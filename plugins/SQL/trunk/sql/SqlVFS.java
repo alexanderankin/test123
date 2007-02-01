@@ -23,21 +23,25 @@
 
 package sql;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Component;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import javax.swing.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.util.Log;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.*;
-
-import projectviewer.vpt.*;
-
-import sql.*;
+import projectviewer.vpt.VPTProject;
 
 /**
  *  SQL VFS "sql:/server/tablespace/table"
@@ -247,7 +251,12 @@ public class SqlVFS extends VFS
 			return new VFS.DirectoryEntry(getFileName(path), path, path,
 			                              VFS.DirectoryEntry.FILESYSTEM, 0L, false);
 
-		final SqlServerRecord rec = getServerRecord(getProject(session), path);
+		VPTProject proj = getProject(session);
+		if (proj == null) {
+			Log.log(Log.ERROR, this, "Error: No project loaded.");
+			return null;
+		}
+		final SqlServerRecord rec = getServerRecord(proj, path);
 		if (rec != null)
 		{
 			final SqlSubVFS.VFSObjectRec or = new SqlSubVFS.VFSObjectRec(path);
@@ -482,10 +491,12 @@ public class SqlVFS extends VFS
 				return;
 
 			final String path = buffer.getPath();
-			final SqlServerRecord rec = getServerRecord(SqlUtils.getProject(umsg.getView()), path);
+			VPTProject proj = SqlUtils.getProject(umsg.getView());
+			assert (proj != null);
+			final SqlServerRecord rec = getServerRecord(proj, path);
 			if (rec == null)
 			{
-				System.err.println("No server record for: " + path + "?");
+				Log.log (Log.ERROR, LoadListener.class, "No server record found for " + path);
 				return;
 			}
 

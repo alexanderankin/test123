@@ -23,27 +23,35 @@
 
 package sql.options;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.filechooser.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
-import common.gui.pathbuilder.*;
-
-import projectviewer.vpt.*;
-
-import sql.*;
-import sql.preprocessors.*;
+import projectviewer.vpt.VPTProject;
+import sql.SqlServerRecord;
+import sql.SqlUtils;
 
 /**
  *  Description of the Class

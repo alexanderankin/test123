@@ -23,23 +23,18 @@
 
 package sql.options;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.util.TreeMap;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.filechooser.*;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 
-import common.gui.pathbuilder.*;
+import org.gjt.sp.jedit.jEdit;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.util.Log;
+import sql.SqlPlugin;
 
-import sql.*;
-import sql.preprocessors.*;
+import common.gui.pathbuilder.ClasspathFilter;
+import common.gui.pathbuilder.PathBuilder;
 
 /**
  *  Description of the Class
