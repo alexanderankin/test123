@@ -5,3 +5,10 @@ VERSION 0.1
 
 * Initial plugin central release
 
+VERSION 1.2
+
+* now provides 20 shortcut saver actions
+* users can rename the action names as they'll appear in the 'Plugins'
+  menu via the plugin option panes
+* option to 'chain' actions, running all that are set for the edit mode, 
+  one after another

@@ -62,20 +62,28 @@ public class ShortcutSaverPlugin extends EditPlugin
 
 		if(actions.size() > 1)
 		{
-			ArrayList listItems = new ArrayList();
-			for(int i = 0; i < actions.size(); i++)
-				listItems.add(new ShortcutSaverListItem(((EditAction)actions.get(i))));
-			final PopupList pop = new PopupList();
-			pop.setItems(listItems);
-			pop.setRequestTextAreaFocusOnCancel(true);
-			pop.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e)
-				{
-					EditAction action = (EditAction)pop.getSelectedActualItem();
-					action.invoke(view);
-				}
-			});
-			pop.show(view);
+			if(ActionUtils.isChained(buffer, actionNumber))
+			{
+				for(int i = 0; i < actions.size(); i++)
+					((EditAction)actions.get(i)).invoke(view);
+			}
+			else
+			{
+				ArrayList listItems = new ArrayList();
+				for(int i = 0; i < actions.size(); i++)
+					listItems.add(new ShortcutSaverListItem(((EditAction)actions.get(i))));
+				final PopupList pop = new PopupList();
+				pop.setItems(listItems);
+				pop.setRequestTextAreaFocusOnCancel(true);
+				pop.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e)
+					{
+						EditAction action = (EditAction)pop.getSelectedActualItem();
+						action.invoke(view);
+					}
+				});
+				pop.show(view);
+			}
 		}
 		else
 			((EditAction)actions.get(0)).invoke(view);

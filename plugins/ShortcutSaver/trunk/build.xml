@@ -3,7 +3,7 @@
 <!-- Ant build file for the ShortcutSaver plugin for jEdit -->
 
 <project name="ShortcutSaver" default="dist" basedir=".">
-
+	<property file="../build.properties" />
 	<property name="jar.name" value="${ant.project.name}.jar"/>
 	
 	<property name="src.dir" value="."/>

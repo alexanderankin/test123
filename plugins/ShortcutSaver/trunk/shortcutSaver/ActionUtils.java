@@ -1,6 +1,6 @@
 /*
  *  ActionUtils.java - ShortcutSaver plugin
- *  Copyright (C) 2003 Carmine Lucarelli
+ *  Copyright (C) 2003, 2007 Carmine Lucarelli
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -85,6 +85,16 @@ public class ActionUtils
 			else
 				Log.log(Log.DEBUG, ActionUtils.class, "Unknown action name: " + name);
 		}
+	}
+	
+	/**
+	 *  Check whether the given action list's 'chained' property is set.
+	 *  
+	 */
+	public static boolean isChained(Buffer buffer, int actionNumber)
+	{
+		String work = buffer.getMode().getName();
+		return jEdit.getBooleanProperty(PROP_PREFIX + actionNumber + "." + work + ".chained");
 	}
 }
 

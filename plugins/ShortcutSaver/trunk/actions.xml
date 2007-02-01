@@ -31,4 +31,74 @@
 			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 6);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="shortcutSaver-action7">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 7);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action8">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 8);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action9">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 9);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action10">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 10);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action11">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 11);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action12">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 12);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action13">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 13);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action14">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 14);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action15">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 15);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action16">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 16);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action17">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 17);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action18">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 18);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action19">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 19);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action20">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 20);
+		</CODE>
+	</ACTION>
 </ACTIONS>
