@@ -69,7 +69,6 @@ public class ResultSetWindow extends JPanel
 		this.view = view;
 
 		setLayout(new BorderLayout());
-//    final JPanel p = new JPanel( new BorderLayout() );
 
 		notebook = new JTabbedPane();
 		add(BorderLayout.CENTER, notebook);
