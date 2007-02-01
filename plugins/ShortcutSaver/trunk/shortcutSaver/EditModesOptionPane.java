@@ -1,7 +1,7 @@
 /*
  * EditModesOptionPane.java - ShortcutSaver plugin's editmodes option pane
  *
- * Copyright (C) 2003 Carmine Lucarelli
+ * Copyright (C) 2003, 2007 Carmine Lucarelli
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,23 +41,68 @@ public class EditModesOptionPane extends AbstractOptionPane
 
 	protected void _init()
 	{
-		setLayout(new BorderLayout());
+//		setLayout(new BorderLayout());
+//		JPanel north = new JPanel(new GridLayout(2, 2, 5, 10));
 
-		JLabel label = new JLabel(jEdit.getProperty(
+		String label = jEdit.getProperty("options.shortcutSaver.editmodes.caption");
+		String work = jEdit.getProperty("shortcutSaver.ActionLabel" + paneNumber);
+		if(work == null)
+			work = "Action " + paneNumber;
+		menuName = new JTextField(work);
+		menuName.setHorizontalAlignment(SwingConstants.LEFT);
+		addComponent(label, menuName);
+		
+		label = jEdit.getProperty("options.shortcutSaver.editmodes.shortcut");
+		work = jEdit.getProperty("shortcutSaver-action" + paneNumber + ".shortcut");
+		if(work == null)
+			work = "";
+		JLabel current = new JLabel(work);
+		current.setFont(new Font(current.getFont().getName(), Font.BOLD, current.getFont().getSize()));
+		addComponent(label, current);
+
+		addComponent(createModeTableScroller(), GridBagConstraints.BOTH);
+
+/*		JLabel label = new JLabel(jEdit.getProperty(
 			"options.shortcutSaver.editmodes.caption"));
 		label.setBorder(new EmptyBorder(0,0,6,0));
-		add(BorderLayout.NORTH,label);
-		add(BorderLayout.CENTER,createModeTableScroller());
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		north.add(label);
+		String work = jEdit.getProperty("shortcutSaver.ActionLabel" + paneNumber);
+		if(work == null)
+			work = "Action " + paneNumber;
+		menuName = new JTextField(work);
+		menuName.setHorizontalAlignment(SwingConstants.LEFT);
+		north.add(menuName);
+
+		label = new JLabel(jEdit.getProperty(
+			"options.shortcutSaver.editmodes.shortcut"));
+		label.setBorder(new EmptyBorder(0,0,6,0));
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		north.add(label);
+		work = jEdit.getProperty("shortcutSaver-action" + paneNumber + ".shortcut");
+		if(work == null)
+			work = "";
+		label = new JLabel(work);
+		label.setBorder(new EmptyBorder(0,0,6,0));
+		label.setHorizontalAlignment(SwingConstants.LEFT);
+		north.add(label); */
+		
+
+		//add(BorderLayout.NORTH, north);
+		//add(BorderLayout.CENTER,createModeTableScroller());
 	}
 
 	protected void _save()
 	{
+		jEdit.setProperty("shortcutSaver.ActionLabel" + paneNumber, menuName.getText());
 		model.save();
 	}
 
 	private ModeTableModel model;
 	private JTable table;
-
+	private JTextField menuName;
+	
+	
 	private JScrollPane createModeTableScroller()
 	{
 		model = new ModeTableModel(paneNumber);
@@ -82,9 +127,13 @@ public class EditModesOptionPane extends AbstractOptionPane
 		{
 			int row = table.getSelectedRow();
 			ShortcutsDialog dialog = new ShortcutsDialog(GUIUtilities.getParentDialog(
-				EditModesOptionPane.this), (String)model.getValueAt(row, 0), (String)model.getValueAt(row, 1));
+				EditModesOptionPane.this), (String)model.getValueAt(row, 0), (String)model.getValueAt(row, 1), 
+				model.getIsChainedAt(row));
 			if(dialog.isOK())
+			{
 				table.setValueAt(dialog.getAction(), row, 1);
+				((ModeTableModel)table.getModel()).setChainedAt(row, dialog.isChained());
+			}
 		}
 	}
 } 
@@ -93,7 +142,7 @@ class ModeTableModel extends AbstractTableModel
 {
 	private ArrayList modes;
 	private int paneNumber;
-	
+
 	ModeTableModel(int paneNumber)
 	{
 		this.paneNumber = paneNumber;
@@ -136,6 +185,12 @@ class ModeTableModel extends AbstractTableModel
 		}
 	} 
 
+	public boolean getIsChainedAt(int row)
+	{
+		Entry mode = (Entry)modes.get(row);
+		return mode.chained;
+	}
+	
 	public boolean isCellEditable(int row, int col)
 	{
 		return (col != 0);
@@ -159,6 +214,12 @@ class ModeTableModel extends AbstractTableModel
 		fireTableRowsUpdated(row,row);
 	} 
 
+	public void setChainedAt(int row, boolean isChained)
+	{
+		Entry mode = (Entry)modes.get(row);
+		mode.chained = isChained;
+	}
+	
 	public String getColumnName(int index)
 	{
 		switch(index)
@@ -184,19 +245,28 @@ class ModeTableModel extends AbstractTableModel
 	{
 		String name;
 		String action;
-
+		boolean chained;
+		String prefix;
+		
 		Entry(String name)
 		{
 			this.name = name;
 			action = jEdit.getProperty(ActionUtils.PROP_PREFIX + paneNumber + "." + name, "");
+			chained = jEdit.getBooleanProperty(ActionUtils.PROP_PREFIX + paneNumber + "." + 
+				name + ".chained", false);
+			prefix = ActionUtils.PROP_PREFIX + paneNumber + "." + name;
 		}
-
+		
 		void save()
 		{
 			if(action.length() > 0)
-				jEdit.setProperty(ActionUtils.PROP_PREFIX + paneNumber + "." + name, action);
+				jEdit.setProperty(prefix, action);
 			else
-				jEdit.unsetProperty(ActionUtils.PROP_PREFIX + paneNumber + "." + name);
+				jEdit.unsetProperty(prefix);
+			if(chained)
+				jEdit.setBooleanProperty(prefix + ".chained", true); 
+			else
+				jEdit.unsetProperty(prefix + ".chained");
 		}
 	}
 }

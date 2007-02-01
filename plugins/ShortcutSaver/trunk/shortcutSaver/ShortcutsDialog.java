@@ -1,6 +1,6 @@
 /*
  * ShortcutsDialog.java - Shortcut picking dialog
- * Copyright (C) 2003 Carmine Lucarelli
+ * Copyright (C) 2003, 2007 Carmine Lucarelli
  *
  * Originally copied from ShortcutsOptionPane.java
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
@@ -37,7 +37,7 @@ import org.gjt.sp.jedit.gui.*;
  */
 public class ShortcutsDialog extends EnhancedDialog implements ActionListener
 {
-	public ShortcutsDialog(Dialog parent, String editMode, String actionName)
+	public ShortcutsDialog(Dialog parent, String editMode, String actionName, boolean isChained)
 	{
 		super(jEdit.getActiveView(), jEdit.getProperty("shortcutSaver.frame.title"), true);
 
@@ -77,17 +77,24 @@ public class ShortcutsDialog extends EnhancedDialog implements ActionListener
 		selectModel = new JComboBox(models);
 		selectModel.addActionListener(this);
 
-		JPanel north = new JPanel(new GridLayout(2, 2, 5, 10));
+		JPanel north = new JPanel(new GridLayout(3, 2, 5, 10));
 		String[] args = { editMode };
 		JLabel label = new JLabel(jEdit.getProperty("shortcutSaver.current.label", args));
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
 		north.add(label);
-		action = new JTextField(actionName);
+		action = new TextFieldWithClear(actionName);
 		north.add(action);
+
 		label = new JLabel(jEdit.getProperty("shortcutSaver.actionset.label"));
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
 		north.add(label);
 		north.add(selectModel);
+
+		north.add(new JLabel(""));
+		chain = new JCheckBox("  Check to chain actions");
+		chain.setHorizontalAlignment(SwingConstants.RIGHT);
+		chain.setSelected(isChained);
+		north.add(chain);
 
 		JPanel south = new JPanel();
 		ok = new JButton(jEdit.getProperty("shortcutSaver.ok.label"));
@@ -133,6 +140,11 @@ public class ShortcutsDialog extends EnhancedDialog implements ActionListener
 		return isOK;
 	}
 
+	public boolean isChained()
+	{
+		return chain.isSelected();
+	}
+	
 	public void cancel()
 	{
 		GUIUtilities.saveGeometry(this, "shortcutsDialog.window");
@@ -205,6 +217,7 @@ public class ShortcutsDialog extends EnhancedDialog implements ActionListener
 	private JTextField action;
 	private JButton ok;
 	private JButton cancel;
+	private JCheckBox chain;
 
 	class TableMouseHandler extends MouseAdapter
 	{
