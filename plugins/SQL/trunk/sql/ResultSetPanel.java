@@ -56,6 +56,9 @@ public class ResultSetPanel extends JPanel
 
 	protected final String formattedQuery;
 
+	protected JComponent dataComponent;
+	protected HelpfulJTable dataTable;
+
 	protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
 	protected final static String AUTORESIZE = "sql.autoresizeResult";
 	protected final static String CLOSE_WITH_BUFFER = "sql.closeWithBuffer";
@@ -144,12 +147,16 @@ public class ResultSetPanel extends JPanel
 
 	public void updateDataSet(Data data)
 	{
-		final JComponent dataView = createDataView(data);
-		add(BorderLayout.CENTER, dataView);
+		if (dataComponent != null)
+		{
+			remove(dataComponent);
+			dataComponent.setVisible(false);
+			dataComponent = null;
+		}
+		add(BorderLayout.CENTER, createDataView(data));
 		add(BorderLayout.SOUTH, createRecCountLabel(data));
 
-		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
-		addMouseListener(new MouseHandler(tbl));
+		addMouseListener(new MouseHandler(dataTable));
 	}
 
 
@@ -340,48 +347,46 @@ public class ResultSetPanel extends JPanel
 	 */
 	protected JComponent createDataView(final Data data)
 	{
-		final HelpfulJTable tbl = new HelpfulJTable();
-		tbl.addPropertyChangeListener("sortOrder",
-		                              new PropertyChangeListener()
-		                              {
-			                              public void propertyChange(PropertyChangeEvent evt)
-			                              {
-				                              setSortOrder(tbl, data, ((Number) evt.getNewValue()).intValue());
-			                              }
-		                              });
+		dataTable = new HelpfulJTable();
+		dataTable.addPropertyChangeListener("sortOrder",
+		                                    new PropertyChangeListener()
+		                                    {
+			                                    public void propertyChange(PropertyChangeEvent evt)
+			                                    {
+				                                    setSortOrder(dataTable, data, ((Number) evt.getNewValue()).intValue());
+			                                    }
+		                                    });
 
-		tbl.addPropertyChangeListener("sortColumn",
-		                              new PropertyChangeListener()
-		                              {
-			                              public void propertyChange(PropertyChangeEvent evt)
-			                              {
-				                              setSortColumn(tbl, data, ((Number) evt.getNewValue()).intValue());
-			                              }
-		                              });
+		dataTable.addPropertyChangeListener("sortColumn",
+		                                    new PropertyChangeListener()
+		                                    {
+			                                    public void propertyChange(PropertyChangeEvent evt)
+			                                    {
+				                                    setSortColumn(dataTable, data, ((Number) evt.getNewValue()).intValue());
+			                                    }
+		                                    });
 
-		setRenderers(tbl, data.getServerRecord().getServerType());
+		setRenderers(dataTable, data.getServerRecord().getServerType());
 
 		if (getAutoResize())
 		{
-			tbl.setAutoResizeColumns(true);
-			tbl.setAutoResizeWithHeaders(true);
-			tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			dataTable.setAutoResizeColumns(true);
+			dataTable.setAutoResizeWithHeaders(true);
+			dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		}
 		else
 		{
-			tbl.setAutoResizeColumns(false);
-			tbl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			dataTable.setAutoResizeColumns(false);
+			dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		}
 
-		setSortOrder(tbl, data, HelpfulJTable.SORT_OFF);
+		setSortOrder(dataTable, data, HelpfulJTable.SORT_OFF);
 
-		tbl.addMouseListener(new MouseHandler(tbl));
+		dataTable.addMouseListener(new MouseHandler(dataTable));
 
-		tbl.setTableHeader(new TableHeader(tbl, data.columnTypeNames));
+		dataTable.setTableHeader(new TableHeader(dataTable, data.columnTypeNames));
 
-		final JScrollPane scroller = new JScrollPane(tbl);
-
-		return scroller;
+		return dataComponent = new JScrollPane(dataTable);
 	}
 
 
