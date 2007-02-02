@@ -14,19 +14,22 @@
 -->
 <project name="SuperAbbrevs" default="dist" basedir=".">
 	
-  <property file="build.platform.properties"/>
 	<property file="build.properties"/>
+  
+  <property name="jar.name" value="SuperAbbrevs.jar"/>
+  <property name="src.dir" value="."/>
+  <property name="build.dir" value="build"/>
 	
   <target name="setup-mac">
-  	<copy file="build.mac.properties" tofile="build.platform.properties"/>
+  	<copy file="build.mac.properties" tofile="build.properties"/>
   </target>
   
   <target name="setup-linux">
-  	<copy file="build.linux.properties" tofile="build.platform.properties"/>
+  	<copy file="build.linux.properties" tofile="build.properties"/>
   </target>
 
   <target name="setup-windows">
-  	<copy file="build.windows.properties" tofile="build.platform.properties"/>
+  	<copy file="build.windows.properties" tofile="build.properties"/>
   </target>
   
 	<path id="project.class.path">
