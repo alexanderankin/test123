@@ -13,26 +13,28 @@
      See INSTALL.txt
 -->
 <project name="SuperAbbrevs" default="dist" basedir=".">
-	
-  <property file="build.platform.properties"/>
+
+    <property file="build.platform.properties"/>
 	<property file="build.properties"/>
-	
+    <property name="jar.name" value="SuperAbbrevs.jar"/>
+    <property name="src.dir" value="."/>
+
   <target name="setup-mac">
-  	<copy file="build.mac.properties" tofile="build.platform.properties"/>
+  	<copy file="build.mac.properties" tofile="build.properties"/>
   </target>
-  
+
   <target name="setup-linux">
-  	<copy file="build.linux.properties" tofile="build.platform.properties"/>
+  	<copy file="build.linux.properties" tofile="build.properties"/>
   </target>
 
   <target name="setup-windows">
-  	<copy file="build.windows.properties" tofile="build.platform.properties"/>
+  	<copy file="build.windows.properties" tofile="build.properties"/>
   </target>
-  
+
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	</path>
-  
+
   <!-- make tags with ctags-exuberant -->
   <target name="tags">
 		<exec executable="ctags-exuberant">
@@ -40,9 +42,9 @@
 			<arg value="."/>
 		</exec>
   </target>
-  
-  <!-- 
-  You need to install jflex to compile this target. But you only need to build 
+
+  <!--
+  You need to install jflex to compile this target. But you only need to build
   this target if you change the lexer files.
   -->
 	<target name="jflex">
@@ -50,13 +52,13 @@
 			<arg value="superabbrevs/lexer/*.lex"/>
 		</exec>
 	</target>
-  
+
   <target name="init">
 		<mkdir dir="${build.dir}"/>
 	</target>
-  
+
 	<target name="compile" depends="init">
-		<javac 
+		<javac
 		target="1.4"
 		source="1.4"
 			srcdir="${src.dir}"
@@ -67,7 +69,7 @@
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
-	
+
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
@@ -92,7 +94,7 @@
 		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/${stylesheet}'/>"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
-	
+
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs">
 		<antcall target="generate-docbook-wrapper"/>
@@ -108,7 +110,7 @@
 			<fileset dir="doc" includes="*.html" defaultexcludes="no"/>
 		</delete>
 	</target>
-	
+
 	<target name="clean" depends="clean-docs">
 		<delete dir="${build.dir}"/>
 		<delete>
