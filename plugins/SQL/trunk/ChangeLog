@@ -1,3 +1,8 @@
+2007-02-02        svu
+
+	* SqlPlugin.props, sql/ResultSetPanel.java,
+	sql/options/GeneralOptionPane.java: make requery period configurable
+
 2007-02-01        svu
 
 	* sql/SqlTextPublisher.java, sql/ResultSetWindow.java: requerying

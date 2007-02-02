@@ -49,6 +49,7 @@ import sql.preprocessors.*;
 public class GeneralOptionPane extends SqlOptionPane
 {
 	private JTextField maxRecsField;
+	private JTextField queryExecPeriodField;
 	private JCheckBox showToolBar;
 	private JCheckBox showTitle;
 	private JCheckBox autoresizeResult;
@@ -96,8 +97,20 @@ public class GeneralOptionPane extends SqlOptionPane
 			JPanel panel1 = new JPanel();
 			{
 				panel1.setLayout(new BorderLayout(5, 5));
-				panel1.add(new JLabel(jEdit.getProperty("sql.options.maxRecs2Show.label")), BorderLayout.WEST);
-				panel1.add(maxRecsField = new JTextField("" + ResultSetPanel.getMaxRecordsToShow()), BorderLayout.CENTER);
+				JPanel panel2 = new JPanel();
+				{
+					panel2.setLayout(new BorderLayout(5, 5));
+					panel2.add(new JLabel(jEdit.getProperty("sql.options.maxRecs2Show.label")), BorderLayout.WEST);
+					panel2.add(maxRecsField = new JTextField("" + ResultSetPanel.getMaxRecordsToShow()), BorderLayout.CENTER);
+				}
+				panel1.add(panel2, BorderLayout.NORTH);
+				panel2 = new JPanel();
+				{
+					panel2.setLayout(new BorderLayout(5, 5));
+					panel2.add(new JLabel(jEdit.getProperty("sql.options.queryExectionPeriod.label")), BorderLayout.WEST);
+					panel2.add(queryExecPeriodField = new JTextField("" + ResultSetPanel.getQueryExecutionPeriod()), BorderLayout.CENTER);
+				}
+				panel1.add(panel2, BorderLayout.SOUTH);
 			}
 			panel.add(panel1);
 
@@ -182,6 +195,13 @@ public class GeneralOptionPane extends SqlOptionPane
 		try
 		{
 			ResultSetPanel.setMaxRecordsToShow(Integer.parseInt(maxRecsField.getText()));
+		} catch (NumberFormatException ex)
+		{
+		}
+
+		try
+		{
+			ResultSetPanel.setQueryExecutionPeriod(Integer.parseInt(queryExecPeriodField.getText()));
 		} catch (NumberFormatException ex)
 		{
 		}
