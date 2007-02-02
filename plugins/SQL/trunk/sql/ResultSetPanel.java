@@ -60,14 +60,12 @@ public class ResultSetPanel extends JPanel
 	protected HelpfulJTable dataTable;
 
 	protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
+	protected final static String QUERY_EXEC_PERIOD_PROP = "sql.queryExecutionPeriod";
 	protected final static String AUTORESIZE = "sql.autoresizeResult";
 	protected final static String CLOSE_WITH_BUFFER = "sql.closeWithBuffer";
 
 	protected int sortOrder = HelpfulJTable.SORT_OFF;
 	protected int sortColumn = -1;
-
-	// TODO: put into plugin options dialog
-	public final static int REEXEC_PERIOD = 3;
 
 	/**
 	 *  Constructor for the ResultSetWindow object
@@ -202,7 +200,7 @@ public class ResultSetPanel extends JPanel
 
 		ppm.add(new JSeparator());
 
-		final Object[] args = new Object[]{ new Integer(REEXEC_PERIOD) };
+		final Object[] args = new Object[]{ new Integer(getQueryExecutionPeriod()) };
 		final JMenuItem remi = new JCheckBoxMenuItem(jEdit.getProperty("sql.resultSet.repeatQuery.every.label", args));
 		remi.setFocusPainted(false);
 		remi.setToolTipText(jEdit.getProperty("sql.resultSet.repeatQuery.every.tooltip", args));
@@ -444,6 +442,27 @@ public class ResultSetPanel extends JPanel
 		} catch (NullPointerException ex)
 		{
 			return 10;
+		}
+	}
+
+
+	public final static void setQueryExecutionPeriod(int secs)
+	{
+		SqlPlugin.setGlobalProperty(QUERY_EXEC_PERIOD_PROP, "" + secs);
+	}
+
+
+	public final static int getQueryExecutionPeriod()
+	{
+		try
+		{
+			return Integer.parseInt(SqlPlugin.getGlobalProperty(QUERY_EXEC_PERIOD_PROP));
+		} catch (NumberFormatException ex)
+		{
+			return 3;
+		} catch (NullPointerException ex)
+		{
+			return 3;
 		}
 	}
 
@@ -814,7 +833,7 @@ public class ResultSetPanel extends JPanel
 				                             ResultSetPanel.this);
 				try
 				{
-					Thread.sleep(1000L * REEXEC_PERIOD);
+					Thread.sleep(1000L * getQueryExecutionPeriod());
 				} catch (Exception ex) {}
 			}
 			repeaterThread = null;

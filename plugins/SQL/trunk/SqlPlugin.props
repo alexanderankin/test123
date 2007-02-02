@@ -64,6 +64,7 @@ sql.options.export.warning.title=Security warning
 
 sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
+sql.options.queryExectionPeriod.label=Query reexecution period, sec
 sql.options.autoresizeResult.label=Autoresize
 sql.options.closeWithBuffer.label=Close with buffer
 
