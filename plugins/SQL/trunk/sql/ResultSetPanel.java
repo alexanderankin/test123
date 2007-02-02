@@ -511,6 +511,7 @@ public class ResultSetPanel extends JPanel
 	public final static void clearProperties()
 	{
 		SqlPlugin.unsetGlobalProperty(MAX_RECS_TO_SHOW_PROP);
+		SqlPlugin.unsetGlobalProperty(QUERY_EXEC_PERIOD_PROP);
 		SqlPlugin.unsetGlobalProperty(AUTORESIZE);
 		SqlPlugin.unsetGlobalProperty(CLOSE_WITH_BUFFER);
 	}
