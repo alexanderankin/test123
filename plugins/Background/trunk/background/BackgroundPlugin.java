@@ -20,41 +20,38 @@
 
 package background;
 
-import java.awt.*;
-import java.util.Vector;
-
-import javax.swing.*;
-
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.util.Log;
 
 
 public class BackgroundPlugin extends EBPlugin
 {
-    public void start() {}
-
-
-    public void stop() {}
-
-
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenuItem("background.toggle-background"));
+    public void start()
+    {
+	    View view = jEdit.getFirstView();
+	    while (view != null)
+	    {
+		    EditPane[] panes = view.getEditPanes();
+		    for (int i = 0; i < panes.length; i++)
+			    initEditPane(panes[i]);
+		    view = view.getNext();
+	    }
     }
 
 
-    public void createOptionPanes(OptionsDialog optionsDialog) {
-        optionsDialog.addOptionPane(new BackgroundOptionPane());
+    public void stop()
+    {
+	    View view = jEdit.getFirstView();
+	    while (view != null)
+	    {
+		    EditPane[] panes = view.getEditPanes();
+		    for (int i = 0; i < panes.length; i++)
+			    uninitEditPane(panes[i]);
+		    view = view.getNext();
+	    }
     }
-
 
     public void handleMessage(EBMessage message) {
         if (message instanceof EditPaneUpdate) {
@@ -62,18 +59,34 @@ public class BackgroundPlugin extends EBPlugin
             EditPane editPane = epu.getEditPane();
 
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                TextAreaPainter textAreaPainter = editPane.getTextArea().getPainter();
-
-                BackgroundHighlight backgroundHighlight =
-                    (BackgroundHighlight) BackgroundHighlight.addHighlightTo(editPane);
-
-                textAreaPainter.addExtension(TextAreaPainter.BACKGROUND_LAYER, backgroundHighlight);
+		    initEditPane(editPane);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
-                BackgroundHighlight.removeHighlightFrom(editPane);
+                uninitEditPane(editPane);
             }
         } else if (message instanceof PropertiesChanged) {
             BackgroundHighlight.propertiesChanged();
         }
     }
+
+	private static void initEditPane(EditPane editPane)
+	{
+		TextAreaPainter textAreaPainter = editPane.getTextArea().getPainter();
+
+		BackgroundHighlight backgroundHighlight =
+		    (BackgroundHighlight) BackgroundHighlight.addHighlightTo(editPane);
+
+		textAreaPainter.addExtension(TextAreaPainter.BACKGROUND_LAYER, backgroundHighlight);
+	}
+
+	private static void uninitEditPane(EditPane editPane)
+	{
+		TextAreaPainter textAreaPainter = editPane.getTextArea().getPainter();
+
+		BackgroundHighlight backgroundHighlight =
+		    BackgroundHighlight.getHighlightFor(editPane);
+
+		textAreaPainter.removeExtension(backgroundHighlight);
+		BackgroundHighlight.removeHighlightFrom(editPane);
+	}
 }
 
