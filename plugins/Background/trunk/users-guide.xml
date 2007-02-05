@@ -53,8 +53,8 @@
     <para>Background requires:</para>
 
     <itemizedlist>
-        <listitem>JDK 1.2</listitem>
-        <listitem>jEdit 4.0pre4</listitem>
+        <listitem>JDK 1.4</listitem>
+        <listitem>jEdit 4.2</listitem>
     </itemizedlist>
 
 </chapter>
@@ -73,7 +73,7 @@
     </para>
 
     <para>
-    The accepted image formats include GIF, JPEG and PNG (JDK 1.3).
+    The accepted image formats include GIF, JPEG and PNG.
     </para>
 
     <para>
@@ -113,17 +113,13 @@
     <para>
     The preferred way to send bug reports is to use the
     Sourceforge Bug Tracker at
-    <ulink url="http://sourceforge.net/bugs/?group_id=588">
-        http://sourceforge.net/bugs/?group_id=588
+    <ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588&amp;func=browse">
+        hhttp://sourceforge.net/tracker/?atid=565475&amp;group_id=588&amp;func=browse
     </ulink>
     </para>
 
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
-            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
-        </listitem>
-
         <listitem>
             or jEdit-users mailing-list
             <email>jedit-users@lists.sourceforge.net</email>;
