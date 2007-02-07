@@ -33,9 +33,11 @@ public class P4GlobalConfig {
 
     private static final P4GlobalConfig instance = new P4GlobalConfig();
 
-    private static final String     P4BINARY_OPT    = "p4plugin.p4command";
-    private static final String     P4EDITOR_OPT    = "p4plugin.p4editor";
-    private static final String     P4FMON_OPT      = "p4plugin.p4fmon";
+    protected static final String   P4BINARY_OPT    = "p4plugin.p4command";
+    protected static final String   P4DIFF_OPT      = "p4plugin.p4diff";
+    protected static final String   P4DIFF_IGN_OPT  = "p4plugin.p4diff.ignore_output";
+    protected static final String   P4EDITOR_OPT    = "p4plugin.p4editor";
+    protected static final String   P4FMON_OPT      = "p4plugin.p4fmon";
 
     public static P4GlobalConfig getInstance() {
         return instance;
@@ -49,30 +51,20 @@ public class P4GlobalConfig {
         return jEdit.getProperty(P4BINARY_OPT);
     }
 
-    public void setPerforcePath(String path) {
-        if (path != null && path.length() > 0)
-            jEdit.setProperty(P4BINARY_OPT, path);
-        else
-            jEdit.unsetProperty(P4BINARY_OPT);
-    }
-
     public String getEditor() {
         return jEdit.getProperty(P4EDITOR_OPT);
-    }
-
-    public void setEditor(String cmd) {
-        if (cmd != null && cmd.length() > 0)
-            jEdit.setProperty(P4EDITOR_OPT, cmd);
-        else
-            jEdit.unsetProperty(P4EDITOR_OPT);
     }
 
     public boolean getMonitorFiles() {
         return jEdit.getBooleanProperty(P4FMON_OPT, false);
     }
 
-    public void setMonitorFiles(boolean flag) {
-        jEdit.setBooleanProperty(P4FMON_OPT, flag);
+    public String getDiffTool() {
+        return jEdit.getProperty(P4DIFF_OPT);
+    }
+
+    public boolean getIgnoreDiffOutput() {
+        return jEdit.getBooleanProperty(P4DIFF_IGN_OPT, false);
     }
 
 }

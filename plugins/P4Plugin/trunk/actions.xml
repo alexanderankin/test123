@@ -88,10 +88,10 @@
         </CODE>
     </ACTION>
 
-    <ACTION NAME="p4plugin_fstat">
+    <ACTION NAME="p4plugin_diff">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
-                new p4plugin.action.P4FileInfoAction("fstat"), view, false);
+                new p4plugin.action.P4FileInfoAction("diff"), view, false);
         </CODE>
     </ACTION>
 

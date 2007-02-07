@@ -207,6 +207,7 @@ public abstract class AbstractP4Action extends Action {
         public boolean  cancelled;
 
         private ActionEvent ae;
+        private boolean allowOthers;
         private boolean showDefault;
         private boolean autoInvoke;
 
@@ -216,7 +217,14 @@ public abstract class AbstractP4Action extends Action {
         }
 
         public CListChooser(boolean showDefault, ActionEvent ae) {
+            this(showDefault, false, ae);
+        }
+
+        public CListChooser(boolean showDefault, boolean allowOthers,
+                            ActionEvent ae)
+        {
             this.showDefault = showDefault;
+            this.allowOthers = allowOthers;
             this.autoInvoke = true;
             this.ae = ae;
         }
@@ -228,7 +236,7 @@ public abstract class AbstractP4Action extends Action {
         public void run() {
             change = null;
             View v = (viewer != null) ? viewer.getView() : jEdit.getActiveView();
-            ChangeListDialog dlg = new ChangeListDialog(v, showDefault);
+            ChangeListDialog dlg = new ChangeListDialog(v, showDefault, allowOthers);
             PVActions.swingInvoke(dlg);
             if (autoInvoke && !dlg.isCancelled())
                 invokePerforce(dlg.getChange(), ae);

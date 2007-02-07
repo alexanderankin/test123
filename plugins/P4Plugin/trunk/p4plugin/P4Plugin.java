@@ -124,8 +124,8 @@ public class P4Plugin extends EBPlugin {
         if (!P4GlobalConfig.getInstance().getMonitorFiles())
             return;
 
-        View v;
-        Buffer b;
+        View v = null;
+        Buffer b = null;
         if (msg instanceof ViewUpdate) {
             v = ((ViewUpdate)msg).getView();
             b = v.getBuffer();
@@ -137,7 +137,9 @@ public class P4Plugin extends EBPlugin {
         } else if (msg instanceof EditPaneUpdate) {
             v = ((EditPaneUpdate)msg).getEditPane().getView();
             b = ((EditPaneUpdate)msg).getEditPane().getBuffer();
-        } else {
+        }
+
+        if (b == null) {
             return;
         }
 

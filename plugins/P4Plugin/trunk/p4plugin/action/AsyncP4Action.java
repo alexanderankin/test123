@@ -33,7 +33,7 @@ import common.threads.WorkerThreadPool;
  *	show an error message if something goes wrong. The idea here is
  *	that some action might spawn a long running external process, so
  *	it would be bad to block the AWT thread in these cases. Especially
- *	bad if this process happened to be jEdit connection to the current
+ *	bad if this process happened to be jEdit connecting to the current
  *	instance to edit a file.
  *
  *  @author     Marcelo Vanzin

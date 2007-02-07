@@ -20,13 +20,10 @@
  */
 package p4plugin.config;
 
-//{{{ Imports
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.jEdit;
-//}}}
+import common.gui.EasyOptionPane;
 
 /**
  *  The global plugin configuration pane.
@@ -35,41 +32,24 @@ import org.gjt.sp.jedit.jEdit;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class P4GlobalOptionPane extends AbstractOptionPane {
-
-    private P4Config config;
-
-    private JCheckBox   monitorFiles;
-    private JTextField  p4Path;
-    private JTextField  editorCommand;
+public class P4GlobalOptionPane extends EasyOptionPane {
 
     public P4GlobalOptionPane() {
-        super(jEdit.getProperty("p4plugin.config.global_option_pane.name"));
+        super("p4plugin.config.global_option_pane");
+
+        List spec = new LinkedList();
+        spec.add("file,p4plugin.global_cfg.p4_path,"
+                    + P4GlobalConfig.P4BINARY_OPT);
+        spec.add("file,p4plugin.global_cfg.editor_cmd,"
+                    + P4GlobalConfig.P4EDITOR_OPT);
+        spec.add("file,p4plugin.global_cfg.diff_cmd,"
+                    + P4GlobalConfig.P4DIFF_OPT);
+        spec.add("checkbox,p4plugin.global_cfg.ignore_diff_output,"
+                    + P4GlobalConfig.P4DIFF_IGN_OPT);
+        spec.add("checkbox,p4plugin.global_cfg.monitor_files,"
+                    + P4GlobalConfig.P4FMON_OPT);
+        setComponentSpec(spec);
     }
-
-    //{{{ _init() method
-    protected void _init() {
-        P4GlobalConfig config = P4GlobalConfig.getInstance();
-
-        p4Path = new JTextField(config.getPerforcePath());
-        addComponent(jEdit.getProperty("p4plugin.global_cfg.p4_path"), p4Path);
-
-        editorCommand = new JTextField(config.getEditor());
-        addComponent(jEdit.getProperty("p4plugin.global_cfg.editor_cmd"), editorCommand);
-
-        monitorFiles = new JCheckBox(jEdit.getProperty("p4plugin.global_cfg.monitor_files"));
-        monitorFiles.setToolTipText(jEdit.getProperty("p4plugin.global_cfg.monitor_files.tooltip"));
-        monitorFiles.setSelected(config.getMonitorFiles());
-        addComponent(monitorFiles);
-    } //}}}
-
-    //{{{ _save() method
-    protected void _save() {
-        P4GlobalConfig config = P4GlobalConfig.getInstance();
-        config.setPerforcePath(p4Path.getText());
-        config.setEditor(editorCommand.getText());
-        config.setMonitorFiles(monitorFiles.isSelected());
-    } //}}}
 
 }
 

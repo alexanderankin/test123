@@ -22,12 +22,15 @@ package p4plugin.config;
 
 import java.io.Serializable;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.PropertiesBean;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
@@ -39,7 +42,7 @@ import projectviewer.vpt.VPTProject;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class P4Config implements Serializable {
+public class P4Config extends PropertiesBean {
 
     /** For compatibility with plugin version 0.2. */
     public static final long serialVersionUID = -6061609192143296794L;
@@ -68,9 +71,22 @@ public class P4Config implements Serializable {
         if (proj == null)
             return null;
 
-        String _client = proj.getProperty(P4CONFIG_CLIENT);
+        // new style PropertiesBean
+        String _client = proj.getProperty("p4plugin.cfg.client");
         if (_client != null) {
-            // new style config using properties.
+            try {
+                P4Config cfg = new P4Config();
+                cfg.load(proj.getProperties());
+                return cfg;
+            } catch (Exception e) {
+                Log.log(Log.WARNING, P4Config.class, "corrupt P4Plugin properties: " + e.getMessage());
+                return null;
+            }
+        }
+
+        // old style properties.
+        _client = proj.getProperty(P4CONFIG_CLIENT);
+        if (_client != null) {
             try {
                 P4Config cfg = new P4Config();
                 cfg.setEditorConfig(Integer.parseInt(proj.getProperty(P4CONFIG_EDITOR_TYPE)));
@@ -101,6 +117,11 @@ public class P4Config implements Serializable {
     private String      p4Editor;
     private String      p4Client;
     private String      p4User;
+    private String      p4Config;
+
+    public P4Config() {
+        super("p4plugin.cfg");
+    }
 
     public int getEditorConfig() {
         return p4EditorType;
@@ -146,12 +167,27 @@ public class P4Config implements Serializable {
             p4Client = null;
     }
 
+    public String getConfig() {
+        return p4Config;
+    }
+
+    public void setConfig(String fname) {
+        if (fname != null && fname.length() > 0)
+            p4Config = fname;
+        else
+            p4Config = null;
+    }
+
     /**
      *  Builds the environment array to use when calling the p4
      *  executable.
+     *
+     *  @since  P4P 0.3.0
      */
     public String[] getEnv() {
-        List envp = new LinkedList();
+        Map<String,String> envp = new HashMap();
+        envp.putAll(System.getenv());
+
         String editor = null;
         switch (p4EditorType) {
             case P4EDITOR_USE_GLOBAL:
@@ -167,18 +203,32 @@ public class P4Config implements Serializable {
         }
 
         if (editor != null) {
-            envp.add("P4EDITOR=" + editor);
+            envp.put("P4EDITOR", editor);
         }
 
-        if (p4Client != null) {
-            envp.add("P4CLIENT=" + p4Client);
+        if (p4Config != null) {
+            envp.put("P4CONFIG", p4Config);
+            envp.remove("P4CLIENT");
+        } else if (p4Client != null) {
+            envp.put("P4CLIENT", p4Client);
+            envp.remove("P4CONFIG");
         }
 
         if (p4User != null) {
-            envp.add("P4USER=" + p4User);
+            envp.put("P4USER", p4User);
         }
 
-        return (String[]) envp.toArray(new String[envp.size()]);
+        if (P4GlobalConfig.getInstance().getDiffTool() != null) {
+            envp.put("P4DIFF", P4GlobalConfig.getInstance().getDiffTool());
+        }
+
+        String[] env = new String[envp.size()];
+        int cnt = 0;
+        for (String key : envp.keySet()) {
+            env[cnt++] = key + "=" + envp.get(key);
+        }
+
+        return env;
     }
 
 }

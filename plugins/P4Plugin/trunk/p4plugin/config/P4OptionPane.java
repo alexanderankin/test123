@@ -20,11 +20,12 @@
  */
 package p4plugin.config;
 
-//{{{ Imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -35,7 +36,6 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTProject;
-//}}}
 
 /**
  *  The configuration pane for the P4Plugin, attached to the project
@@ -56,6 +56,7 @@ public class P4OptionPane extends AbstractOptionPane
     private JComboBox   editorType;
     private JTextField  editorCommand;
     private JTextField  client;
+    private JTextField  p4config;
     private JTextField  user;
 
     public P4OptionPane() {
@@ -89,9 +90,17 @@ public class P4OptionPane extends AbstractOptionPane
         addComponent(jEdit.getProperty("p4plugin.project_cfg.editor_cmd"), editorCommand);
         editorType.addItemListener(this);
 
+        KeyHandler khandler = new KeyHandler();
+
         client = new JTextField(config.getClient());
         client.setEnabled(usePerforce.isSelected());
+        client.addKeyListener(khandler);
         addComponent(jEdit.getProperty("p4plugin.project_cfg.client"), client);
+
+        p4config = new JTextField(config.getConfig());
+        p4config.setEnabled(usePerforce.isSelected() && config.getClient() == null);
+        p4config.addKeyListener(khandler);
+        addComponent(jEdit.getProperty("p4plugin.project_cfg.p4config"), p4config);
 
         user = new JTextField(config.getUser());
         user.setEnabled(usePerforce.isSelected());
@@ -125,6 +134,7 @@ public class P4OptionPane extends AbstractOptionPane
             editorType.setEnabled(usePerforce.isSelected());
             editorCommand.setEnabled(shouldEnableCommandBox());
             client.setEnabled(usePerforce.isSelected());
+            p4config.setEnabled(usePerforce.isSelected());
             user.setEnabled(usePerforce.isSelected());
         }
     }
@@ -141,24 +151,22 @@ public class P4OptionPane extends AbstractOptionPane
         VPTProject p = ProjectOptions.getProject();
         p.removeProperty(P4Config.KEY);
         if (config != null) {
-            _set(p, P4Config.P4CONFIG_EDITOR_TYPE, String.valueOf(config.getEditorConfig()));
-            _set(p, P4Config.P4CONFIG_EDITOR, config.getEditor());
-            _set(p, P4Config.P4CONFIG_CLIENT, config.getClient());
-            _set(p, P4Config.P4CONFIG_USER, config.getUser());
+            config.save(p.getProperties());
         } else {
-            p.removeProperty(P4Config.P4CONFIG_EDITOR_TYPE);
-            p.removeProperty(P4Config.P4CONFIG_EDITOR);
-            p.removeProperty(P4Config.P4CONFIG_CLIENT);
-            p.removeProperty(P4Config.P4CONFIG_USER);
+            config.clean(p.getProperties());
         }
     }
 
-    private void _set(VPTProject p, String prop, String value) {
-        if (value != null) {
-            p.setProperty(prop, value);
-        } else {
-            p.removeProperty(prop);
+    private class KeyHandler extends KeyAdapter {
+
+        public void keyReleased(KeyEvent ke) {
+            if (ke.getSource() == client) {
+                p4config.setEnabled(client.getText().length() == 0);
+            } else if (ke.getSource() == p4config) {
+                client.setEnabled(p4config.getText().length() == 0);
+            }
         }
+
     }
 
 }

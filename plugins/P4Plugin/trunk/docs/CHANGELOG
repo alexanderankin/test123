@@ -2,8 +2,14 @@ CHANGELOG
 
 Version 0.2.3:
 	[marcelo vanzin]
-	- don't store the configuration as a serialized object; just use
-	  regular properties to avoid problems with class loaders.
+	- fix weird NPE when handling an EditBus message.
+	- add a "diff" action and related configuration to set what diff
+	  tool to use.
+	- make the file info actions asynchronous.
+	- properly set up the user environment when running the P4 binary;
+	  this allows wrapper scripts around p4 (that might rely on
+	  environment variables) to be used.
+	- add support for P4CONFIG instead of P4CLIENT.
 
 Version 0.2.2:
 	[marcelo vanzin]
@@ -12,6 +18,8 @@ Version 0.2.2:
 	  binary-incompatible between Console versions 4.2 and 4.3.
 	- need to check the key interceptor registrating when getting
 	  and EditPaneUpdate message also.
+	- don't store the configuration as a serialized object; just use
+      regular properties to avoid problems with class loaders.
 
 Version 0.2.1:
 	[marcelo vanzin]

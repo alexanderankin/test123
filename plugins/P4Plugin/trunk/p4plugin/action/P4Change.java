@@ -37,7 +37,7 @@ import p4plugin.Perforce;
 import p4plugin.config.P4Config;
 
 /**
- *  Calls "p4 user" and hopes for the best.
+ *  Lets the user edit a change list.
  *
  *  @author     Marcelo Vanzin
  *  @version    $Id$

@@ -72,6 +72,7 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
 
     private int     visiting;
     private boolean inViews;
+    private boolean p4ClientFailed  = false;
 
     public String getRecurseDescription() {
         return jEdit.getProperty("p4plugin.file_filter_desc");
@@ -109,7 +110,7 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
         if (entries == null)
             entries = new HashMap();
 
-        if (clientRoot == null && !findClientRoot()) {
+        if (clientRoot == null && !p4ClientFailed && !findClientRoot()) {
             entries.put(dirpath, null);
             return;
         }
@@ -166,7 +167,13 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
         try {
             cmd.exec(jEdit.getActiveView()).waitFor();
         } catch (Exception e) {
+            p4ClientFailed = true;
             Log.log(Log.WARNING, this, e);
+            return false;
+        }
+
+        if (!cmd.isSuccess()) {
+            p4ClientFailed = true;
             return false;
         }
 
