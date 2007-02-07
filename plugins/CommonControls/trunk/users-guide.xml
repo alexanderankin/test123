@@ -1,14 +1,10 @@
-<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <!-- SQL user's guide -->
 <!-- (C) 2001 Sergey V. Udaltsov -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-"/usr/share/sgml/docbook/xml-dtd-4.1.2/docbookx.dtd">
-<!--
-  VERY BAD SYSTEM ID - but openjade cannot handle URLs:(
-  Should be "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
--->
+
 <book>
   <bookinfo>
     <title>Common Controls user's guide</title>
