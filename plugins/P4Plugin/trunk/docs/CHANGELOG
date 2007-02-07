@@ -2,6 +2,7 @@ CHANGELOG
 
 Version 0.2.3:
 	[marcelo vanzin]
+	- now requires Java 1.5.
 	- fix weird NPE when handling an EditBus message.
 	- add a "diff" action and related configuration to set what diff
 	  tool to use.
