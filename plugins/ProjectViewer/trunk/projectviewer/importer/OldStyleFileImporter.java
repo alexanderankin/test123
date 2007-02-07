@@ -33,8 +33,9 @@ import javax.swing.filechooser.FileFilter;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import common.gui.ModalJFileChooser;
+
 import projectviewer.ProjectViewer;
-import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTDirectory;

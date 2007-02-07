@@ -13,7 +13,7 @@ plugin.projectviewer.ProjectPlugin.description=The ProjectViewer plugin provides
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.99.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.4
 
-plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
+plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListPlugin 1.3.1
 plugin.projectviewer.ProjectPlugin.depend.4=optional plugin infoviewer.InfoViewerPlugin 1.2
 #}}}

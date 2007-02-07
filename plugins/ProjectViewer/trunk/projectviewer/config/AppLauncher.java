@@ -43,8 +43,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import common.gui.ModalJFileChooser;
+
 import projectviewer.ProjectPlugin;
-import projectviewer.gui.ModalJFileChooser;
 //}}}
 
 /**

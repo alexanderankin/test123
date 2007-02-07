@@ -40,10 +40,11 @@ import javax.swing.JPopupMenu;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
+import common.gui.ModalJFileChooser;
+
 import projectviewer.ProjectManager;
 
 import projectviewer.gui.GroupMenu;
-import projectviewer.gui.ModalJFileChooser;
 
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTProject;
@@ -117,8 +118,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 				chooser.setCurrentDirectory(new File(root).getParentFile());
 			} else if (lookupPath != null) {
 				File f = new File(lookupPath);
-				if (f.isDirectory()) {	
-					chooser.setCurrentDirectory(f.getParentFile()); 
+				if (f.isDirectory()) {
+					chooser.setCurrentDirectory(f.getParentFile());
 				}
 			}
 
