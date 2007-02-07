@@ -443,7 +443,18 @@
 
     <itemizedlist>
 
-     <listitem>
+      <listitem>
+        <formalpara>
+            <title>Version 0.9.4</title>
+
+            <para />
+        </formalpara>
+
+        <para>Add a few new widgets: EasyOptionPane, FileTextFilter and
+        ModalJFileChooser.</para>
+      </listitem>
+
+      <listitem>
         <formalpara>
             <title>Version 0.9.2</title>
 
