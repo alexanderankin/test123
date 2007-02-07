@@ -47,7 +47,7 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import projectviewer.gui.ModalJFileChooser;
+import common.gui.FileTextField;
 //}}}
 
 /**
@@ -68,10 +68,9 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 
  	//{{{ Private members
 	private JButton cmdAdd;
-	private JButton cmdChooseFile;
 	private JButton cmdDelete;
 
-	private JTextField appField;
+	private FileTextField appField;
 	private JTextField extField;
 
 	private JTable appTable;
@@ -99,15 +98,12 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		JLabel extLabel = new JLabel(EXTENSIONS_TEXT);
 		JLabel appLabel = new JLabel(APPLICATION_TEXT);
 
-		appField = new JTextField();
+		appField = new FileTextField(true);
 		extField = new JTextField();
 
 		cmdAdd = new JButton("+");
 		cmdAdd.addActionListener(this);
 		cmdAdd.setToolTipText(jEdit.getProperty("projectviewer.common.add"));
-
-		cmdChooseFile = new JButton("...");
-		cmdChooseFile.addActionListener(this);
 
 		cmdDelete = new JButton("-");
 		cmdDelete.addActionListener(this);
@@ -142,17 +138,13 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		gb.setConstraints(appField, gbc);
 		input.add(appField);
 
-		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = 2;
+		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
-		gb.setConstraints(cmdChooseFile, gbc);
-		input.add(cmdChooseFile);
-
-		gbc.gridx = 3;
 		gb.setConstraints(cmdAdd, gbc);
 		input.add(cmdAdd);
 
-		gbc.gridx = 4;
+		gbc.gridx = 3;
 		gb.setConstraints(cmdDelete, gbc);
 		input.add(cmdDelete);
 
@@ -177,35 +169,23 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	public void actionPerformed(ActionEvent ae) {
 
 		if (ae.getSource() == cmdAdd) {
-			if (extField.getText().length() >= 1 && appField.getText().length() >=1) {
+			if (extField.getText().length() >= 1 &&
+				appField.getTextField().getText().length() >=1)
+			{
 				if (this.editingRow > -1)
 					deleteRow();
-				apps.addAppExt(extField.getText(), replaceString(appField.getText(), "\\", "/"));
+				apps.addAppExt(extField.getText(),
+						replaceString(appField.getTextField().getText(), "\\", "/"));
 				extField.setText("");
-				appField.setText("");
+				appField.getTextField().setText("");
 				model.requestRefresh();
 			} else {
 				this.editingRow = -1;
 			}
 		} else if (ae.getSource() == cmdDelete) {
 			deleteRow();
-		} else if (ae.getSource() == cmdChooseFile) {
-			doChoose();
 		}
 
-	} //}}}
-
-	//{{{ +doChoose() : void
-	public void doChoose() {
-		// Used for selected and executable file
-		JFileChooser chooser = new ModalJFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
-				!= JFileChooser.APPROVE_OPTION)
-			return;
-		try {
-			appField.setText(chooser.getSelectedFile().getPath());
-		} catch (Exception Excp) { }
 	} //}}}
 
 	//{{{ -_replaceString(String, String, String)_ : String
@@ -287,7 +267,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 
 		//{{{ +getValueAt(int, int) : Object
 		public Object getValueAt(int r, int c) {
-			
+
 			Iterator iter = appSet.iterator();
 			int iCurrentRow = 0;
 
@@ -331,7 +311,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 				if (sel > -1) {
 					editingRow = sel;
 					extField.setText(appTable.getValueAt(sel, 0).toString());
-					appField.setText(appTable.getValueAt(sel, 1).toString());
+					appField.getTextField().setText(appTable.getValueAt(sel, 1).toString());
 				}
 			}
 		} //}}}

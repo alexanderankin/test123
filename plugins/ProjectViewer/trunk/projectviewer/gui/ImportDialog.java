@@ -58,6 +58,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
+import common.gui.ModalJFileChooser;
 import common.gui.OkCancelButtons;
 
 import projectviewer.importer.CVSEntriesFilter;
