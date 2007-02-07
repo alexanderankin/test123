@@ -238,7 +238,7 @@ public class WorkerThreadPool
 				else if (idleCount >= 10)
 				{
 					// stop the thread if if has been inactive for a long
-					// time and there´s more than 1 thread running
+					// time and there's more than 1 thread running
 					synchronized (lock)
 					{
 						run = !(threads.size() > 1);
