@@ -21,6 +21,7 @@
 package p4plugin;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.io.StringReader;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -43,7 +45,9 @@ import org.gjt.sp.util.Log;
 import common.threads.WorkerThreadPool;
 import common.threads.WorkRequest;
 
+import projectviewer.ProjectViewer;
 import projectviewer.PVActions;
+import projectviewer.vpt.VPTProject;
 
 import p4plugin.config.P4Config;
 import p4plugin.config.P4GlobalConfig;
@@ -81,7 +85,7 @@ public class Perforce {
     }
 
     /**
-     *  If the visitor is set to something non-null, insteaf of
+     *  If the visitor is set to something non-null, instead of
      *  buffering the output of the Perforce command the command
      *  object will call the visitor directly as soon as lines are
      *  read from the output of the process. This makes the process
@@ -133,17 +137,15 @@ public class Perforce {
         // Try to find the project for the view and see if it has
         // the configuration for perforce.
         String[] envp = null;
-        P4Config usercfg = P4Config.getProjectConfig(view);
+        VPTProject proj = ProjectViewer.getActiveProject(view);
+        P4Config usercfg = P4Config.getProjectConfig(proj);
         if (usercfg != null) {
             envp = usercfg.getEnv();
         }
 
         // try to run the command.
-        if (envp != null) {
-            perforce = Runtime.getRuntime().exec(p4cmd, envp);
-        } else {
-            perforce = Runtime.getRuntime().exec(p4cmd);
-        }
+        File workdir = new File(proj.getRootPath());
+        perforce = Runtime.getRuntime().exec(p4cmd, envp, workdir);
 
         Runnable stdoutTask;
         stderr = new StreamReader(perforce.getErrorStream(), perforce.getOutputStream());

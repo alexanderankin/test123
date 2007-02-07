@@ -56,19 +56,7 @@ public class P4Shell extends Shell {
                     console = (Console) mgr.getDockable("console");
                 }
 
-                P4Shell shell = (P4Shell) Shell.getShell(NAME);
-
-                // Shell.setShell() is binary incompatible between console
-                // version 4.2 and 4.3; so we have to use reflection here
-                // if we want to support both versions.
-                try {
-                    Method m = console.getClass()
-                                      .getMethod("setShell", new Class[] { Shell.class });
-                    m.invoke(console, new Object[] { shell });
-                } catch (Exception e) {
-                    Log.log(Log.ERROR, P4Shell.class, e);
-                    return;
-                }
+                console.setShell(Shell.getShell(NAME));
                 console.getOutput().print(console.getInfoColor(), text);
 
                 JComponent output = console.getConsolePane();

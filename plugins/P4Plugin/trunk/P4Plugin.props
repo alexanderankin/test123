@@ -5,15 +5,15 @@
 # "even" (0.2, 0.4) is stable, "odd" (0.1, 0.3) is "beta".
 plugin.p4plugin.P4Plugin.name=Perforce Plugin
 plugin.p4plugin.P4Plugin.author=Marcelo Vanzin
-plugin.p4plugin.P4Plugin.version=0.2.2
+plugin.p4plugin.P4Plugin.version=0.2.3
 plugin.p4plugin.P4Plugin.activate=defer
 plugin.p4plugin.P4Plugin.docs=index.html
 
-plugin.p4plugin.P4Plugin.depend.0=jedit 04.02.99.00
-plugin.p4plugin.P4Plugin.depend.1=jdk 1.4
+plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.07.00
+plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
 plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.0
-plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.1.2
-plugin.p4plugin.P4Plugin.depend.4=plugin CommonControlsPlugin 0.9.1
+plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.2.5.1
+plugin.p4plugin.P4Plugin.depend.4=plugin CommonControlsPlugin 0.9.4
 
 plugin.p4plugin.P4Plugin.option-pane=p4-plugin-global-cfg
 options.p4-plugin-global-cfg.code=new p4plugin.config.P4GlobalOptionPane();
@@ -92,11 +92,16 @@ p4plugin.project_cfg.editor_type.no_editor=Don't change $P4EDITOR
 p4plugin.project_cfg.editor_cmd=Editor command:
 p4plugin.project_cfg.client=P4 Client:
 p4plugin.project_cfg.user=P4 User:
+p4plugin.project_cfg.p4config=P4 Config:
 #}}}
 
 #{{{ Global Config Pane
 p4plugin.global_cfg.p4_path=Perforce path:
+p4plugin.global_cfg.diff_cmd=Diff tool:
 p4plugin.global_cfg.editor_cmd=Editor command:
+p4plugin.global_cfg.ignore_diff_output=Ignore diff output
+p4plugin.global_cfg.ignore_diff_output.tooltip=Check this if the diff tool has \
+    a GUI and doesn't print any information to the terminal.
 p4plugin.global_cfg.monitor_files=Monitor read-only files
 p4plugin.global_cfg.monitor_files.tooltip=Asks to run "p4 edit" if trying to modify a read-only file
 #}}}
@@ -114,6 +119,7 @@ p4plugin.action.filelog=File Log
 p4plugin.action.revert=Revert
 p4plugin.action.submit=Submit
 p4plugin.action.describe=Desbribe Change List
+p4plugin.action.diff=Diff
 
 p4plugin.action.edit-clist=Edit in change list
 p4plugin.action.add-clist=Add to change list
@@ -128,6 +134,7 @@ p4plugin.action.changelists.other=Other
 p4plugin.action.fstat.title=File Stats for {0}
 p4plugin.action.filelog.title=File Log for {0}
 p4plugin.action.describe.title=Change List {0}
+p4plugin.action.diff.title=Diff for {0}
 
 p4plugin.action.no_viewer=Can't execute action with no Project Viewer open.
 p4plugin.action.no_config=No Perforce config found for active project.

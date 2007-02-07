@@ -62,6 +62,15 @@
         </para>
 
         <para>
+        Optionally, you can have a perforce "config" file in the root
+        of your project, and the the "P4 Config" option to the name of
+        that file. When using this option, you shouldn't set the client
+        name (it should be in the config file). While perforce itself
+        doesn't have this restriction, the plugin requires that the file
+        be in the root of the project.
+        </para>
+
+        <para>
         By default the commands execute using the default change list.
         If you execute the actions that include the option of choosing a
         change list, a popup dialog will let you choose the change list

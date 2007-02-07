@@ -67,7 +67,7 @@ public class P4Describe extends AbstractP4Action {
     }
 
     public void actionPerformed(ActionEvent ae) {
-        CListChooser chooser = new CListChooser(false, ae);
+        CListChooser chooser = new CListChooser(false, true, ae);
         chooser.setAutoInvoke(false);
         WorkRequest[] req = WorkerThreadPool.getSharedInstance().runRequests(
                             new Runnable[] { chooser });

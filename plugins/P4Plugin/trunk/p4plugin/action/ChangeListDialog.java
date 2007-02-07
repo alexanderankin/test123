@@ -264,6 +264,7 @@ public class ChangeListDialog implements Runnable,
             int x = (parent.getWidth() / 2 - getWidth() / 2);
             int y = (parent.getHeight() / 2 - getHeight() / 2);
             setLocation(x,y);
+            setLocationRelativeTo(parent);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {

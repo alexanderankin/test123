@@ -25,35 +25,50 @@ import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
 
 import p4plugin.Perforce;
+import p4plugin.config.P4GlobalConfig;
 
 /**
- *  Calls p4 fstat on a file.
+ *  Calls a customizable p4 command to show information about a file.
  *
  *  @author     Marcelo Vanzin
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class P4FileInfoAction extends P4FileAction {
+public class P4FileInfoAction extends AsyncP4Action {
 
     private String path;
+    private String cmd;
 
     public P4FileInfoAction(String cmd) {
-        super(cmd, true);
+        super(getActionName(cmd, false), false);
+        this.cmd = cmd;
+    }
+
+    protected String getCommand() {
+        return cmd;
+    }
+
+	protected String[] getArgs(ActionEvent ae) {
+        return new String[] { path };
     }
 
     public void actionPerformed(ActionEvent ae) {
         path = viewer.getSelectedNode().getNodePath();
-        invokePerforce(null, ae);
+        super.actionPerformed(ae);
     }
 
     /** Shows the output in a dialog. */
     protected void postProcess(Perforce p4) {
+        if ("diff".equals(getCommand()) &&
+            P4GlobalConfig.getInstance().getIgnoreDiffOutput())
+        {
+            return;
+        }
         String title =
             jEdit.getProperty("p4plugin.action." + getCommand() + ".title",
                               new String[] { path });
         showOutputDialog(p4, title);
     }
-
 
 }
 
