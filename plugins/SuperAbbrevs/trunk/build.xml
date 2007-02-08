@@ -2,14 +2,14 @@
 
 <!--
      This build.xml file for building the SuperAbbrevs  plugin is based
-	 upon the model file used for building the QuickNotepad plugin.
-
+     upon the model file used for building the QuickNotepad plugin.
+     
      The 'dist' target compiles the plugin and creates the JAR file.
      Before running the 'dist' target, you will need to generate the
      documentation using one of these two targets:
-
+     
      - 'docs-xsltproc': Creates documentation using the xsltproc tool
-
+     
      See INSTALL.txt
 -->
 <project name="SuperAbbrevs" default="dist" basedir=".">
@@ -86,14 +86,19 @@
 			</fileset>
 		</jar>
 	</target>
-
+  
 	<target name="generate-docbook-wrapper">
 		<delete file="doc/docbook-wrapper.xsl"/>
-		<echo file="doc/docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
-		<echo file="doc/docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="doc/docbook-wrapper.xsl" append="true" message=" version='1.0'&gt;"/>
-		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/${stylesheet}'/>"/>
-		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
+		<echo file="doc/docbook-wrapper.xsl" 
+      message="&lt;xsl:stylesheet"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" 
+      message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" 
+      message=" version='1.0'&gt;"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" 
+      message="&lt;xsl:import href='${docbook.xsl}/${stylesheet}'/>"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" 
+      message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
 	
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
