@@ -35,6 +35,7 @@ plugin.p4plugin.P4Plugin.menu=p4plugin_client \
 	p4plugin_edit_cl \
 	p4plugin_revert \
 	p4plugin_reopen_cl \
+    p4plugin_diff \
 	p4plugin_fstat \
     p4plugin_filelog \
 	p4plugin_submit
@@ -48,6 +49,7 @@ p4plugin_delete.label=Delete File
 p4plugin_edit.label=Edit File
 p4plugin_add_cl.label=Add File to Change List
 p4plugin_delete_cl.label=Delete File in Change List
+p4plugin_diff.label=File Diff
 p4plugin_edit_cl.label=Edit File in Change List
 p4plugin_fstat.label=Perforce File Information
 p4plugin_filelog.label=Perforce File Log
