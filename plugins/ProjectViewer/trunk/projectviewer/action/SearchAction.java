@@ -87,6 +87,8 @@ public class SearchAction extends Action {
 				if (!mgr.isLoaded(node.getName())) {
 					node = mgr.getProject(node.getName());
 				}
+			} else if (node.isLeaf()) {
+				node = (VPTNode) node.getParent();
 			}
 
 			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
@@ -103,17 +105,16 @@ public class SearchAction extends Action {
 	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (node != null && (node.isDirectory() || node.isProject())) {
-			cmItem.setVisible(true);
-			if (node.isDirectory()) {
-				((JMenuItem)cmItem).setText(
-					jEdit.getProperty("projectviewer.action.hypersearch_dir"));
-			} else {
-				((JMenuItem)cmItem).setText(
-					jEdit.getProperty("projectviewer.action.hypersearch_project"));
-			}
+		cmItem.setVisible(true);
+		if (node.isDirectory()) {
+			((JMenuItem)cmItem).setText(
+				jEdit.getProperty("projectviewer.action.hypersearch_dir"));
+		} else if (node.isProject()) {
+			((JMenuItem)cmItem).setText(
+				jEdit.getProperty("projectviewer.action.hypersearch_project"));
 		} else {
-			cmItem.setVisible(false);
+			((JMenuItem)cmItem).setText(
+				jEdit.getProperty("projectviewer.action.hypersearch_parent"));
 		}
 	} //}}}
 
