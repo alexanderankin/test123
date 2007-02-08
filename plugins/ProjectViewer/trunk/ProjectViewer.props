@@ -238,6 +238,7 @@ projectviewer.action.vfs_import=Add files from VFS
 projectviewer.action.expand_all=Expand all nodes
 projectviewer.action.collapse_all=Collapse all nodes
 projectviewer.action.hypersearch_dir=Search in directory
+projectviewer.action.hypersearch_parent=Search in parent directory
 projectviewer.action.hypersearch_project=Search in project root
 projectviewer.action.archive=Archive project
 projectviewer.action.archive.filter=Project "{0}" files
