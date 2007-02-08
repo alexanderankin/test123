@@ -756,11 +756,20 @@ public final class ProjectViewer extends JPanel
 	//{{{ +_getActiveNode(View)_ : VPTNode
 	/**
 	 *	Return the current "active" node (opened project/group)
-	 *		for the view. Returns null if no active node is known for the view.
+	 *	for the view. Returns null if no active node is known for the view.
 	 *
 	 *	@since	PV 2.1.0
 	 */
 	public static VPTNode getActiveNode(View aView) {
+		if (aView == null) {
+			aView = jEdit.getActiveView();
+		}
+
+		if (aView == null) {
+			// cowardly bail out when jEdit is starting up.
+			return null;
+		}
+
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
 		if (ve == null) {
 			setActiveNode(aView, config.getLastNode());
