@@ -4,7 +4,7 @@ plugin.helperlauncher.HelperLauncherPlugin.author=Carmine Lucarelli
 plugin.helperlauncher.HelperLauncherPlugin.version=1.0
 plugin.helperlauncher.HelperLauncherPlugin.docs=help.html
 
-plugin.helperlauncher.HelperLauncherPlugin.depend.0=jedit 04.02.99.00
+plugin.helperlauncher.HelperLauncherPlugin.depend.0=jedit 04.03.07.00
 plugin.helperlauncher.HelperLauncherPlugin.depend.1=jdk 1.4.1
 plugin.helperlauncher.HelperLauncherPlugin.browser-menu-item=vfs.helperlauncher
 
