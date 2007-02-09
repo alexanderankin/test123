@@ -48,6 +48,10 @@ Version 2.1.3.6:
 		- move ModalJFileChooser to CommonControls and use it from there.
 		- allow search to work on file nodes directly (choose parent
 		  node automatically when that happens).
+		- fix IconComposer crashing on icons that were not instances
+		  of ImageIcon.
+		- deprecate VPTNode(String); force use of VPTNode(String,boolean)
+		  to avoid an ugly hack in the first one.
 
 Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]

@@ -74,7 +74,7 @@ public class VPTProject extends VPTNode {
 	//{{{ +VPTProject(String) : <init>
 
 	public VPTProject(String name) {
-		super(name);
+		super(name, true);
 		openableNodes	= new HashMap();
 		openFiles		= new ArrayList();
 		properties		= new Properties();

@@ -81,10 +81,12 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	//}}}
 
 	//{{{ #VPTNode(String) : <init>
-
+	/**
+	 *	@deprecated	Use {@link VPTNode(String,boolean)}
+	 */
 	protected VPTNode(String name) {
 		this.name = name;
-		setAllowsChildren(getClass() != VPTFile.class);
+		setAllowsChildren(false);
 	} //}}}
 
 	//{{{ #VPTNode(String, boolean) : <init>

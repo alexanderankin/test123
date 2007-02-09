@@ -53,7 +53,7 @@ public class VPTDirectory extends VPTNode {
 	}
 
 	public VPTDirectory(File file) {
-		super(file.getName());
+		super(file.getName(), true);
 		this.file = file;
 	}
 

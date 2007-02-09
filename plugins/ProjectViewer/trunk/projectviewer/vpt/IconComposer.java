@@ -22,7 +22,9 @@ package projectviewer.vpt;
 import java.io.File;
 import java.util.HashMap;
 
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
@@ -176,7 +178,18 @@ public final class IconComposer {
 
 	//{{{ -_composeIcons(Icon, Icon, int, int)_ : Icon
 	private static Icon composeIcons(Icon baseIcon, Icon decoIcon, int px, int py) {
-		Image baseImage=((ImageIcon)baseIcon).getImage();
+		Image baseImage;
+		if (baseIcon instanceof ImageIcon) {
+			baseImage = ((ImageIcon)baseIcon).getImage();
+		} else {
+			// not an image icon. do this ugly thing.
+			baseImage = new BufferedImage(baseIcon.getIconWidth(),
+										  baseIcon.getIconHeight(),
+										  BufferedImage.TYPE_INT_ARGB);
+			Graphics g = baseImage.getGraphics();
+			baseIcon.paintIcon(null, g, 0, 0);
+			g.dispose();
+		}
 		int baseWidth=baseIcon.getIconWidth();
 		int baseHeight=baseIcon.getIconHeight();
 		int [] base = new int[baseWidth*baseHeight];
