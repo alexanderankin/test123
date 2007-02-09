@@ -97,7 +97,7 @@ public class ResultSetPanel extends JPanel
 			        public void actionPerformed(ActionEvent evt)
 			        {
 				        notebook.remove(ResultSetPanel.this);
-				        stopRepeatingQuery = true;
+				        stopRequerying();
 			        }
 		        });
 		closeBtn.setToolTipText(jEdit.getProperty("sql.resultSet.close.tooltip"));
@@ -227,7 +227,7 @@ public class ResultSetPanel extends JPanel
 				        } else
 					        // state change x -> 0
 				        {
-					        stopRepeatingQuery = true;
+					        stopRequerying();
 				        }
 			        }
 		        });
@@ -389,6 +389,12 @@ public class ResultSetPanel extends JPanel
 		dataTable.setTableHeader(new TableHeader(dataTable, data.columnTypeNames));
 
 		return dataComponent = new JScrollPane(dataTable);
+	}
+
+
+	public void stopRequerying()
+	{
+		stopRepeatingQuery = true;
 	}
 
 
