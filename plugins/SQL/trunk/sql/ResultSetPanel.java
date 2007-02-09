@@ -97,7 +97,7 @@ public class ResultSetPanel extends JPanel
 			        public void actionPerformed(ActionEvent evt)
 			        {
 				        notebook.remove(ResultSetPanel.this);
-					stopRepeatingQuery = true;
+				        stopRepeatingQuery = true;
 			        }
 		        });
 		closeBtn.setToolTipText(jEdit.getProperty("sql.resultSet.close.tooltip"));
@@ -832,10 +832,10 @@ public class ResultSetPanel extends JPanel
 		{
 			while (!stopRepeatingQuery)
 			{
-					SqlTextPublisher.publishText(jEdit.getActiveView(),
-					                             data.getQueryText(),
-					                             data.getServerRecord(),
-					                             ResultSetPanel.this);
+				SqlTextPublisher.publishText(jEdit.getActiveView(),
+				                             data.getQueryText(),
+				                             data.getServerRecord(),
+				                             ResultSetPanel.this);
 
 				try
 				{
