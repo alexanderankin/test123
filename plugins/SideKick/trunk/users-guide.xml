@@ -346,7 +346,8 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <listitem><para>
  <emphasis role="bold">Version 0.7.3</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
  <itemizedlist>
-   <listitem><para> Added parser setting from mode options pane. </para></listitem>
+   <listitem><para> Added parser setting from mode options pane. (ezust) </para></listitem>
+   <listitem><para> NPE after install from plugin manager fixed. (kpouer) </para></listitem> 
  </itemizedlist>
 </listitem>
 
