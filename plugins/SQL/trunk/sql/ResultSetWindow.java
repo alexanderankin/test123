@@ -88,7 +88,11 @@ public class ResultSetWindow extends JPanel
 			        public void actionPerformed(ActionEvent evt)
 			        {
 				        while (notebook.getComponentCount() != 0)
-					        notebook.remove(notebook.getComponent(0));
+					{
+						final Component child = notebook.getComponent(0);
+						((ResultSetPanel)child).stopRequerying();
+					        notebook.remove(child);
+					}
 			        }
 		        });
 
