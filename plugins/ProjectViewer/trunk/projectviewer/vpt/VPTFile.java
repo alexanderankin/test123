@@ -64,14 +64,13 @@ public class VPTFile extends VPTNode {
 	//}}}
 
 	//{{{ +VPTFile(String) : <init>
-
 	public VPTFile(String path) {
 		this(new File(path));
 	} //}}}
 
 	//{{{ +VPTFile(File) : <init>
 	public VPTFile(File file) {
-		super(file.getName());
+		super(file.getName(), false);
 		this.file = file;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		this.fileIcon = null;

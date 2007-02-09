@@ -42,7 +42,7 @@ public class VPTGroup extends VPTNode {
 
 	//{{{ +VPTGroup(String) : <init>
 	public VPTGroup(String name) {
-		super(name);
+		super(name, true);
 	} //}}}
 
 	//{{{ +getIcon(boolean) : Icon
