@@ -64,6 +64,8 @@ public class ResultSetPanel extends JPanel
 	protected final static String AUTORESIZE = "sql.autoresizeResult";
 	protected final static String CLOSE_WITH_BUFFER = "sql.closeWithBuffer";
 
+	protected int queryExecutionPeriod;
+
 	protected int sortOrder = HelpfulJTable.SORT_OFF;
 	protected int sortColumn = -1;
 
@@ -201,7 +203,8 @@ public class ResultSetPanel extends JPanel
 
 		ppm.add(new JSeparator());
 
-		final Object[] args = new Object[]{ new Integer(getQueryExecutionPeriod()) };
+		queryExecutionPeriod = getQueryExecutionPeriod();
+		final Object[] args = new Object[]{ new Integer(queryExecutionPeriod) };
 		final JMenuItem remi = new JCheckBoxMenuItem(jEdit.getProperty("sql.resultSet.repeatQuery.every.label", args));
 		remi.setFocusPainted(false);
 		remi.setToolTipText(jEdit.getProperty("sql.resultSet.repeatQuery.every.tooltip", args));
@@ -844,7 +847,7 @@ public class ResultSetPanel extends JPanel
 
 				try
 				{
-					Thread.sleep(1000L * getQueryExecutionPeriod());
+					Thread.sleep(1000L * queryExecutionPeriod);
 				} catch (Exception ex) {}
 			}
 			repeaterThread = null;
