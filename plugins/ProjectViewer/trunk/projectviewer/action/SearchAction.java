@@ -106,15 +106,19 @@ public class SearchAction extends Action {
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(true);
-		if (node.isDirectory()) {
-			((JMenuItem)cmItem).setText(
-				jEdit.getProperty("projectviewer.action.hypersearch_dir"));
-		} else if (node.isProject()) {
-			((JMenuItem)cmItem).setText(
-				jEdit.getProperty("projectviewer.action.hypersearch_project"));
+		if (node != null) {
+			if (node.isDirectory()) {
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.hypersearch_dir"));
+			} else if (node.isProject()) {
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.hypersearch_project"));
+			} else {
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.hypersearch_parent"));
+			}
 		} else {
-			((JMenuItem)cmItem).setText(
-				jEdit.getProperty("projectviewer.action.hypersearch_parent"));
+			cmItem.setVisible(false);
 		}
 	} //}}}
 
