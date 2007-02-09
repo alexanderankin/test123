@@ -95,7 +95,7 @@ public class ResultSetPanel extends JPanel
 			        public void actionPerformed(ActionEvent evt)
 			        {
 				        notebook.remove(ResultSetPanel.this);
-					ResultSetPanel.this.setVisible(false);
+				        ResultSetPanel.this.setVisible(false);
 			        }
 		        });
 		closeBtn.setToolTipText(jEdit.getProperty("sql.resultSet.close.tooltip"));
