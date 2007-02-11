@@ -95,6 +95,8 @@ public class ParsedData extends SideKickParsedData
 	{
 		if (sorter != null)
 			tree.sort(sorter);
+		if (mapper instanceof KindTreeMapper)
+			tree.addChildCounts();
 		tree.addToTree(root);
 	}
 	private static boolean assetContains(IAsset asset, int offset)
@@ -130,6 +132,21 @@ public class ParsedData extends SideKickParsedData
 		void setUserObject(Object obj)
 		{
 			object = obj;
+		}
+		public void addChildCounts()
+		{
+			Enumeration children = this.children.elements();
+			while (children.hasMoreElements())
+			{
+				CtagsSideKickTreeNode child =
+					(CtagsSideKickTreeNode) children.nextElement();
+				Object obj = child.getUserObject();
+				if (obj instanceof String)
+				{
+					int num = child.children.size();
+					child.setUserObject((String)obj + " (" + num + ")");
+				}
+			}
 		}
 		Object getUserObject()
 		{
