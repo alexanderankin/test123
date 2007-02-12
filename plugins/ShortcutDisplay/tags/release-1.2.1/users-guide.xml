@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=4:noTabs=true:f -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!-- "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"> -->
+<book>
+  <bookinfo>
+    <title>ShortcutDisplay plugin info</title>
+    <authorgroup>
+      <author>
+        <firstname>Jeffrey</firstname>
+        <surname>Hoyt</surname>
+      </author>
+    </authorgroup>
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>Permission is granted to copy, distribute and/or
+      modify this document under the terms of the GNU Free
+      Documentation License, Version 1.1 or any later version
+      published by the Free Software Foundation; with no 
+      <quote>Invariant Sections</quote>
+      , 
+      <quote>Front-Cover Texts</quote>
+      or 
+      <quote>Back-Cover Texts</quote>
+      , each as defined in the license. A copy of the license can
+      be found in the file 
+      <filename>COPYING.DOC.txt</filename>
+      included with jEdit.</para>
+    </legalnotice>
+  </bookinfo>
+  <chapter id="purpose">
+    <title>Purpose</title>
+    <para>The ShortcutDisplay plugin will cause a pop up to be
+    displayed whenever the user presses a shortcut prefix. The
+    pop up contains all the possible completions and the name of
+    the action. The idea here is to help us mortals learn more of
+    the built-in functionality jEdit has, or to make use of more
+    of them even when we don't remember the keyboard
+    shortcuts.</para>
+    <para>There are a total of two options. The first turns off
+    the pop up - basically disables the plugin. The second
+    switches between showing the pop up list by Action name (as
+    specified in jEdit/macro/plugin) or by shortcut.</para>
+  </chapter>
+</book>
+
