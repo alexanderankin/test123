@@ -748,6 +748,8 @@ implements EBComponent, DefaultFocusComponent
 			this.shell = shell;
 			commandRunning = false;
 			scrollback = new DefaultStyledDocument();
+			((DefaultStyledDocument)scrollback).setDocumentFilter(new LengthFilter());
+			
 			// ick! talk about tightly coupling two classes.
 			shell.openConsole(Console.this);
 		}
@@ -858,6 +860,34 @@ implements EBComponent, DefaultFocusComponent
 
 	} //}}}
 
+       //{{{ LengthFilter class
+       private class LengthFilter extends DocumentFilter
+       {
+	       public LengthFilter()
+	       {
+		       super();
+	       }
+
+	       //{{{ insertString() method
+	       public void insertString(DocumentFilter.FilterBypass fb, int offset,
+		       String str, AttributeSet attr) throws BadLocationException
+	       {
+		       replace(fb, offset, 0, str, attr);
+	       } //}}}
+
+	       //{{{ replace() method
+	       public void replace(DocumentFilter.FilterBypass fb, int offset,
+		       int length, String str, AttributeSet attrs)
+		       throws BadLocationException
+	       {
+		       int newLength = fb.getDocument().getLength() -
+			       length + str.length();
+		       fb.replace(offset, length, str, attrs);
+		       int limit = jEdit.getIntegerProperty("console.outputLimit", Integer.MAX_VALUE);
+		       if(newLength > limit)
+			       fb.remove(0, newLength - limit - 1);
+	       } //}}}
+       } //}}}
 
 
 

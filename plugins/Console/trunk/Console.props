@@ -78,6 +78,7 @@ options.console.general.shellprefix=Shell Prefix:
 options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
 options.console.general.font=Font:
 options.console.general.encoding=Character encoding:
+options.console.general.charlimit=Maximum scrollback buffer size (characters):
 options.console.general.bgColor=Console background:
 options.console.general.plainColor=Plain text:
 options.console.general.caretColor=Caret:
