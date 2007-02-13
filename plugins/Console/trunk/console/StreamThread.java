@@ -99,10 +99,7 @@ class StreamThread extends Thread
 				for (int i = 0; i < read; i++)
 				{
 					char c = input[i];
-					if (oldchar != '\r' || c != '\n')
-					{
-						lb.append(c);
-					}
+					lb.append(c);
 					if((c == '\n' && oldchar != '\r') || c == '\r')
 					{
 
