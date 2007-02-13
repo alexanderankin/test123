@@ -455,6 +455,26 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 1.06</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Ability to repeat query in the result set window.</para>
+          </listitem>
+          <listitem>
+            <para>Ability to repeat queries periodically.</para>
+          </listitem>
+          <listitem>
+            <para>Tooltips in the result set window are fixed.</para>
+          </listitem>
+          <listitem>
+            <para>Fix sorting in the result set window.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
           <title>Version 1.05</title>
           <para/>
         </formalpara>
