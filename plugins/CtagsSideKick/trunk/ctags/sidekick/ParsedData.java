@@ -177,7 +177,6 @@ public class ParsedData extends SideKickParsedData
 		}
 		void addToTree(DefaultMutableTreeNode root)
 		{
-			root.setUserObject(getUserObject());
 			addChildrenToTree(root);
 		}
 		void addChildrenToTree(DefaultMutableTreeNode node)
