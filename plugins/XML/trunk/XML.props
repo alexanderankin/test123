@@ -282,10 +282,11 @@ options.sidekick.html.showJspElements.label=Show JSP Tags
 # }}}
 # {{{ JavaScript Properties
 
-sidekick.parser.javascript.label=javascript
-mode.javascript.sidekick.parser=ecmascript
-sidekick.parser.ecmascript.label=ecmascript
+# Default Javascript Parser
+mode.javascript.sidekick.parser=javascript
 
+sidekick.parser.javascript.label=javascript
+sidekick.parser.ecmascript.label=ecmascript
 
 #{{{ icons
 sidekick.parser.javascript.package-icon=package.gif
