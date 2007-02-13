@@ -104,6 +104,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.general.encoding"),
 			encoding);
 
+		Label limitLabel = new Label("options.console.general.charlimit");
+		limit = new JTextField(jEdit.getProperty("console.outputLimit"));
+		addComponent(limitLabel, limit);
+		
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
@@ -148,6 +152,12 @@ public class GeneralOptionPane extends AbstractOptionPane
 		runner.prependUserPath();
 		jEdit.setFontProperty("console.font",font.getFont());
 
+		String limitstr = limit.getText();
+		if(limitstr != null && limitstr.length() > 0)
+			jEdit.setProperty("console.outputLimit", limitstr);
+		else
+			jEdit.unsetProperty("console.outputLimit");
+		
  		jEdit.setProperty("console.encoding", 
  			(String)encoding.getSelectedItem());
 
@@ -209,5 +219,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox showExitStatus;
 	private JCheckBox showWelcomeMessage;
 	private JTextField pathDirs ;
+	private JTextField limit ;
 	// }}}
 }
