@@ -11,6 +11,16 @@ Version 0.2.3:
 	  this allows wrapper scripts around p4 (that might rely on
 	  environment variables) to be used.
 	- add support for P4CONFIG instead of P4CLIENT.
+	- refactored the client information code into a new class (P4ClientInfo).
+	- somewhat better error detection and reporting. And fix a few bugs in
+	  the output parsing to boot.
+	- the visitor pattern was being used in a really innefficient manner
+	  by the file filter, kinda defeating the whole purpose of using
+	  the pattern. So fix that, which should make the filter a lot more
+	  efficient.
+	- speed up the file filter by not repeatedly invoking "p4 files" in
+	  nested unmanaged directories.
+	- some fixes to support p4.exe on Windows.
 
 Version 0.2.2:
 	[marcelo vanzin]

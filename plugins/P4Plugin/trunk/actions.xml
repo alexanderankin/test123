@@ -74,6 +74,27 @@
         </CODE>
     </ACTION>
 
+    <ACTION NAME="p4plugin_open_files">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4OpenFiles(false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_open_files_ex">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4OpenFiles(true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_edit_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("edit", false), view, false);
+        </CODE>
+    </ACTION>
+
     <ACTION NAME="p4plugin_reopen_cl">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
@@ -119,7 +140,7 @@
     <ACTION NAME="p4plugin_submit_cl">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
-                new p4plugin.action.P4Submit(), view, true);
+                new p4plugin.action.P4Submit(false), view, true);
         </CODE>
     </ACTION>
 

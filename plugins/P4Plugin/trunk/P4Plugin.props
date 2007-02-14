@@ -26,6 +26,8 @@ plugin.p4plugin.P4Plugin.menu=p4plugin_client \
 	p4plugin_describe \
 	p4plugin_user \
 	p4plugin_submit_cl \
+    p4plugin_open_files \
+    p4plugin_open_files_ex \
 	- \
 	p4plugin_add \
 	p4plugin_delete \
@@ -53,6 +55,8 @@ p4plugin_diff.label=File Diff
 p4plugin_edit_cl.label=Edit File in Change List
 p4plugin_fstat.label=Perforce File Information
 p4plugin_filelog.label=Perforce File Log
+p4plugin_open_files.label=Open Files from Change List
+p4plugin_open_files_ex.label= Open Files and Close Current
 p4plugin_reopen_cl.label=Reopen in Change List
 p4plugin_revert.label=Revert
 p4plugin_submit_cl.label=Submit Change List
@@ -70,6 +74,7 @@ plugin.projectviewer.p4plugin.P4Plugin.context-menu-actions=p4plugin.action.P4Fi
 
 #{{{ GUI messages
 p4plugin.config.project_option_pane.name=Perforce
+p4plugin.config.no_config_warn=P4 WARNING: No config detected, 'p4' might not work.
 p4plugin.file_filter_desc=Perfoce Repository Files
 p4plugin.p4_error.title=Error executing Perforce
 p4plugin.shell_name=Perforce
@@ -81,6 +86,8 @@ p4plugin.retry_msg=An error was detected in the data sent to perforce.\n\
 p4plugin.buffer_handler.msg=You're trying to edit a read-only file\n\
 							Do you want to do "p4 edit" on it?
 p4plugin.buffer_handler.title=Perforce: Editing Read-Only File
+
+p4plugin.filter.no_config=P4: No configuration found. Check your project options.
 #}}}
 
 #{{{ Project Config Pane
@@ -132,6 +139,9 @@ p4plugin.action.changelists.msg=Choose a change list:
 p4plugin.action.changelists.title=Choose change list
 p4plugin.action.changelists.default=Default
 p4plugin.action.changelists.other=Other
+
+p4plugin.action.openfiles.no_files=No opened files!
+p4plugin.action.openfiles.no_files.title=No files
 
 p4plugin.action.fstat.title=File Stats for {0}
 p4plugin.action.filelog.title=File Log for {0}

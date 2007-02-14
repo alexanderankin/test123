@@ -89,13 +89,23 @@ public class P4Shell extends Shell {
     }
 
     public void execute(Console console, Output output, String command) {
-        // do nothing.
+        stopAnimation(console);
     }
 
     public void execute(Console console, String input, Output output,
                         Output error, String command)
     {
-        // do nothing.
+        stopAnimation(console);
+    }
+
+    private void stopAnimation(final Console console) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    console.stopAnimation();
+                }
+            }
+        );
     }
 
 }

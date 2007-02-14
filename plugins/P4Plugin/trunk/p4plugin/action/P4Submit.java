@@ -44,15 +44,10 @@ public class P4Submit extends AsyncP4Action {
 
     private final boolean fileOnly;
 
-	public P4Submit() {
-		super(true);
-        this.fileOnly = false;
-	}
-
     /** This submits a single file (the selected node in the PV tree). */
     public P4Submit(boolean fileOnly) {
-        super(getActionName("submit", false), false);
-        this.fileOnly = true;
+        super(getActionName("submit", !fileOnly), !fileOnly);
+        this.fileOnly = fileOnly;
     }
 
     public String getCommand() {
