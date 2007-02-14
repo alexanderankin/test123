@@ -52,9 +52,10 @@ public abstract class AbstractP4Action extends Action {
 
     protected boolean askForChangeList;
     protected boolean showDefaultCL;
+    protected Perforce.Visitor visitor;
 
     protected static String getActionName(String cmd, boolean useCL) {
-        StringBuffer sb = new StringBuffer("p4plugin_").append(cmd);
+        StringBuilder sb = new StringBuilder("p4plugin_").append(cmd);
         if (useCL)
             sb.append("_cl");
         return sb.toString();
@@ -103,6 +104,17 @@ public abstract class AbstractP4Action extends Action {
      */
 	protected abstract String[] getArgs(ActionEvent ae);
 
+    /**
+     *  Sets the visitor instance to use when invoking perforce. The
+     *  visitor might be used for several p4 invocations, so set it
+     *  back to null if you don't want it to be re-used.
+     *
+     *  @since  P4P 0.2.3
+     */
+    protected void setVisitor(Perforce.Visitor visitor) {
+        this.visitor = visitor;
+    }
+
     /** Returns the menu item text. */
     public String getText() {
         if (askForChangeList) {
@@ -124,7 +136,7 @@ public abstract class AbstractP4Action extends Action {
     }
 
     /** Calls the perforce command and does proper error reporting. */
-    protected void invokePerforce(String clist, ActionEvent ae) {
+    protected void invokePerforce(final String clist, ActionEvent ae) {
         String[] args = getArgs(ae);
         if (clist != null) {
             int size = (args != null) ? args.length : 0;
@@ -139,6 +151,7 @@ public abstract class AbstractP4Action extends Action {
 
         final Perforce p4 = new Perforce(getCommand(), args);
         View v = (viewer != null) ? viewer.getView() : jEdit.getActiveView();
+        p4.setVisitor(visitor);
 
         try {
             p4.exec(v).waitFor();
@@ -155,7 +168,7 @@ public abstract class AbstractP4Action extends Action {
         PVActions.swingInvoke(
             new Runnable() {
                 public void run() {
-                    postProcess(p4);
+                    postProcess(p4, clist);
                 }
             }
         );
@@ -170,6 +183,22 @@ public abstract class AbstractP4Action extends Action {
      */
     protected void postProcess(Perforce p4) {
 
+    }
+
+    /**
+     *  Implementations that need to do post-processing of the data
+     *  returned by p4 can override this method. By default this does
+     *  nothing. This method is not called if the p4 call fails for
+     *  any reason, so it can't be used to process errors.
+     *
+     *  <p>This implementation provides the change list used when
+     *  invoking the p4 command as a parameter; by default, it
+     *  just calls {@link #postProcess(Perforce)}.</p>
+     *
+     *  @since  P4P 0.2.3
+     */
+    protected void postProcess(Perforce p4, String clist) {
+        postProcess(p4);
     }
 
     /** Shows the output in a dialog. */

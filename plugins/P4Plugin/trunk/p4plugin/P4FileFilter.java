@@ -63,16 +63,11 @@ import p4plugin.config.P4Config;
  */
 public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor {
 
-    private static final int VISITING_FILES     = 0;
-    private static final int VISITING_CLIENT    = 1;
+    private Map<String,List>    entries;
+    private Map<String,String>  views;
+    private P4ClientInfo        clientInfo;
 
-    private String  clientRoot;
-    private Map     entries;
-    private Map     views;
-
-    private int     visiting;
     private boolean inViews;
-    private boolean p4ClientFailed  = false;
 
     public String getRecurseDescription() {
         return jEdit.getProperty("p4plugin.file_filter_desc");
@@ -87,13 +82,16 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
     }
 
     public boolean accept(File dir, String name) {
+        if (clientInfo != null && !clientInfo.isSuccess())
+            return false;
+
         File f = new File(dir.getAbsolutePath(), name);
         if (f.isDirectory()) return true;
 
         if (entries == null || !entries.containsKey(dir.getAbsolutePath()))
             findEntries(dir.getAbsolutePath());
 
-        List files = (List) entries.get(dir.getAbsolutePath());
+        List files = entries.get(dir.getAbsolutePath());
         if (files != null)
             return files.contains(name);
         return false;
@@ -107,21 +105,57 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
      *  be added to the entries array with a "null" list.</p>
      */
     private void findEntries(String dirpath) {
-        if (entries == null)
-            entries = new HashMap();
+        if (entries == null) {
+            entries = new HashMap<String,List>();
+        }
 
-        if (clientRoot == null && !p4ClientFailed && !findClientRoot()) {
+        if (clientInfo == null) {
+            findClientRoot();
+        }
+
+        if (clientInfo.getClientRoot() == null
+            || !clientInfo.isSuccess())
+        {
             entries.put(dirpath, null);
             return;
         }
 
-        if (!dirpath.startsWith(clientRoot)) {
+        if (!dirpath.startsWith(clientInfo.getClientRoot()))
+        {
             entries.put(dirpath, null);
             return;
+        }
+
+        /*
+         * Before calling perforce, do a "brute force" search in the
+         * current known entries looking for a parent directory that
+         * has been registered as not having any files. This avoids
+         * calling p4 repeatedly for directories that are not under
+         * version control, speeding up the process tremendously.
+         */
+        File parent = new File(dirpath).getParentFile();
+        String parentPath = parent.getAbsolutePath();
+        while (parentPath.length() > clientInfo.getClientRoot().length()) {
+            if (entries.containsKey(parentPath)) {
+                if (entries.get(parentPath) == null) {
+                    /*
+                     * Directory is not under a version-control-managed
+                     * branch of the project's tree, so just ignore it.
+                     */
+                    entries.put(dirpath, null);
+                    return;
+                } else {
+                    break;
+                }
+            }
+            parent = parent.getParentFile();
+            parentPath = parent.getAbsolutePath();
         }
 
         // call p4 files <directory>
         Perforce p4 = new Perforce("files", new String[] { dirpath + "/..." });
+        p4.setVisitor(this);
+        entries.put(dirpath, null);
         try {
             p4.exec(jEdit.getActiveView()).waitFor();
         } catch (Exception e) {
@@ -135,12 +169,6 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
             entries.put(dirpath, null);
             return;
         }
-
-        // break the list into individual directories.
-        entries.put(dirpath, new ArrayList());
-        visiting = VISITING_FILES;
-        p4.processOutput(this);
-
     }
 
     /**
@@ -152,38 +180,18 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
     private boolean findClientRoot() {
         P4Config cfg = P4Config.getProjectConfig(jEdit.getActiveView());
         if (cfg == null) {
-            // if no project, set status bar text to error
-            // if project doesn't use peforce, set status bar text to error
+            jEdit.getActiveView().getStatus().setMessageAndClear(
+                jEdit.getProperty("p4plugin.filter.no_config"));
             return false;
         }
 
-        if (cfg.getClient() == null) {
-            // if config has no client, try to read $P4CLIENT
+        clientInfo = new P4ClientInfo(cfg.getClient());
+
+        if (!clientInfo.fetch()) {
             return false;
         }
 
-        String[] args = new String[] { "-o", cfg.getClient() };
-        Perforce cmd = new Perforce("client", args);
-        try {
-            cmd.exec(jEdit.getActiveView()).waitFor();
-        } catch (Exception e) {
-            p4ClientFailed = true;
-            Log.log(Log.WARNING, this, e);
-            return false;
-        }
-
-        if (!cmd.isSuccess()) {
-            p4ClientFailed = true;
-            return false;
-        }
-
-        // parse the output looking for the "Root:" entry and the client's views.
-        views       = new HashMap();
-        inViews     = false;
-        visiting    = VISITING_CLIENT;
-        cmd.processOutput(this);
-
-        return (clientRoot != null);
+        return (clientInfo.getClientRoot() != null);
     }
 
     /**
@@ -192,75 +200,27 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
      *  the given file name to the list of files of that path.
      */
     private void addPath(String p4path) {
-        // break the path into smaller paths and return the first match.
-        StringTokenizer st = new StringTokenizer(p4path, "/");
-        StringBuffer curr = new StringBuffer(st.nextToken());
-        while (!views.containsKey(curr.toString()) && st.hasMoreTokens())
-            curr.append("/").append(st.nextToken());
+        File lpath = new File(clientInfo.translate(p4path));
+        String fname = lpath.getName();
+        String dirname = lpath.getParent();
 
-        String dirName = (String) views.get(curr.toString());
-        curr.setLength(0);
-        curr.append(clientRoot).append("/").append(dirName);
-
-        String fname = null;
-        while (st.hasMoreTokens()) {
-            String next = st.nextToken();
-            if (st.hasMoreTokens()) {
-                curr.append("/").append(next);
-            } else {
-                fname = next;
-            }
-        }
-
-        List files = (List) entries.get(curr.toString());
+        List files = entries.get(dirname);
         if (files == null) {
             files = new ArrayList();
-            entries.put(curr.toString(), files);
+            entries.put(dirname, files);
         }
 
-        if (fname != null) {
-            files.add(fname);
-        }
+        files.add(fname);
     }
 
     public boolean process(String line) {
-        switch (visiting) {
-
-            case VISITING_CLIENT:
-                if (inViews) {
-                    StringTokenizer view = new StringTokenizer(line);
-                    if (view.countTokens() == 2) {
-                        String p4path = view.nextToken().substring(2);
-                        p4path = p4path.substring(0, p4path.length() - 4);
-                        String localPath = view.nextToken();
-                        localPath = localPath.substring(localPath.indexOf("/", 2) + 1);
-                        localPath = localPath.substring(0, localPath.length() - 4);
-                        views.put(p4path, localPath);
-                    }
-                } else if (line.startsWith("Root:")) {
-                    clientRoot = line.substring(5, line.length()).trim();
-                    // is this really all we need to support Windows?!?!?
-                    clientRoot = clientRoot.replace('\\', '/');
-                } else if (line.startsWith("View:")) {
-                    inViews = true;
-                }
-                break;
-
-            case VISITING_FILES:
-                int revIdx = line.indexOf("#");
-                int actIdx = line.indexOf("-", revIdx) + 2;
-                String action = line.substring(actIdx, line.indexOf(" ", actIdx));
-                if (!action.equals("delete")) {
-                    line = line.substring(2, revIdx);
-                    addPath(line);
-                    break;
-                }
-
-            default:
-                // will not happen.
-
+        int revIdx = line.indexOf("#");
+        int actIdx = line.indexOf("-", revIdx) + 2;
+        String action = line.substring(actIdx, line.indexOf(" ", actIdx));
+        if (!action.equals("delete")) {
+            line = line.substring(2, revIdx);
+            addPath(line);
         }
-
         return true;
     }
 

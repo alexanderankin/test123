@@ -128,7 +128,7 @@ public class Perforce {
         }
 
         // print the command to the shell instance
-        StringBuffer cmdstr = new StringBuffer("> ");
+        StringBuilder cmdstr = new StringBuilder("> ");
         for (int i = 0; i < p4cmd.length; i++)
             cmdstr.append(p4cmd[i]).append(" ");
         cmdstr.setLength(cmdstr.length() - 1);
@@ -141,15 +141,21 @@ public class Perforce {
         P4Config usercfg = P4Config.getProjectConfig(proj);
         if (usercfg != null) {
             envp = usercfg.getEnv();
+        } else {
+            view.getStatus().setMessageAndClear(
+                jEdit.getProperty("p4plugin.config.no_config_warn"));
         }
 
         // try to run the command.
-        File workdir = new File(proj.getRootPath());
+        File workdir = null;
+        if (proj != null) {
+            workdir = new File(proj.getRootPath());
+        }
         perforce = Runtime.getRuntime().exec(p4cmd, envp, workdir);
 
         Runnable stdoutTask;
-        stderr = new StreamReader(perforce.getErrorStream(), perforce.getOutputStream());
-        stdout = new StreamReader(perforce.getInputStream(), perforce.getOutputStream());
+        stderr = new StreamReader(perforce.getErrorStream(), perforce.getOutputStream(), true);
+        stdout = new StreamReader(perforce.getInputStream(), perforce.getOutputStream(), false);
 
         WorkRequest[] reqs =
             WorkerThreadPool.getSharedInstance().runRequests(
@@ -213,7 +219,7 @@ public class Perforce {
     }
 
     public void processOutput(Visitor visitor) {
-        // break the list into individual directories.
+        // break the list into individual lines.
         try {
             BufferedReader br = new BufferedReader(new StringReader(getOutput()));
             String line;
@@ -229,16 +235,18 @@ public class Perforce {
     private class StreamReader implements Runnable {
 
         private boolean         foundError;
+        private boolean         iserr;
         private InputStream     input;
         private OutputStream    output;
 
-        private StringBuffer    data;
+        private StringBuilder    data;
 
-        public StreamReader(InputStream in, OutputStream out) {
+        public StreamReader(InputStream in, OutputStream out, boolean iserr) {
             this.input  = in;
             this.output = out;
+            this.iserr  = iserr;
 
-            this.data       = new StringBuffer();
+            this.data       = new StringBuilder();
             this.foundError = false;
         }
 
@@ -256,25 +264,28 @@ public class Perforce {
                     if (visitor != null) {
                         int idx;
                         while ( (idx = data.indexOf("\n")) >= 0) {
+                            if (idx > 0 && data.charAt(idx - 1) == '\r') {
+                                // ah, windows.
+                                idx--;
+                            }
                             String line = data.substring(0, idx);
-                            data.delete(0, idx);
+                            data.delete(0, idx + 1);
                             if (!foundError) {
                                 foundError = checkErrorMessage(line);
-                                if (!foundError) {
+                                if (!foundError && !iserr) {
                                     visitor.process(line);
                                 }
-                            } else if (visitor != null) {
+                            } else if (!iserr) {
                                 visitor.process(line);
                             }
-
+                            if (foundError) {
+                                break;
+                            }
                         }
                     }
 
                     if (!foundError) {
                         foundError = checkErrorMessage(data.toString());
-                        if (visitor != null) {
-                            data.setLength(0);
-                        }
                     }
                 }
             } catch (IOException ioe) {
@@ -300,6 +311,8 @@ public class Perforce {
                 );
                 output.write("\n".getBytes());
                 output.flush();
+                return true;
+            } else if (str.indexOf("Perforce client error:") >= 0) {
                 return true;
             }
             return false;
