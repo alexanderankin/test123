@@ -141,7 +141,7 @@ public class SideKickTree extends JPanel
                 parseBtn.addActionListener(ah);
                 
                 propsBtn= new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
-                propsBtn.setToolTipText("SideKick Properties");
+                propsBtn.setToolTipText(jEdit.getProperty("sidekick-tree.mode-options"));
                 propsBtn.addActionListener(new SideKickProperties());
                 
                 configMenu = new JPopupMenu("Parse");
