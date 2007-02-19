@@ -102,6 +102,12 @@
 
       <listitem>
         <para>
+          <ulink url="#AtomicOutputStream">AtomicOutputStream</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
           <ulink url="#WorkerThreadPool">WorkerThreadPool</ulink>
         </para>
       </listitem>
@@ -395,6 +401,24 @@
       filter.</para>
     </sect1>
 
+    <sect1 id="AtomicOutputStream">
+      <title>AtomicOutputStream</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Marcelo</firstname>
+            <surname>Vanzin</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>An output stream that uses a temporary file to write the
+      data, and only overwrites the target file at close time.</para>
+    </sect1>
+
     <sect1 id="WorkerThreadPool">
       <title>WorkerThreadPool</title>
 
@@ -446,8 +470,8 @@
             <para />
         </formalpara>
 
-        <para>Add a few new widgets: EasyOptionPane, FileTextFilter and
-        ModalJFileChooser.</para>
+        <para>Add a few new classes: EasyOptionPane, FileTextFilter,
+        ModalJFileChooser and AtomicOutputStream.</para>
       </listitem>
 
       <listitem>
