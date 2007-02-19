@@ -52,6 +52,8 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
+import common.io.AtomicOutputStream;
+
 import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
@@ -533,19 +535,23 @@ public final class ProjectManager {
 	 */
 	public void saveProjectList() {
 		// save the global configuration
-		OutputStreamWriter out = null;
+		AtomicOutputStream aout = null;
 		try {
-			OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
-			out = new OutputStreamWriter(outs, "UTF-8");
+			aout = new AtomicOutputStream(ProjectPlugin.getResourcePath(CONFIG_FILE));
+			OutputStreamWriter out = new OutputStreamWriter(aout, "UTF-8");
 			writeXMLHeader("UTF-8", out);
 			writeGroup(PROJECT_ROOT, VPTRoot.getInstance(), out);
+			out.close();
 		} catch (IOException ioe) {
 			GUIUtilities.error(jEdit.getActiveView(), "projectviewer.error.save",
 								new Object[] { jEdit.getProperty("projectviewer.error.project_list_str"),
 												ioe.getMessage() });
 			Log.log(Log.ERROR, this, ioe);
+			return;
 		} finally {
-			if (out != null) try  { out.close(); } catch (IOException ioe) { }
+			if (aout != null) {
+				aout.rollback();
+			}
 		}
 
 		if (nodeActions != null) {

@@ -52,6 +52,9 @@ Version 2.1.3.6:
 		  of ImageIcon.
 		- deprecate VPTNode(String); force use of VPTNode(String,boolean)
 		  to avoid an ugly hack in the first one.
+		- use CommonControls's new AtomicOutputStream to write important
+		  files, in an attempt to avoid overwriting data when something
+		  goes wrong.
 
 Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]
