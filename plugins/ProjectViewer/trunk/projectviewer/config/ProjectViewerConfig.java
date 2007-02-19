@@ -929,7 +929,6 @@ public final class ProjectViewerConfig {
 		}
 
 		// saves the properties back to the file
-		Properties props = new Properties();
 		OutputStream out = ProjectPlugin.getResourceAsOutputStream("fileassocs.properties");
 		if (out != null) {
 			try {

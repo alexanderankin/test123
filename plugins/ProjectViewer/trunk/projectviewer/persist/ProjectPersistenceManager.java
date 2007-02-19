@@ -42,6 +42,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.util.Log;
 
+import common.io.AtomicOutputStream;
+
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectManager;
 
@@ -150,14 +152,21 @@ public final class ProjectPersistenceManager {
 	//{{{ +_save(VPTProject, String)_ : void
 	/** Saves the given project data to the disk. */
 	public static void save(VPTProject p, String filename) throws IOException {
-		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_DIR + filename);
-		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
-		ProjectManager.writeXMLHeader("UTF-8", out);
+		AtomicOutputStream aout = null;
+		try {
+			aout = new AtomicOutputStream(ProjectPlugin.getResourcePath(CONFIG_DIR + filename));
+			OutputStreamWriter out = new OutputStreamWriter(aout, "UTF-8");
+			ProjectManager.writeXMLHeader("UTF-8", out);
 
-		saveNode(p, out);
+			saveNode(p, out);
 
-		out.flush();
-		out.close();
+			out.flush();
+			out.close();
+		} finally {
+			if (aout != null) {
+				aout.rollback();
+			}
+		}
 	} //}}}
 
 	//{{{ -_saveNode(VPTNode, Writer)_ : void
