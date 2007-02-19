@@ -621,7 +621,7 @@ public class SideKickTree extends JPanel
                         		b.setProperty("usermode", Boolean.FALSE);
                         		Mode m = b.getMode();
                         		if (m == null) {
-                        			Log.log(Log.ERROR, "SideKick: can't determine mode of current buffer:", b);
+                        			Log.log(Log.ERROR, this, "SideKick: can't determine mode of current buffer:" + b);
                         		}
                         		else {
                         			SideKickParser newParser = SideKickPlugin.getParserForMode(m);
@@ -734,7 +734,7 @@ public class SideKickTree extends JPanel
                 }
         } //}}}
 
-        // SidekickProperties class
+        // {{{ SidekickProperties class
         /**
          * This class creates an options dialog containing an optionpane
          * for each SideKick service, as well as one for SideKick itself.
@@ -755,7 +755,7 @@ public class SideKickTree extends JPanel
 			
 		}
         	
-        }
+	} // }}}
         
         //{{{ Renderer class
         class Renderer extends DefaultTreeCellRenderer
