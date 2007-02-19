@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="FunnyDb">
+
+<!--The name of the JDBC driver -->
+  <driverClass>org.jedit.jdbc.FunnyDbDriver</driverClass>
+
+<!--
+  Optional: some DBMSs (like Oracle) do not keep the CREATE OR REPLACE
+    prefix in the source code of the stored procedures so you can specify it
+    here. If not specified, the empty prefix "" is used.
+-->
+  <objectCreationPrefix>CrEaTe Or RePlAcE </objectCreationPrefix>
+
+<!--
+  Optional: VFS
+-->
+  <vfs>
+<!--
+    The subclass of sql.SqlSubVFS implementing some db-specific SqlVFS behavior.
+    If not set, generic sql.SqlSubVFS is used.
+-->
+    <driverClass>sql.serverTypes.FunnyDbVFS</driverClass>
+<!--
+  Optional:
+    The edit mode used for files read.
+    If not set, transact-sql is used
+-->
+    <editMode>pl-sql</editMode>
+  </vfs>
+
+
+  <connection>
+
+<!-- These parameters affect the UI used to manage server records -->
+    <parameter name="host" default="127.0.0.1"/>
+    <parameter name="port" default="1234"/>
+    <parameter name="dbName" default="jedit"/>
+    <parameter name="extra" default=""/>
+    <parameter name="user" default="jedit"/>
+    <parameter name="password" default="jedit"/>
+
+<!--
+  This string is used as a pattern for connecting to the database.
+  See DriverManager.getConnection() function.
+  Parameters named "user" and "password" are used directly in the function call.
+-->
+    <string>jdbc:funnydb://{host}:{port}/{dbName}{extra}</string>
+  </connection>
+
+  <statements>
+<!--
+  These are various DB statements used in SqlVFS, code publishing etc.
+  The concrete "purposes" depend on the server type and class named in <vfs> tag
+  Some standard ones are:
+
+    - selectObjectGroups:
+        used in VFS to get the list of the tablegroups
+    - selectTablesInGroup:
+        used in VFS to get the list of the tables in the group
+
+  There is a lot of others used for the stored procedures handling (see
+  oracle.xml)
+-->
+    <statement purpose="selectObjectGroups">
+      SELECT group_name
+      FROM all_table_groups
+    </statement>
+    <statement purpose="selectTablesInGroup">
+      SELECT table_name
+      FROM all_tables
+      WHERE group_name = ?
+    </statement>
+
+  </statements>
+
+</serverType>
