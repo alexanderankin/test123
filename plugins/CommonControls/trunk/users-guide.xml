@@ -470,7 +470,7 @@
             <para />
         </formalpara>
 
-        <para>Add a few new classes: EasyOptionPane, FileTextFilter,
+        <para>Add a few new classes: EasyOptionPane, FileTextField,
         ModalJFileChooser and AtomicOutputStream.</para>
       </listitem>
 
