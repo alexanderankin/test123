@@ -889,7 +889,8 @@ public class JBrowseOptionPane extends AbstractOptionPane
             else if (actionSource == cmbStyle) {
                 styleIndex = cmbStyle.getSelectedIndex();
                 refreshDisplayOptions(styleIndex);
-            } else if (actionSource == cbxShowArguments) {
+            }
+            else if (actionSource == cbxShowArguments) {
                 if(cbxShowArguments.getModel().isSelected()) {
                     cbxShowArgumentNames.getModel().setEnabled(true);
                 } else {

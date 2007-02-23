@@ -3,6 +3,7 @@ package sidekick.property.parser.property;
 
 import java.util.*;
 
+import sidekick.util.Location;
 public class PropertyParser implements PropertyParserConstants {
 
     // accumulates parse exceptions
@@ -14,11 +15,11 @@ public class PropertyParser implements PropertyParserConstants {
         parser.Properties();
     }
 
-        /**
-	 * Utility to trim horizontal whitespace from the front of a string.
-	 * @param the string to trim
-	 * @return the trimmed string
-	 */
+    /**
+     * Utility to trim horizontal whitespace from the front of a string.
+     * @param the string to trim
+     * @return the trimmed string
+     */
     public String trimFront(String s) {
         if (s == null || s.length() == 0) {
             return s;
@@ -34,57 +35,57 @@ public class PropertyParser implements PropertyParserConstants {
         return s.substring(index);
     }
 
-        /**
-	 * Setting the tab size makes the token locations more accurate.
-	 * @param size the size of the tabs in the current jEdit buffer
-	 */
+    /**
+     * Setting the tab size makes the token locations more accurate.
+     * @param size the size of the tabs in the current jEdit buffer
+     */
     public void setTabSize(int size) {
         jj_input_stream.setTabSize(size);
     }
 
-        /**
-	 * @return the current tab size that the parser is using    
-	 */
+    /**
+     * @return the current tab size that the parser is using
+     */
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
     }
 
-        /**
-	 * Creates a start location from the given token.
-	 * @param t a token
-	 * @return the start location of the token.
-	 */
+    /**
+     * Creates a start location from the given token.
+     * @param t a token
+     * @return the start location of the token.
+     */
     public Location createStartLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
        return new Location(t.beginLine, t.beginColumn);
     }
 
-        /**
-	 * Creates an end location from the given token.
-	 * @param t a token
-	 * @return the end location of the token.
-	 */
+    /**
+     * Creates an end location from the given token.
+     * @param t a token
+     * @return the end location of the token.
+     */
     public Location createEndLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
        return new Location(t.endLine, t.endColumn);
     }
 
-        /**
-	 * Add an exception to the list of exceptions. Rather than failing on
-	 * any exception, this parser will continue parsing and will accumulate
-	 * any/all exceptions.
-	 * @param pe a ParseException to accumulate
-	 */
+    /**
+     * Add an exception to the list of exceptions. Rather than failing on
+     * any exception, this parser will continue parsing and will accumulate
+     * any/all exceptions.
+     * @param pe a ParseException to accumulate
+     */
     public void addException(ParseException pe) {
         if (pe != null)
             exceptions.add(pe);
     }
 
-        /**
-	 * @return the list of accumulated ParseExceptions
-	 */
+    /**
+     * @return the list of accumulated ParseExceptions
+     */
     public List<ParseException> getExceptions() {
         return exceptions;
     }
@@ -122,7 +123,7 @@ public class PropertyParser implements PropertyParserConstants {
       }
     }
     jj_consume_token(0);
-        /* always sort the list by property name -- could make the caller do 
+        /* always sort the list by property name -- could make the caller do
         this and just return the properties in the original order */
         Collections.sort(list);
         {if (true) return list;}
@@ -169,8 +170,8 @@ public class PropertyParser implements PropertyParserConstants {
         out = out.replaceAll("\\\\\\t", "\t");
         prop.setKey(out);
 
-        /* value -- need to combine multi-line values into a single line. Leading 
-        whitespace on continuation lines is discarded, as is leading whitespace 
+        /* value -- need to combine multi-line values into a single line. Leading
+        whitespace on continuation lines is discarded, as is leading whitespace
         at the start of the value. */
         out = value == null ? "" : value.image.replaceAll("\\\\(\\s)+", "");
         out = trimFront(out);

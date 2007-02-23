@@ -28,8 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package sidekick.property;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +40,7 @@ import org.gjt.sp.jedit.View;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
-import sidekick.property.parser.property.Location;
+import sidekick.util.*;
 import sidekick.property.parser.property.ParseException;
 import sidekick.property.parser.property.Property;
 import sidekick.property.parser.property.Token;
@@ -87,11 +86,12 @@ public class PropertyParser extends SideKickParser {
 
             /* get the properties as Property objects, convert them to SideKick Assets,
             and add them to the tree */
-            List<PropertyAsset> assets = convert( buffer, parser.Properties() );
-            for ( PropertyAsset asset : assets ) {
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode( asset );
+            List<Property> properties = parser.Properties();
+            for ( Property property : properties ) {
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode( property );
                 root.add( node );
             }
+            ElementUtil.convert(buffer, root);
             handleErrors( buffer, errorSource, parser.getExceptions() );
         }
         catch ( Exception e ) {
@@ -103,56 +103,6 @@ public class PropertyParser extends SideKickParser {
         return parsedData;
     }
 
-    /* convert individual Property objects to PropertyAsset objects suitable
-    for SideKick */
-    private List<PropertyAsset> convert( Buffer buffer, List<Property> properties ) {
-        List<PropertyAsset> assets = new ArrayList();
-        for ( Property property : properties ) {
-            PropertyAsset asset = new PropertyAsset( property );
-            asset.setStart( createStartPosition( buffer, property ) );
-            asset.setEnd( createEndPosition( buffer, property ) );
-            assets.add( asset );
-        }
-        return assets;
-    }
-
-
-    /**
-     * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The
-     * TigerNode contains a column offset based on the current tab size as set in
-     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
-     * hard tab handling.
-     */
-    private Position createStartPosition( Buffer buffer, Property child ) {
-        final int line_offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),
-                Math.max( child.getStartLocation().column - 1, 0 ), null );
-        return new Position() {
-                   public int getOffset() {
-                       return line_offset + col_offset;
-                   }
-               };
-    }
-
-
-    /**
-     * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The
-     * TigerNode contains a column offset based on the current tab size as set in
-     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
-     * hard tab handling.
-     */
-    private Position createEndPosition( Buffer buffer, Property child ) {
-        final int line_offset = buffer.getLineStartOffset( Math.max( child.getEndLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getEndLocation().line - 1, 0 ),
-                Math.max( child.getEndLocation().column - 1, 0 ), null );
-        return new Position() {
-                   public int getOffset() {
-                       return line_offset + col_offset;
-                   }
-               };
-    }
 
     /* the parser accumulates errors as it parses.  This method passed them all
     to the ErrorList plugin. */
