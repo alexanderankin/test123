@@ -44,24 +44,26 @@ public class ElementUtil {
      * set in the Buffer, need to use getOffsetOfVirtualColumn to account for
      * soft and hard tab handling.
      *
-     * @param buffer
-     * @param child
-     * @return        Description of the Returned Value
+     * Note that this method will also set the start position in the given SideKickElement.
+     *
+     * @param buffer the buffer containing the child element/text in question
+     * @param element the SideKickElement representing some text in the buffer
+     * @return  a Position representing the offset from the start of the buffer
+     * to the start of the element
      */
-    public static Position createStartPosition(Buffer buffer, SideKickElement child) {
-        final int line_offset = buffer.getLineStartOffset(
-                Math.max(child.getStartLocation().line - 1, 0));
-        final int col_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(child.getStartLocation().line - 1, 0),
-                Math.max(child.getStartLocation().column - 1, 0),
-                null);
-        Position p =
-            new Position() {
-                public int getOffset() {
-                    return line_offset + col_offset;
-                }
-            };
-        child.setStartPosition(p);
+    public static Position createStartPosition(Buffer buffer, SideKickElement element) {
+        int line_offset = buffer.getLineStartOffset(
+                Math.max(element.getStartLocation().line - 1, 0));
+        int[] totalVirtualWidth = new int[1];
+        int column_offset = buffer.getOffsetOfVirtualColumn(
+                Math.max(element.getStartLocation().line - 1, 0),
+                Math.max(element.getStartLocation().column - 1, 0),
+                totalVirtualWidth);
+        if (column_offset == -1) {
+            column_offset = totalVirtualWidth[0];
+        }
+        Position p = createPosition(line_offset, column_offset);
+        element.setStartPosition(p);
         return p;
     }
 
@@ -73,25 +75,38 @@ public class ElementUtil {
      * set in the Buffer, need to use getOffsetOfVirtualColumn to account for
      * soft and hard tab handling.
      *
-     * @param buffer
-     * @param child
-     * @return        Description of the Returned Value
+     * Note that this method will also set the end position in the given SideKickElement.
+     *
+     * @param buffer the buffer containing the child element/text in question
+     * @param element the SideKickElement representing some text in the buffer
+     * @return  a Position representing the offset from the start of the buffer
+     * to the end of the element
      */
-    public static Position createEndPosition(Buffer buffer, SideKickElement child) {
-        final int line_offset = buffer.getLineStartOffset(
-                Math.max(child.getEndLocation().line - 1, 0));
-        final int col_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(child.getEndLocation().line - 1, 0),
-                Math.max(child.getEndLocation().column - 1, 0),
-                null);
-        Position p =
-            new Position() {
+    public static Position createEndPosition(Buffer buffer, SideKickElement element) {
+        int line_offset = buffer.getLineStartOffset(
+                Math.max(element.getEndLocation().line - 1, 0));
+        int[] totalVirtualWidth = new int[1];
+        int column_offset = buffer.getOffsetOfVirtualColumn(
+                Math.max(element.getEndLocation().line - 1, 0),
+                Math.max(element.getEndLocation().column - 1, 0),
+                totalVirtualWidth);
+        if (column_offset == -1) {
+            column_offset = totalVirtualWidth[0];
+        }
+        Position p = createPosition(line_offset, column_offset);
+        element.setEndPosition(p);
+        return p;
+    }
+
+    public static Position createPosition(int line_offset, int column_offset) {
+        final int lo = line_offset;
+        final int co = column_offset;
+        return new Position() {
                 public int getOffset() {
-                    return line_offset + col_offset;
+                    return lo + co;
                 }
             };
-        child.setEndPosition(p);
-        return p;
+
     }
 
     /**
@@ -112,7 +127,7 @@ public class ElementUtil {
         }
 
         // convert the node itself
-        if (!(node.getUserObject() instanceof IAsset)) {
+        if ((node.getUserObject() instanceof SideKickElement)) {
             SideKickElement userObject = (SideKickElement)node.getUserObject();
             Position start_position = createStartPosition(buffer, userObject);
             Position end_position = createEndPosition(buffer, userObject);
