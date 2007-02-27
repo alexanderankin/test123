@@ -1,0 +1,221 @@
+<html>
+<head>
+<title>
+Using JavaCC to Create a SideKick
+</title>
+<body>
+<h2>Using JavaCC to Create a SideKick</h2>
+
+<p>
+The SideKick plugin provides a dockable window in which other plugins can display buffer structure.  There are a number of such plugins, supporting languages such as Inform, Java, Javascript, EcmaScript, Perl, XML, HTML, CSS, and so on.  SideKick makes browsing code for these languages easier, and has the ability to provide code completion (although this is not implemented in all of the sidekicks).  Javacc is an excellent tool to parse language files and create the SideKick tree.
+<p>
+
+Some useful resources:
+<p>
+
+Javacc home: <a href="https://javacc.dev.java.net/">https://javacc.dev.java.net/</a><br>
+This site contains the latest releases of javacc, links to documentation, and has a repository of grammars.
+<p>
+
+Javacc FAQ: <a href="http://www.engr.mun.ca/~theo/JavaCC-FAQ/">http://www.engr.mun.ca/~theo/JavaCC-FAQ/</a><br>
+This is an excellent resource.
+<p>
+
+I'll assume you have javacc installed and understand how it works (here is the briefest of overviews: javacc converts a .jj file into .java files, which are then compiled with javac.  jjtree converts a .jjt file into a .jj file, then javacc converts the .jj file into .java files, which are then compiled with javac).  See <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/build.xml?revision=6907&view=markup#l_73" target="jj"> the build file</a> for the XML plugin for an example of how to use the javacc and jjtree Ant tasks.
+
+I'll use the CSS sidekick as a working example of how javacc can be used to create a parser for SideKick.  The CSS sidekick is part of the XML plugin. In the examples below, I'll be referencing the CSS2Parser.jj file, revision 6774. That file can be found <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup" target="jj">here</a>.  This link will open a new browser window so you can follow the code while reading this document.
+<p>
+
+I started with a "clean" .jj file.  A clean file is one that will parse appropriate input, but doesn't actually do anything.  We want to add our own code to create a tree for SideKick.  I want the parser to create tree nodes for specific items.  In SideKick, the root node represents the file being parsed.  All other nodes are based on the language, so a java file would show class and method nodes, a css file would show selectors, javascript would show functions, and so on.  Generally, a good .jj file, that is, one that fully supports the language to be parsed, will have a lot more in it than is strictly necessary for creating the tree structure.  While that level of detail isn't necessary for the tree, it is nice for code completion, so it's good to have.
+<p>
+
+The overall strategy is to use the javacc-generated parser to read the contents of the current jEdit buffer and create a set of tree nodes that can be displayed in a javax.swing.JTree.  The SideKick plugin itself handles the tree, we just have to make the nodes.
+<p>
+
+To represent the nodes, I created a <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSSNode.java?revision=6674&view=markup#l_1" target="jj">CSSNode</a> class.  This class implements <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/SideKick/trunk/sidekick/util/SideKickElement.java?revision=6673&view=markup#l_29" target="jj">sidekick.util.SideKickElement</a></code>:
+<p>
+<code><pre>
+package sidekick.util;
+
+import javax.swing.text.Position;
+
+public interface SideKickElement {
+    public void setStartLocation( Location loc );
+
+    public Location getStartLocation();
+
+    public void setEndLocation( Location loc );
+
+    public Location getEndLocation();
+
+    public void setStartPosition( Position s );
+
+    public Position getStartPosition();
+
+    public void setEndPosition( Position s );
+
+    public Position getEndPosition();
+
+}
+</pre></code>
+<p>
+A <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/SideKick/trunk/sidekick/util/Location.java?revision=6673&view=markup#l_28" target="jj">sidekick.util.Location</a></code> represents an offset in the file based on line and column.  Javacc tokens provide this information.  A <code>javax.swing.text.Position</code> represents an offset in the file based on character count from the start of the file.  SideKick uses <code>Position</code>s to locate items in the jEdit editor pane.  Clicking on an item in the SideKick tree moves the cursor to the corresponding element in the editor, and moving the cursor in the editor moves the tree selection to the corresponding tree node. <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/SideKick/trunk/sidekick/util/ElementUtil.java?revision=6678&view=markup#l_29" target="jj">sidekick.util.ElementUtil</a></code> provides methods to convert the <code>Location</code>s provided by javacc to the <code>Position</code>s needed by jEdit and SideKick.
+<p>
+
+The CSSNode itself is fairly simple, it has a "name" attribute that is used for display in the SideKick tree, it has methods to add child nodes, and concrete methods for the SideKickElement methods.
+<p>
+
+To actually create a CSSNode, the .jj file is modified. The main entry point is the <code>styleSheet</code> production at <a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_317">line 317</a>.  The top level node for our tree is created, then the <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_324">styleSheetRuleList</a></code> production is called.  This production returns a list of child nodes, which are added to our top level node as children.  In this case, we don't really care about the top level node, it's just a holder for the children.  We'll throw it away later when the actual Swing tree nodes are created.
+<p>
+
+<code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_339">styleSheetRuleList</a></code> calls other productions to create individual nodes.  These nodes are assembled into a list and will become the first nodes below the root/file node.  Below is an example of a production that actually creates a node (<a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_444">line 444</a>).  First is the original production from my "clean" .jj file, followed by my edits:
+<p>
+<b>Original</b> This will find things like <code>@import url(imptest1.css);</code> in a css file:
+
+<code><pre>
+void importRule() :
+{
+}
+{
+    &lt;IMPORT_SYM&gt; ( &lt;S&gt; )*
+    ( &lt;STRING&gt;
+    | &lt;URI&gt; ) ( &lt;S&gt; )*
+    ( mediaList() )?
+    &lt;SEMICOLON&gt;
+}
+</pre></code>
+
+<b>Editted:</b>
+<code><pre>
+CSSNode importRule() :
+{
+    Token start = null;
+    CSSNode middle = null;
+    Token uri = null;
+    Token end = null;
+    CSSNode node = null;
+}
+{
+    try {
+        start=&lt;IMPORT_SYM&gt; ( &lt;S&gt; )*
+        ( uri=&lt;STRING&gt;
+        | uri=&lt;URI&gt; ) ( &lt;S&gt; )*
+        ( middle=mediaList() )?
+        end=&lt;SEMICOLON&gt;
+    }
+    catch(ParseException pe) {
+        addException(pe);
+        return null;
+    }
+    {
+        if (notNull(start, end)) {
+            String name = start.image + (uri != null ? " " + uri.image : "") + (middle != null ? " " + middle.getName() : "");
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+        return node;
+    }
+}
+</pre></code>
+<p>
+A <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/Token.java?revision=6674&view=markup#l_17" target="jj">Token</a></code> provides the starting and ending line and column. The <code>Token.java</code> file is generated automatically by javacc.  Passing the <code>Token</code> to <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_59">getStartLocation</a></code> creates a <code>Location</code> for the start of the <code>Token</code>, <code>getEndLocation</code> is similar.  These two methods must be added to the parser, but they are pretty simple:
+<p>
+
+<code><pre>
+    public Location getStartLocation(Token t) {
+       if (t == null)
+           return new Location(0 + lineOffset, 0);
+       return new Location(t.beginLine + lineOffset, t.beginColumn);
+    }
+</pre></code>
+
+<p>
+Note the reference to <code>lineOffset</code>.  By default, lineOffset is 0, but can be set to some other value.  I added the <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_81" target="jj">setLineOffset</a> method to the parser to set the value. This is useful for when the css code is embedded in an html page in a &lt;style&gt; block.  The html parser can call the css parser to provide part of the tree for the style, and can set the line number for the start of the style block so the offsets will be correct.  Not all sidekicks will need to provide this functionality.
+<p>
+
+Once the call to <code>styleSheet</code> returns, there is a CSSNode that contains other CSSNodes in a tree-like structure.  All that is left is to convert those nodes into <code>javax.swing.tree.DefaultMutableTreeNode</code>s.  There are a few other things to point out in the .jj file, though:
+<p>
+<ul>
+<li>All productions that create a node should be wrapped in a try/catch block like in the example for <code>importRule</code> above.  The <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_95">addException</a></code>, <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_104">getExceptionLocation</a></code>, and <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_100">getParseErrors</a></code> methods have been added to the parser so that parse errors can be displayed in the ErrorList plugin.  These are pretty much boiler-plate code, I've reused these methods in several parsers. <code>ParseException.java</code> is also a file generated by javacc.</li>
+<li>The <code><a target="jj" href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/parser/CSS2Parser.jj?revision=6774&view=markup#l_87">setTabSize</a></code> method has been added so that the javacc parser can know the tab size in use by the jEdit buffer being parsed.  Javacc uses a default tab size of 8, so setting the tab size correctly for the buffer is essential so that <code>Location</code>s and <code>Position</code>s are accurate.</li>
+<li>All generated files will be put in the same directory as your .jj file.  They will be generated with the same package name as you put in your .jj file.</li>
+<li>The name of your generated parser is the name you give it in the <code>PARSER_BEGIN</code> definition. This is from the JavaCC documentation:
+<pre>
+The name that follows "PARSER_BEGIN" and "PARSER_END" must be the same and
+this identifies the name of the generated parser. For example, if name is
+"MyParser", then the following files are generated:
+
+MyParser.java: The generate parser.
+MyParserTokenManager.java: The generated token manager (or scanner/lexical
+analyzer).
+MyParserConstants.java: A bunch of useful constants.
+
+Other files such as "Token.java", "ParseException.java", etc. are also
+generated. However, these files contain boilerplate code and are the same
+for any grammar and may be reused across grammars.
+</pre>
+</li>
+</ul>
+<p>
+There is some "magic" in the parser created by javacc.  While you can declare constructors in the .jj file itself, javacc will automatically create constructors that accept a java.io.InputStream and a java.io.Reader.  Most likely, it is one of these constructors that you'll want to use.  You may want a <code>main</code> method so that you can test the parser from the command line.
+
+<p>
+
+The next file to look at is <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_52" target="jj">sidekick.css.CSS2SideKickParser.java</a></code>.  This class extends <code>sidekick.SideKickParser</code> and will be called by SideKick itself when it determines a buffer should be parsed as CSS.  This is the file that actually produces the Swing tree nodes for the SideKick tree and will call the javacc-generated parser.  The main entry point for SideKick is the <code>public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)</code> method, which uses a <code>lineOffset</code> of 0.  This will cause the entire buffer to be parsed and will return a <code>sidekick.SideKickParsedData</code> which will contain a DefaultMutableTreeNode that SideKick will show in its tree.
+<p>
+Stepping through the <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_98" target="jj">parse</a></code> method:
+<p>
+<ol>
+<li>The filename of the buffer is fetched. This is used later if there are parse errors.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_109" target="jj">(line 109)</a></li>
+<li>The SideKickParsedData object is created.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_110" target="jj">(line 110)</a></li>
+<li>The SideKickParsedData provides an empty DefaultMutableTreeNode to use as the root of the SideKick tree.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_111" target="jj">(line 111)</a></li>
+<li>A Reader is created for the parser to read the text from the Buffer.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_113" target="jj">(line 113)</a></li>
+<li>The CSS2Parser is created using the Reader.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_115" target="jj">(line 116)</a></li>
+<li>The lineOffset is set for the CSS2Parser. (not required for all SideKicks).<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_118" target="jj">(line 121)</a></li>
+<li>The tab size for the buffer is read and passed to the parser.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_123" target="jj">(line 125)</a></li>
+<li>The text of the buffer is parsed.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_127" target="jj">(line 128)</a></li>
+<li>The CSSNodes returned from the parser are converted into DefaultMutableTreeNodes and added to the root node. <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_130" target="jj">(line 131)</a>  The parser returns a single node that contains child nodes, I don't care about the single node, but do want the children.  This is all handled in the <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_163" target="jj">addTreeNodes</a></code> method.</li>
+<li>The CSSNodes are converted to SideKick Assets.  This is where the javacc provided <code>Location</code>s are changed to the <code>Position</code>s needed by SideKick and jEdit.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_133" target="jj">(line 135)</a></li>
+<li>Parse errors, if any, are passed to the ErrorList plugin for display.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_137" target="jj">(line 137)</a></li>
+<li>And finally, the SideKickParsedData is returned.<a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/css/CSS2SideKickParser.java?revision=6689&view=markup#l_160" target="jj">(line 160)</a></li>
+</ol>
+<p>
+
+<h3>Using JJTree</h3>
+You may find a .jjt file on the internet that is suitable for creating a SideKick parser.  <a href="https://javacc.dev.java.net/doc/JJTree.html" target="jj">JJTree</a> is a preprocessor for JavaCC.  jjtree will take a .jjt file and produce a .jj file, which can then be processed by javacc to create .java files.  Generally, you don't need to do much editing to a .jjt file, instead, you use jjtree to process the .jjt file into a .jj file, then process that file with javacc into .java files.  Then those java files are edited as necessary.  Notice all the AST files listed on <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/" target="jj">this page</a> for the EcmaScript parser.  These are all generated files.  All of them extend <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/SimpleNode.java?revision=6918&view=markup" target="jj">SimpleNode</a></code>, which is also a generated file.  I edited <code>SimpleNode.java</code> so that it implements <code>SideKickElement</code>.  To get the <code>Location</code>s set into the <code>SimpleNode</code>s, I did edit the .jjt file. From the JJTree documentation:
+<p>
+<pre>
+If the NODE_SCOPE_HOOK option is set to true, JJTree generates calls to
+two user-defined parser methods on the entry and exit of every node scope.
+The methods must have the following signatures:
+
+    void jjtreeOpenNodeScope(Node n)
+    void jjtreeCloseNodeScope(Node n)
+
+</pre>
+<p>
+I set the <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_75" target="jj">NODE_SCOPE_HOOK</a></code> value to true, then filled in the method bodies of <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_127" target="jj">jjtreeOpenNodeScope</a></code> and <a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_135" target="jj">jjtreeCloseNodeScope</a></code> so that the start and end locations are populated.  Notice too that I added in the <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_155" target="jj">setLineOffset</a></code>, <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_162" target="jj">setTabSize</a></code>, and <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/EcmaScript.jjt?revision=6907&view=markup#l_170" target="jj">getParseErrors</a></code> (which needs to be finished) methods into the .jjt file like I did for the .jj example above.
+<p>
+
+The majority of the various AST files are unchanged from when they were generated by javacc.  I changed the <code>toString</code> methods in <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/ASTFunctionDeclaration.java?revision=6918&view=markup" target="jj">ASTFunctionDeclaration.java</a></code>, <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/ASTIdentifier.java?revision=6918&view=markup">ASTIdentifier.java</a></code>, and <code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/parser/ASTVariableStatement.java?revision=6918&view=markup" target="jj">ASTVariableStatement.java</a></code> so that the display in the SideKick tree is nicer.
+<p>
+
+<code><a href="http://svn.sourceforge.net/viewvc/jedit/plugins/XML/trunk/sidekick/ecmascript/EcmaScriptSideKickParser.java?revision=6918&view=markup">EcmaScriptSideKickParser.java</a></code> is almost identical to CSS2SideKickParser.  It follows the same steps to create the DefaultMutableTreeNodes for SideKick.
+<p>
+
+<h3>Some Tips</h3>
+<ul>
+<li>Keep a copy of your "clean" .jj or .jjt file.  You may want it later.  Maybe even check it into SVN.</li>
+<li>Be careful with the generated files that you edited.  Neither jjtree nor javacc will overwrite them, but you may decide to "clean things up" and delete them for a fresh build -- and loose some work.</li>
+<li>Commit your generated files to SVN.  That way others can recompile your plugin without having to run jjtree or javacc themselves.</li>
+<li>When working with .jj and/or .jjt files in jEdit, be sure to have the JavaSideKick plugin installed.  It provides a SideKick tree for these files and really helps in finding the various productions.</li>
+<li>Never (never, never, never!) edit the generated parser .java file.  Always edit the .jj or .jjt file and regenerate the parser file.</li>
+</ul>
+<hr>
+
+Questions? Please ask on the <a href="http://sourceforge.net/mail/?group_id=588">jedit-devel</a> list.  I am not an expert nor an authority on javacc, you may get better results by reading the javacc documentation or faq.
+<p>
+<i>Dale Anson, Sep 2006</i>
+</body>
+</html>
