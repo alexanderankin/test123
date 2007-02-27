@@ -7,7 +7,6 @@ import sidekick.java.util.Log;
 import java.io.*;
 import java.util.*;
 
-
 /**
  * Based on grammar to parse Java version 1.5 written by Sreenivasa Viswanadha,
  * parses a java file for the JavaSideKick plugin to provide a java code
