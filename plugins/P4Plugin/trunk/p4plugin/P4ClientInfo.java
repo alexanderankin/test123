@@ -94,13 +94,6 @@ public class P4ClientInfo implements Perforce.Visitor {
             cmd.showError(jEdit.getActiveView());
         }
 
-        System.err.println("P4ClientInfo:");
-        System.err.println("Name: " + clientName);
-        System.err.println("Root: " + clientRoot);
-        for (String key : views.keySet()) {
-            System.err.println("View: " + key + " = " + views.get(key));
-        }
-
         return cmdok;
     }
 
