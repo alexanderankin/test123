@@ -95,6 +95,7 @@ public class ProjectComboBox extends JButton
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
+		showOnNextEvent = true;
 		ProjectViewer.setActiveNode(view, (VPTNode) ae.getSource());
 	} //}}}
 
