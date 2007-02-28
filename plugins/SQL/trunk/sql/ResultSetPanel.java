@@ -57,6 +57,7 @@ public class ResultSetPanel extends JPanel
 	protected final String formattedQuery;
 
 	protected JComponent dataComponent;
+	protected JLabel recordsCountLabel;
 	protected HelpfulJTable dataTable;
 
 	protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
@@ -153,6 +154,9 @@ public class ResultSetPanel extends JPanel
 			remove(dataComponent);
 			dataComponent.setVisible(false);
 			dataComponent = null;
+			remove(recordsCountLabel);
+			recordsCountLabel.setVisible(false);
+			recordsCountLabel = null;
 		}
 		add(BorderLayout.CENTER, createDataView(data));
 		add(BorderLayout.SOUTH, createRecCountLabel(data));
@@ -172,8 +176,8 @@ public class ResultSetPanel extends JPanel
 
 		final String lblText = jEdit.getProperty("sql.resultSet.info", args);
 
-		final JLabel rclbl = new JLabel(lblText, SwingConstants.LEFT);
-		return rclbl;
+		recordsCountLabel = new JLabel(lblText, SwingConstants.LEFT);
+		return recordsCountLabel;
 	}
 
 
