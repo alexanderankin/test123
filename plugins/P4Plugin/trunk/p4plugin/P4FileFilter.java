@@ -109,8 +109,8 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
             entries = new HashMap<String,List>();
         }
 
-        if (clientInfo == null) {
-            findClientRoot();
+        if (clientInfo == null && !findClientRoot()) {
+            return;
         }
 
         if (clientInfo.getClientRoot() == null
@@ -215,11 +215,17 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
 
     public boolean process(String line) {
         int revIdx = line.indexOf("#");
-        int actIdx = line.indexOf("-", revIdx) + 2;
-        String action = line.substring(actIdx, line.indexOf(" ", actIdx));
-        if (!action.equals("delete")) {
-            line = line.substring(2, revIdx);
-            addPath(line);
+        int actIdx = -1;
+        if (revIdx >= 0) {
+            actIdx = line.indexOf("-", revIdx) + 2;
+        }
+
+        if (actIdx >= 0) {
+            String action = line.substring(actIdx, line.indexOf(" ", actIdx));
+            if (!action.equals("delete")) {
+                line = line.substring(2, revIdx);
+                addPath(line);
+            }
         }
         return true;
     }
