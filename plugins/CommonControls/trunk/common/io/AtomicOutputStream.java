@@ -27,7 +27,11 @@ import java.io.OutputStream;
 /**
  *	<p>An "atomic" output stream. It is "atomic" in the sense that the
  *	target file won't be overwritten until "close()" is called, at which
- *	point a rename is done (rename is atomic).</p>
+ *	point a rename is done. A point of note that for this stream to
+ *	actually be atomic, "rename" needs to be atomic, such as in POSIX
+ *	systems. Windows, for example, doesn't have this property, so this
+ *	stream tries to do the next best thing (delete the original, then
+ *	rename).</p>
  *
  *	<p>This stream works a little bit differently than other streams, in the
  *	sense that it has a second close method called {@link #rollback()}. This
@@ -69,7 +73,10 @@ public final class AtomicOutputStream extends OutputStream
 	public AtomicOutputStream(File path)
 		throws IOException
 	{
-		this.temp	= File.createTempFile(path.getName(), "tmp", path.getParentFile());
+		if (path.exists() && !path.canWrite()) {
+			throw new IOException("Can't write to " + path.getAbsolutePath());
+		}
+		this.temp	= File.createTempFile(path.getName(), ".tmp", path.getParentFile());
 		this.out 	= new FileOutputStream(temp);
 		this.target	= path;
 	}
@@ -90,7 +97,27 @@ public final class AtomicOutputStream extends OutputStream
 		try {
 			out.close();
 			if (!temp.renameTo(target)) {
-				throw new IOException("Can't rename temp file to " + target.getName());
+				/*
+				 * Windows doesn't allow renaming to a file that already exists.
+				 * So take a "slow, non-atomic" path in this case. This is
+				 * pretty ugly and absolutely not atomic, but I'm trying to be
+				 * really paranoid.
+				 */
+				if (target.exists()) {
+					File backup = File.createTempFile(target.getName(),
+													  ".backup",
+													  target.getParentFile());
+					backup.delete();
+					if (!target.renameTo(backup) || !temp.renameTo(target)) {
+						if (backup.exists() && !target.exists()) {
+							backup.renameTo(target);
+						}
+						throw new IOException("Can't rename temp file to " + target.getName());
+					}
+					backup.delete();
+				} else {
+					throw new IOException("Can't rename temp file to " + target.getName());
+				}
 			}
 		} finally {
 			out = null;
