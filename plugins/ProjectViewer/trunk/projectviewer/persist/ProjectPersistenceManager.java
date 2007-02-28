@@ -19,6 +19,7 @@
 package projectviewer.persist;
 
 //{{{ Imports
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.Writer;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import java.io.OutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -155,7 +157,7 @@ public final class ProjectPersistenceManager {
 		AtomicOutputStream aout = null;
 		try {
 			aout = new AtomicOutputStream(ProjectPlugin.getResourcePath(CONFIG_DIR + filename));
-			OutputStreamWriter out = new OutputStreamWriter(aout, "UTF-8");
+			Writer out = new BufferedWriter(new OutputStreamWriter(aout, "UTF-8"));
 			ProjectManager.writeXMLHeader("UTF-8", out);
 
 			saveNode(p, out);
