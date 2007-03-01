@@ -737,8 +737,9 @@ public final class ProjectViewer extends JPanel
 					&& !ProjectManager.getInstance().isLoaded(n.getName())) {
 				ProjectManager.getInstance().getProject(n.getName());
 			}
-		}
-		else {
+		} else {
+			ve.dockable.setRootNode(n);
+			/*
 			ProjectViewer viewer = ve.dockable;
 			final JTree tree = viewer.getCurrentTree();
 			tree.setSelectionRow(0);
@@ -747,6 +748,7 @@ public final class ProjectViewer extends JPanel
 						tree.requestFocus();
 					}
 			});
+			*/
 		}
 
 

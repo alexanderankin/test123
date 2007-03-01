@@ -53,6 +53,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
 import common.io.AtomicOutputStream;
+import common.threads.WorkerThreadPool;
+import common.threads.WorkRequest;
 
 import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTGroup;
@@ -232,10 +234,7 @@ public final class ProjectManager {
 				String pName = (String) it.next();
 				Entry e = (Entry) projects.get(pName);
 				if (e.isLoaded) {
-					if (e.fileName == null) {
-						e.fileName = createFileName(pName);
-					}
-					ProjectPersistenceManager.save(e.project, e.fileName);
+					saveProject(e.project, true);
 				}
 			}
 
@@ -267,6 +266,18 @@ public final class ProjectManager {
 	 *	before calling this method).
 	 */
 	public void saveProject(VPTProject p) {
+		saveProject(p, false);
+	} //}}}
+
+	//{{{ +saveProject(VPTProject, boolean) : void
+	/**
+	 *	Same as above, with an extra argument.
+	 *
+	 *	@see	#saveProject(VPTProject)
+	 *	@param	wait	Whether to wait for the I/O operation to finish.
+	 *	@since	PV 2.1.3.6
+	 */
+	public void saveProject(VPTProject p, boolean wait) {
 		Entry e = (Entry) projects.get(p.getName());
 		synchronized (e) {
 			if (e.fileName == null) {
@@ -275,13 +286,13 @@ public final class ProjectManager {
 				// paranoid and save all configuration along with it
 				saveProjectList();
 			}
-			try {
-				ProjectPersistenceManager.save(p, e.fileName);
-			} catch (IOException ioe) {
-				GUIUtilities.error(jEdit.getActiveView(), "projectviewer.error.save",
-									new Object[] { jEdit.getProperty("projectviewer.error.project_str"),
-													ioe.getMessage() });
-				Log.log(Log.ERROR, this, ioe);
+			WorkRequest req = ProjectPersistenceManager.save(p, e.fileName);
+			if (wait) {
+				try {
+					req.waitFor();
+				} catch (InterruptedException iex) {
+					// I hate this exception.
+				}
 			}
 			e.isLoaded = true;
 		}
@@ -421,16 +432,9 @@ public final class ProjectManager {
 	 *	state to "unloaded", freeing memory.
 	 */
 	public void unloadProject(VPTProject p) {
-		saveProject(p);
-		// remove the project's listeners
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			p.removeProjectListener((ProjectListener)i.next());
-		}
-		// remove all other things
-		p.removeAllChildren();
-		p.getProperties().clear();
-		p.clearOpenFiles();
-		((Entry)projects.get(p.getName())).isLoaded = false;
+		Entry e = (Entry) projects.get(p.getName());
+		WorkerThreadPool.getSharedInstance().ensureCapacity(2);
+		WorkerThreadPool.getSharedInstance().addRequest(new UnloadRequest(e));
 	} //}}}
 
 	//{{{ +getGlobalFilterList() : List
@@ -709,8 +713,7 @@ public final class ProjectManager {
 	/**
 	 *  An action that switches to a given project or group.
 	 *
-	 *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
-	 *  @version	0.1
+	 *	@author		Marcelo Vanzin
 	 */
 	private static final class VPTNodeActivateAction extends EditAction {
 
@@ -742,9 +745,37 @@ public final class ProjectManager {
 			}
 		}
 
-	}
+	} //}}}
+
+	//{{{ UnloadRequest class
+	private static class UnloadRequest implements Runnable {
+
+		private Entry entry;
+
+		private UnloadRequest(Entry e) {
+			this.entry = e;
+		}
+
+		public void run() {
+			ProjectManager pm = ProjectManager.getInstance();
+			synchronized (entry) {
+				if (entry.isLoaded) {
+					pm.saveProject(entry.project, true);
+					// remove the project's listeners
+					for (Iterator i = pm.listeners.iterator(); i.hasNext(); ) {
+						entry.project.removeProjectListener((ProjectListener)i.next());
+					}
+					// remove all other things
+					entry.project.removeAllChildren();
+					entry.project.getProperties().clear();
+					entry.project.clearOpenFiles();
+					entry.isLoaded = false;
+				}
+			}
+		}
+
+	} //}}}
 
 	//}}}
-
 }
 

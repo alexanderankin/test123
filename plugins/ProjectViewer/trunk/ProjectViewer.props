@@ -174,7 +174,7 @@ projectviewer.general.hidden_file_filter=All Files (including hidden)
 projectviewer.groupmenu.select_group=Select group "{0}"
 projectviewer.groupmenu.activate_group=Group "{0}"
 
-projectviewer.error.save.message=Error saving {0}; check your user directory.\nOriginal error message: {0}
+projectviewer.error.save.message=Error saving {0}; check your user directory.\nOriginal error message: {1}
 projectviewer.error.save.title=Error saving {0}
 projectviewer.error.project_str=project
 projectviewer.error.project_list_str=project list
