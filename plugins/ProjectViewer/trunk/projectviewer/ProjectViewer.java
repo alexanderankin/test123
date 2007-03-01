@@ -739,19 +739,7 @@ public final class ProjectViewer extends JPanel
 			}
 		} else {
 			ve.dockable.setRootNode(n);
-			/*
-			ProjectViewer viewer = ve.dockable;
-			final JTree tree = viewer.getCurrentTree();
-			tree.setSelectionRow(0);
-			SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						tree.requestFocus();
-					}
-			});
-			*/
 		}
-
-
 
 	} //}}}
 
@@ -1863,7 +1851,7 @@ public final class ProjectViewer extends JPanel
 				ProjectViewer.this.notifyAll();
 			}
 
-			PVActions.swingInvoke(
+			SwingUtilities.invokeLater(
 				new Runnable() {
 					public void run() {
 						if (tree != null) {
