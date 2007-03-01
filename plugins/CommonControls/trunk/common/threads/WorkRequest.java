@@ -35,6 +35,7 @@ public final class WorkRequest
 	private volatile boolean done;
 	private Object		lock;
 	private Runnable	work;
+	private Exception	error;
 
 	public WorkRequest(Runnable work)
 	{
@@ -63,12 +64,23 @@ public final class WorkRequest
 		}
 	}
 
+	/**
+	 * Returns any exception that was caught while running the request.
+	 *
+	 * @since CC 0.9.4
+	 */
+	public Exception getError()
+	{
+		return error;
+	}
+
 	protected void run()
 	{
 		try {
 			work.run();
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
+			error = e;
 		}
 		synchronized (lock)
 		{
