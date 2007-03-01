@@ -279,22 +279,25 @@ public final class ProjectManager {
 	 */
 	public void saveProject(VPTProject p, boolean wait) {
 		Entry e = (Entry) projects.get(p.getName());
+		WorkRequest req;
 		synchronized (e) {
+			if (!e.isLoaded) {
+				return;
+			}
 			if (e.fileName == null) {
 				e.fileName = createFileName(p.getName());
 				// since we're saving the project for the first time, let's be
 				// paranoid and save all configuration along with it
 				saveProjectList();
 			}
-			WorkRequest req = ProjectPersistenceManager.save(p, e.fileName);
-			if (wait) {
-				try {
-					req.waitFor();
-				} catch (InterruptedException iex) {
-					// I hate this exception.
-				}
+			req = ProjectPersistenceManager.save(p, e.fileName);
+		}
+		if (wait) {
+			try {
+				req.waitFor();
+			} catch (InterruptedException iex) {
+				// I hate this exception.
 			}
-			e.isLoaded = true;
 		}
 	} //}}}
 
@@ -433,8 +436,16 @@ public final class ProjectManager {
 	 */
 	public void unloadProject(VPTProject p) {
 		Entry e = (Entry) projects.get(p.getName());
-		WorkerThreadPool.getSharedInstance().ensureCapacity(2);
-		WorkerThreadPool.getSharedInstance().addRequest(new UnloadRequest(e));
+		saveProject(e.project, true);
+		// remove the project's listeners
+		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+			e.project.removeProjectListener((ProjectListener)i.next());
+		}
+		// remove all other things
+		e.project.removeAllChildren();
+		e.project.getProperties().clear();
+		e.project.clearOpenFiles();
+		e.isLoaded = false;
 	} //}}}
 
 	//{{{ +getGlobalFilterList() : List
@@ -747,35 +758,7 @@ public final class ProjectManager {
 
 	} //}}}
 
-	//{{{ UnloadRequest class
-	private static class UnloadRequest implements Runnable {
-
-		private Entry entry;
-
-		private UnloadRequest(Entry e) {
-			this.entry = e;
-		}
-
-		public void run() {
-			ProjectManager pm = ProjectManager.getInstance();
-			synchronized (entry) {
-				if (entry.isLoaded) {
-					pm.saveProject(entry.project, true);
-					// remove the project's listeners
-					for (Iterator i = pm.listeners.iterator(); i.hasNext(); ) {
-						entry.project.removeProjectListener((ProjectListener)i.next());
-					}
-					// remove all other things
-					entry.project.removeAllChildren();
-					entry.project.getProperties().clear();
-					entry.project.clearOpenFiles();
-					entry.isLoaded = false;
-				}
-			}
-		}
-
-	} //}}}
-
 	//}}}
+
 }
 
