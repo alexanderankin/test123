@@ -323,7 +323,6 @@ public abstract class Importer implements Runnable {
 						}
 					}
 				});
-				ProjectManager.getInstance().saveProject(project);
 			} else if (fireEvent) {
 				if ((added != null && added.size() > 0) ||
 						(removed != null && removed.size() > 0)) {
@@ -334,6 +333,7 @@ public abstract class Importer implements Runnable {
 					});
 				}
 			}
+			ProjectManager.getInstance().saveProject(project);
 		} catch (RuntimeException e) {
 			error = true;
 			throw e;

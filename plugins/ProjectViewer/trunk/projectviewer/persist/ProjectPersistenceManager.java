@@ -35,16 +35,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
+import javax.swing.SwingUtilities;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.util.Log;
 
 import common.io.AtomicOutputStream;
+import common.threads.WorkerThreadPool;
+import common.threads.WorkRequest;
 
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectManager;
@@ -64,11 +69,7 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public final class ProjectPersistenceManager {
 
-	//{{{ Constants
-
 	private final static String CONFIG_DIR		= "projects" + File.separator;
-
-	//}}}
 
 	//{{{ -ProjectPersistenceManager() : <init>
 
@@ -153,22 +154,9 @@ public final class ProjectPersistenceManager {
 
 	//{{{ +_save(VPTProject, String)_ : void
 	/** Saves the given project data to the disk. */
-	public static void save(VPTProject p, String filename) throws IOException {
-		AtomicOutputStream aout = null;
-		try {
-			aout = new AtomicOutputStream(ProjectPlugin.getResourcePath(CONFIG_DIR + filename));
-			Writer out = new BufferedWriter(new OutputStreamWriter(aout, "UTF-8"));
-			ProjectManager.writeXMLHeader("UTF-8", out);
-
-			saveNode(p, out);
-
-			out.flush();
-			out.close();
-		} finally {
-			if (aout != null) {
-				aout.rollback();
-			}
-		}
+	public static WorkRequest save(VPTProject p, String filename) {
+		IORequest req = new IORequest(p, filename);
+		return WorkerThreadPool.getSharedInstance().addRequest(req);
 	} //}}}
 
 	//{{{ -_saveNode(VPTNode, Writer)_ : void
@@ -266,6 +254,62 @@ public final class ProjectPersistenceManager {
 				openNodes.pop();
 			}
 		} //}}}
+
+	} //}}}
+
+	//{{{ IORequest class
+	private static class IORequest implements Runnable {
+
+		private VPTProject 	p;
+		private String 		fname;
+		private boolean 	notify;
+		private Exception	error;
+
+		public IORequest(VPTProject p, String fname) {
+			this.p 		= p;
+			this.fname 	= fname;
+			this.notify = false;
+		}
+
+		public void run() {
+			if (!notify) {
+				doSave();
+			} else {
+				doNotify();
+			}
+		}
+
+		private void doSave() {
+			AtomicOutputStream aout = null;
+			try {
+				synchronized (p) {
+					aout = new AtomicOutputStream(ProjectPlugin.getResourcePath(CONFIG_DIR + fname));
+					Writer out = new BufferedWriter(new OutputStreamWriter(aout, "UTF-8"));
+					ProjectManager.writeXMLHeader("UTF-8", out);
+
+					saveNode(p, out);
+
+					out.flush();
+					out.close();
+				}
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, p, ioe);
+				notify = true;
+				error = ioe;
+				SwingUtilities.invokeLater(this);
+			} finally {
+				if (aout != null) {
+					aout.rollback();
+				}
+			}
+		}
+
+		private void doNotify() {
+			String msg = jEdit.getProperty("projectviewer.error.project_str")
+							+ " '" +  p.getName() + "'";
+			GUIUtilities.error(jEdit.getActiveView(), "projectviewer.error.save",
+								new Object[] { msg, error.getMessage() });
+		}
 
 	} //}}}
 
