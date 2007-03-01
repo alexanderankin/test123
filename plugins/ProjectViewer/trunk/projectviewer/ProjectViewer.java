@@ -273,23 +273,25 @@ public final class ProjectViewer extends JPanel
 	 *	@param	p		The activated project.
 	 *	@param	v		The view where the change occured, or null.
 	 */
-	public static void fireProjectLoaded(Object src, VPTProject p, View v) {
-		ProjectViewerEvent evt;
-		if (src instanceof ProjectViewer) {
-			evt = new ProjectViewerEvent((ProjectViewer) src, p);
-		} else {
-			ProjectViewer viewer = getViewer(v);
-			if (viewer != null) {
-				viewer.setRootNode(p);
-				return;
-			}
-			evt = new ProjectViewerEvent(src, p);
-		}
+	public static void fireProjectLoaded(final Object src,
+										 final VPTProject p,
+										 final View v)
+	{
+		SwingUtilities.invokeLater(
+			new Runnable() {
+				public void run() {
+					Object mySrc = (src != null) ? src : v;
+					ProjectViewerEvent evt = new ProjectViewerEvent(mySrc,
+																	getViewer(v),
+																	p);
 
-		Set listeners = getAllListeners(v);
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).projectLoaded(evt);
-		}
+					Set listeners = getAllListeners(v);
+					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+						((ProjectViewerListener)i.next()).projectLoaded(evt);
+					}
+				}
+			}
+		);
 	} //}}}
 
 	//{{{ +_fireGroupActivated(VPTGroup, View)_ : void
@@ -304,13 +306,19 @@ public final class ProjectViewer extends JPanel
 	 *	@param	grp		The activated group.
 	 *	@param	v		The view where the change occured, or null.
 	 */
-	public static void fireGroupActivated(VPTGroup grp, View v) {
-		ProjectViewer viewer = getViewer(v);
-		ProjectViewerEvent evt = new ProjectViewerEvent(grp, viewer);
-		Set listeners = getAllListeners(v);
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).groupActivated(evt);
-		}
+	public static void fireGroupActivated(final VPTGroup grp, final View v) {
+		SwingUtilities.invokeLater(
+			new Runnable() {
+				public void run() {
+					ProjectViewer viewer = getViewer(v);
+					ProjectViewerEvent evt = new ProjectViewerEvent(grp, viewer);
+					Set listeners = getAllListeners(v);
+					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+						((ProjectViewerListener)i.next()).groupActivated(evt);
+					}
+				}
+			}
+		);
 	} //}}}
 
 	//{{{ +_fireNodeSelected(ProjectViewer, VPTNode)_ : void
@@ -1391,7 +1399,13 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 
+		// try to release some memory.
+		if (!n.isNodeDescendant(treeRoot)) {
+			unloadInactiveProjects(n);
+		}
+
 		// set the new root
+		ViewerEntry ve = (ViewerEntry) viewers.get(view);
 		if (n.isProject()) {
 			VPTProject p = (VPTProject) n;
 			if (!ProjectManager.getInstance().isLoaded(p.getName())) {
@@ -1400,14 +1414,15 @@ public final class ProjectViewer extends JPanel
 				return;
 			}
 			openProject(p);
-			fireProjectLoaded(this, p, view);
+			if (ve.node != p) {
+				fireProjectLoaded(this, p, view);
+				ve.node = p;
+			}
 		} else if (n.isGroup()){
-			fireGroupActivated((VPTGroup)n, view);
-		}
-
-		// try to release some memory.
-		if (!n.isNodeDescendant(treeRoot)) {
-			unloadInactiveProjects(n);
+			if (ve.node != n) {
+				fireGroupActivated((VPTGroup)n, view);
+				ve.node = n;
+			}
 		}
 
 		treeRoot = n;
@@ -1423,7 +1438,6 @@ public final class ProjectViewer extends JPanel
 			((DefaultTreeModel)filteredTree.getModel()).setRoot(treeRoot);
 
 		dontAsk = null;
-		((ViewerEntry)viewers.get(view)).node = n;
 		ProjectManager.getInstance().fireDynamicMenuChange();
 		pList.setSelectedNode(treeRoot);
 		modifyViewTitle(view, treeRoot);
