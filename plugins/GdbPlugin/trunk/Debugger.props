@@ -1,0 +1,47 @@
+plugin.debugger.jedit.Plugin.activate=defer
+
+# general plugin information
+plugin.debugger.jedit.Plugin.name=Debugger
+plugin.debugger.jedit.Plugin.author=Shlomy Reinstein
+plugin.debugger.jedit.Plugin.version=0.1
+plugin.debugger.jedit.Plugin.description=\
+	This plugin provides a jEdit interface for debuggers
+	
+# action labels
+debugger-go.label=Go!
+debugger-next.label=Next
+debugger-step.label=Step
+debugger-toggle-breakpoint.label=Toggle breakpoint
+debugger-set-breakpoint.label=Set breakpoint
+debugger-remove-breakpoint.label=Remove breakpoint
+
+# menu items
+plugin.debugger.jedit.Plugin.menu=debugger-go \
+  debugger-next \
+  debugger-step \
+  separator \
+  debugger-toggle-breakpoint \
+  debugger-set-breakpoint \
+  debugger-remove-breakpoint
+
+# dockables
+debugger-program-output.title=Program Output
+debugger-program-output.label=Program Output
+debugger-gdb-output.title=Gdb CLI Output
+debugger-gdb-output.label=Gdb CLI Output
+debugger-show-locals.title=Local Variables
+debugger-show-locals.label=Local Variables
+debugger-show-stack-trace.title=Stack Trace
+debugger-show-stack-trace.label=Stack Trace
+
+# Options
+plugin.debugger.jedit.Plugin.option-pane=Debugger
+options.Debugger.code=new debugger.jedit.OptionPane();
+options.Debugger.label=Debugger
+options.debugger.configurations_label=Configurations:
+options.debugger.configuration_label=Name:
+options.debugger.program_label=Program:
+options.debugger.arguments_label=Arguments:
+options.debugger.directory_label=Working directory:
+options.debugger.environment_label=Environment:
+
