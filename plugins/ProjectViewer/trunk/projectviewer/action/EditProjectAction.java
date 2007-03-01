@@ -34,6 +34,7 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
 
 import projectviewer.config.ProjectOptions;
 import projectviewer.config.ProjectViewerConfig;
@@ -104,7 +105,12 @@ public class EditProjectAction extends Action {
 		}
 		if (viewer != null && parent == null) {
 			VPTNode sel = viewer.getSelectedNode();
-			if (sel != null && sel.isGroup()) {
+			while (sel != null && !sel.isGroup()) {
+				sel = (VPTNode) sel.getParent();
+			}
+			if (sel == null) {
+				parent = VPTRoot.getInstance();
+			} else {
 				parent = (VPTGroup) sel;
 			}
 		}
