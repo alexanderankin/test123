@@ -1,0 +1,43 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
+
+<ACTIONS>
+	
+	<ACTION NAME="debugger-quit" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.quit(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-go" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.go(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-next" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.next(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-step" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.step(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-toggle-breakpoint" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.toggleBreakpoint(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-set-breakpoint" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.setBreakpoint(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-remove-breakpoint" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.removeBreakpoint(view);
+		</CODE>
+	</ACTION>
+	
+</ACTIONS>
+

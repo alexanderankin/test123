@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- $Id: dockables.xml 7600 2003-12-30 18:46:24Z orutherfurd $ -->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="debugger-program-output">
+		gdb.Debugger.showProgramOutput(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="debugger-gdb-output">
+		gdb.Debugger.showGdbOutput(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="debugger-show-locals">
+		gdb.Debugger.showLocals(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="debugger-show-stack-trace">
+		gdb.Debugger.showStackTrace(view);
+	</DOCKABLE>
+</DOCKABLES>
+
+<!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->
