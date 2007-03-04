@@ -155,31 +155,30 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static CurrentPositionPainter dp = null;
 	static View dpview = null;
 	private static void jumpTo(final String file, final int line, final boolean isCurrent) {
-		View view = jEdit.getActiveView();
+		final View view = jEdit.getActiveView();
 		if (isCurrent && (dp != null)) {
 			dpview.getTextArea().getGutter().removeExtension(dp);
 		}
 		if (file == null)
 			return;
-		final Buffer buffer = jEdit.openFile(view, file);
-		if(buffer == null)
-		{
-			view.getStatus().setMessage("Unable to open: " + file);
-			return;
-		}
-
-		final View v = view;	// for VFSManager inner class
 		final int defLine = line - 1;
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
 			{
-				v.getTextArea().setCaretPosition(
-						v.getTextArea().getLineStartOffset(defLine));
+				Buffer buffer = jEdit.openFile(view, file);
+				if(buffer == null)
+				{
+					view.getStatus().setMessage("Unable to open: " + file);
+					return;
+				}
+
+				view.getTextArea().setCaretPosition(
+						view.getTextArea().getLineStartOffset(defLine));
 				if (isCurrent) {
-					dp = new CurrentPositionPainter(v.getEditPane(), buffer, line);
-					dpview = v;
-					v.getTextArea().getGutter().addExtension(dp);
+					dp = new CurrentPositionPainter(view.getEditPane(), buffer, line);
+					dpview = view;
+					view.getTextArea().getGutter().addExtension(dp);
 				}
 			}
 		});
