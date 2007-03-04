@@ -6,10 +6,8 @@ import gdb.Parser.ResultHandler;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -56,6 +54,8 @@ public class Debugger implements DebuggerTool {
 	private static JTree stackTraceTree = null;
 	// Command manager
 	private CommandManager commandManager = null;
+
+	private GdbRecordHandler gdbRecordHandler = null;
 	
 	private class Data implements IData {
 		String name, value;
@@ -271,11 +271,13 @@ public class Debugger implements DebuggerTool {
 	}
 	private class StackTraceNode {
 		String file;
+		String base = null;
 		int line = 0;
 		int level = 0;
 		String func;
 		String from;
 		Vector<String> args = null;
+		Vector<String> values = null;
 		StackTraceNode(String level, String func, String file, String line, String from)
 		{
 			if (level != null)
@@ -286,8 +288,9 @@ public class Debugger implements DebuggerTool {
 				this.line = Integer.parseInt(line);
 			this.from = from;
 		}
-		public void setArguments(Vector<String> arguments) {
+		public void setArguments(Vector<String> arguments, Vector<String>argValues) {
 			args = arguments;
+			values = argValues;
 		}
 		public String toString() {
 			String location;
@@ -308,9 +311,53 @@ public class Debugger implements DebuggerTool {
 			return level + " " + func + arguments + " " + location;
 		}
 		public void selected() {
-			Debugger.getInstance().getFrontEnd().goTo(file, line);
+			selectFrame(this);
+		}
+		public int getLevel() {
+			return level;
+		}
+		public void setBase(String path) {
+			base = path;
+		}
+		public boolean hasBase() {
+			return (base != null);
+		}
+		public void jump() {
+			String path = (base != null) ? base + "/" + file : file;
+			Debugger.getInstance().getFrontEnd().goTo(path, line);
 		}
 	}
+	private interface GdbRecordHandler {
+		void handle(String line);
+	}
+	private class InfoSourceHandler implements GdbRecordHandler {
+		StackTraceNode frame;
+		public InfoSourceHandler(StackTraceNode frame) {
+			this.frame = frame; 
+		}
+		public void handle(String line) {
+			System.err.println("infosourcehandler: " + line);
+			final String prefix = "Compilation directory is ";
+			int i = line.indexOf(prefix);
+			if (i >= 0) {
+				String path = line.substring(i + prefix.length()).trim();
+				frame.setBase(path);
+				frame.jump();
+				gdbRecordHandler = null;
+			}
+		}
+	}
+	private void selectFrame(StackTraceNode frame) {
+		commandManager.add("frame " + frame.getLevel());
+		if (! frame.hasBase()) {
+			gdbRecordHandler = new InfoSourceHandler(frame);
+			commandManager.add("info source");
+		} else {
+			frame.jump();
+		}
+		getLocals();
+	}
+
 	private class StackArgumentsResultHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
 			//System.err.println("StackTraceResultHandler called with " + msg);
@@ -332,6 +379,7 @@ public class Debugger implements DebuggerTool {
 								((Hashtable<String, Object>)frame).get("frame");
 							Object frameArgs = frameHash.get("args");
 							Vector<String> names = new Vector<String>();
+							Vector<String> values = new Vector<String>();
 							if (frameArgs instanceof Vector) {
 								Vector<Object> frameArgsVec =
 									(Vector<Object>)frameArgs;
@@ -340,11 +388,13 @@ public class Debugger implements DebuggerTool {
 										(Hashtable<String, Object>)frameArgsVec.get(j);
 									String name = argsHash.get("name").toString();
 									names.add(name);
+									String value = argsHash.get("value").toString();
+									values.add(value);
 								}
 								DefaultMutableTreeNode node =
 									(DefaultMutableTreeNode) root.getChildAt(i);
 								StackTraceNode frameNode = (StackTraceNode) node.getUserObject();
-								frameNode.setArguments(names);
+								frameNode.setArguments(names, values);
 							}
 						}
 					}
@@ -355,7 +405,7 @@ public class Debugger implements DebuggerTool {
 	}
 	public void getStackArguments() {
 		StackArgumentsResultHandler handler = new StackArgumentsResultHandler();
-		commandManager.add("-stack-list-arguments 0", handler);
+		commandManager.add("-stack-list-arguments 1", handler);
 	}
 	private class StackTraceResultHandler implements ResultHandler {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Stack trace:");
@@ -441,6 +491,10 @@ public class Debugger implements DebuggerTool {
 	}
 	public void gdbRecord(String line)
 	{
+		if (gdbRecordHandler  != null) {
+			gdbRecordHandler.handle(line);
+			return;
+		}
 		if (gdbOutputText == null)
 			showGdbOutput(jEdit.getActiveView());
 		gdbOutputText.append(line);
