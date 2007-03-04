@@ -204,11 +204,15 @@ public class Parser extends Thread {
 		case '*':
 			// Result ('^') or out-of-band ('*') record
 			int sepIndex = line.indexOf(",");
-			if (sepIndex < 0)
-				return;
-			String msg = line.substring(1, sepIndex);
+			String msg = null;
+			GdbResult res = null;
+			if (sepIndex < 0) {
+				msg = line;
+			} else {
+				msg = line.substring(1, sepIndex);
+				res = new GdbResult(line.substring(sepIndex + 1));
+			}
 			//System.err.println("Passing to gdbResult");
-			GdbResult res = new GdbResult(line.substring(sepIndex + 1));
 			if (c == '^') {
 				for (int i = 0; i < resultHandlers.size(); i++)
 					resultHandlers.get(i).handle(msg, res);
