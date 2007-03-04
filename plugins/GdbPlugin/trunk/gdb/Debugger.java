@@ -206,11 +206,10 @@ public class Debugger implements DebuggerTool {
 		public void handle(String msg, GdbResult res) {
 			final String getCurrentPosition = new String("-file-list-exec-source-file");
 			String reason = res.getStringValue("reason");
-			String file = null;//res.getStringValue("frame/fullname");
+			String file = null;
 			int line = (file != null) ?
 				Integer.parseInt(res.getStringValue("frame/line")) : 0;
 			if (reason.equals("breakpoint-hit")) {
-				//System.err.println("Parser recognized bkpt hit message");
 				int bkptno = Integer.parseInt(res.getStringValue("bkptno"));
 				if (file != null) {
 					breakpointHit(bkptno, file, line);
@@ -233,7 +232,6 @@ public class Debugger implements DebuggerTool {
 
 	private class LocalsResultHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
-			//System.err.println("LocalsResultHandler called with " + msg);
 			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Locals");
 			if (msg.equals("done")) {
 				// First add the arguments of the current stack frame
@@ -364,7 +362,6 @@ public class Debugger implements DebuggerTool {
 			this.frame = frame; 
 		}
 		public void handle(String line) {
-			System.err.println("infosourcehandler: " + line);
 			final String prefix = "Compilation directory is ";
 			int i = line.indexOf(prefix);
 			if (i >= 0) {
@@ -389,7 +386,6 @@ public class Debugger implements DebuggerTool {
 
 	private class StackArgumentsResultHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
-			//System.err.println("StackTraceResultHandler called with " + msg);
 			if (stackTraceTree == null)
 				return;
 			DefaultMutableTreeNode root =
