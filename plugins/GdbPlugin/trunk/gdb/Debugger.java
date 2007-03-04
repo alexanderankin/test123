@@ -267,8 +267,7 @@ public class Debugger implements DebuggerTool {
 	public void getLocals() {
 		//System.err.println("getLocals()");
 		LocalsResultHandler handler = new LocalsResultHandler();
-		parser.addResultHandler(handler);
-		commandManager.add("-stack-list-locals 2");
+		commandManager.add("-stack-list-locals 2", handler);
 	}
 	private class StackTraceNode {
 		String file;
@@ -356,8 +355,7 @@ public class Debugger implements DebuggerTool {
 	}
 	public void getStackArguments() {
 		StackArgumentsResultHandler handler = new StackArgumentsResultHandler();
-		parser.addResultHandler(handler);
-		commandManager.add("-stack-list-arguments 0");
+		commandManager.add("-stack-list-arguments 0", handler);
 	}
 	private class StackTraceResultHandler implements ResultHandler {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Stack trace:");
@@ -401,8 +399,7 @@ public class Debugger implements DebuggerTool {
 	}
 	public void getStackTrace() {
 		StackTraceResultHandler handler = new StackTraceResultHandler();
-		parser.addResultHandler(handler);
-		commandManager.add("-stack-list-frames");
+		commandManager.add("-stack-list-frames", handler);
 	}
 
 	static public JPanel showProgramOutput(View view) {
