@@ -24,7 +24,6 @@ public class Parser extends Thread {
 			next = 0;
 			while (next != -1 && next < line.length()) {
 				Object [] pair = parsePair(line);
-				//System.err.println("GdbResult: line=" + line + " name=" + (String)pair[0]);
 				result.put((String)pair[0], pair[1]);
 				if (next != -1 && next < line.length()) {
 					if (line.charAt(next) == ',')
@@ -212,7 +211,6 @@ public class Parser extends Thread {
 				msg = line.substring(1, sepIndex);
 				res = new GdbResult(line.substring(sepIndex + 1));
 			}
-			//System.err.println("Passing to gdbResult");
 			if (c == '^') {
 				for (int i = 0; i < resultHandlers.size(); i++)
 					resultHandlers.get(i).handle(msg, res);
