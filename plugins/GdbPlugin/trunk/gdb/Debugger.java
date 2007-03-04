@@ -248,7 +248,10 @@ public class Debugger implements DebuggerTool {
 							Hashtable<String, Object> localHash =
 								(Hashtable<String, Object>)local;
 							String name = localHash.get("name").toString();
-							String value = localHash.get("value").toString();
+							String value = "<missing>";
+							Object valueObj = localHash.get("value");
+							if (valueObj != null)
+								value = valueObj.toString();
 							root.add(new DefaultMutableTreeNode(name + "=" + value));
 						}
 					}
@@ -273,6 +276,7 @@ public class Debugger implements DebuggerTool {
 		int level = 0;
 		String func;
 		String from;
+		Vector<String> args = null;
 		StackTraceNode(String level, String func, String file, String line, String from)
 		{
 			if (level != null)
@@ -283,17 +287,77 @@ public class Debugger implements DebuggerTool {
 				this.line = Integer.parseInt(line);
 			this.from = from;
 		}
+		public void setArguments(Vector<String> arguments) {
+			args = arguments;
+		}
 		public String toString() {
 			String location;
 			if (file != null)
 				location = "at " + file + ":" + line;
 			else
 				location = "from " + from;
-			return level + " " + func + " " + location;
+			StringBuffer arguments = new StringBuffer();
+			if (args != null) {
+				arguments.append("(");
+				for (int i = 0; i < args.size(); i++) {
+					if (i > 0)
+						arguments.append(", ");
+					arguments.append(args.get(i));
+				}
+				arguments.append(")");
+			}
+			return level + " " + func + arguments + " " + location;
 		}
 		public void selected() {
 			Debugger.getInstance().getFrontEnd().goTo(file, line);
 		}
+	}
+	private class StackArgumentsResultHandler implements ResultHandler {
+		public void handle(String msg, GdbResult res) {
+			//System.err.println("StackTraceResultHandler called with " + msg);
+			if (stackTraceTree == null)
+				return;
+			DefaultMutableTreeNode root =
+				(DefaultMutableTreeNode) stackTraceTree.getModel().getRoot();
+			if (msg.equals("done")) {
+				Object stack = res.getValue("stack-args");
+				if (stack == null)
+					return;
+				if (stack instanceof Vector) {
+					Vector<Object> frames = (Vector<Object>)stack;
+					for (int i = 0; i < frames.size(); i++) {
+						Object frame = frames.get(i);
+						if (frame instanceof Hashtable) {
+							Hashtable<String, Object> frameHash =
+								(Hashtable<String, Object>)
+								((Hashtable<String, Object>)frame).get("frame");
+							Object frameArgs = frameHash.get("args");
+							Vector<String> names = new Vector<String>();
+							if (frameArgs instanceof Vector) {
+								Vector<Object> frameArgsVec =
+									(Vector<Object>)frameArgs;
+								for (int j = 0; j < frameArgsVec.size(); j++) {
+									Hashtable<String, Object> argsHash =
+										(Hashtable<String, Object>)frameArgsVec.get(j);
+									String name = argsHash.get("name").toString();
+									names.add(name);
+								}
+								DefaultMutableTreeNode node =
+									(DefaultMutableTreeNode) root.getChildAt(i);
+								StackTraceNode frameNode = (StackTraceNode) node.getUserObject();
+								frameNode.setArguments(names);
+							}
+						}
+					}
+				}
+			}
+			stackTraceTree.setModel(new DefaultTreeModel(root));
+		}
+	}
+	public void getStackArguments() {
+		StackArgumentsResultHandler handler = new StackArgumentsResultHandler();
+		parser.addResultHandler(handler);
+		commandManager.add("-stack-list-arguments 0");
 	}
 	private class StackTraceResultHandler implements ResultHandler {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Stack trace:");
@@ -332,6 +396,7 @@ public class Debugger implements DebuggerTool {
 			}
 			if (stackTraceTree != null)
 				stackTraceTree.setModel(new DefaultTreeModel(root));
+			getStackArguments();
 		}
 	}
 	public void getStackTrace() {
