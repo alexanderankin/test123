@@ -161,12 +161,11 @@ public class Debugger implements DebuggerTool {
 	}
 
 	private void stopped(String file, int line) {
-		if (localsPanel == null)
-			showLocals(jEdit.getActiveView());
-		getLocals();
 		if (stackTracePanel == null)
 			showStackTrace(jEdit.getActiveView());
 		getStackTrace();
+		getStackArguments();
+		getLocals();
 		frontEnd.setCurrentLocation(file, line);
 		
 	}
@@ -233,10 +232,31 @@ public class Debugger implements DebuggerTool {
 	}
 
 	private class LocalsResultHandler implements ResultHandler {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Locals");
 		public void handle(String msg, GdbResult res) {
 			//System.err.println("LocalsResultHandler called with " + msg);
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Locals");
 			if (msg.equals("done")) {
+				// First add the arguments of the current stack frame
+				TreePath path = stackTraceTree.getSelectionPath();
+				Object obj;
+				if (path == null) {
+					obj = ((DefaultMutableTreeNode)
+						((DefaultMutableTreeNode)stackTraceTree.getModel().
+								getRoot()).getChildAt(0)).getUserObject();
+				} else {
+					obj = ((DefaultMutableTreeNode) path
+						.getLastPathComponent()).getUserObject();
+				}
+				if (obj instanceof StackTraceNode) {
+					StackTraceNode frame = (StackTraceNode) obj;
+					Vector<String> args = frame.getArguments();
+					Vector<String> vals = frame.getValues();
+					for (int i = 0; i < args.size(); i++) {
+						String arg = args.get(i) + "=" + vals.get(i);
+						root.add(new DefaultMutableTreeNode(arg));
+					}
+				}
+				// Now for the locals
 				Object locals = res.getValue("locals");
 				if (locals == null)
 					return;
@@ -266,6 +286,8 @@ public class Debugger implements DebuggerTool {
 	}
 	public void getLocals() {
 		//System.err.println("getLocals()");
+		if (localsPanel == null)
+			showLocals(jEdit.getActiveView());
 		LocalsResultHandler handler = new LocalsResultHandler();
 		commandManager.add("-stack-list-locals 2", handler);
 	}
@@ -326,6 +348,12 @@ public class Debugger implements DebuggerTool {
 			String path = (base != null) ? base + "/" + file : file;
 			Debugger.getInstance().getFrontEnd().goTo(path, line);
 		}
+		public Vector<String> getArguments() {
+			return args;
+		}
+		public Vector<String> getValues() {
+			return values;
+		}
 	}
 	private interface GdbRecordHandler {
 		void handle(String line);
@@ -348,6 +376,7 @@ public class Debugger implements DebuggerTool {
 		}
 	}
 	private void selectFrame(StackTraceNode frame) {
+		System.err.println("selectFrame");
 		commandManager.add("frame " + frame.getLevel());
 		if (! frame.hasBase()) {
 			gdbRecordHandler = new InfoSourceHandler(frame);
@@ -401,11 +430,12 @@ public class Debugger implements DebuggerTool {
 				}
 			}
 			stackTraceTree.setModel(new DefaultTreeModel(root));
+			stackTraceTree.setSelectionRow(0);
+			
 		}
 	}
 	public void getStackArguments() {
-		StackArgumentsResultHandler handler = new StackArgumentsResultHandler();
-		commandManager.add("-stack-list-arguments 1", handler);
+		commandManager.add("-stack-list-arguments 1", new StackArgumentsResultHandler());
 	}
 	private class StackTraceResultHandler implements ResultHandler {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Stack trace:");
@@ -444,7 +474,6 @@ public class Debugger implements DebuggerTool {
 			}
 			if (stackTraceTree != null)
 				stackTraceTree.setModel(new DefaultTreeModel(root));
-			getStackArguments();
 		}
 	}
 	public void getStackTrace() {
