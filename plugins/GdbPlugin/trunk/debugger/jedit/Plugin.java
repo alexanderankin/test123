@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package debugger.jedit;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -46,23 +47,22 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static private DebuggerTool debugger = Debugger.getInstance();
 	static private Hashtable env = null;
 	static private LaunchConfiguration currentConfig;
-
+	static private Hashtable<DebuggerPainter, View> painters =
+		new Hashtable<DebuggerPainter, View>();
+	
 	public void start()	{
 		debugger.setFrontEnd(this);
 	}
 
 	public void stop() {
 		// Remove all debugger painters
-		JEditTextArea ta = jEdit.getActiveView().getTextArea();
-		Gutter gutter = ta.getGutter();
-		TextAreaExtension [] ext = gutter.getExtensions();
-		int i;
-		Vector<TextAreaExtension> painters = new Vector<TextAreaExtension>();
-		for (i = 0; i < ext.length; i++)
-			if (ext[i] instanceof BreakpointPainter)
-				painters.add(ext[i]);
-		for (i = 0; i < painters.size(); i++)
-			gutter.removeExtension(painters.get(i));
+		Enumeration<DebuggerPainter> paintersEnum = painters.keys();
+		while (paintersEnum.hasMoreElements()) {
+			DebuggerPainter dp = paintersEnum.nextElement();
+			View v = painters.get(dp);
+			v.getTextArea().getGutter().removeExtension(dp);
+		}
+		dpview.getTextArea().getGutter().removeExtension(dp);
 	}
 	
 	public static void next(View view) {
@@ -108,9 +108,11 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			v = view;
 			p = new BreakpointPainter(view.getEditPane(), buf, b.getLine());
 			view.getTextArea().getGutter().addExtension(p);
+			painters.put(p, v);
 		}
 		public void removePainter() {
 			v.getTextArea().getGutter().removeExtension(p);
+			painters.remove(p);
 		}
 	}
 	public static void toggleBreakpoint(View view)
@@ -157,6 +159,8 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		if (isCurrent && (dp != null)) {
 			dpview.getTextArea().getGutter().removeExtension(dp);
 		}
+		if (file == null)
+			return;
 		final Buffer buffer = jEdit.openFile(view, file);
 		if(buffer == null)
 		{
@@ -184,8 +188,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		goTo(file, line, false);
 	}
 	public void goTo(String file, int line, boolean isCurrent) {
-		if (file != null)
-			jumpTo(file, line, isCurrent);
+		jumpTo(file, line, isCurrent);
 	}
 	public void setCurrentLocation(String file, int line) {
 		DebuggerDB.getInstance().setCurrentLocation(file, line);
@@ -197,6 +200,5 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			msg = msg + ", at " + file + ":" + line + ".";
 		System.err.println(msg);
 		JOptionPane.showMessageDialog(null, msg);
-		setCurrentLocation(file, line);
 	}
 }
