@@ -11,7 +11,7 @@
 		gdb.Debugger.showGdbOutput(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-locals">
-		gdb.Debugger.showLocals(view);
+		gdb.Debugger.getInstance().showLocals(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-stack-trace">
 		gdb.Debugger.showStackTrace(view);
