@@ -2,6 +2,7 @@ package gdb;
 
 import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
+import gdb.views.LocalVariables;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
@@ -47,7 +48,7 @@ public class Debugger implements DebuggerTool {
 	private static JPanel gdbOutputPanel = null;
 	private static JTextArea gdbOutputText = null;
 	// Local variables
-	private static JPanel localsPanel = null;
+	private LocalVariables localsPanel = null;
 	private static JTree localsTree = null;
 	// Stack trace
 	private static JPanel stackTracePanel = null;
@@ -165,7 +166,7 @@ public class Debugger implements DebuggerTool {
 			showStackTrace(jEdit.getActiveView());
 		getStackTrace();
 		getStackArguments();
-		getLocals();
+		updateLocals(0);
 		frontEnd.setCurrentLocation(file, line);
 		
 	}
@@ -230,64 +231,14 @@ public class Debugger implements DebuggerTool {
 		}
 	}
 
-	private class LocalsResultHandler implements ResultHandler {
-		public void handle(String msg, GdbResult res) {
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Locals");
-			if (msg.equals("done")) {
-				// First add the arguments of the current stack frame
-				TreePath path = stackTraceTree.getSelectionPath();
-				Object obj;
-				if (path == null) {
-					obj = ((DefaultMutableTreeNode)
-						((DefaultMutableTreeNode)stackTraceTree.getModel().
-								getRoot()).getChildAt(0)).getUserObject();
-				} else {
-					obj = ((DefaultMutableTreeNode) path
-						.getLastPathComponent()).getUserObject();
-				}
-				if (obj instanceof StackTraceNode) {
-					StackTraceNode frame = (StackTraceNode) obj;
-					Vector<String> args = frame.getArguments();
-					Vector<String> vals = frame.getValues();
-					for (int i = 0; i < args.size(); i++) {
-						String arg = args.get(i) + "=" + vals.get(i);
-						root.add(new DefaultMutableTreeNode(arg));
-					}
-				}
-				// Now for the locals
-				Object locals = res.getValue("locals");
-				if (locals == null)
-					return;
-				if (locals instanceof Vector) {
-					Vector<Object> localsVec = (Vector<Object>)locals;
-					for (int i = 0; i < localsVec.size(); i++) {
-						Object local = localsVec.get(i);
-						if (local instanceof Hashtable) {
-							Hashtable<String, Object> localHash =
-								(Hashtable<String, Object>)local;
-							String name = localHash.get("name").toString();
-							String value = "<missing>";
-							Object valueObj = localHash.get("value");
-							if (valueObj != null)
-								value = valueObj.toString();
-							root.add(new DefaultMutableTreeNode(name + "=" + value));
-						}
-					}
-				}
-			}
-			if (localsTree != null)
-				localsTree.setModel(new DefaultTreeModel(root));
-		}
-	}
 	public JEditFrontEnd getFrontEnd() {
 		return frontEnd;
 	}
-	public void getLocals() {
-		//System.err.println("getLocals()");
-		if (localsPanel == null)
-			showLocals(jEdit.getActiveView());
-		LocalsResultHandler handler = new LocalsResultHandler();
-		commandManager.add("-stack-list-locals 2", handler);
+	public void updateLocals(int frame) {
+		if (localsPanel != null) {
+			localsPanel.setCommandManager(commandManager);
+			localsPanel.update(frame);
+		}
 	}
 	private class StackTraceNode {
 		String file;
@@ -381,7 +332,7 @@ public class Debugger implements DebuggerTool {
 		} else {
 			frame.jump();
 		}
-		getLocals();
+		updateLocals(frame.getLevel());
 	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
@@ -493,14 +444,9 @@ public class Debugger implements DebuggerTool {
 		}
 		return gdbOutputPanel;
 	}
-	static public JPanel showLocals(View view) {
-		if (localsPanel == null) {
-			localsPanel = new JPanel(new BorderLayout());
-			localsTree = new JTree();
-			localsTree.setModel(emptyTreeModel);
-			localsTree.setRootVisible(false);
-			localsPanel.add(new JScrollPane(localsTree));
-		}
+	public JPanel showLocals(View view) {
+		if (localsPanel == null)
+			localsPanel = new LocalVariables();
 		return localsPanel;
 	}
 	static public JPanel showStackTrace(View view) {
