@@ -39,6 +39,9 @@ public class LocalVariables extends JPanel {
 				new StackArgumentsResultHandler());
 		commandManager.add("-stack-list-locals 2", new LocalsResultHandler());
 	}
+	public void sessionEnded() {
+		tree.setModel(emptyTreeModel);
+	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
