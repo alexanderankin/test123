@@ -12,10 +12,15 @@ public class Parser extends Thread {
 	public interface ResultHandler {
 		void handle(String msg, GdbResult res);
 	}
+	public interface GdbHandler {
+		void handle(String line);
+	}
+
 	Debugger debugger;
 	private BufferedReader stdInput;
 	private Vector<ResultHandler> resultHandlers = new Vector<ResultHandler>();
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
+	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
 	
 	public class GdbResult {
 		Hashtable<String, Object> result = new Hashtable<String, Object>();
@@ -177,6 +182,14 @@ public class Parser extends Thread {
 	{
 		outOfBandHandlers.remove(rh);
 	}
+	public void addGdbHandler(GdbHandler gh)
+	{
+		gdbHandlers.add(gh);
+	}
+	public void removeGdbHandler(GdbHandler gh)
+	{
+		gdbHandlers.remove(gh);
+	}
 	String extractString(String line)
 	{
 		if (line.startsWith("\""))
@@ -197,7 +210,13 @@ public class Parser extends Thread {
 			return;
 		case '~':
 			// Gdb CLI record
-			debugger.gdbRecord(extractString(line.substring(1)));
+			String l = extractString(line.substring(1));
+			if (gdbHandlers.isEmpty()) {
+				debugger.gdbRecord(l);
+				return;
+			}
+			for (int i = 0; i < gdbHandlers.size(); i++)
+				gdbHandlers.get(i).handle(l);
 			return;
 		case '^':
 		case '*':
