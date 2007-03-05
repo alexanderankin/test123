@@ -62,7 +62,8 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			View v = painters.get(dp);
 			v.getTextArea().getGutter().removeExtension(dp);
 		}
-		dpview.getTextArea().getGutter().removeExtension(dp);
+		if (dpview != null && dp != null)
+			dpview.getTextArea().getGutter().removeExtension(dp);
 	}
 	
 	public static void next(View view) {
