@@ -52,7 +52,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	public void stop() {
 		// Remove all debugger painters
 		Vector<Breakpoint> breakpoints = DebuggerDB.getInstance().getBreakpoints();
-		Enumeration bpEnum = breakpoints.elements();
+		Enumeration<Breakpoint> bpEnum = breakpoints.elements();
 		while (bpEnum.hasMoreElements()) {
 			Breakpoint bp = (Breakpoint) bpEnum.nextElement();
 			bp.remove();

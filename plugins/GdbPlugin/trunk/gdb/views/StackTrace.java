@@ -21,6 +21,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+@SuppressWarnings("serial")
 public class StackTrace extends JPanel {
 	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 	private JTree tree;
@@ -55,6 +56,7 @@ public class StackTrace extends JPanel {
 	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
+		@SuppressWarnings("unchecked")
 		public void handle(String msg, GdbResult res) {
 			if (msg.equals("done")) {
 				Object stack = res.getValue("stack-args");
@@ -97,6 +99,7 @@ public class StackTrace extends JPanel {
 	}
 	
 	private class StackTraceResultHandler implements ResultHandler {
+		@SuppressWarnings("unchecked")
 		public void handle(String msg, GdbResult res) {
 			//System.err.println("StackTraceResultHandler called with " + msg);
 			if (msg.equals("done")) {

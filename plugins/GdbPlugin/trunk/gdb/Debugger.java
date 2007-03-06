@@ -129,7 +129,7 @@ public class Debugger implements DebuggerTool {
 		if (localsPanel != null)
 			localsPanel.sessionEnded();
 	}
-	public void start(String prog, String args, String cwd, Hashtable env) {
+	public void start(String prog, String args, String cwd, Hashtable<String, String> env) {
 		String command = "gdb --interpreter=mi " + prog;
 		//File dir = new File(getBufferDirectory());
 		if (cwd == null || cwd.length() == 0)

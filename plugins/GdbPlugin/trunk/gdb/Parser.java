@@ -124,6 +124,7 @@ public class Parser extends Thread {
 		}
 		
 		// Query methods
+		@SuppressWarnings("unchecked")
 		public Object getValue(String path) {
 			Object current = result;
 			int index = 0;
@@ -139,7 +140,7 @@ public class Parser extends Thread {
 				}
 				if (current instanceof Hashtable)
 				{
-					current = ((Hashtable)current).get(part);
+					current = ((Hashtable<String, Object>)current).get(part);
 					path = path.substring(index + 1);
 				} else if (current instanceof Vector) {
 					int i = Integer.parseInt(part);

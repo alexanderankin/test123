@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 public interface DebuggerTool {
 	void setFrontEnd(JEditFrontEnd frontEnd);
-	void start(String prog, String args, String cwd, Hashtable env);
+	void start(String prog, String args, String cwd, Hashtable<String, String> env);
 	void go();
 	void next();
 	void step();
