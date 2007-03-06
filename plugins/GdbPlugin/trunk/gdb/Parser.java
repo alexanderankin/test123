@@ -113,11 +113,14 @@ public class Parser extends Thread {
 		}
 		private Object parseCString(String line) {
 			//System.err.println("parseCString:" + line.substring(next));
-			int index = line.indexOf("\"", next + 1);
-			if (index < 0) {
-				next = index;
-				return line.substring(1);
-			}
+			int index = next;
+			do {
+				index = line.indexOf("\"", index + 1);
+				if (index < 0) {
+					next = index;
+					return line.substring(1);
+				}
+			} while (line.charAt(index - 1) == '\\');
 			int prev = next + 1;
 			next = index + 1;
 			return line.substring(prev, index);
