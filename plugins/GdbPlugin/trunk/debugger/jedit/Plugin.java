@@ -18,22 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package debugger.jedit;
 
+import gdb.Debugger;
+
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-
-import gdb.Debugger;
+import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
 import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
@@ -45,10 +43,7 @@ import debugger.jedit.launch.LaunchConfigurationManager;
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	public static String OPTION_PREFIX = "options.debugger.";
 	static private DebuggerTool debugger = Debugger.getInstance();
-	static private Hashtable env = null;
 	static private LaunchConfiguration currentConfig;
-	static private Hashtable<DebuggerPainter, View> painters =
-		new Hashtable<DebuggerPainter, View>();
 	
 	public void start()	{
 		debugger.setFrontEnd(this);
@@ -56,11 +51,11 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 
 	public void stop() {
 		// Remove all debugger painters
-		Enumeration<DebuggerPainter> paintersEnum = painters.keys();
-		while (paintersEnum.hasMoreElements()) {
-			DebuggerPainter dp = paintersEnum.nextElement();
-			View v = painters.get(dp);
-			v.getTextArea().getGutter().removeExtension(dp);
+		Vector<Breakpoint> breakpoints = DebuggerDB.getInstance().getBreakpoints();
+		Enumeration bpEnum = breakpoints.elements();
+		while (bpEnum.hasMoreElements()) {
+			Breakpoint bp = (Breakpoint) bpEnum.nextElement();
+			bp.remove();
 		}
 		if (dpview != null && dp != null)
 			dpview.getTextArea().getGutter().removeExtension(dp);
@@ -86,36 +81,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			debugger.go();
 	}
 	
-	static private class Breakpoint implements IBreakpoint {
-		IBreakpoint b;
-		BreakpointPainter p;
-		View v;
-		Buffer buf;
-		Breakpoint(IBreakpoint brkpt, Buffer buf) {
-			b = brkpt;
-			this.buf = buf;
-		}
-		public String getFile() {
-			return b.getFile();
-		}
-		public int getLine() {
-			// TODO Auto-generated method stub
-			return b.getLine();
-		}
-		public Buffer getBuffer() {
-			return buf;
-		}
-		public void addPainter(View view) {
-			v = view;
-			p = new BreakpointPainter(view.getEditPane(), buf, b.getLine());
-			view.getTextArea().getGutter().addExtension(p);
-			painters.put(p, v);
-		}
-		public void removePainter() {
-			v.getTextArea().getGutter().removeExtension(p);
-			painters.remove(p);
-		}
-	}
 	public static void toggleBreakpoint(View view)
 	{
 		Buffer buffer = view.getBuffer();
@@ -131,12 +96,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine() + 1;
-		IBreakpoint b = debugger.addBreakpoint(buffer.getPath(), line);
-		if (b != null) {
-			Breakpoint bp = new Breakpoint(b, buffer);
-			DebuggerDB.getInstance().addBreakpoint(bp);
-			bp.addPainter(view);
-		}
+		new Breakpoint(view, debugger, buffer, line);
 	}
 	public static void removeBreakpoint(View view) {
 		Buffer buffer = view.getBuffer();
@@ -148,9 +108,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		for (int i = 0; i < breakpoints.size(); i++) {
 			IBreakpoint b = breakpoints.get(i);
 			Breakpoint bp = (Breakpoint)b;
-			debugger.removeBreakpoint(bp);
-			DebuggerDB.getInstance().removeBreakpoint(bp);
-			bp.removePainter();
+			bp.remove();
 		}
 	}
 	static CurrentPositionPainter dp = null;
@@ -200,5 +158,10 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			msg = msg + ", at " + file + ":" + line + ".";
 		System.err.println(msg);
 		JOptionPane.showMessageDialog(null, msg);
+	}
+	// Views
+	static public JPanel showBreakpoints(View view) {
+		BreakpointView brkView = new BreakpointView();
+		return brkView;
 	}
 }

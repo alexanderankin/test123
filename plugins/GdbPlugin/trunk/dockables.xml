@@ -16,6 +16,9 @@
 	<DOCKABLE NAME="debugger-show-stack-trace">
 		gdb.Debugger.getInstance().showStackTrace(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="debugger-breakpoints">
+		debugger.jedit.Plugin.showBreakpoints(view);
+	</DOCKABLE>
 </DOCKABLES>
 
 <!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->

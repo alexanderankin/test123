@@ -13,6 +13,5 @@ public interface DebuggerTool {
 	boolean isRunning();
 	// Note: line counting begins at 0
 	IBreakpoint addBreakpoint(String file, int line);
-	void removeBreakpoint(IBreakpoint brkpt);
 	IData getData(String name);
 }

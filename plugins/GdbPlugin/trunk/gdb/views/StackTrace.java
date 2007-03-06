@@ -176,10 +176,10 @@ public class StackTrace extends JPanel {
 			return level + " " + func + arguments + " " + location;
 		}
 		public void selected() {
-			commandManager.add("frame " + level);
+			commandManager.addCLI("frame " + level);
 			if (base == null) {
 				parser.addGdbHandler(new InfoSourceHandler(this));
-				commandManager.add("info source");
+				commandManager.addCLI("info source");
 			}
 			else
 				jump();

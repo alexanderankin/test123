@@ -33,6 +33,8 @@ debugger-show-locals.title=Local Variables
 debugger-show-locals.label=Local Variables
 debugger-show-stack-trace.title=Stack Trace
 debugger-show-stack-trace.label=Stack Trace
+debugger-breakpoints.title=Breakpoints
+debugger-breakpoints.label=Breakpoints
 
 # Options
 plugin.debugger.jedit.Plugin.option-pane=Debugger

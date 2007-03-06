@@ -4,11 +4,8 @@ import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
 import gdb.views.LocalVariables;
 import gdb.views.StackTrace;
-import gdb.views.StackTrace.StackTraceNode;
 
 import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -17,11 +14,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -31,6 +23,7 @@ import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.IData;
 import debugger.itf.JEditFrontEnd;
+import debugger.jedit.Breakpoint;
 
 public class Debugger implements DebuggerTool {
 
@@ -40,8 +33,6 @@ public class Debugger implements DebuggerTool {
 	private Parser parser;
 
 	private boolean running = false;
-
-	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 
 	// Program output
 	private static JPanel programOutputPanel = null;
@@ -55,32 +46,30 @@ public class Debugger implements DebuggerTool {
 	// Command manager
 	private CommandManager commandManager = null;
 
-	private class Data implements IData {
-		String name, value;
-		Vector<IData> children = new Vector<IData>(); 
-		Data(String name, String value) {
-			this.name = name;
-			this.value = value;
+	private class BreakpointResultHandler implements ResultHandler {
+		private GdbBreakpoint bp;
+		public BreakpointResultHandler(GdbBreakpoint bp) {
+			this.bp = bp;
 		}
-		public void addChild(IData data) {
-			children.add(data);
-		}
-		public Vector<IData> getChildren() {
-			return children;
-		}
-		public String getName() {
-			return name;
-		}
-		public String getValue() {
-			return value;
+		public void handle(String msg, GdbResult res) {
+			if (! msg.equals("done"))
+				return;
+			String num = res.getStringValue("bkpt/number");
+			if (num != null)
+				bp.setNumber(Integer.parseInt(num));
 		}
 	}
-	private class Breakpoint implements IBreakpoint	{
+	private class GdbBreakpoint implements IBreakpoint	{
 		String file;
 		int line;
-		Breakpoint(String file, int line) {
+		int number;
+		GdbBreakpoint(String file, int line) {
 			this.file = file;
 			this.line = line;
+		}
+		public void setNumber(int num) {
+			System.err.println("bp at " + file + ":" + line + " -> " + num);
+			number = num;
 		}
 		public String getFile() {
 			return file;
@@ -89,13 +78,29 @@ public class Debugger implements DebuggerTool {
 		public int getLine() {
 			return line;
 		}
+		public boolean canSetEnabled() {
+			return true;
+		}
+		public void setEnabled(boolean enabled) {
+			if (commandManager != null)
+				if (enabled)
+					commandManager.add("-break-enable " + number);
+				else
+					commandManager.add("-break-disable " + number);
+		}
+		public void remove() {
+			if (commandManager != null)
+				commandManager.add("-break-delete " + number);
+		}
 	}
 
 	public IBreakpoint addBreakpoint(String file, int line) {
+		GdbBreakpoint bp = new GdbBreakpoint(file, line);
 		if (commandManager != null) {
-			commandManager.add("-break-insert " + file + ":" + line);
+			commandManager.add("-break-insert " + file + ":" + line,
+					new BreakpointResultHandler(bp));
 		}
-		return new Breakpoint(file, line);
+		return bp; 
 	}
 
 	public IData getData(String name) {
@@ -117,15 +122,12 @@ public class Debugger implements DebuggerTool {
 
 	}
 
-	public void removeBreakpoint(IBreakpoint brkpt) {
-		// TODO Auto-generated method stub
-
-	}
-
 	private void sessionEnded() {
 		running = false;
-		stackTracePanel.sessionEnded();
-		localsPanel.sessionEnded();
+		if (stackTracePanel != null)
+			stackTracePanel.sessionEnded();
+		if (localsPanel != null)
+			localsPanel.sessionEnded();
 	}
 	public void start(String prog, String args, String cwd, Hashtable env) {
 		String command = "gdb --interpreter=mi " + prog;
@@ -145,11 +147,15 @@ public class Debugger implements DebuggerTool {
 			// First set up the arguments
 			commandManager.add("-exec-arguments " + args);
 			// Now set up the breakpoints
-			Vector<IBreakpoint> bps = DebuggerDB.getInstance().getBreakpoints();
+			Vector<Breakpoint> bps = DebuggerDB.getInstance().getBreakpoints();
 			for (int i = 0; i < bps.size(); i++) {
-				IBreakpoint b = bps.get(i);
-				commandManager.add("-break-insert " + b.getFile() + ":" +
-						b.getLine());
+				Breakpoint b = bps.get(i);
+				GdbBreakpoint gbp = (GdbBreakpoint)b.getBreakpoint();
+				commandManager.add(
+						"-break-insert " + gbp.getFile() + ":" + gbp.getLine(),
+						new BreakpointResultHandler(gbp));
+				if (! b.isEnabled())
+					gbp.setEnabled(false);
 			}
 			commandManager.add("-exec-run");
 		} catch (IOException e) {
