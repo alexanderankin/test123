@@ -78,6 +78,7 @@ public class OptionPane extends AbstractOptionPane {
 	/***************************************************************************
 	 * Factory methods
 	 **************************************************************************/
+	@SuppressWarnings("serial")
 	public OptionPane()
 	{
 		super("Debugger");

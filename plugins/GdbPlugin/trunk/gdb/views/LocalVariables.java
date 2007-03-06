@@ -15,6 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
+@SuppressWarnings("serial")
 public class LocalVariables extends JPanel {
 	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 	private JTree tree;

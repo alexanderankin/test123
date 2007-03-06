@@ -20,21 +20,27 @@ public class CommandManager extends Thread {
 		String cmd;
 		ResultHandler handler;
 		Integer id;
-		public Command(String cmd, ResultHandler handler) {
+		boolean wait;
+		// Add a CLI command
+		public Command(String cmd) {
 			this.cmd = cmd;
-			this.handler = handler;
+			id = null;
+			handler = null;
+			wait = false;
 		}
 		public Command(Integer id, String cmd, ResultHandler handler) {
 			this.id = id;
 			this.cmd = cmd;
 			this.handler = handler;
+			wait = true;
 		}
 		public void run() {
 			ResultHandler wrapper = null;
-			if (handler != null) {
+			if (wait) {
 				wrapper = new ResultHandler() {
 					public void handle(String msg, GdbResult res) {
-						handler.handle(msg, res);
+						if (handler != null)
+							handler.handle(msg, res);
 						synchronized(id) {
 							id.notify();
 						}
@@ -43,13 +49,14 @@ public class CommandManager extends Thread {
 				parser.addResultHandler(wrapper);
 			}
 			try {
+				System.err.println("CommandManager: " + cmd);
 				stdOutput.write(cmd + "\n");
 				stdOutput.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (handler != null) {
+			if (wait) {
 				// Wait for result
 				synchronized(id) {
 					try {
@@ -73,6 +80,13 @@ public class CommandManager extends Thread {
 		Integer cid = new Integer(id);
 		id++;
 		Command c = new Command(cid, cmd, handler);
+		synchronized(commands) {
+			commands.add(c);
+			commands.notify();
+		}
+	}
+	public void addCLI(String cmd) {
+		Command c = new Command(cmd);
 		synchronized(commands) {
 			commands.add(c);
 			commands.notify();

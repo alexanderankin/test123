@@ -9,13 +9,19 @@ import org.gjt.sp.jedit.EditPane;
 
 public class BreakpointPainter extends DebuggerPainter {
 
-	BreakpointPainter(EditPane e, Buffer b, int l) {
-		super(e, b, l);
+	private Breakpoint bp;
+	
+	BreakpointPainter(EditPane e, Buffer b, Breakpoint bp) {
+		super(e, b, bp.getLine());
+		this.bp = bp;
 	}
 	
 	@Override
 	protected void paintLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y, Point p) {
 		gfx.setColor(Color.blue);
-		gfx.fillOval(p.x, p.y, 10, 10);
+		if (bp.isEnabled()) 
+			gfx.fillOval(p.x, p.y, 10, 10);
+		else
+			gfx.drawOval(p.x, p.y, 10, 10);
 	}
 }
