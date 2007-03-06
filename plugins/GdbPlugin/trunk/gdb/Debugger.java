@@ -128,6 +128,7 @@ public class Debugger implements DebuggerTool {
 			stackTracePanel.sessionEnded();
 		if (localsPanel != null)
 			localsPanel.sessionEnded();
+		frontEnd.programExited();
 	}
 	public void start(String prog, String args, String cwd, Hashtable<String, String> env) {
 		String command = "gdb --interpreter=mi " + prog;

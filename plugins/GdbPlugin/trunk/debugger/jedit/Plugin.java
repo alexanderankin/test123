@@ -57,8 +57,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			Breakpoint bp = (Breakpoint) bpEnum.nextElement();
 			bp.remove();
 		}
-		if (dpview != null && dp != null)
-			dpview.getTextArea().getGutter().removeExtension(dp);
+		removeCurrentPositionPainter();
 	}
 	
 	public static void next(View view) {
@@ -163,5 +162,14 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static public JPanel showBreakpoints(View view) {
 		BreakpointView brkView = new BreakpointView();
 		return brkView;
+	}
+
+	public void programExited() {
+		removeCurrentPositionPainter();
+	}
+
+	private void removeCurrentPositionPainter() {
+		if (dpview != null && dp != null)
+			dpview.getTextArea().getGutter().removeExtension(dp);
 	}
 }
