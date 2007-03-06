@@ -50,7 +50,7 @@ public class LaunchConfiguration {
 	public void setEnvironment(String env) {
 		environment = env;
 	}
-	public Hashtable getEnvironmentHash() {
+	public Hashtable<String, String> getEnvironmentHash() {
 		return null;
 	}
 }

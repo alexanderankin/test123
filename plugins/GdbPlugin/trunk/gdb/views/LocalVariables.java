@@ -45,6 +45,7 @@ public class LocalVariables extends JPanel {
 	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
+		@SuppressWarnings("unchecked")
 		public void handle(String msg, GdbResult res) {
 			if (! msg.equals("done"))
 				return;
@@ -65,6 +66,7 @@ public class LocalVariables extends JPanel {
 	}
 	
 	private class LocalsResultHandler implements ResultHandler {
+		@SuppressWarnings("unchecked")
 		public void handle(String msg, GdbResult res) {
 			if (! msg.equals("done"))
 				return;
