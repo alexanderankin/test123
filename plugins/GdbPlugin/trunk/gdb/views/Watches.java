@@ -40,7 +40,7 @@ public class Watches extends JPanel {
 				String expr = JOptionPane.showInputDialog("Expression:");
 				if (expr == null)
 					return;
-				Watch w = new Watch(expr, "");
+				Watch w = new Watch(expr);
 				watches.add(w);
 				w.eval();
 				root.add(w);
@@ -102,27 +102,45 @@ public class Watches extends JPanel {
 	private class Watch extends DefaultMutableTreeNode {
 		private String name;
 		private String value;
-		public Watch(String name, String value) {
+		private String gdbName = null;
+		
+		public Watch(String name) {
 			this.name = name;
 			this.value = value;
 		}
 		public String toString() {
 			return name + " = " + value;
 		}
+		public void getValue() {
+			commandManager.add("-var-update " + gdbName);
+			commandManager.add("-var-evaluate-expression " + gdbName,
+					new ResultHandler() {
+					public void handle(String msg, GdbResult res) {
+						if (! msg.equals("done"))
+							return;
+						value = res.getStringValue("value");
+						if (value == null)
+							value = "";
+						updateTree();
+					}
+			});
+		}
 		public void eval() {
 			if (commandManager == null)
 				return;
-			commandManager.add("-data-evaluate-expression " + name,
-				new ResultHandler() {
-				public void handle(String msg, GdbResult res) {
-					if (! msg.equals("done"))
-						return;
-					value = res.getStringValue("value");
-					if (value == null)
-						value = "";
-					updateTree();
-				}
-			});
+			if (gdbName != null)
+				getValue();
+			else {
+				commandManager.add("-var-create - * " + name,
+						new ResultHandler() {
+							public void handle(String msg, GdbResult res) {
+								if (! msg.equals("done"))
+									return;
+								gdbName = res.getStringValue("name");
+								getValue();
+							}
+				});
+			}
 		}
 	}
 }
