@@ -33,9 +33,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${install.dir}/j2ssh-common.jar"/>
-		<pathelement location="${install.dir}/j2ssh-core.jar"/>
-		<pathelement location="${install.dir}/log4j.jar"/>
+		<pathelement location="${install.dir}/jsch.jar"/>
 		<pathelement location="."/>
 	</path>
 
@@ -82,6 +80,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
 				<include name="conf/*.xml"/>
+				<include name="jsch-license.txt"/>
 			</fileset>
 		</jar>
 	</target>

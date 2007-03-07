@@ -32,9 +32,6 @@ import java.io.IOException;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
-import com.sshtools.j2ssh.transport.publickey.*;
-import com.sshtools.common.authentication.PassphraseDialog;
-
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
@@ -43,12 +40,12 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	String user, String password)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
-		jEdit.getProperty(_secure ?
-		"login.title-sftp" : "login.title-ftp"),
-		true);
+			jEdit.getProperty(_secure ?
+				"login.title-sftp" : "login.title-ftp"),
+			true);
 		this.secure = _secure;
 		JPanel content = new JPanel(new VariableGridLayout(
-		VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
+			VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 		
@@ -120,31 +117,33 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			host = hostField.getText();
 			user = userField.getText();
 			if (privateKeyField!=null && privateKeyField.getText().length() > 0) {
-				try{
-					SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(privateKeyField.getText()));
-					if (file.isPassphraseProtected()) {
-						Log.log(Log.DEBUG, this, "Key File is password protected.");
-						PassphraseDialog ppd = new PassphraseDialog(jEdit.getActiveView());
-						Point p  = this.getLocation();
-						Dimension s = this.getSize();
-						Dimension ppds = ppd.getSize();
-						ppd.setLocation((int)(p.x + s.width/2 - ppds.width/2), (int)(p.y + s.height/2 - ppds.height/2));
-						ppd.setMessage(jEdit.getProperty("login.privatekeypassword"));
-						ppd.setVisible(true);
-						if (ppd.isCancelled())
-							return;
-						privateKey = file.toPrivateKey(new String(ppd.getPassphrase()));
-					} else {
-						privateKey = file.toPrivateKey(null);
-					}
+				//try{
+					//SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(privateKeyField.getText()));
+					//if (file.isPassphraseProtected()) {
+					//	Log.log(Log.DEBUG, this, "Key File is password protected.");
+					//	PassphraseDialog ppd = new PassphraseDialog(jEdit.getActiveView());
+					//	Point p  = this.getLocation();
+					//	Dimension s = this.getSize();
+					//	Dimension ppds = ppd.getSize();
+					//	ppd.setLocation((int)(p.x + s.width/2 - ppds.width/2), (int)(p.y + s.height/2 - ppds.height/2));
+					//	ppd.setMessage(jEdit.getProperty("login.privatekeypassword"));
+					//	ppd.setVisible(true);
+					//	if (ppd.isCancelled())
+					//		return;
+					//	privateKey = file.toPrivateKey(new String(ppd.getPassphrase()));
+					//} else {
+					//	privateKey = file.toPrivateKey(null);
+					//}
 					privateKeyFilename = privateKeyField.getText();
-				} catch (InvalidSshKeyException iske) {
-					GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {iske.getMessage()});
-					return;
-				} catch (IOException ioe) {
-					GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {ioe.getMessage()});
-					return;
-				}
+					privateKey = privateKeyField.getText();
+					
+				//} catch (InvalidSshKeyException iske) {
+				//	GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {iske.getMessage()});
+				//	return;
+				//} catch (IOException ioe) {
+				//	GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {ioe.getMessage()});
+				//	return;
+				//}
 				
 			}
 			if(host.length() == 0 || user.length() == 0)
@@ -189,7 +188,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	} //}}}
 	
 	//{{{ getPrivateKey() method
-	public SshPrivateKey getPrivateKey()
+	public String getPrivateKey()
 	{
 		return privateKey;
 	} //}}}
@@ -230,7 +229,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private String user;
 	private String password;
 	private String privateKeyFilename;
-	private SshPrivateKey privateKey;
+	private String privateKey;
 	private boolean isOK;
 	private boolean secure;
 	private JButton ok;

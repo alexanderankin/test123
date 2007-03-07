@@ -28,10 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -110,50 +106,6 @@ public class FtpPlugin extends EditPlugin
 				return;
 
 			view.getBuffer().save(view,files[0],true);
-		}
-	} //}}}
-
-	//{{{ initSshtoolsHome() method
-	public static void initSshtoolsHome()
-	{
-		String path = MiscUtilities.constructPath(
-			jEdit.getSettingsDirectory(),"sshtools");
-
-		System.getProperties().put("sshtools.home",path);
-
-		String[] files = new String[] {
-			"authorization.xml",
-			"automation.xml",
-			"sshtools.xml"
-		};
-
-		File dir = new File(path,"conf");
-		dir.mkdirs();
-
-		try
-		{
-			for(int i = 0; i < files.length; i++)
-			{
-				File file = new File(dir,files[i]);
-				if(!file.exists())
-				{
-					copy(FtpPlugin.class.getResourceAsStream(
-						"/conf/" + files[i]),
-						new FileOutputStream(
-						file));
-				}
-			}
-
-			RollingFileAppender log = new RollingFileAppender(
-				new PatternLayout(),
-				MiscUtilities.constructPath(path,"ssh.log"),
-				true);
-			log.setMaxFileSize("100KB");
-			BasicConfigurator.configure(log);
-		}
-		catch(IOException io)
-		{
-			Log.log(Log.ERROR,FtpPlugin.class,io);
 		}
 	} //}}}
 
