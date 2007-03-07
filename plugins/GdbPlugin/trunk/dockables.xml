@@ -13,6 +13,9 @@
 	<DOCKABLE NAME="debugger-show-locals">
 		gdb.Debugger.getInstance().showLocals(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="debugger-watches">
+		gdb.Debugger.getInstance().showWatches(view);
+	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-stack-trace">
 		gdb.Debugger.getInstance().showStackTrace(view);
 	</DOCKABLE>

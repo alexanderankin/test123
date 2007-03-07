@@ -4,6 +4,7 @@ import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
 import gdb.views.LocalVariables;
 import gdb.views.StackTrace;
+import gdb.views.Watches;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -43,8 +44,10 @@ public class Debugger implements DebuggerTool {
 	// Views
 	private LocalVariables localsPanel = null;
 	private StackTrace stackTracePanel = null;
+	private Watches watchesPanel = null;
 	// Command manager
 	private CommandManager commandManager = null;
+
 
 	private class BreakpointResultHandler implements ResultHandler {
 		private GdbBreakpoint bp;
@@ -128,6 +131,8 @@ public class Debugger implements DebuggerTool {
 			stackTracePanel.sessionEnded();
 		if (localsPanel != null)
 			localsPanel.sessionEnded();
+		if (watchesPanel != null)
+			watchesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
 	public void start(String prog, String args, String cwd, Hashtable<String, String> env) {
@@ -168,10 +173,17 @@ public class Debugger implements DebuggerTool {
 	private void stopped(String file, int line) {
 		updateStackTrace();
 		updateLocals(0);
+		updateWatches();
 		frontEnd.setCurrentLocation(file, line);
 		
 	}
 
+	private void updateWatches() {
+		if (watchesPanel != null) {
+			watchesPanel.setCommandManager(commandManager);
+			watchesPanel.update();
+		}
+	}
 	private void updateStackTrace() {
 		if (stackTracePanel != null) {
 			stackTracePanel.setCommandManager(commandManager);
@@ -273,6 +285,11 @@ public class Debugger implements DebuggerTool {
 		if (localsPanel == null)
 			localsPanel = new LocalVariables();
 		return localsPanel;
+	}
+	public JPanel showWatches(View view) {
+		if (watchesPanel == null)
+			watchesPanel = new Watches();
+		return watchesPanel;
 	}
 	public JPanel showStackTrace(View view) {
 		if (stackTracePanel == null)
