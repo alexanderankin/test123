@@ -33,6 +33,8 @@ debugger-show-locals.title=Local Variables
 debugger-show-locals.label=Local Variables
 debugger-show-stack-trace.title=Stack Trace
 debugger-show-stack-trace.label=Stack Trace
+debugger-watches.title=Expressions
+debugger-watches.label=Expressions
 debugger-breakpoints.title=Breakpoints
 debugger-breakpoints.label=Breakpoints
 
