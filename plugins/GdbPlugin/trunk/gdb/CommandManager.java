@@ -10,6 +10,7 @@ import gdb.Parser.ResultHandler;
 
 public class CommandManager extends Thread {
 
+	private static CommandManager instance = null;
 	Vector<Command> commands = new Vector<Command>();
 	BufferedWriter stdOutput = null;
 	Debugger debugger = null;
@@ -71,6 +72,7 @@ public class CommandManager extends Thread {
 		}
 	}
 	public CommandManager(Debugger debugger, Process p, Parser parser) {
+		instance = this;
 		this.debugger = debugger;
 		stdOutput = new BufferedWriter(
 				new OutputStreamWriter(p.getOutputStream()));
@@ -114,5 +116,8 @@ public class CommandManager extends Thread {
 			Command cmd = next();
 			cmd.run();
 		}
+	}
+	public static CommandManager getInstance() {
+		return instance ;
 	}
 }

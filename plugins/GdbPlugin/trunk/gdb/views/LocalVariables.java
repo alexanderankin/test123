@@ -3,6 +3,7 @@ package gdb.views;
 import gdb.CommandManager;
 import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
+import gdb.views.GdbVar.ChangeListener;
 
 import java.awt.BorderLayout;
 import java.util.Hashtable;
@@ -13,20 +14,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 @SuppressWarnings("serial")
 public class LocalVariables extends JPanel {
-	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 	private JTree tree;
 	private CommandManager commandManager = null;
 	private DefaultMutableTreeNode root;
+	private DefaultTreeModel model;
 	
 	public LocalVariables() {
 		setLayout(new BorderLayout());
 		tree = new JTree();
 		root = new DefaultMutableTreeNode("Locals");
-		tree.setModel(emptyTreeModel);
+		model = new DefaultTreeModel(root);
+		tree.setModel(model);
 		tree.setRootVisible(false);
 		add(new JScrollPane(tree));
 	}
@@ -36,12 +37,13 @@ public class LocalVariables extends JPanel {
 	}
 	public void update(int frame) {
 		root.removeAllChildren();
-		commandManager.add("-stack-list-arguments 1 " + frame + " " + frame,
+		commandManager.add("-stack-list-arguments 0 " + frame + " " + frame,
 				new StackArgumentsResultHandler());
-		commandManager.add("-stack-list-locals 2", new LocalsResultHandler());
+		commandManager.add("-stack-list-locals 0", new LocalsResultHandler());
 	}
 	public void sessionEnded() {
-		tree.setModel(emptyTreeModel);
+		root.removeAllChildren();
+		model.nodeStructureChanged(root);
 	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
@@ -58,8 +60,13 @@ public class LocalVariables extends JPanel {
 					Hashtable<String, Object> hash =
 						(Hashtable<String, Object>)args.get(i);
 					String name = hash.get("name").toString();
-					String value = hash.get("value").toString();
-					root.add(createTreeNode(name, value));
+					GdbVar v = new GdbVar(name);
+					v.setChangeListener(new ChangeListener() {
+						public void changed(GdbVar v) {
+							model.nodeStructureChanged(v);
+						}
+					});
+					root.add(v);
 				}
 			}
 		}
@@ -81,11 +88,13 @@ public class LocalVariables extends JPanel {
 						Hashtable<String, Object> localHash =
 							(Hashtable<String, Object>)local;
 						String name = localHash.get("name").toString();
-						String value = "<missing>";
-						Object valueObj = localHash.get("value");
-						if (valueObj != null)
-							value = valueObj.toString();
-						root.add(createTreeNode(name, value));
+						GdbVar v = new GdbVar(name);
+						v.setChangeListener(new ChangeListener() {
+							public void changed(GdbVar v) {
+								model.nodeStructureChanged(v);
+							}
+						});
+						root.add(v);
 					}
 				}
 			}
@@ -98,6 +107,6 @@ public class LocalVariables extends JPanel {
 	}
 
 	public void updateTree() {
-		tree.setModel(new DefaultTreeModel(root));
+		model.nodeStructureChanged(root);
 	}
 }

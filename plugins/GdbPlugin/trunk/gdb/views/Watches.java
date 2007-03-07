@@ -1,13 +1,11 @@
 package gdb.views;
 
 import gdb.CommandManager;
-import gdb.Parser.GdbResult;
-import gdb.Parser.ResultHandler;
+import gdb.views.GdbVar.ChangeListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -18,17 +16,15 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 @SuppressWarnings("serial")
 public class Watches extends JPanel {
-	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 	private JTree tree;
-	private CommandManager commandManager = null;
 	private DefaultMutableTreeNode root;
-	private Vector<Watch> watches = new Vector<Watch>();
-
+	private Vector<GdbVar> vars = new Vector<GdbVar>();
+	private DefaultTreeModel model = null;
+	
 	public Watches() {
 		setLayout(new BorderLayout());
 		
@@ -41,9 +37,14 @@ public class Watches extends JPanel {
 				String expr = JOptionPane.showInputDialog("Expression:");
 				if (expr == null)
 					return;
-				Watch w = new Watch(expr);
-				watches.add(w);
-				root.add(w);
+				GdbVar v = new GdbVar(expr);
+				v.setChangeListener(new ChangeListener() {
+					public void changed(GdbVar v) {
+						model.nodeStructureChanged(v);
+					}
+				});
+				vars.add(v);
+				root.add(v);
 				updateTree();
 			}
 		});
@@ -55,8 +56,8 @@ public class Watches extends JPanel {
 				if (tp == null)
 					return;
 				Object [] path = tp.getPath();
-				Watch w = (Watch)(path[1]);
-				watches.remove(w);
+				GdbVar v = (GdbVar)(path[1]);
+				vars.remove(v);
 				updateTree();
 			}
 		});
@@ -64,7 +65,7 @@ public class Watches extends JPanel {
 		JButton removeAll = new JButton("Remove All");
 		removeAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				watches.clear();
+				vars.clear();
 				root.removeAllChildren();
 				updateTree();
 			}
@@ -74,111 +75,29 @@ public class Watches extends JPanel {
 		
 		tree = new JTree();
 		root = new DefaultMutableTreeNode("Watches");
-		tree.setModel(emptyTreeModel);
+		model = new DefaultTreeModel(root);
+		tree.setModel(model);
 		tree.setRootVisible(false);
 		add(new JScrollPane(tree), BorderLayout.CENTER);
 	}
 
 	public void setCommandManager(CommandManager cm) {
-		commandManager = cm;
 	}
 	public void update() {
-		root.removeAllChildren();
-		for (int i = 0; i < watches.size(); i++) {
-			watches.get(i).update();
+		for (int i = 0; i < vars.size(); i++) {
+			vars.get(i).update();
 		}
 	}
 	public void sessionEnded() {
-		tree.setModel(emptyTreeModel);
+		root.removeAllChildren();
+		model.nodeStructureChanged(root);
 	}
 
 	public void updateTree() {
 		root.removeAllChildren();
-		for (int i = 0; i < watches.size(); i++)
-			root.add(watches.get(i));
-		tree.setModel(new DefaultTreeModel(root));
-	}
-	
-	private class Watch extends DefaultMutableTreeNode {
-		private String name;
-		private String value = null;
-		private String gdbName = null;
-		
-		public Watch(String name) {
-			this.name = name;
-			createGdbVar();
-		}
-		public Watch(String name, String gdbName) {
-			this.name = name;
-			this.gdbName = gdbName;
-			createChildren();
-			getValue();
-		}
-		public String toString() {
-			return name + (value != null ? " = " + value : "");
-		}
-		private void getValue() {
-			if (commandManager == null)
-				return;
-			commandManager.add("-var-evaluate-expression " + gdbName,
-					new ResultHandler() {
-					public void handle(String msg, GdbResult res) {
-						if (! msg.equals("done"))
-							return;
-						value = res.getStringValue("value");
-						if (value == null)
-							value = "";
-						updateTree();
-					}
-			});
-		}
-		private void createChildren() {
-			commandManager.add("-var-list-children " + gdbName,
-				new ResultHandler() {
-					public void handle(String msg, GdbResult res) {
-						if (! msg.equals("done"))
-							return;
-						int nc = Integer.parseInt(res.getStringValue("numchild"));
-						for (int i = 0; i < nc; i++) {
-							String base = "children/" + i + "/child/";
-							String cname = res.getStringValue(base + "name");
-							String cexp = res.getStringValue(base + "exp");
-							Watch child = new Watch(cexp, cname);
-							add(child);
-						}
-					}
-				}
-			);
-		}
-		public void update() {
-			if (gdbName == null)
-				createGdbVar();
-			else {
-				if (commandManager == null)
-					return;
-				commandManager.add("-var-update " + gdbName);
-				getValue();
-				Enumeration<Watch> c = this.children();
-				while (c.hasMoreElements()) {
-					Watch child = c.nextElement();
-					child.update();
-				}
-			}
-		}
-		private void createGdbVar() {
-			if (commandManager == null)
-				return;
-			commandManager.add("-var-create - * " + name,
-				new ResultHandler() {
-					public void handle(String msg, GdbResult res) {
-						if (! msg.equals("done"))
-							return;
-						gdbName = res.getStringValue("name");
-						createChildren();
-						getValue();
-					}
-				}
-			);
-		}
+		for (int i = 0; i < vars.size(); i++)
+			root.add(vars.get(i));
+		model.nodeStructureChanged(root);
 	}
 }
+
