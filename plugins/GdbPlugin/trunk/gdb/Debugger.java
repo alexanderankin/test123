@@ -325,4 +325,8 @@ public class Debugger implements DebuggerTool {
 	public void step() {
 		commandManager.add("-exec-step");
 	}
+
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
 }
