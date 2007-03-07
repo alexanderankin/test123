@@ -23,6 +23,7 @@
 package ftp;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 public class FtpAddress
 {

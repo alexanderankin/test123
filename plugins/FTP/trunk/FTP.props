@@ -3,12 +3,11 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.8
+plugin.ftp.FtpPlugin.version=0.9
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.03.04.00
-plugin.ftp.FtpPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.3
-plugin.ftp.FtpPlugin.depend.2=jdk 1.4
-plugin.ftp.FtpPlugin.jars=j2ssh-common.jar j2ssh-core.jar
+plugin.ftp.FtpPlugin.depend.1=jdk 1.4
+plugin.ftp.FtpPlugin.jars=jsch.jar
 plugin.ftp.FtpPlugin.menu=open-ftp \
 	save-ftp \
 	- \
@@ -43,6 +42,7 @@ login.privateKey=Private key:
 login.selectprivatekey=Select private key file...
 login.privatekeypassword=Enter passphrase for private key file
 login.storePassword=Save Password - these are stored in a file that is difficult, but not impossible, to read.
+
 # Settings
 vfs.ftp.passive=true
 vfs.ftp.binary=true
@@ -61,7 +61,8 @@ vfs.sftp.failed-authentication.message=Failed to authenticate using {0} authenti
 vfs.sftp.invalid-privatekey.title=Invalid Private Key File
 vfs.sftp.invalid-privatekey.message={0}
 
-
+vfs.sftp.invalid-keystore.title=Invalid Password File
+vfs.sftp.invalid-keystore.message=There was a problem reading the password file. All saved passwords have been lost.
 
 # File listing regexps
 vfs.ftp.list.count=3

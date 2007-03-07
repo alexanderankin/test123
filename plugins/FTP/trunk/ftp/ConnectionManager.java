@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2002, 2003 Slava Pestov
+ * Copyright (C) 2002, 2003, 2007 Slava Pestov, Nicholas O'Leary
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,8 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-import com.sshtools.j2ssh.transport.publickey.*;
-import com.sshtools.j2ssh.util.Base64;
+
+import com.jcraft.jsch.jcraft.Compression;
 //}}}
 
 public class ConnectionManager
@@ -56,18 +56,13 @@ public class ConnectionManager
 	//{{{ getPassword() method
 	protected static String getPassword(String hostInfo)
 	{
-		Object encoded = passwords.get(hostInfo);
-		if (encoded != null)
-		{
-			return Base64.decodeToString((String)encoded);
-		}
-		return null;
+		return (String)passwords.get(hostInfo);
 	} //}}}
 	
 	//{{{ setPassword() method
 	protected static void setPassword(String hostInfo, String password)
 	{
-		passwords.put(hostInfo,Base64.encodeString(password,false));
+		passwords.put(hostInfo,password);
 	} //}}}
 	
 	//{{{ loadPasswords() method
@@ -78,37 +73,64 @@ public class ConnectionManager
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to load passwords.");
 			return;
 		}
-		if (passwordFile.length() == 0)
+		int passwordFileLength = (int)passwordFile.length();
+		if (passwordFileLength == 0)
 		{
 			return;
 		}
-		ObjectInputStream in = null;
+		ObjectInputStream ois = null;
+		FileInputStream fis = null;
 		try
 		{
-			in = new ObjectInputStream(
+			byte[] buffer = new byte[passwordFileLength];
+			fis = new FileInputStream(passwordFile);
+			int read = 0;
+			while(read<passwordFileLength) {
+				read+=fis.read(buffer,read,passwordFileLength-read);
+			}
+			Compression comp = new Compression();
+			comp.init(Compression.INFLATER,6);
+			byte[] uncompressed = comp.uncompress(buffer,0,new int[]{buffer.length});
+			ois = new ObjectInputStream(
 				new BufferedInputStream(
-					new FileInputStream(passwordFile)));
-			passwords = (HashMap)Base64.decodeToObject((String)in.readObject());
+					new ByteArrayInputStream(
+						uncompressed,0,uncompressed.length
+						)
+					)
+				);
+			passwords = (HashMap)ois.readObject();
 		}
 		catch(Exception e)
 		{
+			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords");
 			Log.log(Log.ERROR,ConnectionManager.class,e);
 		}
 		finally
 		{
-			if(in != null)
+			if(fis != null)
 			{
 				try
 				{
-					in.close();
+					fis.close();
+				}
+				catch(Exception e)
+				{
+				}
+			}
+			if(ois != null)
+			{
+				try
+				{
+					ois.close();
 				}
 				catch(Exception e)
 				{
 				}
 			}
 		}
+		
 	} //}}}
-	
+
 	//{{{ savePasswords() method
 	protected static void savePasswords()
 	{
@@ -117,13 +139,23 @@ public class ConnectionManager
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
 		}
-		ObjectOutputStream out = null;
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+		ByteArrayOutputStream baos = null;
 		try
 		{
-			out = new ObjectOutputStream(
-				new BufferedOutputStream(
-					new FileOutputStream(passwordFile)));
-			out.writeObject(Base64.encodeObject(passwords));
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(passwords);
+			Compression comp = new Compression();
+			comp.init(Compression.DEFLATER,6);
+			byte[] objectBuffer = baos.toByteArray();
+			int newLength = comp.compress(
+				objectBuffer,
+				0,
+				objectBuffer.length);
+			fos = new FileOutputStream(passwordFile);
+			fos.write(objectBuffer,0,newLength);
 		}
 		catch(Exception e)
 		{
@@ -131,11 +163,31 @@ public class ConnectionManager
 		}
 		finally
 		{
-			if(out != null)
+			if(oos != null)
 			{
 				try
 				{
-					out.close();
+					oos.close();
+				}
+				catch(Exception e)
+				{
+				}
+			}
+			if(baos != null)
+			{
+				try
+				{
+					baos.close();
+				}
+				catch(Exception e)
+				{
+				}
+			}
+			if(fos != null)
+			{
+				try
+				{
+					fos.close();
 				}
 				catch(Exception e)
 				{
@@ -211,7 +263,9 @@ public class ConnectionManager
 			dialog.getUser(),dialog.getPassword(),dialog.getPrivateKey());
 
 		if (secure && dialog.getPrivateKey()!=null)
+		{
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
+		}
 		if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
 		{
 			// Save password here
@@ -294,9 +348,9 @@ public class ConnectionManager
 		public int port;
 		public String user;
 		public String password;
-		public SshPrivateKey privateKey;
+		public String privateKey;
 		public ConnectionInfo(boolean secure, String host, int port,
-			String user, String password, SshPrivateKey privateKey)
+			String user, String password, String privateKey)
 		{
 			this.secure = secure;
 			this.host = host;

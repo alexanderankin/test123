@@ -15,6 +15,7 @@
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+  <author><firstname>Nicholas</firstname><surname>O'Leary</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -98,8 +99,8 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <para>
 
 SFTP support is provided using the
-<ulink url="http://www.sshtools.com">sshtools</ulink>
-library.
+<ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink>
+library, licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
 
 </para>
 
@@ -153,6 +154,14 @@ You can close unused connections at any other time using the
 
  <itemizedlist>
  
+   <listitem><para> <emphasis role="bold">Version 0.9</emphasis>
+   Requires jEdit 4.3pre4</para>
+   <itemizedlist>
+      <listitem><para>Ported to the JSch library, away from the SSHTools library.</para></listitem>
+      <listitem><para>Removed dependency on JakartaCommons</para></listitem>
+      </itemizedlist>
+   </listitem>
+
    <listitem><para> <emphasis role="bold">Version 0.7.9</emphasis>
    Requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
    <itemizedlist>

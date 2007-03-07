@@ -7,23 +7,6 @@
 		new ftp.FtpVFS(false);
 	</SERVICE>
 	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="sftp">
-		getSftpInstance()
-		{
-			if(!OperatingSystem.hasJava14())
-				return null;
-
-			String settings = jEdit.getSettingsDirectory();
-			if(settings == null)
-			{
-				Log.log(Log.WARNING,this,"SFTP support cannot "
-					+ "be used if -nosettings switch specified");
-			}
-			else
-				ftp.FtpPlugin.initSshtoolsHome();
-
-			return new ftp.FtpVFS(true);
-		}
-
-		getSftpInstance();
+		new ftp.FtpVFS(true);
 	</SERVICE>
 </SERVICES>

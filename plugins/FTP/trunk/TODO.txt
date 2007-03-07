@@ -1,3 +1,6 @@
+- Saving Passwords/Password Manager
+
+
 - 4.2 symlinkPath in VFS.DirectoryEntry
 - implement backups
 - a lot of the ConnectionManager stuff is just wrappers around the VFS
