@@ -170,7 +170,6 @@ class StreamThread extends Thread
 		String _line = buf.toString();
 		int length = _line.length();
 		int end = length;
-		int lineEnds = 0;
 
 		// we need to write the line break to the output, but we
 		// can't pass it to the "processLine()" method or the
@@ -178,12 +177,8 @@ class StreamThread extends Thread
 		if (_line.charAt(length-1) == '\n' || _line.charAt(length-1) == '\r')
 		{
 			end--;
-			lineEnds++;
 			if (length > 1 && _line.charAt(length-2) == '\r')
-			{
 				end--;
-				lineEnds++;
-			}
 		}
 
 		if (end == length)
@@ -196,7 +191,7 @@ class StreamThread extends Thread
 		}
 
 		output.writeAttrs(null, _line.substring(written));
-		output.setAttrs(end + lineEnds, ConsolePane.colorAttributes(copt.getColor()));
+		output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
 		if (end != length)
 		{
 			// empty the buffer if we've read a line.
