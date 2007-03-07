@@ -99,13 +99,21 @@ class StreamThread extends Thread
 				for (int i = 0; i < read; i++)
 				{
 					char c = input[i];
-					lb.append(c);
-					if((c == '\n' && oldchar != '\r') || c == '\r')
+					if (c == '\n')
 					{
 
+						lb.append(c);
 						process(lb, output, written);
 						written = 0;
 					}
+					else if (c != '\n' && oldchar == '\r')
+					{
+						process(lb, output, written);
+						lb.append(c);
+						written = 0;
+					}
+					else
+						lb.append(c);
 					oldchar = c;
 				}
 				if (lb.length() > 0)
@@ -162,13 +170,20 @@ class StreamThread extends Thread
 		String _line = buf.toString();
 		int length = _line.length();
 		int end = length;
+		int lineEnds = 0;
 
 		// we need to write the line break to the output, but we
 		// can't pass it to the "processLine()" method or the
 		// regexps won't recognize anything.
-		if (_line.charAt(length -1) == '\n' || _line.charAt(length -1) == '\r')
+		if (_line.charAt(length-1) == '\n' || _line.charAt(length-1) == '\r')
 		{
 			end--;
+			lineEnds++;
+			if (length > 1 && _line.charAt(length-2) == '\r')
+			{
+				end--;
+				lineEnds++;
+			}
 		}
 
 		if (end == length)
@@ -181,7 +196,7 @@ class StreamThread extends Thread
 		}
 
 		output.writeAttrs(null, _line.substring(written));
-		output.setAttrs(end, ConsolePane.colorAttributes(copt.getColor()));
+		output.setAttrs(end + lineEnds, ConsolePane.colorAttributes(copt.getColor()));
 		if (end != length)
 		{
 			// empty the buffer if we've read a line.
