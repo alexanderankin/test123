@@ -57,6 +57,7 @@ public class Watches extends JPanel {
 					return;
 				Object [] path = tp.getPath();
 				GdbVar v = (GdbVar)(path[1]);
+				v.done();
 				vars.remove(v);
 				updateTree();
 			}
@@ -65,6 +66,8 @@ public class Watches extends JPanel {
 		JButton removeAll = new JButton("Remove All");
 		removeAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < vars.size(); i++)
+					vars.get(i).done();
 				vars.clear();
 				root.removeAllChildren();
 				updateTree();

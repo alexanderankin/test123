@@ -36,6 +36,8 @@ public class LocalVariables extends JPanel {
 		commandManager = cm;
 	}
 	public void update(int frame) {
+		for (int i = 0; i < root.getChildCount(); i++)
+			((GdbVar)root.getChildAt(i)).done();
 		root.removeAllChildren();
 		commandManager.add("-stack-list-arguments 0 " + frame + " " + frame,
 				new StackArgumentsResultHandler());
