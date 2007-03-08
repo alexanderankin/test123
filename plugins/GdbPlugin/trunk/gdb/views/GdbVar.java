@@ -30,6 +30,13 @@ public class GdbVar extends DefaultMutableTreeNode {
 		createChildren();
 		getValue();
 	}
+	
+	public void done() {
+		if (CommandManager.getInstance() == null)
+			return;
+		CommandManager.getInstance().add("-var-delete " + gdbName);
+	}
+	
 	public void setChangeListener(ChangeListener l) {
 		listener = l;
 	}
@@ -104,4 +111,5 @@ public class GdbVar extends DefaultMutableTreeNode {
 			}
 		);
 	}
+
 }
