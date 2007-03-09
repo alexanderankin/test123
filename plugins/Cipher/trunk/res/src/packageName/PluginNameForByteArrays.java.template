@@ -1,0 +1,375 @@
+/*
+ * @noWhitespacePluginName@Plugin - @shortDescription@
+ * :tabSize=4:indentSize=4:noTabs=true:
+ *
+ * Copyright (C) @currentYear@ @authorForename@ @authorSurname@
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package @packageName@;
+
+import java.io.UnsupportedEncodingException;
+
+import cipher.AdditionalInformationRequester;
+import cipher.Cipher;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
+
+import org.apache.commons.codec.binary.Base64;
+
+/**
+ * <p>@shortDescription@</p>
+ * 
+ * <p>The jEdit ServicesAPI name of this implementation is &quot;@servicesAPIName@&quot;.</p>
+ * 
+ * <p>This implementation works on {@code byte} arrays. Because of that, the
+ * {@link #encryptToString()} method transforms the result with Base64
+ * into a {@code String} and the {@link #setEncryptedData(String)}
+ * method expects Base64 encoded data.</p>
+ * 
+ * <p>This implmentation expects no additional information and will throw
+ * an {@code IllegalArgumentException} if you supply some.</p>
+ * 
+ * <p>This class is thread-safe, the lock for the mutable state is this instance.
+ * To ensure the atomicity of the encrypting or decrypting
+ * process in a thread safe manner, the subsequent calls to
+ * <ul><li>one of the {@code set*Data()},</li>
+ * <li>one of the {@code setEntropy()},</li>
+ * <li>the {@code setAdditionalInformation()} and</li>
+ * <li>one of the {@code *cryptTo*()} methods</li></ul>
+ * should all be made from within one {@code synchronized} block,
+ * locking on this instance.</p>
+ * 
+ * @author @authorForename@ @authorSurname@
+ * @since @noWhitespacePluginName@Plugin 0.1
+ * @see cipher.Cipher
+ */
+@ThreadSafe
+public class @noWhitespacePluginName@ implements Cipher {
+    @GuardedBy("this") private byte[] rawData;
+    @GuardedBy("this") private byte[] encryptedData;
+    @GuardedBy("this") private byte[] entropy;
+    
+    /**
+     * Constructs a new {@code @noWhitespacePluginName@}.
+     */
+    public @noWhitespacePluginName@() {
+        rawData = new byte[0];
+        encryptedData = new byte[0];
+        entropy = new byte[0];
+    }
+    
+    /**
+     * <p>Sets the raw data for an encrypting process
+     * from a {@code byte} array. If your raw data is a password you may
+     * consider using {@link #setRawData(String)}.</p>
+     * 
+     * <p>If {@code rawData} is {@code null}, {@code rawData} is
+     * set to an empty {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param rawData The raw data as a {@code byte} array
+     * @see #setRawData(String)
+     * @see cipher.Cipher#setRawData(byte[])
+     */
+    public synchronized void setRawData(@Nullable byte[] rawData) {
+        if (null == rawData) {
+            this.rawData = new byte[0];
+        } else {
+            this.rawData = new byte[rawData.length];
+            System.arraycopy(rawData,0,this.rawData,0,rawData.length);
+        }
+    }
+    
+    /**
+     * <p>Sets the raw data for an encrypting process
+     * from a {@code String} object.</p>
+     * 
+     * <p>If {@code rawData} is {@code null}, {@code rawData} is
+     * set to an empty {@code byte} array, otherwise
+     * {@code rawData.getBytes("UTF-8")} is used to
+     * transform the parameter to a {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param rawData The raw data as a {@code String} object
+     * @see #setRawData(byte[])
+     * @see cipher.Cipher#setRawData(java.lang.String)
+     */
+    public synchronized void setRawData(@Nullable String rawData) {
+        if (null == rawData) {
+            this.rawData = new byte[0];
+        } else {
+            try {
+                this.rawData = rawData.getBytes("UTF-8");
+            } catch (UnsupportedEncodingException uee) {
+                InternalError ie = new InternalError("JVM doesn't support UTF-8");
+                ie.initCause(uee);
+                throw ie;
+            }
+        }
+    }
+    
+    /**
+     * <p>Sets the encrypted data for a decrypting process
+     * from a {@code byte} array.</p>
+     * 
+     * <p>If {@code encryptedData} is {@code null},
+     * {@code encryptedData} is set to an empty
+     * {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param encryptedData The encrypted data as a {@code byte} array
+     * @see #setEncryptedData(String)
+     * @see cipher.Cipher#setEncryptedData(byte[])
+     */
+    public synchronized void setEncryptedData(@Nullable byte[] encryptedData) {
+        if (null == encryptedData) {
+            this.encryptedData = new byte[0];
+        } else {
+            this.encryptedData = new byte[encryptedData.length];
+            System.arraycopy(encryptedData,0,this.encryptedData,0,encryptedData.length);
+        }
+    }
+    
+    /**
+     * <p>Sets the encrypted data for a decrypting process
+     * from a {@code String} object. Encrypted data in String
+     * form is supposed to be Base64 encoded by this implementation.</p>
+     * 
+     * <p>If {@code encryptedData} is {@code null},
+     * {@code encryptedData} is set to an empty
+     * {@code byte} array, otherwise the {@code String}
+     * gets Base64 decoded to transform the parameter
+     * to a {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param encryptedData The encrypted data as a {@code String} object
+     * @see #setEncryptedData(byte[])
+     * @see cipher.Cipher#setEncryptedData(java.lang.String)
+     */
+    public synchronized void setEncryptedData(@Nullable String encryptedData) {
+        if (null == encryptedData) {
+            this.encryptedData = new byte[0];
+        } else {
+            this.encryptedData = Base64.decodeBase64(encryptedData.getBytes());
+        }
+    }
+    
+    /**
+     * <p>Sets the entropy for an encrypting or decrypting process
+     * from a {@code byte} array. The entropy could e. g. be a
+     * &quot;fingerprint&quot; in byte data.</p>
+     * 
+     * <p>If {@code entropy} is {@code null}, {@code entropy}
+     * is set to an empty {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param entropy The entropy as a {@code byte} array
+     * @see #setEntropy(String)
+     * @see cipher.Cipher#setEntropy(byte[])
+     */
+    public synchronized void setEntropy(@Nullable byte[] entropy) {
+        if (null == entropy) {
+            this.entropy = new byte[0];
+        } else {
+            this.entropy = new byte[entropy.length];
+            System.arraycopy(entropy,0,this.entropy,0,entropy.length);
+        }
+    }
+    
+    /**
+     * <p>Sets the entropy for an encrypting or decrypting process
+     * from a {@code String} object. The entropy could e. g. be a
+     * password, like a master password that is used to encrypt
+     * all stored passwords.</p>
+     * 
+     * <p>If {@code entropy} is {@code null}, {@code entropy} is
+     * set to an empty {@code byte} array, otherwise
+     * {@code entropy.getBytes("UTF-8")} is used to
+     * transform the parameter to a {@code byte} array.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param entropy The entropy as a {@code String} object
+     * @see #setEntropy(byte[])
+     * @see cipher.Cipher#setEntropy(java.lang.String)
+     */
+    public synchronized void setEntropy(@Nullable String entropy) {
+        if (null == entropy) {
+            this.entropy = new byte[0];
+        } else {
+            try {
+                entropy.getBytes("UTF-8");
+            } catch (UnsupportedEncodingException uee) {
+                InternalError ie = new InternalError("JVM doesn't support UTF-8");
+                ie.initCause(uee);
+                throw ie;
+            }
+        }
+    }
+    
+    /**
+     * <p>Returns an {@code AdditionalInformationRequester} that request
+     * the needed additional information for an encrypting or
+     * decrypting process. If no additional information is needed,
+     * the method should return {@code null}.</p>
+     * 
+     * @return {@code null}
+     * @see cipher.Cipher#getAdditionalInformationRequester()
+     */
+    @CheckForNull
+    @CheckReturnValue(explanation = "If the additional information requester got requested it should be used")
+    public AdditionalInformationRequester getAdditionalInformationRequester() {
+        return null;
+    }
+    
+    /**
+     * <p>Sets the additional information for an encrypting or
+     * decrypting process from an {@code Object} vararg.</p>
+     * 
+     * <p>This implmentation expects no additional information and will throw
+     * an {@code IllegalArgumentException} if you supply some.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @param additionalInformation Must not be nothing
+     * @throws IllegalArgumentException If there is something given
+     * @see cipher.Cipher#setAdditionalInformation(java.lang.Object[])
+     */
+    public synchronized void setAdditionalInformation(@Nullable Object... additionalInformation) {
+        if ((null != additionalInformation) &&
+            (0 != additionalInformation.length)){
+            throw new IllegalArgumentException("additionalInformation has to be nothing");
+        }
+    }
+    
+    /**
+     * <p>Encrypts the given raw data with the given entropy
+     * and the given additional information. If you want
+     * to store the encrypted data on some text device like
+     * a text file, consider using {@link #encryptToString()}.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @return The encrypted data as a {@code byte} array
+     * @see #encryptToString()
+     * @see cipher.Cipher#encryptToByteArray()
+     */
+    @CheckForNull
+    @CheckReturnValue(explanation = "If the encryption result is not of further interest, the process should not be invoked")
+    public synchronized byte[] encryptToByteArray() {
+        // TODO: implement encryption here
+        return null;
+    }
+    
+    /**
+     * <p>Decrypts the given encrypted data with the given
+     * entropy and the given additional information.
+     * If you want to decrypt a password, consider using
+     * {@link #decryptToString()}.</p>
+     * 
+     * <p>The method is synchronized on this instance.</p>
+     * 
+     * @return The decrypted data as a {@code byte} array
+     * @see #decryptToString()
+     * @see cipher.Cipher#decryptToByteArray()
+     */
+    @CheckForNull
+    @CheckReturnValue(explanation = "If the decryption result is not of further interest, the process should not be invoked")
+    public synchronized byte[] decryptToByteArray() {
+        // TODO: implement decryption here
+        return null;
+    }
+    
+    /**
+     * <p>Encrypts the given raw data with the given entropy
+     * and the given additional information. The returned
+     * {@code String} object is a Base64 encoded representation
+     * of the encryptedData.</p>
+     * 
+     * <p>The method is not synchronized but forwards the work
+     * to the {@code encryptToByteArray()} method
+     * which is synchronized on this instance.</p>
+     * 
+     * @return The encrypted data as a Base64 encoded {@code String} object
+     * @see #encryptToByteArray()
+     * @see cipher.Cipher#encryptToString()
+     */
+    @CheckForNull
+    @CheckReturnValue(explanation = "If the encryption result is not of further interest, the process should not be invoked")
+    public String encryptToString() {
+        byte[] encryptedData = encryptToByteArray();
+        if (null == encryptedData) {
+            return null;
+        }
+        return new String(Base64.encodeBase64(encryptedData));
+    }
+    
+    /**
+     * <p>Decrypts the given encrypted data with the given
+     * entropy and the given additional information.
+     * The decrypted data is transformed to a {@code String}
+     * by using the method {@code new String(decryptedData,"UTF-8")}.</p>
+     * 
+     * <p>The method is not synchronized but forwards the work
+     * to the {@code encryptToByteArray()} method
+     * which is synchronized on this instance.</p>
+     * 
+     * @return The decrypted data as a {@code String} object
+     * @see #decryptToByteArray()
+     * @see cipher.Cipher#decryptToString()
+     */
+    @CheckForNull
+    @CheckReturnValue(explanation = "If the decryption result is not of further interest, the process should not be invoked")
+    public String decryptToString() {
+        byte[] decryptedData = decryptToByteArray();
+        if (null == decryptedData) {
+            return null;
+        }
+        try {
+            return new String(decryptedData,"UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            InternalError ie = new InternalError("JVM doesn't support UTF-8");
+            ie.initCause(uee);
+            throw ie;
+        }
+    }
+    
+    /**
+     * <p>Checks if this {@code Cipher} implementation is
+     * currently available. This method should return
+     * the same value during one JVM session.</p>
+     * 
+     * @availabilityDocumentation@
+     * 
+     * @return @availabilityReturn@
+     * @see cipher.Cipher#isAvailable()
+     */
+    @CheckReturnValue(explanation = "If the availability got requested it should be used")
+    public boolean isAvailable() {
+        @availabilityCheck@
+    }
+}
