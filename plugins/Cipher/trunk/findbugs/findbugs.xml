@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.2.0-rc1" sequence="0" timestamp="-1" analysisTimestamp="1172753010742" release="">
+  <Project filename="&lt;&lt;unnamed project&gt;&gt;">
+    <Jar>W:\.jedit\jars\Cipher.jar</Jar>
+    <AuxClasspathEntry>C:\Programme\jEdit\jedit.jar</AuxClasspathEntry>
+    <SrcDir>W:\Eigene Dateien\Coding\jedit\plugins\Cipher\src</SrcDir>
+  </Project>
+  <Errors></Errors>
+  <FindBugsSummary timestamp="Thu, 1 Mar 2007 13:43:30 +0100" total_classes="0" total_bugs="0" total_size="0" num_packages="0" cpu_seconds="0.02" clock_seconds="0.07" peak_mbytes="103.91" gc_seconds="0.00"></FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
