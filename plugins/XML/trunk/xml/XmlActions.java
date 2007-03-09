@@ -481,6 +481,7 @@ loop:			for(;;)
 		}
 	} //}}}
 
+
 	//{{{ selectElement() method
 	/**
 	 * Selects whole element, can be called repeatedly to select
@@ -538,9 +539,14 @@ loop:			for(;;)
 				}
 				else
 				{
-					// No tag found -- skip as much as posible
-					pos = (matchingTag != null ? matchingTag.start : tag.start) - step;
-					continue;
+					// No tag found - skip as much as posible
+					// NOTE: checking if matchingTag.start < tag.start
+					// shouldn't be necesary, but TagParser.getMatchingTag method
+					// sometimes finds matching tag only for start,
+					// tag, e.g.: "<x> => </x>"
+					pos = (matchingTag != null && matchingTag.start < tag.start)
+							? matchingTag.start
+							: tag.start;
 				}
 			}
 			pos -= step;
@@ -606,9 +612,14 @@ loop:			for(;;)
 				}
 				else
 				{
-					// No tag found -- skip as much as posible
-					pos = (matchingTag != null ? matchingTag.start : tag.start) - step;
-					continue;
+					// No tag found - skip as much as posible
+					// NOTE: checking if matchingTag.start < tag.start
+					// shouldn't be necesary, but TagParser.getMatchingTag method
+					// sometimes finds matching tag only for start,
+					// tag, e.g.: "<x> => </x>"
+					pos = (matchingTag != null && matchingTag.start < tag.start)
+							? matchingTag.start
+							: tag.start;
 				}
 			}
 			pos -= step;
@@ -618,6 +629,7 @@ loop:			for(;;)
 			textArea.getToolkit().beep();
 		}
 	}
+	// }}}
 
 
 	//{{{ insertClosingTagKeyTyped() method
