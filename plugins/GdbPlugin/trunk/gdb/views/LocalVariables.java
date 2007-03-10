@@ -45,7 +45,7 @@ public class LocalVariables extends JPanel {
 	}
 	public void sessionEnded() {
 		root.removeAllChildren();
-		model.nodeStructureChanged(root);
+		model.reload(root);
 	}
 
 	private class StackArgumentsResultHandler implements ResultHandler {
@@ -65,7 +65,7 @@ public class LocalVariables extends JPanel {
 					GdbVar v = new GdbVar(name);
 					v.setChangeListener(new ChangeListener() {
 						public void changed(GdbVar v) {
-							model.nodeStructureChanged(v);
+							model.reload(v);
 						}
 					});
 					root.add(v);
@@ -93,7 +93,7 @@ public class LocalVariables extends JPanel {
 						GdbVar v = new GdbVar(name);
 						v.setChangeListener(new ChangeListener() {
 							public void changed(GdbVar v) {
-								model.nodeStructureChanged(v);
+								model.reload(v);
 							}
 						});
 						root.add(v);
@@ -109,6 +109,6 @@ public class LocalVariables extends JPanel {
 	}
 
 	public void updateTree() {
-		model.nodeStructureChanged(root);
+		model.reload(root);
 	}
 }
