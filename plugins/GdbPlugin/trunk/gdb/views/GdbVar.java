@@ -14,6 +14,9 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private String value = null;
 	private String gdbName = null;
 	private ChangeListener listener = null;
+	private boolean created = false;
+	private boolean requested = false;
+	private boolean leaf = true;
 	
 	public interface ChangeListener {
 		void changed(GdbVar v);
@@ -24,10 +27,10 @@ public class GdbVar extends DefaultMutableTreeNode {
 		createGdbVar();
 	}
 	
-	public GdbVar(String name, String gdbName) {
+	public GdbVar(String name, String gdbName, boolean leaf) {
 		this.name = name;
 		this.gdbName = gdbName;
-		createChildren();
+		this.leaf = leaf;
 		getValue();
 	}
 	
@@ -63,6 +66,11 @@ public class GdbVar extends DefaultMutableTreeNode {
 		});
 	}
 	private void createChildren() {
+		created = true;
+		if (gdbName == null) {
+			requested = true;
+			return;
+		}
 		CommandManager.getInstance().add("-var-list-children " + gdbName,
 			new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
@@ -73,9 +81,13 @@ public class GdbVar extends DefaultMutableTreeNode {
 						String base = "children/" + i + "/child/";
 						String cname = res.getStringValue(base + "name");
 						String cexp = res.getStringValue(base + "exp");
-						GdbVar child = new GdbVar(cexp, cname);
+						String cnc = res.getStringValue(base + "numchild");
+						GdbVar child = new GdbVar(cexp, cname, Integer.parseInt(cnc) == 0);
+						child.setChangeListener(listener);
 						add(child);
 					}
+					if (listener != null)
+						listener.changed(GdbVar.this);
 				}
 			}
 		);
@@ -105,11 +117,29 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (! msg.equals("done"))
 						return;
 					gdbName = res.getStringValue("name");
-					createChildren();
+					String nc = res.getStringValue("numchild");
+					leaf = (Integer.parseInt(nc) == 0);
+					if (requested)
+						createChildren();
 					getValue();
 				}
 			}
 		);
 	}
 
+	@Override
+	public int getChildCount() {
+		if (! created) {
+			createChildren();
+			return 0;
+		}
+		return super.getChildCount();
+	}
+
+	@Override
+	public boolean isLeaf() {
+		if (! created)
+			return leaf ;
+		return super.isLeaf();
+	}
 }
