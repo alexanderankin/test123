@@ -47,7 +47,9 @@ public class GdbVar extends DefaultMutableTreeNode {
 		listener = null;
 	}
 	public String toString() {
-		return name + (value != null ? " = " + value : "");
+		if (value == null || value.equals(""))
+			return name;
+		return name + " = " + value;
 	}
 	private void getValue() {
 		if (CommandManager.getInstance() == null)
