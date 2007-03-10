@@ -40,7 +40,7 @@ public class Watches extends JPanel {
 				GdbVar v = new GdbVar(expr);
 				v.setChangeListener(new ChangeListener() {
 					public void changed(GdbVar v) {
-						model.nodeStructureChanged(v);
+						model.reload(v);
 					}
 				});
 				vars.add(v);
@@ -93,14 +93,14 @@ public class Watches extends JPanel {
 	}
 	public void sessionEnded() {
 		root.removeAllChildren();
-		model.nodeStructureChanged(root);
+		model.reload(root);
 	}
 
 	public void updateTree() {
 		root.removeAllChildren();
 		for (int i = 0; i < vars.size(); i++)
 			root.add(vars.get(i));
-		model.nodeStructureChanged(root);
+		model.reload(root);
 	}
 }
 
