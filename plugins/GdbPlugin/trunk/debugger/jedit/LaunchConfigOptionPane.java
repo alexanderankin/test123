@@ -44,7 +44,7 @@ import debugger.jedit.launch.LaunchConfiguration;
 import debugger.jedit.launch.LaunchConfigurationManager;
 
 /** ************************************************************************** */
-public class OptionPane extends AbstractOptionPane {
+public class LaunchConfigOptionPane extends AbstractOptionPane {
 	/**
 	 * 
 	 */
@@ -79,9 +79,9 @@ public class OptionPane extends AbstractOptionPane {
 	 * Factory methods
 	 **************************************************************************/
 	@SuppressWarnings("serial")
-	public OptionPane()
+	public LaunchConfigOptionPane()
 	{
-		super("Debugger");
+		super("Programs");
 		configs = LaunchConfigurationManager.getInstance();
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
