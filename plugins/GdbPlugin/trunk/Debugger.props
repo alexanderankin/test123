@@ -39,9 +39,15 @@ debugger-breakpoints.title=Breakpoints
 debugger-breakpoints.label=Breakpoints
 
 # Options
-plugin.debugger.jedit.Plugin.option-pane=Debugger
-options.Debugger.code=new debugger.jedit.OptionPane();
-options.Debugger.label=Debugger
+plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs
+options.debugger.gdb.code=new gdb.options.OptionPane();
+options.debugger.gdb.label=Gdb
+options.debugger.gdb_path_label=Gdb executable:
+options.debugger.gdb_path=gdb
+options.debugger.single_vars_view_label=Use a single view for local variables and watches
+options.debugger.single_vars_view=false
+options.debugger.programs.code=new debugger.jedit.LaunchConfigOptionPane();
+options.debugger.programs.label=Programs
 options.debugger.configurations_label=Configurations:
 options.debugger.configuration_label=Name:
 options.debugger.program_label=Program:
