@@ -1006,9 +1006,8 @@ public class FtpClient {
         {
             dataXfrSocket.close();
             dataXfrSocket = null;
-        }
-
-        setResponse();
+ 	    setResponse();        
+	}
     }
 
     //
