@@ -328,7 +328,7 @@ public class ResultSetPanel extends JPanel
 				            final Object do1 = row1[sortColumn];
 				            final Object do2 = row2[sortColumn];
 				            final int rv = (do1 instanceof Comparable) ?
-				                           ((Comparable)do1).compareTo(do2) :
+				                           ((Comparable)do1).compareTo(do2 == null ? "" : do2) :
 				                           ("" + do1).compareTo("" + do2);
 				            return isAscending ? rv : -rv;
 			            }
