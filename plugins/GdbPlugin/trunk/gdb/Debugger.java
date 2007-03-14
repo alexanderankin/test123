@@ -4,6 +4,7 @@ import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
 import gdb.views.LocalVariables;
 import gdb.views.StackTrace;
+import gdb.views.Variables;
 import gdb.views.Watches;
 
 import java.awt.BorderLayout;
@@ -45,9 +46,9 @@ public class Debugger implements DebuggerTool {
 	private LocalVariables localsPanel = null;
 	private StackTrace stackTracePanel = null;
 	private Watches watchesPanel = null;
+	private Variables variablesPanel = null;
 	// Command manager
 	private CommandManager commandManager = null;
-
 
 	private class BreakpointResultHandler implements ResultHandler {
 		private GdbBreakpoint bp;
@@ -133,6 +134,8 @@ public class Debugger implements DebuggerTool {
 			localsPanel.sessionEnded();
 		if (watchesPanel != null)
 			watchesPanel.sessionEnded();
+		if (variablesPanel != null)
+			variablesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
 	public void start(String prog, String args, String cwd, Hashtable<String, String> env) {
@@ -174,6 +177,7 @@ public class Debugger implements DebuggerTool {
 		updateStackTrace();
 		updateLocals(0);
 		updateWatches();
+		updateVariables(0);
 		frontEnd.setCurrentLocation(file, line);
 		
 	}
@@ -182,6 +186,12 @@ public class Debugger implements DebuggerTool {
 		if (watchesPanel != null) {
 			watchesPanel.setCommandManager(commandManager);
 			watchesPanel.update();
+		}
+	}
+	private void updateVariables(int frame) {
+		if (variablesPanel != null) {
+			variablesPanel.setCommandManager(commandManager);
+			variablesPanel.update(frame);
 		}
 	}
 	private void updateStackTrace() {
@@ -260,6 +270,10 @@ public class Debugger implements DebuggerTool {
 			localsPanel.setCommandManager(commandManager);
 			localsPanel.update(frame);
 		}
+		if (variablesPanel != null) {
+			variablesPanel.setCommandManager(commandManager);
+			variablesPanel.update(frame);
+		}
 	}
 	public void frameSelected(int level) {
 		updateLocals(level);
@@ -290,6 +304,11 @@ public class Debugger implements DebuggerTool {
 		if (watchesPanel == null)
 			watchesPanel = new Watches();
 		return watchesPanel;
+	}
+	public JPanel showVariables(View view) {
+		if (variablesPanel == null)
+			variablesPanel = new Variables();
+		return variablesPanel;
 	}
 	public JPanel showStackTrace(View view) {
 		if (stackTracePanel == null)

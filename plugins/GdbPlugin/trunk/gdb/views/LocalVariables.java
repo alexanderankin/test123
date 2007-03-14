@@ -3,7 +3,6 @@ package gdb.views;
 import gdb.CommandManager;
 import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
-import gdb.options.OptionPane;
 import gdb.views.GdbVar.ChangeListener;
 
 import java.awt.BorderLayout;
@@ -12,12 +11,9 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-
-import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class LocalVariables extends JPanel {
@@ -34,16 +30,7 @@ public class LocalVariables extends JPanel {
 		tree.setModel(model);
 		tree.setRootVisible(false);
 		JScrollPane locals = new JScrollPane(tree);
-		boolean singleVarsView = jEdit.getBooleanProperty(
-				OptionPane.SINGLE_VARS_VIEW_PROP);
-		if (singleVarsView) {
-			Watches watches = new Watches();
-			JSplitPane pane = new JSplitPane(
-					JSplitPane.VERTICAL_SPLIT, locals, watches);
-			add(pane);
-		} else {
-			add(locals);
-		}
+		add(locals);
 	}
 
 	public void setCommandManager(CommandManager cm) {
