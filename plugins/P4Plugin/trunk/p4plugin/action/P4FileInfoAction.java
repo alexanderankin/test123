@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.jEdit;
 
+import projectviewer.vpt.VPTNode;
+
 import p4plugin.Perforce;
 import p4plugin.config.P4GlobalConfig;
 
@@ -55,6 +57,10 @@ public class P4FileInfoAction extends AsyncP4Action {
     public void actionPerformed(ActionEvent ae) {
         path = viewer.getSelectedNode().getNodePath();
         super.actionPerformed(ae);
+    }
+
+    public void prepareForNode(VPTNode node) {
+        getMenuItem().setVisible(node != null && node.isFile());
     }
 
     /** Shows the output in a dialog. */

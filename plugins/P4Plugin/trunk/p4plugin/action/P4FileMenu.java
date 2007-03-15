@@ -46,8 +46,8 @@ import p4plugin.config.P4Config;
  */
 public class P4FileMenu extends Action {
 
-    private JMenu   fileMenu;
-    private List    actions;
+    private JMenu           fileMenu;
+    private List<Action>    actions;
 
     public String getText() {
         return jEdit.getProperty("p4plugin.action.file-menu");
@@ -69,13 +69,25 @@ public class P4FileMenu extends Action {
             addAction(new P4FileInfoAction("fstat"));
             addAction(new P4FileInfoAction("filelog"));
             addAction(new P4Submit(true));
+            addAction(new P4SyncAction());
         }
         return fileMenu;
     }
 
     public void prepareForNode(VPTNode node) {
         P4Config cfg = P4Config.getProjectConfig(jEdit.getActiveView());
-        getMenuItem().setVisible(cfg != null && node != null && node.isFile());
+        if (cfg != null) {
+            boolean show = false;
+            for (Action a : actions) {
+                a.prepareForNode(node);
+                if (a.getMenuItem().isVisible()) {
+                    show = true;
+                }
+            }
+            getMenuItem().setVisible(show);
+        } else {
+            getMenuItem().setVisible(false);
+        }
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -92,7 +104,7 @@ public class P4FileMenu extends Action {
     private void addAction(Action a) {
         a.setViewer(viewer);
         if (actions == null)
-            actions = new LinkedList();
+            actions = new LinkedList<Action>();
         actions.add(a);
         fileMenu.add(a.getMenuItem());
     }
