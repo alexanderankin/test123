@@ -109,6 +109,13 @@
         </CODE>
     </ACTION>
 
+    <ACTION NAME="p4plugin_sync">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4SyncAction(), view, false);
+        </CODE>
+    </ACTION>
+
     <ACTION NAME="p4plugin_diff">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(

@@ -40,7 +40,8 @@ plugin.p4plugin.P4Plugin.menu=p4plugin_client \
     p4plugin_diff \
 	p4plugin_fstat \
     p4plugin_filelog \
-	p4plugin_submit
+	p4plugin_submit \
+    p4plugin_sync
 
 p4plugin_client.label=Change Project's Client Spec
 p4plugin_change.label=Create/Edit Change List
@@ -61,6 +62,7 @@ p4plugin_reopen_cl.label=Reopen in Change List
 p4plugin_revert.label=Revert
 p4plugin_submit_cl.label=Submit Change List
 p4plugin_submit.label=Submit File
+p4plugin_sync.label=Sync File/Directory
 #}}}
 
 #{{{ PV extensions
@@ -129,6 +131,7 @@ p4plugin.action.revert=Revert
 p4plugin.action.submit=Submit
 p4plugin.action.describe=Desbribe Change List
 p4plugin.action.diff=Diff
+p4plugin.action.sync=Sync
 
 p4plugin.action.edit-clist=Edit in change list
 p4plugin.action.add-clist=Add to change list
