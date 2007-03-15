@@ -283,9 +283,6 @@ public class NodeRenamerAction extends Action {
 					chFile.setSelected(true);
 					chFile.setEnabled(node.canWrite() && node.isFile());
 				}
-				System.err.println(node.getName());
-				System.err.println(((VPTFile)node).getFile().getName());
-
 				getContentPane().add(BorderLayout.CENTER, p);
 			}
 
