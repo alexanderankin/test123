@@ -35,5 +35,6 @@ poptions.main.enabled=Use Custom Options
 #{{{ Editing pane
 options.poptions-editing.code=new poptions.EditingOptionPane();
 options.poptions-editing.label=Editing
+poptions.editing.whitespace=WhiteSpace Plugin
 #}}}
 

@@ -40,7 +40,7 @@ public class ProjectListener extends ProjectAdapter
     public ProjectListener()
     {
         plugin = (ProjectOptionsPlugin)
-                    jEdit.getPlugin("poptions.ProjectOptionsPlugin");
+                    jEdit.getPlugin(ProjectOptionsPlugin.class.getName());
     }
 
     public void propertiesChanged(ProjectEvent evt)

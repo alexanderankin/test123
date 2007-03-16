@@ -30,7 +30,6 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
 import common.gui.EasyOptionPane;
-import projectviewer.config.ProjectOptions;
 
 /**
  *  Option pane with configurable editing actions.
@@ -55,6 +54,20 @@ public class EditingOptionPane extends ChildOptionPane
         lst.add("encodings,options.general.encoding,poptions.buffer.encoding");
         lst.add("checkbox,options.editing.noTabs,poptions.buffer.noTabs");
         lst.add("checkbox,options.editing.deepIndent,poptions.buffer.deepIndent");
+
+        /*
+         * If the whitespace plugin is installed, add an option to enable
+         * "remove trailing whitespace on save".
+         */
+        if (jEdit.getPlugin("whitespace.WhiteSpacePlugin") != null)
+        {
+            lst.add("sep,poptions.editing.whitespace");
+            lst.add("checkbox,white-space.toggle-remove-trailing-white-space.label,poptions.white-space.remove-trailing-white-space");
+            lst.add("checkbox,white-space.toggle-soft-tabify-leading-white-space.label,poptions.white-space.soft-tabify-leading-white-space");
+            lst.add("checkbox,white-space.toggle-untabify-leading-white-space.label,poptions.white-space.untabify-leading-white-space");
+            lst.add("checkbox,white-space.toggle-tabify-leading-white-space.label,poptions.white-space.tabify-leading-white-space");
+        }
+
         setComponentSpec(lst);
     }
 
