@@ -254,7 +254,7 @@ public class EasyOptionPane extends AbstractOptionPane
 				label = st.nextToken();
 				if ("null".equals(label)) {
 					label = null;
-				} else {
+				} else if (!"sep".equals(type)) {
 					tooltip = jEdit.getProperty(label + ".tooltip", (String)null);
 					label = jEdit.getProperty(label, label);
 				}
