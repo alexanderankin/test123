@@ -45,8 +45,7 @@ public class ProjectListener extends ProjectAdapter
 
     public void propertiesChanged(ProjectEvent evt)
     {
-        plugin.restoreGlobalOptions(false);
-        plugin.setProjectOptions(evt.getProject());
+        plugin.setProjectOptions(evt.getProject(), true);
     }
 
 }
