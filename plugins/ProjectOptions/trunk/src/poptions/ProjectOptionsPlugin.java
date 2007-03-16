@@ -56,8 +56,8 @@ public class ProjectOptionsPlugin extends EBPlugin {
         // check if there's an active project and load it's custom
         // properties
         VPTProject p = ProjectViewer.getActiveProject(jEdit.getActiveView());
-        if (p != null && !p.getName().equals(activeProjectName)) {
-            setProjectOptions(p);
+        if (p != null) {
+            setProjectOptions(p, false);
         }
     }
 
@@ -115,25 +115,35 @@ public class ProjectOptionsPlugin extends EBPlugin {
     protected void restoreProjectOptions()
     {
         if (activeProjectName != null) {
+            System.err.println("restoring project: " + activeProjectName);
             VPTProject p = ProjectManager.getInstance()
                                 .getProject(activeProjectName);
             if (p != null) {
-                setProjectOptions(p);
+                setProjectOptions(p, true);
             }
         }
     }
 
-    protected void setProjectOptions(VPTProject p)
+    protected void setProjectOptions(VPTProject p, boolean force)
     {
         boolean changed = false;
         boolean restore = true;
 
+        if (force) {
+            activeProjectName = null;
+            if (savedProperties != null) {
+                restoreGlobalOptions(false);
+            }
+        }
+
         if (p != null) {
+            if (p.getName().equals(activeProjectName)) {
+                return;
+            }
             Properties popts = p.getProperties();
             boolean enabled = "true".equalsIgnoreCase(popts.getProperty("poptions.enabled"));
             if (enabled) {
                 System.err.println("setting project options for: " + p.getName());
-                savedProperties = null;
                 for (Object okey : popts.keySet()) {
                     String key = (String) okey;
                     if (key.startsWith("poptions.") &&
@@ -173,6 +183,7 @@ public class ProjectOptionsPlugin extends EBPlugin {
         ignoreChange = true;
         jEdit.propertiesChanged();
         ignoreChange = false;
+        System.err.println("sending message done");
     }
 
 }

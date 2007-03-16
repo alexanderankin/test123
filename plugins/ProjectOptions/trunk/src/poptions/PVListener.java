@@ -45,12 +45,12 @@ public class PVListener extends ProjectViewerAdapter
 
     public void groupActivated(ProjectViewerEvent evt)
     {
-        plugin.setProjectOptions(null);
+        plugin.setProjectOptions(null, false);
     }
 
     public void projectLoaded(ProjectViewerEvent evt)
     {
-        plugin.setProjectOptions(evt.getProject());
+        plugin.setProjectOptions(evt.getProject(), false);
     }
 
 }
