@@ -6,7 +6,10 @@
 	<property name="javadoc.packagenames"	value="sidekick.perl.*" />
 	<property name="plugin.dependencies" 	value="SideKick,ErrorList" />
 	<property name="version" value="0.6" />
-	
+
+    <property name="dist.target"    value="build" />
+
+
 	<import file="${build.support}/plugin-build.xml" />
 
 	<path id="project.class.path">
