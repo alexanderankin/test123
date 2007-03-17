@@ -257,17 +257,18 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		return entry;
 	}
 	
-	public String getPassphrase()
-	{
-		// TODO: password dialog
-		return null;
-	}
 	private char[] passphrase = null;
-	public String getPassword()
+	
+	public String getPassphrase()
 	{
 		if (passphrase == null)
 			return null;
 		return new String(passphrase);
+	}
+	
+	public String getPassword()
+	{
+		return info.password;
 	}
 	
 	public boolean promptPassword(String message){ return true;}
