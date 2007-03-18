@@ -23,6 +23,12 @@
 			debugger.jedit.Plugin.step(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-finish" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.finishCurrentFunction(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="debugger-toggle-breakpoint" NO_REPEAT="TRUE">
 		<CODE>
 			debugger.jedit.Plugin.toggleBreakpoint(view);

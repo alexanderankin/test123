@@ -117,13 +117,23 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void pause() {
-		// TODO Auto-generated method stub
-
+		commandManager.add("-exec-interrupt");
 	}
 
 	public void quit() {
-		// TODO Auto-generated method stub
+		commandManager.add("-gdb-exit");
+	}
 
+	public void next() {
+		commandManager.add("-exec-next");
+	}
+
+	public void step() {
+		commandManager.add("-exec-step");
+	}
+
+	public void finishCurrentFunction() {
+		commandManager.add("-exec-finish");
 	}
 
 	private void sessionEnded() {
@@ -337,15 +347,8 @@ public class Debugger implements DebuggerTool {
 		return running;
 	}
 
-	public void next() {
-		commandManager.add("-exec-next");
-	}
-
-	public void step() {
-		commandManager.add("-exec-step");
-	}
-
 	public CommandManager getCommandManager() {
 		return commandManager;
 	}
+
 }

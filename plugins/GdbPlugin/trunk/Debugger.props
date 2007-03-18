@@ -11,6 +11,8 @@ plugin.debugger.jedit.Plugin.description=\
 debugger-go.label=Go!
 debugger-next.label=Next
 debugger-step.label=Step
+debugger-quit.label=Quit
+debugger-finish.label=Return from current function
 debugger-toggle-breakpoint.label=Toggle breakpoint
 debugger-set-breakpoint.label=Set breakpoint
 debugger-remove-breakpoint.label=Remove breakpoint
@@ -19,6 +21,8 @@ debugger-remove-breakpoint.label=Remove breakpoint
 plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-next \
   debugger-step \
+  debugger-finish \
+  debugger-quit \
   separator \
   debugger-toggle-breakpoint \
   debugger-set-breakpoint \

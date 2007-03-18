@@ -8,6 +8,7 @@ public interface DebuggerTool {
 	void go();
 	void next();
 	void step();
+	void finishCurrentFunction();
 	void pause();
 	void quit();
 	boolean isRunning();
