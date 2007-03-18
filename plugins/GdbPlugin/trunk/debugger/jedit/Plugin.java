@@ -79,7 +79,14 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		} else 
 			debugger.go();
 	}
-	
+	public static void finishCurrentFunction(View view) {
+		if (debugger.isRunning())
+			debugger.finishCurrentFunction();
+	}
+	public static void quit(View view) {
+		if (debugger.isRunning())
+			debugger.quit();
+	}
 	public static void toggleBreakpoint(View view)
 	{
 		Buffer buffer = view.getBuffer();
