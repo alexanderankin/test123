@@ -348,6 +348,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <itemizedlist>
    <listitem><para> Added parser setting from mode options pane. (ezust) </para></listitem>
    <listitem><para> NPE after install from plugin manager fixed. (kpouer) </para></listitem> 
+   <listitem><para> Bug 1643614 fixed (reparse on mode change) </para></listitem>
  </itemizedlist>
 </listitem>
 

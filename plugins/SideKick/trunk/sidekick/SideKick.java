@@ -288,6 +288,7 @@ class SideKick implements EBComponent
 	} //}}}
 
 	//{{{ propertiesChanged() method
+	/** called when the sidekick's properties are changed */
 	private void propertiesChanged()
 	{
 		if (!isParseOnChange()) return;
@@ -300,6 +301,7 @@ class SideKick implements EBComponent
 		{
 			delay = 1500;
 		}
+		
 	} //}}}
 
 	//{{{ showNotParsedMessage() method
@@ -344,7 +346,12 @@ class SideKick implements EBComponent
 	//{{{ handleBufferUpdate() method
 	private void handleBufferUpdate(BufferUpdate bmsg)
 	{
-		if (bmsg.getView() != view) return;
+		if (bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED &&
+			view.getBuffer() == bmsg.getBuffer()) {
+			setParser(view.getBuffer());
+		}
+
+		if (bmsg.getView() != view ) return;
 		
 		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
 			parse(true);

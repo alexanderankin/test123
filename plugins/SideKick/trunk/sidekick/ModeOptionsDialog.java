@@ -32,20 +32,17 @@ import java.util.Enumeration;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.gui.OptionsDialog.OptionTreeModel;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 // }}}
