@@ -72,9 +72,13 @@ class SessionManagerDialog
 				lSessions.setSelectedValue(currentSession, true);
 			}
 		});
+		// try to show as many sessions as possible (maximum 25)
+		int numSessions = lSessions.getModel().getSize();
+		if (numSessions > 25)
+			numSessions = 25;
+		lSessions.setVisibleRowCount(numSessions);
 
 		JScrollPane scrSessions = new JScrollPane(lSessions);
-		scrSessions.setPreferredSize(new Dimension(200, 100));
 
 		bRename = new JButton(jEdit.getProperty("sessions.manager.rename"));
 		bRename.addActionListener(this);
