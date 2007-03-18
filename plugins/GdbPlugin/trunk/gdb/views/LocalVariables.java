@@ -31,6 +31,7 @@ public class LocalVariables extends JPanel {
 		tree.setRootVisible(false);
 		JScrollPane locals = new JScrollPane(tree);
 		add(locals);
+		tree.addMouseListener(new VarTreeMouseListener());
 	}
 
 	public void setCommandManager(CommandManager cm) {

@@ -82,6 +82,7 @@ public class Watches extends JPanel {
 		tree.setModel(model);
 		tree.setRootVisible(false);
 		add(new JScrollPane(tree), BorderLayout.CENTER);
+		tree.addMouseListener(new VarTreeMouseListener());
 	}
 
 	public void setCommandManager(CommandManager cm) {
