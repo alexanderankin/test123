@@ -6,6 +6,7 @@ import gdb.Parser.ResultHandler;
 
 import java.util.Enumeration;
 
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 @SuppressWarnings("serial")
@@ -143,5 +144,17 @@ public class GdbVar extends DefaultMutableTreeNode {
 		if (! created)
 			return leaf ;
 		return super.isLeaf();
+	}
+
+	public void contextRequested() {
+		if (CommandManager.getInstance() == null)
+			return;
+		if (! isLeaf())
+			return;
+		String newValue =
+			JOptionPane.showInputDialog("New value for '" + name + "':", value);
+		CommandManager.getInstance().add(
+				"-var-assign " + gdbName + " " + newValue);
+		getValue();	// Update the value after the change
 	}
 }
