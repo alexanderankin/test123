@@ -28,6 +28,11 @@
 			debugger.jedit.Plugin.finishCurrentFunction(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-pause" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.pause(view);
+		</CODE>
+	</ACTION>
 
 	<ACTION NAME="debugger-toggle-breakpoint" NO_REPEAT="TRUE">
 		<CODE>

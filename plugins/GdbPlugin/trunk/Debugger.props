@@ -13,6 +13,7 @@ debugger-next.label=Next
 debugger-step.label=Step
 debugger-quit.label=Quit
 debugger-finish.label=Return from current function
+debugger-pause.label=Pause
 debugger-toggle-breakpoint.label=Toggle breakpoint
 debugger-set-breakpoint.label=Set breakpoint
 debugger-remove-breakpoint.label=Remove breakpoint
@@ -22,8 +23,10 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-next \
   debugger-step \
   debugger-finish \
+  - \
+  debugger-pause \
   debugger-quit \
-  separator \
+  - \
   debugger-toggle-breakpoint \
   debugger-set-breakpoint \
   debugger-remove-breakpoint
@@ -43,6 +46,8 @@ debugger-watches.title=Expressions
 debugger-watches.label=Expressions
 debugger-breakpoints.title=Breakpoints
 debugger-breakpoints.label=Breakpoints
+debugger-panel.title=Control Panel
+debugger-panel.label=Control Panel
 
 # Options
 plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs

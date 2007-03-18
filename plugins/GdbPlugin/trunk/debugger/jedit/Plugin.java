@@ -83,6 +83,10 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		if (debugger.isRunning())
 			debugger.finishCurrentFunction();
 	}
+	public static void pause(View view) {
+		if (debugger.isRunning())
+			debugger.pause();
+	}
 	public static void quit(View view) {
 		if (debugger.isRunning())
 			debugger.quit();
@@ -119,6 +123,8 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	}
 	static CurrentPositionPainter dp = null;
 	static View dpview = null;
+	private static ControlView controlView = null;
+	private static BreakpointView brkView = null;
 	private static void jumpTo(final String file, final int line, final boolean isCurrent) {
 		final View view = jEdit.getActiveView();
 		if (isCurrent && (dp != null)) {
@@ -166,8 +172,14 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		JOptionPane.showMessageDialog(null, msg);
 	}
 	// Views
+	static public JPanel showControlPanel(View view) {
+		if (controlView == null)
+			controlView = new ControlView();
+		return controlView;
+	}
 	static public JPanel showBreakpoints(View view) {
-		BreakpointView brkView = new BreakpointView();
+		if (brkView == null)
+			brkView = new BreakpointView();
 		return brkView;
 	}
 
