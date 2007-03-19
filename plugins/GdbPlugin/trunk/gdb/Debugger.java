@@ -121,7 +121,13 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void quit() {
-		commandManager.add("-gdb-exit");
+		commandManager.add("-gdb-exit", new ResultHandler() {
+			public void handle(String msg, GdbResult res) {
+				if (msg.equals("exit")) {
+					sessionEnded();
+				}
+			}
+		});
 	}
 
 	public void next() {

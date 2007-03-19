@@ -39,6 +39,8 @@ import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
 import debugger.jedit.launch.LaunchConfiguration;
 import debugger.jedit.launch.LaunchConfigurationManager;
+import debugger.jedit.views.BreakpointView;
+import debugger.jedit.views.ControlView;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	public static String OPTION_PREFIX = "options.debugger.";
