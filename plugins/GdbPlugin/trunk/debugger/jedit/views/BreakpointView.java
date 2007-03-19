@@ -1,4 +1,4 @@
-package debugger.jedit;
+package debugger.jedit.views;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 import debugger.core.DebuggerDB;
 import debugger.core.DebuggerDB.BreakpointListListener;
+import debugger.jedit.Breakpoint;
 
 @SuppressWarnings("serial")
 public class BreakpointView extends JPanel {

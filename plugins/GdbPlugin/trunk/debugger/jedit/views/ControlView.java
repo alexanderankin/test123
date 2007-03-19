@@ -1,6 +1,5 @@
-package debugger.jedit;
+package debugger.jedit.views;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,11 +8,12 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
 
+import debugger.jedit.Plugin;
+
 @SuppressWarnings("serial")
 public class ControlView extends JPanel {
 
-	ControlView() {
-		setLayout(new FlowLayout());
+	public ControlView() {
 		JButton go = new JButton("Go!");
 		add(go);
 		go.addActionListener(new ActionListener() {
