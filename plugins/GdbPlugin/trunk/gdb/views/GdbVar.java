@@ -114,7 +114,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private void createGdbVar() {
 		if (CommandManager.getInstance() == null)
 			return;
-		CommandManager.getInstance().add("-var-create - * " + name,
+		CommandManager.getInstance().add("-var-create - * \"" + name + "\"",
 			new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
 					if (! msg.equals("done"))
