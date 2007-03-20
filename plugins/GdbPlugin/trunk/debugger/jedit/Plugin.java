@@ -185,6 +185,14 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		return brkView;
 	}
 
+	static public void toggleAllViews(View view) {
+		view.getDockableWindowManager().toggleDockableWindow("debugger-program-output");
+		view.getDockableWindowManager().toggleDockableWindow("debugger-gdb-output");
+		view.getDockableWindowManager().toggleDockableWindow("debugger-show-variables");
+		view.getDockableWindowManager().toggleDockableWindow("debugger-show-stack-trace");
+		view.getDockableWindowManager().toggleDockableWindow("debugger-breakpoints");
+	}
+	
 	public void programExited() {
 		removeCurrentPositionPainter();
 	}
