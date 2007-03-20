@@ -311,7 +311,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 				privateKeyField.setText("");
 		}
 		
-		if (pass != null)	
+		if (pass != null)
 			passwordField.setText(pass);
 		else
 			passwordField.setText("");

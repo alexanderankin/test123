@@ -58,8 +58,10 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 			Session session=client.getSession(info.user, info.host,info.port);
 			if (info.privateKey != null) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
+				Log.log(Log.DEBUG,this,"Using key: "+info.privateKey);
 				client.addIdentity(info.privateKey);
 			}
+			keyAttempts = 0;
 			session.setUserInfo(this);
 			
 			// Timeout hardcoded to 60seconds
@@ -78,6 +80,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	{
 		ArrayList listing = new ArrayList();
 		int count=0;
+		
 		try
 		{
 			java.util.Vector vv=sftp.ls(path);
@@ -227,6 +230,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	
 	private JSch client;
 	private ChannelSftp sftp;
+	private int keyAttempts = 0;
 	
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(com.jcraft.jsch.ChannelSftp.LsEntry file)
 	{
@@ -257,27 +261,39 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		return entry;
 	}
 	
-	private char[] passphrase = null;
+	private String passphrase = null;
 	
 	public String getPassphrase()
 	{
 		if (passphrase == null)
 			return null;
-		return new String(passphrase);
+		return passphrase;
 	}
 	
 	public String getPassword()
 	{
-		return info.password;
+		return new String(info.password);
 	}
 	
 	public boolean promptPassword(String message){ return true;}
 	public boolean promptPassphrase(String message)
-	{ 
-		PasswordDialog pd = new PasswordDialog(null,"Enter Passphrase for key:",message);
-		if (!pd.isOK())
-			return false;
-		passphrase = pd.getPassword();
+	{
+		Log.log(Log.DEBUG,this,message);
+		String pass = ConnectionManager.getPassword(info.privateKey);
+		if (pass==null || keyAttempts != 0)
+		{
+			PasswordDialog pd = new PasswordDialog(null,"Enter Passphrase for key",message);
+			if (!pd.isOK())
+				return false;
+			passphrase = new String(pd.getPassword());
+			if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
+			{
+				ConnectionManager.setPassword(info.privateKey,passphrase);
+			}
+			return true;
+		}
+		keyAttempts++;
+		passphrase = pass;
 		return true;
 	}
 	public boolean promptYesNo(String message)
@@ -285,7 +301,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		Object[] options={ "yes", "no" };
 		int foo=JOptionPane.showOptionDialog(null, 
 			message,
-			"Warning", 
+			"Warning",
 			JOptionPane.DEFAULT_OPTION, 
 			JOptionPane.WARNING_MESSAGE,
 			null, options, options[0]);
