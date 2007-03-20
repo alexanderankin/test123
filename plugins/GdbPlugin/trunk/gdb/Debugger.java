@@ -274,13 +274,10 @@ public class Debugger implements DebuggerTool {
 			localsPanel.setCommandManager(commandManager);
 			localsPanel.update(frame);
 		}
-		if (variablesPanel != null) {
-			variablesPanel.setCommandManager(commandManager);
-			variablesPanel.update(frame);
-		}
 	}
 	public void frameSelected(int level) {
 		updateLocals(level);
+		updateVariables(level);
 	}
 
 	static public JPanel showProgramOutput(View view) {
