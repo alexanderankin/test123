@@ -49,6 +49,12 @@
 			debugger.jedit.Plugin.removeBreakpoint(view);
 		</CODE>
 	</ACTION>
+
+	<ACTION NAME="debugger-toggle-all-views" NO_REPEAT="TRUE">
+		<CODE>
+			debugger.jedit.Plugin.toggleAllViews(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 

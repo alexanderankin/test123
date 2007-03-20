@@ -17,6 +17,7 @@ debugger-pause.label=Pause
 debugger-toggle-breakpoint.label=Toggle breakpoint
 debugger-set-breakpoint.label=Set breakpoint
 debugger-remove-breakpoint.label=Remove breakpoint
+debugger-toggle-all-views.label=Toggle all dockables
 
 # menu items
 plugin.debugger.jedit.Plugin.menu=debugger-go \
@@ -29,7 +30,9 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   - \
   debugger-toggle-breakpoint \
   debugger-set-breakpoint \
-  debugger-remove-breakpoint
+  debugger-remove-breakpoint \
+  - \
+  debugger-toggle-all-views
 
 # dockables
 debugger-program-output.title=Program Output
