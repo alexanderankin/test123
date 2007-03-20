@@ -9,7 +9,7 @@ public class LaunchConfiguration {
 	private String directory;
 	private String environment;
 	public LaunchConfiguration(String name, String program, String arguments,
-			String directory, String environmnent) {
+			String directory, String environment) {
 		set(name, program, arguments, directory, environment);
 	}
 	public String getName() {
