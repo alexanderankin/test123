@@ -22,7 +22,7 @@ public class Parser extends Thread {
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
 	
-	public class GdbResult {
+	static public class GdbResult {
 		Hashtable<String, Object> result = new Hashtable<String, Object>();
 		int next;
 		GdbResult(String line) {
@@ -152,7 +152,6 @@ public class Parser extends Thread {
 				} else {
 					return null;
 				}
-				index = path.indexOf("/");
 			}
 			return current;
 		}

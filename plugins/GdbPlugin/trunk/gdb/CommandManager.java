@@ -13,7 +13,6 @@ public class CommandManager extends Thread {
 	private static CommandManager instance = null;
 	Vector<Command> commands = new Vector<Command>();
 	BufferedWriter stdOutput = null;
-	Debugger debugger = null;
 	Parser parser = null;
 	int id = 0;
 	
@@ -22,6 +21,7 @@ public class CommandManager extends Thread {
 		ResultHandler handler;
 		Integer id;
 		boolean wait;
+		boolean done = false;
 		// Add a CLI command
 		public Command(String cmd) {
 			this.cmd = cmd;
@@ -43,6 +43,7 @@ public class CommandManager extends Thread {
 						if (handler != null)
 							handler.handle(msg, res);
 						synchronized(id) {
+							done = true;
 							id.notify();
 						}
 					}
@@ -61,7 +62,8 @@ public class CommandManager extends Thread {
 				// Wait for result
 				synchronized(id) {
 					try {
-						id.wait();
+						if (! done)
+							id.wait();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -71,15 +73,14 @@ public class CommandManager extends Thread {
 			}
 		}
 	}
-	public CommandManager(Debugger debugger, Process p, Parser parser) {
+	public CommandManager(Process p, Parser parser) {
 		instance = this;
-		this.debugger = debugger;
 		stdOutput = new BufferedWriter(
 				new OutputStreamWriter(p.getOutputStream()));
 		this.parser = parser;
 	}
 	public void add(String cmd, ResultHandler handler) {
-		Integer cid = new Integer(id);
+		Integer cid = Integer.valueOf(id);
 		id++;
 		Command c = new Command(cid, cmd, handler);
 		synchronized(commands) {

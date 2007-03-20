@@ -63,7 +63,7 @@ public class BreakpointView extends JPanel {
 	}
 	
 	@SuppressWarnings("serial")
-	private class BreakpointCheckBox extends JCheckBox {
+	static private class BreakpointCheckBox extends JCheckBox {
 		private Breakpoint bp;
 		
 		public BreakpointCheckBox(Breakpoint bpt) {
@@ -82,7 +82,7 @@ public class BreakpointView extends JPanel {
 			return (this.bp == bp.bp);
 		}
 	}
-	private class BreakpointCellRenderer implements ListCellRenderer
+	static private class BreakpointCellRenderer implements ListCellRenderer
 	{
 		public Component getListCellRendererComponent(
 				JList list, Object value, int index,

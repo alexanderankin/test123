@@ -224,7 +224,6 @@ public class StackTrace extends JPanel {
 	}
 	
 	private class StackTraceListener extends MouseAdapter {
-		Debugger debugger;
 		public void mouseClicked(MouseEvent e) {
 			TreePath path = tree.getSelectionPath();
 			Object obj = ((DefaultMutableTreeNode) path

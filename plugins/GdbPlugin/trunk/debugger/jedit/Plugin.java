@@ -43,7 +43,7 @@ import debugger.jedit.views.BreakpointView;
 import debugger.jedit.views.ControlView;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
-	public static String OPTION_PREFIX = "options.debugger.";
+	static public final String OPTION_PREFIX = "options.debugger.";
 	static private DebuggerTool debugger = Debugger.getInstance();
 	static private LaunchConfiguration currentConfig;
 	

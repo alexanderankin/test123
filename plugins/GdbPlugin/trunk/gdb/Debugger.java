@@ -50,7 +50,7 @@ public class Debugger implements DebuggerTool {
 	// Command manager
 	private CommandManager commandManager = null;
 
-	private class BreakpointResultHandler implements ResultHandler {
+	static private class BreakpointResultHandler implements ResultHandler {
 		private GdbBreakpoint bp;
 		public BreakpointResultHandler(GdbBreakpoint bp) {
 			this.bp = bp;
@@ -167,7 +167,7 @@ public class Debugger implements DebuggerTool {
 	        parser = new Parser(this, p);
 	        parser.addOutOfBandHandler(new OutOfBandHandler());
 			parser.start();
-			commandManager = new CommandManager(this, p, parser);
+			commandManager = new CommandManager(p, parser);
 			commandManager.start();
 			// First set up the arguments
 			commandManager.add("-exec-arguments " + args);
@@ -252,28 +252,16 @@ public class Debugger implements DebuggerTool {
 	}
 	private class OutOfBandHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
-			final String getCurrentPosition = new String("-file-list-exec-source-file");
+			final String getCurrentPosition = "-file-list-exec-source-file";
 			String reason = res.getStringValue("reason");
-			String file = null;
-			int line = (file != null) ?
-				Integer.parseInt(res.getStringValue("frame/line")) : 0;
 			if (reason.equals("breakpoint-hit")) {
 				int bkptno = Integer.parseInt(res.getStringValue("bkptno"));
-				if (file != null) {
-					breakpointHit(bkptno, file, line);
-					stopped(file, line);
-				} else {
-					commandManager.add(getCurrentPosition, new BreakpointHitHandler(bkptno));
-				}
+				commandManager.add(getCurrentPosition, new BreakpointHitHandler(bkptno));
 			} else if (reason.startsWith("exited")) {
 				System.err.println("Exited");
 				sessionEnded();
 			} else {
-				if (file != null) {
-					stopped(file, line);
-				} else {
-					commandManager.add(getCurrentPosition, new StoppedHandler());
-				}
+				commandManager.add(getCurrentPosition, new StoppedHandler());
 			}
 		}
 	}
