@@ -1,0 +1,4 @@
+- re-check when project options should be set and when global options should be kept, especially when the project is not set for using custom options
+
+- nice and easy way to control which options are custom set?
+

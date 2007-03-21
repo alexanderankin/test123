@@ -1,0 +1,35 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Options plugin          -->
+<!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="ProjectOptions" default="build" basedir=".">
+	<property file="../build.properties" />
+	<property name="build.support" value="../build-support" />
+	<property name="plugin.dependencies" 	value="ProjectViewer" />
+	<property name="dist.target" 			value="dist.nojavadoc" />
+    <property name="compiler.source"        value="1.5" />
+    <property name="compiler.target"        value="1.5" />
+	<property name="user-doc.xml"           value="${basedir}/users-guide.xml" />
+	<property name="docbook.xsl.sheet"		value="html/onechunk.xsl" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+
+	<selector id="compileFiles">
+		<and>
+			<filename name="src/**/*.java" />
+		</and>
+	</selector>
+
+	<path id="project.class.path">
+		<fileset dir="..">
+			<include name="*.jar" />
+			<exclude name="ProjectOptions*" />
+		</fileset>
+		<pathelement location="${install.dir}/CommonControls.jar" />
+		<pathelement location="${install.dir}/ProjectViewer.jar" />
+	</path>
+
+</project>
+
