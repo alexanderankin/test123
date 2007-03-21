@@ -50,6 +50,7 @@ public class ConnectionManager
 				"Unable to create password file:"+passwordFile);
 		}
 		passwords.clear();
+		passphrases.clear();
 		logins.clear();
 	} //}}}
 
@@ -63,6 +64,18 @@ public class ConnectionManager
 	protected static void setPassword(String hostInfo, String password)
 	{
 		passwords.put(hostInfo,password);
+	} //}}}
+	
+	//{{{ getPassphrase() method
+	protected static String getPassphrase(String keyFile)
+	{
+		return (String)passphrases.get(keyFile);
+	} //}}}
+	
+	//{{{ setPassphrase() method
+	protected static void setPassphrase(String keyFile, String passphrase)
+	{
+		passphrases.put(keyFile,passphrase);
 	} //}}}
 	
 	//{{{ loadPasswords() method
@@ -507,6 +520,7 @@ public class ConnectionManager
 	private static ArrayList connections;
 	private static HashMap logins;
 	private static HashMap passwords;
+	private static HashMap passphrases;
 	private static int connectionTimeout = 120000;
 	private static File passwordFile = null;
 	static
@@ -515,6 +529,7 @@ public class ConnectionManager
 		connections = new ArrayList();
 		logins = new HashMap();
 		passwords = new HashMap();
+		passphrases = new HashMap();
 
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory == null)
