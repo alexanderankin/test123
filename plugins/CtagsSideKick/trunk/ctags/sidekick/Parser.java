@@ -129,9 +129,10 @@ public class Parser extends SideKickParser {
 		String [] args = new String[cmdLine.size()]; 
 		cmdLine.toArray(args);
 		Process p;
+		BufferedReader in = null;
 		try {
 			p = Runtime.getRuntime().exec(args);
-			BufferedReader in = new BufferedReader(
+			in = new BufferedReader(
 					new InputStreamReader(p.getInputStream()));
 			String line;
 			Tag prevTag = null;
@@ -191,6 +192,13 @@ public class Parser extends SideKickParser {
 			data.done();
 		} catch (IOException e) {
 			System.err.println(e);
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if (f != null)
 			f.delete();

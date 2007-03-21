@@ -204,14 +204,14 @@ public class ParsedData extends SideKickParsedData
 			}			
 		}
 	}
-	class NameComparator implements Comparator<CtagsSideKickTreeNode>	
+	static class NameComparator implements Comparator<CtagsSideKickTreeNode>	
 	{
 		public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b)
 		{
 			return a.getUserObject().toString().compareTo(b.getUserObject().toString());
 		}
 	}
-	class FoldNameComparator implements Comparator<CtagsSideKickTreeNode>	
+	static class FoldNameComparator implements Comparator<CtagsSideKickTreeNode>	
 	{
 		public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b)
 		{
