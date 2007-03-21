@@ -23,11 +23,25 @@ options.code2html.label=Code2HTML
 options.code2html.use-css=Use CSS
 options.code2html.show-gutter=Show gutter
 options.code2html.wrap=Wrap at column (0 for no wrapping):
+options.code2html.custom.styles.1=Set custom styles for the output
+options.code2html.custom.styles.2=These two tags enclose all of your code.
+options.code2html.body.style.open=body {
+options.code2html.pre.style.open=pre {
+options.code2html.body.html.open=<body 
+options.code2html.pre.html.open=<pre 
+options.code2html.body.style.close= }
+options.code2html.pre.style.close= }
+options.code2html.body.html.close= >
+options.code2html.pre.html.close= >
 
 # Option Pane values
 code2html.use-css=true
 code2html.show-gutter=true
 code2html.wrap=0
+options.code2html.body.style.value=background: #ffffff
+options.code2html.pre.style.value=
+options.code2html.body.html.value=bgcolor="#ffffff"
+options.code2html.pre.html.value=
 
 #-----------------------
 # option pane settings

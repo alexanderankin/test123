@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class HtmlDocument
@@ -77,20 +78,38 @@ public class HtmlDocument
             }
 
             out.write((this.gutter != null) ? this.gutter.toCSS() : "");
+            out.write(jEdit.getProperty("options.code2html.body.style.open"));
+            out.write(this.lineSeparator);
+            out.write(jEdit.getProperty("options.code2html.body.style.value"));
+            out.write(this.lineSeparator);
+            out.write(jEdit.getProperty("options.code2html.body.style.close"));
+            out.write(this.lineSeparator);
+            out.write(jEdit.getProperty("options.code2html.pre.style.open"));
+            out.write(this.lineSeparator);
+            out.write(jEdit.getProperty("options.code2html.pre.style.value"));
+            out.write(this.lineSeparator);
+            out.write(jEdit.getProperty("options.code2html.pre.style.close"));
+            out.write(this.lineSeparator);
             out.write("-->");
             out.write("</style>");
             out.write(this.lineSeparator);
         }
         out.write("</head>");
         out.write(this.lineSeparator);
-        out.write("<body bgcolor=\"");
-        out.write(this.viewBgColor);
-        out.write("\">");
+        
+        if (style instanceof HtmlCssStyle) {
+            out.write("<body>");
         out.write(this.lineSeparator);
         out.write("<pre>");
-        if (style instanceof HtmlCssStyle) {
             out.write("<span class=\"syntax0\">");
         } else {
+            out.write("<body ");
+            out.write(jEdit.getProperty("options.code2html.body.html.value"));
+            out.write(" >");
+            out.write(this.lineSeparator);
+            out.write("<pre ");
+            out.write(jEdit.getProperty("options.code2html.pre.html.value"));
+            out.write(" >");
             out.write("<font color=\"");
             out.write(this.viewFgColor);
             out.write("\">");

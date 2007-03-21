@@ -24,6 +24,7 @@ import java.awt.Color;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
+import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
 
@@ -37,7 +38,7 @@ public class HtmlCssStyle extends HtmlStyle
 
     public String toHTML(int styleId, SyntaxStyle style, String text) {
         StringBuffer buf = new StringBuffer();
-        buf.append("<span class=\"syntax" + styleId + "\">")
+        buf.append("<span class=\"" + Token.TOKEN_TYPES[styleId] + "\">")
             .append(text)
             .append("</span>");
         return buf.toString();
@@ -51,27 +52,27 @@ public class HtmlCssStyle extends HtmlStyle
         }
         StringBuffer buf = new StringBuffer();
 
-        buf.append(".syntax" + styleId + " {\n");
+        buf.append("." + Token.TOKEN_TYPES[styleId] + " {\n");
 
         Color c;
         if ((c = style.getBackgroundColor()) != null) {
-            buf.append("background: ")
+            buf.append("\tbackground: ")
                 .append(GUIUtilities.getColorHexString(c))
                 .append(";\n");
         }
 
         if ((c = style.getForegroundColor()) != null) {
-            buf.append("color: ")
+            buf.append("\tcolor: ")
                 .append(GUIUtilities.getColorHexString(c))
                 .append(";\n");
         }
 
         if (style.getFont().isBold()) {
-            buf.append("font-weight: bold;\n");
+            buf.append("\tfont-weight: bold;\n");
         }
 
         if (style.getFont().isItalic()) {
-            buf.append("font-style: italic;\n");
+            buf.append("\tfont-style: italic;\n");
         }
 
         buf.append("}\n");
