@@ -30,7 +30,7 @@ public class OptionPane extends AbstractOptionPane {
 	/***************************************************************************
 	 * Implementation
 	 **************************************************************************/
-	public void save()
+	public void _save()
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
 	}
