@@ -93,12 +93,12 @@ public class HtmlCssGutter extends HtmlGutter
         StringBuffer buf = new StringBuffer();
 
         buf.append(".gutter {\n")
-            .append("background: " + this.bgColor + ";\n")
-            .append("color: " + this.fgColor + ";\n")
+            .append("\tbackground: " + this.bgColor + ";\n")
+            .append("\tcolor: " + this.fgColor + ";\n")
             .append("}\n")
             .append(".gutterH {\n")
-            .append("background: " + this.bgColor + ";\n")
-            .append("color: " + this.highlightColor + ";\n")
+            .append("\tbackground: " + this.bgColor + ";\n")
+            .append("\tcolor: " + this.highlightColor + ";\n")
             .append("}\n");
 
         return buf.toString();

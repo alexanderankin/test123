@@ -20,8 +20,22 @@
 
 package code2html;
 
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+
 import javax.swing.JCheckBox;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -35,6 +49,20 @@ public class Code2HTMLOptionPane
     private JCheckBox ckShowGutter;
     private JTextField tfWrap;
 
+    // <pre> and <body> custom code elements
+    private JPanel customStylePanel;
+    private JPanel customBODY;
+    private JPanel customBODYHtml;
+    private JPanel customBODYCss;
+    
+    private JTextField customBODYHtmlValue;
+    private JTextArea  customBODYCssValue;
+    private JTextField customPREHtmlValue;
+    private JTextArea  customPRECssValue; 
+    
+    private JPanel customPRE;
+    private JPanel customPREHtml;
+    private JPanel customPRECss;
 
     public Code2HTMLOptionPane() {
         super("code2html");
@@ -59,6 +87,92 @@ public class Code2HTMLOptionPane
         if (wrap < 0) { wrap = 0; }
         this.tfWrap.setText("" + wrap);
         addComponent(jEdit.getProperty("options.code2html.wrap"), this.tfWrap);
+        
+        // Custom <pre> and <body>
+        this.customStylePanel = new JPanel(new GridLayout(2,1));
+        this.customStylePanel.setBorder(
+            new TitledBorder(
+                new EtchedBorder(EtchedBorder.LOWERED),
+                jEdit.getProperty("options.code2html.custom.styles.1")));
+        this.customStylePanel.setPreferredSize(new Dimension(500, 500));
+        this.customStylePanel.setToolTipText(
+            jEdit.getProperty("options.code2html.custom.styles.2"));
+        
+        this.customBODY = new JPanel(new BorderLayout());
+        this.customStylePanel.add(this.customBODY);
+        
+        this.customPRE = new JPanel(new BorderLayout());
+        this.customStylePanel.add(this.customPRE);
+        
+        this.customBODYHtmlValue = new JTextField(
+            jEdit.getProperty("options.code2html.body.html.value"), 80);
+        this.customBODYCssValue = new JTextArea(
+            jEdit.getProperty("options.code2html.body.style.value"), 10, 80);
+        this.customBODYCssValue.addKeyListener(new KeyAdapter(){
+                public void keyPressed(KeyEvent e){
+                    if(e.getKeyChar() == KeyEvent.VK_ENTER){
+                        customBODYCssValue.append("\n");
+                        e.consume();
+                    }
+                }
+            });
+        
+        this.customPREHtmlValue = new JTextField(
+            jEdit.getProperty("options.code2html.pre.html.value"), 80);
+        this.customPRECssValue = new JTextArea(
+            jEdit.getProperty("options.code2html.pre.style.value"), 10, 80);
+        this.customPRECssValue.addKeyListener(new KeyAdapter(){
+                public void keyPressed(KeyEvent e){
+                    if(e.getKeyChar() == KeyEvent.VK_ENTER){
+                        customPRECssValue.append("\n");
+                        e.consume();
+                    }
+                }
+            });
+        
+        this.customBODYHtml = new JPanel(new BorderLayout());
+        this.customBODYHtml.add(
+            new JLabel(jEdit.getProperty("options.code2html.body.html.open")),
+            BorderLayout.WEST);
+        this.customBODYHtml.add(this.customBODYHtmlValue, BorderLayout.CENTER);
+        this.customBODYHtml.add(
+            new JLabel(jEdit.getProperty("options.code2html.body.html.close")),
+            BorderLayout.EAST);
+        
+        this.customBODYCss = new JPanel(new BorderLayout());
+        this.customBODYCss.add(
+            new JLabel(jEdit.getProperty("options.code2html.body.style.open")),
+            BorderLayout.NORTH);
+        this.customBODYCss.add(new JScrollPane(this.customBODYCssValue));
+        this.customBODYCss.add(
+            new JLabel(jEdit.getProperty("options.code2html.body.style.close")),
+            BorderLayout.SOUTH);
+        
+        this.customBODY.add(this.customBODYHtml, BorderLayout.NORTH);
+        this.customBODY.add(this.customBODYCss, BorderLayout.CENTER);
+        
+        this.customPREHtml = new JPanel(new BorderLayout());
+        this.customPREHtml.add(
+            new JLabel(jEdit.getProperty("options.code2html.pre.html.open")),
+            BorderLayout.WEST);
+        this.customPREHtml.add(this.customPREHtmlValue, BorderLayout.CENTER);
+        this.customPREHtml.add(
+            new JLabel(jEdit.getProperty("options.code2html.pre.html.close")),
+            BorderLayout.EAST);
+        
+        this.customPRECss = new JPanel(new BorderLayout());
+        this.customPRECss.add(
+            new JLabel(jEdit.getProperty("options.code2html.pre.style.open")),
+            BorderLayout.NORTH);
+        this.customPRECss.add(new JScrollPane(this.customPRECssValue));
+        this.customPRECss.add(
+            new JLabel(jEdit.getProperty("options.code2html.pre.style.close")),
+            BorderLayout.SOUTH);
+        
+        this.customPRE.add(this.customPREHtml, BorderLayout.NORTH);
+        this.customPRE.add(this.customPRECss, BorderLayout.CENTER);
+        
+        addComponent(this.customStylePanel);
     }
 
 
@@ -72,6 +186,16 @@ public class Code2HTMLOptionPane
         int wrap = Code2HTMLOptionPane.getInteger(this.tfWrap.getText(), 0);
         if (wrap < 0) { wrap = 0; }
         jEdit.setProperty("code2html.wrap", "" + wrap);
+        
+        // save custom style tags values
+        jEdit.setProperty("options.code2html.body.html.value",
+            customBODYHtmlValue.getText());
+        jEdit.setProperty("options.code2html.body.style.value",
+            customBODYCssValue.getText());
+        jEdit.setProperty("options.code2html.pre.html.value",
+            customPREHtmlValue.getText());
+        jEdit.setProperty("options.code2html.pre.style.value",
+            customPRECssValue.getText()); 
     }
 
 
