@@ -238,7 +238,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		String name;
 		if (obj instanceof Record) {
 			Record tag = (Record) obj;
-			name = tag.getName();
 			String inheritsStr = tag.get(TagDB.INHERITS_COL);
 			if (inheritsStr == null)
 				return;
@@ -500,8 +499,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		if (clazz == null)
 			return;
 		if (derivedMembersButton.isSelected()) {
-			if (clazz == null)
-				return;
 			if (!derivedMembersHash.containsKey(clazz))
 				buildDerivedMembers(clazz);
 			setMemberListData(derivedMembersHash.get(clazz));
@@ -664,7 +661,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * NonFieldMemberFilter - used for filtering out fields
 	 **************************************************************************/
-	class NonFieldMemberFilter implements MemberFilter {
+	static class NonFieldMemberFilter implements MemberFilter {
 		public boolean pass(Object o) {
 			return (!((o instanceof Record) && ((Record) o).isVariable()));
 		}
@@ -673,7 +670,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * NonStaticMemberFilter - used for filtering out static fields & methods
 	 **************************************************************************/
-	class NonStaticMemberFilter implements MemberFilter {
+	static class NonStaticMemberFilter implements MemberFilter {
 		public boolean pass(Object o) {
 			return (!((o instanceof Record) && ((Record) o).isStatic()));
 		}
@@ -682,7 +679,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * PublicMemberFilter - used for filtering out non-public fields & members
 	 **************************************************************************/
-	class PublicMemberFilter implements MemberFilter {
+	static class PublicMemberFilter implements MemberFilter {
 		public boolean pass(Object o) {
 			return ((!(o instanceof Record)) || ((Record) o).isPublic());
 		}
