@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+  <ACTION NAME="jalopy.format">
+    <CODE>
+      de.hunsicker.jalopy.plugin.jedit.JEditPlugin.formatActive(view);
+    </CODE>
+  </ACTION>
+  <!-- <ACTION NAME="jalopy.formatopen">
+    <CODE>
+      de.hunsicker.jalopy.plugin.jedit.JEditPlugin.formatOpen(view);
+    </CODE>
+  </ACTION> -->
+  <ACTION NAME="jalopy.options">
+    <CODE>
+      de.hunsicker.jalopy.plugin.jedit.JEditPlugin.displaySettingsDialog(view);
+    </CODE>
+  </ACTION>
+</ACTIONS>

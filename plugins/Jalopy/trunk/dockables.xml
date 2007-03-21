@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+  <DOCKABLE NAME="message-view">
+    new org.gjt.sp.jedit.view.message.MessageViewPanel(view);
+  </DOCKABLE>
+</DOCKABLES>
