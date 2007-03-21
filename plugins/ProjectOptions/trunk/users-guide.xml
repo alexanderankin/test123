@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<!-- ProjectOptions user's guide  				-->
+<!-- (C) 2007 Marcelo Vanzin    				-->
+<!-- :tabSize=4:indentSize=4:noTabs=true:       -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<book>
+
+    <bookinfo>
+        <title>ProjectOptions</title>
+        <authorgroup>
+            <author><firstname>Marcelo</firstname><surname>Vanzin</surname></author>
+        </authorgroup>
+        <legalnotice>
+            <title>Legal Notice</title>
+
+            <para>
+                Permission is granted to copy, distribute and/or modify
+                this document under the terms of the GNU Free
+                Documentation License, Version 1.1 or any later version
+                published by the Free Software Foundation; with no
+                <quote>Invariant Sections</quote>,
+                <quote>Front-Cover Texts</quote> or
+                <quote>Back-Cover Texts</quote>,
+                each as defined in the license.
+                A copy of the license can be found in the file
+                <filename>COPYING.DOC.txt</filename> included with jEdit.
+            </para>
+
+        </legalnotice>
+    </bookinfo>
+
+    <chapter id="presentation">
+
+        <title>The ProjectOptions Plugin</title>
+
+        <para>
+        ProjectOptions is a plugin that allows users set options that are
+        generally defined globally in jEdit on a per-project basis. It
+        takes care of changing the options depending on which project
+        is currently active, and restoring the original values when
+        projects are deactivated.
+        </para>
+
+        <para>
+        Currently there's support for a limited subset of the available
+        options. These are:
+        </para>
+
+        <itemizedlist>
+            <listitem><para>
+            Editing options: most options available in the "Editing"
+            option pane in the jEdit "Global Options" dialog.
+            </para></listitem>
+            <listitem><para>
+            WhiteSpacePlugin options: it's possible to configure the
+            "on save" actions of the WhiteSpacePlugin on a per-project
+            basis.
+            </para></listitem>
+        </itemizedlist>
+
+        <para>
+        To choose project-specific options, open the project options
+        dialog using ProjectViewer, and make sure you check "Use Custom
+        Options" under "Project Options -> Main".
+        </para>
+
+        <para>
+        The project-specific options will apply to all buffers while
+        that project is active. The plugin is able to manage several
+        views, keeping the options synchronized with the active project
+        on the current view. This might cause some delay when changing
+        between views.
+        </para>
+
+        <para>
+        If you wish to provide feedback, please use the
+        <ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
+            Sourceforge Plugin Bugs Tracker</ulink>,
+        or one of the jEdit mailing lists:
+        </para>
+
+		<itemizedlist>
+			<listitem>
+			<para>
+				jEdit-users mailing-list
+				<email>jedit-users@lists.sourceforge.net</email>;
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				or jEdit-devel mailing-list
+				<email>jedit-devel@lists.sourceforge.net</email>.
+			</para>
+			</listitem>
+        </itemizedlist>
+
+    </chapter>
+
+</book>
+
