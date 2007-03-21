@@ -1,10 +1,11 @@
 <!-- ================================================== -->
-<!-- Build file for the Perforce plugin                 -->
+<!-- Build file for the CommonControls plugin           -->
 <!-- :tabSize=4:indentSize=4:noTabs=true:               -->
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="CommonControls" default="build" basedir=".">
 
+  <property file="build.properties" />
   <property file="../build.properties" />
   <property name="build.support" value="../build-support" />
 
