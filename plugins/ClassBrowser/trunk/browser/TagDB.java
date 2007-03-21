@@ -43,26 +43,26 @@ public class TagDB {
 	// Ctags constants
 	static private HashSet<String> ScopeNames = new HashSet<String>();
 	static private HashSet<String> ShortScopeNames = new HashSet<String>();
-	static private String SCOPE_NAME_LIST =
+	static private final String SCOPE_NAME_LIST =
 		"class|struct|union|enum|interface|namespace";
 	// Names of main table columns
-	static public String TAG_COL = "tag";
-	static public String DEFINED_COL = "defined";
-	static public String REGEXP_COL = "regexp";
-	static public String KIND_COL = "kind";
-	static public String FILE_COL = "file";
-	static public String ACCESS_COL = "access";
-	static public String INHERITS_COL = "inherits";
-	static public String LANGUAGE_COL = "language";
-	static public String IMPLEMENTATION_COL = "implementation";
-	static public String LINE_COL = "line";
-	static public String SCOPE_COL = "scope";
-	static public String SIGNATURE_COL = "signature";
+	static public final String TAG_COL = "tag";
+	static public final String DEFINED_COL = "defined";
+	static public final String REGEXP_COL = "regexp";
+	static public final String KIND_COL = "kind";
+	static public final String FILE_COL = "file";
+	static public final String ACCESS_COL = "access";
+	static public final String INHERITS_COL = "inherits";
+	static public final String LANGUAGE_COL = "language";
+	static public final String IMPLEMENTATION_COL = "implementation";
+	static public final String LINE_COL = "line";
+	static public final String SCOPE_COL = "scope";
+	static public final String SIGNATURE_COL = "signature";
 
 	// TagDB's own added columns
 	private static final String TAG_INDEX_COL = "tic";
 	
-	static private String ICONS = "options.ClassBrowser.icons.";
+	static private final String ICONS = "options.ClassBrowser.icons.";
 	static Hashtable<String, ImageIcon> icons =
 		new Hashtable<String, ImageIcon>();
 	
@@ -112,7 +112,7 @@ public class TagDB {
 		{
 			tagFiles.add(tagFile);
 			tagFileTimeStamps.add(getFileTimeStamp(tagFile));
-			tagFileIsTemporary.add(new Boolean(isTemporary));
+			tagFileIsTemporary.add(Boolean.valueOf(isTemporary));
 			return true;
 		}
 		int index = tagFiles.indexOf(tagFile);
@@ -177,7 +177,7 @@ public class TagDB {
 		Vector<String> matches = new Vector<String>();
 		for (int i = 0; i < tagFiles.size(); i++)
 		{
-			BufferedReader in;
+			BufferedReader in = null;
 			String tagFilePath = tagFiles.get(i);
 			try {
 				if (tagFilePath == null)	// In case tag file was removed
@@ -193,6 +193,13 @@ public class TagDB {
 			} catch (IOException e) {
 				Log.log(Log.WARNING, TagDB.class,
 						"Can't read tag file: " + tagFilePath);
+			} finally {
+				try {
+					if (in != null)
+						in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return matches;
@@ -429,7 +436,7 @@ public class TagDB {
 		}
 	};
 	
-	public class RecordSet
+	static public class RecordSet
 	{
 		Vector<Record> data = new Vector<Record>();
 		int index = -1;
