@@ -10,6 +10,8 @@
 	<property name="dist.target" 			value="dist.nojavadoc" />
     <property name="compiler.source"        value="1.5" />
     <property name="compiler.target"        value="1.5" />
+	<property name="user-doc.xml"           value="${basedir}/users-guide.xml" />
+	<property name="docbook.xsl.sheet"		value="html/onechunk.xsl" />
 
 	<import file="${build.support}/plugin-build.xml" />
 
@@ -25,6 +27,7 @@
 			<include name="*.jar" />
 			<exclude name="ProjectOptions*" />
 		</fileset>
+		<pathelement location="${install.dir}/CommonControls.jar" />
 		<pathelement location="${install.dir}/ProjectViewer.jar" />
 	</path>
 
