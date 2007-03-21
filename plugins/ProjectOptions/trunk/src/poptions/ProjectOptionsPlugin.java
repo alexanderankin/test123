@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.EBPlugin;
 
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.PropertiesChanging;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
@@ -85,6 +86,14 @@ public class ProjectOptionsPlugin extends EBPlugin {
                     restoreProjectOptions();
                     break;
             }
+        } else if (msg instanceof ViewUpdate &&
+                   ((ViewUpdate)msg).getWhat() == ViewUpdate.ACTIVATED)
+        {
+            VPTProject proj = ProjectViewer.getActiveProject(((ViewUpdate)msg).getView());
+            if (proj != null && !proj.getName().equals(activeProjectName)) {
+                restoreGlobalOptions(false);
+                setProjectOptions(proj, false);
+            }
         } else if (!ignoreChange && msg instanceof PropertiesChanged) {
             SwingUtilities.invokeLater(
                 new Runnable() {
@@ -99,10 +108,10 @@ public class ProjectOptionsPlugin extends EBPlugin {
     protected void restoreGlobalOptions(boolean send)
     {
         if (savedProperties != null) {
-            System.err.println("restoring global opts");
+            // System.err.println("restoring global opts");
             for (String key : savedProperties.keySet()) {
-                System.err.printf("restoring: %s to %s (from %s)", key,
-                    savedProperties.get(key), jEdit.getProperty(key));
+                // System.err.printf("restoring: %s to %s (from %s)", key,
+                //     savedProperties.get(key), jEdit.getProperty(key));
                 jEdit.setProperty(key, savedProperties.get(key));
             }
             savedProperties = null;
@@ -115,7 +124,7 @@ public class ProjectOptionsPlugin extends EBPlugin {
     protected void restoreProjectOptions()
     {
         if (activeProjectName != null) {
-            System.err.println("restoring project: " + activeProjectName);
+            // System.err.println("restoring project: " + activeProjectName);
             VPTProject p = ProjectManager.getInstance()
                                 .getProject(activeProjectName);
             if (p != null) {
@@ -129,11 +138,11 @@ public class ProjectOptionsPlugin extends EBPlugin {
         boolean changed = false;
         boolean restore = true;
 
+        if (savedProperties != null) {
+            restoreGlobalOptions(false);
+        }
         if (force) {
             activeProjectName = null;
-            if (savedProperties != null) {
-                restoreGlobalOptions(false);
-            }
         }
 
         if (p != null) {
@@ -143,7 +152,7 @@ public class ProjectOptionsPlugin extends EBPlugin {
             Properties popts = p.getProperties();
             boolean enabled = "true".equalsIgnoreCase(popts.getProperty("poptions.enabled"));
             if (enabled) {
-                System.err.println("setting project options for: " + p.getName());
+                // System.err.println("setting project options for: " + p.getName());
                 for (Object okey : popts.keySet()) {
                     String key = (String) okey;
                     if (key.startsWith("poptions.") &&
@@ -153,9 +162,9 @@ public class ProjectOptionsPlugin extends EBPlugin {
                         if (savedProperties == null) {
                             savedProperties = new HashMap<String,String>();
                         }
-                        System.err.printf("setting: %s to %s (old = %s)",
-                            jkey, popts.getProperty(key),
-                            jEdit.getProperty(jkey));
+                        // System.err.printf("setting: %s to %s (old = %s)",
+                        //     jkey, popts.getProperty(key),
+                        //     jEdit.getProperty(jkey));
                         savedProperties.put(jkey, jEdit.getProperty(jkey));
                         jEdit.setProperty(jkey, popts.getProperty(key));
                         changed = true;
@@ -167,7 +176,7 @@ public class ProjectOptionsPlugin extends EBPlugin {
         }
 
         if (restore) {
-            System.err.println("no project selected");
+            // System.err.println("no project selected");
             restoreGlobalOptions(false);
             activeProjectName = null;
             changed = true;
@@ -179,11 +188,11 @@ public class ProjectOptionsPlugin extends EBPlugin {
     }
 
     private void sendChangeMsg() {
-        System.err.println("sending edit bus message");
+        // System.err.println("sending edit bus message");
         ignoreChange = true;
         jEdit.propertiesChanged();
         ignoreChange = false;
-        System.err.println("sending message done");
+        // System.err.println("sending message done");
     }
 
 }
