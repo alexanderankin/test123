@@ -71,6 +71,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 			channel.connect();
 			sftp=(ChannelSftp)channel;
 			home=sftp.getHome();
+			keyAttempts = 0;
 		} catch(Exception e) {
 			throw new IOException(e.toString());
 		}
@@ -265,8 +266,6 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	
 	public String getPassphrase()
 	{
-		if (passphrase == null)
-			return null;
 		return passphrase;
 	}
 	
@@ -279,21 +278,16 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	public boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
-		String pass = ConnectionManager.getPassword(info.privateKey);
-		if (pass==null || keyAttempts != 0)
+		passphrase = ConnectionManager.getPassphrase(info.privateKey);
+		if (passphrase==null || keyAttempts != 0)
 		{
 			PasswordDialog pd = new PasswordDialog(null,"Enter Passphrase for key",message);
 			if (!pd.isOK())
 				return false;
 			passphrase = new String(pd.getPassword());
-			if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
-			{
-				ConnectionManager.setPassword(info.privateKey,passphrase);
-			}
-			return true;
+			ConnectionManager.setPassphrase(info.privateKey,passphrase);
 		}
 		keyAttempts++;
-		passphrase = pass;
 		return true;
 	}
 	public boolean promptYesNo(String message)
