@@ -81,7 +81,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 	@SuppressWarnings("serial")
 	public LaunchConfigOptionPane()
 	{
-		super("Programs");
+		super("debugger.programs");
 		configs = LaunchConfigurationManager.getInstance();
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 

@@ -19,7 +19,7 @@ public class OptionPane extends AbstractOptionPane {
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
 	
 	public OptionPane() {
-		super("Gdb");
+		super("debugger.gdb");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		gdbPathTF = new JTextField(40);
