@@ -8,6 +8,7 @@ plugin.p4plugin.P4Plugin.author=Marcelo Vanzin
 plugin.p4plugin.P4Plugin.version=0.2.3
 plugin.p4plugin.P4Plugin.activate=defer
 plugin.p4plugin.P4Plugin.docs=index.html
+plugin.p4plugin.P4Plugin.description=Perforce integration for jEdit.
 
 plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.07.00
 plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
