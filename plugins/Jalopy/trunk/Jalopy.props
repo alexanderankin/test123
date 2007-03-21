@@ -1,0 +1,53 @@
+# $Id: jalopy.props,v 1.5 2006/01/13 20:26:28 notzippy Exp $
+#
+# Plugin properties
+#
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.name=Jalopy Java Source Code Formatter
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.author=Marco Hunsicker
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.version=0.3.7
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.docs=docs/index.html
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.depend.0=jdk 1.5
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.depend.1=jedit 04.03.08.00
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.4.4
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.jars = jalopy-1.5rc3.jar messageview-0.1.0.jar
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.activate=defer
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.description=Jalopy is a source code formatter/beautifier/pretty printer for the Sun Java programming language.
+#
+# Menu properties
+#
+plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.menu=jalopy.format - jalopy.options
+
+jalopy.format.label=$Format active Buffer
+jalopy.formatopen.label=Format all $Buffers
+jalopy.options.label = Jalopy Options...
+
+#
+# Option panes
+#
+options.jalopy.label=Jalopy
+options.jalopy.general.label = General
+options.jalopy.project.label = Projects
+options.jalopy.printer.label = Printer
+options.jalopy.printer.braces.label = Braces
+options.jalopy.printer.whitespace.label = Whitespace
+options.jalopy.printer.indentation.label = Indentation
+options.jalopy.printer.wrapping.label = Line Wrapping
+options.jalopy.printer.blanklines.label = Blank Lines
+options.jalopy.printer.comments.label = Comments
+options.jalopy.printer.javadoc.label = Javadoc
+options.jalopy.printer.misc.label = Misc
+options.jalopy.printer.sort.label = Sorting
+options.jalopy.printer.header.label = Header
+options.jalopy.printer.footer.label = Footer
+options.jalopy.printer.environment.label = Environment
+options.jalopy.printer.imports.label = Imports
+options.jalopy.inspector.label = Code Inspector
+options.jalopy.inspector.general.label = General
+options.jalopy.inspector.naming.label = Naming
+options.jalopy.messages.label = Messages
+
+# Add option pane
+# Commented out because it pops up two panes instead of one and locks up the display - need to re-code this.
+# plugin.de.hunsicker.jalopy.plugin.jedit.JEditPlugin.option-pane=jalopy-option-menu
+# options.jalopy-option-menu.label=Jalopy
+# options.jalopy-option-menu.code=de.hunsicker.jalopy.plugin.jedit.JEditPlugin.displaySettingsDialog(view);
