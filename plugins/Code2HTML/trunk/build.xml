@@ -44,7 +44,7 @@
 
     <property name="doc.dir" value="${build.dir}/docs"/>
     <property name="docs-proc.target" value="xsltproc"/>
-    <property name="docbook.xsl" value="/usr/share/xsl/docbook-xsl-1.49"/>
+    <property name="docbook.xsl" value="/usr/share/docbook-xsl"/>
 
 
     <target name="init">
