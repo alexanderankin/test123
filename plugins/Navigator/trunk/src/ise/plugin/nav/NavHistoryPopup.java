@@ -104,7 +104,7 @@ class NavHistoryPopup extends JWindow
 		Point location = new Point(rect.x + (rect.width - d.width) / 2,
 				rect.y + (rect.height - d.height) / 2);
 		// make sure it fits on screen
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension screenSize = rect.getSize();
 		if(location.x + d.width > screenSize.width)
 		{
 			if(d.width >= screenSize.width)
@@ -112,9 +112,9 @@ class NavHistoryPopup extends JWindow
 				 * the tag index filename, but for now just position it so that you 
 				 * can at least read the left side of the dialog
 				 */
-				location.x = 0;
+				location.x = rect.x;
 			else
-				location.x = screenSize.width - d.width;
+				location.x = rect.x + rect.width - d.width - 200;
 		}
 		if(location.y + d.height > screenSize.height)
 			location.y = screenSize.height - d.height;
