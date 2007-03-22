@@ -109,8 +109,12 @@
 
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
+        <!-- listitem>
             Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        </listitem -->
+        <listitem>
+            David S. Moss (Current Maintainer)
+            <email>seconddevil@users.sourceforge.net</email>;
         </listitem>
 
         <listitem>
