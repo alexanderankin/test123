@@ -16,6 +16,7 @@ public class NavPosition {
    public Buffer buffer = null;
    //public JEditBuffer buffer = null;      // for jEdit 4.3
    public int caret = 0;
+   public int line = 0;
 
    public NavPosition(Buffer b, int c) {
    //public NavPosition( JEditBuffer b, int c ) {   // for jEdit 4.3
@@ -25,6 +26,7 @@ public class NavPosition {
          throw new IllegalArgumentException( "caret position cannot less than 0" );
       buffer = b;
       caret = c;
+      line = buffer.getLineOfOffset(caret);
    }
 
    public boolean equals(NavPosition other) {
@@ -35,6 +37,6 @@ public class NavPosition {
 	  String path = "";
 	  Buffer b = (Buffer) buffer;
 	  if ( b != null) path = b.getPath();
-      return path + ":" + caret;
+      return path + ":" + (line + 1);
    }
 }
