@@ -16,35 +16,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.html;
 
 import java.awt.Color;
 
 import org.gjt.sp.jedit.GUIUtilities;
+
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
 
 
-public class HtmlCssStyle extends HtmlStyle
-{
+/**
+ *  Gets the CSS Style for a buffer
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class HtmlCssStyle extends HtmlStyle {
+    /**
+     *  HtmlCssStyle Constructor
+     */
     public HtmlCssStyle() {
         super();
     }
 
 
-    public String toHTML(int styleId, SyntaxStyle style, String text) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("<span class=\"" + Token.TOKEN_TYPES[styleId] + "\">")
-            .append(text)
-            .append("</span>");
-        return buf.toString();
-    }
-
-
+    /**
+     *  Creates css code to display a buffer tag
+     *
+     * @param  styleId  The ID of the style
+     * @param  style    The actual style
+     * @return          A String containing the CSS stylesheet for a style
+     */
     public String toCSS(int styleId, SyntaxStyle style) {
         if (style == null) {
             Log.log(Log.DEBUG, this, "toCSS: null style");
@@ -77,6 +82,25 @@ public class HtmlCssStyle extends HtmlStyle
 
         buf.append("}\n");
 
+        return buf.toString();
+    }
+
+
+    /**
+     *  Gets a string surrounding the given text with span tags referencing the
+     *  apropriate style
+     *
+     * @param  styleId  The ID of the style to use
+     * @param  style    The actual style
+     * @param  text     The text to put in between spans
+     * @return          A piece of HTML with span tags referencing an adequate
+     *      style in the CSS
+     */
+    public String toHTML(int styleId, SyntaxStyle style, String text) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("<span class=\"" + Token.TOKEN_TYPES[styleId] + "\">")
+            .append(text)
+            .append("</span>");
         return buf.toString();
     }
 }

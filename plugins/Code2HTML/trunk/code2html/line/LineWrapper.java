@@ -16,21 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.line;
 
 
-public class LineWrapper
-{
+/**
+ *  Wraps lines when the char count goes beyond a certain length
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class LineWrapper {
     private int wrapSize = 72;
 
 
+    /**
+     *  LineWrapper Constructor
+     */
     public LineWrapper() {
         this(72);
     }
 
 
+    /**
+     *  LineWrapper Constructor
+     *
+     * @param  wrapSize  The length at which we should wrap the line
+     */
     public LineWrapper(int wrapSize) {
         if (wrapSize > 0) {
             this.wrapSize = wrapSize;
@@ -38,33 +49,42 @@ public class LineWrapper
     }
 
 
+    /**
+     *  Gets the wrap size of the object
+     *
+     * @return    The wrap size value
+     */
     public int getWrapSize() {
         return this.wrapSize;
     }
 
 
     /**
-     * Returns an array of all indexes at which a string of length len at
-     * position pos wraps. The referential for the indexes is the string.
-     * Also, the wrap indexes are surrounded by 0 and len so that it is
-     * very easy to compute the wrapped substrings:
-     * <pre>
+     *  Returns an array of all indexes at which a string of length len at
+     *  position pos wraps. The referential for the indexes is the string. Also,
+     *  the wrap indexes are surrounded by 0 and len so that it is very easy to
+     *  compute the wrapped substrings: <pre>
      * int[] wraps = wrapper.wrap(pos, len);
      * if (wraps == null) { return; }
      * for (int i = 0; i &lt; wraps.length - 1; i++) {
-     *    System.out.println("Piece " + (i + 1) + ": " + s.substring(wraps[i], wraps[i + 1]));
+     *    System.out.println("Piece " + (i + 1) + ": " +
+     *        s.substring(wraps[i], wraps[i + 1]));
      * }
-     * </pre>
-     * Returns null if the string does not wrap.
-     * @requires pos >= 0
-     * @requires len >= 0
+     * </pre> Returns null if the string does not wrap.
+     *
+     * @param  pos  The position of the line
+     * @param  len  The length of the line
+     * @return      an array
+     * @requires    pos >= 0
+     * @requires    len >= 0
+     * @todo        work out what this code is actually doing
      */
     public int[] wrap(int pos, int len) {
         // Log.log(Log.DEBUG, this, "#### pos-len " + pos + "," + len);
 
         int min = pos / this.wrapSize + 1;
-
         int max = (pos + len) / this.wrapSize;
+
         if ((pos + len) % this.wrapSize == 0) {
             max--;
         }
@@ -73,12 +93,14 @@ public class LineWrapper
         if (min <= max) {
             int[] wrapArr = new int[max - min + 1 + 2];
             int wrapIdx = 0;
-            int i   = min;
+            int i = min;
             int idx = i * this.wrapSize - pos;
             wrapArr[wrapIdx++] = 0;
+
             for (; i <= max; i++, idx += this.wrapSize) {
                 wrapArr[wrapIdx++] = idx;
             }
+
             wrapArr[wrapIdx++] = len;
             return wrapArr;
         }

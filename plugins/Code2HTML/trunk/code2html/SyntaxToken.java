@@ -17,34 +17,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html;
 
 
-public class SyntaxToken
-{
+/**
+ * @author     Slava Pestov
+ * @version    0.5
+ * @todo       Replace or link with jedit's own
+ */
+public class SyntaxToken {
+
     /**
-     * The length of this token.
+     *  The id of this token.
+     */
+    public byte id = 0;
+    /**
+     *  The length of this token.
      */
     public int length = 0;
 
-
     /**
-     * The id of this token.
-     */
-    public byte id = 0;
-
-
-    /**
-     * The previous token in the linked list.
-     */
-    public SyntaxToken prev = null;
-
-
-    /**
-     * The next token in the linked list.
+     *  The next token in the linked list.
      */
     public SyntaxToken next = null;
+
+    /**
+     *  The previous token in the linked list.
+     */
+    public SyntaxToken prev = null;
 }
 

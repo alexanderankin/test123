@@ -22,81 +22,116 @@
 package code2html.syntax;
 
 /**
- * A linked list of syntax tokens.
+ *  A linked list of syntax tokens.
  *
- * @author Slava Pestov
- * @version $Id$
+ * @author     Slava Pestov
+ * @version    $Id$
+ * @todo       Use the actual jEdit code
  */
-public class Token
-{
-	//{{{ Token types
-	public static final byte NULL = 0;
-	public static final byte COMMENT1 = 1;
-	public static final byte COMMENT2 = 2;
-	public static final byte LITERAL1 = 3;
-	public static final byte LITERAL2 = 4;
-	public static final byte LABEL = 5;
-	public static final byte KEYWORD1 = 6;
-	public static final byte KEYWORD2 = 7;
-	public static final byte KEYWORD3 = 8;
-	public static final byte FUNCTION = 9;
-	public static final byte MARKUP = 10;
-	public static final byte OPERATOR = 11;
-	public static final byte DIGIT = 12;
-	public static final byte INVALID = 13; //}}}
+public class Token {
 
-	public static final byte ID_COUNT = 14;
+    /**
+     *  The id of this token.
+     */
+    public byte id;
 
-	public static final byte END = 127;
+    //{{{ Instance variables
+    /**
+     *  The length of this token.
+     */
+    public int length;
 
-	//{{{ Instance variables
-	/**
-	 * The length of this token.
-	 */
-	public int length;
+    /**
+     *  The next token in the linked list.
+     */
+    public Token next;
 
-	/**
-	 * The id of this token.
-	 */
-	public byte id;
+    /**
+     *  The previous token in the linked list.
+     *
+     * @since    jEdit 2.6pre1
+     */
+    public Token prev;
 
-	/**
-	 * The rule set of this token.
-	 */
-	public ParserRuleSet rules;
+    /**
+     *  The rule set of this token.
+     */
+    public ParserRuleSet rules;
+    /**
+     */
+    public final static byte COMMENT1 = 1;
+    /**
+     */
+    public final static byte COMMENT2 = 2;
+    /**
+     */
+    public final static byte DIGIT = 12;
 
-	/**
-	 * The previous token in the linked list.
-	 * @since jEdit 2.6pre1
-	 */
-	public Token prev;
+    /**
+     */
+    public final static byte END = 127;
+    /**
+     */
+    public final static byte FUNCTION = 9;  //}}}
 
-	/**
-	 * The next token in the linked list.
-	 */
-	public Token next;
-	//}}}
+        /**
+     */
+    public final static byte ID_COUNT = 14;
+    /**
+     */
+    public final static byte INVALID = 13;
+    /**
+     */
+    public final static byte KEYWORD1 = 6;
+    /**
+     */
+    public final static byte KEYWORD2 = 7;
+    /**
+     */
+    public final static byte KEYWORD3 = 8;
+    /**
+     */
+    public final static byte LABEL = 5;
+    /**
+     */
+    public final static byte LITERAL1 = 3;
+    /**
+     */
+    public final static byte LITERAL2 = 4;
+    /**
+     */
+    public final static byte MARKUP = 10;
+    //{{{ Token types
+    /**
+     */
+    public final static byte NULL = 0;
+    /**
+     */
+    public final static byte OPERATOR = 11;
+    //}}}
 
-	//{{{ Token constructor
-	/**
-	 * Creates a new token.
-	 * @param length The length of the token
-	 * @param id The id of the token
-	 * @param rules The parser rule set that generated this token
-	 */
-	public Token(int length, byte id, ParserRuleSet rules)
-	{
-		this.length = length;
-		this.id = id;
-		this.rules = rules;
-	} //}}}
+    //{{{ Token constructor
+    /**
+     *  Creates a new token.
+     *
+     * @param  length  The length of the token
+     * @param  id      The id of the token
+     * @param  rules   The parser rule set that generated this token
+     */
+    public Token(int length, byte id, ParserRuleSet rules) {
+        this.length = length;
+        this.id = id;
+        this.rules = rules;
+    }  //}}}
 
-	//{{{ toString() method
-	/**
-	 * Returns a string representation of this token.
-	 */
-	public String toString()
-	{
-		return "[id=" + id + ",length=" + length + "]";
-	} //}}}
+    //{{{ toString() method
+    /**
+     *  Returns a string representation of this token.
+     *
+     * @return
+     */
+    public String toString() {
+        return "[id=" + id + ",length=" + length + "]";
+    }  //}}}
 }
+

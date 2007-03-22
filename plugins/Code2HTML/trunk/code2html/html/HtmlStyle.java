@@ -16,8 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.html;
 
 import java.awt.Color;
@@ -28,30 +26,59 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 
-public class HtmlStyle
-{
-    public HtmlStyle() {}
+/**
+ *  Describes an HTML style
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class HtmlStyle {
+    /**
+     *  HtmlStyle Constructor
+     */
+    public HtmlStyle() { }
 
 
+    /**
+     *  Does nothing! Use correct class!
+     *
+     * @param  styleId  The id of the style
+     * @param  style    the style itself
+     * @return          an empty string
+     */
+    public String toCSS(int styleId, SyntaxStyle style) {
+        return "";
+    }
+
+
+    /**
+     *  makes an html string of the text
+     *
+     * @param  styleId  The style for the text
+     * @param  style    the style itself
+     * @param  text     the text to be hilighted
+     * @return          a string of HTML code representing the pretty-printed
+     *      text
+     */
     public String toHTML(int styleId, SyntaxStyle style, String text) {
         if (style == null) {
             Log.log(Log.DEBUG, this, "toHTML: null style");
             return text;
         }
-        StringBuffer bufOpen  = new StringBuffer();
+        
+        StringBuffer bufOpen = new StringBuffer();
         StringBuffer bufClose = new StringBuffer();
 
         Color c;
         /*
-        if ((c = style.getBackgroundColor()) != null) {
-            bufOpen.append("<font")
-                .append(" bgcolor=\"")
-                .append(GUIUtilities.getColorHexString(c))
-                .append("\">");
-            bufClose.insert(0, "</font>");
-        }
-        */
-
+         *if ((c = style.getBackgroundColor()) != null) {
+         *bufOpen.append("<font")
+         *.append(" bgcolor=\"")
+         *.append(GUIUtilities.getColorHexString(c))
+         *.append("\">");
+         *bufClose.insert(0, "</font>");
+         *}
+         */
         if ((c = style.getForegroundColor()) != null) {
             bufOpen.append("<font")
                 .append(" color=\"")
@@ -74,11 +101,6 @@ public class HtmlStyle
         buf.append(bufOpen).append(text).append(bufClose);
 
         return buf.toString();
-    }
-
-
-    public String toCSS(int styleId, SyntaxStyle style) {
-        return "";
     }
 }
 

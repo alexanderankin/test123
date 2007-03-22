@@ -1,0 +1,19 @@
+[ Prepend TODOs for new versions here, change * to + when item dealt with. dsm ]
+
+--------------------------------------------------------------------------------
+--                          TODO for version 0.6                              --
+--------------------------------------------------------------------------------
+* Need to follow the @todo tags in several files
+* Work out what the code does in obfuscated bits, no time ATM
+* Link th estandalone code with jEdit. It is already required to even start so
+    it should be painless (probably... maybe... just a bit)
+    * Code should at the very least be copied and exported (symlinked) from main
+        jEdit trunk.
+* Make better docs
+    * Include javadoc in help file
+    * prettyfy help file a bit
+* Check that I got rid of all hardcoded \n's
+* Clean up code in html package
+* Add ant target to reload plugin
+* Fix the <span class="some>word</span> <span class="some">after</span>
+    duplication in generated code 

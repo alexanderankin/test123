@@ -16,50 +16,97 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.html;
 
+/**
+ *  Manager class for the gutter when CSS mode in enabled
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class HtmlCssGutter extends HtmlGutter {
+    private String nl = System.getProperty("line.separator");
 
-public class HtmlCssGutter extends HtmlGutter
-{
+
+    /**
+     *  HtmlCssGutter Constructor
+     *
+     * @param  bgColor            Background colour
+     * @param  fgColor            Foregroud colour
+     * @param  highlightColor     Hilighted row colour
+     * @param  highlightInterval  Interval at which to highlight rows
+     */
+    public HtmlCssGutter(String bgColor,
+                         String fgColor,
+                         String highlightColor,
+                         int highlightInterval) {
+        super(bgColor, fgColor, highlightColor, highlightInterval);
+    }
+
+
+    /**
+     *  HtmlCssGutter Constructor
+     *
+     * @param  gutterSize         Size of the gutter in spaces
+     * @param  bgColor            Background colour
+     * @param  fgColor            Foregroud colour
+     * @param  highlightColor     Hilighted row colour
+     * @param  highlightInterval  Interval at which to highlight rows
+     */
+    public HtmlCssGutter(int gutterSize,
+                         String bgColor,
+                         String fgColor,
+                         String highlightColor,
+                         int highlightInterval) {
+        super(gutterSize, bgColor, fgColor, highlightColor, highlightInterval);
+    }
+
+
+    /**
+     *  HtmlCssGutter Constructor
+     */
     protected HtmlCssGutter() {
         super();
     }
 
 
-    public HtmlCssGutter(
-            String bgColor, String fgColor,
-            String highlightColor, int highlightInterval
-    ) {
-        super(bgColor, fgColor, highlightColor, highlightInterval);
-    }
-
-
-    public HtmlCssGutter(
-            int gutterSize,
-            String bgColor, String fgColor,
-            String highlightColor, int highlightInterval
-    ) {
-        super(gutterSize, bgColor, fgColor, highlightColor, highlightInterval);
-    }
-
-
-    public String toHTML(int lineNumber) {
+    /**
+     *  Gets a string with the CSS code necessary to render the gutter
+     *
+     * @return    A string with the gutter CSS code
+     */
+    public String toCSS() {
         StringBuffer buf = new StringBuffer();
 
-        String style = "gutter";
+        buf.append(".gutter {").append(nl)
+            .append("\tbackground: " + this.bgColor + ";").append(nl)
+            .append("\tcolor: " + this.fgColor + ";").append(nl)
+            .append("}").append(nl)
+            .append(".gutterH {").append(nl)
+            .append("\tbackground: " + this.bgColor + ";").append(nl)
+            .append("\tcolor: " + this.highlightColor + ";").append(nl)
+            .append("}").append(nl);
 
-        if (    (this.highlightInterval > 0)
-            &&  (lineNumber % this.highlightInterval == 0)
-        ) {
-            style = "gutterH";
-        }
+        return buf.toString();
+    }
 
-        String s = Integer.toString(lineNumber);
+
+    /**
+     *  Gets a String with the reference to the CSS needed to draw the gutter.
+     *  This method does not print the line numbers
+     *
+     * @param  lineNumber  The line number
+     * @return             A String with the necessary span tags
+     */
+    public String toEmptyHTML(int lineNumber) {
+        boolean highlighted = ((this.highlightInterval > 0)
+             && (lineNumber % this.highlightInterval == 0));
+        StringBuffer buf = new StringBuffer();
+
+        String style = highlighted ? "gutterH" : "gutter";
+
         buf.append("<span class=\"" + style + "\">")
-            .append(spacer.substring(0, this.gutterSize - s.length()))
-            .append(s)
+            .append(spacer)
             .append(this.gutterBorder)
             .append("</span>");
 
@@ -67,39 +114,26 @@ public class HtmlCssGutter extends HtmlGutter
     }
 
 
-    public String toEmptyHTML(int lineNumber) {
-        boolean highlighted = (
-                (this.highlightInterval > 0)
-            &&  (lineNumber % this.highlightInterval == 0)
-        );
+    /**
+     *  Gets a String with the reference to the CSS needed to draw the gutter
+     *
+     * @param  lineNumber  The line number
+     * @return             A String with the necessary span tags
+     */
+    public String toHTML(int lineNumber) {
         StringBuffer buf = new StringBuffer();
 
-        String style = "gutter";
+        String style = (this.highlightInterval > 0)
+             && (lineNumber % this.highlightInterval == 0) ?
+            "gutterH" : "gutter";
 
-        if (highlighted) {
-            style = "gutterH";
-        }
+        String s = Integer.toString(lineNumber);
 
         buf.append("<span class=\"" + style + "\">")
-            .append(spacer)
-            .append(':')
+            .append(spacer.substring(0, this.gutterSize - s.length()))
+            .append(s)
+            .append(this.gutterBorder)
             .append("</span>");
-
-        return buf.toString();
-    }
-
-
-    public String toCSS() {
-        StringBuffer buf = new StringBuffer();
-
-        buf.append(".gutter {\n")
-            .append("\tbackground: " + this.bgColor + ";\n")
-            .append("\tcolor: " + this.fgColor + ";\n")
-            .append("}\n")
-            .append(".gutterH {\n")
-            .append("\tbackground: " + this.bgColor + ";\n")
-            .append("\tcolor: " + this.highlightColor + ";\n")
-            .append("}\n");
 
         return buf.toString();
     }

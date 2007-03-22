@@ -16,29 +16,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.line;
 
 
-public class LinePosition
-{
+/**
+ *  Represents the position of an imaginary 'cursor' in a line
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class LinePosition {
     private int pos = 0;
 
 
-    public LinePosition() {}
+    /**
+     *  LinePosition Constructor
+     */
+    public LinePosition() { }
 
 
-    public int getPos() {
-        return this.pos;
-    }
-
-
+    /**
+     *  Sets the pos of the object
+     *
+     * @param  pos  The new pos value
+     */
     public void setPos(int pos) {
         this.pos = pos;
     }
 
 
+    /**
+     *  Gets the pos of the object
+     *
+     * @return    The pos value
+     */
+    public int getPos() {
+        return this.pos;
+    }
+
+
+    /**
+     *  increase the position by an ammount
+     *
+     * @param  inc  The ammount to increase the position by
+     */
     public void incPos(int inc) {
         this.pos += inc;
     }

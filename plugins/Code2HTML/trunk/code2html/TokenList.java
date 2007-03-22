@@ -29,6 +29,7 @@ import code2html.syntax.Token;
 /**
  * Encapsulates a token list.
  * @since jEdit 4.0pre1
+ @todo Change to use jEdit's code
  */
 public class TokenList
 {
