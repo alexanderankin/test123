@@ -16,8 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.html;
 
 import java.io.IOException;
@@ -29,75 +27,103 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
 import code2html.SyntaxToken;
+
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
 
 
-public class HtmlPainter
-{
-    private SyntaxStyle[]   syntaxStyles;
-
-    private HtmlStyle       style;
-    private HtmlGutter      gutter;
+/**
+ *  Managing class used to paint the buffer
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class HtmlPainter {
     private LineTabExpander expander;
-    private LineWrapper     wrapper;
+    private HtmlGutter gutter;
+    private String nl = System.getProperty("line.separator");
+    private LinePosition position;
+    private boolean showGutter;
+    private HtmlStyle style;
+    private SyntaxStyle[] syntaxStyles;
+    private int wrap;
+    private LineWrapper wrapper;
 
-    private LinePosition    position;
 
-    private boolean         showGutter;
-    private int             wrap;
-
-
-    public HtmlPainter(
-            SyntaxStyle[]   syntaxStyles,
-            HtmlStyle       style,
-            HtmlGutter      gutter,
-            LineTabExpander expander,
-            LineWrapper     wrapper
-    ) {
+    /**
+     *  HtmlPainter Constructor
+     *
+     * @param  syntaxStyles  A list of styles to be used
+     * @param  style         The HTML style
+     * @param  gutter        The gutter
+     * @param  expander      The tab expander
+     * @param  wrapper       The line wrapper
+     */
+    public HtmlPainter(SyntaxStyle[] syntaxStyles,
+                       HtmlStyle style,
+                       HtmlGutter gutter,
+                       LineTabExpander expander,
+                       LineWrapper wrapper) {
         this.syntaxStyles = syntaxStyles;
-
-        this.style    = style;
-        this.gutter   = gutter;
+        this.style = style;
+        this.gutter = gutter;
         this.expander = expander;
-        this.wrapper  = wrapper;
-
+        this.wrapper = wrapper;
         this.position = new LinePosition();
-
         this.showGutter = (gutter != null);
-        this.wrap       = (wrapper == null) ? 0 : wrapper.getWrapSize();
+        this.wrap = (wrapper == null) ? 0 : wrapper.getWrapSize();
     }
 
 
-    public SyntaxStyle[] getSyntaxStyles() {
-        return this.syntaxStyles;
-    }
-
-
+    /**
+     *  Sets the pos of the object
+     *
+     * @param  pos  The new pos value
+     */
     public void setPos(int pos) {
         this.position.setPos(pos);
     }
 
 
-    public void paintPlainLine(Writer out, int lineNumber, Segment line, SyntaxToken tokens)
-    {
+    /**
+     *  Gets the syntax styles of the object
+     *
+     * @return    The syntax styles value
+     */
+    public SyntaxStyle[] getSyntaxStyles() {
+        return this.syntaxStyles;
+    }
+
+
+    /**
+     *  Paints a plain line (i.e. in HTML, no CSS)
+     *
+     * @param  out         The writer we are to paint to
+     * @param  lineNumber  The number of the line
+     * @param  line        The text of the line
+     * @param  tokens      The tokens for the line
+     */
+    public void paintPlainLine(Writer out,
+                               int lineNumber,
+                               Segment line,
+                               SyntaxToken tokens) {
         try {
             if (this.showGutter) {
                 out.write(this.gutter.toHTML(lineNumber));
             }
 
             int pos = this.position.getPos();
-            String expandedText = this.expander.expand(pos, line.array, line.offset, line.count);
+            String expandedText = this.expander.expand(
+                pos, line.array, line.offset, line.count);
             this.position.incPos(expandedText.length());
-
             int[] wraps = null;
 
             if (this.wrapper != null) {
                 wraps = this.wrapper.wrap(pos, expandedText.length());
 
                 if (pos > 0 && (pos % this.wrap) == 0) {
-                    out.write("\n");
+                    out.write(nl);
                     if (this.showGutter) {
                         out.write(this.gutter.toEmptyHTML(lineNumber));
                     }
@@ -109,32 +135,43 @@ public class HtmlPainter
             } else {
                 for (int i = 0; i < wraps.length - 1; i++) {
                     if (i >= 1) {
-                        out.write("\n");
+                        out.write(nl);
+
                         if (this.showGutter) {
                             out.write(this.gutter.toEmptyHTML(lineNumber));
                         }
                     }
 
                     out.write(HtmlUtilities.toHTML(
-                        expandedText.substring(wraps[i], wraps[i + 1])
-                    ));
+                        expandedText.substring(wraps[i], wraps[i + 1])));
                 }
             }
         } catch (IOException ioe) {}
     }
 
 
-    public void paintSyntaxLine(
-            Writer out, int lineNumber, Segment line, SyntaxToken tokens
-    ) {
+    /**
+     *  Paints a line with CSS hilighting
+     *
+     * @param  out         The writer we are to write to
+     * @param  lineNumber  The number of the line being painted
+     * @param  line        The text of the line
+     * @param  tokens      The tokens representing the line
+     * @todo               fix for(;;) loop
+     */
+    public void paintSyntaxLine(Writer out,
+                                int lineNumber,
+                                Segment line,
+                                SyntaxToken tokens) {
         try {
             if (this.showGutter) {
                 out.write(this.gutter.toHTML(lineNumber));
             }
         } catch (IOException ioe) {}
 
-        for (;;) {
+        for (; ; ) {
             byte id = tokens.id;
+
             if (id == Token.END) {
                 break;
             }
@@ -144,7 +181,8 @@ public class HtmlPainter
 
             try {
                 int pos = this.position.getPos();
-                String expandedText = this.expander.expand(pos, line.array, line.offset, length);
+                String expandedText = this.expander.expand(
+                    pos, line.array, line.offset, length);
                 this.position.incPos(expandedText.length());
 
                 int[] wraps = null;
@@ -153,7 +191,8 @@ public class HtmlPainter
                     wraps = this.wrapper.wrap(pos, expandedText.length());
 
                     if (pos > 0 && (pos % this.wrap) == 0) {
-                        out.write("\n");
+                        out.write(nl);
+
                         if (this.showGutter) {
                             out.write(this.gutter.toEmptyHTML(lineNumber));
                         }
@@ -162,6 +201,7 @@ public class HtmlPainter
 
                 if (wraps == null) {
                     String text = HtmlUtilities.toHTML(expandedText);
+
                     if (id == Token.NULL) {
                         out.write(text);
                     } else {
@@ -169,17 +209,18 @@ public class HtmlPainter
                     }
                 } else {
                     String text;
+
                     for (int i = 0; i < wraps.length - 1; i++) {
                         if (i >= 1) {
-                            out.write("\n");
+                            out.write(nl);
+
                             if (this.showGutter) {
                                 out.write(this.gutter.toEmptyHTML(lineNumber));
                             }
                         }
 
                         text = HtmlUtilities.toHTML(
-                            expandedText.substring(wraps[i], wraps[i + 1])
-                        );
+                            expandedText.substring(wraps[i], wraps[i + 1]));
 
                         if (id == Token.NULL) {
                             out.write(text);
@@ -191,7 +232,6 @@ public class HtmlPainter
             } catch (IOException ioe) {}
 
             line.offset += length;
-
             tokens = tokens.next;
         }
     }

@@ -16,14 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html;
 
-import java.io.IOException;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -43,32 +42,40 @@ import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
 
-public class Code2HTML
-{
-    private Buffer       buffer    = null;
-    private Selection[]  selection = null;
+/**
+ *  Starting point for the Code2HTML plugin
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class Code2HTML {
+    private Buffer buffer = null;
+    private HtmlDocument document = null;
+    private HtmlGutter gutter = null;
+    private HtmlPainter painter = null;
+    private Selection[] selection = null;
+    private HtmlStyle style = null;
 
-    private HtmlStyle    style     = null;
-    private HtmlGutter   gutter    = null;
-    private HtmlPainter  painter   = null;
 
-    private HtmlDocument document  = null;
-
-
-    public Code2HTML(
-            Buffer buffer, SyntaxStyle[] syntaxStyle, Selection[] selection
-    ) {
-        this.buffer    = buffer;
+    /**
+     *  Code2HTML Constructor
+     *
+     * @param  buffer       The jEdit buffer we are converting
+     * @param  syntaxStyle  Collection of syntax tags with which we are to
+     *      convert the buffer
+     * @param  selection    A selection from the buffer or null
+     */
+    public Code2HTML(Buffer buffer,
+                     SyntaxStyle[] syntaxStyle,
+                     Selection[] selection) {
+        this.buffer = buffer;
         this.selection = selection;
 
-        Config config = new JEditConfig(
-            syntaxStyle,
-            buffer.getTabSize()
-        );
+        Config config = new JEditConfig(syntaxStyle, buffer.getTabSize());
 
-        this.style    = config.getStyle();
-        this.gutter   = config.getGutter();
-        this.painter  = config.getPainter();
+        this.style = config.getStyle();
+        this.gutter = config.getGutter();
+        this.painter = config.getPainter();
 
         this.document = new HtmlDocument(
             jEdit.getProperty("view.bgColor", "#ffffff"),
@@ -77,15 +84,21 @@ public class Code2HTML
             this.style,
             this.gutter,
             buffer.getName(),
-            "\n"
-        );
+            System.getProperty("line.separator"));
     }
 
 
+    /**
+     *  Gets the html buffer of the object
+     *
+     * @return    The html buffer value
+     */
     public Buffer getHtmlBuffer() {
         String htmlString = this.getHtmlString();
 
-        if (htmlString == null) { return null; }
+        if (htmlString == null) {
+            return null;
+        }
 
         Buffer newBuffer = jEdit.newFile(null);
 
@@ -95,11 +108,16 @@ public class Code2HTML
     }
 
 
+    /**
+     *  Gets the html string of the object
+     *
+     * @return    The html string value
+     */
     public String getHtmlString() {
         int physicalFirst = 0;
-        int physicalLast  = this.buffer.getLineCount() - 1;
+        int physicalLast = this.buffer.getLineCount() - 1;
 
-        StringWriter sw  = new StringWriter();
+        StringWriter sw = new StringWriter();
 
         try {
             BufferedWriter out = new BufferedWriter(sw);
@@ -110,6 +128,7 @@ public class Code2HTML
                 this.htmlText(out, physicalFirst, physicalLast);
             } else {
                 int last = 0;
+
                 for (int i = 0; i < selection.length; i++) {
                     if (selection[i].getEndLine() > last) {
                         last = selection[i].getEndLine();
@@ -120,17 +139,22 @@ public class Code2HTML
                 Arrays.sort(selection, new SelectionStartLineComparator());
 
                 if (this.gutter != null) {
-                    this.gutter.setGutterSize(Integer.toString(last + 1).length());
+                    this.gutter.setGutterSize(
+                        Integer.toString(last + 1).length());
                 }
 
                 int lastLine = -1;
+
                 for (int i = 0; i < selection.length; i++) {
                     physicalFirst = selection[i].getStartLine();
-                    physicalLast  = selection[i].getEndLine();
+                    physicalLast = selection[i].getEndLine();
 
-                    if (physicalLast <= lastLine) { continue; }
+                    if (physicalLast <= lastLine) {
+                        continue;
+                    }
 
-                    this.htmlText(out, Math.max(physicalFirst, lastLine + 1) , physicalLast);
+                    this.htmlText(out, Math.max(physicalFirst, lastLine + 1),
+                        physicalLast);
 
                     lastLine = physicalLast;
                 }
@@ -149,52 +173,59 @@ public class Code2HTML
     }
 
 
+    /**
+     *  Paints the actual HTML using the painter
+     *
+     * @param  out              The stream to paint HTML code to
+     * @param  first            The first line of the buffer to paint
+     * @param  last             The last line of the buffer to paint
+     * @exception  IOException  In the extremely odd case that the writer can
+     *      not be written to
+     */
     private void htmlText(Writer out, int first, int last) throws IOException {
-        long start = System.currentTimeMillis();
-        this.paintLines(out, this.buffer, first, last);
-        long end = System.currentTimeMillis();
-        Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
-    }
-
-
-    private void paintLines(
-            Writer out, Buffer buffer, int first, int last
-    ) throws IOException
-    {
         Segment line = new Segment();
         Token tokens = null;
+
         for (int i = first; i <= last; i++) {
             buffer.getLineText(i, line);
             tokens = buffer.markTokens(i).getFirstToken();
             this.painter.setPos(0);
+
             if (tokens == null) {
                 this.painter.paintPlainLine(out, i + 1, line, null);
             } else {
                 SyntaxToken syntaxTokens = SyntaxTokenUtilities.convertTokens(
-                    tokens
-                );
+                    tokens);
                 this.painter.paintSyntaxLine(out, i + 1, line, syntaxTokens);
             }
-            out.write("\n");
+
+            out.write(this.document.getLineSeparator());
         }
     }
 
 
-    private class SelectionStartLineComparator implements Comparator
-    {
+    /**
+     *  comparator for Selection start lines - to be passed to Arrays.sort
+     *
+     * @author     Andre kaplan
+     * @version    0.5
+     */
+    private class SelectionStartLineComparator implements Comparator {
+        /**
+         *  Implements the compare method of java.util.Comparator
+         *
+         * @param  obj1  The first object to compare
+         * @param  obj2  The second object to compare
+         * @return       1, 0, or -1 when obj1 &gt;, = or &lt; obj2 respectively
+         */
         public int compare(Object obj1, Object obj2) {
             Selection s1 = (Selection) obj1;
             Selection s2 = (Selection) obj2;
 
             int diff = s1.getStartLine() - s2.getStartLine();
 
-            if (diff == 0) {
-                return 0;
-            } else if (diff > 0) {
-                return 1;
-            } else {
-                return -1;
-            }
+            return diff == 0 ? 0 : (
+                diff > 0 ? 1 : -1);
         }
     }
 }

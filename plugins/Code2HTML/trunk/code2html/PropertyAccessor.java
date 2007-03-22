@@ -16,66 +16,81 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html;
 
-
-public interface PropertyAccessor
-{
+/**
+ *  Redundant interface to access properties. This and all its implementations
+ *  should be removed from the code
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ * @delete     file & see what happens
+ */
+public interface PropertyAccessor {
     /**
-     * Fetches a property, returning null if it's not defined.
-     * @param name The property
+     *  Fetches a property, returning null if it's not defined.
+     *
+     * @param  name  The property
+     * @return       The property value
      */
     String getProperty(String name);
 
 
     /**
-     * Fetches a property, returning the default value if it's not
-     * defined.
-     * @param name The property
-     * @param def The default value
+     *  Fetches a property, returning the default value if it's not defined.
+     *
+     * @param  name  The property
+     * @param  def   The default value
+     * @return       The property value
      */
     String getProperty(String name, String def);
 
 
     /**
-     * Returns the property with the specified name, formatting it with
-     * the <code>java.text.MessageFormat.format()</code> method.
-     * @param name The property
-     * @param args The positional parameters
+     *  Returns the property with the specified name, formatting it with the
+     *  <code>java.text.MessageFormat.format()</code> method.
+     *
+     * @param  name  The property
+     * @param  args  The positional parameters
+     * @return       The property value
      */
     String getProperty(String name, Object[] args);
 
 
     /**
-     * Fetches a boolean property, returning false if it's not defined.
-     * @param name The property
+     *  Fetches a boolean property, returning false if it's not defined.
+     *
+     * @param  name  The property
+     * @return       The boolean property value
      */
     boolean getBooleanProperty(String name);
 
 
     /**
-     * Fetches a boolean property, returning the default value if it's not
-     * defined.
-     * @param name The property
-     * @param def The default value
+     *  Fetches a boolean property, returning the default value if it's not
+     *  defined.
+     *
+     * @param  name  The property
+     * @param  def   The default value
+     * @return       The boolean property value
      */
     boolean getBooleanProperty(String name, boolean def);
 
 
     /**
-     * Sets a property to a new value.
-     * @param name The property
-     * @param value The new value
+     *  Sets a property to a new value.
+     *
+     * @param  name   The property
+     * @param  value  The new value
      */
     void setProperty(String name, String value);
 
 
     /**
-     * Sets a boolean property to a new value.
-     * @param name The property
-     * @param value The new value
+     *  Sets a boolean property to a new value.
+     *
+     * @param  name   The property
+     * @param  value  The new value
      */
     void setBooleanProperty(String name, boolean value);
 }

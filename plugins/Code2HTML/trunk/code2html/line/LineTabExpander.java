@@ -16,34 +16,55 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html.line;
 
 
-public class LineTabExpander
-{
-    private int tabSize;
+/**
+ *  Expands tabs
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class LineTabExpander {
     private char[] spacer;
+    private int tabSize;
 
 
+    /**
+     *  LineTabExpander Constructor
+     */
     public LineTabExpander() {
         this(4);
     }
 
 
+    /**
+     *  LineTabExpander Constructor
+     *
+     * @param  tabSize  The size of the tabs
+     */
     public LineTabExpander(int tabSize) {
         if (tabSize > 0) {
             this.tabSize = tabSize;
         }
 
         this.spacer = new char[this.tabSize];
+
         for (int i = 0; i < this.tabSize; i++) {
             this.spacer[i] = ' ';
         }
     }
 
 
+    /**
+     *  Expands a tab at a position in a String
+     *
+     * @param  pos     The position at which we are at
+     * @param  str     The string
+     * @param  strOff  The string offset
+     * @param  strLen  The string length
+     * @return         A string with the tab chars expanded to spaces
+     */
     public String expand(int pos, char[] str, int strOff, int strLen) {
         StringBuffer buf = new StringBuffer();
 
@@ -71,6 +92,14 @@ public class LineTabExpander
     }
 
 
+    /**
+     *  Expands a tab at a position in a String
+     *
+     * @param  pos  The position at which we are at
+     * @param  s    The string
+     * @return      A string with the tab chars expanded to spaces
+     * @todo        Do we need to pass a string length?
+     */
     public String expand(int pos, String s) {
         return this.expand(pos, s.toCharArray(), 0, s.length());
     }

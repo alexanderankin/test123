@@ -20,617 +20,560 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package code2html.syntax;
-
-//{{{ Imports
-import com.microstar.xml.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
 import org.gjt.sp.jedit.syntax.KeywordMap;
 ///import org.gjt.sp.jedit.syntax.ParserRuleFactory;
 import org.gjt.sp.util.Log;
+
+//{{{ Imports
+import com.microstar.xml.*;
 import code2html.Main;
 import code2html.Mode;
 import code2html.ModeUtilities;
 //}}}
 
-public class XModeHandler extends HandlerBase
-{
-	//{{{ XModeHandler constructor
-	public XModeHandler (XmlParser parser, String modeName, String path)
-	{
-		this.modeName = modeName;
-		this.parser = parser;
-		this.path = path;
-		stateStack = new Stack();
-	} //}}}
+/**
+ * @author     Slava Pestov
+ * @version    0.5
+ @todo Use the actual jEdit code
+ */
+public class XModeHandler extends HandlerBase {
+    private KeywordMap keywords;
+    private boolean lastAtLineStart;
+    private byte lastDefaultID = Token.NULL;
+    private String lastDelegateSet;
+    private String lastEnd;
+    private String lastEscape;
+    private boolean lastExcludeMatch;
+    private boolean lastHighlightDigits;
+    private boolean lastIgnoreCase = true;
+    private String lastKeyword;
+    private boolean lastNoLineBreak;
+    private boolean lastNoWordBreak;
+    private String lastSetName;
+    private String lastStart;
+    private byte lastTokenID;
 
-	//{{{ resolveEntity() method
-	public Object resolveEntity(String publicId, String systemId)
-	{
-		if("xmode.dtd".equals(systemId))
-		{
-			// this will result in a slight speed up, since we
-			// don't need to read the DTD anyway, as AElfred is
-			// non-validating
-			return new StringReader("<!-- -->");
+    private TokenMarker marker;
+    private Mode mode;
+    private String modeName;  //}}}
 
-			/* try
-			{
-				return new BufferedReader(new InputStreamReader(
-					getClass().getResourceAsStream(
-					"/org/gjt/sp/jedit/xmode.dtd")));
-			}
-			catch(Exception e)
-			{
-				error("dtd",e);
-			} */
-		}
+    //{{{ Private members
 
-		return null;
-	} //}}}
+    //{{{ Instance variables
+    private XmlParser parser;
+    private String path;
+    private String propName;
+    private String propValue;
+    private Hashtable props;
+    private ParserRuleSet rules;
+    private Stack stateStack;
+    private int termChar = -1;
+    //{{{ XModeHandler constructor
 
-	//{{{ attribute() method
-	public void attribute(String aname, String value, boolean isSpecified)
-	{
-		String tag = peekElement();
-		aname = (aname == null) ? null : aname.intern();
-		value = (value == null) ? null : value.intern();
+    /**
+     *  XModeHandler Constructor
+     *
+     * @param  parser
+     * @param  modeName
+     * @param  path
+     */
+    public XModeHandler(XmlParser parser, String modeName, String path) {
+        this.modeName = modeName;
+        this.parser = parser;
+        this.path = path;
+        stateStack = new Stack();
+    }  //}}}
 
-		if (aname == "NAME")
-		{
-			propName = value;
-		}
-		else if (aname == "VALUE")
-		{
-			propValue = value;
-		}
-		else if (aname == "TYPE")
-		{
-			lastTokenID = stringToToken(value);
-		}
-		else if (aname == "AT_LINE_START")
-		{
-			lastAtLineStart = (isSpecified) ? (value == "TRUE") :
-				false;
-		}
-		else if (aname == "NO_LINE_BREAK")
-		{
-			lastNoLineBreak = (isSpecified) ? (value == "TRUE") :
-				false;
-		}
-		else if (aname == "NO_WORD_BREAK")
-		{
-			lastNoWordBreak = (isSpecified) ? (value == "TRUE") :
-				false;
-		}
-		else if (aname == "EXCLUDE_MATCH")
-		{
-			lastExcludeMatch = (isSpecified) ? (value == "TRUE") :
-				false;
-		}
-		else if (aname == "IGNORE_CASE")
-		{
-			lastIgnoreCase = (isSpecified) ? (value != "FALSE") :
-				true;
-		}
-		else if (aname == "HIGHLIGHT_DIGITS")
-		{
-			lastHighlightDigits = (isSpecified) ? (value != "FALSE") :
-				false;
-		}
-		else if (aname == "AT_CHAR")
-		{
-			try
-			{
-				if (isSpecified) termChar =
-					Integer.parseInt(value);
-			}
-			catch (NumberFormatException e)
-			{
-				error("termchar-invalid",value);
-				termChar = -1;
-			}
-		}
-		else if (aname == "ESCAPE")
-		{
-			lastEscape = value;
-		}
-		else if (aname == "SET")
-		{
-			lastSetName = value;
-		}
-		else if (aname == "DELEGATE")
-		{
-			lastDelegateSet = value;
-		}
-		else if (aname == "DEFAULT")
-		{
-			lastDefaultID = stringToToken(value);
-		}
-	} //}}}
+    //{{{ attribute() method
+    /**
+     * @param  aname
+     * @param  value
+     * @param  isSpecified
+     */
+    public void attribute(String aname, String value, boolean isSpecified) {
+        String tag = peekElement();
+        aname = (aname == null) ? null : aname.intern();
+        value = (value == null) ? null : value.intern();
 
-	//{{{ doctypeDecl() method
-	public void doctypeDecl(String name, String publicId,
-		String systemId) throws Exception
-	{
-		if ("MODE".equalsIgnoreCase(name)) return;
+        if (aname == "NAME") {
+            propName = value;
+        } else if (aname == "VALUE") {
+            propValue = value;
+        } else if (aname == "TYPE") {
+            lastTokenID = stringToToken(value);
+        } else if (aname == "AT_LINE_START") {
+            lastAtLineStart = (isSpecified) ? (value == "TRUE") :
+                false;
+        } else if (aname == "NO_LINE_BREAK") {
+            lastNoLineBreak = (isSpecified) ? (value == "TRUE") :
+                false;
+        } else if (aname == "NO_WORD_BREAK") {
+            lastNoWordBreak = (isSpecified) ? (value == "TRUE") :
+                false;
+        } else if (aname == "EXCLUDE_MATCH") {
+            lastExcludeMatch = (isSpecified) ? (value == "TRUE") :
+                false;
+        } else if (aname == "IGNORE_CASE") {
+            lastIgnoreCase = (isSpecified) ? (value != "FALSE") :
+                true;
+        } else if (aname == "HIGHLIGHT_DIGITS") {
+            lastHighlightDigits = (isSpecified) ? (value != "FALSE") :
+                false;
+        } else if (aname == "AT_CHAR") {
+            try {
+                if (isSpecified) {
+                    termChar =
+                        Integer.parseInt(value);
+                }
+            } catch (NumberFormatException e) {
+                error("termchar-invalid", value);
+                termChar = -1;
+            }
+        } else if (aname == "ESCAPE") {
+            lastEscape = value;
+        } else if (aname == "SET") {
+            lastSetName = value;
+        } else if (aname == "DELEGATE") {
+            lastDelegateSet = value;
+        } else if (aname == "DEFAULT") {
+            lastDefaultID = stringToToken(value);
+        }
+    }  //}}}
 
-		error("doctype-invalid",name);
-	} //}}}
+    //{{{ charData() method
+    /**
+     * @param  c
+     * @param  off
+     * @param  len
+     */
+    public void charData(char[] c, int off, int len) {
+        String tag = peekElement();
+        String text = new String(c, off, len);
 
-	//{{{ charData() method
-	public void charData(char[] c, int off, int len)
-	{
-		String tag = peekElement();
-		String text = new String(c, off, len);
+        if (tag == "WHITESPACE" ||
+            tag == "EOL_SPAN" ||
+            tag == "MARK_PREVIOUS" ||
+            tag == "MARK_FOLLOWING" ||
+            tag == "SEQ" ||
+            tag == "BEGIN"
+            ) {
+            lastStart = text;
+        } else if (tag == "END") {
+            lastEnd = text;
+        } else {
+            lastKeyword = text;
+        }
+    }  //}}}
 
-		if (tag == "WHITESPACE" ||
-			tag == "EOL_SPAN" ||
-			tag == "MARK_PREVIOUS" ||
-			tag == "MARK_FOLLOWING" ||
-			tag == "SEQ" ||
-			tag == "BEGIN"
-		)
-		{
-			lastStart = text;
-		}
-		else if (tag == "END")
-		{
-			lastEnd = text;
-		}
-		else
-		{
-			lastKeyword = text;
-		}
-	} //}}}
+    //{{{ doctypeDecl() method
+    /**
+     * @param  name
+     * @param  publicId
+     * @param  systemId
+     * @exception  Exception
+     */
+    public void doctypeDecl(String name, String publicId,
+                            String systemId) throws Exception {
+        if ("MODE".equalsIgnoreCase(name)) {
+            return;
+        }
 
-	//{{{ startElement() method
-	public void startElement (String tag)
-	{
-		tag = pushElement(tag);
+        error("doctype-invalid", name);
+    }  //}}}
 
-		if (tag == "MODE")
-		{
-			mode = ModeUtilities.getMode(modeName);
-			if (mode == null)
-			{
-				mode = new Mode(modeName);
-				ModeUtilities.addMode(mode);
-			}
-		}
-		else if (tag == "KEYWORDS")
-		{
-			keywords = new KeywordMap(true);
-		}
-		else if (tag == "RULES")
-		{
-			rules = new ParserRuleSet(lastSetName,mode);
-			rules.setIgnoreCase(lastIgnoreCase);
-			rules.setHighlightDigits(lastHighlightDigits);
-			rules.setEscape(lastEscape);
-			rules.setDefault(lastDefaultID);
-		}
-	} //}}}
+    //{{{ endElement() method
+    /**
+     * @param  name
+     */
+    public void endElement(String name) {
+        if (name == null) {
+            return;
+        }
 
-	//{{{ endElement() method
-	public void endElement (String name)
-	{
-		if (name == null) return;
+        String tag = popElement();
 
-		String tag = popElement();
+        if (name.equalsIgnoreCase(tag)) {
+            //{{{ MODE
+            if (tag == "MODE") {
+                mode.init();
+                mode.setTokenMarker(marker);
+            }   //}}}
+            //{{{ PROPERTY
+            else if (tag == "PROPERTY") {
+                props.put(propName, propValue);
+            }   //}}}
+            //{{{ PROPS
+            else if (tag == "PROPS") {
+                if (peekElement().equals("RULES")) {
+                    rules.setProperties(props);
+                } else {
+                    mode.setProperties(props);
+                }
 
-		if (name.equalsIgnoreCase(tag))
-		{
-			//{{{ MODE
-			if (tag == "MODE")
-			{
-				mode.init();
-				mode.setTokenMarker(marker);
-			} //}}}
-			//{{{ PROPERTY
-			else if (tag == "PROPERTY")
-			{
-				props.put(propName,propValue);
-			} //}}}
-			//{{{ PROPS
-			else if (tag == "PROPS")
-			{
-				if(peekElement().equals("RULES"))
-					rules.setProperties(props);
-				else
-					mode.setProperties(props);
+                props = new Hashtable();
+            }   //}}}
+            //{{{ KEYWORDS
+            else if (tag == "KEYWORDS") {
+                keywords.setIgnoreCase(lastIgnoreCase);
+                lastIgnoreCase = true;
+            }   //}}}
+            //{{{ RULES
+            else if (tag == "RULES") {
+                rules.setKeywords(keywords);
+                marker.addRuleSet(lastSetName, rules);
+                keywords = null;
+                lastSetName = null;
+                lastEscape = null;
+                lastIgnoreCase = true;
+                lastHighlightDigits = false;
+                lastDefaultID = Token.NULL;
+                rules = null;
+            }   //}}}
+            //{{{ TERMINATE
+            else if (tag == "TERMINATE") {
+                rules.setTerminateChar(termChar);
+                termChar = -1;
+            }   //}}}
+            //{{{ WHITESPACE
+            else if (tag == "WHITESPACE") {
+                if (lastStart == null) {
+                    error("empty-tag", "WHITESPACE");
+                    return;
+                }
 
-				props = new Hashtable();
-			} //}}}
-			//{{{ KEYWORDS
-			else if (tag == "KEYWORDS")
-			{
-				keywords.setIgnoreCase(lastIgnoreCase);
-				lastIgnoreCase = true;
-			} //}}}
-			//{{{ RULES
-			else if (tag == "RULES")
-			{
-				rules.setKeywords(keywords);
-				marker.addRuleSet(lastSetName, rules);
-				keywords = null;
-				lastSetName = null;
-				lastEscape = null;
-				lastIgnoreCase = true;
-				lastHighlightDigits = false;
-				lastDefaultID = Token.NULL;
-				rules = null;
-			} //}}}
-			//{{{ TERMINATE
-			else if (tag == "TERMINATE")
-			{
-				rules.setTerminateChar(termChar);
-				termChar = -1;
-			} //}}}
-			//{{{ WHITESPACE
-			else if (tag == "WHITESPACE")
-			{
-				if(lastStart == null)
-				{
-					error("empty-tag","WHITESPACE");
-					return;
-				}
+                ///rules.addRule(ParserRuleFactory.createWhitespaceRule(
+                ///	lastStart));
+                lastStart = null;
+                lastEnd = null;
+            }   //}}}
+            //{{{ EOL_SPAN
+            else if (tag == "EOL_SPAN") {
+                if (lastStart == null) {
+                    error("empty-tag", "EOL_SPAN");
+                    return;
+                }
 
-				///rules.addRule(ParserRuleFactory.createWhitespaceRule(
-				///	lastStart));
-				lastStart = null;
-				lastEnd = null;
-			} //}}}
-			//{{{ EOL_SPAN
-			else if (tag == "EOL_SPAN")
-			{
-				if(lastStart == null)
-				{
-					error("empty-tag","EOL_SPAN");
-					return;
-				}
+                ///rules.addRule(ParserRuleFactory.createEOLSpanRule(
+                ///	lastStart,lastTokenID,lastAtLineStart,
+                ///	lastExcludeMatch));
+                lastStart = null;
+                lastEnd = null;
+                lastTokenID = Token.NULL;
+                lastAtLineStart = false;
+                lastExcludeMatch = false;
+            }   //}}}
+            //{{{ MARK_PREVIOUS
+            else if (tag == "MARK_PREVIOUS") {
+                if (lastStart == null) {
+                    error("empty-tag", "MARK_PREVIOUS");
+                    return;
+                }
 
-				///rules.addRule(ParserRuleFactory.createEOLSpanRule(
-				///	lastStart,lastTokenID,lastAtLineStart,
-				///	lastExcludeMatch));
-				lastStart = null;
-				lastEnd = null;
-				lastTokenID = Token.NULL;
-				lastAtLineStart = false;
-				lastExcludeMatch = false;
-			} //}}}
-			//{{{ MARK_PREVIOUS
-			else if (tag == "MARK_PREVIOUS")
-			{
-				if(lastStart == null)
-				{
-					error("empty-tag","MARK_PREVIOUS");
-					return;
-				}
+                ///rules.addRule(ParserRuleFactory
+                ///	.createMarkPreviousRule(lastStart,
+                ///	lastTokenID,lastAtLineStart,
+                ///	lastExcludeMatch));
+                lastStart = null;
+                lastEnd = null;
+                lastTokenID = Token.NULL;
+                lastAtLineStart = false;
+                lastExcludeMatch = false;
+            }   //}}}
+            //{{{ MARK_FOLLOWING
+            else if (tag == "MARK_FOLLOWING") {
+                if (lastStart == null) {
+                    error("empty-tag", "MARK_FOLLOWING");
+                    return;
+                }
 
-				///rules.addRule(ParserRuleFactory
-				///	.createMarkPreviousRule(lastStart,
-				///	lastTokenID,lastAtLineStart,
-				///	lastExcludeMatch));
-				lastStart = null;
-				lastEnd = null;
-				lastTokenID = Token.NULL;
-				lastAtLineStart = false;
-				lastExcludeMatch = false;
-			} //}}}
-			//{{{ MARK_FOLLOWING
-			else if (tag == "MARK_FOLLOWING")
-			{
-				if(lastStart == null)
-				{
-					error("empty-tag","MARK_FOLLOWING");
-					return;
-				}
+                ///rules.addRule(ParserRuleFactory
+                ///	.createMarkFollowingRule(lastStart,
+                ///	lastTokenID,lastAtLineStart,
+                ///	lastExcludeMatch));
+                lastStart = null;
+                lastEnd = null;
+                lastTokenID = Token.NULL;
+                lastAtLineStart = false;
+                lastExcludeMatch = false;
+            }   //}}}
+            //{{{ SEQ
+            else if (tag == "SEQ") {
+                if (lastStart == null) {
+                    error("empty-tag", "SEQ");
+                    return;
+                }
 
-				///rules.addRule(ParserRuleFactory
-				///	.createMarkFollowingRule(lastStart,
-				///	lastTokenID,lastAtLineStart,
-				///	lastExcludeMatch));
-				lastStart = null;
-				lastEnd = null;
-				lastTokenID = Token.NULL;
-				lastAtLineStart = false;
-				lastExcludeMatch = false;
-			} //}}}
-			//{{{ SEQ
-			else if (tag == "SEQ")
-			{
-				if(lastStart == null)
-				{
-					error("empty-tag","SEQ");
-					return;
-				}
+                ///rules.addRule(ParserRuleFactory.createSequenceRule(
+                ///	lastStart,lastTokenID,lastAtLineStart));
+                lastStart = null;
+                lastEnd = null;
+                lastTokenID = Token.NULL;
+                lastAtLineStart = false;
+            }   //}}}
+            //{{{ END
+            else if (tag == "END") {
+                // empty END tags should be supported; see
+                // asp.xml, for example
+                /* if(lastEnd == null)
+                 *{
+                 *error("empty-tag","END");
+                 *return;
+                 *}  */
+                if (lastDelegateSet == null) {
+                    ///rules.addRule(ParserRuleFactory
+                    ///	.createSpanRule(lastStart,
+                    ///	lastEnd,lastTokenID,
+                    ///	lastNoLineBreak,
+                    ///	lastAtLineStart,
+                    ///	lastExcludeMatch,
+                    ///	lastNoWordBreak));
+                } else {
+                    if (lastDelegateSet.indexOf("::") == -1) {
+                        lastDelegateSet = modeName + "::" + lastDelegateSet;
+                    }
+                    ///rules.addRule(ParserRuleFactory
+                    ///	.createDelegateSpanRule(
+                    ///	lastStart,lastEnd,
+                    ///	lastDelegateSet,
+                    ///	lastTokenID,lastNoLineBreak,
+                    ///	lastAtLineStart,
+                    ///	lastExcludeMatch,
+                    ///	lastNoWordBreak));
+                }
+                lastStart = null;
+                lastEnd = null;
+                lastTokenID = Token.NULL;
+                lastAtLineStart = false;
+                lastNoLineBreak = false;
+                lastExcludeMatch = false;
+                lastNoWordBreak = false;
+                lastDelegateSet = null;
+            }   //}}}
+            //{{{ Keywords
+            else if (tag == "NULL") {
+                addKeyword(lastKeyword, Token.NULL);
+            } else if (tag == "COMMENT1") {
+                addKeyword(lastKeyword, Token.COMMENT1);
+            } else if (tag == "COMMENT2") {
+                addKeyword(lastKeyword, Token.COMMENT2);
+            } else if (tag == "LITERAL1") {
+                addKeyword(lastKeyword, Token.LITERAL1);
+            } else if (tag == "LITERAL2") {
+                addKeyword(lastKeyword, Token.LITERAL2);
+            } else if (tag == "LABEL") {
+                addKeyword(lastKeyword, Token.LABEL);
+            } else if (tag == "KEYWORD1") {
+                addKeyword(lastKeyword, Token.KEYWORD1);
+            } else if (tag == "KEYWORD2") {
+                addKeyword(lastKeyword, Token.KEYWORD2);
+            } else if (tag == "KEYWORD3") {
+                addKeyword(lastKeyword, Token.KEYWORD3);
+            } else if (tag == "FUNCTION") {
+                addKeyword(lastKeyword, Token.FUNCTION);
+            } else if (tag == "MARKUP") {
+                addKeyword(lastKeyword, Token.MARKUP);
+            } else if (tag == "OPERATOR") {
+                addKeyword(lastKeyword, Token.OPERATOR);
+            } else if (tag == "DIGIT") {
+                addKeyword(lastKeyword, Token.DIGIT);
+            }  //}}}
+        } else {
+            // can't happen
+            throw new InternalError();
+        }
+    }  //}}}
 
-				///rules.addRule(ParserRuleFactory.createSequenceRule(
-				///	lastStart,lastTokenID,lastAtLineStart));
-				lastStart = null;
-				lastEnd = null;
-				lastTokenID = Token.NULL;
-				lastAtLineStart = false;
-			} //}}}
-			//{{{ END
-			else if (tag == "END")
-			{
-				// empty END tags should be supported; see
-				// asp.xml, for example
-				/* if(lastEnd == null)
-				{
-					error("empty-tag","END");
-					return;
-				} */
+    //{{{ resolveEntity() method
+    /**
+     * @param  publicId
+     * @param  systemId
+     * @return
+     */
+    public Object resolveEntity(String publicId, String systemId) {
+        if ("xmode.dtd".equals(systemId)) {
+            // this will result in a slight speed up, since we
+            // don't need to read the DTD anyway, as AElfred is
+            // non-validating
+            return new StringReader("<!-- -->");
+            /* try
+             *{
+             *return new BufferedReader(new InputStreamReader(
+             *getClass().getResourceAsStream(
+             *"/org/gjt/sp/jedit/xmode.dtd")));
+             *}
+             *catch(Exception e)
+             *{
+             *error("dtd",e);
+             *}  */
+        }
 
-				if (lastDelegateSet == null)
-				{
-					///rules.addRule(ParserRuleFactory
-					///	.createSpanRule(lastStart,
-					///	lastEnd,lastTokenID,
-					///	lastNoLineBreak,
-					///	lastAtLineStart,
-					///	lastExcludeMatch,
-					///	lastNoWordBreak));
-				}
-				else
-				{
-					if (lastDelegateSet.indexOf("::") == -1)
-					{
-						lastDelegateSet = modeName + "::" + lastDelegateSet;
-					}
+        return null;
+    }  //}}}
 
-					///rules.addRule(ParserRuleFactory
-					///	.createDelegateSpanRule(
-					///	lastStart,lastEnd,
-					///	lastDelegateSet,
-					///	lastTokenID,lastNoLineBreak,
-					///	lastAtLineStart,
-					///	lastExcludeMatch,
-					///	lastNoWordBreak));
-				}
-				lastStart = null;
-				lastEnd = null;
-				lastTokenID = Token.NULL;
-				lastAtLineStart = false;
-				lastNoLineBreak = false;
-				lastExcludeMatch = false;
-				lastNoWordBreak = false;
-				lastDelegateSet = null;
-			} //}}}
-			//{{{ Keywords
-			else if (tag == "NULL")
-			{
-				addKeyword(lastKeyword,Token.NULL);
-			}
-			else if (tag == "COMMENT1")
-			{
-				addKeyword(lastKeyword,Token.COMMENT1);
-			}
-			else if (tag == "COMMENT2")
-			{
-				addKeyword(lastKeyword,Token.COMMENT2);
-			}
-			else if (tag == "LITERAL1")
-			{
-				addKeyword(lastKeyword,Token.LITERAL1);
-			}
-			else if (tag == "LITERAL2")
-			{
-				addKeyword(lastKeyword,Token.LITERAL2);
-			}
-			else if (tag == "LABEL")
-			{
-				addKeyword(lastKeyword,Token.LABEL);
-			}
-			else if (tag == "KEYWORD1")
-			{
-				addKeyword(lastKeyword,Token.KEYWORD1);
-			}
-			else if (tag == "KEYWORD2")
-			{
-				addKeyword(lastKeyword,Token.KEYWORD2);
-			}
-			else if (tag == "KEYWORD3")
-			{
-				addKeyword(lastKeyword,Token.KEYWORD3);
-			}
-			else if (tag == "FUNCTION")
-			{
-				addKeyword(lastKeyword,Token.FUNCTION);
-			}
-			else if (tag == "MARKUP")
-			{
-				addKeyword(lastKeyword,Token.MARKUP);
-			}
-			else if (tag == "OPERATOR")
-			{
-				addKeyword(lastKeyword,Token.OPERATOR);
-			}
-			else if (tag == "DIGIT")
-			{
-				addKeyword(lastKeyword,Token.DIGIT);
-			} //}}}
-		}
-		else
-		{
-			// can't happen
-			throw new InternalError();
-		}
-	} //}}}
+    //{{{ startDocument() method
+    /**
+     */
+    public void startDocument() {
+        marker = new TokenMarker();
+        marker.setName(modeName);
+        props = new Hashtable();
 
-	//{{{ startDocument() method
-	public void startDocument()
-	{
-		marker = new TokenMarker();
-		marker.setName(modeName);
-		props = new Hashtable();
+        pushElement(null);
+    }  //}}}
 
-		pushElement(null);
-	} //}}}
+    //{{{ startElement() method
+    /**
+     * @param  tag
+     */
+    public void startElement(String tag) {
+        tag = pushElement(tag);
 
-	//{{{ Private members
+        if (tag == "MODE") {
+            mode = ModeUtilities.getMode(modeName);
+            if (mode == null) {
+                mode = new Mode(modeName);
+                ModeUtilities.addMode(mode);
+            }
+        } else if (tag == "KEYWORDS") {
+            keywords = new KeywordMap(true);
+        } else if (tag == "RULES") {
+            rules = new ParserRuleSet(lastSetName, mode);
+            rules.setIgnoreCase(lastIgnoreCase);
+            rules.setHighlightDigits(lastHighlightDigits);
+            rules.setEscape(lastEscape);
+            rules.setDefault(lastDefaultID);
+        }
+    }  //}}}
 
-	//{{{ Instance variables
-	private XmlParser parser;
-	private String modeName;
-	private String path;
+    //{{{ _error() method
+    /**
+     * @param  msg
+     */
+    private void _error(String msg) {
+        Object[] args = {path, new Integer(parser.getLineNumber()),
+            new Integer(parser.getColumnNumber()), msg};
 
-	private TokenMarker marker;
-	private KeywordMap keywords;
-	private Mode mode;
-	private Stack stateStack;
-	private String propName;
-	private String propValue;
-	private Hashtable props;
-	private String lastStart;
-	private String lastEnd;
-	private String lastKeyword;
-	private String lastSetName;
-	private String lastEscape;
-	private String lastDelegateSet;
-	private ParserRuleSet rules;
-	private byte lastDefaultID = Token.NULL;
-	private byte lastTokenID;
-	private int termChar = -1;
-	private boolean lastNoLineBreak;
-	private boolean lastNoWordBreak;
-	private boolean lastAtLineStart;
-	private boolean lastExcludeMatch;
-	private boolean lastIgnoreCase = true;
-	private boolean lastHighlightDigits;
-	//}}}
+        Log.log(Log.ERROR, this, Main.getProperty("xmode-error".concat(".message"), args));
+    }  //}}}
 
-	//{{{ stringToToken() method
-	private byte stringToToken(String value)
-	{
-		if (value == "NULL")
-		{
-			return Token.NULL;
-		}
-		else if (value == "COMMENT1")
-		{
-			return Token.COMMENT1;
-		}
-		else if (value == "COMMENT2")
-		{
-			return Token.COMMENT2;
-		}
-		else if (value == "LITERAL1")
-		{
-			return Token.LITERAL1;
-		}
-		else if (value == "LITERAL2")
-		{
-			return Token.LITERAL2;
-		}
-		else if (value == "LABEL")
-		{
-			return Token.LABEL;
-		}
-		else if (value == "KEYWORD1")
-		{
-			return Token.KEYWORD1;
-		}
-		else if (value == "KEYWORD2")
-		{
-			return Token.KEYWORD2;
-		}
-		else if (value == "KEYWORD3")
-		{
-			return Token.KEYWORD3;
-		}
-		else if (value == "FUNCTION")
-		{
-			return Token.FUNCTION;
-		}
-		else if (value == "MARKUP")
-		{
-			return Token.MARKUP;
-		}
-		else if (value == "OPERATOR")
-		{
-			return Token.OPERATOR;
-		}
-		else if (value == "DIGIT")
-		{
-			return Token.DIGIT;
-		}
-		else if (value == "INVALID")
-		{
-			return Token.INVALID;
-		}
-		else
-		{
-			error("token-invalid",value);
-			return Token.NULL;
-		}
-	} //}}}
+    //{{{ addKeyword() method
+    /**
+     *  Adds a feature to the keyword of the object
+     *
+     * @param  k   The feature to be added to the keyword
+     * @param  id  The feature to be added to the keyword
+     */
+    private void addKeyword(String k, byte id) {
+        if (k == null) {
+            error("empty-keyword");
+            return;
+        }
 
-	//{{{ addKeyword() method
-	private void addKeyword(String k, byte id)
-	{
-		if(k == null)
-		{
-			error("empty-keyword");
-			return;
-		}
+        if (keywords == null) {
+            return;
+        }
+        keywords.add(k, id);
+    }  //}}}
 
-		if (keywords == null) return;
-		keywords.add(k,id);
-	} //}}}
+    //{{{ error() method
+    /**
+     * @param  msg
+     */
+    private void error(String msg) {
+        _error(Main.getProperty("xmode-error." + msg));
+    }  //}}}
 
-	//{{{ pushElement() method
-	private String pushElement(String name)
-	{
-		name = (name == null) ? null : name.intern();
+    //{{{ error() method
+    /**
+     * @param  msg
+     * @param  subst
+     */
+    private void error(String msg, String subst) {
+        _error(Main.getProperty("xmode-error." + msg, new String[]{subst}));
+    }  //}}}
 
-		stateStack.push(name);
+    //{{{ error() method
+    /**
+     * @param  msg
+     * @param  t
+     */
+    private void error(String msg, Throwable t) {
+        _error(Main.getProperty("xmode-error." + msg, new String[]{t.toString()}));
+        Log.log(Log.ERROR, this, t);
+    }  //}}}
 
-		return name;
-	} //}}}
+    //{{{ peekElement() method
+    /**
+     * @return
+     */
+    private String peekElement() {
+        return (String) stateStack.peek();
+    }  //}}}
 
-	//{{{ peekElement() method
-	private String peekElement()
-	{
-		return (String) stateStack.peek();
-	} //}}}
+    //{{{ popElement() method
+    /**
+     * @return
+     */
+    private String popElement() {
+        return (String) stateStack.pop();
+    }  //}}}
 
-	//{{{ popElement() method
-	private String popElement()
-	{
-		return (String) stateStack.pop();
-	} //}}}
+    //{{{ pushElement() method
+    /**
+     * @param  name
+     * @return
+     */
+    private String pushElement(String name) {
+        name = (name == null) ? null : name.intern();
 
-	//{{{ error() method
-	private void error(String msg)
-	{
-		_error(Main.getProperty("xmode-error." + msg));
-	} //}}}
+        stateStack.push(name);
 
-	//{{{ error() method
-	private void error(String msg, String subst)
-	{
-		_error(Main.getProperty("xmode-error." + msg,new String[] { subst }));
-	} //}}}
+        return name;
+    }
+    //}}}
 
-	//{{{ error() method
-	private void error(String msg, Throwable t)
-	{
-		_error(Main.getProperty("xmode-error." + msg,new String[] { t.toString() }));
-		Log.log(Log.ERROR,this,t);
-	} //}}}
-
-	//{{{ _error() method
-	private void _error(String msg)
-	{
-		Object[] args = { path, new Integer(parser.getLineNumber()),
-			new Integer(parser.getColumnNumber()), msg };
-
-		Log.log(Log.ERROR, this, Main.getProperty("xmode-error".concat(".message"), args));
-	} //}}}
+    //{{{ stringToToken() method
+    /**
+     * @param  value
+     * @return
+     */
+    private byte stringToToken(String value) {
+        if (value == "NULL") {
+            return Token.NULL;
+        } else if (value == "COMMENT1") {
+            return Token.COMMENT1;
+        } else if (value == "COMMENT2") {
+            return Token.COMMENT2;
+        } else if (value == "LITERAL1") {
+            return Token.LITERAL1;
+        } else if (value == "LITERAL2") {
+            return Token.LITERAL2;
+        } else if (value == "LABEL") {
+            return Token.LABEL;
+        } else if (value == "KEYWORD1") {
+            return Token.KEYWORD1;
+        } else if (value == "KEYWORD2") {
+            return Token.KEYWORD2;
+        } else if (value == "KEYWORD3") {
+            return Token.KEYWORD3;
+        } else if (value == "FUNCTION") {
+            return Token.FUNCTION;
+        } else if (value == "MARKUP") {
+            return Token.MARKUP;
+        } else if (value == "OPERATOR") {
+            return Token.OPERATOR;
+        } else if (value == "DIGIT") {
+            return Token.DIGIT;
+        } else if (value == "INVALID") {
+            return Token.INVALID;
+        } else {
+            error("token-invalid", value);
+            return Token.NULL;
+        }
+    }  //}}}
 }
+

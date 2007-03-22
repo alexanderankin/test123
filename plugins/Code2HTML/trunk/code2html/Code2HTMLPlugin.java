@@ -16,49 +16,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html;
 
 import java.util.Vector;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.jEdit;
 
 import org.gjt.sp.util.Log;
 
 
 /**
- * Code2HTML plugin
+ *  Code2HTML plugin
  *
- * @author Andr&eacute; Kaplan
+ * @author     Andr&eacute; Kaplan
+ * @version    0.5
  */
-public class Code2HTMLPlugin
-    extends EditPlugin
-{
+public class Code2HTMLPlugin extends EditPlugin {
+    /**
+     *  Code2HTMLPlugin Constructor
+     */
     public Code2HTMLPlugin() {
         super();
     }
 
 
-    public void start() {}
+    /**
+     *  Start the plugin
+     */
+    public void start() { }
 
 
-    public void stop() {}
-
+    /**
+     *  Stop the plugin
+     */
+    public void stop() { }
 
     /*
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu("code2html"));
-    }
-
-
-    public void createOptionPanes(OptionsDialog dialog) {
-        dialog.addOptionPane(new Code2HTMLOptionPane());
-    }
-    */
+     *public void createMenuItems(Vector menuItems) {
+     *menuItems.addElement(GUIUtilities.loadMenu("code2html"));
+     *}
+     *public void createOptionPanes(OptionsDialog dialog) {
+     *dialog.addOptionPane(new Code2HTMLOptionPane());
+     *}
+     */
 }
 

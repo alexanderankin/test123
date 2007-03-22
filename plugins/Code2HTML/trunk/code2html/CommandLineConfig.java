@@ -16,47 +16,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package code2html;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 
 import code2html.html.HtmlCssGutter;
+import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
-import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlStyle;
+
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
 
 
-public class CommandLineConfig implements Config
-{
-    public static class Arguments
-    {
-        public int     gutterSize        = 3;
-        public int     tabSize           = 8;
-        public int     wrap              = 0;
-        public int     highlightInterval = 5;
-
-        public boolean useCSS     = true;
-        public boolean showGutter = true;
-
-        public SyntaxStyle[]     styles           = null;
-        public PropertyAccessor  propertyAccessor = null;
-    }
-
-
-    private HtmlStyle       style       = null;
-    private HtmlGutter      gutter      = null;
-    private HtmlPainter     painter     = null;
+/**
+ *  Command line configuration for the Code2HTML plugin
+ *
+ * @author     Andre Kaplan
+ * @version    0.5
+ */
+public class CommandLineConfig implements Config {
+    private HtmlGutter gutter = null;
+    private HtmlPainter painter = null;
+    private HtmlStyle style = null;
     private LineTabExpander tabExpander = null;
-    private LineWrapper     wrapper     = null;
+    private LineWrapper wrapper = null;
 
 
+    /**
+     *  CommandLineConfig Constructor
+     *
+     * @param  args  Holds the properties to be used in the generated code
+     */
     public CommandLineConfig(Arguments args) {
-        if (args.wrap < 0) { args.wrap = 0; }
+        if (args.wrap < 0) {
+            args.wrap = 0;
+        }
 
         if (args.useCSS) {
             this.style = new HtmlCssStyle();
@@ -65,26 +61,23 @@ public class CommandLineConfig implements Config
         }
 
         PropertyAccessor accessor = args.propertyAccessor;
+
         if (args.showGutter) {
             String bgColor = accessor.getProperty(
-                "view.gutter.bgColor", "#ffffff"
-            );
+                "view.gutter.bgColor", "#ffffff");
             String fgColor = accessor.getProperty(
-                "view.gutter.fgColor", "#8080c0"
-            );
+                "view.gutter.fgColor", "#8080c0");
             String highlightColor = accessor.getProperty(
-                "view.gutter.highlightColor", "#000000"
-            );
+                "view.gutter.highlightColor", "#000000");
 
             if (args.useCSS) {
                 this.gutter = new HtmlCssGutter(
-                    bgColor, fgColor, highlightColor, args.highlightInterval
-                );
+                    bgColor, fgColor, highlightColor, args.highlightInterval);
             } else {
                 this.gutter = new HtmlGutter(
-                    bgColor, fgColor, highlightColor, args.highlightInterval
-                );
+                    bgColor, fgColor, highlightColor, args.highlightInterval);
             }
+
             this.gutter.setGutterSize(args.gutterSize);
         }
 
@@ -95,33 +88,107 @@ public class CommandLineConfig implements Config
         }
 
         this.painter = new HtmlPainter(
-            args.styles, this.style, this.gutter, this.tabExpander, this.wrapper
-        );
+            args.styles,
+            this.style,
+            this.gutter,
+            this.tabExpander,
+            this.wrapper);
     }
 
 
+    /**
+     *  Gets the gutter of the object
+     *
+     * @return    The gutter value
+     */
     public HtmlGutter getGutter() {
         return this.gutter;
     }
 
 
+    /**
+     *  Gets the painter of the object
+     *
+     * @return    The painter value
+     */
+    public HtmlPainter getPainter() {
+        return this.painter;
+    }
+
+
+    /**
+     *  Gets the style of the object
+     *
+     * @return    The style value
+     */
     public HtmlStyle getStyle() {
         return this.style;
-    };
+    }
 
 
+    /**
+     *  Gets the tab expander of the object
+     *
+     * @return    The tab expander value
+     */
     public LineTabExpander getTabExpander() {
         return this.tabExpander;
     }
 
 
+    /**
+     *  Gets the wrapper of the object
+     *
+     * @return    The wrapper value
+     */
     public LineWrapper getWrapper() {
         return this.wrapper;
     }
 
 
-    public HtmlPainter getPainter() {
-        return this.painter;
+    /**
+     *  Holds properties relating to the output code
+     *
+     * @author     Andre Kaplan
+     * @version    0.5
+     * @todo       This should really be called something different, along the
+     *      lines of properties or similar
+     * @todo       Make this implement Config & pass config args to anything
+     *      requesting one of this -> ? Or not ?
+     */
+    public static class Arguments {
+        /**
+         *  The size of the Gutter
+         */
+        public int gutterSize = 3;
+        /**
+         *  The interval at which to highlight the gutter number
+         */
+        public int highlightInterval = 5;
+        /**
+         *  A property accessor
+         */
+        public PropertyAccessor propertyAccessor = null;
+        /**
+         *  Whether to show the gutter
+         */
+        public boolean showGutter = true;
+        /**
+         *  A list of styles
+         */
+        public SyntaxStyle[] styles = null;
+        /**
+         *  The defauklt size of the tab character
+         */
+        public int tabSize = 8;
+        /**
+         *  Whether to use CSS in the generated code
+         */
+        public boolean useCSS = true;
+        /**
+         *  Wrap column
+         */
+        public int wrap = 0;
     }
 }
 
