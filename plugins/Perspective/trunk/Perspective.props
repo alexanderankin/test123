@@ -1,0 +1,16 @@
+plugin.debugger.jedit.Plugin.activate=defer
+
+# general plugin information
+plugin.perspective.Plugin.name=Perspective
+plugin.perspective.Plugin.author=Shlomy Reinstein
+plugin.perspective.Plugin.version=0.1
+plugin.perspective.Plugin.description=\
+	This plugin provides perspective functionality
+	
+# action labels
+perspective-load.label=Load...
+perspective-save.label=Save...
+
+# menu items
+plugin.perspective.Plugin.menu=perspective-load perspective-save
+
