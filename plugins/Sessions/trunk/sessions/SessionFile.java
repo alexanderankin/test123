@@ -22,10 +22,14 @@
 
 package sessions;
 
+import java.util.Hashtable;
+import org.gjt.sp.jedit.*;
+
 public class SessionFile
 {
 	protected String path;
 	protected String encoding;
+	protected Integer carat;
 	
 	/**
 	 * Create a <code>SessionFile</code> object with the supplied file path
@@ -51,6 +55,19 @@ public class SessionFile
 		this.encoding = encoding;
 	}
 	
+	/**
+	 * Create a <code>SessionFile</code> object with the supplied file path, 
+	 * character encoding, and carat position. Note that the supplied encoding 
+	 * is only used to set the buffer's character encoding at the time the 
+	 * file is opened. The <code>SessionFile</code>'s encoding is not 
+	 * currently kept synchronized with the buffer encoding.
+	 */
+	public SessionFile(String path, String encoding, Integer carat)
+	{
+		this(path, encoding);
+		this.carat = carat;
+	}
+	
 	public String getPath()
 	{
 		return path;
@@ -59,6 +76,27 @@ public class SessionFile
 	public String getEncoding()
 	{
 		return encoding;
+	}
+	
+	public Integer getCarat()
+	{
+		if (carat == null)
+			return new Integer(0);
+		return carat;
+	}
+	
+	/**
+	 * A convenience method which returns a <code>Hashtable</code> containing 
+	 * properties suitable for passing to the <code>openFile</code> method in 
+	 * the <code>org.gjt.sp.jedit.jEdit</code> class.
+	 */
+	public Hashtable getBufferProperties()
+	{
+		Hashtable props = new Hashtable();
+		if (this.getEncoding() != null)
+			props.put(Buffer.ENCODING, this.getEncoding());
+		props.put(Buffer.CARET, this.getCarat());
+		return props;
 	}
 	
 }

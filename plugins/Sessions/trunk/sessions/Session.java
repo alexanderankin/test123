@@ -258,9 +258,7 @@ public class Session implements Cloneable
 			while(it.hasNext())
 			{
 				SessionFile sf = (SessionFile)it.next();
-				Hashtable props = new Hashtable();
-				if (sf.getEncoding() != null)
-					props.put(Buffer.ENCODING, sf.getEncoding());
+				Hashtable props = sf.getBufferProperties();
 				jEdit.openFile(view, null, sf.getPath(), false, props);
 			}
 
@@ -454,13 +452,16 @@ public class Session implements Cloneable
 			out.write('"');
 			if(filename.equals(getCurrentFile()))
 				out.write(" isCurrent=\"true\"");
-			// TODO: Write encoding info here
+			// Write character encoding info, carat position
 			Buffer buff = jEdit.getBuffer(filename);
 			if (buff != null)
 			{
 				String encoding = buff.getStringProperty(Buffer.ENCODING);
 				if (encoding != null && encoding.length() > 0)
 					out.write(" encoding=\"" + encoding + "\"");
+				Integer carat = new Integer(buff.getIntegerProperty(
+					Buffer.CARET, 0));
+				out.write(" carat=\"" + carat.toString() + "\"");
 			}
 			out.write("/>");
 			out.newLine();
@@ -538,6 +539,19 @@ public class Session implements Cloneable
 			}
 			else if("encoding".equals(att))
 				currentFileEncoding = value; // Note: value may be null, if missing
+			else if("carat".equals(att))
+			{
+				Integer carat = null;
+				try
+				{
+					carat = new Integer(value);
+				}
+				catch (NumberFormatException nfe)
+				{
+					carat = new Integer(0);
+				}
+				currentFileCarat = carat;
+			}
 			else if ("key".equals(att))
 				currentPropKey = value;
 			else if ("value".equals(att))
@@ -575,6 +589,7 @@ public class Session implements Cloneable
 				// Clear the local values in preparation for the next FILE
 				currentFilePath = null;
 				currentFileEncoding = null;
+				currentFileCarat = null;
 			}
 			else if("PROP".equals(elementName))
 				properties.put(currentPropKey, currentPropValue);
@@ -585,6 +600,7 @@ public class Session implements Cloneable
 		private String currentName;
 		private String currentFilePath;
 		private String currentFileEncoding;
+		private Integer currentFileCarat;
 		private String currentPropKey;
 		private String currentPropValue;
 		private boolean currentIsCurrent;
