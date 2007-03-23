@@ -19,6 +19,7 @@
 		filename CDATA #REQUIRED
 		isCurrent %att-bool; "false"
 		encoding CDATA #IMPLIED
+		carat CDATA #IMPLIED
 	>
 
 
