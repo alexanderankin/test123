@@ -1,6 +1,7 @@
 VERSION 1.4.0 (Steve Jakob)
 - show more sessions in the SessionManagerDialog (based on code submitted by SourceForge user strank)
 - retain file character encoding when saving/retrieving sessions
+- retain carat position in each file when saving/retrieving sessions
 
 VERSION 1.3.0 (Steve Jakob)
 - added the option to display a confirmation dialog prior to session autosave (based on code submitted by Davide Del Vento)
