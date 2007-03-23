@@ -24,10 +24,7 @@ package sessions;
 
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 import com.microstar.xml.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
@@ -43,15 +40,14 @@ public class Session implements Cloneable
 
 	private String name;
 	private String filename;
-	private Vector allFiles;
 	private String currentFile;
-	private Hashtable properties;
+	private Hashtable properties, sessionFiles;
 
 
 	public Session(String name)
 	{
 		setName(name);
-		this.allFiles = new Vector();
+		this.sessionFiles = new Hashtable();
 		this.properties = new Hashtable();
 	}
 
@@ -196,13 +192,13 @@ public class Session implements Cloneable
 
 	public boolean hasFile(String file)
 	{
-		return allFiles.contains(file);
+		return sessionFiles.containsKey(file);
 	}
 
 
 	public Enumeration getAllFiles()
 	{
-		return allFiles.elements();
+		return sessionFiles.elements();
 	}
 
 
@@ -258,14 +254,20 @@ public class Session implements Cloneable
 		if (openFiles)
 		{
 			// open session files:
-			Enumeration myEnum = allFiles.elements();
-			while(myEnum.hasMoreElements())
-				jEdit.openFile(null, myEnum.nextElement().toString());
+			Iterator it = sessionFiles.values().iterator();
+			while(it.hasNext())
+			{
+				SessionFile sf = (SessionFile)it.next();
+				Hashtable props = new Hashtable();
+				if (sf.getEncoding() != null)
+					props.put(Buffer.ENCODING, sf.getEncoding());
+				jEdit.openFile(view, null, sf.getPath(), false, props);
+			}
 
 			// open session's recent buffer:
 			if(currentFile != null)
 			{
-				Buffer buffer = jEdit.openFile(null, currentFile);
+				Buffer buffer = jEdit.getBuffer(currentFile);
 				if(buffer != null)
 					view.setBuffer(buffer);
 			}
@@ -292,11 +294,11 @@ public class Session implements Cloneable
 		// Right now, the session's file list is cleared and filled again with
 		// the current list of open jEdit buffers, but this behavior could be
 		// changed in the future...
-		allFiles.removeAllElements();
+		sessionFiles.clear();
 
 		for(Buffer buffer = jEdit.getFirstBuffer(); buffer != null; buffer = buffer.getNext())
 			if(!buffer.isUntitled())
-				addFile(buffer.getPath());
+				addFile(buffer.getPath(), buffer.getStringProperty(Buffer.ENCODING));
 
 		if(view != null)
 			currentFile = view.getBuffer().getPath();
@@ -329,20 +331,35 @@ public class Session implements Cloneable
 			if(!buffer.isUntitled())
 				currentFiles.addElement(buffer.getPath());
 		
+		Vector allFiles = new Vector(sessionFiles.values());
 		if (allFiles.equals(currentFiles))
 			return false;
 		
 		return true;
 	}
 
+	/**
+	 * Add a file to the session's file list using the default character encoding.
+	 */
 	public void addFile(String file)
 	{
 		if(hasFile(file))
 			Log.log(Log.DEBUG, this, "addFile: session " + name + ": already contains file " + file + " - not added.");
 		else
-			allFiles.addElement(file);
+			addFile(file, jEdit.getProperty("buffer.encoding",
+					System.getProperty("file.encoding")));
 	}
 
+	/**
+	 * Add a file to the session's file list using the supplied character encoding.
+	 */
+	public void addFile(String file, String encoding)
+	{
+		if(hasFile(file))
+			Log.log(Log.DEBUG, this, "addFile: session " + name + ": already contains file " + file + " - not added.");
+		else
+			sessionFiles.put(file, new SessionFile(file, encoding));
+	}
 
 	/**
 	 * Clears the session's contents: forgets all open files and properties,
@@ -350,7 +367,7 @@ public class Session implements Cloneable
 	 */
 	public void clear()
 	{
-		allFiles.removeAllElements();
+		sessionFiles.clear();
 		properties.clear();
 		currentFile = null;
 	}
@@ -365,7 +382,7 @@ public class Session implements Cloneable
 	public Session getClone()
 	{
 		Session clone = new Session(this.name);
-		clone.allFiles = (Vector) this.allFiles.clone();
+		clone.sessionFiles = (Hashtable) this.sessionFiles.clone();
 		clone.properties = (Hashtable) this.properties.clone();
 		return clone;
 	}
@@ -427,15 +444,24 @@ public class Session implements Cloneable
 
 	private void saveFiles(BufferedWriter out) throws IOException
 	{
-		Enumeration myEnum = allFiles.elements();
+		Enumeration myEnum = sessionFiles.elements();
 		while(myEnum.hasMoreElements())
 		{
-			String filename = myEnum.nextElement().toString().replace('\\','/');
+			SessionFile sf = (SessionFile)myEnum.nextElement();
+			String filename = sf.getPath().replace('\\','/');
 			out.write("      <FILE filename=\"");
 			out.write(ParseUtilities.encodeXML(filename));
 			out.write('"');
 			if(filename.equals(getCurrentFile()))
 				out.write(" isCurrent=\"true\"");
+			// TODO: Write encoding info here
+			Buffer buff = jEdit.getBuffer(filename);
+			if (buff != null)
+			{
+				String encoding = buff.getStringProperty(Buffer.ENCODING);
+				if (encoding != null && encoding.length() > 0)
+					out.write(" encoding=\"" + encoding + "\"");
+			}
 			out.write("/>");
 			out.newLine();
 		}
@@ -502,7 +528,7 @@ public class Session implements Cloneable
 			if("name".equals(att))
 				currentName = value;
 			else if("filename".equals(att))
-				currentFilename = value;
+				currentFilePath = value;
 			else if ("isCurrent".equals(att))
 			{
 				if(value == null)
@@ -510,6 +536,8 @@ public class Session implements Cloneable
 				else
 					currentIsCurrent = Boolean.valueOf(value).booleanValue();
 			}
+			else if("encoding".equals(att))
+				currentFileEncoding = value; // Note: value may be null, if missing
 			else if ("key".equals(att))
 				currentPropKey = value;
 			else if ("value".equals(att))
@@ -541,9 +569,12 @@ public class Session implements Cloneable
 			}
 			else if("FILE".equals(elementName))
 			{
-				addFile(currentFilename);
+				addFile(currentFilePath, currentFileEncoding);
 				if(currentIsCurrent)
-					setCurrentFile(currentFilename);
+					setCurrentFile(currentFilePath);
+				// Clear the local values in preparation for the next FILE
+				currentFilePath = null;
+				currentFileEncoding = null;
 			}
 			else if("PROP".equals(elementName))
 				properties.put(currentPropKey, currentPropValue);
@@ -552,7 +583,8 @@ public class Session implements Cloneable
 
 		private XmlParser parser;
 		private String currentName;
-		private String currentFilename;
+		private String currentFilePath;
+		private String currentFileEncoding;
 		private String currentPropKey;
 		private String currentPropValue;
 		private boolean currentIsCurrent;
