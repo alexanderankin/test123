@@ -102,13 +102,11 @@ public class Plugin extends EditPlugin {
 		for (int i = 0; i < names.length; i++) {
 			perspectives[i] = names[i].substring(0, names[i].length() - 4);
 		}
-		String sel = (String) JOptionPane.showInputDialog(
-				null, "Select perspective:", "Load perspective",
-				JOptionPane.QUESTION_MESSAGE,
+		int sel = JOptionPane.showOptionDialog(null,
+				"Select perspective:", "Load perspective",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, perspectives, null);
-		if (sel == null)
-			return;
-		String selected = getConfigFile(sel);
+		String selected = getConfigFile(perspectives[sel]);
 		PerspectiveHandler handler = new PerspectiveHandler();
 		try
 		{
