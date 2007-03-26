@@ -1,4 +1,4 @@
-package debugger.jedit.launch;
+package gdb.launch;
 
 import java.util.Vector;
 

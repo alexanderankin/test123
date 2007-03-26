@@ -2,7 +2,9 @@ package gdb;
 
 import gdb.Parser.GdbResult;
 import gdb.Parser.ResultHandler;
-import gdb.options.OptionPane;
+import gdb.launch.LaunchConfiguration;
+import gdb.launch.LaunchConfigurationManager;
+import gdb.options.GeneralOptionPane;
 import gdb.views.LocalVariables;
 import gdb.views.StackTrace;
 import gdb.views.Variables;
@@ -154,8 +156,16 @@ public class Debugger implements DebuggerTool {
 			variablesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
+	public void start() {
+		LaunchConfiguration currentConfig =
+			LaunchConfigurationManager.getInstance().getDefault();
+		debugger.start(currentConfig.getProgram(),
+				currentConfig.getArguments(),
+				currentConfig.getDirectory(),
+				currentConfig.getEnvironment().split(","));
+	}
 	public void start(String prog, String args, String cwd, String [] env) {
-		String command = jEdit.getProperty(OptionPane.GDB_PATH_PROP) +
+		String command = jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP) +
 			" --interpreter=mi " + prog;
 		//File dir = new File(getBufferDirectory());
 		if (cwd == null || cwd.length() == 0)

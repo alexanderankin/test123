@@ -37,15 +37,12 @@ import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
-import debugger.jedit.launch.LaunchConfiguration;
-import debugger.jedit.launch.LaunchConfigurationManager;
 import debugger.jedit.views.BreakpointView;
 import debugger.jedit.views.ControlView;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static public final String OPTION_PREFIX = "options.debugger.";
 	static private DebuggerTool debugger = Debugger.getInstance();
-	static private LaunchConfiguration currentConfig;
 	
 	public void start()	{
 		debugger.setFrontEnd(this);
@@ -72,12 +69,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	}
 	public static void go(View view) {
 		if (! debugger.isRunning()) {
-			currentConfig =
-				LaunchConfigurationManager.getInstance().getDefault();
-			debugger.start(currentConfig.getProgram(),
-					currentConfig.getArguments(),
-					currentConfig.getDirectory(),
-					currentConfig.getEnvironment().split(","));
+			debugger.start();
 		} else 
 			debugger.go();
 	}

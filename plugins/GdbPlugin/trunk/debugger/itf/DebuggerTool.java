@@ -3,7 +3,7 @@ package debugger.itf;
 
 public interface DebuggerTool {
 	void setFrontEnd(JEditFrontEnd frontEnd);
-	void start(String prog, String args, String cwd, String [] env);
+	void start();
 	void go();
 	void next();
 	void step();
