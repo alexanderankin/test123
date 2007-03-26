@@ -222,6 +222,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 	 **************************************************************************/
 	public void save()
 	{
+		updateSelectedConfiguration();
 		configs.save();
 	}
 }

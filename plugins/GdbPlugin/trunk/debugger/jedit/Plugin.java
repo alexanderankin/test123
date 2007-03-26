@@ -77,7 +77,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			debugger.start(currentConfig.getProgram(),
 					currentConfig.getArguments(),
 					currentConfig.getDirectory(),
-					currentConfig.getEnvironmentHash());
+					currentConfig.getEnvironment().split(","));
 		} else 
 			debugger.go();
 	}

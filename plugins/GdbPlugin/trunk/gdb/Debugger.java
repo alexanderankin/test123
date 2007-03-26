@@ -11,7 +11,6 @@ import gdb.views.Watches;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -155,7 +154,7 @@ public class Debugger implements DebuggerTool {
 			variablesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
-	public void start(String prog, String args, String cwd, Hashtable<String, String> env) {
+	public void start(String prog, String args, String cwd, String [] env) {
 		String command = jEdit.getProperty(OptionPane.GDB_PATH_PROP) +
 			" --interpreter=mi " + prog;
 		//File dir = new File(getBufferDirectory());
@@ -164,7 +163,7 @@ public class Debugger implements DebuggerTool {
 		File dir = new File(cwd);
 		Process p;
 		try {
-			p = Runtime.getRuntime().exec(command, null, dir);
+			p = Runtime.getRuntime().exec(command, env, dir);
 			running = true;
 	        parser = new Parser(this, p);
 	        parser.addOutOfBandHandler(new OutOfBandHandler());
