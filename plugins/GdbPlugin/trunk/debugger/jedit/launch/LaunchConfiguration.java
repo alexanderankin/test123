@@ -1,7 +1,5 @@
 package debugger.jedit.launch;
 
-import java.util.Hashtable;
-
 public class LaunchConfiguration {
 	private String name;
 	private String program;
@@ -49,8 +47,5 @@ public class LaunchConfiguration {
 	}
 	public void setEnvironment(String env) {
 		environment = env;
-	}
-	public Hashtable<String, String> getEnvironmentHash() {
-		return null;
 	}
 }
