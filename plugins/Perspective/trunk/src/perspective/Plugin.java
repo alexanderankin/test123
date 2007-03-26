@@ -119,7 +119,7 @@ public class Plugin extends EditPlugin {
 		for (int i = 0; i < names.length; i++) {
 			perspectives[i] = names[i].substring(0, names[i].length() - 4);
 		}
-		int sel = JOptionPane.showOptionDialog(null,
+		int sel = JOptionPane.showOptionDialog(jEdit.getActiveView(),
 				"Select perspective:", "Load perspective",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, perspectives, null);
