@@ -1,4 +1,4 @@
-package debugger.jedit.launch;
+package gdb.launch;
 
 public class LaunchConfiguration {
 	private String name;

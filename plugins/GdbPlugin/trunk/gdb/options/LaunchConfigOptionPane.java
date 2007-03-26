@@ -19,7 +19,10 @@ Note: The code for the ctags path and the ctags version notice
 was taken from the CodeBrowser plugin by Gerd Knops. 
 */
 
-package debugger.jedit;
+package gdb.options;
+import gdb.launch.LaunchConfiguration;
+import gdb.launch.LaunchConfigurationManager;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,8 +43,8 @@ import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
-import debugger.jedit.launch.LaunchConfiguration;
-import debugger.jedit.launch.LaunchConfigurationManager;
+import debugger.jedit.Plugin;
+
 
 /** ************************************************************************** */
 public class LaunchConfigOptionPane extends AbstractOptionPane {
@@ -108,7 +111,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 				new JScrollPane(configurationsList));
 
 		JPanel buttons = new JPanel();
-		JButton add = new JButton("New");
+		JButton add = new JButton("New1");
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createNewConfiguration();

@@ -1,6 +1,6 @@
 To do:
-- Launch configurations:
-  - Move to debugger-specific extension
+--> Launch configurations:
+  + Move to debugger-specific extension
   - Support for core files
   - Support for attaching to processes
   - Improved GUI for the launch configurations (e.g. file dialogs)
