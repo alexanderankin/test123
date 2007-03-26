@@ -106,6 +106,8 @@ public class Plugin extends EditPlugin {
 				"Select perspective:", "Load perspective",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, perspectives, null);
+		if (sel == JOptionPane.CLOSED_OPTION)
+			return;
 		String selected = getConfigFile(perspectives[sel]);
 		PerspectiveHandler handler = new PerspectiveHandler();
 		try
