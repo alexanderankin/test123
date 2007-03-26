@@ -6,6 +6,12 @@ plugin.debugger.jedit.Plugin.author=Shlomy Reinstein
 plugin.debugger.jedit.Plugin.version=0.1
 plugin.debugger.jedit.Plugin.description=\
 	This plugin provides a jEdit interface for debuggers
+
+# Dependencies
+ 
+plugin.debugger.jedit.Plugin.depend.0=jdk 1.5
+plugin.debugger.jedit.Plugin.depend.1=jedit 04.03.09.00
+plugin.debugger.jedit.Plugin.depend.1=plugin CommonControlsPlugin 0.9.4
 	
 # action labels
 debugger-go.label=Go!
