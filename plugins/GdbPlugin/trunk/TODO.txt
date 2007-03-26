@@ -1,0 +1,28 @@
+To do:
+- Launch configurations:
+  - Move to debugger-specific extension
+  - Support for core files
+  - Support for attaching to processes
+  - Improved GUI for the launch configurations (e.g. file dialogs)
+- Breakpoint window:
+  - Move to debugger-specific extension
+  - Skip count
+  - Conditions
+  - Watch points
+- Locals/Watches/Variables:
+  - Support changes in tree structure of variable.
+  - Provide an action and a context menu item to change the currently selected
+    variable (leafs only).
+- Watches:
+  - Provide actions and context menu items for:
+    - Add an item to the tree.
+    - Remove an item from the tree.
+    - Modify an item in the tree.
+- Complete gdb command-set (e.g. exec-until).
+- Control panel: Should be aware of the gdb state, enable/disable buttons.
+
+Future:
+- Tooltips for variables under caret in the buffer.
+- Multi-threading support, including views, stack trace etc.
+- Memory/Disassembly/Registers view.
+- Symbol query commands.
