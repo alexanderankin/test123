@@ -1,4 +1,4 @@
-plugin.debugger.jedit.Plugin.activate=defer
+plugin.perspective.Plugin.activate=defer
 
 # general plugin information
 plugin.perspective.Plugin.name=Perspective
