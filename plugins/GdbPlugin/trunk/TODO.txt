@@ -1,9 +1,7 @@
 To do:
---> Launch configurations:
++ Launch configurations:
   + Move to debugger-specific extension
-  - Support for core files
-  - Support for attaching to processes
-  - Improved GUI for the launch configurations (e.g. file dialogs)
+  + Improved GUI for the launch configurations (e.g. file dialogs)
 - Breakpoint window:
   - Move to debugger-specific extension
   - Skip count
@@ -22,6 +20,9 @@ To do:
 - Control panel: Should be aware of the gdb state, enable/disable buttons.
 
 Future:
+- Launch configurations:
+  - Support for core files
+  - Support for attaching to processes
 - Tooltips for variables under caret in the buffer.
 - Multi-threading support, including views, stack trace etc.
 - Memory/Disassembly/Registers view.
