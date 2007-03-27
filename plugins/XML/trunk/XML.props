@@ -161,6 +161,19 @@ xml.completion.namespace.5.key=http://www.w3.org/1999/XSL/Format
 xml.completion.namespace.5.value=jeditresource:/XML.jar!/xml/completion/fo-complete.xml
 
 
+xml.completion.namespace.6.key=http://exslt.org/common
+xml.completion.namespace.6.value=jeditresource:/XML.jar!/xml/completion/exslt-common-complete.xml
+
+
+xml.completion.namespace.7.key=http://exslt.org/functions
+xml.completion.namespace.7.value=jeditresource:/XML.jar!/xml/completion/exslt-functions-complete.xml
+
+xml.completion.namespace.8.key=http://exslt.org/dates-and-times
+xml.completion.namespace.8.value=jeditresource:/XML.jar!/xml/completion/exslt-dates-and-times-complete.xml
+
+
+
+
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
