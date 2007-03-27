@@ -699,6 +699,7 @@
  <listitem><para><emphasis role="bold">Version 2.0.6</emphasis>
  Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. </para>
  <itemizedlist>
+ <listitem><para> Added completion info for exslt files (Jakub Roztocil) </para></listitem>
  <listitem><para> 2 new actions: select Element or Code Block, and Select Between Tags
  (Jakub Roztocil)
  </para> </listitem>
