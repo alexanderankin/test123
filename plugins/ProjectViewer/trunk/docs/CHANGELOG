@@ -16,6 +16,12 @@
  * CHANGELOG version: $Id$
  */
 
+Version 2.1.3.7:
+	[marcelo vanzin]
+		- fix NPE in ProjectManager.removeProject()
+		- fix deadlock when creating new project
+
+
 Version 2.1.3.6:
 	[marcelo vanzin]
 		- don't ignore errors when ProjectManager is starting up; that way,

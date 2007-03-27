@@ -311,15 +311,15 @@ public final class ProjectManager {
 		Entry e = (Entry) projects.get(p.getName());
 		if (e == null) return;
 
-		synchronized (e) {
-			if (e.fileName != null) {
-				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
-				// project list changed, save "global" data.
-				saveProjectList();
-			}
-			projects.remove(p.getName());
-		}
+		projects.remove(p.getName());
 		ProjectViewer.projectRemoved(this, p);
+
+		if (e.fileName != null) {
+			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			// project list changed, save "global" data.
+			saveProjectList();
+		}
+
 		p.removeAllChildren(); // for the GC
 		fireDynamicMenuChange();
 	} //}}}
