@@ -117,6 +117,7 @@ public class P4OptionPane extends AbstractOptionPane
             else
                 config.setEditor(null);
             config.setClient(client.getText());
+            config.setConfig(p4config.getText());
             config.setUser(user.getText());
             setProjectConfig(config);
         } else {

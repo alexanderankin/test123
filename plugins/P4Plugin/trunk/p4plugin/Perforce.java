@@ -140,7 +140,7 @@ public class Perforce {
         VPTProject proj = ProjectViewer.getActiveProject(view);
         P4Config usercfg = P4Config.getProjectConfig(proj);
         if (usercfg != null) {
-            envp = usercfg.getEnv();
+            envp = usercfg.environment();
         } else {
             view.getStatus().setMessageAndClear(
                 jEdit.getProperty("p4plugin.config.no_config_warn"));

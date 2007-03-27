@@ -1,5 +1,12 @@
 CHANGELOG
 
+Version 0.2.4:
+	[marcelo vanzin]
+		- change name of P4Config.getEnv() method so that its value is
+		  not saved to the project config file.
+		- correctly support configurations that use P4CONFIG instead
+		  of P4CLIENT.
+
 Version 0.2.3:
 	[marcelo vanzin]
 	- now requires Java 1.5.

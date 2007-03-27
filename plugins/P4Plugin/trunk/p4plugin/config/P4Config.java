@@ -73,7 +73,8 @@ public class P4Config extends PropertiesBean {
 
         // new style PropertiesBean
         String _client = proj.getProperty("p4plugin.cfg.client");
-        if (_client != null) {
+        String _config = proj.getProperty("p4plugin.cfg.config");
+        if (_client != null || _config != null) {
             try {
                 P4Config cfg = new P4Config();
                 cfg.load(proj.getProperties());
@@ -182,11 +183,12 @@ public class P4Config extends PropertiesBean {
      *  Builds the environment array to use when calling the p4
      *  executable.
      *
-     *  @since  P4P 0.3.0
+     *  @since  P4P 0.2.4
      */
-    public String[] getEnv() {
+    public String[] environment() {
         Map<String,String> envp = new HashMap();
         envp.putAll(System.getenv());
+        envp.remove("PWD");
 
         String editor = null;
         switch (p4EditorType) {
