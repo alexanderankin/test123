@@ -37,7 +37,6 @@ import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
-import debugger.jedit.views.BreakpointView;
 import debugger.jedit.views.ControlView;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
@@ -118,7 +117,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static CurrentPositionPainter dp = null;
 	static View dpview = null;
 	private static ControlView controlView = null;
-	private static BreakpointView brkView = null;
 	private static void jumpTo(final String file, final int line, final boolean isCurrent) {
 		final View view = jEdit.getActiveView();
 		if (isCurrent && (dp != null)) {
@@ -171,20 +169,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			controlView = new ControlView();
 		return controlView;
 	}
-	static public JPanel showBreakpoints(View view) {
-		if (brkView == null)
-			brkView = new BreakpointView();
-		return brkView;
-	}
 
-	static public void toggleAllViews(View view) {
-		view.getDockableWindowManager().toggleDockableWindow("debugger-program-output");
-		view.getDockableWindowManager().toggleDockableWindow("debugger-gdb-output");
-		view.getDockableWindowManager().toggleDockableWindow("debugger-show-variables");
-		view.getDockableWindowManager().toggleDockableWindow("debugger-show-stack-trace");
-		view.getDockableWindowManager().toggleDockableWindow("debugger-breakpoints");
-	}
-	
 	public void programExited() {
 		removeCurrentPositionPainter();
 	}
