@@ -1,4 +1,4 @@
-package debugger.jedit.views;
+package gdb.views;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

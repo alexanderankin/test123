@@ -5,6 +5,7 @@ import gdb.Parser.ResultHandler;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
+import gdb.views.BreakpointView;
 import gdb.views.LocalVariables;
 import gdb.views.StackTrace;
 import gdb.views.Variables;
@@ -45,6 +46,7 @@ public class Debugger implements DebuggerTool {
 	private static JPanel gdbOutputPanel = null;
 	private static JTextArea gdbOutputText = null;
 	// Views
+	private BreakpointView breakpointsPanel = null;
 	private LocalVariables localsPanel = null;
 	private StackTrace stackTracePanel = null;
 	private Watches watchesPanel = null;
@@ -306,6 +308,11 @@ public class Debugger implements DebuggerTool {
 			gdbOutputPanel.add(new JScrollPane(gdbOutputText));
 		}
 		return gdbOutputPanel;
+	}
+	public JPanel showBreakpoints(View view) {
+		if (breakpointsPanel == null)
+			breakpointsPanel = new BreakpointView();
+		return breakpointsPanel;
 	}
 	public JPanel showLocals(View view) {
 		if (localsPanel == null)

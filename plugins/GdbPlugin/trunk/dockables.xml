@@ -22,11 +22,11 @@
 	<DOCKABLE NAME="debugger-show-stack-trace">
 		gdb.Debugger.getInstance().showStackTrace(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="debugger-breakpoints">
+		gdb.Debugger.getInstance().showBreakpoints(view);
+	</DOCKABLE>
 	<DOCKABLE NAME="debugger-panel">
 		debugger.jedit.Plugin.showControlPanel(view);
-	</DOCKABLE>
-	<DOCKABLE NAME="debugger-breakpoints">
-		debugger.jedit.Plugin.showBreakpoints(view);
 	</DOCKABLE>
 </DOCKABLES>
 
