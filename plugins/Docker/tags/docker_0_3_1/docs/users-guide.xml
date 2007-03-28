@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<!-- Docker user's guide -->
+<!-- (C) 2003 Calvin Yu -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=sidekick: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+<bookinfo><title>Docker plugin user's guide</title>
+
+ <authorgroup>
+  <author><firstname>Calvin</firstname><surname>Yu</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+  <para>
+   The Docker plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="intro"><title>The Docker Plugin</title>
+
+ <para>
+  The Docker plugin provides additional means of manipulating docked windows.
+ </para>
+
+ <para>
+  The following is a list of features provided by Docker:
+  <itemizedlist>
+  <listitem>
+   <para><emphasis>Auto Hiding Docks.</emphasis>
+    Individual docks can be set to auto hide when the text area has the focus.
+    Additionally, certain docks can be configured to not be hidden.
+   </para>
+  </listitem>
+  <listitem>
+   <para><emphasis>Toggle Docks.</emphasis>
+    A shortcut can be created to toggle visible on and off.
+   </para>
+  </listitem>
+  <listitem>
+   <para><emphasis>Dockable Window Popup</emphasis>
+    A shortcut can be created to popup a list of windows of a given dock.  If
+    the shortcut contains a modifier (<keycap>Ctrl</keycap>,
+    <keycap>Shift</keycap>, <keycap>Alt</keycap>), Docker will allow you
+    to cycle through dockables (much like Window's
+    <keycap>Alt</keycap>+<keycap>Tab</keycap> feature) until that modifier is
+    released.
+   </para>
+  </listitem>
+  </itemizedlist>
+ </para>
+
+</chapter>
+
+<appendix id="changes"><title>Change log</title>
+
+ <itemizedlist>
+ 
+ <listitem><para>
+ <emphasis role="bold">Version 0.3.1</emphasis> requires jEdit 4.2final</para>
+ <itemizedlist>
+ <listitem><para> Updated menu and option panes for 4.2 plugin API. </para></listitem>
+ </itemizedlist></listitem>
+ 
+ <listitem><para>
+ <emphasis role="bold">Version 0.3</emphasis> requires
+  jEdit 4.2</para>
+ 
+  <itemizedlist>  
+  <listitem><para>Supports dynamic loading</para></listitem>
+  </itemizedlist>
+  </listitem>
+  
+ <listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
+  jEdit 4.1</para>
+
+  <itemizedlist>
+   <listitem><para>Dock auto-hiding is disabled by default.</para></listitem>
+
+   <listitem><para>Auto-hide overrides can now be removed. (Thanks to Girotto Mirko)</para></listitem>
+  </itemizedlist>
+
+ </listitem>
+
+  <listitem><para><emphasis role="bold">Version 0.1</emphasis> requires
+  jEdit 4.1</para>
+
+  <itemizedlist>
+   <listitem><para>Configurable dock auto hide.</para></listitem>
+
+   <listitem><para>Actions to allow for the cycling of top/left/bottom/right
+    docks.</para></listitem>
+
+   <listitem><para>Specific dockables can be configured to override auto
+    hiding.</para></listitem>
+
+   <listitem><para>Toggle visible docks - derived from the Full_Screen.bsh macro
+    by Carmine Lucarelli</para></listitem>
+  </itemizedlist>
+
+ </listitem>
+
+ 
+ </itemizedlist>
+
+</appendix>
+
+</book>
