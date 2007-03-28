@@ -13,7 +13,7 @@ public abstract class DebuggerPainter extends TextAreaExtension {
 	private Buffer buffer;
 	private int line;
 	
-	DebuggerPainter(EditPane e, Buffer b, int l) {
+	public DebuggerPainter(EditPane e, Buffer b, int l) {
 		editPane = e;
 		buffer = b;
 		line = l;

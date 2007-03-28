@@ -1,10 +1,11 @@
 package debugger.core;
 
+import gdb.breakpoints.Breakpoint;
+
 import java.util.HashSet;
 import java.util.Vector;
 
 import debugger.itf.IBreakpoint;
-import debugger.jedit.Breakpoint;
 
 public class DebuggerDB {
 	static private DebuggerDB instance = null;
