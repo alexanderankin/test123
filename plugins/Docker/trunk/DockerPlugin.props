@@ -12,10 +12,14 @@
 plugin.docker.DockerPlugin.name=Docker
 plugin.docker.DockerPlugin.activate=startup
 plugin.docker.DockerPlugin.author=Calvin Yu
-plugin.docker.DockerPlugin.version=0.3
+plugin.docker.DockerPlugin.version=0.3.1
 plugin.docker.DockerPlugin.docs=index.html
 
-plugin.docker.DockerPlugin.depend.0=jedit 04.01.99.00
+
+# menus
+plugin.docker.DockerPlugin.menu=docker.toggle-docks docker.popup.top-dock docker.popup.left-dock docker.popup.bottom-dock docker.popup.right-dock
+
+plugin.docker.DockerPlugin.depend.0=jedit 04.02.99.00
 plugin.docker.DockerPlugin.depend.1=jdk 1.4
 plugin.docker.DockerPlugin.depend.2=plugin CommonControlsPlugin 0.7
 
