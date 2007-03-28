@@ -74,6 +74,12 @@
  <itemizedlist>
  
  <listitem><para>
+ <emphasis role="bold">Version 0.3.1</emphasis> requires jEdit 4.2final</para>
+ <itemizedlist>
+ <listitem><para> Updated menu and option panes for 4.2 plugin API. </para></listitem>
+ </itemizedlist></listitem>
+ 
+ <listitem><para>
  <emphasis role="bold">Version 0.3</emphasis> requires
   jEdit 4.2</para>
  

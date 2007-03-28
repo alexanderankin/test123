@@ -145,14 +145,6 @@ public class DockerPlugin extends EBPlugin
                     "docker.popup.right-dock");
    }
 
-   /**
-    * Create the option pane for this plugin.
-    */
-   public void createOptionPanes(OptionsDialog dialog)
-   {
-      dialog.addOptionPane(new DockerOptionPane());
-   }
-
    public void start() {
       EditBus.addToBus(new DockFocusManager());
    }
