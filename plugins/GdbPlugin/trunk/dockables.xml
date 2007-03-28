@@ -5,25 +5,25 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="debugger-program-output">
-		gdb.Debugger.showProgramOutput(view);
+		gdb.core.Debugger.showProgramOutput(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-gdb-output">
-		gdb.Debugger.showGdbOutput(view);
+		gdb.core.Debugger.showGdbOutput(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-locals">
-		gdb.Debugger.getInstance().showLocals(view);
+		gdb.core.Debugger.getInstance().showLocals(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-watches">
-		gdb.Debugger.getInstance().showWatches(view);
+		gdb.core.Debugger.getInstance().showWatches(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-variables">
-		gdb.Debugger.getInstance().showVariables(view);
+		gdb.core.Debugger.getInstance().showVariables(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-stack-trace">
-		gdb.Debugger.getInstance().showStackTrace(view);
+		gdb.core.Debugger.getInstance().showStackTrace(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-breakpoints">
-		gdb.Debugger.getInstance().showBreakpoints(view);
+		gdb.core.Debugger.getInstance().showBreakpoints(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="debugger-panel">
 		debugger.jedit.Plugin.showControlPanel(view);

@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package debugger.jedit;
 
-import gdb.Debugger;
+import gdb.breakpoints.Breakpoint;
+import gdb.core.Debugger;
+import gdb.execution.ControlView;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -37,7 +39,6 @@ import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
-import debugger.jedit.views.ControlView;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static public final String OPTION_PREFIX = "options.debugger.";
