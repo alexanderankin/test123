@@ -83,14 +83,20 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void go() {
-		commandManager.add("-exec-continue");
+		if (! isRunning())
+			start();
+		else 
+			commandManager.add("-exec-continue");
 	}
 
 	public void pause() {
-		commandManager.add("-exec-interrupt");
+		if (isRunning())
+			commandManager.add("-exec-interrupt");
 	}
 
 	public void quit() {
+		if (! isRunning())
+			return;
 		commandManager.add("-gdb-exit", new ResultHandler() {
 			public void handle(String msg, GdbResult res) {
 				if (msg.equals("exit")) {
@@ -101,15 +107,18 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void next() {
-		commandManager.add("-exec-next");
+		if (isRunning())
+			commandManager.add("-exec-next");
 	}
 
 	public void step() {
-		commandManager.add("-exec-step");
+		if (isRunning())
+			commandManager.add("-exec-step");
 	}
 
 	public void finishCurrentFunction() {
-		commandManager.add("-exec-finish");
+		if (isRunning())
+			commandManager.add("-exec-finish");
 	}
 
 	private void sessionEnded() {
