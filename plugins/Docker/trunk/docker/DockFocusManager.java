@@ -24,8 +24,10 @@ package docker;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
+import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
@@ -38,84 +40,141 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 /**
- * Manages focus handling for docks that does provide default docking facilities.
+ * Manages focus handling for docks that does provide default docking
+ * facilities.
  */
-class DockFocusManager implements EBComponent, ContainerListener {
-   public void handleMessage(EBMessage msg) {
-      if (msg instanceof ViewUpdate) {
-         ViewUpdate vu = (ViewUpdate) msg;
-         if(vu.getWhat() == ViewUpdate.CREATED) {
-            installFocusTraversalPolicy(vu.getView());
-            setFocusCycleRoots(vu.getView());
-            installDockUpdateListeners(vu.getView());
-         }
-      }
-   }
+class DockFocusManager implements EBComponent, ContainerListener
+{
 
-   public void componentAdded(ContainerEvent evt) {
-      Log.log(Log.DEBUG, this, "added: " + evt.getComponent());
-      View view = (View) SwingUtilities.getWindowAncestor(evt.getComponent());
-      switch (indexOfContainer(view, evt.getContainer())) {
-         case 4:
-            setFocusCycleRoot(view, view.getDockableWindowManager().getTopDockingArea());
-            break;
-         case 5:
-            setFocusCycleRoot(view, view.getDockableWindowManager().getLeftDockingArea());
-            break;
-         case 6:
-            setFocusCycleRoot(view, view.getDockableWindowManager().getBottomDockingArea());
-            break;
-         case 7:
-            setFocusCycleRoot(view, view.getDockableWindowManager().getRightDockingArea());
-            break;
-         default:
-            Log.log(Log.NOTICE, this, "Component not related to dock: " + evt.getContainer());
-      }
-   }
+	ArrayList <Triple> tlist = new ArrayList<Triple>();
+	ArrayList <Container> clist = new ArrayList<Container>();
+	public DockFocusManager()
+	{
 
-   public void componentRemoved(ContainerEvent evt) {}
+	}
 
-   private void installDockUpdateListeners(View view) {
-      addContainerListener(view, 4); // Top dock
-      addContainerListener(view, 5); // Left dock
-      addContainerListener(view, 6); // Bottom dock
-      addContainerListener(view, 7); // Right dock
-   }
+	public void handleMessage(EBMessage msg)
+	{
+		if (msg instanceof ViewUpdate)
+		{
+			ViewUpdate vu = (ViewUpdate) msg;
+			if (vu.getWhat() == ViewUpdate.CREATED)
+			{
+				installFocusTraversalPolicy(vu.getView());
+				setFocusCycleRoots(vu.getView());
+				installDockUpdateListeners(vu.getView());
+			}
+		}
+	}
 
-   private void installFocusTraversalPolicy(View view) {
-      view.setFocusTraversalPolicy(
-         new DockerFocusTraversalPolicy(view.getFocusTraversalPolicy()));
-   }
+	public void destroy() {
+		for (Triple t: tlist) {
+			t.view.setFocusTraversalPolicy(t.oftp);
+		}
+		tlist.clear();
+		for (Container c: clist) {
+			c.removeContainerListener(this);
+		}
+		clist.clear();
+	}
+	
+	public void componentAdded(ContainerEvent evt)
+	{
+		Log.log(Log.DEBUG, this, "added: " + evt.getComponent());
+		View view = (View) SwingUtilities.getWindowAncestor(evt.getComponent());
+		switch (indexOfContainer(view, evt.getContainer()))
+		{
+		case 4:
+			setFocusCycleRoot(view, view.getDockableWindowManager().getTopDockingArea());
+			break;
+		case 5:
+			setFocusCycleRoot(view, view.getDockableWindowManager()
+				.getLeftDockingArea());
+			break;
+		case 6:
+			setFocusCycleRoot(view, view.getDockableWindowManager()
+				.getBottomDockingArea());
+			break;
+		case 7:
+			setFocusCycleRoot(view, view.getDockableWindowManager()
+				.getRightDockingArea());
+			break;
+		default:
+			Log.log(Log.NOTICE, this, "Component not related to dock: "
+				+ evt.getContainer());
+		}
+	}
 
-   private int indexOfContainer(View view, Container c) {
-      Component[] comps = view.getDockableWindowManager().getComponents();
-      for (int i=0; i<comps.length; i++) {
-         if (comps[i] == c)
-            return i;
-      }
-      return -1;
-   }
+	public void componentRemoved(ContainerEvent evt)
+	{
+	}
 
-   private void setFocusCycleRoots(View view) {
-      setFocusCycleRoot(view, view.getDockableWindowManager().getTopDockingArea());
-      setFocusCycleRoot(view, view.getDockableWindowManager().getLeftDockingArea());
-      setFocusCycleRoot(view, view.getDockableWindowManager().getBottomDockingArea());
-      setFocusCycleRoot(view, view.getDockableWindowManager().getRightDockingArea());
-   }
+	private void installDockUpdateListeners(View view)
+	{
+		addContainerListener(view, 4); // Top dock
+		addContainerListener(view, 5); // Left dock
+		addContainerListener(view, 6); // Bottom dock
+		addContainerListener(view, 7); // Right dock
+	}
 
-   private void setFocusCycleRoot(View view, PanelWindowContainer dock) {
-      String[] names = dock.getDockables();
-      for (int i=0; i<names.length; i++) {
-         Component comp = view.getDockableWindowManager().getDockableWindow(names[i]);
-         if (comp instanceof Container) {
-            Log.log(Log.DEBUG, this, "Setting focus cycle root: " + comp);
-            ((Container) comp).setFocusCycleRoot(true);
-         }
-      }
-   }
+	private void installFocusTraversalPolicy(View view)
+	{
+		FocusTraversalPolicy oftp = view.getFocusTraversalPolicy();
+		DockerFocusTraversalPolicy p = new DockerFocusTraversalPolicy(oftp);
+		view.setFocusTraversalPolicy(p);
+		tlist.add(new Triple(view, p, oftp));
+	}
 
-   private void addContainerListener(View view, int compIdx) {
-      ((Container) view.getDockableWindowManager().getComponent(compIdx))
-         .addContainerListener(this);
-   }
+	private int indexOfContainer(View view, Container c)
+	{
+		Component[] comps = view.getDockableWindowManager().getComponents();
+		for (int i = 0; i < comps.length; i++)
+		{
+			if (comps[i] == c)
+				return i;
+		}
+		return -1;
+	}
+
+	private void setFocusCycleRoots(View view)
+	{
+		setFocusCycleRoot(view, view.getDockableWindowManager().getTopDockingArea());
+		setFocusCycleRoot(view, view.getDockableWindowManager().getLeftDockingArea());
+		setFocusCycleRoot(view, view.getDockableWindowManager().getBottomDockingArea());
+		setFocusCycleRoot(view, view.getDockableWindowManager().getRightDockingArea());
+	}
+
+	private void setFocusCycleRoot(View view, PanelWindowContainer dock)
+	{
+		String[] names = dock.getDockables();
+		for (int i = 0; i < names.length; i++)
+		{
+			Component comp = view.getDockableWindowManager()
+				.getDockableWindow(names[i]);
+			if (comp instanceof Container)
+			{
+				Log.log(Log.DEBUG, this, "Setting focus cycle root: " + comp);
+				((Container) comp).setFocusCycleRoot(true);
+			}
+		}
+	}
+
+	private void addContainerListener(View view, int compIdx)
+	{
+		Container c = (Container)view.getDockableWindowManager().getComponent(compIdx); 
+		c.addContainerListener(this);
+		clist.add(c);
+		
+	}
+	/** Temporary storage to remember what we need to clean up at plugin unload time */
+	static class Triple {
+		View view;
+		DockerFocusTraversalPolicy dftp;
+		FocusTraversalPolicy oftp;
+		Triple(View view, DockerFocusTraversalPolicy dftp, FocusTraversalPolicy oftp) {
+			this.view=view;
+			this.dftp = dftp;
+			this.oftp = oftp;
+		}
+	}
 }

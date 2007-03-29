@@ -22,8 +22,6 @@
 
 package docker;
 
-import java.awt.Component;
-
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 

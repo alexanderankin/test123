@@ -31,17 +31,16 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 
-import org.gjt.sp.util.Log;
-
 /**
- * Handles docking for a given view.
+ * Handles auto-hiding when the EditPane gets focus.
+ * 
  */
 public class ViewHandler implements FocusListener
 {
 
    private View view;
-   private Map docks;
-   private Set editPanes;
+   private Map<String, DockHandler> docks;
+   private Set<EditPane> editPanes;
    private DockerConfig config;
 
    /**
@@ -49,8 +48,8 @@ public class ViewHandler implements FocusListener
     */
    public ViewHandler(View aView) {
       view = aView;
-      docks = new HashMap(4);
-      editPanes = new HashSet(2);
+      docks = new HashMap<String, DockHandler>(4);
+      editPanes = new HashSet<EditPane>(2);
       config = DockerPlugin.getPlugin().getConfig();
       init();
    }
@@ -107,20 +106,20 @@ public class ViewHandler implements FocusListener
    }
 
    public void collapseAllDocks() {
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).collapse();
+      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
+          i.next().collapse();
       }
    }
 
    public void saveDockState() {
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).saveDockState();
+      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
+         i.next().saveDockState();
       }
    }
 
    public void restoreDockState() {
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).restoreDockState();
+      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
+         i.next().restoreDockState();
       }
    }
 
@@ -140,8 +139,8 @@ public class ViewHandler implements FocusListener
    public final void focusGained(FocusEvent evt)
    {
       //Log.log(Log.DEBUG, this, "Focus gained");
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).autoHide();
+      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
+         i.next().autoHide();
       }
    }
 

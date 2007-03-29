@@ -28,7 +28,6 @@ import java.util.List;
 import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 /**
  * A combo box of registered dockables.
