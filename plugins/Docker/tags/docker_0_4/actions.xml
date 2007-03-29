@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="docker.popup.top-dock">
+        <CODE>
+            docker.DockerPlugin.getPlugin().showTopDockPopup(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="docker.popup.left-dock">
+        <CODE>
+            docker.DockerPlugin.getPlugin().showLeftDockPopup(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="docker.popup.bottom-dock">
+        <CODE>
+            docker.DockerPlugin.getPlugin().showBottomDockPopup(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="docker.popup.right-dock">
+        <CODE>
+            docker.DockerPlugin.getPlugin().showRightDockPopup(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="docker.toggle-docks">
+        <CODE>
+            viewHandler = docker.DockerPlugin.getPlugin().getViewHandler(view);
+            if (viewHandler.isAnyDockVisible()) {
+                viewHandler.saveDockState();
+                viewHandler.collapseAllDocks();
+            } else {
+                viewHandler.restoreDockState();
+            }
+        </CODE>
+    </ACTION>
+	<ACTION NAME="perspective-save" NO_REPEAT="TRUE">
+		<CODE>
+			docker.Perspective.save(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="perspective-load" NO_REPEAT="TRUE">
+		<CODE>
+			docker.Perspective.load(view);
+		</CODE>
+	</ACTION>
+	    
+</ACTIONS>
