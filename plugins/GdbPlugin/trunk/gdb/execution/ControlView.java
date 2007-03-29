@@ -1,14 +1,12 @@
 package gdb.execution;
 
+import gdb.core.Debugger;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
-import org.gjt.sp.jedit.jEdit;
-
-import debugger.jedit.Plugin;
 
 @SuppressWarnings("serial")
 public class ControlView extends JPanel {
@@ -18,42 +16,42 @@ public class ControlView extends JPanel {
 		add(go);
 		go.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.go(jEdit.getActiveView());
+				Debugger.getInstance().go();
 			}
 		});
 		JButton step = new JButton("Step");
 		add(step);
 		step.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.step(jEdit.getActiveView());
+				Debugger.getInstance().step();
 			}
 		});
 		JButton next = new JButton("Next");
 		add(next);
 		next.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.next(jEdit.getActiveView());
+				Debugger.getInstance().next();
 			}
 		});
 		JButton ret = new JButton("Return");
 		add(ret);
 		ret.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.finishCurrentFunction(jEdit.getActiveView());
+				Debugger.getInstance().finishCurrentFunction();
 			}
 		});
 		JButton pause = new JButton("Pause");
 		add(pause);
 		pause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.pause(jEdit.getActiveView());
+				Debugger.getInstance().pause();
 			}
 		});
 		JButton quit = new JButton("Quit");
 		add(quit);
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Plugin.quit(jEdit.getActiveView());
+				Debugger.getInstance().quit();
 			}
 		});
 	}

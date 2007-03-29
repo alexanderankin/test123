@@ -59,32 +59,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		removeCurrentPositionPainter();
 	}
 	
-	public static void next(View view) {
-		if (debugger.isRunning())
-			debugger.next();
-	}
-	public static void step(View view) {
-		if (debugger.isRunning())
-			debugger.step();
-	}
-	public static void go(View view) {
-		if (! debugger.isRunning()) {
-			debugger.start();
-		} else 
-			debugger.go();
-	}
-	public static void finishCurrentFunction(View view) {
-		if (debugger.isRunning())
-			debugger.finishCurrentFunction();
-	}
-	public static void pause(View view) {
-		if (debugger.isRunning())
-			debugger.pause();
-	}
-	public static void quit(View view) {
-		if (debugger.isRunning())
-			debugger.quit();
-	}
 	public static void toggleBreakpoint(View view)
 	{
 		Buffer buffer = view.getBuffer();

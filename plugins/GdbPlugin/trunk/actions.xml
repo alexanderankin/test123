@@ -5,32 +5,32 @@
 	
 	<ACTION NAME="debugger-quit" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.quit(view);
+			gdb.core.Debugger.getInstance().quit();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="debugger-go" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.go(view);
+			gdb.core.Debugger.getInstance().go();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="debugger-next" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.next(view);
+			gdb.core.Debugger.getInstance().next();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="debugger-step" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.step(view);
+			gdb.core.Debugger.getInstance().step();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="debugger-finish" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.finishCurrentFunction(view);
+			gdb.core.Debugger.getInstance().finishCurrentFunction();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="debugger-pause" NO_REPEAT="TRUE">
 		<CODE>
-			debugger.jedit.Plugin.pause(view);
+			gdb.core.Debugger.getInstance().pause();
 		</CODE>
 	</ACTION>
 
