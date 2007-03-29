@@ -22,19 +22,17 @@
 
 package docker;
 
-import java.awt.FocusTraversalPolicy;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Window;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.text.JTextComponent;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.gui.PanelWindowContainer;
-import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 
