@@ -20,13 +20,9 @@ package debugger.jedit;
 
 import gdb.breakpoints.Breakpoint;
 import gdb.core.Debugger;
-import gdb.execution.ControlView;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
@@ -91,7 +87,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	}
 	static CurrentPositionPainter dp = null;
 	static View dpview = null;
-	private static ControlView controlView = null;
 	private static void jumpTo(final String file, final int line, final boolean isCurrent) {
 		final View view = jEdit.getActiveView();
 		if (isCurrent && (dp != null)) {
@@ -130,19 +125,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	public void setCurrentLocation(String file, int line) {
 		DebuggerDB.getInstance().setCurrentLocation(file, line);
 		goTo(file, line, true);
-	}
-	public void breakpointHit(int bkptno, String file, int line) {
-		String msg = "Breakpoint " + bkptno + " hit";
-		if (file != null)
-			msg = msg + ", at " + file + ":" + line + ".";
-		System.err.println(msg);
-		JOptionPane.showMessageDialog(null, msg);
-	}
-	// Views
-	static public JPanel showControlPanel(View view) {
-		if (controlView == null)
-			controlView = new ControlView();
-		return controlView;
 	}
 
 	public void programExited() {

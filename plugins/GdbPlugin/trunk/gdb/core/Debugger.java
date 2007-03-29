@@ -6,6 +6,7 @@ import gdb.breakpoints.GdbBreakpoint;
 import gdb.context.StackTrace;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
+import gdb.execution.ControlView;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -47,6 +49,7 @@ public class Debugger implements DebuggerTool {
 	private static JPanel gdbOutputPanel = null;
 	private static JTextArea gdbOutputText = null;
 	// Views
+	private ControlView controlView = null;
 	private BreakpointView breakpointsPanel = null;
 	private LocalVariables localsPanel = null;
 	private StackTrace stackTracePanel = null;
@@ -206,7 +209,11 @@ public class Debugger implements DebuggerTool {
 		}
 	}
 	public void breakpointHit(int bkptno, String file, int line) {
-		frontEnd.breakpointHit(bkptno, file, line);
+		String msg = "Breakpoint " + bkptno + " hit";
+		if (file != null)
+			msg = msg + ", at " + file + ":" + line + ".";
+		System.err.println(msg);
+		JOptionPane.showMessageDialog(null, msg);
 	}
 
 	public void setFrontEnd(JEditFrontEnd frontEnd) {
@@ -268,7 +275,12 @@ public class Debugger implements DebuggerTool {
 		updateVariables(level);
 	}
 
-	static public JPanel showProgramOutput(View view) {
+	public JPanel showControlPanel(View view) {
+		if (controlView == null)
+			controlView = new ControlView();
+		return controlView;
+	}
+	public JPanel showProgramOutput(View view) {
 		if (programOutputPanel == null)	{
 			programOutputPanel = new JPanel(new BorderLayout());
 			programOutputText = new JTextArea();
@@ -276,7 +288,7 @@ public class Debugger implements DebuggerTool {
 		}
 		return programOutputPanel;
 	}
-	static public JPanel showGdbOutput(View view) {
+	public JPanel showGdbOutput(View view) {
 		if (gdbOutputPanel == null)	{
 			gdbOutputPanel = new JPanel(new BorderLayout());
 			gdbOutputText = new JTextArea();
