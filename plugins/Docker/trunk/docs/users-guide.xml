@@ -42,7 +42,7 @@
   The following is a list of features provided by Docker:
   <itemizedlist>
   <listitem><para> <emphasis> Load/Save Perspective.</emphasis>
-    Like Eclipse, the Docker plugin supports named Perspectives, which describe the docking positions of plugins. With this, you can save your current dockable layout as a named perspective, and later load it back again. Loading a perspective restores the the dockable buttons for each docking area.   
+    Like Eclipse, the Docker plugin supports named Perspectives, which describe the docking positions of docked windows. With this, you can save your current dockable layout as a named perspective, and later load it back again. Loading a perspective restores the dockable buttons for each docking area, and the visible window in each docking area.   
     </para></listitem>
     
   <listitem>
