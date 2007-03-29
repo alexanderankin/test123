@@ -11,8 +11,8 @@
 # Plugin properties
 plugin.docker.DockerPlugin.name=Docker
 plugin.docker.DockerPlugin.activate=startup
-plugin.docker.DockerPlugin.author=Calvin Yu
-plugin.docker.DockerPlugin.version=0.3.1
+plugin.docker.DockerPlugin.author=Calvin Yu, Shlomy Reinstein, Alan Ezust
+plugin.docker.DockerPlugin.version=0.4
 plugin.docker.DockerPlugin.docs=index.html
 plugin.docker.DockerPlugin.option-pane=docker
 plugin.docker.DockerPlugin.description=Enhancements to the Dockable window manager
@@ -21,10 +21,10 @@ options.docker.label=Docker
 options.docker.code=new docker.DockerOptionPane()
 
 # menus
-plugin.docker.DockerPlugin.menu=docker.toggle-docks docker.popup.top-dock docker.popup.left-dock docker.popup.bottom-dock docker.popup.right-dock
+plugin.docker.DockerPlugin.menu=perspective-load perspective-save docker.toggle-docks docker.popup.top-dock docker.popup.left-dock docker.popup.bottom-dock docker.popup.right-dock
 
 plugin.docker.DockerPlugin.depend.0=jedit 04.02.99.00
-plugin.docker.DockerPlugin.depend.1=jdk 1.4
+plugin.docker.DockerPlugin.depend.1=jdk 1.5
 plugin.docker.DockerPlugin.depend.2=plugin CommonControlsPlugin 0.7
 
 options.docker.label=Docker
@@ -37,7 +37,9 @@ docker.label.right-dock=Right Dock
 docker.label.auto-hide-overrides=Override auto-hide feature for the following dockables:
 docker.label.add-auto-hide-override=Add
 docker.label.remove-auto-hide-override=Remove
-
+# action labels
+perspective-load.label=Load Perspective...
+perspective-save.label=Save Perspective...
 docker.popup.top-dock.label=Top Dock Popup
 docker.popup.left-dock.label=Left Dock Popup
 docker.popup.bottom-dock.label=Bottom Dock Popup
