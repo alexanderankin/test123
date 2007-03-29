@@ -55,7 +55,8 @@ public class DockerPlugin extends EBPlugin
 
    private Map handlers;
    private DockerConfig config;
-
+   private DockFocusManager dfm;
+   
    /**
     * Create a new <code>DockerPlugin</code>
     */
@@ -146,9 +147,14 @@ public class DockerPlugin extends EBPlugin
    }
 
    public void start() {
-      EditBus.addToBus(new DockFocusManager());
+      dfm = new DockFocusManager();
+      EditBus.addToBus(dfm);
    }
 
+   public void stop() {
+      EditBus.removeFromBus(dfm);
+   }
+   
    /**
     * Gets the Plugin attribute of the DockerPlugin class
     */

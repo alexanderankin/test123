@@ -34,4 +34,15 @@
             }
         </CODE>
     </ACTION>
+	<ACTION NAME="perspective-save" NO_REPEAT="TRUE">
+		<CODE>
+			docker.Perspective.save(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="perspective-load" NO_REPEAT="TRUE">
+		<CODE>
+			docker.Perspective.load(view);
+		</CODE>
+	</ACTION>
+	    
 </ACTIONS>
