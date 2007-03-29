@@ -76,16 +76,18 @@
  <itemizedlist>
  
  <listitem><para>
- <emphasis role="bold">Version 0.4</emphasis> requires jEdit 4.2final </para>
+ <emphasis role="bold">Version 0.4</emphasis> requires jEdit 4.2final, Java 1.5 (Alan Ezust)</para>
  <itemizedlist>
  <listitem><para> Merged Perspective plugin into Docker plugin. </para></listitem>
+ <listitem><para> Added some cleanup code to the DockerPlugin.stop() method. </para> </listitem>
+ <listitem><para> Updated collections to use 1.5 generics. </para></listitem>
  </itemizedlist>
  </listitem>
  
  <listitem><para>
  <emphasis role="bold">Version 0.3.1</emphasis> requires jEdit 4.2final</para>
  <itemizedlist>
- <listitem><para> Updated menu and option panes for 4.2 plugin API. </para></listitem>
+ <listitem><para> Updated menu and option panes for 4.2 plugin API (Alan Ezust). </para></listitem>
  </itemizedlist></listitem>
  
  <listitem><para>
