@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
 <!-- Docker user's guide -->
 <!-- (C) 2003 Calvin Yu -->
-
+<!-- (C) 2007 Alan Ezust -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<book>
 
 <bookinfo><title>Docker plugin user's guide</title>
 
@@ -44,19 +41,19 @@
  <para>
   The following is a list of features provided by Docker:
   <itemizedlist>
-  <listitem><para> <emphasis> Perspective Management.</emphasis>
-    Like Eclipse, the Docker plugin supports named Perspectives, which describe the docking positions of plugins. With this, you can switch to different perspectives depending on what kind of work you need to do. For example, the gdb plugin requires many dockables while you are running the debugger, but when you are not debugging, you may not want to see the dock buttons cluttered with those unused dockables.
+  <listitem><para> <emphasis> Load/Save Perspective.</emphasis>
+    Like Eclipse, the Docker plugin supports named Perspectives, which describe the docking positions of plugins. With this, you can save your current dockable layout as a named perspective, and later load it back again. Loading a perspective restores the the dockable buttons for each docking area.   
     </para></listitem>
     
   <listitem>
    <para><emphasis>Auto Hiding Docks.</emphasis>
-    Individual docks can be set to auto hide when the text area has the focus.
-    Additionally, certain docks can be configured to not be hidden.
+    Individual dock areas can be set to auto hide when the text area has  focus.
+    Additionally, specific dockables can be configured to override this behavior and not auto-hide.
    </para>
   </listitem>
   <listitem>
    <para><emphasis>Toggle Docks.</emphasis>
-    A shortcut can be created to toggle visible on and off.
+    This action lets you toggle the visibility of all docking areas. 
    </para>
   </listitem>
   <listitem>
