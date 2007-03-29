@@ -32,149 +32,175 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 
 /**
- * Handles auto-hiding when the EditPane gets focus.
+ * Handles auto-hiding when the EditPane gets focus. One of these is created for each View.
  * 
  */
 public class ViewHandler implements FocusListener
 {
 
-   private View view;
-   private Map<String, DockHandler> docks;
-   private Set<EditPane> editPanes;
-   private DockerConfig config;
+	private View view;
 
-   /**
-    * Create a new <code>ViewHandler</code>
-    */
-   public ViewHandler(View aView) {
-      view = aView;
-      docks = new HashMap<String, DockHandler>(4);
-      editPanes = new HashSet<EditPane>(2);
-      config = DockerPlugin.getPlugin().getConfig();
-      init();
-   }
+	private Map<String, DockHandler> docks;
 
-   /**
-    * Initialize this handler.
-    */
-   public void init() {
-      docks.clear();
-      attachDock(DockableWindowManager.TOP);
-      attachDock(DockableWindowManager.LEFT);
-      attachDock(DockableWindowManager.BOTTOM);
-      attachDock(DockableWindowManager.RIGHT);
-      EditPane[] editPanes = view.getEditPanes();
-      for (int i=0; i<editPanes.length; i++) {
-         editPaneCreated(editPanes[i]);
-      }
-   }
+	private Set<EditPane> editPanes;
 
-   /**
-    * Detach this handler from the view.
-    */
-   public void detach()
-   {
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).detach();
-      }
-      EditPane[] editPanes = view.getEditPanes();
-      for (int i=0; i<editPanes.length; i++) {
-         editPaneDestroyed(editPanes[i]);
-      }
-   }
+	private DockerConfig config;
 
-   /**
-    * Handle an edit pane creation message.
-    */
-   public void editPaneCreated(EditPane editPane)
-   {
-      editPane.getTextArea().removeFocusListener(this);
-      editPane.getTextArea().addFocusListener(this);
-      editPanes.add(editPane);
-   }
+	/**
+	 * Create a new <code>ViewHandler</code>
+	 */
+	public ViewHandler(View aView)
+	{
+		view = aView;
+		docks = new HashMap<String, DockHandler>(4);
+		editPanes = new HashSet<EditPane>(2);
+		config = DockerPlugin.getPlugin().getConfig();
+		init();
+	}
 
-   /**
-    * Returns <code>true</code> if any dock is visible.
-    */
-   public boolean isAnyDockVisible() {
-      for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         if (((DockHandler) i.next()).isDockVisible()) {
-            return true;
-         }
-      }
-      return false;
-   }
+	/**
+	 * Initialize this handler.
+	 */
+	public void init()
+	{
+		docks.clear();
+		attachDock(DockableWindowManager.TOP);
+		attachDock(DockableWindowManager.LEFT);
+		attachDock(DockableWindowManager.BOTTOM);
+		attachDock(DockableWindowManager.RIGHT);
+		EditPane[] editPanes = view.getEditPanes();
+		for (int i = 0; i < editPanes.length; i++)
+		{
+			editPaneCreated(editPanes[i]);
+		}
+	}
 
-   public void collapseAllDocks() {
-      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
-          i.next().collapse();
-      }
-   }
+	/**
+	 * Detach this handler from the view.
+	 */
+	public void detach()
+	{
+		for (Iterator i = docks.values().iterator(); i.hasNext();)
+		{
+			((DockHandler) i.next()).detach();
+		}
+		EditPane[] editPanes = view.getEditPanes();
+		for (int i = 0; i < editPanes.length; i++)
+		{
+			editPaneDestroyed(editPanes[i]);
+		}
+	}
 
-   public void saveDockState() {
-      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
-         i.next().saveDockState();
-      }
-   }
+	/**
+	 * Handle an edit pane creation message.
+	 */
+	public void editPaneCreated(EditPane editPane)
+	{
+		editPane.getTextArea().removeFocusListener(this);
+		editPane.getTextArea().addFocusListener(this);
+		editPanes.add(editPane);
+	}
 
-   public void restoreDockState() {
-      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
-         i.next().restoreDockState();
-      }
-   }
+	/**
+	 * Returns <code>true</code> if any dock is visible.
+	 */
+	public boolean isAnyDockVisible()
+	{
+		for (Iterator i = docks.values().iterator(); i.hasNext();)
+		{
+			if (((DockHandler) i.next()).isDockVisible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-   /**
-    * Handle an edit pane destruction message.
-    */
-    public void editPaneDestroyed(EditPane editPane)
-    {
-       editPane.getTextArea().removeFocusListener(this);
-       editPanes.remove(editPane);
-    }
+	public void collapseAllDocks()
+	{
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
+		{
+			i.next().collapse();
+		}
+	}
 
-   // {{{ FocusListener Methods
-   /**
-    * Handle a focus gained event.
-    */
-   public final void focusGained(FocusEvent evt)
-   {
-      //Log.log(Log.DEBUG, this, "Focus gained");
-      for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();) {
-         i.next().autoHide();
-      }
-   }
+	public void saveDockState()
+	{
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
+		{
+			i.next().saveDockState();
+		}
+	}
 
-   /**
-    * Handle a focus lost event.
-    */
-   public final void focusLost(FocusEvent evt) {
-      //Log.log(Log.DEBUG, this, "Focus gained");
-   }
-   // }}}
+	public void restoreDockState()
+	{
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
+		{
+			i.next().restoreDockState();
+		}
+	}
 
-   /**
-    * Attach a handler to a dock.
-    */
-   private void attachDock(String dockName)
-   {
-      int compIdx = 0;
-      DockableWindowManager wm = view.getDockableWindowManager();
-      PanelWindowContainer container = null;
-      if (DockableWindowManager.TOP.equals(dockName)) {
-         container = wm.getTopDockingArea();
-         compIdx = 4;
-      } else if (DockableWindowManager.LEFT.equals(dockName)) {
-         container = wm.getLeftDockingArea();
-         compIdx = 5;
-      } else if (DockableWindowManager.BOTTOM.equals(dockName)) {
-         container = wm.getBottomDockingArea();
-         compIdx = 6;
-      } else if (DockableWindowManager.RIGHT.equals(dockName)) {
-         container = wm.getRightDockingArea();
-         compIdx = 7;
-      }
-      docks.put(dockName, new DockHandler(dockName, wm, container, config));
-   }
+	/**
+	 * Handle an edit pane destruction message.
+	 */
+	public void editPaneDestroyed(EditPane editPane)
+	{
+		editPane.getTextArea().removeFocusListener(this);
+		editPanes.remove(editPane);
+	}
+
+	// {{{ FocusListener Methods
+	/**
+	 * Handle a focus gained event.
+	 */
+	public final void focusGained(FocusEvent evt)
+	{
+		// Log.log(Log.DEBUG, this, "Focus gained");
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
+		{
+			i.next().autoHide();
+		}
+	}
+
+	/**
+	 * Handle a focus lost event.
+	 */
+	public final void focusLost(FocusEvent evt)
+	{
+		// Log.log(Log.DEBUG, this, "Focus gained");
+	}
+
+	// }}}
+
+	/**
+	 * Attach a handler to a dock.
+	 */
+	private void attachDock(String dockName)
+	{
+		int compIdx = 0;
+		DockableWindowManager wm = view.getDockableWindowManager();
+		PanelWindowContainer container = null;
+		if (DockableWindowManager.TOP.equals(dockName))
+		{
+			container = wm.getTopDockingArea();
+			compIdx = 4;
+		}
+		else if (DockableWindowManager.LEFT.equals(dockName))
+		{
+			container = wm.getLeftDockingArea();
+			compIdx = 5;
+		}
+		else if (DockableWindowManager.BOTTOM.equals(dockName))
+		{
+			container = wm.getBottomDockingArea();
+			compIdx = 6;
+		}
+		else if (DockableWindowManager.RIGHT.equals(dockName))
+		{
+			container = wm.getRightDockingArea();
+			compIdx = 7;
+		}
+		docks.put(dockName, new DockHandler(dockName, wm, container, config));
+	}
 
 }
-
