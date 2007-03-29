@@ -27,7 +27,10 @@ import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
-import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.swing.SwingUtilities;
@@ -41,18 +44,16 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 /**
- * Manages focus handling for docks that does provide default docking
- * facilities.
+ * Manages focus handling for docks and provides default docking facilities.
  */
 class DockFocusManager implements EBComponent, ContainerListener
 {
 
-	ArrayList <Triple> tlist = new ArrayList<Triple>();
-	Stack <Container> clist = new Stack<Container>();
-	public DockFocusManager()
-	{
+	// map of previous focus traversal policies (before we overrode them)
+	Map<View, FocusTraversalPolicy> ftps = new HashMap<View, FocusTraversalPolicy>();
 
-	}
+	// containers which have this as a ContainerListener
+	Stack <Container> clist = new Stack<Container>();
 
 	public void handleMessage(EBMessage msg)
 	{
@@ -68,12 +69,19 @@ class DockFocusManager implements EBComponent, ContainerListener
 		}
 	}
 
+	/**
+	 * Cleans up all listeners and other registered objects.
+	 *
+	 */
 	public void destroy() 
-	{
-		for (Triple t: tlist) {
-			t.view.setFocusTraversalPolicy(t.oftp);
+	{     
+		Iterator <View> itr = ftps.keySet().iterator();
+		while (itr.hasNext()) {
+			View v = itr.next();
+			FocusTraversalPolicy ftp = ftps.get(v);
+			v.setFocusTraversalPolicy(ftp);
 		}
-		tlist.clear();
+		ftps.clear();
 		while (!clist.empty()) {
 			Container c = clist.pop();
 			c.removeContainerListener(this);
@@ -125,7 +133,7 @@ class DockFocusManager implements EBComponent, ContainerListener
 		FocusTraversalPolicy oftp = view.getFocusTraversalPolicy();
 		DockerFocusTraversalPolicy p = new DockerFocusTraversalPolicy(oftp);
 		view.setFocusTraversalPolicy(p);
-		tlist.add(new Triple(view, p, oftp));
+		ftps.put(view, oftp);
 	}
 
 	private int indexOfContainer(View view, Container c)
@@ -169,15 +177,5 @@ class DockFocusManager implements EBComponent, ContainerListener
 		clist.push(c);
 		
 	}
-	/** Temporary storage to remember what we need to clean up at plugin unload time */
-	static class Triple {
-		View view;
-		DockerFocusTraversalPolicy dftp;
-		FocusTraversalPolicy oftp;
-		Triple(View view, DockerFocusTraversalPolicy dftp, FocusTraversalPolicy oftp) {
-			this.view=view;
-			this.dftp = dftp;
-			this.oftp = oftp;
-		}
-	}
+
 }
