@@ -3,7 +3,6 @@ package gdb.breakpoints;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 
-import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 
@@ -23,7 +22,7 @@ public class Breakpoint implements IBreakpoint {
 		this.buffer = buffer;
 		addPainter();
 		enabled = true;
-		DebuggerDB.getInstance().addBreakpoint(this);
+		BreakpointList.getInstance().addBreakpoint(this);
 	}
 	public IBreakpoint getBreakpoint() {
 		return breakpoint;
@@ -57,7 +56,7 @@ public class Breakpoint implements IBreakpoint {
 				breakpoint = debugger.addBreakpoint(getFile(), getLine());
 				if (breakpoint == null) {
 					// Couldn't re-enable, remove completely
-					DebuggerDB.getInstance().removeBreakpoint(this);
+					BreakpointList.getInstance().removeBreakpoint(this);
 					removePainter();
 					return;
 				}
@@ -74,7 +73,7 @@ public class Breakpoint implements IBreakpoint {
 		return enabled;
 	}
 	public void remove() {
-		DebuggerDB.getInstance().removeBreakpoint(this);
+		BreakpointList.getInstance().removeBreakpoint(this);
 		if (breakpoint != null) {
 			breakpoint.remove();
 			breakpoint = null;
