@@ -28,6 +28,7 @@ import java.awt.FocusTraversalPolicy;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import javax.swing.SwingUtilities;
 
@@ -47,7 +48,7 @@ class DockFocusManager implements EBComponent, ContainerListener
 {
 
 	ArrayList <Triple> tlist = new ArrayList<Triple>();
-	ArrayList <Container> clist = new ArrayList<Container>();
+	Stack <Container> clist = new Stack<Container>();
 	public DockFocusManager()
 	{
 
@@ -67,12 +68,14 @@ class DockFocusManager implements EBComponent, ContainerListener
 		}
 	}
 
-	public void destroy() {
+	public void destroy() 
+	{
 		for (Triple t: tlist) {
 			t.view.setFocusTraversalPolicy(t.oftp);
 		}
 		tlist.clear();
-		for (Container c: clist) {
+		while (!clist.empty()) {
+			Container c = clist.pop();
 			c.removeContainerListener(this);
 		}
 		clist.clear();
@@ -163,7 +166,7 @@ class DockFocusManager implements EBComponent, ContainerListener
 	{
 		Container c = (Container)view.getDockableWindowManager().getComponent(compIdx); 
 		c.addContainerListener(this);
-		clist.add(c);
+		clist.push(c);
 		
 	}
 	/** Temporary storage to remember what we need to clean up at plugin unload time */

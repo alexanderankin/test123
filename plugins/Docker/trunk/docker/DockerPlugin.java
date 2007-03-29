@@ -56,11 +56,8 @@ public class DockerPlugin extends EBPlugin
 {
 
 	static private Icon dockIcon;
-
 	private Map<View, ViewHandler> handlers;
-
 	private DockerConfig config;
-
 	private DockFocusManager dfm;
 
 	/**
@@ -118,13 +115,11 @@ public class DockerPlugin extends EBPlugin
 				{
 					if (editPaneUpdate.getWhat().equals(EditPaneUpdate.CREATED))
 					{
-						viewHandler.editPaneCreated(editPaneUpdate
-							.getEditPane());
+						viewHandler.editPaneCreated(editPaneUpdate.getEditPane());
 					}
 					else
 					{
-						viewHandler.editPaneDestroyed(editPaneUpdate
-							.getEditPane());
+						viewHandler.editPaneDestroyed(editPaneUpdate.getEditPane());
 					}
 				}
 			}
@@ -136,8 +131,7 @@ public class DockerPlugin extends EBPlugin
 	 */
 	public void showTopDockPopup(View view)
 	{
-		showDockPopup(view, view.getDockableWindowManager().getTopDockingArea(),
-			"docker.popup.top-dock");
+		showDockPopup(view, view.getDockableWindowManager().getTopDockingArea(), "docker.popup.top-dock");
 	}
 
 	/**
@@ -177,6 +171,12 @@ public class DockerPlugin extends EBPlugin
 	{
 		EditBus.removeFromBus(dfm);
 		dfm.destroy();
+		Iterator<ViewHandler> itr = handlers.values().iterator();
+		while (itr.hasNext()) {
+			ViewHandler vh = itr.next();
+			vh.detach();
+		}
+		handlers.clear();
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class DockerPlugin extends EBPlugin
 	 */
 	private void detach(View view)
 	{
-		((ViewHandler) handlers.remove(view)).detach();
+		handlers.remove(view).detach();
 	}
 
 	/**
@@ -210,13 +210,13 @@ public class DockerPlugin extends EBPlugin
 		String actionName)
 	{
 		String[] names = dock.getDockables();
-		List items = new ArrayList(names.length + 1);
+		List<DockListItem> items = new ArrayList<DockListItem>(names.length + 1);
 		items.add(new DockListItem(view.getDockableWindowManager(), null));
 		for (int i = 0; i < names.length; i++)
 		{
 			items.add(new DockListItem(view.getDockableWindowManager(), names[i]));
 		}
-		PopupList popup = PopupList.show(view, items, getCurrentDockable(view, dock),
+		PopupList popup = PopupList.show(view, items, getCurrentDockable(view, dock), 
 			new ActionListener()
 			{
 				public void actionPerformed(ActionEvent evt)
@@ -226,51 +226,34 @@ public class DockerPlugin extends EBPlugin
 					if (name == null)
 					{
 						dock.show(null);
-						view
-							.addWindowFocusListener(new java.awt.event.WindowAdapter()
+						view.addWindowFocusListener(new java.awt.event.WindowAdapter()
 							{
-								public void windowGainedFocus(
-									WindowEvent evt)
+								public void windowGainedFocus(WindowEvent evt)
 								{
-									view.getEditPane()
-										.getTextArea()
-										.requestFocus();
-									view
-										.removeWindowFocusListener(this);
-									super
-										.windowGainedFocus(evt);
+									view.getEditPane().getTextArea().requestFocus();
+									view.removeWindowFocusListener(this);
+									super.windowGainedFocus(evt);
 								}
 							});
 						popup.cancel();
 						/*
-						 * Log.log(Log.DEBUG, this,
-						 * "Sending focus to text
-						 * area");
+						 * Log.log(Log.DEBUG, this, "Sending focus to text area");
 						 * view.getEditPane().getTextArea().requestFocus();
 						 */
 					}
 					else
 					{
-						Log.log(Log.DEBUG, this,
-							"Sending focus to dockable: " + name);
-						view
-							.addWindowFocusListener(new java.awt.event.WindowAdapter()
+						Log.log(Log.DEBUG, this, "Sending focus to dockable: " + name);
+						view.addWindowFocusListener(new java.awt.event.WindowAdapter()
 							{
-								public void windowGainedFocus(
-									WindowEvent evt)
+								public void windowGainedFocus(WindowEvent evt)
 								{
-									view
-										.getDockableWindowManager()
-										.getDockable(name)
-										.requestDefaultFocus();
-									view
-										.removeWindowFocusListener(this);
-									super
-										.windowGainedFocus(evt);
+									view.getDockableWindowManager().getDockable(name).requestFocus();
+									view.removeWindowFocusListener(this);
+									super.windowGainedFocus(evt);
 								}
 							});
-						view.getDockableWindowManager().showDockableWindow(
-							name);
+						view.getDockableWindowManager().showDockableWindow(name);
 					}
 				}
 			});
