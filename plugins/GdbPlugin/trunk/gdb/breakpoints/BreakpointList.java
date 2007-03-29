@@ -1,17 +1,14 @@
-package debugger.core;
+package gdb.breakpoints;
 
-import gdb.breakpoints.Breakpoint;
 
 import java.util.HashSet;
 import java.util.Vector;
 
 import debugger.itf.IBreakpoint;
 
-public class DebuggerDB {
-	static private DebuggerDB instance = null;
+public class BreakpointList {
+	static private BreakpointList instance = null;
 	Vector<Breakpoint> breakpoints = new Vector<Breakpoint>();
-	String currentFile = "";
-	int currentLine = 0;
 	Vector<BreakpointListListener> breakpointListeners =
 		new Vector<BreakpointListListener>();
 	
@@ -20,11 +17,11 @@ public class DebuggerDB {
 		void breakpointRemoved(Breakpoint bp);
 	}
 	
-	private DebuggerDB() {
+	private BreakpointList() {
 	}
-	static public DebuggerDB getInstance() {
+	static public BreakpointList getInstance() {
 		if (instance == null)
-			instance = new DebuggerDB();
+			instance = new BreakpointList();
 		return instance;
 	}
 	public Vector<Breakpoint> getBreakpoints() {
@@ -63,15 +60,5 @@ public class DebuggerDB {
 				brkpts.add(b);
 		}
 		return brkpts;
-	}
-	public void setCurrentLocation(String file, int line) {
-		currentFile = file;
-		currentLine = line;
-	}
-	public String getCurrentFile() {
-		return currentFile;
-	}
-	public int getCurrentLine() {
-		return currentLine;
 	}
 }

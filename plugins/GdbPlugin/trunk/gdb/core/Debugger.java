@@ -1,6 +1,7 @@
 package gdb.core;
 
 import gdb.breakpoints.Breakpoint;
+import gdb.breakpoints.BreakpointList;
 import gdb.breakpoints.BreakpointView;
 import gdb.breakpoints.GdbBreakpoint;
 import gdb.context.StackTrace;
@@ -27,7 +28,6 @@ import javax.swing.JTextArea;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.IData;
@@ -163,7 +163,7 @@ public class Debugger implements DebuggerTool {
 			// First set up the arguments
 			commandManager.add("-exec-arguments " + args);
 			// Now set up the breakpoints
-			Vector<Breakpoint> bps = DebuggerDB.getInstance().getBreakpoints();
+			Vector<Breakpoint> bps = BreakpointList.getInstance().getBreakpoints();
 			for (int i = 0; i < bps.size(); i++) {
 				Breakpoint b = bps.get(i);
 				GdbBreakpoint gbp = (GdbBreakpoint)b.getBreakpoint();

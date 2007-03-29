@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package debugger.jedit;
 
 import gdb.breakpoints.Breakpoint;
+import gdb.breakpoints.BreakpointList;
 import gdb.core.Debugger;
 
 import java.util.Enumeration;
@@ -31,7 +32,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import debugger.core.DebuggerDB;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
@@ -46,7 +46,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 
 	public void stop() {
 		// Remove all debugger painters
-		Vector<Breakpoint> breakpoints = DebuggerDB.getInstance().getBreakpoints();
+		Vector<Breakpoint> breakpoints = BreakpointList.getInstance().getBreakpoints();
 		Enumeration<Breakpoint> bpEnum = breakpoints.elements();
 		while (bpEnum.hasMoreElements()) {
 			Breakpoint bp = (Breakpoint) bpEnum.nextElement();
@@ -60,7 +60,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine() + 1;
-		Vector<IBreakpoint> breakpoints = DebuggerDB.getInstance().getBreakpoints(buffer.getPath(), line);
+		Vector<IBreakpoint> breakpoints = BreakpointList.getInstance().getBreakpoints(buffer.getPath(), line);
 		if (breakpoints.isEmpty())
 			setBreakpoint(view);
 		else
@@ -76,7 +76,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine() + 1;
-		Vector<IBreakpoint> breakpoints = DebuggerDB.getInstance().getBreakpoints(buffer.getPath(), line);
+		Vector<IBreakpoint> breakpoints = BreakpointList.getInstance().getBreakpoints(buffer.getPath(), line);
 		if (breakpoints.isEmpty())
 			return;
 		for (int i = 0; i < breakpoints.size(); i++) {
@@ -123,7 +123,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		jumpTo(file, line, isCurrent);
 	}
 	public void setCurrentLocation(String file, int line) {
-		DebuggerDB.getInstance().setCurrentLocation(file, line);
 		goTo(file, line, true);
 	}
 

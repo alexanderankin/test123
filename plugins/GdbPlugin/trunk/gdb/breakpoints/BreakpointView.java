@@ -1,5 +1,7 @@
 package gdb.breakpoints;
 
+import gdb.breakpoints.BreakpointList.BreakpointListListener;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -16,8 +18,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import debugger.core.DebuggerDB;
-import debugger.core.DebuggerDB.BreakpointListListener;
 
 @SuppressWarnings("serial")
 public class BreakpointView extends JPanel {
@@ -45,13 +45,13 @@ public class BreakpointView extends JPanel {
 		add(new JScrollPane(list));
 		model = new DefaultListModel();
 		list.setModel(model);
-		Vector<Breakpoint> brks = DebuggerDB.getInstance().getBreakpoints();
+		Vector<Breakpoint> brks = BreakpointList.getInstance().getBreakpoints();
 		for (int i = 0; i < brks.size(); i++)
 		{
 			Breakpoint bp = (Breakpoint)brks.get(i);
 			model.addElement(new BreakpointCheckBox(bp));
 		}
-		DebuggerDB.getInstance().addBreakpointListListener(new BreakpointListListener() {
+		BreakpointList.getInstance().addBreakpointListListener(new BreakpointListListener() {
 			public void breakpointAdded(Breakpoint bp) {
 				model.addElement(new BreakpointCheckBox(bp));
 			}
