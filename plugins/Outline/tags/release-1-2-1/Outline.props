@@ -1,0 +1,13 @@
+plugin.outline.OutlinePlugin.name=Outline
+plugin.outline.OutlinePlugin.author=Brad Mace
+plugin.outline.OutlinePlugin.version=1.2.1
+plugin.outline.OutlinePlugin.docs=docs/index.html
+plugin.outline.OutlinePlugin.depend.0=jdk 1.5
+plugin.outline.OutlinePlugin.depend.1=jedit 04.03.08.00
+plugin.outline.OutlinePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.outline.OutlinePlugin.depend.3=plugin sidekick.SideKickPlugin 0.7
+plugin.outline.OutlinePlugin.activate=defer
+plugin.outline.OutlinePlugin.description=Provides a SideKick tree structure parser for folds.
+outline.label=Outline
+outline.title=Outline
+plugin.outline.OutlinePlugin.menu=outline
