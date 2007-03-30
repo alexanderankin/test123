@@ -54,37 +54,6 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		removeCurrentPositionPainter();
 	}
 	
-	public static void toggleBreakpoint(View view)
-	{
-		Buffer buffer = view.getBuffer();
-		JEditTextArea ta = view.getTextArea();
-		int line = ta.getCaretLine() + 1;
-		Vector<Breakpoint> breakpoints =
-			BreakpointList.getInstance().get(buffer.getPath(), line);
-		if (breakpoints.isEmpty())
-			setBreakpoint(view);
-		else
-			removeBreakpoint(view);
-	}
-	public static void setBreakpoint(View view) {
-		Buffer buffer = view.getBuffer();
-		JEditTextArea ta = view.getTextArea();
-		int line = ta.getCaretLine() + 1;
-		new Breakpoint(view, debugger, buffer, line);
-	}
-	public static void removeBreakpoint(View view) {
-		Buffer buffer = view.getBuffer();
-		JEditTextArea ta = view.getTextArea();
-		int line = ta.getCaretLine() + 1;
-		Vector<Breakpoint> breakpoints =
-			BreakpointList.getInstance().get(buffer.getPath(), line);
-		if (breakpoints.isEmpty())
-			return;
-		for (int i = 0; i < breakpoints.size(); i++) {
-			Breakpoint b = breakpoints.get(i);
-			b.remove();
-		}
-	}
 	static CurrentPositionPainter dp = null;
 	static View dpview = null;
 	private static void jumpTo(final String file, final int line, final boolean isCurrent) {
