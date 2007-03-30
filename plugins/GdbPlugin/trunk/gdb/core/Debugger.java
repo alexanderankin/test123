@@ -3,7 +3,6 @@ package gdb.core;
 import gdb.breakpoints.Breakpoint;
 import gdb.breakpoints.BreakpointList;
 import gdb.breakpoints.BreakpointView;
-import gdb.breakpoints.GdbBreakpoint;
 import gdb.context.StackTrace;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
@@ -25,11 +24,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import debugger.itf.DebuggerTool;
-import debugger.itf.IBreakpoint;
 import debugger.itf.IData;
 import debugger.itf.JEditFrontEnd;
 
@@ -57,28 +57,6 @@ public class Debugger implements DebuggerTool {
 	private Variables variablesPanel = null;
 	// Command manager
 	private CommandManager commandManager = null;
-
-	static private class BreakpointResultHandler implements ResultHandler {
-		private GdbBreakpoint bp;
-		public BreakpointResultHandler(GdbBreakpoint bp) {
-			this.bp = bp;
-		}
-		public void handle(String msg, GdbResult res) {
-			if (! msg.equals("done"))
-				return;
-			String num = res.getStringValue("bkpt/number");
-			if (num != null)
-				bp.setNumber(Integer.parseInt(num));
-		}
-	}
-	public IBreakpoint addBreakpoint(String file, int line) {
-		GdbBreakpoint bp = new GdbBreakpoint(file, line);
-		if (commandManager != null) {
-			commandManager.add("-break-insert " + file + ":" + line,
-					new BreakpointResultHandler(bp));
-		}
-		return bp; 
-	}
 
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -166,17 +144,49 @@ public class Debugger implements DebuggerTool {
 			Vector<Breakpoint> bps = BreakpointList.getInstance().getBreakpoints();
 			for (int i = 0; i < bps.size(); i++) {
 				Breakpoint b = bps.get(i);
-				GdbBreakpoint gbp = (GdbBreakpoint)b.getBreakpoint();
-				commandManager.add(
-						"-break-insert " + gbp.getFile() + ":" + gbp.getLine(),
-						new BreakpointResultHandler(gbp));
+				b.initialize();
 				if (! b.isEnabled())
-					gbp.setEnabled(false);
+					b.setEnabled(false);
 			}
 			commandManager.add("-exec-run");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public void toggleBreakpoint(View view)
+	{
+		Buffer buffer = view.getBuffer();
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine() + 1;
+		Vector<Breakpoint> breakpoints =
+			BreakpointList.getInstance().get(buffer.getPath(), line);
+		if (breakpoints.isEmpty())
+			setBreakpoint(view, buffer, line);
+		else
+			removeBreakpoint(view);
+	}
+	public void setBreakpoint(View view) {
+		Buffer buffer = view.getBuffer();
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine() + 1;
+		setBreakpoint(view, buffer, line);
+	}
+	private void setBreakpoint(View view, Buffer buffer, int line) {
+		new Breakpoint(view, this, buffer, line);
+	}
+	public void removeBreakpoint(View view) {
+		Buffer buffer = view.getBuffer();
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine() + 1;
+		Vector<Breakpoint> breakpoints =
+			BreakpointList.getInstance().get(buffer.getPath(), line);
+		if (breakpoints.isEmpty())
+			return;
+		for (int i = 0; i < breakpoints.size(); i++) {
+			Breakpoint b = breakpoints.get(i);
+			b.remove();
 		}
 	}
 

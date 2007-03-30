@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import debugger.itf.DebuggerTool;
-import debugger.itf.IBreakpoint;
 import debugger.itf.JEditFrontEnd;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
@@ -60,7 +59,8 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine() + 1;
-		Vector<IBreakpoint> breakpoints = BreakpointList.getInstance().getBreakpoints(buffer.getPath(), line);
+		Vector<Breakpoint> breakpoints =
+			BreakpointList.getInstance().get(buffer.getPath(), line);
 		if (breakpoints.isEmpty())
 			setBreakpoint(view);
 		else
@@ -76,13 +76,13 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine() + 1;
-		Vector<IBreakpoint> breakpoints = BreakpointList.getInstance().getBreakpoints(buffer.getPath(), line);
+		Vector<Breakpoint> breakpoints =
+			BreakpointList.getInstance().get(buffer.getPath(), line);
 		if (breakpoints.isEmpty())
 			return;
 		for (int i = 0; i < breakpoints.size(); i++) {
-			IBreakpoint b = breakpoints.get(i);
-			Breakpoint bp = (Breakpoint)b;
-			bp.remove();
+			Breakpoint b = breakpoints.get(i);
+			b.remove();
 		}
 	}
 	static CurrentPositionPainter dp = null;

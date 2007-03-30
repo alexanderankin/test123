@@ -51,12 +51,14 @@ public class BreakpointView extends JPanel {
 			Breakpoint bp = (Breakpoint)brks.get(i);
 			model.addElement(new BreakpointCheckBox(bp));
 		}
-		BreakpointList.getInstance().addBreakpointListListener(new BreakpointListListener() {
+		BreakpointList.getInstance().addListListener(new BreakpointListListener() {
 			public void breakpointAdded(Breakpoint bp) {
 				model.addElement(new BreakpointCheckBox(bp));
 			}
 			public void breakpointRemoved(Breakpoint bp) {
 				model.removeElement(new BreakpointCheckBox(bp));
+			}
+			public void breakpointChanged(Breakpoint bp) {
 			}
 		});
 	}

@@ -3,7 +3,7 @@ To do:
   + Move to debugger-specific extension
   + Improved GUI for the launch configurations (e.g. file dialogs)
 - Breakpoint window:
-  - Move to debugger-specific extension
+  + Move to debugger-specific extension
   - Skip count
   - Conditions
   - Watch points
