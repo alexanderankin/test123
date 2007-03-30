@@ -1,37 +1,45 @@
 package gdb.breakpoints;
 
+import gdb.core.CommandManager;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 
 import debugger.itf.DebuggerTool;
-import debugger.itf.IBreakpoint;
 
-public class Breakpoint implements IBreakpoint {
+public class Breakpoint {
+	String file;
+	int line;
+	int number;
 	View view;
 	DebuggerTool debugger;
 	Buffer buffer;
-	IBreakpoint breakpoint;
 	BreakpointPainter painter;
 	boolean enabled;
+	boolean initialized = false;
 	public Breakpoint(View view, DebuggerTool debugger, Buffer buffer, int line) {
-		breakpoint = debugger.addBreakpoint(buffer.getPath(), line);
-		if (breakpoint == null)
-			return;
+		this.file = buffer.getPath();
+		this.line = line;
+		initialize();
 		this.view = view;
 		this.debugger = debugger;
 		this.buffer = buffer;
 		addPainter();
 		enabled = true;
-		BreakpointList.getInstance().addBreakpoint(this);
+		BreakpointList.getInstance().add(this);
 	}
-	public IBreakpoint getBreakpoint() {
-		return breakpoint;
+	public void initialize() {
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null) {
+			commandManager.add("-break-insert " + file + ":" + line,
+					new BreakpointResultHandler(this));
+		}
 	}
 	public String getFile() {
-		return breakpoint.getFile();
+		return file;
 	}
 	public int getLine() {
-		return breakpoint.getLine();
+		return line;
 	}
 	public Buffer getBuffer() {
 		return buffer;
@@ -49,22 +57,12 @@ public class Breakpoint implements IBreakpoint {
 		if (this.enabled == enabled)
 			return;
 		this.enabled = enabled;
-		if (breakpoint.canSetEnabled())
-			breakpoint.setEnabled(enabled);
-		else {
-			if (enabled) {
-				breakpoint = debugger.addBreakpoint(getFile(), getLine());
-				if (breakpoint == null) {
-					// Couldn't re-enable, remove completely
-					BreakpointList.getInstance().removeBreakpoint(this);
-					removePainter();
-					return;
-				}
-			} else {
-				breakpoint.remove();
-				breakpoint = null;
-			}
-		}
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null)
+			if (enabled)
+				commandManager.add("-break-enable " + number);
+			else
+				commandManager.add("-break-disable " + number);
 		// Update the painter
 		removePainter();
 		addPainter();
@@ -73,14 +71,14 @@ public class Breakpoint implements IBreakpoint {
 		return enabled;
 	}
 	public void remove() {
-		BreakpointList.getInstance().removeBreakpoint(this);
-		if (breakpoint != null) {
-			breakpoint.remove();
-			breakpoint = null;
-		}
+		BreakpointList.getInstance().remove(this);
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null)
+			commandManager.add("-break-delete " + number);
 		removePainter();
 	}
-	public boolean canSetEnabled() {
-		return breakpoint.canSetEnabled();
+	public void setNumber(int num) {
+		number = num;
+		initialized = true;
 	}
 }
