@@ -1,9 +1,9 @@
 Outline 1.2.1
 
 Requirements:
-	* JDK 1.4.1
-	* jEdit 4.2pre8
-	* SideKick 0.6
+	* JDK 1.5
+	* jEdit 4.3pre8
+	* SideKick 0.7
 	* ErrorList 1.4
 Announcement:
 	Added asset descriptions

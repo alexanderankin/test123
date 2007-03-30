@@ -2,6 +2,7 @@
 {{{ CHANGES
 {{{ 1.2.1
 	- Removed actions file that had been copied from ColumnRuler and was causing problems.
+    - Small bugfixes with SideKick 0.7
 }}}
 
 {{{ 1.1.2
