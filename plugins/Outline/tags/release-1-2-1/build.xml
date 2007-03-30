@@ -1,0 +1,106 @@
+<project name="Outline" default="dist" basedir=".">
+    <!-- {{{ Project: Outline  -->
+    <!-- It should be possible to view this in 
+    two sidekicks: XML and Outline. -->
+    <!-- {{{ Properties -->
+	<property file="../build.properties" />
+	<property file="build.properties" />
+	<property file="${user.home}/build.properties" />
+	
+  <property name="jedit.install.dir"  value="../.." />
+  <property name="jar.name"  value="${ant.project.name}"/>
+
+  <property name="install.dir"  value="${jedit.install.dir}/jars"/>
+  <property name="jedit.install.jars" value="${jedit.install.dir}/jars" />
+  <property name="jedit.user.jars" value="${user.home}/.jedit/jars" />
+
+  <property name="src.dir" value="." />
+  <property name="src.classes" value="${src.dir}/." />
+
+  <property name="build.dir" value="build" />
+  <property name="build.classes" value="${build.dir}/classes" />
+
+  <property name="reports.dir" value="reports" />
+  <property name="reports.classes" value="${reports.dir}/classes" />
+<!-- }}}  -->
+
+<!-- {{{ classpath -->
+  <path id="project.class.path">
+	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	<pathelement location="${jedit.install.jars}/ErrorList.jar" />
+	<pathelement location="${jedit.install.jars}/SideKick.jar" />
+	<pathelement location="${jedit.user.jars}/ErrorList.jar" />
+	<pathelement location="${jedit.user.jars}/SideKick.jar" />
+	<pathelement location="icons/**/*.gif"/>
+	<pathelement location="."/>
+  </path>
+<!-- }}}  -->
+<!-- {{{ Targets -->
+    <!-- {{{ Target: clean
+    ============================== -->
+  <target name="clean" description="Deletes all regeneratable files">
+	<delete dir="${build.dir}"/>
+	<delete dir="${reports.dir}"/>
+  </target>
+ 
+  <!-- }}} -->
+
+    <!-- {{{ Target: compile
+    ============================== --> 
+  <target name="compile">
+	<mkdir dir="${build.dir}" />
+	<mkdir dir="${build.classes}" />
+	<javac destdir="${build.classes}"
+	  srcdir="${src.classes}"
+  	  debug="${compiler.debug}"
+	  deprecation="on"
+	  includejavaruntime="yes"	>
+	  <classpath refid="project.class.path"/>
+	</javac>
+  </target>
+
+  
+   <!-- }}} -->
+   <!-- {{{ Target: dist
+   ============================== -->
+  <target name="dist" depends="compile">
+	<mkdir dir="${install.dir}"/>
+	<jar jarfile="${install.dir}/${jar.name}.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.html"/>
+		<include name="**/*.gif"/>
+		<include name="db/**" />
+		<include name="docs/**" />
+		<include name="icons/**" />
+		<include name="*.xml"/>
+		<exclude name="build.xml"/>
+	  </fileset>
+	  <fileset dir="${build.classes}">
+		<include name="**/*.class" />
+	  </fileset>
+	</jar>
+  </target>
+
+   <!-- }}} -->
+       <!-- {{{ Target: dist-src
+       ============================== -->
+  <target name="dist-src" depends="compile">
+	<jar jarfile="${jar.name}-src.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.gif"/>
+		<include name="docs/**" />
+		<include name="icons/*" />
+		<include name="*.xml"/>
+	  </fileset>
+	  <fileset dir="${src.dir}">
+		<include name="**/*.java" />
+	  </fileset>
+	</jar>
+  </target>
+ <!-- }}} -->
+  
+  <!-- }}} -->
+
+</project>

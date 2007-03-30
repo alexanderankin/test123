@@ -1,0 +1,8 @@
+fix updating
+	- button
+	- change buffer
+	
+- indent mode
+- fix expand/collapse folds with double-click
+
+- option to use different folding mode for outline than is being used in buffer

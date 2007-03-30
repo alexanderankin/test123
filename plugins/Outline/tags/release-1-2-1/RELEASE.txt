@@ -1,0 +1,15 @@
+Outline 1.2.1
+
+Requirements:
+	* JDK 1.5
+	* jEdit 4.3pre8
+	* SideKick 0.7
+	* ErrorList 1.4
+Announcement:
+	Added asset descriptions
+Source:
+	plugins/Outline
+
+Description:
+	Provides a SideKick-like tree which displays folds rather than language specific structures.
+
