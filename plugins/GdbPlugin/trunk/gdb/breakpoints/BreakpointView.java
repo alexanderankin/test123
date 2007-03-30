@@ -4,15 +4,20 @@ import gdb.breakpoints.BreakpointList.BreakpointListListener;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -24,6 +29,8 @@ public class BreakpointView extends JPanel {
 	static private Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 	private JList list;
 	private DefaultListModel model;
+	private JButton editButton;
+	private JButton deleteButton;
 
 	public BreakpointView() {
 		setLayout(new BorderLayout());
@@ -42,7 +49,33 @@ public class BreakpointView extends JPanel {
               }
            }
         });
-		add(new JScrollPane(list));
+		add(new JScrollPane(list), BorderLayout.CENTER);
+		
+		// Create the toolbar
+		JToolBar buttons = new JToolBar();
+		buttons.setFloatable(false);
+		editButton = new JButton("Edit");
+		editButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				BreakpointCheckBox cb =
+					(BreakpointCheckBox) list.getSelectedValue();
+				BreakpointEditor ed = new BreakpointEditor(cb.get());
+				ed.setVisible(true);
+			}
+		});
+		buttons.add(editButton);
+		deleteButton = new JButton("Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				BreakpointCheckBox cb =
+					(BreakpointCheckBox) list.getSelectedValue();
+				cb.get().remove();
+				model.removeElement(cb);
+			}
+		});
+		buttons.add(deleteButton);
+		add(buttons, BorderLayout.NORTH);
+		
 		model = new DefaultListModel();
 		list.setModel(model);
 		Vector<Breakpoint> brks = BreakpointList.getInstance().getBreakpoints();
@@ -59,6 +92,8 @@ public class BreakpointView extends JPanel {
 				model.removeElement(new BreakpointCheckBox(bp));
 			}
 			public void breakpointChanged(Breakpoint bp) {
+				model.removeElement(new BreakpointCheckBox(bp));
+				model.addElement(new BreakpointCheckBox(bp));
 			}
 		});
 	}
@@ -81,6 +116,9 @@ public class BreakpointView extends JPanel {
 		
 		public boolean equals(BreakpointCheckBox bp) {
 			return (this.bp == bp.bp);
+		}
+		public Breakpoint get() {
+			return bp;
 		}
 	}
 	static private class BreakpointCellRenderer implements ListCellRenderer

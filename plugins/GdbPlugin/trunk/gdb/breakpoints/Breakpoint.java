@@ -81,4 +81,7 @@ public class Breakpoint {
 		number = num;
 		initialized = true;
 	}
+	public int getNumber() {
+		return number;
+	}
 }
