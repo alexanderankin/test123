@@ -75,6 +75,8 @@ import java.util.*;
  * are NOT produced by javacc. So the sequence is:<br>
  * .jj -> javacc -> .java -> javac -> .class
  * <p>
+ * References like JLS X.X are section numbers in the Java Language Specification
+ * Third Edition.
  */
 public class TigerParser
 {
@@ -1172,18 +1174,21 @@ CUNode JavaCompilationUnit(int tab_size):
 
 String PackageDeclaration():
 {
-    TigerNode name = null;
+    NameNode name = null;
 }
 {
     try {
-        "package" name=Name() ";"
+        "package" name=Name() ";"   ////
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
 
     {
-        return name == null ? "" : name.getName();
+        if (name == null) {
+            return "";
+        }
+        return name.getFullyQualifiedTypeName();
     }
 }
 
@@ -1196,28 +1201,26 @@ String PackageDeclaration():
  */
 ImportNode ImportDeclaration():
 {
-    TigerNode name = null;
+    NameNode name = null;
     Token st = null;
     Token et = null;
 }
 {
     try {
-        st="import" [ "static" ] name=Name() [ "." "*" ] et=";"
+        st="import" [ "static" ] name=Name() [ "." "*" ] et=";" ////
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
 
     {
-        if (name != null) {
-            ImportNode in = new ImportNode(name.getName());
-            //in.setStartLocation(name.getStartLocation());
-            //in.setEndLocation(name.getEndLocation());
-            in.setStartLocation(getLocation(st));
-            in.setEndLocation(getEndLocation(et));
-            return in;
+        if (name == null) {
+            return null;
         }
-        return null;
+        ImportNode in = new ImportNode(name.getFullyQualifiedTypeName());
+        in.setStartLocation(getLocation(st));
+        in.setEndLocation(getEndLocation(et));
+        return in;
     }
 }
 
@@ -1591,7 +1594,7 @@ String TypeBound():
 /**
  * @return a node representing the contents of a Class or Interface body.  The
  * returned node is simply a holder for the contents, it is the children of this
- * node that is useful as they are the methods and fields of the class or
+ * node that are useful as they are the methods and fields of the class or
  * interface.
  */
 TigerNode ClassOrInterfaceBody(boolean isInterface):
@@ -1683,63 +1686,83 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
 /**
  * @return a FieldNode
  */
-TigerNode FieldDeclaration(Modifier m):
+FieldNode FieldDeclaration(Modifier m):
 {
     Type type = null;
-    TigerNode name  = null;
-    TigerNode a;
-    Token t = null;
+    FieldNode fn = null;
+    VariableDeclarator name  = null;
+    VariableDeclarator a;
+    Token et = null;
 }
 {
     try {
 
         (
-        // Modifiers are already matched in the caller
-        /// might need to change this, I'm collecting multiple declarations into a single
-        /// field, which seems to be okay, e.g. I'm putting "int x = 0, y = 6" into a
-        /// field with Type "int" and name "x, y".  It might be better to create individual
-        /// nodes for each, so for this example, this method could return 2 fields, one
-        /// for "int x" and one for "int y".
-        type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); })* t=";"
+            // Modifiers are already matched in the caller
+            /// might need to change this, I'm collecting multiple declarations into a single
+            /// field, which seems to be okay, e.g. I'm putting "int x = 0, y = 6" into a
+            /// field with Type "int" and name "x, y".  It might be better to create individual
+            /// nodes for each, so for this example, this method could return 2 fields, one
+            /// for "int x" and one for "int y".
+            type=Type() name=VariableDeclarator()
+            {
+                fn = new FieldNode(name.getName(), m.modifiers, type);
+                fn.addChild(name);
+                if (fn.isPrimitive())
+                  results.incPrimitiveFieldCount();
+                else
+                  results.incReferenceFieldCount();
+            }
+            (
+                "," a=VariableDeclarator()
+                {
+                    fn.setName(fn.getName() + ", " + a.getName());
+                    fn.addChild(a);
+                }
+            )*
+            et=";"
         )
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
-        FieldNode fn = new FieldNode(name.getName(), m.modifiers, type);
-        if (fn.isPrimitive())
-          results.incPrimitiveFieldCount();
-        else
-          results.incReferenceFieldCount();
         if (m.beginColumn == -1)
             fn.setStartLocation(type.getStartLocation());
         else
             fn.setStartLocation(getLocation(m)); //type.getStartLocation());
-        fn.setEndLocation(getLocation(t));
+        fn.setEndLocation(getLocation(et));
         return fn;
     }
 }
 
-TigerNode VariableDeclarator():
+/*
+    Represents a variable declaration.  The returned node represents the LHS,
+    the children of the node represent the RHS.
+*/
+VariableDeclarator VariableDeclarator():
 {
-    TigerNode s = null;
+    VariableDeclarator s = null;
+    List list = null;
 }
 {
     try {
         (
-            s=VariableDeclaratorId() [ "=" VariableInitializer() ]
+            s=VariableDeclaratorId() [ "=" list=VariableInitializer() ]
         )
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
+        if (list != null) {
+            s.addChildren(list);
+        }
         return s;
     }
 }
 
-TigerNode VariableDeclaratorId():
+VariableDeclarator VariableDeclaratorId():
 {
     Token t = null;
 }
@@ -1752,7 +1775,7 @@ TigerNode VariableDeclaratorId():
         error_skipto(SEMICOLON);
     }
     {
-        TigerNode tn = new TigerNode(t.image, 0);
+        VariableDeclarator tn = new VariableDeclarator(t.image);
         tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
         tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
         return tn;
@@ -1818,7 +1841,6 @@ TigerNode MethodDeclaration(Modifier m):
 }
 {
     try {
-
         (
           // Modifiers already matched in the caller!
           [ type_params = TypeParameters() ]
@@ -1844,12 +1866,15 @@ TigerNode MethodDeclaration(Modifier m):
         node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
-        if (block == null && t != null) {
+        if ( t != null) {
             node.setEndLocation(getLocation(t));
         }
-        else {
+        else if ( block != null ) {
             node.addChildren(block.getChildren());
             node.setEndLocation(block.getEndLocation());
+        }
+        else {
+            throw new RuntimeException("no end to method node: " + (m_node == null ? "unknown" : m_node.getName()));
         }
         results.incMethodCount();
         return node;
@@ -1927,14 +1952,16 @@ Parameter FormalParameter():
             param.setFinal(true);
             param.setStartLocation(getLocation(t));
         }
+        |
+        Annotation()    // JLS 8.4.1
        ]
-       type_a=Type()
+       type_a = Type()
        { param.setType(type_a); }
        [
         "..."
         { param.setVarArg(true); }
        ]
-       n=VariableDeclaratorId()
+       n = VariableDeclaratorId()
        {
            param.setName(n.getName());
            if (t == null)
@@ -1968,7 +1995,7 @@ ConstructorNode ConstructorDeclaration(Modifier m):
             [ type_params=TypeParameters() ]
             t=<IDENTIFIER> params=FormalParameters() [ "throws" name_list=NameList() ]
             "{"
-            [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
+                [ LOOKAHEAD(ExplicitConstructorInvocation()) child=ExplicitConstructorInvocation() { if (child != null) cn.addChild(child); } ]
             ( child=BlockStatement() { if (child != null) cn.addChild(child); })*
             end_t="}"
         )
@@ -1993,17 +2020,22 @@ ConstructorNode ConstructorDeclaration(Modifier m):
     }
 }
 
-void ExplicitConstructorInvocation():
-{}
+TigerNode ExplicitConstructorInvocation():
+{
+    TigerNode tn = null;
+}
 {
     try {
           LOOKAHEAD("this" Arguments() ";")
           "this" Arguments() ";"
         |
-          [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";"
+        [ LOOKAHEAD(2) tn=PrimaryExpression() "." ] "super" Arguments() ";"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
+    }
+    {
+        return tn;
     }
 
 }
@@ -2105,11 +2137,21 @@ Type ClassOrInterfaceType():
           }
           ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
               {
+                Type a = new Type();
+                a.type = t.image;
+                if (type_args != null) {
+                    a.typeArgs = "<" + toString(type_args) + ">";
+                }
+                s.addChild(a);
+                s.setEndLocation(getEndLocation(t));
+
+                /*
                 s.type += "." + t.image;
                 if (type_args != null) {
                     s.typeArgs = "<" + toString(type_args) + ">";
                 }
                 s.setEndLocation(new Location(t.endLine, t.endColumn));
+                */
               }
           )*
         )
@@ -2261,30 +2303,64 @@ Type ResultType():
     }
 }
 
-TigerNode Name():
+/*
+    This represents the name of something, like a package name, e.g. java.lang.*,
+    or a variable name like 'startLocation', or the name of a static method, e.g.
+    GUIUtilities.centerOnScreen, which is a pain when we need the type of the
+    class containing the static method.
+
+    See JLS 6.5.6, I think this can be done better --
+    use from the start to the last "." as a Type, the remaining as the name.
+    The calling method/production should be able to sort out the result.
+
+*/
+NameNode Name():
 /*
  * A lookahead of 2 is required below since "Name" can be followed
  * by a ".*" when used in the context of an "ImportDeclaration".
  */
 {
     Token t = null;
-    String s = "";
-    TigerNode tn = new TigerNode();
+    String name = null;
+    String type_name = "";
     Location startLocation = null;
     Location endLocation = null;
+    Location typeEndLocation = null;
 }
 {
     try {
 
-        t=<IDENTIFIER> { s = t.image; startLocation = getLocation(t); endLocation = getEndLocation(t); }
-        ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; endLocation = getEndLocation(t); }
+        t=<IDENTIFIER> {
+            name = t.image;
+            startLocation = getLocation(t);
+            endLocation = getEndLocation(t);
+        }
+        (
+            LOOKAHEAD(2)
+            "." t=<IDENTIFIER>
+            {
+                type_name = type_name + name + ".";
+                name = t.image;
+                endLocation = getEndLocation(t);
+                typeEndLocation = getLocation(t);
+            }
         )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
-        tn.setName(s);
+        Type type = null;
+        if (type_name.length() > 0) {
+            if (type_name.endsWith(".")) {
+                type_name = type_name.substring(0, type_name.length() - 1);
+            }
+            type = new Type();
+            type.type = type_name;
+            type.setStartLocation(startLocation);
+            type.setEndLocation(typeEndLocation);
+        }
+        NameNode tn = new NameNode(name, type);
         tn.setStartLocation(startLocation);
         tn.setEndLocation(endLocation);
         return tn;
@@ -2296,12 +2372,12 @@ List NameList():
     List nameList = new ArrayList();
     String s = "";
     String a = "";
-    TigerNode tn;
+    NameNode tn;
 }
 {
     try {
-        tn=Name() { nameList.add(tn); }
-        ( "," tn=Name() { nameList.add(tn); } )*
+        tn=Name() { nameList.add(tn); }             ////
+        ( "," tn=Name() { nameList.add(tn); } )*    ////
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2335,7 +2411,7 @@ List Expression():
       a = ConditionalExpression()
       [
         LOOKAHEAD(2)
-        AssignmentOperator() b = Expression() { a.addAll(b); }
+        AssignmentOperator() b = Expression() { if (b != null) a.addAll(b); }
       ]
 
     }
@@ -2362,7 +2438,7 @@ List ConditionalExpression():
 }
 {
     try {
-        a=ConditionalOrExpression() [ "?" b=Expression(){a.addAll(b);} ":" c=Expression(){a.addAll(c);} ]
+        a=ConditionalOrExpression() [ "?" b=Expression(){if (b != null) a.addAll(b);} ":" c=Expression(){if (c != null) a.addAll(c);} ]
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2379,7 +2455,7 @@ List ConditionalOrExpression():
 }
 {
     try {
-        a=ConditionalAndExpression() ( "||" b=ConditionalAndExpression(){a.addAll(b);} )*
+        a=ConditionalAndExpression() ( "||" b=ConditionalAndExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2396,7 +2472,7 @@ List ConditionalAndExpression():
 }
 {
     try {
-        a=InclusiveOrExpression() ( "&&" b=InclusiveOrExpression(){ a.addAll(b);} )*
+        a=InclusiveOrExpression() ( "&&" b=InclusiveOrExpression(){ if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2413,7 +2489,7 @@ List InclusiveOrExpression():
 }
 {
     try {
-        a=ExclusiveOrExpression() ( "|" b=ExclusiveOrExpression(){a.addAll(b);} )*
+        a=ExclusiveOrExpression() ( "|" b=ExclusiveOrExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2430,7 +2506,7 @@ List ExclusiveOrExpression():
 }
 {
     try {
-        a=AndExpression() ( "^" b=AndExpression(){a.addAll(b);} )*
+        a=AndExpression() ( "^" b=AndExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2447,7 +2523,7 @@ List AndExpression():
 }
 {
     try {
-        a=EqualityExpression() ( "&" b=EqualityExpression(){a.addAll(b);} )*
+        a=EqualityExpression() ( "&" b=EqualityExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2465,7 +2541,7 @@ List EqualityExpression():
 }
 {
     try {
-        a = InstanceOfExpression() ( ( "==" | "!=" ) b = InstanceOfExpression(){ a.addAll(b); } )*
+        a = InstanceOfExpression() ( ( "==" | "!=" ) b = InstanceOfExpression(){ if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2502,7 +2578,7 @@ List RelationalExpression():
 }
 {
     try {
-        a=ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) b=ShiftExpression(){ a.addAll(b); } )*
+        a=ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) b=ShiftExpression(){ if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2519,7 +2595,7 @@ List ShiftExpression():
 }
 {
     try {
-        a=AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) b=AdditiveExpression() { a.addAll(b); })*
+        a=AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) b=AdditiveExpression() { if (b != null) a.addAll(b); })*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2536,7 +2612,7 @@ List AdditiveExpression():
 }
 {
     try {
-        a=MultiplicativeExpression() ( ( "+" | "-" ) b=MultiplicativeExpression() { a.addAll(b); } )*
+        a=MultiplicativeExpression() ( ( "+" | "-" ) b=MultiplicativeExpression() { if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2700,6 +2776,13 @@ TigerNode CastExpression():
     }
 }
 
+/**
+ * JLS 15.8 Primary Expressions
+ * Primary expressions include most of the simplest kinds of expressions, from
+ * which all others are constructed: literals, class literals, field accesses,
+ * method invocations, and array accesses. A parenthesized expression is also
+ * treated syntactically as a primary expression.
+ */
 TigerNode PrimaryExpression():
 {
     PrimaryExpressionNode node = null;
@@ -2709,15 +2792,21 @@ TigerNode PrimaryExpression():
 }
 {
     try {
-        a = PrimaryPrefix() { if (a != null) list.addAll(a); } ( LOOKAHEAD(2) b=PrimarySuffix() { if (b != null) list.addAll(b); } )*
+        a = PrimaryPrefix() {
+            if (a != null)
+                list.addAll(a);
+        }
+        ( LOOKAHEAD(2)
+            b=PrimarySuffix() {
+                if (b != null)
+                    list.addAll(b);
+            }
+        )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
-        //Log.log("+++ PrimaryExpression children: " + toTigerString(list));
-
-
         TigerNode tn = new TigerNode();
         if (!list.isEmpty()) {
             tn = (TigerNode)list.get(0);
@@ -2725,7 +2814,6 @@ TigerNode PrimaryExpression():
         node = new PrimaryExpressionNode(tn.getName());
         node.setStartLocation(tn.getStartLocation());
         node.setEndLocation(tn.getEndLocation());
-        node.addChildren(tn.getChildren());
         node.addChildren(list);
         return node;
     }
@@ -2750,6 +2838,7 @@ List MemberSelector():
 List PrimaryPrefix():
 {
     List expressions = new ArrayList();
+    List list = null;
     TigerNode tn = null;
 }
 {
@@ -2760,18 +2849,21 @@ List PrimaryPrefix():
         |
           "super" "." <IDENTIFIER>
         |
+          LOOKAHEAD( ClassOrInterfaceType() "." <IDENTIFIER> )
+          tn=ClassOrInterfaceType() {if (tn != null ) expressions.add(tn); } "." <IDENTIFIER>
+        |
           // fix for 1561502
           LOOKAHEAD( ClassOrInterfaceType() "." "super" "." <IDENTIFIER> )
-          ClassOrInterfaceType() "." "super" "." <IDENTIFIER>
+          tn=ClassOrInterfaceType() {expressions.add(tn); } "." "super" "." <IDENTIFIER>
         |
-          "(" expressions = Expression() ")"
+            "(" list = Expression() { if (list != null) expressions.addAll(list); } ")"
         |
-          expressions = AllocationExpression()
+            list = AllocationExpression() { if (list != null) expressions.addAll(list); }
         |
           LOOKAHEAD( ResultType() "." "class" )
-          ResultType() "." "class"
+          tn=ResultType() { if (tn != null ) expressions.add(tn); } "." "class"
         |
-        tn = Name() { expressions.add(tn); }
+            tn = Name() { if (tn != null ) expressions.add(tn); }   ////
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
@@ -2938,6 +3030,7 @@ List ArrayDimsAndInits():
 TigerNode Statement():
 {
     TigerNode bn = null;
+    List list = null;
 }
 {
     try {
@@ -2967,9 +3060,9 @@ TigerNode Statement():
         |
           ContinueStatement()
         |
-          ReturnStatement()
+          list=ReturnStatement()
         |
-          ThrowStatement()
+          list=ThrowStatement()
         |
           bn=SynchronizedStatement()
         |
@@ -2981,6 +3074,13 @@ TigerNode Statement():
         error_skipto(SEMICOLON);
     }
   {
+      /* somehow this causes all heap memory to get used up. Need to figure out
+      a better way to include the list.
+      if (list != null) {
+        bn = (TigerNode)list.get(0);
+        bn.addChildren(list);
+      }
+      */
       return bn;
   }
 }
@@ -3112,28 +3212,43 @@ TigerNode TokenMgrDeclBlockStatement():
 LocalVariableNode LocalVariableDeclaration():
 {
     Type type = null;
-    TigerNode name = null ;
-    TigerNode a = null;
+    LocalVariableNode lvn = null;
+    VariableDeclarator a = null;
+    VariableDeclarator b = null;
     Token t = null;
 
 }
 {
     try {
       //[ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
-      [ t="final" ] type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); name.setEndLocation(a.getEndLocation()); })*
+
+      /*
+      VariableDeclarator returns a TigerNode representing the LHS of the declaration.
+      The RHS is contained within that node as the children of the node.
+      */
+      [ t="final" ] type=Type() a=VariableDeclarator()
+      {
+        lvn = new LocalVariableNode(a.getName(), type);
+        lvn.setFinal(t != null);
+        lvn.addChild(a);
+        lvn.setStartLocation(a.getStartLocation());
+        if (lvn.isPrimitive())
+            results.incPrimitiveFieldCount();
+        else
+            results.incReferenceFieldCount();
+      }
+      ( "," b=VariableDeclarator()
+          {
+              lvn.setName(lvn.getName() + ", " + b.getName());
+              lvn.addChild(b);
+              lvn.setEndLocation(b.getEndLocation());
+          }
+      )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
-        LocalVariableNode lvn = new LocalVariableNode(name.getName(), type);
-        if (lvn.isPrimitive())
-            results.incPrimitiveFieldCount();
-        else
-            results.incReferenceFieldCount();
-        lvn.setStartLocation(name.getStartLocation());
-        lvn.setEndLocation(name.getEndLocation());
-        lvn.setFinal(t != null);
         return lvn;
     }
 
@@ -3153,6 +3268,7 @@ TigerNode StatementExpression():
  */
 {
     TigerNode tn = null;
+    List list = null;
 }
 {
     try {
@@ -3166,13 +3282,16 @@ TigerNode StatementExpression():
           |
             "--"
           |
-            AssignmentOperator() Expression()
+            AssignmentOperator() list=Expression()
           ]
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
+        if (list != null) {
+            tn.addChildren(list);
+        }
         return tn;
     }
 }
@@ -3183,11 +3302,12 @@ BlockNode SwitchStatement():
     TigerNode child = null;
     Token start_t = null;
     Token end_t = null;
+    List list = null;
 }
 {
     try {
-      start_t="switch" "(" Expression() ")" "{"
-          ( SwitchLabel() ( child=BlockStatement() {bn.addChild(child); } )* )*
+        start_t="switch" "(" list=Expression() {if (list != null) bn.addChildren(list);} ")" "{"
+            ( list=SwitchLabel() {if (list != null) bn.addChildren(list);} ( child=BlockStatement() {bn.addChild(child); } )* )*
       end_t="}"
 
     }
@@ -3203,16 +3323,21 @@ BlockNode SwitchStatement():
     }
 }
 
-void SwitchLabel():
-{}
+List SwitchLabel():
+{
+    List list = null;
+}
 {
     try {
-          "case" Expression() ":"
+          "case" list=Expression() ":"
         |
           "default" ":"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
+    }
+    {
+        return list;
     }
 }
 
@@ -3289,10 +3414,11 @@ BlockNode DoStatement():
     TigerNode kids = null;
     Token start_t = null;
     Token end_t = null;
+    List list = null;
 }
 {
     try {
-        start_t="do" kids=Statement() "while" "(" Expression() ")" end_t=";"
+        start_t="do" kids=Statement() "while" "(" list=Expression() ")" end_t=";"
 
     }
     catch(ParseException pe) {
@@ -3303,6 +3429,8 @@ BlockNode DoStatement():
             bn.setStartLocation(getLocation(start_t));
         if (end_t != null)
             bn.setEndLocation(getLocation(end_t));
+        if (list != null)
+            bn.addChildren(list);
         if (kids != null)
             bn.addChildren(kids.getChildren());
         return bn;
@@ -3414,25 +3542,35 @@ void ContinueStatement():
   "continue" [ <IDENTIFIER> ] ";"
 }
 
-void ReturnStatement():
-{}
+List ReturnStatement():
+{
+    List list = null;
+}
 {
     try {
-        "return" [ Expression() ] ";"
+        "return" [ list=Expression() ] ";"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
+    }
+    {
+        return list;
     }
 }
 
-void ThrowStatement():
-{}
+List ThrowStatement():
+{
+    List list = null;
+}
 {
     try {
-        "throw" Expression() ";"
+        "throw" list=Expression() ";"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
+    }
+    {
+        return list;
     }
 }
 
@@ -3441,10 +3579,11 @@ BlockNode SynchronizedStatement():
     BlockNode bn = new BlockNode("synchronized");
     BlockNode child = null;
     Token start_t = null;
+    List list = null;
 }
 {
     try {
-        start_t="synchronized" "(" Expression() ")" child=Block()
+        start_t="synchronized" "(" list=Expression() ")" child=Block()
 
     }
     catch(ParseException pe) {
@@ -3452,6 +3591,9 @@ BlockNode SynchronizedStatement():
     }
     {
       bn.setStartLocation(getLocation(start_t));
+      if (list != null) {
+          bn.addChildren(list);
+      }
       if (child != null) {
           bn.setEndLocation(child.getEndLocation());
           bn.addChild(child);
@@ -3469,13 +3611,14 @@ BlockNode TryStatement():
     List nodes = new ArrayList();
     BlockNode bn = new BlockNode("try");
     BlockNode child = null;
+    Parameter exception = null;
     Token start_t = null;
     BlockNode last = null;
 }
 {
     try {
         start_t="try" child=Block() { if (child != null) { child.setName("try"); nodes.add(child); last = child;}  }
-        ( "catch" "(" FormalParameter() ")" child=Block() { if (child != null) { child.setName("catch"); nodes.add(child); last = child; } } )*
+        ( "catch" "(" exception=FormalParameter() ")" child=Block() { if (child != null) { child.setName("catch"); nodes.add(child); if (exception != null) { child.addChild(exception); } last = child; } } )*
         [ "finally" child=Block() { if (child != null) { child.setName("finally"); nodes.add(child); last = child; } } ]
     }
     catch(ParseException pe) {
