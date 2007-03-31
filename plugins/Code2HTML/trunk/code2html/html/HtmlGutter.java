@@ -18,7 +18,7 @@
  */
 package code2html.html;
 
-
+import org.gjt.sp.jedit.jEdit;
 /**
  *  Gutter for generated code in HTML
  *
@@ -37,7 +37,7 @@ public class HtmlGutter {
     /**
      *  the gutter border char
      */
-    protected char gutterBorder = ':';
+    protected String gutterBorder = jEdit.getProperty("plugin.code2html.gutter.divider");
     /**
      *  the gutter border size
      */
@@ -193,23 +193,27 @@ public class HtmlGutter {
             bufOpen.append("<font")
                 .append(" color=\"")
                 .append(this.highlightColor)
+                .append("\" size=\"")
+                .append(jEdit.getProperty("view.gutter.fontsize"))
                 .append("\">");
 
         } else {
             bufOpen.append("<font")
                 .append(" color=\"")
                 .append(this.fgColor)
+                .append("\" size=\"")
+                .append(jEdit.getProperty("view.gutter.fontsize"))
                 .append("\">");
         }
         bufClose.insert(0, "</font>");
 
-        /*
-         *bufOpen.append("<font")
-         *.append(" bgcolor=\"")
-         *.append(this.bgColor)
-         *.append("\">");
-         *bufClose.insert(0, "</font>");
-         */
+        // -> Doesn't work in pure HTML
+        //bufOpen.append("<font")
+        //    .append(" bgcolor=\"")
+        //    .append(this.bgColor)
+        //    .append("\">");
+        //bufClose.insert(0, "</font>");
+        
         StringBuffer buf = new StringBuffer();
         buf.append(bufOpen.toString())
             .append(spacer)
@@ -231,35 +235,38 @@ public class HtmlGutter {
         StringBuffer bufOpen = new StringBuffer();
         StringBuffer bufClose = new StringBuffer();
 
+        bufOpen.append("<font color=\"");
+
         if ((this.highlightInterval > 0)
              && (lineNumber % this.highlightInterval == 0)
             ) {
-            bufOpen.append("<font")
-                .append(" color=\"")
-                .append(this.highlightColor)
-                .append("\">");
-
+            bufOpen.append(this.highlightColor);
         } else {
-            bufOpen.append("<font")
-                .append(" color=\"")
-                .append(this.fgColor)
-                .append("\">");
+            bufOpen.append(this.fgColor);
         }
+        
+        // -> Doesn't work in pure HTML
+        // append("\" size=\"")
+        //    .append(jEdit.getProperty("view.gutter.fontsize"))
+        //    .append("pt")
+       
+        bufOpen.append("\">");
+        
         bufClose.insert(0, "</font>");
 
-        /*
-         *bufOpen.append("<font")
-         *.append(" bgcolor=\"")
-         *.append(this.bgColor)
-         *.append("\">");
-         *bufClose.insert(0, "</font>");
-         */
+        // -> Doesn't work in pure HTML
+        //bufOpen.append("<font")
+        //    .append(" bgcolor=\"")
+        //    .append(this.bgColor)
+        //    .append("\">");
+        //bufClose.insert(0, "</font>");
+        
         StringBuffer buf = new StringBuffer();
         String s = Integer.toString(lineNumber);
         buf.append(bufOpen.toString())
             .append(spacer.substring(0, this.gutterSize - s.length()))
             .append(s)
-            .append(':')
+            .append(gutterBorder)
             .append(bufClose.toString());
 
         return buf.toString();

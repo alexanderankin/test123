@@ -84,7 +84,7 @@ public class Code2HTML {
             this.style,
             this.gutter,
             buffer.getName(),
-            System.getProperty("line.separator"));
+            jEdit.getProperty("plugin.code2html.line.separator"));
     }
 
 
