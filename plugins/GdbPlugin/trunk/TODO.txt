@@ -2,11 +2,11 @@ To do:
 + Launch configurations:
   + Move to debugger-specific extension
   + Improved GUI for the launch configurations (e.g. file dialogs)
-- Breakpoint window:
++ Breakpoint window:
   + Move to debugger-specific extension
-  - Skip count
-  - Conditions
-  - Watch points
+  + Skip count
+  + Conditions
+  + Watch points
 - Locals/Watches/Variables:
   - Support changes in tree structure of variable.
   - Provide an action and a context menu item to change the currently selected

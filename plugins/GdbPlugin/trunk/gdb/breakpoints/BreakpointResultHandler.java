@@ -14,7 +14,8 @@ public class BreakpointResultHandler implements ResultHandler {
 	public void handle(String msg, GdbResult res) {
 		if (! msg.equals("done"))
 			return;
-		String num = res.getStringValue("bkpt/number");
+		String type = (bp.isBreakpoint() ? "bkpt" : "wpt");
+		String num = res.getStringValue(type + "/number");
 		if (num != null)
 			bp.setNumber(Integer.parseInt(num));
 	}

@@ -174,7 +174,7 @@ public class Debugger implements DebuggerTool {
 		setBreakpoint(view, buffer, line);
 	}
 	private void setBreakpoint(View view, Buffer buffer, int line) {
-		new Breakpoint(view, this, buffer, line);
+		new Breakpoint(view, buffer, line);
 	}
 	public void removeBreakpoint(View view) {
 		Buffer buffer = view.getBuffer();
