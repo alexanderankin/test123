@@ -30,7 +30,6 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import debugger.itf.DebuggerTool;
 import debugger.itf.JEditFrontEnd;

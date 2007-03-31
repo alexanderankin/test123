@@ -16,7 +16,9 @@ public class Breakpoint {
 	Buffer buffer;
 	BreakpointPainter painter;
 	boolean enabled;
-	boolean initialized = false;
+	String condition = "";
+	int skipCount = 0;
+	
 	public Breakpoint(View view, DebuggerTool debugger, Buffer buffer, int line) {
 		this.file = buffer.getPath();
 		this.line = line;
@@ -33,6 +35,12 @@ public class Breakpoint {
 		if (commandManager != null) {
 			commandManager.add("-break-insert " + file + ":" + line,
 					new BreakpointResultHandler(this));
+			if (condition.length() > 0) {
+				setCondition(condition);
+			}
+			if (skipCount > 0) {
+				setSkipCount(skipCount);
+			}
 		}
 	}
 	public String getFile() {
@@ -79,9 +87,26 @@ public class Breakpoint {
 	}
 	public void setNumber(int num) {
 		number = num;
-		initialized = true;
 	}
 	public int getNumber() {
 		return number;
+	}
+	public void setSkipCount(int count) {
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null)
+			commandManager.add("-break-after " + number + " " + count);
+		skipCount = count;
+	}
+	public int getSkipCount() {
+		return skipCount;
+	}
+	public void setCondition(String cond) {
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null)
+			commandManager.add("-break-condition " + number + " " + cond);
+		condition = cond;
+	}
+	public String getCondition() {
+		return condition;
 	}
 }

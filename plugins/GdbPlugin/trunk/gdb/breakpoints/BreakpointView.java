@@ -16,7 +16,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
@@ -31,7 +30,8 @@ public class BreakpointView extends JPanel {
 	private DefaultListModel model;
 	private JButton editButton;
 	private JButton deleteButton;
-
+	private int lastSelection = -1;
+	
 	public BreakpointView() {
 		setLayout(new BorderLayout());
 		list = new JList();
@@ -41,12 +41,13 @@ public class BreakpointView extends JPanel {
            public void mousePressed(MouseEvent e)
            {
               int index = list.locationToIndex(e.getPoint());
-              if (index != -1) {
+              if (index != -1 && index == lastSelection) {
                  BreakpointCheckBox bp =
                 	 (BreakpointCheckBox)list.getModel().getElementAt(index);
                  bp.setSelected(!bp.isSelected());
                  repaint();
               }
+              lastSelection = index;
            }
         });
 		add(new JScrollPane(list), BorderLayout.CENTER);
