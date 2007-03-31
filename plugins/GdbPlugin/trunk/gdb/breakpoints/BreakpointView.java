@@ -1,6 +1,7 @@
 package gdb.breakpoints;
 
 import gdb.breakpoints.BreakpointList.BreakpointListListener;
+import gdb.core.Debugger;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -30,6 +31,8 @@ public class BreakpointView extends JPanel {
 	private DefaultListModel model;
 	private JButton editButton;
 	private JButton deleteButton;
+	private JButton gotoButton;
+	private JButton addWatchpointButton;
 	private int lastSelection = -1;
 	
 	public BreakpointView() {
@@ -75,6 +78,25 @@ public class BreakpointView extends JPanel {
 			}
 		});
 		buttons.add(deleteButton);
+		gotoButton = new JButton("Goto");
+		gotoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				BreakpointCheckBox cb =
+					(BreakpointCheckBox) list.getSelectedValue();
+				Breakpoint bp = cb.get();
+				Debugger.getInstance().getFrontEnd().goTo(
+						bp.getFile(), bp.getLine());
+			}
+		});
+		buttons.add(gotoButton);
+		addWatchpointButton = new JButton("Add watchpoint");
+		addWatchpointButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				WatchpointEditor ed = new WatchpointEditor();
+				ed.setVisible(true);
+			}
+		});
+		buttons.add(addWatchpointButton);
 		add(buttons, BorderLayout.NORTH);
 		
 		model = new DefaultListModel();
@@ -104,7 +126,9 @@ public class BreakpointView extends JPanel {
 		private Breakpoint bp;
 		
 		public BreakpointCheckBox(Breakpoint bpt) {
-			super(bpt.getFile() + ":" + bpt.getLine());
+			super(bpt.isBreakpoint() ?
+					bpt.getFile() + ":" + bpt.getLine() :
+					"On " + bpt.getWhat() + " " + bpt.getWhen());
 	      	bp = bpt;
 	      	setSelected(bp.isEnabled());
     	}

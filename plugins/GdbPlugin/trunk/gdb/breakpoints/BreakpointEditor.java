@@ -25,7 +25,7 @@ public class BreakpointEditor extends JDialog {
 	JCheckBox enabled;
 	
 	public BreakpointEditor(Breakpoint bp) {
-		super(jEdit.getActiveView(), true);
+		super(jEdit.getActiveView(), "Edit Breakpoint", true);
 		this.bp = bp;
 		setLayout(new GridLayout(0, 1));
 		String desc = "Breakpoint #" + bp.getNumber() + ": " +
