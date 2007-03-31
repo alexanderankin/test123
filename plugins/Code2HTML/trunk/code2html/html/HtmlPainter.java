@@ -23,6 +23,7 @@ import java.io.Writer;
 
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
@@ -42,7 +43,7 @@ import code2html.line.LineWrapper;
 public class HtmlPainter {
     private LineTabExpander expander;
     private HtmlGutter gutter;
-    private String nl = System.getProperty("line.separator");
+    private String nl = jEdit.getProperty("plugin.code2html.line.separator");
     private LinePosition position;
     private boolean showGutter;
     private HtmlStyle style;

@@ -18,6 +18,8 @@
  */
 package code2html.html;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  *  Manager class for the gutter when CSS mode in enabled
  *
@@ -25,7 +27,7 @@ package code2html.html;
  * @version    0.5
  */
 public class HtmlCssGutter extends HtmlGutter {
-    private String nl = System.getProperty("line.separator");
+    private String nl = jEdit.getProperty("plugin.code2html.line.separator");
 
 
     /**
@@ -78,13 +80,25 @@ public class HtmlCssGutter extends HtmlGutter {
     public String toCSS() {
         StringBuffer buf = new StringBuffer();
 
-        buf.append(".gutter {").append(nl)
-            .append("\tbackground: " + this.bgColor + ";").append(nl)
+        buf.append(".outerGutter{").append(nl)
+	        .append("\tborder-right: solid;").append(nl)
+	        .append("\tborder-right-color: #660066;").append(nl)
+	        .append("\tborder-right-width: 2;").append(nl)
+            .append("\tpadding-right:2px;").append(nl)
+	        .append("\tbackground: " + this.bgColor + ";").append(nl)
+            .append("\tline-height: 100%;").append(nl)
+            .append("}").append(nl)
+            .append(".gutter {").append(nl)
             .append("\tcolor: " + this.fgColor + ";").append(nl)
+            .append("\tfont-size: ")
+            .append(jEdit.getProperty("view.gutter.fontsize")).append(";")
+            .append(nl)
             .append("}").append(nl)
             .append(".gutterH {").append(nl)
-            .append("\tbackground: " + this.bgColor + ";").append(nl)
             .append("\tcolor: " + this.highlightColor + ";").append(nl)
+            .append("\tfont-size: ")
+            .append(jEdit.getProperty("view.gutter.fontsize")).append(";")
+            .append(nl)
             .append("}").append(nl);
 
         return buf.toString();
@@ -105,10 +119,11 @@ public class HtmlCssGutter extends HtmlGutter {
 
         String style = highlighted ? "gutterH" : "gutter";
 
-        buf.append("<span class=\"" + style + "\">")
-            .append(spacer)
+        buf.append("<span class=\"outerGutter\"> ")
+            .append("<span class=\"" + style + "\">")
+            .append(spacer.substring(1))
             .append(this.gutterBorder)
-            .append("</span>");
+            .append("</span></span>");
 
         return buf.toString();
     }
@@ -129,13 +144,13 @@ public class HtmlCssGutter extends HtmlGutter {
 
         String s = Integer.toString(lineNumber);
 
-        buf.append("<span class=\"" + style + "\">")
-            .append(spacer.substring(0, this.gutterSize - s.length()))
+        buf.append("<span class=\"outerGutter\"> ")
+            .append("<span class=\"" + style + "\">")
+            .append(spacer.substring(1, this.gutterSize - s.length()))
             .append(s)
-            .append(this.gutterBorder)
-            .append("</span>");
+            //.append(this.gutterBorder)
+            .append("</span></span>");
 
         return buf.toString();
     }
 }
-

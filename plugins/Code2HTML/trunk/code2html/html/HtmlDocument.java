@@ -153,7 +153,7 @@ public class HtmlDocument {
             out.write("<body>");
             out.write(this.lineSeparator);
             out.write("<pre>");
-            out.write("<span class=\"syntax0\">");
+            out.write("<span class=\"NULL\">");
         } else {
             out.write("<body ");
             out.write(jEdit.getProperty("options.code2html.body.html.value"));

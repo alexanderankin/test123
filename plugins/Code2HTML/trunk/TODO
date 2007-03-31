@@ -4,16 +4,23 @@
 --                          TODO for version 0.6                              --
 --------------------------------------------------------------------------------
 * Need to follow the @todo tags in several files
++ Add gutter font size to style sheet (view.gutter.fontsize)
++ change gutter object from span to something more line-expansive - nested span
 * Work out what the code does in obfuscated bits, no time ATM
 * Link th estandalone code with jEdit. It is already required to even start so
     it should be painless (probably... maybe... just a bit)
     * Code should at the very least be copied and exported (symlinked) from main
-        jEdit trunk.
+        jEdit trunk - better, require jedit.jar in ${CLASSPATH}.
+    * Make scripts to run the standalone Code2HTML command
 * Make better docs
-    * Include javadoc in help file
+    * Include javadoc in help file ?
     * prettyfy help file a bit
-* Check that I got rid of all hardcoded \n's
++ Check that I got rid of all hardcoded \n's - Firefox problem: \r\n is
+    interpreted as \n\n when inside <pre> tags. Hardcode \n's all over again!
+    + Better yet - put \n as a property in props file
 * Clean up code in html package
+    * Make abstract gutter class; style class & make {CSS/HTML}{Gutter/Style}
+        subclass it
 * Add ant target to reload plugin
 * Fix the <span class="some>word</span> <span class="some">after</span>
     duplication in generated code 

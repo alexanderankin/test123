@@ -38,7 +38,7 @@ options.code2html.pre.html.close= >
 code2html.use-css=true
 code2html.show-gutter=true
 code2html.wrap=0
-options.code2html.body.style.value=background: #ffffff
+options.code2html.body.style.value=\tbackground: #ffffff;
 options.code2html.pre.style.value=
 options.code2html.body.html.value=bgcolor="#ffffff"
 options.code2html.pre.html.value=
@@ -50,3 +50,6 @@ plugin.code2html.Code2HTMLPlugin.option-pane=code2html
 options.code2html.label=Code2HTML
 options.code2html.code=new code2html.Code2HTMLOptionPane();
 
+# Other properties
+plugin.code2html.line.separator=\n
+plugin.code2html.gutter.divider=|

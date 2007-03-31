@@ -105,6 +105,7 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
             new EtchedBorder(EtchedBorder.LOWERED),
             jEdit.getProperty("options.code2html.custom.styles.1")));
         this.customStylePanel.setPreferredSize(new Dimension(500, 500));
+        this.customStylePanel.setMinimumSize(new Dimension(300, 300));
         this.customStylePanel.setToolTipText(
             jEdit.getProperty("options.code2html.custom.styles.2"));
 
@@ -186,7 +187,12 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         this.customPRE.add(this.customPREHtml, BorderLayout.NORTH);
         this.customPRE.add(this.customPRECss, BorderLayout.CENTER);
 
-        addComponent(this.customStylePanel);
+        this.addComponent(this.customStylePanel);
+        
+        //Component c = this.get
+        
+        //this.getFrame().pack();
+        this.revalidate();
     }
 
 

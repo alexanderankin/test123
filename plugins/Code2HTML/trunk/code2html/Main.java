@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.syntax.ParserRule;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
@@ -116,7 +117,7 @@ public class Main {
                 style,
                 gutter,
                 "Code2HTML",
-                System.getProperty("line.separator"));
+                jEdit.getProperty("plugin.code2html.line.separator"));
 
             document.htmlOpen(writer);
 
