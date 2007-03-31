@@ -1668,6 +1668,9 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
               a=FieldDeclaration(m)
             |
               a=MethodDeclaration(m)
+            |
+              AnnotationTypeDeclaration(m)
+
           )
         |
           ";"   /// is this the trailing semi-colon??
@@ -3715,7 +3718,7 @@ void MemberValue():
 void  MemberValueArrayInitializer():
 {}
 {
-  "{" MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ] "}"
+  "{" (MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ])? "}"
 }
 
 
