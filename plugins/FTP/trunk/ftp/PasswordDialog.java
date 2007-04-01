@@ -34,11 +34,9 @@ import org.gjt.sp.util.Log;
 
 public class PasswordDialog extends EnhancedDialog implements ActionListener
 {
-	public PasswordDialog(Component comp,String title, String message)
+	public PasswordDialog(JFrame comp,String title, String message)
 	{
-		super(JOptionPane.getFrameForComponent(comp),
-			title,
-			true);
+		super(comp,title,true);
 		JPanel content = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
 		content.setBorder(new EmptyBorder(12,12,12,12));
