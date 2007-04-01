@@ -90,7 +90,8 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 					Object obj=vv.elementAt(ii);
 					if(obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry){
 						count++;
-						listing.add(createDirectoryEntry(path, (com.jcraft.jsch.ChannelSftp.LsEntry)obj));
+						com.jcraft.jsch.ChannelSftp.LsEntry entry = (com.jcraft.jsch.ChannelSftp.LsEntry)obj;
+						listing.add(createDirectoryEntry(entry.getFilename(), entry.getAttrs()));
 					}
 				}
 			}
@@ -105,11 +106,12 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
 		FtpVFS.FtpDirectoryEntry returnValue = null;
-		FtpVFS.FtpDirectoryEntry[] dir = listDirectory(path);
-		if (dir != null && dir.length == 1) {
-			returnValue = dir[0];
+		try {
+			SftpATTRS attrs = sftp.stat(path);
+			returnValue = createDirectoryEntry(path, attrs);
 			returnValue.setPath(path);
 			returnValue.setDeletePath(path);
+		} catch(SftpException e) {
 		}
 		return returnValue;
 	}
@@ -200,43 +202,9 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		return sftp.isConnected();
 	}
 	
-	public String resolveSymlink(String path, String[] name)
-	throws IOException
+	public String resolveSymlink(String path, String[] name) throws IOException
 	{
-		String returnValue;
-		try
-		{
-			returnValue = sftp.readlink(path);
-			if (!returnValue.startsWith("/"))
-			{
-				// relative path link
-				String resolved = path.substring(0,path.length()-name[0].length())+returnValue;
-				String[] parts = resolved.split("/");
-				returnValue = "";
-				Vector absoluteParts = new Vector();
-				for(int i = 0;i<parts.length;i++)
-				{
-					if (parts[i].length() == 0)
-						continue;
-					if (parts[i].equals("."))
-						continue;
-					if (parts[i].equals(".."))
-					{
-						if (absoluteParts.size()>0)
-							absoluteParts.remove(absoluteParts.size()-1);
-						continue;
-					}
-					absoluteParts.add(parts[i]);
-				}
-				for(int i=0;i<absoluteParts.size();i++)
-					returnValue += "/"+(String)absoluteParts.elementAt(i);
-			}
-		}
-		catch(SftpException e)
-		{
-			returnValue = null;
-		}
-		
+		String returnValue = path;
 		return returnValue;
 	}
 	
@@ -245,47 +213,23 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		sftp.disconnect();
 	}
 	
-	//private static FileAttributes DEFAULT_ATTRIBUTES;
-	//static
-	//{
-		//	ConfigurationLoader.setContextClassLoader(new JARClassLoader());
-		//	DEFAULT_ATTRIBUTES = new FileAttributes();
-		//	DEFAULT_ATTRIBUTES.setPermissions(new UnsignedInteger32(600));
-	//}
-	
 	private JSch client;
 	private ChannelSftp sftp;
 	private int keyAttempts = 0;
 	
 	private int symLinkDepth = 0;
-	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String path, com.jcraft.jsch.ChannelSftp.LsEntry file)
+	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String name, SftpATTRS attrs)
 	{
-		SftpATTRS attrs = file.getAttrs();
 		long length = attrs.getSize();
 		int permissions = attrs.getPermissions();
 		
 		// remove file mode bits from the permissions
 		permissions &= 0x1ff; // == binary 111111111
-		String name = file.getFilename();
 		int type;
 		if(attrs.isDir())
 			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-		else if(attrs.isLink()) {
+		else if(attrs.isLink())
 			type = FtpVFS.FtpDirectoryEntry.LINK;
-			try {
-				String resolved = resolveSymlink(path+"/"+name,new String[]{name});
-				if (resolved!=null)
-				{
-					SftpATTRS lattrs = sftp.lstat(resolved);
-					if (lattrs.isDir())
-						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-					else if (lattrs.isLink())
-						Log.log(Log.WARNING,this,path+"/"+name+" : will not follow more than 1 symlink");
-				}
-			} catch (IOException e) {
-			} catch (SftpException se) {
-			}
-		}
 		else
 			type = FtpVFS.FtpDirectoryEntry.FILE;
 		
