@@ -21,18 +21,17 @@
 -->
 
 <project name="FTP" default="build" basedir=".">
-	<property file="../build.properties"/>
-	<property file="build.properties"/>
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
     <property name="user-doc.xml" location = "users-guide.xml"/>
-    
 	
     <property name="javadoc.packagenames"	value="com.fooware.net.*" />
-	<property name="jar.name"  value="FTP.jar"/>
+    <property name="jar.name"  value="FTP.jar"/>
     <property name="compiler.source"        value="1.5" />
     <property name="compiler.target"        value="1.5" />
-	<property name="src.dir" value="."/>
-	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value=".."/>
 
     <import file="${build.support}/plugin-build.xml" />
     
