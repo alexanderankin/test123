@@ -153,6 +153,14 @@ You can close unused connections at any other time using the
    
 
  <itemizedlist>
+
+   <listitem><para> <emphasis role="bold">Version 0.9.1</emphasis>
+   Requires jEdit 4.3pre4 (Nicholas O'leary) </para>
+   <itemizedlist>
+   <listitem><para> Bugfix: unparented dialogs are now parented. </para></listitem>
+   <listitem><para> Bugfix: asking for passphrase more than once per session. </para></listitem>
+   <listitem><para> Remote symlinks work. </para></listitem>
+   </itemizedlist></listitem>
  
    <listitem><para> <emphasis role="bold">Version 0.9</emphasis>
    Requires jEdit 4.3pre4</para>
