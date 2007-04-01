@@ -20,9 +20,10 @@ package code2html;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 
-import code2html.html.HtmlCssGutter;
+import code2html.html.CSSGutter;
 import code2html.html.HtmlCssStyle;
-import code2html.html.HtmlGutter;
+import code2html.html.AbstractGutter;
+import code2html.html.HTMLGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
@@ -37,7 +38,7 @@ import code2html.line.LineWrapper;
  * @version    0.5
  */
 public class CommandLineConfig implements Config {
-    private HtmlGutter gutter = null;
+    private AbstractGutter gutter = null;
     private HtmlPainter painter = null;
     private HtmlStyle style = null;
     private LineTabExpander tabExpander = null;
@@ -71,14 +72,31 @@ public class CommandLineConfig implements Config {
                 "view.gutter.highlightColor", "#000000");
 
             if (args.useCSS) {
-                this.gutter = new HtmlCssGutter(
-                    bgColor, fgColor, highlightColor, args.highlightInterval);
+                this.gutter = new CSSGutter(
+                    bgColor,
+                    fgColor,
+                    highlightColor,
+                    ":",
+                    "    ",
+                    "10",
+                    args.highlightInterval,
+                    true,
+                    true);
             } else {
-                this.gutter = new HtmlGutter(
-                    bgColor, fgColor, highlightColor, args.highlightInterval);
+                this.gutter = new HTMLGutter(
+                    bgColor,
+                    fgColor,
+                    highlightColor,
+                    ":",
+                    "    ",
+                    "10",
+                    args.highlightInterval,
+                    true,
+                    true);
             }
 
-            this.gutter.setGutterSize(args.gutterSize);
+            // set in constructor
+            //this.gutter.setGutterSize(args.gutterSize);
         }
 
         this.tabExpander = new LineTabExpander(args.tabSize);
@@ -101,7 +119,7 @@ public class CommandLineConfig implements Config {
      *
      * @return    The gutter value
      */
-    public HtmlGutter getGutter() {
+    public AbstractGutter getGutter() {
         return this.gutter;
     }
 

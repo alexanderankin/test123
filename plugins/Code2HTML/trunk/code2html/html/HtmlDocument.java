@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
  * @todo       replace lineSeparator with System.getProperty(...)
  */
 public class HtmlDocument {
-    private HtmlGutter gutter;
+    private AbstractGutter gutter;
     private String lineSeparator;
     private HtmlStyle style;
     private SyntaxStyle[] syntaxStyles;
@@ -59,7 +59,7 @@ public class HtmlDocument {
                         String viewFgColor,
                         SyntaxStyle[] syntaxStyles,
                         HtmlStyle style,
-                        HtmlGutter gutter,
+                        AbstractGutter gutter,
                         String title,
                         String lineSeparator) {
         this.viewBgColor = viewBgColor;
@@ -128,7 +128,7 @@ public class HtmlDocument {
                 out.write(this.style.toCSS(i, this.syntaxStyles[i]));
             }
 
-            out.write((this.gutter != null) ? this.gutter.toCSS() : "");
+            out.write((this.gutter != null) ? this.gutter.getHeader() : "");
             out.write(jEdit.getProperty("options.code2html.body.style.open"));
             out.write(this.lineSeparator);
             out.write(jEdit.getProperty("options.code2html.body.style.value"));

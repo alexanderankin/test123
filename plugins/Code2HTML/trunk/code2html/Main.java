@@ -50,7 +50,7 @@ import com.microstar.xml.XmlParser;
 
 import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlDocument;
-import code2html.html.HtmlGutter;
+import code2html.html.AbstractGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
@@ -103,7 +103,7 @@ public class Main {
                                   Reader r,
                                   Writer w) {
         HtmlStyle style = config.getStyle();
-        HtmlGutter gutter = config.getGutter();
+        AbstractGutter gutter = config.getGutter();
         HtmlPainter painter = config.getPainter();
 
         try {
