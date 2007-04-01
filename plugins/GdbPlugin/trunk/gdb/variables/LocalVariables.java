@@ -12,7 +12,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
