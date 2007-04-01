@@ -10,19 +10,17 @@ import gdb.execution.ControlView;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
+import gdb.output.Console;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
 import gdb.variables.Watches;
 
-import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
@@ -42,13 +40,9 @@ public class Debugger implements DebuggerTool {
 
 	private boolean running = false;
 
-	// Program output
-	private static JPanel programOutputPanel = null;
-	private static JTextArea programOutputText = null;
-	// Gdb output
-	private static JPanel gdbOutputPanel = null;
-	private static JTextArea gdbOutputText = null;
 	// Views
+	private Console programOutput = null;
+	private Console gdbOutput = null;
 	private ControlView controlView = null;
 	private BreakpointView breakpointsPanel = null;
 	private LocalVariables localsPanel = null;
@@ -299,20 +293,15 @@ public class Debugger implements DebuggerTool {
 		return controlView;
 	}
 	public JPanel showProgramOutput(View view) {
-		if (programOutputPanel == null)	{
-			programOutputPanel = new JPanel(new BorderLayout());
-			programOutputText = new JTextArea();
-			programOutputPanel.add(new JScrollPane(programOutputText));
-		}
-		return programOutputPanel;
+		if (programOutput == null)
+			programOutput = new Console();
+		return programOutput;
 	}
 	public JPanel showGdbOutput(View view) {
-		if (gdbOutputPanel == null)	{
-			gdbOutputPanel = new JPanel(new BorderLayout());
-			gdbOutputText = new JTextArea();
-			gdbOutputPanel.add(new JScrollPane(gdbOutputText));
+		if (gdbOutput == null)	{
+			gdbOutput = new Console();
 		}
-		return gdbOutputPanel;
+		return gdbOutput;
 	}
 	public JPanel showBreakpoints(View view) {
 		if (breakpointsPanel == null)
@@ -341,15 +330,16 @@ public class Debugger implements DebuggerTool {
 	}
 	public void gdbRecord(String line)
 	{
-		if (gdbOutputText == null)
+		if (gdbOutput == null)
 			showGdbOutput(jEdit.getActiveView());
-		gdbOutputText.append(line);
+		gdbOutput.append(line);
 	}
 	public void programRecord(String line)
 	{
-		if (programOutputText == null)
+		System.out.println("Debugger.programRecord " + line);
+		if (programOutput == null)
 			showProgramOutput(jEdit.getActiveView());
-		programOutputText.append(line);
+		programOutput.append(line);
 	}
 	public static Debugger getInstance() {
 		if (debugger  == null)
