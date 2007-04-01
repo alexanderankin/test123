@@ -226,6 +226,11 @@ public class Debugger implements DebuggerTool {
 		JOptionPane.showMessageDialog(null, msg);
 	}
 
+	public void signalReceived(String signal) {
+		String msg = "Received signal: " + signal;
+		JOptionPane.showMessageDialog(null, msg);
+	}
+	
 	public void setFrontEnd(JEditFrontEnd frontEnd) {
 		this.frontEnd = frontEnd;
 	}
@@ -265,6 +270,9 @@ public class Debugger implements DebuggerTool {
 			} else if (reason.startsWith("exited")) {
 				System.err.println("Exited");
 				sessionEnded();
+			} else if (reason.startsWith("signal-received")) {
+				signalReceived(res.getStringValue("signal-meaning"));
+				commandManager.add(getCurrentPosition, new StoppedHandler());
 			} else {
 				commandManager.add(getCurrentPosition, new StoppedHandler());
 			}
