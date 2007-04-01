@@ -37,9 +37,6 @@ public class HTMLGutter extends AbstractGutter {
      *      the line number (if any)
      *@param  gutterFontSize     Font size of the gutter - DOESN'T WORK IN HTML
      *      MODE!
-     *@param  gutterBorderSize   The number of blank spaces before the
-     *      gutterBorder
-     *@param  gutterSize         Size of the gutter
      *@param  highlightInterval  The interval at which lines of the gutter get
      *      hilighted in a different colour
      *@param  showingNumbers     true when the line numbers should be printed
@@ -52,8 +49,6 @@ public class HTMLGutter extends AbstractGutter {
                       String gutterBorder,
                       String spacer,
                       String gutterFontSize,
-                      int gutterBorderSize,
-                      int gutterSize,
                       int highlightInterval,
                       boolean showingNumbers,
                       boolean showingGutter) {
@@ -63,8 +58,6 @@ public class HTMLGutter extends AbstractGutter {
             gutterBorder,
             spacer,
             gutterFontSize,
-            gutterBorderSize,
-            gutterSize,
             highlightInterval,
             showingNumbers,
             showingGutter);
@@ -111,7 +104,8 @@ public class HTMLGutter extends AbstractGutter {
         bufr.append(bufo.toString());
 
         if (isShowingNumbers()) {
-            bufr.append(getSpacer().substring(0, getGutterSize() - s.length()))
+            bufr.append(
+                getSpacer().substring(0, getSpacer().length() + 1 - s.length()))
                 .append(s);
         } else {
             bufr.append(getSpacer());
