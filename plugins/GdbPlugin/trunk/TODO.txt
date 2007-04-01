@@ -7,7 +7,8 @@ To do:
   + Skip count
   + Conditions
   + Watch points
-- Locals/Watches/Variables:
+--> Locals/Watches/Variables:
+  + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
   - Provide an action and a context menu item to change the currently selected
     variable (leafs only).

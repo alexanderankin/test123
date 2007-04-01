@@ -74,6 +74,19 @@ public class Watches extends JPanel {
 			}
 		});
 		tb.add(removeAll);
+		JButton modify = new JButton("Modify");
+		modify.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TreePath tp = tree.getSelectionPath();
+				if (tp == null)
+					return;
+				Object [] path = tp.getPath();
+				GdbVar v = (GdbVar)(path[1]);
+				if (v != null)
+					v.contextRequested();
+			}
+		});
+		tb.add(modify);
 		add(tb, BorderLayout.NORTH);
 		
 		tree = new JTree();
