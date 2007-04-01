@@ -6,14 +6,20 @@ import gdb.core.Parser.ResultHandler;
 import gdb.variables.GdbVar.ChangeListener;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 @SuppressWarnings("serial")
 public class LocalVariables extends JPanel {
@@ -24,6 +30,24 @@ public class LocalVariables extends JPanel {
 	
 	public LocalVariables() {
 		setLayout(new BorderLayout());
+		
+		JToolBar tb = new JToolBar();
+		tb.setFloatable(false);
+		JButton modify = new JButton("Modify");
+		modify.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TreePath tp = tree.getSelectionPath();
+				if (tp == null)
+					return;
+				Object [] path = tp.getPath();
+				GdbVar v = (GdbVar)(path[1]);
+				if (v != null)
+					v.contextRequested();
+			}
+		});
+		tb.add(modify);
+		add(tb, BorderLayout.NORTH);
+		
 		tree = new JTree();
 		root = new DefaultMutableTreeNode("Locals");
 		model = new DefaultTreeModel(root);
