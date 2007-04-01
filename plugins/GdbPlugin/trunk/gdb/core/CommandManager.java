@@ -79,6 +79,19 @@ public class CommandManager extends Thread {
 				new OutputStreamWriter(p.getOutputStream()));
 		this.parser = parser;
 	}
+	// Add a command to be executed next (before the other registered commands)
+	public void addNow(String cmd, ResultHandler handler) {
+		Integer cid = Integer.valueOf(id);
+		id++;
+		Command c = new Command(cid, cmd, handler);
+		synchronized(commands) {
+			commands.add(0, c);
+			commands.notify();
+		}
+	}
+	public void addNow(String cmd) {
+		addNow(cmd, null);
+	}
 	public void add(String cmd, ResultHandler handler) {
 		Integer cid = Integer.valueOf(id);
 		id++;

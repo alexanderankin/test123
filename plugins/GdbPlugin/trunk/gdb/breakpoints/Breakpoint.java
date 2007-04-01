@@ -82,13 +82,24 @@ public class Breakpoint {
 		view.getTextArea().getGutter().removeExtension(painter);
 	}
 	public void setEnabled(boolean enabled) {
+		if (this.enabled == enabled)
+			return;
 		this.enabled = enabled;
+		gdbSetEnabled(false);
+	}
+	private void gdbSetEnabled(boolean now) {
 		CommandManager commandManager = CommandManager.getInstance();
-		if (commandManager != null)
+		if (commandManager != null) {
+			String cmd = null;
 			if (enabled)
-				commandManager.add("-break-enable " + number);
+				cmd = "-break-enable " + number;
 			else
-				commandManager.add("-break-disable " + number);
+				cmd = "-break-disable " + number;
+			if (now)
+				commandManager.addNow(cmd);
+			else
+				commandManager.add(cmd);
+		}
 		// Update the painter
 		if (painter != null) {
 			removePainter();
@@ -110,31 +121,52 @@ public class Breakpoint {
 		// In case of delayed activation (e.g. breakpoint properties set
 		// prior to gdb invocation), this is the time to set the condition
 		// and skip count.
-		if (condition.length() > 0) {
-			setCondition(condition);
+		if (condition.length() > 0)
+			gdbSetCondition(true);
+		if (skipCount > 0)
+			gdbSetSkipCount(true);
+		// Breakpoint is always initially enabled
+		if (! enabled) {
+			gdbSetEnabled(true);
 		}
-		if (skipCount > 0) {
-			setSkipCount(skipCount);
-		}
-		setEnabled(enabled);
 	}
 	public int getNumber() {
 		return number;
 	}
 	public void setSkipCount(int count) {
-		CommandManager commandManager = CommandManager.getInstance();
-		if (commandManager != null)
-			commandManager.add("-break-after " + number + " " + count);
+		if (skipCount == count)
+			return;
 		skipCount = count;
+		gdbSetSkipCount(false);
+	}
+	private void gdbSetSkipCount(boolean now) {
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null) {
+			String cmd = "-break-after " + number + " " + skipCount;
+			if (now)
+				commandManager.addNow(cmd);
+			else
+				commandManager.add(cmd);
+		}
 	}
 	public int getSkipCount() {
 		return skipCount;
 	}
 	public void setCondition(String cond) {
-		CommandManager commandManager = CommandManager.getInstance();
-		if (commandManager != null)
-			commandManager.add("-break-condition " + number + " " + cond);
+		if (condition.equals(cond))
+			return;
 		condition = cond;
+		gdbSetCondition(false);
+	}
+	private void gdbSetCondition(boolean now) {
+		CommandManager commandManager = CommandManager.getInstance();
+		if (commandManager != null) {
+			String cmd = "-break-condition " + number + " " + condition;
+			if (now)
+				commandManager.addNow(cmd);
+			else
+				commandManager.add(cmd);
+		}
 	}
 	public String getCondition() {
 		return condition;
