@@ -90,7 +90,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 					Object obj=vv.elementAt(ii);
 					if(obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry){
 						count++;
-						listing.add(createDirectoryEntry((com.jcraft.jsch.ChannelSftp.LsEntry)obj));
+						listing.add(createDirectoryEntry(path, (com.jcraft.jsch.ChannelSftp.LsEntry)obj));
 					}
 				}
 			}
@@ -207,6 +207,30 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		try
 		{
 			returnValue = sftp.readlink(path);
+			if (!returnValue.startsWith("/"))
+			{
+				// relative path link
+				String resolved = path.substring(0,path.length()-name[0].length())+returnValue;
+				String[] parts = resolved.split("/");
+				returnValue = "";
+				Vector absoluteParts = new Vector();
+				for(int i = 0;i<parts.length;i++)
+				{
+					if (parts[i].length() == 0)
+						continue;
+					if (parts[i].equals("."))
+						continue;
+					if (parts[i].equals(".."))
+					{
+						if (absoluteParts.size()>0)
+							absoluteParts.remove(absoluteParts.size()-1);
+						continue;
+					}
+					absoluteParts.add(parts[i]);
+				}
+				for(int i=0;i<absoluteParts.size();i++)
+					returnValue += "/"+(String)absoluteParts.elementAt(i);
+			}
 		}
 		catch(SftpException e)
 		{
@@ -233,7 +257,8 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 	private ChannelSftp sftp;
 	private int keyAttempts = 0;
 	
-	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(com.jcraft.jsch.ChannelSftp.LsEntry file)
+	private int symLinkDepth = 0;
+	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String path, com.jcraft.jsch.ChannelSftp.LsEntry file)
 	{
 		SftpATTRS attrs = file.getAttrs();
 		long length = attrs.getSize();
@@ -245,8 +270,22 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		int type;
 		if(attrs.isDir())
 			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-		else if(attrs.isLink())
+		else if(attrs.isLink()) {
 			type = FtpVFS.FtpDirectoryEntry.LINK;
+			try {
+				String resolved = resolveSymlink(path+"/"+name,new String[]{name});
+				if (resolved!=null)
+				{
+					SftpATTRS lattrs = sftp.lstat(resolved);
+					if (lattrs.isDir())
+						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+					else if (lattrs.isLink())
+						Log.log(Log.WARNING,this,path+"/"+name+" : will not follow more than 1 symlink");
+				}
+			} catch (IOException e) {
+			} catch (SftpException se) {
+			}
+		}
 		else
 			type = FtpVFS.FtpDirectoryEntry.FILE;
 		
@@ -281,7 +320,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
 		if (passphrase==null || keyAttempts != 0)
 		{
-			PasswordDialog pd = new PasswordDialog(null,"Enter Passphrase for key",message);
+			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),"Enter Passphrase for key",message);
 			if (!pd.isOK())
 				return false;
 			passphrase = new String(pd.getPassword());
