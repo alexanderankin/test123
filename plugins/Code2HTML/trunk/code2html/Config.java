@@ -18,7 +18,7 @@
  */
 package code2html;
 
-import code2html.html.HtmlGutter;
+import code2html.html.AbstractGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 import code2html.line.LineTabExpander;
@@ -39,7 +39,7 @@ public interface Config {
      *
      * @return    The gutter value
      */
-    HtmlGutter getGutter();
+    AbstractGutter getGutter();
 
 
     /**

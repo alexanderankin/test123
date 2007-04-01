@@ -1,20 +1,20 @@
 /*
- * Code2HTML.java
- * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ *  Code2HTML.java
+ *  Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package code2html;
 
@@ -34,10 +34,10 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import code2html.html.AbstractGutter;
 
 import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlDocument;
-import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
@@ -45,13 +45,13 @@ import code2html.html.HtmlStyle;
 /**
  *  Starting point for the Code2HTML plugin
  *
- * @author     Andre Kaplan
- * @version    0.5
+ *@author     Andre Kaplan
+ *@version    0.5
  */
 public class Code2HTML {
     private Buffer buffer = null;
     private HtmlDocument document = null;
-    private HtmlGutter gutter = null;
+    private AbstractGutter gutter = null;
     private HtmlPainter painter = null;
     private Selection[] selection = null;
     private HtmlStyle style = null;
@@ -60,10 +60,10 @@ public class Code2HTML {
     /**
      *  Code2HTML Constructor
      *
-     * @param  buffer       The jEdit buffer we are converting
-     * @param  syntaxStyle  Collection of syntax tags with which we are to
+     *@param  buffer       The jEdit buffer we are converting
+     *@param  syntaxStyle  Collection of syntax tags with which we are to
      *      convert the buffer
-     * @param  selection    A selection from the buffer or null
+     *@param  selection    A selection from the buffer or null
      */
     public Code2HTML(Buffer buffer,
                      SyntaxStyle[] syntaxStyle,
@@ -71,7 +71,8 @@ public class Code2HTML {
         this.buffer = buffer;
         this.selection = selection;
 
-        Config config = new JEditConfig(syntaxStyle, buffer.getTabSize());
+        Config config = new JEditConfig(
+            syntaxStyle, buffer.getTabSize(), buffer);
 
         this.style = config.getStyle();
         this.gutter = config.getGutter();
@@ -91,7 +92,7 @@ public class Code2HTML {
     /**
      *  Gets the html buffer of the object
      *
-     * @return    The html buffer value
+     *@return    The html buffer value
      */
     public Buffer getHtmlBuffer() {
         String htmlString = this.getHtmlString();
@@ -111,7 +112,7 @@ public class Code2HTML {
     /**
      *  Gets the html string of the object
      *
-     * @return    The html string value
+     *@return    The html string value
      */
     public String getHtmlString() {
         int physicalFirst = 0;
@@ -138,11 +139,13 @@ public class Code2HTML {
                 // Sort selections by their start lines
                 Arrays.sort(selection, new SelectionStartLineComparator());
 
-                if (this.gutter != null) {
-                    this.gutter.setGutterSize(
-                        Integer.toString(last + 1).length());
-                }
-
+                // this should be passed to the constructor of AbstractGutter
+                /*
+                 *  if (this.gutter != null) {
+                 *  this.gutter.setGutterSize(
+                 *  Integer.toString(last + 1).length());
+                 *  }
+                 */
                 int lastLine = -1;
 
                 for (int i = 0; i < selection.length; i++) {
@@ -176,11 +179,11 @@ public class Code2HTML {
     /**
      *  Paints the actual HTML using the painter
      *
-     * @param  out              The stream to paint HTML code to
-     * @param  first            The first line of the buffer to paint
-     * @param  last             The last line of the buffer to paint
-     * @exception  IOException  In the extremely odd case that the writer can
-     *      not be written to
+     *@param  out              The stream to paint HTML code to
+     *@param  first            The first line of the buffer to paint
+     *@param  last             The last line of the buffer to paint
+     *@exception  IOException  In the extremely odd case that the writer can not
+     *      be written to
      */
     private void htmlText(Writer out, int first, int last) throws IOException {
         Segment line = new Segment();
@@ -207,16 +210,16 @@ public class Code2HTML {
     /**
      *  comparator for Selection start lines - to be passed to Arrays.sort
      *
-     * @author     Andre kaplan
-     * @version    0.5
+     *@author     Andre kaplan
+     *@version    0.5
      */
     private class SelectionStartLineComparator implements Comparator {
         /**
          *  Implements the compare method of java.util.Comparator
          *
-         * @param  obj1  The first object to compare
-         * @param  obj2  The second object to compare
-         * @return       1, 0, or -1 when obj1 &gt;, = or &lt; obj2 respectively
+         *@param  obj1  The first object to compare
+         *@param  obj2  The second object to compare
+         *@return       1, 0, or -1 when obj1 &gt;, = or &lt; obj2 respectively
          */
         public int compare(Object obj1, Object obj2) {
             Selection s1 = (Selection) obj1;

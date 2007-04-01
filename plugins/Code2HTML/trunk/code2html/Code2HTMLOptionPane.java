@@ -1,20 +1,20 @@
 /*
- * Code2HTMLOptionPane.java
- * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ *  Code2HTMLOptionPane.java
+ *  Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package code2html;
 
@@ -44,11 +44,12 @@ import org.gjt.sp.util.Log;
  *  This class displays properties to be set by the user in the jEdit -> Plugin
  *  Properties pane
  *
- * @author     Andre Kaplan
- * @version    0.5
+ *@author     Andre Kaplan
+ *@version    0.5
  */
 public class Code2HTMLOptionPane extends AbstractOptionPane {
     private JCheckBox ckShowGutter;
+    private JCheckBox ckShowNumbers;
     private JCheckBox ckUseCSS;
     private JPanel customBODY;
     private JPanel customBODYCss;
@@ -62,6 +63,7 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
     private JTextField customPREHtmlValue;
     private JPanel customStylePanel;
     private JTextField tfWrap;
+    private JTextField tfDivider;
 
 
     /**
@@ -78,15 +80,18 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
     public void _init() {
         this.ckUseCSS = new JCheckBox(
             jEdit.getProperty("options.code2html.use-css"),
-            jEdit.getBooleanProperty("code2html.use-css", false)
-            );
+            jEdit.getBooleanProperty("code2html.use-css", false));
         addComponent(this.ckUseCSS);
 
         this.ckShowGutter = new JCheckBox(
             jEdit.getProperty("options.code2html.show-gutter"),
-            jEdit.getBooleanProperty("code2html.show-gutter", false)
-            );
+            jEdit.getBooleanProperty("code2html.show-gutter", false));
         addComponent(this.ckShowGutter);
+
+        this.ckShowNumbers = new JCheckBox(
+            jEdit.getProperty("options.code2html.show-numbers"),
+            jEdit.getBooleanProperty("code2html.show-numbers", true));
+        addComponent(this.ckShowNumbers);
 
         this.tfWrap = new JTextField(4);
         int wrap = jEdit.getIntegerProperty("code2html.wrap", 0);
@@ -97,6 +102,13 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
 
         this.tfWrap.setText("" + wrap);
         addComponent(jEdit.getProperty("options.code2html.wrap"), this.tfWrap);
+
+        this.tfDivider = new JTextField(4);
+        String divider = jEdit.getProperty("code2html.gutter-divider", ":");
+        this.tfDivider.setText(divider);
+        addComponent(
+            jEdit.getProperty("options.code2html.gutter-divider"),
+            this.tfDivider);
 
         // Custom <pre> and <body>
         this.customStylePanel = new JPanel(new GridLayout(2, 1));
@@ -120,7 +132,7 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         this.customBODYCssValue = new JTextArea(
             jEdit.getProperty("options.code2html.body.style.value"), 10, 80);
         this.customBODYCssValue.addKeyListener(
-            new KeyAdapter() {  // prevent jEdit stealing the ENTER strokes
+            new KeyAdapter() {// prevent jEdit stealing the ENTER strokes
                 public void keyPressed(KeyEvent e) {
                     if (e.getKeyChar() == KeyEvent.VK_ENTER) {
                         customBODYCssValue.append(
@@ -135,7 +147,7 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         this.customPRECssValue = new JTextArea(
             jEdit.getProperty("options.code2html.pre.style.value"), 10, 80);
         this.customPRECssValue.addKeyListener(
-            new KeyAdapter() {  // prevent jEdit stealing the ENTER strokes
+            new KeyAdapter() {// prevent jEdit stealing the ENTER strokes
                 public void keyPressed(KeyEvent e) {
                     if (e.getKeyChar() == KeyEvent.VK_ENTER) {
                         customPRECssValue.append(
@@ -188,9 +200,9 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         this.customPRE.add(this.customPRECss, BorderLayout.CENTER);
 
         this.addComponent(this.customStylePanel);
-        
+
         //Component c = this.get
-        
+
         //this.getFrame().pack();
         this.revalidate();
     }
@@ -206,6 +218,9 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty("code2html.show-gutter",
             this.ckShowGutter.isSelected());
 
+        jEdit.setBooleanProperty("code2html.show-numbers",
+            this.ckShowNumbers.isSelected());
+
         int wrap = Code2HTMLOptionPane.getInteger(this.tfWrap.getText(), 0);
 
         if (wrap < 0) {
@@ -213,6 +228,8 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         }
 
         jEdit.setProperty("code2html.wrap", "" + wrap);
+
+        jEdit.setProperty("code2html.gutter-divider", this.tfDivider.getText());
 
         // save custom style tags values
         jEdit.setProperty("options.code2html.body.html.value",
@@ -229,13 +246,13 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
     /**
      *  Gets an integer from a string representation
      *
-     * @param  value       The string representing the value
-     * @param  defaultVal  A default should the conersion fail
-     * @return             The integer value of value
+     *@param  value       The string representing the value
+     *@param  defaultVal  A default should the conersion fail
+     *@return             The integer value of value
      */
     private static int getInteger(String value, int defaultVal) {
         int res = defaultVal;
-        
+
         if (value != null) {
             try {
                 res = Integer.parseInt(value);
@@ -244,7 +261,7 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
                     "NumberFormatException caught: [" + value + "]");
             }
         }
-        
+
         return res;
     }
 }

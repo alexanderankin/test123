@@ -42,7 +42,7 @@ import code2html.line.LineWrapper;
  */
 public class HtmlPainter {
     private LineTabExpander expander;
-    private HtmlGutter gutter;
+    private AbstractGutter gutter;
     private String nl = jEdit.getProperty("plugin.code2html.line.separator");
     private LinePosition position;
     private boolean showGutter;
@@ -63,7 +63,7 @@ public class HtmlPainter {
      */
     public HtmlPainter(SyntaxStyle[] syntaxStyles,
                        HtmlStyle style,
-                       HtmlGutter gutter,
+                       AbstractGutter gutter,
                        LineTabExpander expander,
                        LineWrapper wrapper) {
         this.syntaxStyles = syntaxStyles;
@@ -111,7 +111,7 @@ public class HtmlPainter {
                                SyntaxToken tokens) {
         try {
             if (this.showGutter) {
-                out.write(this.gutter.toHTML(lineNumber));
+                out.write(this.gutter.getLine(lineNumber));
             }
 
             int pos = this.position.getPos();
@@ -126,7 +126,7 @@ public class HtmlPainter {
                 if (pos > 0 && (pos % this.wrap) == 0) {
                     out.write(nl);
                     if (this.showGutter) {
-                        out.write(this.gutter.toEmptyHTML(lineNumber));
+                        out.write(this.gutter.getLine(lineNumber));
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class HtmlPainter {
                         out.write(nl);
 
                         if (this.showGutter) {
-                            out.write(this.gutter.toEmptyHTML(lineNumber));
+                            out.write(this.gutter.getLine(lineNumber));
                         }
                     }
 
@@ -166,7 +166,7 @@ public class HtmlPainter {
                                 SyntaxToken tokens) {
         try {
             if (this.showGutter) {
-                out.write(this.gutter.toHTML(lineNumber));
+                out.write(this.gutter.getLine(lineNumber));
             }
         } catch (IOException ioe) {}
 
@@ -195,7 +195,7 @@ public class HtmlPainter {
                         out.write(nl);
 
                         if (this.showGutter) {
-                            out.write(this.gutter.toEmptyHTML(lineNumber));
+                            out.write(this.gutter.getLine(lineNumber));
                         }
                     }
                 }
@@ -216,7 +216,7 @@ public class HtmlPainter {
                             out.write(nl);
 
                             if (this.showGutter) {
-                                out.write(this.gutter.toEmptyHTML(lineNumber));
+                                out.write(this.gutter.getLine(lineNumber));
                             }
                         }
 

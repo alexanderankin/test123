@@ -22,7 +22,9 @@ code2html.current-selection.label=HTMLize current selection
 options.code2html.label=Code2HTML
 options.code2html.use-css=Use CSS
 options.code2html.show-gutter=Show gutter
+options.code2html.show-numbers=Show line numbers
 options.code2html.wrap=Wrap at column (0 for no wrapping):
+options.code2html.gutter-divider=Char to use as border divider (HTML only):
 options.code2html.custom.styles.1=Set custom styles for the output
 options.code2html.custom.styles.2=These two tags enclose all of your code.
 options.code2html.body.style.open=body {
@@ -37,6 +39,8 @@ options.code2html.pre.html.close= >
 # Option Pane values
 code2html.use-css=true
 code2html.show-gutter=true
+code2html.show-numbers=true
+code2html.gutter-divider=:
 code2html.wrap=0
 options.code2html.body.style.value=\tbackground: #ffffff;
 options.code2html.pre.style.value=
@@ -52,4 +56,4 @@ options.code2html.code=new code2html.Code2HTMLOptionPane();
 
 # Other properties
 plugin.code2html.line.separator=\n
-plugin.code2html.gutter.divider=|
+
