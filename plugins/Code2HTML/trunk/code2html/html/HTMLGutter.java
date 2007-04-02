@@ -106,7 +106,10 @@ public class HTMLGutter extends AbstractGutter {
         bufc.insert(0, "</font>");
         bufr.append(bufo.toString());
 
-        if (isShowingNumbers()) {
+        
+        if(lineNumber == WRAPPED_LINE){
+            bufr.append(getSpacer()).append(" ");
+        }else if (isShowingNumbers()) {
             bufr.append(
                 getSpacer().substring(0, getSpacer().length() + 1 - s.length()))
                 .append(s);
