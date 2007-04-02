@@ -22,7 +22,7 @@ public class Console extends JPanel {
 		JButton clear = new JButton("Clear");
 		clear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				textarea.setText("");
+				clear();
 			}
 		});
 		tb.add(clear);
@@ -32,5 +32,8 @@ public class Console extends JPanel {
 	}
 	public synchronized void append(String s) {
 		textarea.append(s);
+	}
+	public void clear() {
+		textarea.setText("");
 	}
 }

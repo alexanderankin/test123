@@ -111,6 +111,10 @@ public class Debugger implements DebuggerTool {
 	public void start() {
 		LaunchConfiguration currentConfig =
 			LaunchConfigurationManager.getInstance().getDefault();
+		if (programOutput != null)
+			programOutput.clear();
+		if (gdbOutput != null)
+			gdbOutput.clear();
 		debugger.start(currentConfig.getProgram(),
 				currentConfig.getArguments(),
 				currentConfig.getDirectory(),
