@@ -18,6 +18,7 @@ public class Parser extends Thread {
 
 	Debugger debugger;
 	private BufferedReader stdInput;
+	private BufferedReader stdError;
 	private Vector<ResultHandler> resultHandlers = new Vector<ResultHandler>();
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
@@ -167,6 +168,8 @@ public class Parser extends Thread {
 		this.debugger = debugger;
         stdInput = new BufferedReader(new 
                 InputStreamReader(gdbProcess.getInputStream()));
+        stdError = new BufferedReader(new 
+                InputStreamReader(gdbProcess.getErrorStream()));
 	}
 	
 	public void addResultHandler(ResultHandler rh)
@@ -253,6 +256,19 @@ public class Parser extends Thread {
 	@Override
 	public void run() {
 		String line;
+		Thread errThread = new Thread() {
+			public void run() {
+				String line;
+				try {
+					while ((line=stdError.readLine()) != null)
+						debugger.programError(line + "\n");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		errThread.start();
 		try {
 			while ((line=stdInput.readLine()) != null)
 			{

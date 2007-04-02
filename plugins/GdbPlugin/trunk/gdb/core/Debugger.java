@@ -334,9 +334,13 @@ public class Debugger implements DebuggerTool {
 			showGdbOutput(jEdit.getActiveView());
 		gdbOutput.append(line);
 	}
+	public void programError(String line) {
+		if (programOutput == null)
+			showProgramOutput(jEdit.getActiveView());
+		programOutput.append(line);
+	}
 	public void programRecord(String line)
 	{
-		System.out.println("Debugger.programRecord " + line);
 		if (programOutput == null)
 			showProgramOutput(jEdit.getActiveView());
 		programOutput.append(line);

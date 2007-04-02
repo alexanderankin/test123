@@ -30,7 +30,7 @@ public class Console extends JPanel {
 		textarea = new JTextArea();
 		add(new JScrollPane(textarea), BorderLayout.CENTER);
 	}
-	public void append(String s) {
+	public synchronized void append(String s) {
 		textarea.append(s);
 	}
 }
