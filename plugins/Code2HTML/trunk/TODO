@@ -16,7 +16,7 @@
     * prettyfy help file a bit
 + Check that I got rid of all hardcoded \n's - Firefox problem: \r\n is
 +---interpreted as \n\n when inside <pre> tags. Hardcode \n's all over again!
-    + Put \n as a property in props file
+    * Put \n as a property in props file -> remove and hardcode
 * Clean up code in html package
     + Make abstract gutter class & make {CSS/HTML}Gutter subclass it
     + Make abstract style class & make {CSS/HTML}Style subclass it
@@ -26,3 +26,4 @@
 + Add option to not show line numbers
 + Add option to set divider string (:)
 * Add option to set base of gutter numbering to something other than decimal
++ Fix wrapping (line numbers)

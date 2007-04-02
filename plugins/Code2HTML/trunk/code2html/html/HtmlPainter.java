@@ -43,10 +43,10 @@ import code2html.line.LineWrapper;
 public class HtmlPainter {
     private LineTabExpander expander;
     private AbstractGutter gutter;
-    private String nl = jEdit.getProperty("plugin.code2html.line.separator");
     private LinePosition position;
     private boolean showGutter;
     private AbstractStyle style;
+    private String nl = "\n";
     private SyntaxStyle[] syntaxStyles;
     private int wrap;
     private LineWrapper wrapper;
@@ -126,7 +126,7 @@ public class HtmlPainter {
                 if (pos > 0 && (pos % this.wrap) == 0) {
                     out.write(nl);
                     if (this.showGutter) {
-                        out.write(this.gutter.getLine(lineNumber));
+                        out.write(this.gutter.getLine(AbstractGutter.WRAPPED_LINE));//lineNumber));
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class HtmlPainter {
                         out.write(nl);
 
                         if (this.showGutter) {
-                            out.write(this.gutter.getLine(lineNumber));
+                            out.write(this.gutter.getLine(AbstractGutter.WRAPPED_LINE));//lineNumber));
                         }
                     }
 
@@ -195,7 +195,7 @@ public class HtmlPainter {
                         out.write(nl);
 
                         if (this.showGutter) {
-                            out.write(this.gutter.getLine(lineNumber));
+                            out.write(this.gutter.getLine(AbstractGutter.WRAPPED_LINE));//lineNumber));
                         }
                     }
                 }
@@ -216,7 +216,7 @@ public class HtmlPainter {
                             out.write(nl);
 
                             if (this.showGutter) {
-                                out.write(this.gutter.getLine(lineNumber));
+                                out.write(this.gutter.getLine(AbstractGutter.WRAPPED_LINE));//lineNumber));
                             }
                         }
 

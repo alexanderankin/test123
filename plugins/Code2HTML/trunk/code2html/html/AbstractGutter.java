@@ -34,7 +34,11 @@ public abstract class AbstractGutter {
     private int highlightInterval;
     private boolean showingNumbers;
     private boolean showingGutter;
-
+    /**
+     *  Use this as line number when wrapping so that the number doesn't show in
+     *  the output HTML
+     */
+    public static final int WRAPPED_LINE = -1;
 
 
     /**
