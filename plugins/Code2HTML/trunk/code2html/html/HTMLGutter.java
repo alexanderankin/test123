@@ -19,7 +19,10 @@
 package code2html.html;
 
 /**
- *@author     dsm
+ *  This object defines the way the gutter will look in a generated document
+ *  using HTML FONT tags
+ *
+ *@author     dsm - Using large portions of code from Andre Kaplan
  *@version    0.1
  */
 public class HTMLGutter extends AbstractGutter {

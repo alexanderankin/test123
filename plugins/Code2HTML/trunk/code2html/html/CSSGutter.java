@@ -19,7 +19,10 @@
 package code2html.html;
 
 /**
- *@author     dsm
+ *  This object defines the way the gutter will look in a generated document
+ *  using CSS stylesheets
+ *
+ *@author     dsm - Using large portions of code from Andre Kaplan
  *@version    0.1
  */
 public class CSSGutter extends AbstractGutter {
@@ -35,7 +38,6 @@ public class CSSGutter extends AbstractGutter {
      *@param  spacer             Spacer string (empty spaces) to print before
      *      the line number (if any)
      *@param  gutterFontSize     Font size of the gutter
-     *@param  gutterSize         Size of the gutter
      *@param  highlightInterval  The interval at which lines of the gutter get
      *      hilighted in a different colour
      *@param  showingNumbers     true when the line numbers should be printed
