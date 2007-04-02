@@ -20,7 +20,7 @@ package code2html;
 
 import code2html.html.AbstractGutter;
 import code2html.html.HtmlPainter;
-import code2html.html.HtmlStyle;
+import code2html.html.AbstractStyle;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
 
@@ -47,7 +47,7 @@ public interface Config {
      *
      * @return    The style value
      */
-    HtmlStyle getStyle();
+    AbstractStyle getStyle();
 
 
     /**

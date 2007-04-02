@@ -1,20 +1,20 @@
 /*
- * HtmlPainter.java
- * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ *  HtmlPainter.java
+ *  Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package code2html.html;
 
@@ -37,8 +37,8 @@ import code2html.line.LineWrapper;
 /**
  *  Managing class used to paint the buffer
  *
- * @author     Andre Kaplan
- * @version    0.5
+ *@author     Andre Kaplan
+ *@version    0.5
  */
 public class HtmlPainter {
     private LineTabExpander expander;
@@ -46,7 +46,7 @@ public class HtmlPainter {
     private String nl = jEdit.getProperty("plugin.code2html.line.separator");
     private LinePosition position;
     private boolean showGutter;
-    private HtmlStyle style;
+    private AbstractStyle style;
     private SyntaxStyle[] syntaxStyles;
     private int wrap;
     private LineWrapper wrapper;
@@ -55,14 +55,14 @@ public class HtmlPainter {
     /**
      *  HtmlPainter Constructor
      *
-     * @param  syntaxStyles  A list of styles to be used
-     * @param  style         The HTML style
-     * @param  gutter        The gutter
-     * @param  expander      The tab expander
-     * @param  wrapper       The line wrapper
+     *@param  syntaxStyles  A list of styles to be used
+     *@param  style         The HTML style
+     *@param  gutter        The gutter
+     *@param  expander      The tab expander
+     *@param  wrapper       The line wrapper
      */
     public HtmlPainter(SyntaxStyle[] syntaxStyles,
-                       HtmlStyle style,
+                       AbstractStyle style,
                        AbstractGutter gutter,
                        LineTabExpander expander,
                        LineWrapper wrapper) {
@@ -80,7 +80,7 @@ public class HtmlPainter {
     /**
      *  Sets the pos of the object
      *
-     * @param  pos  The new pos value
+     *@param  pos  The new pos value
      */
     public void setPos(int pos) {
         this.position.setPos(pos);
@@ -90,7 +90,7 @@ public class HtmlPainter {
     /**
      *  Gets the syntax styles of the object
      *
-     * @return    The syntax styles value
+     *@return    The syntax styles value
      */
     public SyntaxStyle[] getSyntaxStyles() {
         return this.syntaxStyles;
@@ -100,10 +100,10 @@ public class HtmlPainter {
     /**
      *  Paints a plain line (i.e. in HTML, no CSS)
      *
-     * @param  out         The writer we are to paint to
-     * @param  lineNumber  The number of the line
-     * @param  line        The text of the line
-     * @param  tokens      The tokens for the line
+     *@param  out         The writer we are to paint to
+     *@param  lineNumber  The number of the line
+     *@param  line        The text of the line
+     *@param  tokens      The tokens for the line
      */
     public void paintPlainLine(Writer out,
                                int lineNumber,
@@ -154,11 +154,11 @@ public class HtmlPainter {
     /**
      *  Paints a line with CSS hilighting
      *
-     * @param  out         The writer we are to write to
-     * @param  lineNumber  The number of the line being painted
-     * @param  line        The text of the line
-     * @param  tokens      The tokens representing the line
-     * @todo               fix for(;;) loop
+     *@param  out         The writer we are to write to
+     *@param  lineNumber  The number of the line being painted
+     *@param  line        The text of the line
+     *@param  tokens      The tokens representing the line
+     *@todo               fix for(;;) loop
      */
     public void paintSyntaxLine(Writer out,
                                 int lineNumber,
@@ -206,7 +206,7 @@ public class HtmlPainter {
                     if (id == Token.NULL) {
                         out.write(text);
                     } else {
-                        out.write(this.style.toHTML(id, this.syntaxStyles[id], text));
+                        out.write(this.style.getToken(id, this.syntaxStyles[id], text));
                     }
                 } else {
                     String text;
@@ -226,7 +226,7 @@ public class HtmlPainter {
                         if (id == Token.NULL) {
                             out.write(text);
                         } else {
-                            out.write(this.style.toHTML(id, this.syntaxStyles[id], text));
+                            out.write(this.style.getToken(id, this.syntaxStyles[id], text));
                         }
                     }
                 }

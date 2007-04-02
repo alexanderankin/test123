@@ -48,11 +48,11 @@ import org.gjt.sp.util.Log;
 import com.microstar.xml.XmlException;
 import com.microstar.xml.XmlParser;
 
-import code2html.html.HtmlCssStyle;
+import code2html.html.CSSStyle;
 import code2html.html.HtmlDocument;
 import code2html.html.AbstractGutter;
 import code2html.html.HtmlPainter;
-import code2html.html.HtmlStyle;
+import code2html.html.AbstractStyle;
 
 import code2html.syntax.ParserRuleSet;
 import code2html.syntax.TokenMarker;
@@ -102,7 +102,7 @@ public class Main {
                                   TokenMarker tokenMarker,
                                   Reader r,
                                   Writer w) {
-        HtmlStyle style = config.getStyle();
+        AbstractStyle style = config.getStyle();
         AbstractGutter gutter = config.getGutter();
         HtmlPainter painter = config.getPainter();
 
