@@ -1777,7 +1777,6 @@ VariableDeclarator VariableDeclaratorId():
         error_skipto(SEMICOLON);
     }
     {
-        System.out.println("+++++ t is null: " + (t == null ? "true" : "false"));
         VariableDeclarator tn = new VariableDeclarator(t.image);
         tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
         tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
@@ -1945,23 +1944,19 @@ Parameter FormalParameter():
     TigerNode n;
     Type type_a = null;
     Token t = null;
+    Modifier m = null;
 }
 {
     try {
       (
-       [
-        Annotation()
-       ]
-       [
-        t="final"
+        m=Modifiers()
         {
-            param.setFinal(true);
-            param.setStartLocation(getLocation(t));
+            if (m != null) {
+                param.setFinal(ModifierSet.isFinal(m.modifiers));
+                param.setStartLocation(getLocation(m));
+            }
         }
-       ]
-       [
-        Annotation()    // JLS 8.4.1
-       ]
+
        type_a = Type()
        { param.setType(type_a); }
        [
