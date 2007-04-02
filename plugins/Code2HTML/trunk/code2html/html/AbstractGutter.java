@@ -82,7 +82,7 @@ public abstract class AbstractGutter {
      *@param  size  THe size of the spacer
      *@return       The spacer for value
      */
-    public static String getSpacerFor(int size) {
+    public static synchronized String getSpacerFor(int size) {
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < size; i++) {
@@ -189,7 +189,7 @@ public abstract class AbstractGutter {
      *@return    A String representing the Object
      */
     public String toString() {
-        return new StringBuffer(getClass().toString())
+        return new StringBuffer(getClass().getName())
             .append("{")
             .append("bgColor:").append(bgColor)
             .append(";fgColor:").append(fgColor)
