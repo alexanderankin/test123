@@ -468,6 +468,7 @@ public class JavaCompletionFinder {
      * @param filename the filename of the buffer
      */
     public Class getClassForType( String type, CUNode cu, String filename ) {
+        ///System.out.println("+++++ type = " + type);
         // check in same package
         String packageName = cu.getPackageName();
         if ( packageName != null ) {
@@ -518,13 +519,6 @@ public class JavaCompletionFinder {
             className = Locator.getInstance().getRuntimeClassName( type );
             c = validateClassName( className, type, filename );
         }
-
-        if ( c != null ) {
-            //System.out.println( "///// found class " + c.getName() + " for type " + type );
-        }
-        else {
-            //System.out.println( "\\\\\\\\\\ did not find class for type " + type );
-        }
         return c;
     }
 
@@ -547,7 +541,6 @@ public class JavaCompletionFinder {
         if (filename == null)
             return null;
         String project_name = PVHelper.getProjectNameForFile( filename );
-        //System.out.println( ">>>>> project_name = " + project_name );
         Class c = null;
         if ( project_name != null ) {
             try {

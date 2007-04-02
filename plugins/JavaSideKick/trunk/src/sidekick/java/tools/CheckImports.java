@@ -3,23 +3,18 @@ package sidekick.java.tools;
 import java.util.*;
 import sidekick.java.*;
 import sidekick.java.node.*;
-import sidekick.java.util.*;
 import sidekick.java.classloader.*;
-import javax.swing.SwingUtilities;
 import errorlist.*;
 import org.gjt.sp.jedit.*;
-
 
 
 public class CheckImports {
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
     private JavaCompletionFinder finder = new JavaCompletionFinder();
     private AntClassLoader loader = null;
-    
+
     // find the definition of the asset at the given position
-    public void findDefinition(Buffer buffer, int caret_position) {
-           
-    }
+    public void findDefinition( Buffer buffer, int caret_position ) {}
 
     /**
      * This method will parse the given buffer prior to checking the imports.
@@ -27,7 +22,7 @@ public class CheckImports {
      * imports and unused imports (that is, imports that are listed, but no classes
      * from that import is actually used in the java file).
      * @param buffer the buffer containing the java file to check.  The filename
-     * of the file in the buffer must end with ".java" or the file won't be 
+     * of the file in the buffer must end with ".java" or the file won't be
      * checked.
      */
     public void checkImports( final Buffer buffer ) {
@@ -39,10 +34,10 @@ public class CheckImports {
 
         JavaParser parser = new JavaParser();
         CUNode cu = parser.parse( buffer );
-        cu.setFilename(buffer.getPath());
-        checkImports(cu);
+        cu.setFilename( buffer.getPath() );
+        checkImports( cu );
     }
-    
+
     /**
      * This method assumes the given CUNode is from a recent parse. Assumes
      * CUNode.getFilename won't return null.
@@ -50,37 +45,37 @@ public class CheckImports {
      * imports and unused imports (that is, imports that are listed, but no classes
      * from that import is actually used in the java file).
      * @param buffer the buffer containing the java file to check.  The filename
-     * of the file in the buffer must end with ".java" or the file won't be 
+     * of the file in the buffer must end with ".java" or the file won't be
      * checked.
      */
-    public void checkImports(CUNode cunode) {
+    public void checkImports( CUNode cunode ) {
+        if ( cunode == null ) {
+            return ;
+        }
+
         final CUNode cu = cunode;
         final String filename = cu.getFilename();
         final List imports = cu.getImportNodes();
         if ( imports == null ) {
             return ;    // nothing to check
         }
-        SwingUtilities.invokeLater( new Runnable() {
+        Thread checker = new Thread() {
                     public void run() {
                         long start_time = new Date().getTime();
                         boolean hadDups = checkDuplicateImports( imports, filename );
-                        if ( PVHelper.isProjectViewerAvailable() ) {
-                            String projectName = PVHelper.getProjectNameForFile( filename );
-                            Path path = PVHelper.getClassPathForProject( projectName );
-                            loader = new AntClassLoader( path );
-                        }
                         boolean hadUnused = checkUnusedImports( cu, imports, filename );
                         long end_time = new Date().getTime();
                         long time = end_time - start_time;
-                        if (!hadDups && !hadUnused) {
-                            jEdit.getActiveView().getStatus().setMessage("Imports okay, " + time + "ms.");   
+                        if ( !hadDups && !hadUnused ) {
+                            jEdit.getActiveView().getStatus().setMessage( "Imports okay, " + time + "ms." );
                         }
                         else {
-                            jEdit.getActiveView().getStatus().setMessage("Imports had errors, " + time + "ms.");
+                            jEdit.getActiveView().getStatus().setMessage( "Imports had errors, " + time + "ms." );
                         }
                     }
-                }
-                                  );
+                };
+        checker.setPriority( Thread.MIN_PRIORITY );
+        checker.start();
     }
 
     private boolean checkDuplicateImports( List imports, String filename ) {
@@ -126,7 +121,6 @@ public class CheckImports {
         }
         if ( imports.size() > 0 ) {
             hadUnused = true;
-            List original_imports = cu.getImports();
             for ( Iterator it = imports.iterator(); it.hasNext(); ) {
                 ImportNode in = ( ImportNode ) it.next();
                 Range range = new Range( in.getStartLocation(), in.getEndLocation() );
@@ -143,21 +137,27 @@ public class CheckImports {
         Class c = null;
         String type = null;
         switch ( child.getOrdinal() ) {
+            case TigerNode.COMPILATION_UNIT:
+                break;
             case TigerNode.CLASS:
                 type = child.getName();
-                c = finder.getClassForType( type, cu, filename );
+                if ( type != null && type.length() > 0 )
+                    c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.EXTENDS:
             case TigerNode.IMPLEMENTS:
                 type = child.getName();
-                c = finder.getClassForType( type, cu, filename );
+                if ( type != null && type.length() > 0 )
+                    c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.PRIMARY_EXPRESSION:
                 type = child.getName();
-                if (type.indexOf(".") > -1) {
-                    type = type.substring(0, type.indexOf("."));   
+                ///System.out.println("===== type = " + type + ", " + child.toString());
+                if ( type.indexOf( "." ) > -1 ) {
+                    type = type.substring( 0, type.indexOf( "." ) );
                 }
-                c = finder.getClassForType( type, cu, filename );
+                if ( type != null && type.length() > 0 )
+                    c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.CONSTRUCTOR:
             case TigerNode.METHOD:
@@ -182,27 +182,32 @@ public class CheckImports {
             case TigerNode.VARIABLE:
                 FieldNode fn = ( FieldNode ) child;
                 if ( fn.isPrimitive() )
-                    return;     // don't need to do anything with primitives
+                    return ;     // don't need to do anything with primitives
                 type = fn.getType();
-                c = finder.getClassForType( type, cu, filename );
+                if ( type != null && type.length() > 0 )
+                    c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.TYPE:
-                if (((Type)child).isVoid) {
-                    return;     // don't need to do anything with void
-                }   
+                if ( ( ( Type ) child ).isVoid ) {
+                    return ;     // don't need to do anything with void
+                }
                 type = ( ( Type ) child ).getName();
-                c = finder.getClassForType( type, cu, filename );
+                if ( type != null && type.length() > 0 )
+                    c = finder.getClassForType( type, cu, filename );
                 break;
             default:
                 type = child.getType();
-                if ( type != null ) {
+                //if ("true".equals(jEdit.getProperty("javasidekick.dump"))) {
+                //    System.out.println( "+++++ default, type = " + type + ", classname = " + child.getClass().getName() + ", " + child.toString() );
+                //}
+                if ( type != null && type.length() > 0 )
                     c = finder.getClassForType( type, cu, filename );
-                }
                 break;
         }
         if ( c != null ) {
-            String package_name = c.getPackage().getName();
-            checked.add( package_name + "." + type );
+            type = c.getPackage().getName() + "." + type;
+            child.setFullyQualifiedTypeName( type );
+            checked.add( type );
         }
         if ( child.getChildren() != null ) {
             for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
