@@ -1771,13 +1771,13 @@ VariableDeclarator VariableDeclaratorId():
 }
 {
     try {
-
         t=<IDENTIFIER> ( "[" "]" )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
+        System.out.println("+++++ t is null: " + (t == null ? "true" : "false"));
         VariableDeclarator tn = new VariableDeclarator(t.image);
         tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
         tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
@@ -1877,7 +1877,7 @@ TigerNode MethodDeclaration(Modifier m):
             node.setEndLocation(block.getEndLocation());
         }
         else {
-            throw new RuntimeException("no end to method node: " + (m_node == null ? "unknown" : m_node.getName()));
+            ///throw new RuntimeException("no end to method node: " + (m_node == null ? "unknown" : m_node.getName()));
         }
         results.incMethodCount();
         return node;
@@ -1950,12 +1950,16 @@ Parameter FormalParameter():
     try {
       (
        [
+        Annotation()
+       ]
+       [
         t="final"
         {
             param.setFinal(true);
             param.setStartLocation(getLocation(t));
         }
-        |
+       ]
+       [
         Annotation()    // JLS 8.4.1
        ]
        type_a = Type()
@@ -1966,10 +1970,12 @@ Parameter FormalParameter():
        ]
        n = VariableDeclaratorId()
        {
-           param.setName(n.getName());
-           if (t == null)
-               param.setStartLocation(n.getStartLocation());
-           param.setEndLocation(n.getEndLocation());
+           if (n != null ) {
+               param.setName(n.getName());
+               if (t == null)
+                   param.setStartLocation(n.getStartLocation());
+               param.setEndLocation(n.getEndLocation());
+           }
        }
       )
     }
