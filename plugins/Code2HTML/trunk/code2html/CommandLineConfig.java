@@ -20,12 +20,13 @@ package code2html;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import code2html.html.AbstractGutter;
+import code2html.html.AbstractStyle;
 
 import code2html.html.CSSGutter;
+import code2html.html.CSSStyle;
 import code2html.html.HTMLGutter;
-import code2html.html.HtmlCssStyle;
+import code2html.html.HTMLStyle;
 import code2html.html.HtmlPainter;
-import code2html.html.HtmlStyle;
 
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
@@ -40,7 +41,7 @@ import code2html.line.LineWrapper;
 public class CommandLineConfig implements Config {
     private AbstractGutter gutter = null;
     private HtmlPainter painter = null;
-    private HtmlStyle style = null;
+    private AbstractStyle style = null;
     private LineTabExpander tabExpander = null;
     private LineWrapper wrapper = null;
 
@@ -54,11 +55,10 @@ public class CommandLineConfig implements Config {
         if (args.wrap < 0) {
             args.wrap = 0;
         }
-
         if (args.useCSS) {
-            this.style = new HtmlCssStyle();
+            this.style = new CSSStyle();
         } else {
-            this.style = new HtmlStyle();
+            this.style = new HTMLStyle();
         }
 
         PropertyAccessor accessor = args.propertyAccessor;
@@ -136,7 +136,7 @@ public class CommandLineConfig implements Config {
      *
      *@return    The style value
      */
-    public HtmlStyle getStyle() {
+    public AbstractStyle getStyle() {
         return this.style;
     }
 

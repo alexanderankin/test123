@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.syntax.Token;
  *@author     dsm - Using large portions of Andre Kaplan's code
  *@version    0.1
  */
-public abstract class CSSStyle {
+public class CSSStyle extends AbstractStyle {
     /**
      *  Constructor for the CSSStyle
      */
@@ -47,7 +47,7 @@ public abstract class CSSStyle {
      *@return          The header value
      */
     public String getHeader(int styleId,
-                                     SyntaxStyle style) {
+                            SyntaxStyle style) {
         if (style == null) {
             return "";
         }
@@ -94,8 +94,8 @@ public abstract class CSSStyle {
      *@return          The token value
      */
     public String getToken(int styleId,
-                                    SyntaxStyle style,
-                                    String text) {
+                           SyntaxStyle style,
+                           String text) {
         return new StringBuffer("<span class=\"")
             .append(Token.TOKEN_TYPES[styleId])
             .append("\">")

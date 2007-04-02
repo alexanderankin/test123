@@ -29,7 +29,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
  *@author     dsm - Using large portions of Andre Kaplan's code
  *@version    0.1
  */
-public class HTMLStyle {
+public class HTMLStyle extends AbstractStyle {
     /**
      *  Constructor for the HTMLStyle
      */

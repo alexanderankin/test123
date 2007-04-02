@@ -37,7 +37,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 public class HtmlDocument {
     private AbstractGutter gutter;
     private String lineSeparator;
-    private HtmlStyle style;
+    private AbstractStyle style;
     private SyntaxStyle[] syntaxStyles;
     private String title;
     private String viewBgColor;
@@ -58,7 +58,7 @@ public class HtmlDocument {
     public HtmlDocument(String viewBgColor,
                         String viewFgColor,
                         SyntaxStyle[] syntaxStyles,
-                        HtmlStyle style,
+                        AbstractStyle style,
                         AbstractGutter gutter,
                         String title,
                         String lineSeparator) {
@@ -90,7 +90,7 @@ public class HtmlDocument {
      */
     public void htmlClose(Writer out)
          throws IOException {
-        if (style instanceof HtmlCssStyle) {
+        if (style instanceof AbstractStyle) {
             out.write("</span>");
         } else {
             out.write("</font>");
@@ -120,12 +120,12 @@ public class HtmlDocument {
         out.write("<title>" + this.title + "</title>");
         out.write(this.lineSeparator);
         
-        if (this.style instanceof HtmlCssStyle) {
+        if (this.style instanceof AbstractStyle) {
             out.write("<style type=\"text/css\"><!--");
             out.write(this.lineSeparator);
 
             for (int i = 0; i < this.syntaxStyles.length; i++) {
-                out.write(this.style.toCSS(i, this.syntaxStyles[i]));
+                out.write(this.style.getHeader(i, this.syntaxStyles[i]));
             }
 
             out.write((this.gutter != null) ? this.gutter.getHeader() : "");
@@ -149,7 +149,7 @@ public class HtmlDocument {
         out.write("</head>");
         out.write(this.lineSeparator);
 
-        if (style instanceof HtmlCssStyle) {
+        if (style instanceof AbstractStyle) {
             out.write("<body>");
             out.write(this.lineSeparator);
             out.write("<pre>");

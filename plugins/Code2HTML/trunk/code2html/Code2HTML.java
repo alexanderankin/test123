@@ -36,10 +36,10 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 import code2html.html.AbstractGutter;
 
-import code2html.html.HtmlCssStyle;
+import code2html.html.CSSStyle;
 import code2html.html.HtmlDocument;
 import code2html.html.HtmlPainter;
-import code2html.html.HtmlStyle;
+import code2html.html.AbstractStyle;
 
 
 /**
@@ -54,7 +54,7 @@ public class Code2HTML {
     private AbstractGutter gutter = null;
     private HtmlPainter painter = null;
     private Selection[] selection = null;
-    private HtmlStyle style = null;
+    private AbstractStyle style = null;
 
 
     /**
