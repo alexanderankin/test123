@@ -7,10 +7,10 @@ To do:
   + Skip count
   + Conditions
   + Watch points
---> Program output view:
-  - Add program stderr. (at first, merged with stdout)
++ Program output view:
+  + Add program stderr. (at first, merged with stdout)
   + Allow clearing of contents.
-  - Clear automatically whenever session begins.
+  + Clear automatically whenever session begins.
 --> Locals/Watches/Variables:
   + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
