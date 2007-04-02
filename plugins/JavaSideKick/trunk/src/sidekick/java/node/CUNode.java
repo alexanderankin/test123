@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-    * Neither the name of the <ORGANIZATION> nor the names of its contributors
-    may be used to endorse or promote products derived from this software without
-    specific prior written permission.
+   * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+   * Neither the name of the <ORGANIZATION> nor the names of its contributors
+   may be used to endorse or promote products derived from this software without
+   specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -29,11 +29,20 @@ package sidekick.java.node;
 
 import java.util.*;
 
-// an extension of TigerNode for a compilation unit
+/**
+
+ * An extension of TigerNode for a compilation unit.  A compilation unit should
+
+ * be the top-level unit for parsing, all other productions represented by TigerNodes
+
+ * should be children of a CUNode.
+
+ */
+
 public class CUNode extends TigerNode {
 
     private String packageName = "";
-    private List imports = null;
+    private List<ImportNode> imports = null;
     private Results results = null;
     private String filename = null;
 
@@ -41,7 +50,7 @@ public class CUNode extends TigerNode {
         super( "", 0 );
     }
 
-    public void setFilename(String name) {
+    public void setFilename( String name ) {
         filename = name;
     }
 
@@ -49,7 +58,7 @@ public class CUNode extends TigerNode {
         return filename;
     }
 
-    public void setPackageName(String name) {
+    public void setPackageName( String name ) {
         packageName = name;
     }
 
@@ -58,49 +67,49 @@ public class CUNode extends TigerNode {
     }
 
     public int getOrdinal() {
-        return 0;
+        return TigerNode.COMPILATION_UNIT;
     }
 
-    public void addImport(ImportNode in) {
-        if (in == null)
-            return;
-        if (imports == null)
+    public void addImport( ImportNode in ) {
+        if ( in == null )
+            return ;
+        if ( imports == null )
             imports = new ArrayList();
-        imports.add(in);
+        imports.add( in );
     }
 
     /** @return List<String> */
     public List getImports() {
         List list = new ArrayList();
-        if (imports == null) {
+        if ( imports == null ) {
             return list;
         }
-        for (Iterator it = imports.iterator(); it.hasNext(); ) {
-            list.add(((ImportNode)it.next()).getName());
+        for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+            list.add( ( ( ImportNode ) it.next() ).getName() );
         }
-        Collections.sort(list);
+        Collections.sort( list );
         return list;
     }
 
     /** @return List<ImportNode> */
-    public List getImportNodes() {
-        return imports == null ? new ArrayList() : new ArrayList(imports);
+    public List<ImportNode> getImportNodes() {
+        return imports == null ? new ArrayList<ImportNode>() : new ArrayList<ImportNode>( imports );
     }
 
-    public ImportNode getImport(String name) {
-        if (imports == null) {
+    public ImportNode getImport( String name ) {
+        if ( imports == null ) {
             return null;
         }
-        for (Iterator it = imports.iterator(); it.hasNext(); ) {
-            ImportNode in = (ImportNode)it.next();
-            if (in.getName().equals(name)) {
+        for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+            ImportNode in = ( ImportNode ) it.next();
+            if ( in.getName().equals( name ) ) {
                 return in;
             }
         }
         return null;
     }
 
-    public void setResults(Results r) {
+    public void setResults( Results r ) {
         results = r;
     }
 
@@ -109,8 +118,7 @@ public class CUNode extends TigerNode {
     }
 
     public String toString() {
-        return super.toString() + (results != null ? ", " + results.toString() : "");
+        return super.toString() + ( results != null ? ", " + results.toString() : "" );
     }
+
 }
-
-
