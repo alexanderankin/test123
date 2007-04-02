@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package sidekick.java;
 
-import java.io.File;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import projectviewer.*;
@@ -38,10 +37,17 @@ import sidekick.java.util.*;
 
 public class PVHelper {
 
+    // filename to project name lookup
+    private static HashMap<String, String> projectNameForFile = new HashMap<String, String>();
+
     /**
      * @return the name of the project containing the given filename
      */
     public static String getProjectNameForFile( String filename ) {
+        String project_name = projectNameForFile.get(filename);
+        if (project_name != null) {
+            return project_name;
+        }
         if (!isProjectViewerAvailable())
             return null;
         ProjectManager pm = ProjectManager.getInstance();
@@ -49,7 +55,9 @@ public class PVHelper {
             VPTProject project = ( VPTProject ) it.next();
             VPTNode node = project.getChildNode( filename );
             if ( node != null ) {
-                return project.getName();
+                project_name = project.getName();
+                projectNameForFile.put(filename, project_name);
+                return project_name;
             }
         }
         return null;

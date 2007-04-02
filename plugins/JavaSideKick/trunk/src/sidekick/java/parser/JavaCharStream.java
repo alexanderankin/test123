@@ -336,7 +336,7 @@ public class JavaCharStream
      else
      {
         UpdateLineColumn(c);
-        return (c);
+        return c;
      }
   }
 
