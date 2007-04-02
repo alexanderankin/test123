@@ -46,7 +46,7 @@ public abstract class CSSStyle {
      *@param  style    The actual style we are using
      *@return          The header value
      */
-    public abstract String getHeader(int styleId,
+    public String getHeader(int styleId,
                                      SyntaxStyle style) {
         if (style == null) {
             return "";
@@ -93,7 +93,7 @@ public abstract class CSSStyle {
      *@param  text     The text that will be tagged by this style
      *@return          The token value
      */
-    public abstract String getToken(int styleId,
+    public String getToken(int styleId,
                                     SyntaxStyle style,
                                     String text) {
         return new StringBuffer("<span class=\"")
