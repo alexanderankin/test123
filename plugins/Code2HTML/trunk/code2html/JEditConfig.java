@@ -71,7 +71,7 @@ public class JEditConfig implements Config {
         } else {
             this.style = new HtmlStyle();
         }
-
+        
         String bgColor = jEdit.getProperty(
             "view.gutter.bgColor", "#ffffff");
         String fgColor = jEdit.getProperty(
@@ -116,7 +116,7 @@ public class JEditConfig implements Config {
         if (wrap > 0) {
             this.wrapper = new LineWrapper(wrap);
         }
-
+        
         this.painter = new HtmlPainter(
             styles, this.style, this.gutter, this.tabExpander, this.wrapper);
     }

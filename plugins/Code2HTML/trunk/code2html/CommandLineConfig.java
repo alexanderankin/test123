@@ -1,29 +1,29 @@
 /*
- * CommandLineConfig.java
- * Copyright (c) 2002 Andre Kaplan
+ *  CommandLineConfig.java
+ *  Copyright (c) 2002 Andre Kaplan
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package code2html;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
+import code2html.html.AbstractGutter;
 
 import code2html.html.CSSGutter;
-import code2html.html.HtmlCssStyle;
-import code2html.html.AbstractGutter;
 import code2html.html.HTMLGutter;
+import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
@@ -34,8 +34,8 @@ import code2html.line.LineWrapper;
 /**
  *  Command line configuration for the Code2HTML plugin
  *
- * @author     Andre Kaplan
- * @version    0.5
+ *@author     Andre Kaplan
+ *@version    0.5
  */
 public class CommandLineConfig implements Config {
     private AbstractGutter gutter = null;
@@ -48,7 +48,7 @@ public class CommandLineConfig implements Config {
     /**
      *  CommandLineConfig Constructor
      *
-     * @param  args  Holds the properties to be used in the generated code
+     *@param  args  Holds the properties to be used in the generated code
      */
     public CommandLineConfig(Arguments args) {
         if (args.wrap < 0) {
@@ -76,27 +76,24 @@ public class CommandLineConfig implements Config {
                     bgColor,
                     fgColor,
                     highlightColor,
-                    ":",
-                    "    ",
-                    "10",
+                    args.border,
+                    AbstractGutter.getSpacerFor(args.gutterSize),
+                    args.gutterFontSize,
                     args.highlightInterval,
-                    true,
-                    true);
+                    args.showNumbers,
+                    args.showGutter);
             } else {
                 this.gutter = new HTMLGutter(
                     bgColor,
                     fgColor,
                     highlightColor,
-                    ":",
-                    "    ",
-                    "10",
+                    args.border,
+                    AbstractGutter.getSpacerFor(args.gutterSize),
+                    args.gutterFontSize,
                     args.highlightInterval,
-                    true,
-                    true);
+                    args.showNumbers,
+                    args.showGutter);
             }
-
-            // set in constructor
-            //this.gutter.setGutterSize(args.gutterSize);
         }
 
         this.tabExpander = new LineTabExpander(args.tabSize);
@@ -117,7 +114,7 @@ public class CommandLineConfig implements Config {
     /**
      *  Gets the gutter of the object
      *
-     * @return    The gutter value
+     *@return    The gutter value
      */
     public AbstractGutter getGutter() {
         return this.gutter;
@@ -127,7 +124,7 @@ public class CommandLineConfig implements Config {
     /**
      *  Gets the painter of the object
      *
-     * @return    The painter value
+     *@return    The painter value
      */
     public HtmlPainter getPainter() {
         return this.painter;
@@ -137,7 +134,7 @@ public class CommandLineConfig implements Config {
     /**
      *  Gets the style of the object
      *
-     * @return    The style value
+     *@return    The style value
      */
     public HtmlStyle getStyle() {
         return this.style;
@@ -147,7 +144,7 @@ public class CommandLineConfig implements Config {
     /**
      *  Gets the tab expander of the object
      *
-     * @return    The tab expander value
+     *@return    The tab expander value
      */
     public LineTabExpander getTabExpander() {
         return this.tabExpander;
@@ -157,7 +154,7 @@ public class CommandLineConfig implements Config {
     /**
      *  Gets the wrapper of the object
      *
-     * @return    The wrapper value
+     *@return    The wrapper value
      */
     public LineWrapper getWrapper() {
         return this.wrapper;
@@ -167,11 +164,11 @@ public class CommandLineConfig implements Config {
     /**
      *  Holds properties relating to the output code
      *
-     * @author     Andre Kaplan
-     * @version    0.5
-     * @todo       This should really be called something different, along the
+     *@author     Andre Kaplan
+     *@version    0.5
+     *@todo       This should really be called something different, along the
      *      lines of properties or similar
-     * @todo       Make this implement Config & pass config args to anything
+     *@todo       Make this implement Config & pass config args to anything
      *      requesting one of this -> ? Or not ?
      */
     public static class Arguments {
@@ -192,6 +189,14 @@ public class CommandLineConfig implements Config {
          */
         public boolean showGutter = true;
         /**
+         *  Whether to show line numbers
+         */
+        public boolean showNumbers = true;
+        /**
+         *  The font size for the gutter text (CSS only)
+         */
+        public String gutterFontSize = "10";
+        /**
          *  A list of styles
          */
         public SyntaxStyle[] styles = null;
@@ -207,6 +212,10 @@ public class CommandLineConfig implements Config {
          *  Wrap column
          */
         public int wrap = 0;
+        /**
+         *  The gutter border for HTML mode
+         */
+        public String border = ":";
     }
 }
 
