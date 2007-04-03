@@ -20,6 +20,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private boolean leaf = true;
 	
 	public interface ChangeListener {
+		void updated(GdbVar v);
 		void changed(GdbVar v);
 	}
 	
@@ -64,7 +65,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (value == null)
 						value = "";
 					if (listener != null)
-						listener.changed(GdbVar.this);
+						listener.updated(GdbVar.this);
 				}
 		});
 	}
@@ -90,7 +91,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 						add(child);
 					}
 					if (listener != null)
-						listener.changed(GdbVar.this);
+						listener.updated(GdbVar.this);
 				}
 			}
 		);
@@ -155,6 +156,8 @@ public class GdbVar extends DefaultMutableTreeNode {
 			JOptionPane.showInputDialog("New value for '" + name + "':", value);
 		CommandManager.getInstance().add(
 				"-var-assign " + gdbName + " " + newValue);
+		if (listener != null)
+			listener.changed(GdbVar.this);
 		getValue();	// Update the value after the change
 	}
 }

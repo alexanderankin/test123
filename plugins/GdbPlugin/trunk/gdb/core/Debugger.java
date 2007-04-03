@@ -197,6 +197,14 @@ public class Debugger implements DebuggerTool {
 		
 	}
 
+	public void updateAllVars() {
+		if (localsPanel != null)
+			localsPanel.update();
+		if (watchesPanel != null)
+			watchesPanel.update();
+		if (variablesPanel != null)
+			variablesPanel.update();
+	}
 	private void updateWatches() {
 		if (watchesPanel != null) {
 			watchesPanel.setCommandManager(commandManager);

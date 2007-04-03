@@ -60,6 +60,10 @@ public class LocalVariables extends JPanel {
 	public void setCommandManager(CommandManager cm) {
 		commandManager = cm;
 	}
+	public void update() {
+		for (int i = 0; i < root.getChildCount(); i++)
+			((GdbVar)root.getChildAt(i)).update();
+	}
 	public void update(int frame) {
 		for (int i = 0; i < root.getChildCount(); i++)
 			((GdbVar)root.getChildAt(i)).done();
@@ -89,8 +93,11 @@ public class LocalVariables extends JPanel {
 					String name = hash.get("name").toString();
 					GdbVar v = new GdbVar(name);
 					v.setChangeListener(new ChangeListener() {
-						public void changed(GdbVar v) {
+						public void updated(GdbVar v) {
 							model.reload(v);
+						}
+						public void changed(GdbVar v) {
+							update();
 						}
 					});
 					root.add(v);
@@ -117,8 +124,11 @@ public class LocalVariables extends JPanel {
 						String name = localHash.get("name").toString();
 						GdbVar v = new GdbVar(name);
 						v.setChangeListener(new ChangeListener() {
-							public void changed(GdbVar v) {
+							public void updated(GdbVar v) {
 								model.reload(v);
+							}
+							public void changed(GdbVar v) {
+								update();
 							}
 						});
 						root.add(v);
