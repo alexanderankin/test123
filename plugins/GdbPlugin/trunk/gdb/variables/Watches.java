@@ -1,6 +1,7 @@
 package gdb.variables;
 
 import gdb.core.CommandManager;
+import gdb.core.Debugger;
 import gdb.variables.GdbVar.ChangeListener;
 
 import java.awt.BorderLayout;
@@ -39,8 +40,11 @@ public class Watches extends JPanel {
 					return;
 				GdbVar v = new GdbVar(expr);
 				v.setChangeListener(new ChangeListener() {
-					public void changed(GdbVar v) {
+					public void updated(GdbVar v) {
 						model.reload(v);
+					}
+					public void changed(GdbVar v) {
+						Debugger.getInstance().updateAllVars();						update();
 					}
 				});
 				vars.add(v);

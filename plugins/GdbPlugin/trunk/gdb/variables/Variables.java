@@ -22,6 +22,10 @@ public class Variables extends JPanel {
 		add(pane);
 	}
 
+	public void update() {
+		locals.update();
+		watches.update();
+	}
 	public void update(int frame) {
 		locals.update(frame);
 		watches.update();
