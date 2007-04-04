@@ -17,6 +17,7 @@ plugin.debugger.jedit.Plugin.depend.1=plugin CommonControlsPlugin 0.9.4
 debugger-go.label=Go!
 debugger-next.label=Next
 debugger-step.label=Step
+debugger-until.label=Run to cursor
 debugger-quit.label=Quit
 debugger-finish.label=Return from current function
 debugger-pause.label=Pause
@@ -30,6 +31,7 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-next \
   debugger-step \
   debugger-finish \
+  debugger-until \
   - \
   debugger-pause \
   debugger-quit \

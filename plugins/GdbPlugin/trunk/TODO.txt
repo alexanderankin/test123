@@ -1,17 +1,4 @@
 To do:
-+ Launch configurations:
-  + Move to debugger-specific extension
-  + Improved GUI for the launch configurations (e.g. file dialogs)
-+ Breakpoint window:
-  + Move to debugger-specific extension
-  + Skip count
-  + Conditions
-  + Watch points
-+ Program output view:
-  + Add program stderr. (at first, merged with stdout)
-  + Allow clearing of contents.
-  + Clear automatically whenever session begins.
-- Change the way launch configs are stored to get rid of the special separator char.
 - Make sure all views are always in sync regarding gdb state and frame selection.
   - Need some major refactoring. Kind of 'DebugBus' like EditBus in jEdit.
   - Make sure the drawing of the current instruction goes away when gdb is not
@@ -27,7 +14,6 @@ To do:
     - Add an item to the tree.
     - Remove an item from the tree.
     - Modify an item in the tree.
-- Complete gdb command-set (e.g. exec-until).
 - Control panel: Should be aware of the gdb state, enable/disable buttons.
 
 Future:
@@ -38,3 +24,18 @@ Future:
 - Multi-threading support, including views, stack trace etc.
 - Memory/Disassembly/Registers view.
 - Symbol query commands.
+
+Done:
++ Launch configurations:
+  + Move to debugger-specific extension
+  + Improved GUI for the launch configurations (e.g. file dialogs)
++ Breakpoint window:
+  + Move to debugger-specific extension
+  + Skip count
+  + Conditions
+  + Watch points
++ Program output view:
+  + Add program stderr. (at first, merged with stdout)
+  + Allow clearing of contents.
+  + Clear automatically whenever session begins.
++ Complete gdb command-set (e.g. exec-until).
