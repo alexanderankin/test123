@@ -11,6 +11,12 @@ To do:
   + Add program stderr. (at first, merged with stdout)
   + Allow clearing of contents.
   + Clear automatically whenever session begins.
+- Change the way launch configs are stored to get rid of the special separator char.
+- Make sure all views are always in sync regarding gdb state and frame selection.
+  - Need some major refactoring. Kind of 'DebugBus' like EditBus in jEdit.
+  - Make sure the drawing of the current instruction goes away when gdb is not
+    running or when outside of any buffer.
+- Write a short user guide.  
 --> Locals/Watches/Variables:
   + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
