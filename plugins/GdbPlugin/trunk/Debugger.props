@@ -77,3 +77,6 @@ options.debugger.arguments_label=Arguments:
 options.debugger.directory_label=Working directory:
 options.debugger.environment_label=Environment:
 
+# Documentation
+plugin.debugger.jedit.Plugin.docs=index.html
+

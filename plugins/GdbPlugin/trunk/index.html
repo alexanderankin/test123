@@ -1,0 +1,123 @@
+<html>
+<title>Gdb Plugin Documentation</title>
+<body>
+<h1>Gdb plugin</h1>
+Written by Shlomy Reinstein, 4/2007.
+<h2>Introduction</h2>
+This plugin enables debugging programs using the gdb debugger directly from
+jEdit. The plugin provides the following functionality:
+<ul>
+<li>
+Setting/Removing/Toggling breakpoints directly in jEdit buffers.
+</li>
+<li>
+Controlling program execution (the usual continue/step/next/...) - either
+using actions from the Debugger menu or using a very simple control panel.
+</li>
+<li>
+Visualization of breakpoints and the current instruction using icons in the
+gutter area.
+</li>
+<li>
+Viewing/changing values of expressions and automatic variables (function
+arguments and variables defined inside the function).
+</li>
+<li>
+Breakpoint dockable which enables editing breakpoint properties (conditions/
+skip counts/enabled state) and adding watchpoints.
+</li>
+<li>
+Stack trace (normally called "backtrace" in gdb) dockable that enables you
+to view and quickly jump to the source code of selected stack frames.
+</li>
+<li>
+Defining "launch configurations" - i.e. the applications to debug, their
+command-line arguments etc.
+</li>
+<li>
+A console for viewing program output and the gdb output.
+</li>
+</ul>
+
+The plugin uses gdb/mi (for most functions) to interface with gdb. This is a
+very incomplete and premature version provided only for preview, it is missing
+many features and might be quite unstable. Use at your own risk! 
+Despite the above, I found it to be quite helpful in debugging my applications.
+
+<h2>Usage</h2>
+First thing's first: If you don't have 'gdb' in your PATH, you should define
+the path to gdb using: Plugins->Plugin Options->Debugger->Gdb.
+<p>
+Next, you need to define how to launch your application under gdb. For this, you
+create a launch configuration using:
+Plugins->Plugin Options->Debugger->Programs.
+Click the 'New' button below the "Configurations" box and enter all the details.
+'Name' is a symbolic name you assign to the configuration, which simply shows
+in the "Configurations" list. In 'Environment' you can set a series of
+environment variables for the debug session in the form
+var1=value1,var2=value2,...
+<p>
+When you're done filling in the details, click the 'Update' button below them.
+<br>
+The 'Make default' button below the "Configurations" box marks the selected
+configuration with an asterisk, which means it is now the default configuration,
+and will be used to launch the next debug session. If the configuration you've
+just added is not marked with an asterisk, select it in the "Configurations" box
+and click 'Make default'.
+<p>
+* Note: Some paragraphs will direct you to open dockables. To open a dockable,
+  use Utilities->Global Options->jEdit->Docking then select the appropriate
+  dockable from the list and change its docking from 'floating' to something
+  else and click Ok.
+<p>  
+By now, you've set up the gdb path and the launch configuration for debugging.
+Now, you can start debugging.
+<br>
+You can do the following:
+<ol>
+<li>
+Mark breakpoints in jEdit buffers by putting the caret on the breakpoint line
+and invoking 'Set breakpoint' from the Debugger plugin menu.
+</li>
+<li>
+Control the debugger (go!, step, next, quit, pause, ...) using either actions
+from the Debugger plugin menu or using the dockable named 'Control Panel'.
+</li>
+<li>
+See the stack trace whenever gdb stops (e.g. in a breakpoint) using the
+dockable named 'Stack Trace'. When a stack trace is available, you can jump
+between the frames by clicking on them.
+</li>
+<li>
+See the automatic variables (arguments + local variables) using the dockable
+named 'Local Variables'.
+</li>
+<li>
+Watch the value of custom variables and expressions using the dockable named
+'Watches'.
+<br>
+* The "Variables" dockable provides both (4) and (5) in a split pane, for those
+  who prefer to see both in the same docking area.
+</li>
+<li>
+Edit breakpoints/add watchpoints using the dockable named "Breakpoints".
+</li>
+<li>
+Watch the program output using the dockable named "Program Output".
+</li>
+</ol>
+
+Tips:
+It is recommended to create keyboard shortcuts or toolbar buttons for quick
+access to frequent debugging actions. Also, you can use the beta-version of the
+"Perspective" plugin (which has been merged into the "Docker" plugin in SVN but
+not released yet) to easily switch between the usual (development) layout and
+the debugging layout of dockables easily, so you won't have to use the Utilities
+menu each time to open the debugger dockables.
+<p>
+Feedback (feature requests / bugs / whatever) can be posted using the tracker in
+SourceForge.
+<p>
+Enjoy!
+</body>
+</html>
