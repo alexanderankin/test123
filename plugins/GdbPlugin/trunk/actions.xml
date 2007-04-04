@@ -33,6 +33,11 @@
 			gdb.core.Debugger.getInstance().pause();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-until" NO_REPEAT="TRUE">
+		<CODE>
+			gdb.core.Debugger.getInstance().runToCursor();
+		</CODE>
+	</ACTION>
 
 	<ACTION NAME="debugger-toggle-breakpoint" NO_REPEAT="TRUE">
 		<CODE>

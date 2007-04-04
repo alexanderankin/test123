@@ -40,6 +40,13 @@ public class ControlView extends JPanel {
 				Debugger.getInstance().finishCurrentFunction();
 			}
 		});
+		JButton until = new JButton("Until");
+		add(until);
+		until.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Debugger.getInstance().runToCursor();
+			}
+		});
 		JButton pause = new JButton("Pause");
 		add(pause);
 		pause.addActionListener(new ActionListener() {

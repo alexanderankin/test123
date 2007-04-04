@@ -96,6 +96,15 @@ public class Debugger implements DebuggerTool {
 			commandManager.add("-exec-finish");
 	}
 
+	public void runToCursor() {
+		View view = jEdit.getActiveView();
+		Buffer buffer = view.getBuffer();
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine() + 1;
+		if (isRunning())
+			commandManager.add("-exec-until " + buffer.getPath() + ":" + line);
+	}
+	
 	private void sessionEnded() {
 		running = false;
 		if (stackTracePanel != null)
