@@ -207,7 +207,8 @@ public class Parser extends Thread {
 		return line;
 	}
 	void parse(String line) {
-		System.err.println("Parsing line: " + line);
+		//System.err.println("Parsing line: " + line);
+		debugger.gdbRecord(line + "\n");
 		char c = line.charAt(0);
 		switch (c) {
 		case '@':
@@ -217,10 +218,6 @@ public class Parser extends Thread {
 		case '~':
 			// Gdb CLI record
 			String l = extractString(line.substring(1));
-			if (gdbHandlers.isEmpty()) {
-				debugger.gdbRecord(l);
-				return;
-			}
 			for (int i = 0; i < gdbHandlers.size(); i++)
 				gdbHandlers.get(i).handle(l);
 			return;
@@ -245,10 +242,8 @@ public class Parser extends Thread {
 			}
 			return;
 		}
-		if (line.startsWith("(gdb)")) {
-			debugger.gdbRecord(line + "\n");
+		if (line.startsWith("(gdb)"))
 			return;
-		}
 		// Program output
 		debugger.programRecord(line + "\n");
 	}
