@@ -45,8 +45,8 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
 # dockables
 debugger-program-output.title=Program Output
 debugger-program-output.label=Program Output
-debugger-gdb-output.title=Gdb CLI Output
-debugger-gdb-output.label=Gdb CLI Output
+debugger-gdb-output.title=GDB/MI Console
+debugger-gdb-output.label=GDB/MI Console
 debugger-show-locals.title=Local Variables
 debugger-show-locals.label=Local Variables
 debugger-show-variables.title=Variables

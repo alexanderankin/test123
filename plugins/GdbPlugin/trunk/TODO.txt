@@ -5,9 +5,6 @@ To do:
     running or when outside of any buffer.
 - A view that is opened in the middle of a debug session should update itself
   automatically upon opening.
---> gdb output console:
-  + Send all gdb output there.
-  - Allow entering commands manually.
 --> Locals/Watches/Variables:
   + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
@@ -48,3 +45,6 @@ Done:
   + Clear automatically whenever session begins.
 + Complete gdb command-set (e.g. exec-until).
 + Write a short user guide.
++ gdb output console:
+  + Send all gdb output there.
+  + Allow entering commands manually.
