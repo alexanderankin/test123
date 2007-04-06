@@ -11,6 +11,7 @@ import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
 import gdb.output.Console;
+import gdb.output.Console.InputHandler;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
 import gdb.variables.Watches;
@@ -237,7 +238,7 @@ public class Debugger implements DebuggerTool {
 		String msg = "Breakpoint " + bkptno + " hit";
 		if (file != null)
 			msg = msg + ", at " + file + ":" + line + ".";
-		System.err.println(msg);
+		//System.err.println(msg);
 		JOptionPane.showMessageDialog(null, msg);
 	}
 
@@ -320,7 +321,11 @@ public class Debugger implements DebuggerTool {
 	}
 	public JPanel showGdbOutput(View view) {
 		if (gdbOutput == null)	{
-			gdbOutput = new Console();
+			gdbOutput = new Console(new InputHandler() {
+				public void handle(String line) {
+					commandManager.add(line);
+				}
+			});
 		}
 		return gdbOutput;
 	}
