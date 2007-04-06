@@ -51,7 +51,8 @@ public class CommandManager extends Thread {
 				parser.addResultHandler(wrapper);
 			}
 			try {
-				System.err.println("CommandManager: " + cmd);
+				//System.err.println("CommandManager: " + cmd);
+				Debugger.getInstance().gdbRecord(">>> CommandManager: " + cmd + "\n");
 				stdOutput.write(cmd + "\n");
 				stdOutput.flush();
 			} catch (IOException e) {

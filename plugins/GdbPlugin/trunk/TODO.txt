@@ -3,7 +3,11 @@ To do:
   - Need some major refactoring. Kind of 'DebugBus' like EditBus in jEdit.
   - Make sure the drawing of the current instruction goes away when gdb is not
     running or when outside of any buffer.
-- Write a short user guide.  
+- A view that is opened in the middle of a debug session should update itself
+  automatically upon opening.
+--> gdb output console:
+  + Send all gdb output there.
+  - Allow entering commands manually.
 --> Locals/Watches/Variables:
   + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
@@ -17,6 +21,10 @@ To do:
 - Control panel: Should be aware of the gdb state, enable/disable buttons.
 
 Future:
+- Variables:
+  - Format specificiation (e.g. hexa/decimal/octal/binary)
+  - Editing watches (e.g. just change index of array element in watch expression)
+  - Casting
 - Launch configurations:
   - Support for core files
   - Support for attaching to processes
@@ -39,3 +47,4 @@ Done:
   + Allow clearing of contents.
   + Clear automatically whenever session begins.
 + Complete gdb command-set (e.g. exec-until).
++ Write a short user guide.
