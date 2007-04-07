@@ -284,7 +284,6 @@ public class Debugger implements DebuggerTool {
 				int bkptno = Integer.parseInt(res.getStringValue("bkptno"));
 				commandManager.add(getCurrentPosition, new BreakpointHitHandler(bkptno));
 			} else if (reason.startsWith("exited")) {
-				System.err.println("Exited");
 				sessionEnded();
 			} else if (reason.startsWith("signal-received")) {
 				signalReceived(res.getStringValue("signal-meaning"));
