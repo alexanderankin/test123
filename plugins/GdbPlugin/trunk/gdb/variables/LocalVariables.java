@@ -1,9 +1,12 @@
 package gdb.variables;
 
-import gdb.core.CommandManager;
+import gdb.context.StackTrace;
+import gdb.context.StackTrace.FrameChangeListener;
+import gdb.core.GdbView;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.variables.GdbVar.ChangeListener;
+import gdb.variables.GdbVar.UpdateListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -12,7 +15,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
@@ -21,14 +23,17 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 @SuppressWarnings("serial")
-public class LocalVariables extends JPanel {
+public class LocalVariables extends GdbView implements ChangeListener,
+	FrameChangeListener {
+	
 	private JTree tree;
-	private CommandManager commandManager = null;
 	private DefaultMutableTreeNode root;
 	private DefaultTreeModel model;
 	
 	public LocalVariables() {
 		setLayout(new BorderLayout());
+		GdbVar.addChangeListener(this);
+		StackTrace.addFrameChangeListener(this);
 		
 		JToolBar tb = new JToolBar();
 		tb.setFloatable(false);
@@ -57,20 +62,16 @@ public class LocalVariables extends JPanel {
 		tree.addMouseListener(new VarTreeMouseListener());
 	}
 
-	public void setCommandManager(CommandManager cm) {
-		commandManager = cm;
-	}
 	public void update() {
-		for (int i = 0; i < root.getChildCount(); i++)
-			((GdbVar)root.getChildAt(i)).update();
+		frameChanged(0);
 	}
-	public void update(int frame) {
+	public void frameChanged(int frame) {
 		for (int i = 0; i < root.getChildCount(); i++)
 			((GdbVar)root.getChildAt(i)).done();
 		root.removeAllChildren();
-		commandManager.add("-stack-list-arguments 0 " + frame + " " + frame,
+		getCommandManager().add("-stack-list-arguments 0 " + frame + " " + frame,
 				new StackArgumentsResultHandler());
-		commandManager.add("-stack-list-locals 0", new LocalsResultHandler());
+		getCommandManager().add("-stack-list-locals 0", new LocalsResultHandler());
 	}
 	public void sessionEnded() {
 		root.removeAllChildren();
@@ -92,12 +93,9 @@ public class LocalVariables extends JPanel {
 						(Hashtable<String, Object>)args.get(i);
 					String name = hash.get("name").toString();
 					GdbVar v = new GdbVar(name);
-					v.setChangeListener(new ChangeListener() {
+					v.setChangeListener(new UpdateListener() {
 						public void updated(GdbVar v) {
 							model.reload(v);
-						}
-						public void changed(GdbVar v) {
-							update();
 						}
 					});
 					root.add(v);
@@ -123,12 +121,9 @@ public class LocalVariables extends JPanel {
 							(Hashtable<String, Object>)local;
 						String name = localHash.get("name").toString();
 						GdbVar v = new GdbVar(name);
-						v.setChangeListener(new ChangeListener() {
+						v.setChangeListener(new UpdateListener() {
 							public void updated(GdbVar v) {
 								model.reload(v);
-							}
-							public void changed(GdbVar v) {
-								update();
 							}
 						});
 						root.add(v);
@@ -146,4 +141,10 @@ public class LocalVariables extends JPanel {
 	public void updateTree() {
 		model.reload(root);
 	}
+
+	public void changed(GdbVar v) {
+		for (int i = 0; i < root.getChildCount(); i++)
+			((GdbVar)root.getChildAt(i)).update();
+	}
+
 }

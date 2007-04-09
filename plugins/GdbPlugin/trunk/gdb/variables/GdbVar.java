@@ -5,6 +5,7 @@ import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -14,14 +15,19 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private String name;
 	private String value = null;
 	private String gdbName = null;
-	private ChangeListener listener = null;
+	private UpdateListener listener = null;
 	private boolean created = false;
 	private boolean requested = false;
 	private boolean leaf = true;
 	
+	private static Vector<ChangeListener> listeners =
+		new Vector<ChangeListener>();
+	
 	public interface ChangeListener {
-		void updated(GdbVar v);
 		void changed(GdbVar v);
+	}
+	public interface UpdateListener {
+		void updated(GdbVar v);
 	}
 	
 	public GdbVar(String name) {
@@ -36,13 +42,20 @@ public class GdbVar extends DefaultMutableTreeNode {
 		getValue();
 	}
 	
+	public static void addChangeListener(ChangeListener l) {
+		listeners.add(l);
+	}
+	public static void removeChangeListener(ChangeListener l) {
+		listeners.remove(l);
+	}
+	
 	public void done() {
 		if (CommandManager.getInstance() == null)
 			return;
 		CommandManager.getInstance().add("-var-delete " + gdbName);
 	}
 	
-	public void setChangeListener(ChangeListener l) {
+	public void setChangeListener(UpdateListener l) {
 		listener = l;
 	}
 	public void unsetChangeListener() {
@@ -156,8 +169,8 @@ public class GdbVar extends DefaultMutableTreeNode {
 			JOptionPane.showInputDialog("New value for '" + name + "':", value);
 		CommandManager.getInstance().add(
 				"-var-assign " + gdbName + " " + newValue);
-		if (listener != null)
-			listener.changed(GdbVar.this);
+		for (int i = 0; i < listeners.size(); i++)
+			listeners.get(i).changed(GdbVar.this);
 		getValue();	// Update the value after the change
 	}
 }

@@ -1,7 +1,5 @@
 package gdb.variables;
 
-import gdb.core.CommandManager;
-
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
@@ -20,24 +18,6 @@ public class Variables extends JPanel {
 		JSplitPane pane = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, locals, watches);
 		add(pane);
-	}
-
-	public void update() {
-		locals.update();
-		watches.update();
-	}
-	public void update(int frame) {
-		locals.update(frame);
-		watches.update();
-	}
-	public void sessionEnded() {
-		locals.sessionEnded();
-		watches.sessionEnded();
-	}
-
-	public void setCommandManager(CommandManager commandManager) {
-		locals.setCommandManager(commandManager);
-		watches.setCommandManager(commandManager);
 	}
 
 }
