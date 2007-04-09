@@ -1,6 +1,7 @@
 package gdb.context;
 
 import gdb.core.Debugger;
+import gdb.core.GdbState;
 import gdb.core.Parser;
 import gdb.core.GdbView;
 import gdb.core.Parser.GdbHandler;
@@ -42,6 +43,8 @@ public class StackTrace extends GdbView {
 		tree.setRootVisible(false);
 		tree.addMouseListener(new StackTraceListener());
 		add(new JScrollPane(tree));
+		if (GdbState.getState() != GdbState.State.RUNNING)
+			update();
 	}
 
 	public static void addFrameChangeListener(FrameChangeListener l) {

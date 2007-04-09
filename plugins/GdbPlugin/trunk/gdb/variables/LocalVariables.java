@@ -2,6 +2,7 @@ package gdb.variables;
 
 import gdb.context.StackTrace;
 import gdb.context.StackTrace.FrameChangeListener;
+import gdb.core.GdbState;
 import gdb.core.GdbView;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
@@ -60,6 +61,8 @@ public class LocalVariables extends GdbView implements ChangeListener,
 		JScrollPane locals = new JScrollPane(tree);
 		add(locals);
 		tree.addMouseListener(new VarTreeMouseListener());
+		if (GdbState.getState() != GdbState.State.RUNNING)
+			update();
 	}
 
 	public void update() {

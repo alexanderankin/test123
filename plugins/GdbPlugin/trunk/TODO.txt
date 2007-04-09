@@ -2,12 +2,6 @@ To do:
 - Handle end of session in parser and possibly command manager: parser thread
   should stop (?), or otherwise it shouldn't be called 'start()' again for next
   session.
-- Make sure all views are always in sync regarding gdb state and frame selection.
-  - Need some major refactoring. Kind of 'DebugBus' like EditBus in jEdit.
-  - Make sure the drawing of the current instruction goes away when gdb is not
-    running or when outside of any buffer.
-- A view that is opened in the middle of a debug session should update itself
-  automatically upon opening.
 --> Locals/Watches/Variables:
   + Add a toolbar button for modifying the value of the currently selected variable.
   - Support changes in tree structure of variable.
@@ -59,4 +53,5 @@ Done:
     and sessionEnded() when appropriate.
   + Handle manual changes in vars.
   + Handle changes of current frame.
-  
++ A view that is opened in the middle of a debug session should update itself
+  automatically upon opening.
