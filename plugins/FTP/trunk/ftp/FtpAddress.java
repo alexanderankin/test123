@@ -55,7 +55,7 @@ public class FtpAddress
 		url = url.substring(trimAt);
 
 		// get username
-		int index = url.lastIndexOf('@');
+		int index = url.indexOf('@');
 		if(index != -1)
 		{
 			user = url.substring(0,index);
