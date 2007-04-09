@@ -1,8 +1,8 @@
 package gdb.variables;
 
-import gdb.core.CommandManager;
-import gdb.core.Debugger;
+import gdb.core.GdbView;
 import gdb.variables.GdbVar.ChangeListener;
+import gdb.variables.GdbVar.UpdateListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
@@ -20,7 +19,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 @SuppressWarnings("serial")
-public class Watches extends JPanel {
+public class Watches extends GdbView implements ChangeListener {
 	private JTree tree;
 	private DefaultMutableTreeNode root;
 	private Vector<GdbVar> vars = new Vector<GdbVar>();
@@ -28,6 +27,7 @@ public class Watches extends JPanel {
 	
 	public Watches() {
 		setLayout(new BorderLayout());
+		GdbVar.addChangeListener(this);
 		
 		// Buttons for adding/removing watches
 		JToolBar tb = new JToolBar();
@@ -39,12 +39,9 @@ public class Watches extends JPanel {
 				if (expr == null)
 					return;
 				GdbVar v = new GdbVar(expr);
-				v.setChangeListener(new ChangeListener() {
+				v.setChangeListener(new UpdateListener() {
 					public void updated(GdbVar v) {
 						model.reload(v);
-					}
-					public void changed(GdbVar v) {
-						Debugger.getInstance().updateAllVars();						update();
 					}
 				});
 				vars.add(v);
@@ -102,8 +99,6 @@ public class Watches extends JPanel {
 		tree.addMouseListener(new VarTreeMouseListener());
 	}
 
-	public void setCommandManager(CommandManager cm) {
-	}
 	public void update() {
 		for (int i = 0; i < vars.size(); i++) {
 			vars.get(i).update();
@@ -119,6 +114,10 @@ public class Watches extends JPanel {
 		for (int i = 0; i < vars.size(); i++)
 			root.add(vars.get(i));
 		model.reload(root);
+	}
+
+	public void changed(GdbVar v) {
+		update();
 	}
 }
 

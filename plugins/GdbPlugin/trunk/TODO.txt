@@ -1,4 +1,7 @@
 To do:
+- Handle end of session in parser and possibly command manager: parser thread
+  should stop (?), or otherwise it shouldn't be called 'start()' again for next
+  session.
 - Make sure all views are always in sync regarding gdb state and frame selection.
   - Need some major refactoring. Kind of 'DebugBus' like EditBus in jEdit.
   - Make sure the drawing of the current instruction goes away when gdb is not
@@ -48,3 +51,12 @@ Done:
 + gdb output console:
   + Send all gdb output there.
   + Allow entering commands manually.
++ Bug Fix: Must also wait for "^done" in CLI commands. Otherwise this "^done" might
+  be captured by the handler of the next MI command. 
++ Refactoring:
+  + New GdbState singleton.
+  + New GdbView base for views, registers for gdb state changes, invokes update()
+    and sessionEnded() when appropriate.
+  + Handle manual changes in vars.
+  + Handle changes of current frame.
+  

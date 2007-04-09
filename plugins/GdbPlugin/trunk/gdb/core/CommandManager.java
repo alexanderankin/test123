@@ -20,36 +20,25 @@ public class CommandManager extends Thread {
 		String cmd;
 		ResultHandler handler;
 		Integer id;
-		boolean wait;
 		boolean done = false;
-		// Add a CLI command
-		public Command(String cmd) {
-			this.cmd = cmd;
-			id = null;
-			handler = null;
-			wait = false;
-		}
 		public Command(Integer id, String cmd, ResultHandler handler) {
 			this.id = id;
 			this.cmd = cmd;
 			this.handler = handler;
-			wait = true;
 		}
 		public void run() {
 			ResultHandler wrapper = null;
-			if (wait) {
-				wrapper = new ResultHandler() {
-					public void handle(String msg, GdbResult res) {
-						if (handler != null)
-							handler.handle(msg, res);
-						synchronized(id) {
-							done = true;
-							id.notify();
-						}
+			wrapper = new ResultHandler() {
+				public void handle(String msg, GdbResult res) {
+					if (handler != null)
+						handler.handle(msg, res);
+					synchronized(id) {
+						done = true;
+						id.notify();
 					}
-				};
-				parser.addResultHandler(wrapper);
-			}
+				}
+			};
+			parser.addResultHandler(wrapper);
 			try {
 				//System.err.println("CommandManager: " + cmd);
 				Debugger.getInstance().gdbRecord(">>> CommandManager: " + cmd + "\n");
@@ -59,23 +48,20 @@ public class CommandManager extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (wait) {
-				// Wait for result
-				synchronized(id) {
-					try {
-						if (! done)
-							id.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			// Wait for result
+			synchronized(id) {
+				try {
+					if (! done)
+						id.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				parser.removeResultHandler(wrapper);
 			}
+			parser.removeResultHandler(wrapper);
 		}
 	}
-	public CommandManager(Process p, Parser parser) {
-		instance = this;
+	public void initialize(Process p, Parser parser) {
 		stdOutput = new BufferedWriter(
 				new OutputStreamWriter(p.getOutputStream()));
 		this.parser = parser;
@@ -97,13 +83,6 @@ public class CommandManager extends Thread {
 		Integer cid = Integer.valueOf(id);
 		id++;
 		Command c = new Command(cid, cmd, handler);
-		synchronized(commands) {
-			commands.add(c);
-			commands.notify();
-		}
-	}
-	public void addCLI(String cmd) {
-		Command c = new Command(cmd);
 		synchronized(commands) {
 			commands.add(c);
 			commands.notify();
@@ -133,6 +112,8 @@ public class CommandManager extends Thread {
 		}
 	}
 	public static CommandManager getInstance() {
+		if (instance == null)
+			instance = new CommandManager();
 		return instance ;
 	}
 }

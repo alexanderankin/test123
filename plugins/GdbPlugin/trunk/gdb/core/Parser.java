@@ -22,6 +22,7 @@ public class Parser extends Thread {
 	private Vector<ResultHandler> resultHandlers = new Vector<ResultHandler>();
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
+	static private Parser instance = null;
 	
 	static public class GdbResult {
 		Hashtable<String, Object> result = new Hashtable<String, Object>();
@@ -164,7 +165,7 @@ public class Parser extends Thread {
 		}
 	}
 	
-	Parser(Debugger debugger, Process gdbProcess) {
+	public void initialize (Debugger debugger, Process gdbProcess) {
 		this.debugger = debugger;
         stdInput = new BufferedReader(new 
                 InputStreamReader(gdbProcess.getInputStream()));
@@ -233,12 +234,14 @@ public class Parser extends Thread {
 			String msg = null;
 			GdbResult res = null;
 			if (sepIndex < 0) {
-				msg = line;
+				msg = line.substring(lineBegin + 1);
 			} else {
 				msg = line.substring(lineBegin + 1, sepIndex);
 				res = new GdbResult(line.substring(sepIndex + 1));
 			}
 			if (c == '^') {
+				if (msg.equals("running"))
+					GdbState.setState(GdbState.State.RUNNING);
 				for (int i = 0; i < resultHandlers.size(); i++)
 					resultHandlers.get(i).handle(msg, res);
 			} else {
@@ -283,4 +286,10 @@ public class Parser extends Thread {
 		}
 	}
 
+	static public Parser getInstance() {
+		if (instance == null)
+			instance = new Parser();
+		return instance ;
+	}
+	
 }

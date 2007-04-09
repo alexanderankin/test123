@@ -1,8 +1,8 @@
 package gdb.context;
 
-import gdb.core.CommandManager;
 import gdb.core.Debugger;
 import gdb.core.Parser;
+import gdb.core.GdbView;
 import gdb.core.Parser.GdbHandler;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -22,14 +21,20 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 @SuppressWarnings("serial")
-public class StackTrace extends JPanel {
+public class StackTrace extends GdbView {
 	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
 	private JTree tree;
-	private CommandManager commandManager = null;
 	private DefaultMutableTreeNode root;
-	private Parser parser = null;
 
+	private static Vector<FrameChangeListener> listeners =
+		new Vector<FrameChangeListener>();
+	
+	public interface FrameChangeListener {
+		void frameChanged(int newFrame);
+	}
+	
 	public StackTrace() {
+		super();
 		setLayout(new BorderLayout());
 		tree = new JTree();
 		root = new DefaultMutableTreeNode("Stack trace:");
@@ -37,19 +42,19 @@ public class StackTrace extends JPanel {
 		tree.setRootVisible(false);
 		tree.addMouseListener(new StackTraceListener());
 		add(new JScrollPane(tree));
-
 	}
 
-	public void setCommandManager(CommandManager cm) {
-		commandManager = cm;
+	public static void addFrameChangeListener(FrameChangeListener l) {
+		listeners.add(l);
 	}
-	public void setParser(Parser p) {
-		parser = p;
+	public static void removeFrameChangeListener(FrameChangeListener l) {
+		listeners.remove(l);
 	}
+
 	public void update() {
 		root.removeAllChildren();
-		commandManager.add("-stack-list-frames", new StackTraceResultHandler());
-		commandManager.add("-stack-list-arguments 1", new StackArgumentsResultHandler());
+		getCommandManager().add("-stack-list-frames", new StackTraceResultHandler());
+		getCommandManager().add("-stack-list-arguments 1", new StackArgumentsResultHandler());
 	}
 	public void sessionEnded() {
 		tree.setModel(emptyTreeModel);
@@ -179,14 +184,15 @@ public class StackTrace extends JPanel {
 			return level + " " + func + arguments + " " + location;
 		}
 		public void selected() {
-			commandManager.addCLI("frame " + level);
+			getCommandManager().add("frame " + level);
 			if (base == null) {
-				parser.addGdbHandler(new InfoSourceHandler(this));
-				commandManager.addCLI("info source");
+				Parser.getInstance().addGdbHandler(new InfoSourceHandler(this));
+				getCommandManager().add("info source");
 			}
 			else
 				jump();
-			Debugger.getInstance().frameSelected(level);
+			for (int i = 0; i < listeners.size(); i++)
+				listeners.get(i).frameChanged(level);
 		}
 		public int getLevel() {
 			return level;
@@ -206,7 +212,7 @@ public class StackTrace extends JPanel {
 		}
 	}
 
-	private class InfoSourceHandler implements GdbHandler {
+	private static class InfoSourceHandler implements GdbHandler {
 		StackTraceNode frame;
 		public InfoSourceHandler(StackTraceNode frame) {
 			this.frame = frame; 
@@ -218,7 +224,7 @@ public class StackTrace extends JPanel {
 				String path = line.substring(i + prefix.length()).trim();
 				frame.setBase(path);
 				frame.jump();
-				parser.removeGdbHandler(this);
+				Parser.getInstance().removeGdbHandler(this);
 			}
 		}
 	}
@@ -238,4 +244,5 @@ public class StackTrace extends JPanel {
 	public void updateTree() {
 		tree.setModel(new DefaultTreeModel(root));
 	}
+
 }

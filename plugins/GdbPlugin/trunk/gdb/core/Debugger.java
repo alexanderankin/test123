@@ -4,6 +4,7 @@ import gdb.breakpoints.Breakpoint;
 import gdb.breakpoints.BreakpointList;
 import gdb.breakpoints.BreakpointView;
 import gdb.context.StackTrace;
+import gdb.core.GdbState.State;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.execution.ControlView;
@@ -35,11 +36,9 @@ import debugger.itf.JEditFrontEnd;
 public class Debugger implements DebuggerTool {
 
 	private static Debugger debugger = null;
-	
+
 	private JEditFrontEnd frontEnd = null;
 	private Parser parser;
-
-	private boolean running = false;
 
 	// Views
 	private Console programOutput = null;
@@ -107,15 +106,13 @@ public class Debugger implements DebuggerTool {
 	}
 	
 	private void sessionEnded() {
-		running = false;
+		GdbState.setState(State.IDLE);
 		if (stackTracePanel != null)
 			stackTracePanel.sessionEnded();
 		if (localsPanel != null)
 			localsPanel.sessionEnded();
 		if (watchesPanel != null)
 			watchesPanel.sessionEnded();
-		if (variablesPanel != null)
-			variablesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
 	public void start() {
@@ -140,11 +137,13 @@ public class Debugger implements DebuggerTool {
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(command, env, dir);
-			running = true;
-	        parser = new Parser(this, p);
+			GdbState.setState(State.RUNNING);
+	        parser = Parser.getInstance();
+	        parser.initialize(this, p);
 	        parser.addOutOfBandHandler(new OutOfBandHandler());
 			parser.start();
-			commandManager = new CommandManager(p, parser);
+			commandManager = CommandManager.getInstance();
+			commandManager.initialize(p, parser);
 			commandManager.start();
 			// First set up the arguments
 			commandManager.add("-exec-arguments " + args);
@@ -199,41 +198,11 @@ public class Debugger implements DebuggerTool {
 	}
 
 	private void stopped(String file, int line) {
-		updateStackTrace();
-		updateLocals(0);
-		updateWatches();
-		updateVariables(0);
+		GdbState.setState(State.PAUSED);
 		frontEnd.setCurrentLocation(file, line);
 		
 	}
 
-	public void updateAllVars() {
-		if (localsPanel != null)
-			localsPanel.update();
-		if (watchesPanel != null)
-			watchesPanel.update();
-		if (variablesPanel != null)
-			variablesPanel.update();
-	}
-	private void updateWatches() {
-		if (watchesPanel != null) {
-			watchesPanel.setCommandManager(commandManager);
-			watchesPanel.update();
-		}
-	}
-	private void updateVariables(int frame) {
-		if (variablesPanel != null) {
-			variablesPanel.setCommandManager(commandManager);
-			variablesPanel.update(frame);
-		}
-	}
-	private void updateStackTrace() {
-		if (stackTracePanel != null) {
-			stackTracePanel.setCommandManager(commandManager);
-			stackTracePanel.setParser(parser);
-			stackTracePanel.update();
-		}
-	}
 	public void breakpointHit(int bkptno, String file, int line) {
 		String msg = "Breakpoint " + bkptno + " hit";
 		if (file != null)
@@ -296,16 +265,6 @@ public class Debugger implements DebuggerTool {
 
 	public JEditFrontEnd getFrontEnd() {
 		return frontEnd;
-	}
-	public void updateLocals(int frame) {
-		if (localsPanel != null) {
-			localsPanel.setCommandManager(commandManager);
-			localsPanel.update(frame);
-		}
-	}
-	public void frameSelected(int level) {
-		updateLocals(level);
-		updateVariables(level);
 	}
 
 	public JPanel showControlPanel(View view) {
@@ -377,7 +336,7 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public boolean isRunning() {
-		return running;
+		return GdbState.isRunning();
 	}
 
 	public CommandManager getCommandManager() {
