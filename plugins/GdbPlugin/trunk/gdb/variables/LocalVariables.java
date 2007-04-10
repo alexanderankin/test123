@@ -61,7 +61,7 @@ public class LocalVariables extends GdbView implements ChangeListener,
 		JScrollPane locals = new JScrollPane(tree);
 		add(locals);
 		tree.addMouseListener(new VarTreeMouseListener());
-		if (GdbState.getState() != GdbState.State.RUNNING)
+		if (GdbState.isStopped())
 			update();
 	}
 

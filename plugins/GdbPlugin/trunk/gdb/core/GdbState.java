@@ -29,6 +29,9 @@ public class GdbState {
 		return state;
 	}
 	
+	static public boolean isStopped() {
+		return (state == State.PAUSED || state == State.DEAD);
+	}
 	static public boolean isRunning() {
 		return (state != State.IDLE);
 	}

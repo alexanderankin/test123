@@ -43,7 +43,7 @@ public class StackTrace extends GdbView {
 		tree.setRootVisible(false);
 		tree.addMouseListener(new StackTraceListener());
 		add(new JScrollPane(tree));
-		if (GdbState.getState() != GdbState.State.RUNNING)
+		if (GdbState.isStopped())
 			update();
 	}
 
