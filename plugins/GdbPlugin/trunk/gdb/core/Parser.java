@@ -210,6 +210,8 @@ public class Parser extends Thread {
 	void parse(String line) {
 		//System.err.println("Parsing line: " + line);
 		debugger.gdbRecord(line + "\n");
+		if (line.length() == 0)
+			return;
 		int lineBegin = -1;
 		char c;
 		do {

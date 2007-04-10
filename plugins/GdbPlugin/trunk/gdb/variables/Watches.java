@@ -98,7 +98,7 @@ public class Watches extends GdbView implements ChangeListener {
 		tree.setRootVisible(false);
 		add(new JScrollPane(tree), BorderLayout.CENTER);
 		tree.addMouseListener(new VarTreeMouseListener());
-		if (GdbState.getState() != GdbState.State.RUNNING)
+		if (GdbState.isStopped())
 			update();
 	}
 
