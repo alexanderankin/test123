@@ -44,20 +44,27 @@ public class PVHelper {
      * @return the name of the project containing the given filename
      */
     public static String getProjectNameForFile( String filename ) {
-        String project_name = projectNameForFile.get(filename);
-        if (project_name != null) {
+        if ( filename == null ) {
+            return null;
+        }
+        String project_name = projectNameForFile.get( filename );
+        if ( project_name != null ) {
             return project_name;
         }
-        if (!isProjectViewerAvailable())
+        if ( !isProjectViewerAvailable() ) {
             return null;
+        }
         ProjectManager pm = ProjectManager.getInstance();
         for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
             VPTProject project = ( VPTProject ) it.next();
-            VPTNode node = project.getChildNode( filename );
-            if ( node != null ) {
-                project_name = project.getName();
-                projectNameForFile.put(filename, project_name);
-                return project_name;
+            Collection nodes = project.getOpenableNodes();
+            for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
+                VPTNode node = ( VPTNode ) iter.next();
+                if ( node != null && filename.equals( node.getNodePath() ) ) {
+                    project_name = project.getName();
+                    projectNameForFile.put( filename, project_name );
+                    return project_name;
+                }
             }
         }
         return null;
@@ -74,24 +81,22 @@ public class PVHelper {
     /**
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
-    public static Path getClassPathForProject(String projectName) {
+    public static Path getClassPathForProject( String projectName ) {
         boolean useJavaClasspath = jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
-        //System.out.println("+++++ useJavaClasspath = " + useJavaClasspath);
-        String classpath = jEdit.getProperty("sidekick.java.pv." + projectName + ".optionalClasspath", "");
-        Path path = new Path(classpath);
-        if (useJavaClasspath) {
+        String classpath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalClasspath", "" );
+        Path path = new Path( classpath );
+        if ( useJavaClasspath ) {
             path.concatSystemClassPath();
         }
-        //System.out.println("+++++ PVHelper, classpath for project " + projectName + " = " + path.toString());
         return path;
     }
 
     /**
      * @return a Path containing the sourcepath as set in ProjectViewer for the given project
      */
-    public static Path getSourcePathForProject(String projectName) {
-        String sourcepath = jEdit.getProperty("sidekick.java.pv." + projectName + ".optionalSourcepath", "");
-        Path path = new Path(sourcepath);
+    public static Path getSourcePathForProject( String projectName ) {
+        String sourcepath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalSourcepath", "" );
+        Path path = new Path( sourcepath );
         return path;
     }
 }

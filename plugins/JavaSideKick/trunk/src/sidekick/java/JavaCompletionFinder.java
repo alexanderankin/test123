@@ -110,7 +110,6 @@ public class JavaCompletionFinder {
                 break;
             }
         }
-        //System.out.println( "+_+_+_+_+ getWordAtCursor: " + text );
         return text;
     }
 
@@ -468,7 +467,6 @@ public class JavaCompletionFinder {
      * @param filename the filename of the buffer
      */
     public Class getClassForType( String type, CUNode cu, String filename ) {
-        ///System.out.println("+++++ type = " + type);
         // check in same package
         String packageName = cu.getPackageName();
         if ( packageName != null ) {
@@ -487,7 +485,7 @@ public class JavaCompletionFinder {
                 String className = packageName;
                 // might have a fully qualified import
                 if ( className.endsWith( type ) ) {
-                    //System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
+                    ///System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
                     Class c = validateClassName( className, type, filename );
                     if ( c != null )
                         return c;
@@ -495,7 +493,6 @@ public class JavaCompletionFinder {
                 else {
                     // wildcard import, need to add . and type
                     className = packageName + "." + type;
-                    //System.out.println("+++++ checking class: " + className);
                     /// this is probably very expensive...
                     try {
                         Class c = validateClassName( className, type, filename );
@@ -538,21 +535,27 @@ public class JavaCompletionFinder {
     }
 
     private Class findClassInProject( String classname, String type, String filename ) {
-        if (filename == null)
+        if (filename == null) {
             return null;
+        }
         String project_name = PVHelper.getProjectNameForFile( filename );
         Class c = null;
         if ( project_name != null ) {
-            try {
                 String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
                 Path pc = new Path( project_classpath );
                 /// TODO: use setting from pv option pane on whether or not to include system classpath,
                 /// then can remove classpath check from getClassForType above.
                 AntClassLoader loader = new AntClassLoader( pc );
+            try {
                 c = loader.findClass( type );
             }
             catch ( Exception e ) {
                 ///e.printStackTrace();     // too loud, shut up!
+                try {
+                    c = loader.findClass(classname);
+                }
+                catch(Exception ee) {
+                }
             }
         }
         return c;
