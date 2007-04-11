@@ -34,7 +34,6 @@ public class Path {
         else
             paths.addAll( systemClassPath.getPaths() );
         compact();
-        //System.out.println("%%%%% " + toString());
         return this;
     }
 
@@ -48,15 +47,15 @@ public class Path {
         return paths.iterator();
     }
 
-	/**
-	 * Removes duplicates while retaining order.
-	 */
+    /**
+     * Removes duplicates while retaining order.
+     */
     private void compact() {
         if ( paths != null ) {
             paths = ListOps.toList( ListOps.toSet( paths ) );
         }
     }
-    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         String pathSep = System.getProperty("path.separator");

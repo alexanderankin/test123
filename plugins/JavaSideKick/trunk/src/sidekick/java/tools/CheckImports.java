@@ -113,7 +113,8 @@ public class CheckImports {
             if ( in != null ) {
                 imports.remove( in );
             }
-            name = name.substring( 0, name.lastIndexOf( "." ) );
+            if (name.indexOf(".") > 0)
+                name = name.substring( 0, name.lastIndexOf( "." ) );
             in = cu.getImport( name );
             if ( in != null ) {
                 imports.remove( in );
@@ -124,8 +125,6 @@ public class CheckImports {
             for ( Iterator it = imports.iterator(); it.hasNext(); ) {
                 ImportNode in = ( ImportNode ) it.next();
                 Range range = new Range( in.getStartLocation(), in.getEndLocation() );
-                //System.out.println("+++++ range: " + range);
-                //System.out.println("+++++ filename: " + filename);
                 myErrorSource.addError( ErrorSource.WARNING, filename, range.startLine - 1, range.startColumn - 1, range.endColumn, "Unused import: " + in.getName() );
             }
         }
@@ -152,7 +151,6 @@ public class CheckImports {
                 break;
             case TigerNode.PRIMARY_EXPRESSION:
                 type = child.getName();
-                ///System.out.println("===== type = " + type + ", " + child.toString());
                 if ( type.indexOf( "." ) > -1 ) {
                     type = type.substring( 0, type.indexOf( "." ) );
                 }
@@ -192,8 +190,9 @@ public class CheckImports {
                     return ;     // don't need to do anything with void
                 }
                 type = ( ( Type ) child ).getName();
-                if ( type != null && type.length() > 0 )
+                if ( type != null && type.length() > 0 ) {
                     c = finder.getClassForType( type, cu, filename );
+                }
                 break;
             default:
                 type = child.getType();
@@ -205,9 +204,18 @@ public class CheckImports {
                 break;
         }
         if ( c != null ) {
-            type = c.getPackage().getName() + "." + type;
-            child.setFullyQualifiedTypeName( type );
+            if ( c.getPackage() != null ) {
+                type = c.getPackage().getName() + "." + type;
+            }
+            else {
+                type = c.getName();
+            }
+                child.setFullyQualifiedTypeName( type );
             checked.add( type );
+        }
+        else {
+            // it could be that the type does exist in the project, but it's not
+            // compiled yet.
         }
         if ( child.getChildren() != null ) {
             for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
