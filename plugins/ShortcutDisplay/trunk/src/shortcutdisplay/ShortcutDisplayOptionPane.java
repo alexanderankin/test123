@@ -18,11 +18,15 @@
  */
 package shortcutdisplay;
 
-import javax.swing.JLabel;
-import javax.swing.Box;
-import java.awt.BorderLayout;
-import javax.swing.*;
+import java.util.Hashtable;
+
 import org.gjt.sp.jedit.*;
+
+import java.awt.BorderLayout;
+
+import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.JLabel;
 
 
 /**
@@ -31,48 +35,66 @@ import org.gjt.sp.jedit.*;
  *@author     jchoyt
  *@created    November 20, 2005
  */
-public class ShortcutDisplayOptionPane extends AbstractOptionPane
-{
-
+public class ShortcutDisplayOptionPane extends AbstractOptionPane {
     private JCheckBox showPopup;
     private JCheckBox sortByAction;
-
+    private JSlider popupDelay;
+    private int delay = 500;
 
     /**
      *  Constructor for the ShortcutDisplayOptionPane object
      */
-    public ShortcutDisplayOptionPane()
-    {
-        super( "shortcut-display" );
+    public ShortcutDisplayOptionPane() {
+        super("shortcut-display");
     }
 
     // protected members
     /**
      *  Description of the Method
      */
-    protected void _init()
-    {
-        setLayout( new BorderLayout( 12, 12 ) );
+    protected void _init() {
+        setLayout(new BorderLayout(12, 12));
 
-        showPopup = new JCheckBox( jEdit.getProperty( "options.shortcuts.popup.label" ),
-            jEdit.getBooleanProperty( "options.shortcuts.displaypopup", true ) );
-        sortByAction = new JCheckBox( jEdit.getProperty( "options.shortcuts.popup.sort.label" ),
-            jEdit.getBooleanProperty( "options.shortcuts.sortbyaction", false ) );
+        showPopup = new JCheckBox(jEdit.getProperty(
+                    "options.shortcuts.popup.label"),
+                jEdit.getBooleanProperty("options.shortcuts.displaypopup", true));
+        sortByAction = new JCheckBox(jEdit.getProperty(
+                    "options.shortcuts.popup.sort.label"),
+                jEdit.getBooleanProperty("options.shortcuts.sortbyaction", false));
+        delay = jEdit.getIntegerProperty("options.shortcut-display.popup.delay",
+                500);
+        popupDelay = new JSlider(200, 3000, delay);
+        popupDelay.setPaintLabels(true);
+        popupDelay.setMajorTickSpacing(500);
+        popupDelay.setPaintTicks(true);
+		Hashtable labelTable = new Hashtable();
+		for(int i = 500; i <= 3000; i += 500)
+		{
+			labelTable.put(new Integer(i),new JLabel(
+				String.valueOf((double)i / 1000.0)));
+		}
+        popupDelay.setLabelTable(labelTable);
+        // popupDelay.setEnabled(keystrokeParse.isSelected());
+
         Box center = Box.createVerticalBox();
-        center.add( showPopup );
-        center.add( sortByAction );
+        center.add(showPopup);
+        center.add(sortByAction);
+        center.add(new JLabel(jEdit.getProperty(
+                    "options.shortcuts.popup.delay.label")));
+        center.add(popupDelay);
 
-        add( BorderLayout.CENTER, center );
+        add(BorderLayout.CENTER, center);
     }
-
 
     /**
      *  Description of the Method
      */
-    protected void _save()
-    {
-        jEdit.setBooleanProperty( "options.shortcuts.displaypopup", showPopup.isSelected() );
-        jEdit.setBooleanProperty( "options.shortcuts.sortbyaction", sortByAction.isSelected() );
+    protected void _save() {
+        jEdit.setBooleanProperty("options.shortcuts.displaypopup",
+            showPopup.isSelected());
+        jEdit.setBooleanProperty("options.shortcuts.sortbyaction",
+            sortByAction.isSelected());
+        jEdit.setIntegerProperty("options.shortcut-display.popup.delay", popupDelay.getValue());
     }
 }
 

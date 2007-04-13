@@ -11,6 +11,10 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.*;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 
 /**
  *  Description of the Class
@@ -21,6 +25,7 @@ import org.gjt.sp.jedit.gui.*;
 public class SDChangeListener implements ChangeListener
 {
 
+    private Timer popupTimer;
     /**
      *  Description of the Method
      *
@@ -28,14 +33,25 @@ public class SDChangeListener implements ChangeListener
      */
     public void stateChanged( ChangeEvent e )
     {
-        Log.log(Log.DEBUG,this,"got stateChanged event: " + e);
-        ShortcutPrefixActiveEvent evt = ( ShortcutPrefixActiveEvent ) e;
+        // Log.log(Log.DEBUG,this,"got stateChanged event: " + e);
+        final ShortcutPrefixActiveEvent evt = ( ShortcutPrefixActiveEvent ) e;
         if ( evt.getActive() == true )
         {
-            ShortcutDisplay.displayShortcuts( evt.getBindings() );
+            popupTimer = new Timer(jEdit.getIntegerProperty("options.shortcut-display.delay", 500), new ActionListener()  //2 second delay for testing
+                {
+                    public void actionPerformed(ActionEvent dontcare)
+                    {
+                        ShortcutDisplay.displayShortcuts( evt.getBindings() );
+                    }
+                }
+            );
+            popupTimer.setRepeats(false);
+            popupTimer.start();
         }
         else
         {
+            if(popupTimer==null || popupTimer.isRunning())
+                popupTimer.stop();
             ShortcutDisplay.disposeShortcuts();
         }
     }
