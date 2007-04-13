@@ -52,9 +52,14 @@ public class Breakpoint {
 	public void initialize() {
 		CommandManager commandManager = CommandManager.getInstance();
 		if (commandManager != null) {
-			if (file != null)
-				commandManager.add("-break-insert " + file + ":" + line,
+			if (file != null) {
+				String fileName = file;
+				if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") > -1) {
+					fileName = file.replace('\\', '/');
+				}
+				commandManager.add("-break-insert " + fileName + ":" + line,
 						new BreakpointResultHandler(this));
+			}
 			else // Watchpoint
 				commandManager.add("-break-watch " + options + " " + what,
 						new BreakpointResultHandler(this));
