@@ -37,7 +37,7 @@ public class SDChangeListener implements ChangeListener
         final ShortcutPrefixActiveEvent evt = ( ShortcutPrefixActiveEvent ) e;
         if ( evt.getActive() == true )
         {
-            popupTimer = new Timer(jEdit.getIntegerProperty("options.shortcut-display.delay", 500), new ActionListener()  //2 second delay for testing
+            popupTimer = new Timer(jEdit.getIntegerProperty("options.shortcut-display.popup.delay", 500), new ActionListener()  //2 second delay for testing
                 {
                     public void actionPerformed(ActionEvent dontcare)
                     {
