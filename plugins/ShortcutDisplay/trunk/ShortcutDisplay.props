@@ -18,3 +18,5 @@ plugin.shortcutdisplay.ShortcutDisplayPlugin.option-pane=shortcut-display-menu
 options.shortcut-display-menu.label=ShortcutDisplay
 options.shortcut-display-menu.code=new shortcutdisplay.ShortcutDisplayOptionPane();
 
+options.shortcut-display.popup.delay=500
+options.shortcuts.popup.delay.label=Popup delay (in seconds)
