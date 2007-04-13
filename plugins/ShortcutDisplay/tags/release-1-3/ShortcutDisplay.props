@@ -1,0 +1,22 @@
+# Plugin properties
+plugin.shortcutdisplay.ShortcutDisplayPlugin.name=ShortcutDisplay
+plugin.shortcutdisplay.ShortcutDisplayPlugin.author=Jeffrey Hoyt
+plugin.shortcutdisplay.ShortcutDisplayPlugin.version=1.2.1
+plugin.shortcutdisplay.ShortcutDisplayPlugin.docs=index.html
+plugin.shortcutdisplay.ShortcutDisplayPlugin.depend.0=jedit 04.03.03.00
+plugin.shortcutdisplay.ShortcutDisplayPlugin.depend.1=jdk 1.5
+# plugin.shortcutdisplay.ShortcutDisplayPlugin.menu=open-ftp
+plugin.shortcutdisplay.ShortcutDisplayPlugin.activate=startup
+plugin.shortcutdisplay.ShortcutDisplayPlugin.description=This plugin causes a pop up to be displayed whenever the user presses a shortcut prefix.
+
+# Labels for option pane
+options.shortcuts.popup.label=Display shortcut popup on prefix
+options.shortcuts.popup.sort.label=Sort popup by Action instead of shortcut
+
+# Add option pane
+plugin.shortcutdisplay.ShortcutDisplayPlugin.option-pane=shortcut-display-menu
+options.shortcut-display-menu.label=ShortcutDisplay
+options.shortcut-display-menu.code=new shortcutdisplay.ShortcutDisplayOptionPane();
+
+options.shortcut-display.popup.delay=500
+options.shortcuts.popup.delay.label=Popup delay (in seconds)
