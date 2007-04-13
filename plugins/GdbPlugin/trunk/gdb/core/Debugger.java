@@ -107,12 +107,6 @@ public class Debugger implements DebuggerTool {
 	
 	private void sessionEnded() {
 		GdbState.setState(State.IDLE);
-		if (stackTracePanel != null)
-			stackTracePanel.sessionEnded();
-		if (localsPanel != null)
-			localsPanel.sessionEnded();
-		if (watchesPanel != null)
-			watchesPanel.sessionEnded();
 		frontEnd.programExited();
 	}
 	public void start() {

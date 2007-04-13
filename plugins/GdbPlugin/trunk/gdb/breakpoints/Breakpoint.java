@@ -15,6 +15,7 @@ public class Breakpoint {
 	boolean enabled;
 	String condition = "";
 	int skipCount = 0;
+	boolean initialized = false;
 	// For watchpoints
 	String what;
 	String options;
@@ -50,6 +51,8 @@ public class Breakpoint {
 		BreakpointList.getInstance().add(this);
 	}
 	public void initialize() {
+		if (initialized)
+			return;
 		CommandManager commandManager = CommandManager.getInstance();
 		if (commandManager != null) {
 			if (file != null) {
@@ -63,6 +66,7 @@ public class Breakpoint {
 			else // Watchpoint
 				commandManager.add("-break-watch " + options + " " + what,
 						new BreakpointResultHandler(this));
+			initialized = true;
 		}
 	}
 	public boolean isBreakpoint() {
