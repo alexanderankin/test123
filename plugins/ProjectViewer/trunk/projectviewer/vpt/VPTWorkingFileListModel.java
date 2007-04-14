@@ -123,12 +123,12 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	public void nodeStructureChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
 		if (!n.isGroup()) {
-			n = VPTNode.findProjectFor(n);
+			node = VPTNode.findProjectFor(n);
 			checkOpenFiles((VPTProject) n);
-			super.nodeStructureChanged(n);
-		} else {
-			super.nodeStructureChanged(node);
+			lastParent = null;
+			lastList = null;
 		}
+		super.nodeStructureChanged(node);
 	} //}}}
 
 	//{{{ -checkOpenFiles() : void
