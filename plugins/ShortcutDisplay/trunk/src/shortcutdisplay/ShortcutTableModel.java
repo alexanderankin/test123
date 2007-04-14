@@ -1,6 +1,6 @@
 /*
  * :tabSize=4:indentSize=4:noTabs=true:
- * 
+ *
  *
  *  $Source$
  *  Copyright (C) 2004 Jeffrey Hoyt
@@ -34,7 +34,7 @@ import shortcutdisplay.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.util.*; 
+import org.gjt.sp.util.*;
 
 /**
  *  Table model for the pop up display box
@@ -45,13 +45,13 @@ import org.gjt.sp.util.*;
 class ShortcutTableModel extends AbstractTableModel
 {
 
-	
+
 	String[] columnTitles = {"Name", "Shortcut"};
 	List shortcuts;
 	int maxActionLength = 0;
-	int maxShortcutLength = 0; 
+	int maxShortcutLength = 0;
 
-	
+
 	/**
 	 *  Gets the preferredWidth attribute of the ShortcutTableModel object
 	 *
@@ -60,9 +60,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public int getPreferredWidth()
 	{
 		return (int) ((maxActionLength + maxShortcutLength) * 1.1);
-	} 
+	}
 
-	
+
 	/**
 	 *  Constructor for the ShortcutTableModel object
 	 *
@@ -71,9 +71,9 @@ class ShortcutTableModel extends AbstractTableModel
 	ShortcutTableModel(Map bindings)
 	{
 		shortcuts = ShortcutTableModel.parseShortcuts(bindings, this);
-	} 
+	}
 
-	
+
 	/**
 	 *  Description of the Method
 	 *
@@ -95,10 +95,9 @@ class ShortcutTableModel extends AbstractTableModel
 		Object value;
 		while (iter.hasNext())
 		{
-			key = iter.next();
-			value = bindings.get(key);
-            // Log.log(Log.DEBUG,ShortcutTableModel.class, key);
-            // Log.log(Log.DEBUG,ShortcutTableModel.class, value);
+            key = iter.next();
+            value = bindings.get(key);
+            // Log.log(Log.DEBUG,ShortcutTableModel.class, key + " = " + value);
 			if (key instanceof KeyEventTranslator.Key)
 			{
 				// Log.log(Log.DEBUG, ShortcutDialog.class, key);
@@ -106,20 +105,29 @@ class ShortcutTableModel extends AbstractTableModel
 			}
 			if (value instanceof String)
 			{
+                String val;
+                EditAction ea = jEdit.getAction((String) value);
+                if( ea==null )
+                {
+                    val = (String)value;
+                }
+                else val = ea.getLabel().replaceAll("\\$","");
 				if (!key.equals(DefaultInputHandler.PREFIX_STR))
 				{
-					ret.add(new Shortcut((String) value, prefix + " " + key));
+					ret.add(new Shortcut(val, prefix + " " + key));
 				}
-				model.setMaxColumnWidths(prefix + " " + key, (String) value);
+				model.setMaxColumnWidths(prefix + " " + key, val);
 
 			}
 			else if (value instanceof Map)
 			{
 				ret.addAll(parseShortcuts((Map) value, model));
 			}
-            else if(value instanceof EditAction)
+            else if(value != null && value instanceof EditAction)
             {
-                ret.add(new Shortcut(String.valueOf( value ), prefix + " " + key));
+                Log.log(Log.DEBUG, ShortcutDialog.class, "Doing getLabel()");
+                String name = ((EditAction)value).getLabel();
+                ret.add(new Shortcut(name, prefix + " " + key));
             }
 			else
 			{
@@ -135,9 +143,9 @@ class ShortcutTableModel extends AbstractTableModel
 			Collections.sort(ret);
 		}
 		return ret;
-	} 
+	}
 
-	
+
 	/**
 	 *  A modification of the code pilfered (with modifications) from GrabKeyDialog
 	 *
@@ -172,9 +180,9 @@ class ShortcutTableModel extends AbstractTableModel
 			keyString.append(symbolicName);
 		}
 		return keyString.toString();
-	} 
+	}
 
-	
+
 	/**
 	 *  Constructor for the setMaxColumnWidths object
 	 *
@@ -185,9 +193,9 @@ class ShortcutTableModel extends AbstractTableModel
 	{
 		maxActionLength = maxActionLength > action.length() ? maxActionLength : action.length();
 		maxShortcutLength = maxShortcutLength > shortcut.length() ? maxShortcutLength : shortcut.length();
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the cellEditable attribute of the ShortcutTableModel object
 	 *
@@ -198,9 +206,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
 		return false;
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the columnName attribute of the ShortcutTableModel object
 	 *
@@ -210,9 +218,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public String getColumnName(int col)
 	{
 		return columnTitles[col];
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the columnClass attribute of the ShortcutTableModel object
 	 *
@@ -222,9 +230,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public Class getColumnClass(int col)
 	{
 		return String.class;
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the rowCount attribute of the ShortcutTableModel object
 	 *
@@ -233,9 +241,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public int getRowCount()
 	{
 		return shortcuts.size();
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the columnCount attribute of the ShortcutTableModel object
 	 *
@@ -244,9 +252,9 @@ class ShortcutTableModel extends AbstractTableModel
 	public int getColumnCount()
 	{
 		return 2;
-	} 
+	}
 
-	
+
 	/**
 	 *  Gets the valueAt attribute of the ShortcutTableModel object
 	 *
@@ -265,7 +273,7 @@ class ShortcutTableModel extends AbstractTableModel
 			default:
 				throw new IllegalArgumentException("Only 2 columns in the list");
 		}
-	} 
-} 
+	}
+}
 
 
