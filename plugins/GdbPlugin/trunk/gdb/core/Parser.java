@@ -1,6 +1,7 @@
 package gdb.core;
 
-import java.awt.HeadlessException;
+import gdb.core.GdbState.StateListener;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +24,8 @@ public class Parser extends Thread {
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
 	static private Parser instance = null;
+	private Thread errThread;
+	private boolean stopping = false;
 	
 	static public class GdbResult {
 		Hashtable<String, Object> result = new Hashtable<String, Object>();
@@ -167,10 +170,10 @@ public class Parser extends Thread {
 	
 	public void initialize (Debugger debugger, Process gdbProcess) {
 		this.debugger = debugger;
-        stdInput = new BufferedReader(new 
-                InputStreamReader(gdbProcess.getInputStream()));
-        stdError = new BufferedReader(new 
-                InputStreamReader(gdbProcess.getErrorStream()));
+        stdInput = new BufferedReader(
+        		new InputStreamReader(gdbProcess.getInputStream()));
+        stdError = new BufferedReader(
+        		new InputStreamReader(gdbProcess.getErrorStream()));
 	}
 	
 	public void addResultHandler(ResultHandler rh)
@@ -261,30 +264,34 @@ public class Parser extends Thread {
 	@Override
 	public void run() {
 		String line;
-		Thread errThread = new Thread() {
+		errThread = new Thread() {
 			public void run() {
 				String line;
-				try {
-					while ((line=stdError.readLine()) != null)
-						debugger.programError(line + "\n");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				while (! stopping) {
+					try {
+						while (stdError.ready()) {
+							if ((line=stdError.readLine()) != null)
+								debugger.programError(line + "\n");
+						}
+					} catch (IOException e) {
+					}
+					try {
+						sleep(200);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		};
 		errThread.start();
-		try {
-			while ((line=stdInput.readLine()) != null)
-			{
-				parse(line);
+		GdbState.addStateListener(new ParserStateListener());
+		while (! stopping) {
+			try {
+				while (stdInput.ready()) {
+					if ((line=stdInput.readLine()) != null)
+						parse(line);
+				}
+			} catch (IOException e) {
 			}
-		} catch (HeadlessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -294,4 +301,16 @@ public class Parser extends Thread {
 		return instance ;
 	}
 	
+	private class ParserStateListener implements StateListener {
+		public void stateChanged(gdb.core.GdbState.State prev,
+				gdb.core.GdbState.State current) {
+			if (current != GdbState.State.IDLE)
+				return;
+			stopping = true;
+			outOfBandHandlers.clear();
+			resultHandlers.clear();
+			gdbHandlers.clear();
+		}
+		
+	}
 }
