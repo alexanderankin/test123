@@ -555,11 +555,11 @@ public final class ProjectViewer extends JPanel
 			if (child.isProject() || child.isGroup()) {
 				if (v.fileTree != null) {
 					((DefaultTreeModel)v.fileTree.getModel())
-						.nodesWereInserted(parent, ind);
+						.nodeStructureChanged(parent);
 				}
 				if (v.workingFileTree != null) {
 					((DefaultTreeModel)v.workingFileTree.getModel())
-						.nodesWereInserted(parent, ind);
+						.nodeStructureChanged(parent);
 				}
 			}
 		}
@@ -625,11 +625,11 @@ public final class ProjectViewer extends JPanel
 			if (child.isProject() || child.isGroup()) {
 				if (v.fileTree != null) {
 					((DefaultTreeModel)v.fileTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
+						.nodeStructureChanged(parent);
 				}
 				if (v.workingFileTree != null) {
 					((DefaultTreeModel)v.workingFileTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
+						.nodeStructureChanged(parent);
 				}
 			}
 		}
