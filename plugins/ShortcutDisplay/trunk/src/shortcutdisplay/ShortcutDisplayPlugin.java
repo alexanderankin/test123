@@ -1,16 +1,9 @@
 package shortcutdisplay;
 
-import javax.swing.event.*;
-import java.awt.Component;
-import java.io.*;
-import java.util.Hashtable;
-import java.util.Vector;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.gui.*;
 
 
 /**
