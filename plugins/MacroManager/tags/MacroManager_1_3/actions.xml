@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="macroManager-download">
+		<CODE>
+			new macroManager.InstallMacrosDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="macroManager-popup">
+		<CODE>
+			macroManager.MacroManagerPlugin.showPopup(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
