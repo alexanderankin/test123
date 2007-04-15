@@ -104,6 +104,7 @@ class MacroListHandler extends HandlerBase
 		{
 			description = null;
 			macroSet = new MacroList.MacroSet();
+			macroList.addMacroSet(macroSet);
 		}
 		else if(tag == "macro")
 		{
@@ -126,13 +127,17 @@ class MacroListHandler extends HandlerBase
 
 		if(tag == "macro_set")
 		{
-			macroList.addMacroSet(macroSet);
+			macroSet.name = name;
+			macroSet.description = description;
 			macroSet = null;
 			macroSetEntry = null;
 		}
 		else if(tag == "macro_set_entry")
 		{
-			macroSet.macros.addElement(macroSetEntry);
+			macroSetEntry = searchAndReplace(macroSetEntry, "_", " ");
+			macroSetEntry = searchAndReplace(macroSetEntry, ".bsh", "");
+			macroList.addMacroSetEntry(macroSetEntry);
+			//macroSet.macros.addElement(macroSetEntry);
 			macroSetEntry = null;
 		}
 		else if(tag == "macro")

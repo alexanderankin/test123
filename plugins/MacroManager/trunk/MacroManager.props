@@ -7,21 +7,21 @@ plugin.macroManager.MacroManagerPlugin.activate=defer
 # Plugin properties
 #
 plugin.macroManager.MacroManagerPlugin.name=MacroManager
+plugin.macroManager.MacroManagerPlugin.title=MacroManager
 plugin.macroManager.MacroManagerPlugin.author=Carmine Lucarelli
-plugin.macroManager.MacroManagerPlugin.version=1.2
+plugin.macroManager.MacroManagerPlugin.version=1.3
 plugin.macroManager.MacroManagerPlugin.docs=index.html
-plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.00.00.00
+plugin.macroManager.MacroManagerPlugin.jars=tar.jar activation.jar
+plugin.macroManager.MacroManagerPlugin.depend.0=jedit 04.02.00.00
+plugin.macroManager.MacroManagerPlugin.depend.1=jdk 1.4.1
 
 #
 # Menu properties
 #
-macroManager.label=Macro Manager
-macroManager-toggle.label=Character Map Toggle
-
-#
-# menu for 4.2 api
-#
-plugin.macroManager.MacroManagerPlugin.menu-item=macroManager
+plugin.macroManager.MacroManagerPlugin.menu=macroManager-download macroManager-popup
+#plugin.macroManager.MacroManagerPlugin.label=MacroManager
+macroManager-download.label=Download macros
+macroManager-popup.label=Macro popup
 
 #
 # errors
@@ -57,15 +57,20 @@ install-macros.custom=Install in custom directory
 install-macros.install=Install
 install-macros.refreshList=Update List of Macros from Server
 install-macros.refresh=Macro list last downloaded on
+install-macros.choosedir=Choose custom directory
 install-macros.sort-by-date=Sort By Date
 install-macros.sort-by-name=Sort By Name
+install-macros.sort-by-set=Sort By Type
 install-macros.searchField=Search for...
+install-macros.filechooser.title=Please choose a directory
+install-macros.filechooser.filefilter=Directories
 macro-list.progress.title=Macro Manager
 macro-list.progress.caption=Downloading macro list
 macro-list.progress.stop=Stop
 macro-list.xmlerror=An xml error has occurred
 macro-list.xmlerror=An io error has occurred
-
+macro-manager.popup.message=Enter macro name:
+macro-manager.popup.filter-message=Filter (? = any character, * = any string)
 macro-manager.progress.install-task=Installing Macros
 macro-manager.progress.downloading=Downloading {0}
 macro-manager.progress.stop=Stop

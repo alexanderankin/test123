@@ -1,8 +1,3 @@
-TODO for Macro Manager 1.3
+TODO for Macro Manager 1.4
 --------------------------
-
-- categorize macro listing
-- select a macro, enter a search term, press <enter> and you
-  start downloading selected macros immediately.  not so bad
-  now that data is cached, but should be fixed
 

@@ -7,6 +7,7 @@
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
 	<property name="jedit.install.dir" value="../.."/>
+	<property name="lib.dir" value="lib"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir" value=".."/>
@@ -14,7 +15,8 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-<!--		<pathelement location="${install.dir}/InfoViewer.jar"/>  -->
+		<pathelement location="${install.dir}/tar.jar"/>
+    <pathelement location="${install.dir}/CommonControls.jar"/> 
 		<pathelement location="${src.dir}"/>
 	</path>
 
@@ -51,6 +53,9 @@
 				<include name="**/*.txt"/>
 			</fileset>
 		</jar>
+
+    <copy file="${lib.dir}/tar.jar" todir="${install.dir}"/>
+    <copy file="${lib.dir}/activation.jar" todir="${install.dir}"/>
 	</target>
 
 
