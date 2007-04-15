@@ -289,6 +289,9 @@ public abstract class Shell
 
 	// {{{ Inner classes
 	// {{{ ShellAction class
+	/** All ShellActions select a named Shell.
+	    @since Console 4.3
+	*/
 	abstract static class ShellAction extends EditAction
 	{
 		protected String shellName;
@@ -303,6 +306,11 @@ public abstract class Shell
 	}// }}}
 
 	// {{{ ToggleAction class
+	/** A ToggleAction is a ShellAction which also toggles the
+	    visibility of the Console. 
+	    
+	    
+	*/
 	public static class ToggleAction extends ShellAction {
 
 		public String getLabel() {
@@ -324,6 +332,9 @@ public abstract class Shell
 
 	} // }}}
 	// {{{ SwitchAction class
+	/**
+	    A SwitchAction selects a shell and makes Console visible.
+	*/
 	public static class SwitchAction extends ShellAction
 	{
 		public SwitchAction(String shellName)
