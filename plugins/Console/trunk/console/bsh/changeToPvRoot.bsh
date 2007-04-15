@@ -19,9 +19,9 @@ changeToPvRoot(view) {
     project = pv.getActiveProject(view);
     if (project != null) {
         path = project.getRootPath();
-	cmd = "cd \"" + path + "\"";
-	sysShell.execute(con, null, sstate, null, cmd); 
-	sysShell.printPrompt(con, sstate);
+		cmd = "cd \"" + path + "\"";
+		sysShell.execute(con, null, sstate, null, cmd);
+		sysShell.printPrompt(con, sstate);
     }
 }
 
