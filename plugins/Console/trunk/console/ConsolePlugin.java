@@ -255,6 +255,7 @@ public class ConsolePlugin extends EBPlugin
 			shellSwitchActions.addAction(ac2);
 		}
 		jEdit.addActionSet(shellSwitchActions);
+		redoKeyboardBindings(shellSwitchActions);
 		EditBus.send(new DynamicMenuChanged(MENU));
 	} // }}}
 
@@ -283,8 +284,7 @@ public class ConsolePlugin extends EBPlugin
 
 	// {{{ redoKeyboardBindings
 	/**
-	@deprecated - this is probably obsolete,
-		but I have to verify.
+		A fix for keyboard bindings that are dynamically generated.
 	*/
 	static private void redoKeyboardBindings(ActionSet actionSet)
 	/* Code duplication from jEdit.initKeyBindings() is bad, but
