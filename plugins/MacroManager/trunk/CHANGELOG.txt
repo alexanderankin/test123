@@ -1,6 +1,17 @@
 ChangeLog for MacroManager plugin
 =================================
 
+VERSION 1.3
+- can now handle archived/compressed downloads (gzip, tar and zip)
+- new dependencies on tar.jar and activation.jar
+- fixed bug that caused NullPointerExceptions on searches
+- allow the dialog to set it's own size (scrollpanel looks nicer this way)
+- added "sort by category", though some macros aren't categorized in the xml,
+  so they aren't shown in this view
+- added "Macro popup" action to allow users to search through and run macros
+  (gui adapted from popup in OpenIt plugin)
+- fixed bug where searching with macros selected would just install those macros
+
 VERSION 1.2
 - show number of downloads in dialog
 - save macros based on the name attribute, rather than url

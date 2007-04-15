@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.zip.*;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 
 import javax.swing.*;
 
@@ -34,11 +35,13 @@ import javax.swing.*;
  */
 class MacroList implements Comparator
 {
-	Vector macros;
+	Hashtable macros;
 	Vector macroSets;
+	MacroList.MacroSet current;
 
 	public static final int SORT_BY_NAME = 0;
 	public static final int SORT_BY_DATE = 1;
+	public static final int SORT_BY_SET = 2;
 
 	private boolean sortByName;
 	public static String timestamp;
@@ -55,7 +58,7 @@ class MacroList implements Comparator
 	
 	public void init(boolean refresh) throws Exception
 	{
-		macros = new Vector();
+		macros = new Hashtable();
 		macroSets = new Vector();
 
 		File cache = new File(MiscUtilities.constructPath(
@@ -113,18 +116,45 @@ class MacroList implements Comparator
 
 	void addMacro(MacroList.Macro macro)
 	{
-		macros.addElement(macro);
+		macros.put(macro.name, macro);
 	}
 
 	void addMacroSet(MacroSet set)
 	{
 		macroSets.addElement(set);
+		current = set;
 	}
 
-	public void sortMacroList(int constraint)
+	void addMacroSetEntry(String macroName)
 	{
-		sortByName = (constraint == SORT_BY_NAME);
-		Collections.sort(macros, this);
+		current.macros.add(macroName);
+	}
+
+	public Vector sortMacroList(int constraint)
+	{
+		if(constraint != SORT_BY_SET)
+		{
+			sortByName = (constraint == SORT_BY_NAME);
+			Vector myMacros = new Vector();
+			myMacros.addAll(macros.values());
+			Collections.sort(myMacros, this);
+			return myMacros;
+		}
+		
+		Vector results = new Vector(macros.size());
+		for(int i = 0; i < macroSets.size(); i++)
+		{
+			MacroSet set = (MacroSet)macroSets.elementAt(i);
+			results.addElement(new JCheckBoxList.Entry(set.name));
+			for(int j = 0; j < set.macros.size(); j++)
+			{
+				String name = (String)set.macros.elementAt(j);
+				if(macros.containsKey(name))
+					results.add(macros.get(name));
+			}
+		}
+				
+		return results;
 	}
 
 	public Vector searchMacroList(String text)
@@ -138,15 +168,24 @@ class MacroList implements Comparator
 		{
 			terms[i++] = st.nextToken();
 		}
-		for(i = 0; i < macros.size(); i++)
+		for(Enumeration enu = macros.keys(); enu.hasMoreElements();)
 		{
-			MacroList.Macro mac = (MacroList.Macro)macros.elementAt(i);
+			String name = (String)enu.nextElement();
+			MacroList.Macro mac = (MacroList.Macro)macros.get(name);
 			boolean match = true;
 			for(int j = 0; j < terms.length; j++)
 			{
-				if(mac.name.toLowerCase().indexOf(terms[j]) == -1 
-					&& mac.description.toLowerCase().indexOf(terms[j]) == -1)
+				try
 				{
+					if(mac.name.toLowerCase().indexOf(terms[j]) == -1 
+						&& mac.description.toLowerCase().indexOf(terms[j]) == -1)
+					{
+						match = false;
+					}
+				}
+				catch(NullPointerException npe)
+				{
+					// author didn't provide a description, no big whoop
 					match = false;
 				}
 			}
@@ -172,9 +211,9 @@ class MacroList implements Comparator
 
 	void dump()
 	{
-		for(int i = 0; i < macros.size(); i++)
+		for(Enumeration enu = macros.keys(); enu.hasMoreElements();)
 		{
-			System.err.println((MacroList.Macro)macros.elementAt(i));
+			System.err.println((MacroList.Macro)enu.nextElement());
 			System.err.println();
 		}
 	}

@@ -27,5 +27,3 @@ Date: June 18, 2002
 	DATE CDATA #REQUIRED
 	OBSOLETE %att-bool; "FALSE" >
 
-
-
