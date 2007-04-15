@@ -287,5 +287,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		fireTreeNodesChanged(n, getPathToRoot(n), null, null);
 	} //}}}
 
+	//{{{ cleanup(VPTProject)
+	public void cleanup(VPTProject p) {
+		fileLists.remove(p);
+	} //}}}
+
 }
 

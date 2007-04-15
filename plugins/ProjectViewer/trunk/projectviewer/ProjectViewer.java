@@ -28,7 +28,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -136,7 +138,7 @@ public final class ProjectViewer extends JPanel
 
 	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	// Mapping from View to ViewerEntry
-	private static final HashMap viewers		= new HashMap();
+	private static final Map viewers			= new WeakHashMap();
 	private static final HashMap listeners		= new HashMap();
 	private static final ArrayList actions		= new ArrayList();
 
@@ -1222,6 +1224,14 @@ public final class ProjectViewer extends JPanel
 				&& (active == null || !active.contains(p.getName())))
 			{
 				pm.unloadProject(p);
+				if (fileTree != null) {
+					((VPTFileListModel)fileTree.getModel())
+						.cleanup(p);
+				}
+				if (workingFileTree != null) {
+					((VPTWorkingFileListModel)workingFileTree.getModel())
+						.cleanup(p);
+				}
 			}
 		}
 	} //}}}
@@ -1602,15 +1612,18 @@ public final class ProjectViewer extends JPanel
 		the EditPane was changed, and focus the file corresponding
 		to the buffer on the EditPane on the PV tree. */
 	private void handleViewUpdateMessage(ViewUpdate vu) {
-		if (vu.getView() == view) {
-			if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
-				PVActions.focusActiveBuffer(view, treeRoot);
-			} else if (vu.getWhat() == ViewUpdate.CLOSED) {
+		if (vu.getView() == view &&
+			vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+		{
+			PVActions.focusActiveBuffer(view, treeRoot);
+		}
+		if (vu.getWhat() == ViewUpdate.CLOSED) {
+			if (vu.getView() == view) {
 				config.setLastNode(treeRoot);
 				unload();
-				viewers.remove(view);
 				removeHierarchyListener(this);
 			}
+			viewers.remove(vu.getView());
 		}
 	}//}}}
 
