@@ -55,6 +55,9 @@ public class CheckImports {
 
         final CUNode cu = cunode;
         final String filename = cu.getFilename();
+        if ( filename == null ) {
+            return ;    // need a filename for error reporting
+        }
         final List imports = cu.getImportNodes();
         if ( imports == null ) {
             return ;    // nothing to check

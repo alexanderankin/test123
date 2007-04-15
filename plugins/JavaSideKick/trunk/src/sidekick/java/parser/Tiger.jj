@@ -3140,8 +3140,9 @@ TigerNode BlockStatement():
 }
 {
     try {
+        [Annotation()]
             (
-          LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+          LOOKAHEAD( Modifiers() Type() <IDENTIFIER>)
           tn=LocalVariableDeclaration() ";"
         |
           tn=Statement()
@@ -3220,20 +3221,23 @@ LocalVariableNode LocalVariableDeclaration():
     VariableDeclarator a = null;
     VariableDeclarator b = null;
     Token t = null;
+    Modifier m = null;
 
 }
 {
     try {
-      //[ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+      // old -- [ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+      // new -- Modifiers() Type() VariableDeclarator() ( "," VariableDeclarator() )*
 
       /*
       VariableDeclarator returns a TigerNode representing the LHS of the declaration.
       The RHS is contained within that node as the children of the node.
       */
-      [ t="final" ] type=Type() a=VariableDeclarator()
+      m=Modifiers() type=Type() a=VariableDeclarator()
       {
         lvn = new LocalVariableNode(a.getName(), type);
-        lvn.setFinal(t != null);
+        if (m != null)
+            lvn.setFinal(ModifierSet.isFinal(m.modifiers));
         lvn.addChild(a);
         lvn.setStartLocation(a.getStartLocation());
         if (lvn.isPrimitive())
