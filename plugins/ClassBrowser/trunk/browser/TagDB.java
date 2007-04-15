@@ -293,7 +293,7 @@ public class TagDB {
 	 */
 	public String getInheritsRegExp(String scope)
 	{
-		return ".*\tinherits:" + scope + "\\b.*"; 
+		return ".*\tinherits:(\\w+::)*" + scope + "\\b.*"; 
 	}
 	public String getClassMembersRegExp(String scope)
 	{
