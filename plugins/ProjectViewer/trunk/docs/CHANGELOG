@@ -21,7 +21,8 @@ Version 2.1.3.7:
 		- fix NPE in ProjectManager.removeProject()
 		- fix deadlock when creating new project
 		- fix working file list not being updated
-
+		- add code to avoid some memory leaks in the flat trees.
+		- use WeakHashMaps where it makes sense to avoid leaks.
 
 Version 2.1.3.6:
 	[marcelo vanzin]

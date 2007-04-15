@@ -62,7 +62,6 @@ public class VPTFilteredModel extends DefaultTreeModel {
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
 	private Map cache = new HashMap();
-	// private List filterList = new ArrayList();
 	//}}}
 
 	//{{{ +VPTFilteredModel(VPTNode) : <init>
@@ -73,11 +72,6 @@ public class VPTFilteredModel extends DefaultTreeModel {
 	*/
 	public VPTFilteredModel(VPTNode rootNode) {
 		super(rootNode, true);
-		// filterList.add(new VPTFilterData("java", Pattern.compile(".*\\.java")));
-		// filterList.add(new VPTFilterData("html", Pattern.compile(".*\\.html")));
-		// filterList.add(new VPTFilterData("xml", Pattern.compile(".*\\.xml")));
-		// filterList.add(new VPTFilterData("c", Pattern.compile(".*\\.c")));
-		// filterList.add(new VPTFilterData("other", Pattern.compile(".*")));
 	}
 	//}}}
 
@@ -263,20 +257,18 @@ public class VPTFilteredModel extends DefaultTreeModel {
 			super(new java.io.File(filterData.getName()));
 			this.filterData = filterData;
 			Iterator it = openableNodeList.iterator();
-			//org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, VPTFilteredModel.class,"+++ .191: openableNodeList size = "+openableNodeList.size());
 			while (it.hasNext())
 			{
 				VPTNode node = (VPTNode)it.next();
-				//org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, VPTFilteredModel.class,"+++ .199: node.getName() = "+node.getName());
 				if (filterData.getPattern().matcher(node.getName()).matches())
 				{
-					// pattern matched: add to list of this node
 					add(node);
 				}
 			}
 			sortFiles();
+
 			// remove from openableNodeList
-			it =files.iterator();
+			it = files.iterator();
 			while (it.hasNext())
 				openableNodeList.remove(it.next());
 
@@ -293,8 +285,7 @@ public class VPTFilteredModel extends DefaultTreeModel {
 		} //}}}
 
 		//{{{ -sortFiles() : void
-		private void sortFiles()
-		{
+		private void sortFiles() {
 			Collections.sort(files);
 		} //}}}
 
