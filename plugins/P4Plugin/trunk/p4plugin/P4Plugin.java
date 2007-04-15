@@ -139,7 +139,7 @@ public class P4Plugin extends EBPlugin {
             b = ((EditPaneUpdate)msg).getEditPane().getBuffer();
         }
 
-        if (b == null) {
+        if (b == null || v.isClosed()) {
             return;
         }
 
