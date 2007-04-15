@@ -6,7 +6,7 @@
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
-plugin.sidekick.java.JavaSideKickPlugin.version=2.3.4
+plugin.sidekick.java.JavaSideKickPlugin.version=2.3.5
 plugin.sidekick.java.JavaSideKickPlugin.description=SideKick to browse java, javacc, and property files.
 
 # docs
