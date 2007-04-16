@@ -61,10 +61,11 @@ public class CommandManager extends Thread {
 			parser.removeResultHandler(wrapper);
 		}
 	}
-	public void initialize(Process p, Parser parser) {
+	public CommandManager(Process p, Parser parser) {
 		stdOutput = new BufferedWriter(
 				new OutputStreamWriter(p.getOutputStream()));
 		this.parser = parser;
+		instance = this;
 	}
 	// Add a command to be executed next (before the other registered commands)
 	public void addNow(String cmd, ResultHandler handler) {
@@ -112,8 +113,6 @@ public class CommandManager extends Thread {
 		}
 	}
 	public static CommandManager getInstance() {
-		if (instance == null)
-			instance = new CommandManager();
 		return instance ;
 	}
 }

@@ -132,12 +132,10 @@ public class Debugger implements DebuggerTool {
 		try {
 			p = Runtime.getRuntime().exec(command, env, dir);
 			GdbState.setState(State.RUNNING);
-	        parser = Parser.getInstance();
-	        parser.initialize(this, p);
+	        parser = new Parser(this, p);
 	        parser.addOutOfBandHandler(new OutOfBandHandler());
 			parser.start();
-			commandManager = CommandManager.getInstance();
-			commandManager.initialize(p, parser);
+			commandManager = new CommandManager(p, parser);
 			commandManager.start();
 			// First set up the arguments
 			commandManager.add("-exec-arguments " + args);
