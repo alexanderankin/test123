@@ -17,6 +17,7 @@ public class Parser extends Thread {
 		void handle(String line);
 	}
 
+	static final int InputStreamDelay = 1; 
 	Debugger debugger;
 	private BufferedReader stdInput;
 	private BufferedReader stdError;
@@ -168,12 +169,13 @@ public class Parser extends Thread {
 		}
 	}
 	
-	public void initialize (Debugger debugger, Process gdbProcess) {
+	public Parser(Debugger debugger, Process gdbProcess) {
 		this.debugger = debugger;
         stdInput = new BufferedReader(
         		new InputStreamReader(gdbProcess.getInputStream()));
         stdError = new BufferedReader(
         		new InputStreamReader(gdbProcess.getErrorStream()));
+        instance = this;
 	}
 	
 	public void addResultHandler(ResultHandler rh)
@@ -276,7 +278,7 @@ public class Parser extends Thread {
 					} catch (IOException e) {
 					}
 					try {
-						sleep(200);
+						sleep(InputStreamDelay);
 					} catch (InterruptedException e) {
 					}
 				}
@@ -292,12 +294,14 @@ public class Parser extends Thread {
 				}
 			} catch (IOException e) {
 			}
+			try {
+				sleep(InputStreamDelay);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
 	static public Parser getInstance() {
-		if (instance == null)
-			instance = new Parser();
 		return instance ;
 	}
 	
