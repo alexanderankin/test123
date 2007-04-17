@@ -329,6 +329,7 @@ public class SystemShell extends Shell
 		{
 			try
 			{
+				Log.log(Log.DEBUG, this, "calling ConsoleProcess.waitFor()");
 				return (process.waitFor() == 0);
 			}
 			catch (InterruptedException e)

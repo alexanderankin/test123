@@ -67,7 +67,10 @@ class InputThread extends Thread
 				_line += '\n'; // fixes "Press any key to continue . . ." (cjp)
 				_line = new String(_line.getBytes(), jEdit.getProperty("console.encoding"));
 				out.write(_line.getBytes());
-				out.flush();
+				try {
+					out.flush() ;
+				}
+				catch (IOException flushe) {}
 			}
 		}
 		catch(IOException e)

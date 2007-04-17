@@ -429,7 +429,6 @@ implements EBComponent, DefaultFocusComponent
 				return;
 			}
 		}
-
 		setShell(shell);
 
 		if(output == null)
