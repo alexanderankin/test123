@@ -1,0 +1,162 @@
+# :folding=explicit:collapseFolds=1:noTabs=true:
+# (c) 2005 Marcelo Vanzin
+
+#{{{ P4Plugin properties
+# "even" (0.2, 0.4) is stable, "odd" (0.1, 0.3) is "beta".
+plugin.p4plugin.P4Plugin.name=Perforce Plugin
+plugin.p4plugin.P4Plugin.author=Marcelo Vanzin
+plugin.p4plugin.P4Plugin.version=0.2.4
+plugin.p4plugin.P4Plugin.activate=defer
+plugin.p4plugin.P4Plugin.docs=index.html
+plugin.p4plugin.P4Plugin.description=Perforce integration for jEdit.
+
+plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.07.00
+plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
+plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.0
+plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.2.5.1
+plugin.p4plugin.P4Plugin.depend.4=plugin CommonControlsPlugin 0.9.4
+
+plugin.p4plugin.P4Plugin.option-pane=p4-plugin-global-cfg
+options.p4-plugin-global-cfg.code=new p4plugin.config.P4GlobalOptionPane();
+options.p4-plugin-global-cfg.label=Perforce
+#}}}
+
+#{{{ Plugins menu
+plugin.p4plugin.P4Plugin.menu=p4plugin_client \
+	p4plugin_change \
+	p4plugin_describe \
+	p4plugin_user \
+	p4plugin_submit_cl \
+    p4plugin_open_files \
+    p4plugin_open_files_ex \
+	- \
+	p4plugin_add \
+	p4plugin_delete \
+	p4plugin_edit \
+	p4plugin_add_cl \
+	p4plugin_delete_cl \
+	p4plugin_edit_cl \
+	p4plugin_revert \
+	p4plugin_reopen_cl \
+    p4plugin_diff \
+	p4plugin_fstat \
+    p4plugin_filelog \
+	p4plugin_submit \
+    p4plugin_sync
+
+p4plugin_client.label=Change Project's Client Spec
+p4plugin_change.label=Create/Edit Change List
+p4plugin_describe.label=Describe Change List
+p4plugin_user.label=Change User Spec
+p4plugin_add.label=Add File
+p4plugin_delete.label=Delete File
+p4plugin_edit.label=Edit File
+p4plugin_add_cl.label=Add File to Change List
+p4plugin_delete_cl.label=Delete File in Change List
+p4plugin_diff.label=File Diff
+p4plugin_edit_cl.label=Edit File in Change List
+p4plugin_fstat.label=Perforce File Information
+p4plugin_filelog.label=Perforce File Log
+p4plugin_open_files.label=Open Files from Change List
+p4plugin_open_files_ex.label= Open Files and Close Current
+p4plugin_reopen_cl.label=Reopen in Change List
+p4plugin_revert.label=Revert
+p4plugin_submit_cl.label=Submit Change List
+p4plugin_submit.label=Submit File
+p4plugin_sync.label=Sync File/Directory
+#}}}
+
+#{{{ PV extensions
+plugin.projectviewer.p4plugin.P4Plugin.option-pane=p4-plugin-pv-cfg
+options.p4-plugin-pv-cfg.code=new p4plugin.config.P4OptionPane();
+options.p4-plugin-pv-cfg.label=Perforce
+
+plugin.projectviewer.p4plugin.P4Plugin.file-filters=p4plugin.P4FileFilter
+plugin.projectviewer.p4plugin.P4Plugin.context-menu-actions=p4plugin.action.P4FileMenu
+#}}}
+
+#{{{ GUI messages
+p4plugin.config.project_option_pane.name=Perforce
+p4plugin.config.no_config_warn=P4 WARNING: No config detected, 'p4' might not work.
+p4plugin.file_filter_desc=Perfoce Repository Files
+p4plugin.p4_error.title=Error executing Perforce
+p4plugin.shell_name=Perforce
+p4plugin.shell_info=Perforce Info Messages
+p4plugin.no_p4_config=Perforce path is not configured
+p4plugin.retry_msg=An error was detected in the data sent to perforce.\n\
+                   Please correct your specification and resubmit the data.
+
+p4plugin.buffer_handler.msg=You're trying to edit a read-only file\n\
+							Do you want to do "p4 edit" on it?
+p4plugin.buffer_handler.title=Perforce: Editing Read-Only File
+
+p4plugin.filter.no_config=P4: No configuration found. Check your project options.
+#}}}
+
+#{{{ Project Config Pane
+p4plugin.project_cfg.use_perforce=Use Perforce for this project
+
+p4plugin.project_cfg.editor_type=Perforce editor:
+p4plugin.project_cfg.editor_type.global=Use global Perforce setting
+p4plugin.project_cfg.editor_type.custom=Use custom editor
+p4plugin.project_cfg.editor_type.no_editor=Don't change $P4EDITOR
+
+p4plugin.project_cfg.editor_cmd=Editor command:
+p4plugin.project_cfg.client=P4 Client:
+p4plugin.project_cfg.user=P4 User:
+p4plugin.project_cfg.p4config=P4 Config:
+#}}}
+
+#{{{ Global Config Pane
+p4plugin.global_cfg.p4_path=Perforce path:
+p4plugin.global_cfg.diff_cmd=Diff tool:
+p4plugin.global_cfg.editor_cmd=Editor command:
+p4plugin.global_cfg.ignore_diff_output=Ignore diff output
+p4plugin.global_cfg.ignore_diff_output.tooltip=Check this if the diff tool has \
+    a GUI and doesn't print any information to the terminal.
+p4plugin.global_cfg.monitor_files=Monitor read-only files
+p4plugin.global_cfg.monitor_files.tooltip=Asks to run "p4 edit" if trying to modify a read-only file
+#}}}
+
+#{{{ Actions
+p4plugin.action.file-menu=Perforce
+p4plugin.action.error=Error executing perforce: {0}
+p4plugin.action.no_selection=No file selected in project viewer.
+
+p4plugin.action.edit=Edit
+p4plugin.action.add=Add
+p4plugin.action.delete=Delete
+p4plugin.action.fstat=File Information (fstat)
+p4plugin.action.filelog=File Log
+p4plugin.action.revert=Revert
+p4plugin.action.submit=Submit
+p4plugin.action.describe=Desbribe Change List
+p4plugin.action.diff=Diff
+p4plugin.action.sync=Sync
+
+p4plugin.action.edit-clist=Edit in change list
+p4plugin.action.add-clist=Add to change list
+p4plugin.action.delete-clist=Delete in change list
+p4plugin.action.reopen-clist=Reopen in change list
+
+p4plugin.action.changelists.msg=Choose a change list:
+p4plugin.action.changelists.title=Choose change list
+p4plugin.action.changelists.default=Default
+p4plugin.action.changelists.other=Other
+
+p4plugin.action.openfiles.no_files=No opened files!
+p4plugin.action.openfiles.no_files.title=No files
+
+p4plugin.action.fstat.title=File Stats for {0}
+p4plugin.action.filelog.title=File Log for {0}
+p4plugin.action.describe.title=Change List {0}
+p4plugin.action.diff.title=Diff for {0}
+
+p4plugin.action.no_viewer=Can't execute action with no Project Viewer open.
+p4plugin.action.no_config=No Perforce config found for active project.
+
+p4plugin.action.buffer_dirty.msg=Please save your changes before\n\
+								 executing Perforce actions.
+p4plugin.action.buffer_dirty.title=Dirty Buffer
+#}}}
+
