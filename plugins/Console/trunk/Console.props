@@ -3,9 +3,9 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.3.2
+plugin.console.ConsolePlugin.version=4.3.3
 
-# new jEdit 4.3 plugin API for short desceription.
+# new jEdit 4.3 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
 # points to a file relative to the root of the jar
 plugin.console.ConsolePlugin.longdescription=description.html
