@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="console.Shell" NAME="Perforce">
+		new p4plugin.P4Shell();
+	</SERVICE>
+</SERVICES>
+

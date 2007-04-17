@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+
+<!-- P4Plugin user's guide      				-->
+<!-- (C) 2005 Marcelo Vanzin    				-->
+<!-- :tabSize=4:indentSize=4:noTabs=true:       -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
+
+<book>
+
+    <bookinfo>
+        <title>P4Plugin</title>
+        <authorgroup>
+            <author><firstname>Marcelo</firstname><surname>Vanzin</surname></author>
+        </authorgroup>
+        <legalnotice>
+            <title>Legal Notice</title>
+
+            <para>
+                Permission is granted to copy, distribute and/or modify
+                this document under the terms of the GNU Free
+                Documentation License, Version 1.1 or any later version
+                published by the Free Software Foundation; with no
+                <quote>Invariant Sections</quote>,
+                <quote>Front-Cover Texts</quote> or
+                <quote>Back-Cover Texts</quote>,
+                each as defined in the license.
+                A copy of the license can be found in the file
+                <filename>COPYING.DOC.txt</filename> included with jEdit.
+            </para>
+
+            <para>
+                This plugin is in no way associated with
+                Perforce Software Inc.
+            </para>
+        </legalnotice>
+    </bookinfo>
+
+    <chapter id="presentation">
+
+        <title>The Perforce Plugin</title>
+
+        <para>
+        The P4Plugin is a plugin that allows users to execute Perforce
+        commands by using the ProjectViewer plugin as a "GUI" to
+        Perforce. It allows the user to manage files being edited and
+        manage open change lists, along with some extra functionality.
+        </para>
+
+        <para>
+        The first step is to head to the Plugin Options dialog, go to
+        the "Perforce" tab, and provide the path to the "p4" executable
+        in your system.
+        </para>
+
+        <para>
+        The main interface of the plugin is the ProjectViewer tree. If
+        you edit the project's properties, you can enable the use of
+        perforce for that project. Set the perforce client name that is
+        managing the files in your tree, an optional user name, and
+        start using the commands provided.
+        </para>
+
+        <para>
+        Optionally, you can have a perforce "config" file in the root
+        of your project, and the the "P4 Config" option to the name of
+        that file. When using this option, you shouldn't set the client
+        name (it should be in the config file). While perforce itself
+        doesn't have this restriction, the plugin requires that the file
+        be in the root of the project.
+        </para>
+
+        <para>
+        By default the commands execute using the default change list.
+        If you execute the actions that include the option of choosing a
+        change list, a popup dialog will let you choose the change list
+        where to add the changes you're making; you'll still be able to
+        choose the default change list from that dialog.
+        </para>
+
+        <para>
+        Some other actions that don't depend on the selection on the
+        ProjectViewer tree are available: these are available through
+        jEdit's "Plugins" menu, under the "Perforce Plugin" menu. You
+        can view, create, edit and submit change lists, edit client
+        specs for the current active project, and edit the user
+        configuration.
+        </para>
+
+        <para>
+        The plugin installs a jEdit mode file that does some basic
+        highlighting when editing perforce change list specifications,
+        client specs, and other perforce-related files. The mode name
+        is called "perforce".
+        </para>
+
+    </chapter>
+
+    <chapter>
+        <title>Choosing an editor to use</title>
+
+        <para>
+        You can choose a custom editor to use when executing actions
+        that require user input, such as creating change lists or
+        submitting files. This is normally set in the P4EDITOR
+        environment variable, but the plugin overrides that setting
+        if you configure it to do so.
+        </para>
+
+        <para>
+        You can set the editor globally, in the Plugin Options dialog,
+        or on a per-project basis, looking at the project properties
+        dialog.
+        </para>
+
+        <para>
+        To use jEdit as the editor for perforce, you'll need to add
+        the "-wait" option to the jEdit start command, so that the
+        invocation waits until you finish editing the temporary buffer.
+        Another useful option in this situation is the "-reuseview"
+        switch, which tells jEdit to not create a new view when
+        opening the temporary file. And example of a jEdit command
+        line to use for editing perforce change lists would be:
+        </para>
+
+        <example>
+        <title>Example jEdit command line</title>
+        <para><command>/usr/local/bin/jedit -wait -reuseview</command></para>
+        </example>
+
+        <para>
+        It's recommended that you don't start your main jEdit instance
+        with the "-noserver" option, to avoid the overhead of starting
+        a new jEdit instance when editing the temporary files.
+        </para>
+
+    </chapter>
+
+    <chapter>
+        <title>Monitoring read-only files</title>
+
+        <para>
+        If you choose "Monitor read-only files" in the Plugin Options
+        dialog, the plugin will install a monitor whenever a read-only
+        buffer is activated.
+        </para>
+
+        <para>
+        If the file represented by the buffer belongs to the currently
+        active project, and the project is using Perforce, then if you
+        try to edit the file the plugin will ask you whether you want to
+        execute "p4 edit" on the file, so that it can be edited.
+        </para>
+
+        <para>
+        If you choose "no", the plugin won't ask the question again,
+        until the next time you activate the buffer.
+        </para>
+
+    </chapter>
+
+    <chapter>
+        <title>Importing files under Perforce</title>
+
+        <para>
+        The Perforce plugin provider a filter that can be used to import
+        only files that are know by Perforce when importing files into
+        a project. Just choose the Perforce file filter from the filter
+        list when performing the importing.
+        </para>
+
+    </chapter>
+
+    <chapter>
+        <title>Known Issues</title>
+
+        <para>
+        The plugin is in the early stages of development, so it should
+        be treated as "beta".
+        </para>
+
+        <para>
+        The plugin was developed with the Unix command line version of
+        perforce (the "p4" command) in mind, so it most probably won't
+        even try to work on Windows. While I have access to Perforce on
+        Windows I've never used it, so I don't even know if they have a
+        working p4 executable. If they do, then the plugin will probably
+        break because it expects Unix-style paths everywhere.
+        </para>
+
+    </chapter>
+
+</book>
+
