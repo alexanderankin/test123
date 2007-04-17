@@ -152,9 +152,8 @@ public class SystemShell extends Shell
 		{
 			currentDirectory = cstate.currentDirectory;
 		}
-		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), "\n" + jEdit
-			.getProperty("console.shell.prompt", new String[] { currentDirectory }));
-		output.writeAttrs(null, " ");
+		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), jEdit
+			.getProperty("console.shell.prompt", new String[] { currentDirectory }) + " ");
 	}
 
 	// }}}
