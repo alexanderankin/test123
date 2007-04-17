@@ -29,7 +29,8 @@ changeToPvSelected(view) {
     cmd = "cd \"" + path + "\"";
 
     try {
-	    sysShell.execute(con, null, sstate, null, cmd); 
+		sysShell.execute(con, null, sstate, null, cmd); 
+	    sstate.print(con.getPlainColor(), "\n");
 	    sysShell.printPrompt(con, sstate);
     }
     catch (Exception e) {

@@ -21,6 +21,7 @@ changeToPvRoot(view) {
         path = project.getRootPath();
 		cmd = "cd \"" + path + "\"";
 		sysShell.execute(con, null, sstate, null, cmd);
+		sstate.print(con.getPlainColor(), "\n");
 		sysShell.printPrompt(con, sstate);
     }
 }
