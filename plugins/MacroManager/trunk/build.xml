@@ -4,6 +4,9 @@
 
 <project name="MacroManager" default="dist" basedir=".">
 
+	<property file="./build.properties" />
+	<property file="../build.properties" />
+
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
 	<property name="jedit.install.dir" value="../.."/>
@@ -23,6 +26,8 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<copy file="${lib.dir}/tar.jar" todir="${install.dir}"/>
+		<copy file="${lib.dir}/activation.jar" todir="${install.dir}"/>
 	</target>
 
 
@@ -54,8 +59,6 @@
 			</fileset>
 		</jar>
 
-    <copy file="${lib.dir}/tar.jar" todir="${install.dir}"/>
-    <copy file="${lib.dir}/activation.jar" todir="${install.dir}"/>
 	</target>
 
 
