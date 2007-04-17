@@ -1,0 +1,142 @@
+==========================================
+Coding Style for the Project Viewer plugin
+==========================================
+
+(Author: Marcelo Vanzin)
+
+In order to maintain a consistent source-code style throughout the plugin, and
+to provide a better way for new developers to understand the source base and how
+the plugin works, it is desirable to follow some simple rules when writing and
+modifying code. I know many of these are kind of "religious decisions", but
+let's try to keep the code consistent.
+
+Not all current source respects all the rules, but the vast majority does.
+Eventually, all source will be updated to follow all these rules.
+
+Many of these rules match the recommendations of Sun's "Code Conventions for
+the Java Programming Language"
+(see http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html).
+
+--------------------------------------------------------------------------------
+(i) Indentation, curly brackets, whitespace and folding
+
+Use tabs for indentation, not spaces. Try to set the tab stops at 4 spaces
+(although it does not make too much of a difference when using tabs).
+
+Use the Sun's "Code Conventions for the Java Programming Language" way of
+laying out the curly brackets:
+
+if (condition) {
+
+} else {
+
+}
+
+Or, for try...catch...finally blocks:
+
+try {
+
+} catch (Exception e) {
+
+} finally {
+
+}
+
+Do not leave trailing whitespace in the files. This can be done easily in jEdit
+by using the "Edit -> Indent -> Remove trailing whitespace" command (default
+shortcut is "C+e r").
+
+Also, make use of jEdit's folding feature to organize your code. Wrap methods
+around explicit folds, put an explicit fold around the attribute declarations
+of your class, etc. Preferably, declare attributes at the top of the file, and
+put them in folds named "Private members", "Protected members", etc. When
+naming folds, put the complete method signature (e.g., "aMethod(String)"), to
+clearly differentiate between overloaded methods. The "Fold_Methods.bsh" macro
+available on the community site makes this much easier.
+
+--------------------------------------------------------------------------------
+(ii) License and copyright
+
+The plugin is GPL'ed, so make it clear in the source file that it is. Include
+the default comment present in all source code files when creating new files.
+
+Optionally, you may maintain the jEdit commands present at the top of the
+message, which sets up most of the folding and indentation options described
+in this document.
+
+--------------------------------------------------------------------------------
+(iii) Documentation
+
+Always write javadoc comments in your classes. All public methods should have at
+least a short phrase describing what the method does, even if it's just "Return
+some value". Javadoc comments for protected and private methods are optional,
+but it's good to write them, so other people reading your code can understand
+more easily what's going on. Don't forget to make it clear when parameters or
+return values may be null.
+
+Always write a Javadoc comment for your classes, and include the "@author" and
+"@version" tags. In the "@version" tag, put the CVS keyword "Id" (using "$"
+instead of the quotes). Other tags are optional, and may be included at will.
+
+Sometimes, packages may have some functionality that needs some explaining for
+outside developers. In such cases, write a "package.html" file explaining the
+purpose of the package's classes.
+
+Always compile the javadoc documentation for the plugin and make sure there are
+no errors and, if possible, no warnings.
+
+Also, when adding a new feature, don't forget to update the "users-guide.xml"
+file with instructions and other information about the new feature. Keep all
+user documentation in "users-guide.xml", and all developer-oriented
+documentation in javadoc comments and "package.html" files.
+
+Also, try to keep the CHANGELOG updated, and to add new ideas and possible bugs
+to the TODO file.
+
+--------------------------------------------------------------------------------
+(iv) Class and method naming, packages and import statements
+
+Just to reinforce, always use the Java convention of naming classes and methods:
+classes always start with a capital letter, and words are capitalized in the
+middle of the name (e.g., "MyClass"). Methods always start with lower case
+letters, and are also capitalized (e.g., "myMethod"). Try to name  classes as NOUNS, and methods as VERBS, and try to make the words as descriptive as possible. 
+
+Also, try to keep the code organized in packages. Do not polute the top level
+"projectviewer" package with classes that would be better situated in the
+"projectviewer.action" package, for example.
+
+Be explicit when importing classes; do not use wildcards, even when you're
+importing lots of classes from the same package. Also, wrap the import section
+in an explicit fold called "Imports". Try not to leave stale imports in your
+classes.
+
+--------------------------------------------------------------------------------
+(v) No hardcoded strings
+
+Never hardcode a string in the code. Add a new entry to the ProjectViewer.props
+file, and retrieve it by calling jEdit.getProperty().
+
+The only exceptions to this rule are debugging statements and other logging
+messages which are only interesting to developers.
+
+--------------------------------------------------------------------------------
+(vi) Logging code
+
+Try to remove all superfluous logging code from your files before committing
+anything to CVS. Leave only logging code that prints out error conditions and
+other information that would be useful for tracking bugs. Debugging code should
+definitely be removed before committing anything to CVS, especially in
+performance-sensitive parts of the code (like loading files, or events that
+block the GUI).
+
+Also, for logging code that should stay, always use jEdit's "Log" class, instead
+of outputting to System.out or System.err, and choose an appropriate log level.
+Generally, logging code that should be included in a release of the plugin
+would have "ERROR" or "WARNING" levels, so that users can give useful
+information when reporting bugs.
+
+--------------------------------------------------------------------------------
+(vii) Dependencies
+
+Try not to add extra dependencies (plugins, libraries) to ProjectViewer. Also, try to target the Java 1.4 runtime. When considering a 1.5-specific feature, check if it is absolutely necessary to use the 1.5 methods, and if so, if it's possible to maintain compatibility with the 1.4 runtime (for example, by detecting the version of the JRE being used).
+
