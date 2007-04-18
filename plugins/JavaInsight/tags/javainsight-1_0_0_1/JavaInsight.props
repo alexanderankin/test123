@@ -1,0 +1,27 @@
+plugin.javainsight.JavaInsightPlugin.name=JavaInsight
+plugin.javainsight.JavaInsightPlugin.author=André Kaplan, Dirk Möbius, Kevin A. Burton
+plugin.javainsight.JavaInsightPlugin.version=1.0
+plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
+plugin.javainsight.JavaInsightPlugin.activate=defer
+plugin.javainsight.JavaInsightPlugin.description=Adds an action to the file system browser that lets you decompile selected Java classes using the Jode decompiler
+plugin.javainsight.JavaInsightPlugin.longdescription=description.html
+
+# Dependencies
+plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.5
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.03.09.00
+plugin.javainsight.JavaInsightPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.2
+plugin.javainsight.JavaInsightPlugin.depend.2=optional plugin archive.ArchivePlugin 0.2
+plugin.javainsight.JavaInsightPlugin.jars=jode.jar
+
+# Option pane
+plugin.javainsight.JavaInsightPlugin.option-pane=javainsight
+options.javainsight.code = new javainsight.JavaInsightOptionPane();
+options.javainsight.title=JavaInsight
+options.javainsight.label=JavaInsight
+options.javainsight.decompiler=Jode Decompiler Options
+
+# VFS actions
+plugin.javainsight.JavaInsightPlugin.browser-menu=vfs.jode - vfs.class vfs.jasmin
+vfs.class.label=Show bytecode
+vfs.jasmin.label=Show jasmin output
+vfs.jode.label=Decompile with Jode
