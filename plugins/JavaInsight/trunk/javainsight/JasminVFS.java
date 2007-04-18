@@ -21,13 +21,7 @@
 package javainsight;
 
 import java.awt.Component;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
@@ -38,7 +32,8 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
 
-public class JasminVFS extends ByteCodeVFS {
+public class JasminVFS extends ByteCodeVFS
+{
     public static final String PROTOCOL = "jasmin";
 
 
@@ -55,11 +50,10 @@ public class JasminVFS extends ByteCodeVFS {
      * @param ignoreErrors If true, file not found errors should be
      * ignored
      * @param comp The component that will parent error dialog boxes
-     * @exception IOException If an I/O error occurs
      */
+    @Override
     public InputStream _createInputStream(Object session,
         String path, boolean ignoreErrors, Component comp)
-        throws IOException
     {
         String clazzPath = path;
         if (path.startsWith(PROTOCOL + ':')) {
@@ -77,16 +71,14 @@ public class JasminVFS extends ByteCodeVFS {
 
             JavaClass java_class = new ClassParser(in, clazzPath).parse();
 
-            ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-            OutputStream out = new NewlineOutputFilter(new BufferedOutputStream(baOut));
+            StringWriter out = new StringWriter();
 
             new JasminVisitor(java_class, out).disassemble();
 
             out.close();
 
             return new BufferedInputStream(new ByteArrayInputStream(
-                baOut.toByteArray()
-            ));
+                out.toString().replace("\r", "").getBytes()));
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         } catch (Exception e) {

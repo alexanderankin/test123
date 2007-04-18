@@ -24,40 +24,33 @@
 package javainsight;
 
 import java.awt.Component;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
+import java.io.*;
+import java.util.ArrayList;
 
+import javainsight.buildtools.ChainedIOException;
 import javainsight.buildtools.JavaUtils;
-
+import net.sf.jode.GlobalOptions;
 import net.sf.jode.bytecode.ClassInfo;
 import net.sf.jode.bytecode.ClassPath;
 import net.sf.jode.decompiler.ClassAnalyzer;
-import net.sf.jode.decompiler.Decompiler;
 import net.sf.jode.decompiler.ImportHandler;
+import net.sf.jode.decompiler.Options;
 import net.sf.jode.decompiler.TabbedPrintWriter;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
-
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.io.VFSManager;
-
 import org.gjt.sp.util.Log;
 
 
-public class JodeVFS extends ByteCodeVFS {
-
+public class JodeVFS extends ByteCodeVFS
+{
     public static final String PROTOCOL = "jode";
+
+    private static final Object mutex = new Object();
 
 
     public JodeVFS() {
@@ -75,18 +68,19 @@ public class JodeVFS extends ByteCodeVFS {
      * @param comp The component that will parent error dialog boxes
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public InputStream _createInputStream(Object session,
         String path, boolean ignoreErrors, Component comp)
         throws IOException
     {
-        String clazzPath = path;
+        String pathToClass = path;
         if (path.startsWith(PROTOCOL + ':')) {
-            clazzPath = clazzPath.substring(PROTOCOL.length() + 1);
+            pathToClass = pathToClass.substring(PROTOCOL.length() + 1);
         }
 
-        VFS vfs = VFSManager.getVFSForPath(clazzPath);
+        VFS vfs = VFSManager.getVFSForPath(pathToClass);
 
-        if (clazzPath.endsWith(".marks")) {
+        if (pathToClass.endsWith(".marks")) {
             return null;
         }
 
@@ -95,21 +89,18 @@ public class JodeVFS extends ByteCodeVFS {
         try {
             // Get the class name from BCEL!
             DataInputStream in = new DataInputStream(new BufferedInputStream(
-                vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
+                vfs._createInputStream(session, pathToClass, ignoreErrors, comp)
             ));
-            JavaClass java_class = new ClassParser(in, clazzPath).parse();
+            JavaClass java_class = new ClassParser(in, pathToClass).parse();
             className = java_class.getClassName();
-
-            // Get the classpath
-            String[] cp = JavaUtils.getClasspath();
+            in.close();
 
             // Get the VFS path
-            String vfsPath = null;
-            int dotIdx = className.lastIndexOf('.');
-            vfsPath = vfs.getParentOfPath(clazzPath);
+            String vfsPath = vfs.getParentOfPath(pathToClass);
             if (vfs != VFSManager.getVFSForPath(vfsPath)) {
                 vfsPath = null;
             } else {
+                int dotIdx = className.lastIndexOf('.');
                 while (dotIdx != -1) {
                     vfsPath = vfs.getParentOfPath(vfsPath);
                     if (vfs != VFSManager.getVFSForPath(vfsPath)) {
@@ -120,75 +111,124 @@ public class JodeVFS extends ByteCodeVFS {
                 }
             }
 
-            Log.log(Log.DEBUG, this, "className=" + className
+            ClassPath classPath = createJodeClasspath(vfsPath);
+
+            Log.log(Log.DEBUG, this, 
+                "className=" + className
                 + " vfsPath=" + vfsPath
-                + " clazzPath=" + clazzPath
-                + " classPath=" + Arrays.asList(cp));
+                + " pathToClass=" + pathToClass
+                + " classPath=" + classPath);
 
             in = new DataInputStream(new BufferedInputStream(
-                vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
+                vfs._createInputStream(session, pathToClass, ignoreErrors, comp)
             ));
 
-            // JODE is not thread-safe
-            synchronized (this) {
-                ClassPath classPath;
-                if (vfsPath == null) {
-                    classPath = new ClassPath(cp);
-                } else {
-                    classPath = new VFSSearchPath(cp, vfsPath);
-                }
-                ClassInfo clazz = classPath.getClassInfo(className);
-                clazz.read(in, ClassInfo.ALL);
-
-                boolean pretty  = jEdit.getBooleanProperty("javainsight.jode.pretty",  true);
-                boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
-                boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
-                String  style   = jEdit.getProperty("javainsight.jode.style", "sun");
-
-                // Setting decompiler options
-                Decompiler decompiler = new Decompiler();
-                decompiler.setOption("style",   style);
-                decompiler.setOption("pretty",  pretty  ? "yes" : "no");
-                decompiler.setOption("onetime", onetime ? "yes" : "no");
-                decompiler.setOption("decrypt", decrypt ? "yes" : "no");
-
-                int packageLimit = ImportHandler.DEFAULT_PACKAGE_LIMIT;
-                int classLimit   = ImportHandler.DEFAULT_CLASS_LIMIT;;
-
-                try {
-                    String importPackageLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
-                    packageLimit = Integer.parseInt(importPackageLimit);
-                } catch (NumberFormatException nfe) {}
-
-                try {
-                    String importClassLimit   = jEdit.getProperty("javainsight.jode.clslimit", "1");
-                    classLimit = Integer.parseInt(importClassLimit);
-                } catch (NumberFormatException nfe) {}
-
-                ImportHandler imports = new ImportHandler(classPath, packageLimit, classLimit);
-
-                ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-                TabbedPrintWriter writer = new TabbedPrintWriter(
-                    new NewlineOutputFilter(new BufferedOutputStream(baOut)), imports, false
-                );
-
-                ClassAnalyzer clazzAna = new ClassAnalyzer(clazz, imports);
-
-                clazzAna.dumpJavaFile(writer);
-
-                writer.close();
-
-                return new BufferedInputStream(new ByteArrayInputStream(
-                    baOut.toByteArray()
-                ));
-            }
+            ClassInfo clazz = classPath.getClassInfo(className);
+            clazz.read(in, ClassInfo.ALL);
+            
+            ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+            OutputStreamWriter output = new OutputStreamWriter(baOut);
+            decompile(className, classPath, output);
+            output.close();
+            
+            return new BufferedInputStream(new ByteArrayInputStream(baOut.toByteArray()));
         } catch (IOException ioex) {
             throw ioex;
         } catch (Throwable t) {
             // Jode sometimes throws java.lang.InternalError or other
             // messy things:
-            Log.log(Log.ERROR, this, t);
-            throw new IOException("An error occured while decompiling " + className + ": " + t);
+            throw new ChainedIOException("An error occured while decompiling " + className, t);
         }
     }
+
+
+    private ClassPath createJodeClasspath(String vfsPath) throws SecurityException, IOException {
+        ArrayList<ClassPath.Location> locations = new ArrayList<ClassPath.Location>();
+        for(String cp : JavaUtils.getClasspath()) {
+            locations.add(ClassPath.createLocation(cp));
+        }
+        if(vfsPath != null) {
+            locations.add(new VFSLocation(vfsPath));
+        }
+        return new ClassPath(locations.toArray(new ClassPath.Location[locations.size()]));
+    }
+
+
+    private void decompile(String className, ClassPath classPath, Writer decompilerOutput) throws IOException {
+        String style = jEdit.getProperty("javainsight.jode.style", "sun");
+        boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+        boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
+        boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
+        
+        int importPkgLimit = 0;
+        try { 
+            importPkgLimit = Integer.parseInt(jEdit.getProperty("javainsight.jode.pkglimit", "0"));
+        } catch(NumberFormatException ex) {}
+        if(importPkgLimit == 0)
+            importPkgLimit = Integer.MAX_VALUE;
+        
+        int importClassLimit = 1;
+        try {
+            importClassLimit = Integer.parseInt(jEdit.getProperty("javainsight.jode.clslimit", "1"));
+        } catch(NumberFormatException ex) {}
+        if(importClassLimit == 0)
+            importClassLimit = Integer.MAX_VALUE;
+        
+        Mode mode = jEdit.getMode("java");
+        String wrapMode = mode.getProperty("wrap").toString(); // "node", "soft", "hard"
+        int maxLineLen = (Integer) mode.getProperty("maxLineLen"); // 0 means no max. line len
+        int tabSize = (Integer) mode.getProperty("tabSize");
+        int indentSize = (Integer) mode.getProperty("indentSize");
+        boolean noTabs = mode.getBooleanProperty("noTabs");
+
+        if(!wrapMode.equals("hard") || maxLineLen == 0)
+            maxLineLen = 1000;
+        
+        if(noTabs)
+            tabSize = 0;
+        
+        int outputStyle = 0; // default for style "pascal"
+        if(style.equals("gnu"))
+            outputStyle = TabbedPrintWriter.GNU_SPACING | TabbedPrintWriter.INDENT_BRACES;
+        else if(style.equals("sun"))
+            outputStyle = TabbedPrintWriter.BRACE_AT_EOL;
+
+        if(pretty)
+            Options.options &= ~Options.OPTION_PRETTY;
+        else
+            Options.options |= Options.OPTION_PRETTY;
+        
+        if(onetime)
+            Options.options &= ~Options.OPTION_ONETIME;
+        else
+            Options.options |= Options.OPTION_ONETIME;
+        
+        if(decrypt)
+            Options.options &= ~Options.OPTION_DECRYPT;
+        else
+            Options.options |= Options.OPTION_DECRYPT;
+        
+        StringWriter errorOutput = new StringWriter();
+        GlobalOptions.err = new PrintWriter(errorOutput);
+
+        // JODE is not thread-safe
+        synchronized (mutex) {
+            ImportHandler importHandler = new ImportHandler(classPath, importPkgLimit, importClassLimit);
+            TabbedPrintWriter tabbedPrintWriter = new TabbedPrintWriter(decompilerOutput,
+                    importHandler, true, outputStyle, indentSize, tabSize, maxLineLen);
+            ClassInfo clazz = classPath.getClassInfo(className);
+            ClassAnalyzer clazzAnalyzer = new ClassAnalyzer(clazz, importHandler);
+            clazzAnalyzer.dumpJavaFile(tabbedPrintWriter);
+            tabbedPrintWriter.close();
+            errorOutput.close();
+        }
+        
+        GlobalOptions.err = null;
+        
+        String errorMessages = errorOutput.toString();
+        if(errorMessages != null && errorMessages.trim().length() > 0) {
+            Log.log(Log.ERROR, this, "Error decompiling class " + className + ":\n" + errorMessages);
+        }
+    }
+
 }

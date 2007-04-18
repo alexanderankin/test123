@@ -19,35 +19,34 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 package javainsight;
 
 
 import java.awt.Component;
-import java.io.IOException;
 import java.io.File;
-import java.util.Vector;
+import java.io.IOException;
+import java.util.ArrayList;
 
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
-
 import org.gjt.sp.util.Log;
 
 
-public abstract class ByteCodeVFS extends VFS {
+public abstract class ByteCodeVFS extends VFS
+{
     protected ByteCodeVFS(String name) {
         super(name, VFS.READ_CAP);
     }
 
 
+    @Override
     public char getFileSeparator() {
         return File.separatorChar;
     }
 
 
+    @Override
     public String getFileName(String path) {
         String protocol = this.getName();
 
@@ -64,6 +63,7 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
+    @Override
     public String getParentOfPath(String path) {
         String protocol = this.getName();
 
@@ -80,6 +80,7 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
+    @Override
     public String constructPath(String parent, String path) {
         String protocol = this.getName();
 
@@ -96,29 +97,8 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
-    public static void handleBrowserAction(View view,
-        VFS.DirectoryEntry[] files, String protocol)
-    {
-        if (files == null || files.length != 1)  {
-            // TODO: error message
-            view.getToolkit().beep();
-            return;
-        }
-
-        VFS.DirectoryEntry entry = files[0];
-        if (entry.type != VFS.DirectoryEntry.FILE) {
-            view.getToolkit().beep();
-            return;
-        }
-
-        VFS vfs = VFSManager.getVFSForPath(entry.path);
-        jEdit.openFile(view, protocol + ':' + entry.path);
-    }
-
-
-    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
-        Component comp)
-    {
+    @Override
+    public VFSFile[] _listFiles(Object session, String path, Component comp) {
         String protocol = this.getName();
 
         String clazzPath = path;
@@ -129,35 +109,33 @@ public abstract class ByteCodeVFS extends VFS {
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
         try {
-            VFS.DirectoryEntry[] directoryEntries =
-                vfs._listDirectory(session, clazzPath, comp);
+            VFSFile[] directoryEntries =
+                vfs._listFiles(session, clazzPath, comp);
 
             if (directoryEntries == null) {
                 return null;
             }
 
-            Vector v = new Vector();
+            ArrayList<VFSFile> result = new ArrayList<VFSFile>();
 
             for (int i = 0; i < directoryEntries.length; i++) {
-                if (   directoryEntries[i].path.endsWith(".class")
-                    || (directoryEntries[i].type == VFS.DirectoryEntry.DIRECTORY)
+                if (   directoryEntries[i].getPath().toLowerCase().endsWith(".class")
+                    || (directoryEntries[i].getType() == VFSFile.DIRECTORY)
                 ) {
-                    v.addElement(
-                        new VFS.DirectoryEntry(
-                            directoryEntries[i].name,
-                            protocol + ':' + directoryEntries[i].path,
-                            protocol + ':' + directoryEntries[i].deletePath,
-                            directoryEntries[i].type,
-                            directoryEntries[i].length,
-                            directoryEntries[i].hidden
+                    result.add(
+                        new VFSFile(
+                            directoryEntries[i].getName(),
+                            protocol + ':' + directoryEntries[i].getPath(),
+                            protocol + ':' + directoryEntries[i].getDeletePath(),
+                            directoryEntries[i].getType(),
+                            directoryEntries[i].getLength(),
+                            directoryEntries[i].isHidden()
                         )
                     );
                 }
             }
-            VFS.DirectoryEntry[] retVal = new VFS.DirectoryEntry[v.size()];
-            v.copyInto(retVal);
-
-            return retVal;
+            
+            return result.toArray(new VFSFile[result.size()]);
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         }
@@ -166,9 +144,8 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
-    public DirectoryEntry _getDirectoryEntry(Object session, String path,
-        Component comp)
-    {
+    @Override
+    public VFSFile _getFile(Object session, String path, Component comp) {
         String protocol = this.getName();
 
         String clazzPath = path;
@@ -179,20 +156,19 @@ public abstract class ByteCodeVFS extends VFS {
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
         try {
-            VFS.DirectoryEntry directoryEntry =
-                vfs._getDirectoryEntry(session, clazzPath, comp);
+            VFSFile file = vfs._getFile(session, clazzPath, comp);
 
-            if (directoryEntry == null) {
+            if (file == null) {
                 return null;
             }
 
-            return new VFS.DirectoryEntry(
-                directoryEntry.name,
-                protocol + ':' + directoryEntry.path,
-                protocol + ':' + directoryEntry.deletePath,
-                directoryEntry.type,
-                directoryEntry.length,
-                directoryEntry.hidden
+            return new VFSFile(
+                file.getName(),
+                protocol + ':' + file.getPath(),
+                protocol + ':' + file.getDeletePath(),
+                file.getType(),
+                file.getLength(),
+                file.isHidden()
             );
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);

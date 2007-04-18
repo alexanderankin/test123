@@ -77,11 +77,12 @@
         <javac
             srcdir="${src.dir}"
             destdir="${build.dir}"
-            deprecation="on"
+            deprecation="true"
+            debug="true"
             includeJavaRuntime="yes"
             includeAntRuntime="no"
-            source="1.4"
-            target="1.4"
+            source="1.5"
+            target="1.5"
         >
             <classpath refid="project.class.path"/>
         </javac>

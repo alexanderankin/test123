@@ -5,20 +5,20 @@
 <ACTIONS>
 	<ACTION NAME="vfs.jode">
 		<CODE>
-			javainsight.ByteCodeVFS.handleBrowserAction(view, files,
-				javainsight.JodeVFS.PROTOCOL);
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.JodeVFS.PROTOCOL);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="vfs.class">
 		<CODE>
-			javainsight.ByteCodeVFS.handleBrowserAction(view, files,
-				javainsight.ClassVFS.PROTOCOL);
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.ClassVFS.PROTOCOL);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="vfs.jasmin">
 		<CODE>
-			javainsight.ByteCodeVFS.handleBrowserAction(view, files,
-				javainsight.JasminVFS.PROTOCOL);
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.JasminVFS.PROTOCOL);
 		</CODE>
 	</ACTION>
 </ACTIONS>

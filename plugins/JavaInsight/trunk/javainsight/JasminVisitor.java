@@ -25,13 +25,14 @@ import org.apache.bcel.Repository;
  * @version $Id$
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  */
-public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
+public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor
+{
   private JavaClass       clazz;
   private PrintWriter     out;
   private String          class_name;
   private ConstantPoolGen cp;
 
-  public JasminVisitor(JavaClass clazz, OutputStream out) {
+  public JasminVisitor(JavaClass clazz, Writer out) {
     this.clazz = clazz;
     this.out   = new PrintWriter(out);
     class_name = clazz.getClassName();
@@ -46,6 +47,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
     out.close();
   }
 
+  @Override
   public void visitJavaClass(JavaClass clazz) {
     out.println(";; Produced by JasminVisitor");
     out.println(";; http://jakarta.apache.org/bcel");
@@ -65,6 +67,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
     out.print("\n");
   }
 
+  @Override
   public void visitField(Field field) {
     out.print(".field " + Utility.accessToString(field.getAccessFlags()) +
                 " " + field.getName() + " " + field.getSignature());
@@ -72,6 +75,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
       out.print("\n");
   }
 
+  @Override
   public void visitConstantValue(ConstantValue cv) {
     out.println(" = " + cv);
   }
@@ -90,9 +94,17 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
       out.println(".end method");
   }
 
-  public void visitDeprecated(Deprecated attribute) { printEndMethod(attribute); }
-  public void visitSynthetic(Synthetic attribute) { printEndMethod(attribute); }
+  @Override
+  public void visitDeprecated(Deprecated attribute) {
+    printEndMethod(attribute); 
+  }
+  
+  @Override
+  public void visitSynthetic(Synthetic attribute) {
+    printEndMethod(attribute); 
+  }
 
+  @Override
   public void visitMethod(Method method) {
     out.println("\n.method " + Utility.accessToString(method.getAccessFlags()) +
                 " " + method.getName() + method.getSignature());
@@ -104,6 +116,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
       out.println(".end method");
   }
 
+  @Override
   public void visitExceptionTable(ExceptionTable e) {
     String[] names = e.getExceptionNames();
     for(int i=0; i < names.length; i++)
@@ -112,8 +125,9 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
     printEndMethod(e);
   }
 
-  private Hashtable map;
+  private HashMap<InstructionHandle,String> map;
 
+  @Override
   public void visitCode(Code code) {
     int label_counter = 0;
 
@@ -127,7 +141,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
     /* Pass 1: Give all referenced instruction handles a symbolic name, i.e. a
      * label.
      */
-    map = new Hashtable();
+    map = new HashMap<InstructionHandle,String>();
 
     for(int i=0; i < ihs.length; i++) {
       if(ihs[i] instanceof BranchHandle) {
@@ -186,7 +200,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
     for(int i=0; i < ihs.length; i++) {
       InstructionHandle ih   = ihs[i];
       Instruction       inst = ih.getInstruction();
-      String            str  = (String)map.get(ih);
+      String            str  = map.get(ih);
 
       if(str != null)
         out.println(str);
@@ -241,12 +255,12 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
 
 
   private final String get(InstructionHandle ih) {
-    String str = new StringTokenizer((String)map.get(ih), "\n").nextToken();
+    String str = new StringTokenizer(map.get(ih), "\n").nextToken();
     return str.substring(0, str.length() - 1);
   }
 
   private final void put(InstructionHandle ih, String line) {
-    String str = (String)map.get(ih);
+    String str = map.get(ih);
 
     if(str == null)
       map.put(ih, line);
@@ -259,7 +273,6 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
   }
 
   public static void main(String[] argv) {
-    ClassParser parser=null;
     JavaClass   java_class;
 
     try {
@@ -281,7 +294,7 @@ public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
             f.mkdirs();
           }
 
-          FileOutputStream out = new FileOutputStream(path + class_name + ".j");
+          FileWriter out = new FileWriter(path + class_name + ".j");
           new JasminVisitor(java_class, out).disassemble();
         }
       }

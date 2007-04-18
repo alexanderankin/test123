@@ -23,14 +23,12 @@
 package javainsight;
 
 
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
@@ -41,17 +39,19 @@ import org.gjt.sp.jedit.jEdit;
  * @author Dirk Moebius
  * @version $Id$
  */
-public class JavaInsightOptionPane extends AbstractOptionPane implements ActionListener {
+public class JavaInsightOptionPane extends AbstractOptionPane
+{
 
     public JavaInsightOptionPane() {
         super("javainsight");
     }
 
 
+    @Override
     public void _init() {
         addSeparator("options.javainsight.decompiler");
 
-        cStyle = new JComboBox(new String[] { "sun", "gnu" });
+        cStyle = new JComboBox(new String[] { "sun", "gnu", "pascal" });
         cStyle.setSelectedItem(jEdit.getProperty("javainsight.jode.style", "sun"));
         addComponent("Coding Style:", cStyle);
 
@@ -70,6 +70,7 @@ public class JavaInsightOptionPane extends AbstractOptionPane implements ActionL
                 jEdit.getBooleanProperty("javainsight.jode.decrypt", true)));
 
         addComponent(Box.createVerticalStrut(15));
+
         addComponent(new JLabel("Generate imports..."));
 
         cImportPkgLimit = new JTextField(jEdit.getProperty("javainsight.jode.pkglimit", "0"));
@@ -86,25 +87,6 @@ public class JavaInsightOptionPane extends AbstractOptionPane implements ActionL
 
         addComponent(Box.createVerticalStrut(5));
         addComponent(new JLabel("(0 means generate no imports)"));
-
-        addComponent(Box.createVerticalStrut(15));
-
-        addSeparator("options.javainsight.general");
-
-        addComponent(cDecompileToBuffer =
-            new JCheckBox("Decompile to jEdit buffer only (w/o storing on filesystem)",
-                jEdit.getBooleanProperty("javainsight.decompileToBuffer", true)));
-        cDecompileToBuffer.addActionListener(this);
-
-        addComponent(cOverwrite =
-            new JCheckBox("Overwrite existing files",
-                jEdit.getBooleanProperty("javainsight.overwrite", true)));
-
-        addComponent(cClearDirty =
-            new JCheckBox("Set status of buffer to \"saved\" after decompile",
-                jEdit.getBooleanProperty("javainsight.clearDirty", false)));
-
-        enableComponents();
     }
 
 
@@ -112,6 +94,7 @@ public class JavaInsightOptionPane extends AbstractOptionPane implements ActionL
      * Called when the options dialog's `OK' button is pressed.
      * This saves any properties saved in this option pane.
      */
+    @Override
     public void _save() {
         jEdit.setProperty("javainsight.jode.style", cStyle.getSelectedItem().toString());
         jEdit.setBooleanProperty("javainsight.jode.pretty", cPretty.isSelected());
@@ -119,20 +102,6 @@ public class JavaInsightOptionPane extends AbstractOptionPane implements ActionL
         jEdit.setBooleanProperty("javainsight.jode.decrypt", cDecrypt.isSelected());
         jEdit.setProperty("javainsight.jode.pkglimit", cImportPkgLimit.getText());
         jEdit.setProperty("javainsight.jode.clslimit", cImportClassLimit.getText());
-        jEdit.setBooleanProperty("javainsight.decompileToBuffer", cDecompileToBuffer.isSelected());
-        jEdit.setBooleanProperty("javainsight.overwrite", cOverwrite.isSelected());
-        jEdit.setBooleanProperty("javainsight.clearDirty", cClearDirty.isSelected());
-    }
-
-
-    public void actionPerformed(ActionEvent evt) {
-        enableComponents();
-    }
-
-
-    private void enableComponents() {
-        cOverwrite.setEnabled(!cDecompileToBuffer.isSelected());
-        cClearDirty.setEnabled(cDecompileToBuffer.isSelected());
     }
 
 
@@ -140,9 +109,6 @@ public class JavaInsightOptionPane extends AbstractOptionPane implements ActionL
     private JCheckBox cPretty;
     private JCheckBox cOnetime;
     private JCheckBox cDecrypt;
-    private JCheckBox cDecompileToBuffer;
-    private JCheckBox cOverwrite;
-    private JCheckBox cClearDirty;
     private JTextField cImportPkgLimit;
     private JTextField cImportClassLimit;
 

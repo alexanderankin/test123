@@ -20,21 +20,16 @@
 package javainsight;
 
 
-import java.util.Vector;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.util.Log;
-import javainsight.buildtools.msg.DecompileClassMessage;
 
 
 /**
@@ -43,84 +38,48 @@ import javainsight.buildtools.msg.DecompileClassMessage;
  * @author Kevin A. Burton
  * @version $Id$
  */
-public class JavaInsightPlugin extends EBPlugin {
-
-
-    /**
-     * The 'name' of the dockable window.
-     */
-    public static final String DOCKABLE_NAME = "javainsight.dock";
-
-
-    /**
-     * Start the plugin.
-     */
-    public void start() {
-        // parse out the resources as a thread so that when the plugin is
-        // requested there is nothing to do.
-        new ThreadedParser().start();
-    }
-
-
+public class JavaInsightPlugin extends EBPlugin
+{
     /**
      * Handle message for decompile requests.
      */
+    @Override
     public void handleMessage(EBMessage message) {
         if (message instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate) message;
-
-            if (bu.getWhat() == BufferUpdate.CREATED) {
+            if (bu.getWhat() == BufferUpdate.LOADED) {
                 Buffer buffer = bu.getBuffer();
                 VFS    vfs    = buffer.getVFS();
                 Mode   mode   = null;
-                if (   (vfs instanceof ClassVFS)
-                    || (vfs instanceof JasminVFS)
-                ) {
+                if (ClassVFS.PROTOCOL.equals(vfs.getName()) || JasminVFS.PROTOCOL.equals(vfs.getName())) {
                     mode = jEdit.getMode("bcel");
-                } else if (vfs instanceof JodeVFS) {
+                } else if (JodeVFS.PROTOCOL.equals(vfs.getName())) {
                     mode = jEdit.getMode("java");
-                } else {}
-
+                }
                 if (mode != null) {
                     buffer.setMode(mode);
                 }
             }
-        } else if (message instanceof DecompileClassMessage) {
-            DecompileClassMessage dmsg = (DecompileClassMessage) message;
-            String classname = dmsg.getClassName();
-            String destination = dmsg.getDestination();
-            boolean generateFile = dmsg.isGeneratingFile();
-
-            Log.log(Log.MESSAGE, this,
-                "Decompiling class "
-                + classname
-                + (generateFile ?
-                    (destination == null ? " to temp directory" : " to " + destination)
-                    : " to new jEdit buffer"));
-
-            // create JavaInsight instance if it doesn't exist
-            if (javaInsight == null) {
-                View view = jEdit.getFirstView();
-                javaInsight = new JavaInsight(view);
-            }
-
-            try {
-                if (generateFile) {
-                    String filename = javaInsight.decompileToFile(classname, destination);
-                    dmsg._setGeneratedFile(filename);
-                } else {
-                    javaInsight.decompileToBuffer(classname);
-                }
-            }
-            catch (Throwable t) {
-                Log.log(Log.ERROR, this, "Error decompiling class " + classname + ": " + t.getMessage());
-                dmsg._setException(t);
-            }
         }
     }
 
-
-    private JavaInsight javaInsight = null;
+    public void handleBrowserAction(View view, VFSFile[] files, String protocol) {
+        if (files == null)  {
+            // TODO: error message
+            view.getToolkit().beep();
+            return;
+        }
+    
+        for (VFSFile entry : files) {
+            if (entry.getType() == VFSFile.FILE) {
+                VFS vfs = VFSManager.getVFSForPath(entry.getPath());
+                if(protocol.equals(vfs.getName()))
+                    jEdit.openFile(view, entry.getPath());
+                else
+                    jEdit.openFile(view, protocol + ':' + entry.getPath());
+            }
+        }
+    }
 
 }
 
