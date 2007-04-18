@@ -1,4 +1,7 @@
 /*
+ * ChainedIOException.java
+ * Copyright (c) 2007 Dirk Moebius
+ *
  * jEdit edit mode settings:
  * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
@@ -17,27 +20,38 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package javainsight.buildtools.packagebrowser;
+package javainsight.buildtools;
 
-
-import org.gjt.sp.jedit.MiscUtilities;
-
+import java.io.IOException;
 
 /**
- * A comparator to compare two <code>JavaClass</code> objects.
+ * Chained IOException (Java1.4+).
  *
- * @see org.gjt.sp.jedit.MiscUtilities.Compare
- * @see buildtools.java.packagebrowser.JavaClass
- * @author Andre Kaplan
+ * @author Dirk Moebius
  * @version $Id$
  */
-public class JavaClassComparator implements MiscUtilities.Compare {
+public class ChainedIOException extends IOException
+{
+    private final Throwable cause;
 
-    public int compare(Object obj1, Object obj2) {
-        JavaClass one = (JavaClass) obj1;
-        JavaClass two = (JavaClass) obj2;
-        return one.getName().compareTo(two.getName());
+    public ChainedIOException(String message) {
+        super(message);
+        this.cause = null;
+    }
+
+    public ChainedIOException(String message, Throwable cause) {
+        super(message);
+        this.cause = cause;
+    }
+
+    public ChainedIOException(Throwable cause) {
+        super();
+        this.cause = cause;
+    }
+    
+    @Override
+    public Throwable getCause() {
+        return cause;
     }
 
 }
-

@@ -21,25 +21,21 @@
 package javainsight;
 
 import java.awt.Component;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
-
 import org.gjt.sp.util.Log;
 
 
-public class ClassVFS extends ByteCodeVFS {
+public class ClassVFS extends ByteCodeVFS 
+{
     public static final String PROTOCOL = "class";
 
 
@@ -58,6 +54,7 @@ public class ClassVFS extends ByteCodeVFS {
      * @param comp The component that will parent error dialog boxes
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public InputStream _createInputStream(Object session,
         String path, boolean ignoreErrors, Component comp)
         throws IOException
@@ -82,7 +79,7 @@ public class ClassVFS extends ByteCodeVFS {
 
             JavaClass java_class = new ClassParser(in, clazzPath).parse();
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             sb.append(java_class).append('\n');
 
@@ -96,24 +93,18 @@ public class ClassVFS extends ByteCodeVFS {
                 this.dumpCode(sb, java_class.getMethods(), verbose);
             }
 
-            ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-            OutputStream out = new NewlineOutputFilter(new BufferedOutputStream(baOut));
-
-            out.write(sb.toString().getBytes());
-            out.close();
-
-            return new ByteArrayInputStream(baOut.toByteArray());
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        } catch (Exception e) {
-            Log.log(Log.ERROR, this, e);
+            return new ByteArrayInputStream(sb.toString().replace("\r", "").getBytes());
+        } catch (IOException ioex) {
+            throw ioex;
+        } catch (Exception ex) {
+            Log.log(Log.ERROR, this, "Error creating bcel class description output", ex);
         }
 
         return null;
     }
 
 
-    private void dumpCode(StringBuffer sb, Method[] methods, boolean verbose) {
+    private void dumpCode(StringBuilder sb, Method[] methods, boolean verbose) {
         for (int i = 0; i < methods.length; i++) {
             sb.append(methods[i]).append('\n');
 

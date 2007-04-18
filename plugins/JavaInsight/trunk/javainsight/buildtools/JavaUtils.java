@@ -21,18 +21,21 @@ package javainsight.buildtools;
 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 
 /**
  * Miscelleanous Java utilities.
  *
-  * @author Kevin A. Burton
-  * @version $Id$
-  */
-public class JavaUtils {
+ * @author Kevin A. Burton
+ * @version $Id$
+ */
+public class JavaUtils
+{
+    private static final Object mutex = new Object();
 
+    private static String[] classpath = null;
 
     /**
      * make the constructor private.
@@ -66,7 +69,18 @@ public class JavaUtils {
       * @return an array of classpath entries
       */
     public static String[] getClasspath() {
-        Vector v = new Vector();
+        if (classpath == null) {
+            String[] newClasspath = computeClasspath();
+            synchronized(mutex) {
+                classpath = newClasspath;
+            }
+        }
+        return classpath;
+    }
+    
+    
+    private static String[] computeClasspath() {
+        ArrayList<String> cp = new ArrayList<String>();
         String pathSep = System.getProperty("path.separator");
 
         // add entries from sun.boot.class.path:
@@ -76,7 +90,7 @@ public class JavaUtils {
             while (tokenizer.hasMoreElements()) {
                 String entry = tokenizer.nextElement().toString();
                 if (new File(entry).exists())
-                    v.addElement(entry);
+                    cp.add(entry);
             }
         }
 
@@ -86,12 +100,10 @@ public class JavaUtils {
         while (tokenizer.hasMoreElements()) {
             String entry = tokenizer.nextElement().toString();
             if (new File(entry).exists())
-                v.addElement(entry);
+                cp.add(entry);
         }
 
-        String[] array = new String[v.size()];
-        v.copyInto(array);
-        return array;
+        return cp.toArray(new String[cp.size()]);
     }
 
 
@@ -107,4 +119,3 @@ public class JavaUtils {
     }
 
 }
-
