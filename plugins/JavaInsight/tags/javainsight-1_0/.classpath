@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="docs/|lib/" kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="JEDIT_HOME/jedit.jar"/>
+	<classpathentry kind="var" path="BCEL_JAR"/>
+	<classpathentry kind="lib" path="lib/jode.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
