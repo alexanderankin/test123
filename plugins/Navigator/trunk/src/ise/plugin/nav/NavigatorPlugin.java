@@ -178,7 +178,6 @@ public class NavigatorPlugin extends EBPlugin
 			if (map.containsKey(pane))
 				map.remove(pane);
 		}
-		view.dispose(); // This is not necessary is it?
 	}
 
 	
