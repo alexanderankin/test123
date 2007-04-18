@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="vfs.jode">
+		<CODE>
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.JodeVFS.PROTOCOL);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="vfs.class">
+		<CODE>
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.ClassVFS.PROTOCOL);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="vfs.jasmin">
+		<CODE>
+			jEdit.getPlugin("javainsight.JavaInsightPlugin")
+				.handleBrowserAction(view, files, javainsight.JasminVFS.PROTOCOL);
+		</CODE>
+	</ACTION>
+</ACTIONS>

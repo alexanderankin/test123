@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="class">
+		new javainsight.ClassVFS();
+	</SERVICE>
+
+	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="jasmin">
+		new javainsight.JasminVFS();
+	</SERVICE>
+
+	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="jode">
+		new javainsight.JodeVFS();
+	</SERVICE>
+</SERVICES>
+
