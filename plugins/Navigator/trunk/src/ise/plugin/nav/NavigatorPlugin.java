@@ -33,8 +33,8 @@ public class NavigatorPlugin extends EBPlugin
 	public final static String NAME = "Navigator";
 	
 	
-	/** View/Navigator map */
-	private final static HashMap map = new HashMap();
+	/** EditPane / Navigator map */
+	private final static HashMap<EditPane, Navigator> map = new HashMap<EditPane, Navigator>();
 
 	public void start()
 	{
@@ -101,6 +101,7 @@ public class NavigatorPlugin extends EBPlugin
 
 	public void stop()
 	{
+		map.clear();
 		clearToolBars();
 	}
 
@@ -110,7 +111,7 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			String toolBarActions = jEdit.getProperty("view.toolbar");
 			StringTokenizer st = new StringTokenizer(toolBarActions);
-			LinkedList ll = new LinkedList();
+			LinkedList<String> ll = new LinkedList<String>();
 			boolean found = false;
 			while (st.hasMoreTokens())
 			{
@@ -173,10 +174,11 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			return;
 		}
-		EditPane pane = view.getEditPane();
-		if (!map.containsKey(pane))
-			return;
-		map.remove(pane);
+		for (EditPane pane : view.getEditPanes()) { 
+			if (map.containsKey(pane))
+				map.remove(pane);
+		}
+		view.dispose(); // This is not necessary is it?
 	}
 
 	
@@ -270,8 +272,11 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			ViewUpdate vu = (ViewUpdate) message;
 			View v = vu.getView();
-			if (vu.getWhat() == vu.CREATED || vu.getWhat() == vu.EDIT_PANE_CHANGED) 
+			Object what = vu.getWhat();
+			if (what == vu.CREATED || what == vu.EDIT_PANE_CHANGED) 
 				createNavigator(v);
+			else if (what.equals(ViewUpdate.CLOSED))
+				removeNavigator(v);
 		}
 
 		/* If the editpane changes its current buffer, we want to know
@@ -297,9 +302,9 @@ public class NavigatorPlugin extends EBPlugin
 					n.update();
 				}
 			}
-			
+			else if (epu.getWhat() == epu.DESTROYED) {
+				map.remove(epu.getEditPane());
+			}
 		}
-		
-
 	}
 }
