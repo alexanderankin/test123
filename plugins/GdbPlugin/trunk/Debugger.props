@@ -1,7 +1,7 @@
 plugin.debugger.jedit.Plugin.activate=defer
 
 # general plugin information
-plugin.debugger.jedit.Plugin.name=Debugger
+plugin.debugger.jedit.Plugin.name=GdbPlugin
 plugin.debugger.jedit.Plugin.author=Shlomy Reinstein
 plugin.debugger.jedit.Plugin.version=0.1
 plugin.debugger.jedit.Plugin.description=\

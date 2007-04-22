@@ -8,7 +8,7 @@
 
 -->
 
-<project name="Debugger" default="dist" basedir=".">
+<project name="GdbPlugin" default="dist" basedir=".">
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
