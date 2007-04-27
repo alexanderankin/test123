@@ -101,24 +101,28 @@ public class BreakpointView extends JPanel {
 		
 		model = new DefaultListModel();
 		list.setModel(model);
+		updateList();
+		BreakpointList.getInstance().addListListener(new BreakpointListListener() {
+			public void breakpointAdded(Breakpoint bp) {
+				updateList();
+			}
+			public void breakpointRemoved(Breakpoint bp) {
+				updateList();
+			}
+			public void breakpointChanged(Breakpoint bp) {
+				updateList();
+			}
+		});
+	}
+	
+	private void updateList() {
+		model.removeAllElements();
 		Vector<Breakpoint> brks = BreakpointList.getInstance().getBreakpoints();
 		for (int i = 0; i < brks.size(); i++)
 		{
 			Breakpoint bp = (Breakpoint)brks.get(i);
 			model.addElement(new BreakpointCheckBox(bp));
 		}
-		BreakpointList.getInstance().addListListener(new BreakpointListListener() {
-			public void breakpointAdded(Breakpoint bp) {
-				model.addElement(new BreakpointCheckBox(bp));
-			}
-			public void breakpointRemoved(Breakpoint bp) {
-				model.removeElement(new BreakpointCheckBox(bp));
-			}
-			public void breakpointChanged(Breakpoint bp) {
-				model.removeElement(new BreakpointCheckBox(bp));
-				model.addElement(new BreakpointCheckBox(bp));
-			}
-		});
 	}
 	
 	@SuppressWarnings("serial")
