@@ -75,7 +75,7 @@ public class ShortcutDisplay
         currentDialog = new ShortcutDialog( bindings );
         currentDialog.pack();
         GUIUtilities.loadGeometry(currentDialog, jEdit.getActiveView(), "shortcutDisplay");
-        currentDialog.show();
+        currentDialog.setVisible(true);
     }
 
 
@@ -91,9 +91,7 @@ public class ShortcutDisplay
         else
         {
             GUIUtilities.saveGeometry(currentDialog, jEdit.getActiveView(), "shortcutDisplay");
-            jEdit.setIntegerProperty( "shortcutdisplay.xlocation", currentDialog.getX() );
-            jEdit.setIntegerProperty( "shortcutdisplay.ylocation", currentDialog.getY() );
-            currentDialog.hide();
+            currentDialog.setVisible(false);
             currentDialog.dispose();
             currentDialog = null;
             return;
