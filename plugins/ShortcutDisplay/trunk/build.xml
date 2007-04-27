@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the FTP plugin.
+     This is a build.xml file for building the ShortcutDisplay plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
      Before running the 'dist' target, you will need to generate the
@@ -23,7 +23,7 @@
 <project name="ShortcutDisplay" default="dist" basedir=".">
 
 	<property file="build.properties"/>
-
+	<property file="../build.properties"/>
 	<property name="jar.name"  value="ShortcutDisplay.jar"/>
 
 	<property name="src.dir" value="src"/>
@@ -81,6 +81,7 @@
 		</jar>
 	</target>
 
+
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" depends="init">
 		<exec executable="xsltproc">
@@ -111,6 +112,7 @@
     </xslt>
   </target>
 
+
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete>
@@ -120,6 +122,7 @@
             </fileset>
 		</delete>
 	</target>
+
 
 	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
 	<target name="tags">
