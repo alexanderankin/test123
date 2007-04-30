@@ -12,7 +12,7 @@ Setting/Removing/Toggling breakpoints directly in jEdit buffers.
 </li>
 <li>
 Controlling program execution (the usual continue/step/next/...) - either
-using actions from the Debugger menu or using a very simple control panel.
+using actions from the GdbPlugin menu or using a very simple control panel.
 </li>
 <li>
 Visualization of breakpoints and the current instruction using icons in the
@@ -46,11 +46,11 @@ Despite the above, I found it to be quite helpful in debugging my applications.
 
 <h2>Usage</h2>
 First thing's first: If you don't have 'gdb' in your PATH, you should define
-the path to gdb using: Plugins->Plugin Options->Debugger->Gdb.
+the path to gdb using: Plugins->Plugin Options->GdbPlugin->Gdb.
 <p>
 Next, you need to define how to launch your application under gdb. For this, you
 create a launch configuration using:
-Plugins->Plugin Options->Debugger->Programs.
+Plugins->Plugin Options->GdbPlugin->Programs.
 Click the 'New' button below the "Configurations" box and enter all the details.
 'Name' is a symbolic name you assign to the configuration, which simply shows
 in the "Configurations" list. In 'Environment' you can set a series of
@@ -77,11 +77,11 @@ You can do the following:
 <ol>
 <li>
 Mark breakpoints in jEdit buffers by putting the caret on the breakpoint line
-and invoking 'Set breakpoint' from the Debugger plugin menu.
+and invoking 'Set breakpoint' from the GdbPlugin plugin menu.
 </li>
 <li>
 Control the debugger (go!, step, next, quit, pause, ...) using either actions
-from the Debugger plugin menu or using the dockable named 'Control Panel'.
+from the GdbPlugin plugin menu or using the dockable named 'Control Panel'.
 </li>
 <li>
 See the stack trace whenever gdb stops (e.g. in a breakpoint) using the
