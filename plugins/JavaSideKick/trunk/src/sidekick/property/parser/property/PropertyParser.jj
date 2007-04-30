@@ -156,7 +156,7 @@ SKIP:
     |
 
     /* a key with no value is assumed to have an empty value */
-    <BARE_KEY: (([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" )) | (~[" ", "\t", "=", ":", "#"]))+ (<NEWLINE>)) > : DEFAULT
+    <BARE_KEY: (([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" | "#")) | (~[" ", "\t", "=", ":", "#"]))+ (<NEWLINE>)) > : DEFAULT
 
     |
 
@@ -165,7 +165,7 @@ SKIP:
     character or : or =.  This means that a key cannot contain any whitespace
     characters.  Note that a key can have escaped space and tab and : and = as
     part of the key name.  */
-    <KEY: ([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" )) | (~[" ", "\t", "=", ":", "#"]))+ > : ParseEquals
+    <KEY: ([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" | "#")) | (~[" ", "\t", "=", ":", "#"]))+ > : ParseEquals
 
     |
 
