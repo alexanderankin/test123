@@ -1,5 +1,0 @@
-Carmine Lucarelli (carmine@jedit.org)
-
-Script to download macro list and macro dtd by John Gellene, updated by Brad Mace
-Plugin Manager code upon which this is based, by Slava Pestov, et. al.
-Macro Popup code based on OpenIt, by Matt Etheridge, Denis Koryavov, et. al.
