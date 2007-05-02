@@ -12,8 +12,9 @@ plugin.macroManager.MacroManagerPlugin.author=Carmine Lucarelli
 plugin.macroManager.MacroManagerPlugin.version=1.3
 plugin.macroManager.MacroManagerPlugin.docs=index.html
 plugin.macroManager.MacroManagerPlugin.jars=tar.jar activation.jar
-plugin.macroManager.MacroManagerPlugin.depend.0=jedit 04.03.06.00
-plugin.macroManager.MacroManagerPlugin.depend.1=jdk 1.5
+plugin.macroManager.MacroManagerPlugin.depend.0=jdk 1.5
+plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.03.07.00
+plugin.macroManager.MacroManagerPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 
 #
 # Menu properties
