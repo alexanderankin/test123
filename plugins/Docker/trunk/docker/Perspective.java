@@ -33,6 +33,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.ActionSet;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -45,6 +47,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Perspective {
 	
+	private static ActionSet actions = null;
+
 	static public void save(View view) {
 		String name = JOptionPane.showInputDialog(null, "Perspective name:",
 				"Save perspective", JOptionPane.QUESTION_MESSAGE);
@@ -101,10 +105,10 @@ public class Perspective {
 			jEdit.setProperty(dockables[i] + ".dock-position",
 					DockableWindowManager.FLOATING);
 	}
-	static public void load(View view) {
+	static private String[] getPerspectives() {
 		File dir = new File(getConfigDirectory());
 		if (! dir.canRead())
-			return;
+			return null;
 		String[] names = dir.list(new FilenameFilter() {
 			public boolean accept(File arg0, String arg1) {
 				return arg1.endsWith(".xml");
@@ -114,17 +118,26 @@ public class Perspective {
 		for (int i = 0; i < names.length; i++) {
 			perspectives[i] = names[i].substring(0, names[i].length() - 4);
 		}
+		return perspectives;
+	}
+	static public void load(View view) {
+		String[] perspectives = getPerspectives();
+		if (perspectives == null || perspectives.length == 0)
+			return;
 		int sel = JOptionPane.showOptionDialog(jEdit.getActiveView(),
 				"Select perspective:", "Load perspective",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, perspectives, null);
 		if (sel == JOptionPane.CLOSED_OPTION)
 			return;
-		String selected = getConfigFile(perspectives[sel]);
+		loadPerspective(view, perspectives[sel]);
+	}
+	public static void loadPerspective(View view, String perspective) {
+		String file = getConfigFile(perspective);
 		PerspectiveHandler handler = new PerspectiveHandler();
 		try
 		{
-			XMLUtilities.parseXML(new FileInputStream(selected), handler);
+			XMLUtilities.parseXML(new FileInputStream(file), handler);
 		}
 		catch(IOException e)
 		{
@@ -202,4 +215,32 @@ public class Perspective {
 			return visible;
 		}
 	}
+	public static void removeActions() {
+		jEdit.removeActionSet(actions);
+	}
+	public static void createActions() {
+		actions = new ActionSet("Plugin: Docker: Perspectives");
+		String[] perspectives = getPerspectives();
+		for (int i = 0; i < perspectives.length; i++)
+			actions.addAction(new ChangePerspectiveAction(perspectives[i]));
+		jEdit.addActionSet(actions);
+		actions.initKeyBindings();
+	}
+
+	static public class ChangePerspectiveAction extends EditAction {
+		private String perspective;
+		
+		public ChangePerspectiveAction(String perspective) {
+			super(perspective);
+			jEdit.setTemporaryProperty(perspective + ".label", perspective);
+			this.perspective = perspective;
+		}
+
+		@Override
+		public void invoke(View view) {
+			loadPerspective(view, perspective);
+		}
+
+	}
+
 }
