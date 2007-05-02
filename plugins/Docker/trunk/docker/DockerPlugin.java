@@ -165,10 +165,12 @@ public class DockerPlugin extends EBPlugin
 	{
 		dfm = new DockFocusManager();
 		EditBus.addToBus(dfm);
+		Perspective.createActions();
 	}
 
 	public void stop()
 	{
+		Perspective.removeActions();
 		EditBus.removeFromBus(dfm);
 		dfm.destroy();
 		Iterator<ViewHandler> itr = handlers.values().iterator();
