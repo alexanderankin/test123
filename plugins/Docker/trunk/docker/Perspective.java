@@ -54,7 +54,7 @@ public class Perspective {
 	static public void save(View view) {
 		JFileChooser fc = new JFileChooser(new File(getConfigDirectory()));
 		fc.addChoosableFileFilter(filter);
-		fc.showSaveDialog(null);
+		fc.showSaveDialog(view);
 	    File sel = fc.getSelectedFile();
 	    if (sel == null)
 			return;
@@ -130,7 +130,7 @@ public class Perspective {
 	static public void load(View view) {
 		JFileChooser fc = new JFileChooser(new File(getConfigDirectory()));
 		fc.addChoosableFileFilter(filter);
-		fc.showOpenDialog(null);
+		fc.showOpenDialog(view);
 	    File sel = fc.getSelectedFile();
 	    if (sel == null)
 			return;
