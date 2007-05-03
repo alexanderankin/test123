@@ -226,7 +226,7 @@ public class Perspective {
 			actions.addAction(new ChangePerspectiveAction(perspective));
 	}
 	public static void createActions() {
-		actions = new ActionSet("Plugin: Docker: Perspectives");
+		actions = new ActionSet("Plugin: Docker - Perspectives");
 		String[] perspectives = getPerspectives();
 		for (int i = 0; i < perspectives.length; i++)
 			addAction(perspectives[i]);
