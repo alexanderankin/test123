@@ -31,7 +31,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
@@ -48,11 +49,14 @@ import org.xml.sax.helpers.DefaultHandler;
 public class Perspective {
 	
 	private static ActionSet actions = null;
-
+	private static PerspectiveFileFilter filter = new PerspectiveFileFilter();
+	
 	static public void save(View view) {
-		String name = JOptionPane.showInputDialog(null, "Perspective name:",
-				"Save perspective", JOptionPane.QUESTION_MESSAGE);
-		if (name == null)
+		JFileChooser fc = new JFileChooser(new File(getConfigDirectory()));
+		fc.addChoosableFileFilter(filter);
+		fc.showSaveDialog(null);
+	    File sel = fc.getSelectedFile();
+	    if (sel == null)
 			return;
 		DockableWindowManager dockMan = view.getDockableWindowManager();
 		Hashtable<String, String[]> dockables = new Hashtable<String, String[]>();
@@ -66,7 +70,7 @@ public class Perspective {
 				dockMan.getBottomDockingArea().getDockables());
 		PrintWriter w;
 		try {
-			w = new PrintWriter(new FileWriter(getConfigFile(name)));
+			w = new PrintWriter(new FileWriter(sel));
 			w.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 			w.println();
 			w.println("<perspective>");
@@ -85,6 +89,7 @@ public class Perspective {
 			}
 			w.println("</perspective>");
 			w.close();
+			addAction(getPerspectiveName(sel));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -109,31 +114,29 @@ public class Perspective {
 		File dir = new File(getConfigDirectory());
 		if (! dir.canRead())
 			return null;
-		String[] names = dir.list(new FilenameFilter() {
-			public boolean accept(File arg0, String arg1) {
-				return arg1.endsWith(".xml");
-			}
-		});
-		String[] perspectives = new String[names.length];
-		for (int i = 0; i < names.length; i++) {
-			perspectives[i] = names[i].substring(0, names[i].length() - 4);
+		File[] files = dir.listFiles(filter);
+		String[] perspectives = new String[files.length];
+		for (int i = 0; i < files.length; i++) {
+			perspectives[i] = getPerspectiveName(files[i]);
 		}
 		return perspectives;
 	}
-	static public void load(View view) {
-		String[] perspectives = getPerspectives();
-		if (perspectives == null || perspectives.length == 0)
-			return;
-		int sel = JOptionPane.showOptionDialog(jEdit.getActiveView(),
-				"Select perspective:", "Load perspective",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-				null, perspectives, null);
-		if (sel == JOptionPane.CLOSED_OPTION)
-			return;
-		loadPerspective(view, perspectives[sel]);
+	static private String getPerspectiveName(File file) {
+		String name = file.getName();
+		if (filter.accept(file))
+			return name.substring(0, name.length() - 4);
+		return name;
 	}
-	public static void loadPerspective(View view, String perspective) {
-		String file = getConfigFile(perspective);
+	static public void load(View view) {
+		JFileChooser fc = new JFileChooser(new File(getConfigDirectory()));
+		fc.addChoosableFileFilter(filter);
+		fc.showOpenDialog(null);
+	    File sel = fc.getSelectedFile();
+	    if (sel == null)
+			return;
+		loadPerspective(view, sel.getAbsolutePath());
+	}
+	public static void loadPerspective(View view, String file) {
 		PerspectiveHandler handler = new PerspectiveHandler();
 		try
 		{
@@ -218,11 +221,15 @@ public class Perspective {
 	public static void removeActions() {
 		jEdit.removeActionSet(actions);
 	}
+	private static void addAction(String perspective) {
+		if (actions != null && (! actions.contains(perspective)))
+			actions.addAction(new ChangePerspectiveAction(perspective));
+	}
 	public static void createActions() {
 		actions = new ActionSet("Plugin: Docker: Perspectives");
 		String[] perspectives = getPerspectives();
 		for (int i = 0; i < perspectives.length; i++)
-			actions.addAction(new ChangePerspectiveAction(perspectives[i]));
+			addAction(perspectives[i]);
 		jEdit.addActionSet(actions);
 		actions.initKeyBindings();
 	}
@@ -238,9 +245,22 @@ public class Perspective {
 
 		@Override
 		public void invoke(View view) {
-			loadPerspective(view, perspective);
+			loadPerspective(view, getConfigFile(perspective));
 		}
 
 	}
-
+	static private class PerspectiveFileFilter extends FileFilter implements FilenameFilter {
+		static private final String XML_SUFFIX = ".xml";
+		@Override
+		public boolean accept(File f) {
+			return accept(f.getParentFile(), f.getName()); 
+		}
+		@Override
+		public String getDescription() {
+			return "Perspective (" + XML_SUFFIX + ")";
+		}
+		public boolean accept(File dir, String name) {
+			return name.endsWith(XML_SUFFIX);
+		}
+	}
 }
