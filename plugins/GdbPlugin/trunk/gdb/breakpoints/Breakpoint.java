@@ -1,6 +1,7 @@
 package gdb.breakpoints;
 
 import gdb.core.CommandManager;
+import gdb.core.Debugger;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
@@ -50,10 +51,13 @@ public class Breakpoint {
 		enabled = true;
 		BreakpointList.getInstance().add(this);
 	}
+	public void reset() {
+		initialized = false;
+	}
 	public void initialize() {
 		if (initialized)
 			return;
-		CommandManager commandManager = CommandManager.getInstance();
+		CommandManager commandManager = getCommandManager();
 		if (commandManager != null) {
 			if (file != null) {
 				String fileName = file;
@@ -97,7 +101,7 @@ public class Breakpoint {
 		gdbSetEnabled(false);
 	}
 	private void gdbSetEnabled(boolean now) {
-		CommandManager commandManager = CommandManager.getInstance();
+		CommandManager commandManager = getCommandManager();
 		if (commandManager != null) {
 			String cmd = null;
 			if (enabled)
@@ -120,7 +124,7 @@ public class Breakpoint {
 	}
 	public void remove() {
 		BreakpointList.getInstance().remove(this);
-		CommandManager commandManager = CommandManager.getInstance();
+		CommandManager commandManager = getCommandManager();
 		if (commandManager != null)
 			commandManager.add("-break-delete " + number);
 		removePainter();
@@ -149,7 +153,7 @@ public class Breakpoint {
 		gdbSetSkipCount(false);
 	}
 	private void gdbSetSkipCount(boolean now) {
-		CommandManager commandManager = CommandManager.getInstance();
+		CommandManager commandManager = getCommandManager();
 		if (commandManager != null) {
 			String cmd = "-break-after " + number + " " + skipCount;
 			if (now)
@@ -167,8 +171,11 @@ public class Breakpoint {
 		condition = cond;
 		gdbSetCondition(false);
 	}
+	private CommandManager getCommandManager() {
+		return Debugger.getInstance().getCommandManager();
+	}
 	private void gdbSetCondition(boolean now) {
-		CommandManager commandManager = CommandManager.getInstance();
+		CommandManager commandManager = getCommandManager();
 		if (commandManager != null) {
 			String cmd = "-break-condition " + number + " " + condition;
 			if (now)

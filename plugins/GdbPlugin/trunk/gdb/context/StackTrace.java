@@ -2,7 +2,6 @@ package gdb.context;
 
 import gdb.core.Debugger;
 import gdb.core.GdbState;
-import gdb.core.Parser;
 import gdb.core.GdbView;
 import gdb.core.Parser.GdbHandler;
 import gdb.core.Parser.GdbResult;
@@ -189,7 +188,7 @@ public class StackTrace extends GdbView {
 		public void selected() {
 			getCommandManager().add("frame " + level);
 			if (base == null) {
-				Parser.getInstance().addGdbHandler(new InfoSourceHandler(this));
+				Debugger.getInstance().getParser().addGdbHandler(new InfoSourceHandler(this));
 				getCommandManager().add("info source");
 			}
 			else
@@ -227,7 +226,7 @@ public class StackTrace extends GdbView {
 				String path = line.substring(i + prefix.length()).trim();
 				frame.setBase(path);
 				frame.jump();
-				Parser.getInstance().removeGdbHandler(this);
+				Debugger.getInstance().getParser().removeGdbHandler(this);
 			}
 		}
 	}

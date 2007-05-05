@@ -38,7 +38,6 @@ public class Debugger implements DebuggerTool {
 	private static Debugger debugger = null;
 
 	private JEditFrontEnd frontEnd = null;
-	private Parser parser;
 
 	// Views
 	private Console programOutput = null;
@@ -51,6 +50,8 @@ public class Debugger implements DebuggerTool {
 	private Variables variablesPanel = null;
 	// Command manager
 	private CommandManager commandManager = null;
+	// Parser
+	private Parser parser = null;
 
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -106,6 +107,8 @@ public class Debugger implements DebuggerTool {
 	}
 	
 	private void sessionEnded() {
+		parser = null;
+		commandManager = null;
 		GdbState.setState(State.IDLE);
 		frontEnd.programExited();
 	}
@@ -124,7 +127,6 @@ public class Debugger implements DebuggerTool {
 	public void start(String prog, String args, String cwd, String [] env) {
 		String command = jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP) +
 			" --interpreter=mi " + prog;
-		//File dir = new File(getBufferDirectory());
 		if (cwd == null || cwd.length() == 0)
 			cwd = ".";
 		File dir = new File(cwd);
@@ -133,7 +135,7 @@ public class Debugger implements DebuggerTool {
 			p = Runtime.getRuntime().exec(command, env, dir);
 			GdbState.setState(State.RUNNING);
 	        parser = new Parser(this, p);
-	        parser.addOutOfBandHandler(new OutOfBandHandler());
+			parser.addOutOfBandHandler(new OutOfBandHandler());
 			parser.start();
 			commandManager = new CommandManager(p, parser);
 			commandManager.start();
@@ -322,7 +324,7 @@ public class Debugger implements DebuggerTool {
 		programOutput.append(line);
 	}
 	public static Debugger getInstance() {
-		if (debugger  == null)
+		if (debugger == null)
 			debugger = new Debugger();
 		return debugger;
 	}
@@ -334,5 +336,7 @@ public class Debugger implements DebuggerTool {
 	public CommandManager getCommandManager() {
 		return commandManager;
 	}
-
+	public Parser getParser() {
+		return parser;
+	}
 }

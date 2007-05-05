@@ -1,9 +1,13 @@
 package gdb.breakpoints;
 
 
+import gdb.core.GdbState;
+import gdb.core.GdbState.State;
+import gdb.core.GdbState.StateListener;
+
 import java.util.Vector;
 
-public class BreakpointList {
+public class BreakpointList implements StateListener {
 	static private BreakpointList instance = null;
 	Vector<Breakpoint> breakpoints = new Vector<Breakpoint>();
 	Vector<BreakpointListListener> listeners = new Vector<BreakpointListListener>();
@@ -15,6 +19,7 @@ public class BreakpointList {
 	}
 	
 	private BreakpointList() {
+		GdbState.addStateListener(this);
 	}
 	static public BreakpointList getInstance() {
 		if (instance == null)
@@ -48,5 +53,12 @@ public class BreakpointList {
 				brkpts.add(b);
 		}
 		return brkpts;
+	}
+	public void stateChanged(State prev, State current) {
+		if (current == State.IDLE) {
+			for (int i = 0; i < breakpoints.size(); i++) {
+				breakpoints.get(i).reset();
+			}
+		}
 	}
 }
