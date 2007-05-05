@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 
+import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 
 public class CommandManager extends Thread {
 
-	private static CommandManager instance = null;
 	Vector<Command> commands = new Vector<Command>();
 	BufferedWriter stdOutput = null;
 	Parser parser = null;
 	int id = 0;
+	private final Command StopCommand = new Command(null, "***Stop***", null);
 	
 	public class Command {
 		String cmd;
@@ -65,13 +66,15 @@ public class CommandManager extends Thread {
 		stdOutput = new BufferedWriter(
 				new OutputStreamWriter(p.getOutputStream()));
 		this.parser = parser;
-		instance = this;
 	}
 	// Add a command to be executed next (before the other registered commands)
 	public void addNow(String cmd, ResultHandler handler) {
 		Integer cid = Integer.valueOf(id);
 		id++;
 		Command c = new Command(cid, cmd, handler);
+		addNow(c);
+	}
+	private void addNow(Command c) {
 		synchronized(commands) {
 			commands.add(0, c);
 			commands.notify();
@@ -107,12 +110,22 @@ public class CommandManager extends Thread {
 		return cmd;
 	}
 	public void run() {
+		GdbState.addStateListener(new CommandManagerStateListener());
 		while (true) {
 			Command cmd = next();
+			if (cmd == StopCommand)
+				break;
 			cmd.run();
 		}
 	}
-	public static CommandManager getInstance() {
-		return instance ;
+
+	private class CommandManagerStateListener implements StateListener {
+		public void stateChanged(gdb.core.GdbState.State prev,
+				gdb.core.GdbState.State current) {
+			if (current != GdbState.State.IDLE)
+				return;
+			addNow(StopCommand);
+		}
+		
 	}
 }

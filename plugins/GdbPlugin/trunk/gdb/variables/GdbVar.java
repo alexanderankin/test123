@@ -1,6 +1,7 @@
 package gdb.variables;
 
 import gdb.core.CommandManager;
+import gdb.core.Debugger;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 
@@ -49,10 +50,13 @@ public class GdbVar extends DefaultMutableTreeNode {
 		listeners.remove(l);
 	}
 	
+	private CommandManager getCommandManager() {
+		return Debugger.getInstance().getCommandManager();
+	}
 	public void done() {
-		if (CommandManager.getInstance() == null)
+		if (getCommandManager() == null)
 			return;
-		CommandManager.getInstance().add("-var-delete " + gdbName);
+		getCommandManager().add("-var-delete " + gdbName);
 	}
 	
 	public void setChangeListener(UpdateListener l) {
@@ -67,9 +71,9 @@ public class GdbVar extends DefaultMutableTreeNode {
 		return name + " = " + value;
 	}
 	private void getValue() {
-		if (CommandManager.getInstance() == null)
+		if (getCommandManager() == null)
 			return;
-		CommandManager.getInstance().add("-var-evaluate-expression " + gdbName,
+		getCommandManager().add("-var-evaluate-expression " + gdbName,
 				new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
 					if (! msg.equals("done"))
@@ -88,7 +92,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 			requested = true;
 			return;
 		}
-		CommandManager.getInstance().add("-var-list-children " + gdbName,
+		getCommandManager().add("-var-list-children " + gdbName,
 			new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
 					if (! msg.equals("done"))
@@ -114,9 +118,9 @@ public class GdbVar extends DefaultMutableTreeNode {
 		if (gdbName == null)
 			createGdbVar();
 		else {
-			if (CommandManager.getInstance() == null)
+			if (getCommandManager() == null)
 				return;
-			CommandManager.getInstance().add("-var-update " + gdbName);
+			getCommandManager().add("-var-update " + gdbName);
 			getValue();
 			Enumeration<GdbVar> c = this.children();
 			while (c.hasMoreElements()) {
@@ -126,9 +130,9 @@ public class GdbVar extends DefaultMutableTreeNode {
 		}
 	}
 	private void createGdbVar() {
-		if (CommandManager.getInstance() == null)
+		if (getCommandManager() == null)
 			return;
-		CommandManager.getInstance().add("-var-create - * \"" + name + "\"",
+		getCommandManager().add("-var-create - * \"" + name + "\"",
 			new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
 					if (! msg.equals("done"))
@@ -161,13 +165,13 @@ public class GdbVar extends DefaultMutableTreeNode {
 	}
 
 	public void contextRequested() {
-		if (CommandManager.getInstance() == null)
+		if (getCommandManager() == null)
 			return;
 		if (! isLeaf())
 			return;
 		String newValue =
 			JOptionPane.showInputDialog("New value for '" + name + "':", value);
-		CommandManager.getInstance().add(
+		getCommandManager().add(
 				"-var-assign " + gdbName + " " + newValue);
 		for (int i = 0; i < listeners.size(); i++)
 			listeners.get(i).changed(GdbVar.this);

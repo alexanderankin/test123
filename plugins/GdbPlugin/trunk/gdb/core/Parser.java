@@ -24,7 +24,6 @@ public class Parser extends Thread {
 	private Vector<ResultHandler> resultHandlers = new Vector<ResultHandler>();
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
-	static private Parser instance = null;
 	private Thread errThread;
 	private boolean stopping = false;
 	
@@ -175,7 +174,6 @@ public class Parser extends Thread {
         		new InputStreamReader(gdbProcess.getInputStream()));
         stdError = new BufferedReader(
         		new InputStreamReader(gdbProcess.getErrorStream()));
-        instance = this;
 	}
 	
 	public void addResultHandler(ResultHandler rh)
@@ -301,10 +299,6 @@ public class Parser extends Thread {
 		}
 	}
 
-	static public Parser getInstance() {
-		return instance ;
-	}
-	
 	private class ParserStateListener implements StateListener {
 		public void stateChanged(gdb.core.GdbState.State prev,
 				gdb.core.GdbState.State current) {

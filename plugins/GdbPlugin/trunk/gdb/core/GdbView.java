@@ -13,7 +13,7 @@ public class GdbView extends JPanel implements StateListener {
 	}
 	
 	protected CommandManager getCommandManager() {
-		return CommandManager.getInstance();
+		return Debugger.getInstance().getCommandManager();
 	}
 
 	public void stateChanged(State prev, State current) {
