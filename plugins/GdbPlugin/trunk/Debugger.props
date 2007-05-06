@@ -14,7 +14,9 @@ plugin.debugger.jedit.Plugin.depend.1=jedit 04.03.09.00
 plugin.debugger.jedit.Plugin.depend.1=plugin CommonControlsPlugin 0.9.4
 	
 # action labels
+debugger-go.base.label=Go!
 debugger-go.label=Go!
+debugger-select.label=Debug...
 debugger-next.label=Next
 debugger-step.label=Step
 debugger-until.label=Run to cursor
@@ -27,6 +29,7 @@ debugger-remove-breakpoint.label=Remove breakpoint
 
 # menu items
 plugin.debugger.jedit.Plugin.menu=debugger-go \
+  debugger-select \
   debugger-next \
   debugger-step \
   debugger-finish \

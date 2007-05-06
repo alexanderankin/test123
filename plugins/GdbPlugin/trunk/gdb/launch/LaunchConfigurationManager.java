@@ -7,6 +7,8 @@ import org.gjt.sp.jedit.jEdit;
 import debugger.jedit.Plugin;
 
 public class LaunchConfigurationManager {
+	private static final String DEBUGGER_GO_BASE_LABEL = "debugger-go.base.label";
+	private static final String DEBUGGER_GO_LABEL = "debugger-go.label";
 	private static LaunchConfigurationManager instance;
 	private Vector<LaunchConfiguration> configurations =
 		new Vector<LaunchConfiguration>();
@@ -25,11 +27,19 @@ public class LaunchConfigurationManager {
 	private LaunchConfigurationManager() {
 		load();
 	}
+	private void checkSingleConfiguration() {
+		if (configurations.size() == 1)
+			setDefaultIndex(0);
+	}
 	public void add(LaunchConfiguration config) {
 		configurations.add(config);
+		checkSingleConfiguration();
 	}
 	public void remove(int index) {
+		if (defaultIndex == index)
+			defaultIndex--;
 		configurations.remove(index);
+		checkSingleConfiguration();
 	}
 	public int size() {
 		return configurations.size();
@@ -63,6 +73,10 @@ public class LaunchConfigurationManager {
 	public void setDefaultIndex(int index)
 	{
 		defaultIndex = index;
+		jEdit.setProperty(DEBUGGER_GO_LABEL,
+				jEdit.getProperty(DEBUGGER_GO_BASE_LABEL) +
+				" [" + configurations.get(index) + "]");
+		jEdit.propertiesChanged();
 	}
 	public LaunchConfiguration getDefault()
 	{
@@ -136,6 +150,8 @@ public class LaunchConfigurationManager {
 					arguments.get(i),
 					directories.get(i),
 					environments.get(i)));
+		// The following is required for the side effects (change menu label)
+		setDefaultIndex(defaultIndex);
 	}
 	static public LaunchConfigurationManager getInstance() {
 		if (instance == null)

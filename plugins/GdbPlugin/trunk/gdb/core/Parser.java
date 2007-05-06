@@ -213,14 +213,15 @@ public class Parser extends Thread {
 	void parse(String line) {
 		//System.err.println("Parsing line: " + line);
 		debugger.gdbRecord(line + "\n");
-		if (line.length() == 0)
+		int len = line.length();
+		if (len == 0)
 			return;
 		int lineBegin = -1;
 		char c;
 		do {
 			lineBegin++;
 			c = line.charAt(lineBegin);
-		} while (c >= '0' && c <= '9');
+		} while (c >= '0' && c <= '9' && lineBegin < len - 1);
 		switch (c) {
 		case '@':
 		case '&':
