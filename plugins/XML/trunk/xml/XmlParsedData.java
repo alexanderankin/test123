@@ -25,11 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.StringList;
 
 import sidekick.SideKickParsedData;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
+import xml.completion.IDDecl;
 import xml.parser.TagParser;
 //}}}
 
@@ -45,12 +47,12 @@ public class XmlParsedData extends SideKickParsedData
 	 * A mapping of namespace to CompletionInfo objects.
 	 *  namespace of "" is the default namespace.
 	 */
-	private Map mappings;
+	private Map<String, CompletionInfo> mappings;
 	
 	/**
 	 *  A list of all identifiers encountered during the parse?
 	 */
-	public List ids;
+	public List<IDDecl> ids;
 
 	public void setCompletionInfo(String namespace, CompletionInfo info) {
 		mappings.put(namespace, info);
@@ -61,14 +63,14 @@ public class XmlParsedData extends SideKickParsedData
 	{
 		super(fileName);
 		this.html = html;
-		mappings = new HashMap();
-		ids = new ArrayList();
+		mappings = new HashMap<String, CompletionInfo>();
+		ids = new ArrayList<IDDecl>();
 	} //}}}
 
 	//{{{ getNoNamespaceCompletionInfo() method
 	public CompletionInfo getNoNamespaceCompletionInfo()
 	{
-		CompletionInfo info = (CompletionInfo)mappings.get("");
+		CompletionInfo info = mappings.get("");
 		if(info == null)
 		{
 			info = new CompletionInfo();
@@ -85,7 +87,7 @@ public class XmlParsedData extends SideKickParsedData
 			name = name.toLowerCase();
 
 		String prefix = getElementNamePrefix(name);
-		CompletionInfo info = (CompletionInfo)mappings.get(prefix);
+		CompletionInfo info = mappings.get(prefix);
 
 		if(info == null)
 			return null;
@@ -98,7 +100,7 @@ public class XmlParsedData extends SideKickParsedData
 			else
 				lName = name.substring(prefixLen + 1);
 
-			ElementDecl decl = (ElementDecl)info.elementHash.get(lName);
+			ElementDecl decl = info.elementHash.get(lName);
 			if(decl == null)
 				return null;
 			else
@@ -108,9 +110,10 @@ public class XmlParsedData extends SideKickParsedData
 
 
 	//{{{ getAllowedElements() method
-	public List getAllowedElements(Buffer buffer, int pos)
+	/** @returns a list containing Elements or Attributes */
+	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
-		List returnValue = new LinkedList();
+		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
 		TagParser.Tag parentTag = null;
 		try {
@@ -128,7 +131,7 @@ public class XmlParsedData extends SideKickParsedData
 				String prefix = (String)iter.next();
 				CompletionInfo info = (CompletionInfo)
 				mappings.get(prefix);
-				info.getAllElements(prefix,returnValue);
+				info.getAllElements(prefix, returnValue);
 			}
 		}
 		else
@@ -151,7 +154,7 @@ public class XmlParsedData extends SideKickParsedData
 				}
 			}
 		}
-		Collections.sort(returnValue,new ElementDecl.Compare());
+		Collections.sort(returnValue, new ElementDecl.Compare());
 		return returnValue;
 	} //}}}
 

@@ -703,6 +703,7 @@
  <listitem><para> 2 new actions: select Element or Code Block, and Select Between Tags
  (Jakub Roztocil)
  </para> </listitem>
+ <listitem><para> Un-broke characters to entities (1579232 ) </para></listitem>
  </itemizedlist>
  </listitem> 
 

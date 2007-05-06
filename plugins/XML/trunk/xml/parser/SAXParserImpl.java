@@ -114,7 +114,7 @@ public class SAXParserImpl extends XmlParser
 		SymbolTable symbolTable = new SymbolTable();
 		XMLGrammarPoolImpl grammarPool = new XMLGrammarPoolImpl();
 
-		Handler handler = new Handler(buffer,text,errorSource,data,grammarPool);
+		Handler handler = new Handler(buffer, text, errorSource, data, grammarPool);
 
 		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
 		try
@@ -195,7 +195,7 @@ public class SAXParserImpl extends XmlParser
 			Log.log(Log.ERROR,this,e);
 		}
 
-		Collections.sort(data.ids,new IDDecl.Compare());
+		Collections.sort(data.ids, new IDDecl.Compare());
 
 		return data;
 	} //}}}

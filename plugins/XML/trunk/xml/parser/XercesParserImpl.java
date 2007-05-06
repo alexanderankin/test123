@@ -68,7 +68,7 @@ import xml.completion.IDDecl;
  * The design goal is to use more recent APIs in Xerces, and to avoid
  * using internal or native interface classes, including the Grammar
  * class. 
- * It is not working yet.
+ * It is not fully working yet.
  *  
  *     
  *     
@@ -151,8 +151,7 @@ public class XercesParserImpl extends XmlParser
 			Log.log(Log.NOTICE,this,"rootDocument specified; "
 				+ "parsing " + rootDocument);
 			rootDocument = MiscUtilities.constructPath(
-				MiscUtilities.getParentOfPath(
-				buffer.getPath()),rootDocument);
+				MiscUtilities.getParentOfPath(buffer.getPath()), rootDocument);
 			source.setSystemId(rootDocument);
 		}
 		else
@@ -172,7 +171,7 @@ public class XercesParserImpl extends XmlParser
 		{
 			Log.log(Log.ERROR,this,ioe);
 			ioe.printStackTrace();
-			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),0,0,0,
+			errorSource.addError(ErrorSource.ERROR, buffer.getPath(), 0, 0, 0,
 				ioe.toString());
 		}
 		catch(SAXParseException spe)
@@ -181,7 +180,7 @@ public class XercesParserImpl extends XmlParser
 		}
 		catch(SAXException se)
 		{
-			Log.log(Log.ERROR,this,se.getException());
+			Log.log(Log.ERROR, this, se.getException());
 			if(se.getMessage() != null)
 			{
 				se.printStackTrace();
