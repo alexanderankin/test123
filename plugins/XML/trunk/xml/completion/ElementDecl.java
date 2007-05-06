@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.StandardUtilities;
 
 public class ElementDecl
 {
@@ -35,9 +35,9 @@ public class ElementDecl
 	public boolean empty;
 	public boolean any;
 
-	public List attributes;
-	public Map attributeHash;
-	public Set content;
+	public List<AttributeDecl> attributes;
+	public Map<String, AttributeDecl> attributeHash;
+	public Set<String> content;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(CompletionInfo completionInfo, String name, String content)
@@ -49,14 +49,14 @@ public class ElementDecl
 		if(content != null)
 			setContent(content);
 
-		attributes = new ArrayList();
-		attributeHash = new HashMap();
+		attributes = new ArrayList<AttributeDecl>();
+		attributeHash = new HashMap<String, AttributeDecl>();
 	} //}}}
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(CompletionInfo completionInfo, String name,
-		boolean empty, boolean any, List attributes, Map attributeHash,
-		Set content)
+		boolean empty, boolean any, List<AttributeDecl> attributes, Map<String, AttributeDecl> attributeHash,
+		Set<String> content)
 	{
 		this.completionInfo = completionInfo;
 		this.name = name;
@@ -83,7 +83,7 @@ public class ElementDecl
 			any = true;
 		else
 		{
-			this.content = new HashSet();
+			this.content = new HashSet<String>();
 
 			StringTokenizer st = new StringTokenizer(content,
 				"(?*+|,) \t\n");
@@ -112,30 +112,28 @@ public class ElementDecl
 			return this;
 		else
 		{
-			return new ElementDecl(completionInfo,prefix + ':' + name,
-				empty,any,attributes,attributeHash,content);
+			return new ElementDecl(completionInfo, prefix + ':' + name,
+				empty, any, attributes, attributeHash, content);
 		}
 	} //}}}
 
 	//{{{ getChildElements() method
-	public List getChildElements(String prefix)
+	public List<ElementDecl> getChildElements(String prefix)
 	{
-		ArrayList children = new ArrayList(100);
+		ArrayList<ElementDecl>children = new ArrayList<ElementDecl>(100);
 
 		if(any)
 		{
 			for(int i = 0; i < completionInfo.elements.size(); i++)
 			{
-				children.add(((ElementDecl)completionInfo.elements.get(i))
-					.withPrefix(prefix));
+				children.add(((ElementDecl)completionInfo.elements.get(i)).withPrefix(prefix));
 			}
 		}
 		else
 		{
 			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
 			{
-				children.add(((ElementDecl)completionInfo
-					.elementsAllowedAnywhere.get(i))
+				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i))
 					.withPrefix(prefix));
 			}
 
@@ -166,28 +164,28 @@ public class ElementDecl
 	 * none.
 	 * 
 	 */
-	public List findReplacements(String prefix) {
+	public List<ElementDecl> findReplacements(String prefix) {
 		return null;
 	}
 	
 	
 	//{{{ getAttribute() method
-	public AttributeDecl getAttribute(String name)
+	public AttributeDecl getAttribute(String attrname)
 	{
-		return (AttributeDecl)attributeHash.get(name);
+		return attributeHash.get(attrname);
 	} //}}}
 
 	//{{{ addAttribute() method
 	public void addAttribute(AttributeDecl attribute)
 	{
-		attributeHash.put(attribute.name,attribute);
+		attributeHash.put(attribute.name, attribute);
 
 		for(int i = 0; i < attributes.size(); i++)
 		{
 			AttributeDecl attr = (AttributeDecl)attributes.get(i);
 			if(attr.name.compareTo(attribute.name) > 0)
 			{
-				attributes.add(i,attribute);
+				attributes.add(i, attribute);
 				return;
 			}
 		}
@@ -308,13 +306,11 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ Compare class
-	public static class Compare implements MiscUtilities.Compare
+	public static class Compare implements java.util.Comparator<ElementDecl>
 	{
-		public int compare(Object obj1, Object obj2)
+		public int compare(ElementDecl obj1, ElementDecl obj2)
 		{
-			return MiscUtilities.compareStrings(
-				((ElementDecl)obj1).name,
-				((ElementDecl)obj2).name,true);
+			return StandardUtilities.compareStrings(obj1.name, obj2.name, true);
 		}
 	} //}}}
 }

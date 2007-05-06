@@ -29,12 +29,12 @@ public class CompletionInfoHandler extends DefaultHandler
 	public CompletionInfoHandler()
 	{
 		completionInfo = new CompletionInfo();
-
+/*		This is redundant - already done in completionInfo ctor 
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"quot","\""));
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'")); */
 	} //}}}
 
 	//{{{ getCompletionInfo() method

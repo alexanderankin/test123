@@ -7,6 +7,7 @@
  *               1998, 2000 Ollie Rutherfurd
  *               2000, 2001 Andre Kaplan
  *               1999 Romain Guy
+ *		 2007 Alan Ezust
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -44,10 +45,19 @@ import xml.completion.ElementDecl;
 import xml.parser.TagParser;
 //}}}
 
+// {{{ class XMLActions 
 public class XmlActions
 {
-	//{{{ showEditTagDialog() method
+	//{{{ Static variables
+	private static Segment seg = new Segment();
+	private static boolean closeCompletion;
+	private static boolean closeCompletionOpen;
+	private static boolean standaloneExtraSpace;
+	static final String brackets = "[](){}";
+	static final String xmlchars = "<>"; 	
+	//}}}
 	
+	//{{{ showEditTagDialog() methods
 	
 	public static void showEditTagDialog(View view)
 	{
@@ -161,7 +171,7 @@ loop:			for(;;)
 		}
 		catch(IOException io)
 		{
-			// won't happen
+			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io); 
 		} //}}}
 
 		ElementDecl elementDecl = data.getElementDecl(tag.tag);
@@ -193,14 +203,12 @@ loop:			for(;;)
 				buffer.endCompoundEdit();
 			}
 		}
-	} //}}}
+	}
 
 	public static void showEditTagDialog(View view, ElementDecl elementDecl) {
 		showEditTagDialog(view, elementDecl, null);
 	}
-	
-	//{{{ showEditTagDialog() method
-	
+		
 	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag)
 	{
 		Buffer buffer = view.getBuffer();
@@ -431,10 +439,8 @@ loop:			for(;;)
 		Log.log(Log.DEBUG, XmlActions.class,
 			"removeTags time: " + (endTime - startTime) + " ms");
 	} //}}}
-	static final String brackets = "[](){}";
-	static final String xmlchars = "<>"; 
-	
-	// {{{ matchTag() method
+
+	//{{{ matchTag() method
 	public static void matchTag(JEditTextArea textArea) {
 	    int caretPos = textArea.getCaretPosition();
 	    for (int i=caretPos-1; i<caretPos+3; ++i) try 
@@ -450,6 +456,7 @@ loop:			for(;;)
 	    xmlMatchTag(textArea);	
 	}
 	// }}}
+
 	//{{{ xmlMatchTag() method
 	public static void xmlMatchTag(JEditTextArea textArea)
 	{
@@ -480,7 +487,6 @@ loop:			for(;;)
 				textArea.getToolkit().beep();
 		}
 	} //}}}
-
 
 	//{{{ selectElement() method
 	/**
@@ -631,7 +637,6 @@ loop:			for(;;)
 	}
 	// }}}
 
-
 	//{{{ insertClosingTagKeyTyped() method
 	public static void insertClosingTagKeyTyped(View view)
 	{
@@ -741,19 +746,15 @@ loop:			for(;;)
 		}
 	} //}}}
 
-	//{{{ charactersToEntities() method
+	//{{{ charactersToEntities() methods
 	public static String charactersToEntities(String s, Map hash)
 	{
+		final String specialChars = "<>&\"\\";
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < s.length(); i++)
 		{
 			char ch = s.charAt(i);
-			if(ch >= 0x7f
-				|| ch == '<'
-				|| ch == '>'
-				|| ch == '&'
-				|| ch == '"'
-				|| ch == '\'')
+			if(ch >= 0x7f || specialChars.indexOf(ch) > -1)
 			{
 				Character c = new Character(ch);
 				String entity = (String)hash.get(c);
@@ -771,38 +772,8 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
-	} //}}}
+	} 
 
-	//{{{ entitiesToCharacters() method
-	public static String entitiesToCharacters(String s, Map hash)
-	{
-		StringBuffer buf = new StringBuffer();
-		for(int i = 0; i < s.length(); i++)
-		{
-			char ch = s.charAt(i);
-			if(ch == '&')
-			{
-				int index = s.indexOf(';',i);
-				if(index != -1)
-				{
-					String entityName = s.substring(i + 1,index);
-					Character c = (Character)hash.get(entityName);
-					if(c != null)
-					{
-						buf.append(c.charValue());
-						i = index;
-						continue;
-					}
-				}
-			}
-
-			buf.append(ch);
-		}
-
-		return buf.toString();
-	} //}}}
-
-	//{{{ charactersToEntities() method
 	public static void charactersToEntities(View view)
 	{
 		Buffer buffer = view.getBuffer();
@@ -829,13 +800,40 @@ loop:			for(;;)
 		Selection[] selection = textArea.getSelection();
 		for(int i = 0; i < selection.length; i++)
 		{
-			textArea.setSelectedText(selection[i],
-				charactersToEntities(textArea.getSelectedText(
-				selection[i]),entityHash));
+			String old = textArea.getSelectedText(selection[i]);
+			textArea.setSelectedText(selection[i], charactersToEntities(old, entityHash));
 		}
 	} //}}}
 
-	//{{{ entitiesToCharacters() method
+	//{{{ entitiesToCharacters() methods
+	public static String entitiesToCharacters(String s, Map hash)
+	{
+		StringBuffer buf = new StringBuffer();
+		for(int i = 0; i < s.length(); i++)
+		{
+			char ch = s.charAt(i);
+			if(ch == '&')
+			{
+				int index = s.indexOf(';',i);
+				if(index != -1)
+				{
+					String entityName = s.substring(i + 1,index);
+					Character c = (Character)hash.get(entityName);
+					if(c != null)
+					{
+						buf.append(c.charValue());
+						i = index;
+						continue;
+					}
+				}
+			}
+
+			buf.append(ch);
+		}
+
+		return buf.toString();
+	}
+
 	public static void entitiesToCharacters(View view)
 	{
 		Buffer buffer = view.getBuffer();
@@ -874,6 +872,8 @@ loop:			for(;;)
 		return (standaloneExtraSpace ? " />" : "/>");
 	} //}}}
 
+	// {{{ non-public methods
+	
 	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
@@ -884,15 +884,6 @@ loop:			for(;;)
 		standaloneExtraSpace = jEdit.getBooleanProperty(
 			"xml.standalone-extra-space");
 	} //}}}
-
-	//{{{ Private members
-
-	//{{{ Static variables
-	private static Segment seg = new Segment();
-	private static boolean closeCompletion;
-	private static boolean closeCompletionOpen;
-	private static boolean standaloneExtraSpace;
-	//}}}
 
 	//{{{ getPrevNonWhitespaceChar() method
 	/**
@@ -961,4 +952,4 @@ loop:			for(;;)
 	//}}}
 
 	//}}}
-}
+} // }}}

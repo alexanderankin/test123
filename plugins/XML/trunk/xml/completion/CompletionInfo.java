@@ -27,36 +27,39 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 //}}}
 
 public class CompletionInfo
 {
-	public ArrayList elements;
-	public HashMap elementHash;
-	public ArrayList entities;
+	public ArrayList<ElementDecl> elements;
+	public HashMap<String, ElementDecl> elementHash;
+	public ArrayList<EntityDecl> entities;
+	/** Appears to implement a bidirectional relationship? */
 	public HashMap entityHash;
+	
 	public ArrayList elementsAllowedAnywhere;
 
 	//{{{ CompletionInfo constructor
 	public CompletionInfo()
 	{
-		this(new ArrayList(), new HashMap(),
-			new ArrayList(), new HashMap(),
+		this(new ArrayList<ElementDecl>(), new HashMap<String, ElementDecl>(),
+			new ArrayList<EntityDecl>(), new HashMap(),
 			new ArrayList());
-		/* This seems to be redundant...
+
 		addEntity(EntityDecl.INTERNAL,"lt","<");
 		addEntity(EntityDecl.INTERNAL,"gt",">");
 		addEntity(EntityDecl.INTERNAL,"amp","&");
 		addEntity(EntityDecl.INTERNAL,"quot","\"");
-		addEntity(EntityDecl.INTERNAL,"apos","'"); 
-		*/ 
+		addEntity(EntityDecl.INTERNAL,"apos","'");  
 	} //}}}
 
 	//{{{ CompletionInfo constructor
-	public CompletionInfo(ArrayList elements, HashMap elementHash,
-		ArrayList entities, HashMap entityHash,
+	public CompletionInfo(ArrayList<ElementDecl> elements, 
+		HashMap<String, ElementDecl> elementHash,
+		ArrayList<EntityDecl> entities, HashMap entityHash,
 		ArrayList elementsAllowedAnywhere)
 	{
 		this.elements = elements;
@@ -86,8 +89,8 @@ public class CompletionInfo
 			&& entity.value.length() == 1)
 		{
 			Character ch = new Character(entity.value.charAt(0));
-			entityHash.put(entity.name,ch);
-			entityHash.put(ch,entity.name);
+			entityHash.put(entity.name, ch);
+			entityHash.put(ch, entity.name);
 		}
 	} //}}}
 
@@ -99,14 +102,14 @@ public class CompletionInfo
 	} //}}}
 
 	//{{{ getAllElements() method
-	public void getAllElements(String prefix, List out)
+	public void getAllElements(String prefix, List<ElementDecl> out)
 	{
 		for(int i = 0; i < elements.size(); i++)
 		{
-			ElementDecl decl = (ElementDecl)elements.get(i);
+			ElementDecl decl = elements.get(i);
 			if (decl.isAbstract()) 
 			{
-				List repls = decl.findReplacements(prefix);
+				List<ElementDecl> repls = decl.findReplacements(prefix);
 				out.addAll(repls);
 				
 				
@@ -177,7 +180,7 @@ public class CompletionInfo
 			if(obj instanceof String)
 			{
 				CompletionInfo info = getCompletionInfoFromResource((String)obj);
-				completionInfoNamespaces.put(namespace,info);
+				completionInfoNamespaces.put(namespace, info);
 				return info;
 			}
 			else
@@ -220,7 +223,7 @@ public class CompletionInfo
 			}
 
 			info = handler.getCompletionInfo();
-			completionInfoResources.put(resource,info);
+			completionInfoResources.put (resource, info);
 
 			return info;
 		}
@@ -239,16 +242,16 @@ public class CompletionInfo
 	} //}}}
 
 	//{{{ Private members
-	private static HashMap globs;
-	private static HashMap completionInfoResources;
-	private static HashMap completionInfoNamespaces;
+	private static HashMap<Pattern, String> globs;
+	private static HashMap<String, CompletionInfo> completionInfoResources;
+	private static HashMap<String, Object> completionInfoNamespaces;
 	private static Object lock;
 
 	//{{{ Class initializer
 	static
 	{
-		completionInfoResources = new HashMap();
-		globs = new HashMap();
+		completionInfoResources = new HashMap<String, CompletionInfo>();
+		globs = new HashMap<Pattern, String>();
 		int i = 0;
 		String glob;
 		while((glob = jEdit.getProperty("xml.completion.glob." + i + ".key")) != null)
@@ -256,8 +259,8 @@ public class CompletionInfo
 			String info = jEdit.getProperty("xml.completion.glob." + i + ".value");
 			try
 			{
-				globs.put(Pattern.compile(MiscUtilities.globToRE(glob),
-					Pattern.CASE_INSENSITIVE),info);
+				globs.put(Pattern.compile(StandardUtilities.globToRE(glob),
+					Pattern.CASE_INSENSITIVE), info);
 			}
 			catch(PatternSyntaxException pse)
 			{
@@ -267,13 +270,13 @@ public class CompletionInfo
 			i++;
 		}
 
-		completionInfoNamespaces = new HashMap();
+		completionInfoNamespaces = new HashMap<String, Object>();
 		i = 0;
 		String namespace;
 		while((namespace = jEdit.getProperty("xml.completion.namespace." + i + ".key")) != null)
 		{
 			String info = jEdit.getProperty("xml.completion.namespace." + i + ".value");
-			completionInfoNamespaces.put(namespace,info);
+			completionInfoNamespaces.put(namespace, info);
 
 			i++;
 		}

@@ -195,8 +195,8 @@ xml-insert.ids=IDs:
 xml-insert.not-parsed=Not parsed
 
 # Edit tag dialog box
-xml-no-data.title=Not an XML file
-xml-no-data.message=This command can only be used in XML files.
+xml-no-data.title=No SideKick parsed data
+xml-no-data.message=This command can only be used on XML/HTML files after a SideKick parse.
 
 xml-edit-tag.undefined-element.title=Element Not Defined
 xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
