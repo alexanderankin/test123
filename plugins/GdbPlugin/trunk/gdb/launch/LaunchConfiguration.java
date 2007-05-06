@@ -48,4 +48,7 @@ public class LaunchConfiguration {
 	public void setEnvironment(String env) {
 		environment = env;
 	}
+	public String toString() {
+		return getName();
+	}
 }

@@ -21,6 +21,7 @@ package debugger.jedit;
 import gdb.breakpoints.Breakpoint;
 import gdb.breakpoints.BreakpointList;
 import gdb.core.Debugger;
+import gdb.launch.LaunchConfigurationManager;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -40,6 +41,8 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 	
 	public void start()	{
 		debugger.setFrontEnd(this);
+		// Ensure launch configurations are loaded, to set label of Go! menu
+		LaunchConfigurationManager.getInstance();
 	}
 
 	public void stop() {

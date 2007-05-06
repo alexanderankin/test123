@@ -58,6 +58,24 @@ public class Debugger implements DebuggerTool {
 		return null;
 	}
 
+	public void selectLaunchConfig(View view) {
+		LaunchConfigurationManager mgr = LaunchConfigurationManager.getInstance();
+		Vector<LaunchConfiguration> configs = mgr.get();
+		LaunchConfiguration sel = (LaunchConfiguration)
+			JOptionPane.showInputDialog(view,
+						"Program",
+						"Select:",
+						JOptionPane.QUESTION_MESSAGE,
+						null,
+						configs.toArray(),
+						mgr.getDefault());
+		if (sel == null)
+			return;
+		mgr.setDefaultIndex(configs.indexOf(sel));
+		mgr.save();
+		go();
+	}
+	
 	public void go() {
 		if (! isRunning())
 			start();
