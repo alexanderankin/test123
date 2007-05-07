@@ -14,6 +14,7 @@
 -->
 
 <project name="XML" default="jar" basedir=".">
+    <property file="build.properties"/>
     <property file="../build.properties"/>
 
 
