@@ -12,7 +12,7 @@
 plugin.docker.DockerPlugin.name=Docker
 plugin.docker.DockerPlugin.activate=startup
 plugin.docker.DockerPlugin.author=Calvin Yu, Shlomy Reinstein, Alan Ezust
-plugin.docker.DockerPlugin.version=0.4
+plugin.docker.DockerPlugin.version=0.5
 plugin.docker.DockerPlugin.docs=index.html
 plugin.docker.DockerPlugin.option-pane=docker
 plugin.docker.DockerPlugin.description=Enhancements to the Dockable window manager
@@ -23,7 +23,7 @@ options.docker.code=new docker.DockerOptionPane()
 # menus
 plugin.docker.DockerPlugin.menu=perspective-load perspective-save docker.toggle-docks docker.popup.top-dock docker.popup.left-dock docker.popup.bottom-dock docker.popup.right-dock
 
-plugin.docker.DockerPlugin.depend.0=jedit 04.02.99.00
+plugin.docker.DockerPlugin.depend.0=jedit 04.03.09.00
 plugin.docker.DockerPlugin.depend.1=jdk 1.5
 plugin.docker.DockerPlugin.depend.2=plugin CommonControlsPlugin 0.7
 
