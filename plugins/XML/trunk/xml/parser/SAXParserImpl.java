@@ -66,7 +66,6 @@ import errorlist.ErrorSource;
 import sidekick.SideKickParsedData;
 
 import xml.CatalogManager;
-import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
 import xml.completion.CompletionInfo;
@@ -99,7 +98,7 @@ public class SAXParserImpl extends XmlParser
 		try
 		{
 			buffer.readLock();
-			text = buffer.getText(0,buffer.getLength());
+			text = buffer.getText(0, buffer.getLength());
 		}
 		finally
 		{
@@ -107,9 +106,9 @@ public class SAXParserImpl extends XmlParser
 		}
 
 		if(text.length() == 0)
-			return new XmlParsedData(buffer.getName(),false);
+			return new XmlParsedData(buffer.getName(), false);
 
-		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
+		XmlParsedData data = new XmlParsedData(buffer.getName(), false);
 
 		SymbolTable symbolTable = new SymbolTable();
 		XMLGrammarPoolImpl grammarPool = new XMLGrammarPoolImpl();
@@ -119,17 +118,17 @@ public class SAXParserImpl extends XmlParser
 		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
 		try
 		{
-			reader.setFeature("http://xml.org/sax/features/validation",
+			reader.setFeature("http://xml.org/sax/features/validation", 
 				buffer.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
+			reader.setFeature("http://apache.org/xml/features/validation/dynamic", true);
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				buffer.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://xml.org/sax/features/namespaces",true);
+			reader.setFeature("http://xml.org/sax/features/namespaces", true);
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
 			reader.setEntityResolver(handler);
 			reader.setContentHandler(handler);
-			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+			reader.setProperty("http://xml.org/sax/properties/declaration-handler", handler);
 		}
 		catch(SAXException se)
 		{
@@ -174,21 +173,21 @@ public class SAXParserImpl extends XmlParser
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
-			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),0,0,0,
-				ioe.toString());
+			errorSource.addError(
+				ErrorSource.ERROR, buffer.getPath(), 0, 0, 0, ioe.toString());
 		}
-		catch(SAXParseException spe)
+		catch(SAXParseException se)
 		{
-			// already handled
-		}
-		catch(SAXException se)
-		{
+			/* Handled by Handler already, we can ignore it */
+			/*
 			Log.log(Log.ERROR,this,se.getException());
+
 			if(se.getMessage() != null)
 			{
-				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
-					0,0,0,se.getMessage());
+				errorSource.addError(
+					ErrorSource.ERROR,buffer.getPath(), se.getLineNumber()-1, se.getColumnNumber(), 0, se.getMessage()); 
 			}
+			*/
 		}
 		catch(Exception e)
 		{
@@ -290,7 +289,7 @@ public class SAXParserImpl extends XmlParser
 		XmlParsedData data;
 		XMLGrammarPoolImpl grammarPool;
 
-		HashMap activePrefixes;
+		HashMap<String, String> activePrefixes;
 		Stack currentNodeStack;
 		Locator loc;
 		boolean empty;
@@ -304,7 +303,7 @@ public class SAXParserImpl extends XmlParser
 			this.errorSource = errorSource;
 			this.data = data;
 			this.grammarPool = grammarPool;
-			this.activePrefixes = new HashMap();
+			this.activePrefixes = new HashMap<String, String>();
 			this.currentNodeStack = new Stack();
 			this.empty = true;
 
@@ -314,8 +313,8 @@ public class SAXParserImpl extends XmlParser
 		private void addError(int type, String uri, int line, String message)
 		{
 			try {
-				String resolved = CatalogManager.resolveSystem(uri);
-				if (resolved != null) resolved = uri;
+				String resolved = XmlPlugin.uriToFile(uri);
+				if (resolved != null) uri = resolved;
 			}
 			catch (Exception e) {}
 			errorSource.addError(type, uri, line, 0, 0, message);
@@ -423,7 +422,7 @@ public class SAXParserImpl extends XmlParser
 		//{{{ startPrefixMapping() method
 		public void startPrefixMapping(String prefix, String uri)
 		{
-			activePrefixes.put(prefix,uri);
+			activePrefixes.put(prefix, uri);
 		} //}}}
 
 		//{{{ endPrefixMapping() method
@@ -582,9 +581,8 @@ public class SAXParserImpl extends XmlParser
 			String systemId = spe.getSystemId();
 			if(systemId == null)
 				systemId = buffer.getPath();
-			addError(ErrorSource.ERROR,spe.getSystemId(),
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
+			addError(ErrorSource.ERROR, spe.getSystemId(),
+				Math.max(0, spe.getLineNumber()-1), spe.getMessage());
 		} //}}}
 
 		//{{{ warning() method
@@ -605,9 +603,8 @@ public class SAXParserImpl extends XmlParser
 			String systemId = spe.getSystemId();
 			if(systemId == null)
 				systemId = buffer.getPath();
-			addError(ErrorSource.ERROR,systemId,
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
+			addError(ErrorSource.ERROR, systemId,
+				Math.max(0, spe.getLineNumber()-1), spe.getMessage());
 		} //}}}
 
 		//{{{ elementDecl() method

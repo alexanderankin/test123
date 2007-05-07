@@ -81,7 +81,7 @@ public class XercesParserImpl extends XmlParser
 	//{{{ SAXParserImpl constructor
 	public XercesParserImpl()
 	{
-		super("xml");
+		super("newxml");
 		
 	} //}}}
 	
