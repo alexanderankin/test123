@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cssCompletion [
+	<!ELEMENT cssCompletion (units,valueSets, properties)>
+	<!ELEMENT units (unit+)>
+	<!ELEMENT unit (#PCDATA)>
+	<!ELEMENT properties (property+)>
+	<!ELEMENT valueSets (valueSet*)>
+	<!ELEMENT valueSet (value+)>
+	<!ELEMENT property ((include*, value*)+)>
+	<!ELEMENT value (#PCDATA)>
+	<!ELEMENT include EMPTY>
+	<!ATTLIST include name IDREF #REQUIRED>
+	<!ATTLIST property name ID #REQUIRED>
+	<!ATTLIST valueSet name ID #REQUIRED>
+]>
+<cssCompletion>
+	<units>
+		<unit>%</unit>
+		<unit>cm</unit>
+		<unit>em</unit>
+		<unit>ex</unit>
+		<unit>in</unit>
+		<unit>mm</unit>
+		<unit>pc</unit>
+		<unit>pt</unit>
+		<unit>px</unit>
+	</units>
+	<valueSets>
+	
+		<valueSet name="color-values">
+			<value>maroon</value> 
+			<value>red</value>
+			<value>orange</value>
+			<value>yellow</value>
+			<value>olive</value>
+			<value>purple</value>
+			<value>fuchsia</value>
+			<value>white</value>
+			<value>lime</value>
+			<value>green</value>
+			<value>navy</value>
+			<value>blue</value>
+			<value>aqua</value>
+			<value>teal</value>
+			<value>black</value>
+			<value>silver</value>
+			<value>gray</value>
+			<value>transparent</value>
+		</valueSet>
+		
+		<!-- BORDERS -->
+		<valueSet name="border-style-values">
+			<value>none</value>
+			<value>hidden</value>
+			<value>dotted</value>
+			<value>dashed</value>
+			<value>solid</value>
+			<value>double</value>
+			<value>groove</value>
+			<value>ridge</value>
+			<value>inset</value>
+			<value>outset</value>
+		</valueSet>
+		<valueSet name="border-width-values">
+			<value>thin</value> 
+			<value>medium</value> 
+			<value>thick</value>
+		</valueSet>
+		
+		<!-- BACKGROUNDS -->
+		<valueSet name="background-position-values">
+			<value>center</value>
+			<value>bottom</value>
+			<value>left</value>
+			<value>right</value>
+			<value>top</value>
+		</valueSet> 
+		<valueSet name="background-attachment-values">
+			<value>scroll</value>
+			<value>fixed</value>
+		</valueSet>
+		<valueSet name="background-repeat-values">
+			<value>repeat</value>
+			<value>repeat-x</value>
+			<value>repeat-y</value>
+			<value>no-repeat</value>
+		</valueSet>
+		<valueSet name="background-image-values">
+			<value>url</value>
+			<value>none</value>
+		</valueSet>
+		
+		<!-- FONTS -->
+		<valueSet name="font-family-generic">
+			<value>cursive</value>
+			<value>fantasy</value>
+			<value>monospace</value>
+			<value>sans-serif</value>
+			<value>serif</value>
+		</valueSet>
+		<valueSet name="font-size-keywords">
+			<value>xx-small</value>
+			<value>x-small</value>
+			<value>small</value>
+			<value>medium</value>
+			<value>large</value>
+			<value>x-large</value>
+			<value>xx-large</value>
+			<value>larger</value>
+			<value>smaller</value>
+		</valueSet>
+		<valueSet name="font-weight-values">
+			<value>normal</value>
+			<value>bold</value>
+			<value>bolder</value>
+			<value>lighter</value>
+			<value>100</value>
+			<value>200</value>
+			<value>300</value>
+			<value>400</value>
+			<value>500</value>
+			<value>600</value>
+			<value>700</value>
+			<value>800</value>
+			<value>900</value>
+		</valueSet>
+		<valueSet name="font-style-values">
+			<value>normal</value>
+			<value>italic</value>
+			<value>oblique</value>
+			<value>inherit</value>
+		</valueSet>
+		<valueSet name="font-variant-values">
+			<value>normal</value>
+			<value>small-caps</value>
+		</valueSet>
+		<valueSet name="line-height-values">
+			<value>normal</value>
+		</valueSet>
+		
+		<!-- LISTS -->
+		<valueSet name="list-style-image-values">
+			<value>url</value>
+			<value>none</value>
+		</valueSet>
+		<valueSet name="list-style-position-values">
+			<value>inside</value>
+			<value>outside</value>
+		</valueSet>
+		<valueSet name="list-style-type-values">
+			<value>disc</value>
+			<value>circle</value>
+			<value>square</value>
+			<value>decimal</value>
+			<value>decimal-leading-zero</value>
+			<value>lower-roman</value>
+			<value>upper-roman</value>
+			<value>lower-greek</value>
+			<value>lower-latin</value>
+			<value>upper-latin</value>
+			<value>armenian</value>
+			<value>georgian</value>
+			<value>lower-alpha</value>
+			<value>upper-alpha</value>
+			<value>none</value>
+		</valueSet>
+		
+		<!-- PRINT -->
+		<valueSet name="page-break-common">
+			<value>avoid</value>
+			<value>auto</value>
+			<value>inherit</value>
+		</valueSet>
+		<valueSet name="page-break-other">
+			<value>always</value>
+			<value>left</value>
+			<value>right</value>
+		</valueSet>
+		<!-- PADDING + MARGIN -->
+		<valueSet name="margin-values">
+			<value>auto</value>
+			<value>inherit</value>
+		</valueSet>
+		
+	</valueSets>
+	<properties>
+		<property name="background">
+			<include name="background-position-values" />
+			<include name="background-attachment-values" />
+			<include name="background-image-values" />
+			<include name="background-repeat-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="background-attachment">
+			<include name="background-attachment-values" />
+			<value>inherit</value> 
+		</property>
+		<property name="background-color">
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="background-image">
+			<include name="background-image-values" /> 
+			<value>inherit</value>
+		</property>
+		<property name="background-position">
+			<include name="background-position-values" />
+			<value>inherit</value>
+		</property>
+		<property name="background-repeat">
+			<include name="background-repeat-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-collapse">
+			<value>collapse</value>
+			<value>separate</value>
+			<value>inherit</value>
+		</property>
+		<property name="border-color">
+			<include name="color-values" />
+		</property>
+		<property name="border-spacing">
+			<value>inherit</value>
+		</property>
+		<property name="border-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-top">
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-right">
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-bottom">
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-left">
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-top-color">
+			<include name="color-values" />
+		</property>
+		<property name="border-right-color">
+			<include name="color-values" />
+		</property>
+		<property name="border-bottom-color">
+			<include name="color-values" />
+		</property>
+		<property name="border-left-color">
+			<include name="color-values" />
+		</property>
+		
+		<property name="border-top-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-right-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-bottom-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-left-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		
+		<property name="border-top-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-right-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-bottom-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border-left-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		
+		<property name="border-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="border">
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="bottom">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="caption-side">
+			<value>top</value>
+			<value>bottom</value>
+			<value>inherit</value>
+		</property>
+		<property name="clear">
+			<value>both</value>
+			<value>left</value>
+			<value>none</value>
+			<value>right</value>
+			<value>inherit</value>
+		</property>
+		<property name="clip">
+			<value>auto</value>
+			<value>shape</value>
+			<value>inherit</value>
+		</property>
+		<property name="color">
+			<include name="color-values" />
+			<value>inherit</value>
+		</property>
+		<property name="content">
+			<value>normal</value>
+			<value>none</value>
+			<value>url</value>
+			<value>counter</value>
+			<value>attr</value>
+			<value>open-quote</value>
+			<value>close-quote</value>
+			<value>no-open-quote</value>
+			<value>no-close-quote</value>
+			<value>inherit</value>
+		</property>
+		<property name="counter-increment">
+			<value>inherit</value>
+		</property>
+		<property name="counter-reset">
+			<value>inherit</value>
+		</property>
+		<property name="cursor">
+			<value>url</value>
+			<value>auto</value>
+			<value>crosshair</value>
+			<value>default</value>
+			<value>pointer</value>
+			<value>move</value>
+			<value>e-resize</value>
+			<value>ne-resize</value>
+			<value>nw-resize</value>
+			<value>n-resize</value>
+			<value>se-resize</value>
+			<value>sw-resize</value>
+			<value>s-resize</value>
+			<value>w-resize</value>
+			<value>text</value>
+			<value>wait</value>
+			<value>help</value>
+			<value>progress</value>
+			<value>inherit</value>
+		</property>
+		<property name="direction">
+			<value>ltr</value>
+			<value>rtl</value>
+			<value>inherit</value>
+		</property>
+		<property name="display">
+			<value>inline</value>
+			<value>block</value>
+			<value>list-item</value>
+			<value>run-in</value>
+			<value>inline-block</value>
+			<value>table</value>
+			<value>inline-table</value>
+			<value>table-row-group</value>
+			<value>table-header-group</value>
+			<value>table-footer-group</value>
+			<value>table-row</value>
+			<value>table-column-group</value>
+			<value>table-column</value>
+			<value>table-cell</value>
+			<value>table-caption</value>
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="empty-cells">
+			<value>show</value>
+			<value>hide</value>
+			<value>inherit</value>
+		</property>
+		<property name="float">
+			<value>left</value>
+			<value>right</value>
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="font">
+			<include name="font-size-keywords" />
+			<include name="font-weight-values" />
+			<include name="font-style-values" />
+			<include name="font-variant-values" /> 
+			<include name="line-height-values" /> 
+			<value>font-family</value>
+			
+			<value>caption</value>
+			<value>icon</value>
+			<value>menu</value>
+			<value>message-box</value>
+			<value>small-caption</value>
+			<value>status-bar</value>
+			<value>inherit</value>
+		</property>
+		<property name="font-family">
+			<include name="font-family-generic" />
+			<value>family-name</value>
+			<value>inherit</value>
+		</property>
+		<property name="font-size">
+			<include name="font-size-keywords" />
+			<value>inherit</value>
+		</property>
+		<property name="font-style">
+			<include name="font-style-values" /> 
+		</property>
+		<property name="font-variant">
+			<include name="font-variant-values" /> 
+			<value>inherit</value>
+		</property>
+		<property name="font-weight">
+			<include name="font-weight-values" /> 
+			<value>inherit</value>
+		</property>
+		<property name="height">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="left">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="letter-spacing">
+			<value>normal</value>
+			<value>inherit</value>
+		</property>
+		<property name="line-height">
+			<include name="line-height-values" />
+			<value>inherit</value>
+		</property>
+		<property name="list-style-image">
+			<include name="list-style-image-values" />
+			<value>inherit</value>
+		</property>
+		<property name="list-style-position">
+			<include name="list-style-position-values" />
+			<value>inherit</value>
+		</property>
+		<property name="list-style-type">
+			<include name="list-style-type-values" />
+			<value>inherit</value>
+		</property>
+		<property name="list-style">
+			<include name="list-style-type-values" />
+			<include name="list-style-position-values" />
+			<include name="list-style-image-values" />
+			<value>inherit</value>
+		</property>
+		<property name="margin">
+			<include name="margin-values" />
+		</property>
+		<property name="margin-top">
+			<include name="margin-values" />
+		</property>
+		<property name="margin-right">
+			<include name="margin-values" />
+		</property>
+		<property name="margin-bottom">
+			<include name="margin-values" />
+		</property>
+		<property name="margin-left">
+			<include name="margin-values" />
+		</property>
+		<property name="max-height">
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="max-width">
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="min-height">
+			<value>inherit</value>
+		</property>
+		<property name="min-width">
+			<value>inherit</value>
+		</property>
+		<property name="orphans">
+			<value>inherit</value>
+		</property>
+		<property name="outline-color">
+			<include name="color-values" />
+		</property>
+		<property name="outline-style">
+			<include name="border-style-values" />
+			<value>inherit</value>
+		</property>
+		<property name="outline-width">
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="outline">
+			<include name="color-values" />
+			<include name="border-style-values" />
+			<include name="border-width-values" />
+			<value>inherit</value>
+		</property>
+		<property name="overflow">
+			<value>visible</value>
+			<value>hidden</value>
+			<value>scroll</value>
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="padding">
+			<value>inherit</value>
+		</property>
+		<property name="padding-top">
+			<value>inherit</value>
+		</property>
+		<property name="padding-right">
+			<value>inherit</value>
+		</property>
+		<property name="padding-bottom">
+			<value>inherit</value>
+		</property>
+		<property name="padding-left">
+			<value>inherit</value>
+		</property>
+		<property name="page-break-after">
+			<include name="page-break-common" />
+			<include name="page-break-other" />
+		</property>
+		<property name="page-break-before">
+			<include name="page-break-common" />
+			<include name="page-break-other" />
+		</property>
+		<property name="page-break-inside">
+			<include name="page-break-common" />
+		</property>
+		<property name="position">
+			<value>static</value>
+			<value>relative</value>
+			<value>absolute</value>
+			<value>fixed</value>
+			<value>inherit</value>
+		</property>
+		<property name="quotes">
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="right">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="table-layout">
+			<value>auto</value>
+			<value>fixed</value>
+			<value>inherit</value>
+		</property>
+		<property name="text-align">
+			<value>left</value>
+			<value>right</value>
+			<value>center</value>
+			<value>justify</value>
+			<value>inherit</value>
+		</property>
+		<property name="text-decoration">
+			<value>none</value>
+			<value>underline</value>
+			<value>overline</value>
+			<value>line-through</value>
+			<value>blink</value>
+			<value>inherit</value>
+		</property>
+		<property name="text-indent">
+			<value>inherit</value>
+		</property>
+		<property name="text-transform">
+			<value>capitalize</value>
+			<value>uppercase</value>
+			<value>lowercase</value>
+			<value>none</value>
+			<value>inherit</value>
+		</property>
+		<property name="top">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="unicode-bidi">
+			<value>normal</value>
+			<value>embed</value>
+			<value>bidi-override</value>
+			<value>inherit</value>
+		</property>
+		<property name="vertical-align">
+			<value>baseline</value>
+			<value>sub</value>
+			<value>super</value>
+			<value>top</value>
+			<value>text-top</value>
+			<value>middle</value>
+			<value>bottom</value>
+			<value>text-bottom</value>
+			<value>percentage</value>
+			<value>inherit</value>
+		</property>
+		<property name="visibility">
+			<value>visible</value>
+			<value>hidden</value>
+			<value>collapse</value>
+			<value>inherit</value>
+		</property>
+		<property name="white-space">
+			<value>normal</value>
+			<value>pre</value>
+			<value>nowrap</value>
+			<value>pre-wrap</value>
+			<value>pre-line</value>
+			<value>inherit</value>
+		</property>
+		<property name="widows">
+			<value>integer</value>
+			<value>inherit</value>
+		</property>
+		<property name="width">
+			<value>percentage</value>
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+		<property name="word-spacing">
+			<value>normal</value>
+			<value>inherit</value>
+		</property>
+		<property name="z-index">
+			<value>auto</value>
+			<value>inherit</value>
+		</property>
+	</properties>
+</cssCompletion>
