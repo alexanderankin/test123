@@ -58,6 +58,7 @@ public class Perspective {
 	    File sel = fc.getSelectedFile();
 	    if (sel == null)
 			return;
+	    sel = filter.adapt(sel);
 		DockableWindowManager dockMan = view.getDockableWindowManager();
 		Hashtable<String, String[]> dockables = new Hashtable<String, String[]>();
 		dockables.put(DockableWindowManager.LEFT,
@@ -261,6 +262,11 @@ public class Perspective {
 		}
 		public boolean accept(File dir, String name) {
 			return name.endsWith(XML_SUFFIX);
+		}
+		public File adapt(File f) {
+			if (! accept(f))
+				return new File(f.getAbsolutePath() + XML_SUFFIX);
+			return f;
 		}
 	}
 }
