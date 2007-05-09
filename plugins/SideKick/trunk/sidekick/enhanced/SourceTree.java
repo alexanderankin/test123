@@ -73,8 +73,6 @@ public class SourceTree extends SideKickTree {
     private static boolean _showMarkers = true;
     private static Color _markerColor = jEdit.getColorProperty( "view.gutter.markerColor" );
 
-    private Asset _asset;
-
     private HashMap _actionShortcuts = new HashMap();
     //}}}
 
@@ -226,7 +224,7 @@ public class SourceTree extends SideKickTree {
                 setIcon( org.gjt.sp.jedit.browser.FileCellRenderer.fileIcon );
             }
             if ( nodeValue instanceof Asset ) {
-                _asset = ( Asset ) node.getUserObject();
+                IAsset _asset = ( IAsset ) node.getUserObject();
                 setIcon( _asset.getIcon() );
                 setText( _asset.getShortString() );
                 _hasMarker = hasMarker(
