@@ -73,6 +73,8 @@ public class LaunchConfigurationManager {
 	public void setDefaultIndex(int index)
 	{
 		defaultIndex = index;
+		if (index < 0 || index >= configurations.size())
+			return;
 		jEdit.setProperty(DEBUGGER_GO_LABEL,
 				jEdit.getProperty(DEBUGGER_GO_BASE_LABEL) +
 				" [" + configurations.get(index) + "]");
@@ -80,6 +82,8 @@ public class LaunchConfigurationManager {
 	}
 	public LaunchConfiguration getDefault()
 	{
+		if (defaultIndex < 0 || defaultIndex >= configurations.size())
+			return null;
 		return configurations.get(defaultIndex);
 	}
 	public Vector<LaunchConfiguration> get()
@@ -88,17 +92,14 @@ public class LaunchConfigurationManager {
 	}
 	public LaunchConfiguration getByIndex(int index)
 	{
+		if (index < 0 || index >= configurations.size())
+			return null;
 		return configurations.get(index);
-	}
-	public LaunchConfiguration getByName(String name)
-	{
-		for (int i = 0; i < configurations.size(); i++)
-			if (configurations.get(i).getName().equals(name))
-				return configurations.get(i);
-		return null;
 	}
 	public String getName(int index)
 	{
+		if (index < 0 || index >= configurations.size())
+			return null;
 		return configurations.get(index).getName();
 	}
 	public void save()

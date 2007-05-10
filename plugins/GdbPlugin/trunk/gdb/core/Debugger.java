@@ -133,6 +133,16 @@ public class Debugger implements DebuggerTool {
 	public void start() {
 		LaunchConfiguration currentConfig =
 			LaunchConfigurationManager.getInstance().getDefault();
+		if (currentConfig == null) {
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+					"No program is selected for debugging.\n" +
+					"Please do one of the following:\n" +
+					"- Use the GdbPlugin options to specify the default " +
+					"program for debugging ('Make default' button)\n" +
+					"- Use 'Debug ...' from the GdbPlugin menu and select " +
+					"the program you wish to debug from the list");
+			return;
+		}
 		if (programOutput != null)
 			programOutput.clear();
 		if (gdbOutput != null)
