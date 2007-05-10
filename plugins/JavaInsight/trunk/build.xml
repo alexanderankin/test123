@@ -37,7 +37,8 @@
     <property file="../build.properties"/>
 
     <property name="jedit.install.dir" value="../.."/>
-    <property name="bcel.install.dir" value=".."/>
+    <property name="install.dir" value=".."/>
+    <property name="bcel.install.dir" value="${install.dir}" />
 
     <property name="jar.name" value="${ant.project.name}.jar"/>
     <property name="docs-proc.target" value="xsltproc"/>
@@ -45,7 +46,6 @@
     <property name="src.dir" value="."/>
     <property name="lib.dir" value="lib"/>
     <property name="build.dir" value="build"/>
-    <property name="install.dir" value=".."/>
 
 
     <path id="project.class.path">
