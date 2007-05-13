@@ -33,10 +33,11 @@ import java.io.IOException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
+
+import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectPlugin;
@@ -337,7 +338,7 @@ public final class ProjectViewerConfig {
 
 		// check if import settings mods were applied (version: PV 2.1.0)
 		if (lastInitVersion == null ||
-				MiscUtilities.compareStrings(lastInitVersion,
+				StandardUtilities.compareStrings(lastInitVersion,
 					"2.1.0", true) < 0) {
 			updateImportSettings(props);
 		}
@@ -348,7 +349,7 @@ public final class ProjectViewerConfig {
 		// this avoids messing up the configuration for those people
 		// that were using the beta.
 		if (lastInitVersion == null ||
-				MiscUtilities.compareStrings(lastInitVersion,
+				StandardUtilities.compareStrings(lastInitVersion,
 					"2.1.0.1", true) < 0) {
 			updateAppLauncherSettings(props);
 		}
@@ -356,7 +357,7 @@ public final class ProjectViewerConfig {
 		// checks for incremental updates to import settings
 		String thisVersion = jEdit.getProperty("plugin.projectviewer.ProjectPlugin.version");
 		if (lastInitVersion == null ||
-				MiscUtilities.compareStrings(lastInitVersion,
+				StandardUtilities.compareStrings(lastInitVersion,
 					thisVersion, true) < 0) {
 			Properties importProps = loadDefaultImportProps();
 			// check again, since we may have had IO problems.
@@ -745,21 +746,6 @@ public final class ProjectViewerConfig {
 		return (jEdit.getPlugin(ERRORLIST_PLUGIN) != null);
 	} //}}}
 
-	//{{{ isJEdit43()
-	public boolean isJEdit43() {
-		return jEdit.getBuild().startsWith("04.03");
-	} //}}}
-
-	/**
-	 *	Checks whether jEdit has the methods to do binary file check,
-	 *	which was added in 4.3pre5.
-	 *
-	 *	@since	PV 2.3.1.6
-	 */
-	public boolean hasBinaryFileCheck() {
-		return (MiscUtilities.compareVersions(jEdit.getBuild(), "04.03.05.00") >= 0);
-	}
-
 	//}}}
 
 	//{{{ Private Methods
@@ -860,7 +846,7 @@ public final class ProjectViewerConfig {
 	 */
 	private boolean needUpdate(String updateVersion) {
 		return (lastInitVersion == null
-				|| MiscUtilities.compareStrings(lastInitVersion, updateVersion, true) < 0);
+				|| StandardUtilities.compareStrings(lastInitVersion, updateVersion, true) < 0);
 	}
 
 	/**

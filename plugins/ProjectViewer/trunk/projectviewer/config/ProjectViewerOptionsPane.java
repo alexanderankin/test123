@@ -198,11 +198,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		useSystemIcons.setSelected(config.getUseSystemIcons());
 		addComponent(useSystemIcons);
 
-		if (config.isJEdit43()) {
-			showProjectInTitle = new JCheckBox(jEdit.getProperty("projectviewer.options.show_project_in_title"));
-			showProjectInTitle.setSelected(config.getShowProjectInTitle());
-			addComponent(showProjectInTitle);
-		}
+		showProjectInTitle = new JCheckBox(jEdit.getProperty("projectviewer.options.show_project_in_title"));
+		showProjectInTitle.setSelected(config.getShowProjectInTitle());
+		addComponent(showProjectInTitle);
 
 		caseInsensitiveSort = new JCheckBox(jEdit.getProperty("projectviewer.options.case_insensitive_sort"));
 		caseInsensitiveSort.setSelected(config.getCaseInsensitiveSort());
@@ -271,9 +269,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowFilteredTree(showFilteredTree.isSelected());
 		config.setUseSystemIcons(useSystemIcons.isSelected());
 
-		if (config.isJEdit43()) {
-			config.setShowProjectInTitle(showProjectInTitle.isSelected());
-		}
+		config.setShowProjectInTitle(showProjectInTitle.isSelected());
 
 		config.setCaseInsensitiveSort(caseInsensitiveSort.isSelected());
 		config.setFollowCurrentBuffer(followCurrentBuffer.isSelected());

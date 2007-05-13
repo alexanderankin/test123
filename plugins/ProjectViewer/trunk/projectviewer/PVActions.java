@@ -242,7 +242,7 @@ public final class PVActions {
 
 	//{{{ +_newFile(View)_ : void
 	public static void newFile(View v) {
-		ProjectViewer pv = ProjectViewer.getProjectViewer(v);
+		ProjectViewer pv = ProjectViewer.getViewer(v);
 		if (pv == null)
 			return;
 

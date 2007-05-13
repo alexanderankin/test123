@@ -92,7 +92,7 @@ public class ReImporter extends RootImporter {
 			id.show();
 
 			if (id.isApproved()) {
-				String state = viewer.getFolderTreeState(selected);
+				String state = viewer.getTreePanel().getFolderTreeState(selected);
 				fnf = id.getImportFilter();
 				reimportDirectory((VPTDirectory)selected, id.getFlattenFilePaths());
 				postAction = new NodeStructureChange(selected, state);

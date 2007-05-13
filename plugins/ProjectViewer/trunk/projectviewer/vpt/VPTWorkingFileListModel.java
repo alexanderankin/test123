@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
@@ -38,7 +37,7 @@ import org.gjt.sp.jedit.Buffer;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTWorkingFileListModel extends DefaultTreeModel {
+public class VPTWorkingFileListModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private WeakHashMap fileLists;
@@ -55,7 +54,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	 *	@param rootNode	The root node of the tree.
 	 */
 	public VPTWorkingFileListModel(VPTNode rootNode) {
-		super(rootNode, true);
+		super(rootNode);
 		fileLists = new WeakHashMap();
 		pathBuilder = new ArrayList();
 		checkOpenFiles();
@@ -179,12 +178,13 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		Collections.sort(lst);
 	} //}}}
 
-	//{{{ +addOpenFile(String) : void
+	//{{{ +fileOpened(VPTNode) : void
 	/**
 	 *	Adds an open file to the list of open files of the projects to which
 	 *	it belongs.
 	 */
-	public void addOpenFile(String path) {
+	public void fileOpened(VPTNode child) {
+		String path = child.getNodePath();
 		VPTProject[] projs = getProjects();
 
 		for (int j = 0; j < projs.length; j++) {
@@ -204,12 +204,13 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		}
 	} //}}}
 
-	//{{{ +removeOpenFile(String) : void
+	//{{{ +fileClosed(VPTNode) : void
 	/**
 	 *	Removes an open file from the list of open files of the projects to
 	 *	which it belongs.
 	 */
-	public void removeOpenFile(String path) {
+	public void fileClosed(VPTNode child) {
+		String path = child.getNodePath();
 		VPTProject[] projs = getProjects();
 
 		for (int j = 0; j < projs.length; j++) {
@@ -287,10 +288,23 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		fireTreeNodesChanged(n, getPathToRoot(n), null, null);
 	} //}}}
 
-	//{{{ cleanup(VPTProject)
-	public void cleanup(VPTProject p) {
+
+	public void projectClosed(VPTProject p)
+	{
 		fileLists.remove(p);
-	} //}}}
+	}
+
+
+	protected String getName()
+	{
+        return "projectviewer.workingfilestab";
+	}
+
+
+	public boolean isFlat()
+	{
+		return true;
+	}
 
 }
 

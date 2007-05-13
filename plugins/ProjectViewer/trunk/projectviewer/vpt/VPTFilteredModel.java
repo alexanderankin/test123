@@ -10,7 +10,7 @@
 *  This program is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more detaProjectTreeSelectionListenerils.
+*  GNU General Public License for more details.
 *
 *  You should have received a copy of the GNU General Public License
 *  along with this program; if not, write to the Free Software
@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.regex.*;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
 
@@ -57,7 +56,7 @@ import projectviewer.ProjectManager;
  *	@version	$Id$
  *	@since		PV 2.2.0.0
  */
-public class VPTFilteredModel extends DefaultTreeModel {
+public class VPTFilteredModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
@@ -71,7 +70,7 @@ public class VPTFilteredModel extends DefaultTreeModel {
 	*	@param rootNode	The root node of the tree.
 	*/
 	public VPTFilteredModel(VPTNode rootNode) {
-		super(rootNode, true);
+		super(rootNode);
 	}
 	//}}}
 
@@ -244,6 +243,13 @@ public class VPTFilteredModel extends DefaultTreeModel {
 			}
 		}
 	} //}}}
+
+
+	protected String getName()
+	{
+        return "projectviewer.filteredtab";
+	}
+
 
 	//{{{ +class FilteredDirectoryNode
 	public class FilteredDirectoryNode extends VPTDirectory {

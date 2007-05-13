@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
 //}}}
@@ -47,7 +46,7 @@ import org.gjt.sp.util.Log;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTFileListModel extends DefaultTreeModel {
+public class VPTFileListModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private WeakHashMap fileLists;
@@ -64,7 +63,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 	 *	@param rootNode	The root node of the tree.
 	 */
 	public VPTFileListModel(VPTNode rootNode) {
-		super(rootNode, true);
+		super(rootNode);
 		fileLists = new WeakHashMap();
 		pathBuilder = new LinkedList();
 	} //}}}
@@ -194,10 +193,23 @@ public class VPTFileListModel extends DefaultTreeModel {
 		fireTreeNodesChanged(n, getPathToRoot(n), null, null);
 	} //}}}
 
-	//{{{ cleanup(VPTProject)
-	public void cleanup(VPTProject p) {
+
+	public void projectClosed(VPTProject p)
+	{
 		fileLists.remove(p);
-	} //}}}
+	}
+
+
+	protected String getName()
+	{
+        return "projectviewer.filestab";
+	}
+
+
+	public boolean isFlat()
+	{
+		return true;
+	}
 
 }
 

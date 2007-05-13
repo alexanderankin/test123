@@ -3,15 +3,15 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.3.7
+plugin.projectviewer.ProjectPlugin.version=2.9.0.0
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 plugin.projectviewer.ProjectPlugin.description=The ProjectViewer plugin provides an interface \
 	for managing a "project", i.e. a related group of \
 	source files.
 
-plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.99.00
-plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.4
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.03.10.00
+plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.5
 
 plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListPlugin 1.3.1
@@ -156,6 +156,9 @@ projectviewer.options.context.caption=Items in the tree's context menu:
 projectviewer.folderstab=Folders
 projectviewer.filestab=Files
 projectviewer.workingfilestab=Working Files
+projectviewer.compacttab=Compact
+projectviewer.filteredtab=Filtered
+
 projectviewer.archive_filter=Archive files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
