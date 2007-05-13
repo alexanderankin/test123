@@ -40,14 +40,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
-
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -64,7 +56,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -81,7 +72,6 @@ import org.gjt.sp.jedit.EBComponent;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
@@ -101,13 +91,7 @@ import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
-import projectviewer.vpt.VPTContextMenu;
-import projectviewer.vpt.VPTCellRenderer;
-import projectviewer.vpt.VPTFileListModel;
-import projectviewer.vpt.VPTFilteredModel;
-import projectviewer.vpt.VPTSelectionListener;
-import projectviewer.vpt.VPTWorkingFileListModel;
-import projectviewer.vpt.VPTCompactModel;
+import projectviewer.vpt.ProjectTreePanel;
 
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
@@ -120,7 +104,6 @@ import projectviewer.action.FileImportAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OldStyleAddFileAction;
-import projectviewer.action.UpAction;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.NewFileImporter;
 //}}}
@@ -135,12 +118,11 @@ public final class ProjectViewer extends JPanel
 	implements HierarchyListener, DefaultFocusComponent, EBComponent {
 
 	//{{{ Static members
+	private static final ProjectViewerConfig config;
+	private static final Map<View,ViewerEntry> viewers;
+	private static final List<Action> actions;
 
-	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-	// Mapping from View to ViewerEntry
-	private static final Map viewers			= new WeakHashMap();
 	private static final HashMap listeners		= new HashMap();
-	private static final ArrayList actions		= new ArrayList();
 
 	//{{{ Static Initialization
 	/**
@@ -149,6 +131,9 @@ public final class ProjectViewer extends JPanel
 	 */
 	static {
 		// Default toolbar actions
+		config = ProjectViewerConfig.getInstance();
+		viewers = new WeakHashMap<View,ViewerEntry>();
+		actions = new ArrayList<Action>();
 		actions.add(new EditProjectAction());
 		actions.add(new ExpandAllAction());
 		actions.add(new CollapseAllAction());
@@ -220,9 +205,7 @@ public final class ProjectViewer extends JPanel
 	 */
 	public static ProjectViewer getViewer(View view) {
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		if (ve != null)
-			return ve.dockable;
-		return null;
+		return (ve != null) ? ve.dockable : null;
 	} //}}}
 
 	//{{{ Event Handling
@@ -458,31 +441,11 @@ public final class ProjectViewer extends JPanel
 	 *	Notify all project viewer instances of a change in a node's structure.
 	 */
 	public static void nodeStructureChanged(VPTNode node) {
-		VPTNode.findProjectFor(node);
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-			if (v == null)
-				continue;
-			if (v.treeRoot.isNodeDescendant(node)) {
-				if (v.folderTree != null) {
-					((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
-				}
-				if (v.fileTree != null) {
-					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
-				}
-
-				if (v.workingFileTree != null) {
-					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
-				}
-
-				if (v.compactTree != null) {
-					((DefaultTreeModel)v.compactTree.getModel()).nodeStructureChanged(node);
-				}
-
-				if (v.filteredTree != null) {
-					((DefaultTreeModel)v.filteredTree.getModel()).nodeStructureChanged(node);
-				}
+		for (ViewerEntry ve : viewers.values()) {
+			if (ve.dockable != null
+				&& ve.dockable.getRoot().isNodeDescendant(node))
+			{
+				ve.dockable.getTreePanel().nodeStructureChanged(node);
 			}
 		}
 	} //}}}
@@ -490,36 +453,16 @@ public final class ProjectViewer extends JPanel
 	//{{{ +_nodeChanged(VPTNode)_ : void
 	/** Notify all project viewer instances of a change in a node. */
 	public static void nodeChanged(VPTNode node) {
-		if (node == null) return;
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-			if (v == null)
-				continue;
-			if (v.treeRoot.isNodeDescendant(node)) {
-				if (v.folderTree != null) {
-					((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
-				}
-				if (node.canOpen() || node.isProject() || node.isGroup()) {
-					if (v.fileTree != null) {
-						((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
-					}
-
-					if (v.workingFileTree != null) {
-						((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
-					}
-
-					if (v.compactTree != null) {
-						((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
-					}
-
-					if (v.filteredTree != null) {
-						((DefaultTreeModel)v.filteredTree.getModel()).nodeChanged(node);
-					}
-				}
-				if (node == v.treeRoot && v.pList != null) {
+		for (ViewerEntry ve : viewers.values()) {
+			if (ve.dockable != null
+				&& ve.dockable.getRoot().isNodeDescendant(node))
+			{
+				ve.dockable.getTreePanel().nodeChanged(node);
+				if (node == ve.dockable.getRoot()
+					&& ve.dockable.pList != null)
+				{
 					// force a refresh of the "selected node" of the "combo"
-					v.pList.setSelectedNode(node);
+					ve.dockable.pList.setSelectedNode(node);
 				}
 			}
 		}
@@ -533,36 +476,15 @@ public final class ProjectViewer extends JPanel
 	 */
 	public static void insertNodeInto(VPTNode child, VPTNode parent) {
 		int idx = parent.findIndexForChild(child);
+		int[] indexes = new int[] { idx };
+
 		parent.insert(child, idx);
 
-		int[] ind = new int[] { idx };
-
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-			if (v == null || !v.getRoot().isNodeDescendant(parent))
-				continue;
-			if (v.folderTree != null) {
-				((DefaultTreeModel)v.folderTree.getModel())
-					.nodesWereInserted(parent, ind);
-			}
-			if (v.compactTree != null) {
-				((DefaultTreeModel)v.compactTree.getModel())
-					.nodesWereInserted(parent, ind);
-			}
-			if (v.filteredTree != null) {
-				((DefaultTreeModel)v.filteredTree.getModel())
-					.nodesWereInserted(parent, ind);
-			}
-			if (child.isProject() || child.isGroup()) {
-				if (v.fileTree != null) {
-					((DefaultTreeModel)v.fileTree.getModel())
-						.nodeStructureChanged(parent);
-				}
-				if (v.workingFileTree != null) {
-					((DefaultTreeModel)v.workingFileTree.getModel())
-						.nodeStructureChanged(parent);
-				}
+		for (ViewerEntry ve : viewers.values() ) {
+			if (ve.dockable != null
+				&& ve.dockable.getRoot().isNodeDescendant(parent))
+			{
+				ve.dockable.getTreePanel().nodesWereInserted(parent, indexes);
 			}
 		}
 	} //}}}
@@ -573,23 +495,11 @@ public final class ProjectViewer extends JPanel
 	 *	a node's structure.
 	 */
 	public static void nodeStructureChangedFlat(VPTNode node) {
-		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
-			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ViewerEntry ve = (ViewerEntry) it.next();
-				ProjectViewer v = ve.dockable;
-				if (v == null)
-					continue;
-				if (v.treeRoot.isNodeDescendant(node)) {
-					if (v.fileTree != null) {
-						((DefaultTreeModel)v.fileTree.getModel())
-							.nodeStructureChanged(node);
-					}
-
-					if (v.workingFileTree != null) {
-						((DefaultTreeModel)v.workingFileTree.getModel())
-							.nodeStructureChanged(node);
-					}
-				}
+		for (ViewerEntry ve : viewers.values() ) {
+			if (ve.dockable != null
+				&& ve.dockable.getRoot().isNodeDescendant(node))
+			{
+				ve.dockable.getTreePanel().flatStructureChanged(node);
 			}
 		}
 	} //}}}
@@ -602,37 +512,16 @@ public final class ProjectViewer extends JPanel
 	public static void removeNodeFromParent(VPTNode child) {
 		VPTNode parent = (VPTNode) child.getParent();
 		int index = parent.getIndex(child);
+		int[] idx = new int[] { index };
+		Object[] removed = new Object[] { child };
+
 		parent.remove(index);
 
-		Object[] removed = new Object[] { child };
-		int[] idx = new int[] { index };
-
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-			if (v == null || !v.getRoot().isNodeDescendant(parent))
-				continue;
-			if (v.folderTree != null) {
-				((DefaultTreeModel)v.folderTree.getModel())
-					.nodesWereRemoved(parent, idx, removed);
-			}
-			if (v.compactTree != null) {
-				((DefaultTreeModel)v.compactTree.getModel())
-					.nodesWereRemoved(parent, idx, removed);
-			}
-			if (v.filteredTree != null) {
-				((DefaultTreeModel)v.filteredTree.getModel())
-					.nodesWereRemoved(parent, idx, removed);
-			}
-			if (child.isProject() || child.isGroup()) {
-				if (v.fileTree != null) {
-					((DefaultTreeModel)v.fileTree.getModel())
-						.nodeStructureChanged(parent);
-				}
-				if (v.workingFileTree != null) {
-					((DefaultTreeModel)v.workingFileTree.getModel())
-						.nodeStructureChanged(parent);
-				}
+		for (ViewerEntry ve : viewers.values() ) {
+			if (ve.dockable != null
+				&& ve.dockable.getRoot().isNodeDescendant(parent))
+			{
+				ve.dockable.getTreePanel().nodesWereRemoved(parent, idx, removed);
 			}
 		}
 	} //}}}
@@ -645,63 +534,29 @@ public final class ProjectViewer extends JPanel
 	public static void projectRemoved(Object src, VPTProject p) {
 		VPTNode parent = (VPTNode) p.getParent();
 		int index = parent.getIndex(p);
+		int[] idx = new int[] { index };
+		Object[] removed = new Object[] { p };
+
 		parent.remove(index);
 
-		if (config.getShowFoldersTree() || config.getShowFilesTree()
-			|| config.getShowWorkingFilesTree() || config.getShowCompactTree()
-			|| config.getShowFilteredTree())
-		{
+		for (ViewerEntry ve : viewers.values() ) {
+			if (ve.dockable == null) {
+				continue;
+			}
 
-			Object[] removed = new Object[] { p };
-			int[] idx = new int[] { index };
+			if (p == ve.dockable.getRoot()) {
+				ve.dockable.setRootNode(VPTRoot.getInstance());
+				continue;
+			}
 
-			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ViewerEntry ve = (ViewerEntry) it.next();
-				ProjectViewer v = ve.dockable;
-				if (v == null)
-					continue;
-				if (p == v.treeRoot) {
-					v.setRootNode(VPTRoot.getInstance());
-					continue;
-				}
-				if (v.treeRoot.isNodeDescendant(parent)) {
-					if (v.folderTree != null) {
-						((DefaultTreeModel)v.folderTree.getModel())
-							.nodesWereRemoved(parent, idx, removed);
-					}
-
-					if (v.fileTree != null) {
-						((DefaultTreeModel)v.fileTree.getModel())
-							.nodesWereRemoved(parent, idx, removed);
-					}
-
-					if (v.workingFileTree != null) {
-						((DefaultTreeModel)v.workingFileTree.getModel())
-							.nodesWereRemoved(parent, idx, removed);
-					}
-
-					if (v.compactTree != null) {
-						((DefaultTreeModel)v.compactTree.getModel())
-							.nodesWereRemoved(parent, idx, removed);
-					}
-
-					if (v.filteredTree != null) {
-						((DefaultTreeModel)v.filteredTree.getModel())
-							.nodesWereRemoved(parent, idx, removed);
-					}
-				}
+			if (ve.dockable.getRoot().isNodeDescendant(parent)) {
+				ve.dockable.getTreePanel().nodesWereRemoved(parent, idx, removed);
 			}
 		}
 		fireProjectRemoved(src, p);
 	} //}}}
 
 	//}}}
-
-	public static ProjectViewer getProjectViewer(View view) {
-		ViewerEntry entry = (ViewerEntry) viewers.get(view);
-		if (entry != null) return entry.dockable;
-		else return null;
-	}
 
 	//{{{ +_setActiveNode(View, VPTNode)_ : void
 	/**
@@ -790,8 +645,7 @@ public final class ProjectViewer extends JPanel
 	private static void modifyViewTitle(final View view, final VPTNode info) {
 		// (info == null) might happen during jEdit startup.
 		if (info != null
-			&& config.getShowProjectInTitle()
-			&& config.isJEdit43())
+			&& config.getShowProjectInTitle())
 		{
 			view.updateTitle();
 			StringBuffer title = new StringBuffer(view.getTitle());
@@ -832,15 +686,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Constants
 
-	private final static String FOLDERS_TAB_TITLE		= "projectviewer.folderstab";
-	private final static String FILES_TAB_TITLE			= "projectviewer.filestab";
-	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
-	private final static String COMPACT_TAB_TITLE		= "projectviewer.compacttab";
-	private final static String FILTERED_TAB_TITLE		= "projectviewer.filteredtab";
-
 	private final static String TREE_STATE_PROP = "projectviewer.folder_tree_state";
-	private final static char NOT_EXPANDED		= '0';
-	private final static char EXPANDED			= '1';
 
 	//}}}
 
@@ -848,29 +694,14 @@ public final class ProjectViewer extends JPanel
 	private View					view;
 	private HashSet					dontAsk;
 
-	private JTree					folderTree;
-	private JScrollPane				folderTreeScroller;
-	private JTree					fileTree;
-	private JScrollPane				fileTreeScroller;
-	private JTree					workingFileTree;
-	private JScrollPane				workingFileTreeScroller;
-	private JTree					compactTree;
-	private JScrollPane				compactTreeScroller;
-	private JTree					filteredTree;
-	private JScrollPane				filteredTreeScroller;
 	private JToolBar				toolBar;
 
 	private JPanel					topPane;
-	private JTabbedPane				treePane;
+	private ProjectTreePanel		treePanel;
 	private ProjectComboBox			pList;
 
 	private VPTNode					treeRoot;
-	private VPTContextMenu			vcm;
-	private VPTSelectionListener	vsl;
 	private ConfigChangeListener	ccl;
-
-	private TreeDragListener		tdl;
-	private DragSource				dragSource;
 
 	private boolean					isChangingBuffers;
 	private boolean					isClosingProject;
@@ -896,18 +727,11 @@ public final class ProjectViewer extends JPanel
 
 		setLayout(new BorderLayout());
 		view = aView;
-		vcm = new VPTContextMenu(this);
-		vsl = new VPTSelectionListener(this);
 		treeRoot = VPTRoot.getInstance();
 		isLoadingProject = false;
 
 		addHierarchyListener(this);
 
-		// drag support
-		tdl = new TreeDragListener();
-		dragSource = new DragSource();
-
-		// GUI
 		buildGUI();
 
 		ccl = new ConfigChangeListener();
@@ -937,27 +761,6 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Private methods
 
-	//{{{ -createTree(TreeModel) : JTree
-	/** Creates a new tree to be added to the viewer. */
-	private JTree createTree(TreeModel model, boolean useTooltips) {
-		JTree tree = new PVTree(model);
-		tree.setCellRenderer(new VPTCellRenderer(useTooltips));
-		if (useTooltips) {
-			ToolTipManager.sharedInstance().registerComponent(tree);
-		}
-
-		// don't change order!
-		tree.addMouseListener(vsl);
-		tree.addMouseListener(vcm);
-		tree.addTreeSelectionListener(vsl);
-
-		// drag support
-		dragSource.createDefaultDragGestureRecognizer(tree,
-			DnDConstants.ACTION_COPY, tdl);
-
-		return tree;
-	} //}}}
-
 	//{{{ -populateToolBar() : void
 	/** Loads the toolbar. */
 	private void populateToolBar() {
@@ -974,7 +777,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ -buildGUI() : void
 	/** Builds the viewer GUI. */
 	private void buildGUI() {
-		treePane = new JTabbedPane();
+		treePanel = new ProjectTreePanel(this);
 
 		topPane = new JPanel(new BorderLayout());
 
@@ -987,8 +790,9 @@ public final class ProjectViewer extends JPanel
 
 		topPane.add(BorderLayout.CENTER, box);
 
-		showTrees();
+		treePanel.loadGUI();
 		showToolBar(config.getShowToolBar());
+		add(BorderLayout.CENTER, treePanel);
 		add(BorderLayout.NORTH, topPane);
 
 	} //}}}
@@ -1058,7 +862,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// saves the folder tree state
-		String state = getFolderTreeState(p);
+		String state = treePanel.getFolderTreeState(p);
 		if (state != null) {
 			p.setProperty(TREE_STATE_PROP, state);
 		} else {
@@ -1086,100 +890,17 @@ public final class ProjectViewer extends JPanel
 
 		// loads tree state from the project, if saved
 		final String state = p.getProperty(TREE_STATE_PROP);
-		if (state != null && folderTree != null) {
+		if (state != null && treePanel.getFolderTree() != null) {
 			SwingUtilities.invokeLater(
 				new Runnable() {
-					//{{{ +run() : void
 					public void run() {
-						setFolderTreeState(p, state);
-					} //}}}
+						treePanel.setFolderTreeState(p, state);
+					}
 				}
 			);
 		}
 		setChangingBuffers(false);
 	} //}}}
-
-	//{{{ -showTrees() : void
-	/**
-	 *	Loads the trees (folders, files, working files) into the view, deciding
-	 *	what to show according to the configuration of the plugin
-	 */
-	private void showTrees() {
-		treePane.removeAll();
-
-		// Folders tree
-		if (config.getShowFoldersTree()) {
-			if(folderTree == null) {
-				folderTree = createTree(new DefaultTreeModel(treeRoot, true), false);
-				folderTreeScroller = new JScrollPane(folderTree);
-			}
-			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
-		} else if (folderTree != null) {
-			folderTree = null;
-			folderTreeScroller = null;
-		}
-
-		// Files tree
-		if (config.getShowFilesTree()) {
-			if(fileTree == null) {
-				fileTree = createTree(new VPTFileListModel(treeRoot), true);
-				fileTreeScroller = new JScrollPane(fileTree);
-			}
-			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
-		} else if (fileTree != null) {
-			fileTree = null;
-			fileTreeScroller = null;
-		}
-
-		// Working files tree
-		if (config.getShowWorkingFilesTree()) {
-			if(workingFileTree == null) {
-				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
-				workingFileTree = createTree(model, true);
-				workingFileTreeScroller = new JScrollPane(workingFileTree);
-			}
-			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
-		} else if (workingFileTree != null) {
-			workingFileTree = null;
-			workingFileTreeScroller = null;
-		}
-
-		// compact tree
-		if (config.getShowCompactTree()) {
-			if(compactTree == null) {
-				VPTCompactModel model = new VPTCompactModel(treeRoot);
-				compactTree = createTree(model, false);
-				compactTreeScroller = new JScrollPane(compactTree);
-			}
-			treePane.addTab(jEdit.getProperty(COMPACT_TAB_TITLE,"Compact"), compactTreeScroller);
-		} else {
-			compactTree = null;
-			compactTreeScroller = null;
-		}
-
-		// filtered tree
-		if (config.getShowFilteredTree()) {
-			if(filteredTree == null) {
-				VPTFilteredModel model = new VPTFilteredModel(treeRoot);
-				filteredTree = createTree(model, true);
-				filteredTreeScroller = new JScrollPane(filteredTree);
-			}
-			treePane.addTab(jEdit.getProperty(FILTERED_TAB_TITLE,"Filtered"), filteredTreeScroller);
-		} else {
-			filteredTree = null;
-			filteredTreeScroller = null;
-		}
-
-		if (treePane.getTabCount() == 0) {
-			remove(treePane);
-		} else if (treePane.getTabCount() == 1) {
-			remove(treePane);
-			add(BorderLayout.CENTER,treePane.getComponentAt(0));
-		} else {
-			add(BorderLayout.CENTER,treePane);
-			treePane.setSelectedIndex(0);
-		}
-	}//}}}
 
 	//{{{ -showToolBar(boolean) : void
 	/** Shows/Hides the toolbar. */
@@ -1224,14 +945,7 @@ public final class ProjectViewer extends JPanel
 				&& (active == null || !active.contains(p.getName())))
 			{
 				pm.unloadProject(p);
-				if (fileTree != null) {
-					((VPTFileListModel)fileTree.getModel())
-						.cleanup(p);
-				}
-				if (workingFileTree != null) {
-					((VPTWorkingFileListModel)workingFileTree.getModel())
-						.cleanup(p);
-				}
+				getTreePanel().projectClosed(p);
 			}
 		}
 	} //}}}
@@ -1296,7 +1010,6 @@ public final class ProjectViewer extends JPanel
 		view.getStatus().setMessageAndClear(message);
 	} //}}}
 
-
 	//{{{ +getSelectedNode() : VPTNode
 	/** Returns the currently selected node in the tree. */
 	public VPTNode getSelectedNode() {
@@ -1338,39 +1051,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ +getCurrentTree() : JTree
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
-		if (treePane.getTabCount() > 0) {
-			switch(treePane.getSelectedIndex()) {
-				case 0:
-					if (folderTree != null) return folderTree;
-					if (fileTree != null) return fileTree;
-					if (workingFileTree != null) return workingFileTree;
-					if (compactTree != null) return compactTree;
-					if (filteredTree != null) return filteredTree;
-				case 1:
-					if (fileTree != null) return fileTree;
-					if (workingFileTree != null) return workingFileTree;
-					if (compactTree != null) return compactTree;
-					if (filteredTree != null) return filteredTree;
-				case 2:
-					if (workingFileTree != null) return workingFileTree;
-					if (compactTree != null) return compactTree;
-					if (filteredTree != null) return filteredTree;
-				case 3:
-					if (compactTree != null) return compactTree;
-					if (filteredTree != null) return filteredTree;
-				case 4:
-					if (filteredTree != null) return filteredTree;
-				default:
-					return null;
-			}
-		} else {
-			if (folderTree != null) return folderTree;
-			if (fileTree != null) return fileTree;
-			if (workingFileTree != null) return workingFileTree;
-			if (compactTree != null) return compactTree;
-			if (filteredTree != null) return filteredTree;
-			return null;
-		}
+		return treePanel.getCurrentTree();
 	} //}}}
 
 	//{{{ +getView() : View
@@ -1436,16 +1117,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		treeRoot = n;
-		if (folderTree != null)
-			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
-		if (fileTree != null)
-			((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
-		if (workingFileTree != null)
-			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
-		if (compactTree != null)
-			((DefaultTreeModel)compactTree.getModel()).setRoot(treeRoot);
-		if (filteredTree != null)
-			((DefaultTreeModel)filteredTree.getModel()).setRoot(treeRoot);
+		treePanel.setRoot(treeRoot);
 
 		dontAsk = null;
 		ProjectManager.getInstance().fireDynamicMenuChange();
@@ -1475,81 +1147,14 @@ public final class ProjectViewer extends JPanel
 	//{{{ +setEnabled(boolean) : void
 	/** Enables or disables the viewer GUI. */
 	public void setEnabled(boolean flag) {
-		treePane.setEnabled(flag);
+		treePanel.setEnabled(flag);
 		pList.setEnabled(flag);
-		if (folderTree != null) folderTree.setEnabled(flag);
-		if (fileTree != null) fileTree.setEnabled(flag);
-		if (workingFileTree != null) workingFileTree.setEnabled(flag);
-		if (compactTree != null) compactTree.setEnabled(flag);
-		if (filteredTree != null) filteredTree.setEnabled(flag);
 		if (toolBar != null) {
 			Component[] buttons = toolBar.getComponents();
 			for (int i = 0; i < buttons.length; i++)
 				buttons[i].setEnabled(flag);
 		}
 		super.setEnabled(flag);
-	} //}}}
-
-	//{{{ +getFolderTreeState(VPTNode) : String
-	/**
-	 *	Returns a String representing the state of the folder tree.
-	 *
-	 *	@see	#setFolderTreeState(VPTNode, String)
-	 *	@return The state of the tree, starting at the given node, or
-	 *			null if the folderTree is not visible.
-	 */
-	public String getFolderTreeState(VPTNode node) {
-		if (folderTree != null) {
-			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
-			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
-			if (start >= 0) {
-				StringBuffer state = new StringBuffer();
-				if(folderTree.isExpanded(start)) {
-					for(int i = start; i < folderTree.getRowCount(); i++) {
-						VPTNode n = (VPTNode) folderTree.getPathForRow(i)
-										.getLastPathComponent();
-						if (!node.isNodeDescendant(n))
-							break;
-						if (folderTree.isExpanded(i)) {
-							state.append(EXPANDED);
-						} else {
-							state.append(NOT_EXPANDED);
-						}
-					}
-				}
-				return state.toString();
-			}
-		}
-		return null;
-	} //}}}
-
-	//{{{ +setFolderTreeState(VPTNode, String) : void
-	/**
-	 *	Sets the folder tree state from the given String.
-	 *
-	 *	@see	#getFolderTreeState(VPTNode)
-	 */
-	public void setFolderTreeState(VPTNode node, String state) {
-		if (folderTree != null && state != null) {
-			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
-			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
-			for(int i = 0; i < state.length(); i++) {
-				int row = start + i;
-				if (row >= folderTree.getRowCount())
-					break;
-
-				TreePath path = folderTree.getPathForRow(row);
-				if (path == null)
-					return;
-				VPTNode n = (VPTNode) path.getLastPathComponent();
-				if (!node.isNodeDescendant(n))
-					break;
-
-				if (state.charAt(i) == EXPANDED) {
-					folderTree.expandRow(row);
-				}
-			}
-		}
 	} //}}}
 
 	//{{{ +setChangingBuffers(boolean) : void
@@ -1565,6 +1170,11 @@ public final class ProjectViewer extends JPanel
 	public void setChangingBuffers(boolean flag) {
 		isChangingBuffers = flag;
 	} //}}}
+
+	public ProjectTreePanel getTreePanel()
+	{
+		return treePanel;
+	}
 
 	//}}}
 
@@ -1709,14 +1319,10 @@ public final class ProjectViewer extends JPanel
 			if (where != null && where.isProject()) {
 				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
 				if (f != null) {
-					if (workingFileTree != null) {
-						if (bu.getWhat() == BufferUpdate.CLOSED) {
-							((VPTWorkingFileListModel)workingFileTree.getModel())
-								.removeOpenFile(f.getNodePath());
-						} else if (bu.getWhat() == BufferUpdate.LOADED) {
-							((VPTWorkingFileListModel)workingFileTree.getModel())
-								.addOpenFile(f.getNodePath());
-						}
+					if (bu.getWhat() == BufferUpdate.CLOSED) {
+						getTreePanel().projectFileClosed(f);
+					} else if (bu.getWhat() == BufferUpdate.LOADED) {
+						getTreePanel().projectFileOpened(f);
 					}
 
 					if (!isClosingProject && bu.getWhat() == BufferUpdate.CLOSED) {
@@ -1778,10 +1384,8 @@ public final class ProjectViewer extends JPanel
 		public void propertyChange(PropertyChangeEvent evt) {
 			// Toolbar show/hide.
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
-				showToolBar( ((Boolean)evt.getNewValue()).booleanValue() &&
-					(folderTree != null || fileTree != null
-					 || workingFileTree != null || compactTree != null
-					 || filteredTree != null) );
+				showToolBar(((Boolean)evt.getNewValue()).booleanValue()
+							&& treePanel.getTreeCount() > 0);
 				return;
 			}
 
@@ -1796,10 +1400,10 @@ public final class ProjectViewer extends JPanel
 
 			if (evt.getPropertyName().equals(ProjectViewerConfig.CASE_INSENSITIVE_SORT_OPT)) {
 				treeRoot.sortChildren(true);
-				String state = getFolderTreeState(treeRoot);
+				String state = treePanel.getFolderTreeState(treeRoot);
 				nodeStructureChanged(treeRoot);
 				nodeStructureChangedFlat(treeRoot);
-				setFolderTreeState(treeRoot, state);
+				treePanel.setFolderTreeState(treeRoot, state);
 				repaint();
 				return;
 			}
@@ -1824,7 +1428,7 @@ public final class ProjectViewer extends JPanel
 		 *	or more of the trees has changed.
 		 */
 		public void run() {
-			showTrees();
+			treePanel.loadGUI();
 			showToolBar(config.getShowToolBar());
 			willRun = false;
 		}//}}}
@@ -1894,192 +1498,6 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ -class PVTree
-	/** Listens for key events in the trees. */
-	private class PVTree extends JTree {
-
-		//{{{ +PVTree(TreeModel) : <init>
-		public PVTree(TreeModel model) {
-			super(model);
-		} //}}}
-
-		//{{{ +processKeyEvent(KeyEvent) : void
-		public void processKeyEvent(KeyEvent e) {
-			if (e.getID() == KeyEvent.KEY_PRESSED) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_ESCAPE:
-					DockableWindowManager dwm = view.getDockableWindowManager();
-					dwm.hideDockableWindow(ProjectPlugin.NAME);
-					e.consume();
-					break;
-				case KeyEvent.VK_ENTER:
-					TreePath[] paths = getSelectionPaths();
-					for (int i = 0; i < paths.length; i++) {
-						VPTNode n = (VPTNode) paths[i].getLastPathComponent();
-						if (n.isFile()) {
-							n.open();
-						}
-					}
-					e.consume();
-					break;
-				case KeyEvent.VK_BACK_SPACE:
-					e.consume();
-					UpAction up = new UpAction();
-					up.setViewer(ProjectViewer.this);
-					up.actionPerformed(null);
-					break;
-				case KeyEvent.VK_DELETE:
-					e.consume();
-					NodeRemoverAction nra = new NodeRemoverAction(true);
-					nra.setViewer(ProjectViewer.this);
-					nra.actionPerformed(null);
-					break;
-				case KeyEvent.VK_F5:
-					e.consume();
-					EditAction ea = jEdit.getAction("projectviewer_wrapper_reimport");
-					ea.invoke(view);
-					break;
-				case KeyEvent.VK_F2:
-					e.consume();
-					NodeRenamerAction ra = new NodeRenamerAction();
-					ra.setViewer(ProjectViewer.this);
-					ra.actionPerformed(null);
-					break;
-				default:
-					super.processKeyEvent(e);
-				}
-			}
-			else { super.processKeyEvent(e); }
-		} //}}}
-
-		//{{{ +expandPath(TreePath) : void
-		/**
-		 *	If trying to expand unloaded projects, load them before expansion
-		 *	occurs.
-		 */
-		public void expandPath(TreePath path) {
-			VPTNode n = (VPTNode) path.getLastPathComponent();
-			if (n.isProject()
-					&& !ProjectManager.getInstance().isLoaded(n.getName())) {
-
-				synchronized (n) {
-					if (!ProjectManager.getInstance().isLoaded(n.getName())) {
-						setStatus(jEdit.getProperty("projectviewer.loading_project",
-							new Object[] { n.getName() } ));
-						ProjectManager.getInstance().getProject(n.getName());
-					}
-				}
-			}
-			super.expandPath(path);
-
-			if (n.isProject() || n.isGroup()) {
-				if (folderTree != null && folderTree != this)
-					((PVTree)folderTree).expand(path);
-				if (fileTree != null && fileTree != this)
-					((PVTree)fileTree).expand(path);
-				if (workingFileTree != null && workingFileTree != this)
-					((PVTree)workingFileTree).expand(path);
-				if (compactTree != null && compactTree != this)
-					((PVTree)compactTree).expand(path);
-				if (filteredTree != null && filteredTree != this)
-					((PVTree)filteredTree).expand(path);
-			}
-
-		} //}}}
-
-		//{{{ +collapsePath(TreePath) : void
-		/** Keeps trees syncd w.r.t. projects and groups. */
-		public void collapsePath(TreePath path) {
-			super.collapsePath(path);
-			VPTNode n = (VPTNode) path.getLastPathComponent();
-			if (n.isProject() || n.isGroup()) {
-				if (folderTree != null && folderTree != this)
-					((PVTree)folderTree).collapse(path);
-				if (fileTree != null && fileTree != this)
-					((PVTree)fileTree).collapse(path);
-				if (workingFileTree != null && workingFileTree != this)
-					((PVTree)workingFileTree).collapse(path);
-				if (compactTree != null && compactTree != this)
-					((PVTree)compactTree).collapse(path);
-				if (filteredTree != null && filteredTree != this)
-					((PVTree)filteredTree).collapse(path);
-			}
-		} //}}}
-
-		//{{{ -expand(TreePath) : void
-		/**
-		 *	Used internally to bypass the overridden "expandPath()" method and
-		 *	keep the different trees synced w.r.t. projects and groups.
-		 */
-		private void expand(TreePath path) {
-			super.expandPath(path);
-		} //}}}
-
-		//{{{ -collapse(TreePath) : void
-		/**
-		 *	Used internally to bypass the overridden "expandPath()" method and
-		 *	keep the different trees synced w.r.t. projects and groups.
-		 */
-		private void collapse(TreePath path) {
-			super.collapsePath(path);
-		} //}}}
-
-	} //}}}
-
-	//{{{ -class TreeDragListener
-	/**
-	 *	Implements a DragGestureListener for the trees, that will detect when
-	 *	the user tries to drag a file to somewhere. Other kinds of nodes will
-	 *	be ignored.
-	 */
-	private class TreeDragListener implements DragGestureListener {
-
-		//{{{ +dragGestureRecognized(DragGestureEvent) : void
-		public void dragGestureRecognized(DragGestureEvent dge) {
-			JTree tree = getCurrentTree();
-			TreePath path = tree.getPathForLocation( (int) dge.getDragOrigin().getX(),
-								(int) dge.getDragOrigin().getY());
-
-			if (path != null) {
-				VPTNode n = (VPTNode) path.getLastPathComponent();
-				if (n.isFile()) {
-					dge.startDrag(DragSource.DefaultCopyDrop,
-									new FileListTransferable((VPTFile)n));
-				}
-			}
-		} //}}}
-
-	} //}}}
-
-	//{{{ -class _FileListTransferable_
-	/** A transferable for a file. */
-	private static class FileListTransferable extends LinkedList implements Transferable {
-
-		//{{{ +FileListTransferable(VPTFile) : <init>
-		public FileListTransferable(VPTFile file) {
-			super.add(file.getFile());
-		} //}}}
-
-		//{{{ +getTransferData(DataFlavor) : Object
-		public Object getTransferData(DataFlavor flavor) {
-			if (flavor == DataFlavor.javaFileListFlavor) {
-				return this;
-			}
-			return null;
-		} //}}}
-
-		//{{{ +getTransferDataFlavors() : DataFlavor[]
-		public DataFlavor[] getTransferDataFlavors() {
-			return new DataFlavor[] { DataFlavor.javaFileListFlavor };
-		} //}}}
-
-		//{{{ +isDataFlavorSupported(DataFlavor) : boolean
-		public boolean isDataFlavorSupported(DataFlavor flavor) {
-			return (flavor == DataFlavor.javaFileListFlavor);
-		} //}}}
-
-	} //}}}
-
 	//{{{ -class _ViewerEntry_
 	/**
 	 *	Holds information about what's active on what view, to allow active
@@ -2109,50 +1527,21 @@ public final class ProjectViewer extends JPanel
 		//{{{ -handleErrorSourceUpdateMessage(ErrorSourceUpdate) : void
 		/** Handles a ErrorSourceUpdate EditBus message. */
 		private void handleErrorSourceUpdateMessage(ErrorSourceUpdate esu) {
-			//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
-			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
-				esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
+			if (esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED
+				|| esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED)
+			{
 				VPTProject p = (VPTProject) treeRoot;
 				ErrorSource.Error error = esu.getError();
 				VPTNode f = p.getChildNode(error.getFilePath());
-				if ( f != null ) {
-					//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
-					if (folderTree != null) {
-						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-					}
-					if (fileTree != null) {
-						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-					}
-					if (workingFileTree != null) {
-						((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
-					}
-					if (compactTree != null) {
-						((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
-					}
-					if (filteredTree != null) {
-						((DefaultTreeModel)filteredTree.getModel()).nodeChanged(f);
-					}
+				if (f != null) {
+					treePanel.nodeChanged(f);
 				}
 			}
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
-					|| esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED
-					|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
-
-				if (folderTree != null) {
-					folderTree.repaint();
-				}
-				if (fileTree != null) {
-					fileTree.repaint();
-				}
-				if (workingFileTree != null) {
-					workingFileTree.repaint();
-				}
-				if (compactTree != null) {
-					compactTree.repaint();
-				}
-				if (filteredTree != null) {
-					filteredTree.repaint();
-				}
+				|| esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED
+				|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED)
+			{
+				treePanel.repaint();
 			}
 		}//}}}
 

@@ -16,6 +16,15 @@
  * CHANGELOG version: $Id$
  */
 
+Version 3.0.0:
+	[marcelo vanzin]
+		- Bump requirements: jEdit 4.3, Java 5
+		- Refactor the tree handling code into its own class, to try to
+		  simplify the ProjectViewer class.
+
+
+================================================================================
+
 Version 2.1.3.7:
 	[marcelo vanzin]
 		- fix NPE in ProjectManager.removeProject()

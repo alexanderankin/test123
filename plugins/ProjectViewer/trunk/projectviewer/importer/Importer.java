@@ -425,7 +425,7 @@ public abstract class Importer implements Runnable {
 		//{{{ +run() : void
 		public void run() {
 			ProjectViewer.nodeStructureChanged(node);
-			viewer.setFolderTreeState(node, state);
+			viewer.getTreePanel().setFolderTreeState(node, state);
 		} //}}}
 
 	} //}}}

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.StandardUtilities;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -117,10 +117,10 @@ public class GlobFilter extends ImporterFileFilter {
 			while (globs.hasMoreTokens()) {
 				String token = globs.nextToken();
 				if (token.startsWith("!")) {
-					fNeg.append(MiscUtilities.globToRE(token.substring(1)));
+					fNeg.append(StandardUtilities.globToRE(token.substring(1)));
 					fNeg.append("|");
 				} else {
-					fPos.append(MiscUtilities.globToRE(token));
+					fPos.append(StandardUtilities.globToRE(token));
 					fPos.append("|");
 				}
 			}
@@ -133,7 +133,7 @@ public class GlobFilter extends ImporterFileFilter {
 			globs = new StringTokenizer(dirGlobs);
 			StringBuffer dirs = new StringBuffer();
 			while (globs.hasMoreTokens()) {
-				dirs.append(MiscUtilities.globToRE(globs.nextToken()));
+				dirs.append(StandardUtilities.globToRE(globs.nextToken()));
 				dirs.append("|");
 			}
 			if (dirs.length() > 0)

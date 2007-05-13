@@ -10,7 +10,7 @@
 *  This program is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more detaProjectTreeSelectionListenerils.
+*  GNU General Public License for more details.
 *
 *  You should have received a copy of the GNU General Public License
 *  along with this program; if not, write to the Free Software
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import bsh.Interpreter;
 
@@ -53,7 +52,7 @@ import org.gjt.sp.util.Log;
  *	@version	$Id$
  *	@since		PV 2.1.0
  */
-public class VPTCompactModel extends DefaultTreeModel {
+public class VPTCompactModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
@@ -67,7 +66,7 @@ public class VPTCompactModel extends DefaultTreeModel {
 	*	@param rootNode	The root node of the tree.
 	*/
 	public VPTCompactModel(VPTNode rootNode) {
-		super(rootNode, true);
+		super(rootNode);
 	}
 	//}}}
 
@@ -188,6 +187,12 @@ public class VPTCompactModel extends DefaultTreeModel {
 		}
 		return cd;
 	} //}}}
+
+
+	protected String getName()
+	{
+        return "projectviewer.compacttab";
+	}
 
 	//{{{ +class _CompactDirectoryNode_
 	public static class CompactDirectoryNode extends VPTDirectory {

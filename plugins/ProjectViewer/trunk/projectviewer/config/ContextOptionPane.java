@@ -24,6 +24,7 @@ package projectviewer.config;
 
 //{{{ Imports
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
@@ -54,10 +55,11 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.AbstractOptionPane;
+
+import org.gjt.sp.util.StandardUtilities;
 
 import common.gui.OkCancelButtons;
 
@@ -152,7 +154,7 @@ public class ContextOptionPane extends AbstractOptionPane {
 		showUserFirst = new JCheckBox(jEdit.getProperty("options.projectviewer.contextmenu.userfirst"));
 		showUserFirst.setSelected(jEdit.getBooleanProperty("projectviewer.contextmenu.userfirst"));
 		buttons.add(showUserFirst);
-		
+
 		buttons.add(Box.createHorizontalStrut(6));
 		buttons.add(Box.createGlue());
 
@@ -161,11 +163,11 @@ public class ContextOptionPane extends AbstractOptionPane {
 	} //}}}
 
 	//{{{ MenuItemCompare class
-	static class MenuItemCompare implements MiscUtilities.Compare
+	static class MenuItemCompare implements Comparator
 	{
 		public int compare(Object obj1, Object obj2)
 		{
-			return MiscUtilities.compareStrings(
+			return StandardUtilities.compareStrings(
 				((MenuItem)obj1).label,
 				((MenuItem)obj2).label,
 				true);
@@ -411,7 +413,7 @@ class ContextAddDialog extends EnhancedDialog
 				action.getName(),label));
 		}
 
-		Collections.sort(listModel,new ContextOptionPane.MenuItemCompare());
+		Collections.sort(listModel, new ContextOptionPane.MenuItemCompare());
 
 		list.setListData(listModel);
 	} //}}}

@@ -102,7 +102,7 @@ public class RootImporter extends FileImporter {
 
 		String state = null;
 		if (viewer != null) {
-			state = viewer.getFolderTreeState(project);
+			state = viewer.getTreePanel().getFolderTreeState(project);
 		}
 
 		if (clean) {

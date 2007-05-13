@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
@@ -141,8 +142,7 @@ public class SearchAction extends Action {
 		public NodeFileSet(VPTNode node) {
 			super(null, "*", true);
 			this.node = node;
-			this.skipBinary = jEdit.getBooleanProperty("search.skipBinary.toggle", false)
-							&& ProjectViewerConfig.getInstance().hasBinaryFileCheck();
+			this.skipBinary = jEdit.getBooleanProperty("search.skipBinary.toggle", false);
 		}
 		//}}}
 
@@ -157,7 +157,7 @@ public class SearchAction extends Action {
 		protected String[] _getFiles(Component comp) {
 			String filter = getFileFilter();
 			if (filter != null && filter.length() > 0 && !filter.equals("*")) {
-				pFilter = Pattern.compile(MiscUtilities.globToRE(filter));
+				pFilter = Pattern.compile(StandardUtilities.globToRE(filter));
 			}
 
 			HashSet fileset = new HashSet();
@@ -190,18 +190,15 @@ public class SearchAction extends Action {
 
 					if (skipBinary) {
 						InputStream is = null;
-						Reader r = null;
 						try {
 							is = new FileInputStream(n.getNodePath());
-							r = MiscUtilities.autodetect(is, null);
-							if (MiscUtilities.isBinary(r)) {
+							if (MiscUtilities.isBinary(is)) {
 								continue;
 							}
 						} catch (IOException ioe) {
 							Log.log(Log.ERROR, this, ioe);
 							continue;
 						} finally {
-							if (r != null)  try { r.close(); } catch (Exception ex) { }
 							if (is != null)  try { is.close(); } catch (Exception ex) { }
 						}
 					}

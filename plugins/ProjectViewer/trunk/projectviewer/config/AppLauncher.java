@@ -38,10 +38,11 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSManager;
+
+import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import common.gui.ModalJFileChooser;
 
@@ -346,7 +347,7 @@ public class AppLauncher {
 
 		//{{{ +ComparableRE(String) : <init>
 		public ComparablePattern(String glob) {
-			this.pattern = Pattern.compile(MiscUtilities.globToRE(glob));
+			this.pattern = Pattern.compile(StandardUtilities.globToRE(glob));
 			this.glob = glob;
 		} //}}}
 
