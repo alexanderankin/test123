@@ -401,9 +401,10 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
- <listitem><formalpara><title>Version 1.4.3</title>
+ <listitem><formalpara><title>Version 1.5</title>
  <para>requires JDK 1.4, and jEdit 4.2 final. </para></formalpara>
  <itemizedlist>
+   <listitem><para>Bugfix to avoid displaying duplicate errors (k_satoda). </para></listitem>
    <listitem><para>New option: autoRefocusTextArea: 
    When ErrorList gets focus, it now deliberately passes the focus back to the current jEditTextArea. (ezust)
    </para></listitem>
