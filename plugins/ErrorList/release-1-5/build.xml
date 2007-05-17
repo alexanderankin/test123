@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- :tabSize=4:indentSize=4:noTabs=false: -->
+
+<!-- This is a build.xml file for building the ErrorList plugin.      -->
+<!--                                                                  -->
+<!-- The 'dist' target compiles the plugin, creates the documentation -->
+<!--      and the ErrorList.jar file.                                 -->
+<!--                                                                  -->
+<!-- Before running the 'dist' target, you will need to decide if you -->
+<!-- want to use Xalan or xsltproc for documentation generation.      -->
+<!-- In build.properties, you must set the value of the property      -->
+<!-- 'docs-proc.target' to one of:                                    -->
+<!--   'xalan': Creates documentation using the Xalan XSLT processor  -->
+<!--   'xsltproc': Creates documentation using the xsltproc tool      -->
+<!-- You might need to set additional properties in build.properties  -->
+<!-- to make documentation generation work. Please take a look at the -->
+<!-- file.                                                            -->
+
+<project name="ErrorList" default="build" basedir=".">
+
+	<property name="user-doc.xml" location= "users-guide.xml"/>
+	<property file="../build.properties"/>
+	<import file="${build.support}/plugin-build.xml" />
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+
+	<selector id="packageFiles">
+	  <or>
+	  	<filename name="errorlist/*.png" />
+	  </or>
+    </selector>
+
+</project>
