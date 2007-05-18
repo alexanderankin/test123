@@ -4,12 +4,15 @@ import gdb.core.CommandManager;
 import gdb.core.Debugger;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
+import gdb.options.GeneralOptionPane;
 
 import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class GdbVar extends DefaultMutableTreeNode {
@@ -20,7 +23,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private boolean created = false;
 	private boolean requested = false;
 	private boolean leaf = true;
-	
+
 	private static Vector<ChangeListener> listeners =
 		new Vector<ChangeListener>();
 	
@@ -98,6 +101,10 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (! msg.equals("done"))
 						return;
 					int nc = Integer.parseInt(res.getStringValue("numchild"));
+					int maxChildren = jEdit.getIntegerProperty(
+							GeneralOptionPane.CHILD_DISPLAY_LIMIT_PROP, 100);
+					if ((maxChildren > 0) && (nc > maxChildren))
+						nc = maxChildren;
 					for (int i = 0; i < nc; i++) {
 						String base = "children/" + i + "/child/";
 						String cname = res.getStringValue(base + "name");
