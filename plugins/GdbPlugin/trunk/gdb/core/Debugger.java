@@ -52,6 +52,8 @@ public class Debugger implements DebuggerTool {
 	private CommandManager commandManager = null;
 	// Parser
 	private Parser parser = null;
+	// Gdb process
+	private Process p = null;
 
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -123,6 +125,10 @@ public class Debugger implements DebuggerTool {
 		if (isRunning())
 			commandManager.add("-exec-until " + buffer.getPath() + ":" + line);
 	}
+	public void destroy() {
+		if (p != null)
+			p.destroy();
+	}
 	
 	private void sessionEnded() {
 		parser = null;
@@ -158,7 +164,6 @@ public class Debugger implements DebuggerTool {
 		if (cwd == null || cwd.length() == 0)
 			cwd = ".";
 		File dir = new File(cwd);
-		Process p;
 		try {
 			p = Runtime.getRuntime().exec(command, env, dir);
 			GdbState.setState(State.RUNNING);
