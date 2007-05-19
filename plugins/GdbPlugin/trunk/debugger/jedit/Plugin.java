@@ -32,12 +32,11 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import debugger.itf.DebuggerTool;
 import debugger.itf.JEditFrontEnd;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static public final String OPTION_PREFIX = "options.debugger.";
-	static private DebuggerTool debugger = Debugger.getInstance();
+	static private Debugger debugger = Debugger.getInstance();
 	
 	public void start()	{
 		debugger.setFrontEnd(this);
@@ -54,6 +53,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 			bp.remove();
 		}
 		removeCurrentPositionPainter();
+		debugger.destroy();
 	}
 	
 	static CurrentPositionPainter dp = null;
