@@ -63,7 +63,7 @@ debugger-panel.label=Control Panel
 # Options
 plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs
 options.debugger.gdb.code=new gdb.options.GeneralOptionPane();
-options.debugger.gdb.label=Gdb
+options.debugger.gdb.label=General
 options.debugger.gdb_path_label=Gdb executable:
 options.debugger.gdb_path=gdb
 options.debugger.array_range_split_size_label=Split large arrays to ranges of size:
