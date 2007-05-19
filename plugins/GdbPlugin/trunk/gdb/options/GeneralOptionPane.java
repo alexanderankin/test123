@@ -14,14 +14,14 @@ import debugger.jedit.Plugin;
 public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
-	private JTextField childDisplayLimitTF;
+	private JTextField arrayRangeSplitSizeTF;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
 	static final String GDB_PATH_LABEL = PREFIX + "gdb_path_label";
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
-	static final String CHILD_DISPLAY_LIMIT_LABEL = "child_display_limit_label";
-	static public final String CHILD_DISPLAY_LIMIT_PROP = "child_display_limit";
+	static final String ARRAY_RANGE_SPLIT_SIZE_LABEL = PREFIX + "array_range_split_size_label";
+	static public final String ARRAY_RANGE_SPLIT_SIZE_PROP = PREFIX + "array_range_split_size";
 	
 	public GeneralOptionPane() {
 		super("debugger.gdb");
@@ -30,12 +30,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		gdbPathTF = new JTextField(40);
 		addComponent(jEdit.getProperty(GDB_PATH_LABEL), gdbPathTF);
 		gdbPathTF.setText(jEdit.getProperty(GDB_PATH_PROP));
-		childDisplayLimitTF = new JTextField();
-		addComponent(jEdit.getProperty(CHILD_DISPLAY_LIMIT_LABEL),
-				childDisplayLimitTF);
-		childDisplayLimitTF.setText(String.valueOf(
-				jEdit.getIntegerProperty(CHILD_DISPLAY_LIMIT_PROP, 100)));
-		childDisplayLimitTF.setInputVerifier(new InputVerifier() {
+		arrayRangeSplitSizeTF = new JTextField();
+		addComponent(jEdit.getProperty(ARRAY_RANGE_SPLIT_SIZE_LABEL),
+				arrayRangeSplitSizeTF);
+		arrayRangeSplitSizeTF.setText(String.valueOf(
+				jEdit.getIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP, 100)));
+		arrayRangeSplitSizeTF.setInputVerifier(new InputVerifier() {
 			@Override
 			public boolean verify(JComponent arg0) {
 				JTextField tf = (JTextField)arg0;
@@ -56,8 +56,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public void _save()
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
-		jEdit.setIntegerProperty(CHILD_DISPLAY_LIMIT_PROP,
-				Integer.valueOf(childDisplayLimitTF.getText()).intValue());
+		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
+				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
 	}
 
 }
