@@ -8,6 +8,8 @@ import gdb.options.GeneralOptionPane;
 
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -16,14 +18,18 @@ import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class GdbVar extends DefaultMutableTreeNode {
-	private String name;
+	protected String name;
 	private String value = null;
+	private String type = null;
 	private String gdbName = null;
-	private UpdateListener listener = null;
+	private int numChildren = 0;
+	protected UpdateListener listener = null;
 	private boolean created = false;
 	private boolean requested = false;
 	private boolean leaf = true;
-
+	private static Pattern arrayPattern = Pattern.compile(".*\\s\\[\\d+\\]");
+	private boolean splitArray = false;
+	
 	private static Vector<ChangeListener> listeners =
 		new Vector<ChangeListener>();
 	
@@ -52,14 +58,23 @@ public class GdbVar extends DefaultMutableTreeNode {
 	public static void removeChangeListener(ChangeListener l) {
 		listeners.remove(l);
 	}
-	
+
 	private CommandManager getCommandManager() {
 		return Debugger.getInstance().getCommandManager();
 	}
+	@SuppressWarnings("unchecked")
 	public void done() {
 		if (getCommandManager() == null)
 			return;
 		getCommandManager().add("-var-delete " + gdbName);
+		if (splitArray) {
+			Enumeration c = children();
+			while (c.hasMoreElements()) {
+				Object next = c.nextElement(); 
+				if (next instanceof ArrayRangeVar)
+					((ArrayRangeVar)next).done();
+			}
+		}
 	}
 	
 	public void setChangeListener(UpdateListener l) {
@@ -68,10 +83,18 @@ public class GdbVar extends DefaultMutableTreeNode {
 	public void unsetChangeListener() {
 		listener = null;
 	}
+	protected void notifyListener() {
+		if (listener != null)
+			listener.updated(this);
+	}
+	protected String getDisplayName() {
+		return name;
+	}
 	public String toString() {
+		String displayName = getDisplayName();
 		if (value == null || value.equals(""))
-			return name;
-		return name + " = " + value;
+			return displayName;
+		return displayName + " = " + value;
 	}
 	private void getValue() {
 		if (getCommandManager() == null)
@@ -84,16 +107,31 @@ public class GdbVar extends DefaultMutableTreeNode {
 					value = res.getStringValue("value");
 					if (value == null)
 						value = "";
-					if (listener != null)
-						listener.updated(GdbVar.this);
+					notifyListener();
 				}
 		});
 	}
 	private void createChildren() {
 		created = true;
+		doCreateChildren();
+	}
+
+	protected void doCreateChildren() {
 		if (gdbName == null) {
 			requested = true;
 			return;
+		}
+		// Check for large arrays
+		int arrayRangeSplitSize = jEdit.getIntegerProperty(
+				GeneralOptionPane.ARRAY_RANGE_SPLIT_SIZE_PROP, 100);
+		if ((arrayRangeSplitSize > 0) && (numChildren > arrayRangeSplitSize)) {
+			Matcher m = arrayPattern.matcher(type);
+			if (m.find()) {
+				splitArray = true;
+				createArrayRangeChildren(arrayRangeSplitSize);
+				notifyListener();
+				return;
+			}
 		}
 		getCommandManager().add("-var-list-children " + gdbName,
 			new ResultHandler() {
@@ -101,10 +139,6 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (! msg.equals("done"))
 						return;
 					int nc = Integer.parseInt(res.getStringValue("numchild"));
-					int maxChildren = jEdit.getIntegerProperty(
-							GeneralOptionPane.CHILD_DISPLAY_LIMIT_PROP, 100);
-					if ((maxChildren > 0) && (nc > maxChildren))
-						nc = maxChildren;
 					for (int i = 0; i < nc; i++) {
 						String base = "children/" + i + "/child/";
 						String cname = res.getStringValue(base + "name");
@@ -114,13 +148,25 @@ public class GdbVar extends DefaultMutableTreeNode {
 						child.setChangeListener(listener);
 						add(child);
 					}
-					if (listener != null)
-						listener.updated(GdbVar.this);
+					notifyListener();
 				}
 			}
 		);
 	}
-	@SuppressWarnings("unchecked")
+	private void createArrayRangeChildren(int arrayRangeSplitSize) {
+		int from = 0;
+		do {
+			int to = from + arrayRangeSplitSize - 1;
+			if (to > numChildren)
+				to = numChildren;
+			String name = "[" + String.valueOf(from) + ".." +
+				String.valueOf(to) + "]";
+			ArrayRangeVar child = new ArrayRangeVar(name, this, from, to);
+			child.setChangeListener(listener);
+			add(child);
+			from = to + 1; 
+		} while (from <= numChildren);
+	}
 	public void update() {
 		if (gdbName == null)
 			createGdbVar();
@@ -129,14 +175,18 @@ public class GdbVar extends DefaultMutableTreeNode {
 				return;
 			getCommandManager().add("-var-update " + gdbName);
 			getValue();
-			Enumeration<GdbVar> c = this.children();
-			while (c.hasMoreElements()) {
-				GdbVar child = c.nextElement();
-				child.update();
-			}
+			updateChildren();
 		}
 	}
-	private void createGdbVar() {
+	@SuppressWarnings("unchecked")
+	protected void updateChildren() {
+		Enumeration<GdbVar> c = this.children();
+		while (c.hasMoreElements()) {
+			GdbVar child = c.nextElement();
+			child.update();
+		}
+	}
+	protected void createGdbVar() {
 		if (getCommandManager() == null)
 			return;
 		getCommandManager().add("-var-create - * \"" + name + "\"",
@@ -145,8 +195,10 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (! msg.equals("done"))
 						return;
 					gdbName = res.getStringValue("name");
+					type = res.getStringValue("type"); 
 					String nc = res.getStringValue("numchild");
-					leaf = (Integer.parseInt(nc) == 0);
+					numChildren = Integer.parseInt(nc); 
+					leaf = (numChildren == 0);
 					if (requested)
 						createChildren();
 					getValue();
