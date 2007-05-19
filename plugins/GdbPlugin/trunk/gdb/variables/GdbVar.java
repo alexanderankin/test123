@@ -28,6 +28,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private boolean requested = false;
 	private boolean leaf = true;
 	private static Pattern arrayPattern = Pattern.compile(".*\\s\\[\\d+\\]");
+	private static Pattern charArrayPattern = Pattern.compile("char\\s\\[\\d+\\]");
 	private boolean splitArray = false;
 	
 	private static Vector<ChangeListener> listeners =
@@ -197,6 +198,16 @@ public class GdbVar extends DefaultMutableTreeNode {
 					gdbName = res.getStringValue("name");
 					type = res.getStringValue("type"); 
 					String nc = res.getStringValue("numchild");
+					// Display char arrays as strings if requested
+					if (jEdit.getBooleanProperty(GeneralOptionPane.CHAR_ARRAY_AS_STRING_PROP)) {
+						Matcher m = charArrayPattern.matcher(type);
+						if (m.find()) {
+							numChildren = 0;
+							leaf = true;
+							getCharArrayValue();
+							return;
+						}
+					}
 					numChildren = Integer.parseInt(nc); 
 					leaf = (numChildren == 0);
 					if (requested)
@@ -205,6 +216,22 @@ public class GdbVar extends DefaultMutableTreeNode {
 				}
 			}
 		);
+	}
+
+	protected void getCharArrayValue() {
+		if (getCommandManager() == null)
+			return;
+		getCommandManager().add("-data-evaluate-expression " + name,
+				new ResultHandler() {
+				public void handle(String msg, GdbResult res) {
+					if (! msg.equals("done"))
+						return;
+					value = res.getStringValue("value");
+					if (value == null)
+						value = "";
+					notifyListener();
+				}
+		});
 	}
 
 	@Override

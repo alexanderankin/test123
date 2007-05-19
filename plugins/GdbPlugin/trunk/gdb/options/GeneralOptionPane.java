@@ -1,6 +1,7 @@
 package gdb.options;
 
 import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -15,6 +16,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
 	private JTextField arrayRangeSplitSizeTF;
+	private JCheckBox charArrayAsStringCB;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
@@ -22,6 +24,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
 	static final String ARRAY_RANGE_SPLIT_SIZE_LABEL = PREFIX + "array_range_split_size_label";
 	static public final String ARRAY_RANGE_SPLIT_SIZE_PROP = PREFIX + "array_range_split_size";
+	static final String CHAR_ARRAY_AS_STRING_LABEL = PREFIX + "char_array_as_string_label";
+	static public final String CHAR_ARRAY_AS_STRING_PROP = PREFIX + "char_array_as_string";
 	
 	public GeneralOptionPane() {
 		super("debugger.gdb");
@@ -48,6 +52,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				return true;
 			}
 		});
+		charArrayAsStringCB = new JCheckBox(
+				jEdit.getProperty(CHAR_ARRAY_AS_STRING_LABEL));
+		addComponent(charArrayAsStringCB);
+		charArrayAsStringCB.setSelected(
+				jEdit.getBooleanProperty(CHAR_ARRAY_AS_STRING_PROP)); 
 	}
 
 	/***************************************************************************
@@ -58,6 +67,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
 		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
+		jEdit.setBooleanProperty(CHAR_ARRAY_AS_STRING_PROP,
+				charArrayAsStringCB.isSelected());
 	}
 
 }
