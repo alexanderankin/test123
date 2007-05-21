@@ -67,7 +67,7 @@ class StreamThread extends Thread
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 		DefaultErrorSource es = console.getErrorSource();
-		copt = new CommandOutputParser(console.getView(),	es, defaultColor);
+		copt = console.getShell().createOutputParser(console.getView(), es, defaultColor); 
 		copt.setDirectory(currentDirectory);
 
 	} // }}}
