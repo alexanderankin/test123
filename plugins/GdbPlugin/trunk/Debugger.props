@@ -11,7 +11,8 @@ plugin.debugger.jedit.Plugin.description=\
  
 plugin.debugger.jedit.Plugin.depend.0=jdk 1.5
 plugin.debugger.jedit.Plugin.depend.1=jedit 04.03.09.00
-plugin.debugger.jedit.Plugin.depend.1=plugin CommonControlsPlugin 0.9.4
+plugin.debugger.jedit.Plugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.debugger.jedit.Plugin.depend.3=plugin console.ConsolePlugin 4.3.2
 	
 # action labels
 debugger-go.base.label=Go!
@@ -80,6 +81,7 @@ options.debugger.program_label=Program:
 options.debugger.arguments_label=Arguments:
 options.debugger.directory_label=Working directory:
 options.debugger.environment_label=Environment:
+options.debugger.mi_shell_info_msg=The GDB/MI shell enables interaction with the GDB/MI interpreter.
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html

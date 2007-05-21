@@ -26,6 +26,7 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${user.home}/.jedit/jars/CommonControls.jar"/>
+		<pathelement location="${user.home}/.jedit/jars/Console.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 
@@ -54,6 +55,7 @@
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
 				<include name="dockables.xml"/>
+				<include name="services.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.txt"/>

@@ -12,7 +12,7 @@ import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
 import gdb.output.Console;
-import gdb.output.Console.InputHandler;
+import gdb.output.MIShell;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
 import gdb.variables.Watches;
@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -41,7 +42,6 @@ public class Debugger implements DebuggerTool {
 
 	// Views
 	private Console programOutput = null;
-	private Console gdbOutput = null;
 	private ControlView controlView = null;
 	private BreakpointView breakpointsPanel = null;
 	private LocalVariables localsPanel = null;
@@ -151,8 +151,6 @@ public class Debugger implements DebuggerTool {
 		}
 		if (programOutput != null)
 			programOutput.clear();
-		if (gdbOutput != null)
-			gdbOutput.clear();
 		debugger.start(currentConfig.getProgram(),
 				currentConfig.getArguments(),
 				currentConfig.getDirectory(),
@@ -304,16 +302,6 @@ public class Debugger implements DebuggerTool {
 			programOutput = new Console();
 		return programOutput;
 	}
-	public JPanel showGdbOutput(View view) {
-		if (gdbOutput == null)	{
-			gdbOutput = new Console(new InputHandler() {
-				public void handle(String line) {
-					commandManager.add(line);
-				}
-			});
-		}
-		return gdbOutput;
-	}
 	public JPanel showBreakpoints(View view) {
 		if (breakpointsPanel == null)
 			breakpointsPanel = new BreakpointView();
@@ -339,11 +327,12 @@ public class Debugger implements DebuggerTool {
 			stackTracePanel = new StackTrace();
 		return stackTracePanel;
 	}
+	private MIShell getMIShell() {
+		return (MIShell) ServiceManager.getService("console.Shell", MIShell.NAME);
+	}
 	public void gdbRecord(String line)
 	{
-		if (gdbOutput == null)
-			showGdbOutput(jEdit.getActiveView());
-		gdbOutput.append(line);
+		getMIShell().append(line);
 	}
 	public void programError(String line) {
 		if (programOutput == null)
