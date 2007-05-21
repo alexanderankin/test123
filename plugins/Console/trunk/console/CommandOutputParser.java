@@ -35,6 +35,8 @@ import errorlist.ErrorSource;
  *
  * Refactored from ConsolePlugin.parseLine().
  * This class contains all code related to parsing the output of console commands.
+ * Derived shells can return extended versions of this for handling their own
+ * Output processing by overriding @ref Shell.createOutputParser()
  *
  * @author ezust
  * @since Console 4.2
@@ -59,7 +61,6 @@ public class CommandOutputParser
 	private ErrorMatcher lastMatcher;
 
 	private Console console;
-
 	private Color defaultColor;
 	private Color color;
 	// }}}
@@ -72,7 +73,8 @@ public class CommandOutputParser
 	 *
 	 * @param v - the current View
 	 * @param es - An ErrorSource which corresponds to the plugin which is generating the errors.
-	 *
+	 * @param defaultColor - the default color to use when errors are not found
+	 * 
 	 * TODO: Use the es to determine which errormatchers to look at?
 	 */
 

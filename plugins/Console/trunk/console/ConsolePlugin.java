@@ -143,7 +143,6 @@ public class ConsolePlugin extends EBPlugin
 	 * 	@ref ErrorSource.WARNING
 	 *
 	 * Although it is possible derived ErrorSources will return custom error codes.
-	 *
 	 */
 	public static synchronized int parseLine(View view,
 		String text, String directory, DefaultErrorSource errorSource)
@@ -243,7 +242,7 @@ public class ConsolePlugin extends EBPlugin
 	// }}}
 
 	// {{{ rescanShells()
-	public static void rescanShells()
+	static void rescanShells()
 	{
 		jEdit.removeActionSet(shellSwitchActions);
 		shellSwitchActions.removeAllActions();

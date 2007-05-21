@@ -3,7 +3,7 @@
 <!-- Build file for the Console plugin           -->
 <!-- :tabSize=4:indentSize=4:noTabs=false:              -->
 <!-- ================================================== -->
-    <property file="../build.properties" />
+    	<property file="../build.properties" />
 	<property name="javadoc.packagenames"	value="console.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
 	<property name="dist.target" 			value="dist.complete" />

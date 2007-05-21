@@ -22,10 +22,14 @@
 
 package console;
 
+import java.awt.Color;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
+
+import errorlist.DefaultErrorSource;
 
 
 /**
@@ -106,10 +110,10 @@ public abstract class Shell
 	 */
 	public static String[] getShellNames()
 	{
-		ArrayList retVal = new ArrayList();
+		StringList retVal = new StringList();
 		for(int i = 0; i < shells.size(); i++)
 		{
-			retVal.add(((Shell)shells.get(i)).getName());
+			retVal.add(shells.get(i).getName());
 		}
 
 		String[] newAPI = ServiceManager.getServiceNames(SERVICE);
@@ -118,7 +122,7 @@ public abstract class Shell
 			retVal.add(newAPI[i]);
 		}
 
-		return (String[])retVal.toArray(new String[retVal.size()]);
+		return retVal.toArray();
 	} //}}}
 
 	//{{{ getShell() method
@@ -143,7 +147,15 @@ public abstract class Shell
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
 
-
+	/**
+	 * @return a derived instance of CommandOutputParser if this shell needs custom
+	 *    handling of shell output. By default, returns the standard CommandOutputParser.
+	 *    @since Console 4.3.3
+	 *    @see CommandOutputParser 
+	 */
+	public CommandOutputParser createOutputParser(View v, DefaultErrorSource es, Color defaultColor) {
+		return new CommandOutputParser(v, es, defaultColor);
+	}
 
 	//{{{ openConsole() method
 	/**
