@@ -1,5 +1,9 @@
 package gdb.output;
 
+import javax.swing.JOptionPane;
+
+import gdb.core.CommandManager;
+
 import org.gjt.sp.jedit.jEdit;
 
 import console.Console;
@@ -9,6 +13,8 @@ import debugger.jedit.Plugin;
 public class MIShell extends BaseShell {
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String MI_SHELL_INFO_MSG_PROP = PREFIX + "mi_shell_info_msg";
+	private static final String DEBUGGER_NOT_STARTED =
+		Plugin.MESSAGE_PREFIX + "debugger_not_started";
 	public static String NAME = "GDB/MI";
 
 	public MIShell() {
@@ -32,7 +38,12 @@ public class MIShell extends BaseShell {
 	@Override
 	public void execute(Console console, String input,
 			Output output, Output error, String command) {
-		getCommandManager().add(command);
+		CommandManager cmdMgr = getCommandManager();
+		if (cmdMgr != null)
+			cmdMgr.add(command);
+		else
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+					jEdit.getProperty(DEBUGGER_NOT_STARTED));
 	}
 
 }
