@@ -4,12 +4,6 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="debugger-program-output">
-		gdb.core.Debugger.getInstance().showProgramOutput(view);
-	</DOCKABLE>
-	<DOCKABLE NAME="debugger-gdb-output">
-		gdb.core.Debugger.getInstance().showGdbOutput(view);
-	</DOCKABLE>
 	<DOCKABLE NAME="debugger-show-locals">
 		gdb.core.Debugger.getInstance().showLocals(view);
 	</DOCKABLE>

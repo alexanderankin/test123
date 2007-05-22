@@ -44,10 +44,6 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-remove-breakpoint \
 
 # dockables
-debugger-program-output.title=Program Output
-debugger-program-output.label=Program Output
-debugger-gdb-output.title=GDB/MI Console
-debugger-gdb-output.label=GDB/MI Console
 debugger-show-locals.title=Local Variables
 debugger-show-locals.label=Local Variables
 debugger-show-variables.title=Variables
@@ -82,6 +78,7 @@ options.debugger.arguments_label=Arguments:
 options.debugger.directory_label=Working directory:
 options.debugger.environment_label=Environment:
 options.debugger.mi_shell_info_msg=The GDB/MI shell enables interaction with the GDB/MI interpreter.
+options.debugger.program_shell_info_msg=The Program shell enables interaction with the program being debugged.
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html
