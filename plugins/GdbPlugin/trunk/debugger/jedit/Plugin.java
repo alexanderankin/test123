@@ -36,6 +36,7 @@ import debugger.itf.JEditFrontEnd;
 
 public class Plugin extends EditPlugin implements JEditFrontEnd {
 	static public final String OPTION_PREFIX = "options.debugger.";
+	static public final String MESSAGE_PREFIX = "messages.debugger.";
 	static private Debugger debugger = Debugger.getInstance();
 	
 	public void start()	{
