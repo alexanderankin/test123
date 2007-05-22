@@ -11,8 +11,8 @@ import gdb.execution.ControlView;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
-import gdb.output.Console;
 import gdb.output.MIShell;
+import gdb.output.ProgramShell;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
 import gdb.variables.Watches;
@@ -40,8 +40,6 @@ public class Debugger implements DebuggerTool {
 
 	private JEditFrontEnd frontEnd = null;
 
-	// Views
-	private Console programOutput = null;
 	private ControlView controlView = null;
 	private BreakpointView breakpointsPanel = null;
 	private LocalVariables localsPanel = null;
@@ -149,8 +147,10 @@ public class Debugger implements DebuggerTool {
 					"the program you wish to debug from the list");
 			return;
 		}
-		if (programOutput != null)
-			programOutput.clear();
+		// Clear the consoles
+		getProgramShell().clear();
+		getMIShell().clear();
+		// Start the debugging process
 		debugger.start(currentConfig.getProgram(),
 				currentConfig.getArguments(),
 				currentConfig.getDirectory(),
@@ -297,11 +297,6 @@ public class Debugger implements DebuggerTool {
 			controlView = new ControlView();
 		return controlView;
 	}
-	public JPanel showProgramOutput(View view) {
-		if (programOutput == null)
-			programOutput = new Console();
-		return programOutput;
-	}
 	public JPanel showBreakpoints(View view) {
 		if (breakpointsPanel == null)
 			breakpointsPanel = new BreakpointView();
@@ -334,16 +329,15 @@ public class Debugger implements DebuggerTool {
 	{
 		getMIShell().append(line);
 	}
+	private ProgramShell getProgramShell() {
+		return (ProgramShell) ServiceManager.getService("console.Shell", ProgramShell.NAME);
+	}
 	public void programError(String line) {
-		if (programOutput == null)
-			showProgramOutput(jEdit.getActiveView());
-		programOutput.append(line);
+		getProgramShell().appendError(line);
 	}
 	public void programRecord(String line)
 	{
-		if (programOutput == null)
-			showProgramOutput(jEdit.getActiveView());
-		programOutput.append(line);
+		getProgramShell().append(line);
 	}
 	public static Debugger getInstance() {
 		if (debugger == null)

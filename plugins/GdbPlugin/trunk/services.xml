@@ -4,5 +4,8 @@
     <SERVICE CLASS="console.Shell" NAME="GDB/MI">
          new gdb.output.MIShell();
     </SERVICE>
+    <SERVICE CLASS="console.Shell" NAME="Program">
+         new gdb.output.ProgramShell();
+    </SERVICE>
  </SERVICES>
  
