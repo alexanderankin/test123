@@ -35,7 +35,7 @@ Defining "launch configurations" - i.e. the applications to debug, their
 command-line arguments etc.
 </li>
 <li>
-A console for viewing program output and the gdb output.
+Two Console plugin shell services: "Program" for communication with the debugged program, and "GDB/MI" for controlling the GDB/MI interface.
 </li>
 </ul>
 
@@ -103,17 +103,13 @@ Watch the value of custom variables and expressions using the dockable named
 Edit breakpoints/add watchpoints using the dockable named "Breakpoints".
 </li>
 <li>
-Watch the program output using the dockable named "Program Output".
+Watch the running program output, or supply standard input to it, using the Console plugin, via the "Program" shell.
 </li>
 </ol>
 
 Tips:
 It is recommended to create keyboard shortcuts or toolbar buttons for quick
-access to frequent debugging actions. Also, you can use the beta-version of the
-"Perspective" plugin (which has been merged into the "Docker" plugin in SVN but
-not released yet) to easily switch between the usual (development) layout and
-the debugging layout of dockables easily, so you won't have to use the Utilities
-menu each time to open the debugger dockables.
+access to frequent debugging actions. Also, you can use the Docker plugin to save and restore perspectives, so that you can easily switch between your usual (development) perspective and the debugging perspective, which use different dockables. 
 <p>
 Feedback (feature requests / bugs / whatever) can be posted using the tracker in
 SourceForge.
