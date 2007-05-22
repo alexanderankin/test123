@@ -4,11 +4,13 @@ import gdb.core.Debugger;
 import gdb.core.GdbState;
 import gdb.core.GdbView;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -27,7 +29,8 @@ public class ControlView extends GdbView {
 	private JButton toggleBreakpoint;
 	
 	public ControlView() {
-		setLayout(new GridLayout(0, 1));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(Box.createRigidArea(new Dimension(0, 5)));
 		JPanel execPanel = new JPanel();
 		execPanel.setLayout(new FlowLayout());
 		add(execPanel);
