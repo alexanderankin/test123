@@ -10,6 +10,10 @@ public class LaunchConfiguration {
 			String directory, String environment) {
 		set(name, program, arguments, directory, environment);
 	}
+	public LaunchConfiguration clone() {
+		return new LaunchConfiguration(name, program, arguments, directory,
+				environment);
+	}
 	public String getName() {
 		return name;
 	}
