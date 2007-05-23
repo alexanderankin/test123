@@ -201,7 +201,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		int index = configurationsList.getSelectedIndex();
 		if (index > -1) {
 			currentConfig = configs.getByIndex(index);
-			LaunchConfiguration newConfig = currentConfig.clone();
+			LaunchConfiguration newConfig = currentConfig.createDuplicate();
 			newConfig.setName(configs.getNewName(currentConfig.getName()));
 			createConfiguration(newConfig);
 		}
