@@ -10,7 +10,7 @@ public class LaunchConfiguration {
 			String directory, String environment) {
 		set(name, program, arguments, directory, environment);
 	}
-	public LaunchConfiguration clone() {
+	public LaunchConfiguration createDuplicate() {
 		return new LaunchConfiguration(name, program, arguments, directory,
 				environment);
 	}
