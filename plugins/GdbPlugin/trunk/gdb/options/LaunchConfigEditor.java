@@ -43,7 +43,7 @@ public class LaunchConfigEditor extends JDialog {
 	boolean accepted = false;
 	
 	public LaunchConfigEditor(LaunchConfiguration config) {
-		super(jEdit.getActiveView(), "Edit launch configuration", ModalityType.APPLICATION_MODAL);
+		super(jEdit.getActiveView(), "Edit launch configuration", true);
 		this.config = config;
 		configurationTF = new JTextField(config.getName(), 40);
 		programTF = new FileTextField(config.getProgram(), true);
