@@ -35,16 +35,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-
-import common.gui.FileTextField;
 
 import debugger.jedit.Plugin;
 
@@ -64,11 +59,6 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 	
 	private JList configurationsList;
 	private DefaultListModel configurationsModel;
-	private JTextField configurationTF;
-	private FileTextField programTF;
-	private JTextField argumentsTF;
-	private JTextField directoryTF;
-	private JTextField environmentTF;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
@@ -87,7 +77,9 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 
 	private JButton makeDefault;
 
-	private JButton update;
+	private JButton edit;
+	
+	private JButton copy;
 
 	/***************************************************************************
 	 * Factory methods
@@ -102,11 +94,6 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		configurationsModel = new DefaultListModel();
 		configurationsList = new JList(configurationsModel);
 		configurationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		configurationsList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent arg0) {
-				updateTextFields();
-			}
-		});
 		configurationsList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(JList list,
 					Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -130,6 +117,13 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 			}
 		});
 		buttons.add(add);
+		copy = new JButton("Duplicate");
+		copy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				duplicateSelectedConfiguration();
+			}
+		});
+		buttons.add(copy);
 		delete = new JButton("Delete");
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -137,6 +131,13 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 			}
 		});
 		buttons.add(delete);
+		edit = new JButton("Edit");
+		edit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editSelectedConfiguration();
+			}
+		});
+		buttons.add(edit);
 		makeDefault = new JButton("Make default");
 		makeDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -146,34 +147,12 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		buttons.add(makeDefault);
 		addComponent(buttons);
 		
-		addSeparator();
-		configurationTF = new JTextField(40);
-		addComponent(jEdit.getProperty(CONFIGURATION_LABEL), configurationTF);
-		programTF = new FileTextField(true);
-		addComponent(jEdit.getProperty(PROGRAM_LABEL), programTF);
-		argumentsTF = new JTextField(40);
-		addComponent(jEdit.getProperty(ARGUMENTS_LABEL), argumentsTF);
-		directoryTF = new JTextField(40);
-		addComponent(jEdit.getProperty(DIRECTORY_LABEL), directoryTF);
-		environmentTF = new JTextField(40);
-		addComponent(jEdit.getProperty(ENVIRONMENT_LABEL), environmentTF);
-		
-		update = new JButton("Update");
-		update.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				updateSelectedConfiguration();
-			}
-		});
-		addComponent(update);
-		
 		// Finally, initialize the list of configurations
 		for (int i = 0; i < configs.size(); i++)
 			configurationsModel.addElement(configs.getName(i));
 		
 		if (configs.size() > 0) {
 			configurationsList.setSelectedIndex(configs.getDefaultIndex());
-		} else {
-			update.setEnabled(false);
 		}
 	}
 	
@@ -197,49 +176,41 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 				index--;
 			configurationsList.setSelectedIndex(index);
 		}
-		updateTextFields();
 	}
-	private void createNewConfiguration()
-	{
-		LaunchConfiguration newConfig =
-			new LaunchConfiguration("Unnamed", "", "", "", ""); 
-		configs.add(newConfig);
-		configurationsModel.addElement(newConfig);
-		configurationsList.setSelectedIndex(configs.size() - 1);
-		updateTextFields();
-	}
-	private void updateTextFields()
-	// Update the text fields to the selected configuration
+	private void editSelectedConfiguration()
 	{
 		int index = configurationsList.getSelectedIndex();
 		if (index > -1) {
 			currentConfig = configs.getByIndex(index);
-			configurationTF.setText(currentConfig.getName());
-			programTF.getTextField().setText(currentConfig.getProgram());
-			argumentsTF.setText(currentConfig.getArguments());
-			directoryTF.setText(currentConfig.getDirectory());
-			environmentTF.setText(currentConfig.getEnvironment());
-			update.setEnabled(true);
-		} else {
-			currentConfig = null;
-			configurationTF.setText("");
-			programTF.getTextField().setText("");
-			argumentsTF.setText("");
-			directoryTF.setText("");
-			environmentTF.setText("");
-			update.setEnabled(false);
+			LaunchConfigEditor d = new LaunchConfigEditor(currentConfig);
+			d.setVisible(true);
 		}
 	}
-	private void updateSelectedConfiguration()
+	private void createConfiguration(LaunchConfiguration config)
+	{
+		LaunchConfigEditor d = new LaunchConfigEditor(config);
+		d.setVisible(true);
+		if (! d.accepted())
+			return;
+		configs.add(config);
+		configurationsModel.addElement(config);
+		configurationsList.setSelectedIndex(configs.size() - 1);
+	}
+	private void duplicateSelectedConfiguration()
 	{
 		int index = configurationsList.getSelectedIndex();
-		String name = configurationTF.getText();
-		currentConfig.setName(name);
-		currentConfig.setProgram(programTF.getTextField().getText());
-		currentConfig.setArguments(argumentsTF.getText());
-		currentConfig.setDirectory(directoryTF.getText());
-		currentConfig.setEnvironment(environmentTF.getText());
-		configurationsModel.set(index, name);
+		if (index > -1) {
+			currentConfig = configs.getByIndex(index);
+			LaunchConfiguration newConfig = currentConfig.clone();
+			newConfig.setName(configs.getNewName(currentConfig.getName()));
+			createConfiguration(newConfig);
+		}
+	}
+	private void createNewConfiguration()
+	{
+		LaunchConfiguration newConfig =
+			new LaunchConfiguration("Unnamed", "", "", "", "");
+		createConfiguration(newConfig);
 	}
 	
 	/***************************************************************************
@@ -247,7 +218,6 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 	 **************************************************************************/
 	public void save()
 	{
-		updateSelectedConfiguration();
 		configs.save();
 	}
 }

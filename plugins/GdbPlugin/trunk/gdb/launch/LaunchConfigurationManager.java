@@ -159,4 +159,22 @@ public class LaunchConfigurationManager {
 			 instance = new LaunchConfigurationManager();
 		return instance;
 	}
+	public String getNewName(String prefix) {
+		Vector<String> names = getNames();
+		for (int suffix = 0; suffix < 100; suffix++)
+		{				
+			String name = prefix + suffix;
+			boolean found = false;
+			for (int i = 0; i < names.size(); i++)
+			{
+				if (names.get(i).equals(name)) {
+					found = true;
+					break;
+				}
+			}
+			if (! found)
+				return name;
+		}
+		return prefix;
+	}
 }
