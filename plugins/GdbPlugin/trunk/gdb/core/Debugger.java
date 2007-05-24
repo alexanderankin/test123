@@ -370,4 +370,7 @@ public class Debugger implements DebuggerTool {
 	public String getGdbMessage() {
 		return gdbInternalMessage;
 	}
+	public Process getGdbProcess() {
+		return p;
+	}
 }
