@@ -1,5 +1,0 @@
-/* Plays the entire contents of the buffer */
-import com.townsfolkdesigns.jfugue.JFuguePlugin;
-playBuffer(View view) {
-	JFuguePlugin.playBuffer(view);
-}
