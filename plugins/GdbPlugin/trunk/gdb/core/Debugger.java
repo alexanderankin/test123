@@ -52,7 +52,9 @@ public class Debugger implements DebuggerTool {
 	private Parser parser = null;
 	// Gdb process
 	private Process p = null;
-
+	// Gdb internal message
+	private String gdbInternalMessage = null;
+	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
 		return null;
@@ -329,6 +331,11 @@ public class Debugger implements DebuggerTool {
 	{
 		getMIShell().append(line);
 	}
+	public void commandRecord(String line)
+	{
+		gdbInternalMessage = null;
+		getMIShell().append(line);
+	}
 	private ProgramShell getProgramShell() {
 		return (ProgramShell) ServiceManager.getService("console.Shell", ProgramShell.NAME);
 	}
@@ -354,5 +361,13 @@ public class Debugger implements DebuggerTool {
 	}
 	public Parser getParser() {
 		return parser;
+	}
+
+	public void gdbMessage(String msg) {
+		gdbInternalMessage = msg;
+	}
+	
+	public String getGdbMessage() {
+		return gdbInternalMessage;
 	}
 }
