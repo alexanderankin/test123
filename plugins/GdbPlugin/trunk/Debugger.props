@@ -85,4 +85,4 @@ plugin.debugger.jedit.Plugin.docs=index.html
 
 # Messages
 messages.debugger.debugger_not_started=The debugger is not running yet; start a debug session first.
-
+messages.debugger.cannot_create_breakpoint=Could not set breakpoint or watchpoint:\n

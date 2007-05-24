@@ -224,8 +224,11 @@ public class Parser extends Thread {
 		} while (c >= '0' && c <= '9' && lineBegin < len - 1);
 		switch (c) {
 		case '@':
+			// Ignore - remote target records
+			return;
 		case '&':
-			// Ignore - debugging and remote target records
+			// Debugging messages produced by GDB internals
+			debugger.gdbMessage(extractString(line.substring(lineBegin + 1)));
 			return;
 		case '~':
 			// Gdb CLI record
