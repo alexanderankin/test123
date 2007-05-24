@@ -1,8 +1,8 @@
 package gdb.output;
 
-import javax.swing.JOptionPane;
-
 import gdb.core.CommandManager;
+
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -28,6 +28,11 @@ public class MIShell extends BaseShell {
 	public void printInfoMessage (Output output) {
 		output.print(getConsole().getPlainColor(),
 				jEdit.getProperty(MI_SHELL_INFO_MSG_PROP));
+	}
+	
+	public void printPrompt(Console console, Output output)
+	{
+		// No prompt - prompt given by gdb/mi itself
 	}
 	
 	public void append(String s) {
