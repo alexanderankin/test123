@@ -54,8 +54,8 @@ debugger-watches.title=Expressions
 debugger-watches.label=Expressions
 debugger-breakpoints.title=Breakpoints
 debugger-breakpoints.label=Breakpoints
-debugger-panel.title=Control Panel
-debugger-panel.label=Control Panel
+debugger-panel.title=GdbPlugin Panel
+debugger-panel.label=GdbPlugin Panel
 
 # Options
 plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs
