@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<project name="JFuguePlugin" basedir="." default="dist">
+	<property file="build.properties" />
+	<!-- Plugin src directories -->
+	<property name="src.dir" value="./src" />
+	<property name="src.java.dir" value="${src.dir}/java" />
+	<property name="src.jar.name" value="JFuguePlugin_src.jar" />
+	<!-- Plugin configuration directory -->
+	<property name="conf.dir" value="conf" />
+	<!-- Plugin build directory -->
+	<property name="build.dir" value="build" />
+	<!-- Plugin dist directory -->
+	<property name="dist.dir" value="dist" />
+	<!-- Should be the application jars dir (jEdit.jar) -->
+	<property name="jedit.jars.dir" value=".." />
+	<!-- Should be the directory where plugins are installed -->
+	<property name="jedit.plugins.dir" value=".." />
+	<property name="project.jars.dir" value="./lib" />
+	<property name="project.jar.name" value="JFuguePlugin.jar" />
+	<!-- Classpath is the plugins directory, application jars dir, project lib dir and project build dir -->
+	<path id="project-classpath">
+		<!-- Application Jars -->
+		<fileset dir="${jedit.jars.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<!-- Other plugins jars -->
+		<fileset dir="${jedit.plugins.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<!-- Your jars -->
+		<fileset dir="${project.jars.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<!-- Your compiled classes -->
+		<pathelement path="${build.dir}" />
+	</path>
+	<!-- deletes the build and dist dirs and recreates them -->
+	<target name="clean" description="Cleans the build and jar file">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}"/>
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}"/>
+	</target>
+	<!-- compiles the source files -->
+	<target name="build" depends="clean" description="Compiles the projects source files">
+		<javac debug="true" deprecation="false" destdir="${build.dir}" failonerror="true" optimize="true">
+			<src path="${src.java.dir}" />
+			<classpath refid="project-classpath" />
+		</javac>
+	</target>
+	<!-- jars up the compiled classes and configuration files. -->
+	<target name="jar" description="Jars up the projects compiled classes and configuration files">
+		<!-- jar up class files and configuration files. -->
+		<jar destfile="${dist.dir}/${project.jar.name}">
+			<!-- include all the classes. -->
+			<fileset dir="${build.dir}" />
+			<!-- configuration files are expected in ./conf -->
+			<fileset dir="." includes="${conf.dir}/**" />
+			<!-- include any bsh files -->
+			<fileset dir="${src.dir}" includes="bsh/**" />
+			<!-- your documentation files -->
+			<fileset dir="." includes="docs/**" />
+		</jar>
+		<!-- jar up whole directory (for source distribution) -->
+		<jar destfile="${dist.dir}/${src.jar.name}" defaultexcludes="true">
+			<!-- exclude build and dist directories -->
+			<fileset dir="." excludes="${build.dir}/**,${dist.dir}/**" />
+		</jar>
+	</target>
+	<!-- Moves the jar file to the jedit plugins dir. -->
+	<target name="redist" description="Moves the packaged project into the jEdit plugins dir.">
+		<copy file="${dist.dir}/${project.jar.name}" todir="${jedit.plugins.dir}" />
+		<copy todir="${jedit.plugins.dir}">
+			<!-- Copy necessary lib jars to jEdit jars dir -->
+			<fileset dir="${project.jars.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+	<!-- Compiles the sources, jars the compiles classes and moves the jar to the jedit plugins dir -->
+	<target name="dist" depends="build,jar,redist" description="Moves the packaged project into the jEdit plugins dir. (Compiles and jars first)">
+	</target>
+</project>
