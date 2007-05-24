@@ -1,0 +1,17 @@
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.activate=startup
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.name=JFugue Plugin
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.version=0.5.2
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.author=Eric Berry <elberry@gmail.com>
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.docs=docs/help/jfugueplugin.html
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.depend.0=jdk 1.5
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.depend.1=jedit 04.03.09.00
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.4.4
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.jars=jfugue.jar
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.description=A jEdit plugin to bring the JFugue API to jEdit users and provide some basic functionality to help users create music using the JFugue API.
+
+#Action labels.
+jfugueplugin.play.buffer.label=Play Buffer
+jfugueplugin.play.selection.label=Play Selection
+
+#Menu Definition
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.menu=jfugueplugin.play.buffer jfugueplugin.play.selection
