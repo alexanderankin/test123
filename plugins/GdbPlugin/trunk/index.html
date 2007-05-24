@@ -2,7 +2,17 @@
 <title>Gdb Plugin Documentation</title>
 <body>
 <h1>Gdb plugin</h1>
-Written by Shlomy Reinstein, 4/2007.
+Written by Shlomy Reinstein, April-May 2007. (Still under development)<br>
+
+<h2>Feedback</h2>
+Feel free to ask for help, report bugs, or request new features 
+<a href="mailto:sreinst1@gmail.com?subject=GdbPlugin%20feedback">by email</a>.<br>
+
+You can also report bugs <a href="http://sourceforge.net/tracker/?func=add&group_id=588&atid=565475">here</a>
+or ask for new Features <a href="http://sourceforge.net/tracker/?func=add&group_id=588&atid=350588">here</a>.
+<br>
+Your feedback will be very much appreciated.
+
 <h2>Introduction</h2>
 This plugin enables debugging programs using the gdb debugger directly from
 jEdit. The plugin provides the following functionality:
@@ -39,10 +49,8 @@ Two Console plugin shell services: "Program" for communication with the debugged
 </li>
 </ul>
 
-The plugin uses gdb/mi (for most functions) to interface with gdb. This is a
-very incomplete and premature version provided only for preview, it is missing
-many features and might be quite unstable. Use at your own risk! 
-Despite the above, I found it to be quite helpful in debugging my applications.
+The plugin uses gdb/mi (for most functions) for the interface with gdb.
+The plugin is still under development; as such, it is incomplete and might be unstable.
 
 <h2>Usage</h2>
 First thing's first: If you don't have 'gdb' in your PATH, you should define
@@ -57,8 +65,6 @@ in the "Configurations" list. In 'Environment' you can set a series of
 environment variables for the debug session in the form
 var1=value1,var2=value2,...
 <p>
-When you're done filling in the details, click the 'Update' button below them.
-<br>
 The 'Make default' button below the "Configurations" box marks the selected
 configuration with an asterisk, which means it is now the default configuration,
 and will be used to launch the next debug session. If the configuration you've
@@ -110,9 +116,6 @@ Watch the running program output, or supply standard input to it, using the Cons
 Tips:
 It is recommended to create keyboard shortcuts or toolbar buttons for quick
 access to frequent debugging actions. Also, you can use the Docker plugin to save and restore perspectives, so that you can easily switch between your usual (development) perspective and the debugging perspective, which use different dockables. 
-<p>
-Feedback (feature requests / bugs / whatever) can be posted using the tracker in
-SourceForge.
 <p>
 Enjoy!
 </body>
