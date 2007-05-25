@@ -55,7 +55,7 @@
 			<!-- include all the classes. -->
 			<fileset dir="${build.dir}" />
 			<!-- configuration files are expected in ./conf -->
-			<fileset dir="." includes="${conf.dir}/**" />
+			<fileset dir="${conf.dir}" includes="**" />
 			<!-- include any bsh files -->
 			<fileset dir="${src.dir}" includes="bsh/**" />
 			<!-- your documentation files -->
