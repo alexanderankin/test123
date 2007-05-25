@@ -9,9 +9,11 @@ import console.Console;
 import console.ConsolePlugin;
 import console.Output;
 import console.Shell;
+import debugger.jedit.Plugin;
 
 public abstract class BaseShell extends Shell {
 
+	protected static final String DEBUGGER_NOT_STARTED = Plugin.MESSAGE_PREFIX + "debugger_not_started";
 	private Output output = null;
 	
 	public BaseShell(String arg0) {

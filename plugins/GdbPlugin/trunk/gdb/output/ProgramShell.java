@@ -1,9 +1,8 @@
 package gdb.output;
 
-import gdb.core.Debugger;
+import gdb.core.CommandManager;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -16,7 +15,6 @@ public class ProgramShell extends BaseShell {
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String MI_SHELL_INFO_MSG_PROP = PREFIX + "program_shell_info_msg";
 	public static String NAME = "Program";
-	private OutputStreamWriter writer = null;
 	
 	public ProgramShell() {
 		super(NAME);
@@ -26,13 +24,6 @@ public class ProgramShell extends BaseShell {
 		super(arg0);
 	}
 
-	private OutputStreamWriter getWriter() {
-		if (writer == null)
-	        writer = new OutputStreamWriter(
-	        		Debugger.getInstance().getGdbProcess().getOutputStream());
-		return writer;
-	}
-	
 	public void printInfoMessage (Output output) {
 		output.print(getConsole().getPlainColor(),
 				jEdit.getProperty(MI_SHELL_INFO_MSG_PROP));
@@ -56,11 +47,12 @@ public class ProgramShell extends BaseShell {
 	@Override
 	public void execute(Console console, String input,
 			Output output, Output error, String command) {
-		try {
-			getWriter().append(command);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		CommandManager cmdMgr = getCommandManager();
+		if (cmdMgr != null)
+			cmdMgr.addNow(command);
+		else
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+					jEdit.getProperty(DEBUGGER_NOT_STARTED));
 	}
 
 }
