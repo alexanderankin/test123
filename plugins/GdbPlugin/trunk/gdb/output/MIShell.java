@@ -13,8 +13,6 @@ import debugger.jedit.Plugin;
 public class MIShell extends BaseShell {
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String MI_SHELL_INFO_MSG_PROP = PREFIX + "mi_shell_info_msg";
-	private static final String DEBUGGER_NOT_STARTED =
-		Plugin.MESSAGE_PREFIX + "debugger_not_started";
 	public static String NAME = "GDB/MI";
 
 	public MIShell() {
