@@ -2,24 +2,25 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Сергей В. Удальцов (Sergey V. Udaltsov)
-plugin.sql.SqlPlugin.version=1.06
+plugin.sql.SqlPlugin.version=1.07
 plugin.sql.SqlPlugin.docs=index.html
 plugin.sql.SqlPlugin.description=Cross-DBMS JDBC-based SQL client
 plugin.sql.SqlPlugin.longdescription=description.html
 
-plugin.sql.SqlPlugin.depend.0=jdk 1.4
-plugin.sql.SqlPlugin.depend.1=jedit 04.02.04.00
+plugin.sql.SqlPlugin.depend.0=jdk 1.5
+plugin.sql.SqlPlugin.depend.1=jedit 04.02.99.00
 plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.12
 plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.9.3
 plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.1.1
 plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
 
 # The menu item label
-plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
+plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover  - sql.toolbar.toggle sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
 
 plugin.projectviewer.sql.SqlPlugin.pv-listeners=sql.SqlPluginPVListener
 plugin.projectviewer.sql.SqlPlugin.option-pane=sql.serverconfig
 
+sql.toolbar.toggle.label=Toggle Toolbar
 sql.publishBuffer.label=Execute buffer
 sql.publishSelection.label=Execute selection
 sql.loadObject.label=Load object

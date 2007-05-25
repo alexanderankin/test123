@@ -7,6 +7,16 @@
      <action>.label. -->
 
 <ACTIONS>
+  <ACTION NAME="sql.toolbar.toggle">
+     <CODE>
+        selected = jEdit.getBooleanProperty("sql.toolbar.showToolBar");
+        sql.SqlToolBar.showToolBar(!selected);
+        jEdit.propertiesChanged();
+     </CODE>
+     <IS_SELECTED>
+      return  jEdit.getBooleanProperty("sql.toolbar.showToolBar");
+    </IS_SELECTED>
+  </ACTION>
   <ACTION NAME="sql.preprocessors.BeanShellEvaluator">
     <CODE>
       sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).toggleEnabled();
