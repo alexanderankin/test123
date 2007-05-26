@@ -49,7 +49,7 @@ public class ProgramShell extends BaseShell {
 			Output output, Output error, String command) {
 		CommandManager cmdMgr = getCommandManager();
 		if (cmdMgr != null)
-			cmdMgr.addNow(command);
+			cmdMgr.addImmediateExecution(command);
 		else
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
 					jEdit.getProperty(DEBUGGER_NOT_STARTED));
