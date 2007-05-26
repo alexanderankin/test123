@@ -74,6 +74,15 @@ public class CommandManager extends Thread {
 		Command c = new Command(cid, cmd, handler);
 		addNow(c);
 	}
+	public void addImmediateExecution(String cmd) {
+		Debugger.getInstance().commandRecord(">>> CommandManager: " + cmd + "\n");
+		try {
+			stdOutput.write(cmd + "\n");
+			stdOutput.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	private void addNow(Command c) {
 		synchronized(commands) {
 			commands.add(0, c);
