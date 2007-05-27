@@ -59,8 +59,13 @@
  </itemizedlist>
 
  <para>
-  Note that to provide some of its functionality, the XML plugin relies on the SideKick plugin. See the SideKick plugin documentation for details.
- </para>
+  Note that to provide most of its functionality, the XML plugin relies on
+ the SideKick plugin. What this means is that Sidekick must be enabled, and
+ docked (preferably to your right or left) and parsing your current buffer
+ in order for certain operations to succeed.  Select Plugins - SideKick -
+ SideKick, and click on the little arrow, which is the docking menu in the
+ upper left corner, to set its docked position.  See the SideKick plugin
+ documentation for more details.  </para>
 
 </chapter>
 
