@@ -22,6 +22,7 @@ debugger-next.label=Next
 debugger-step.label=Step
 debugger-until.label=Run to cursor
 debugger-quit.label=Quit
+debugger-kill.label=Kill
 debugger-finish.label=Return from current function
 debugger-pause.label=Pause
 debugger-toggle-breakpoint.label=Toggle breakpoint
@@ -38,6 +39,7 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   - \
   debugger-pause \
   debugger-quit \
+  debugger-kill \
   - \
   debugger-toggle-breakpoint \
   debugger-set-breakpoint \

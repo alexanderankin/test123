@@ -3,6 +3,11 @@
 
 <ACTIONS>
 	
+	<ACTION NAME="debugger-kill" NO_REPEAT="TRUE">
+		<CODE>
+			gdb.core.Debugger.getInstance().kill();
+		</CODE>
+	</ACTION>
 	<ACTION NAME="debugger-quit" NO_REPEAT="TRUE">
 		<CODE>
 			gdb.core.Debugger.getInstance().quit();
