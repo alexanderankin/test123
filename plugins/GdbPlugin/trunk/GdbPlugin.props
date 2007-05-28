@@ -80,10 +80,15 @@ options.debugger.programs.code=new gdb.options.LaunchConfigOptionPane();
 options.debugger.programs.label=Programs
 options.debugger.configurations_label=Configurations:
 options.debugger.configuration_label=Name:
+options.debugger.configuration_tooltip=The name of this configuration (to be listed in the list of launch configurations)
 options.debugger.program_label=Program:
+options.debugger.program_tooltip=The path to the executable file to debug
 options.debugger.arguments_label=Arguments:
+options.debugger.arguments_tooltip=The command-line arguments for the executable
 options.debugger.directory_label=Working directory:
+options.debugger.directory_tooltip=The directory where gdb will run
 options.debugger.environment_label=Environment:
+options.debugger.environment_tooltip=Environment variables to set, in the form: var1=value1,var2=value2,... (e.g. HOME=/usr/shlomy,DISPLAY=:0,LD_LIBRARY_PATH=/usr/lib)
 options.debugger.mi_shell_info_msg=The GDB/MI shell enables interaction with the GDB/MI interpreter.
 options.debugger.program_shell_info_msg=The Program shell enables interaction with the program being debugged.
 

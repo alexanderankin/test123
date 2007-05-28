@@ -31,6 +31,12 @@ public class LaunchConfigEditor extends JDialog {
 	static final String DIRECTORY_LABEL = PREFIX + "directory_label";
 	static final String ENVIRONMENT_LABEL = PREFIX + "environment_label";
 
+	static final String CONFIGURATION_TOOLTIP = PREFIX + "configuration_tooltip";
+	static final String PROGRAM_TOOLTIP = PREFIX + "program_tooltip";
+	static final String ARGUMENTS_TOOLTIP= PREFIX + "arguments_tooltip";
+	static final String DIRECTORY_TOOLTIP = PREFIX + "directory_tooltip";
+	static final String ENVIRONMENT_TOOLTIP = PREFIX + "environment_tooltip";
+
 	private JTextField configurationTF;
 	private FileTextField programTF;
 	private JTextField argumentsTF;
@@ -56,6 +62,11 @@ public class LaunchConfigEditor extends JDialog {
 		addField(ARGUMENTS_LABEL, argumentsTF);
 		addField(DIRECTORY_LABEL, directoryTF);
 		addField(ENVIRONMENT_LABEL, environmentTF);
+		configurationTF.setToolTipText(jEdit.getProperty(CONFIGURATION_TOOLTIP));
+		programTF.getTextField().setToolTipText(jEdit.getProperty(PROGRAM_TOOLTIP));
+		argumentsTF.setToolTipText(jEdit.getProperty(ARGUMENTS_TOOLTIP));
+		directoryTF.setToolTipText(jEdit.getProperty(DIRECTORY_TOOLTIP));
+		environmentTF.setToolTipText(jEdit.getProperty(ENVIRONMENT_TOOLTIP));
 		JPanel buttons = new JPanel();
 		JButton ok = new JButton("Ok");
 		ok.addActionListener(new ActionListener() {
