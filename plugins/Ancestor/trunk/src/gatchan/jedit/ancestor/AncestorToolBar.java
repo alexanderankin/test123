@@ -2,11 +2,13 @@ package gatchan.jedit.ancestor;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.util.StringTokenizer;
+import java.util.LinkedList;
 
 /**
  * @author Matthieu Casanova
@@ -16,10 +18,8 @@ public class AncestorToolBar extends JToolBar
 {
 	private View view;
 	private Component glue = Box.createGlue();
+	private final LinkedList<String> list = new LinkedList<String>();
 
-	/**
-	 * Creates a new tool bar; orientation defaults to <code>HORIZONTAL</code>.
-	 */
 	public AncestorToolBar(View view)
 	{
 		this.view = view;
@@ -30,12 +30,19 @@ public class AncestorToolBar extends JToolBar
 	void setBuffer(Buffer buffer)
 	{
 		String path = buffer.getPath();
-
-
-		StringTokenizer tokenizer = new StringTokenizer(path, File.separatorChar + "/");
+		VFS _vfs = VFSManager.getVFSForPath(path);
+		list.clear();
+		while (true)
+		{
+			list.addFirst(path);
+			String parent = _vfs.getParentOfPath(path);
+			if (path == null || MiscUtilities.pathsEqual(path,parent))
+				break;
+			path = parent;
+		}
 		int count = getComponentCount() - 1;
 
-		int nbTokens = tokenizer.countTokens();
+		int nbTokens = list.size();
 		if (nbTokens < count)
 		{
 			for (int i = 0;i<count - nbTokens;i++)
@@ -51,18 +58,13 @@ public class AncestorToolBar extends JToolBar
 			}
 		}
 		int i = 0;
-		StringBuilder builder = new StringBuilder();
-		while (tokenizer.hasMoreTokens())
+		int nb = list.size();
+		for (String fileName : list)
 		{
 			AncestorButton button = (AncestorButton) getComponent(i);
-			String token = tokenizer.nextToken();
-			if (i != 0)
-			{
-				builder.append(path.charAt(builder.length()));
-			}
-			builder.append(token);
-			button.setAncestor(new Ancestor(view, builder.toString(), token));
+			button.setAncestor(new Ancestor(view, fileName, _vfs.getFileName(fileName)));
 			i++;
+			button.setEnabled(nb != i);
 		}
 	}
 }
