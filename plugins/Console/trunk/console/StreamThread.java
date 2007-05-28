@@ -54,6 +54,9 @@ class StreamThread extends Thread
 
 	private InputStream in;
 	CommandOutputParser copt = null;
+
+	private StringBuilder lineBuffer;
+	private boolean pendingCr;
 	// }}}
 
 	// {{{ StreamThread constructor
@@ -69,7 +72,8 @@ class StreamThread extends Thread
 		DefaultErrorSource es = console.getErrorSource();
 		copt = console.getShell().createOutputParser(console.getView(), es, defaultColor); 
 		copt.setDirectory(currentDirectory);
-
+		lineBuffer = new StringBuilder(100);
+		pendingCr = false;
 	} // }}}
 
 	// {{{ run() method
@@ -86,44 +90,61 @@ class StreamThread extends Thread
 		}
 
 		Output output = process.getOutput();
-		char oldchar = ' ';
 		try
 		{
-			StringBuilder lb = new StringBuilder();
 			char[] input = new char[1024];
-			int written = 0;
 			while (!aborted)
 			{
 				int read = isr.read(input, 0, input.length);
-				if (read == -1 || aborted) break;
+				if (aborted)
+				{
+					break;
+				}
+				else if (read == -1)
+				{
+					if (pendingCr)
+					{
+						flushLine(output, "\r");
+					}
+					else if (lineBuffer.length() > 0)
+					{
+						flushLine(output, "");
+					}
+					break;
+				}
+
 				for (int i = 0; i < read; i++)
 				{
 					char c = input[i];
 					if (c == '\n')
 					{
-
-						lb.append(c);
-						process(lb, output, written);
-						written = 0;
-					}
-					else if (c != '\n' && oldchar == '\r')
-					{
-						process(lb, output, written);
-						lb.append(c);
-						written = 0;
+						if (pendingCr)
+						{
+							flushLine(output, "\r\n");
+						}
+						else
+						{
+							flushLine(output, "\n");
+						}
 					}
 					else
-						lb.append(c);
-					oldchar = c;
+					{
+						if (pendingCr)
+						{
+							flushLine(output, "\r");
+						}
+		
+						if (c == '\r')
+						{
+							pendingCr = true;
+						}
+						else
+						{
+							lineBuffer.append(c);
+						}
+					}
 				}
-				if (lb.length() > 0)
-				{
-					process(lb, output, written);
-					written = lb.length();
-				}
-
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -163,40 +184,18 @@ class StreamThread extends Thread
 		interrupt();
 	} // }}}
 
-	// {{{ process() method
-	private void process(StringBuilder buf, Output output, int written)
+	// {{{ flushLine() method
+	private void flushLine(Output output, String eol)
 	{
-		assert (buf != null && buf.length() > 0) : "buffer is empty";
-		String _line = buf.toString();
-		int length = _line.length();
-		int end = length;
-
 		// we need to write the line break to the output, but we
 		// can't pass it to the "processLine()" method or the
 		// regexps won't recognize anything.
-		if (_line.charAt(length-1) == '\n' || _line.charAt(length-1) == '\r')
-		{
-			end--;
-			if (length > 1 && _line.charAt(length-2) == '\r')
-				end--;
-		}
-
-		if (end == length)
-		{
-			copt.processLine(_line);
-		}
-		else
-		{
-			copt.processLine(_line.substring(0, end));
-		}
-
-		output.writeAttrs(null, _line.substring(written));
-		output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
-		if (end != length)
-		{
-			// empty the buffer if we've read a line.
-			buf.setLength(0);
-		}
+		String line = lineBuffer.toString();
+		copt.processLine(line);
+		output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()),
+			line + eol);
+		lineBuffer.setLength(0);
+		pendingCr = false;
 	} //}}}
 
 } // }}}

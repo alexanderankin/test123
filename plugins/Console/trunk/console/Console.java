@@ -183,7 +183,7 @@ implements EBComponent, DefaultFocusComponent
 		String name = shell.getName();
 		text.setHistoryModel(getShellHistory(shell));
 
-		shellState = (ShellState)shellStateMap.get(name);
+		shellState = shellStateMap.get(name);
 		if(shellState == null)
 		{
 			shellState = new ShellState(shell);
@@ -233,7 +233,20 @@ implements EBComponent, DefaultFocusComponent
 		getShell().printInfoMessage(shellState);
 	} //}}}
 
-	//{{{ getOutput() method
+	//{{{ getOutput() methods
+	/**
+	 * Returns the Output corresponding to a particular Shell, without changing 
+	 * the selected Shell.
+	 */
+	public Output getOutput(String shellName) {
+		ShellState retval = shellStateMap.get(shellName);
+		if (retval == null) {
+			Shell s = Shell.getShell(shellName);
+			retval = new ShellState(s);
+			shellStateMap.put(shellName, retval);
+		}
+		return retval;
+	}
 	/**
 	 * Returns the output instance for the currently selected Shell.z
 	 * @since Console 3.6
@@ -243,6 +256,7 @@ implements EBComponent, DefaultFocusComponent
 		return shellState;
 	} //}}}
 
+	
 
 	//{{{ runLastCommand() method
 	/**
@@ -350,11 +364,13 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getShellState() method
 	/**
+	 * @returns the Output of a Shell, assuming the Shell was already created....
+	 * 
 	 * @since Console 4.0.2.
 	 */
 	public ShellState getShellState(Shell shell)
 	{
-		return (ShellState)shellStateMap.get(shell.getName());
+		return shellStateMap.get(shell.getName());
 	} //}}}
 
 	// {{{ stopAnimation() method

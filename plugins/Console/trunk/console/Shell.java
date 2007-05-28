@@ -136,7 +136,7 @@ public abstract class Shell
 		// old API
 		for(int i = 0; i < shells.size(); i++)
 		{
-			Shell shell = (Shell)shells.get(i);
+			Shell shell = shells.get(i);
 			if(shell.getName().equals(name))
 			{
 				return shell;
