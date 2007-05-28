@@ -59,10 +59,8 @@ public class ConsoleBeanShell extends Shell
 			jEdit.getProperty("console.beanshell.prompt"));
 		output.writeAttrs(null," ");
 	} //}}}
-	public void execute(Console console, Output output, String command)
-	{
-		execute(console, null, output, null, command);
-	}
+	
+
 	//{{{ execute() method
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
@@ -103,9 +101,9 @@ public class ConsoleBeanShell extends Shell
 			{
 			}
 		}
-
+		if (error != output) error.commandDone();
 		output.commandDone();
-//		error.commandDone();
+
 	} //}}}
 
 	//{{{ stop() method
