@@ -54,6 +54,8 @@ public class Debugger implements DebuggerTool {
 	private Process p = null;
 	// Gdb internal message
 	private String gdbInternalMessage = null;
+
+	public static final String KILL_ACTION = "debugger-kill";
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -124,6 +126,10 @@ public class Debugger implements DebuggerTool {
 		int line = ta.getCaretLine() + 1;
 		if (isRunning())
 			commandManager.add("-exec-until " + buffer.getPath() + ":" + line);
+	}
+	public void kill() {
+		sessionEnded();
+		destroy();
 	}
 	public void destroy() {
 		if (p != null)
