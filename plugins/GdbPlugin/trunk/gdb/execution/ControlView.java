@@ -3,15 +3,20 @@ package gdb.execution;
 import gdb.core.Debugger;
 import gdb.core.GdbState;
 import gdb.core.GdbView;
+import gdb.launch.LaunchConfiguration;
+import gdb.launch.LaunchConfigurationManager;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
@@ -19,6 +24,7 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class ControlView extends GdbView {
 
+	private JComboBox config;
 	private JButton go;
 	private JButton step;
 	private JButton next;
@@ -27,6 +33,7 @@ public class ControlView extends GdbView {
 	private JButton pause;
 	private JButton quit;
 	private JButton toggleBreakpoint;
+	private LaunchConfigurationManager mgr;
 	
 	public ControlView() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -34,10 +41,21 @@ public class ControlView extends GdbView {
 		JPanel execPanel = new JPanel();
 		execPanel.setLayout(new FlowLayout());
 		add(execPanel);
+		JPanel configPanel = new JPanel();
+		configPanel.add(new JLabel("Program:"));
+		mgr = LaunchConfigurationManager.getInstance();
+		Vector<LaunchConfiguration> configs = mgr.get();
+		config = new JComboBox(configs);
+		configPanel.add(config);
+		execPanel.add(configPanel);
 		go = new JButton("Go!");
 		execPanel.add(go);
 		go.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if (GdbState.getState() == GdbState.State.IDLE) {
+					mgr.setDefaultIndex(config.getSelectedIndex());
+					mgr.save();
+				}
 				Debugger.getInstance().go();
 			}
 		});
@@ -83,11 +101,8 @@ public class ControlView extends GdbView {
 				Debugger.getInstance().quit();
 			}
 		});
-		JPanel miscPanel = new JPanel();
-		miscPanel.setLayout(new FlowLayout());
-		add(miscPanel);
 		toggleBreakpoint = new JButton("Toggle breakpoint");
-		miscPanel.add(toggleBreakpoint);
+		execPanel.add(toggleBreakpoint);
 		toggleBreakpoint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Debugger.getInstance().toggleBreakpoint(jEdit.getActiveView());
@@ -111,6 +126,7 @@ public class ControlView extends GdbView {
 	}
 	@Override
 	public void running() {
+		config.setEnabled(false);
 		go.setEnabled(false);
 		step.setEnabled(false);
 		next.setEnabled(false);
@@ -122,6 +138,7 @@ public class ControlView extends GdbView {
 
 	@Override
 	public void sessionEnded() {
+		config.setEnabled(true);
 		go.setEnabled(true);
 		step.setEnabled(false);
 		next.setEnabled(false);
