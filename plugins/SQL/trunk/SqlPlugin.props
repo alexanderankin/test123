@@ -7,7 +7,7 @@ plugin.sql.SqlPlugin.docs=index.html
 plugin.sql.SqlPlugin.description=Cross-DBMS JDBC-based SQL client
 plugin.sql.SqlPlugin.longdescription=description.html
 
-plugin.sql.SqlPlugin.depend.0=jdk 1.5
+plugin.sql.SqlPlugin.depend.0=jdk 1.4
 plugin.sql.SqlPlugin.depend.1=jedit 04.02.99.00
 plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.12
 plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.9.3
