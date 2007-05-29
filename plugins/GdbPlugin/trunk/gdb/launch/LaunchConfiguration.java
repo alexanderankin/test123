@@ -1,7 +1,7 @@
 package gdb.launch;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class LaunchConfiguration {
@@ -34,7 +34,7 @@ public class LaunchConfiguration {
 		return environment;
 	}
 	public String [] getEnvironmentArray() {
-		Map<String, String> env = System.getenv();
+		HashMap<String, String> env = new HashMap<String, String>(System.getenv());
 		String [] userEnv = getEnvironment().split(",");
 		for (int i = 0; i < userEnv.length; i++) {
 			String [] var = userEnv[i].split("=", 2);
