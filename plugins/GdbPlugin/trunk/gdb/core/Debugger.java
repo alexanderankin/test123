@@ -56,6 +56,14 @@ public class Debugger implements DebuggerTool {
 	private String gdbInternalMessage = null;
 
 	public static final String KILL_ACTION = "debugger-kill";
+	public static final String GO_ACTION = "debugger-go";
+	public static final String NEXT_ACTION = "debugger-next";
+	public static final String STEP_ACTION = "debugger-step";
+	public static final String FINISH_ACTION = "debugger-finish";
+	public static final String UNTIL_ACTION = "debugger-until";
+	public static final String PAUSE_ACTION = "debugger-pause";
+	public static final String QUIT_ACTION = "debugger-quit";
+	public static final String TOGGLE_BREAKPOINT_ACTION = "debugger-toggle-breakpoint";
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
