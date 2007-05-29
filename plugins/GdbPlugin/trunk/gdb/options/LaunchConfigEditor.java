@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -47,9 +48,19 @@ public class LaunchConfigEditor extends JDialog {
 	
 	private LaunchConfiguration config = null;
 	boolean accepted = false;
-	
+
 	public LaunchConfigEditor(LaunchConfiguration config) {
-		super(jEdit.getActiveView(), "Edit launch configuration", true);
+		this(jEdit.getActiveView(), config);
+	}
+	public LaunchConfigEditor(JDialog parent, LaunchConfiguration config) {
+		super(parent, "Edit launch configuration", true);
+		setConfig(config);
+	}
+	public LaunchConfigEditor(JFrame parent, LaunchConfiguration config) {
+		super(parent, "Edit launch configuration", true);
+		setConfig(config);
+	}
+	void setConfig(LaunchConfiguration config) {
 		this.config = config;
 		configurationTF = new JTextField(config.getName(), 40);
 		programTF = new FileTextField(config.getProgram(), true);
