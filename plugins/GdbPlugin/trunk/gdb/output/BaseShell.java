@@ -3,6 +3,7 @@ package gdb.output;
 import gdb.core.CommandManager;
 import gdb.core.Debugger;
 
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import console.Console;
@@ -23,7 +24,13 @@ public abstract class BaseShell extends Shell {
 	}
 
 	protected Console getConsole() {
-		return ConsolePlugin.getConsole(jEdit.getActiveView());
+		View v = jEdit.getActiveView();
+		Console c = ConsolePlugin.getConsole(v);
+		if (c == null) {
+			v.getDockableWindowManager().showDockableWindow("console");
+			c = ConsolePlugin.getConsole(v);
+		}
+		return c;
 	}
 	protected CommandManager getCommandManager() {
 		return Debugger.getInstance().getCommandManager();
