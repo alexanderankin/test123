@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import javax.swing.text.AttributeSet;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -57,6 +59,7 @@ class StreamThread extends Thread
 
 	private StringBuilder lineBuffer;
 	private boolean pendingCr;
+	private int uncoloredWritten;
 	// }}}
 
 	// {{{ StreamThread constructor
@@ -74,6 +77,7 @@ class StreamThread extends Thread
 		copt.setDirectory(currentDirectory);
 		lineBuffer = new StringBuilder(100);
 		pendingCr = false;
+		uncoloredWritten = 0;
 	} // }}}
 
 	// {{{ run() method
@@ -144,6 +148,15 @@ class StreamThread extends Thread
 						}
 					}
 				}
+
+				// Following output shows unterminated lines
+				// such as prompt of interactive programs.
+				if (lineBuffer.length() > uncoloredWritten)
+				{
+					String tail = lineBuffer.substring(uncoloredWritten);
+					output.writeAttrs(null, tail);
+					uncoloredWritten += tail.length();
+				}
 			}
 		}
 		catch (Exception e)
@@ -192,10 +205,21 @@ class StreamThread extends Thread
 		// regexps won't recognize anything.
 		String line = lineBuffer.toString();
 		copt.processLine(line);
-		output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()),
-			line + eol);
+		AttributeSet color = ConsolePane.colorAttributes(copt.getColor());
+		if (uncoloredWritten > 0)
+		{
+			output.setAttrs(uncoloredWritten, color);
+			output.writeAttrs(color,
+				lineBuffer.substring(uncoloredWritten) + eol);
+		}
+		else
+		{
+			output.writeAttrs(color, line + eol);
+		}
+
 		lineBuffer.setLength(0);
 		pendingCr = false;
+		uncoloredWritten = 0;
 	} //}}}
 
 } // }}}
