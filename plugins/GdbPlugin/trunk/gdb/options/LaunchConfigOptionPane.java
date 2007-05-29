@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,6 +40,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import debugger.jedit.Plugin;
@@ -182,13 +184,13 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		int index = configurationsList.getSelectedIndex();
 		if (index > -1) {
 			currentConfig = configs.getByIndex(index);
-			LaunchConfigEditor d = new LaunchConfigEditor(currentConfig);
+			LaunchConfigEditor d = new LaunchConfigEditor(GUIUtilities.getParentDialog(this), currentConfig);
 			d.setVisible(true);
 		}
 	}
 	private void createConfiguration(LaunchConfiguration config)
 	{
-		LaunchConfigEditor d = new LaunchConfigEditor(config);
+		LaunchConfigEditor d = new LaunchConfigEditor(GUIUtilities.getParentDialog(this), config);
 		d.setVisible(true);
 		if (! d.accepted())
 			return;
