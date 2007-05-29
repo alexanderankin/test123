@@ -124,11 +124,18 @@ Watch the running program output, or supply standard input to it, using the Cons
 <ul>
 <li>
 It is recommended to define keyboard shortcuts for quick access to frequent debugging actions (step, next, go, return, etc). <tt>Global Options - Shortcuts - Plugin: GdbPlugin</tt>. </li>
-<li> Shortcuts to show specific Console shells can be found under <tt>Global options - Shortcuts - Plugin: Console: Shell Switchers</tt>.
+<li> Shortcuts to Show or toggle the Gdb/Mi or Program Console shells can be found under <tt>Global options - Shortcuts - Plugin: Console - Shell Switchers</tt>.
 </li>
-
 <li> Because the GdbPlugin uses many dockables, it may be desireable to have them docked only when you are actually using GdbPlugin, to avoid taking up extra space on the dock button bar. You can use the Docker plugin to save and restore "perspectives". A perspective is just a selection of dockables their locations. With this, you can easily switch between your usual (development) perspective and the debugging perspective, to use different sets of dockables. </li>
 </ul>
+
+<h2> Tips for debugging Qt programs </h2>
+
+<p> The Gdb sub-shell by default inherits a clean environment. You can instruct it to inherit certain variables from the parent jEdit process by placing shell variables in the environment string. Most Qt applications do not debug properly unless these variables are set. </p>
+<pre>
+HOME=$HOME,LD_LIBRARY_PATH=$LD_LIBRARY_PATH,DISPLAY=$DISPLAY
+</pre>
+
 <p>Enjoy! </p>
 </body>
 </html>
