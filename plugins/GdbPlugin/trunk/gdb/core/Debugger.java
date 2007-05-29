@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -159,10 +160,11 @@ public class Debugger implements DebuggerTool {
 		getProgramShell().clear();
 		getMIShell().clear();
 		// Start the debugging process
+		String environment = MiscUtilities.expandVariables(currentConfig.getEnvironment());
 		debugger.start(currentConfig.getProgram(),
 				currentConfig.getArguments(),
 				currentConfig.getDirectory(),
-				currentConfig.getEnvironment().split(","));
+				environment.split(","));
 	}
 	public void start(String prog, String args, String cwd, String [] env) {
 		String command = jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP) +
