@@ -1,20 +1,31 @@
 package gdb.launch;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
+import org.gjt.sp.util.XMLUtilities;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import debugger.jedit.Plugin;
 
 public class LaunchConfigurationManager {
+	
 	private static final String DEBUGGER_GO_BASE_LABEL = "debugger-go.base.label";
 	private static final String DEBUGGER_GO_LABEL = "debugger-go.label";
 	private static LaunchConfigurationManager instance;
 	private Vector<LaunchConfiguration> configurations =
 		new Vector<LaunchConfiguration>();
 	int defaultIndex;
-	
-	static private final String ListValueSeparator = "<->";
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String CONFIGURATIONS = PREFIX + "configurations";
@@ -43,21 +54,6 @@ public class LaunchConfigurationManager {
 	}
 	public int size() {
 		return configurations.size();
-	}
-	private void load(String propName, Vector<String> objects)
-	{
-		String list = jEdit.getProperty(propName);
-		if (list == null)
-			return;
-		String [] items = list.split(ListValueSeparator);
-		for (int i = 0; i < items.length; i++)
-			objects.add(items[i]);
-	}
-	private void ensureSize(Vector<String> list, int n)
-	{
-		int size = list.size();
-		for (int i = size; i < n; i++)
-			list.add("");
 	}
 	public Vector<String> getNames()
 	{
@@ -102,55 +98,82 @@ public class LaunchConfigurationManager {
 			return null;
 		return configurations.get(index).getName();
 	}
+	private static String getConfigDirectory() {
+		String dir = jEdit.getSettingsDirectory() + File.separator + "gdbplugin";
+		File f = new File(dir);
+		if (! f.exists())
+			f.mkdir();
+		return dir;
+	}
+	static private String LAUNCH_CONFIG_ELEMENT = "launchConfiguration";
+	static private String PROGRAM_ELEMENT = "program";
+	static private String DIRECTORY_ELEMENT = "directory";
+	static private String ARGUMENTS_ELEMENT = "arguments";
+	static private String ENVIRONMENT_ELEMENT = "environment";
+	
 	public void save()
 	{
-		StringBuffer names = new StringBuffer();
-		StringBuffer programs = new StringBuffer();
-		StringBuffer arguments = new StringBuffer();
-		StringBuffer directories = new StringBuffer();
-		StringBuffer environments = new StringBuffer();
+		String configDir = getConfigDirectory();
 		for (int i = 0; i < configurations.size(); i++) {
 			LaunchConfiguration config = configurations.get(i);
-			String sep = (i > 0) ? ListValueSeparator : "";
-			names.append(sep + config.getName());
-			programs.append(sep + config.getProgram());
-			arguments.append(sep + config.getArguments());
-			directories.append(sep + config.getDirectory());
-			environments.append(sep + config.getEnvironment());
+			String filePath = configDir + "/" + config.getName();
+			File configFile = new File(filePath);
+			PrintWriter w;
+			try {
+				w = new PrintWriter(new FileWriter(configFile));
+				w.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+				w.println();
+				w.println("<" + LAUNCH_CONFIG_ELEMENT + ">");
+				w.println(createElement(1, PROGRAM_ELEMENT, config.getProgram()));
+				w.println(createElement(1, ARGUMENTS_ELEMENT, config.getArguments()));
+				w.println(createElement(1, DIRECTORY_ELEMENT, config.getDirectory()));
+				w.println(createElement(1, ENVIRONMENT_ELEMENT, config.getEnvironment()));
+				w.println("</" + LAUNCH_CONFIG_ELEMENT + ">");
+				w.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		jEdit.setProperty(CONFIGURATIONS, names.toString());
-		jEdit.setProperty(PROGRAMS, programs.toString());
-		jEdit.setProperty(ARGUMENTS, arguments.toString());
-		jEdit.setProperty(DIRECTORIES, directories.toString());
-		jEdit.setProperty(ENVIRONMENTS, environments.toString());
 		jEdit.setIntegerProperty(DEFAULT_CONFIGURATION, defaultIndex);
 	}
 
+	private String createElement(int column, String name, String value) {
+		StringBuffer sb = new StringBuffer();
+		while (column > 0) {
+			sb.append("  ");
+			column--;
+		}
+		return sb.toString() + "<" + name + ">" + value + "</" + name + ">";
+	}
 	public void load() {
-		Vector<String> names = new Vector<String>();
-		Vector<String> programs = new Vector<String>();
-		Vector<String> arguments = new Vector<String>();
-		Vector<String> directories = new Vector<String>();
-		Vector<String> environments = new Vector<String>();
-		load(CONFIGURATIONS, names);
-		int configs = names.size();
-		load(PROGRAMS, programs);
-		ensureSize(programs, configs);
-		load(ARGUMENTS, arguments);
-		ensureSize(arguments, configs);
-		load(DIRECTORIES, directories);
-		ensureSize(directories, configs);
-		load(ENVIRONMENTS, environments);
-		ensureSize(environments, configs);
+		File configDir = new File(getConfigDirectory());
+		if (! configDir.canRead())
+			return;
+		File[] files = configDir.listFiles(new FilenameFilter() {
+			static private final String XML_SUFFIX = ".xml";
+			public boolean accept(File dir, String name) {
+				return (name.endsWith(XML_SUFFIX));
+			}
+		});
 		defaultIndex = jEdit.getIntegerProperty(DEFAULT_CONFIGURATION, 0);
 		configurations.clear();
-		for (int i = 0; i < configs; i++)
-			configurations.add(new LaunchConfiguration(
-					names.get(i),
-					programs.get(i),
-					arguments.get(i),
-					directories.get(i),
-					environments.get(i)));
+		int configs = files.length;
+		for (int i = 0; i < configs; i++) {
+			File file = files[i];
+			String name = file.getName();
+			name = name.substring(0, name.length() - 4);
+			LaunchConfigurationHandler handler =
+				new LaunchConfigurationHandler(name);
+			try
+			{
+				XMLUtilities.parseXML(new FileInputStream(file), handler);
+			}
+			catch(IOException e)
+			{
+				Log.log(Log.ERROR,LaunchConfigurationManager.class,e);
+			}
+			configurations.add(handler.getLaunchConfiguration());
+		}
 		// The following is required for the side effects (change menu label)
 		setDefaultIndex(defaultIndex);
 	}
@@ -177,4 +200,41 @@ public class LaunchConfigurationManager {
 		}
 		return prefix;
 	}
+	static class LaunchConfigurationHandler extends DefaultHandler {
+
+		String name;
+		String element = null;
+		HashMap<String, String> attributes = new HashMap<String, String>();
+		
+		LaunchConfigurationHandler(String name) {
+			this.name = name;
+		}
+		@Override
+		public void startElement(String nsURI, String localName,
+				String qualifiedName, Attributes attr) throws SAXException
+		{
+			element = localName;
+		}
+		@Override
+		public void characters(char[] ch, int start, int len)
+				throws SAXException {
+			if (element == null)
+				return;
+			String s = new String(ch, start, len);
+			attributes.put(element, s);
+		}
+		public LaunchConfiguration getLaunchConfiguration() {
+			return new LaunchConfiguration(name,
+					attributes.get(PROGRAM_ELEMENT),
+					attributes.get(ARGUMENTS_ELEMENT),
+					attributes.get(DIRECTORY_ELEMENT),
+					attributes.get(ENVIRONMENT_ELEMENT));
+		}
+		@Override
+		public void endElement(String uri, String localName, String name)
+				throws SAXException {
+			element = null;
+		}
+	}
+
 }
