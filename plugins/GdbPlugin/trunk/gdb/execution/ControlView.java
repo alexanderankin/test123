@@ -35,6 +35,16 @@ public class ControlView extends GdbView {
 	private JButton toggleBreakpoint;
 	private LaunchConfigurationManager mgr;
 	
+	private static class ActionInvoker implements ActionListener {
+		String action;
+		ActionInvoker(String actionName) {
+			action = actionName;
+		}
+		public void actionPerformed(ActionEvent arg0) {
+			jEdit.getAction(action).invoke(jEdit.getActiveView());
+		}
+	}
+	
 	public ControlView() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(Box.createRigidArea(new Dimension(0, 5)));
@@ -56,58 +66,30 @@ public class ControlView extends GdbView {
 					mgr.setDefaultIndex(config.getSelectedIndex());
 					mgr.save();
 				}
-				Debugger.getInstance().go();
+				jEdit.getAction(Debugger.GO_ACTION).invoke(jEdit.getActiveView());
 			}
 		});
 		step = new JButton("Step");
 		execPanel.add(step);
-		step.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().step();
-			}
-		});
+		step.addActionListener(new ActionInvoker(Debugger.STEP_ACTION));
 		next = new JButton("Next");
 		execPanel.add(next);
-		next.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().next();
-			}
-		});
+		next.addActionListener(new ActionInvoker(Debugger.NEXT_ACTION));
 		ret = new JButton("Return");
 		execPanel.add(ret);
-		ret.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().finishCurrentFunction();
-			}
-		});
+		ret.addActionListener(new ActionInvoker(Debugger.FINISH_ACTION));
 		until = new JButton("Until");
 		execPanel.add(until);
-		until.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().runToCursor();
-			}
-		});
+		until.addActionListener(new ActionInvoker(Debugger.UNTIL_ACTION));
 		pause = new JButton("Pause");
 		execPanel.add(pause);
-		pause.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().pause();
-			}
-		});
+		pause.addActionListener(new ActionInvoker(Debugger.PAUSE_ACTION));
 		quit = new JButton("Quit");
 		execPanel.add(quit);
-		quit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().quit();
-			}
-		});
+		quit.addActionListener(new ActionInvoker(Debugger.QUIT_ACTION));
 		toggleBreakpoint = new JButton("Toggle breakpoint");
 		execPanel.add(toggleBreakpoint);
-		toggleBreakpoint.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Debugger.getInstance().toggleBreakpoint(jEdit.getActiveView());
-			}
-		});
+		toggleBreakpoint.addActionListener(new ActionInvoker(Debugger.TOGGLE_BREAKPOINT_ACTION));
 		initialize();
 	}
 
