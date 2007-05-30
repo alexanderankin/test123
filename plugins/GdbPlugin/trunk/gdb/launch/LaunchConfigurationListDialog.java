@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import debugger.jedit.Plugin;
@@ -21,6 +22,7 @@ import debugger.jedit.Plugin;
 public class LaunchConfigurationListDialog extends JDialog {
 	private static final String LaunchConfigListDialogProp =
 		Plugin.OPTION_PREFIX + "launch_config_dialog.title";
+	private static final String GEOMETRY = "launch.config.list.dialog.geometry";
 	private JButton ok;
 /*
 	private JButton cancel;
@@ -35,6 +37,7 @@ public class LaunchConfigurationListDialog extends JDialog {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
 		optionPane = new LaunchConfigOptionPane(); 
 		add(optionPane, c);
 		JPanel buttons = new JPanel();
@@ -67,10 +70,12 @@ public class LaunchConfigurationListDialog extends JDialog {
 		c.fill = GridBagConstraints.NONE;
 		add(buttons, c);
 		pack();
+		GUIUtilities.loadGeometry(this, GEOMETRY);
 	}
 	private void close(boolean accepted) {
 		if (accepted)
 			optionPane.save();
+		GUIUtilities.saveGeometry(this, GEOMETRY);
 		setVisible(false);
 	}
 	
