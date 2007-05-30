@@ -35,6 +35,7 @@ public class ControlView extends GdbView {
 	private JButton pause;
 	private JButton quit;
 	private JButton toggleBreakpoint;
+	private JButton editLaunchConfigs;
 	private LaunchConfigurationManager mgr;
 	
 	private static class ActionInvoker implements ActionListener {
@@ -50,9 +51,6 @@ public class ControlView extends GdbView {
 	public ControlView() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(Box.createRigidArea(new Dimension(0, 5)));
-		JPanel execPanel = new JPanel();
-		execPanel.setLayout(new FlowLayout());
-		add(execPanel);
 		JPanel configPanel = new JPanel();
 		configPanel.add(new JLabel("Program:"));
 		mgr = LaunchConfigurationManager.getInstance();
@@ -70,7 +68,13 @@ public class ControlView extends GdbView {
 			}
 		});
 		configPanel.add(config);
-		execPanel.add(configPanel);
+		editLaunchConfigs = new JButton("Edit program list");
+		configPanel.add(editLaunchConfigs);
+		editLaunchConfigs.addActionListener(new ActionInvoker(Debugger.EDIT_LAUNCH_CONFIGS_ACTION));
+		add(configPanel);
+		JPanel execPanel = new JPanel();
+		execPanel.setLayout(new FlowLayout());
+		add(execPanel);
 		go = new JButton("Go!");
 		execPanel.add(go);
 		go.addActionListener(new ActionListener() {

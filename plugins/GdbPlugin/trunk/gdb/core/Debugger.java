@@ -65,6 +65,7 @@ public class Debugger implements DebuggerTool {
 	public static final String PAUSE_ACTION = "debugger-pause";
 	public static final String QUIT_ACTION = "debugger-quit";
 	public static final String TOGGLE_BREAKPOINT_ACTION = "debugger-toggle-breakpoint";
+	public static final String EDIT_LAUNCH_CONFIGS_ACTION = "debugger-edit-launch-configs";
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
