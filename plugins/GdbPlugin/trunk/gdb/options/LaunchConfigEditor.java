@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import common.gui.FileTextField;
@@ -38,6 +39,8 @@ public class LaunchConfigEditor extends JDialog {
 	static final String DIRECTORY_TOOLTIP = PREFIX + "directory_tooltip";
 	static final String ENVIRONMENT_TOOLTIP = PREFIX + "environment_tooltip";
 
+	private static final String GEOMETRY = "launch.config.editor.geometry";
+
 	private JTextField configurationTF;
 	private FileTextField programTF;
 	private JTextField argumentsTF;
@@ -55,6 +58,7 @@ public class LaunchConfigEditor extends JDialog {
 	public LaunchConfigEditor(JDialog parent, LaunchConfiguration config) {
 		super(parent, "Edit launch configuration", true);
 		setConfig(config);
+		GUIUtilities.loadGeometry(this, GEOMETRY);
 	}
 	public LaunchConfigEditor(JFrame parent, LaunchConfiguration config) {
 		super(parent, "Edit launch configuration", true);
@@ -132,6 +136,7 @@ public class LaunchConfigEditor extends JDialog {
 					argumentsTF.getText(), directoryTF.getText(),
 					environmentTF.getText());
 		}
+		GUIUtilities.saveGeometry(this, GEOMETRY);
 		setVisible(false);
 	}
 }
