@@ -6,6 +6,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -25,7 +28,7 @@ public class LaunchConfigurationManager {
 	private static LaunchConfigurationManager instance;
 	private Vector<LaunchConfiguration> configurations =
 		new Vector<LaunchConfiguration>();
-	int defaultIndex;
+	int defaultIndex = -1;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String CONFIGURATIONS = PREFIX + "configurations";
@@ -66,7 +69,7 @@ public class LaunchConfigurationManager {
 	}
 	public void remove(int index) {
 		if (defaultIndex == index)
-			defaultIndex--;
+			defaultIndex = -1;
 		configurations.remove(index);
 		checkSingleConfiguration();
 		notifyChanged();
@@ -163,7 +166,8 @@ public class LaunchConfigurationManager {
 				e.printStackTrace();
 			}
 		}
-		jEdit.setIntegerProperty(DEFAULT_CONFIGURATION, defaultIndex);
+		jEdit.setProperty(DEFAULT_CONFIGURATION,
+				configurations.get(defaultIndex).getName());
 	}
 
 	private String createElement(int column, String name, String value) {
@@ -176,12 +180,14 @@ public class LaunchConfigurationManager {
 	}
 	public void load() {
 		File[] files = getConfigFiles();
-		defaultIndex = jEdit.getIntegerProperty(DEFAULT_CONFIGURATION, 0);
+		String defaultConfig = jEdit.getProperty(DEFAULT_CONFIGURATION);
 		configurations.clear();
 		int configs = files.length;
 		for (int i = 0; i < configs; i++) {
 			File file = files[i];
 			String name = getConfigName(file.getName());
+			if (name.equals(defaultConfig))
+				defaultIndex = i;
 			LaunchConfigurationHandler handler =
 				new LaunchConfigurationHandler(name);
 			try
@@ -207,6 +213,11 @@ public class LaunchConfigurationManager {
 		File[] files = configDir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return (name.endsWith(XML_SUFFIX));
+			}
+		});
+		Arrays.sort(files, new Comparator<File>() {
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
 			}
 		});
 		return files;
