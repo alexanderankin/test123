@@ -9,6 +9,7 @@ import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.execution.ControlView;
 import gdb.launch.LaunchConfiguration;
+import gdb.launch.LaunchConfigurationListDialog;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
 import gdb.output.MIShell;
@@ -70,6 +71,10 @@ public class Debugger implements DebuggerTool {
 		return null;
 	}
 
+	public void editLaunchConfigs(View view) {
+		LaunchConfigurationListDialog dlg = new LaunchConfigurationListDialog(view);
+		dlg.setVisible(true);
+	}
 	public void selectLaunchConfig(View view) {
 		LaunchConfigurationManager mgr = LaunchConfigurationManager.getInstance();
 		Vector<LaunchConfiguration> configs = mgr.get();

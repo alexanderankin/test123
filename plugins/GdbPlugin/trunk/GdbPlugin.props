@@ -28,6 +28,7 @@ debugger-pause.label=Pause
 debugger-toggle-breakpoint.label=Toggle breakpoint
 debugger-set-breakpoint.label=Set breakpoint
 debugger-remove-breakpoint.label=Remove breakpoint
+debugger-edit-launch-configs.label=Edit list of programs to debug
 
 # menu items
 plugin.debugger.jedit.Plugin.menu=debugger-go \
@@ -50,7 +51,9 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-show-stack-trace \
   debugger-breakpoints \
   debugger-show-locals \
-  debugger-watches
+  debugger-watches \
+  - \
+  debugger-edit-launch-configs
 
 # dockables
 debugger-show-locals.title=Local Variables
@@ -93,6 +96,7 @@ options.debugger.environment_label=Environment:
 options.debugger.environment_tooltip=Environment variables to set, in the form: var1=value1,var2=value2,... (e.g. HOME=/usr/shlomy,DISPLAY=:0,LD_LIBRARY_PATH=/usr/lib)
 options.debugger.mi_shell_info_msg=The GDB/MI shell enables interaction with the GDB/MI interpreter.
 options.debugger.program_shell_info_msg=The Program shell enables interaction with the program being debugged.
+options.debugger.launch_config_dialog.title=GdbPlugin - Programs to debug
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html
