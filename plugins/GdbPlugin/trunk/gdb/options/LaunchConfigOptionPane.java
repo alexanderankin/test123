@@ -161,7 +161,9 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 			configurationsModel.addElement(configs.getName(i));
 		
 		if (configs.size() > 0) {
-			configurationsList.setSelectedIndex(configs.getDefaultIndex());
+			int index = configs.getDefaultIndex();
+			if (index >= 0 && index < configs.size())
+				configurationsList.setSelectedIndex(index);
 		}
 	}
 	
@@ -171,8 +173,10 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		int defaultIndex = configurationsList.getSelectedIndex();
 		configs.setDefaultIndex(defaultIndex);
 		// These are required for updating the display
-		configurationsModel.set(prevDefault, configs.getName(prevDefault));
-		configurationsModel.set(defaultIndex, configs.getName(defaultIndex));
+		if (prevDefault >= 0 && prevDefault < configs.size())
+			configurationsModel.set(prevDefault, configs.getName(prevDefault));
+		if (defaultIndex >= 0 && defaultIndex < configs.size())
+			configurationsModel.set(defaultIndex, configs.getName(defaultIndex));
 	}
 	private void deleteSelectedConfiguration()
 	{
