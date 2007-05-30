@@ -1,6 +1,6 @@
 package gdb.variables;
 
-import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.jEdit;
 public class Variables extends JPanel {
 	
 	public Variables() {
-		setLayout(new BorderLayout());
+		setLayout(new GridLayout(0, 1));
 		JPanel locals = new JPanel();
 		locals.setLayout(new BoxLayout(locals, 1));
 		TitledBorder border = new TitledBorder(
