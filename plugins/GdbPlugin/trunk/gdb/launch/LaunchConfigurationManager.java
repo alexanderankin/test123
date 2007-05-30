@@ -36,22 +36,40 @@ public class LaunchConfigurationManager {
 	static final String DEFAULT_CONFIGURATION = "default_configuration";
 	static private final String XML_SUFFIX = ".xml";
 
+	private Vector<ChangeListener> listeners = new Vector<ChangeListener>();
+	
+	static public interface ChangeListener {
+		void changed();
+	}
+	
 	private LaunchConfigurationManager() {
 		load();
+	}
+	public void addChangeListener(ChangeListener l) {
+		listeners.add(l);
+	}
+	public void removeChangeListener(ChangeListener l) {
+		listeners.remove(l);
 	}
 	private void checkSingleConfiguration() {
 		if (configurations.size() == 1)
 			setDefaultIndex(0);
 	}
+	private void notifyChanged() {
+		for (int i = 0; i < listeners.size(); i++)
+			listeners.get(i).changed();
+	}
 	public void add(LaunchConfiguration config) {
 		configurations.add(config);
 		checkSingleConfiguration();
+		notifyChanged();
 	}
 	public void remove(int index) {
 		if (defaultIndex == index)
 			defaultIndex--;
 		configurations.remove(index);
 		checkSingleConfiguration();
+		notifyChanged();
 	}
 	public int size() {
 		return configurations.size();
@@ -76,6 +94,7 @@ public class LaunchConfigurationManager {
 				jEdit.getProperty(DEBUGGER_GO_BASE_LABEL) +
 				" [" + configurations.get(index) + "]");
 		jEdit.propertiesChanged();
+		notifyChanged();
 	}
 	public LaunchConfiguration getDefault()
 	{
