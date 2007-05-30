@@ -25,11 +25,13 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -44,6 +46,7 @@ import debugger.jedit.Plugin;
 public class LaunchConfigEditor extends JDialog {
 
 	static final String PREFIX = Plugin.OPTION_PREFIX;
+	static final String INVALID_NAME_MSG = Plugin.MESSAGE_PREFIX + "invalid_launch_config_name";
 	
 	static final String CONFIGURATION_LABEL = PREFIX + "configuration_label";
 	static final String PROGRAM_LABEL = PREFIX + "program_label";
@@ -69,7 +72,8 @@ public class LaunchConfigEditor extends JDialog {
 	
 	private LaunchConfiguration config = null;
 	boolean accepted = false;
-
+	boolean valid = false;
+	
 	public LaunchConfigEditor(LaunchConfiguration config) {
 		this(jEdit.getActiveView(), config);
 	}
@@ -85,6 +89,15 @@ public class LaunchConfigEditor extends JDialog {
 	void setConfig(LaunchConfiguration config) {
 		this.config = config;
 		configurationTF = new JTextField(config.getName(), 40);
+		configurationTF.setInputVerifier(new InputVerifier() {
+			@Override
+			public boolean verify(JComponent arg0) {
+				JTextField tf = (JTextField) arg0;
+				String s = tf.getText();
+				valid = s.matches("^[\\w ]+$");
+				return valid;
+			}
+		});
 		programTF = new FileTextField(config.getProgram(), true);
 		argumentsTF = new JTextField(config.getArguments(), 40);
 		directoryTF = new JTextField(config.getDirectory(), 40);
@@ -104,7 +117,12 @@ public class LaunchConfigEditor extends JDialog {
 		JButton ok = new JButton("Ok");
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				close(true);
+				if (valid)
+					close(true);
+				else
+					JOptionPane.showMessageDialog(LaunchConfigEditor.this,
+							jEdit.getProperty(INVALID_NAME_MSG),
+							"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 		JButton cancel = new JButton("Cancel");
@@ -150,7 +168,8 @@ public class LaunchConfigEditor extends JDialog {
 	private void close(boolean accepted) {
 		this.accepted = accepted;
 		if (accepted && config != null) {
-			config.set(configurationTF.getText(), programTF.getTextField().getText(),
+			config.set(configurationTF.getText().trim(),
+					programTF.getTextField().getText(),
 					argumentsTF.getText(), directoryTF.getText(),
 					environmentTF.getText());
 		}
