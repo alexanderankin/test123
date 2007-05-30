@@ -5,6 +5,7 @@ import gdb.core.GdbState;
 import gdb.core.GdbView;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
+import gdb.launch.LaunchConfigurationManager.ChangeListener;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -14,6 +15,7 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -56,6 +58,17 @@ public class ControlView extends GdbView {
 		mgr = LaunchConfigurationManager.getInstance();
 		Vector<LaunchConfiguration> configs = mgr.get();
 		config = new JComboBox(configs);
+		mgr.addChangeListener(new ChangeListener() {
+			public void changed() {
+				String selected =
+					((LaunchConfiguration) config.getSelectedItem()).getName();
+				config.setModel(new DefaultComboBoxModel(mgr.get()));
+				int index = mgr.getNames().indexOf(selected);
+				if (index == -1)
+					index = 0;
+				config.setSelectedIndex(index);
+			}
+		});
 		configPanel.add(config);
 		execPanel.add(configPanel);
 		go = new JButton("Go!");
