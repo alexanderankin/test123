@@ -35,11 +35,13 @@ public class LaunchConfiguration {
 	}
 	public String [] getEnvironmentArray() {
 		HashMap<String, String> env = new HashMap<String, String>(System.getenv());
-		String [] userEnv = getEnvironment().split(",");
-		for (int i = 0; i < userEnv.length; i++) {
-			String [] var = userEnv[i].split("=", 2);
-			if (var.length == 2)
-				env.put(var[0], var[1]);
+		if (environment != null) {
+			String [] userEnv = environment.split(",");
+			for (int i = 0; i < userEnv.length; i++) {
+				String [] var = userEnv[i].split("=", 2);
+				if (var.length == 2)
+					env.put(var[0], var[1]);
+			}
 		}
 		String [] envArray = new String[env.size()];
 		Iterator<Entry<String, String>> varIter = env.entrySet().iterator();
