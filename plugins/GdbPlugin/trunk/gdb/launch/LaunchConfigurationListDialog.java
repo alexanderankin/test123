@@ -54,6 +54,13 @@ public class LaunchConfigurationListDialog extends JDialog {
 	
 	public LaunchConfigurationListDialog(Frame frame) {
 		super(frame, jEdit.getProperty(LaunchConfigListDialogProp), true);
+		addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+            	saveGeometry();	
+            }
+        });
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(5, 5, 5, 5);
@@ -99,8 +106,11 @@ public class LaunchConfigurationListDialog extends JDialog {
 	private void close(boolean accepted) {
 		if (accepted)
 			optionPane.save();
-		GUIUtilities.saveGeometry(this, geometryProp);
+		saveGeometry();
 		setVisible(false);
+	}
+	private void saveGeometry() {
+		GUIUtilities.saveGeometry(this, geometryProp);
 	}
 	
 }
