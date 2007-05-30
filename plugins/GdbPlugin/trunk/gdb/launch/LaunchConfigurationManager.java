@@ -34,6 +34,7 @@ public class LaunchConfigurationManager {
 	static final String DIRECTORIES = PREFIX + "directories";
 	static final String ENVIRONMENTS = PREFIX + "environments";
 	static final String DEFAULT_CONFIGURATION = "default_configuration";
+	static private final String XML_SUFFIX = ".xml";
 
 	private LaunchConfigurationManager() {
 		load();
@@ -113,10 +114,19 @@ public class LaunchConfigurationManager {
 	
 	public void save()
 	{
+		// Remove the deleted configurations
+		File [] files = getConfigFiles();
+		Vector<String> names = getNames();
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+			String name = getConfigName(file.getName());
+			if (! names.contains(name))
+				file.delete();
+		}
 		String configDir = getConfigDirectory();
 		for (int i = 0; i < configurations.size(); i++) {
 			LaunchConfiguration config = configurations.get(i);
-			String filePath = configDir + "/" + config.getName();
+			String filePath = configDir + "/" + config.getName() + XML_SUFFIX;
 			File configFile = new File(filePath);
 			PrintWriter w;
 			try {
@@ -146,22 +156,13 @@ public class LaunchConfigurationManager {
 		return sb.toString() + "<" + name + ">" + value + "</" + name + ">";
 	}
 	public void load() {
-		File configDir = new File(getConfigDirectory());
-		if (! configDir.canRead())
-			return;
-		File[] files = configDir.listFiles(new FilenameFilter() {
-			static private final String XML_SUFFIX = ".xml";
-			public boolean accept(File dir, String name) {
-				return (name.endsWith(XML_SUFFIX));
-			}
-		});
+		File[] files = getConfigFiles();
 		defaultIndex = jEdit.getIntegerProperty(DEFAULT_CONFIGURATION, 0);
 		configurations.clear();
 		int configs = files.length;
 		for (int i = 0; i < configs; i++) {
 			File file = files[i];
-			String name = file.getName();
-			name = name.substring(0, name.length() - 4);
+			String name = getConfigName(file.getName());
 			LaunchConfigurationHandler handler =
 				new LaunchConfigurationHandler(name);
 			try
@@ -176,6 +177,20 @@ public class LaunchConfigurationManager {
 		}
 		// The following is required for the side effects (change menu label)
 		setDefaultIndex(defaultIndex);
+	}
+	private String getConfigName(String fileName) {
+		return fileName.substring(0, fileName.length() - 4);
+	}
+	private File[] getConfigFiles() {
+		File configDir = new File(getConfigDirectory());
+		if (! configDir.canRead())
+			return new File[0];
+		File[] files = configDir.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return (name.endsWith(XML_SUFFIX));
+			}
+		});
+		return files;
 	}
 	static public LaunchConfigurationManager getInstance() {
 		if (instance == null)

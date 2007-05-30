@@ -64,6 +64,11 @@
 			gdb.core.Debugger.getInstance().removeBreakpoint(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-edit-launch-configs" NO_REPEAT="TRUE">
+		<CODE>
+			gdb.core.Debugger.getInstance().editLaunchConfigs(view);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 
