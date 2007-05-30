@@ -97,6 +97,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.gridx = gbc.gridy = 0;
 		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
 		add(new JLabel(jEdit.getProperty(CONFIGURATIONS_LABEL)), gbc);
 		configurationsModel = new DefaultListModel();
 		configurationsList = new JList(configurationsModel);
