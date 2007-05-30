@@ -80,6 +80,8 @@ public class LaunchConfigEditor extends JDialog {
 	public LaunchConfigEditor(JDialog parent, LaunchConfiguration config) {
 		super(parent, "Edit launch configuration", true);
 		setConfig(config);
+	}
+	private void loadGeometry() {
 		GUIUtilities.loadGeometry(this, GEOMETRY);
 	}
 	public LaunchConfigEditor(JFrame parent, LaunchConfiguration config) {
@@ -87,6 +89,13 @@ public class LaunchConfigEditor extends JDialog {
 		setConfig(config);
 	}
 	void setConfig(LaunchConfiguration config) {
+		addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+            	saveGeometry();	
+            }
+        });
 		this.config = config;
 		configurationTF = new JTextField(config.getName(), 40);
 		configurationTF.setInputVerifier(new InputVerifier() {
@@ -94,7 +103,7 @@ public class LaunchConfigEditor extends JDialog {
 			public boolean verify(JComponent arg0) {
 				JTextField tf = (JTextField) arg0;
 				String s = tf.getText();
-				valid = s.matches("^[\\w ]+$");
+				valid = s.matches("^[\\w \\.]+$");
 				return valid;
 			}
 		});
@@ -142,6 +151,7 @@ public class LaunchConfigEditor extends JDialog {
 		gc.weighty = 0;
 		getContentPane().add(buttons, gc);
 		pack();
+		loadGeometry();
 	}
 	
 	public boolean accepted() {
@@ -173,7 +183,10 @@ public class LaunchConfigEditor extends JDialog {
 					argumentsTF.getText(), directoryTF.getText(),
 					environmentTF.getText());
 		}
-		GUIUtilities.saveGeometry(this, GEOMETRY);
+		saveGeometry();
 		setVisible(false);
+	}
+	private void saveGeometry() {
+		GUIUtilities.saveGeometry(this, GEOMETRY);
 	}
 }

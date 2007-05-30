@@ -90,7 +90,7 @@ options.debugger.programs.code=new gdb.options.LaunchConfigOptionPane();
 options.debugger.programs.label=Programs
 options.debugger.configurations_label=Configurations:
 options.debugger.configuration_label=Name:
-options.debugger.configuration_tooltip=The name of this configuration (must contain only letters, digits and spaces).
+options.debugger.configuration_tooltip=The name of this configuration (must contain only letters, digits, spaces and dots).
 options.debugger.program_label=Program:
 options.debugger.program_tooltip=The path to the executable file to debug
 options.debugger.arguments_label=Arguments:
@@ -109,4 +109,4 @@ plugin.debugger.jedit.Plugin.docs=index.html
 # Messages
 messages.debugger.debugger_not_started=The debugger is not running yet; start a debug session first.
 messages.debugger.cannot_create_breakpoint=Could not set breakpoint or watchpoint:\n
-messages.debugger.invalid_launch_config_name=The configuration name can only contain letters, digits and spaces.
+messages.debugger.invalid_launch_config_name=The configuration name can only contain letters, digits, spaces and dots.
