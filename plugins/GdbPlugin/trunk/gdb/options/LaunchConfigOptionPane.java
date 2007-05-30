@@ -24,6 +24,7 @@ import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationManager;
 
 import java.awt.Component;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -92,6 +93,11 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 		configs = LaunchConfigurationManager.getInstance();
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.gridx = gbc.gridy = 0;
+		gbc.weighty = 0.0;
+		add(new JLabel(jEdit.getProperty(CONFIGURATIONS_LABEL)), gbc);
 		configurationsModel = new DefaultListModel();
 		configurationsList = new JList(configurationsModel);
 		configurationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -107,8 +113,10 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 				return label;
 			}
 		});
-		addComponent(jEdit.getProperty(CONFIGURATIONS_LABEL),
-				new JScrollPane(configurationsList));
+		gbc.gridy++;
+		gbc.weightx = gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		add(new JScrollPane(configurationsList), gbc);
 
 		JPanel buttons = new JPanel();
 		add = new JButton("New");
@@ -146,7 +154,9 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 			}
 		});
 		buttons.add(makeDefault);
-		addComponent(buttons);
+		gbc.gridy++;
+		gbc.weightx = gbc.weighty = 0.0;
+		add(buttons, gbc);
 		
 		// Finally, initialize the list of configurations
 		for (int i = 0; i < configs.size(); i++)

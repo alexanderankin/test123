@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
