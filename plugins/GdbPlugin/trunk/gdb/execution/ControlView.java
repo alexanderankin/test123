@@ -4,11 +4,13 @@ import gdb.core.Debugger;
 import gdb.core.GdbState;
 import gdb.core.GdbView;
 import gdb.launch.LaunchConfiguration;
+import gdb.launch.LaunchConfigurationListDialog;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.launch.LaunchConfigurationManager.ChangeListener;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -63,7 +66,14 @@ public class ControlView extends GdbView {
 		configPanel.add(config);
 		editLaunchConfigs = new JButton("Edit program list");
 		configPanel.add(editLaunchConfigs);
-		editLaunchConfigs.addActionListener(new ActionInvoker(Debugger.EDIT_LAUNCH_CONFIGS_ACTION));
+		editLaunchConfigs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				LaunchConfigurationListDialog dlg =
+					new LaunchConfigurationListDialog(
+							(Frame)SwingUtilities.getWindowAncestor(ControlView.this));
+				dlg.setVisible(true);
+			}
+		});
 		add(configPanel);
 		JPanel execPanel = new JPanel();
 		execPanel.setLayout(new FlowLayout());
