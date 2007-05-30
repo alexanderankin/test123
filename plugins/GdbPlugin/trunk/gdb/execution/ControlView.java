@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -54,17 +53,11 @@ public class ControlView extends GdbView {
 		JPanel configPanel = new JPanel();
 		configPanel.add(new JLabel("Program:"));
 		mgr = LaunchConfigurationManager.getInstance();
-		Vector<LaunchConfiguration> configs = mgr.get();
-		config = new JComboBox(configs);
+		config = new JComboBox();
+		updateLaunchConfigs();
 		mgr.addChangeListener(new ChangeListener() {
 			public void changed() {
-				String selected =
-					((LaunchConfiguration) config.getSelectedItem()).getName();
-				config.setModel(new DefaultComboBoxModel(mgr.get()));
-				int index = mgr.getNames().indexOf(selected);
-				if (index == -1)
-					index = 0;
-				config.setSelectedIndex(index);
+				updateLaunchConfigs();
 			}
 		});
 		configPanel.add(config);
@@ -110,6 +103,15 @@ public class ControlView extends GdbView {
 		initialize();
 	}
 
+	void updateLaunchConfigs() {
+		LaunchConfiguration selectedConfig =
+			(LaunchConfiguration) config.getSelectedItem();
+		if (selectedConfig == null)
+			selectedConfig = mgr.getDefault();
+		config.setModel(new DefaultComboBoxModel(mgr.get()));
+		config.setSelectedItem(selectedConfig);
+	}
+	
 	void initialize() {
 		switch (GdbState.getState()) {
 		case RUNNING:
