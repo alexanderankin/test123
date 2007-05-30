@@ -183,8 +183,9 @@ public class LaunchConfigurationManager {
 				e.printStackTrace();
 			}
 		}
-		jEdit.setProperty(DEFAULT_CONFIGURATION,
-				configurations.get(defaultIndex).getName());
+		LaunchConfiguration defaultConfig = getDefault();
+		if (defaultConfig != null)
+			jEdit.setProperty(DEFAULT_CONFIGURATION, defaultConfig.getName());
 	}
 
 	private String createElement(int column, String name, String value) {
