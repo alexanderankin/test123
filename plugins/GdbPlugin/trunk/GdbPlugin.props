@@ -52,10 +52,15 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-breakpoints \
   debugger-show-locals \
   debugger-watches \
+  console.shell.GDB/MI-show \
+  console.shell.Program-show \
   - \
   debugger-edit-launch-configs
 
 # dockables
+console.shell.GDB/MI-show.label=GDB/MI Console
+console.shell.Program-show.label=Program Output
+
 debugger-show-locals.title=Local Variables
 debugger-show-locals.label=Local Variables
 debugger-show-variables.title=Variables
