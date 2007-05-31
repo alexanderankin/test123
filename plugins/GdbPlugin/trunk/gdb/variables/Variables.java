@@ -32,6 +32,12 @@ public class Variables extends JPanel {
 	Watches watchesPanel = null;
 	
 	public Variables() {
+		setupUI(null);
+	}
+	public Variables(Watches watches) {
+		setupUI(watches);
+	}
+	private void setupUI(Watches watches2) {
 		setLayout(new GridLayout(0, 1));
 		JPanel locals = new JPanel();
 		locals.setLayout(new BoxLayout(locals, 1));
@@ -44,7 +50,7 @@ public class Variables extends JPanel {
 		border = new TitledBorder(
 				jEdit.getProperty("debugger-watches.title"));
 		watches.setBorder(border);
-		watchesPanel = new Watches();
+		watchesPanel = (watches2 == null) ? new Watches() : watches2;
 		watches.add(watchesPanel);
 		JSplitPane pane = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, locals, watches);

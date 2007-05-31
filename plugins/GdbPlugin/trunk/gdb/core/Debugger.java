@@ -84,6 +84,7 @@ public class Debugger implements DebuggerTool {
 	public static final String QUIT_ACTION = "debugger-quit";
 	public static final String TOGGLE_BREAKPOINT_ACTION = "debugger-toggle-breakpoint";
 	public static final String EDIT_LAUNCH_CONFIGS_ACTION = "debugger-edit-launch-configs";
+	public static final String SHOW_WATCHES = "debugger-watches";
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -248,14 +249,9 @@ public class Debugger implements DebuggerTool {
 	// Add the selected text to the watches view
 	public void watchSelection(View view) {
 		String selected = view.getTextArea().getSelectedText();
-		Watches panel;
-		if (variablesPanel != null)
-			panel = variablesPanel.getWatches();
-		else if (watchesPanel != null)
-			panel = watchesPanel;
-		else
-			panel = new Watches();
-		panel.addWatch(selected);
+		if (watchesPanel == null)
+			jEdit.getAction(SHOW_WATCHES).invoke(view);
+		watchesPanel.addWatch(selected);
 	}
 	private void setBreakpoint(View view, Buffer buffer, int line) {
 		new Breakpoint(view, buffer, line);
@@ -360,13 +356,20 @@ public class Debugger implements DebuggerTool {
 		return localsPanel;
 	}
 	public JPanel showWatches(View view) {
+		variablesPanel = null;
 		if (watchesPanel == null)
 			watchesPanel = new Watches();
 		return watchesPanel;
 	}
 	public JPanel showVariables(View view) {
-		if (variablesPanel == null)
-			variablesPanel = new Variables();
+		if (variablesPanel == null) {
+			if (watchesPanel == null) {
+				variablesPanel = new Variables();
+				watchesPanel = variablesPanel.getWatches();
+			} else {
+				variablesPanel = new Variables(watchesPanel);
+			}
+		}
 		return variablesPanel;
 	}
 	public JPanel showStackTrace(View view) {
