@@ -69,6 +69,11 @@
 			gdb.core.Debugger.getInstance().editLaunchConfigs(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-watch-selection" NO_REPEAT="TRUE">
+		<CODE>
+			gdb.core.Debugger.getInstance().watchSelection(view);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 
