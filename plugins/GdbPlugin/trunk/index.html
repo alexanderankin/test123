@@ -1,92 +1,83 @@
 <html>
-<title>Gdb Plugin Documentation</title>
+<title>GdbPlugin Documentation</title>
 <body>
-<h1>Gdb plugin</h1>
+<h1>GdbPlugin</h1>
 
 <p>Written by Shlomy Reinstein, April-May 2007. (Still under development)</p>
 
 <h2>Feedback</h2>
 <p>
-Feel free to ask for help, report bugs, or request new features by email: 
+Feel free to ask for help, report bugs, request new features, or suggest
+improvements in the user interface by email: 
 <a href="mailto:sreinst1@gmail.com?subject=GdbPlugin%20feedback">sreinst1@gmail.com</a>
 </p>
 <p>
 You can also report bugs and request new features using the jEdit SourceForge tracker: <a href="http://sourceforge.net/tracker/?group_id=588">http://sourceforge.net/tracker/?group_id=588</a>
 </p>
-<br/>
-Your feedback will be very much appreciated.
+Your feedback will be highly appreciated.
 
 <h2>Introduction</h2>
-This plugin enables debugging programs using the gdb debugger directly from
-jEdit. The plugin provides the following functionality:
+This plugin enables debugging programs with GDB (the GNU debugger) directly from
+jEdit. The plugin provides the following features:
 <ul>
 <li>
-Setting/Removing/Toggling breakpoints directly in jEdit buffers.
+Set breakpoints directly in jEdit buffers (at the caret position).
 </li>
 <li>
-Controlling program execution (the usual continue/step/next/...) - either
-using actions from the GdbPlugin menu or using a very simple GUI panel.
+Control program execution (continue/step/next/...).
 </li>
 <li>
-Visualization of breakpoints and the current instruction using icons in the
-gutter area.
+Visual indication of breakpoints and the current instruction in the gutter area.
 </li>
 <li>
-Viewing/changing values of expressions and automatic variables (function
-arguments and variables defined inside the function).
+Display expressions/variables and modify values of variables.
 </li>
 <li>
-Breakpoint dockable which enables editing breakpoint properties (conditions/
-skip counts/enabled state) and adding watchpoints.
+Automatic display of local variables.
 </li>
 <li>
-Stack trace (normally called "backtrace" in gdb) dockable that enables you
-to view and quickly jump to the source code of selected stack frames.
+Manipulate breakpoints and watchpoints using a dedicated GUI.
 </li>
 <li>
-Defining "launch configurations" - i.e. the applications to debug, their
-command-line arguments etc.
+Stack trace display that provides easy navigation of stack frames; clicking a frame jumps directly to the source code of the frame in jEdit.
+</li>
+<li>
+GUI editing of launch configurations. A launch configuration specifies the settings for a debugging session: program, arguments, directory and environment.
 </li>
 <li>
 Two Console plugin shell services: "Program" for communication with the debugged program, and "GDB/MI" for controlling the GDB/MI process.
 </li>
 </ul>
 
-The plugin uses gdb/mi (for most functions) for the interface with gdb.
-The plugin is still under development; as such, it is incomplete and might be unstable.
+The plugin uses GDB/MI to interact with GDB. Entering GDB CLI commands (the common commands: next, step, cont, ...) in the GDB/MI shell is possible but highly discouraged, as it can easily put the plugin into an inconsistent state.
 
 <h2>Usage</h2>
-First thing's first: If you don't have 'gdb' in your PATH, you should define
-the path to gdb using: Plugins->Plugin Options->GdbPlugin->Gdb.
+<h3>Quick start</h3>
+If 'gdb' is not in your PATH, specify the path to it in the GdbPlugin options -&gt; General pane.
 <p>
-Next, you need to define how to launch your application under gdb. For this, you
-create a launch configuration using:
-<tt>Plugins-&gt;Plugin Options-&gt;GdbPlugin-&gt;Programs</tt>. 
-Click the 'New' button below the "Configurations" box and enter all the details.
-'Name' is a symbolic name you assign to the configuration, which simply shows
-in the "Configurations" list. In 'Environment' you can set a series of
-environment variables for the debug session in the form
-<tt>var1=value1,var2=value2,</tt>... </p>
+To start debugging, you first need to define a launch configuration using the GdbPlugin options -&gt; Programs pane. Click 'New' and fill in the debug settings in the dialog that pops up. The fields in the dialog have tooltips describing their meaning.
 <p>
-The 'Make default' button below the "Configurations" box marks the selected
-configuration with an asterisk, which means it is now the default configuration,
-and will be used to launch the next debug session. If the configuration you've
-just added is not marked with an asterisk, select it in the "Configurations" box
-and click 'Make default'.
+When you close the dialog you will see the new launch configuration in the list. Select it, and click 'Make default' to make it the default configuration to use for debug sessions. Clicking 'Make default' will mark the configuration with an asterisk.<br>
+You can now close the plugin options dialog. Now that you've set up a launch configuration, you can start debugging. But don't start yet!
 </p>
 <p>
-* Note: Some paragraphs will direct you to open dockables. To open a dockable,
-  use Utilities->Global Options->jEdit->Docking then select the appropriate
-  dockable from the list and change its docking from 'floating' to something
-  else and click Ok.
-</p>  
-<p>
-By now, you've set up the gdb path and the launch configuration for debugging.
-Now, you can start debugging.
+First, open the execution control dockable window by selecting 'GdbPlugin Panel' from the GdbPlugin menu. If you like, you can resize the window or dock it like any other jEdit dockable window. 
 </p>
 <p>
-You can do the following:
+Let's set a breakpoint. Put the caret on the source line where you want the breakpoint to be, and click 'Toggle breakpoint' in the control execution window. You will see an indication of the breakpoint in the gutter area. 
 </p>
+<p>
+Now open several other dockable windows so you can actually see what's going on in the program. From the GdbPlugin menu, select the following items: Variables, Stack trace, and Program output. Dock them in separate docking areas so you can see them all at the same time. 
+<p>
+Now click the 'Go' button in the execution control panel. This will start running the program in GDB. When the execution hits the breakpoint, you will see a pop-up message. When you dismiss the message, you will see an arrow icon on the line of the breakpoint (indicating the next instruction to execute), and the dockable windows that you opened will be updated with the stack trace and the local variables.
+</p>
+<p>
+Note how clicking on a frame in the stack trace takes you directly to the corresponding source location and updates the Variables window with the local variables of that frame.
+</p>
+<p>
+The 'Add' button on the bottom pane of the Variables window lets you add watches (variables or expressions whose values you want to see whenever GDB stops).
+</p>
+What you can do:
 <ol>
 <li>
 Mark breakpoints in jEdit buffers by putting the caret on the breakpoint line
