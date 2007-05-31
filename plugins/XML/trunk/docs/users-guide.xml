@@ -31,7 +31,7 @@
   </para>
 
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, an EcmaScript parser by Dale Anson, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, EcmaScript parser by Dale Anson, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
  </para>
 
  </legalnotice>
