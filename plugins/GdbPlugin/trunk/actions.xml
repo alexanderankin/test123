@@ -74,6 +74,11 @@
 			gdb.core.Debugger.getInstance().watchSelection(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-evaluate-selection" NO_REPEAT="TRUE">
+		<CODE>
+			gdb.core.Debugger.getInstance().evaluateSelection(view);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 
