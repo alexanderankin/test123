@@ -57,15 +57,7 @@ public class Watches extends GdbView implements ChangeListener {
 				String expr = JOptionPane.showInputDialog("Expression:");
 				if (expr == null)
 					return;
-				GdbVar v = new GdbVar(expr);
-				v.setChangeListener(new UpdateListener() {
-					public void updated(GdbVar v) {
-						model.reload(v);
-					}
-				});
-				vars.add(v);
-				root.add(v);
-				updateTree();
+				addWatch(expr);
 			}
 		});
 		tb.add(add);
@@ -139,6 +131,18 @@ public class Watches extends GdbView implements ChangeListener {
 
 	public void changed(GdbVar v) {
 		update();
+	}
+
+	public void addWatch(String expr) {
+		GdbVar v = new GdbVar(expr);
+		v.setChangeListener(new UpdateListener() {
+			public void updated(GdbVar v) {
+				model.reload(v);
+			}
+		});
+		vars.add(v);
+		root.add(v);
+		updateTree();
 	}
 }
 

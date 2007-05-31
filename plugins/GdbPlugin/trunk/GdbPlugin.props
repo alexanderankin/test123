@@ -29,6 +29,7 @@ debugger-toggle-breakpoint.label=Toggle breakpoint
 debugger-set-breakpoint.label=Set breakpoint
 debugger-remove-breakpoint.label=Remove breakpoint
 debugger-edit-launch-configs.label=Edit list of programs to debug
+debugger-watch-selection.label=Add selected text to watches
 
 # menu items
 plugin.debugger.jedit.Plugin.menu=debugger-go \
@@ -45,6 +46,8 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-toggle-breakpoint \
   debugger-set-breakpoint \
   debugger-remove-breakpoint \
+  - \
+  debugger-watch-selection \
   - \
   debugger-panel \
   debugger-show-variables \

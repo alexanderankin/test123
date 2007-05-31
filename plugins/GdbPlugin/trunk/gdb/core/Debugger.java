@@ -245,6 +245,18 @@ public class Debugger implements DebuggerTool {
 		int line = ta.getCaretLine() + 1;
 		setBreakpoint(view, buffer, line);
 	}
+	// Add the selected text to the watches view
+	public void watchSelection(View view) {
+		String selected = view.getTextArea().getSelectedText();
+		Watches panel;
+		if (variablesPanel != null)
+			panel = variablesPanel.getWatches();
+		else if (watchesPanel != null)
+			panel = watchesPanel;
+		else
+			panel = new Watches();
+		panel.addWatch(selected);
+	}
 	private void setBreakpoint(View view, Buffer buffer, int line) {
 		new Breakpoint(view, buffer, line);
 	}

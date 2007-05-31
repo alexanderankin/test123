@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class Variables extends JPanel {
+	Watches watchesPanel = null;
 	
 	public Variables() {
 		setLayout(new GridLayout(0, 1));
@@ -43,10 +44,13 @@ public class Variables extends JPanel {
 		border = new TitledBorder(
 				jEdit.getProperty("debugger-watches.title"));
 		watches.setBorder(border);
-		watches.add(new Watches());
+		watchesPanel = new Watches();
+		watches.add(watchesPanel);
 		JSplitPane pane = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, locals, watches);
 		add(pane);
 	}
-
+	public Watches getWatches() {
+		return watchesPanel;
+	}
 }
