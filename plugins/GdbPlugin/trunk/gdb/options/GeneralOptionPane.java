@@ -35,6 +35,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private JTextField gdbPathTF;
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
+	private JCheckBox variableTooltipCB;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
@@ -44,6 +45,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String ARRAY_RANGE_SPLIT_SIZE_PROP = PREFIX + "array_range_split_size";
 	static final String CHAR_ARRAY_AS_STRING_LABEL = PREFIX + "char_array_as_string_label";
 	static public final String CHAR_ARRAY_AS_STRING_PROP = PREFIX + "char_array_as_string";
+	static final String VARIABLE_TOOLTIP_LABEL = PREFIX + "variable_tooltip_label";
+	static public final String VARIABLE_TOOLTIP_PROP = PREFIX + "variable_tooltip";
 	
 	public GeneralOptionPane() {
 		super("debugger.gdb");
@@ -75,6 +78,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(charArrayAsStringCB);
 		charArrayAsStringCB.setSelected(
 				jEdit.getBooleanProperty(CHAR_ARRAY_AS_STRING_PROP)); 
+		variableTooltipCB = new JCheckBox(
+				jEdit.getProperty(VARIABLE_TOOLTIP_LABEL));
+		addComponent(variableTooltipCB);
+		variableTooltipCB.setSelected(
+				jEdit.getBooleanProperty(VARIABLE_TOOLTIP_PROP)); 
 	}
 
 	/***************************************************************************
@@ -87,6 +95,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
 		jEdit.setBooleanProperty(CHAR_ARRAY_AS_STRING_PROP,
 				charArrayAsStringCB.isSelected());
+		jEdit.setBooleanProperty(VARIABLE_TOOLTIP_PROP,
+				variableTooltipCB.isSelected());
 	}
 
 }

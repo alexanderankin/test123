@@ -23,6 +23,7 @@ import gdb.breakpoints.BreakpointList;
 import gdb.breakpoints.BreakpointView;
 import gdb.context.StackTrace;
 import gdb.core.GdbState.State;
+import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.execution.ControlView;
@@ -49,7 +50,9 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
 import debugger.itf.DebuggerTool;
 import debugger.itf.IData;
@@ -87,6 +90,8 @@ public class Debugger implements DebuggerTool {
 	public static final String TOGGLE_BREAKPOINT_ACTION = "debugger-toggle-breakpoint";
 	public static final String EDIT_LAUNCH_CONFIGS_ACTION = "debugger-edit-launch-configs";
 	public static final String SHOW_WATCHES = "debugger-watches";
+
+	private TextAreaExtension varTooltipExtension = null;
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -178,6 +183,7 @@ public class Debugger implements DebuggerTool {
 		frontEnd.programExited();
 	}
 	public void start() {
+		setGdbStateListener();
 		LaunchConfiguration currentConfig =
 			LaunchConfigurationManager.getInstance().getDefault();
 		if (currentConfig == null) {
@@ -199,6 +205,31 @@ public class Debugger implements DebuggerTool {
 				currentConfig.getDirectory(),
 				currentConfig.getEnvironmentArray());
 	}
+	private void setGdbStateListener() {
+		GdbState.addStateListener(new StateListener() {
+			public void stateChanged(State prev, State current) {
+				final State cur = current;
+				VFSManager.runInAWTThread(new Runnable() {
+					public void run() {
+						if (cur == GdbState.State.PAUSED) {
+							if (! jEdit.getBooleanProperty(GeneralOptionPane.VARIABLE_TOOLTIP_PROP))
+								return;
+							JEditTextArea ta = jEdit.getActiveView().getTextArea();
+							varTooltipExtension = new VariableTooltipTextAreaExtension(ta);
+							ta.getPainter().addExtension(varTooltipExtension);
+						} else {
+							if (varTooltipExtension != null) {
+								JEditTextArea ta = jEdit.getActiveView().getTextArea();
+								ta.getPainter().removeExtension(varTooltipExtension);
+								varTooltipExtension = null;
+							}
+						}
+					}
+				});
+			}
+		});
+	}
+
 	public void start(String prog, String args, String cwd, String [] env) {
 		String command = jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP) +
 			" --interpreter=mi " + prog;
@@ -286,7 +317,6 @@ public class Debugger implements DebuggerTool {
 	private void stopped(String file, int line) {
 		GdbState.setState(State.PAUSED);
 		frontEnd.setCurrentLocation(file, line);
-		
 	}
 
 	public void breakpointHit(int bkptno, String file, int line) {
@@ -306,6 +336,55 @@ public class Debugger implements DebuggerTool {
 		this.frontEnd = frontEnd;
 	}
 
+	private final class VariableTooltipTextAreaExtension extends TextAreaExtension {
+		JEditTextArea textArea;
+		public VariableTooltipTextAreaExtension(JEditTextArea ta) {
+			textArea = ta;
+		}
+		@Override
+		public String getToolTipText(int x, int y) {
+			int offset = textArea.xyToOffset(x, y);
+			int line = textArea.getLineOfOffset(offset);
+			int index = offset - textArea.getLineStartOffset(line);
+			String text = textArea.getLineText(line);
+			String s1 = text.substring(0, index);
+			String s2 = text.substring(index);
+			StringBuffer sel = new StringBuffer();
+			for (int i = index - 1; i >= 0; i--) {
+				char c = s1.charAt(i);
+				if (! Character.isJavaIdentifierPart(c))
+					break;
+				sel.insert(0, c);
+			}
+			for (int i = 0; i < s2.length(); i++) {
+				char c = s2.charAt(i);
+				if (! Character.isJavaIdentifierPart(c))
+					break;
+				sel.append(c);
+			}
+			String selected = sel.toString();
+			if (selected.length() == 0)
+				return null;
+			GdbVar v = new GdbVar(selected);
+			v.setChangeListener(new UpdateListener() {
+				public void updated(GdbVar v) {
+					synchronized(v) {
+						v.notify();
+					}
+				}
+			});
+			try {
+				synchronized(v) {
+					v.wait();
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			String s = v.toString();
+			v.done();
+			return s;
+		}
+	}
 	private class BreakpointHitHandler implements ResultHandler {
 		int bkptno;
 		BreakpointHitHandler(int bkptno) {
