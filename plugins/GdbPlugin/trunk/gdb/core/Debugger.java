@@ -32,9 +32,11 @@ import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
 import gdb.output.MIShell;
 import gdb.output.ProgramShell;
+import gdb.variables.GdbVar;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
 import gdb.variables.Watches;
+import gdb.variables.GdbVar.UpdateListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -252,6 +254,17 @@ public class Debugger implements DebuggerTool {
 		if (watchesPanel == null)
 			jEdit.getAction(SHOW_WATCHES).invoke(view);
 		watchesPanel.addWatch(selected);
+	}
+	// Show a tooltip with the value of the selected text
+	public void evaluateSelection(final View view) {
+		String selected = view.getTextArea().getSelectedText();
+		GdbVar v = new GdbVar(selected);
+		v.setChangeListener(new UpdateListener() {
+			public void updated(GdbVar v) {
+				JOptionPane.showMessageDialog(view, v.toString());
+			}
+		});
+		v.done();
 	}
 	private void setBreakpoint(View view, Buffer buffer, int line) {
 		new Breakpoint(view, buffer, line);
