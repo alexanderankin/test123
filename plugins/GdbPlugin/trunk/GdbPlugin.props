@@ -122,3 +122,5 @@ plugin.debugger.jedit.Plugin.docs=index.html
 messages.debugger.debugger_not_started=The debugger is not running yet; start a debug session first.
 messages.debugger.cannot_create_breakpoint=Could not set breakpoint or watchpoint:\n
 messages.debugger.invalid_launch_config_name=The configuration name can only contain letters, digits, spaces and dots.
+messages.debugger.could_not_get_value=Could not get the value of: {0}.
+
