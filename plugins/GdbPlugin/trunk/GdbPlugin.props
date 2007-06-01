@@ -91,6 +91,11 @@ options.debugger.char_array_as_string_label=Display fixed-size char arrays as st
 options.debugger.char_array_as_string=true
 options.debugger.expression_tooltip_label=Display expression value tooltips
 options.debugger.expression_tooltip=true
+options.debugger.expression_regexp_label=Expression discovery regexp for tooltips:
+options.debugger.expression_regexp_tooltip=A regular expression defining the \
+	text at the mouse location whose tooltip should be displayed. \
+	Do not change unless you know what you're doing!
+options.debugger.expression_regexp=\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*
 options.debugger.single_vars_view_label=Use a single view for local variables and watches
 options.debugger.single_vars_view=false
 options.debugger.programs.code=new gdb.options.LaunchConfigOptionPane();

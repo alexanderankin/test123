@@ -39,7 +39,6 @@ import gdb.variables.Variables;
 import gdb.variables.Watches;
 import gdb.variables.GdbVar.UpdateListener;
 
-import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
@@ -53,6 +52,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
@@ -211,19 +211,23 @@ public class Debugger implements DebuggerTool {
 		GdbState.addStateListener(new StateListener() {
 			public void stateChanged(State prev, State current) {
 				final State cur = current;
-				if (cur == GdbState.State.PAUSED) {
-					if (! jEdit.getBooleanProperty(GeneralOptionPane.EXPRESSION_TOOLTIP_PROP))
-						return;
-					JEditTextArea ta = jEdit.getActiveView().getTextArea();
-					varTooltipExtension = new VariableTooltipTextAreaExtension(ta);
-					ta.getPainter().addExtension(varTooltipExtension);
-				} else {
-					if (varTooltipExtension != null) {
-						JEditTextArea ta = jEdit.getActiveView().getTextArea();
-						ta.getPainter().removeExtension(varTooltipExtension);
-						varTooltipExtension = null;
+				VFSManager.runInAWTThread(new Runnable() {
+					public void run() {
+						if (cur == GdbState.State.PAUSED) {
+							if (! jEdit.getBooleanProperty(GeneralOptionPane.EXPRESSION_TOOLTIP_PROP))
+								return;
+							JEditTextArea ta = jEdit.getActiveView().getTextArea();
+							varTooltipExtension = new VariableTooltipTextAreaExtension(ta);
+							ta.getPainter().addExtension(varTooltipExtension);
+						} else {
+							if (varTooltipExtension != null) {
+								JEditTextArea ta = jEdit.getActiveView().getTextArea();
+								ta.getPainter().removeExtension(varTooltipExtension);
+								varTooltipExtension = null;
+							}
+						}
 					}
-				}
+				});
 			}
 		});
 	}
@@ -334,7 +338,8 @@ public class Debugger implements DebuggerTool {
 	}
 
 	private final class VariableTooltipTextAreaExtension extends TextAreaExtension {
-		private final Pattern varPat = Pattern.compile("\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*");
+		private final Pattern expressionPattern = Pattern.compile(
+				jEdit.getProperty(GeneralOptionPane.EXPRESSION_REGEXP_PROP));
 		JEditTextArea textArea;
 		public VariableTooltipTextAreaExtension(JEditTextArea ta) {
 			textArea = ta;
@@ -345,7 +350,7 @@ public class Debugger implements DebuggerTool {
 			int line = textArea.getLineOfOffset(offset);
 			int index = offset - textArea.getLineStartOffset(line);
 			String text = textArea.getLineText(line);
-			Matcher m = varPat.matcher(text);
+			Matcher m = expressionPattern.matcher(text);
 			int end = -1;
 			String selected = "";
 			while (end <= index) {
@@ -353,7 +358,6 @@ public class Debugger implements DebuggerTool {
 					return null;
 				end = m.end();
 				selected = m.group();
-				System.err.println(selected);
 			}
 			if (selected.length() == 0)
 				return null;
@@ -375,11 +379,6 @@ public class Debugger implements DebuggerTool {
 			String s = v.toString();
 			v.done();
 			return s;
-		}
-		@Override
-		public void paintValidLine(Graphics2D arg0, int arg1, int arg2,
-				int arg3, int arg4, int arg5) {
-			// empty on purpose
 		}
 	}
 	private class BreakpointHitHandler implements ResultHandler {

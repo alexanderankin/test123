@@ -36,6 +36,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
 	private JCheckBox expressionTooltipCB;
+	private JTextField expressionRegExpTF;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
@@ -47,6 +48,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String CHAR_ARRAY_AS_STRING_PROP = PREFIX + "char_array_as_string";
 	static final String EXPRESSION_TOOLTIP_LABEL = PREFIX + "expression_tooltip_label";
 	static public final String EXPRESSION_TOOLTIP_PROP = PREFIX + "expression_tooltip";
+	static final String EXPRESSION_REGEXP_LABEL = PREFIX + "expression_regexp_label";
+	static final String EXPRESSION_REGEXP_TOOLTIP = PREFIX + "expression_regexp_tooltip";
+	static public final String EXPRESSION_REGEXP_PROP = PREFIX + "expression_regexp";
 	
 	public GeneralOptionPane() {
 		super("debugger.gdb");
@@ -83,6 +87,10 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(expressionTooltipCB);
 		expressionTooltipCB.setSelected(
 				jEdit.getBooleanProperty(EXPRESSION_TOOLTIP_PROP)); 
+		expressionRegExpTF = new JTextField(40);
+		expressionRegExpTF.setToolTipText(jEdit.getProperty(EXPRESSION_REGEXP_TOOLTIP));
+		addComponent(jEdit.getProperty(EXPRESSION_REGEXP_LABEL), expressionRegExpTF);
+		expressionRegExpTF.setText(jEdit.getProperty(EXPRESSION_REGEXP_PROP));
 	}
 
 	/***************************************************************************
@@ -97,6 +105,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				charArrayAsStringCB.isSelected());
 		jEdit.setBooleanProperty(EXPRESSION_TOOLTIP_PROP,
 				expressionTooltipCB.isSelected());
+		jEdit.setProperty(EXPRESSION_REGEXP_PROP, expressionRegExpTF.getText());
 	}
 
 }
