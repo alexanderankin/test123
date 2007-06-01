@@ -343,8 +343,6 @@ public class Debugger implements DebuggerTool {
 
 	private final class VariableTooltipTextAreaExtension extends TextAreaExtension {
 		private static final long VAR_VALUE_TIMEOUT = 500;
-		private final Pattern expressionPattern = Pattern.compile(
-				jEdit.getProperty(GeneralOptionPane.EXPRESSION_REGEXP_PROP));
 		JEditTextArea textArea;
 		private boolean gotValue;
 		public VariableTooltipTextAreaExtension(JEditTextArea ta) {
@@ -356,16 +354,20 @@ public class Debugger implements DebuggerTool {
 			int line = textArea.getLineOfOffset(offset);
 			int index = offset - textArea.getLineStartOffset(line);
 			String text = textArea.getLineText(line);
+			Pattern expressionPattern = Pattern.compile(
+					jEdit.getProperty(GeneralOptionPane.EXPRESSION_REGEXP_PROP));
 			Matcher m = expressionPattern.matcher(text);
 			int end = -1;
+			int start = -1;
 			String selected = "";
 			while (end <= index) {
 				if (! m.find())
 					return null;
 				end = m.end();
+				start = m.start();
 				selected = m.group();
 			}
-			if (selected.length() == 0)
+			if (start > index || selected.length() == 0)
 				return null;
 			GdbVar v = new GdbVar(selected);
 			gotValue = false;

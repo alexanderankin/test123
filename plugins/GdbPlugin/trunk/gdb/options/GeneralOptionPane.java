@@ -18,9 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package gdb.options;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.InputVerifier;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -51,6 +56,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static final String EXPRESSION_REGEXP_LABEL = PREFIX + "expression_regexp_label";
 	static final String EXPRESSION_REGEXP_TOOLTIP = PREFIX + "expression_regexp_tooltip";
 	static public final String EXPRESSION_REGEXP_PROP = PREFIX + "expression_regexp";
+	static public final String DEFAULT_EXPRESSION_REGEXP_PROP = PREFIX + "default_expression_regexp";
 	
 	public GeneralOptionPane() {
 		super("debugger.gdb");
@@ -86,11 +92,21 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				jEdit.getProperty(EXPRESSION_TOOLTIP_LABEL));
 		addComponent(expressionTooltipCB);
 		expressionTooltipCB.setSelected(
-				jEdit.getBooleanProperty(EXPRESSION_TOOLTIP_PROP)); 
+				jEdit.getBooleanProperty(EXPRESSION_TOOLTIP_PROP));
+		JPanel regexpPane = new JPanel();
 		expressionRegExpTF = new JTextField(40);
+		regexpPane.add(expressionRegExpTF);
 		expressionRegExpTF.setToolTipText(jEdit.getProperty(EXPRESSION_REGEXP_TOOLTIP));
-		addComponent(jEdit.getProperty(EXPRESSION_REGEXP_LABEL), expressionRegExpTF);
 		expressionRegExpTF.setText(jEdit.getProperty(EXPRESSION_REGEXP_PROP));
+		JButton resetRegexp = new JButton("Reset to default");
+		regexpPane.add(resetRegexp);
+		resetRegexp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				expressionRegExpTF.setText(
+						jEdit.getProperty(DEFAULT_EXPRESSION_REGEXP_PROP));
+			}
+		});
+		addComponent(jEdit.getProperty(EXPRESSION_REGEXP_LABEL), regexpPane);
 	}
 
 	/***************************************************************************

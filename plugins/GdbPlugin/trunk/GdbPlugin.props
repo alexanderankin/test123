@@ -95,6 +95,7 @@ options.debugger.expression_regexp_label=Expression discovery regexp for tooltip
 options.debugger.expression_regexp_tooltip=A regular expression defining the \
 	text at the mouse location whose tooltip should be displayed. \
 	Do not change unless you know what you're doing!
+options.debugger.default_expression_regexp=\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*
 options.debugger.expression_regexp=\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*
 options.debugger.single_vars_view_label=Use a single view for local variables and watches
 options.debugger.single_vars_view=false
