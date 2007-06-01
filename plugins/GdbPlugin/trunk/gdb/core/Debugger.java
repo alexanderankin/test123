@@ -59,6 +59,7 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import debugger.itf.DebuggerTool;
 import debugger.itf.IData;
 import debugger.itf.JEditFrontEnd;
+import debugger.jedit.Plugin;
 
 public class Debugger implements DebuggerTool {
 
@@ -92,6 +93,9 @@ public class Debugger implements DebuggerTool {
 	public static final String TOGGLE_BREAKPOINT_ACTION = "debugger-toggle-breakpoint";
 	public static final String EDIT_LAUNCH_CONFIGS_ACTION = "debugger-edit-launch-configs";
 	public static final String SHOW_WATCHES = "debugger-watches";
+
+	public static final String COULD_NOT_GET_VALUE =
+		Plugin.MESSAGE_PREFIX + "could_not_get_value";
 
 	private TextAreaExtension varTooltipExtension = null;
 	
@@ -338,9 +342,11 @@ public class Debugger implements DebuggerTool {
 	}
 
 	private final class VariableTooltipTextAreaExtension extends TextAreaExtension {
+		private static final long VAR_VALUE_TIMEOUT = 500;
 		private final Pattern expressionPattern = Pattern.compile(
 				jEdit.getProperty(GeneralOptionPane.EXPRESSION_REGEXP_PROP));
 		JEditTextArea textArea;
+		private boolean gotValue;
 		public VariableTooltipTextAreaExtension(JEditTextArea ta) {
 			textArea = ta;
 		}
@@ -362,21 +368,24 @@ public class Debugger implements DebuggerTool {
 			if (selected.length() == 0)
 				return null;
 			GdbVar v = new GdbVar(selected);
+			gotValue = false;
 			v.setChangeListener(new UpdateListener() {
 				public void updated(GdbVar v) {
 					synchronized(v) {
+						gotValue = true;
 						v.notify();
 					}
 				}
 			});
 			try {
 				synchronized(v) {
-					v.wait();
+					v.wait(VAR_VALUE_TIMEOUT);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			String s = v.toString();
+			String s = gotValue ? v.toString() :
+				jEdit.getProperty(COULD_NOT_GET_VALUE, new String []{selected});
 			v.done();
 			return s;
 		}
@@ -470,11 +479,13 @@ public class Debugger implements DebuggerTool {
 	}
 	public void gdbRecord(String line)
 	{
+		System.err.println(line);
 		getMIShell().append(line);
 	}
 	public void commandRecord(String line)
 	{
 		gdbInternalMessage = null;
+		System.err.println(line);
 		getMIShell().append(line);
 	}
 	private ProgramShell getProgramShell() {
