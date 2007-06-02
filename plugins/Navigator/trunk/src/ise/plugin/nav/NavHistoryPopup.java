@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.util.Log;
 //}}}
 
-class NavHistoryPopup extends JWindow 
+class NavHistoryPopup extends JWindow
 {
 	//{{{ private declarations
 	private JList list;
@@ -68,7 +68,7 @@ class NavHistoryPopup extends JWindow
 		// place components
 		/*
 		 * stupid scrollbar policy is an attempt to work around
-		 * bugs people have been seeing with IBM's JDK -- 7 Sep 2000 
+		 * bugs people have been seeing with IBM's JDK -- 7 Sep 2000
 		 * Comment from Slava
 		 */
 		JScrollPane scroller = new JScrollPane(list,
@@ -81,7 +81,7 @@ class NavHistoryPopup extends JWindow
 
 		pack();
 		setLocation();
-		show();
+		setVisible();
 
 		KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
@@ -108,8 +108,8 @@ class NavHistoryPopup extends JWindow
 		if(location.x + d.width > screenSize.width)
 		{
 			if(d.width >= screenSize.width)
-				/* In this intance we should actually resize the number of columns in 
-				 * the tag index filename, but for now just position it so that you 
+				/* In this intance we should actually resize the number of columns in
+				 * the tag index filename, but for now just position it so that you
 				 * can at least read the left side of the dialog
 				 */
 				location.x = rect.x;
@@ -128,7 +128,7 @@ class NavHistoryPopup extends JWindow
 	} //}}}
 
 	//{{{ dispose() method
-	public void dispose()	
+	public void dispose()
 	{
 		this.view.setKeyEventInterceptor(null);
 		super.dispose();
@@ -143,7 +143,7 @@ class NavHistoryPopup extends JWindow
 	} //}}}
 
 	//{{{ KeyHandler class
-	class KeyHandler extends KeyAdapter	
+	class KeyHandler extends KeyAdapter
 	{
 		//{{{ keyTyped() method
 		public void keyTyped(KeyEvent evt)
@@ -151,7 +151,7 @@ class NavHistoryPopup extends JWindow
 			evt = KeyEventWorkaround.processKeyEvent(evt);
 			if (evt == null)
 				return;
-			
+
 			switch (evt.getKeyChar())
 			{
 				case '1':
@@ -165,14 +165,14 @@ class NavHistoryPopup extends JWindow
 				case '9':
 					if (numberKeyProcessed) // Since many components have this handler
 						return;
-					
+
 					/* There may actually be more than 9 items in the list, but since
 					 * the user would have to scroll to see them either with the mouse
 					 * or with the arrow keys, then they can select the item they want
 					 * with those means.
 					 */
 					int selected = Character.getNumericValue(evt.getKeyChar()) - 1;
-					if (selected >= 0 && 
+					if (selected >= 0 &&
 						selected < list.getModel().getSize())
 					{
 						list.setSelectedIndex(selected);
@@ -181,18 +181,18 @@ class NavHistoryPopup extends JWindow
 					}
 					evt.consume();
 			}
-			
+
 			evt = null;
 		} //}}}
 
 		//{{{ keyPressed() method
-		public void keyPressed(KeyEvent evt) 
+		public void keyPressed(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
 			if (evt == null)
 				return;
 			//{{{ evt.getKeyCode() switch
-			switch(evt.getKeyCode()) 
+			switch(evt.getKeyCode())
 			{
 				case KeyEvent.VK_TAB:
 				case KeyEvent.VK_ENTER:
@@ -225,10 +225,10 @@ class NavHistoryPopup extends JWindow
 						return; // Let JList handle the event
 					else
 						selected = selected + 1;
-					
+
 					list.setSelectedIndex(selected);
 					list.ensureIndexIsVisible(selected);
-					
+
 					evt.consume();
 					break;
 				case KeyEvent.VK_SPACE:
@@ -258,9 +258,9 @@ class NavHistoryPopup extends JWindow
 	} //}}}
 
 	//{{{ MouseHandler
-	class MouseHandler extends MouseAdapter	
+	class MouseHandler extends MouseAdapter
 	{
-		public void mouseClicked(MouseEvent evt) 
+		public void mouseClicked(MouseEvent evt)
 		{
 			selected();
 		}
