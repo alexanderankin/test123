@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package gdb.core;
 
 import gdb.core.GdbState.StateListener;
+import gdb.jni.GdbProcess;
+import gdb.jni.GdbProcess.Reader;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -37,8 +37,7 @@ public class Parser extends Thread {
 
 	static final int InputStreamDelay = 1; 
 	Debugger debugger;
-	private BufferedReader stdInput;
-	private BufferedReader stdError;
+	GdbProcess process;
 	private Vector<ResultHandler> resultHandlers = new Vector<ResultHandler>();
 	private Vector<ResultHandler> outOfBandHandlers = new Vector<ResultHandler>();
 	private Vector<GdbHandler> gdbHandlers = new Vector<GdbHandler>();
@@ -186,12 +185,9 @@ public class Parser extends Thread {
 		}
 	}
 	
-	public Parser(Debugger debugger, Process gdbProcess) {
+	public Parser(Debugger debugger, GdbProcess process) {
 		this.debugger = debugger;
-        stdInput = new BufferedReader(
-        		new InputStreamReader(gdbProcess.getInputStream()));
-        stdError = new BufferedReader(
-        		new InputStreamReader(gdbProcess.getErrorStream()));
+		this.process = process;
 	}
 	
 	public void addResultHandler(ResultHandler rh)
@@ -289,10 +285,11 @@ public class Parser extends Thread {
 		errThread = new Thread() {
 			public void run() {
 				String line;
+				Reader gdbError = process.getGdbErrorReader();
 				while (! stopping) {
 					try {
-						while (stdError.ready()) {
-							if ((line=stdError.readLine()) != null)
+						while (gdbError.ready()) {
+							if ((line=gdbError.readLine()) != null)
 								debugger.programError(line + "\n");
 						}
 					} catch (IOException e) {
@@ -307,9 +304,10 @@ public class Parser extends Thread {
 		errThread.start();
 		GdbState.addStateListener(new ParserStateListener());
 		while (! stopping) {
+			Reader gdbOutput = process.getGdbOutputReader();
 			try {
-				while (stdInput.ready()) {
-					if ((line=stdInput.readLine()) != null)
+				while (gdbOutput.ready()) {
+					if ((line=gdbOutput.readLine()) != null)
 						parse(line);
 				}
 			} catch (IOException e) {

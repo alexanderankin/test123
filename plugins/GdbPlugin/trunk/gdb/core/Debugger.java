@@ -27,6 +27,7 @@ import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.execution.ControlView;
+import gdb.jni.GdbProcess;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationListDialog;
 import gdb.launch.LaunchConfigurationManager;
@@ -39,7 +40,6 @@ import gdb.variables.Variables;
 import gdb.variables.Watches;
 import gdb.variables.GdbVar.UpdateListener;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -77,8 +77,6 @@ public class Debugger implements DebuggerTool {
 	private CommandManager commandManager = null;
 	// Parser
 	private Parser parser = null;
-	// Gdb process
-	private Process p = null;
 	// Gdb internal message
 	private String gdbInternalMessage = null;
 
@@ -98,6 +96,8 @@ public class Debugger implements DebuggerTool {
 		Plugin.MESSAGE_PREFIX + "could_not_get_value";
 
 	private TextAreaExtension varTooltipExtension = null;
+
+	private GdbProcess gdbProcess = null;
 	
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -178,8 +178,10 @@ public class Debugger implements DebuggerTool {
 		destroy();
 	}
 	public void destroy() {
-		if (p != null)
-			p.destroy();
+		if (gdbProcess != null) {
+			gdbProcess.destroy();
+			gdbProcess = null;
+		}
 	}
 	
 	private void sessionEnded() {
@@ -206,10 +208,7 @@ public class Debugger implements DebuggerTool {
 		getProgramShell().clear();
 		getMIShell().clear();
 		// Start the debugging process
-		debugger.start(currentConfig.getProgram(),
-				currentConfig.getArguments(),
-				currentConfig.getDirectory(),
-				currentConfig.getEnvironmentArray());
+		debugger.start(currentConfig);
 	}
 	private void setGdbStateListener() {
 		GdbState.addStateListener(new StateListener() {
@@ -236,34 +235,31 @@ public class Debugger implements DebuggerTool {
 		});
 	}
 
-	public void start(String prog, String args, String cwd, String [] env) {
-		String command = jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP) +
-			" --interpreter=mi " + prog;
-		if (cwd == null || cwd.length() == 0)
-			cwd = ".";
-		File dir = new File(cwd);
+	public void start(LaunchConfiguration config) {
 		try {
-			p = Runtime.getRuntime().exec(command, env, dir);
-			GdbState.setState(State.RUNNING);
-	        parser = new Parser(this, p);
-			parser.addOutOfBandHandler(new OutOfBandHandler());
-			parser.start();
-			commandManager = new CommandManager(p, parser);
-			commandManager.start();
-			// First set up the arguments
-			commandManager.add("-exec-arguments " + args);
-			// Now set up the breakpoints
-			Vector<Breakpoint> bps = BreakpointList.getInstance().getBreakpoints();
-			for (int i = 0; i < bps.size(); i++) {
-				Breakpoint b = bps.get(i);
-				b.initialize();
-				if (! b.isEnabled())
-					b.setEnabled(false);
-			}
-			commandManager.add("-exec-run");
+			gdbProcess = new GdbProcess(config);
 		} catch (IOException e) {
 			e.printStackTrace();
+			gdbProcess = null;
+			return;
 		}
+		GdbState.setState(State.RUNNING);
+		parser = new Parser(this, gdbProcess);
+		parser.addOutOfBandHandler(new OutOfBandHandler());
+		parser.start();
+		commandManager = new CommandManager(gdbProcess, parser);
+		commandManager.start();
+		// First set up the arguments
+		commandManager.add("-exec-arguments " + config.getArguments());
+		// Now set up the breakpoints
+		Vector<Breakpoint> bps = BreakpointList.getInstance().getBreakpoints();
+		for (int i = 0; i < bps.size(); i++) {
+			Breakpoint b = bps.get(i);
+			b.initialize();
+			if (! b.isEnabled())
+				b.setEnabled(false);
+		}
+		commandManager.add("-exec-run");
 	}
 
 	public void toggleBreakpoint(View view)
@@ -523,8 +519,5 @@ public class Debugger implements DebuggerTool {
 	
 	public String getGdbMessage() {
 		return gdbInternalMessage;
-	}
-	public Process getGdbProcess() {
-		return p;
 	}
 }

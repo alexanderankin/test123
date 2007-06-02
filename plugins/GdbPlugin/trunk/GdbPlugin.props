@@ -85,6 +85,10 @@ options.debugger.gdb.code=new gdb.options.GeneralOptionPane();
 options.debugger.gdb.label=General
 options.debugger.gdb_path_label=Gdb executable:
 options.debugger.gdb_path=gdb
+options.debugger.use_jni_label=Use JNI to communicate with Gdb
+options.debugger.use_jni_tooltip=<html>Using JNI improves the communication with Gdb, and enables pausing execution in the middle (e.g. for debugging a deadlock).\
+  <br>However, it can only be used on platforms where the gdbProcess library is provided.</html>
+options.debugger.use_jni=true
 options.debugger.array_range_split_size_label=Split large arrays to ranges of size:
 options.debugger.array_range_split_size=100
 options.debugger.char_array_as_string_label=Display fixed-size char arrays as strings

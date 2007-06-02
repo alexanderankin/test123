@@ -18,19 +18,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package gdb.core;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Vector;
-
 import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
+import gdb.jni.GdbProcess;
+
+import java.io.IOException;
+import java.util.Vector;
 
 public class CommandManager extends Thread {
 
 	Vector<Command> commands = new Vector<Command>();
-	BufferedWriter stdOutput = null;
+	GdbProcess process;
 	Parser parser = null;
 	int id = 0;
 	private final Command StopCommand = new Command(null, "***Stop***", null);
@@ -61,8 +60,7 @@ public class CommandManager extends Thread {
 			try {
 				//System.err.println("CommandManager: " + cmd);
 				Debugger.getInstance().commandRecord(">>> CommandManager: " + cmd + "\n");
-				stdOutput.write(cmd + "\n");
-				stdOutput.flush();
+				process.getGdbInputWriter().write(cmd + "\n");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -80,9 +78,8 @@ public class CommandManager extends Thread {
 			parser.removeResultHandler(wrapper);
 		}
 	}
-	public CommandManager(Process p, Parser parser) {
-		stdOutput = new BufferedWriter(
-				new OutputStreamWriter(p.getOutputStream()));
+	public CommandManager(GdbProcess process, Parser parser) {
+		this.process = process;
 		this.parser = parser;
 	}
 	// Add a command to be executed next (before the other registered commands)
@@ -95,8 +92,7 @@ public class CommandManager extends Thread {
 	public void addImmediateExecution(String cmd) {
 		Debugger.getInstance().commandRecord(">>> CommandManager: " + cmd + "\n");
 		try {
-			stdOutput.write(cmd + "\n");
-			stdOutput.flush();
+			process.getGdbInputWriter().write(cmd + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

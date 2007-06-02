@@ -1,0 +1,32 @@
+JNI usage in GdbPlugin
+----------------------
+The GdbPlugin requires the use of native code for two main tasks:
+1. Stopping program execution in the middle: This requires sending the SIGINT
+   signal to gdb. There is no way to send signals from Java directly, native
+   code must be used. But even a simple invocation of the common "kill" command
+   is insufficient - Java does not provide access to the process id of gdb...
+   So - native code must be used to launch gdb, store its process id, and
+   send signals to it.
+2. Separating the output stream of the program from that of gdb. In a simple
+   execution of gdb, both output streams are mixed, so parsing of gdb output
+   can not be perfect. E.g. half-lines from the program may precede output
+   lines from gdb, like:
+   <some-program-output>*stopped,...(gdb-output)
+
+API required from the native code:
+- Debugger: Start and end gdb
+  void start(program,args,wdir,env)
+  void end()
+  void sendSignal(int signal)
+- Parser: Read output and error streams, for both gdb and program 
+  int getGdbErrorStream()
+  int getGdbOutputStream()
+  int getProgramErrorStream()
+  int getProgramOutputStream()
+  boolean isReady(int stream)
+  string readLine(int stream)
+  * Note: error stream seems to always belong to the program
+- CommandManager: Write to input stream
+  void writeLine(string)
+  
+
