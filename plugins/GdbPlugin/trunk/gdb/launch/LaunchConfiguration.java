@@ -51,6 +51,7 @@ public class LaunchConfiguration {
 	public String getEnvironment() {
 		return environment;
 	}
+	// getEnvironmentArray adds the user specified env to the current env
 	public String [] getEnvironmentArray() {
 		HashMap<String, String> env = new HashMap<String, String>(System.getenv());
 		if (environment != null) {
