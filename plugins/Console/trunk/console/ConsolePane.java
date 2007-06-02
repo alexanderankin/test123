@@ -73,13 +73,18 @@ public class ConsolePane extends JTextPane
 			new SelectHomeAction());
 
 		/* Press Up/Down to access history */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new HistoryUpAction(
-			actionMap.get("caret-up")));
-
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new HistoryDownAction(
-			actionMap.get("caret-down")));
-
-		/* Press S+Up/Down to search history */
+		
+		HistoryUpAction hup =  new HistoryUpAction(actionMap.get("caret-up"));
+		
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), hup);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK), hup);
+		
+		HistoryDownAction down =  new HistoryDownAction(actionMap.get("caret-down"));
+		
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), down);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), down);
+		
+		/* Press S+Up/Down to select history */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_MASK),
 			new SearchUpAction(actionMap.get("selection-up")));
 
