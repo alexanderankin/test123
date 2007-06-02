@@ -59,6 +59,7 @@ public abstract class BaseShell extends Shell {
 	@Override
 	public void stop(Console arg0) {
 		jEdit.getAction(Debugger.KILL_ACTION).invoke(jEdit.getActiveView());
+		getOutput().commandDone();
 	}
 	protected void print(String s) {
 		getOutput().print(getConsole().getPlainColor(), s);
