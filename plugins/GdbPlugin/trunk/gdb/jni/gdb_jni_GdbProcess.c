@@ -47,6 +47,7 @@ JNIEXPORT void JNICALL Java_gdb_jni_GdbProcess_start
 		putenv(s);
 		s = strtok(0, ",");
 	}
+	fprintf(stderr, "Running: %s %s %s\n", argv[0], argv[1], argv[2]);
 	execv(argv[0], argv);
 }
 

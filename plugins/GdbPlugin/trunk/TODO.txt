@@ -1,4 +1,6 @@
 To do:
+- Fix bug: After responding to Stop button in Console, the Console is not aware
+  that the operation finished and the animation goes on; Call Output.commandDone().
 - Use JNI to communicate with gdb process:
   - Launch GDB from native code.
   - I/O through native code.

@@ -6,17 +6,23 @@ import gdb.options.GeneralOptionPane;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.gjt.sp.jedit.jEdit;
 
+import debugger.jedit.Plugin;
+
 public class GdbProcess {
 	
-	private static final String GDB_PROCESS_LIBRARY = "gdbProcess";
+	private static final String GDB_PROCESS_LIBRARY_NAME = "gdbProcess.so";
+	private static final String GDB_PROCESS_LIBRARY = "gdb/jni/" + GDB_PROCESS_LIBRARY_NAME;
 	
 	public interface Reader {
 		boolean ready()  throws IOException;
@@ -140,8 +146,51 @@ public class GdbProcess {
 	private native String readLine(int stream);
 	private native void write(int stream, String s);
 	
+	private void loadNativeLibrary() {
+		String jarPath = jEdit.getPlugin(Plugin.class.getName()).getPluginJAR().getPath();
+		File jarFile = new File(jarPath);
+		File jarDir = jarFile.getParentFile();
+		String jarCopy = new File(jarDir, GDB_PROCESS_LIBRARY_NAME).getPath(); 
+		JarFile jar = null;
+		try {
+			jar = new JarFile(jarPath);
+			JarEntry entry = jar.getJarEntry(GDB_PROCESS_LIBRARY);
+			if (entry != null) {
+				InputStream entryStream = jar.getInputStream(entry);
+				try {
+					FileOutputStream file = new FileOutputStream(jarCopy);
+					try {
+						byte[] buffer = new byte[1024];
+						int bytesRead;
+						while ((bytesRead = entryStream.read(buffer)) != -1) {
+							file.write(buffer, 0, bytesRead);
+						}
+					}
+					finally {
+						file.close();
+					}
+				}
+				finally {
+					entryStream.close();
+				}
+			} else {
+				System.err.println("Could not find native lib");
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		finally {
+			try {
+				jar.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		System.load(jarCopy);
+	}
+
 	private void startJNI(LaunchConfiguration config) throws IOException {
-        System.loadLibrary(GDB_PROCESS_LIBRARY);
+		loadNativeLibrary();
         start(jEdit.getProperty(GeneralOptionPane.GDB_PATH_PROP),
         	config.getProgram(), config.getArguments(), config.getDirectory(),
         	config.getEnvironment());
