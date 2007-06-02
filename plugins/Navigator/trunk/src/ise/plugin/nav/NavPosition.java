@@ -7,8 +7,7 @@ import org.gjt.sp.jedit.Buffer;
 
 
 /**
- * This object is used to mark caret positions in jEdit buffers for the Nav
- * used by VPT.
+ * This object is used to mark caret positions in jEdit buffers
  * @author Dale Anson, danson@germane-software.com
  */
 public class NavPosition {
@@ -30,13 +29,13 @@ public class NavPosition {
    }
 
    public boolean equals(NavPosition other) {
-	   return (buffer == other.buffer && caret == other.caret);
+       return (buffer == other.buffer && caret == other.caret);
    }
-   
+
    public String toString() {
-	  String path = "";
-	  Buffer b = (Buffer) buffer;
-	  if ( b != null) path = b.getPath();
+      String path = "";
+      Buffer b = (Buffer) buffer;
+      if ( b != null) path = b.getPath();
       return path + ":" + (line + 1);
    }
 }
