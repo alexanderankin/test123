@@ -18,9 +18,12 @@
 -->
 
 <project name="Optional" default="build" basedir=".">
+
+
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
+    <property name="docbook.xsl.sheet" value="html/onechunk.xsl" />
     <property name="user-doc.xml" location = "users-guide.xml"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
