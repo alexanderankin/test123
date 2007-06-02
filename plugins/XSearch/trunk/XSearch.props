@@ -8,7 +8,7 @@ plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.05.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
 plugin.xsearch.XSearchPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.1
-
+plugin.xsearch.XSearchPlugin.description=A replacement for the built-in search/replace dialog with enhancements.
 # new in version 1.1:
 # adapted to plugin API 4.2
 # new RMB options in HyperSearch menu
