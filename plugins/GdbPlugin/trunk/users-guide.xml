@@ -1,22 +1,14 @@
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-<title>GdbPlugin Documentation</title>
+<title>GdbPlugin</title>
+<articleinfo>
+<author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
+<date>
+April-May 2007  (Still under development)
+</date>
 
+</articleinfo>
 
-<bridgehead> GdbPlugin</bridgehead>
-
-<para>Written by Shlomy Reinstein, April-May 2007. (Still under development)</para>
-
-<bridgehead> Feedback </bridgehead>
-<para>
-Feel free to ask for help, report bugs, request new features, or suggest
-improvements in the user interface by email: 
-<ulink url="mailto:sreinst1@gmail.com?subject=GdbPlugin%20feedback">sreinst1@gmail.com</ulink>
-</para>
-<para>
-You can also report bugs and request new features using the jEdit SourceForge tracker: <ulink url="http://sourceforge.net/tracker/?group_id=588">http://sourceforge.net/tracker/?group_id=588</ulink>
-</para>
-<para>Your feedback will be highly appreciated. </para>
 <section id="introduction">
 <title> Introduction </title>
 <para>
@@ -48,21 +40,21 @@ Stack trace display that provides easy navigation of stack frames; clicking a fr
 GUI editing of launch configurations. A launch configuration specifies the settings for a debugging session: program, arguments, directory and environment.
 </para></listitem>
 <listitem><para>
-Two Console plugin shell services: "Program" for communication with the debugged program, and "GDB/MI" for controlling the GDB/MI process.
+Two Console plugin shell services: <literal>Program</literal> for communication with the debugged program, and <literal>GDB/MI</literal> for controlling the GDB/MI process.
 </para></listitem>
 </itemizedlist>
 <para>
-The plugin uses GDB/MI to interact with GDB. Entering GDB CLI commands (the common commands: next, step, cont, ...) in the GDB/MI shell is possible but highly discouraged, as it can easily put the plugin into an inconsistent state. </para>
+The plugin uses GDB/MI to interact with GDB. Entering GDB CLI commands (the common commands: <literal>next</literal>, <literal>step</literal>, <literal>cont</literal>, ...) in the GDB/MI shell is possible but highly discouraged, as it can easily put the plugin into an inconsistent state. </para>
 </section>
 <section id="usage">
 <title> Usage </title>
 
 <bridgehead> Quick start </bridgehead>
 <para>
-If 'gdb' is not in your PATH, specify the path to it in the GdbPlugin options -&gt; General pane.
+If <literal>gdb</literal> is not in your <literal>PATH</literal>, specify the path to it in the <guilabel>GdbPlugin options -&gt; General</guilabel> pane.
 </para>
 <para>
-To start debugging, you first need to define a launch configuration using the GdbPlugin options -&gt; Programs pane. Click 'New' and fill in the debug settings in the dialog that pops up. The fields in the dialog have tooltips describing their meaning.
+To start debugging, you first need to define a launch configuration using the <guilabel>GdbPlugin options -&gt; Programs pane</guilabel> Click 'New' and fill in the debug settings in the dialog that pops up. The fields in the dialog have tooltips describing their meaning.
 </para>
 <para>
 When you close the dialog you will see the new launch configuration in the list. Select it, and click 'Make default' to make it the default configuration to use for debug sessions. Clicking 'Make default' will mark the configuration with an asterisk.</para>
@@ -70,7 +62,7 @@ When you close the dialog you will see the new launch configuration in the list.
 You can now close the plugin options dialog. Now that you've set up a launch configuration, you can start debugging. But don't start yet!
 </para>
 <para>
-First, open the execution control dockable window by selecting 'GdbPlugin Panel' from the GdbPlugin menu. If you like, you can resize the window or dock it like any other jEdit dockable window. 
+First, open the execution control dockable window by selecting <guilabel>GdbPlugin Panel</guilabel> from the <guilabel>GdbPlugin menu</guilabel>. If you like, you can resize the window or dock it like any other jEdit dockable window. 
 </para>
 <para>
 Let's set a breakpoint. Put the caret on the source line where you want the breakpoint to be, and click 'Toggle breakpoint' in the control execution window. You will see an indication of the breakpoint in the gutter area. 
@@ -89,13 +81,14 @@ The 'Add' button on the bottom pane of the Variables window lets you add watches
 <para>
 You can now use the buttons in the execution control panel to control the execution. Go on and explore the features provided by the plugin.
 </para>
-<para>
-Note: Due to technical reasons, the Pause button does not work, so if you click 'Go' without setting a breakpoint or a watchpoint, there is no way to stop GDB in the middle of execution (other than killing it, of course).
-</para>
+<note>
+<title> The Pause Button </title>
+<para>Due to technical reasons, the Pause button does not work, so if you click 'Go' without setting a breakpoint or a watchpoint, there is no way to stop GDB in the middle of execution (other than killing it, of course).</para>
+</note>
 <para>Manipulation of breakpoints and watchpoints can be done using the Breakpoints dockable window, that you can also open from the GdbPlugin menu.
 </para>
-
 </section>
+
 <section id="tips">
 <title> Tips </title>
 <itemizedlist>
@@ -107,5 +100,17 @@ It is recommended to define keyboard shortcuts for quick access to frequent debu
 </itemizedlist>
 
 <para>Enjoy! </para>
+</section>
+<section>
+<title> Feedback </title>
+<para>
+Feel free to ask for help, report bugs, request new features, or suggest
+improvements in the user interface by email: 
+<ulink url="mailto:sreinst1@gmail.com?subject=GdbPlugin%20feedback">sreinst1@gmail.com</ulink>
+</para>
+<para>
+You can also report bugs and request new features using the jEdit SourceForge tracker: <ulink url="http://sourceforge.net/tracker/?group_id=588">http://sourceforge.net/tracker/?group_id=588</ulink>
+</para>
+<para>Your feedback will be highly appreciated. </para>
 </section>
 </article>
