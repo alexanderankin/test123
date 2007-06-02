@@ -3,11 +3,8 @@
 <title>GdbPlugin</title>
 <articleinfo>
 <author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
-<date>
-April-May 2007  (Still under development)
-</date>
-
 </articleinfo>
+<para> April-May 2007  (Still under development) </para>
 
 <section id="introduction">
 <title> Introduction </title>
@@ -101,7 +98,8 @@ It is recommended to define keyboard shortcuts for quick access to frequent debu
 
 <para>Enjoy! </para>
 </section>
-<section>
+
+<section id="feedback">
 <title> Feedback </title>
 <para>
 Feel free to ask for help, report bugs, request new features, or suggest
