@@ -14,12 +14,17 @@
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
-
-	<property name="jar.name"  value="${ant.project.name}.jar"/>
+    <property name="docbook.xsl.sheet" value="html/onechunk.xsl" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+	
 	<property name="docs-proc.target"  value="xsltproc"/>
 
-	<property name="jedit.install.dir"  value="/home/shlomy/jedit/4.3pre9"/>
-	<property name="src.dir" value="."/>
+    <property name="build.support" value="../../build-support" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    
+	<import file="${build.support}/plugin-build.xml" />
+	 
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
 
@@ -29,50 +34,6 @@
 		<pathelement location="${user.home}/.jedit/jars/Console.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
-
-	<target name="prepare" >
-	 	<mkdir dir="${build.dir}" />
-	</target>
-	
-	<target name="compile" depends="prepare">
-		<javac
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			deprecation="on"
-			debug="yes"
-			includeJavaRuntime="yes"
-			target="1.5"
-		>
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
-
-	<target name="dist" depends="compile">
-		<mkdir dir="${install.dir}"/>
-
-		<jar jarfile="${install.dir}/${jar.name}">
-			<fileset dir="${build.dir}"/>
-			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
-				<include name="services.xml"/>
-				<include name="**/*.so"/>
-				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.txt"/>
-				<include name="**/*.png"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="clean">
-		<delete dir="${build.dir}"/>
-		<delete>
-			<fileset dir="." includes="**/*~"/>
-		</delete>
-		<delete file="doc/index.html"/>
-		<delete file="doc/docbook-wrapper.xsl"/>
-	</target>
 
 	<target name="tags">
 		<exec executable="ctags">
