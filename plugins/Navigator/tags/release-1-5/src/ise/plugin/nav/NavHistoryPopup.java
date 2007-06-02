@@ -81,7 +81,7 @@ class NavHistoryPopup extends JWindow
 
 		pack();
 		setLocation();
-		setVisible();
+		setVisible(true);
 
 		KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
