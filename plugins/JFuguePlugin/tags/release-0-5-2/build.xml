@@ -76,6 +76,7 @@
 				<include name="*.jar" />
 			</fileset>
 		</copy>
+        <copy file="lib/jfugue.jar" todir="${install.dir}" />
 	</target>
 	<!-- Compiles the sources, jars the compiles classes and moves the jar to the jedit plugins dir -->
 	<target name="dist" depends="build,jar,redist" description="Moves the packaged project into the jEdit plugins dir. (Compiles and jars first)">
