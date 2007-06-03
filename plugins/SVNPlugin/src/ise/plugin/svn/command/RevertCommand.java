@@ -18,7 +18,7 @@ public class RevertCommand implements Command {
 
         boolean recursive = params.length > 1 && params[1].equals("--recursive");
 
-        // run svn update on the selected item
+        // run svn revert on the selected item
         try {
             String[] command = new String[ recursive ? 3 : 2 ];
             command[0] = "revert";
