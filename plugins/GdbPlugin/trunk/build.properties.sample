@@ -16,9 +16,6 @@ build.directory=${basedir}/build
 build.dir=${basedir}/build
 build.docs=${basedir}/build/docs
 
-# We look for jars in the same place as we install this one.
-install.dir=${jedit.install.dir}/jars
-
 jedit.home=${jedit.install.dir}
 jedit.plugins.dir=${install.dir}
 jedit.jars.dir=${install.dir}
