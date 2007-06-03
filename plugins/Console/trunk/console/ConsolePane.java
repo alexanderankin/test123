@@ -100,12 +100,13 @@ public class ConsolePane extends JTextPane
 	} // }}}
 
 	// {{{ paste()
-	
+	/** Overridden to avoid pasting in the output of the Console itself. */
 	public void paste() {
 		Document d = getDocument();
 		if (d == null) super.paste();
 		int endpos = d.getLength();
-		setCaretPosition(endpos);			
+		int startpos = getInputStart(); 
+		if ( getCaretPosition() < startpos) setCaretPosition(endpos);			
 		super.paste();
 	} // }}}
 	
