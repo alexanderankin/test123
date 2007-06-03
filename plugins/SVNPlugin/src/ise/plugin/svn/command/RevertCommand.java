@@ -20,7 +20,12 @@ public class RevertCommand implements Command {
 
         // run svn update on the selected item
         try {
-            String[] command = new String[]{"revert", (recursive ? "--recursive" : ""), params[0]};
+            String[] command = new String[ recursive ? 3 : 2 ];
+            command[0] = "revert";
+            command[1] = recursive ? "--recursive" : params[0];
+            if (recursive) {
+                command[2] = params[0];
+            }
             return SVN2.execute(command);
         }
         catch ( Exception e ) {
