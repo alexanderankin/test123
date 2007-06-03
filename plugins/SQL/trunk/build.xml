@@ -4,10 +4,12 @@
   <property file="build.properties"/>
   <property file="../build.properties"/>
 
-	<property name="compiler.source" value="1.4" />
-	<property name="compiler.target" value="1.4" />
-	<property name="compiler.debug" value="false" />
+  <property name="compiler.source" value="1.4" />
+  <property name="compiler.target" value="1.4" />
+  <property name="compiler.debug" value="false" />
   <property name="user-doc.xml" location= "users-guide.xml"/>
+  <property name="docbook.xsl.sheet" value="html/onechunk.xsl" />
+  
   <property name="build.support" value="../../jedit/build-support" />  
 
   <import file="${build.support}/plugin-build.xml" /> 
