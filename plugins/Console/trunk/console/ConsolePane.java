@@ -99,6 +99,16 @@ public class ConsolePane extends JTextPane
 
 	} // }}}
 
+	// {{{ paste()
+	
+	public void paste() {
+		Document d = getDocument();
+		if (d == null) super.paste();
+		int endpos = d.getLength();
+		setCaretPosition(endpos);			
+		super.paste();
+	} // }}}
+	
 	// {{{ setDocument() method
 	public void setDocument(Document doc)
 	{
