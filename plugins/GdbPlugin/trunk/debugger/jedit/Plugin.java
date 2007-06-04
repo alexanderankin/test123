@@ -22,6 +22,7 @@ import gdb.breakpoints.Breakpoint;
 import gdb.breakpoints.BreakpointList;
 import gdb.core.Debugger;
 import gdb.launch.LaunchConfigurationManager;
+import gdb.variables.TypeMacroMap;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -44,6 +45,7 @@ public class Plugin extends EditPlugin implements JEditFrontEnd {
 		debugger.setFrontEnd(this);
 		// Ensure launch configurations are loaded, to set label of Go! menu
 		LaunchConfigurationManager.getInstance();
+		TypeMacroMap.getInstance();
 	}
 
 	public void stop() {

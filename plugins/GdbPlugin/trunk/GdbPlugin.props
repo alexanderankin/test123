@@ -80,7 +80,7 @@ debugger-panel.title=GdbPlugin Panel
 debugger-panel.label=GdbPlugin Panel
 
 # Options
-plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs
+plugin.debugger.jedit.Plugin.option-group=debugger.gdb debugger.programs  debugger.macros
 options.debugger.gdb.code=new gdb.options.GeneralOptionPane();
 options.debugger.gdb.label=General
 options.debugger.gdb_path_label=Gdb executable:
@@ -119,6 +119,9 @@ options.debugger.environment_tooltip=Environment variables to set, in the form: 
 options.debugger.mi_shell_info_msg=The GDB/MI shell enables interaction with the GDB/MI interpreter.
 options.debugger.program_shell_info_msg=The Program shell enables interaction with the program being debugged.
 options.debugger.launch_config_dialog.title=GdbPlugin - Programs to debug
+options.debugger.macros.code=new gdb.options.GdbMacroOptionPane();
+options.debugger.macros.label=Formatting
+options.debugger.macro_map_label=The following table specifies GDB macros to be used for displaying values of various types:
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html
