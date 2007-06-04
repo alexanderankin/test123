@@ -20,6 +20,8 @@ package gdb.variables;
 
 import gdb.core.CommandManager;
 import gdb.core.Debugger;
+import gdb.core.Parser;
+import gdb.core.Parser.GdbHandler;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.options.GeneralOptionPane;
@@ -36,6 +38,8 @@ import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class GdbVar extends DefaultMutableTreeNode {
+	static protected TypeMacroMap tmm = TypeMacroMap.getInstance();
+
 	protected String name;
 	private String value = null;
 	private String type = null;
@@ -118,6 +122,10 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private void getValue() {
 		if (getCommandManager() == null)
 			return;
+		if (type != null && tmm.containsKey(type)) {
+			getValueByMacro(tmm.get(type));
+			return;
+		}
 		getCommandManager().add("-var-evaluate-expression " + gdbName,
 				new ResultHandler() {
 				public void handle(String msg, GdbResult res) {
@@ -130,6 +138,19 @@ public class GdbVar extends DefaultMutableTreeNode {
 				}
 		});
 	}
+	private void getValueByMacro(String macro) {
+		Debugger.getInstance().getParser().addGdbHandler(new GdbHandler() {
+			public void handle(String line) {
+				value = line;
+				if (value == null)
+					value = "";
+				notifyListener();
+				Debugger.getInstance().getParser().removeGdbHandler(this);		
+			}
+		});
+		getCommandManager().add(macro + " " + name);
+	}
+
 	private void createChildren() {
 		created = true;
 		doCreateChildren();
