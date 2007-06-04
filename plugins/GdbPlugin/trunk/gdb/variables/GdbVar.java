@@ -20,7 +20,6 @@ package gdb.variables;
 
 import gdb.core.CommandManager;
 import gdb.core.Debugger;
-import gdb.core.Parser;
 import gdb.core.Parser.GdbHandler;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;

@@ -28,7 +28,7 @@ public class MacroTypePairEditor extends JDialog {
 	private JTextField macroTF;
 	
 	public MacroTypePairEditor(DefaultTableModel model, int row, JDialog parent) {
-		super(parent, "Value type -> GDB macro association editor", true);
+		super(parent, "Type -> GDB-macro Association Editor", true);
 		addWindowListener(new java.awt.event.WindowAdapter()
         {
             public void windowClosing(java.awt.event.WindowEvent evt)
