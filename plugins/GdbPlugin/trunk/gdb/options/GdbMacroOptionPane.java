@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -18,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import debugger.jedit.Plugin;
@@ -46,11 +49,22 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 		c.gridy = 0;
 		c.weighty = 0.0;
 		add(new JLabel(jEdit.getProperty(GDB_MACRO_MAP_LABEL)), c);
-		table = new JTable();
+		table = new JTable() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		model = new DefaultTableModel();
 		model.addColumn("Type");
 		model.addColumn("Macro");
 		table.setModel(model);
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					editRow(table.getSelectedRow());
+			}
+		});
 		TypeMacroMap tmm = TypeMacroMap.getInstance();
 		String [] keys = new String[tmm.size()];
 		tmm.keySet().toArray(keys);
@@ -66,6 +80,7 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.addRow(new String [] {"", ""});
+				editRow(model.getRowCount() - 1);
 			}
 		});
 		buttons.add(add);
@@ -73,7 +88,10 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 		buttons.add(del);
 		del.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.removeRow(table.getSelectedRow());
+				int sel = table.getSelectedRow();
+				if (sel == -1)
+					return;
+				model.removeRow(sel);
 			}
 		});
 		JButton clear = new JButton("Remove all");
@@ -96,7 +114,6 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 	public void _save()
 	{
 		// Workaround for committing the last cell editing operation
-		table.getCellEditor().stopCellEditing();
 		TypeMacroMap tmm = TypeMacroMap.getInstance();
 		tmm.clear();
 		for (int i = 0; i < model.getRowCount(); i++) {
@@ -107,6 +124,17 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 			tmm.put(type, macro);
 		}
 		tmm.save();
+	}
+
+	private void editRow(int row) {
+		MacroTypePairEditor editor = new MacroTypePairEditor(model, row,
+				GUIUtilities.getParentDialog(GdbMacroOptionPane.this));
+		editor.setVisible(true);
+		String type = (String) model.getValueAt(row, 0);
+		String macro = (String) model.getValueAt(row, 1);
+		if (type == null || macro == null || type.matches("^\\s*$") ||
+				macro.matches("^\\s*$"))
+			model.removeRow(row);
 	}
 
 }
