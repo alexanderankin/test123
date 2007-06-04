@@ -121,7 +121,7 @@ options.debugger.program_shell_info_msg=The Program shell enables interaction wi
 options.debugger.launch_config_dialog.title=GdbPlugin - Programs to debug
 options.debugger.macros.code=new gdb.options.GdbMacroOptionPane();
 options.debugger.macros.label=Formatting
-options.debugger.macro_map_label=The following table specifies GDB macros to be used for displaying values of various types:
+options.debugger.gdb_macro_map_label=The following table specifies GDB macros to be used for displaying values of various types:
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html
