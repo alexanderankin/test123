@@ -5,12 +5,23 @@ import java.util.Iterator;
 
 import org.gjt.sp.jedit.jEdit;
 
+import debugger.jedit.Plugin;
+
 @SuppressWarnings("serial")
 public class TypeMacroMap extends HashMap<String, String> {
+	static final String PREFIX = Plugin.OPTION_PREFIX;
+	private static final String TYPE_MACRO_MAP_PROP = PREFIX + "type_macro_map.";
+	private static final String TYPE_MACRO_MAP_SIZE = TYPE_MACRO_MAP_PROP + "size";
 	private static TypeMacroMap instance = null;
 	
 	private TypeMacroMap() {
 		load();
+	}
+	private String getTypePropName(int index) {
+		return TYPE_MACRO_MAP_PROP + index + ".type";
+	}
+	private String getMacroPropName(int index) {
+		return TYPE_MACRO_MAP_PROP + index + ".macro";
 	}
 	public static TypeMacroMap getInstance() {
 		if (instance == null)
@@ -18,27 +29,23 @@ public class TypeMacroMap extends HashMap<String, String> {
 		return instance;
 	}
 	public void load() {
-		int n = jEdit.getIntegerProperty("options.debugger.type_macro_map.size", 0);
+		int n = jEdit.getIntegerProperty(TYPE_MACRO_MAP_SIZE, 0);
 		for (int i = 0; i < n; i++) {
-			String type = jEdit.getProperty("options.debugger.type_macro_map." +
-					String.valueOf(i) + ".type");
-			String macro = jEdit.getProperty("options.debugger.type_macro_map." +
-					String.valueOf(i) + ".macro");
+			String type = jEdit.getProperty(getTypePropName(i));
+			String macro = jEdit.getProperty(getMacroPropName(i));
 			put(type, macro);
 		}
 	}
 	public void save() {
-		jEdit.setIntegerProperty("options.debugger.type_macro_map.size", size());
-		Iterator<String> kit = this.keySet().iterator();
+		Iterator<String> keys = keySet().iterator();
 		int i = 0;
-		while (kit.hasNext()) {
-			String type = kit.next();
-			String macro = get(kit);
-			jEdit.setProperty("options.debugger.type_macro_map." +
-					String.valueOf(i) + ".type", type);
-			jEdit.setProperty("options.debugger.type_macro_map." +
-					String.valueOf(i) + ".macro", macro);
+		while (keys.hasNext()) {
+			String type = keys.next();
+			String macro = get(type);
+			jEdit.setProperty(getTypePropName(i), type);
+			jEdit.setProperty(getMacroPropName(i), macro);
 			i++;
 		}
+		jEdit.setIntegerProperty(TYPE_MACRO_MAP_SIZE, i);
 	}
 }
