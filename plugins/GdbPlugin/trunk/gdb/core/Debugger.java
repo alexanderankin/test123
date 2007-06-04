@@ -330,7 +330,7 @@ public class Debugger implements DebuggerTool {
 
 	public void signalReceived(String signal) {
 		String msg = "Received signal: " + signal;
-		JOptionPane.showMessageDialog(null, msg);
+		JOptionPane.showMessageDialog(jEdit.getActiveView(), msg);
 	}
 	
 	public void setFrontEnd(JEditFrontEnd frontEnd) {
