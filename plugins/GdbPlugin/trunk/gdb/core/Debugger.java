@@ -325,7 +325,7 @@ public class Debugger implements DebuggerTool {
 		if (file != null)
 			msg = msg + ", at " + file + ":" + line + ".";
 		//System.err.println(msg);
-		JOptionPane.showMessageDialog(null, msg);
+		JOptionPane.showMessageDialog(jEdit.getActiveView(), msg);
 	}
 
 	public void signalReceived(String signal) {
