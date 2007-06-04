@@ -38,6 +38,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import org.gjt.sp.jedit.MiscUtilities;
+
 @SuppressWarnings("serial")
 public class StackTrace extends GdbView {
 	static private TreeModel emptyTreeModel = new DefaultTreeModel(null);
@@ -221,7 +223,11 @@ public class StackTrace extends GdbView {
 			base = path;
 		}
 		public void jump() {
-			String path = (base != null) ? base + "/" + file : file;
+			String path = null;
+			if ((base == null) || MiscUtilities.isAbsolutePath(file))
+				path = file;
+			else
+				path = base + "/" + file;
 			Debugger.getInstance().getFrontEnd().goTo(path, line);
 		}
 		public Vector<String> getArguments() {
