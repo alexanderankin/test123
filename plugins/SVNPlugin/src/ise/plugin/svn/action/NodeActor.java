@@ -23,6 +23,15 @@ public abstract class NodeActor implements ActionListener {
     // this is the current view containing the ProjectViewer
     protected View view = null;
 
+    // this is the root directory of the project
+    protected String projectRoot = null;
+
+    // the username as set for the project
+    protected String username = null;
+
+    // the password for the user
+    protected String password = null;
+
     // subclasses need to implement this to provide the appropriate
     // parameters to their subversion command
     public abstract void actionPerformed(ActionEvent ae);
@@ -30,9 +39,12 @@ public abstract class NodeActor implements ActionListener {
     // called by SVNAction to set the ProjectViewer node and the View.  This
     // is called each time the user raises the PV context menu, which will be
     // prior to the actionPerformed method being called.
-    public void prepareForNode( VPTNode n, View v ) {
+    public void prepareForNode( VPTNode n, View v, String project_root, String username, String password ) {
         node = n;
         view = v;
+        projectRoot = project_root;
+        this.username = username;
+        this.password = password;
     }
 
     // print a message to the system shell in the Console plugin.  This is an

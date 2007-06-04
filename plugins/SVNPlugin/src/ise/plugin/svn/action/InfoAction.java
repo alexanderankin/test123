@@ -15,7 +15,14 @@ public class InfoAction extends NodeActor {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
                             InfoCommand command = new InfoCommand();
-                            String[] params = new String[] {node.getNodePath() };
+                            String[] params;
+                            if (username != null && password != null) {
+                                params = new String[]{node.getNodePath(), username, password};
+                            }
+                            else {
+                                params = new String[] {node.getNodePath() };
+                            }
+
                             try {
                                 String result = command.execute( params );
                                 print( result );

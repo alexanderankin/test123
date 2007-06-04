@@ -4,6 +4,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+import projectviewer.ProjectViewer;
 import ise.plugin.svn.command.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -13,6 +15,8 @@ import org.gjt.sp.jedit.View;
  * as the menu for a pull-out menu containing the subversion commands.
  */
 public class SVNAction extends projectviewer.action.Action {
+
+    public static String PREFIX = "ise.plugin.svn.pv.";
 
     private JMenu menu = null;
     private VPTNode path = null;
@@ -41,7 +45,12 @@ public class SVNAction extends projectviewer.action.Action {
             try {
                 NodeActor action = ( NodeActor ) Class.forName( classname ).newInstance();
                 if ( path != null ) {
-                    action.prepareForNode( path, viewer.getView() );
+                    View view = viewer.getView();
+                    String project_name = getProjectName(view);
+                    String project_root = getProjectRoot(view);
+                    String username = jEdit.getProperty( PREFIX + project_name + ".username" );
+                    String password = jEdit.getProperty( PREFIX + project_name + ".password" );
+                    action.prepareForNode( path, view, project_root, username, password );
                 }
                 item = new JMenuItem( label );
                 item.addActionListener( ( ActionListener ) action );
@@ -73,13 +82,17 @@ public class SVNAction extends projectviewer.action.Action {
     public void prepareForNode( VPTNode node ) {
         path = node;
         View view = viewer.getView();
+        String project_name = getProjectName(view);
+        String project_root = getProjectRoot(view);
+        String username = jEdit.getProperty( PREFIX + project_name + ".username" );
+        String password = jEdit.getProperty( PREFIX + project_name + ".password" );
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );
                 ActionListener[] listeners = actor.getActionListeners();
                 for (ActionListener al : listeners) {
                     if (al instanceof NodeActor) {
-                        ((NodeActor)al).prepareForNode(node, view);
+                        ((NodeActor)al).prepareForNode(node, view, project_root, username, password);
                     }
                 }
             }
@@ -93,4 +106,16 @@ public class SVNAction extends projectviewer.action.Action {
         // does nothing, this is the top of a pull out menu so has no specific
         // action other than to display the pull out.
     }
+
+    private String getProjectName(View view) {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        return project == null ? "" : project.getName();
+    }
+
+    private String getProjectRoot(View view) {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        return project == null ? "" : project.getRootPath();
+    }
+
+
 }

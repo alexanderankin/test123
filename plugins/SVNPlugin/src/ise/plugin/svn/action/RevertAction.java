@@ -2,6 +2,7 @@ package ise.plugin.svn.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 import ise.plugin.svn.command.RevertCommand;
@@ -30,14 +31,22 @@ public class RevertAction extends NodeActor {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
                             RevertCommand command = new RevertCommand();
-                            String[] params = new String[] {node.getNodePath(), recurse };
-                            System.out.println("+++++ " + params[0] + ", " + params[1]);
+                            List<String> args = new ArrayList<String>();
+                            args.add(node.getNodePath());
+                            if (recurse.length() > 0) {
+                                args.add("--recursive");
+                            }
+
+                            String[] params = new String[args.size()];
+                            params = args.toArray(params);
+
                             try {
                                 String result = command.execute( params );
                                 print( result );
                             }
                             catch ( Exception e ) {
                                 printError( e.getMessage() );
+                                e.printStackTrace();
                             }
                         }
                     }

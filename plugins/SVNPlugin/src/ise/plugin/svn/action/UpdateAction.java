@@ -14,7 +14,13 @@ public class UpdateAction extends NodeActor {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
                             UpdateCommand command = new UpdateCommand();
-                            String[] params = new String[] {node.getNodePath() };
+                            String[] params;
+                            if (username != null && password != null) {
+                                params = new String[]{node.getNodePath(), username, password};
+                            }
+                            else {
+                                params = new String[] {node.getNodePath() };
+                            }
                             try {
                                 String result = command.execute( params );
                                 print( result );
