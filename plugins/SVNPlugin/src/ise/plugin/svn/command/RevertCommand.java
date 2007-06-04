@@ -1,6 +1,7 @@
 package ise.plugin.svn.command;
 
 import java.io.File;
+import java.util.*;
 import ise.plugin.svn.SVN2;
 
 public class RevertCommand implements Command {
@@ -8,6 +9,8 @@ public class RevertCommand implements Command {
     /**
      * params[0] directory or filename, required
      * params[1] --recursive, this is optional
+     * params[2] username, optional
+     * params[3] password, required if username, otherwise optional
      */
     public String execute( String[] params ) throws
                 CommandInitializationException, CommandExecutionException {
@@ -15,17 +18,22 @@ public class RevertCommand implements Command {
         if ( params == null || params.length < 1 ) {
             throw new CommandInitializationException( "Must have directory or file name to revert." );
         }
+        String path = params[0];
 
         boolean recursive = params.length > 1 && params[1].equals("--recursive");
 
-        // run svn revert on the selected item
+        List<String> args = new ArrayList<String>();
+        args.add("revert");
+        if (recursive) {
+            args.add("--recursive");
+        }
+        args.add(path);
+
+        // run the command
+        String[] command = new String[args.size()];
+        command = args.toArray(command);
+
         try {
-            String[] command = new String[ recursive ? 3 : 2 ];
-            command[0] = "revert";
-            command[1] = recursive ? "--recursive" : params[0];
-            if (recursive) {
-                command[2] = params[0];
-            }
             return SVN2.execute(command);
         }
         catch ( Exception e ) {

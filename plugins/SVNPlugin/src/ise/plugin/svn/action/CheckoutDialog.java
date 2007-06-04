@@ -27,8 +27,6 @@ import ise.plugin.svn.library.PasswordHandlerException;
  */
 public class CheckoutDialog extends JDialog {
     // instance fields
-    public static String PREFIX = "ise.plugin.svn.pv.";
-
     private View view = null;
 
     private JTextField url = null;
@@ -51,8 +49,8 @@ public class CheckoutDialog extends JDialog {
         String project_name = getProjectName();
 
         // subversion repository url field
-        JLabel url_label = new JLabel( jEdit.getProperty( PREFIX + "url.label" ) );
-        url = new JTextField( jEdit.getProperty( PREFIX + project_name + ".url" ), 30 );
+        JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
+        url = new JTextField( jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" ), 30 );
 
         // populate url field from existing svn info, if available
         String info_text = SVN2.execute( new String[] {"info", getProjectRoot() } );
@@ -69,7 +67,7 @@ public class CheckoutDialog extends JDialog {
         }
 
         // local destination directory
-        JLabel path_label = new JLabel( jEdit.getProperty( PREFIX + "path.label" ) );
+        JLabel path_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "path.label" ) );
         path = new JTextField( getProjectRoot(), 30 );
         JButton browse_btn = new JButton( "Browse" );
         browse_btn.addActionListener( new ActionListener() {
@@ -83,12 +81,12 @@ public class CheckoutDialog extends JDialog {
                                     );
 
         // username field
-        JLabel username_label = new JLabel( jEdit.getProperty( PREFIX + "username.label" ) );
-        username = new JTextField( jEdit.getProperty( PREFIX + project_name + ".username" ), 30 );
+        JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
+        username = new JTextField( jEdit.getProperty( SVNAction.PREFIX + project_name + ".username" ), 30 );
 
         // password field
-        JLabel password_label = new JLabel( jEdit.getProperty( PREFIX + "password.label" ) );
-        String pwd = jEdit.getProperty( PREFIX + project_name + ".password" );
+        JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
+        String pwd = jEdit.getProperty( SVNAction.PREFIX + project_name + ".password" );
         if ( pwd != null && pwd.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();

@@ -2,6 +2,7 @@ package ise.plugin.svn.action;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.*;
 import javax.swing.SwingUtilities;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.command.CommitCommand;
@@ -27,11 +28,19 @@ public class CommitAction extends NodeActor {
                 return ;     // null comments means user cancelled
             }
 
+            final List<String> list = new ArrayList<String>();
+            list.add(node.getNodePath());
+            list.add(comment);
+            if (username != null && password != null) {
+                list.add(username);
+                list.add(password);
+            }
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
                             CommitCommand command = new CommitCommand();
-                            String[] params = new String[] {node.getNodePath(), comment };
+                            String[] params = new String[list.size()];
+                            params = list.toArray(params);
                             try {
                                 String result = command.execute( params );
                                 print( result );
