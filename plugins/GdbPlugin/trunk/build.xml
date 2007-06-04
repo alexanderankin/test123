@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="GdbPlugin" default="dist" basedir="."> 
+<project name="GdbPlugin" default="build" basedir="."> 
   <description>
   	This is the build.xml file for building the GdbPlugin.
   	It is based on the standard build.xml file for jEdit plugins.
