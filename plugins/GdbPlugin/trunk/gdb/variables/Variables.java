@@ -55,6 +55,7 @@ public class Variables extends JPanel {
 		JSplitPane pane = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, locals, watches);
 		add(pane);
+        pane.setDividerLocation(350);
 	}
 	public Watches getWatches() {
 		return watchesPanel;
