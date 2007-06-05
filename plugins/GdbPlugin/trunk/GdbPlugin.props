@@ -85,6 +85,8 @@ options.debugger.gdb.code=new gdb.options.GeneralOptionPane();
 options.debugger.gdb.label=General
 options.debugger.gdb_path_label=Gdb executable:
 options.debugger.gdb_path=gdb
+options.debugger.use_external_commands_label=Use external commands (ps, kill) for extended features
+options.debugger.use_external_commands=true
 options.debugger.show_breakpoint_popup_label=Show a pop-up message when a breakpoint is hit
 options.debugger.show_breakpoint_popup=true
 options.debugger.array_range_split_size_label=Split large arrays to ranges of size:
@@ -129,4 +131,6 @@ messages.debugger.debugger_not_started=The debugger is not running yet; start a 
 messages.debugger.cannot_create_breakpoint=Could not set breakpoint or watchpoint:\n
 messages.debugger.invalid_launch_config_name=The configuration name can only contain letters, digits, spaces and dots.
 messages.debugger.could_not_get_value=Could not get the value of: {0}.
-
+messages.debugger.pause_not_implemented=The Pause button requires the use of external commands; you need to enable \
+  them in the plugin options, General pane. 
+messages.debugger.program_not_detected=Could not pause program execution. ProcessId could not be detected.
