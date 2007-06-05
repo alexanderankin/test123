@@ -39,7 +39,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
 	private JCheckBox showBreakpointPopupCB;
-	private JCheckBox useJNICB;
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
 	private JCheckBox expressionTooltipCB;
@@ -51,9 +50,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
 	static final String SHOW_BREAKPOINT_POPUP_LABEL = PREFIX + "show_breakpoint_popup_label";
 	static public final String SHOW_BREAKPOINT_POPUP_PROP = PREFIX + "show_breakpoint_popup";
-	static final String USE_JNI_LABEL = PREFIX + "use_jni_label";
-	static final String USE_JNI_TOOLTIP = PREFIX + "use_jni_tooltip";
-	static public final String USE_JNI_PROP = PREFIX + "use_jni";
 	static final String ARRAY_RANGE_SPLIT_SIZE_LABEL = PREFIX + "array_range_split_size_label";
 	static public final String ARRAY_RANGE_SPLIT_SIZE_PROP = PREFIX + "array_range_split_size";
 	static final String CHAR_ARRAY_AS_STRING_LABEL = PREFIX + "char_array_as_string_label";
@@ -77,12 +73,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(showBreakpointPopupCB);
 		showBreakpointPopupCB.setSelected(
 				jEdit.getBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP)); 
-		useJNICB = new JCheckBox(
-				jEdit.getProperty(USE_JNI_LABEL));
-		addComponent(useJNICB);
-		useJNICB.setSelected(
-				jEdit.getBooleanProperty(USE_JNI_PROP)); 
-		useJNICB.setToolTipText(jEdit.getProperty(USE_JNI_TOOLTIP));
 		arrayRangeSplitSizeTF = new JTextField();
 		addComponent(jEdit.getProperty(ARRAY_RANGE_SPLIT_SIZE_LABEL),
 				arrayRangeSplitSizeTF);
@@ -134,7 +124,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
 		jEdit.setBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP, showBreakpointPopupCB.isSelected()); 
-		jEdit.setBooleanProperty(USE_JNI_PROP, useJNICB.isSelected()); 
 		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
 		jEdit.setBooleanProperty(CHAR_ARRAY_AS_STRING_PROP,

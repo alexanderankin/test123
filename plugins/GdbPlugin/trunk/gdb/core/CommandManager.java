@@ -21,7 +21,6 @@ package gdb.core;
 import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
-import gdb.jni.GdbProcess;
 
 import java.io.IOException;
 import java.util.Vector;

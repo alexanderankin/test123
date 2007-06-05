@@ -27,7 +27,6 @@ import gdb.core.GdbState.StateListener;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 import gdb.execution.ControlView;
-import gdb.jni.GdbProcess;
 import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationListDialog;
 import gdb.launch.LaunchConfigurationManager;
