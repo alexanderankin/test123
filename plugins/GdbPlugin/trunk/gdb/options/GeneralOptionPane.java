@@ -38,6 +38,7 @@ import debugger.jedit.Plugin;
 public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
+	private JCheckBox showBreakpointPopupCB;
 	private JCheckBox useJNICB;
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
@@ -48,6 +49,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	
 	static final String GDB_PATH_LABEL = PREFIX + "gdb_path_label";
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
+	static final String SHOW_BREAKPOINT_POPUP_LABEL = PREFIX + "show_breakpoint_popup_label";
+	static public final String SHOW_BREAKPOINT_POPUP_PROP = PREFIX + "show_breakpoint_popup";
 	static final String USE_JNI_LABEL = PREFIX + "use_jni_label";
 	static final String USE_JNI_TOOLTIP = PREFIX + "use_jni_tooltip";
 	static public final String USE_JNI_PROP = PREFIX + "use_jni";
@@ -69,6 +72,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		gdbPathTF = new JTextField(40);
 		addComponent(jEdit.getProperty(GDB_PATH_LABEL), gdbPathTF);
 		gdbPathTF.setText(jEdit.getProperty(GDB_PATH_PROP));
+		showBreakpointPopupCB = new JCheckBox(
+				jEdit.getProperty(SHOW_BREAKPOINT_POPUP_LABEL));
+		addComponent(showBreakpointPopupCB);
+		showBreakpointPopupCB.setSelected(
+				jEdit.getBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP)); 
 		useJNICB = new JCheckBox(
 				jEdit.getProperty(USE_JNI_LABEL));
 		addComponent(useJNICB);
@@ -125,6 +133,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public void _save()
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
+		jEdit.setBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP, showBreakpointPopupCB.isSelected()); 
 		jEdit.setBooleanProperty(USE_JNI_PROP, useJNICB.isSelected()); 
 		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
