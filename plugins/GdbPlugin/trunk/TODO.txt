@@ -1,16 +1,7 @@
 To do:
-- Fix bug: After responding to Stop button in Console, the Console is not aware
-  that the operation finished and the animation goes on; Call Output.commandDone().
-- Use JNI to communicate with gdb process:
-  - Launch GDB from native code.
-  - I/O through native code.
-  - Send signals (SIGINT to stop execution) to the GDB process.
-    (Can't be done from Java because Java doesn't provide the process id)
-  - Create pty (pseudo terminal) for the debuggee, to separate its I/O from gdb's.
-- Add option to specify format for display of various types
-  (e.g. display Qt4 strings as const char *). Add mapping from type to gdb macro name.
-  Gdb macros will be defined in .gdbinit, and GdbPlugin will run them (with the
-  expression to evaluate as input) and display the output of the macro as value.
+- Fix breakpoint UI to reflect GDB state rather than plugin actions.
+- Add type inference rules for the type->macro map.
+- Extend type->macro map to allow 'set', not only 'get'.
 --> Locals/Watches/Variables:
   - Support changes in tree structure of variable.
   - Provide an action and a context menu item to change the currently selected
@@ -66,4 +57,10 @@ Done:
 + Locals/Watches/Variables: Add toolbar button for modifying the selected var value.
 + Control panel: Should be aware of the gdb state, enable/disable buttons.
 + Tooltips for variables under caret in the buffer.
++ Fix bug: After responding to Stop button in Console, the Console is not aware
+  that the operation finished and the animation goes on; Call Output.commandDone().
++ Add option to specify format for display of various types
+  (e.g. display Qt4 strings as const char *). Add mapping from type to gdb macro name.
+  Gdb macros will be defined in .gdbinit, and GdbPlugin will run them (with the
+  expression to evaluate as input) and display the output of the macro as value.
   
