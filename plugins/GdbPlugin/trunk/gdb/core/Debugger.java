@@ -479,13 +479,13 @@ public class Debugger implements DebuggerTool {
 	}
 	public void gdbRecord(String line)
 	{
-		System.err.println(line);
+		//System.err.println(line);
 		getMIShell().append(line);
 	}
 	public void commandRecord(String line)
 	{
 		gdbInternalMessage = null;
-		System.err.println(line);
+		//System.err.println(line);
 		getMIShell().append(line);
 	}
 	private ProgramShell getProgramShell() {
