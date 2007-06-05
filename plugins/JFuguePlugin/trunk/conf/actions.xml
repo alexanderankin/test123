@@ -10,4 +10,14 @@
 			com.townsfolkdesigns.jfugue.JFuguePlugin.playSelection(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="jfugueplugin.save.buffer">
+		<CODE>
+			com.townsfolkdesigns.jfugue.JFuguePlugin.saveBuffer(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="jfugueplugin.save.selection">
+		<CODE>
+			com.townsfolkdesigns.jfugue.JFuguePlugin.saveSelection(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>

@@ -12,6 +12,8 @@ plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.description=A jEdit plugin to br
 #Action labels.
 jfugueplugin.play.buffer.label=Play Buffer
 jfugueplugin.play.selection.label=Play Selection
+jfugueplugin.save.buffer.label=Buffer to Midi
+jfugueplugin.save.selection.label=Selection to Midi
 
 #Menu Definition
-plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.menu=jfugueplugin.play.buffer jfugueplugin.play.selection
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.menu=jfugueplugin.play.buffer jfugueplugin.play.selection - jfugueplugin.save.buffer jfugueplugin.save.selection
