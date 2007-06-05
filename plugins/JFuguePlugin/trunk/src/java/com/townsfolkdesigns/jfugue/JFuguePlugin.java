@@ -19,15 +19,23 @@
  */
 package com.townsfolkdesigns.jfugue;
 
+import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JFileChooser;
+
 import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.jfugue.Pattern;
+import org.jfugue.Player;
 
 /**
  * @author elberry
@@ -87,6 +95,50 @@ public class JFuguePlugin extends EditPlugin {
 			playMusicString(selectedText);
 		} else {
 			playBuffer(view);
+		}
+	}
+
+	public static void saveBuffer(View view) {
+		Macros.message(view, "Saving Buffer");
+		JEditTextArea currentTextArea = view.getTextArea();
+		String bufferText = currentTextArea.getText();
+		if (StringUtils.isNotBlank(bufferText)) {
+			saveMusicString(view, bufferText);
+		}
+	}
+
+	public static void saveSelection(View view) {
+		Macros.message(view, "Saving Selection");
+		JEditTextArea currentTextArea = view.getTextArea();
+		String selectedText = currentTextArea.getSelectedText();
+		if (StringUtils.isNotBlank(selectedText)) {
+			saveMusicString(view, selectedText);
+		} else {
+			saveBuffer(view);
+		}
+	}
+
+	public static void saveMusicString(View view, String musicString) {
+		Macros.message(view, "Saving Music String - musicString: " + musicString);
+		Buffer buffer = view.getBuffer();
+		VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(view, buffer.getPath(), JFileChooser.OPEN_DIALOG,
+		      false);
+		String[] selectedFiles = fileChooser.getSelectedFiles();
+		if (selectedFiles != null && selectedFiles.length > 0) {
+			String filePath = selectedFiles[0];
+			Macros.message(view, "Saving Music String - filePath: " + filePath);
+			if (!filePath.endsWith("mid")) {
+				filePath += ".mid";
+			}
+			Macros.message(view, "Saving Music String - filePath: " + filePath);
+			File file = new File(filePath);
+			Pattern pattern = new Pattern(musicString);
+			Player player = JFuguePlayerFactory.createJFuguePlayer();
+			try {
+				player.saveMidi(pattern, file);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
