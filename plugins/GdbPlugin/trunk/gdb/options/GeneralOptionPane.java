@@ -38,6 +38,7 @@ import debugger.jedit.Plugin;
 public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
+	private JCheckBox useExternalCommandsCB;
 	private JCheckBox showBreakpointPopupCB;
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
@@ -48,6 +49,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	
 	static final String GDB_PATH_LABEL = PREFIX + "gdb_path_label";
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
+	static final String USE_EXTERNAL_COMMANDS_LABEL = PREFIX + "use_external_commands_label";
+	static public final String USE_EXTERNAL_COMMANDS_PROP = PREFIX + "use_external_commands";
 	static final String SHOW_BREAKPOINT_POPUP_LABEL = PREFIX + "show_breakpoint_popup_label";
 	static public final String SHOW_BREAKPOINT_POPUP_PROP = PREFIX + "show_breakpoint_popup";
 	static final String ARRAY_RANGE_SPLIT_SIZE_LABEL = PREFIX + "array_range_split_size_label";
@@ -68,6 +71,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		gdbPathTF = new JTextField(40);
 		addComponent(jEdit.getProperty(GDB_PATH_LABEL), gdbPathTF);
 		gdbPathTF.setText(jEdit.getProperty(GDB_PATH_PROP));
+		useExternalCommandsCB = new JCheckBox(
+				jEdit.getProperty(USE_EXTERNAL_COMMANDS_LABEL));
+		addComponent(useExternalCommandsCB);
+		useExternalCommandsCB.setSelected(
+				jEdit.getBooleanProperty(USE_EXTERNAL_COMMANDS_PROP)); 
 		showBreakpointPopupCB = new JCheckBox(
 				jEdit.getProperty(SHOW_BREAKPOINT_POPUP_LABEL));
 		addComponent(showBreakpointPopupCB);
@@ -123,6 +131,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public void _save()
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
+		jEdit.setBooleanProperty(USE_EXTERNAL_COMMANDS_PROP, useExternalCommandsCB.isSelected()); 
 		jEdit.setBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP, showBreakpointPopupCB.isSelected()); 
 		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());

@@ -33,6 +33,7 @@ import gdb.launch.LaunchConfigurationManager;
 import gdb.options.GeneralOptionPane;
 import gdb.output.MIShell;
 import gdb.output.ProgramShell;
+import gdb.proc.GdbProcess;
 import gdb.variables.GdbVar;
 import gdb.variables.LocalVariables;
 import gdb.variables.Variables;
@@ -133,8 +134,8 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void pause() {
-		if (isRunning())
-			commandManager.add("-exec-interrupt");
+		if (isRunning() && (gdbProcess != null))
+			gdbProcess.pause();
 	}
 
 	public void quit() {
