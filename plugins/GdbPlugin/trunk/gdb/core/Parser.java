@@ -18,9 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package gdb.core;
 
+import gdb.core.GdbProcess.Reader;
 import gdb.core.GdbState.StateListener;
-import gdb.jni.GdbProcess;
-import gdb.jni.GdbProcess.Reader;
 
 import java.io.IOException;
 import java.util.Hashtable;
