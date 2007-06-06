@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package gdb.options;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -109,13 +110,13 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(expressionTooltipCB);
 		expressionTooltipCB.setSelected(
 				jEdit.getBooleanProperty(EXPRESSION_TOOLTIP_PROP));
-		JPanel regexpPane = new JPanel();
+		JPanel regexpPane = new JPanel(new BorderLayout());
 		expressionRegExpTF = new JTextField(40);
-		regexpPane.add(expressionRegExpTF);
+		regexpPane.add(expressionRegExpTF, BorderLayout.CENTER);
 		expressionRegExpTF.setToolTipText(jEdit.getProperty(EXPRESSION_REGEXP_TOOLTIP));
 		expressionRegExpTF.setText(jEdit.getProperty(EXPRESSION_REGEXP_PROP));
 		JButton resetRegexp = new JButton("Reset to default");
-		regexpPane.add(resetRegexp);
+		regexpPane.add(resetRegexp, BorderLayout.EAST);
 		resetRegexp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				expressionRegExpTF.setText(
