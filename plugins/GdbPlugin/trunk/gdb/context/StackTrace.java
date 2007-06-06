@@ -223,6 +223,8 @@ public class StackTrace extends GdbView {
 			base = path;
 		}
 		public void jump() {
+			if (file == null)
+				return;
 			String path = null;
 			if ((base == null) || MiscUtilities.isAbsolutePath(file))
 				path = file;
