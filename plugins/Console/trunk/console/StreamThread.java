@@ -73,7 +73,7 @@ class StreamThread extends Thread
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 		DefaultErrorSource es = console.getErrorSource();
-		copt = console.getShell().createOutputParser(console.getView(), es, defaultColor); 
+		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
 		lineBuffer = new StringBuilder(100);
 		pendingCr = false;

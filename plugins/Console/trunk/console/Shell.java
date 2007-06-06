@@ -147,16 +147,7 @@ public abstract class Shell
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
 
-	/**
-	 * @return a derived instance of CommandOutputParser if this shell needs custom
-	 *    handling of shell output. By default, returns the standard CommandOutputParser.
-	 *    @since Console 4.3.3
-	 *    @see CommandOutputParser 
-	 */
-	public CommandOutputParser createOutputParser(View v, DefaultErrorSource es, Color defaultColor) {
-		return new CommandOutputParser(v, es, defaultColor);
-	}
-
+	
 	//{{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.

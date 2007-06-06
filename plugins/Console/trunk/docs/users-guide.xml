@@ -1510,6 +1510,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      <listitem><para> 1727037, 1726365 applied, handling error lines in StreamThread better. (k_satoda) </para></listitem>
      <listitem><para> 1700484 fixed, was not registering dynamic shortcuts on startup. </para></listitem>
      <listitem><para> 1671430 cd to project root/node needs line break </para></listitem>
+     <listitem><para> Ctrl-P and Ctrl-N select through command history. </para></listitem>
+     <listitem><para> Paste in the panel moves caret to end of input before pasting. </para></listitem>
      </itemizedlist>
    </para>
    </listitem>
