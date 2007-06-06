@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.*;	
+import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.options.GlobalOptions;
 import org.gjt.sp.jedit.options.PluginOptions;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -246,12 +246,19 @@ public class ContextMenuPlugin extends EBPlugin {
 		JPopupMenu jeditPopup = GUIUtilities.loadPopupMenu("view.context");
 		JPopupMenu contextPopup = GUIUtilities.loadPopupMenu("mode." + mode + ".contextmenu");
 
-		MenuElement[] contextElements = contextPopup.getSubElements();
-
+		Component[] contextElements = contextPopup.getComponents();
 		jeditPopup.addSeparator();
 
 		for (int i = 0; i < contextElements.length; i++) {
-			jeditPopup.add((JMenuItem)contextElements[i]);
+			Component comp = contextElements[i];
+			if (comp instanceof JMenuItem) {
+				jeditPopup.add(comp);
+				continue;
+			}
+			if (comp instanceof JPopupMenu.Separator
+				&& jEdit.getBooleanProperty("contextmenu.separators-in-popup")) {
+					jeditPopup.addSeparator();
+			}
 		}
 
 		jeditPopup.addSeparator();

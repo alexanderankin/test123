@@ -12,10 +12,12 @@ plugin.contextmenu.ContextMenuPlugin.depend.1=jdk 1.5
 # Options
 contextmenu.in-menubar=true
 contextmenu.in-popup=true
+contextmenu.separators-in-popup=true
 
 # Option labels
 contextmenu.in-menubar.label=Show in Menu Bar
 contextmenu.in-popup.label=Show in Popup
+contextmenu.separators-in-popup.label=Show Separators in Popup
 contextmenu.actions-label=Actions to display in menu:
 contextmenu.modes-label=Mode:
 contextmenu.menu-name.label=Menu label:
