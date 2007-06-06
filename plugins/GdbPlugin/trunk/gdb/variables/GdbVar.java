@@ -42,6 +42,7 @@ public class GdbVar extends DefaultMutableTreeNode {
 	protected String name;
 	private String value = null;
 	private String type = null;
+	private String inferredType = null;
 	private String gdbName = null;
 	private int numChildren = 0;
 	protected UpdateListener listener = null;
@@ -121,8 +122,8 @@ public class GdbVar extends DefaultMutableTreeNode {
 	private void getValue() {
 		if (getCommandManager() == null)
 			return;
-		if (type != null && tmm.containsKey(type)) {
-			getValueByMacro(tmm.get(type));
+		if (inferredType != null && tmm.containsKey(inferredType)) {
+			getValueByMacro(tmm.get(inferredType));
 			return;
 		}
 		getCommandManager().add("-var-evaluate-expression " + gdbName,
@@ -234,7 +235,8 @@ public class GdbVar extends DefaultMutableTreeNode {
 					if (! msg.equals("done"))
 						return;
 					gdbName = res.getStringValue("name");
-					type = res.getStringValue("type"); 
+					type = res.getStringValue("type");
+					inferredType = TypeMacroMap.getInstance().getInferredType(type);
 					String nc = res.getStringValue("numchild");
 					// Display char arrays as strings if requested
 					if (jEdit.getBooleanProperty(GeneralOptionPane.CHAR_ARRAY_AS_STRING_PROP)) {
