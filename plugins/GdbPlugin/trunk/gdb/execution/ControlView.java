@@ -25,6 +25,7 @@ import gdb.launch.LaunchConfiguration;
 import gdb.launch.LaunchConfigurationListDialog;
 import gdb.launch.LaunchConfigurationManager;
 import gdb.launch.LaunchConfigurationManager.ChangeListener;
+import gdb.options.GeneralOptionPane;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -41,10 +42,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 @SuppressWarnings("serial")
-public class ControlView extends GdbView {
+public class ControlView extends GdbView implements EBComponent {
 
 	private JComboBox config;
 	private JButton go;
@@ -57,6 +62,7 @@ public class ControlView extends GdbView {
 	private JButton toggleBreakpoint;
 	private JButton editLaunchConfigs;
 	private LaunchConfigurationManager mgr;
+	private JPanel configPanel;
 	
 	private static class ActionInvoker implements ActionListener {
 		String action;
@@ -71,28 +77,7 @@ public class ControlView extends GdbView {
 	public ControlView() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(Box.createRigidArea(new Dimension(0, 5)));
-		JPanel configPanel = new JPanel();
-		configPanel.add(new JLabel("Program:"));
-		mgr = LaunchConfigurationManager.getInstance();
-		config = new JComboBox();
-		updateLaunchConfigs();
-		mgr.addChangeListener(new ChangeListener() {
-			public void changed() {
-				updateLaunchConfigs();
-			}
-		});
-		configPanel.add(config);
-		editLaunchConfigs = new JButton("Edit program list");
-		configPanel.add(editLaunchConfigs);
-		editLaunchConfigs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				LaunchConfigurationListDialog dlg =
-					new LaunchConfigurationListDialog(
-							(Frame)SwingUtilities.getWindowAncestor(ControlView.this));
-				dlg.setVisible(true);
-			}
-		});
-		add(configPanel);
+		createProgramListPanel();
 		JPanel execPanel = new JPanel();
 		execPanel.setLayout(new FlowLayout());
 		add(execPanel);
@@ -129,6 +114,34 @@ public class ControlView extends GdbView {
 		execPanel.add(toggleBreakpoint);
 		toggleBreakpoint.addActionListener(new ActionInvoker(Debugger.TOGGLE_BREAKPOINT_ACTION));
 		initialize();
+		EditBus.addToBus(this);
+	}
+
+	private void createProgramListPanel() {
+		configPanel = new JPanel();
+		configPanel.add(new JLabel("Program:"));
+		mgr = LaunchConfigurationManager.getInstance();
+		config = new JComboBox();
+		updateLaunchConfigs();
+		mgr.addChangeListener(new ChangeListener() {
+			public void changed() {
+				updateLaunchConfigs();
+			}
+		});
+		configPanel.add(config);
+		editLaunchConfigs = new JButton("Edit program list");
+		configPanel.add(editLaunchConfigs);
+		editLaunchConfigs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				LaunchConfigurationListDialog dlg =
+					new LaunchConfigurationListDialog(
+							(Frame)SwingUtilities.getWindowAncestor(ControlView.this));
+				dlg.setVisible(true);
+			}
+		});
+		add(configPanel);
+		configPanel.setVisible(jEdit.getBooleanProperty(
+				GeneralOptionPane.SHOW_PROGRAM_LIST_IN_PANEL_PROP));
 	}
 
 	void updateLaunchConfigs() {
@@ -186,6 +199,16 @@ public class ControlView extends GdbView {
 		until.setEnabled(true);
 		pause.setEnabled(false);
 		quit.setEnabled(true);
+	}
+
+	public void handleMessage(EBMessage msg) {
+		if(msg instanceof PropertiesChanged)
+			propertiesChanged();
+	}
+
+	private void propertiesChanged() {
+		configPanel.setVisible(jEdit.getBooleanProperty(
+				GeneralOptionPane.SHOW_PROGRAM_LIST_IN_PANEL_PROP));
 	}
 	
 }
