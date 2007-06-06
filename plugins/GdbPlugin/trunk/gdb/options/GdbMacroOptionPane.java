@@ -4,6 +4,7 @@ import gdb.variables.TypeMacroMap;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,11 +30,17 @@ import debugger.jedit.Plugin;
 @SuppressWarnings("serial")
 public class GdbMacroOptionPane extends AbstractOptionPane {
 
+	private JTextField typePatternTF;
+	private JTextField typeReplacementTF;
 	private JTable table;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	
 	static final String GDB_MACRO_MAP_LABEL = PREFIX + "gdb_macro_map_label";
+	private static final String TYPE_PATTERN_LABEL = PREFIX + "type_pattern_label";
+	private static final String TYPE_REPLACEMENT_LABEL = PREFIX + "type_replacement_label";
+	protected static final String TYPE_PATTERN_DEFAULT = PREFIX + "type_pattern_default";
+	protected static final String TYPE_REPLACEMENT_DEFAULT = PREFIX + "type_replacement_default";
 
 	private DefaultTableModel model;
 	
@@ -40,14 +48,40 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 		super("debugger.macros");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new GridBagLayout());
+		
+		// Type inferrence panel
+		JPanel typePanel = new JPanel(new GridLayout(0, 1));
+		typePanel.add(new JLabel("The fields below specify a regexp substitution for type names:"));
+		JPanel typeFields = new JPanel();
+		typeFields.add(new JLabel(jEdit.getProperty(TYPE_PATTERN_LABEL)));
+		typePatternTF = new JTextField(20);
+		typePatternTF.setText(jEdit.getProperty(TypeMacroMap.TYPE_PATTERN));
+		typeFields.add(typePatternTF);
+		typeFields.add(new JLabel(jEdit.getProperty(TYPE_REPLACEMENT_LABEL)));
+		typeReplacementTF = new JTextField(10);
+		typeReplacementTF.setText(jEdit.getProperty(TypeMacroMap.TYPE_REPLACEMENT));
+		typeFields.add(typeReplacementTF);
+		JButton resetTypeSubst = new JButton("Reset");
+		typeFields.add(resetTypeSubst);
+		resetTypeSubst.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				typePatternTF.setText(jEdit.getProperty(TYPE_PATTERN_DEFAULT));
+				typeReplacementTF.setText(jEdit.getProperty(TYPE_REPLACEMENT_DEFAULT));
+			}
+		});
+		typePanel.add(typeFields);
 		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(10, 10, 10, 10);
+		c.insets = new Insets(5, 5, 5, 5);
 		c.ipady = 20;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weighty = 0.0;
+		add(typePanel, c);
+		
+		// Type -> Macro table
+		c.gridy++;
 		add(new JLabel(jEdit.getProperty(GDB_MACRO_MAP_LABEL)), c);
 		table = new JTable() {
 			@Override
@@ -123,6 +157,7 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 				continue;
 			tmm.put(type, macro);
 		}
+		tmm.setTypeInferrence(typePatternTF.getText(), typeReplacementTF.getText());
 		tmm.save();
 	}
 

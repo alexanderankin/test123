@@ -122,6 +122,12 @@ options.debugger.launch_config_dialog.title=GdbPlugin - Programs to debug
 options.debugger.macros.code=new gdb.options.GdbMacroOptionPane();
 options.debugger.macros.label=Formatting
 options.debugger.gdb_macro_map_label=The following table associates types with GDB macros that will be used to display values of these types:
+options.debugger.type_pattern_label=Actual type regexp:
+options.debugger.type_pattern=(const\\s+)?(\\S+)(\\s*&)?
+options.debugger.type_pattern_default=(const\\s+)?(\\S+)(\\s*&)?
+options.debugger.type_replacement_label=Replacement type:
+options.debugger.type_replacement=$2
+options.debugger.type_replacement_default=$2
 
 # Documentation
 plugin.debugger.jedit.Plugin.docs=index.html
