@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package gdb.variables;
 
 import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -30,6 +32,7 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class Variables extends JPanel {
 	Watches watchesPanel = null;
+	JSplitPane pane = null;
 	
 	public Variables() {
 		setupUI(null);
@@ -52,12 +55,26 @@ public class Variables extends JPanel {
 		watches.setBorder(border);
 		watchesPanel = (watches2 == null) ? new Watches() : watches2;
 		watches.add(watchesPanel);
-		JSplitPane pane = new JSplitPane(
-				JSplitPane.VERTICAL_SPLIT, locals, watches);
+		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, locals, watches);
 		add(pane);
-        pane.setDividerLocation(350);
+		pane.setDividerLocation(jEdit.getIntegerProperty("gdbplugin.variables.splitter", 350));
+		pane.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (evt.getPropertyName() == JSplitPane.DIVIDER_LOCATION_PROPERTY) {
+					jEdit.setProperty("gdbplugin.variables.splitter", evt.getNewValue().toString());					
+				}
+			}
+			
+		});
 	}
 	public Watches getWatches() {
 		return watchesPanel;
+	}
+	@Override
+	protected void finalize() throws Throwable
+	{
+		pane = null;
+		super.finalize();
 	}
 }
