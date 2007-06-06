@@ -1,6 +1,5 @@
 To do:
 - Fix breakpoint UI to reflect GDB state rather than plugin actions.
-- Add type inference rules for the type->macro map.
 - Extend type->macro map to allow 'set', not only 'get'.
 --> Locals/Watches/Variables:
   - Support changes in tree structure of variable.
@@ -63,4 +62,5 @@ Done:
   (e.g. display Qt4 strings as const char *). Add mapping from type to gdb macro name.
   Gdb macros will be defined in .gdbinit, and GdbPlugin will run them (with the
   expression to evaluate as input) and display the output of the macro as value.
++ Add type inference rules for the type->macro map.
   
