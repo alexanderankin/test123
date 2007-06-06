@@ -31,30 +31,35 @@ import org.gjt.sp.jedit.jEdit;
 
 
 public class GeneralOptionPane extends AbstractOptionPane {
-	
+
 	private JCheckBox showInMenuBar, showInContextMenu;
 
 	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane() {
         super("contextmenu-general");
     } //}}}
-	
+
 	//{{{ _init()
 	protected void _init() {
 		showInMenuBar = new JCheckBox(jEdit.getProperty("contextmenu.in-menubar.label"),
 										jEdit.getBooleanProperty("contextmenu.in-menubar"));
-		
+
 		add(showInMenuBar);
+
 		showInContextMenu = new JCheckBox(jEdit.getProperty("contextmenu.in-popup.label"),
 											jEdit.getBooleanProperty("contextmenu.in-popup"));
-		
+		add(showInContextMenu);
+
+		showInContextMenu = new JCheckBox(jEdit.getProperty("contextmenu.separators-in-popup.label"),
+											jEdit.getBooleanProperty("contextmenu.separators-in-popup"));
 		add(showInContextMenu);
 	} //}}}
-	
+
 	//{{{ _save()
 	protected void _save() {
-		jEdit.setBooleanProperty("contextmenu.in-popup", showInContextMenu.isSelected());
 		jEdit.setBooleanProperty("contextmenu.in-menubar", showInMenuBar.isSelected());
+		jEdit.setBooleanProperty("contextmenu.in-popup", showInContextMenu.isSelected());
+		jEdit.setBooleanProperty("contextmenu.separators-in-popup", showInContextMenu.isSelected());
 	} //}}}
 
 }

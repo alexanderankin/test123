@@ -27,13 +27,13 @@
 	<section id="summary">
 		<title>Summary</title>
 		<para>
-			The ContextMenu plugin allows you to change the text area's right-click context menu for each 
+			The ContextMenu plugin allows you to change the text area's right-click context menu for each
 			mode.
-			To the menu, you can add jEdit's built-in actions, or actions from any plugin, or a macro. 
+			To the menu, you can add jEdit's built-in actions, or actions from any plugin, or a macro.
 			Selected actions can be also shown in jEdit's menu bar.
 		</para>
 	</section>
-    
+
 	<section id="options">
 		<title>Options</title>
 		<itemizedlist>
@@ -41,25 +41,30 @@
 				<itemizedlist>
 					<listitem>
 						<para>
-							<emphasis>Show in Popup</emphasis> - 
+							<emphasis>Show in Popup</emphasis> -
 							if selected, actions are shown in the
 							text area's context menu before
-							the "Customize This Menu" item. Separators between
-							mode-specific items are not shown in this menu.
+							the "Customize This Menu" item.
 						</para>
 					</listitem>
 					<listitem>
 						<para>
-							<emphasis>Show in Menu Bar</emphasis> - 
+							<emphasis>Show in Menu Bar</emphasis> -
 							if selected, actions are also shown in jEdit's menu bar.
 						</para>
 					</listitem>
 					<listitem>
 						<para>
-							<emphasis>Menu label</emphasis> - 
+							<emphasis>Show Separators in Popup</emphasis> -
+							if selected, separators between mode-specific items are shown in text area's context menu.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Menu label</emphasis> -
 							label for menu in menu bar. Tip:
 							Insert dollar sign ($) before letter, which you
-							want to have as shortcut to access menu 
+							want to have as shortcut to access menu
 							via A+<replaceable>letter</replaceable>.
 							For example: <replaceable>J$ava</replaceable>.
 						</para>
@@ -71,6 +76,14 @@
 	<section id="change-log">
 		<title>Change log</title>
 		<itemizedlist>
+			<listitem>
+				<para>Version 0.2, Requires jEdit 4.3pre6 and Java 1.5</para>
+				<itemizedlist>
+					<listitem>
+						<para>Separators in text area's context menu (bug #1731851).</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
 			<listitem>
 				<para>Version 0.1, Requires jEdit 4.3pre6 and Java 1.5</para>
 				<itemizedlist>
