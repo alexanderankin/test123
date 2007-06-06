@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="console.Shell" NAME="System">
+		new console.SystemShell();
+	</SERVICE>
+	<SERVICE CLASS="console.Shell" NAME="BeanShell">
+		new console.ConsoleBeanShell();
+	</SERVICE>
+</SERVICES>
