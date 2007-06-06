@@ -40,6 +40,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 	private JTextField gdbPathTF;
 	private JCheckBox useExternalCommandsCB;
+	private JCheckBox showProgramListInPanelCB;
 	private JCheckBox showBreakpointPopupCB;
 	private JTextField arrayRangeSplitSizeTF;
 	private JCheckBox charArrayAsStringCB;
@@ -52,6 +53,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String GDB_PATH_PROP = PREFIX + "gdb_path";
 	static final String USE_EXTERNAL_COMMANDS_LABEL = PREFIX + "use_external_commands_label";
 	static public final String USE_EXTERNAL_COMMANDS_PROP = PREFIX + "use_external_commands";
+	static final String SHOW_PROGRAM_LIST_IN_PANEL_LABEL = PREFIX + "show_program_list_in_panel_label";
+	static public final String SHOW_PROGRAM_LIST_IN_PANEL_PROP = PREFIX + "show_program_list_in_panel";
 	static final String SHOW_BREAKPOINT_POPUP_LABEL = PREFIX + "show_breakpoint_popup_label";
 	static public final String SHOW_BREAKPOINT_POPUP_PROP = PREFIX + "show_breakpoint_popup";
 	static final String ARRAY_RANGE_SPLIT_SIZE_LABEL = PREFIX + "array_range_split_size_label";
@@ -77,6 +80,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(useExternalCommandsCB);
 		useExternalCommandsCB.setSelected(
 				jEdit.getBooleanProperty(USE_EXTERNAL_COMMANDS_PROP)); 
+		showProgramListInPanelCB = new JCheckBox(
+				jEdit.getProperty(SHOW_PROGRAM_LIST_IN_PANEL_LABEL));
+		addComponent(showProgramListInPanelCB);
+		showProgramListInPanelCB.setSelected(
+				jEdit.getBooleanProperty(SHOW_PROGRAM_LIST_IN_PANEL_PROP)); 
 		showBreakpointPopupCB = new JCheckBox(
 				jEdit.getProperty(SHOW_BREAKPOINT_POPUP_LABEL));
 		addComponent(showBreakpointPopupCB);
@@ -133,6 +141,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
 		jEdit.setBooleanProperty(USE_EXTERNAL_COMMANDS_PROP, useExternalCommandsCB.isSelected()); 
+		jEdit.setBooleanProperty(SHOW_PROGRAM_LIST_IN_PANEL_PROP, showProgramListInPanelCB.isSelected()); 
 		jEdit.setBooleanProperty(SHOW_BREAKPOINT_POPUP_PROP, showBreakpointPopupCB.isSelected()); 
 		jEdit.setIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP,
 				Integer.valueOf(arrayRangeSplitSizeTF.getText()).intValue());
@@ -141,6 +150,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(EXPRESSION_TOOLTIP_PROP,
 				expressionTooltipCB.isSelected());
 		jEdit.setProperty(EXPRESSION_REGEXP_PROP, expressionRegExpTF.getText());
+		jEdit.propertiesChanged();
 	}
 
 }
