@@ -63,11 +63,12 @@ To more directly control the execution of the debugged programs, the GdbPlugin u
 
 <bridgehead> Programs </bridgehead>
 
-<para> This is one place where you can specify which programs GdbPlugin knows to debug. You can also configure the programs by clicking on <guibutton>Edit Program List</guibutton> from the GdbPlugin panel dockable. </para>
+<para> This is where you can specify which programs GdbPlugin knows to debug. Eclipse calls these <emphasis role="bold">launch configurations</emphasis>. You can also add and edit these settings by clicking on <guibutton>Edit Program List</guibutton> from the GdbPlugin panel dockable. </para>
+
 
 <bridgehead> Formatting </bridgehead>
 
-<para> Gdb only knows how to display simple and primitive types. For more complex classes, it is handy to use <ulink url="http://sourceware.org/gdb/current/onlinedocs/gdb_21.html#SEC220">Gdb macros</ulink> to display values of objects. For example, the Qt4 QString is a smart pointer to data located elsewhere. A macro for printing QStrings, found in the <ulink url="http://websvn.kde.org/~checkout~/trunk/KDE/kdesdk/scripts/kde-devel-gdb">KDE subversion repository</ulink> shows us how to print out its contents from Gdb: </para>
+<para> Gdb only knows how to display simple and primitive types. For more complex classes, it is handy to use <ulink url="http://sourceware.org/gdb/current/onlinedocs/gdb_21.html#SEC220">Gdb macros</ulink> to display values of objects. For example, the Qt4 QString is actually a smart pointer to data located elsewhere. A macro for printing QStrings, found in the <ulink url="http://websvn.kde.org/~checkout~/trunk/KDE/kdesdk/scripts/kde-devel-gdb">KDE subversion repository</ulink> shows us how to print out its contents from Gdb: </para>
 
 <programlisting>
 define printqstring
@@ -83,7 +84,10 @@ define printq4stringdata
 end
 </programlisting>
 
-<para> To tell the GdbPlugin to use use this macro automatically whenever a QString needs to be displayed, we first make sure this macro is in our <literal>.gdbrc</literal> file, and then use the <emphasis role="bold">Formatting</emphasis> option pane to map the QString type to the <literal>printqstring</literal> macro. </para>
+<para> To tell the GdbPlugin to use use this macro automatically whenever a QString needs to be displayed, we first make sure this macro is in our <literal>.gdbrc</literal> file, and then use the <emphasis role="bold">Formatting</emphasis> option pane to map the <literal>QString</literal> type to the <literal>printqstring</literal> macro. </para>
+
+<para> The regex type substitution for type names makes it possible to specify only one mapping, for example, from <literal>QString:printqstring</literal>, without also having to map related modified types, such as <literal>const QString &amp;</literal> and <literal>QString&amp;</literal>. </para>
+
 </section>
 
 <section id="gettingstarted">
@@ -126,7 +130,11 @@ You can now use the buttons in the execution control panel to control the execut
 
 <note>
 <title> The Pause Button </title>
-<para>Due to technical reasons, the Pause button does not work, so if you click 'Go' without setting a breakpoint or a watchpoint, there is no way to stop GDB in the middle of execution (other than killing it, of course).</para>
+<para> Due to technical reasons, Java can not directly communicate with processes as easily as C/C++, which means the GdbPlugin must make use of some native programs, <literal>kill</literal> and <literal>ps</literal>, in order for the Pause button to work. If you click 'Go' without setting a breakpoint or a watchpoint, and you do not have the <guilabel>Use External Commands</guilabel> option switched on, there is no way to stop GDB in the middle of execution (other than killing it, of course).</para>
+
+<para> To obtain the PID of the debugged process, the GdbPlugin currently assumes only one jEdit process is running. This means that the pause button may fail to work when there are multiple jEdit processes running.
+</para>
+
 </note>
 <para>Manipulation of breakpoints and watchpoints can be done using the Breakpoints dockable window, that you can also open from the GdbPlugin menu.
 </para>
