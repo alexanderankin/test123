@@ -13,7 +13,7 @@ public class CommitCommand implements Command {
      * params[3] password, required if username, otherwise optional
      */
     public String execute( String[] params ) throws CommandInitializationException, CommandExecutionException {
-        if ( params == null || params.length > 2 ) {
+        if ( params == null || params.length < 2 ) {
             throw new CommandInitializationException( "Must have directory or filename and commit message." );
         }
 
@@ -54,6 +54,7 @@ public class CommitCommand implements Command {
             return SVN2.execute( command );
         }
         catch ( Exception e ) {
+            e.printStackTrace();
             throw new CommandExecutionException( e );
         }
     }
