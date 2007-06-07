@@ -31,6 +31,15 @@ import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class Variables extends JPanel {
+	private static final class SplitterLocationChangeListener implements
+			PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (evt.getPropertyName() == JSplitPane.DIVIDER_LOCATION_PROPERTY) {
+				jEdit.setProperty("gdbplugin.variables.splitter", evt.getNewValue().toString());					
+			}
+		}
+	}
 	Watches watchesPanel = null;
 	JSplitPane pane = null;
 	
@@ -58,15 +67,7 @@ public class Variables extends JPanel {
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, locals, watches);
 		add(pane);
 		pane.setDividerLocation(jEdit.getIntegerProperty("gdbplugin.variables.splitter", 350));
-		pane.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				if (evt.getPropertyName() == JSplitPane.DIVIDER_LOCATION_PROPERTY) {
-					jEdit.setProperty("gdbplugin.variables.splitter", evt.getNewValue().toString());					
-				}
-			}
-			
-		});
+		pane.addPropertyChangeListener(new SplitterLocationChangeListener());
 	}
 	public Watches getWatches() {
 		return watchesPanel;

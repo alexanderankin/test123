@@ -30,6 +30,13 @@ import debugger.jedit.Plugin;
 @SuppressWarnings("serial")
 public class GdbMacroOptionPane extends AbstractOptionPane {
 
+	private static final class ReadOnlyTable extends JTable {
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
+	}
+
 	private JTextField typePatternTF;
 	private JTextField typeReplacementTF;
 	private JTable table;
@@ -83,12 +90,7 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 		// Type -> Macro table
 		c.gridy++;
 		add(new JLabel(jEdit.getProperty(GDB_MACRO_MAP_LABEL)), c);
-		table = new JTable() {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		table = new ReadOnlyTable();
 		model = new DefaultTableModel();
 		model.addColumn("Type");
 		model.addColumn("Macro");
