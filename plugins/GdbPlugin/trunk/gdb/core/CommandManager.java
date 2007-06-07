@@ -31,8 +31,8 @@ public class CommandManager extends Thread {
 	Vector<Command> commands = new Vector<Command>();
 	GdbProcess process;
 	Parser parser = null;
-	int id = 0;
 	private final Command StopCommand = new Command(null, "***Stop***", null);
+	private Integer cid = new Integer(0);
 	
 	public class Command {
 		String cmd;
@@ -84,8 +84,9 @@ public class CommandManager extends Thread {
 	}
 	// Add a command to be executed next (before the other registered commands)
 	public void addNow(String cmd, ResultHandler handler) {
-		Integer cid = Integer.valueOf(id);
-		id++;
+		synchronized(cid) {
+			cid = Integer.valueOf(cid.intValue() + 1);
+		}
 		Command c = new Command(cid, cmd, handler);
 		addNow(c);
 	}
@@ -107,8 +108,9 @@ public class CommandManager extends Thread {
 		addNow(cmd, null);
 	}
 	public void add(String cmd, ResultHandler handler) {
-		Integer cid = Integer.valueOf(id);
-		id++;
+		synchronized(cid) {
+			cid = Integer.valueOf(cid.intValue() + 1);
+		}
 		Command c = new Command(cid, cmd, handler);
 		synchronized(commands) {
 			commands.add(c);
