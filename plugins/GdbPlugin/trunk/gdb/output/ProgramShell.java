@@ -32,7 +32,7 @@ public class ProgramShell extends BaseShell {
 
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String MI_SHELL_INFO_MSG_PROP = PREFIX + "program_shell_info_msg";
-	public static String NAME = "Program";
+	public static final String NAME = "Program";
 	
 	public ProgramShell() {
 		super(NAME);

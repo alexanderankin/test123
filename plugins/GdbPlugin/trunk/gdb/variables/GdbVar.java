@@ -37,7 +37,7 @@ import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class GdbVar extends DefaultMutableTreeNode {
-	static protected TypeMacroMap tmm = TypeMacroMap.getInstance();
+	static protected final TypeMacroMap tmm = TypeMacroMap.getInstance();
 
 	protected String name;
 	private String value = null;
