@@ -101,12 +101,6 @@ public class BreakpointTableView extends GdbView {
 							}
 						}
 					}
-					for (int i = 0; i < columns.size(); i++) {
-						String name = columns.get(i);
-						name = name.substring(0, 1).toUpperCase() +
-							name.substring(1);
-						columns.set(i, name);
-					}
 					synchronized(columns) {
 						columns.notify();
 					}
@@ -148,7 +142,10 @@ line="13",times="0"}]}
 		}
 
 		public String getColumnName(int i) {
-			return columns.get(i);
+			String name = columns.get(i);
+			if (name != null)
+				name = name.substring(0, 1).toUpperCase() + name.substring(1);
+			return name;
 		}
 
 		public int getRowCount() {
