@@ -291,11 +291,7 @@ public class Debugger implements DebuggerTool {
 	public void evaluateSelection(final View view) {
 		String selected = view.getTextArea().getSelectedText();
 		GdbVar v = new GdbVar(selected);
-		v.setChangeListener(new UpdateListener() {
-			public void updated(GdbVar v) {
-				JOptionPane.showMessageDialog(view, v.toString());
-			}
-		});
+		v.setChangeListener(new PopupEvaluationUpdateListener(view));
 		v.done();
 	}
 	private void setBreakpoint(View view, Buffer buffer, int line) {
@@ -339,6 +335,18 @@ public class Debugger implements DebuggerTool {
 		this.frontEnd = frontEnd;
 	}
 
+	private static final class PopupEvaluationUpdateListener implements
+			UpdateListener {
+		private final View view;
+
+		private PopupEvaluationUpdateListener(View view) {
+			this.view = view;
+		}
+
+		public void updated(GdbVar v) {
+			JOptionPane.showMessageDialog(view, v.toString());
+		}
+	}
 	private static final class VariableTooltipTextAreaExtension extends TextAreaExtension {
 		private static final long VAR_VALUE_TIMEOUT = 500;
 		JEditTextArea textArea;
@@ -367,8 +375,8 @@ public class Debugger implements DebuggerTool {
 			}
 			if (start > index || selected.length() == 0)
 				return null;
-			GdbVar v = new GdbVar(selected);
 			gotValue = false;
+			GdbVar v = new GdbVar(selected);
 			v.setChangeListener(new UpdateListener() {
 				public void updated(GdbVar v) {
 					synchronized(v) {
@@ -379,7 +387,8 @@ public class Debugger implements DebuggerTool {
 			});
 			try {
 				synchronized(v) {
-					v.wait(VAR_VALUE_TIMEOUT);
+					if (! gotValue)
+						v.wait(VAR_VALUE_TIMEOUT);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
