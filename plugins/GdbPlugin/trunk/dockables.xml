@@ -19,6 +19,9 @@
 	<DOCKABLE NAME="debugger-breakpoints">
 		gdb.core.Debugger.getInstance().showBreakpoints(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="debugger-gdb-breakpoints">
+		gdb.core.Debugger.getInstance().showGdbBreakpoints(view);
+	</DOCKABLE>
 	<DOCKABLE NAME="debugger-panel">
 		gdb.core.Debugger.getInstance().showControlPanel(view);
 	</DOCKABLE>

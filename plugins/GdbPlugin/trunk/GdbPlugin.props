@@ -3,7 +3,7 @@ plugin.debugger.jedit.Plugin.activate=defer
 # general plugin information
 plugin.debugger.jedit.Plugin.name=GdbPlugin
 plugin.debugger.jedit.Plugin.author=Shlomy Reinstein
-plugin.debugger.jedit.Plugin.version=0.3
+plugin.debugger.jedit.Plugin.version=0.4
 plugin.debugger.jedit.Plugin.description=\
 	This plugin provides a jEdit interface for debuggers
 
@@ -55,6 +55,7 @@ plugin.debugger.jedit.Plugin.menu=debugger-go \
   debugger-show-variables \
   debugger-show-stack-trace \
   debugger-breakpoints \
+  debugger-gdb-breakpoints \
   debugger-show-locals \
   debugger-watches \
   console.shell.GDB/MI-show \
@@ -76,6 +77,8 @@ debugger-watches.title=Expressions
 debugger-watches.label=Expressions
 debugger-breakpoints.title=Breakpoints
 debugger-breakpoints.label=Breakpoints
+debugger-gdb-breakpoints.title=GDB Breakpoints (view-only)
+debugger-gdb-breakpoints.label=GDB Breakpoints (view-only)
 debugger-panel.title=GdbPlugin Panel
 debugger-panel.label=GdbPlugin Panel
 
