@@ -339,7 +339,7 @@ public class Debugger implements DebuggerTool {
 		this.frontEnd = frontEnd;
 	}
 
-	private final class VariableTooltipTextAreaExtension extends TextAreaExtension {
+	private static final class VariableTooltipTextAreaExtension extends TextAreaExtension {
 		private static final long VAR_VALUE_TIMEOUT = 500;
 		JEditTextArea textArea;
 		private boolean gotValue;
