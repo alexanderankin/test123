@@ -38,6 +38,20 @@ import debugger.jedit.Plugin;
 @SuppressWarnings("serial")
 public class GeneralOptionPane extends AbstractOptionPane {
 
+	private static final class NumberInputVerifier extends InputVerifier {
+		@Override
+		public boolean verify(JComponent arg0) {
+			JTextField tf = (JTextField)arg0;
+			String s = tf.getText();
+			try {
+				Integer.valueOf(s);
+			} catch (Exception e) {
+				return false;
+			}
+			return true;
+		}
+	}
+
 	private JTextField gdbPathTF;
 	private JCheckBox useExternalCommandsCB;
 	private JCheckBox showProgramListInPanelCB;
@@ -95,19 +109,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				arrayRangeSplitSizeTF);
 		arrayRangeSplitSizeTF.setText(String.valueOf(
 				jEdit.getIntegerProperty(ARRAY_RANGE_SPLIT_SIZE_PROP, 100)));
-		arrayRangeSplitSizeTF.setInputVerifier(new InputVerifier() {
-			@Override
-			public boolean verify(JComponent arg0) {
-				JTextField tf = (JTextField)arg0;
-				String s = tf.getText();
-				try {
-					Integer.valueOf(s);
-				} catch (Exception e) {
-					return false;
-				}
-				return true;
-			}
-		});
+		arrayRangeSplitSizeTF.setInputVerifier(new NumberInputVerifier());
 		charArrayAsStringCB = new JCheckBox(
 				jEdit.getProperty(CHAR_ARRAY_AS_STRING_LABEL));
 		addComponent(charArrayAsStringCB);

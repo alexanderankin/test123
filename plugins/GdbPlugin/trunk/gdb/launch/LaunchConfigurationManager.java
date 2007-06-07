@@ -58,6 +58,16 @@ public class LaunchConfigurationManager {
 
 	private Vector<ChangeListener> listeners = new Vector<ChangeListener>();
 	
+	private static final class FileNameComparator implements Comparator<File> {
+		public int compare(File o1, File o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	}
+	private static final class XmlFilenameFilter implements FilenameFilter {
+		public boolean accept(File dir, String name) {
+			return (name.endsWith(XML_SUFFIX));
+		}
+	}
 	static public interface ChangeListener {
 		void changed();
 	}
@@ -228,16 +238,8 @@ public class LaunchConfigurationManager {
 		File configDir = new File(getConfigDirectory());
 		if (! configDir.canRead())
 			return new File[0];
-		File[] files = configDir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return (name.endsWith(XML_SUFFIX));
-			}
-		});
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		File[] files = configDir.listFiles(new XmlFilenameFilter());
+		Arrays.sort(files, new FileNameComparator());
 		return files;
 	}
 	static public LaunchConfigurationManager getInstance() {
