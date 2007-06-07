@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.2.0-rc2" sequence="0" timestamp="-1" analysisTimestamp="1181245130306" release="">
+  <Project filename="&lt;&lt;unnamed project&gt;&gt;" projectName="GdbPlugin">
+    <Jar>/home/shlomy/.jedit/jars/GdbPlugin.jar</Jar>
+    <AuxClasspathEntry>/home/shlomy/.jedit/jars/Console.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/shlomy/.jedit/jars/CommonControls.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/shlomy/jedit/4.3pre9/jedit.jar</AuxClasspathEntry>
+    <SrcDir>/home/shlomy/Plugins/GdbPlugin</SrcDir>
+  </Project>
+  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="3" abbrev="ST" category="STYLE">
+    <Class classname="debugger.jedit.Plugin$1">
+      <SourceLine classname="debugger.jedit.Plugin$1" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Class>
+    <Method classname="debugger.jedit.Plugin$1" name="run" signature="()V" isStatic="false">
+      <SourceLine classname="debugger.jedit.Plugin$1" start="77" end="91" startBytecode="0" endBytecode="125" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Method>
+    <Field classname="debugger.jedit.Plugin" name="dp" signature="Ldebugger/jedit/CurrentPositionPainter;" isStatic="true">
+      <SourceLine classname="debugger.jedit.Plugin" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Field>
+    <SourceLine classname="debugger.jedit.Plugin$1" start="87" end="87" startBytecode="99" endBytecode="99" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+  </BugInstance>
+  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="3" abbrev="ST" category="STYLE">
+    <Class classname="debugger.jedit.Plugin$1">
+      <SourceLine classname="debugger.jedit.Plugin$1" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Class>
+    <Method classname="debugger.jedit.Plugin$1" name="run" signature="()V" isStatic="false">
+      <SourceLine classname="debugger.jedit.Plugin$1" start="77" end="91" startBytecode="0" endBytecode="125" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Method>
+    <Field classname="debugger.jedit.Plugin" name="dpview" signature="Lorg/gjt/sp/jedit/View;" isStatic="true">
+      <SourceLine classname="debugger.jedit.Plugin" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+    </Field>
+    <SourceLine classname="debugger.jedit.Plugin$1" start="88" end="88" startBytecode="106" endBytecode="106" sourcefile="Plugin.java" sourcepath="debugger/jedit/Plugin.java"/>
+  </BugInstance>
+  <BugInstance type="DM_CONVERT_CASE" priority="3" abbrev="Dm" category="I18N">
+    <Class classname="gdb.breakpoints.Breakpoint">
+      <SourceLine classname="gdb.breakpoints.Breakpoint" sourcefile="Breakpoint.java" sourcepath="gdb/breakpoints/Breakpoint.java"/>
+    </Class>
+    <Method classname="gdb.breakpoints.Breakpoint" name="initialize" signature="()V" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.Breakpoint" start="76" end="93" startBytecode="0" endBytecode="155" sourcefile="Breakpoint.java" sourcepath="gdb/breakpoints/Breakpoint.java"/>
+    </Method>
+    <SourceLine classname="gdb.breakpoints.Breakpoint" start="82" end="82" startBytecode="34" endBytecode="34" sourcefile="Breakpoint.java" sourcepath="gdb/breakpoints/Breakpoint.java"/>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.breakpoints.BreakpointEditor">
+      <SourceLine classname="gdb.breakpoints.BreakpointEditor" sourcefile="BreakpointEditor.java" sourcepath="gdb/breakpoints/BreakpointEditor.java"/>
+    </Class>
+    <Field classname="gdb.breakpoints.BreakpointEditor" name="bp" signature="Lgdb/breakpoints/Breakpoint;" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.BreakpointEditor" sourcefile="BreakpointEditor.java" sourcepath="gdb/breakpoints/BreakpointEditor.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="BC_UNCONFIRMED_CAST" priority="3" abbrev="BC" category="STYLE">
+    <Class classname="gdb.breakpoints.BreakpointEditor$1">
+      <SourceLine classname="gdb.breakpoints.BreakpointEditor$1" sourcefile="BreakpointEditor.java" sourcepath="gdb/breakpoints/BreakpointEditor.java"/>
+    </Class>
+    <Method classname="gdb.breakpoints.BreakpointEditor$1" name="verify" signature="(Ljavax/swing/JComponent;)Z" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.BreakpointEditor$1" start="64" end="72" startBytecode="0" endBytecode="16" sourcefile="BreakpointEditor.java" sourcepath="gdb/breakpoints/BreakpointEditor.java"/>
+    </Method>
+    <Type descriptor="Ljavax/swing/JComponent;" role="TYPE_FOUND"/>
+    <Type descriptor="Ljavax/swing/JTextField;" role="TYPE_EXPECTED"/>
+    <LocalVariable name="comp" register="1" pc="0" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="gdb.breakpoints.BreakpointEditor$1" start="64" end="64" startBytecode="1" endBytecode="1" sourcefile="BreakpointEditor.java" sourcepath="gdb/breakpoints/BreakpointEditor.java"/>
+  </BugInstance>
+  <BugInstance type="SIC_INNER_SHOULD_BE_STATIC_ANON" priority="3" abbrev="SIC" category="PERFORMANCE">
+    <Class classname="gdb.breakpoints.BreakpointView$5">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$5" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="EQ_SELF_USE_OBJECT" priority="3" abbrev="Eq" category="BAD_PRACTICE">
+    <Class classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Class>
+    <Method classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" name="equals" signature="(Lgdb/breakpoints/BreakpointView$BreakpointCheckBox;)Z" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" start="165" end="165" startBytecode="0" endBytecode="16" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Method>
+  </BugInstance>
+  <BugInstance type="HE_EQUALS_USE_HASHCODE" priority="3" abbrev="HE" category="BAD_PRACTICE">
+    <UserAnnotation/>
+    <Class classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Class>
+    <Method classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" name="equals" signature="(Lgdb/breakpoints/BreakpointView$BreakpointCheckBox;)Z" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" start="165" end="165" startBytecode="0" endBytecode="16" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Method>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Class>
+    <Field classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" name="bp" signature="Lgdb/breakpoints/Breakpoint;" isStatic="false">
+      <SourceLine classname="gdb.breakpoints.BreakpointView$BreakpointCheckBox" sourcefile="BreakpointView.java" sourcepath="gdb/breakpoints/BreakpointView.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="DM_NUMBER_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE">
+    <Class classname="gdb.core.CommandManager">
+      <SourceLine classname="gdb.core.CommandManager" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager" name="&lt;init&gt;" signature="(Lgdb/proc/GdbProcess;Lgdb/core/Parser;)V" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager" start="81" end="84" startBytecode="0" endBytecode="58" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager" start="35" end="35" startBytecode="42" endBytecode="42" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    <String value="Integer(int)"/>
+    <String value="Integer.valueOf(int)"/>
+  </BugInstance>
+  <BugInstance type="NO_NOTIFY_NOT_NOTIFYALL" priority="3" abbrev="No" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.CommandManager">
+      <SourceLine classname="gdb.core.CommandManager" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager" name="add" signature="(Ljava/lang/String;Lgdb/core/Parser$ResultHandler;)V" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager" start="111" end="119" startBytecode="0" endBytecode="88" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager" start="117" end="117" startBytecode="71" endBytecode="71" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+  </BugInstance>
+  <BugInstance type="NO_NOTIFY_NOT_NOTIFYALL" priority="3" abbrev="No" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.CommandManager">
+      <SourceLine classname="gdb.core.CommandManager" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager" name="addNow" signature="(Lgdb/core/CommandManager$Command;)V" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager" start="102" end="106" startBytecode="0" endBytecode="33" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager" start="104" end="104" startBytecode="20" endBytecode="20" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+  </BugInstance>
+  <BugInstance type="WA_NOT_IN_LOOP" priority="2" abbrev="Wa" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.CommandManager">
+      <SourceLine classname="gdb.core.CommandManager" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager" name="next" signature="()Lgdb/core/CommandManager$Command;" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager" start="124" end="135" startBytecode="0" endBytecode="59" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager" start="128" end="128" startBytecode="23" endBytecode="23" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+  </BugInstance>
+  <BugInstance type="WA_NOT_IN_LOOP" priority="2" abbrev="Wa" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.CommandManager$Command">
+      <SourceLine classname="gdb.core.CommandManager$Command" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager$Command" name="run" signature="()V" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager$Command" start="48" end="79" startBytecode="0" endBytecode="152" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager$Command" start="72" end="72" startBytecode="118" endBytecode="118" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+  </BugInstance>
+  <BugInstance type="NO_NOTIFY_NOT_NOTIFYALL" priority="3" abbrev="No" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.CommandManager$Command$1">
+      <SourceLine classname="gdb.core.CommandManager$Command$1" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Class>
+    <Method classname="gdb.core.CommandManager$Command$1" name="handle" signature="(Ljava/lang/String;Lgdb/core/Parser$GdbResult;)V" isStatic="false">
+      <SourceLine classname="gdb.core.CommandManager$Command$1" start="51" end="57" startBytecode="0" endBytecode="64" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.CommandManager$Command$1" start="55" end="55" startBytecode="49" endBytecode="49" sourcefile="CommandManager.java" sourcepath="gdb/core/CommandManager.java"/>
+  </BugInstance>
+  <BugInstance type="WA_NOT_IN_LOOP" priority="3" abbrev="Wa" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.Debugger$VariableTooltipTextAreaExtension">
+      <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+    </Class>
+    <Method classname="gdb.core.Debugger$VariableTooltipTextAreaExtension" name="getToolTipText" signature="(II)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension" start="360" end="400" startBytecode="0" endBytecode="243" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension" start="392" end="392" startBytecode="178" endBytecode="178" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+  </BugInstance>
+  <BugInstance type="NO_NOTIFY_NOT_NOTIFYALL" priority="3" abbrev="No" category="MT_CORRECTNESS">
+    <UserAnnotation/>
+    <Class classname="gdb.core.Debugger$VariableTooltipTextAreaExtension$1">
+      <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension$1" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+    </Class>
+    <Method classname="gdb.core.Debugger$VariableTooltipTextAreaExtension$1" name="updated" signature="(Lgdb/variables/GdbVar;)V" isStatic="false">
+      <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension$1" start="383" end="387" startBytecode="0" endBytecode="27" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+    </Method>
+    <SourceLine classname="gdb.core.Debugger$VariableTooltipTextAreaExtension$1" start="385" end="385" startBytecode="14" endBytecode="14" sourcefile="Debugger.java" sourcepath="gdb/core/Debugger.java"/>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.execution.ControlView">
+      <SourceLine classname="gdb.execution.ControlView" sourcefile="ControlView.java" sourcepath="gdb/execution/ControlView.java"/>
+    </Class>
+    <Field classname="gdb.execution.ControlView" name="mgr" signature="Lgdb/launch/LaunchConfigurationManager;" isStatic="false">
+      <SourceLine classname="gdb.execution.ControlView" sourcefile="ControlView.java" sourcepath="gdb/execution/ControlView.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.launch.LaunchConfigurationManager$FileNameComparator">
+      <SourceLine classname="gdb.launch.LaunchConfigurationManager$FileNameComparator" sourcefile="LaunchConfigurationManager.java" sourcepath="gdb/launch/LaunchConfigurationManager.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="BC_UNCONFIRMED_CAST" priority="3" abbrev="BC" category="STYLE">
+    <Class classname="gdb.options.GeneralOptionPane$NumberInputVerifier">
+      <SourceLine classname="gdb.options.GeneralOptionPane$NumberInputVerifier" sourcefile="GeneralOptionPane.java" sourcepath="gdb/options/GeneralOptionPane.java"/>
+    </Class>
+    <Method classname="gdb.options.GeneralOptionPane$NumberInputVerifier" name="verify" signature="(Ljavax/swing/JComponent;)Z" isStatic="false">
+      <SourceLine classname="gdb.options.GeneralOptionPane$NumberInputVerifier" start="44" end="51" startBytecode="0" endBytecode="14" sourcefile="GeneralOptionPane.java" sourcepath="gdb/options/GeneralOptionPane.java"/>
+    </Method>
+    <Type descriptor="Ljavax/swing/JComponent;" role="TYPE_FOUND"/>
+    <Type descriptor="Ljavax/swing/JTextField;" role="TYPE_EXPECTED"/>
+    <LocalVariable name="arg0" register="1" pc="0" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="gdb.options.GeneralOptionPane$NumberInputVerifier" start="44" end="44" startBytecode="1" endBytecode="1" sourcefile="GeneralOptionPane.java" sourcepath="gdb/options/GeneralOptionPane.java"/>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.options.LaunchConfigEditor">
+      <SourceLine classname="gdb.options.LaunchConfigEditor" sourcefile="LaunchConfigEditor.java" sourcepath="gdb/options/LaunchConfigEditor.java"/>
+    </Class>
+    <Field classname="gdb.options.LaunchConfigEditor" name="config" signature="Lgdb/launch/LaunchConfiguration;" isStatic="false">
+      <SourceLine classname="gdb.options.LaunchConfigEditor" sourcefile="LaunchConfigEditor.java" sourcepath="gdb/options/LaunchConfigEditor.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="BC_UNCONFIRMED_CAST" priority="3" abbrev="BC" category="STYLE">
+    <Class classname="gdb.options.LaunchConfigEditor$2">
+      <SourceLine classname="gdb.options.LaunchConfigEditor$2" sourcefile="LaunchConfigEditor.java" sourcepath="gdb/options/LaunchConfigEditor.java"/>
+    </Class>
+    <Method classname="gdb.options.LaunchConfigEditor$2" name="verify" signature="(Ljavax/swing/JComponent;)Z" isStatic="false">
+      <SourceLine classname="gdb.options.LaunchConfigEditor$2" start="104" end="107" startBytecode="0" endBytecode="15" sourcefile="LaunchConfigEditor.java" sourcepath="gdb/options/LaunchConfigEditor.java"/>
+    </Method>
+    <Type descriptor="Ljavax/swing/JComponent;" role="TYPE_FOUND"/>
+    <Type descriptor="Ljavax/swing/JTextField;" role="TYPE_EXPECTED"/>
+    <LocalVariable name="arg0" register="1" pc="0" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="gdb.options.LaunchConfigEditor$2" start="104" end="104" startBytecode="1" endBytecode="1" sourcefile="LaunchConfigEditor.java" sourcepath="gdb/options/LaunchConfigEditor.java"/>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.options.LaunchConfigOptionPane">
+      <SourceLine classname="gdb.options.LaunchConfigOptionPane" sourcefile="LaunchConfigOptionPane.java" sourcepath="gdb/options/LaunchConfigOptionPane.java"/>
+    </Class>
+    <Field classname="gdb.options.LaunchConfigOptionPane" name="configs" signature="Lgdb/launch/LaunchConfigurationManager;" isStatic="false">
+      <SourceLine classname="gdb.options.LaunchConfigOptionPane" sourcefile="LaunchConfigOptionPane.java" sourcepath="gdb/options/LaunchConfigOptionPane.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.options.LaunchConfigOptionPane">
+      <SourceLine classname="gdb.options.LaunchConfigOptionPane" sourcefile="LaunchConfigOptionPane.java" sourcepath="gdb/options/LaunchConfigOptionPane.java"/>
+    </Class>
+    <Field classname="gdb.options.LaunchConfigOptionPane" name="currentConfig" signature="Lgdb/launch/LaunchConfiguration;" isStatic="false">
+      <SourceLine classname="gdb.options.LaunchConfigOptionPane" sourcefile="LaunchConfigOptionPane.java" sourcepath="gdb/options/LaunchConfigOptionPane.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="OS_OPEN_STREAM_EXCEPTION_PATH" priority="3" abbrev="OS" category="BAD_PRACTICE" last="0">
+    <UserAnnotation/>
+    <Class classname="gdb.proc.GdbProcess">
+      <SourceLine classname="gdb.proc.GdbProcess" sourcefile="GdbProcess.java" sourcepath="gdb/proc/GdbProcess.java"/>
+    </Class>
+    <Method classname="gdb.proc.GdbProcess" name="getProcesses" signature="()Ljava/util/Vector;" isStatic="false">
+      <SourceLine classname="gdb.proc.GdbProcess" start="167" end="182" startBytecode="0" endBytecode="41" sourcefile="GdbProcess.java" sourcepath="gdb/proc/GdbProcess.java"/>
+    </Method>
+    <SourceLine classname="gdb.proc.GdbProcess" start="171" end="171" startBytecode="22" endBytecode="22" sourcefile="GdbProcess.java" sourcepath="gdb/proc/GdbProcess.java"/>
+  </BugInstance>
+  <BugInstance type="SE_NO_SERIALVERSIONID" priority="3" abbrev="SnVI" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.ArrayRangeVar">
+      <SourceLine classname="gdb.variables.ArrayRangeVar" sourcefile="ArrayRangeVar.java" sourcepath="gdb/variables/ArrayRangeVar.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="SE_NO_SERIALVERSIONID" priority="3" abbrev="SnVI" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.GdbArrayElementVar">
+      <SourceLine classname="gdb.variables.GdbArrayElementVar" sourcefile="GdbArrayElementVar.java" sourcepath="gdb/variables/GdbArrayElementVar.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="SE_BAD_FIELD" priority="2" abbrev="Se" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.GdbVar">
+      <SourceLine classname="gdb.variables.GdbVar" sourcefile="GdbVar.java" sourcepath="gdb/variables/GdbVar.java"/>
+    </Class>
+    <Field classname="gdb.variables.GdbVar" name="listener" signature="Lgdb/variables/GdbVar$UpdateListener;" isStatic="false">
+      <SourceLine classname="gdb.variables.GdbVar" sourcefile="GdbVar.java" sourcepath="gdb/variables/GdbVar.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="SE_NO_SERIALVERSIONID" priority="3" abbrev="SnVI" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.GdbVar">
+      <SourceLine classname="gdb.variables.GdbVar" sourcefile="GdbVar.java" sourcepath="gdb/variables/GdbVar.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="SE_NO_SERIALVERSIONID" priority="3" abbrev="SnVI" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.TypeMacroMap">
+      <SourceLine classname="gdb.variables.TypeMacroMap" sourcefile="TypeMacroMap.java" sourcepath="gdb/variables/TypeMacroMap.java"/>
+    </Class>
+  </BugInstance>
+  <BugInstance type="WMI_WRONG_MAP_ITERATOR" priority="2" abbrev="WMI" category="PERFORMANCE">
+    <Class classname="gdb.variables.TypeMacroMap">
+      <SourceLine classname="gdb.variables.TypeMacroMap" sourcefile="TypeMacroMap.java" sourcepath="gdb/variables/TypeMacroMap.java"/>
+    </Class>
+    <Method classname="gdb.variables.TypeMacroMap" name="save" signature="()V" isStatic="false">
+      <SourceLine classname="gdb.variables.TypeMacroMap" start="61" end="73" startBytecode="0" endBytecode="90" sourcefile="TypeMacroMap.java" sourcepath="gdb/variables/TypeMacroMap.java"/>
+    </Method>
+    <SourceLine classname="gdb.variables.TypeMacroMap" start="65" end="65" startBytecode="33" endBytecode="33" sourcefile="TypeMacroMap.java" sourcepath="gdb/variables/TypeMacroMap.java"/>
+  </BugInstance>
+  <BugInstance type="ES_COMPARING_STRINGS_WITH_EQ" priority="3" abbrev="ES" category="BAD_PRACTICE">
+    <Class classname="gdb.variables.Variables$SplitterLocationChangeListener">
+      <SourceLine classname="gdb.variables.Variables$SplitterLocationChangeListener" sourcefile="Variables.java" sourcepath="gdb/variables/Variables.java"/>
+    </Class>
+    <Method classname="gdb.variables.Variables$SplitterLocationChangeListener" name="propertyChange" signature="(Ljava/beans/PropertyChangeEvent;)V" isStatic="false">
+      <SourceLine classname="gdb.variables.Variables$SplitterLocationChangeListener" start="38" end="41" startBytecode="0" endBytecode="9" sourcefile="Variables.java" sourcepath="gdb/variables/Variables.java"/>
+    </Method>
+    <Type descriptor="Ljava/lang/String;" role="TYPE_FOUND"/>
+    <SourceLine classname="gdb.variables.Variables$SplitterLocationChangeListener" start="38" end="38" startBytecode="6" endBytecode="6" sourcefile="Variables.java" sourcepath="gdb/variables/Variables.java"/>
+  </BugInstance>
+  <Errors></Errors>
+  <FindBugsSummary timestamp="Thu, 7 Jun 2007 22:38:50 +0300" total_classes="0" total_bugs="0" total_size="0" num_packages="0" cpu_seconds="0.03" clock_seconds="0.05" peak_mbytes="89.41" gc_seconds="0.00"></FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
