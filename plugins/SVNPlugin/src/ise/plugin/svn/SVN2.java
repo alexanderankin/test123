@@ -86,6 +86,9 @@ public class SVN2 extends org.tmatesoft.svn.cli.SVN {
         ourArguments.add( SVNArgument.IGNORE_ALL_WS );
         ourArguments.add( SVNArgument.IGNORE_EOL_STYLE );
         ourArguments.add( SVNArgument.IGNORE_WS_CHANGE );
+
+        // danson, added this one for compatibility with older versions of svn client
+        ourArguments.add( SVNArgument.PRE_14_COMPATIBLE );
     }
 
     public static String execute( String[] args ) {
