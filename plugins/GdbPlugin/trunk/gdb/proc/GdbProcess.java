@@ -166,9 +166,10 @@ public class GdbProcess {
 	private Vector<String> getProcesses() {
 		Vector<String> procs = new Vector<String>();
 		String command = "ps -f";
+		BufferedReader br = null;
 		try {
 			p = Runtime.getRuntime().exec(command);
-			BufferedReader br = new BufferedReader(
+			br = new BufferedReader(
 					new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = br.readLine()) != null)
@@ -177,6 +178,14 @@ public class GdbProcess {
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
 					"Failed to read process list from 'ps'.");
 			e.printStackTrace();
+		} finally {
+			if (br != null)
+				try {
+					br.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 		return procs;
 	}

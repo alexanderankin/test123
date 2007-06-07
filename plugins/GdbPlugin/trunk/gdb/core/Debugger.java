@@ -285,7 +285,8 @@ public class Debugger implements DebuggerTool {
 		String selected = view.getTextArea().getSelectedText();
 		if (watchesPanel == null)
 			jEdit.getAction(SHOW_WATCHES).invoke(view);
-		watchesPanel.addWatch(selected);
+		if (watchesPanel != null)
+			watchesPanel.addWatch(selected);
 	}
 	// Show a tooltip with the value of the selected text
 	public void evaluateSelection(final View view) {
