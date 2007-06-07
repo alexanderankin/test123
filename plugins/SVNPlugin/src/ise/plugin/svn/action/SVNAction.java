@@ -7,6 +7,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.ProjectViewer;
 import ise.plugin.svn.command.*;
+import ise.plugin.svn.library.PasswordHandler;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
@@ -46,10 +47,19 @@ public class SVNAction extends projectviewer.action.Action {
                 NodeActor action = ( NodeActor ) Class.forName( classname ).newInstance();
                 if ( path != null ) {
                     View view = viewer.getView();
-                    String project_name = getProjectName(view);
-                    String project_root = getProjectRoot(view);
+                    String project_name = getProjectName( view );
+                    String project_root = getProjectRoot( view );
                     String username = jEdit.getProperty( PREFIX + project_name + ".username" );
                     String password = jEdit.getProperty( PREFIX + project_name + ".password" );
+                    if ( password != null && password.length() > 0 ) {
+                        try {
+                            PasswordHandler ph = new PasswordHandler();
+                            password = ph.decrypt( password );
+                        }
+                        catch ( Exception e ) {
+                            password = "";
+                        }
+                    }
                     action.prepareForNode( path, view, project_root, username, password );
                 }
                 item = new JMenuItem( label );
@@ -82,17 +92,27 @@ public class SVNAction extends projectviewer.action.Action {
     public void prepareForNode( VPTNode node ) {
         path = node;
         View view = viewer.getView();
-        String project_name = getProjectName(view);
-        String project_root = getProjectRoot(view);
+        String project_name = getProjectName( view );
+        String project_root = getProjectRoot( view );
         String username = jEdit.getProperty( PREFIX + project_name + ".username" );
         String password = jEdit.getProperty( PREFIX + project_name + ".password" );
+        if ( password != null && password.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                password = ph.decrypt( password );
+            }
+            catch ( Exception e ) {
+                password = "";
+            }
+        }
+        System.out.println( "+++++ username = " + username + ", password = " + password );
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );
                 ActionListener[] listeners = actor.getActionListeners();
-                for (ActionListener al : listeners) {
-                    if (al instanceof NodeActor) {
-                        ((NodeActor)al).prepareForNode(node, view, project_root, username, password);
+                for ( ActionListener al : listeners ) {
+                    if ( al instanceof NodeActor ) {
+                        ( ( NodeActor ) al ).prepareForNode( node, view, project_root, username, password );
                     }
                 }
             }
@@ -107,12 +127,12 @@ public class SVNAction extends projectviewer.action.Action {
         // action other than to display the pull out.
     }
 
-    private String getProjectName(View view) {
+    private String getProjectName( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getName();
     }
 
-    private String getProjectRoot(View view) {
+    private String getProjectRoot( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getRootPath();
     }
