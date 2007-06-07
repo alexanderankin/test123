@@ -21,6 +21,7 @@ package gdb.breakpoints;
 import gdb.core.Debugger;
 import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
+import gdb.options.GeneralOptionPane;
 
 import javax.swing.JOptionPane;
 
@@ -51,6 +52,8 @@ public class BreakpointResultHandler implements ResultHandler {
 		String gdbMsg = Debugger.getInstance().getGdbMessage();
 		if (gdbMsg != null)
 			errMsg = errMsg + gdbMsg;
-		JOptionPane.showMessageDialog(jEdit.getActiveView(), errMsg);
+		if (jEdit.getBooleanProperty(GeneralOptionPane.SHOW_BREAKPOINT_ERROR_PROP))
+			JOptionPane.showMessageDialog(jEdit.getActiveView(), errMsg);
+		jEdit.getActiveView().getStatus().setMessage(errMsg);
 	}
 }
