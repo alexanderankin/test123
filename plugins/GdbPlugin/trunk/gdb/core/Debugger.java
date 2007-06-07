@@ -20,6 +20,7 @@ package gdb.core;
 
 import gdb.breakpoints.Breakpoint;
 import gdb.breakpoints.BreakpointList;
+import gdb.breakpoints.BreakpointTableView;
 import gdb.breakpoints.BreakpointView;
 import gdb.context.StackTrace;
 import gdb.core.GdbState.State;
@@ -69,6 +70,7 @@ public class Debugger implements DebuggerTool {
 
 	private ControlView controlView = null;
 	private BreakpointView breakpointsPanel = null;
+	private BreakpointTableView gdbBreakpointsPanel = null;
 	private LocalVariables localsPanel = null;
 	private StackTrace stackTracePanel = null;
 	private Watches watchesPanel = null;
@@ -98,7 +100,7 @@ public class Debugger implements DebuggerTool {
 	private TextAreaExtension varTooltipExtension = null;
 
 	private GdbProcess gdbProcess = null;
-	
+
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
 		return null;
@@ -243,12 +245,12 @@ public class Debugger implements DebuggerTool {
 			gdbProcess = null;
 			return;
 		}
-		GdbState.setState(State.RUNNING);
 		parser = new Parser(this, gdbProcess);
 		parser.addOutOfBandHandler(new OutOfBandHandler());
 		parser.start();
 		commandManager = new CommandManager(gdbProcess, parser);
 		commandManager.start();
+		GdbState.setState(State.RUNNING);
 		// First set up the arguments
 		commandManager.add("-exec-arguments " + config.getArguments());
 		// Now set up the breakpoints
@@ -456,6 +458,11 @@ public class Debugger implements DebuggerTool {
 		if (breakpointsPanel == null)
 			breakpointsPanel = new BreakpointView();
 		return breakpointsPanel;
+	}
+	public JPanel showGdbBreakpoints(View view) {
+		if (gdbBreakpointsPanel == null)
+			gdbBreakpointsPanel = new BreakpointTableView();
+		return gdbBreakpointsPanel;
 	}
 	public JPanel showLocals(View view) {
 		if (localsPanel == null)
