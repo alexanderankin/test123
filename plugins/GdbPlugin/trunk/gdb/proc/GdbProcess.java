@@ -200,7 +200,7 @@ public class GdbProcess {
     	return programInputWriter;
     }
     
-	public class ProcessWriter extends BufferedWriter implements Writer {
+	static public class ProcessWriter extends BufferedWriter implements Writer {
 		public ProcessWriter(OutputStream outputStream) {
 			super(new OutputStreamWriter(outputStream));
 		}
@@ -210,7 +210,7 @@ public class GdbProcess {
 			super.flush();
 		}
 	}
-	public class ProcessReader extends BufferedReader implements Reader {
+	static public class ProcessReader extends BufferedReader implements Reader {
 		public ProcessReader(InputStream inputStream) {
 			super(new InputStreamReader(inputStream));
 		}
