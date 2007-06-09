@@ -60,6 +60,8 @@ public final class ApplicationRunner {
 	public static final int RETURN_SELECTION	= 1;
 	/** Returned text is appended to the current buffer. */
 	public static final int RETURN_APPEND		= 2;
+	/** Returned text replaces the current buffer. */
+	public static final int RETURN_REPLACE		= 3;
 
 	/** The whole buffer. */
 	public static final int SOURCE_BUFFER		= 0;
@@ -201,6 +203,22 @@ public final class ApplicationRunner {
 							buffer.insert(buffer.getLength(), new String(data));
 							break;
 
+						case RETURN_REPLACE:
+							int pos  = textArea.getCaretPosition();
+							int scroll = textArea.getFirstLine();
+							buffer.beginCompoundEdit();
+							try {
+								buffer.remove(0, buffer.getLength());
+								buffer.insert(0, new String(data));
+							} finally {
+								buffer.endCompoundEdit();
+							}
+							if (buffer.getLength() < pos) {
+								pos = buffer.getLength();
+							}
+							textArea.setCaretPosition(pos);
+							textArea.setFirstLine(scroll);
+							break;
 						default:
 							Log.log(Log.WARNING, ApplicationRunner.class, "Shouldn't reach this.");
 					}

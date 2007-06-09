@@ -73,6 +73,7 @@ public class ApplicationChooserDialog extends EnhancedDialog
 	private JRadioButton destNew;
 	private JRadioButton destSelection;
 	private JRadioButton destAppend;
+	private JRadioButton destReplace;
 
 	private JButton browse;
 
@@ -227,6 +228,11 @@ public class ApplicationChooserDialog extends EnhancedDialog
 		destination.add(destAppend);
 		dest.add(destAppend);
 
+		destReplace = new JRadioButton(jEdit.getProperty("textfilter.chooser.dest.replace"));
+		destReplace.setToolTipText(jEdit.getProperty("textfilter.chooser.dest.replace.tooltip"));
+		destination.add(destReplace);
+		dest.add(destReplace);
+
 		if (textArea.getSelectionCount() > 0)
 			destSelection.setSelected(true);
 		else
@@ -282,8 +288,10 @@ public class ApplicationChooserDialog extends EnhancedDialog
 			destIdx = ApplicationRunner.RETURN_NEW;
 		else if (destSelection.isSelected())
 			destIdx = ApplicationRunner.RETURN_SELECTION;
-		else
+		else if (destAppend.isSelected())
 			destIdx = ApplicationRunner.RETURN_APPEND;
+		else
+			destIdx = ApplicationRunner.RETURN_REPLACE;
 
 		if (createAction) {
 			ActionManager am = ActionManager.getInstance();
