@@ -16,7 +16,6 @@ import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableRowSorter;
 
 @SuppressWarnings("serial")
 public class BreakpointTableView extends GdbView {
@@ -208,6 +207,5 @@ line="13",times="0"}]}
 			return;
 		model = new BreakpointTableModel();
 		table.setModel(model);
-		table.setRowSorter(new TableRowSorter<BreakpointTableModel>(model)); 
 	}
 }
