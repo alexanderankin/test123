@@ -1,5 +1,19 @@
 To do:
 - Fix breakpoint UI to reflect GDB state rather than plugin actions.
+  Two sets of breakpoints need to be maintained:
+  - Offline list: Simple list of source locations with their "offline" properties
+    (skip count, enabled, ...) to be used when gdb starts running. No need to keep
+    gdb state in this list (E.g. breakpoint numbers).
+  - Online list: List of real gdb breakpoints, available only after gdb starts
+    running. This list does not necessarily have to be maintained in the plugin, as
+    it is maintained by gdb and retrieved from gdb anyway. We can table the bp number
+    from gdb (from the table).
+  Use a single text painter extension, provide different icons for offline list and
+  online list. The extension should check, if the breakpoint is only offline it
+  should mark this with a different icon. If the breakpoint is also online, it means
+  that gdb has accepted it and forget about the offline entry.
+  The table should list both, maybe enabling a filter to hide offline ones when gdb
+  is running.
 - Extend type->macro map to allow 'set', not only 'get'.
 --> Locals/Watches/Variables:
   - Support changes in tree structure of variable.
