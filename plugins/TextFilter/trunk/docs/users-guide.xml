@@ -199,30 +199,23 @@
 
 		<para>
 			The preferred way to send bug reports is to use the
-			Sourceforge Bug Tracker at
 			<ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
-				http://sourceforge.net/tracker/?atid=565475&amp;group_id=588
-			</ulink>
+				Sourceforge Bug Tracker</ulink>.
 			Please start the report subject with the text "Text Filter:".
 		</para>
 
-		<para>You can also write to:</para>
+		<para>You can also write to one of the jEdit mailing lists:</para>
 		<itemizedlist>
 			<listitem>
 			<para>
-				Marcelo Vanzin <email>mvanzin@yahoo.com</email>;
+				jEdit-users mailing-list
+				<email>jedit-users@lists.sourceforge.net</email>
 			</para>
 			</listitem>
 			<listitem>
 			<para>
-				or jEdit-users mailing-list
-				<email>jedit-users@lists.sourceforge.net</email>;
-			</para>
-			</listitem>
-			<listitem>
-			<para>
-				or jEdit-devel mailing-list
-				<email>jedit-devel@lists.sourceforge.net</email>.
+				jEdit-devel mailing-list
+				<email>jedit-devel@lists.sourceforge.net</email>
 			</para>
 			</listitem>
 		</itemizedlist>
@@ -235,6 +228,9 @@
 			<listitem>
 			<para>
 				Text Filter is developed by Marcelo Vanzin.
+			</para>
+			<para>
+				Some code contributed by Tobias Bielohlawek.
 			</para>
 			</listitem>
 		</itemizedlist>
