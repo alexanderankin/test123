@@ -40,13 +40,14 @@ public class BreakpointTableView extends GdbView {
 
 		Vector<String> columns = new Vector<String>();
 		Vector<Vector<String>> rows = new Vector<Vector<String>>();
+		boolean structureChanged;
 		
 		public BreakpointTableModel() {
 			update();
 		}
 
 		private void update() {
-			columns.clear();
+			structureChanged = false;
 			rows.clear();
 			CommandManager cmdMgr = Debugger.getInstance().getCommandManager();
 			if (cmdMgr == null)
@@ -66,7 +67,10 @@ public class BreakpointTableView extends GdbView {
 								Hashtable<String, Object> colHash =
 									(Hashtable<String, Object>)col;
 								String colname = (String)colHash.get("col_name");
-								columns.add(colname);
+								if (! columns.contains(colname)) {
+									columns.add(colname);
+									structureChanged = true;
+								}
 							}
 						}
 					}
@@ -93,6 +97,7 @@ public class BreakpointTableView extends GdbView {
 										int colIndex = columns.indexOf(key);
 										if (colIndex < 0) {
 											columns.add(key);
+											structureChanged = true;
 											row.add(val);
 										} else
 											row.set(colIndex, val);
@@ -104,7 +109,10 @@ public class BreakpointTableView extends GdbView {
 					synchronized(columns) {
 						columns.notify();
 					}
-					BreakpointTableModel.this.fireTableStructureChanged();
+					if (structureChanged)
+						BreakpointTableModel.this.fireTableStructureChanged();
+					else
+						BreakpointTableModel.this.fireTableDataChanged();
 					/*
 ^done,BreakpointTable={nr_rows="2",nr_cols="6",
 hdr=[{width="3",alignment="-1",col_name="number",colhdr="Num"},
