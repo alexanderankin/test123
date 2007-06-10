@@ -22,6 +22,7 @@ import javax.swing.table.AbstractTableModel;
 @SuppressWarnings("serial")
 public class BreakpointTableView extends GdbView {
 
+	private static final String ENABLED_COLUMN_NAME = "Enabled";
 	private static final String LINE_COLUMN_NAME = "Line";
 	private static final String FILE_COLUMN_NAME = "File";
 
@@ -48,6 +49,9 @@ public class BreakpointTableView extends GdbView {
 		boolean structureChanged;
 		
 		public BreakpointTableModel() {
+			columns.add(ENABLED_COLUMN_NAME);
+			columns.add(FILE_COLUMN_NAME);
+			columns.add(LINE_COLUMN_NAME);
 			update();
 		}
 
@@ -71,7 +75,8 @@ public class BreakpointTableView extends GdbView {
 							if (col instanceof Hashtable) {
 								Hashtable<String, Object> colHash =
 									(Hashtable<String, Object>)col;
-								String colname = (String)colHash.get("col_name");
+								String colname = capitalize(
+										(String)colHash.get("col_name"));
 								if (! columns.contains(colname)) {
 									columns.add(colname);
 									structureChanged = true;
@@ -98,14 +103,16 @@ public class BreakpointTableView extends GdbView {
 									Enumeration<String> k = bkptHash.keys();
 									while (k.hasMoreElements()) {
 										String key = k.nextElement();
+										String capKey = capitalize(key);
 										String val = (String) bkptHash.get(key);
-										int colIndex = columns.indexOf(key);
+										int colIndex = columns.indexOf(capKey);
 										if (colIndex < 0) {
-											columns.add(key);
+											columns.add(capKey);
 											structureChanged = true;
-											row.add(val);
-										} else
-											row.set(colIndex, val);
+											row.add("");
+											colIndex = columns.size() - 1;
+										}
+										row.set(colIndex, val);
 									}
 								}
 							}
@@ -137,6 +144,9 @@ line="13",times="0"}]}
 		}
 
 		public Class<?> getColumnClass(int arg0) {
+			if (columns.get(arg0).equals(ENABLED_COLUMN_NAME)) {
+				return Boolean.class;
+			}
 			return String.class;
 		}
 
@@ -154,11 +164,13 @@ line="13",times="0"}]}
 			return columns.size();
 		}
 
+		private String capitalize(String s) {
+			if (s == null)
+				return s;
+			return s.substring(0, 1).toUpperCase() + s.substring(1);
+		}
 		public String getColumnName(int i) {
-			String name = columns.get(i);
-			if (name != null)
-				name = name.substring(0, 1).toUpperCase() + name.substring(1);
-			return name;
+			return columns.get(i);
 		}
 
 		public int getRowCount() {
@@ -173,6 +185,9 @@ line="13",times="0"}]}
 			Vector<String> r = rows.get(row);
 			if (col >= r.size())
 				return null;
+			if (columns.get(col).equals(ENABLED_COLUMN_NAME)) {
+				return new Boolean(r.get(col).equals("y"));
+			}
 			return r.get(col);
 		}
 
