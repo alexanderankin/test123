@@ -9,6 +9,8 @@ import gdb.core.Parser.GdbResult;
 import gdb.core.Parser.ResultHandler;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -19,6 +21,9 @@ import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 public class BreakpointTableView extends GdbView {
+
+	private static final String LINE_COLUMN_NAME = "Line";
+	private static final String FILE_COLUMN_NAME = "File";
 
 	@Override
 	public void running() {
@@ -47,7 +52,6 @@ public class BreakpointTableView extends GdbView {
 		}
 
 		private void update() {
-			structureChanged = false;
 			rows.clear();
 			CommandManager cmdMgr = Debugger.getInstance().getCommandManager();
 			if (cmdMgr == null)
@@ -57,6 +61,7 @@ public class BreakpointTableView extends GdbView {
 				public void handle(String msg, GdbResult res) {
 					if ((! msg.equals("done")) || res == null)
 						return;
+					structureChanged = false;
 					// Reading the headers only for the order
 					Object hdr = res.getValue("BreakpointTable/hdr");
 					if (hdr != null && hdr instanceof Vector) {
@@ -208,8 +213,26 @@ line="13",times="0"}]}
 				update();
 			}
 		});
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					jumpToSelected();
+				} else {
+					super.mouseClicked(e);
+				}
+			}
+		});
 	}
 
+	private void jumpToSelected() {
+		int index = table.getSelectedRow();
+		int fileCol = model.findColumn(FILE_COLUMN_NAME);
+		int lineCol = model.findColumn(LINE_COLUMN_NAME);
+		Debugger.getInstance().getFrontEnd().setCurrentLocation(
+				(String)model.getValueAt(index, fileCol),
+				Integer.parseInt((String)model.getValueAt(index, lineCol)));
+	}
 	private void createModel() {
 		if (model != null)
 			return;
