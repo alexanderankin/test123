@@ -1,4 +1,16 @@
 To do:
+- BreakpointTable:
+  - Call tableStructureChanged only if it really changed. Otherwise, call
+    dataChanged instead. Set a boolean variable whenever a column is added to
+    the column list to check for structure changes.
+  - Provide 'go to source' by double clicking a breakpoint in the list.
+    Use hard-coded column names for this function, for the file and line number.
+  - Enabled column should use editable check boxes.
+  - Breakpoint editor: Based on the columns and values from the table (model).
+    Since each field (column) requires its own gdb command for setting, only
+    enable editing of a hard-coded set of columns.
+    (This should be good enough for all practical purposes, the structure of
+     the table should be fixed.)
 - Fix breakpoint UI to reflect GDB state rather than plugin actions.
   Two sets of breakpoints need to be maintained:
   - Offline list: Simple list of source locations with their "offline" properties
