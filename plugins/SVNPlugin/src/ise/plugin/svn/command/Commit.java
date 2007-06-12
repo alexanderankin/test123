@@ -13,6 +13,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import ise.plugin.svn.data.CommitData;
 
 public class Commit {
 

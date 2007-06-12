@@ -20,15 +20,15 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.SVN2;
-import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.AddData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 
 
 /**
- * Dialog for obtaining a comment for a commit.
+ * Dialog for adding files and directories.
  */
-public class CommitDialog extends JDialog {
+public class AddDialog extends JDialog {
     // instance fields
     private View view = null;
     private List<VPTNode> nodes = null;
@@ -37,10 +37,10 @@ public class CommitDialog extends JDialog {
 
     private boolean cancelled = false;
 
-    private CommitData commitData = null;
+    private AddData addData = null;
 
-    public CommitDialog( View view, List<VPTNode> nodes ) {
-        super( ( JFrame ) view, "Commit", true );
+    public AddDialog( View view, List<VPTNode> nodes ) {
+        super( ( JFrame ) view, "Add", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
@@ -52,7 +52,7 @@ public class CommitDialog extends JDialog {
     /** Initialises the option pane. */
     protected void _init() {
 
-        commitData = new CommitData();
+        addData = new AddData();
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
@@ -71,9 +71,9 @@ public class CommitDialog extends JDialog {
             }
         }
 
-        commitData.setPaths(paths);
+        addData.setPaths(paths);
 
-        JLabel file_label = new JLabel("Committing these files:");
+        JLabel file_label = new JLabel("Adding these files:");
         final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
         file_panel.setBackground(Color.WHITE);
         file_panel.setBorder(new EmptyBorder(3, 3, 3, 3));
@@ -84,18 +84,13 @@ public class CommitDialog extends JDialog {
             file_panel.add(cb);
         }
 
-        final JCheckBox recursive_cb = new JCheckBox("Recursively commit?");
+        final JCheckBox recursive_cb = new JCheckBox("Recursively add?");
         recursive_cb.setSelected(recursive);
         recursive_cb.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ae) {
-                    commitData.setRecursive(recursive_cb.isSelected());
+                    addData.setRecursive(recursive_cb.isSelected());
                 }
         });
-
-        JLabel label = new JLabel( "Enter comment for this commit:" );
-        comment = new JTextArea( 10, 50 );
-        comment.setLineWrap( true );
-        comment.setWrapStyleWord( true );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -119,27 +114,22 @@ public class CommitDialog extends JDialog {
                         }
                         if (paths.size() == 0) {
                             // nothing to commit, bail out
-                            commitData = null;
+                            addData = null;
                         }
                         else {
-                            commitData.setPaths(paths);
-                            String msg = comment.getText();
-                            if (msg == null || msg.length() == 0) {
-                                msg = "no comment";
-                            }
-                            commitData.setCommitMessage(msg);
+                            addData.setPaths(paths);
                         }
-                        CommitDialog.this.setVisible( false );
-                        CommitDialog.this.dispose();
+                        AddDialog.this.setVisible( false );
+                        AddDialog.this.dispose();
                     }
                 }
                                 );
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        commitData = null;
-                        CommitDialog.this.setVisible( false );
-                        CommitDialog.this.dispose();
+                        addData = null;
+                        AddDialog.this.setVisible( false );
+                        AddDialog.this.dispose();
                     }
                 }
                                     );
@@ -151,20 +141,16 @@ public class CommitDialog extends JDialog {
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
-        panel.add( "0, 4, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 6, true ) );
+        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
 
-        panel.add( "0, 5, 1, 1, W,  , 3", label );
-        panel.add( "0, 6, 1, 1, W,  , 3", new JScrollPane( comment ) );
-
-        panel.add( "0, 7, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 8, 1, 1, E,  , 0", btn_panel );
+        panel.add( "0, 5, 1, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
 
     }
 
-    public CommitData getCommitData() {
-        return commitData;
+    public AddData getAddData() {
+        return addData;
     }
 }

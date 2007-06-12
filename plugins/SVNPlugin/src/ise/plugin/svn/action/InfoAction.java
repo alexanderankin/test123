@@ -11,7 +11,7 @@ import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
-import ise.plugin.svn.command.CommitData;
+import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
