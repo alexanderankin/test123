@@ -1,8 +1,11 @@
 package ise.plugin.svn.action;
 
 // imports
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -17,6 +20,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.SVN2;
+import ise.plugin.svn.command.CommitData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 
@@ -27,21 +31,66 @@ import ise.plugin.svn.library.PasswordHandlerException;
 public class CommitDialog extends JDialog {
     // instance fields
     private View view = null;
+    private List<VPTNode> nodes = null;
 
     private JTextArea comment = null;
 
     private boolean cancelled = false;
 
-    public CommitDialog( View view ) {
+    private CommitData commitData = null;
+
+    public CommitDialog( View view, List<VPTNode> nodes ) {
         super( ( JFrame ) view, "Commit", true );
+        if ( nodes == null ) {
+            throw new IllegalArgumentException( "nodes may not be null" );
+        }
         this.view = view;
+        this.nodes = nodes;
         _init();
     }
 
     /** Initialises the option pane. */
     protected void _init() {
+
+        commitData = new CommitData();
+
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+
+        // set recursive value, if any of the nodes are a directory, set
+        // recursive to true.  While we're at it, make a list of strings of
+        // the node paths.
+        boolean recursive = false;
+        List<String> paths = new ArrayList<String>();
+        for ( VPTNode node : nodes ) {
+            if ( node != null ) {
+                if ( node.isDirectory() ) {
+                    recursive = true;
+                }
+                paths.add(node.getNodePath());
+            }
+        }
+
+        commitData.setPaths(paths);
+
+        JLabel file_label = new JLabel("Committing these files:");
+        final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
+        file_panel.setBackground(Color.WHITE);
+        file_panel.setBorder(new EmptyBorder(3, 3, 3, 3));
+        for(String path : paths) {
+            JCheckBox cb = new JCheckBox(path);
+            cb.setSelected(true);
+            cb.setBackground(Color.WHITE);
+            file_panel.add(cb);
+        }
+
+        final JCheckBox recursive_cb = new JCheckBox("Recursively commit?");
+        recursive_cb.setSelected(recursive);
+        recursive_cb.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ae) {
+                    commitData.setRecursive(recursive_cb.isSelected());
+                }
+        });
 
         JLabel label = new JLabel( "Enter comment for this commit:" );
         comment = new JTextArea( 10, 50 );
@@ -59,42 +108,63 @@ public class CommitDialog extends JDialog {
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = false;
+                        // get the paths
+                        List paths = new ArrayList();
+                        Component[] files = file_panel.getComponents();
+                        for (Component file : files) {
+                            JCheckBox cb = (JCheckBox)file;
+                            if (cb.isSelected()) {
+                                paths.add(cb.getText());
+                            }
+                        }
+                        if (paths.size() == 0) {
+                            // nothing to commit, bail out
+                            commitData = null;
+                        }
+                        else {
+                            commitData.setPaths(paths);
+                            String msg = comment.getText();
+                            if (msg == null || msg.length() == 0) {
+                                msg = "no comment";
+                            }
+                            commitData.setCommitMessage(msg);
+                        }
                         CommitDialog.this.setVisible( false );
-                        // don't dispose of the dialog, by keeping it, we keep the last
-                        // entered comment available for the user so they don't have to
-                        // re-enter it in case there is some problem with the commit.
+                        CommitDialog.this.dispose();
                     }
                 }
                                 );
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        commitData = null;
                         CommitDialog.this.setVisible( false );
-                        // don't dispose of the dialog, by keeping it, we keep the last
-                        // entered comment available for the user so they don't have to
-                        // re-enter it in case there is some problem with the commit.
+                        CommitDialog.this.dispose();
                     }
                 }
                                     );
 
         // add the components to the option panel
-        panel.add( "0, 0, 1, 1, W", label );
-        panel.add( "0, 1, 1, 1, W", new JScrollPane( comment ) );
+        panel.add( "0, 0, 1, 1, W,  , 3", file_label );
+        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_panel ) );
+        panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true));
+        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 3, 1, 1, E,  , 0", btn_panel );
+        panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
+        panel.add( "0, 4, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 6, true ) );
+
+        panel.add( "0, 5, 1, 1, W,  , 3", label );
+        panel.add( "0, 6, 1, 1, W,  , 3", new JScrollPane( comment ) );
+
+        panel.add( "0, 7, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 8, 1, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
 
     }
 
-    public String getComment() {
-        if ( cancelled ) {
-            return null;
-        }
-        return comment.getText();
+    public CommitData getCommitData() {
+        return commitData;
     }
 }

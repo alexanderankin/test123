@@ -4,11 +4,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingUtilities;
 import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.command.AddCommand;
+import ise.plugin.svn.command.CleanupCommand;
 
-
-
-public class AddAction extends NodeActor {
+public class CleanupAction extends NodeActor {
 
 
     public void actionPerformed( ActionEvent ae ) {
@@ -16,8 +14,7 @@ public class AddAction extends NodeActor {
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
-
-                            AddCommand command = new AddCommand();
+                            CleanupCommand command = new CleanupCommand();
                             String[] params = new String[nodes.size()];
                             for (int i = 0; i < nodes.size(); i++) {
                                 params[i] = nodes.get(i).getNodePath();
@@ -34,4 +31,5 @@ public class AddAction extends NodeActor {
                                       );
         }
     }
+
 }

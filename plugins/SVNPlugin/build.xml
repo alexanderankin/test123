@@ -163,6 +163,7 @@
         <copy todir="${config.dir}">
             <fileset dir="${basedir}">
                 <include name="SVNPlugin.props"/>
+                <include name="dockables.xml"/>
             </fileset>
         </copy>
 

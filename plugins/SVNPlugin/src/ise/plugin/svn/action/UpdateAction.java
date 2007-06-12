@@ -9,17 +9,17 @@ import ise.plugin.svn.command.UpdateCommand;
 public class UpdateAction extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( node != null ) {
+        if ( nodes != null && nodes.size() > 0) {
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
                             view.getDockableWindowManager().showDockableWindow( "console" );
                             UpdateCommand command = new UpdateCommand();
                             String[] params;
                             if (username != null && password != null) {
-                                params = new String[]{node.getNodePath(), username, password};
+                                params = new String[]{nodes.get(0).getNodePath(), username, password};
                             }
                             else {
-                                params = new String[] {node.getNodePath() };
+                                params = new String[] {nodes.get(0).getNodePath() };
                             }
                             try {
                                 String result = command.execute( params );
