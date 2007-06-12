@@ -25,6 +25,8 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
+import ise.plugin.svn.data.CommitData;
+
 public class Info {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );

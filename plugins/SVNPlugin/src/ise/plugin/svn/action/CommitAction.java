@@ -7,7 +7,7 @@ import java.util.*;
 import javax.swing.SwingUtilities;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.command.Commit;
-import ise.plugin.svn.command.CommitData;
+import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.io.ConsolePrintStream;
 
