@@ -3,6 +3,7 @@ package ise.plugin.svn.action;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.*;
 import projectviewer.vpt.VPTNode;
 import console.ConsolePlugin;
 import console.Console;
@@ -20,8 +21,8 @@ import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
  */
 public abstract class NodeActor implements ActionListener {
 
-    // this is the currently selected node in ProjectViewer
-    protected VPTNode node = null;
+    // this is a list of the currently selected nodes in ProjectViewer
+    protected List<VPTNode> nodes = null;
 
     // this is the current view containing the ProjectViewer
     protected View view = null;
@@ -42,8 +43,8 @@ public abstract class NodeActor implements ActionListener {
     // called by SVNAction to set the ProjectViewer node and the View.  This
     // is called each time the user raises the PV context menu, which will be
     // prior to the actionPerformed method being called.
-    public void prepareForNode( VPTNode n, View v, String project_root, String username, String password ) {
-        node = n;
+    public void prepareForNode( List<VPTNode>n, View v, String project_root, String username, String password ) {
+        nodes = n;
         view = v;
         projectRoot = project_root;
         this.username = username;
@@ -51,12 +52,22 @@ public abstract class NodeActor implements ActionListener {
         setupLibrary();
     }
 
+    public View getView() {
+        return view;
+    }
+
     // print a message to the system shell in the Console plugin.  This is an
     // easy way to display output without a lot of work.
+    /**
+     * @deprecated
+     */
     public void print(String msg) {
         print(msg, null);
     }
 
+    /**
+     * @deprecated
+     */
     public void print(String msg, Color color) {
         if (msg == null || msg.length() == 0) {
             return;
@@ -68,9 +79,21 @@ public abstract class NodeActor implements ActionListener {
         console.setShell(ConsolePlugin.getSystemShell());
         Output output = console.getOutput();
         output.print(color, msg);
+    }
+
+    /**
+     * @deprecated
+     */
+    public void close() {
+        Console console = ConsolePlugin.getConsole(view);
+        console.setShell(ConsolePlugin.getSystemShell());
+        Output output = console.getOutput();
         output.print(Color.BLACK, "\n-------------------------------------------\n");
     }
 
+    /**
+     * @deprecated
+     */
     public void printError(String msg) {
         print(msg, Color.RED);
     }

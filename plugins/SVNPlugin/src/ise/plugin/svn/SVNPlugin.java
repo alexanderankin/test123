@@ -27,10 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ise.plugin.svn;
 
+import java.util.*;
+
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
 
 public class SVNPlugin extends EditPlugin {
-    public final static String NAME = "ise.plugin.svn";
+    public final static String NAME = "subversion";
+
+    private static HashMap<View, OutputPanel> panelMap = new HashMap<View, OutputPanel>();
+
+    public static OutputPanel getOutputPanel(View view) {
+        OutputPanel panel = panelMap.get(view);
+        if (panel == null) {
+            panel = new OutputPanel();
+            panelMap.put(view, panel);
+        }
+        return panel;
+    }
 
 }
 

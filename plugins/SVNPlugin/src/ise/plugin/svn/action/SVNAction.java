@@ -1,7 +1,9 @@
 package ise.plugin.svn.action;
 
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -20,7 +22,6 @@ public class SVNAction extends projectviewer.action.Action {
     public static String PREFIX = "ise.plugin.svn.pv.";
 
     private JMenu menu = null;
-    private VPTNode path = null;
 
     public SVNAction() {
         // set up the menu to be added to Project Viewer's context menu
@@ -45,23 +46,6 @@ public class SVNAction extends projectviewer.action.Action {
             JMenuItem item = null;
             try {
                 NodeActor action = ( NodeActor ) Class.forName( classname ).newInstance();
-                if ( path != null ) {
-                    View view = viewer.getView();
-                    String project_name = getProjectName( view );
-                    String project_root = getProjectRoot( view );
-                    String username = jEdit.getProperty( PREFIX + project_name + ".username" );
-                    String password = jEdit.getProperty( PREFIX + project_name + ".password" );
-                    if ( password != null && password.length() > 0 ) {
-                        try {
-                            PasswordHandler ph = new PasswordHandler();
-                            password = ph.decrypt( password );
-                        }
-                        catch ( Exception e ) {
-                            password = "";
-                        }
-                    }
-                    action.prepareForNode( path, view, project_root, username, password );
-                }
                 item = new JMenuItem( label );
                 item.addActionListener( ( ActionListener ) action );
                 menu.add( item );
@@ -90,7 +74,6 @@ public class SVNAction extends projectviewer.action.Action {
     // execute the subversion commands so they know the current node and can
     // act accordingly.
     public void prepareForNode( VPTNode node ) {
-        path = node;
         View view = viewer.getView();
         String project_name = getProjectName( view );
         String project_root = getProjectRoot( view );
@@ -105,14 +88,13 @@ public class SVNAction extends projectviewer.action.Action {
                 password = "";
             }
         }
-        System.out.println( "+++++ username = " + username + ", password = " + password );
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );
                 ActionListener[] listeners = actor.getActionListeners();
                 for ( ActionListener al : listeners ) {
                     if ( al instanceof NodeActor ) {
-                        ( ( NodeActor ) al ).prepareForNode( node, view, project_root, username, password );
+                        ( ( NodeActor ) al ).prepareForNode( getSelectedNodes(), view, project_root, username, password );
                     }
                 }
             }
@@ -137,5 +119,50 @@ public class SVNAction extends projectviewer.action.Action {
         return project == null ? "" : project.getRootPath();
     }
 
+    private List<VPTNode> getSelectedNodes() {
+        List<VPTNode> list = new ArrayList<VPTNode>();
+        JTree tree = viewer.getCurrentTree();
+
+        switch ( tree.getSelectionCount() ) {
+            case 0:
+                // no Selection, shouldn't happen, but just in case...
+                break;
+
+            case 1: {
+                    // single selection
+                    list.add( ( VPTNode ) tree.getLastSelectedPathComponent() );
+                    break;
+                }
+
+            default: {
+                    list = getSelectedArtifacts( tree.getSelectionPaths() );
+                    break;
+                }
+        }
+        return list;
+    }
+
+    /**
+     *  Receives a collection of TreePath objects and returns the underlying
+     *  objects selected, removing a child when its parent has also been
+     *  selected.
+     */
+    private List<VPTNode> getSelectedArtifacts( TreePath[] paths ) {
+        TreePath last = null;
+        List<VPTNode> objs = new ArrayList<VPTNode>();
+
+        for ( int i = 0; i < paths.length; i++ ) {
+            if ( last != null && !last.isDescendant( paths[ i ] ) ) {
+                last = null;
+            }
+
+            if ( last == null ) {
+                last = paths[ i ];
+                objs.add( ( VPTNode ) paths[ i ].getLastPathComponent() );
+            }
+        }
+
+        return objs;
+    }
 
 }

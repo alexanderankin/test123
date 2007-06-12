@@ -11,11 +11,12 @@ import projectviewer.vpt.VPTNode;
 public class RevertAction extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( node != null ) {
+        if ( nodes != null && nodes.size() > 0 ) {
 
             // if user has selected a directory, ask if the revert should be
             // applied recursively, and give the user the opportunity to
             // cancel the revert.
+            final VPTNode node = nodes.get(0);    // fix this, need to support multiple nodes
             boolean is_directory = node.isDirectory();
             boolean recursive = false;
             if ( is_directory ) {

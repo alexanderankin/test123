@@ -29,14 +29,18 @@ public class Info {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );
 
-    public void info( CommitData cd ) throws CommandInitializationException, SVNException {
-        SVNInfo info = getInfo( cd );
+    public List<SVNInfo> info( CommitData cd ) throws CommandInitializationException, SVNException {
+        List<SVNInfo> results = getInfo( cd );
 
         // print the results
-        handleInfo( info, cd.getOut() );
+        for ( SVNInfo info : results ) {
+            handleInfo( info, cd.getOut() );
+        }
+        cd.getOut().close();
+        return results;
     }
 
-    public SVNInfo getInfo( CommitData cd ) throws CommandInitializationException, SVNException {
+    public List<SVNInfo> getInfo( CommitData cd ) throws CommandInitializationException, SVNException {
 
         // validate commit data values
         if ( cd.getPaths() == null ) {
@@ -49,9 +53,8 @@ public class Info {
             cd.setErr( cd.getOut() );
         }
 
-        // convert first path to File -- add support for multiple files?
+        // convert first path to File
         List<String> paths = cd.getPaths();
-        File localPath = new File( paths.get( 0 ) );
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
@@ -66,113 +69,119 @@ public class Info {
         client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
 
         // actually fetch the info
-        SVNInfo result = client.doInfo( localPath, SVNRevision.HEAD );
-
-        return result;
+        List<SVNInfo> results = new ArrayList<SVNInfo>();
+        for ( String path : paths ) {
+            File localPath = new File( path );
+            SVNInfo result = client.doInfo( localPath, SVNRevision.HEAD );
+            results.add( result );
+        }
+        return results;
     }
 
     public void handleInfo( SVNInfo info, PrintStream out ) {
+        StringBuffer sb = new StringBuffer();
+        sb.append( "\n" );
         if ( !info.isRemote() ) {
-            out.println( "Path: " + SVNFormatUtil.formatPath( info.getFile() ) );
+            sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() )  + "\n" );
         }
         else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
-            out.println( "Path: " + path );
+            sb.append( "Path: " + path  + "\n" );
         }
         if ( info.getKind() != SVNNodeKind.DIR ) {
             if ( info.isRemote() ) {
-                out.println( "Name: " + SVNPathUtil.tail( info.getPath() ) );
+                sb.append( "Name: " + SVNPathUtil.tail( info.getPath() )  + "\n" );
             }
             else {
-                out.println( "Name: " + info.getFile().getName() );
+                sb.append( "Name: " + info.getFile().getName()  + "\n" );
             }
         }
-        out.println( "URL: " + info.getURL() );
+        sb.append( "URL: " + info.getURL()  + "\n" );
         if ( info.getRepositoryRootURL() != null ) {
-            out.println( "Repository Root: " + info.getRepositoryRootURL() );
+            sb.append( "Repository Root: " + info.getRepositoryRootURL()  + "\n" );
         }
         if ( info.isRemote() && info.getRepositoryUUID() != null ) {
-            out.println( "Repository UUID: " + info.getRepositoryUUID() );
+            sb.append( "Repository UUID: " + info.getRepositoryUUID()  + "\n" );
         }
         if ( info.getRevision() != null && info.getRevision().isValid() ) {
-            out.println( "Revision: " + info.getRevision() );
+            sb.append( "Revision: " + info.getRevision()  + "\n" );
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
-            out.println( "Node Kind: directory" );
+            sb.append( "Node Kind: directory"  + "\n" );
         }
         else if ( info.getKind() == SVNNodeKind.FILE ) {
-            out.println( "Node Kind: file" );
+            sb.append( "Node Kind: file"  + "\n" );
         }
         else if ( info.getKind() == SVNNodeKind.NONE ) {
-            out.println( "Node Kind: none" );
+            sb.append( "Node Kind: none"  + "\n" );
         }
         else {
-            out.println( "Node Kind: unknown" );
+            sb.append( "Node Kind: unknown"  + "\n" );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
-            out.println( "Schedule: normal" );
+            sb.append( "Schedule: normal"  + "\n" );
         }
         else if ( !info.isRemote() ) {
-            out.println( "Schedule: " + info.getSchedule() );
+            sb.append( "Schedule: " + info.getSchedule()  + "\n" );
         }
         if ( info.getAuthor() != null ) {
-            out.println( "Last Changed Author: " + info.getAuthor() );
+            sb.append( "Last Changed Author: " + info.getAuthor()  + "\n" );
         }
         if ( info.getCommittedRevision() != null && info.getCommittedRevision().getNumber() >= 0 ) {
-            out.println( "Last Changed Rev: " + info.getCommittedRevision() );
+            sb.append( "Last Changed Rev: " + info.getCommittedRevision() + "\n"  );
         }
         if ( info.getCommittedDate() != null ) {
-            out.println( "Last Changed Date: " + formatDate( info.getCommittedDate() ) );
+            sb.append( "Last Changed Date: " + formatDate( info.getCommittedDate() ) + "\n"  );
         }
         if ( !info.isRemote() ) {
             if ( info.getTextTime() != null ) {
-                out.println( "Text Last Updated: " + formatDate( info.getTextTime() ) );
+                sb.append( "Text Last Updated: " + formatDate( info.getTextTime() )  + "\n" );
             }
             if ( info.getPropTime() != null ) {
-                out.println( "Properties Last Updated: " + formatDate( info.getPropTime() ) );
+                sb.append( "Properties Last Updated: " + formatDate( info.getPropTime() ) + "\n"  );
             }
             if ( info.getChecksum() != null ) {
-                out.println( "Checksum: " + info.getChecksum() );
+                sb.append( "Checksum: " + info.getChecksum()  + "\n" );
             }
             if ( info.getCopyFromURL() != null ) {
-                out.println( "Copied From URL: " + info.getCopyFromURL() );
+                sb.append( "Copied From URL: " + info.getCopyFromURL()  + "\n" );
             }
             if ( info.getCopyFromRevision() != null && info.getCopyFromRevision().getNumber() >= 0 ) {
-                out.println( "Copied From Rev: " + info.getCopyFromRevision() );
+                sb.append( "Copied From Rev: " + info.getCopyFromRevision()  + "\n" );
             }
             if ( info.getConflictOldFile() != null ) {
-                out.println( "Conflict Previous Base File: " + info.getConflictOldFile().getName() );
+                sb.append( "Conflict Previous Base File: " + info.getConflictOldFile().getName()  + "\n" );
             }
             if ( info.getConflictWrkFile() != null ) {
-                out.println( "Conflict Previous Working File: " + info.getConflictWrkFile().getName() );
+                sb.append( "Conflict Previous Working File: " + info.getConflictWrkFile().getName() + "\n"  );
             }
             if ( info.getConflictNewFile() != null ) {
-                out.println( "Conflict Current Base File: " + info.getConflictNewFile().getName() );
+                sb.append( "Conflict Current Base File: " + info.getConflictNewFile().getName()  + "\n" );
             }
             if ( info.getPropConflictFile() != null ) {
-                out.println( "Conflict Properties File: " + info.getPropConflictFile().getName() );
+                sb.append( "Conflict Properties File: " + info.getPropConflictFile().getName()  + "\n" );
             }
         }
         if ( info.getLock() != null ) {
             SVNLock lock = info.getLock();
-            out.println( "Lock Token: " + lock.getID() );
-            out.println( "Lock Owner: " + lock.getOwner() );
-            out.println( "Lock Created: " + formatDate( lock.getCreationDate() ) );
+            sb.append( "Lock Token: " + lock.getID() + "\n"  );
+            sb.append( "Lock Owner: " + lock.getOwner() + "\n"  );
+            sb.append( "Lock Created: " + formatDate( lock.getCreationDate() )  + "\n" );
             if ( lock.getComment() != null ) {
-                out.println( "Lock Comment " );
+                sb.append( "Lock Comment " );
                 int lineCount = getLineCount( lock.getComment() );
                 if ( lineCount == 1 ) {
-                    out.println( "(1 line)" );
+                    sb.append( "(1 line)" );
                 }
                 else {
-                    out.println( "(" + lineCount + " lines)" );
+                    sb.append( "(" + lineCount + " lines)" );
                 }
-                out.println( ":\n" + lock.getComment() + "\n" );
+                sb.append( ":\n" + lock.getComment() + "\n" );
             }
         }
+        out.println(sb.toString());
         out.flush();
-        out.close();
     }
 
     private static String formatDate( Date date ) {

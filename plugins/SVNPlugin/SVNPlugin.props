@@ -23,6 +23,14 @@ plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 
 plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar svnkit-javahl.jar
 
+# title for DockableWindowManager
+subversion.title=SVN
+subversion.label=SVN
+
+# new setting for jEdit 4.2
+plugin.ise.plugin.svn.SVNPlugin.activate=defer
+
+
 # ProjectViewer option pane
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugins.svn.pv.options
 options.ise.plugins.svn.pv.options.label=Subversion settings

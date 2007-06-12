@@ -2,10 +2,11 @@ package ise.plugin.svn.command;
 
 import java.io.*;
 import java.util.*;
+import ise.plugin.svn.io.ConsolePrintStream;
 
 public class CommitData {
-    private PrintStream out;
-    private PrintStream err;
+    private ConsolePrintStream out;
+    private ConsolePrintStream err;
     private List<String> paths;
     private boolean keepLocks = true;
     private String commitMessage = "";
@@ -15,8 +16,8 @@ public class CommitData {
 
     public CommitData(){}
 
-    public CommitData( PrintStream out,
-            PrintStream err,
+    public CommitData( ConsolePrintStream out,
+            ConsolePrintStream err,
             List<String> paths,
             boolean keepLocks,
             String commitMessage,
@@ -36,7 +37,7 @@ public class CommitData {
     /**
      * Returns the value of out.
      */
-    public PrintStream getOut() {
+    public ConsolePrintStream getOut() {
         return out;
     }
 
@@ -44,14 +45,14 @@ public class CommitData {
      * Sets the value of out.
      * @param out The value to assign out.
      */
-    public void setOut( PrintStream out ) {
+    public void setOut( ConsolePrintStream out ) {
         this.out = out;
     }
 
     /**
      * Returns the value of err.
      */
-    public PrintStream getErr() {
+    public ConsolePrintStream getErr() {
         return err;
     }
 
@@ -59,7 +60,7 @@ public class CommitData {
      * Sets the value of err.
      * @param err The value to assign err.
      */
-    public void setErr( PrintStream err ) {
+    public void setErr( ConsolePrintStream err ) {
         this.err = err;
     }
 
