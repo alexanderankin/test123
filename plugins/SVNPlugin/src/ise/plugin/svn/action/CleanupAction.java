@@ -1,35 +1,63 @@
 package ise.plugin.svn.action;
 
-import java.awt.event.ActionListener;
+import ise.plugin.svn.OutputPanel;
+import ise.plugin.svn.SVNPlugin;
+import ise.plugin.svn.command.Cleanup;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.GUIUtils;
 import java.awt.event.ActionEvent;
-import javax.swing.SwingUtilities;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
 import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.command.CleanupCommand;
 
 public class CleanupAction extends NodeActor {
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
+            final SVNData data = new SVNData();
+
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
+            data.setPaths( paths );
+
+            if ( username != null && password != null ) {
+                data.setUsername( username );
+                data.setPassword( password );
+            }
+
+            data.setOut( new ConsolePrintStream( this ) );
+
+            view.getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            panel.showTab( OutputPanel.CONSOLE );
+            final Logger logger = panel.getLogger();
+            logger.log( Level.INFO, "Cleaning up ..." );
+            for ( Handler handler : logger.getHandlers() ) {
+                handler.flush();
+            }
+
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
-                            view.getDockableWindowManager().showDockableWindow( "console" );
-                            CleanupCommand command = new CleanupCommand();
-                            String[] params = new String[nodes.size()];
-                            for (int i = 0; i < nodes.size(); i++) {
-                                params[i] = nodes.get(i).getNodePath();
-                            }
+
                             try {
-                                String result = command.execute( params );
-                                print( result );
+                                Cleanup c = new Cleanup( );
+                                c.cleanup( data );
                             }
                             catch ( Exception e ) {
-                                printError( e.getMessage() );
+                                data.getOut().printError( e.getMessage() );
                             }
                         }
                     }
                                       );
         }
     }
-
 }

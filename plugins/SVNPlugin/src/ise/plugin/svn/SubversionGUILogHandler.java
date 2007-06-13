@@ -58,6 +58,9 @@ import javax.swing.text.*;
 import ise.library.*;
 import ise.library.Log;
 
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.gui.RolloverButton;
+
 /**
  * Borrowed from Antelope:
  *
@@ -267,51 +270,51 @@ public class SubversionGUILogHandler extends Handler {
                 new Runnable() {
                     public void run() {
                         */
-                        String msg = lr.getMessage();
-                        if ( msg == null )
-                            return ;
-                        if ( getFormatter() != null )
-                            msg = getFormatter().format( lr );
-                        if ( _text == null ) {
-                            return ;
-                        }
-                        try {
-                            int index = _text.getDocument().getLength();
-                            int caret_position = _text.getCaretPosition();
-                            SimpleAttributeSet set = new SimpleAttributeSet();
-                            if ( _font == null ) {
-                                StyleConstants.setFontFamily( set, "Monospaced" );
-                            }
-                            else {
-                                StyleConstants.setFontFamily( set, _font.getFamily() );
-                                StyleConstants.setBold( set, _font.isBold() );
-                                StyleConstants.setItalic( set, _font.isItalic() );
-                                StyleConstants.setFontSize( set, _font.getSize() );
-                            }
-                            if ( lr.getLevel().equals( Level.WARNING ) ) {
-                                StyleConstants.setForeground( set, GREEN );
-                            }
-                            else if ( lr.getLevel().equals( Level.SEVERE ) ) {
-                                StyleConstants.setForeground( set, Color.RED );
-                            }
-                            else if ( lr.getLevel().equals( Level.INFO ) ) {
-                                StyleConstants.setForeground( set, Color.BLUE );
-                            }
-                            else {
-                                StyleConstants.setForeground( set, Color.BLACK );
-                            }
-                            _text.getDocument().insertString( index, msg, set );
-                            if ( _tail )
-                                _text.setCaretPosition( index + msg.length() );
-                            else
-                                _text.setCaretPosition( caret_position );
-                        }
-                        catch ( Exception e ) {
-                            Log.log( e );
-                        }
-                        /*
-                    }
+            String msg = lr.getMessage();
+            if ( msg == null )
+                return ;
+            if ( getFormatter() != null )
+                msg = getFormatter().format( lr );
+            if ( _text == null ) {
+                return ;
+            }
+            try {
+                int index = _text.getDocument().getLength();
+                int caret_position = _text.getCaretPosition();
+                SimpleAttributeSet set = new SimpleAttributeSet();
+                if ( _font == null ) {
+                    StyleConstants.setFontFamily( set, "Monospaced" );
                 }
+                else {
+                    StyleConstants.setFontFamily( set, _font.getFamily() );
+                    StyleConstants.setBold( set, _font.isBold() );
+                    StyleConstants.setItalic( set, _font.isItalic() );
+                    StyleConstants.setFontSize( set, _font.getSize() );
+                }
+                if ( lr.getLevel().equals( Level.WARNING ) ) {
+                    StyleConstants.setForeground( set, GREEN );
+                }
+                else if ( lr.getLevel().equals( Level.SEVERE ) ) {
+                    StyleConstants.setForeground( set, Color.RED );
+                }
+                else if ( lr.getLevel().equals( Level.INFO ) ) {
+                    StyleConstants.setForeground( set, Color.BLUE );
+                }
+                else {
+                    StyleConstants.setForeground( set, Color.BLACK );
+                }
+                _text.getDocument().insertString( index, msg, set );
+                if ( _tail )
+                    _text.setCaretPosition( index + msg.length() );
+                else
+                    _text.setCaretPosition( caret_position );
+            }
+            catch ( Exception e ) {
+                Log.log( e );
+            }
+            /*
+        }
+        }
             );
             */
         }
@@ -322,7 +325,7 @@ public class SubversionGUILogHandler extends Handler {
     }
 
     private JPanel getControlPanel() {
-        JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
+        JPanel panel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
         final JCheckBox tail_cb = new JCheckBox( "Tail" );
         tail_cb.setSelected( true );
         tail_cb.addActionListener( new ActionListener() {
@@ -333,7 +336,15 @@ public class SubversionGUILogHandler extends Handler {
                     }
                 }
                                  );
+        RolloverButton clear_btn = new RolloverButton( GUIUtilities.loadIcon( "Clear.png" ) );
+        clear_btn.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ae) {
+                    _text.selectAll();
+                    _text.replaceSelection("");
+                }
+        });
         panel.add( tail_cb );
+        panel.add( clear_btn );
         return panel;
     }
 }

@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.command.CheckoutCommand;
+import ise.plugin.svn.gui.CheckoutDialog;
 import ise.plugin.svn.library.GUIUtils;
 
 public class CheckoutAction extends NodeActor {

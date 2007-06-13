@@ -50,6 +50,7 @@ package ise.plugin.svn.library;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 /**
  * Some GUI utility methods that I seem to use over and over, so I put them
@@ -232,6 +233,12 @@ public class GUIUtils {
    }
 
 
+   public static JPanel createTablePanel(JTable table) {
+        JPanel table_panel = new JPanel(new BorderLayout());
+        table_panel.add(table.getTableHeader(), BorderLayout.NORTH);
+        table_panel.add(table, BorderLayout.CENTER);
+        return table_panel;
+   }
 
 }
 
