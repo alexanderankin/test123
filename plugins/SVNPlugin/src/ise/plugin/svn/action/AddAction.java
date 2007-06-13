@@ -6,6 +6,7 @@ import ise.plugin.svn.command.Add;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.AddData;
 import ise.plugin.svn.data.AddResults;
+import ise.plugin.svn.gui.AddDialog;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;

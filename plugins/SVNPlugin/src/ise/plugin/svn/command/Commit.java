@@ -17,11 +17,11 @@ import ise.plugin.svn.data.CommitData;
 
 public class Commit {
 
-    public void commit( CommitData cd ) throws CommandInitializationException, SVNException {
+    public SVNCommitInfo commit( CommitData cd ) throws CommandInitializationException, SVNException {
 
         // validate commit data values
         if (cd.getPaths() == null) {
-            return;     // nothing to do
+            return null;     // nothing to do
         }
         if (cd.getOut() == null) {
             throw new CommandInitializationException("Invalid output stream.");
@@ -75,5 +75,7 @@ public class Commit {
             out.flush();
         }
         out.close();
+
+        return result;
     }
 }
