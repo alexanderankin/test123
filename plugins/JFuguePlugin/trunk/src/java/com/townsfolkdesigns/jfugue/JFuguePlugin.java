@@ -99,7 +99,7 @@ public class JFuguePlugin extends EditPlugin {
 	}
 
 	public static void saveBuffer(View view) {
-		Macros.message(view, "Saving Buffer");
+		//Macros.message(view, "Saving Buffer");
 		JEditTextArea currentTextArea = view.getTextArea();
 		String bufferText = currentTextArea.getText();
 		if (StringUtils.isNotBlank(bufferText)) {
@@ -108,7 +108,7 @@ public class JFuguePlugin extends EditPlugin {
 	}
 
 	public static void saveSelection(View view) {
-		Macros.message(view, "Saving Selection");
+		//Macros.message(view, "Saving Selection");
 		JEditTextArea currentTextArea = view.getTextArea();
 		String selectedText = currentTextArea.getSelectedText();
 		if (StringUtils.isNotBlank(selectedText)) {
@@ -119,18 +119,18 @@ public class JFuguePlugin extends EditPlugin {
 	}
 
 	public static void saveMusicString(View view, String musicString) {
-		Macros.message(view, "Saving Music String - musicString: " + musicString);
+		//Macros.message(view, "Saving Music String - musicString: " + musicString);
 		Buffer buffer = view.getBuffer();
 		VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(view, buffer.getPath(), JFileChooser.OPEN_DIALOG,
 		      false);
 		String[] selectedFiles = fileChooser.getSelectedFiles();
 		if (selectedFiles != null && selectedFiles.length > 0) {
 			String filePath = selectedFiles[0];
-			Macros.message(view, "Saving Music String - filePath: " + filePath);
+			//Macros.message(view, "Saving Music String - filePath: " + filePath);
 			if (!filePath.endsWith("mid")) {
 				filePath += ".mid";
 			}
-			Macros.message(view, "Saving Music String - filePath: " + filePath);
+			//Macros.message(view, "Saving Music String - filePath: " + filePath);
 			File file = new File(filePath);
 			Pattern pattern = new Pattern(musicString);
 			Player player = JFuguePlayerFactory.createJFuguePlayer();
