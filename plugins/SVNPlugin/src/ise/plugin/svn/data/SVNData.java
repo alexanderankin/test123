@@ -13,6 +13,7 @@ public class SVNData {
     private List<String> paths;
     private String username = "";
     private String password = "";
+    private boolean recursive = false;
 
     public SVNData(){}
 
@@ -20,12 +21,14 @@ public class SVNData {
             ConsolePrintStream err,
             List<String> paths,
             String username,
-            String password ) {
+            String password,
+            boolean recursive) {
         this.out = out;
         this.err = err;
         this.paths = paths;
         this.username = username;
         this.password = password;
+        this.recursive = recursive;
     }
 
     /**
@@ -103,6 +106,19 @@ public class SVNData {
         this.password = password;
     }
 
+    /**
+     * Returns the value of recursive.
+     */
+    public boolean getRecursive() {
+        return recursive;
+    }
 
+    /**
+     * Sets the value of recursive.
+     * @param recursive The value to assign recursive.
+     */
+    public void setRecursive( boolean recursive ) {
+        this.recursive = recursive;
+    }
 
 }

@@ -91,6 +91,9 @@ public class SVN2 extends org.tmatesoft.svn.cli.SVN {
         ourArguments.add( SVNArgument.PRE_14_COMPATIBLE );
     }
 
+    /**
+     * @deprecated
+     */
     public static String execute( String[] args ) {
         if ( args == null || args.length < 1 ) {
             throw new IllegalArgumentException( "usage: jsvn commandName commandArguments" );

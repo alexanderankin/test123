@@ -59,6 +59,8 @@ ise.plugin.svn.action.label.7=Checkout...
 ise.plugin.svn.action.code.7=ise.plugin.svn.action.CheckoutAction
 ise.plugin.svn.action.label.8=Cleanup
 ise.plugin.svn.action.code.8=ise.plugin.svn.action.CleanupAction
+ise.plugin.svn.action.label.9=Resolve
+ise.plugin.svn.action.code.9=ise.plugin.svn.action.ResolvedAction
 
 
 # register subversion commands with ProjectViewer
