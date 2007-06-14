@@ -1,4 +1,8 @@
 To do:
+- Bugs:
+  - Expression tooltips not removed when debug session ends.
+  - "null" value for empty strings in launch configuration.
+    This includes incorrect "null" parameters on the command-line.
 - BreakpointTable:
   - Call tableStructureChanged only if it really changed. Otherwise, call
     dataChanged instead. Set a boolean variable whenever a column is added to
