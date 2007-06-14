@@ -7,7 +7,6 @@ import ise.plugin.svn.io.ConsolePrintStream;
 public class CommitData extends SVNData {
     private boolean keepLocks = true;
     private String commitMessage = "";
-    private boolean recursive = true;
 
     public CommitData(){}
 
@@ -19,10 +18,9 @@ public class CommitData extends SVNData {
             boolean recursive,
             String username,
             String password ) {
-        super(out, err, paths, username, password);
+        super(out, err, paths, username, password, recursive);
         this.keepLocks = keepLocks;
         this.commitMessage = commitMessage;
-        this.recursive = recursive;
     }
 
     /**
@@ -53,21 +51,6 @@ public class CommitData extends SVNData {
      */
     public void setCommitMessage( String commitMessage ) {
         this.commitMessage = commitMessage;
-    }
-
-    /**
-     * Returns the value of recursive.
-     */
-    public boolean getRecursive() {
-        return recursive;
-    }
-
-    /**
-     * Sets the value of recursive.
-     * @param recursive The value to assign recursive.
-     */
-    public void setRecursive( boolean recursive ) {
-        this.recursive = recursive;
     }
 
 }

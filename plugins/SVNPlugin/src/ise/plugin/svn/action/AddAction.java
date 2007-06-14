@@ -4,7 +4,7 @@ import ise.plugin.svn.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Add;
 import ise.plugin.svn.command.Info;
-import ise.plugin.svn.data.AddData;
+import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.gui.AddDialog;
 import ise.plugin.svn.gui.AddResultsPanel;
@@ -28,7 +28,7 @@ public class AddAction extends NodeActor {
             dialog = new AddDialog( view, nodes );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
-            final AddData cd = dialog.getAddData();
+            final SVNData cd = dialog.getSVNData();
             if ( cd == null ) {
                 return ;     // null means user cancelled
             }
@@ -56,7 +56,7 @@ public class AddAction extends NodeActor {
                                 final AddResults results = add.add( cd );
                                 SwingUtilities.invokeLater(new Runnable(){
                                         public void run() {
-                                            JPanel results_panel = new AddResultsPanel(results);
+                                            JPanel results_panel = new AddResultsPanel(results, true);
                                             panel.setResultsPanel(results_panel);
                                             panel.showTab(OutputPanel.RESULTS);
                                         }

@@ -15,12 +15,12 @@ import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 
 
-public class Add {
+public class Resolved {
 
     /**
-     * @return a list of paths that were scheduled to be added.
+     * @return a list of paths to be resolved.  This is very similar to an "add".
      */
-    public AddResults add( SVNData cd ) throws CommandInitializationException, SVNException {
+    public AddResults resolve( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getPaths() == null ) {
@@ -53,14 +53,13 @@ public class Add {
         // set an event handler so that messages go to the commit data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
 
-        // actually do the add(s)
+        // actually do the reverts(s)
         PrintStream out = cd.getOut();
         AddResults results = new AddResults();
         for ( String path : paths ) {
-            // path, force, mkdir, add parents, recursive
             try {
                 File file = new File(path);
-                client.doAdd( file, false, false, true, cd.getRecursive() );
+                client.doResolve(file, cd.getRecursive());
                 results.addPath(path);
             }
             catch ( Exception e ) {

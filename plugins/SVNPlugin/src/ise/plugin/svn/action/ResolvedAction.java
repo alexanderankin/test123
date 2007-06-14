@@ -9,7 +9,7 @@ import javax.swing.*;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Revert;
+import ise.plugin.svn.command.Resolved;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
@@ -18,7 +18,7 @@ import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
-public class RevertAction extends NodeActor {
+public class ResolvedAction extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
@@ -38,16 +38,16 @@ public class RevertAction extends NodeActor {
 
             // user confirmations
             if (recursive) {
-                // have the user verify they want a recursive revert
-                int response = JOptionPane.showConfirmDialog(getView(), "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                // have the user verify they want a recursive resolve
+                int response = JOptionPane.showConfirmDialog(getView(), "Recursively resolve all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (response == JOptionPane.CANCEL_OPTION) {
                     return;
                 }
                 recursive = response == JOptionPane.YES_OPTION;
             }
             else {
-                // have the user confirm they really want to revert
-                int response = JOptionPane.showConfirmDialog(getView(), "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                // have the user confirm they really want to resolve
+                int response = JOptionPane.showConfirmDialog(getView(), "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (response == JOptionPane.NO_OPTION) {
                     return;
                 }
@@ -66,7 +66,7 @@ public class RevertAction extends NodeActor {
             final OutputPanel panel = SVNPlugin.getOutputPanel(view);
             panel.showTab(OutputPanel.CONSOLE);
             Logger logger = panel.getLogger();
-            logger.log(Level.INFO, "Reverting ...");
+            logger.log(Level.INFO, "Resolving ...");
             for(Handler handler : logger.getHandlers()) {
                 handler.flush();
             }
@@ -74,8 +74,8 @@ public class RevertAction extends NodeActor {
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
                             try {
-                                Revert revert = new Revert();
-                                final AddResults results = revert.revert( data );
+                                Resolved resolve = new Resolved();
+                                final AddResults results = resolve.resolve( data );
                                 SwingUtilities.invokeLater(new Runnable(){
                                         public void run() {
                                             JPanel results_panel = new AddResultsPanel(results, true);
