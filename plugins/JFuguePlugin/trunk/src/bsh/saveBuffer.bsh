@@ -1,0 +1,5 @@
+/* Saves the entire contents of the buffer as a midi file */
+import com.townsfolkdesigns.jfugue.JFuguePlugin;
+saveBuffer(View view) {
+	JFuguePlugin.saveBuffer(view);
+}

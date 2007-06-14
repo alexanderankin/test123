@@ -1,0 +1,5 @@
+/* Saves the selected text of a buffer to a midi file */
+import com.townsfolkdesigns.jfugue.JFuguePlugin
+saveSelection(View view) {
+	JFuguePlugin.saveSelection(view);
+}
