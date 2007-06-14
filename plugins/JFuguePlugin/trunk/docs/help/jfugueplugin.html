@@ -1,91 +1,160 @@
 <html>
    <head>
       <style type="text/css">
-		/* <![CDATA[ */ 
-		@import "http://www.tigris.org/branding/css/tigris.css"; 
-		@import "http://www.tigris.org/branding/css/inst.css"; 
-		/*  ]]> */
-		</style> 
-      <link rel="stylesheet" type="text/css" href="http://www.tigris.org/branding/css/print.css" media="print"/>
-      <script src="http://www.tigris.org/branding/scripts/tigris.js" type="text/javascript"></script> 
+		</style>
       <title>JFugue Plugin Help</title> 
    </head> 
    <body>
-      <h3>About JFugue</h3>
-      <p>
-      JFugue is an open-source Java API for programming music without the complexities of MIDI. 
-      <br>
-      <br>
-      JFugue makes programming music this easy: 
-      <br>
-      <br>
-      Player player = new Player(); 
-      <br>
-      player.play("C D E F G A B"); 
-      <br>
-      <br>
-      In addition, JFugue provides many more features: 
-      <br>
-      <br>
-      <ul>
-         <li>
-            Music Strings let you specify notes, chords, instruments, tracks. More... 
-         </li>
-         <li>
-            Music can be played at runtime, or saved to and opened from MIDI files 
-         </li>
-         <li>
-            Music can be sent to and received from external devices: keyboards, mixers, etc. 
-         </li>
-         <li>
-            A "Pattern" of music can be transformed and manipulated in interesting ways 
-         </li>
-         <li>
-            Support for <a href="http://en.wikipedia.org/wiki/Microtonal_music" target="_blank">microtonal music</a>,  
-            intuitive rhythm tracks, anticipating musical events 
-         </li>
-         <li>
-            Other music parsers and renderers can be easily integrated into the JFugue architecture 
-         </li>
-      </ul>
-      JFugue is ideal for applications in which music is generated at run-time, such as: 
-      <br>
-      <br>
-      <ul>
-         <li>
-            <a href="http://en.wikipedia.org/wiki/Algorithmic_music" target="_blank">Algorithmic</a>, <a href="http://en.wikipedia.org/wiki/Generative_music" target="_blank">generative</a>
-            , <a href="http://en.wikipedia.org/wiki/Aleatoric_music" target="_blank">aleatoric</a>, or <a href="http://en.wikipedia.org/wiki/Interactive_evolutionary_computation" target="_blank">evolutionary</a>
-            music 
-         </li>
-         <li>
-            Music editors, beat boxes, <a href="http://sound.condorow.net/drum.html" target="_blank">drum machines</a>
-         </li>
-         <li>
-            Jazz improvisers, mimicking classical composers, AI in music 
-         </li>
-         <li>
-            <a href="http://en.wikipedia.org/wiki/Procedural_synthesis" target="_blank">Procedural synthesis</a>,  
-            virtual instruments, interactive software playthings 
-         </li>
-         <li>
-            Dynamic mood setting, <a href="http://www.gamasutra.com/features/20070417/clark_01.shtml">adaptive music</a>
-            , music that depends on game state, games that require musical skill 
-         </li>
-         <li>
-            ...<a href="http://www.jfugue.org/book.html" target="_blank">And much more</a>, limited only by your  
-            imagination! 
-         </li>
-      </ul>
-      Using JFugue is also a great way to inspire future programmers, and to experiment with music theory and  
-      composition. 
-      <br>
-      <br>
-      <h3>Links</h3>
-      <ul>
-         <li>
-            <a href="http://www.jfugue.org" target="_blank">JFugue</a> Java API for Music Programming 
-         </li>
-      </ul>
+		<p>
+			<h1>JFuguePlugin</h1>
+			<h3>Author: Eric Berry</h3>
+			<b>Contents</b>
+			<ul>
+				<li><a href="#about_jfugue">About JFugue</a></li>
+				<li><a href="#about_soundbanks">About Sound Banks</a></li>
+				<li><a href="#plugin_features">Plugin Features</a></li>
+				<li><a href="#change_log">Change Log</a></li>
+			</ul>
+		</p>
+		<p> <!-- About JFugue -->
+			<b>	<a name="about_jfugue">About JFugue</a></b>
+			<span style="font-style: none; color: #999;">
+				(from the JFugue website: <a href="http://www.jfugue.org">www.jfugue.org</a>)
+			</span>
+			<br>
+			JFugue is an open-source Java API for programming music without the complexities of MIDI. 
+			<br><br>
+			JFugue makes programming music this easy: 
+			<br><br>
+			Player player = new Player(); 
+			<br>
+			player.play("C D E F G A B"); 
+			<br><br>
+			In addition, JFugue provides many more features: 
+			<br><br>
+			<ul>
+				<li>
+					Music Strings let you specify notes, chords, instruments, tracks. More... 
+				</li>
+				<li>
+					Music can be played at runtime, or saved to and opened from MIDI files 
+				</li>
+				<li>
+					Music can be sent to and received from external devices: keyboards, mixers, etc. 
+				</li>
+				<li>
+					A "Pattern" of music can be transformed and manipulated in interesting ways 
+				</li>
+				<li>
+					Support for <a href="http://en.wikipedia.org/wiki/Microtonal_music" target="_blank">microtonal music</a>,  
+					intuitive rhythm tracks, anticipating musical events 
+				</li>
+				<li>
+					Other music parsers and renderers can be easily integrated into the JFugue architecture 
+				</li>
+			</ul>
+			JFugue is ideal for applications in which music is generated at run-time, such as: 
+			<br><br>
+			<ul>
+				<li>
+					<a href="http://en.wikipedia.org/wiki/Algorithmic_music" target="_blank">Algorithmic</a>, <a href="http://en.wikipedia.org/wiki/Generative_music" target="_blank">generative</a>
+					, <a href="http://en.wikipedia.org/wiki/Aleatoric_music" target="_blank">aleatoric</a>, or <a href="http://en.wikipedia.org/wiki/Interactive_evolutionary_computation" target="_blank">evolutionary</a>
+					music 
+				</li>
+				<li>
+					Music editors, beat boxes, <a href="http://sound.condorow.net/drum.html" target="_blank">drum machines</a>
+				</li>
+				<li>
+					Jazz improvisers, mimicking classical composers, AI in music 
+				</li>
+				<li>
+					<a href="http://en.wikipedia.org/wiki/Procedural_synthesis" target="_blank">Procedural synthesis</a>,  
+					virtual instruments, interactive software playthings 
+				</li>
+				<li>
+					Dynamic mood setting, <a href="http://www.gamasutra.com/features/20070417/clark_01.shtml">adaptive music</a>
+					, music that depends on game state, games that require musical skill 
+				</li>
+				<li>
+					...<a href="http://www.jfugue.org/book.html" target="_blank">And much more</a>, limited only by your  
+					imagination! 
+				</li>
+			</ul>
+			Using JFugue is also a great way to inspire future programmers, and to experiment with music theory and  
+			composition. 
+      </p>
+		<p> <!-- About Sound Banks -->
+			<b>	<a name="about_soundbanks">About Sound Banks</a></b>
+			<br>
+			You can download sound banks for your Java installation here:<br>
+			<a href="http://java.sun.com/products/java-media/sound/soundbanks.html">http://java.sun.com/products/java-media/sound/soundbanks.html</a>
+			<br><br>
+			You need to put the downloaded sound bank in to your JRE/lib/audio directory. You do not need to change the name at all, or delete existing sound banks. Java will automatically find the highest quality one and use it.
+		</p>
+		<p> <!-- Plugin Features -->
+			<b>	<a name="plugin_features">Plugin Features</a></b>
+			<br>
+			JFuguePlugin's Menu:
+			<br>
+			<img src="plugin_actions.png">
+			<br><br>
+			Play Buffer - Plays the entire contents of the current buffer through JFugue's Player.<br>
+			Play Selection - Plays the currently selected text. If your buffer contains "T160 I[Cello] G3q G3q G3q Eb3q Bb3i G3q Eb3q Bb3i G3h", and you have selected "Eb3q Bb3i G3q" and "G3h", you will hear "Eb3q Bb3i G3q G3h". Also, if no selection is found, the entire buffer is played.
+			Buffer to midi - Takes the contents of the current buffer and uses JFugue's Player to save it to a midi file.
+			Selection to midi - Takes the currently selected text and uses JFugue's Player to save it to a midi file.
+			<br><br>
+			The JFuguePlugin also makes the aforementioned features available through beanshell which makes it easy to write macros that play music, or sounds.<br>
+			Function available for beanshell scripts:<br>
+			playBuffer(view) - plays the content of the current buffer.<br>
+			playSelection(view) - plays the currently selected text.<br>
+			playMusicString(musicString) - plays any given music string.<br>
+			createJFuguePlayer() - creates a new JFugue Player to play.<br>
+			saveBuffer(view) - saves the content of the current buffer as a midi file.<br>
+			saveSelection(view) - saves the currently selected text as a midi file.<br>
+			saveMusicString(view, musicString) - saves the given music string as a midi file.<br>
+			<b>Eg:</b>
+			<code><pre>
+				// playMusicString
+				playMusicString("T160 I[Cello] G3q G3q G3q Eb3q Bb3i G3q Eb3q Bb3i G3h");
+			</pre></code>
+			or:
+			<code><pre>
+				import org.jfugue.*;
+				Player player = createJFuguePlayer();
+			
+				// "Frere Jacques"
+				Pattern pattern1 = new Pattern("C5q D5q E5q C5q");
+				
+				// "Dormez-vous?"
+				Pattern pattern2 = new Pattern("E5q F5q G5h");
+				
+				// "Sonnez les matines"
+				Pattern pattern3 = new Pattern("G5i A5i G5i F5i E5q C5q");
+				
+				// "Ding ding dong"
+				Pattern pattern4 = new Pattern("C5q G4q C5h");
+				
+				// Put it all together
+				Pattern song = new Pattern();
+				song.add(pattern1, 2); // Adds 'pattern1' to 'song' twice
+				song.add(pattern2, 2); // Adds 'pattern2' to 'song' twice
+				song.add(pattern3, 2); // Adds 'pattern3' to 'song' twice
+				song.add(pattern4, 2); // Adds 'pattern4' to 'song' twice
+				
+				// Play the song!
+				player.play(song);
+			</pre></code>
+			<br>
+			Using any of the save functions will prompt you for the file name.
+		</p>
+		<p> <!-- Change Log -->
+			<b>	<a name="change_log">Change Log</a></b>
+			<br>
+			<ul>
+				<li>0.6.1 - Save buffer, selection and musicString were added.
+				<li>0.5.2 - Initial Release</li>
+			</ul>
+		</p>
    </body> 
 </html> 
 
