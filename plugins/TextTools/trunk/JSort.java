@@ -21,7 +21,7 @@
  */
 
 
-//{{{ imports
+//{{{ Imports
 import java.util.*;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.util.Log;
@@ -37,35 +37,35 @@ public class JSort implements Comparator
 	
 	//{{{ JSort constructors
 	/**
-	  * Constructor initializes Vector of SortBy instances and
-	  * sets properties to false;
-	  *
-	  */
+	 * Constructor initializes Vector of SortBy instances and
+	 * sets properties to false;
+	 *
+	 */
 	public JSort()
 	{
 		this(false, false);
 	}
 	
 	/**
-	  * Constructor initializes Vector of SortBy instances and
-	  * sets deleteDuplicates property to value passed in;
-	  *
-	  * @param deleteDuplicates  Should we delete duplicate lines while we sort?
-	  *
-	  */
+	 * Constructor initializes Vector of SortBy instances and
+	 * sets deleteDuplicates property to value passed in;
+	 *
+	 * @param deleteDuplicates  Should we delete duplicate lines while we sort?
+	 *
+	 */
 	public JSort(boolean deleteDuplicates)
 	{
 		this(deleteDuplicates, false);
 	}
 	
 	/**
-	  * Constructor initializes Vector of SortBy instances and
-	  * sets properties to values passed in;
-	  *
-	  * @param deleteDuplicates  Should we delete duplicate lines while we sort?
-	  * @param dontSort          Should we skip sorting when deleting duplicates?
-	  *
-	  */
+	 * Constructor initializes Vector of SortBy instances and
+	 * sets properties to values passed in;
+	 *
+	 * @param deleteDuplicates  Should we delete duplicate lines while we sort?
+	 * @param dontSort          Should we skip sorting when deleting duplicates?
+	 *
+	 */
 	public JSort(boolean deleteDuplicates, boolean dontSort)
 	{
 		options = new Vector();
@@ -73,35 +73,33 @@ public class JSort implements Comparator
 		this.dontSort = dontSort;
 	}  //}}}
 	
-	//{{{ methods to modify sort
-
-	//{{{ getSortBy()
+	//{{{ getSortBy() method
 	/**
-	  * convenience method to return all current options for this sort
-	  */
+	 * convenience method to return all current options for this sort
+	 */
 	public Vector getSortBy()
 	{
 		return options;
 	}  //}}}
-
-	//{{{ addSortBy(JSort.SortBy sortBy)
+	
+	//{{{ addSortBy() method
 	public void addSortBy(JSort.SortBy sortBy)
 	{
 		options.add(sortBy);
 	}  //}}}
-
-	//{{{ clearSort
+	
+	//{{{ clearSort() method
 	/**
-	  * remove all current sort options and set delete duplicates flag to false
-	  */
+	 * remove all current sort options and set delete duplicates flag to false
+	 */
 	public void clearSort()
 	{
 		options = new Vector();
 		deleteDuplicates = false;
 		dontSort = false;
 	}  //}}}
-
-	//{{{ JSort addSortConstraint
+	
+	//{{{ addSortConstraint() method
 	/**
 	  * Add a 'field' to sort by.  Identical to calling addSortConstraint(startColumn, endColumn, true, false, false, false)
 	  *
@@ -166,58 +164,61 @@ public class JSort implements Comparator
 	{
 		addSortConstraint(startColumn, endColumn, ascending, ignoreCase, numeric, false, false);
 	}   //}}}
-
+	
+	//{{{ addSortConstraint() method
 	/**
-	  * Add a 'field' to sort by.  The entries are used in order.  So the first
-	  * constraint is the primary sort field, the second becomes the secondary, etc.
-	  *
-	  * @param startColumn  The start position of the field, 1 indexed.  If less than one, will be
-	  *                     modified to be one.
-	  * @param endColumn  The end position of the field, inclusive and 1 indexed.  If greater than
-	  *                   the length of any of the entries, will effectively be startColumn to the
-	  *                   end of the entry.
-	  * @param ascending  True for an ascending sort, false for a descending
-	  * @param ignoreCase  True will treat 'a' and 'A' identically.
-	  * @param numeric  True will place SomeName2 before SomeName10 in the sort.
-	  * @param trimWhitespace  True will do a String.trim() previous to sorting (this will not trim the original
-	  *                        value in the List to be sorted
-	  */
+	 * Add a 'field' to sort by.  The entries are used in order.  So the first
+	 * constraint is the primary sort field, the second becomes the secondary, etc.
+	 *
+	 * @param startColumn  The start position of the field, 1 indexed.  If less than one, will be
+	 *                     modified to be one.
+	 * @param endColumn  The end position of the field, inclusive and 1 indexed.  If greater than
+	 *                   the length of any of the entries, will effectively be startColumn to the
+	 *                   end of the entry.
+	 * @param ascending  True for an ascending sort, false for a descending
+	 * @param ignoreCase  True will treat 'a' and 'A' identically.
+	 * @param numeric  True will place SomeName2 before SomeName10 in the sort.
+	 * @param trimWhitespace  True will do a String.trim() previous to sorting (this will not trim the original
+	 *                        value in the List to be sorted
+	 */
 	public void addSortConstraint(int startColumn, int endColumn, boolean ascending, boolean ignoreCase, boolean numeric, boolean trimWhitespace, boolean delDupRange)
 	{
 		// column choices are 1 indexed...
 		addSortBy((new JSort.SortBy(--startColumn, endColumn, ascending, ignoreCase, numeric, trimWhitespace, delDupRange)));
-	}   //}}}
+	} //}}}
 	
-	//{{{ set/get DeleteDuplicates(boolean)
+	//{{{ setDeleteDuplicates() method
 	public void setDeleteDuplicates(boolean deleteDuplicates)
 	{
 		this.deleteDuplicates = deleteDuplicates;
-	} 
+	} //}}}
+	
+	//{{{ getDeleteDuplicates() method
 	public boolean getDeleteDuplicates()
 	{
 		return deleteDuplicates;
-	}  
-	//}}}
+	} //}}}
 	
-	//{{{ set/get dontSort(boolean)
+	//{{{ setDontSort() method
 	public void setDontSort(boolean dontSort)
 	{
 		this.dontSort = dontSort;
-	} 
+	} //}}}
+	
+	//{{{ getDontSort() method
 	public boolean getDontSort()
 	{
 		return dontSort;
-	}  
-	//}}}
+	} //}}}
 	
-	//{{{ public sort methods
+	//{{{ Public Sort Methods
 	
-	//{{{ shuffle(List)
+	//{{{ shuffle() method
 	/**
-	  * Randomize the entries in the given collection
-	  *
-	  * @param list  The data to 'shuffle'
-	  */
+	 * Randomize the entries in the given collection
+	 *
+	 * @param list  The data to 'shuffle'
+	 */
 	public static void shuffle(List list) 
 	{
 		for(int lastPlace = list.size() - 1; lastPlace > 0; lastPlace--)
@@ -228,14 +229,14 @@ public class JSort implements Comparator
 			Object o = list.set(lastPlace, list.get(randLoc));
 			list.set(randLoc, o);
 		}
-	}  //}}}
+	} //}}}
 
-	//{{{ sort(List)
+	//{{{ sort() method
 	/**
-	  * Sort the given collection, based on current sort options.
-	  *
-	  * @param list  The data to sort
-	  */
+	 * Sort the given collection, based on current sort options.
+	 *
+	 * @param list  The data to sort
+	 */
 	public void sort(List list)
 	{
 		if (deleteDuplicates && dontSort)
@@ -274,16 +275,16 @@ public class JSort implements Comparator
 	
 	//}}}
 	
-	//{{{ compare methods
+	//{{{ Compare methods
 	
-	//{{{ compare(Object, Object)
+	//{{{ compare() method
 	/**
-	  * Implemenation of java.util.Comparator used in creating a sorted 
-	  * collection (TreeMap implementation).  Will also delete duplicates
-	  * if option is set to true.
-	  *
-	  * @return int  if o1 > o2, positive, 0 if same and delete duplicates option set, else negative
-	  */
+	 * Implemenation of java.util.Comparator used in creating a sorted 
+	 * collection (TreeMap implementation).  Will also delete duplicates
+	 * if option is set to true.
+	 *
+	 * @return int  if o1 > o2, positive, 0 if same and delete duplicates option set, else negative
+	 */
 //	public static int dontSort = 1;
 	public int compare(Object o1, Object o2)
 	{
@@ -344,10 +345,9 @@ public class JSort implements Comparator
 		}
 
 		return retVal;
-	}  //}}}
-
-
-	//{{{  compare(String, String, SortBy)
+	} //}}}
+	
+	//{{{ compare(String, String, SortBy)
 	/**
 	 *********** originally copied from Slava Pestov's MiscUtilities.compareStrings(...) method ***********
 	 * A more intelligent version of String.compareTo() that handles
@@ -479,7 +479,7 @@ public class JSort implements Comparator
 	
 	//}}}
 	
-	//{{{ SortBy class def.
+	//{{{ SortBy class
 	public class SortBy
 	{
 		public int startColumn;
