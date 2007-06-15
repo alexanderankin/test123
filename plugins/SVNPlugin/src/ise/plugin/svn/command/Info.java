@@ -25,13 +25,13 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
-import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.SVNData;
 
 public class Info {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );
 
-    public List<SVNInfo> info( CommitData cd ) throws CommandInitializationException, SVNException {
+    public List<SVNInfo> info( SVNData cd ) throws CommandInitializationException, SVNException {
         List<SVNInfo> results = getInfo( cd );
 
         // print the results
@@ -42,7 +42,7 @@ public class Info {
         return results;
     }
 
-    public List<SVNInfo> getInfo( CommitData cd ) throws CommandInitializationException, SVNException {
+    public List<SVNInfo> getInfo( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate commit data values
         if ( cd.getPaths() == null ) {

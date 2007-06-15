@@ -17,14 +17,17 @@ import ise.plugin.svn.data.SVNData;
 
 public class Update {
 
-    private TreeMap<String, String> entries = new TreeMap();
+    private TreeMap<String, String> entries = new TreeMap<String, String>();
 
     private PrintStream out = null;
 
     /**
-     * @return a list of paths that were scheduled to be added.
+     * Performs an update on the paths provided by the SVNData object.
+     * @param cd the data needed by svn to perform an update, must have paths
+     * and output stream set at minimum.
+     * @return TreeMap<String, String> containing path and revision for updated files
      */
-    public TreeMap doUpdate( SVNData cd ) throws CommandInitializationException, SVNException {
+    public TreeMap<String, String> doUpdate( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getPaths() == null ) {
@@ -63,7 +66,6 @@ public class Update {
 
         out = cd.getOut();
 
-        // files for logs, start revision, end revision, stop on copy, report paths, number of entries, handler
         for ( File file : localPaths ) {
             long revision = client.doUpdate(file, SVNRevision.HEAD, recursive);
             entries.put(file.toString(), String.valueOf(revision));

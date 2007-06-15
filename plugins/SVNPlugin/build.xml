@@ -86,6 +86,7 @@
                 target="1.5"
                 source="1.5">
             <classpath refid="classpathref" />
+            <compilerarg value="-Xlint:unchecked"/>
         </javac>
         <copy todir="${classes.dir}/docs" overwrite="no">
             <fileset dir="${src.dir}/docs">
@@ -201,11 +202,12 @@
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${build.dir}"/>
 
+        <!--
         <delete file="${install.dir}/ganymed.jar"/>
         <delete file="${install.dir}/svnkit-cli.jar"/>
         <delete file="${install.dir}/svnkit.jar"/>
         <delete file="${install.dir}/svnkit-javahl.jar"/>
-
+        -->
     </target>
 
    <!-- ========================================================================

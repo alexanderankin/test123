@@ -7,7 +7,8 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.OutputPanel;
+import ise.plugin.svn.gui.OutputPanel;
+
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Revert;
 import ise.plugin.svn.data.SVNData;

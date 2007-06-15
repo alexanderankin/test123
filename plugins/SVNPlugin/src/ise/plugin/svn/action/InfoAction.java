@@ -8,7 +8,8 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.OutputPanel;
+import ise.plugin.svn.gui.OutputPanel;
+
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.CommitData;

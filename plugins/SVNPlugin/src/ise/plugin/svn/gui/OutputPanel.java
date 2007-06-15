@@ -1,8 +1,9 @@
-package ise.plugin.svn;
+package ise.plugin.svn.gui;
 
 import java.awt.*;
 import java.util.logging.*;
 import javax.swing.*;
+import ise.plugin.svn.*;
 
 public class OutputPanel extends JPanel {
 

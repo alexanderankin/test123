@@ -1,6 +1,7 @@
 package ise.plugin.svn.action;
 
-import ise.plugin.svn.OutputPanel;
+import ise.plugin.svn.gui.OutputPanel;
+
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Update;
 import ise.plugin.svn.data.SVNData;
@@ -24,14 +25,27 @@ public class UpdateAction extends NodeActor {
         if ( nodes != null && nodes.size() > 0 ) {
             final SVNData data = new SVNData();
 
-
+            boolean recursive = false;
             List<String> paths = new ArrayList<String>();
             for ( VPTNode node : nodes ) {
                 if ( node != null ) {
                     paths.add( node.getNodePath() );
+                    if (node.isDirectory()) {
+                        recursive = true;
+                    }
                 }
             }
             data.setPaths( paths );
+
+            // user confirmations
+            if (recursive) {
+                // have the user verify they want a recursive update
+                int response = JOptionPane.showConfirmDialog(getView(), "Recursively update all files in selected directories?", "Recursive Update?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (response == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+                recursive = response == JOptionPane.YES_OPTION;
+            }
 
             if ( username != null && password != null ) {
                 data.setUsername( username );
