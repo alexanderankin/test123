@@ -1,7 +1,8 @@
 /*
- * :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
- *
  * TextToolsComments.java - Actions for toggling range and line comments
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2003 Robert Fletcher
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-//{{{ imports
+
+//{{{ Imports
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.text.Segment;

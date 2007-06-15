@@ -29,6 +29,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+//{{{ Imports
+
 import java.util.*;
 
 import org.gjt.sp.jedit.buffer.JEditBuffer;
@@ -48,12 +51,18 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.border.*;
 
+//}}}
+
 public class BeanShellUtility 
 {
+	
+	//{{{ Protected members
 	
 	View		view;
 	JEditTextArea	textArea;
 	JEditBuffer		buffer;
+	
+	//}}}
 	
 	//{{{ BeanShellUtility constructor
 	/**
@@ -68,7 +77,7 @@ public class BeanShellUtility
 		buffer = view.getBuffer();
 	} //}}}
 	
-	//{{{ int getRow() method
+	//{{{ getRow() method
 	/**
 	 * Find the column of the passed buffer position
 	 * @param bufferPosition
@@ -87,7 +96,7 @@ public class BeanShellUtility
 		return bsu.getRow(bufferPosition);
 	} //}}}
 	
-	//{{{ int getVisibleRow() method
+	//{{{ getVisibleRow() method
 	/**
 	 * Find the visible column of the passed buffer position
 	 * tabs are expanded according to buffers tabSize
@@ -102,7 +111,7 @@ public class BeanShellUtility
 		);
 	} //}}}
 	
-	//{{{ int getVisibleRow() method
+	//{{{ getVisibleRow() method
 	public static int getVisibleRow(View view, int bufferPosition)
 	{
 		BeanShellUtility bsu = new BeanShellUtility(view);
