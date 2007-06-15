@@ -8,14 +8,14 @@ import java.util.*;
  */
 public class AddResults {
 
-    private List<String> paths = new ArrayList();
-    private TreeMap<String, String> error_paths = new TreeMap();
+    private List<String> paths = new ArrayList<String>();
+    private TreeMap<String, String> error_paths = new TreeMap<String, String>();
 
     public void addPath(String path) {
         paths.add(path);
     }
 
-    public List getPaths() {
+    public List<String> getPaths() {
         return paths;
     }
 
@@ -23,7 +23,7 @@ public class AddResults {
         error_paths.put(path, msg);
     }
 
-    public Map getErrorPaths() {
+    public Map<String, String> getErrorPaths() {
         return error_paths;
     }
 }

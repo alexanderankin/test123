@@ -262,9 +262,9 @@ public class SubversionGUILogHandler extends Handler {
      */
     public void publish( final LogRecord lr ) {
         try {
-            // I removed the invokeLater since the callers _should_ already be
-            // in an invokeLater.  Calling invokeLater from within an invokeLater
-            // causes the logging to be delayed to the UI.
+            // I removed the invokeLater for svn plugin since the callers _should_
+            // already be in an invokeLater.  Calling invokeLater from within an
+            // invokeLater causes the logging to be delayed to the UI.
             /*
             SwingUtilities.invokeLater(
                 new Runnable() {

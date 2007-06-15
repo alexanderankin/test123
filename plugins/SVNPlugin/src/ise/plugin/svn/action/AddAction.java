@@ -1,6 +1,6 @@
 package ise.plugin.svn.action;
 
-import ise.plugin.svn.OutputPanel;
+import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Add;
 import ise.plugin.svn.command.Info;

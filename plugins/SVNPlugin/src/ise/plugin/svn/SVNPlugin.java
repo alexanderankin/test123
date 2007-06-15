@@ -31,6 +31,7 @@ import java.util.*;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
+import ise.plugin.svn.gui.OutputPanel;
 
 public class SVNPlugin extends EditPlugin {
     public final static String NAME = "subversion";

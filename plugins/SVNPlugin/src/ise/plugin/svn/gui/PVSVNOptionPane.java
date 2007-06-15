@@ -1,4 +1,4 @@
-package ise.plugin.svn;
+package ise.plugin.svn.gui;
 
 // imports
 import java.awt.*;
@@ -11,7 +11,10 @@ import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
+import ise.plugin.svn.data.*;
+import ise.plugin.svn.command.*;
 
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
  * Option pane for setting the url, username, and password for subversion via
@@ -39,17 +42,26 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         url = new JTextField( jEdit.getProperty( PREFIX + project_name + ".url" ), 30 );
 
         // populate url field from existing svn info, if available
-        String info_text = SVN2.execute(new String[]{"info", getProjectRoot()});
-        String[] info_lines = info_text.split("[\r\n]");
+        java.util.List<String> info_path = new java.util.ArrayList<String>();
+        info_path.add(getProjectRoot());
+        SVNData info_data = new SVNData();
+        info_data.setPaths(info_path);
         String url_text = null;
-        for (String line : info_lines) {
-            if (line.startsWith("URL: ")) {
-                url_text = line.substring("URL: ".length());
-                break;
+        java.util.List<SVNInfo> info_results = null;
+        try {
+            info_results = new Info().getInfo(info_data);
+        }
+        catch(Exception e) {
+            info_results = null;
+        }
+        if (info_results != null && info_results.size() > 0) {
+            SVNInfo svn_info = info_results.get(0);
+            if (svn_info != null && svn_info.getURL() != null) {
+                url_text = svn_info.getURL().toString();
             }
         }
-        if (url_text != null) {
-            url.setText(url_text);
+        if ( url_text != null ) {
+            url.setText( url_text );
         }
 
         // username field

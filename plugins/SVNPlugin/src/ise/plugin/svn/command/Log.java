@@ -20,7 +20,7 @@ import ise.plugin.svn.data.SVNData;
 
 public class Log {
 
-    private TreeMap<String, List<SVNLogEntry>> entries = new TreeMap();
+    private TreeMap<String, List<SVNLogEntry>> entries = new TreeMap<String, List<SVNLogEntry>>();
 
     private PrintStream out = null;
 
