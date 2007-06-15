@@ -1,7 +1,8 @@
 /*
+ * JSort.java - a class to sort sets
+ * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * JSort.java - a class to sort sets
  * Copyright (c) 2002 Carmine Lucarelli (carmine.lucarelli@rogers.com)
  *
  * This program is free software; you can redistribute it and/or
@@ -33,24 +34,7 @@ import org.gjt.sp.util.Log;
  */
 public class JSort implements Comparator
 {
-	//{{{ private members
-	/**
-	  * A collection of SortBy objects (sort options)
-	  */
-	private Vector options;
-
-	/**
-	  * Flags to control whether we will delete duplicate entries while we sort / skip sort
-	  */
-	private boolean deleteDuplicates;
-	private boolean dontSort;
-
-	/**
-	  *  The sorted data
-	  */
-	private TreeSet data;
-	//}}}
-
+	
 	//{{{ JSort constructors
 	/**
 	  * Constructor initializes Vector of SortBy instances and
@@ -72,7 +56,8 @@ public class JSort implements Comparator
 	public JSort(boolean deleteDuplicates)
 	{
 		this(deleteDuplicates, false);
-	}  //}}}
+	}
+	
 	/**
 	  * Constructor initializes Vector of SortBy instances and
 	  * sets properties to values passed in;
@@ -87,7 +72,7 @@ public class JSort implements Comparator
 		this.deleteDuplicates = deleteDuplicates;
 		this.dontSort = dontSort;
 	}  //}}}
-
+	
 	//{{{ methods to modify sort
 
 	//{{{ getSortBy()
@@ -202,7 +187,7 @@ public class JSort implements Comparator
 		// column choices are 1 indexed...
 		addSortBy((new JSort.SortBy(--startColumn, endColumn, ascending, ignoreCase, numeric, trimWhitespace, delDupRange)));
 	}   //}}}
-
+	
 	//{{{ set/get DeleteDuplicates(boolean)
 	public void setDeleteDuplicates(boolean deleteDuplicates)
 	{
@@ -213,7 +198,7 @@ public class JSort implements Comparator
 		return deleteDuplicates;
 	}  
 	//}}}
-
+	
 	//{{{ set/get dontSort(boolean)
 	public void setDontSort(boolean dontSort)
 	{
@@ -224,7 +209,7 @@ public class JSort implements Comparator
 		return dontSort;
 	}  
 	//}}}
-
+	
 	//{{{ public sort methods
 	
 	//{{{ shuffle(List)
@@ -288,7 +273,7 @@ public class JSort implements Comparator
 	}  //}}}
 	
 	//}}}
-
+	
 	//{{{ compare methods
 	
 	//{{{ compare(Object, Object)
@@ -493,7 +478,7 @@ public class JSort implements Comparator
 	}  //}}}
 	
 	//}}}
-
+	
 	//{{{ SortBy class def.
 	public class SortBy
 	{
@@ -529,7 +514,9 @@ public class JSort implements Comparator
 				.append(" delDupRange = ").append(delDupRange);
 			return sb.toString();
 		}
-	}  //}}}
+	} //}}}
+	
+	//{{{ getCompareStringForSortby() method
 	private static String getCompareStringForSortby(SortBy sb, String compStr)
 	{
 		if(sb.startColumn > compStr.length()) 
@@ -544,7 +531,24 @@ public class JSort implements Comparator
 				return compStr.substring(sb.startColumn, sb.endColumn);
 			}
 		}
-	}
+	}//}}}
+	
+	//{{{ Private members
+	/**
+	  * A collection of SortBy objects (sort options)
+	  */
+	private Vector options;
 
+	/**
+	  * Flags to control whether we will delete duplicate entries while we sort / skip sort
+	  */
+	private boolean deleteDuplicates;
+	private boolean dontSort;
+
+	/**
+	  *  The sorted data
+	  */
+	private TreeSet data;
+	//}}}
 }
 

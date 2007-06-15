@@ -1,14 +1,16 @@
 /*
- * :folding=explicit:collapseFolds=1:
  * BeanShellUtility.java - a Java class for the jEdit text editor
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2002 Rudolf Widmann
+ * Rudi.Widmann@web.de
+ *
  * 1) Utilities useful for BeanShell applications
  * 2) converts spaces to tabs
  *	based on:
  *	- TextUtilities.spacesToTabs
  *	- MiscUtilities.createWhiteSpace
-
- * Copyright (C) 2002 Rudolf Widmann
- * Rudi.Widmann@web.de
  *
  * Checked for jEdit 4.0 API
  *
@@ -46,179 +48,200 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.border.*;
 
-public class BeanShellUtility {
-    View 		view;
-    JEditTextArea	textArea;
-    JEditBuffer		buffer;
-
-//{{{ public BeanShellUtility(View view)
+public class BeanShellUtility 
+{
+	
+	View		view;
+	JEditTextArea	textArea;
+	JEditBuffer		buffer;
+	
+	//{{{ BeanShellUtility constructor
 	/**
-     * Constructs object
-     * sets textArea, buffer
-     * @param view
-     */
-    public BeanShellUtility(View view) {
-      this.view = view;
-      textArea = view.getTextArea();
-      buffer = view.getBuffer();
-    }
- //}}}
-
-//{{{ int getRow(int bufferPosition)
-    /**
-     * Find the column of the passed buffer position
-     * @param bufferPosition
-     */
-    public int getRow(int bufferPosition) {
-      int lineNbr = textArea.getLineOfOffset(bufferPosition);
-      int startLineOffset = textArea.getLineStartOffset(lineNbr);
-      return bufferPosition - startLineOffset;
-    }
-    public static int getRow(View view, int bufferPosition) {
-      BeanShellUtility bsu = new BeanShellUtility(view);
-      return bsu.getRow(bufferPosition);
-    }
- //}}}
-
-//{{{ int getVisibleRow
-	/**
-     * Find the visible column of the passed buffer position
-     * tabs are expanded according to buffers tabSize
-     * @param bufferPosition
-     */
-    public int getVisibleRow(int bufferPosition) {
-      int lineNbr = textArea.getLineOfOffset(bufferPosition);
-      return getVisiblePosition(buffer.getTabSize(),
-	getRow(bufferPosition),
-	textArea.getLineText(lineNbr)
-	);
-    }
-    public static int getVisibleRow(View view, int bufferPosition) {
-      BeanShellUtility bsu = new BeanShellUtility(view);
-      return bsu.getVisibleRow(bufferPosition);
-    }
- //}}}
-
-//{{{ int goToLineRow
-	/**
-     * Set cursor to the given line/row position
-     * selects lines, acording to given parameter
-     * @param bufferPosition
-     * returns new cursor position
-     */
-    public int goToLineRow(int line, int row, boolean select) {
-      int caret = textArea.getCaretPosition();
-      int newCaret = buffer.getLineStartOffset(line) + row;
-      if (select) textArea.extendSelection(caret, newCaret);
-      textArea.moveCaretPosition(newCaret,true);
-      return newCaret;
-    }
-    public static int goToLineRow(View view, int line, int row, boolean select) {
-      BeanShellUtility bsu = new BeanShellUtility(view);
-      return bsu.goToLineRow(line, row, select);
-    }
- //}}}
-
-//{{{ selectLine(int lineNbr)
-     /**
-     * Select given linenumber
-     * @param lineSelector Line number
-     */
-    void selectLine(int lineNbr) {
-      textArea.setSelection(
-	  new Selection.Range(textArea.getLineStartOffset(lineNbr),
-		textArea.getLineEndOffset(lineNbr)));
-    }
- //}}}
-
-//{{{ int getVisiblePosition(int tabWidth, int realPos, String line) {
-	/**
-	 * gets the visible column (tabs expanded) of the given String
-	 * @param tabWidth tabulator width
-	 * @param realPos physical column position
-	 * @param line current line
+	 * Constructs object
+	 * sets textArea, buffer
+	 * @param view
 	 */
-	public static int getVisiblePosition(int tabWidth, int realPos, String line) {
-	  int delta = 0;  // difference between tabPos and visible Pos
-	  for (int i=0;i<realPos && i<line.length(); i++) {
-	    if (line.charAt(i) == '\t') { // tab found
-	      int spaceNbr = (tabWidth*(1+(i+delta)/tabWidth)) - (i+delta);
-	      delta += spaceNbr - 1; // tab counts for 1
-	    }
-	  }
-	  return realPos + delta;
-	}
- //}}}
-
-//{{{ int getSelectionLine(int lineNbr, Selection currSelection)
-    /**
+	public BeanShellUtility(View view)
+	{
+		this.view = view;
+		textArea = view.getTextArea();
+		buffer = view.getBuffer();
+	} //}}}
+	
+	//{{{ int getRow() method
+	/**
+	 * Find the column of the passed buffer position
+	 * @param bufferPosition
+	 */
+	public int getRow(int bufferPosition)
+	{
+		int lineNbr = textArea.getLineOfOffset(bufferPosition);
+		int startLineOffset = textArea.getLineStartOffset(lineNbr);
+		return bufferPosition - startLineOffset;
+	} //}}}
+	
+	//{{{ getRow() method
+	public static int getRow(View view, int bufferPosition)
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.getRow(bufferPosition);
+	} //}}}
+	
+	//{{{ int getVisibleRow() method
+	/**
+	 * Find the visible column of the passed buffer position
+	 * tabs are expanded according to buffers tabSize
+	 * @param bufferPosition
+	 */
+	public int getVisibleRow(int bufferPosition) 
+	{
+		int lineNbr = textArea.getLineOfOffset(bufferPosition);
+		return getVisiblePosition(buffer.getTabSize(),
+			getRow(bufferPosition),
+			textArea.getLineText(lineNbr)
+		);
+	} //}}}
+	
+	//{{{ int getVisibleRow() method
+	public static int getVisibleRow(View view, int bufferPosition)
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.getVisibleRow(bufferPosition);
+	} //}}}
+	
+	//{{{ goToLineRow() method
+	/**
+	 * Set cursor to the given line/row position
+	 * selects lines, acording to given parameter
+	 * @param bufferPosition
+	 * returns new cursor position
+	 */
+	public int goToLineRow(int line, int row, boolean select)
+	{
+		int caret = textArea.getCaretPosition();
+		int newCaret = buffer.getLineStartOffset(line) + row;
+		if (select) textArea.extendSelection(caret, newCaret);
+		textArea.moveCaretPosition(newCaret,true);
+		return newCaret;
+	} //}}}
+	
+	//{{{ goToLineRow() method
+	public static int goToLineRow(View view, int line, int row, boolean select) 
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.goToLineRow(line, row, select);
+	} //}}}
+	
+	//{{{ selectLine() method
+	/**
+	 * Select given linenumber
+	 * @param lineSelector Line number
+	 */
+	 void selectLine(int lineNbr) 
+	 {
+		textArea.setSelection(
+			new Selection.Range(
+				textArea.getLineStartOffset(lineNbr),
+				textArea.getLineEndOffset(lineNbr)
+			)
+		);
+	 } //}}}
+	 
+	//{{{ getVisiblePosition() method
+	 /**
+	  * gets the visible column (tabs expanded) of the given String
+	  * @param tabWidth tabulator width
+	  * @param realPos physical column position
+	  * @param line current line
+	  */
+	 public static int getVisiblePosition(int tabWidth, int realPos, String line) {
+		 int delta = 0;  // difference between tabPos and visible Pos
+		 for (int i=0;i<realPos && i<line.length(); i++) {
+			 if (line.charAt(i) == '\t') { // tab found
+				 int spaceNbr = (tabWidth*(1+(i+delta)/tabWidth)) - (i+delta);
+				 delta += spaceNbr - 1; // tab counts for 1
+			 }
+		 }
+		 return realPos + delta;
+	 } //}}}
+	 
+	//{{{ getSelectionLine() method
+	/**
 	 * gets the selected text of the given line of the given selection
 	 * @param lineNbr line Number
 	 * @param currSelection current Selection
-     */
-   public String getSelectionLine(int lineNbr, Selection currSelection) {
-      int startSelectionOffset = currSelection.getStart(buffer, lineNbr);
-      int endSelectionOffset = currSelection.getEnd(buffer, lineNbr);
-      return textArea.getText(startSelectionOffset,
-	currSelection.getEnd(buffer, lineNbr) - startSelectionOffset);
-    }
-
+	 */
+	public String getSelectionLine(int lineNbr, Selection currSelection)
+	{
+		int startSelectionOffset = currSelection.getStart(buffer, lineNbr);
+		int endSelectionOffset = currSelection.getEnd(buffer, lineNbr);
+		return textArea.getText(
+			startSelectionOffset,
+			currSelection.getEnd(buffer, lineNbr) - startSelectionOffset
+		);
+	} //}}}
+	
+	//{{{ getSelectionLine() method
 	/**
 	 * static version
 	 */
-	public String getSelectionLine(View view, int lineNbr, Selection currSelection) {
-	  BeanShellUtility bsu = new BeanShellUtility(view);
-	  return bsu.getSelectionLine(lineNbr, currSelection);
-	}
- //}}}
-
- //{{{ int getSelectionVisibleStartColumn(int lineNbr, Selection currSelection)
-    /**
+	public String getSelectionLine(View view, int lineNbr, Selection currSelection)
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.getSelectionLine(lineNbr, currSelection);
+	} //}}}
+	
+	//{{{ getSelectionVisibleStartColumn() method
+	/**
 	 * gets the visible start column of the given line of the given selection
 	 * @param lineNbr line Number
 	 * @param currSelection current Selection
-     */
-    public int getSelectionVisibleStartColumn(int lineNbr, Selection currSelection) {
-      int startLineOffset = textArea.getLineStartOffset(lineNbr);
-      int startSelectionOffset = currSelection.getStart(buffer, lineNbr);
-      return getVisiblePosition(buffer.getTabSize(),
-	startSelectionOffset - startLineOffset,
-	textArea.getLineText(lineNbr)
-	);
-    }
+	 */
+	public int getSelectionVisibleStartColumn(int lineNbr, Selection currSelection) {
+		int startLineOffset = textArea.getLineStartOffset(lineNbr);
+		int startSelectionOffset = currSelection.getStart(buffer, lineNbr);
+		return getVisiblePosition(
+			buffer.getTabSize(),
+			startSelectionOffset - startLineOffset,
+			textArea.getLineText(lineNbr)
+		);
+	} //}}}
+	
+	//{{{ getSelectionVisibleStartColumn() method
 	/**
 	 * static version
 	 */
-	public static int getSelectionVisibleStartColumn(View view, int lineNbr,
-		Selection currSelection) {
-	  BeanShellUtility bsu = new BeanShellUtility(view);
-	  return bsu.getSelectionVisibleStartColumn(lineNbr, currSelection);
-	}
- //}}}
-
-//{{{ getSelectionVisibleEndColumn(int lineNbr, Selection currSelection)
+	public static int getSelectionVisibleStartColumn(View view, int lineNbr, Selection currSelection)
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.getSelectionVisibleStartColumn(lineNbr, currSelection);
+	} //}}}
+ 	
+	//{{{ getSelectionVisibleEndColumn() method
 	/**
 	 * gets the visible end column of the given line of the given selection
 	 * @param lineNbr line Number
 	 * @param currSelection current Selection
-     */
-    int getSelectionVisibleEndColumn(int lineNbr, Selection currSelection) {
-      int startLineOffset = textArea.getLineStartOffset(lineNbr);
-      int endSelectionOffset = currSelection.getEnd(buffer, lineNbr);
-      return getVisiblePosition(buffer.getTabSize(),
-	endSelectionOffset - startLineOffset,
-	textArea.getLineText(lineNbr)
-	);
-    }
+	 */
+	int getSelectionVisibleEndColumn(int lineNbr, Selection currSelection) {
+		int startLineOffset = textArea.getLineStartOffset(lineNbr);
+		int endSelectionOffset = currSelection.getEnd(buffer, lineNbr);
+		return getVisiblePosition(
+			buffer.getTabSize(),
+			endSelectionOffset - startLineOffset,
+			textArea.getLineText(lineNbr)
+		);
+	} //}}}
+	
+	//{{{ getSelectionVisibleEndColumn() method
 	/**
 	 * static version
 	 */
-	public static int getSelectionVisibleEndColumn(View view, int lineNbr,
-		Selection currSelection) {
-	  BeanShellUtility bsu = new BeanShellUtility(view);
-	  return bsu.getSelectionVisibleEndColumn(lineNbr, currSelection);
-	}
- //}}}
+	public static int getSelectionVisibleEndColumn(View view, int lineNbr, Selection currSelection)
+	{
+		BeanShellUtility bsu = new BeanShellUtility(view);
+		return bsu.getSelectionVisibleEndColumn(lineNbr, currSelection);
+	} //}}}
 
 	//{{{ createWhiteSpace() method (MiscUtilities)
 	/**
@@ -311,7 +334,7 @@ public class BeanShellUtility {
 	 * Converts spaces to tabs in the selection.
 	 * @since jEdit 2.7pre2
 	 */
-	public  void JEditTextArea_spacesToTabs() {
+	public	void JEditTextArea_spacesToTabs() {
 		Selection[] selection = textArea.getSelection();
 		if(!buffer.isEditable())
 		{
