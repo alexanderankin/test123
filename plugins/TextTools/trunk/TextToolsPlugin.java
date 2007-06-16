@@ -1,7 +1,9 @@
 /*
  * TextToolsPlugin.java - Plugin for a number of text related functions
- * Copyright (C) 1999, 2001 mike dillon
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
  *
+ * Copyright (C) 1999, 2001 mike dillon
  * Revised for jEdit 4.0 by John Gellene
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//{{{ Imports
 import java.util.*;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -36,17 +39,20 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
+//}}}
 
 public class TextToolsPlugin extends EditPlugin
 {
-	public static boolean debugTT = false;  // debug flag, can be set via Utilities->BeanShell
-									// TextToolsPlugin.debugTT = true
-
+	public static boolean debugTT = false; // debug flag, can be set via Utilities->BeanShell
+						// TextToolsPlugin.debugTT = true
+	
+	//{{{ isTextAreaEditable() method
 	/**
 	 * isTextAreaEditable: checks if textarea editable
 	 */
-	public static boolean isTextAreaEditable(View view, JEditTextArea textArea) {
-		if(!textArea.isEditable())
+	public static boolean isTextAreaEditable(View view, JEditTextArea textArea)
+	{
+		if (!textArea.isEditable())
 		{
 			textArea.getToolkit().beep();
 			if (view != null)
@@ -55,24 +61,27 @@ public class TextToolsPlugin extends EditPlugin
 									"view.status.textTools.buffer-not-editable"));
 			return false;
 		}
-		else return true;
-	}
-
-	/**
-	 * isTextAreaEditable: checks if textarea editable
-	 */
-	public static boolean isSelectedAndRectangular(View view, JEditTextArea textArea) {
+		else
+			return true;
+	}//}}}
+	
+	//{{{ isSelectedAndRectangular() method
+	public static boolean isSelectedAndRectangular(View view, JEditTextArea textArea)
+	{
 		Selection[] selection = textArea.getSelection();
-		if (selection.length == 0 || selection[0] instanceof Selection.Range) {
+		if (selection.length == 0 || selection[0] instanceof Selection.Range)
+		{
 			textArea.getToolkit().beep();
 			if (view != null)
 				view.getStatus().setMessageAndClear(jEdit.getProperty(
 									"view.status.textTools.rectangular-selection-required"));
 			return false;
 		}
-		else return true;
-	}
-
+		else
+			return true;
+	} //}}}
+	
+	//{{{ transposeChars() method
 	public static void transposeChars(JEditTextArea textArea)
 	{
 		int line = textArea.getCaretLine();
@@ -115,13 +124,14 @@ public class TextToolsPlugin extends EditPlugin
 		textArea.setCaretPosition(start);
 
 		b.endCompoundEdit();
-	}
-
+	} //}}}
+	
+	//{{{ transposeWords() method
 	public static void transposeWords(JEditTextArea textArea)
 	{
 		int line = textArea.getCaretLine();
 
-		if(!textArea.isEditable() || textArea.getLineLength(line) == 0)
+		if (!textArea.isEditable() || textArea.getLineLength(line) == 0)
 		{
 			textArea.getToolkit().beep();
 			return;
@@ -135,7 +145,8 @@ public class TextToolsPlugin extends EditPlugin
 		String lineText = textArea.getLineText(line);
 		String noWordSep = (String)buffer.getProperty("noWordSep");
 
-		if(offset == lineText.length()) offset--;
+		if (offset == lineText.length())
+			offset--;
 
 		int wordStart = TextUtilities.findWordStart(lineText, offset,
 			noWordSep);
@@ -143,7 +154,8 @@ public class TextToolsPlugin extends EditPlugin
 			noWordSep);
 
 		// only one "word" in this line, so do nothing
-		if (wordStart == 0 && wordEnd == lineText.length()) return;
+		if (wordStart == 0 && wordEnd == lineText.length())
+			return;
 
 		boolean reverseBias = false;
 
@@ -169,7 +181,8 @@ public class TextToolsPlugin extends EditPlugin
 				word2Start = TextUtilities.findWordEnd(
 					lineText, word1End + 1, noWordSep);
 
-				if (word2Start == lineText.length()) return;
+				if (word2Start == lineText.length())
+					return;
 
 				word2End = TextUtilities.findWordEnd(
 					lineText, word2Start + 1, noWordSep);
@@ -186,7 +199,8 @@ public class TextToolsPlugin extends EditPlugin
 				word1End = TextUtilities.findWordStart(
 					lineText, word2Start - 1, noWordSep);
 
-				if (word1End == 0) return;
+				if (word1End == 0)
+					return;
 
 				word1Start = TextUtilities.findWordStart(
 					lineText, word1End - 1, noWordSep);
@@ -198,7 +212,8 @@ public class TextToolsPlugin extends EditPlugin
 					lineText, wordStart - 1, noWordSep);
 
 				// only one word in the line so do nothing
-				if (word2Start == 0) return;
+				if (word2Start == 0)
+					return;
 
 				word2End = wordStart;
 
@@ -224,7 +239,8 @@ public class TextToolsPlugin extends EditPlugin
 				word1End = TextUtilities.findWordStart(
 					lineText, word2Start - 1, noWordSep);
 
-				if (word1End == 0) return;
+				if (word1End == 0)
+					return;
 
 				word1Start = TextUtilities.findWordStart(
 					lineText, word1End - 1, noWordSep);
@@ -249,7 +265,8 @@ public class TextToolsPlugin extends EditPlugin
 				word2Start = TextUtilities.findWordEnd(
 					lineText, word1End + 1, noWordSep);
 
-				if (word2Start == lineText.length()) return;
+				if (word2Start == lineText.length())
+					return;
 
 				word2End = TextUtilities.findWordEnd(
 					lineText, word2Start + 1, noWordSep);
@@ -261,7 +278,8 @@ public class TextToolsPlugin extends EditPlugin
 					lineText, wordStart - 1, noWordSep);
 
 				// only one word in the line so do nothing
-				if (word2Start == 0) return;
+				if (word2Start == 0)
+					return;
 
 				word2End = wordStart;
 
@@ -271,7 +289,8 @@ public class TextToolsPlugin extends EditPlugin
 				word1End = TextUtilities.findWordStart(
 					lineText, word2Start - 1, noWordSep);
 
-				if (word1End == 0) return;
+				if (word1End == 0)
+					return;
 
 				word1Start = TextUtilities.findWordStart(
 					lineText, word1End - 1, noWordSep);
@@ -307,8 +326,9 @@ public class TextToolsPlugin extends EditPlugin
 		textArea.setCaretPosition(lineStart + word2End);
 
 		buffer.endCompoundEdit();
-	}
-
+	} //}}}
+	
+	//{{{ transposeLines() method
 	public static void transposeLines(JEditTextArea textArea)
 	{
 		if (!textArea.isEditable() || textArea.getLineCount() < 2)
@@ -316,53 +336,46 @@ public class TextToolsPlugin extends EditPlugin
 			textArea.getToolkit().beep();
 			return;
 		}
-
+		
 		int line = textArea.getCaretLine();
-
+		
 		if (line == 0)
 		{
 			// this is the first line, so move forward one line
 			line++;
 		}
-
+		
 		int start = textArea.getLineStartOffset(line - 1);
 		int end = textArea.getLineEndOffset(line);
-
+		
 		StringBuffer buf = new StringBuffer();
-
+		
 		buf.append(textArea.getLineText(line) + "\n");
 		buf.append(textArea.getLineText(line - 1) + "\n");
-
+		
 		JEditBuffer b = textArea.getBuffer();
-
+		
 		b.beginCompoundEdit();
-
+		
 		b.remove(start, end - start);
 		b.insert(start, buf.toString());
-
-
+		
 		// put the caret at the end of the last line transposed
 		textArea.setCaretPosition(end - 1);
-
+		
 		b.endCompoundEdit();
-	}
-
-	// private members
-	private static final boolean isWordChar(char ch, String noWordSep)
-	{
-		return Character.isLetterOrDigit(ch) ||
-			(noWordSep != null && noWordSep.indexOf(ch) != -1);
-	}
-
+	} //}}}
+	
+	//{{{ doColumnInsert() method
 	public static void doColumnInsert(View view)
 	{
 		JEditTextArea ta = view.getTextArea();
 		final Selection [] sel = ta.getSelection();
-
-		if(sel.length != 0 && sel[0] instanceof Selection.Rect)
+		
+		if (sel.length != 0 && sel[0] instanceof Selection.Rect)
 		{
 			final View theView = view; //final because it is used in inner class.
-
+			
 			//pop up a dialog that the user can enter text.
 			//get the width and height of the text area.
 			int width = ta.getWidth();
@@ -373,10 +386,11 @@ public class TextToolsPlugin extends EditPlugin
 			int xCoord = taX + width/2;
 			int yCoord = taY + height/2;
 
-			final ColumnInsertDialog dialog = new ColumnInsertDialog(new KeyListener() {
+			final ColumnInsertDialog dialog = new ColumnInsertDialog(new KeyListener()
+			{
 				public void keyTyped(KeyEvent e) {
 					//check for an enter key
-					if(e.getKeyChar() == '\n')
+					if (e.getKeyChar() == '\n')
 					{
 						int startPos = -1;
 						int endPos   = -1;
@@ -424,11 +438,13 @@ public class TextToolsPlugin extends EditPlugin
 					}
 				}
 
-				public void keyPressed(KeyEvent e){
+				public void keyPressed(KeyEvent e)
+				{
 					//No op
 				}
 
-				public void keyReleased(KeyEvent e){
+				public void keyReleased(KeyEvent e)
+				{
 					//No op
 				}
 			});
@@ -440,16 +456,29 @@ public class TextToolsPlugin extends EditPlugin
 		{
 			view.getToolkit().beep();
 		}
-	}
-
-	public static void textToolsBlockHandling(View view, JEditTextArea textArea) {
+	} //}}}
+	
+	//{{{ textToolsBlockHandling()
+	public static void textToolsBlockHandling(View view, JEditTextArea textArea)
+	{
 		if (isTextAreaEditable(view, textArea) && isSelectedAndRectangular(view, textArea))
 			new TextToolsBlockHandlingDialog(view);
-	}
-
+	} //}}}
+	
+	//{{{ spacesToTabsXT() method
 	public static void spacesToTabsXT(JEditTextArea textArea) {
 		System.out.println("Call SpacesToTabs_XT 1");
 		//    TextToolsBlockHandling.spacesToTabs(textArea);
-	}
-
+	} //}}}
+	
+	//{{{ Private members
+	
+	//{{{ isWordChar() method
+	private static final boolean isWordChar(char ch, String noWordSep)
+	{
+		return Character.isLetterOrDigit(ch) ||
+			(noWordSep != null && noWordSep.indexOf(ch) != -1);
+	} //}}}
+	
+	//}}}
 }

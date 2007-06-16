@@ -41,7 +41,7 @@ import org.gjt.sp.util.Log;
  */
 public class TextToolsComments
 {
-	//{{{ +_toggleLineComments(View)_ : void
+	//{{{ toggleLineComments() method
 	/**
 	 * Toggles a line comment on or off at all currently selected lines or, if
 	 * there are none, at the line where the caret currently sits.
@@ -189,7 +189,7 @@ public class TextToolsComments
 		}
 	} //}}}
 
-	//{{{ +_toggleRangeComments(View)_ : void
+	//{{{ toggleRangeComments() method
 	/**
 	 * Toggles all range comments in the specified view by applying {@link
 	 * #toggleRangeComment(Buffer, int, int)} to each selection. If there are no
@@ -254,7 +254,7 @@ public class TextToolsComments
 		}
 	} //}}}
 
-	//{{{ -_isInRangeComment(Buffer, int)_ : boolean
+	//{{{ isInRangeComment() method
 	/**
 	 * Tests whether the specified buffer index is within a range comment block.
 	 *
@@ -273,7 +273,7 @@ public class TextToolsComments
 		return (lastStart != -1 && lastStart > lastEnd);
 	} //}}}
 
-	//{{{ -_lockBuffer(JEditBuffer)_ : boolean
+	//{{{ lockBuffer() method
 	/**
 	 * If the specified <code>JEditBuffer</code> is not currently inside a compound
 	 * edit, this method will start one, lock the buffer and return <code>true</code>
@@ -294,7 +294,7 @@ public class TextToolsComments
 		return false;
 	}//}}}
 
-	//{{{ -_toggleRangeComment(Buffer, int)_ : void
+	//{{{ toggleRangeComment() method
 	/**
 	 * Toggles range comments around a specified buffer index. If the index is
 	 * within a range comment, the comment block will be un-commented. If the index
@@ -338,7 +338,7 @@ public class TextToolsComments
 		}
 	} //}}}
 
-	//{{{ -_toggleRangeComment(Buffer, int, int)_ : int
+	//{{{ toggleRangeComment() method
 	/**
 	 * Toggles range commenting in a buffer around/within the range from <code>start
 	 * </code> to <code>end</code> . In the simplest case comment symbols are added /
@@ -455,7 +455,7 @@ public class TextToolsComments
 		}
 	} //}}}
 
-	//{{{ -_unlockBuffer(JEditBuffer)_ : boolean
+	//{{{ unlockBuffer() method
 	/**
 	 * If the specified <code>JEditBuffer</code> is currently inside a compound edit,
 	 * this method will end it, unlock the buffer and return <code>true</code>,
@@ -476,7 +476,7 @@ public class TextToolsComments
 		return false;
 	}//}}}
 
-	//{{{ -_usesRangeComments(JEditBuffer)_ : boolean
+	//{{{ usesRangeComments() method
 	/**
 	 * Determines if the given buffer has defined range comment settings.
 	 *
