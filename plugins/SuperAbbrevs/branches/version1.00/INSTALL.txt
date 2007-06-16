@@ -1,0 +1,13 @@
+To install the plugin you need to set the correct properties 
+for the platform you are compiling on. The files to change are:
+build.mac.properties
+build.linux.properties
+build.windows.properties
+
+Then you have to run the setup for the platform you are compiling
+on. The targets are:
+ant setup-mac
+ant setup-linux
+ant setup-windows
+
+Lastly you have to run ant to compile and install the files.

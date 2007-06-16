@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="SuperAbbrevs.shiftTab">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.shiftTab(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.tab">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.tab(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.showDialog">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.showDialog(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.showOptionPane">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.showOptionPane(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<!--<ACTION NAME="SuperAbbrevs.displayModeAbbrevs">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.displayModeAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.displayAllAbbrevs">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.displayAllAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>-->
+</ACTIONS>

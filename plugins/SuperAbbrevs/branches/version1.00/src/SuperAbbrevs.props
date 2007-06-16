@@ -1,0 +1,58 @@
+plugin.superabbrevs.SuperAbbrevsPlugin.name=SuperAbbrevs
+plugin.superabbrevs.SuperAbbrevsPlugin.author=Sune Simonsen
+plugin.superabbrevs.SuperAbbrevsPlugin.version=0.26
+plugin.superabbrevs.SuperAbbrevsPlugin.depend.0=jedit 04.02.99.00
+plugin.superabbrevs.SuperAbbrevsPlugin.depend.1=jdk 1.6
+plugin.superabbrevs.SuperAbbrevsPlugin.activate=defer
+#plugin.superabbrevs.SuperAbbrevsPlugin.activate=startup
+plugin.superabbrevs.SuperAbbrevsPlugin.description= \
+    This plug-in enables you to tab-expand an abbreviation with variables in it.\
+    After the abbreviation is expanded, you can use the tab-key to jump between\
+    the variables. If you change the content of a variable in the abbreviation,\
+    all the variables with the same name will change accordingly. This concept\
+    is previously know from Eclipse and TextMate.
+plugin.superabbrevs.SuperAbbrevsPlugin.longdescription=doc/description.html
+plugin.superabbrevs.SuperAbbrevsPlugin.docs=doc/index.html
+
+superabbrevs.label=SuperAbbrevs
+
+# Option pane
+plugin.superabbrevs.SuperAbbrevsPlugin.option-pane=superabbrevs.variables
+#plugin.superabbrevs.SuperAbbrevsPlugin.option-group=superabbrevs.abbreviations \
+#                                                    superabbrevs.variables
+
+plugin.superabbrevs.SuperAbbrevsPlugin.jars=xpp3_min-1.1.3.4.O.jar xstream-1.2.1.jar
+
+options.superabbrevs.abbreviations.label=Abbreviations
+options.superabbrevs.abbreviations.code=new superabbrevs.gui.AbbrevsOptionPane(view,new superabbrevs.AbbrevsOptionPaneController());
+
+options.superabbrevs.variables.label=Variables
+options.superabbrevs.variables.code=new superabbrevs.gui.VariablesOptionPane(view);
+
+options.superabbrevs.mode=Select mode:
+options.superabbrevs.abbreviations.abbrev=Abbreviation
+options.superabbrevs.abbreviations.expand=Expansion
+
+options.superabbrevs.variables.variable=Variable
+options.superabbrevs.variables.value=Value
+
+plugin.superabbrevs.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
+                                            SuperAbbrevs.shiftTab \
+                                            SuperAbbrevs.showDialog \
+                                            SuperAbbrevs.showOptionPane
+#                                            SuperAbbrevs.showOptionpane
+#                                           SuperAbbrevs.displayModeAbbrevs \ 
+#                                           SuperAbbrevs.displayAllAbbrevs
+
+# Menu labels
+SuperAbbrevs.tab.label=Tab
+SuperAbbrevs.shiftTab.label=Shift Tab
+SuperAbbrevs.showDialog.label=Show expansion dialog
+SuperAbbrevs.showOptionPane.label=Abbreviations...
+SuperAbbrevs.displayModeAbbrevs.label=Display mode abbreviations
+SuperAbbrevs.displayAllAbbrevs.label=Display all abbreviations
+
+SuperAbbrevs.abbrev-editor.template=Template text
+SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exist
+SuperAbbrevs.tab.shortcut=TAB
+SuperAbbrevs.shiftTab.shortcut=S+TAB
