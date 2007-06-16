@@ -21,11 +21,11 @@ public class Cleanup {
     /**
      * @return a list of paths that were scheduled to be added.
      */
-    public void cleanup( SVNData cd ) throws CommandInitializationException, SVNException {
+    public String cleanup( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getPaths() == null ) {
-            return ;     // nothing to do
+            return "";     // nothing to do
         }
         if ( cd.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
@@ -68,5 +68,6 @@ public class Cleanup {
         out.println("Done.");
         out.flush();
         out.close();
+        return "Done.";
     }
 }

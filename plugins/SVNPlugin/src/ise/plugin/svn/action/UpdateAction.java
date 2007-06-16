@@ -30,7 +30,7 @@ public class UpdateAction extends NodeActor {
             for ( VPTNode node : nodes ) {
                 if ( node != null ) {
                     paths.add( node.getNodePath() );
-                    if (node.isDirectory()) {
+                    if ( node.isDirectory() ) {
                         recursive = true;
                     }
                 }
@@ -38,11 +38,11 @@ public class UpdateAction extends NodeActor {
             data.setPaths( paths );
 
             // user confirmations
-            if (recursive) {
+            if ( recursive ) {
                 // have the user verify they want a recursive update
-                int response = JOptionPane.showConfirmDialog(getView(), "Recursively update all files in selected directories?", "Recursive Update?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (response == JOptionPane.CANCEL_OPTION) {
-                    return;
+                int response = JOptionPane.showConfirmDialog( getView(), "Recursively update all files in selected directories?", "Recursive Update?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                if ( response == JOptionPane.CANCEL_OPTION ) {
+                    return ;
                 }
                 recursive = response == JOptionPane.YES_OPTION;
             }
@@ -63,27 +63,37 @@ public class UpdateAction extends NodeActor {
                 handler.flush();
             }
 
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
+            class Runner extends SwingWorker<TreeMap<String, String>, Object> {
 
-                            try {
-                                Update update = new Update( );
-                                final TreeMap<String, String> results = update.doUpdate(data);
-                                SwingUtilities.invokeLater( new Runnable() {
-                                            public void run() {
-                                                JPanel results_panel = new UpdateResultsPanel( results );
-                                                panel.setResultsPanel( results_panel );
-                                                panel.showTab( OutputPanel.RESULTS );
-                                            }
-                                        }
-                                                          );
-                            }
-                            catch ( Exception e ) {
-                                data.getOut().printError( e.getMessage() );
-                            }
-                        }
+                @Override
+                public TreeMap<String, String> doInBackground() {
+                    try {
+                        Update update = new Update( );
+                        return update.doUpdate( data );
                     }
-                                      );
+                    catch ( Exception e ) {
+                        data.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        data.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        JPanel results_panel = new UpdateResultsPanel( get() );
+                        panel.setResultsPanel( results_panel );
+                        panel.showTab( OutputPanel.RESULTS );
+                    }
+                    catch ( Exception e ) {
+                        // ignored
+                    }
+                }
+            }
+            ( new Runner() ).execute();
+
         }
     }
 }

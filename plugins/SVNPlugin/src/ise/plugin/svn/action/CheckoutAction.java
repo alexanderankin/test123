@@ -2,7 +2,6 @@ package ise.plugin.svn.action;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.SwingUtilities;
 import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.gui.CheckoutDialog;
@@ -13,6 +12,7 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
+import ise.plugin.svn.library.swingworker.*;
 
 public class CheckoutAction extends NodeActor {
 
@@ -36,18 +36,33 @@ public class CheckoutAction extends NodeActor {
             handler.flush();
         }
 
-        SwingUtilities.invokeLater( new Runnable() {
-                    public void run() {
-                        try {
-                            Checkout checkout = new Checkout();
-                            long revision = checkout.doCheckout(cd);
-                            cd.getOut().print( "Checkout completed, revision " + revision );
-                        }
-                        catch ( Exception e ) {
-                            cd.getOut().printError( e.getMessage() );
-                        }
-                    }
+        class Runner extends SwingWorker<Long, Object> {
+
+            @Override
+            public Long doInBackground() {
+                try {
+                    Checkout checkout = new Checkout();
+                    return checkout.doCheckout( cd );
                 }
-                                  );
+                catch ( Exception e ) {
+                    cd.getOut().printError( e.getMessage() );
+                }
+                finally {
+                    cd.getOut().close();
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    cd.getOut().print( "Checkout completed, revision " + get() );
+                }
+                catch ( Exception e ) {
+                    cd.getOut().printError( e.getMessage() );
+                }
+            }
+        }
+        ( new Runner() ).execute();
     }
 }

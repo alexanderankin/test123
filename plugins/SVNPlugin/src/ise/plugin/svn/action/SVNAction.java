@@ -39,6 +39,10 @@ public class SVNAction extends projectviewer.action.Action {
             if ( label == null ) {
                 break;
             }
+            if ( label.equals("-")) {
+                menu.addSeparator();
+                continue;
+            }
             String classname = jEdit.getProperty( pbase + "code." + i );
             if ( classname == null ) {
                 continue;
@@ -91,6 +95,9 @@ public class SVNAction extends projectviewer.action.Action {
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );
+                if (actor == null) {
+                    continue;
+                }
                 ActionListener[] listeners = actor.getActionListeners();
                 for ( ActionListener al : listeners ) {
                     if ( al instanceof NodeActor ) {

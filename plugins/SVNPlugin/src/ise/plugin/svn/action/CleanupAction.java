@@ -7,12 +7,12 @@ import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
 import projectviewer.vpt.VPTNode;
 
 public class CleanupAction extends NodeActor {
@@ -46,19 +46,35 @@ public class CleanupAction extends NodeActor {
                 handler.flush();
             }
 
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
+            class Runner extends SwingWorker<String, Object> {
 
-                            try {
-                                Cleanup c = new Cleanup( );
-                                c.cleanup( data );
-                            }
-                            catch ( Exception e ) {
-                                data.getOut().printError( e.getMessage() );
-                            }
-                        }
+                @Override
+                public String doInBackground() {
+                    try {
+                        Cleanup c = new Cleanup( );
+                        return c.cleanup( data );
                     }
-                                      );
+                    catch ( Exception e ) {
+                        data.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        data.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        data.getOut().print( get() );
+                    }
+                    catch ( Exception e ) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            ( new Runner() ).execute();
+
         }
     }
 }

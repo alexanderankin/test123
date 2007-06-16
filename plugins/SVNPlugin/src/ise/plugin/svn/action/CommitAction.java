@@ -9,6 +9,7 @@ import ise.plugin.svn.gui.CommitDialog;
 import ise.plugin.svn.gui.CommitResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +17,6 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
@@ -40,37 +40,65 @@ public class CommitAction extends NodeActor {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }
-            cd.setOut( new ConsolePrintStream(this) );
+            cd.setOut( new ConsolePrintStream( this ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel(view);
-            panel.showTab(OutputPanel.CONSOLE);
+            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            panel.showTab( OutputPanel.CONSOLE );
             final Logger logger = panel.getLogger();
-            logger.log(Level.INFO, "Committing ...");
-            for(Handler handler : logger.getHandlers()) {
+            logger.log( Level.INFO, "Committing ..." );
+            for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
+            class Runner extends SwingWorker<SVNCommitInfo, Object> {
+
+                @Override
+                public SVNCommitInfo doInBackground() {
+                    try {
+                        Commit commit = new Commit( );
+                        return commit.commit( cd );
+                    }
+                    catch ( Exception e ) {
+                        cd.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        cd.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        JPanel results_panel = new CommitResultsPanel( cd.getPaths(), get() );
+                        panel.setResultsPanel( results_panel );
+                        panel.showTab( OutputPanel.RESULTS );
+                    }
+                    catch ( Exception e ) {
+                        // ignored
+                    }
+                }
+            }
+            ( new Runner() ).execute();
+
+            /*
             SwingUtilities.invokeLater( new Runnable() {
                         public void run() {
                             try {
                                 Commit commit = new Commit( );
                                 final SVNCommitInfo results = commit.commit( cd );
-                                SwingUtilities.invokeLater( new Runnable() {
-                                            public void run() {
-                                                JPanel results_panel = new CommitResultsPanel( cd.getPaths(), results );
-                                                panel.setResultsPanel( results_panel );
-                                                panel.showTab( OutputPanel.RESULTS );
-                                            }
-                                        }
-                                                          );
+                                JPanel results_panel = new CommitResultsPanel( cd.getPaths(), results );
+                                panel.setResultsPanel( results_panel );
+                                panel.showTab( OutputPanel.RESULTS );
                             }
                             catch ( Exception e ) {
-                                logger.log(Level.SEVERE, e.getMessage());
+                                logger.log( Level.SEVERE, e.getMessage() );
                             }
                         }
                     }
                                       );
+            */
         }
     }
 }

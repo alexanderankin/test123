@@ -9,12 +9,13 @@ import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
+import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
@@ -50,28 +51,38 @@ public class LogAction extends NodeActor {
                 handler.flush();
             }
 
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
+            class Runner extends SwingWorker<TreeMap < String, List < SVNLogEntry >>, Object> {
 
-                            try {
+                @Override
+                public TreeMap < String, List < SVNLogEntry >> doInBackground() {
+                    try {
                                 Log log = new Log( );
                                 log.doLog( data );
-                                final TreeMap<String, List<SVNLogEntry>> results = log.getLogEntries();
-                                SwingUtilities.invokeLater( new Runnable() {
-                                            public void run() {
-                                                JPanel results_panel = new LogResultsPanel( results );
-                                                panel.setResultsPanel( results_panel );
-                                                panel.showTab( OutputPanel.RESULTS );
-                                            }
-                                        }
-                                                          );
-                            }
-                            catch ( Exception e ) {
-                                data.getOut().printError( e.getMessage() );
-                            }
-                        }
+                                return log.getLogEntries();
                     }
-                                      );
+                    catch ( Exception e ) {
+                        data.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        data.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                                JPanel results_panel = new LogResultsPanel( get() );
+                                panel.setResultsPanel( results_panel );
+                                panel.showTab( OutputPanel.RESULTS );
+                    }
+                    catch(Exception e) {
+                        // ignored
+                    }
+                }
+            }
+            (new Runner()).execute();
+
         }
     }
 }

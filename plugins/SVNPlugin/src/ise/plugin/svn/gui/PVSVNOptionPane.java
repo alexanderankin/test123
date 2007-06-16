@@ -2,6 +2,7 @@ package ise.plugin.svn.gui;
 
 // imports
 import java.awt.*;
+import java.io.PrintStream;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -13,6 +14,7 @@ import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
+import ise.plugin.svn.io.*;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
@@ -45,6 +47,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         java.util.List<String> info_path = new java.util.ArrayList<String>();
         info_path.add(getProjectRoot());
         SVNData info_data = new SVNData();
+        info_data.setOut(new ConsolePrintStream(new NullOutputStream()));
         info_data.setPaths(info_path);
         String url_text = null;
         java.util.List<SVNInfo> info_results = null;
