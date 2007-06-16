@@ -4,11 +4,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
-import javax.swing.SwingUtilities;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.tmatesoft.svn.core.wc.SVNStatus;
@@ -33,19 +33,35 @@ public class StatusAction extends NodeActor {
 
             cd.setOut( new ConsolePrintStream(this));
 
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
-                            view.getDockableWindowManager().showDockableWindow( "console" );
-                            try {
+            class Runner extends SwingWorker<List<SVNStatus>, Object> {
+
+                @Override
+                public List<SVNStatus> doInBackground() {
+                    try {
                                 Status status = new Status();
-                                List<SVNStatus> results = status.getStatus( cd );
-                            }
-                            catch ( Exception e ) {
-                                cd.getOut().printError( e.getMessage() );
-                            }
-                        }
+                                return status.getStatus( cd );
                     }
-                                      );
+                    catch ( Exception e ) {
+                        cd.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        cd.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        /// TODO: fill this in
+                    }
+                    catch(Exception e) {
+                        // ignored
+                    }
+                }
+            }
+            (new Runner()).execute();
+
         }
     }
 

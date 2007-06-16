@@ -11,12 +11,13 @@ import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
+import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 
 public class AddAction extends NodeActor {
@@ -37,37 +38,48 @@ public class AddAction extends NodeActor {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }
-            cd.setOut( new ConsolePrintStream(this) );
+            cd.setOut( new ConsolePrintStream( this ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel(view);
-            panel.showTab(OutputPanel.CONSOLE);
+            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            panel.showTab( OutputPanel.CONSOLE );
             Logger logger = panel.getLogger();
-            logger.log(Level.INFO, "Preparing to add ...");
-            for(Handler handler : logger.getHandlers()) {
+            logger.log( Level.INFO, "Preparing to add ..." );
+            for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
+            class Runner extends SwingWorker<AddResults, Object> {
 
-                            try {
-                                Add add = new Add( );
-                                final AddResults results = add.add( cd );
-                                SwingUtilities.invokeLater(new Runnable(){
-                                        public void run() {
-                                            JPanel results_panel = new AddResultsPanel(results, true);
-                                            panel.setResultsPanel(results_panel);
-                                            panel.showTab(OutputPanel.RESULTS);
-                                        }
-                                });
-                            }
-                            catch ( Exception e ) {
-                                cd.getOut().printError( e.getMessage() );
-                            }
-                        }
+                @Override
+                public AddResults doInBackground() {
+                    try {
+                        Add add = new Add( );
+                        return add.add( cd );
                     }
-                                      );
+                    catch ( Exception e ) {
+                        cd.getOut().printError( e.getMessage() );
+                    }
+                    finally {
+                        cd.getOut().close();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        JPanel results_panel = new AddResultsPanel( get(), true );
+                        panel.setResultsPanel( results_panel );
+                        panel.showTab( OutputPanel.RESULTS );
+                    }
+                    catch ( Exception e ) {
+                        // ignored
+                    }
+                }
+            }
+            ( new Runner() ).execute();
+
         }
     }
 }
