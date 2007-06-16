@@ -130,17 +130,16 @@ public class TextToolsComments
 				}
 
 				lockBuffer(buffer);
+				
 				// if the first non-whitespace char in the line is the line
-				// comment symbol, remove, otherwise insert
-				if(line.trim().startsWith(lineComment))
+				// comment symbol and we are doing an uncomment
+				// then, remove, otherwise insert
+				if(line.trim().startsWith(lineComment) && doUncomment)
 				{
-					if(doUncomment)
+					buffer.remove(pos, lineComment.length());
+					if(Character.isWhitespace(buffer.getText(pos, 1).charAt(0)))
 					{
-						buffer.remove(pos, lineComment.length());
-						if(Character.isWhitespace(buffer.getText(pos, 1).charAt(0)))
-						{
-							buffer.remove(pos, 1);
-						}
+						buffer.remove(pos, 1);
 					}
 				}
 				else
