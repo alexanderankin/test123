@@ -29,8 +29,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.util.*;
-
 //{{{ Imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -40,9 +38,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
+import java.util.*;
 //}}}
 
-public class TextToolsBlockHandlingDialog extends JDialog implements KeyListener, ActionListener {
+public class TextToolsBlockHandlingDialog extends JDialog implements KeyListener, ActionListener
+{
 	
 	//{{{ TextToolsBlockHandlingDialog constructor
 	public TextToolsBlockHandlingDialog(View view) {

@@ -1,8 +1,9 @@
 /*
  * TextToolsSortDialog.java - sort options, adapted version from Carmine Lucarelli
- * Copyright (C) 2002 Rudolf Widmann
- *
+ * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2002 Rudolf Widmann
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +21,7 @@
  */
 
 
-//{{{ imports
+//{{{ Imports
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
@@ -41,62 +42,23 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 public class TextToolsSortDialog extends EnhancedDialog implements ActionListener
 {
 
-	//{{{ private members
-	/**
-	  * The class with the sort routines.
-	  */
-	private JSort jsort;
-	
-	/**
-	  * The data to be sorted
-	  */
-	private java.util.List data;
-	
-	/**
-	  * The view containing the buffer that contained the data to be sorted (whew!!)
-	  */
-	private View view;
-	
-	/**
-	  * The text area we'll write the results to
-	  */
-	private JEditTextArea textArea;
-	
-	/**
-	  * Did the data come from a selection within the buffer?
-	  */
-	private boolean selection;
-
-	// gui components
-	private JCheckBox onlySelectionCheckBox;
-	private JCheckBox dontSortCheckBox;  // used if you only want to delete duplicates
-	private JCheckBox delDupsCheckBox;
-	private JButton ok;
-	private JButton cancel;
-	private JButton clear;
-	private JButton help;
-	private SortTableModel sortTableModel;
-	private JTable sortTable;
-
-	//}}}
-	
-	//{{{ constructor(View, JEdtiTextArea, List, boolean)
+	//{{{ TextToolsSortDialog constructor
 	/**
 	  * Constructor.  Sets up and shows the GUI
 	  */
 	public TextToolsSortDialog(View view, JEditTextArea textArea)
 	{
 		super(view, jEdit.getProperty("text-tools.sortadvanced.label"), false);
-
+			
 		this.view = view;
 		this.textArea = textArea;
 //		this.data = data;
 //		this.selection = selection;
-	
+		
 		view.showWaitCursor();
-
+		
 		sortTableModel = new SortTableModel();
-
+		
 		// preset sortTable if there is a rect selection
 		boolean rectSel = false;
 		int[] selRows =	TextToolsSorting.getRectSelectionRows(textArea);
@@ -106,14 +68,14 @@ public class TextToolsSortDialog extends EnhancedDialog implements ActionListene
 			sortTableModel.setValueAt(new Integer(selRows[1]+1), 0, 1);
 			rectSel = true;
 		}
-
+		
 		sortTable = new JTable(sortTableModel);
 		TableColumnModel cMod = sortTable.getColumnModel();
 		sortTable.setTableHeader((new SortTableHeader(cMod)));
 		sortTable.setRowHeight(25);
 		
 		sortTable.setPreferredScrollableViewportSize(new Dimension(430, 200));
-
+		
 		JScrollPane scroll = new JScrollPane(sortTable);
 		
 		JPanel content = new JPanel(new BorderLayout());
@@ -121,37 +83,37 @@ public class TextToolsSortDialog extends EnhancedDialog implements ActionListene
 		content.setLayout(new BorderLayout());
 		setContentPane(content);
 		content.add(scroll, BorderLayout.CENTER);
-
+		
 		JPanel buttons = new JPanel();
 		buttons.setBorder(new EmptyBorder(12,0,0,0));
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 		buttons.add(Box.createGlue());
-
+		
 		ok = new JButton(jEdit.getProperty("common.ok"));
 		ok.addActionListener(this);
 		buttons.add(ok);
 		buttons.add(Box.createHorizontalStrut(6));
 		getRootPane().setDefaultButton(ok);
-
+		
 		cancel = new JButton(jEdit.getProperty("common.cancel"));
 		cancel.addActionListener(this);
 		buttons.add(cancel);
 		buttons.add(Box.createHorizontalStrut(6));
-
+		
 		clear = new JButton("Clear");
 		clear.addActionListener(this);
 		buttons.add(clear);
 		buttons.add(Box.createHorizontalStrut(6));
-
+		
 		help = new JButton("Help");
 		help.addActionListener(this);
 		buttons.add(help);
 		buttons.add(Box.createHorizontalStrut(6));
-
+		
 		buttons.add(Box.createGlue());
-
+		
 		content.add(buttons, BorderLayout.SOUTH);
-
+		
 		delDupsCheckBox = new JCheckBox(
 			jEdit.getProperty("text-tools.sortadvanced.delete-identic-lines"));
 		onlySelectionCheckBox = new JCheckBox(
@@ -178,22 +140,25 @@ public class TextToolsSortDialog extends EnhancedDialog implements ActionListene
 		GUIUtilities.loadGeometry(this, "texttools-sort-control");
 		setLocationRelativeTo(view);
 		show();
-	}  //}}}
-
-	//{{{ EnhancedDialog implementation
+	} //}}}
+	
+	//{{{ EnhancedDialog methods
+	
+	//{{{ ok() method
 	public void ok()
 	{
 		ok(true);
-	}
-
+	} //}}}
+	
+	//{{{ cancel() method
 	public void cancel()
 	{
 		dispose();
-	}
+	}//}}}
 
 	//}}}
-
-	//{{{ ok(boolean)
+	
+	//{{{ ok() method
 	/**
 	  * run the sort
 	  */
@@ -279,8 +244,8 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 		if (dispose)
 			dispose();
 	}  //}}}
-
-	//{{{ actionPerformed(ActionEvent)
+	
+	//{{{ actionPerformed() method
 	public void actionPerformed(ActionEvent evt)
 	{
 		Object source = evt.getSource();
@@ -312,9 +277,9 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 			}
 		}
 		*/
-	}  //}}}
-
-	//{{{ showHelp()
+	} //}}}
+	
+	//{{{ showHelp() method
 	/**
 	* Shows JSort help in the jEdit help viewer
 	*/
@@ -330,22 +295,14 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 			new org.gjt.sp.jedit.help.HelpViewer(helpUrl.toString());
 		}
 	} //}}}
-
+	
 	//{{{ SortTableModel class
 	/**
 	  * Our table model
 	  */
 	private class SortTableModel extends AbstractTableModel
 	{
-		private String[] columnNames;
-		private int[] startColumns;
-		private int[] endColumns;
-		private boolean[] ignoreCases;
-		private boolean[] directions;
-		private boolean[] types;
-		private boolean[] trims;
-		private boolean[] delDups;
-
+		//{{{ SortTableModel constructor
 		public SortTableModel()
 		{
 			columnNames = new String[7];
@@ -356,11 +313,11 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 			columnNames[4] = "Numeric";
 			columnNames[5] = "Trim";
 			columnNames[6] = "DelDups";
-
+			
 			clear();
-		}
-
-
+		}//}}}
+		
+		//{{{ clear() method
 		public void clear()
 		{
 			startColumns = new int[10];
@@ -371,8 +328,9 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 			trims = new boolean[10];
 			delDups = new boolean[10];
 			fireTableDataChanged();
-		}
+		} //}}}
 		
+		//{{{ setValueAt() method
 		public void setValueAt(Object value, int row, int col)
 		{
 			switch(col)
@@ -400,27 +358,27 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 					break;
 			}
 			fireTableCellUpdated(row, col);
-		}
-
-
+		} //}}}
+		
+		//{{{ getColumnCount() method
 		public int getColumnCount()
 		{
 			return columnNames.length;
-		}
-
-
+		} //}}}
+		
+		//{{{ getRowCount() method
 		public int getRowCount()
 		{
 			return startColumns.length;
-		}
-
-
+		} //}}}
+		
+		//{{{ getColumnName() method
 		public String getColumnName(int col)
 		{
 			return columnNames[col];
-		}
-
-
+		} //}}}
+		
+		//{{{ getValueAt() method
 		public Object getValueAt(int row, int col)
 		{
 			switch(col)
@@ -441,10 +399,10 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 					return new Boolean(delDups[row]);
 			}
 			return null;
-		}
-
-
-		/*
+		} //}}}
+		
+		//{{{ getColumnClass() method
+		/**
 		 *  JTable uses this method to determine the default renderer/
 		 *  editor for each cell.  If we didn't implement this method,
 		 *  then the last column would contain text ("true"/"false"),
@@ -453,9 +411,9 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 		public Class getColumnClass(int c)
 		{
 			return getValueAt(0, c).getClass();
-		}
-
-
+		} //}}}
+		
+		//{{{ isCellEditable() method
 		/*
 		 *  Don't need to implement this method unless your table's
 		 *  editable.
@@ -463,17 +421,31 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 		public boolean isCellEditable(int row, int col)
 		{
 			return true;
-		}
+		} //}}}
+		
+		//{{{ Private members
+		private String[] columnNames;
+		private int[] startColumns;
+		private int[] endColumns;
+		private boolean[] ignoreCases;
+		private boolean[] directions;
+		private boolean[] types;
+		private boolean[] trims;
+		private boolean[] delDups;
+		//}}}
+		
 	}  //}}}
 	
 	//{{{ SortTableHeader class
 	private class SortTableHeader extends JTableHeader
 	{
+		//{{{ SortTableHeader constructor
 		public SortTableHeader(TableColumnModel tcom)
 		{
 			super(tcom);
-		}
+		} //}}}
 		
+		//{{{ getToolTipText()
 		public String getToolTipText(MouseEvent event)
 		{
 			Point p = event.getPoint();
@@ -493,6 +465,45 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 					return "Trim whitespace before sorting";
 			}
 			return null;
-		}
-	}
+		}//}}}
+	} //}}}
+	
+	//{{{ Private members
+	/**
+	  * The class with the sort routines.
+	  */
+	private JSort jsort;
+	
+	/**
+	  * The data to be sorted
+	  */
+	private java.util.List data;
+	
+	/**
+	  * The view containing the buffer that contained the data to be sorted (whew!!)
+	  */
+	private View view;
+	
+	/**
+	  * The text area we'll write the results to
+	  */
+	private JEditTextArea textArea;
+	
+	/**
+	  * Did the data come from a selection within the buffer?
+	  */
+	private boolean selection;
+
+	// gui components
+	private JCheckBox onlySelectionCheckBox;
+	private JCheckBox dontSortCheckBox;  // used if you only want to delete duplicates
+	private JCheckBox delDupsCheckBox;
+	private JButton ok;
+	private JButton cancel;
+	private JButton clear;
+	private JButton help;
+	private SortTableModel sortTableModel;
+	private JTable sortTable;
+
+	//}}}
 }

@@ -29,9 +29,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//{{{ Imports
 import java.util.*;
 
-//{{{ Imports
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EditPlugin;
@@ -51,7 +51,8 @@ import javax.swing.JTextField;
 import javax.swing.border.*;
 //}}}
 
-public class TextToolsBlockHandling {
+public class TextToolsBlockHandling
+{
 	
 	//{{{ doBlockAction() method
 	public static void doBlockAction(
@@ -298,7 +299,4 @@ public class TextToolsBlockHandling {
 
 */
 
-
 }
-
-

@@ -1,7 +1,8 @@
 /*
- * :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
- *
  * TextToolsCommentsOptionPane.java - Option pane for Text Tools comments actions
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2002, 2003 Robert Fletcher
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-//{{{ imports
+
+//{{{ Imports
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
@@ -34,23 +36,15 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class TextToolsCommentsOptionPane extends AbstractOptionPane
 {
-	//{{{ instance fields
-	private JCheckBox keepSelected;
-	private JCheckBox commentAsBlock;
-	private ButtonGroup lineIndentMode;
-	private JRadioButton indentAtLineStart;
-	private JRadioButton indentWithCode;
-	private JRadioButton indentAsBlock;
-	//}}}
-
-	//{{{ +TextToolsCommentsOptionPane() : <init>
+	
+	//{{{ TextToolsCommentsOptionPane constructor
 	/** Constructor for the <code>TextToolsCommentsOptionPane</code> object. */
 	public TextToolsCommentsOptionPane()
 	{
 		super("text-tools.toggle-comments");
 	} //}}}
-
-	//{{{ +_init() : void
+	
+	//{{{ init() method
 	/** Initialises the option pane. */
 	public void _init()
 	{
@@ -81,8 +75,8 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 		lineIndentMode.add(indentWithCode);
 		lineIndentMode.add(indentAsBlock);
 	} //}}}
-
-	//{{{ +_save() : void
+	
+	//{{{ save() method
 	/** Saves properties from the option pane. */
 	public void _save()
 	{
@@ -97,5 +91,15 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("options.toggle-comments.indentAsBlock",
 			indentAsBlock.isSelected());
 	} //}}}
+	
+	//{{{ Private members
+	private JCheckBox keepSelected;
+	private JCheckBox commentAsBlock;
+	private ButtonGroup lineIndentMode;
+	private JRadioButton indentAtLineStart;
+	private JRadioButton indentWithCode;
+	private JRadioButton indentAsBlock;
+	//}}}
+
 }
 
