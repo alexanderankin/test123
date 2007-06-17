@@ -53,13 +53,13 @@ public class Commit {
 
         // set an event handler so that messages go to the commit data streams for display
         // and gather the paths actually committed
-        paths.clear();
+        final List<String> result_paths = new ArrayList<String>();
         client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) {
             @Override
             public void handleEvent(SVNEvent event, double progress) {
                 super.handleEvent(event, progress);
                 if (event.getFile() != null) {
-                    paths.add(event.getFile().toString());
+                    result_paths.add(event.getFile().toString());
                 }
             }
         });
@@ -87,7 +87,7 @@ public class Commit {
         }
         out.close();
 
-        cd.setPaths(paths);
+        cd.setPaths(result_paths);
         cd.setInfo(info);
         return cd;
     }
