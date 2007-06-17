@@ -31,8 +31,8 @@ public class CommitResultsPanel extends JPanel {
         String date = DATE_FORMAT.format( info.getDate() );
 
         List<String> paths = results.getPaths();
-        String[][] data = new String[ paths.size() ][ 4 ];
         Collections.sort( paths );
+        String[][] data = new String[ paths.size() ][ 4 ];
         int i = 0;
         for ( String path : paths ) {
             data[ i ][ 0 ] = path;
