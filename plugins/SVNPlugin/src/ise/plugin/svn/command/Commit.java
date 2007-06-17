@@ -11,13 +11,14 @@ import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
+import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CommitData;
 
 public class Commit {
 
-    public SVNCommitInfo commit( CommitData cd ) throws CommandInitializationException, SVNException {
+    public CommitData commit( CommitData cd ) throws CommandInitializationException, SVNException {
 
         // validate commit data values
         if (cd.getPaths() == null) {
@@ -34,7 +35,7 @@ public class Commit {
         }
 
         // convert paths to Files
-        List<String> paths = cd.getPaths();
+        final List<String> paths = cd.getPaths();
         File[] localPaths = new File[ paths.size() ];
         for ( int i = 0; i < paths.size(); i++ ) {
             localPaths[ i ] = new File( paths.get( i ) );
@@ -51,23 +52,33 @@ public class Commit {
         SVNCommitClient client = clientManager.getCommitClient();
 
         // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        // and gather the paths actually committed
+        paths.clear();
+        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) {
+            @Override
+            public void handleEvent(SVNEvent event, double progress) {
+                super.handleEvent(event, progress);
+                if (event.getFile() != null) {
+                    paths.add(event.getFile().toString());
+                }
+            }
+        });
 
         // actually do the commit
-        SVNCommitInfo result = client.doCommit( localPaths, cd.getKeepLocks(), cd.getCommitMessage(), false, cd.getRecursive() );
+        SVNCommitInfo info = client.doCommit( localPaths, cd.getKeepLocks(), cd.getCommitMessage(), false, cd.getRecursive() );
 
         // handle the results
         PrintStream out = cd.getOut();
-        if ( result != SVNCommitInfo.NULL ) {
+        if ( info != SVNCommitInfo.NULL ) {
             out.println();
-            out.println( "Committed revision " + result.getNewRevision() + "." );
+            out.println( "Committed revision " + info.getNewRevision() + "." );
             out.flush();
         }
         else {
             out.println();
-            if ( result.getErrorMessage() != null ) {
+            if ( info.getErrorMessage() != null ) {
                 out.println("Commit failed:");
-                out.println( result.getErrorMessage() );
+                out.println( info.getErrorMessage() );
             }
             else {
                 out.println("Commit failed.");
@@ -76,6 +87,8 @@ public class Commit {
         }
         out.close();
 
-        return result;
+        cd.setPaths(paths);
+        cd.setInfo(info);
+        return cd;
     }
 }

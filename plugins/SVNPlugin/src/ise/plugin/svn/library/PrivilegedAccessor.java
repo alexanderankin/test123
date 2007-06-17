@@ -213,6 +213,7 @@ public class PrivilegedAccessor {
      * @return                           The method value
      * @exception NoSuchMethodException  Description of Exception
      */
+    @SuppressWarnings("unchecked")
     public static Method getMethod( Class thisClass, String methodName, Class[] classTypes ) throws NoSuchMethodException {
         if ( thisClass == null )
             throw new NoSuchMethodException( "Invalid method : " + methodName );

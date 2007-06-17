@@ -8,6 +8,7 @@ import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.data.CommitData;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
 public class CommitResultsPanel extends JPanel {
@@ -15,7 +16,7 @@ public class CommitResultsPanel extends JPanel {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() );
 
 
-    public CommitResultsPanel( List<String> paths, SVNCommitInfo results ) {
+    public CommitResultsPanel( CommitData results ) {
         super( new LambdaLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
@@ -24,9 +25,12 @@ public class CommitResultsPanel extends JPanel {
         con.p = 0;
 
         JLabel label = new JLabel( "Committed:" );
-        String revision = String.valueOf( results.getNewRevision() );
-        String author = results.getAuthor();
-        String date = DATE_FORMAT.format( results.getDate() );
+        SVNCommitInfo info = results.getInfo();
+        String revision = String.valueOf( info.getNewRevision() );
+        String author = info.getAuthor();
+        String date = DATE_FORMAT.format( info.getDate() );
+
+        List<String> paths = results.getPaths();
         String[][] data = new String[ paths.size() ][ 4 ];
         Collections.sort( paths );
         int i = 0;

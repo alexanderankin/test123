@@ -9,6 +9,7 @@ import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
+import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.SVNData;
@@ -50,18 +51,27 @@ public class Add {
         // get a commit client
         SVNWCClient client = clientManager.getWCClient();
 
+        // put the add output here
+        final AddResults results = new AddResults();
+
         // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) {
+            @Override
+            public void handleEvent(SVNEvent event, double progress) {
+                super.handleEvent(event, progress);
+                if (event.getFile() != null) {
+                    results.addPath(event.getFile().toString());
+                }
+            }
+        });
 
         // actually do the add(s)
         PrintStream out = cd.getOut();
-        AddResults results = new AddResults();
         for ( String path : paths ) {
             // path, force, mkdir, add parents, recursive
             try {
                 File file = new File(path);
                 client.doAdd( file, false, false, true, cd.getRecursive() );
-                results.addPath(path);
             }
             catch ( Exception e ) {
                 out.println( e.getMessage() );

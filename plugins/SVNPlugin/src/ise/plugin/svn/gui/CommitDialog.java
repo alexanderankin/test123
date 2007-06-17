@@ -69,8 +69,8 @@ public class CommitDialog extends JDialog {
                 paths.add(node.getNodePath());
             }
         }
-
         commitData.setPaths(paths);
+        commitData.setRecursive(recursive);
 
         JLabel file_label = new JLabel("Committing these files:");
         final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
