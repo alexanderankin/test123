@@ -21,6 +21,8 @@ package debugger.jedit;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
+import javax.swing.text.Position;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -29,12 +31,15 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 public abstract class DebuggerPainter extends TextAreaExtension {
 	private EditPane editPane;
 	private Buffer buffer;
-	private int line;
+	private Position pos;
+	private int line; // Just in case 'pos' cannot be created
 	
 	public DebuggerPainter(EditPane e, Buffer b, int l) {
 		editPane = e;
 		buffer = b;
-		line = l;
+		pos = buffer.createPosition(buffer.getLineStartOffset(l));
+		if (buffer == null || pos == null)
+			line = l;
 	}
 	public EditPane getEditPane() {
 		return editPane;
@@ -43,12 +48,15 @@ public abstract class DebuggerPainter extends TextAreaExtension {
 		return buffer;
 	}
 	public int getLine() {
+		if (buffer != null && pos != null)
+			return buffer.getLineOfOffset(pos.getOffset());
 		return line;
 	}
 	@Override
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 			int physicalLine, int start, int end, int y) {
 		super.paintValidLine(gfx, screenLine, physicalLine, start, end, y);
+		int line = getLine();
 		if (buffer == editPane.getBuffer() && line == physicalLine + 1) {
 			JEditTextArea textArea = editPane.getTextArea();
 			Point p = textArea.offsetToXY(textArea.getLineStartOffset(physicalLine));
