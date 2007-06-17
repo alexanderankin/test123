@@ -51,10 +51,10 @@ public class CommitAction extends NodeActor {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker<SVNCommitInfo, Object> {
+            class Runner extends SwingWorker<CommitData, Object> {
 
                 @Override
-                public SVNCommitInfo doInBackground() {
+                public CommitData doInBackground() {
                     try {
                         Commit commit = new Commit( );
                         return commit.commit( cd );
@@ -71,7 +71,7 @@ public class CommitAction extends NodeActor {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new CommitResultsPanel( cd.getPaths(), get() );
+                        JPanel results_panel = new CommitResultsPanel( get() );
                         panel.setResultsPanel( results_panel );
                         panel.showTab( OutputPanel.RESULTS );
                     }
@@ -82,23 +82,6 @@ public class CommitAction extends NodeActor {
             }
             ( new Runner() ).execute();
 
-            /*
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
-                            try {
-                                Commit commit = new Commit( );
-                                final SVNCommitInfo results = commit.commit( cd );
-                                JPanel results_panel = new CommitResultsPanel( cd.getPaths(), results );
-                                panel.setResultsPanel( results_panel );
-                                panel.showTab( OutputPanel.RESULTS );
-                            }
-                            catch ( Exception e ) {
-                                logger.log( Level.SEVERE, e.getMessage() );
-                            }
-                        }
-                    }
-                                      );
-            */
         }
     }
 }

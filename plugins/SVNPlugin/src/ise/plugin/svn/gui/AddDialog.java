@@ -69,8 +69,8 @@ public class AddDialog extends JDialog {
                 paths.add(node.getNodePath());
             }
         }
-
         addData.setPaths(paths);
+        addData.setRecursive(recursive);
 
         JLabel file_label = new JLabel("Adding these files:");
         final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
