@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package gdb.breakpoints;
 
+import javax.swing.text.Position;
+
 import gdb.core.CommandManager;
 import gdb.core.Debugger;
 
@@ -26,7 +28,8 @@ import org.gjt.sp.jedit.View;
 
 public class Breakpoint {
 	String file;
-	int line;
+	Position pos = null;
+	int line;	// Just in case 'pos' cannot be created
 	int number;
 	View view;
 	Buffer buffer;
@@ -61,7 +64,9 @@ public class Breakpoint {
 	}
 	public Breakpoint(View view, Buffer buffer, int line) {
 		this.file = buffer.getPath();
-		this.line = line;
+		this.pos = buffer.createPosition(buffer.getLineStartOffset(line));
+		if (buffer == null || pos == null)
+			this.line = line;
 		initialize();
 		this.view = view;
 		this.buffer = buffer;
@@ -82,7 +87,7 @@ public class Breakpoint {
 				if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") > -1) {
 					fileName = file.replace('\\', '/');
 				}
-				commandManager.add("-break-insert " + fileName + ":" + line,
+				commandManager.add("-break-insert " + fileName + ":" + getLine(),
 						new BreakpointResultHandler(this));
 			}
 			else // Watchpoint
@@ -98,6 +103,8 @@ public class Breakpoint {
 		return file;
 	}
 	public int getLine() {
+		if (buffer != null && pos != null)
+			return buffer.getLineOfOffset(pos.getOffset());
 		return line;
 	}
 	public Buffer getBuffer() {
