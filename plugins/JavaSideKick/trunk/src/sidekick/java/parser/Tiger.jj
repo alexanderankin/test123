@@ -1777,6 +1777,8 @@ VariableDeclarator VariableDeclaratorId():
         error_skipto(SEMICOLON);
     }
     {
+        if ( t == null)
+            return null;
         VariableDeclarator tn = new VariableDeclarator(t.image);
         tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
         tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
