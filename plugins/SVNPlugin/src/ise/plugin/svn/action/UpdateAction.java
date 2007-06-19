@@ -5,6 +5,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Update;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.UpdateData;
 import ise.plugin.svn.gui.UpdateResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -63,10 +64,10 @@ public class UpdateAction extends NodeActor {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker<TreeMap<String, String>, Object> {
+            class Runner extends SwingWorker<UpdateData, Object> {
 
                 @Override
-                public TreeMap<String, String> doInBackground() {
+                public UpdateData doInBackground() {
                     try {
                         Update update = new Update( );
                         return update.doUpdate( data );
@@ -88,7 +89,7 @@ public class UpdateAction extends NodeActor {
                         panel.showTab( OutputPanel.RESULTS );
                     }
                     catch ( Exception e ) {
-                        // ignored
+                        e.printStackTrace();
                     }
                 }
             }

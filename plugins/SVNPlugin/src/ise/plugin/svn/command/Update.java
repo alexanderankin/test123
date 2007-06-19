@@ -13,21 +13,19 @@ import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.UpdateData;
 
 
 public class Update {
 
-    private TreeMap<String, String> entries = new TreeMap<String, String>();
-
-    private PrintStream out = null;
 
     /**
      * Performs an update on the paths provided by the SVNData object.
      * @param cd the data needed by svn to perform an update, must have paths
      * and output stream set at minimum.
-     * @return TreeMap<String, String> containing path and revision for updated files
+     * @return an UpdateData containing a list of the updated files
      */
-    public TreeMap<String, String> doUpdate( SVNData cd ) throws CommandInitializationException, SVNException {
+    public UpdateData doUpdate( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getPaths() == null ) {
@@ -61,19 +59,24 @@ public class Update {
         // get a commit client
         SVNUpdateClient client = clientManager.getUpdateClient();
 
-        // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        // set an event handler so that messages go to the streams for display
+        UpdateEventHandler handler = new UpdateEventHandler(cd.getOut(), cd.getErr());
+        client.setEventHandler( handler );
 
-        out = cd.getOut();
+        PrintStream out = cd.getOut();
+        long revision = -1;
 
         for ( File file : localPaths ) {
-            long revision = client.doUpdate(file, SVNRevision.HEAD, recursive);
-            entries.put(file.toString(), String.valueOf(revision));
+            revision = client.doUpdate(file, SVNRevision.HEAD, recursive);
         }
 
         out.flush();
         out.close();
 
-        return entries;
+        // fetch the accumulated data from the handler
+        UpdateData data = handler.getData();
+        data.setRevision(revision);
+
+        return data;
     }
 }

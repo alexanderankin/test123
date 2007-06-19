@@ -27,11 +27,12 @@ import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 
-import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.StatusData;
 
 public class Status {
 
-    public List<SVNStatus> getStatus( CommitData cd ) throws CommandInitializationException, SVNException {
+    public StatusData getStatus( SVNData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getPaths() == null ) {
@@ -52,19 +53,22 @@ public class Status {
         // use the svnkit client manager
         SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
 
-        // get a commit client
+        // get a client
         SVNStatusClient client = clientManager.getStatusClient();
 
-        // set an event handler so that messages go to the commit data streams for display
+        // set an event handler so that messages go to the streams for display
         client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
 
         // actually fetch the info
-        List<SVNStatus> results = new ArrayList<SVNStatus>();
+
+        StatusHandler handler = new StatusHandler(cd.getOut(), true);
+        long revision = -1;
         for ( String path : paths ) {
             File localPath = new File( path );
-            SVNStatus result = client.doStatus( localPath, true );
-            results.add( result );
+            revision = client.doStatus( localPath, true, true, false, false, handler );
         }
-        return results;
+        StatusData status_data = handler.getResults();
+        status_data.setRevision(revision);
+        return status_data;
     }
 }
