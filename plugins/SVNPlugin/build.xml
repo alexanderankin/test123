@@ -228,7 +228,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.SVN2">
+        <java classname="ise.plugin.svn.gui.UpdateResultsPanel">
             <classpath refid="classpathref" />
         </java>
     </target>

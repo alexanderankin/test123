@@ -6,7 +6,6 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
-import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.ListOps;
 import ise.plugin.svn.data.CommitData;
@@ -18,12 +17,8 @@ public class CommitResultsPanel extends JPanel {
 
 
     public CommitResultsPanel( CommitData results ) {
-        super( new LambdaLayout() );
+        super( new BorderLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
-        LambdaLayout.Constraints con = LambdaLayout.createConstraint();
-        con.a = LambdaLayout.W;
-        con.s = "w";
-        con.p = 0;
 
         JLabel label = new JLabel( "Committed:" );
         SVNCommitInfo info = results.getInfo();
@@ -55,9 +50,8 @@ public class CommitResultsPanel extends JPanel {
         column2.setPreferredWidth( 180 );
 
 
-        add( label, con );
-        ++con.y;
-        add( GUIUtils.createTablePanel(table), con );
+        add( label, BorderLayout.NORTH );
+        add( GUIUtils.createTablePanel(table), BorderLayout.CENTER );
     }
 
 }

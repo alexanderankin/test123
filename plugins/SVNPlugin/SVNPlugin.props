@@ -43,27 +43,29 @@ ise.plugin.svn.pv.username.label=Username:
 ise.plugin.svn.pv.password.label=Password:
 
 # subversion commands
-ise.plugin.svn.action.label.1=Update
-ise.plugin.svn.action.code.1=ise.plugin.svn.action.UpdateAction
-ise.plugin.svn.action.label.2=Commit...
-ise.plugin.svn.action.code.2=ise.plugin.svn.action.CommitAction
-ise.plugin.svn.action.label.3=-
-ise.plugin.svn.action.label.4=Revert...
-ise.plugin.svn.action.code.4=ise.plugin.svn.action.RevertAction
-ise.plugin.svn.action.label.5=Add
-ise.plugin.svn.action.code.5=ise.plugin.svn.action.AddAction
-ise.plugin.svn.action.label.6=Resolve
-ise.plugin.svn.action.code.6=ise.plugin.svn.action.ResolvedAction
-ise.plugin.svn.action.label.7=-
-ise.plugin.svn.action.label.8=Info
-ise.plugin.svn.action.code.8=ise.plugin.svn.action.InfoAction
-ise.plugin.svn.action.label.9=Log
-ise.plugin.svn.action.code.9=ise.plugin.svn.action.LogAction
-ise.plugin.svn.action.label.10=-
-ise.plugin.svn.action.label.11=Checkout...
-ise.plugin.svn.action.code.11=ise.plugin.svn.action.CheckoutAction
-ise.plugin.svn.action.label.12=Cleanup
-ise.plugin.svn.action.code.12=ise.plugin.svn.action.CleanupAction
+ise.plugin.svn.action.label.1=Synchronize
+ise.plugin.svn.action.code.1=ise.plugin.svn.action.StatusAction
+ise.plugin.svn.action.label.2=Update
+ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateAction
+ise.plugin.svn.action.label.3=Commit...
+ise.plugin.svn.action.code.3=ise.plugin.svn.action.CommitAction
+ise.plugin.svn.action.label.4=-
+ise.plugin.svn.action.label.5=Revert...
+ise.plugin.svn.action.code.5=ise.plugin.svn.action.RevertAction
+ise.plugin.svn.action.label.6=Add
+ise.plugin.svn.action.code.6=ise.plugin.svn.action.AddAction
+ise.plugin.svn.action.label.7=Resolve
+ise.plugin.svn.action.code.7=ise.plugin.svn.action.ResolvedAction
+ise.plugin.svn.action.label.8=-
+ise.plugin.svn.action.label.9=Info
+ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoAction
+ise.plugin.svn.action.label.10=Log
+ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogAction
+ise.plugin.svn.action.label.11=-
+ise.plugin.svn.action.label.12=Checkout...
+ise.plugin.svn.action.code.12=ise.plugin.svn.action.CheckoutAction
+ise.plugin.svn.action.label.13=Cleanup
+ise.plugin.svn.action.code.13=ise.plugin.svn.action.CleanupAction
 
 
 # register subversion commands with ProjectViewer
