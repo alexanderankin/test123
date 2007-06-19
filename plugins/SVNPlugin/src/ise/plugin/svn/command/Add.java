@@ -15,10 +15,13 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 
-
+/**
+ * Performs a subversion "add" command.
+ */
 public class Add {
 
     /**
+     * @param cd SVNData containing a list of paths to be added
      * @return a list of paths that were scheduled to be added.
      */
     public AddResults add( SVNData cd ) throws CommandInitializationException, SVNException {

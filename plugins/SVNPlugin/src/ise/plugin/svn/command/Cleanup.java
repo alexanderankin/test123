@@ -56,7 +56,7 @@ public class Cleanup {
 
         ConsolePrintStream out = cd.getOut();
 
-        // files for logs, start revision, end revision, stop on copy, report paths, number of entries, handler
+        // do the cleanup
         for ( File file : localPaths ) {
             try {
                 client.doCleanup(file);

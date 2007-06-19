@@ -21,16 +21,15 @@ public class StatusResultsPanel extends JPanel {
         super( new LambdaLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel("Status checked against revision: " + results.getRevision());
-
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
         con.y = 0;
-        con.s = "wh";
+        con.s = "w";
         con.p = 3;
 
-
+        JLabel label = new JLabel("Status checked against revision: " + results.getRevision());
         add(label, con);
+        con.s = "wh";
 
         boolean added = false;
 
