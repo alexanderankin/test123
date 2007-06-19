@@ -8,6 +8,7 @@ import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.ListOps;
 import ise.plugin.svn.data.CommitData;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
@@ -30,7 +31,7 @@ public class CommitResultsPanel extends JPanel {
         String author = info.getAuthor();
         String date = DATE_FORMAT.format( info.getDate() );
 
-        List<String> paths = results.getPaths();
+        List<String> paths = ListOps.toList(ListOps.toSet(results.getPaths()));
         Collections.sort( paths );
         String[][] data = new String[ paths.size() ][ 4 ];
         int i = 0;

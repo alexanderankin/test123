@@ -4,21 +4,31 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
+import javax.swing.JPanel;
+
 import projectviewer.vpt.VPTNode;
+
+import ise.plugin.svn.gui.OutputPanel;
+import ise.plugin.svn.SVNPlugin;
+
 import ise.plugin.svn.command.Status;
-import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.StatusData;
+import ise.plugin.svn.gui.StatusResultsPanel;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.tmatesoft.svn.core.wc.SVNStatus;
 
+
 public class StatusAction extends NodeActor {
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
-            final CommitData cd = new CommitData();
+            final SVNData cd = new SVNData();
             List<String> paths = new ArrayList<String>();
             for ( VPTNode node : nodes ) {
                 if ( node != null && node.getNodePath() != null ) {
@@ -31,15 +41,24 @@ public class StatusAction extends NodeActor {
                 cd.setPassword( password );
             }
 
-            cd.setOut( new ConsolePrintStream(this));
+            cd.setOut( new ConsolePrintStream( this ) );
 
-            class Runner extends SwingWorker<List<SVNStatus>, Object> {
+            view.getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel output_panel = SVNPlugin.getOutputPanel( view );
+            output_panel.showTab( OutputPanel.CONSOLE );
+            Logger logger = output_panel.getLogger();
+            logger.log( Level.INFO, "Gathering status ..." );
+            for ( Handler handler : logger.getHandlers() ) {
+                handler.flush();
+            }
+
+            class Runner extends SwingWorker<StatusData, Object> {
 
                 @Override
-                public List<SVNStatus> doInBackground() {
+                public StatusData doInBackground() {
                     try {
-                                Status status = new Status();
-                                return status.getStatus( cd );
+                        Status status = new Status();
+                        return status.getStatus( cd );
                     }
                     catch ( Exception e ) {
                         cd.getOut().printError( e.getMessage() );
@@ -53,14 +72,16 @@ public class StatusAction extends NodeActor {
                 @Override
                 protected void done() {
                     try {
-                        /// TODO: fill this in
+                        JPanel panel = new StatusResultsPanel( get() );
+                        output_panel.setResultsPanel( panel );
+                        output_panel.showTab( OutputPanel.RESULTS );
                     }
-                    catch(Exception e) {
+                    catch ( Exception e ) {
                         // ignored
                     }
                 }
             }
-            (new Runner()).execute();
+            ( new Runner() ).execute();
 
         }
     }

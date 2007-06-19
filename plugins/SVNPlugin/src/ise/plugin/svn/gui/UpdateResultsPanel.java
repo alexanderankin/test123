@@ -1,46 +1,85 @@
 package ise.plugin.svn.gui;
 
+import java.awt.BorderLayout;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.data.UpdateData;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
+/**
+ * Shows the results of an update.  Conflicted files, updated files,
+ * added files, and deleted files are shown in separate tables.
+ */
 public class UpdateResultsPanel extends JPanel {
 
-    public UpdateResultsPanel( TreeMap < String, String > results ) {
+    public UpdateResultsPanel( UpdateData results ) {
         super( new LambdaLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        String[][] data = new String[ results.size() ][ 2 ];
-        int i = 0;
-        for ( String path : results.keySet() ) {
-            String revision = results.get( path );
-            data[ i ][ 0 ] = path;
-            data[ i ][ 1 ] = revision;
-        }
+        JLabel label = new JLabel("Updated to revision: " + results.getRevision());
 
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
-        con.s = "w";
-        con.p = 0;
+        con.y = 0;
+        con.s = "wh";
+        con.p = 3;
 
-        if (results == null || results.size() == 0) {
-            add(new JLabel("Selected files are already up to date."), con);
-            return;
+
+        add(label, con);
+
+        boolean added = false;
+
+        List<String> list = results.getConflictedFiles();
+        if (list != null) {
+            ++con.y;
+            add(createPanel("Files with conflicts:", list), con);
+            added = true;
         }
 
-        JLabel label = new JLabel( "Updated: ");
-        JTable table = new JTable( data, new String[] {"Path", "Revision"} );
-        TableColumnModel column_model = table.getColumnModel();
-        TableColumn column1 = column_model.getColumn( 1 );
-        column1.setMaxWidth( 100 );
-        column1.setPreferredWidth( 100 );
-        add( label, con );
-        ++con.y;
-        add( GUIUtils.createTablePanel(table), con );
+        list = results.getUpdatedFiles();
+        if (list != null) {
+            ++con.y;
+            add(createPanel("Updated files:", list), con);
+            added = true;
+        }
+
+        list = results.getAddedFiles();
+        if (list != null) {
+            ++con.y;
+            add(createPanel("Added files:", list), con);
+            added = true;
+        }
+
+        list = results.getDeletedFiles();
+        if (list != null) {
+            ++con.y;
+            add(createPanel("Deleted files:", list), con);
+            added = true;
+        }
+
+        if (!added) {
+            label.setText(label.getText() + " (Already up to date.)");
+        }
     }
+
+    private JPanel createPanel(String title, List<String> values) {
+        JLabel label = new JLabel(title);
+        String[][] data = new String[values.size()][1];
+        for (int i = 0; i < values.size(); i++) {
+            data[i][0] = values.get(i);
+        }
+        JTable table = new JTable(data, new String[]{"Path:"});
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EtchedBorder());
+        panel.add(label, BorderLayout.NORTH);
+        panel.add(GUIUtils.createTablePanel(table), BorderLayout.CENTER);
+        return panel;
+    }
+
 }
