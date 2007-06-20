@@ -41,7 +41,7 @@ public class InfoAction extends NodeActor {
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showTab( OutputPanel.CONSOLE );
+            panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Fetching info..." );
             for ( Handler handler : logger.getHandlers() ) {
@@ -69,8 +69,9 @@ public class InfoAction extends NodeActor {
                 protected void done() {
                     try {
                         JPanel info_panel = new SVNInfoPanel( get() );
-                        panel.setResultsPanel( info_panel );
-                        panel.showTab( OutputPanel.RESULTS );
+                        //panel.setResultsPanel( info_panel );
+                        //panel.showTab( OutputPanel.RESULTS );
+                        panel.addTab("Info", info_panel);
                     }
                     catch(Exception e) {
                         // ignored

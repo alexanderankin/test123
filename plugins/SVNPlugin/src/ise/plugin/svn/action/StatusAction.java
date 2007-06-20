@@ -45,7 +45,7 @@ public class StatusAction extends NodeActor {
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel output_panel = SVNPlugin.getOutputPanel( view );
-            output_panel.showTab( OutputPanel.CONSOLE );
+            output_panel.showConsole();
             Logger logger = output_panel.getLogger();
             logger.log( Level.INFO, "Gathering status ..." );
             for ( Handler handler : logger.getHandlers() ) {
@@ -73,8 +73,7 @@ public class StatusAction extends NodeActor {
                 protected void done() {
                     try {
                         JPanel panel = new StatusResultsPanel( get() );
-                        output_panel.setResultsPanel( panel );
-                        output_panel.showTab( OutputPanel.RESULTS );
+                        output_panel.addTab("Status", panel);
                     }
                     catch ( Exception e ) {
                         // ignored

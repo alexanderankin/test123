@@ -1,14 +1,14 @@
 package ise.plugin.svn.gui;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.logging.*;
 import javax.swing.*;
 import ise.plugin.svn.*;
+import ise.plugin.svn.library.GUIUtils;
 
 public class OutputPanel extends JPanel {
 
-    public static final int RESULTS = 0;
-    public static final int CONSOLE = 1;
     private JTabbedPane tabs;
 
     // used to generate unique name for this panel
@@ -21,18 +21,51 @@ public class OutputPanel extends JPanel {
     private SubversionGUILogHandler handler = new SubversionGUILogHandler();
 
     public OutputPanel() {
-        super(new BorderLayout());
+        super( new BorderLayout() );
 
         myIndex = ++COUNT;
         logger = Logger.getLogger( "ise.plugin.svn.Subversion" + myIndex );
-        logger.setLevel(Level.ALL);
-        logger.removeHandler(handler);
-        logger.addHandler(handler);
+        logger.setLevel( Level.ALL );
+        logger.removeHandler( handler );
+        logger.addHandler( handler );
 
         tabs = new JTabbedPane();
-        tabs.addTab("SVN Results", new JPanel());
-        tabs.addTab("SVN Console", getConsolePanel());
-        add(tabs);
+        tabs.addTab( "SVN Console", getConsolePanel() );
+        add( tabs );
+        tabs.addMouseListener( new MouseAdapter() {
+                    public void mousePressed( MouseEvent me ) {
+                        if ( me.isPopupTrigger() )
+                            handleIsPopup( me );
+                    }
+
+                    public void mouseReleased( MouseEvent me ) {
+                        if ( me.isPopupTrigger() )
+                            handleIsPopup( me );
+                    }
+
+                    private void handleIsPopup( MouseEvent me ) {
+                        final int x = me.getX();
+                        final int y = me.getY();
+                        int index = tabs.indexAtLocation(x, y);
+                        if (index < 1) {
+                            // index 0 is the console, don't close it ever,
+                            // less than 0 is an invalid tab
+                            return;
+                        }
+                        final Component c = tabs.getComponentAt(index);
+                        final JPopupMenu pm = new JPopupMenu();
+                        JMenuItem mi = new JMenuItem( "Close" );
+                        pm.add( mi );
+                        mi.addActionListener( new ActionListener() {
+                                    public void actionPerformed( ActionEvent ae ) {
+                                        tabs.remove( c );
+                                    }
+                                }
+                                            );
+                        GUIUtils.showPopupMenu( pm, c, x, y );
+                    }
+                }
+                             );
     }
 
     private JPanel getConsolePanel() {
@@ -43,19 +76,12 @@ public class OutputPanel extends JPanel {
         return logger;
     }
 
-    public void showTab(int tab) {
-        switch(tab) {
-        case RESULTS:
-            tabs.setSelectedIndex(RESULTS);
-            break;
-        default:
-            tabs.setSelectedIndex(CONSOLE);
-        }
+    public void showConsole( ) {
+        tabs.setSelectedIndex( 0 );
     }
 
-    public void setResultsPanel(JPanel panel) {
-        JScrollPane scroller = new JScrollPane(panel);
-        tabs.setComponentAt(RESULTS, scroller);
+    public void addTab( String name, JPanel panel ) {
+        final Component c = tabs.add( name, new JScrollPane( panel ) );
+        tabs.setSelectedComponent( c );
     }
-
 }
