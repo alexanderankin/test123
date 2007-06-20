@@ -66,9 +66,9 @@ public class CommitDialog extends JDialog {
                 }
                 previousComments.insertElementAt( comment, 0 );
             }
-            if ( previousComments.size() > 0 ) {
-                previousComments.insertElementAt( SELECT, 0 );
-            }
+        }
+        if ( previousComments.size() > 0 && !previousComments.contains(SELECT)) {
+            previousComments.insertElementAt( SELECT, 0 );
         }
 
         commitData = new CommitData();
