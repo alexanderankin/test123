@@ -39,7 +39,8 @@ public class CommitDialog extends JDialog {
 
     private CommitData commitData = null;
 
-    private static Stack<String> previousComments = null;
+    private static Vector<String> previousComments = null;
+    private static final String SELECT = "-- Select --";
 
     public CommitDialog( View view, List<VPTNode> nodes ) {
         super( ( JFrame ) view, "Commit", true );
@@ -56,15 +57,18 @@ public class CommitDialog extends JDialog {
 
         // load previous comments
         if ( previousComments == null ) {
-            previousComments = new Stack<String>();
+            previousComments = new Vector<String>();
         }
 
-        for ( int i = 0; i < 10; i++ ) {
+        for ( int i = 1; i < 10; i++ ) {
             String comment = jEdit.getProperty( "ise.plugin.svn.comment." + i );
             if ( comment == null ) {
                 break;
             }
-            previousComments.push( comment );
+            previousComments.insertElementAt( comment, 0 );
+        }
+        if (previousComments.size() > 0 ) {
+            previousComments.insertElementAt(SELECT, 0);
         }
 
         commitData = new CommitData();
@@ -114,11 +118,14 @@ public class CommitDialog extends JDialog {
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final JList commentList = new JList( previousComments );
-        commentList.setSelectionMode( ListSelectionModel.SINGLE_INTERVAL_SELECTION );
-        commentList.addListSelectionListener( new ListSelectionListener() {
-                    public void valueChanged( ListSelectionEvent e ) {
-                        comment.setText( commentList.getSelectedValue().toString() );
+        final JComboBox commentList = new JComboBox( previousComments );
+        commentList.setEditable(false);
+        commentList.addItemListener( new ItemListener() {
+                    public void itemStateChanged( ItemEvent e ) {
+                        if (SELECT.equals(commentList.getSelectedItem().toString())) {
+                            return;
+                        }
+                        comment.setText( commentList.getSelectedItem().toString() );
                     }
                 }
                                             );
@@ -154,11 +161,10 @@ public class CommitDialog extends JDialog {
                                 msg = "no comment";
                             }
                             else {
-                                previousComments.push( msg );
+                                previousComments.insertElementAt( msg, 0 );
                             }
                             commitData.setCommitMessage( msg );
                         }
-                        System.out.println("+++++ calling _save");
                         CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
                         CommitDialog.this.dispose();
@@ -189,7 +195,7 @@ public class CommitDialog extends JDialog {
 
         if ( previousComments != null && previousComments.size() > 0 ) {
             panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
-            panel.add( "0, 8, 1, 1, W, w, 3", new JScrollPane(commentList) );
+            panel.add( "0, 8, 1, 1, W, w, 3", commentList );
         }
 
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
@@ -201,12 +207,12 @@ public class CommitDialog extends JDialog {
     }
 
     protected void _save() {
-        System.out.println("+++++ doing save");
         if ( previousComments != null ) {
-            System.out.println("+++++ comments not null");
-            for ( int i = Math.min( previousComments.size(), 10 ); i > 0 ; i-- ) {
-                String comment = previousComments.pop();
-                System.out.println("+++++ comment" + i + " = " + comment);
+            for ( int i = Math.min( previousComments.size() - 1, 10 ); i >= 0 ; i-- ) {
+                String comment = previousComments.get(i);
+                if (SELECT.equals(comment)) {
+                    continue;
+                }
                 if ( comment != null && comment.length() > 0 ) {
                     jEdit.setProperty( "ise.plugin.svn.comment." + i, comment );
                 }
