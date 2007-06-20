@@ -158,9 +158,9 @@ public class CommitDialog extends JDialog {
                             }
                             commitData.setCommitMessage( msg );
                         }
+                        CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
                         CommitDialog.this.dispose();
-                        CommitDialog.this._save();
                     }
                 }
                                 );
@@ -188,7 +188,7 @@ public class CommitDialog extends JDialog {
 
         if ( previousComments != null && previousComments.size() > 0 ) {
             panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
-            panel.add( "0, 8, 1, 1, W, w, 3", commentList );
+            panel.add( "0, 8, 1, 1, W, w, 3", new JScrollPane(commentList) );
         }
 
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
