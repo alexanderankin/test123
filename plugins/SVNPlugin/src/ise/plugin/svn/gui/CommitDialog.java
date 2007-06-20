@@ -158,6 +158,7 @@ public class CommitDialog extends JDialog {
                             }
                             commitData.setCommitMessage( msg );
                         }
+                        System.out.println("+++++ calling _save");
                         CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
                         CommitDialog.this.dispose();
@@ -200,9 +201,12 @@ public class CommitDialog extends JDialog {
     }
 
     protected void _save() {
+        System.out.println("+++++ doing save");
         if ( previousComments != null ) {
+            System.out.println("+++++ comments not null");
             for ( int i = Math.min( previousComments.size(), 10 ); i > 0 ; i-- ) {
                 String comment = previousComments.pop();
+                System.out.println("+++++ comment" + i + " = " + comment);
                 if ( comment != null && comment.length() > 0 ) {
                     jEdit.setProperty( "ise.plugin.svn.comment." + i, comment );
                 }
