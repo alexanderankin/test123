@@ -63,7 +63,7 @@ public class CommitDialog extends JDialog {
         List<String> paths = new ArrayList<String>();
         for ( VPTNode node : nodes ) {
             if ( node != null ) {
-                if ( node.isDirectory() ) {
+                if ( node.isDirectory() || node.isRoot() ) {
                     recursive = true;
                 }
                 paths.add(node.getNodePath());

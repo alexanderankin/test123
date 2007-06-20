@@ -29,7 +29,7 @@ public class CheckoutAction extends NodeActor {
 
         view.getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-        panel.showTab( OutputPanel.CONSOLE );
+        panel.showConsole();
         Logger logger = panel.getLogger();
         logger.log( Level.INFO, "Check out ..." );
         for ( Handler handler : logger.getHandlers() ) {

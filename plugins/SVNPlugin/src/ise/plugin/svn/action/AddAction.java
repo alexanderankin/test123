@@ -42,7 +42,7 @@ public class AddAction extends NodeActor {
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showTab( OutputPanel.CONSOLE );
+            panel.showConsole( );
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Preparing to add ..." );
             for ( Handler handler : logger.getHandlers() ) {
@@ -70,8 +70,7 @@ public class AddAction extends NodeActor {
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), true );
-                        panel.setResultsPanel( results_panel );
-                        panel.showTab( OutputPanel.RESULTS );
+                        panel.addTab("Add", results_panel);
                     }
                     catch ( Exception e ) {
                         // ignored

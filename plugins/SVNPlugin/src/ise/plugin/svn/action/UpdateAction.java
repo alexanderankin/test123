@@ -57,7 +57,7 @@ public class UpdateAction extends NodeActor {
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showTab( OutputPanel.CONSOLE );
+            panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Updating ..." );
             for ( Handler handler : logger.getHandlers() ) {
@@ -85,8 +85,7 @@ public class UpdateAction extends NodeActor {
                 protected void done() {
                     try {
                         JPanel results_panel = new UpdateResultsPanel( get() );
-                        panel.setResultsPanel( results_panel );
-                        panel.showTab( OutputPanel.RESULTS );
+                        panel.addTab("Update", results_panel);
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();

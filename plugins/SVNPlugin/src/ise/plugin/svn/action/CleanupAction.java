@@ -39,7 +39,7 @@ public class CleanupAction extends NodeActor {
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showTab( OutputPanel.CONSOLE );
+            panel.showConsole();
             final Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Cleaning up ..." );
             for ( Handler handler : logger.getHandlers() ) {
