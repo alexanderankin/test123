@@ -58,17 +58,17 @@ public class CommitDialog extends JDialog {
         // load previous comments
         if ( previousComments == null ) {
             previousComments = new Vector<String>();
-        }
 
-        for ( int i = 1; i < 10; i++ ) {
-            String comment = jEdit.getProperty( "ise.plugin.svn.comment." + i );
-            if ( comment == null ) {
-                break;
+            for ( int i = 1; i < 10; i++ ) {
+                String comment = jEdit.getProperty( "ise.plugin.svn.comment." + i );
+                if ( comment == null ) {
+                    break;
+                }
+                previousComments.insertElementAt( comment, 0 );
             }
-            previousComments.insertElementAt( comment, 0 );
-        }
-        if (previousComments.size() > 0 ) {
-            previousComments.insertElementAt(SELECT, 0);
+            if ( previousComments.size() > 0 ) {
+                previousComments.insertElementAt( SELECT, 0 );
+            }
         }
 
         commitData = new CommitData();
@@ -119,16 +119,16 @@ public class CommitDialog extends JDialog {
 
         // list for previous comments
         final JComboBox commentList = new JComboBox( previousComments );
-        commentList.setEditable(false);
+        commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
-                        if (SELECT.equals(commentList.getSelectedItem().toString())) {
-                            return;
+                        if ( SELECT.equals( commentList.getSelectedItem().toString() ) ) {
+                            return ;
                         }
                         comment.setText( commentList.getSelectedItem().toString() );
                     }
                 }
-                                            );
+                                   );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -209,8 +209,8 @@ public class CommitDialog extends JDialog {
     protected void _save() {
         if ( previousComments != null ) {
             for ( int i = Math.min( previousComments.size() - 1, 10 ); i >= 0 ; i-- ) {
-                String comment = previousComments.get(i);
-                if (SELECT.equals(comment)) {
+                String comment = previousComments.get( i );
+                if ( SELECT.equals( comment ) ) {
                     continue;
                 }
                 if ( comment != null && comment.length() > 0 ) {
