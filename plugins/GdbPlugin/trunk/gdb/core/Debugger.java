@@ -97,7 +97,7 @@ public class Debugger implements DebuggerTool {
 	public static final String COULD_NOT_GET_VALUE =
 		Plugin.MESSAGE_PREFIX + "could_not_get_value";
 
-	private TextAreaExtension varTooltipExtension = null;
+	private VariableTooltipTextAreaExtension varTooltipExtension = null;
 
 	private GdbProcess gdbProcess = null;
 
@@ -226,7 +226,7 @@ public class Debugger implements DebuggerTool {
 							ta.getPainter().addExtension(varTooltipExtension);
 						} else {
 							if (varTooltipExtension != null) {
-								JEditTextArea ta = jEdit.getActiveView().getTextArea();
+								JEditTextArea ta = varTooltipExtension.getTextArea();
 								ta.getPainter().removeExtension(varTooltipExtension);
 								varTooltipExtension = null;
 							}
@@ -356,6 +356,9 @@ public class Debugger implements DebuggerTool {
 		private boolean gotValue;
 		public VariableTooltipTextAreaExtension(JEditTextArea ta) {
 			textArea = ta;
+		}
+		public JEditTextArea getTextArea() {
+			return textArea;
 		}
 		@Override
 		public String getToolTipText(int x, int y) {

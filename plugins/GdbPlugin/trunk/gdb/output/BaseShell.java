@@ -20,6 +20,9 @@ package gdb.output;
 
 import gdb.core.CommandManager;
 import gdb.core.Debugger;
+import gdb.core.GdbState;
+import gdb.core.GdbState.State;
+import gdb.core.GdbState.StateListener;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -41,6 +44,17 @@ public abstract class BaseShell extends Shell {
 		output = getConsole().getOutput();
 	}
 
+	@SuppressWarnings("unused")
+	private void setGdbStateListener() {
+		GdbState.addStateListener(new StateListener() {
+			public void stateChanged(State prev, State current) {
+				if (current == GdbState.State.IDLE) {
+					getOutput().commandDone();
+				}
+			}
+		});
+	}
+	
 	protected Console getConsole() {
 		View v = jEdit.getActiveView();
 		Console c = ConsolePlugin.getConsole(v);
