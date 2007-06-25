@@ -125,16 +125,21 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
                 writer.write( qName );
             }
 
+            boolean onNewLine = false;
+            String split_attributes = System.getProperty("xmlindenter.splitAttributes");
+            if (split_attributes != null && atts.getLength() > 1) {
+                onNewLine = split_attributes.equals("true");
+            }
             for ( int i = 0; i < atts.getLength(); i++ ) {
                 String attributeQName = atts.getQName( i );
                 String attributeValue = atts.getValue( i );
-                boolean onNewLine = ( atts.getType( i ) == ON_NEW_LINE );
+                //boolean onNewLine = ( atts.getType( i ) == ON_NEW_LINE );
 
                 boolean containsDoubleQuote = ( attributeValue.indexOf( '"' ) != -1 );
                 char quote = containsDoubleQuote ? '\'' : '\"';
 
                 if ( onNewLine ) {
-                    indent( 2 );
+                    indent( 1 );
                 }
                 else {
                     writer.write( ' ' );
