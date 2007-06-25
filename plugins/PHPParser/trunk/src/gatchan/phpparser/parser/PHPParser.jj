@@ -3016,9 +3016,9 @@ Expression instanceofExpression() :
     <INSTANCEOF>
     try {
       (
-        expr = ClassIdentifier()
+        expr2 = ClassIdentifier()
       |
-        expr = VariableDeclaratorId()
+        expr2 = VariableDeclaratorId()
       )
     } catch (ParseException e) {
       fireParseError("string or object expected","string or object",e.currentToken.next);

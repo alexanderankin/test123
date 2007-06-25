@@ -482,14 +482,26 @@ public final class PHPSideKickParser extends SideKickParser
 		Project project = projectManager.getProject();
 		if (project != null)
 		{
-			Map classes = project.getClasses();
+			Map<String, Object> classes = project.getClasses();
 			Collection collection = classes.values();
 			Iterator iterator = collection.iterator();
 			while (iterator.hasNext())
 			{
 				Object o = iterator.next();
-				phpSideKickCompletion.addItem(o, startName);
-			}
+                if (o instanceof PHPItem)
+                {
+                    phpSideKickCompletion.addItem(o, startName);
+                }
+                else
+                {
+                    List<PHPItem> item = (List<PHPItem>) o;
+                    for (int i = 0; i < item.size(); i++)
+                    {
+                        PHPItem phpItem = item.get(i);
+                        phpSideKickCompletion.addItem(phpItem, startName);
+                    }
+                }
+            }
 		}
 
 		for (int i = 0; i < phpDocument.size(); i++)
