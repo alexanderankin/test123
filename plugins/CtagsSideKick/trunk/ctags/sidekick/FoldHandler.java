@@ -6,14 +6,15 @@ import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
-import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickPlugin;
 
 public class FoldHandler extends org.gjt.sp.jedit.buffer.FoldHandler {
 
+	public static final String CTAGS_SIDE_KICK_FOLD_HANDLER = "CtagsSideKick";
+
 	protected FoldHandler() {
-		super("CtagsSideKick");
+		super(CTAGS_SIDE_KICK_FOLD_HANDLER);
 	}
 
 	@Override

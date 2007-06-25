@@ -33,10 +33,12 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
+import sidekick.SideKickPlugin;
 import errorlist.DefaultErrorSource;
 
 
@@ -49,6 +51,20 @@ public class Parser extends SideKickParser {
 		super(serviceName);
 	}
 
+	private static class FoldInvalidator implements Runnable {
+		private Buffer buffer;
+		private SideKickParsedData data;
+		public FoldInvalidator(Buffer buffer, SideKickParsedData data) {
+			this.buffer = buffer;
+			this.data = data;
+		}
+		public void run() {
+			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
+			if(buffer.getProperty("folding").equals(FoldHandler.CTAGS_SIDE_KICK_FOLD_HANDLER))
+				buffer.invalidateCachedFoldLevels();
+		}
+	}
+	
 	@Override
 	public SideKickParsedData parse(Buffer buffer,
 									DefaultErrorSource errorSource)
@@ -56,6 +72,7 @@ public class Parser extends SideKickParser {
 		ParsedData data =
 			new ParsedData(buffer, buffer.getMode().getName());
 		runctags(buffer, errorSource, data);
+		VFSManager.runInAWTThread(new FoldInvalidator(buffer, data));
 		return data;
 	}
 
