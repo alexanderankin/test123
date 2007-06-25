@@ -3439,10 +3439,10 @@ final Token arrayAssignToken;
         case INT:
         case INTEGER:
         case IDENTIFIER:
-          expr = ClassIdentifier();
+          expr2 = ClassIdentifier();
           break;
         case DOLLAR:
-          expr = VariableDeclaratorId();
+          expr2 = VariableDeclaratorId();
           break;
         default:
           jj_la1[70] = jj_gen;
