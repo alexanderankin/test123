@@ -32,6 +32,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ArrayList;
 
+import beauty.BeautyPlugin;
+
 /**
  * EditPlugin implementation for the XML Indenter plugin.
  *
@@ -75,8 +77,8 @@ public class XmlIndenterPlugin {
 
     public static void toggleSplitAttributes( View view ) {
         boolean split = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
-        jEdit.setBooleanProperty("xmlindenter.splitAttributes", !split);
-        indentXml(view);
+        jEdit.setBooleanProperty( "xmlindenter.splitAttributes", !split );
+        BeautyPlugin.beautify(view.getBuffer(), view, true);
     }
 
 
