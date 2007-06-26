@@ -26,6 +26,7 @@ package beauty;
 import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 
@@ -39,7 +40,7 @@ import beauty.beautifiers.Beautifier;
  * @author Matthieu Casanova
  */
 public class BeautifierOptionPane extends AbstractOptionPane {
-	
+
     public BeautifierOptionPane() {
         super( "beauty.beautifiers" );
     }
@@ -77,7 +78,7 @@ public class BeautifierOptionPane extends AbstractOptionPane {
         }
         Collections.sort(beautifierList, new Comparator(){
                 public int compare(Object a, Object b) {
-                    return a.toString().compareToIgnoreCase(b.toString());   
+                    return a.toString().compareToIgnoreCase(b.toString());
                 }
         } );
         beautifierList.add( 0, MyTableModel.DEFAULT_BEAUTIFIER );
@@ -90,7 +91,17 @@ public class BeautifierOptionPane extends AbstractOptionPane {
 
         Dimension d = table.getPreferredSize();
         d.height = Math.min( d.height, 50 );
-        JScrollPane scroller = new JScrollPane( table );
+        JPanel panel = new JPanel(new BorderLayout());
+        final JCheckBox defaultIndenter = new JCheckBox("Use jEdit indenter for undefined modes");
+        defaultIndenter.setSelected(jEdit.getBooleanProperty("beauty.useBuiltInIndenter", true));
+        defaultIndenter.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ae) {
+                    jEdit.setBooleanProperty( "beauty.useBuiltInIndenter", defaultIndenter.isSelected() );
+                }
+        });
+        panel.add(defaultIndenter, BorderLayout.NORTH);
+        panel.add(table, BorderLayout.CENTER);
+        JScrollPane scroller = new JScrollPane( panel );
         scroller.setPreferredSize( d );
         return scroller;
     }

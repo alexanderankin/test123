@@ -5,6 +5,8 @@ package beauty;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 import java.util.*;
@@ -14,7 +16,7 @@ import javax.swing.*;
 import beauty.beautifiers.*;
 
 
-public class BeautyPlugin extends EditPlugin {
+public class BeautyPlugin extends EBPlugin {
 
     /**
      * Beautify the current buffer using Beauty.
@@ -34,20 +36,32 @@ public class BeautyPlugin extends EditPlugin {
         }
 
         // load beautifier
-        String mode = buffer.getStringProperty("beauty.beautifier");
-        if (mode == null)
+        String mode = buffer.getStringProperty( "beauty.beautifier" );
+        if ( mode == null )
             mode = buffer.getMode().getName();
-        Beautifier beautifier = (Beautifier)ServiceManager.getService(Beautifier.SERVICE_NAME, mode);
+        Beautifier beautifier = ( Beautifier ) ServiceManager.getService( Beautifier.SERVICE_NAME, mode );
         if ( beautifier == null ) {
-            if ( showErrorDialogs ) {
-                JOptionPane.showMessageDialog(view, "Error: can't beautify this buffer because I don't know how to handle this mode.",
-                    "Beauty Error", JOptionPane.ERROR_MESSAGE);
-                return ;
+            if ( jEdit.getBooleanProperty( "beauty.useBuiltInIndenter", false ) ) {
+                JEditTextArea ta = view.getEditPane().getTextArea();
+                int cp = ta.getCaretPosition();
+                ta.selectAll();
+                EditAction action = jEdit.getAction("indent-lines");
+                action.invoke(view);
+                ta.selectNone();
+                ta.setCaretPosition(cp);
+                return;
             }
             else {
-                Log.log( Log.NOTICE, BeautyPlugin.class, "buffer " + buffer.getName()
-                        + " not beautified, because mode is not supported." );
-                return ;
+                if ( showErrorDialogs ) {
+                    JOptionPane.showMessageDialog( view, "Error: can't beautify this buffer because I don't know how to handle this mode.",
+                            "Beauty Error", JOptionPane.ERROR_MESSAGE );
+                    return ;
+                }
+                else {
+                    Log.log( Log.NOTICE, BeautyPlugin.class, "buffer " + buffer.getName()
+                            + " not beautified, because mode is not supported." );
+                    return ;
+                }
             }
         }
 
@@ -55,5 +69,10 @@ public class BeautyPlugin extends EditPlugin {
         VFSManager.runInAWTThread( new BeautyThread( buffer, view, showErrorDialogs, beautifier ) );
     }
 
-}
+    public static void toggleSplitAttributes( View view ) {
+        boolean split = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
+        jEdit.setBooleanProperty( "xmlindenter.splitAttributes", !split );
+        beautify( view.getBuffer(), view, true );
+    }
 
+}
