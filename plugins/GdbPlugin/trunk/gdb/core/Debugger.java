@@ -221,6 +221,8 @@ public class Debugger implements DebuggerTool {
 						if (cur == GdbState.State.PAUSED) {
 							if (! jEdit.getBooleanProperty(GeneralOptionPane.EXPRESSION_TOOLTIP_PROP))
 								return;
+							if (varTooltipExtension != null)	// Don't duplicate extensions
+								return;
 							JEditTextArea ta = jEdit.getActiveView().getTextArea();
 							varTooltipExtension = new VariableTooltipTextAreaExtension(ta);
 							ta.getPainter().addExtension(varTooltipExtension);
