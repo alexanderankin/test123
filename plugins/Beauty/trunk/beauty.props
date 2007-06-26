@@ -10,7 +10,7 @@ plugin.beauty.BeautyPlugin.version=0.2.1
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 1.4
 plugin.beauty.BeautyPlugin.depend.1=jedit 04.02.01.00
-plugins.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
+plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
 
 beautyplugin.label=Beauty
 
@@ -19,6 +19,7 @@ beautyplugin.label=Beauty
 #
 
 make_it_pretty.label=Beautify Buffer
+beauty.toggleSplitAttributes.label=Split/Unsplit Attributes
 
 #
 # Option pane properties
