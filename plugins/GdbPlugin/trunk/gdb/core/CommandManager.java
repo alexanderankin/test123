@@ -59,7 +59,7 @@ public class CommandManager extends Thread {
 			parser.addResultHandler(wrapper);
 			try {
 				//System.err.println("CommandManager: " + cmd);
-				Debugger.getInstance().commandRecord(">>> CommandManager: " + cmd + "\n");
+				Debugger.getInstance().commandRecord(cmd + "\n");
 				process.getGdbInputWriter().write(cmd + "\n");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -91,7 +91,7 @@ public class CommandManager extends Thread {
 		addNow(c);
 	}
 	public void addImmediateExecution(String cmd) {
-		Debugger.getInstance().commandRecord(">>> CommandManager: " + cmd + "\n");
+		Debugger.getInstance().commandRecord(cmd + "\n");
 		try {
 			process.getGdbInputWriter().write(cmd + "\n");
 		} catch (IOException e) {

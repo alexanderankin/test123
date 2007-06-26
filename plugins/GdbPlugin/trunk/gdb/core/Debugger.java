@@ -508,7 +508,7 @@ public class Debugger implements DebuggerTool {
 	{
 		gdbInternalMessage = null;
 		//System.err.println(line);
-		getMIShell().append(line);
+		getMIShell().append(">>> CommandManager: " + line);
 	}
 	private ProgramShell getProgramShell() {
 		return (ProgramShell) ServiceManager.getService("console.Shell", ProgramShell.NAME);
