@@ -17,8 +17,8 @@ plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XM
 
 plugin.xml.XmlPlugin.menu=sidekick-tree \
     xml-match-tag \
-	xml-select-element \
-	xml-select-between-tags \
+    xml-select-element \
+    xml-select-between-tags \
     - \
     xml-insert \
     xml-edit-tag \
@@ -29,6 +29,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
     xml-chars-to-entities \
     xml-entities-to-chars \
     xmlindenter.indent \
+    xmlindenter.toggleSplitAttributes \
     - \
     csssidekick-insert-relative-path \
     - \
@@ -39,6 +40,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
 # Indent action
 xmlindenter.indent.message.failure=Indenting failed to complete.
 xmlindenter.indent.label=Indent XML
+xmlindenter.toggleSplitAttributes.label=Split/Unsplit Attributes
 
 xml-match-tag.label=Go to Matching Tag or Bracket
 xml-insert.label=XML Insert
@@ -260,6 +262,8 @@ options.csssidekick.colon=true
 options.csssidekick.space-after-colon.title=Insert space after colon when property is completed
 options.csssidekick.space-after-colon=true
 
+options.csssidekick.showProprietaryAsError.title=List proprietary CSS tags in Error List as error
+options.csssidekick.showProprietaryAsError=true
 
 # }}}
 # {{{ HTMLSideKick props
