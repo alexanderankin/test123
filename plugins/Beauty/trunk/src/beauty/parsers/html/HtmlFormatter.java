@@ -1,10 +1,10 @@
 /*
  * HtmlFormatter.java -- HTML document pretty-printer
- * Copyright (C) 1999 Quiotix Corporation.  
+ * Copyright (C) 1999 Quiotix Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as 
- * published by the Free Software Foundation.  
+ * it under the terms of the GNU General Public License, version 2, as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  * HtmlFormatter is a Visitor which traverses an HtmlDocument, dumping the
  * contents of the document to a specified output stream.  It assumes that
@@ -29,13 +31,13 @@ import java.util.Set;
  * formatting algorithm.
  * <p/>
  * <P>The right margin and indent increment can be specified as properties.
- * <p>danson: 
+ * <p>danson:
  * Modified for Beauty plugin for jEdit, added ability to handle jsps. Removed
  * the PrintWriter from the MarginWriter as PrintWriter munges line separators
  * in its own weird way.  For jEdit, I want the same line separator that has
  * been specified for the current buffer, which is not necessarily the system
  * line separator.  Formatted content is now written to a StringBuffer and can
- * be retrieved with the <code>toString</code> method. 
+ * be retrieved with the <code>toString</code> method.
  * <p>
  * Did some minor modification to the handling of PRE, SCRIPT, and STYLE blocks.
  * Formatting once would be fine, formatting the same file a second time would
@@ -53,26 +55,26 @@ public class HtmlFormatter extends HtmlVisitor {
     protected int rightMargin = 80;
     protected int indentSize = 2;
     protected String lineSeparator = System.getProperty("line.separator");
-    
+
     protected static Set tagsIndentBlock = new HashSet();
     protected static Set tagsNewlineBefore = new HashSet();
     protected static Set tagsPreformatted = new HashSet();
     protected static Set tagsTryMatch = new HashSet();
-    
-    /// TODO: should let the user specify these lists 
-    
+
+    /// TODO: should let the user specify these lists
+
     // these tags _should_ be block tags, so indent the block
     protected static final String[] tagsIndentStrings
             = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV"};
-            
+
     // always start these tags on a new line
     protected static final String[] tagsNewlineBeforeStrings
             = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI"};
-    
+
     // don't format inside these tags
     protected static final String[] tagsPreformattedStrings
             = {"PRE", "SCRIPT", "STYLE"};
-            
+
     // these are often missing the closing tag, attempt to match
     protected static final String[] tagsTryMatchStrings
             //= {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
@@ -97,9 +99,9 @@ public class HtmlFormatter extends HtmlVisitor {
         out.setRightMargin(rightMargin);
         out.setLineSeparator(lineSeparator);
     }
-    
+
     public String toString() {
-        return out.toString();   
+        return out.toString();
     }
 
     public void setRightMargin(int margin) {
@@ -110,9 +112,9 @@ public class HtmlFormatter extends HtmlVisitor {
     public void setIndent(int indent) {
         indentSize = indent;
     }
-    
+
     public void setLineSeparator(String ls) {
-        lineSeparator = ls;   
+        lineSeparator = ls;
         out.setLineSeparator(lineSeparator);
     }
 
@@ -176,10 +178,26 @@ public class HtmlFormatter extends HtmlVisitor {
 
         out.print(t.tagStart + t.tagName);
         hanging = t.tagName.length() + 1;
+        boolean splitAttrs = jEdit.getBooleanProperty("xmlindenter.splitAttributes", false);
+        if (splitAttrs) {
+            out.setLeftMargin(out.getLeftMargin() + indentSize);
+            out.print("\n");
+        }
         for (Iterator it = t.attributeList.attributes.iterator(); it.hasNext();) {
             HtmlDocument.Attribute a = (HtmlDocument.Attribute) it.next();
-            out.printAutoWrap(" " + a.toString(), hanging);
-        };
+            if (splitAttrs) {
+                out.printAttr(a.toString());
+                if (it.hasNext()) {
+                    out.print("\n");
+                }
+            }
+            else {
+                out.printAutoWrap(" " + a.toString(), hanging);
+            }
+        }
+        if (splitAttrs) {
+            out.setLeftMargin(out.getLeftMargin() - indentSize);
+        }
         if (t.tagEnd.length() > 1 && !t.tagEnd.startsWith("/"))
             out.print(" ");  // got a jsp tag
         out.print(t.tagEnd);
@@ -193,7 +211,7 @@ public class HtmlFormatter extends HtmlVisitor {
             ///out.print(lineSeparator);
         }
         else {
-            out.print(" ");   
+            out.print(" ");
         }
         previousElement = t;
     }
@@ -268,9 +286,9 @@ class MarginWriter {
     }
 
     public String toString() {
-        return sb.toString();   
+        return sb.toString();
     }
-    
+
     public void print(String s) {
         if (curPosition == 0 && leftMargin > 0) {
             sb.append(spaces, 0, leftMargin);
@@ -279,7 +297,7 @@ class MarginWriter {
         sb.append(s);
         curPosition += s.length();
     }
-    
+
     public void printAutoWrap(String s) {
         if (curPosition > leftMargin
                 && curPosition + s.length() > rightMargin)
@@ -300,6 +318,11 @@ class MarginWriter {
     public void println() {
         curPosition = 0;
         sb.append(lineSeparator);
+    }
+
+    public void printAttr(String s) {
+        sb.append(spaces, 0, leftMargin);
+        print(s);
     }
 
     public void printlnSoft() {
@@ -326,9 +349,13 @@ class MarginWriter {
     public int getCurPosition() {
         return (curPosition == 0 ? leftMargin : curPosition);
     }
-    
+
+    public void setCurPosition(int p) {
+        curPosition = p >= 0 ? p : 0;
+    }
+
     public void setLineSeparator(String ls) {
-        this.lineSeparator = ls;   
+        this.lineSeparator = ls;
     }
 }
 
