@@ -39,6 +39,19 @@
          JavaCC: works well, formats to a combination of Sun's Java formatting standard and my own style for javacc
          files.
       </ul>
+      <p>
+      Two other plugins have been updated to support the Beauty framework:
+      <ul>
+         <li>AStyle: a nice, configurable beautifier for Java, C, and C++ code.
+         <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based
+         files.  Use this for well-formed xml dialects like docbook files, Ant files, and
+         so on, use the HTML beautifier for those xml-like files that are not necessarily
+         well-formed.
+      </ul>
+      <p>
+      All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes.  To
+      turn on this option, check the box in the Beauty options.
+      <p>
       <table summary="Configuration" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
             <td bgcolor="#7FB2FF" width="100%">
@@ -58,6 +71,9 @@
          <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next
          release to honor the soft tab setting for the buffer.
       </ul>
+      <p>
+      To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
+      <p>
       <table summary="For Developers" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
             <td bgcolor="#7FB2FF" width="100%">
@@ -99,7 +115,11 @@
          mode.MODENAME.beauty.beautifier.NAME
          <p>
          where <code>MODENAME</code> is the name of an editing mode that your beautifier supports, and <code>NAME</code>
-         is the same name used in the services.xml file.
+         is the same name used in the services.xml file. So continuing the example, you might have:
+         <p>
+         &nbsp;&nbsp;&nbsp;<code>mode.lisp.beauty.beautifiers.lispy</code>
+         <p>
+         for your beautifier that supports the Lisp language.
          <li>Release your plugin.
       </ol>
    </body>

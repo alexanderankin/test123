@@ -35,10 +35,9 @@ public class HtmlParser implements HtmlParserConstants {
 
   final public HtmlDocument HtmlDocument() throws ParseException {
   HtmlDocument.ElementSequence s;
-  System.out.println("+++++ html document start");
     s = ElementSequence();
     jj_consume_token(0);
-    System.out.println("+++++ html document"); {if (true) return new HtmlDocument(s);}
+    {if (true) return new HtmlDocument(s);}
     throw new Error("Missing return statement in function");
   }
 
@@ -70,7 +69,6 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.HtmlElement Element() throws ParseException {
   HtmlDocument.HtmlElement e;
   Token text;
-  System.out.println("+++++ in element");
     if (jj_2_1(2)) {
       e = Tag();
                             {if (true) return e;}
@@ -364,7 +362,6 @@ public class HtmlParser implements HtmlParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-      System.out.println("+++++ got comment: " + comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));
       {if (true) return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));}
     throw new Error("Missing return statement in function");
   }
@@ -376,7 +373,6 @@ public class HtmlParser implements HtmlParserConstants {
     s = jj_consume_token(DECL_START);
     t = jj_consume_token(DECL_ANY);
     e = jj_consume_token(DECL_END);
-    System.out.println("+++++ DeclTag: " + s.image + t.image + e.image);
     {if (true) return new HtmlDocument.Comment(s.image + t.image + e.image);}
     throw new Error("Missing return statement in function");
   }
@@ -465,10 +461,10 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1f800,0x7000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x1,};
+      jj_la1_0 = new int[] {0x2f800,0x7000,0x20800,0x8000000,0x1000000,0x6000000,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x700,0xe,0xe,0x1,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0xe00,0xe00,0x1c,0x1c,0x2,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[4];
   private boolean jj_rescan = false;
@@ -645,8 +641,8 @@ public class HtmlParser implements HtmlParserConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[43];
-    for (int i = 0; i < 43; i++) {
+    boolean[] la1tokens = new boolean[44];
+    for (int i = 0; i < 44; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -665,7 +661,7 @@ public class HtmlParser implements HtmlParserConstants {
         }
       }
     }
-    for (int i = 0; i < 43; i++) {
+    for (int i = 0; i < 44; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
