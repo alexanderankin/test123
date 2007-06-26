@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.regex.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 
 /**
  * Indents elements, by adding whitespace where appropriate.
@@ -125,11 +127,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
                 writer.write( qName );
             }
 
-            boolean onNewLine = false;
-            String split_attributes = System.getProperty("xmlindenter.splitAttributes");
-            if (split_attributes != null && atts.getLength() > 1) {
-                onNewLine = split_attributes.equals("true");
-            }
+            boolean onNewLine = jEdit.getBooleanProperty("xmlindenter.splitAttributes", false);
             for ( int i = 0; i < atts.getLength(); i++ ) {
                 String attributeQName = atts.getQName( i );
                 String attributeValue = atts.getValue( i );
