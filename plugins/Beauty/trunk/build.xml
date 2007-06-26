@@ -1,3 +1,4 @@
+
 <project name="Beauty" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
@@ -5,8 +6,11 @@
     <property file="../build.properties"/>
     <property file="build.properties"/>
 
+
+    <taskdef resource="/net/sf/antcontrib/antlib.xml"/>
+
     <!-- default location of jedit.jar -->
-    <property name="jedit.install.dir"  value="../.."/>
+    <property name="jedit.install.dir" value="../.."/>
 
 
     <!-- jar name -->
@@ -44,19 +48,19 @@
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
-   <target name="setClasspath">
-      <path id="classpathref">
+    <target name="setClasspath">
+        <path id="classpathref">
          <!-- required locations/jars -->
-         <pathelement location="${classes.dir}" />
-         <pathelement path="${java.class.path}"/>
+            <pathelement location="${classes.dir}" />
+            <pathelement path="${java.class.path}"/>
 
          <!-- required for jEdit plugin -->
-         <pathelement location="${jedit.install.dir}/jedit.jar" />
+            <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
 
-      </path>
-   </target>
+        </path>
+    </target>
 
    <!-- ========================================================================
       Target: compile
@@ -65,38 +69,38 @@
             description="Compile"
             depends="init,setClasspath">
         <javac deprecation="on"
-               debug="on"
-               nowarn="on"
-               destdir="${classes.dir}"
-               srcdir="${src.dir}"
-               target="1.4"
-               source="1.4">
+                debug="on"
+                nowarn="on"
+                destdir="${classes.dir}"
+                srcdir="${src.dir}"
+                target="1.4"
+                source="1.4">
             <classpath refid="classpathref" />
         </javac>
-         <copy todir="${classes.dir}/docs" overwrite="no">
+        <copy todir="${classes.dir}/docs" overwrite="no">
             <fileset dir="${src.dir}/docs">
-               <include name="**/*"/>
+                <include name="**/*"/>
             </fileset>
-         </copy>
+        </copy>
     </target>
 
    <!-- ========================================================================
       Target: javacc clean and create
    ========================================================================= -->
-  <target name="javacc_clean">
-    <delete>
-      <fileset dir="${parser.src.dir}/java">
-         <include name="*.java"/>
-         <exclude name="Token.java"/>
-         <exclude name="ModifierSet.java"/>
-      </fileset>
-      <fileset dir="${parser.src.dir}/javacc">
-         <include name="*.java"/>
-         <exclude name="Token.java"/>
-         <exclude name="ModifierSet.java"/>
-      </fileset>
-    </delete>
-  </target>
+    <target name="javacc_clean">
+        <delete>
+            <fileset dir="${parser.src.dir}/java">
+                <include name="*.java"/>
+                <exclude name="Token.java"/>
+                <exclude name="ModifierSet.java"/>
+            </fileset>
+            <fileset dir="${parser.src.dir}/javacc">
+                <include name="*.java"/>
+                <exclude name="Token.java"/>
+                <exclude name="ModifierSet.java"/>
+            </fileset>
+        </delete>
+    </target>
 
     <target name="javacc" description="Runs javacc">
         <condition property="javacchome.set">
@@ -178,7 +182,7 @@
         <!-- copy the docs -->
         <copy todir="${doc.dir}/docs" overwrite="yes">
             <fileset dir="${src.dir}/docs">
-               <include name="**/*"/>
+                <include name="**/*"/>
             </fileset>
         </copy>
 
@@ -191,17 +195,17 @@
             value="${build.num}" />
         -->
         <replace dir="${doc.dir}" token="@@build.num@@"
-            value="${build.num}" />
+                value="${build.num}" />
         <tstamp/>
         <replace dir="${doc.dir}" token="@@tstamp@@"
-            value="${TODAY}" />
+                value="${TODAY}" />
     </target>
 
    <!-- ========================================================================
       Target: clean
       deletes all files from the temp directory
    ========================================================================= -->
-   <target name="clean" description="Delete all files from the classes directory.">
+    <target name="clean" description="Delete all files from the classes directory.">
         <!-- delete old directories that may still be hanging around.  These
         caused some confusion. -->
         <delete dir="config"/>
@@ -210,7 +214,7 @@
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
-   </target>
+    </target>
 
    <!-- ========================================================================
       Target: init
@@ -229,16 +233,16 @@
 
 
 
-   <target name="run"
-           description="Run the application."
-           depends="setClasspath, javacc, compile">
-      <java classname="beauty.JavaBeautyTest" fork="true">
-         <classpath refid="classpathref"/>
-         <arg file="c:/temp/Testing.java"/>
-      </java>
-   </target>
+    <target name="run"
+            description="Run the application."
+            depends="setClasspath, javacc, compile">
+        <java classname="beauty.JavaBeautyTest" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="c:/temp/Testing.java"/>
+        </java>
+    </target>
 
-   <target name="all" depends="javacc,compile,run"/>
+    <target name="all" depends="javacc,compile,run"/>
 
 
 </project>

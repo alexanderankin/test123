@@ -19,30 +19,31 @@ public interface HtmlParserConstants {
   int DECL_START = 13;
   int ENDTAG_START = 14;
   int TAG_START = 15;
-  int PCDATA = 16;
-  int TAG_SCRIPT = 18;
-  int TAG_STYLE = 19;
-  int TAG_NAME = 20;
-  int LST_ERROR = 21;
-  int ATTR_NAME = 23;
-  int TAG_END = 24;
-  int TAG_SLASHEND = 25;
-  int ATTR_EQ = 26;
-  int IMPLICIT_TAG_END = 27;
-  int LIT_ERROR = 28;
-  int ATTR_VAL = 30;
-  int LAV_ERROR = 31;
-  int COMMENT_END = 32;
-  int DASH = 33;
-  int COMMENT_EOL = 34;
-  int COMMENT_WORD = 35;
-  int DECL_ANY = 36;
-  int DECL_END = 37;
-  int SCRIPT_END = 38;
-  int STYLE_END = 39;
-  int BLOCK_EOL = 40;
-  int BLOCK_LBR = 41;
-  int BLOCK_WORD = 42;
+  int JSP_TAG_START = 16;
+  int PCDATA = 17;
+  int TAG_SCRIPT = 19;
+  int TAG_STYLE = 20;
+  int TAG_NAME = 21;
+  int LST_ERROR = 22;
+  int ATTR_NAME = 24;
+  int TAG_END = 25;
+  int TAG_SLASHEND = 26;
+  int ATTR_EQ = 27;
+  int IMPLICIT_TAG_END = 28;
+  int LIT_ERROR = 29;
+  int ATTR_VAL = 31;
+  int LAV_ERROR = 32;
+  int COMMENT_END = 33;
+  int DASH = 34;
+  int COMMENT_EOL = 35;
+  int COMMENT_WORD = 36;
+  int DECL_ANY = 37;
+  int DECL_END = 38;
+  int SCRIPT_END = 39;
+  int STYLE_END = 40;
+  int BLOCK_EOL = 41;
+  int BLOCK_LBR = 42;
+  int BLOCK_WORD = 43;
 
   int LexStyle = 0;
   int LexScript = 1;
@@ -70,20 +71,21 @@ public interface HtmlParserConstants {
     "\"<!\"",
     "\"</\"",
     "<TAG_START>",
+    "\"<%\"",
     "<PCDATA>",
-    "<token of kind 17>",
+    "<token of kind 18>",
     "\"SCRIPT\"",
     "\"STYLE\"",
     "<TAG_NAME>",
     "<LST_ERROR>",
-    "<token of kind 22>",
+    "<token of kind 23>",
     "<ATTR_NAME>",
     "<TAG_END>",
     "\"/>\"",
     "\"=\"",
     "\"<\"",
     "<LIT_ERROR>",
-    "<token of kind 29>",
+    "<token of kind 30>",
     "<ATTR_VAL>",
     "<LAV_ERROR>",
     "<COMMENT_END>",

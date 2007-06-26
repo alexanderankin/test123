@@ -124,6 +124,7 @@ PARSER_END(HtmlParser)
 | <DECL_START:        "<!"      >            : LexDecl
 | <ENDTAG_START:      "</"      >            : LexStartTag
 | <TAG_START:         "<" | "<%@" | "<" <IDENTIFIER> ":" > : LexStartTag
+| <JSP_TAG_START:     "<%"      >            : LexInTag
 | <PCDATA:            ( ~["<", "\r", "\n"] )+ >
 }
 

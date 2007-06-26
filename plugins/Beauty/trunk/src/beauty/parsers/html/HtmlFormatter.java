@@ -181,14 +181,14 @@ public class HtmlFormatter extends HtmlVisitor {
         boolean splitAttrs = jEdit.getBooleanProperty("xmlindenter.splitAttributes", false);
         if (splitAttrs) {
             out.setLeftMargin(out.getLeftMargin() + indentSize);
-            out.print("\n");
+            out.print(lineSeparator);
         }
         for (Iterator it = t.attributeList.attributes.iterator(); it.hasNext();) {
             HtmlDocument.Attribute a = (HtmlDocument.Attribute) it.next();
             if (splitAttrs) {
                 out.printAttr(a.toString());
                 if (it.hasNext()) {
-                    out.print("\n");
+                    out.print(lineSeparator);
                 }
             }
             else {
