@@ -42,14 +42,17 @@ public abstract class BaseShell extends Shell {
 		super(arg0);
 		getConsole().setShell(this);	// The only way to create an Output
 		output = getConsole().getOutput();
+		setGdbStateListener();
 	}
 
 	@SuppressWarnings("unused")
 	private void setGdbStateListener() {
 		GdbState.addStateListener(new StateListener() {
 			public void stateChanged(State prev, State current) {
-				if (current == GdbState.State.IDLE) {
-					getOutput().commandDone();
+				if (current == GdbState.State.RUNNING) {
+					getConsole().startAnimation();
+				} else {
+					getConsole().stopAnimation();
 				}
 			}
 		});
