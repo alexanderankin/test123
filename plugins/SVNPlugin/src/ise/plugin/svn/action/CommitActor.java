@@ -22,6 +22,9 @@ import org.tmatesoft.svn.core.SVNCommitInfo;
 
 import projectviewer.vpt.VPTNode;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn commit.
+ */
 public class CommitActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {

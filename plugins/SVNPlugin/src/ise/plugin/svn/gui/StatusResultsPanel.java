@@ -118,6 +118,9 @@ public class StatusResultsPanel extends JPanel {
         return node;
     }
 
+    /**
+     * MouseListener to popup context menu on the tree.
+     */
     class TreeMouseListener extends MouseAdapter {
         public void mouseReleased( MouseEvent me ) {
             handleClick( me );
@@ -134,85 +137,112 @@ public class StatusResultsPanel extends JPanel {
         }
     }
 
+    /**
+     * Create the context menu.
+     */
     private JPopupMenu createPopupMenu() {
-        // update, commit, revert, add, log
+        // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
+
         JMenuItem mi = new JMenuItem( "Update" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
-                        if (tree_paths.length == 0) {
-                            return;
+                        if ( tree_paths.length == 0 ) {
+                            return ;
                         }
                         List<String> paths = new ArrayList<String>();
-                        for (TreePath path : tree_paths) {
-                            paths.add( (String) ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() );
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
                         }
-                        UpdateAction action = new UpdateAction(view, paths, username, password);
-                        action.actionPerformed(ae);
+                        UpdateAction action = new UpdateAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
+
         mi = new JMenuItem( "Commit" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
-                        if (tree_paths.length == 0) {
-                            return;
+                        if ( tree_paths.length == 0 ) {
+                            return ;
                         }
                         List<String> paths = new ArrayList<String>();
-                        for (TreePath path : tree_paths) {
-                            paths.add( (String) ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() );
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
                         }
-                        CommitAction action = new CommitAction(view, paths, username, password);
-                        action.actionPerformed(ae);
+                        CommitAction action = new CommitAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
+
         mi = new JMenuItem( "Revert" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
+                        }
+                        RevertAction action = new RevertAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
+
         mi = new JMenuItem( "Add" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
-                        if (tree_paths.length == 0) {
-                            return;
+                        if ( tree_paths.length == 0 ) {
+                            return ;
                         }
                         List<String> paths = new ArrayList<String>();
-                        for (TreePath path : tree_paths) {
-                            paths.add( (String) ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() );
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
                         }
-                        AddAction action = new AddAction(view, paths, username, password);
-                        action.actionPerformed(ae);
+                        AddAction action = new AddAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
+
         mi = new JMenuItem( "Log" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
-                        if (tree_paths.length == 0) {
-                            return;
+                        if ( tree_paths.length == 0 ) {
+                            return ;
                         }
                         List<String> paths = new ArrayList<String>();
-                        for (TreePath path : tree_paths) {
-                            paths.add( (String) ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() );
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
                         }
-                        LogAction action = new LogAction(view, paths, username, password);
-                        action.actionPerformed(ae);
+                        LogAction action = new LogAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
         return pm;
     }
-
 }

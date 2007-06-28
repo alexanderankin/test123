@@ -15,8 +15,10 @@ import java.util.*;
 import java.util.logging.*;
 import projectviewer.vpt.VPTNode;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn cleanup.
+ */
 public class CleanupActor extends NodeActor {
-
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {

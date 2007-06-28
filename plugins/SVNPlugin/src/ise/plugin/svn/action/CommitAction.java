@@ -23,6 +23,10 @@ import org.gjt.sp.jedit.View;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
 
+/**
+ * ActionListener to perform an svn commit.
+ * This is not dependent on ProjectViewer.
+ */
 public class CommitAction implements ActionListener {
 
     private CommitDialog dialog = null;
@@ -31,6 +35,12 @@ public class CommitAction implements ActionListener {
     private String username = null;
     private String password = null;
 
+    /**
+     * @param view the View in which to display results
+     * @param paths a list of paths to be added
+     * @param username the username for the svn repository
+     * @param password the password for the username
+     */
     public CommitAction( View view, List<String> paths, String username, String password ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );

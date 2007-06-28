@@ -16,10 +16,13 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
-import projectviewer.vpt.VPTNode;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.gjt.sp.jedit.View;
 
+/**
+ * ActionListener to perform an svn log.
+ * This is not dependent on ProjectViewer.
+ */
 public class LogAction implements ActionListener {
 
     private View view = null;
@@ -27,6 +30,12 @@ public class LogAction implements ActionListener {
     private String username = null;
     private String password = null;
 
+    /**
+     * @param view the View in which to display results
+     * @param paths a list of paths to be added
+     * @param username the username for the svn repository
+     * @param password the password for the username
+     */
     public LogAction( View view, List<String> paths, String username, String password ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );

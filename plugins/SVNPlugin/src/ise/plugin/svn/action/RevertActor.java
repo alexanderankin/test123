@@ -24,6 +24,9 @@ import org.gjt.sp.jedit.jEdit;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn revert.
+ */
 public class RevertActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
