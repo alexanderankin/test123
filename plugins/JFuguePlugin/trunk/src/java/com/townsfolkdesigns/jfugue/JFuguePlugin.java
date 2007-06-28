@@ -121,7 +121,7 @@ public class JFuguePlugin extends EditPlugin {
 	public static void saveMusicString(View view, String musicString) {
 		//Macros.message(view, "Saving Music String - musicString: " + musicString);
 		Buffer buffer = view.getBuffer();
-		VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(view, buffer.getPath(), JFileChooser.OPEN_DIALOG,
+		VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(view, buffer.getPath(), JFileChooser.SAVE_DIALOG,
 		      false);
 		String[] selectedFiles = fileChooser.getSelectedFiles();
 		if (selectedFiles != null && selectedFiles.length > 0) {
