@@ -1,6 +1,6 @@
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.activate=startup
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.name=JFugue Plugin
-plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.version=0.5.2
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.version=0.7.1
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.author=Eric Berry <elberry@gmail.com>
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.docs=docs/help/jfugueplugin.html
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.depend.0=jdk 1.5
