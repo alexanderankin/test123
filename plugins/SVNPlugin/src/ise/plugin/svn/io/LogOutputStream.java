@@ -15,8 +15,8 @@ public class LogOutputStream extends OutputStream {
     private Logger logger = null;
     private Level level = Level.INFO;
 
-    public LogOutputStream( NodeActor actor ) {
-        OutputPanel panel = SVNPlugin.getOutputPanel( actor.getView() );
+    public LogOutputStream( View view ) {
+        OutputPanel panel = SVNPlugin.getOutputPanel( view );
         logger = panel.getLogger();
     }
 

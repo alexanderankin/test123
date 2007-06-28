@@ -24,10 +24,15 @@ public class AddResultsPanel extends JPanel {
         if ( paths != null && paths.size() > 0 ) {
             JPanel top_panel = new JPanel(new BorderLayout());
             JLabel good_label = new JLabel( forAdd ? "Scheduled for add:" : "Reverted:" );
-            JTable good_table = new JTable( paths.size(), 1 );
-            for ( int i = 0; i < paths.size(); i++ ) {
-                good_table.setValueAt( paths.get( i ), i, 0 );
+
+            String[][] data = new String[paths.size()][1];
+            Iterator it = paths.iterator();
+            for (int i = 0; it.hasNext(); i++) {
+                String path = (String)it.next();
+                data[i][0] = path;
             }
+            JTable good_table = new JTable( data, new String[]{"Path"} );
+
             top_panel.add( good_label, BorderLayout.NORTH );
             top_panel.add( GUIUtils.createTablePanel(good_table), BorderLayout.CENTER );
             add(top_panel, con);
@@ -39,6 +44,7 @@ public class AddResultsPanel extends JPanel {
         if ( error_map != null && error_map.size() > 0 ) {
             JPanel bottom_panel = new JPanel(new BorderLayout());
             JLabel bad_label = new JLabel( forAdd ? "Unable to scheduled for add:" : "Unable to revert:");
+
             String[][] data = new String[ error_map.size() ][ 2 ];
             Iterator it = error_map.keySet().iterator();
             for ( int i = 0; it.hasNext(); i++ ) {

@@ -19,14 +19,31 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
+import org.gjt.sp.jedit.View;
 
-public class AddAction extends NodeActor {
+public class AddAction implements ActionListener {
 
     private AddDialog dialog = null;
 
+    private View view = null;
+    private List<String> paths = null;
+    private String username = null;
+    private String password = null;
+
+    public AddAction( View view, List<String> paths, String username, String password ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( paths == null )
+            throw new IllegalArgumentException( "paths may not be null" );
+        this.view = view;
+        this.paths = paths;
+        this.username = username;
+        this.password = password;
+    }
+
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
-            dialog = new AddDialog( view, nodes );
+        if ( paths != null && paths.size() > 0 ) {
+            dialog = new AddDialog( view, paths );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             final SVNData cd = dialog.getSVNData();
@@ -38,7 +55,7 @@ public class AddAction extends NodeActor {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }
-            cd.setOut( new ConsolePrintStream( this ) );
+            cd.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -31,7 +32,7 @@ import ise.plugin.svn.library.PasswordHandlerException;
 public class CommitDialog extends JDialog {
     // instance fields
     private View view = null;
-    private List<VPTNode> nodes = null;
+    private List<String> nodes = null;
 
     private JTextArea comment = null;
 
@@ -42,7 +43,7 @@ public class CommitDialog extends JDialog {
     private static Vector<String> previousComments = null;
     private static final String SELECT = "-- Select --";
 
-    public CommitDialog( View view, List<VPTNode> nodes ) {
+    public CommitDialog( View view, List<String> nodes ) {
         super( ( JFrame ) view, "Commit", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
@@ -81,12 +82,13 @@ public class CommitDialog extends JDialog {
         // the node paths.
         boolean recursive = false;
         List<String> paths = new ArrayList<String>();
-        for ( VPTNode node : nodes ) {
+        for ( String node : nodes ) {
             if ( node != null ) {
-                if ( node.isDirectory() || node.isRoot() ) {
+                File file = new File(node);
+                if ( file.isDirectory() ) {
                     recursive = true;
                 }
-                paths.add( node.getNodePath() );
+                paths.add( node );
             }
         }
         commitData.setPaths( paths );
@@ -161,7 +163,10 @@ public class CommitDialog extends JDialog {
                                 msg = "no comment";
                             }
                             else {
-                                previousComments.insertElementAt( msg, 0 );
+                                if (previousComments.size() == 0){
+                                    previousComments.insertElementAt(SELECT, 0);
+                                }
+                                previousComments.insertElementAt( msg, 1 );
                             }
                             commitData.setCommitMessage( msg );
                         }
@@ -208,7 +213,7 @@ public class CommitDialog extends JDialog {
 
     protected void _save() {
         if ( previousComments != null ) {
-            for ( int i = Math.min( previousComments.size() - 1, 10 ); i >= 0 ; i-- ) {
+            for (int i = 1; i < Math.min(previousComments.size(), 10); i++) {
                 String comment = previousComments.get( i );
                 if ( SELECT.equals( comment ) ) {
                     continue;

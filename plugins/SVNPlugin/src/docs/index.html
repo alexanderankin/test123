@@ -1,5 +1,8 @@
 <html>
 <body>
+<h1>Subversion Plugin</h1>
+<p>
+Author: Dale Anson
 <p>
 First attempt at a Subversion plugin.  Access the commands via the context
 menu in ProjectViewer.  Set/view repository location in ProjectViewer
@@ -18,5 +21,28 @@ must continue to use your older client and are unable to upgrade it to be
 Subversion 1.4 compatible, you should not use this plugin.
 </strong>
 </p>
+
+<hr/>
+To check out a project that already exists in subversion:
+<ol>
+<li>Create the project in ProjectViewer</li>
+<li>Right click on the project node in ProjectViewer</li>
+<li>Select "Properties"</li>
+<li>Select "Subversion Settings"</li>
+<li>Enter the repository URL, username, and password.  Leave username and password
+blank if the repository allows anonymous access.  Don't forget to add "/trunk" to the
+end of the URL, unless you want all the branch and tag info locally.</li>
+<li>Click the "OK" button.</li>
+<li>Right click on the project node in ProjectViewer</li>
+<li>Select "Subversion"</li>
+<li>Select "Checkout"</li>
+<li>Double check the entries on the dialog</li>
+<li>Click the "OK" button</li>
+<li>Wait for the checkout to complete</li>
+<li>Right click on the project node in ProjectViewer</li>
+<li>Select "Re-import files"</li>
+<li>Select "Use CVS or SVN settings"</li>
+<li>Click the "OK" button.</li>
+</ol>
 </body>
 </html>

@@ -41,7 +41,7 @@ public class StatusAction extends NodeActor {
                 cd.setPassword( password );
             }
 
-            cd.setOut( new ConsolePrintStream( this ) );
+            cd.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel output_panel = SVNPlugin.getOutputPanel( view );
@@ -72,7 +72,7 @@ public class StatusAction extends NodeActor {
                 @Override
                 protected void done() {
                     try {
-                        JPanel panel = new StatusResultsPanel( get() );
+                        JPanel panel = new StatusResultsPanel( get(), view, username, password );
                         output_panel.addTab("Status", panel);
                     }
                     catch ( Exception e ) {

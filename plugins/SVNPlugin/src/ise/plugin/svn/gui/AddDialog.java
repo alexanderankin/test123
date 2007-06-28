@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,8 +17,6 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.PasswordHandler;
@@ -30,7 +29,7 @@ import ise.plugin.svn.library.PasswordHandlerException;
 public class AddDialog extends JDialog {
     // instance fields
     private View view = null;
-    private List<VPTNode> nodes = null;
+    private List<String> nodes = null;
 
     private JTextArea comment = null;
 
@@ -38,7 +37,7 @@ public class AddDialog extends JDialog {
 
     private SVNData addData = null;
 
-    public AddDialog( View view, List<VPTNode> nodes ) {
+    public AddDialog( View view, List<String> nodes ) {
         super( ( JFrame ) view, "Add", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
@@ -61,12 +60,13 @@ public class AddDialog extends JDialog {
         // the node paths.
         boolean recursive = false;
         List<String> paths = new ArrayList<String>();
-        for ( VPTNode node : nodes ) {
+        for ( String node : nodes ) {
             if ( node != null ) {
-                if ( node.isDirectory() ) {
+                File file = new File(node);
+                if ( file.isDirectory() ) {
                     recursive = true;
                 }
-                paths.add(node.getNodePath());
+                paths.add(node);
             }
         }
         addData.setPaths(paths);

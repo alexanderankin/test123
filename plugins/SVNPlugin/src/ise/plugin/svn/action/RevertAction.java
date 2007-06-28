@@ -19,21 +19,40 @@ import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
-public class RevertAction extends NodeActor {
+public class RevertAction implements ActionListener {
+    private View view = null;
+    private List<String> paths = null;
+    private String username = null;
+    private String password = null;
+
+    public RevertAction( View view, List<String> paths, String username, String password ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( paths == null )
+            throw new IllegalArgumentException( "paths may not be null" );
+        this.view = view;
+        this.paths = paths;
+        this.username = username;
+        this.password = password;
+    }
+
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
+        if ( paths != null && paths.size() > 0 ) {
             final SVNData data = new SVNData();
 
             // get the paths
             boolean recursive = false;
-            List<String> paths = new ArrayList<String>();
-            for ( VPTNode node : nodes ) {
-                if ( node != null && node.getNodePath() != null ) {
-                    paths.add( node.getNodePath() );
-                    if ( node.isDirectory() ) {
+            for ( String path : paths ) {
+                if (path != null) {
+                    File file = new File(path);
+                    if (file.isDirectory()) {
                         recursive = true;
                     }
                 }
@@ -42,7 +61,7 @@ public class RevertAction extends NodeActor {
             // user confirmations
             if ( recursive ) {
                 // have the user verify they want a recursive revert
-                int response = JOptionPane.showConfirmDialog( getView(), "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( view, "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.CANCEL_OPTION ) {
                     return ;
                 }
@@ -50,7 +69,7 @@ public class RevertAction extends NodeActor {
             }
             else {
                 // have the user confirm they really want to revert
-                int response = JOptionPane.showConfirmDialog( getView(), "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( view, "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.NO_OPTION ) {
                     return ;
                 }
@@ -63,7 +82,7 @@ public class RevertAction extends NodeActor {
                 data.setPassword( password );
             }
 
-            data.setOut( new ConsolePrintStream( this ) );
+            data.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
@@ -94,8 +113,15 @@ public class RevertAction extends NodeActor {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), false );
+                        AddResults results = get();
+                        JPanel results_panel = new AddResultsPanel( results, false );
                         panel.addTab("Revert", results_panel);
+                        for (String path : results.getPaths()) {
+                            Buffer buffer = jEdit.getBuffer(path);
+                            if (buffer != null) {
+                                buffer.reload(RevertAction.this.view);
+                            }
+                        }
                     }
                     catch ( Exception e ) {
                         // ignored
