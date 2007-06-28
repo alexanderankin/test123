@@ -20,6 +20,9 @@ import projectviewer.vpt.VPTNode;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.gjt.sp.jedit.View;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn update.
+ */
 public class UpdateActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {

@@ -19,6 +19,9 @@ import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn log.
+ */
 public class LogActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {

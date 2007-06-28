@@ -20,8 +20,10 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 
+/**
+ * Action for ProjectViewer's context menu to execute an svn add.
+ */
 public class AddActor extends NodeActor {
-
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
