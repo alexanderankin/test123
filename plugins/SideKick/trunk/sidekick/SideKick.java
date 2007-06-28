@@ -392,6 +392,8 @@ class SideKick implements EBComponent
 				removeBufferChangeListener(this.buffer);
 				deactivateParser();
 				buffer = editPane.getBuffer();
+				if (! buffer.isLoaded())
+					return;
 				parser = SideKickPlugin.getParserForBuffer(buffer);
 				activateParser();
 
