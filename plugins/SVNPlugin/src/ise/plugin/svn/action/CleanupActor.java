@@ -3,10 +3,8 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
+import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.gui.LogResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
@@ -15,32 +13,21 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
-import org.tmatesoft.svn.core.SVNLogEntry;
-import org.gjt.sp.jedit.View;
 
-public class LogAction implements ActionListener {
+public class CleanupActor extends NodeActor {
 
-    private View view = null;
-    private List<String> paths = null;
-    private String username = null;
-    private String password = null;
-
-    public LogAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        if ( paths == null )
-            throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
-        this.paths = paths;
-        this.username = username;
-        this.password = password;
-    }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( paths != null && paths.size() > 0 ) {
+        if ( nodes != null && nodes.size() > 0 ) {
             final SVNData data = new SVNData();
+
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
             data.setPaths( paths );
 
             if ( username != null && password != null ) {
@@ -53,20 +40,19 @@ public class LogAction implements ActionListener {
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
-            Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching log ..." );
+            final Logger logger = panel.getLogger();
+            logger.log( Level.INFO, "Cleaning up ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker < TreeMap < String, List < SVNLogEntry >> , Object > {
+            class Runner extends SwingWorker<String, Object> {
 
                 @Override
-                public TreeMap < String, List < SVNLogEntry >> doInBackground() {
+                public String doInBackground() {
                     try {
-                        Log log = new Log( );
-                        log.doLog( data );
-                        return log.getLogEntries();
+                        Cleanup c = new Cleanup( );
+                        return c.cleanup( data );
                     }
                     catch ( Exception e ) {
                         data.getOut().printError( e.getMessage() );
@@ -80,11 +66,10 @@ public class LogAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new LogResultsPanel( get() );
-                        panel.addTab( "Log", results_panel );
+                        data.getOut().print( get() );
                     }
                     catch ( Exception e ) {
-                        // ignored
+                        e.printStackTrace();
                     }
                 }
             }

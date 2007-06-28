@@ -20,8 +20,8 @@ public class ConsolePrintStream extends PrintStream {
         super(os, true);
     }
 
-    public ConsolePrintStream( NodeActor na ) {
-        super( new LogOutputStream( na ), true );
+    public ConsolePrintStream( View view ) {
+        super( new LogOutputStream( view ), true );
     }
 
     // print a message to the system shell in the Console plugin.  This is an

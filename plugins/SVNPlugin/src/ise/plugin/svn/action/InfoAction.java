@@ -37,7 +37,7 @@ public class InfoAction extends NodeActor {
                 cd.setPassword( password );
             }
 
-            cd.setOut( new ConsolePrintStream( this ) );
+            cd.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );

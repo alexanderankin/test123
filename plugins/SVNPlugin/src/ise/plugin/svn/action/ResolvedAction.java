@@ -63,7 +63,7 @@ public class ResolvedAction extends NodeActor {
                 data.setPassword( password );
             }
 
-            data.setOut( new ConsolePrintStream( this ) );
+            data.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );

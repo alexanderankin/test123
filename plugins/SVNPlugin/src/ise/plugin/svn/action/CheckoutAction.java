@@ -25,7 +25,7 @@ public class CheckoutAction extends NodeActor {
             return ;        // user cancelled
         }
 
-        cd.setOut( new ConsolePrintStream( this ) );
+        cd.setOut( new ConsolePrintStream( view ) );
 
         view.getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel panel = SVNPlugin.getOutputPanel( view );

@@ -3,8 +3,8 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
-import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.command.BrowseRepository;
+import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -16,33 +16,20 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+import projectviewer.ProjectViewer;
 import org.tmatesoft.svn.core.SVNLogEntry;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
-public class LogAction implements ActionListener {
+public class BrowseRepositoryAction extends NodeActor {
 
-    private View view = null;
-    private List<String> paths = null;
-    private String username = null;
-    private String password = null;
-
-    public LogAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        if ( paths == null )
-            throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
-        this.paths = paths;
-        this.username = username;
-        this.password = password;
-    }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( paths != null && paths.size() > 0 ) {
-            final SVNData data = new SVNData();
-            data.setPaths( paths );
-
+        if ( nodes != null && nodes.size() > 0 ) {
+            final CheckoutData data = new CheckoutData();
+            data.setURL( jEdit.getProperty( SVNAction.PREFIX + getProjectName() + ".url" ) );
             if ( username != null && password != null ) {
                 data.setUsername( username );
                 data.setPassword( password );
@@ -54,19 +41,18 @@ public class LogAction implements ActionListener {
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching log ..." );
+            logger.log( Level.INFO, "Fetching repository info ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker < TreeMap < String, List < SVNLogEntry >> , Object > {
+            class Runner extends SwingWorker < DefaultMutableTreeNode, Object> {
 
                 @Override
-                public TreeMap < String, List < SVNLogEntry >> doInBackground() {
+                public DefaultMutableTreeNode doInBackground() {
                     try {
-                        Log log = new Log( );
-                        log.doLog( data );
-                        return log.getLogEntries();
+                        BrowseRepository br = new BrowseRepository( );
+                        return br.getRepository( data );
                     }
                     catch ( Exception e ) {
                         data.getOut().printError( e.getMessage() );
@@ -80,8 +66,8 @@ public class LogAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new LogResultsPanel( get() );
-                        panel.addTab( "Log", results_panel );
+                        //JPanel results_panel = new LogResultsPanel( get() );
+                        //panel.addTab("Log", results_panel);
                     }
                     catch ( Exception e ) {
                         // ignored
@@ -92,4 +78,10 @@ public class LogAction implements ActionListener {
 
         }
     }
+
+    private String getProjectName() {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        return project == null ? "" : project.getName();
+    }
+
 }

@@ -18,17 +18,34 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 
+import org.gjt.sp.jedit.View;
+
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
-import projectviewer.vpt.VPTNode;
 
-public class CommitAction extends NodeActor {
+public class CommitAction implements ActionListener {
 
     private CommitDialog dialog = null;
+    private View view = null;
+    private List<String> paths = null;
+    private String username = null;
+    private String password = null;
+
+    public CommitAction( View view, List<String> paths, String username, String password ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( paths == null )
+            throw new IllegalArgumentException( "paths may not be null" );
+        this.view = view;
+        this.paths = paths;
+        this.username = username;
+        this.password = password;
+    }
+
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
-            dialog = new CommitDialog( view, nodes );
+        if ( paths != null && paths.size() > 0 ) {
+            dialog = new CommitDialog( view, paths );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             final CommitData cd = dialog.getCommitData();
@@ -40,7 +57,7 @@ public class CommitAction extends NodeActor {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }
-            cd.setOut( new ConsolePrintStream( this ) );
+            cd.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );

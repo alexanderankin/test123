@@ -7,6 +7,13 @@ import javax.swing.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
 
+/**
+ * Wraps a tabbed pane to show output.  There is always a 'console' tab that
+ * shows raw output of the svn commands.  Each class in ise.plugin.svn.action
+ * produces an output panel that is added as a tab to the tabbed pane in this
+ * panel.  Tabs can be closed by right clicking on them, however, the 'console'
+ * tab may not be closed.
+ */
 public class OutputPanel extends JPanel {
 
     private JTabbedPane tabs;
@@ -32,6 +39,8 @@ public class OutputPanel extends JPanel {
         tabs = new JTabbedPane();
         tabs.addTab( "SVN Console", getConsolePanel() );
         add( tabs );
+
+        // add a mouse listener to be able to close results tabs
         tabs.addMouseListener( new MouseAdapter() {
                     public void mousePressed( MouseEvent me ) {
                         if ( me.isPopupTrigger() )
