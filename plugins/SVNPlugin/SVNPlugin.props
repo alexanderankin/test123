@@ -34,7 +34,7 @@ plugin.ise.plugin.svn.SVNPlugin.activate=defer
 # ProjectViewer option pane
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugins.svn.pv.options
 options.ise.plugins.svn.pv.options.label=Subversion settings
-options.ise.plugins.svn.pv.options.code=new ise.plugin.svn.PVSVNOptionPane()
+options.ise.plugins.svn.pv.options.code=new ise.plugin.svn.gui.PVSVNOptionPane()
 
 # ProjectViewer option pane labels
 ise.plugin.svn.pv.url.label=URL:
@@ -61,11 +61,13 @@ ise.plugin.svn.action.label.9=Info
 ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoAction
 ise.plugin.svn.action.label.10=Log
 ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogAction
-ise.plugin.svn.action.label.11=-
-ise.plugin.svn.action.label.12=Checkout...
-ise.plugin.svn.action.code.12=ise.plugin.svn.action.CheckoutAction
-ise.plugin.svn.action.label.13=Cleanup
-ise.plugin.svn.action.code.13=ise.plugin.svn.action.CleanupAction
+ise.plugin.svn.action.label.11=Browse Repository
+ise.plugin.svn.action.code.11=ise.plugin.svn.action.BrowseRepositoryAction
+ise.plugin.svn.action.label.12=-
+ise.plugin.svn.action.label.13=Checkout...
+ise.plugin.svn.action.code.13=ise.plugin.svn.action.CheckoutAction
+ise.plugin.svn.action.label.14=Cleanup
+ise.plugin.svn.action.code.14=ise.plugin.svn.action.CleanupAction
 
 
 # register subversion commands with ProjectViewer
