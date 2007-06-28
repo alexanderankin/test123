@@ -366,7 +366,9 @@ class SideKick implements EBComponent
 	private void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
 		editPane = epu.getEditPane();
-		if(editPane.getView() != view)
+		View v = editPane.getView();
+		if (v == null) v=jEdit.getActiveView();
+		if (v != view)
 			return;
 
 		if(epu.getWhat() == EditPaneUpdate.DESTROYED)
