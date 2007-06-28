@@ -30,6 +30,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -126,6 +128,7 @@ public class ErrorList extends JPanel implements EBComponent,
 		if(!OperatingSystem.isMacOSLF())
 			errorTree.putClientProperty("JTree.lineStyle", "Angled");
 		errorTree.addMouseListener(new MouseHandler());
+		errorTree.addKeyListener(new KeyHandler());
 		errorTree.setCellRenderer(new ErrorCellRenderer());
 		errorTree.setRootVisible(false);
 		errorTree.setShowsRootHandles(true);
@@ -179,7 +182,8 @@ public class ErrorList extends JPanel implements EBComponent,
 		// Whenever Errorlist "gets" focus, it sends the focus back to the textarea.
 		if (jEdit.getBooleanProperty("error-list.autoRefocusTextArea"))
 			view.getTextArea().requestFocus();
-		
+		else
+			errorTree.requestFocus();
 	} //}}}
 
 	//{{{ focus() method
@@ -531,7 +535,7 @@ public class ErrorList extends JPanel implements EBComponent,
 		ErrorSource.Error[] errors = source.getAllErrors();
 		if(errors == null)
 			return;
-;
+
 		for(int j = 0; j < errors.length; j++)
 		{
 			addError(errors[j],true);
@@ -748,6 +752,39 @@ public class ErrorList extends JPanel implements EBComponent,
 	}
 	//}}}
 
+	//{{{ openNode() method
+	private void openNode(DefaultMutableTreeNode node)
+	{
+		Object object = node.getUserObject();
+		if(object instanceof Root)
+		{
+			// do nothing
+		}
+		else if(object instanceof String)
+		{
+			jEdit.openFile(view,(String)object);
+		}
+		else if(object instanceof Extra)
+		{
+			openNode((DefaultMutableTreeNode)node.getParent());
+		}
+		else if(object instanceof ErrorSource.Error)
+		{
+			openError((ErrorSource.Error)object);
+		}
+	} //}}}
+
+	//{{{ openSelectedNode() method
+	private void openSelectedNode()
+	{
+		TreePath selected = errorTree.getSelectionPath();
+		if(selected != null)
+		{
+			openNode((DefaultMutableTreeNode)
+				selected.getLastPathComponent());
+		}
+	} //}}}
+
 	//}}}
 
 	//{{{ Root class
@@ -885,26 +922,46 @@ public class ErrorList extends JPanel implements EBComponent,
 			TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
 			if(path == null)
 				return;
+			errorTree.setSelectionPath(path);
+			openNode((DefaultMutableTreeNode)
+				path.getLastPathComponent());
+		}
+	} //}}}
 
-			if(!errorTree.isPathSelected(path))
-				errorTree.setSelectionPath(path);
+	//{{{ KeyHandler class
+	class KeyHandler extends KeyAdapter
+	{
+		public void keyPressed(KeyEvent evt)
+		{
+			switch(evt.getKeyCode())
+			{
+			case KeyEvent.VK_SPACE:
+				openSelectedNode();
 
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				path.getLastPathComponent();
-			if(node.getUserObject() instanceof Root)
-			{
-				// do nothing
-			}
-			else if(node.getUserObject() instanceof String)
-			{
-				jEdit.openFile(view,(String)node.getUserObject());
-			}
-			else
-			{
-				if(node.getUserObject() instanceof Extra)
-					node = (DefaultMutableTreeNode)node.getParent();
+				// Dirty method to keep the focus.
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						errorTree.requestFocus();
+					}
+				});
 
-				openError((ErrorSource.Error)node.getUserObject());
+				evt.consume();
+				break;
+			case KeyEvent.VK_ENTER:
+				openSelectedNode();
+				evt.consume();
+				break;
+			case KeyEvent.VK_DELETE:
+				// removeSelectedNode() should be here.
+				// Now just consume the event so prevent
+				// VK_DELETE passed to the text area.
+				getToolkit().beep();
+				evt.consume();
+				break;
+			default:
+				break;
 			}
 		}
 	} //}}}

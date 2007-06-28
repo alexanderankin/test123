@@ -399,8 +399,14 @@ errorSource.addError(new ErrorSource.DefaultError(
 </chapter>
 
 <appendix id="changes"><title>Change log</title>
-
  <itemizedlist>
+ <listitem>
+ <formalpara><title>Version 1.6</title> <para>requires JDK 1.4, and jEdit 4.2 final. </para> </formalpara> 
+ <itemizedlist>
+ <listitem><para> Improved keyboard Handling when ErrorList has focus (patch 1729970 by k_satoda) </para></listitem>
+ </itemizedlist>
+ </listitem>
+ 
  <listitem><formalpara><title>Version 1.5</title>
  <para>requires JDK 1.4, and jEdit 4.2 final. </para></formalpara>
  <itemizedlist>
