@@ -52,8 +52,15 @@ import errorlist.DefaultErrorSource;
 
 public class Parser extends SideKickParser {
 
-	private static final String OPTIONS_TOOLBAR = Plugin.OPTION_PREFIX + "toolbar.";
 	private static final String SPACES = "\\s+";
+	private JPanel panel = null;
+	private ButtonGroup groupingBG = null;
+	private JToggleButton groupByKindButton;
+	private JToggleButton groupByNamespaceButton;
+	private JToggleButton groupByNamespaceFlatButton;
+	private JToggleButton sortByLineButton;
+	private JToggleButton sortByNameButton;
+	private JToggleButton sortByNameFoldsFirstButton;
 
 	public Parser(String serviceName)
 	{
@@ -74,15 +81,7 @@ public class Parser extends SideKickParser {
 		}
 	}
 
-	private JToggleButton createButton(String category, int i) {
-		String title = jEdit.getProperty(
-				OPTIONS_TOOLBAR + category + ".button." + i);
-		if (title == null)
-			return null;
-		final String action = jEdit.getProperty(
-				OPTIONS_TOOLBAR + category + ".action." + i);
-		if (action == null)
-			return null;
+	private JToggleButton createButton(final String action, String title) {
 		JToggleButton btn = new JToggleButton(title);
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -97,35 +96,63 @@ public class Parser extends SideKickParser {
 	
 	@Override
 	public JPanel getPanel() {
-		JPanel panel = new JPanel(new GridLayout(1, 1));
+		if (panel != null)
+			return panel;
+		panel = new JPanel(new GridLayout(1, 1));
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 		toolbar.add(new JLabel("Grouping:"));
-		ButtonGroup groupingBG = new ButtonGroup();
-		for (int i = 1; true; i++) {
-			JToggleButton b = createButton("grouping", i);
-			if (b == null)
-				break;
-			toolbar.add(b);
-			groupingBG.add(b);
-		}
+		groupingBG = new ButtonGroup();
+		groupByKindButton = createButton("group-by-kind", "K");
+		toolbar.add(groupByKindButton);
+		groupingBG.add(groupByKindButton);
+		groupByNamespaceButton = createButton("group-by-namespace", "N");
+		toolbar.add(groupByNamespaceButton);
+		groupingBG.add(groupByNamespaceButton);
+		groupByNamespaceFlatButton = createButton("group-by-namespace-flat", "NF");
+		toolbar.add(groupByNamespaceFlatButton);
+		groupingBG.add(groupByNamespaceFlatButton);
 		toolbar.add(new JLabel("Sorting:"));
 		ButtonGroup sortingBG = new ButtonGroup();
-		for (int i = 1; true; i++) {
-			JToggleButton b = createButton("sorting", i);
-			if (b == null)
-				break;
-			toolbar.add(b);
-			sortingBG.add(b);
-		}
+		sortByLineButton = createButton("sort-by-line", "L");
+		toolbar.add(sortByLineButton);
+		sortingBG.add(sortByLineButton);
+		sortByNameButton = createButton("sort-by-name", "N");
+		toolbar.add(sortByNameButton);
+		sortingBG.add(sortByNameButton);
+		sortByNameFoldsFirstButton = createButton("sort-by-name-folds-first", "NF");
+		toolbar.add(sortByNameFoldsFirstButton);
+		sortingBG.add(sortByNameFoldsFirstButton);
 		panel.add(toolbar);
 		return panel;
 	}
 
+	private void updatePanel(Buffer buffer) {
+		if (panel == null)
+			return;
+		String mode = buffer.getMode().getName();
+		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.MAPPER);
+		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
+			groupByNamespaceButton.setSelected(true);
+		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))
+			groupByNamespaceFlatButton.setSelected(true);
+		else
+			groupByKindButton.setSelected(true);
+		if (jEdit.getBooleanProperty(OptionPane.SORT, false))
+		{
+			if (jEdit.getBooleanProperty(OptionPane.FOLDS_BEFORE_LEAFS, true))
+				sortByNameFoldsFirstButton.setSelected(true);
+			else
+				sortByNameButton.setSelected(true);
+		}
+		else
+			sortByLineButton.setSelected(true);
+	}
 	@Override
 	public SideKickParsedData parse(Buffer buffer,
 									DefaultErrorSource errorSource)
 	{		
+		updatePanel(buffer);
 		ParsedData data =
 			new ParsedData(buffer, buffer.getMode().getName());
 		runctags(buffer, errorSource, data);
