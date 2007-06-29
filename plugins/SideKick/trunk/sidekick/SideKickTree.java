@@ -116,6 +116,8 @@ public class SideKickTree extends JPanel
         protected SideKickParsedData data;
 	
 	private int autoExpandTree = 0;
+	private JPanel toolBox;
+	private JPanel parserPanel = null;
         //}}}
 
         //{{{ SideKickTree constructor
@@ -177,8 +179,10 @@ public class SideKickTree extends JPanel
                 buttonBox.add(parserCombo);
                 parserCombo.addActionListener(ah);
                 
+                toolBox = new JPanel(new BorderLayout());
+				toolBox.add(BorderLayout.NORTH,buttonBox);
 
-                topPanel.add(BorderLayout.NORTH,buttonBox);
+                topPanel.add(BorderLayout.NORTH,toolBox);
 
                 // create a faux model that will do until a real one arrives
                 DefaultTreeModel emptyModel = new DefaultTreeModel(
@@ -430,7 +434,21 @@ public class SideKickTree extends JPanel
                 }
 	} // }}}
 
-        //{{{ expandTreeWithDelay() method
+	//{{{ addParserToolbar() method
+	void addParserPanel(SideKickParser parser) 
+	{
+		parserPanel = parser.getPanel();
+		if (parserPanel != null)
+			toolBox.add(BorderLayout.CENTER,parserPanel);
+	} // }}}
+	//{{{ removeParserToolbar() method
+	void removeParserPanel() 
+	{
+		if (parserPanel != null)
+			toolBox.remove(parserPanel);
+	} // }}}
+
+	//{{{ expandTreeWithDelay() method
         /**
          * Expands the tree after a delay.  
          * The delay timer is restarted each time this method is called.

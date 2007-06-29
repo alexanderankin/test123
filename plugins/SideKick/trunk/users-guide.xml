@@ -343,6 +343,14 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+ 
+<listitem><para>
+ <emphasis role="bold">Version 0.7.4</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+ <itemizedlist>
+ <listitem><para>Added support for SideKick Parser Services to offer a JPanel for inserting above the SideKickTree. (Shlomy Reinstein, # 1744797 ) </para></listitem>
+ </itemizedlist>
+ </listitem>
+ 
 <listitem><para>
  <emphasis role="bold">Version 0.7.3</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
  <itemizedlist>
