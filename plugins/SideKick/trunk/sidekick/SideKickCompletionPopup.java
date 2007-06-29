@@ -308,7 +308,14 @@ public class SideKickCompletionPopup extends JWindow
 		{
 			if(complete == null || complete.size() == 0)
 			{
-				view.getTextArea().userInput(ch);
+				if (ch == '\b')
+				{
+					view.getTextArea().backspace();
+				}
+				else
+				{
+					view.getTextArea().userInput(ch);
+				}
 				dispose();
 			}
 			else if(complete.handleKeystroke(list.getSelectedIndex(), ch))

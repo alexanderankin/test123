@@ -435,6 +435,9 @@ class SideKick implements EBComponent
 			else
 				parser.deactivate(this.editPane);
 //			this.editPane = null;
+			SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
+			if (tree == null) return;
+			tree.removeParserPanel();
 		}
 	} //}}}
 
@@ -455,6 +458,8 @@ class SideKick implements EBComponent
 		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
 		if (tree == null) return;
 		tree.reloadParserCombo();
+		if (parser != null)
+			tree.addParserPanel(parser);
 		parse(true);
 	} //}}}
 

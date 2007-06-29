@@ -25,6 +25,9 @@ package sidekick;
 
 //{{{ Imports
 import java.util.*;
+
+import javax.swing.JPanel;
+
 import org.gjt.sp.jedit.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
@@ -237,6 +240,19 @@ public abstract class SideKickParser {
 		}
 		catch ( Exception e ) {
 		}
+		return null;
+	} //}}}
+
+	//{{{ getPanel() method
+	/**
+	 * Returns a parser-specific panel that will be shown in the SideKick dockable
+	 * window just below the SideKick toolbar. This panel is meant to be a toolbar,
+	 * but can be another UI element if needed.
+	 *
+	 * Returns null by default.
+	 * @since SideKick 0.7.4
+	 */
+	public JPanel getPanel() {
 		return null;
 	} //}}}
 
