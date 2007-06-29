@@ -20,6 +20,9 @@ plugin by Gerd Knops.
 */
 
 package ctags.sidekick;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,11 +33,16 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
@@ -44,6 +52,7 @@ import errorlist.DefaultErrorSource;
 
 public class Parser extends SideKickParser {
 
+	private static final String OPTIONS_TOOLBAR = Plugin.OPTION_PREFIX + "toolbar.";
 	private static final String SPACES = "\\s+";
 
 	public Parser(String serviceName)
@@ -64,7 +73,55 @@ public class Parser extends SideKickParser {
 				buffer.invalidateCachedFoldLevels();
 		}
 	}
+
+	private JToggleButton createButton(String category, int i) {
+		String title = jEdit.getProperty(
+				OPTIONS_TOOLBAR + category + ".button." + i);
+		if (title == null)
+			return null;
+		final String action = jEdit.getProperty(
+				OPTIONS_TOOLBAR + category + ".action." + i);
+		if (action == null)
+			return null;
+		JToggleButton btn = new JToggleButton(title);
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				jEdit.getAction(action).invoke(jEdit.getActiveView());
+			}
+		});
+		String tooltip = jEdit.getProperty(action + ".label");
+		if (tooltip != null)
+			btn.setToolTipText(tooltip);
+		return btn;
+	}
 	
+	@Override
+	public JPanel getPanel() {
+		JPanel panel = new JPanel(new GridLayout(1, 1));
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.add(new JLabel("Grouping:"));
+		ButtonGroup groupingBG = new ButtonGroup();
+		for (int i = 1; true; i++) {
+			JToggleButton b = createButton("grouping", i);
+			if (b == null)
+				break;
+			toolbar.add(b);
+			groupingBG.add(b);
+		}
+		toolbar.add(new JLabel("Sorting:"));
+		ButtonGroup sortingBG = new ButtonGroup();
+		for (int i = 1; true; i++) {
+			JToggleButton b = createButton("sorting", i);
+			if (b == null)
+				break;
+			toolbar.add(b);
+			sortingBG.add(b);
+		}
+		panel.add(toolbar);
+		return panel;
+	}
+
 	@Override
 	public SideKickParsedData parse(Buffer buffer,
 									DefaultErrorSource errorSource)

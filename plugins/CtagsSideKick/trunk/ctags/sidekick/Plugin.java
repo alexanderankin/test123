@@ -32,6 +32,8 @@ public class Plugin extends EditPlugin {
 	public static void groupBy(View view, String mapper)
 	{
 		jEdit.setProperty(OptionPane.MAPPER, mapper);
+		String mode = view.getBuffer().getMode().getName();
+		ModeOptionsPane.setProperty(mode, OptionPane.MAPPER, mapper);
 		SideKickPlugin.parse(view, true);
 	}
 	public static void setSorting(View view, boolean sort, boolean foldsFirst)
