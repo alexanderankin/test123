@@ -37,19 +37,6 @@ options.CtagsSideKick.label=Ctags SideKick
 options.CtagsSideKick.mode.label=CtagsSideKick
 options.CtagsSideKick.mode.ctags_options_label=Ctags invocation options:
 
-options.CtagsSideKick.toolbar.grouping.button.1=K
-options.CtagsSideKick.toolbar.grouping.action.1=group-by-kind
-options.CtagsSideKick.toolbar.grouping.button.2=N
-options.CtagsSideKick.toolbar.grouping.action.2=group-by-namespace
-options.CtagsSideKick.toolbar.grouping.button.3=NF
-options.CtagsSideKick.toolbar.grouping.action.3=group-by-namespace-flat
-options.CtagsSideKick.toolbar.sorting.button.1=L
-options.CtagsSideKick.toolbar.sorting.action.1=sort-by-line
-options.CtagsSideKick.toolbar.sorting.button.2=N
-options.CtagsSideKick.toolbar.sorting.action.2=sort-by-name
-options.CtagsSideKick.toolbar.sorting.button.3=NF
-options.CtagsSideKick.toolbar.sorting.action.3=sort-by-name-folds-first
-
 # action labels for actions supplied by dockables.xml
 CtagsSideKick.label=CtagsSideKick
 
