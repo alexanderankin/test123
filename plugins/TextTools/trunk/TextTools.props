@@ -1,6 +1,6 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon
-plugin.TextToolsPlugin.version=1.13
+plugin.TextToolsPlugin.version=1.14
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.depend.0=jedit 04.03.03.00
 plugin.TextToolsPlugin.activate=defer
