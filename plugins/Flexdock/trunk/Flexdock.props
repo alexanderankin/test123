@@ -1,0 +1,28 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.flexdock.Plugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.flexdock.Plugin.name=Flexdock
+plugin.flexdock.Plugin.author=Shlomy Reinstein
+plugin.flexdock.Plugin.description=Interface to flexdock docking framework
+
+plugin.flexdock.Plugin.version=0.1
+
+# Dependencies
+ 
+plugin.flexdock.Plugin.depend.0=jdk 1.5
+plugin.flexdock.Plugin.depend.1=jedit 04.03.09.00
+
+# Options
+#plugin.ctags.sidekick.Plugin.option-pane=CtagsSideKick
+#options.CtagsSideKick.code=new ctags.sidekick.OptionPane();
+
+# action labels
+flexdock-start.label=Start
+
+# menus
+plugin.flexdock.Plugin.menu=flexdock-start
+
+# docs
+plugin.ctags.sidekick.Plugin.docs=index.html

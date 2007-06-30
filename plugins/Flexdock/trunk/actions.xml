@@ -1,0 +1,12 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="flexdock-start" NO_REPEAT="TRUE">
+		<CODE>
+			flexdock.Plugin.doStart(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
