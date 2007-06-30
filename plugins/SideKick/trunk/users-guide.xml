@@ -286,7 +286,11 @@ add  structure elements to the <varname>root</varname> field of the instance.
 <varname>root</varname> is an instance of Java's <classname>DefaultMutableTreeNode</classname> class,
 and is given an initial value by the <classname>SideKickParsedData</classname> constructor.
  </para>
-
+ 
+<formalpara id="optionalPanel"> <title> getPanel() </title>
+ <para> Some SideKick parsers, such as CtagsSideKick, offer an additional toolbar to provide a convenient interface to change certain mode options such as sort by, and group by. They achieve this by overriding the <literal>getPanel()</literal> method of SideKickParser. </para>
+ </formalpara>
+ 
  </sect1>
 
  <sect1 id="implement-completion"><title>Implementing completion popups</title>
@@ -316,17 +320,18 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
      brains of the plugin goes in the last method, <literal>complete()</literal>,
      which must construct an instance of    <ulink
      url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickCompletion.html">
-     SideKickCompletion</ulink>, given an EditPane and a caret position.
+     SideKickCompletion</ulink>, given an <literal>EditPane</literal> and a caret position.
    </para>
 
    <para>
-   The constructor for SideKickCompletion accepts a list (or array) of possible values, these are the values that are displayed in the dropdown.
+   The constructor for <literal>SideKickCompletion</literal> accepts a list (or array) of possible values, these are the values that are displayed in the dropdown.
    This is an abstract class, so you'll need to derive a specific implementation.  You may want to override the 'insert(int)' method to
    support language specifics, like "dot" completion.
    </para>
 
    <para>How you actually create the completion depends on the specific language and support classes, and the information provided by the parser for the current file. </para>
 
+ 
  </sect1>
 
 </chapter>
@@ -347,6 +352,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <listitem><para>
  <emphasis role="bold">Version 0.7.4</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
  <itemizedlist>
+ <listitem><para>Fixed "can't determine mode of buffer" ( 1744627 - Shlomy Reinstein ) </para></listitem>
  <listitem><para>Added support for SideKick Parser Services to offer a JPanel for inserting above the SideKickTree. (Shlomy Reinstein, # 1744797 ) </para></listitem>
  </itemizedlist>
  </listitem>
