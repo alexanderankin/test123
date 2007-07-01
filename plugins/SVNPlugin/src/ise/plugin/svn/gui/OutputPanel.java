@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.util.logging.*;
 import javax.swing.*;
 import ise.plugin.svn.*;
-import ise.plugin.svn.library.GUIUtils;
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Wraps a tabbed pane to show output.  There is always a 'console' tab that
@@ -71,7 +71,7 @@ public class OutputPanel extends JPanel {
                                     }
                                 }
                                             );
-                        GUIUtils.showPopupMenu( pm, c, x, y );
+                        GUIUtilities.showPopupMenu( pm, c, x, y );
                     }
                 }
                              );

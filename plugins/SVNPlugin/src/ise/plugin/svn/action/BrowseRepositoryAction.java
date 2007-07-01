@@ -1,7 +1,7 @@
 package ise.plugin.svn.action;
 
+import ise.plugin.svn.action.NodeActor;
 import ise.plugin.svn.gui.OutputPanel;
-
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CheckoutData;
@@ -15,73 +15,77 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectViewer;
-import org.tmatesoft.svn.core.SVNLogEntry;
-import org.gjt.sp.jedit.jEdit;
+import javax.swing.JTree;
+import javax.swing.tree.*;
+import org.gjt.sp.jedit.View;
 
-public class BrowseRepositoryAction extends NodeActor {
+public class BrowseRepositoryAction implements ActionListener {
 
+    private View view = null;
+    private JTree tree = null;
+    private DefaultMutableTreeNode node = null;
+    private CheckoutData data = null;
+
+    public BrowseRepositoryAction( View view, JTree tree, DefaultMutableTreeNode node, CheckoutData data ) {
+        this.view = view;
+        this.tree = tree;
+        this.node = node;
+        this.data = data;
+        if (view == null || tree == null || node == null || data == null || data.getURL() == null) {
+            throw new IllegalArgumentException("neither view, tree, node, nor url can be null");
+        }
+        NodeActor.setupLibrary();
+    }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
-            final CheckoutData data = new CheckoutData();
-            data.setURL( jEdit.getProperty( SVNAction.PREFIX + getProjectName() + ".url" ) );
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
-
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showConsole();
-            Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching repository info ..." );
-            for ( Handler handler : logger.getHandlers() ) {
-                handler.flush();
-            }
-
-            class Runner extends SwingWorker < DefaultMutableTreeNode, Object> {
-
-                @Override
-                public DefaultMutableTreeNode doInBackground() {
-                    try {
-                        BrowseRepository br = new BrowseRepository( );
-                        return br.getRepository( data );
-                    }
-                    catch ( Exception e ) {
-                        data.getOut().printError( e.getMessage() );
-                    }
-                    finally {
-                        data.getOut().close();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        //JPanel results_panel = new LogResultsPanel( get() );
-                        //panel.addTab("Log", results_panel);
-                    }
-                    catch ( Exception e ) {
-                        // ignored
-                    }
-                }
-            }
-            ( new Runner() ).execute();
-
+        data.setOut( new ConsolePrintStream( view ) );
+        view.getDockableWindowManager().showDockableWindow( "subversion" );
+        view.getDockableWindowManager().showDockableWindow( "subversion.browser" );
+        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+        panel.showConsole();
+        Logger logger = panel.getLogger();
+        logger.log( Level.INFO, "Fetching repository info for\n" + data.getURL() + "..." );
+        for ( Handler handler : logger.getHandlers() ) {
+            handler.flush();
         }
-    }
 
-    private String getProjectName() {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getName();
-    }
+        class Runner extends SwingWorker < List<DefaultMutableTreeNode>, Object> {
 
+            @Override
+            public List<DefaultMutableTreeNode> doInBackground() {
+                try {
+                    BrowseRepository br = new BrowseRepository( );
+                    return br.getRepository( data );
+                }
+                catch ( Exception e ) {
+                    data.getOut().printError( e.getMessage() );
+                }
+                finally {
+                    data.getOut().close();
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    List<DefaultMutableTreeNode> children = get();
+                    for (DefaultMutableTreeNode child : children) {
+                        node.add(child);
+                    }
+                    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+                    model.nodeStructureChanged(node);
+                    TreePath path = new TreePath(node.getPath());
+                    tree.invalidate();
+                    tree.repaint();
+                    tree.expandPath(path);
+                }
+                catch ( Exception e ) {
+                    // ignored
+                }
+            }
+        }
+        ( new Runner() ).execute();
+//https://svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin
+    }
 }

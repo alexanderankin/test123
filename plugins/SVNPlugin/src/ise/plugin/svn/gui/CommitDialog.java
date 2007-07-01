@@ -24,6 +24,7 @@ import ise.java.awt.KappaLayout;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
+import ise.plugin.svn.library.PropertyComboBox;
 
 
 /**
@@ -35,13 +36,12 @@ public class CommitDialog extends JDialog {
     private List<String> nodes = null;
 
     private JTextArea comment = null;
+    private PropertyComboBox commentList = null;
 
     private boolean cancelled = false;
 
     private CommitData commitData = null;
 
-    private static Vector<String> previousComments = null;
-    private static final String SELECT = "-- Select --";
 
     public CommitDialog( View view, List<String> nodes ) {
         super( ( JFrame ) view, "Commit", true );
@@ -55,22 +55,6 @@ public class CommitDialog extends JDialog {
 
     /** Initialises the option pane. */
     protected void _init() {
-
-        // load previous comments
-        if ( previousComments == null ) {
-            previousComments = new Vector<String>();
-
-            for ( int i = 1; i < 10; i++ ) {
-                String comment = jEdit.getProperty( "ise.plugin.svn.comment." + i );
-                if ( comment == null ) {
-                    break;
-                }
-                previousComments.insertElementAt( comment, 0 );
-            }
-        }
-        if ( previousComments.size() > 0 && !previousComments.contains(SELECT)) {
-            previousComments.insertElementAt( SELECT, 0 );
-        }
 
         commitData = new CommitData();
 
@@ -120,11 +104,11 @@ public class CommitDialog extends JDialog {
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final JComboBox commentList = new JComboBox( previousComments );
+        final PropertyComboBox commentList = new PropertyComboBox("ise.plugin.svn.comment.");
         commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
-                        if ( SELECT.equals( commentList.getSelectedItem().toString() ) ) {
+                        if ( PropertyComboBox.SELECT.equals( commentList.getSelectedItem().toString() ) ) {
                             return ;
                         }
                         comment.setText( commentList.getSelectedItem().toString() );
@@ -163,10 +147,9 @@ public class CommitDialog extends JDialog {
                                 msg = "no comment";
                             }
                             else {
-                                if (previousComments.size() == 0){
-                                    previousComments.insertElementAt(SELECT, 0);
+                                if (commentList != null) {
+                                    commentList.addValue(msg);
                                 }
-                                previousComments.insertElementAt( msg, 1 );
                             }
                             commitData.setCommitMessage( msg );
                         }
@@ -198,7 +181,7 @@ public class CommitDialog extends JDialog {
         panel.add( "0, 5, 1, 1, W,  , 3", label );
         panel.add( "0, 6, 1, 1, W, wh, 3", new JScrollPane( comment ) );
 
-        if ( previousComments != null && previousComments.size() > 0 ) {
+        if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
             panel.add( "0, 8, 1, 1, W, w, 3", commentList );
         }
@@ -212,16 +195,8 @@ public class CommitDialog extends JDialog {
     }
 
     protected void _save() {
-        if ( previousComments != null ) {
-            for (int i = 1; i < Math.min(previousComments.size(), 10); i++) {
-                String comment = previousComments.get( i );
-                if ( SELECT.equals( comment ) ) {
-                    continue;
-                }
-                if ( comment != null && comment.length() > 0 ) {
-                    jEdit.setProperty( "ise.plugin.svn.comment." + i, comment );
-                }
-            }
+        if ( commentList != null ) {
+            commentList.save();
         }
     }
 
