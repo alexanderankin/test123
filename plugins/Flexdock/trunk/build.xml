@@ -25,7 +25,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="/home/shlomy/flexdock/flexdock-0.5.1.jar"/>
+		<pathelement location="${src.dir}/flexdock-0.5.1.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 
