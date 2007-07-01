@@ -354,6 +354,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <itemizedlist>
  <listitem><para>Fixed "can't determine mode of buffer" ( 1744627 - Shlomy Reinstein ) </para></listitem>
  <listitem><para>Added support for SideKick Parser Services to offer a JPanel for inserting above the SideKickTree. (Shlomy Reinstein, # 1744797 ) </para></listitem>
+ <listitem><para>Preserve horizontal scroll position (Vladimir Avondin # 1746146) </para></listitem>
  </itemizedlist>
  </listitem>
  
