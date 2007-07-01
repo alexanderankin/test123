@@ -35,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.awt.Rectangle;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -73,7 +74,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
-import org.gjt.sp.jedit.msg.CaretChanging;
+import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -489,8 +490,11 @@ public class SideKickTree extends JPanel
                 {
                         tree.expandPath(treePath);
                         tree.setSelectionPath(treePath);
-                        if (jEdit.getBooleanProperty("options.sidekick.scrollToVisible"))
-                        	tree.scrollPathToVisible(treePath);
+                        if (jEdit.getBooleanProperty("sidekick.scrollToVisible")) {
+				Rectangle r = tree.getPathBounds(treePath);
+				r.width = 1;
+				tree.scrollRectToVisible(r);
+			}
                 }
         } //}}}
 
@@ -541,7 +545,7 @@ public class SideKickTree extends JPanel
                                                         controlClick(view,asset,path);
                                                 }
                                                 else {
-			                                EditBus.send(new CaretChanging(textArea));
+			                                EditBus.send(new BufferChanging(editPane, null));
                                                 	textArea.setCaretPosition(asset.getStart().getOffset());
                                                 }
                                                         
