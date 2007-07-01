@@ -2,7 +2,7 @@ package ise.plugin.svn.library;
 
 
 import javax.swing.*;
-import java.util.Vector;
+import java.util.*;
 import org.gjt.sp.jedit.jEdit;
 
 /**
@@ -14,27 +14,40 @@ public class PropertyComboBox extends JComboBox {
 
     public static final String SELECT = "-- Select --";
     private String propertyPrefix = null;
-    private Vector<String> values = null;
+    DefaultComboBoxModel model = null;
 
     public PropertyComboBox( String propertyPrefix ) {
-        if (propertyPrefix == null || propertyPrefix.length() == 0) {
-            throw new IllegalArgumentException("invalid property prefix");
+        if ( propertyPrefix == null || propertyPrefix.length() == 0 ) {
+            throw new IllegalArgumentException( "invalid property prefix" );
         }
         this.propertyPrefix = propertyPrefix;
 
-        values = new Vector<String>();
+        model = new DefaultComboBoxModel();
+        List<String> values = new ArrayList<String>();
 
         for ( int i = 1; i < 10; i++ ) {
             String name = jEdit.getProperty( propertyPrefix + i );
             if ( name == null ) {
                 break;
             }
-            values.insertElementAt( name, 0 );
+            values.add(0, name);
         }
-        if ( values.size() > 0 && !values.contains( SELECT ) ) {
-            values.insertElementAt( SELECT, 0 );
+        values = ListOps.toList(ListOps.toSet(values));   // remove dupes, keep order
+        Vector<String> v = new Vector<String>();
+        model = new DefaultComboBoxModel(v);
+
+        if ( model.getSize() > 0 && model.getIndexOf( SELECT ) < 0 ) {
+            model.insertElementAt( SELECT, 0 );
         }
-        setModel(new DefaultComboBoxModel(values));
+        setModel( model );
+    }
+
+    @Override
+    public void setEditable( boolean editable ) {
+        if ( editable ) {
+            model.removeElement( SELECT );
+        }
+        super.setEditable( editable );
     }
 
     /**
@@ -42,9 +55,11 @@ public class PropertyComboBox extends JComboBox {
      * the "-- Select --".
      * @param value a value to add to the list
      */
-    public void addValue(String value) {
-        if (value != null && value.length() > 0) {
-            values.insertElementAt(value, 1);
+    public void addValue( String value ) {
+        if ( value != null && value.length() > 0 ) {
+            int index = model.getIndexOf( SELECT ) >= 0 ? 1 : 0;
+            model.removeElement( value );
+            ( ( DefaultComboBoxModel ) getModel() ).insertElementAt( value, index );
         }
     }
 
@@ -53,15 +68,15 @@ public class PropertyComboBox extends JComboBox {
      * top 10 items will be saved.
      */
     public void save() {
-        if ( values != null ) {
-            for (int i = 1; i < Math.min(values.size(), 10); i++) {
-                String value = values.get( i );
-                if ( SELECT.equals( value ) ) {
-                    continue;
-                }
-                if ( value != null && value.length() > 0 ) {
-                    jEdit.setProperty( propertyPrefix + i, value );
-                }
+        for ( int i = 1; i < Math.min( model.getSize(), 10 ); i++ ) {
+            String value = ( String ) model.getElementAt( i );
+            if ( SELECT.equals( value ) ) {
+                // there's a bug here, if SELECT is hit, the loop counter
+                // increments, so only 9 items will be saved
+                continue;
+            }
+            if ( value != null && value.length() > 0 ) {
+                jEdit.setProperty( propertyPrefix + i, value );
             }
         }
     }
