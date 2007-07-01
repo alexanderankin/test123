@@ -36,8 +36,6 @@
 package cscopefinder;
 
 //{{{ imports
-import java.io.*;
-import java.lang.System.*;
 import java.util.*;
 import java.awt.event.*;
 import java.awt.Toolkit;
@@ -56,11 +54,10 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
@@ -228,8 +225,8 @@ public class CscopeFinderPlugin extends EBPlugin
 	//{{{ pushPosition() method
 	public static void pushPosition(View view)
 	{
-        // For Navigator plugin's benefit:
-		EditBus.send(new CaretChanging(view.getTextArea()));
+		// For Navigator plugin's benefit:
+		EditBus.send(new BufferChanging(view.getEditPane(), null));
 		TargetStackModel model = getTagStack(view);
 		try
 		{
