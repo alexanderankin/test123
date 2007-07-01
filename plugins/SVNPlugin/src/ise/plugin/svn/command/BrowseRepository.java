@@ -16,12 +16,12 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CheckoutData;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.*;
 
 
 public class BrowseRepository {
 
-    public DefaultMutableTreeNode getRepository( CheckoutData cd ) throws CommandInitializationException, SVNException {
+    public List<DefaultMutableTreeNode> getRepository( CheckoutData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( cd.getURL() == null ) {
@@ -50,7 +50,8 @@ public class BrowseRepository {
         repository.setAuthenticationManager( authManager );
 
 
-
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode( cd.getURL() );
+        List<DefaultMutableTreeNode> children = null;
         try {
             /*
              * Checks up if the specified path/to/repository part of the URL
@@ -85,7 +86,7 @@ public class BrowseRepository {
              * Displays the repository tree at the current path - "" (what means
              * the path/to/repository directory)
              */
-            listEntries( repository, "", out );
+            children = listEntries( repository, "", out );
         }
         catch ( SVNException svne ) {
             cd.getOut().printError( "error while listing entries: "
@@ -111,7 +112,7 @@ public class BrowseRepository {
         out.flush();
         out.close();
 
-        return null;
+        return children;
     }
 
 
@@ -125,7 +126,7 @@ public class BrowseRepository {
      * is a part of the URL used to create an SVNRepository instance);
      *
      */
-    public static void listEntries( SVNRepository repository, String path, PrintStream out )
+    public List<DefaultMutableTreeNode> listEntries( SVNRepository repository, String path, PrintStream out )
     throws SVNException {
         /*
          * Gets the contents of the directory specified by path at the latest
@@ -142,6 +143,7 @@ public class BrowseRepository {
          * doesn't provide its own Collection instance and uses the one returned
          * by getDir.
          */
+        List<DirTreeNode> list = new ArrayList<DirTreeNode>();
         Collection entries = repository.getDir( path, -1, null,
                 ( Collection ) null );
         Iterator iterator = entries.iterator();
@@ -150,13 +152,41 @@ public class BrowseRepository {
             out.println( "/" + ( path.equals( "" ) ? "" : path + "/" )
                     + entry.getName() + " (author: '" + entry.getAuthor()
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
+            DirTreeNode node = new DirTreeNode( entry.getName(), !(entry.getKind() == SVNNodeKind.DIR) );
+            list.add( node );
             /*
              * Checking up if the entry is a directory.
              */
+            /*
             if ( entry.getKind() == SVNNodeKind.DIR ) {
                 listEntries( repository, ( path.equals( "" ) ) ? entry.getName()
                         : path + "/" + entry.getName(), out );
-            }
+        }
+            */
+        }
+        Collections.sort( list );
+        List<DefaultMutableTreeNode> newList = new ArrayList<DefaultMutableTreeNode>();
+        for (DirTreeNode node : list) {
+            newList.add((DefaultMutableTreeNode)node);
+        }
+        return newList;
+    }
+
+    class DirTreeNode extends DefaultMutableTreeNode implements Comparable {
+        private boolean isLeaf = true;
+        public DirTreeNode( Object userObject, boolean isLeaf ) {
+            super(userObject);
+            this.isLeaf = isLeaf;
+        }
+
+        public boolean isLeaf() {
+            return this.isLeaf;
+        }
+
+        public int compareTo(Object node) {
+            String a = this.getUserObject().toString();
+            String b = ((DirTreeNode)node).getUserObject().toString();
+            return a.compareTo(b);
         }
     }
 

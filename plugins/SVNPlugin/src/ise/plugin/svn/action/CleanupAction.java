@@ -13,21 +13,36 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import projectviewer.vpt.VPTNode;
+import org.gjt.sp.jedit.View;
 
-public class CleanupAction extends NodeActor {
+public class CleanupAction implements ActionListener {
 
+    private View view = null;
+    private List<String> paths = null;
+    private String username = null;
+    private String password = null;
+
+    /**
+     * @param view the View in which to display results
+     * @param paths a list of paths to be added
+     * @param username the username for the svn repository
+     * @param password the password for the username
+     */
+    public CleanupAction( View view, List<String> paths, String username, String password ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( paths == null )
+            throw new IllegalArgumentException( "paths may not be null" );
+        this.view = view;
+        this.paths = paths;
+        this.username = username;
+        this.password = password;
+    }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
+        if ( paths != null && paths.size() > 0 ) {
             final SVNData data = new SVNData();
 
-            List<String> paths = new ArrayList<String>();
-            for ( VPTNode node : nodes ) {
-                if ( node != null ) {
-                    paths.add( node.getNodePath() );
-                }
-            }
             data.setPaths( paths );
 
             if ( username != null && password != null ) {
@@ -35,7 +50,7 @@ public class CleanupAction extends NodeActor {
                 data.setPassword( password );
             }
 
-            data.setOut( new ConsolePrintStream( this ) );
+            data.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );

@@ -102,7 +102,7 @@ public abstract class NodeActor implements ActionListener {
      * Initializes the svnkit library to work with a repository via
      * different protocols.
      */
-    private static void setupLibrary() {
+    public static void setupLibrary() {
         /*
          * For using over http:// and https://
          */

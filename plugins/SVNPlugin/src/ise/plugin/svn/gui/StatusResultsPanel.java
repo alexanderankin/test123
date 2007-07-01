@@ -10,11 +10,11 @@ import javax.swing.tree.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Shows the results of a status check.
@@ -132,7 +132,7 @@ public class StatusResultsPanel extends JPanel {
 
         private void handleClick( MouseEvent e ) {
             if ( e.isPopupTrigger() && tree.getSelectionCount() > 0 ) {
-                GUIUtils.showPopupMenu( popupMenu, StatusResultsPanel.this, e.getX(), e.getY() );
+                GUIUtilities.showPopupMenu( popupMenu, StatusResultsPanel.this, e.getX(), e.getY() );
             }
         }
     }
