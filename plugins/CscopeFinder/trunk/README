@@ -250,6 +250,9 @@ Release Notes
 -------------
 Below is a list of the issues resolved for each release.
 
+* Release 0.5
+    - Changed CaretChanging to BufferChanging (ezust)
+
 * Release 0.4
     - Emits a new CaretChanging EBMessage (for benefit of Navigator plugin) (ezust). 
     - Updated build.xml to use build-support
