@@ -23,9 +23,11 @@ plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 
 plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar svnkit-javahl.jar
 
-# title for DockableWindowManager
+# titles for DockableWindowManager
 subversion.title=SVN
 subversion.label=SVN
+subversion.browser.title=SVN Browser
+subversion.browser.label=SVN Browser
 
 # new setting for jEdit 4.2
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
@@ -46,21 +48,21 @@ ise.plugin.svn.pv.password.label=Password:
 ise.plugin.svn.action.label.1=Synchronize
 ise.plugin.svn.action.code.1=ise.plugin.svn.action.StatusAction
 ise.plugin.svn.action.label.2=Update
-ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateAction
+ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateActor
 ise.plugin.svn.action.label.3=Commit...
-ise.plugin.svn.action.code.3=ise.plugin.svn.action.CommitAction
+ise.plugin.svn.action.code.3=ise.plugin.svn.action.CommitActor
 ise.plugin.svn.action.label.4=-
 ise.plugin.svn.action.label.5=Revert...
-ise.plugin.svn.action.code.5=ise.plugin.svn.action.RevertAction
+ise.plugin.svn.action.code.5=ise.plugin.svn.action.RevertActor
 ise.plugin.svn.action.label.6=Add
-ise.plugin.svn.action.code.6=ise.plugin.svn.action.AddAction
+ise.plugin.svn.action.code.6=ise.plugin.svn.action.AddActor
 ise.plugin.svn.action.label.7=Resolve
 ise.plugin.svn.action.code.7=ise.plugin.svn.action.ResolvedAction
 ise.plugin.svn.action.label.8=-
 ise.plugin.svn.action.label.9=Info
 ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoAction
 ise.plugin.svn.action.label.10=Log
-ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogAction
+ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogActor
 ise.plugin.svn.action.label.11=Browse Repository
 ise.plugin.svn.action.code.11=ise.plugin.svn.action.BrowseRepositoryAction
 ise.plugin.svn.action.label.12=-

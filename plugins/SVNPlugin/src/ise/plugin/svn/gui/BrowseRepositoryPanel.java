@@ -3,7 +3,7 @@ package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.NodeActor;
 import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.action.SVNAction;
@@ -63,10 +64,11 @@ public class BrowseRepositoryPanel extends JPanel {
                             CheckoutData data = createData();
                             Object[] parts = path.getPath();
                             StringBuilder sb = new StringBuilder();
+                            sb.append(parts[0]);
                             for ( int i = 1; i < parts.length; i++ ) {
                                 sb.append( "/" ).append( parts[ i ].toString() );
                             }
-                            String url = chooser.getSelectedItem() + sb.toString();
+                            String url = sb.toString();
                             data.setURL( url );
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
                             action.actionPerformed( null );
@@ -78,10 +80,12 @@ public class BrowseRepositoryPanel extends JPanel {
         tree.addMouseListener( new MouseAdapter() {
                     public void mouseClicked( MouseEvent me ) {
                         if ( me.getClickCount() == 2 ) {
-                            NodeActor.setupLibrary();
+                            // for double-click on a text file, open the file in jEdit
                             TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
                             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
                             if ( node.isLeaf() ) {
+                                // leaf nodes should be files, not directories.
+                                // get url and path for the selected file
                                 Object[] parts = path.getPath();
                                 StringBuilder sb = new StringBuilder();
                                 for ( int i = 1; i < parts.length; i++ ) {
@@ -90,6 +94,9 @@ public class BrowseRepositoryPanel extends JPanel {
                                 CheckoutData data = createData();
                                 String filepath = sb.toString().substring(1);
                                 String url = data.getURL();
+
+                                // fetch the file contents
+                                NodeActor.setupLibrary();
                                 SVNRepository repository = null;
                                 try {
                                     repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
@@ -107,12 +114,17 @@ public class BrowseRepositoryPanel extends JPanel {
                                     String mimeType = ( String ) fileproperties.get( SVNProperty.MIME_TYPE );
                                     boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
+                                    // ignore non-text files for now
                                     if ( isTextType ) {
-                                        Buffer buffer = jEdit.newFile( getView() );
-                                        buffer.beginCompoundEdit();
-                                        buffer.remove( 0, buffer.getLength() );
-                                        buffer.insert( 0, baos.toString() );
-                                        buffer.endCompoundEdit();
+                                        // copy the file contents to a temp file.  Preserve
+                                        // the file name so that jEdit can apply highlighting
+                                        StringReader reader = new StringReader(baos.toString());
+                                        File outfile = new File(System.getProperty("java.io.tmpdir"), parts[parts.length - 1].toString());
+                                        outfile.deleteOnExit();     // automatic cleanup
+                                        BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
+                                        FileUtilities.copy(reader, writer);
+                                        writer.close();
+                                        jEdit.openFile(getView(), outfile.getAbsolutePath());
                                     }
                                 }
                                 catch ( Exception e ) {
