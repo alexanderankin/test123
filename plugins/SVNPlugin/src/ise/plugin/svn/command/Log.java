@@ -6,6 +6,7 @@ import java.util.*;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
@@ -20,55 +21,67 @@ import ise.plugin.svn.data.SVNData;
 
 public class Log {
 
-    private TreeMap<String, List<SVNLogEntry>> entries = new TreeMap<String, List<SVNLogEntry>>();
+    private TreeMap < String, List < SVNLogEntry >> entries = new TreeMap < String, List < SVNLogEntry >> ();
 
     private PrintStream out = null;
 
     /**
      * @return a list of paths that were scheduled to be added.
      */
-    public void doLog( SVNData cd ) throws CommandInitializationException, SVNException {
+    public void doLog( SVNData data ) throws CommandInitializationException, SVNException {
 
         // validate data values
-        if ( cd.getPaths() == null ) {
+        if ( data.getPaths() == null ) {
             return ;     // nothing to do
         }
-        if ( cd.getOut() == null ) {
+        if ( data.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
         }
-        if ( cd.getErr() == null ) {
-            cd.setErr( cd.getOut() );
+        if ( data.getErr() == null ) {
+            data.setErr( data.getOut() );
         }
 
         // convert paths to Files
-        List<String> paths = cd.getPaths();
-        File[] localPaths = new File[ paths.size() ];
-        for ( int i = 0; i < paths.size(); i++ ) {
-            localPaths[ i ] = new File( paths.get( i ) );
-            // check for file existence?
+        List<String> paths = data.getPaths();
+        File[] localPaths = null;
+        if ( !data.pathsAreURLs() ) {
+            localPaths = new File[ paths.size() ];
+            for ( int i = 0; i < paths.size(); i++ ) {
+                localPaths[ i ] = new File( paths.get( i ) );
+                // check for file existence?
+            }
         }
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
 
         // get a commit client
         SVNLogClient client = clientManager.getLogClient();
 
         // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
 
-        out = cd.getOut();
+        out = data.getOut();
 
         // files for logs, start revision, end revision, stop on copy, report paths, number of entries, handler
-        for ( File file : localPaths ) {
-            LogHandler handler = new LogHandler(file);
-            client.doLog( new File[] {file}, SVNRevision.create( 0L ), SVNRevision.HEAD, true, false, 100, handler );
-            entries.put(handler.getPath(), handler.getEntries());
+        if ( data.pathsAreURLs() ) {
+            for (String path : data.getPaths()) {
+                SVNURL svnurl = SVNURL.parseURIDecoded(path);
+                LogHandler handler = new LogHandler( path );
+                client.doLog( svnurl, null, SVNRevision.create( 0L ), SVNRevision.create( 0L ), SVNRevision.HEAD, true, false, 100, handler );
+                entries.put( handler.getPath(), handler.getEntries() );
+            }
         }
-
+        else {
+            for ( File file : localPaths ) {
+                LogHandler handler = new LogHandler( file );
+                client.doLog( new File[] {file}, SVNRevision.create( 0L ), SVNRevision.HEAD, true, false, 100, handler );
+                entries.put( handler.getPath(), handler.getEntries() );
+            }
+        }
         out.flush();
         out.close();
     }
@@ -82,6 +95,10 @@ public class Log {
             path = f.toString();
         }
 
+        public LogHandler( String p ) {
+            path = p;
+        }
+
         public void handleLogEntry( SVNLogEntry logEntry ) {
             if ( logEntries == null ) {
                 logEntries = new ArrayList<SVNLogEntry>();
@@ -90,7 +107,7 @@ public class Log {
             Log.this.printLogEntry( path, logEntry );
         }
 
-        public String getPath(){
+        public String getPath() {
             return path;
         }
 
@@ -99,7 +116,7 @@ public class Log {
         }
     }
 
-    public TreeMap<String, List<SVNLogEntry>> getLogEntries() {
+    public TreeMap < String, List < SVNLogEntry >> getLogEntries() {
         return entries;
     }
 
@@ -107,7 +124,7 @@ public class Log {
         if ( out == null )
             return ;
 
-        out.println("path: " + path);
+        out.println( "path: " + path );
         /*
          * gets the revision number
          */

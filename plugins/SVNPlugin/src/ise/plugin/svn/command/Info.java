@@ -31,52 +31,63 @@ public class Info {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );
 
-    public List<SVNInfo> info( SVNData cd ) throws CommandInitializationException, SVNException {
-        List<SVNInfo> results = getInfo( cd );
+    public List<SVNInfo> info( SVNData data ) throws CommandInitializationException, SVNException {
+        List<SVNInfo> results = getInfo( data );
 
         // print the results
         for ( SVNInfo info : results ) {
-            handleInfo( info, cd.getOut() );
+            handleInfo( info, data.getOut() );
         }
-        cd.getOut().close();
+        data.getOut().close();
         return results;
     }
 
-    public List<SVNInfo> getInfo( SVNData cd ) throws CommandInitializationException, SVNException {
+    public List<SVNInfo> getInfo( SVNData data ) throws CommandInitializationException, SVNException {
 
         // validate commit data values
-        if ( cd.getPaths() == null ) {
+        if ( data.getPaths() == null ) {
             return null;     // nothing to do
         }
-        if ( cd.getOut() == null ) {
+        if ( data.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
         }
-        if ( cd.getErr() == null ) {
-            cd.setErr( cd.getOut() );
+        if ( data.getErr() == null ) {
+            data.setErr( data.getOut() );
         }
 
         // convert first path to File
-        List<String> paths = cd.getPaths();
+        List<String> paths = data.getPaths();
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
 
         // get a commit client
         SVNWCClient client = clientManager.getWCClient();
 
         // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
 
         // actually fetch the info
         List<SVNInfo> results = new ArrayList<SVNInfo>();
-        for ( String path : paths ) {
-            File localPath = new File( path );
-            SVNInfo result = client.doInfo( localPath, SVNRevision.HEAD );
-            results.add( result );
+        if ( data.pathsAreURLs() ) {
+            for ( String path : data.getPaths() ) {
+                SVNURL svnurl = SVNURL.parseURIDecoded( path );
+                System.out.println("+++++ svnurl = " + svnurl);
+                SVNInfo result = client.doInfo( svnurl, SVNRevision.HEAD, SVNRevision.HEAD );
+                results.add( result );
+            }
         }
+        else {
+            for ( String path : paths ) {
+                File localPath = new File( path );
+                SVNInfo result = client.doInfo( localPath, SVNRevision.HEAD );
+                results.add( result );
+            }
+        }
+
         return results;
     }
 
@@ -84,92 +95,92 @@ public class Info {
         StringBuffer sb = new StringBuffer();
         sb.append( "\n" );
         if ( !info.isRemote() ) {
-            sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() )  + "\n" );
+            sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() ) + "\n" );
         }
         else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
-            sb.append( "Path: " + path  + "\n" );
+            sb.append( "Path: " + path + "\n" );
         }
         if ( info.getKind() != SVNNodeKind.DIR ) {
             if ( info.isRemote() ) {
-                sb.append( "Name: " + SVNPathUtil.tail( info.getPath() )  + "\n" );
+                sb.append( "Name: " + SVNPathUtil.tail( info.getPath() ) + "\n" );
             }
             else {
-                sb.append( "Name: " + info.getFile().getName()  + "\n" );
+                sb.append( "Name: " + info.getFile().getName() + "\n" );
             }
         }
-        sb.append( "URL: " + info.getURL()  + "\n" );
+        sb.append( "URL: " + info.getURL() + "\n" );
         if ( info.getRepositoryRootURL() != null ) {
-            sb.append( "Repository Root: " + info.getRepositoryRootURL()  + "\n" );
+            sb.append( "Repository Root: " + info.getRepositoryRootURL() + "\n" );
         }
         if ( info.isRemote() && info.getRepositoryUUID() != null ) {
-            sb.append( "Repository UUID: " + info.getRepositoryUUID()  + "\n" );
+            sb.append( "Repository UUID: " + info.getRepositoryUUID() + "\n" );
         }
         if ( info.getRevision() != null && info.getRevision().isValid() ) {
-            sb.append( "Revision: " + info.getRevision()  + "\n" );
+            sb.append( "Revision: " + info.getRevision() + "\n" );
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
-            sb.append( "Node Kind: directory"  + "\n" );
+            sb.append( "Node Kind: directory" + "\n" );
         }
         else if ( info.getKind() == SVNNodeKind.FILE ) {
-            sb.append( "Node Kind: file"  + "\n" );
+            sb.append( "Node Kind: file" + "\n" );
         }
         else if ( info.getKind() == SVNNodeKind.NONE ) {
-            sb.append( "Node Kind: none"  + "\n" );
+            sb.append( "Node Kind: none" + "\n" );
         }
         else {
-            sb.append( "Node Kind: unknown"  + "\n" );
+            sb.append( "Node Kind: unknown" + "\n" );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
-            sb.append( "Schedule: normal"  + "\n" );
+            sb.append( "Schedule: normal" + "\n" );
         }
         else if ( !info.isRemote() ) {
-            sb.append( "Schedule: " + info.getSchedule()  + "\n" );
+            sb.append( "Schedule: " + info.getSchedule() + "\n" );
         }
         if ( info.getAuthor() != null ) {
-            sb.append( "Last Changed Author: " + info.getAuthor()  + "\n" );
+            sb.append( "Last Changed Author: " + info.getAuthor() + "\n" );
         }
         if ( info.getCommittedRevision() != null && info.getCommittedRevision().getNumber() >= 0 ) {
-            sb.append( "Last Changed Rev: " + info.getCommittedRevision() + "\n"  );
+            sb.append( "Last Changed Rev: " + info.getCommittedRevision() + "\n" );
         }
         if ( info.getCommittedDate() != null ) {
-            sb.append( "Last Changed Date: " + formatDate( info.getCommittedDate() ) + "\n"  );
+            sb.append( "Last Changed Date: " + formatDate( info.getCommittedDate() ) + "\n" );
         }
         if ( !info.isRemote() ) {
             if ( info.getTextTime() != null ) {
-                sb.append( "Text Last Updated: " + formatDate( info.getTextTime() )  + "\n" );
+                sb.append( "Text Last Updated: " + formatDate( info.getTextTime() ) + "\n" );
             }
             if ( info.getPropTime() != null ) {
-                sb.append( "Properties Last Updated: " + formatDate( info.getPropTime() ) + "\n"  );
+                sb.append( "Properties Last Updated: " + formatDate( info.getPropTime() ) + "\n" );
             }
             if ( info.getChecksum() != null ) {
-                sb.append( "Checksum: " + info.getChecksum()  + "\n" );
+                sb.append( "Checksum: " + info.getChecksum() + "\n" );
             }
             if ( info.getCopyFromURL() != null ) {
-                sb.append( "Copied From URL: " + info.getCopyFromURL()  + "\n" );
+                sb.append( "Copied From URL: " + info.getCopyFromURL() + "\n" );
             }
             if ( info.getCopyFromRevision() != null && info.getCopyFromRevision().getNumber() >= 0 ) {
-                sb.append( "Copied From Rev: " + info.getCopyFromRevision()  + "\n" );
+                sb.append( "Copied From Rev: " + info.getCopyFromRevision() + "\n" );
             }
             if ( info.getConflictOldFile() != null ) {
-                sb.append( "Conflict Previous Base File: " + info.getConflictOldFile().getName()  + "\n" );
+                sb.append( "Conflict Previous Base File: " + info.getConflictOldFile().getName() + "\n" );
             }
             if ( info.getConflictWrkFile() != null ) {
-                sb.append( "Conflict Previous Working File: " + info.getConflictWrkFile().getName() + "\n"  );
+                sb.append( "Conflict Previous Working File: " + info.getConflictWrkFile().getName() + "\n" );
             }
             if ( info.getConflictNewFile() != null ) {
-                sb.append( "Conflict Current Base File: " + info.getConflictNewFile().getName()  + "\n" );
+                sb.append( "Conflict Current Base File: " + info.getConflictNewFile().getName() + "\n" );
             }
             if ( info.getPropConflictFile() != null ) {
-                sb.append( "Conflict Properties File: " + info.getPropConflictFile().getName()  + "\n" );
+                sb.append( "Conflict Properties File: " + info.getPropConflictFile().getName() + "\n" );
             }
         }
         if ( info.getLock() != null ) {
             SVNLock lock = info.getLock();
-            sb.append( "Lock Token: " + lock.getID() + "\n"  );
-            sb.append( "Lock Owner: " + lock.getOwner() + "\n"  );
-            sb.append( "Lock Created: " + formatDate( lock.getCreationDate() )  + "\n" );
+            sb.append( "Lock Token: " + lock.getID() + "\n" );
+            sb.append( "Lock Owner: " + lock.getOwner() + "\n" );
+            sb.append( "Lock Created: " + formatDate( lock.getCreationDate() ) + "\n" );
             if ( lock.getComment() != null ) {
                 sb.append( "Lock Comment " );
                 int lineCount = getLineCount( lock.getComment() );
@@ -182,7 +193,7 @@ public class Info {
                 sb.append( ":\n" + lock.getComment() + "\n" );
             }
         }
-        out.println(sb.toString());
+        out.println( sb.toString() );
         out.flush();
     }
 

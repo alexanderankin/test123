@@ -11,6 +11,7 @@ public class SVNData {
     private ConsolePrintStream out;
     private ConsolePrintStream err;
     private List<String> paths;
+    private boolean pathsAreUrls = false;
     private String username = "";
     private String password = "";
     private boolean recursive = false;
@@ -74,6 +75,14 @@ public class SVNData {
      */
     public void setPaths( List<String> paths ) {
         this.paths = paths;
+    }
+
+    public boolean pathsAreURLs() {
+        return pathsAreUrls;
+    }
+
+    public void setPathsAreURLs(boolean b) {
+        pathsAreUrls = b;
     }
 
     /**

@@ -12,8 +12,9 @@ import javax.swing.tree.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import ise.plugin.svn.action.NodeActor;
+import ise.plugin.svn.action.*;
 import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.library.PasswordHandler;
@@ -22,6 +23,7 @@ import ise.plugin.svn.action.BrowseRepositoryAction;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.ProjectViewer;
+import org.gjt.sp.jedit.GUIUtilities;
 
 import org.tmatesoft.svn.core.io.*;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
@@ -33,6 +35,9 @@ public class BrowseRepositoryPanel extends JPanel {
     private View view = null;
     private PropertyComboBox chooser = null;
     private JTree tree = null;
+    private JPopupMenu popupMenu = null;
+    private String username = null;
+    private String password = null;
 
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
@@ -64,7 +69,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             CheckoutData data = createData();
                             Object[] parts = path.getPath();
                             StringBuilder sb = new StringBuilder();
-                            sb.append(parts[0]);
+                            sb.append( parts[ 0 ] );
                             for ( int i = 1; i < parts.length; i++ ) {
                                 sb.append( "/" ).append( parts[ i ].toString() );
                             }
@@ -92,7 +97,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 CheckoutData data = createData();
-                                String filepath = sb.toString().substring(1);
+                                String filepath = sb.toString().substring( 1 );
                                 String url = data.getURL();
 
                                 // fetch the file contents
@@ -118,13 +123,13 @@ public class BrowseRepositoryPanel extends JPanel {
                                     if ( isTextType ) {
                                         // copy the file contents to a temp file.  Preserve
                                         // the file name so that jEdit can apply highlighting
-                                        StringReader reader = new StringReader(baos.toString());
-                                        File outfile = new File(System.getProperty("java.io.tmpdir"), parts[parts.length - 1].toString());
+                                        StringReader reader = new StringReader( baos.toString() );
+                                        File outfile = new File( System.getProperty( "java.io.tmpdir" ), parts[ parts.length - 1 ].toString() );
                                         outfile.deleteOnExit();     // automatic cleanup
-                                        BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
-                                        FileUtilities.copy(reader, writer);
+                                        BufferedWriter writer = new BufferedWriter( new FileWriter( outfile ) );
+                                        FileUtilities.copy( reader, writer );
                                         writer.close();
-                                        jEdit.openFile(getView(), outfile.getAbsolutePath());
+                                        jEdit.openFile( getView(), outfile.getAbsolutePath() );
                                     }
                                 }
                                 catch ( Exception e ) {
@@ -136,6 +141,9 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 }
                              );
+
+        tree.addMouseListener( new TreeMouseListener() );
+        popupMenu = createPopupMenu();
 
         JButton go = new JButton( "Go" );
         go.addActionListener( new ActionListener() {
@@ -165,8 +173,8 @@ public class BrowseRepositoryPanel extends JPanel {
         if ( value != null ) {
             data.setURL( value );
         }
-        String username = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".username" );
-        String password = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".password" );
+        username = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".username" );
+        password = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".password" );
         if ( password != null && password.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();
@@ -203,4 +211,116 @@ public class BrowseRepositoryPanel extends JPanel {
         return project == null ? "" : project.getName();
     }
 
+    /**
+     * MouseListener to popup context menu on the tree.
+     */
+    class TreeMouseListener extends MouseAdapter {
+        public void mouseReleased( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        public void mousePressed( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        private void handleClick( MouseEvent me ) {
+            if ( me.isPopupTrigger() ) {
+                if ( tree.getSelectionCount() == 0 ) {
+                    TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                    tree.addSelectionPath( path );
+                }
+                GUIUtilities.showPopupMenu( popupMenu, BrowseRepositoryPanel.this, me.getX(), me.getY() );
+            }
+        }
+    }
+
+    /**
+     * Create the context menu.
+     */
+    private JPopupMenu createPopupMenu() {
+        // update, commit, revert, add, log, need to add others as appropriate
+        final JPopupMenu pm = new JPopupMenu();
+
+        JMenuItem mi = new JMenuItem( "Checkout" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Info" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        SVNData data = new SVNData();
+                        data.setPaths( paths );
+                        data.setPathsAreURLs( true );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        InfoAction action = new InfoAction( view, data );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Log" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        SVNData data = new SVNData();
+                        data.setPaths( paths );
+                        data.setPathsAreURLs( true );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        LogAction action = new LogAction( view, data );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        JMenuItem mi = new JMenuItem( "Properties" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                    }
+                }
+                            );
+
+        return pm;
+    }
 }
