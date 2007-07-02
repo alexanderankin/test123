@@ -27,6 +27,7 @@ public class LogAction implements ActionListener {
 
     private View view = null;
     private List<String> paths = null;
+    private boolean pathsAreUrls = false;
     private String username = null;
     private String password = null;
 
@@ -47,10 +48,25 @@ public class LogAction implements ActionListener {
         this.password = password;
     }
 
+    public LogAction(View view, SVNData data) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( data == null )
+            throw new IllegalArgumentException( "data may not be null" );
+        if ( data.getPaths() == null )
+            throw new IllegalArgumentException( "paths may not be null" );
+        this.view = view;
+        this.paths = data.getPaths();
+        this.pathsAreUrls = data.pathsAreURLs();
+        this.username = data.getUsername();
+        this.password = data.getPassword();
+    }
+
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
             final SVNData data = new SVNData();
             data.setPaths( paths );
+            data.setPathsAreURLs(pathsAreUrls);
 
             if ( username != null && password != null ) {
                 data.setUsername( username );
