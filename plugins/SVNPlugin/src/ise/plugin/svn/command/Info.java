@@ -75,7 +75,6 @@ public class Info {
         if ( data.pathsAreURLs() ) {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
-                System.out.println("+++++ svnurl = " + svnurl);
                 SVNInfo result = client.doInfo( svnurl, SVNRevision.HEAD, SVNRevision.HEAD );
                 results.add( result );
             }
