@@ -69,8 +69,8 @@ public class Plugin extends EditPlugin {
 				viewport.setSingleTabAllowed(false);
 				mv.add(viewport, BorderLayout.CENTER);
 				view.setContentPane(mv);
-				DockingManager.restoreLayout();
 				PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
+				DockingManager.restoreLayout();
 			}
 		});
 
@@ -130,7 +130,7 @@ public class Plugin extends EditPlugin {
 			if (dockables.length == 0)
 				return;
 			float split = (region.equals(DockingConstants.WEST_REGION) ||
-				region.equals(DockingConstants.NORTH_REGION)) ? 0.2f : 0.75f;
+				region.equals(DockingConstants.SOUTH_REGION)) ? 0.2f : 0.75f;
 			sequence.add(dockables[0], MAIN_VIEW, region, split);
 			for (int i = 1; i < dockables.length; i++)
 				sequence.add(dockables[i], dockables[0]);
@@ -145,7 +145,6 @@ public class Plugin extends EditPlugin {
 			this.view = view;
 		}
 		public Component getDockableComponent(String dockableId) {
-			System.err.println("getDockableComponent:"  + dockableId);
 			if(MAIN_VIEW.equals(dockableId))
 				return createMainView();
 			return createView(dockableId);
