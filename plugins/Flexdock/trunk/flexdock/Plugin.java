@@ -17,12 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package flexdock;
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockableFactory;
@@ -31,8 +34,6 @@ import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DockableComponentWrapper;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
-import org.flexdock.docking.props.DockingPortPropertySet;
-import org.flexdock.docking.props.PropertyManager;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.LayoutSequence;
 import org.flexdock.perspective.Perspective;
@@ -54,33 +55,25 @@ public class Plugin extends EditPlugin {
 	private static final String PERSPECTIVE_FILE = "jedit.xml";
 	private static final String MAIN_VIEW = "Main";
 	private static final String MAIN_PERSPECTIVE = "jEdit";
-	private static org.flexdock.view.View mainView;
 	private static Viewport viewport;
+	public static Container editPane;
 	
 	public static void doStart(final View view) {
 		configureDocking(view);
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				editPane = view.getContentPane();
+				JPanel mv = new JPanel(new BorderLayout());
 				viewport = new Viewport();
-				mainView = createMainView(view);
-				viewport.dock(mainView);
 				viewport.setSingleTabAllowed(false);
-				view.setContentPane(viewport);
+				mv.add(viewport, BorderLayout.CENTER);
+				view.setContentPane(mv);
 				DockingManager.restoreLayout();
 				PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
 			}
 		});
 
-	}
-	private static org.flexdock.view.View createMainView(View view) {
-		org.flexdock.view.View mainView =
-			new org.flexdock.view.View(MAIN_VIEW, null, null);
-
-		mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
-		mainView.setTitlebar(null);
-		mainView.setContentPane(view.getContentPane());
-		return mainView;
 	}
 
 	private static void configureDocking(View view) {
@@ -152,6 +145,7 @@ public class Plugin extends EditPlugin {
 			this.view = view;
 		}
 		public Component getDockableComponent(String dockableId) {
+			System.err.println("getDockableComponent:"  + dockableId);
 			if(MAIN_VIEW.equals(dockableId))
 				return createMainView();
 			return createView(dockableId);
@@ -166,6 +160,12 @@ public class Plugin extends EditPlugin {
 		}
 		
 		private org.flexdock.view.View createMainView() {
+			org.flexdock.view.View mainView =
+				new org.flexdock.view.View(MAIN_VIEW, null, null);
+
+			mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
+			mainView.setTitlebar(null);
+			mainView.setContentPane(editPane);
 			return mainView;
 		}
 		private JComponent getJEditDockable(String id, DockableWindowManager dockMan) {
