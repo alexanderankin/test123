@@ -56,13 +56,13 @@ import common.io.AtomicOutputStream;
 import common.threads.WorkerThreadPool;
 import common.threads.WorkRequest;
 
+import projectviewer.event.StructureUpdate;
 import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectViewerConfig;
-import projectviewer.event.ProjectListener;
 import projectviewer.persist.OldConfigLoader;
 import projectviewer.persist.ProjectPersistenceManager;
 //}}}
@@ -312,7 +312,9 @@ public final class ProjectManager {
 		if (e == null) return;
 
 		projects.remove(p.getName());
-		ProjectViewer.projectRemoved(this, p);
+		ProjectViewer.projectRemoved(p);
+		StructureUpdate.send(p, StructureUpdate.Type.PROJECT_REMOVED);
+
 
 		if (e.fileName != null) {
 			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
@@ -343,7 +345,9 @@ public final class ProjectManager {
 	} //}}}
 
 	//{{{ +addProject(VPTProject, VPTGroup) : void
-	/** Adds a project to the list. */
+	/**
+	 *	Adds a project to the list.
+	 */
 	public void addProject(VPTProject p, VPTGroup parent) {
 		Entry e = new Entry();
 		e.project = p;
@@ -352,7 +356,8 @@ public final class ProjectManager {
 
 		ProjectViewer.insertNodeInto(p, parent);
 		ProjectViewer.nodeStructureChangedFlat(parent);
-		ProjectViewer.fireProjectAdded(this, p);
+
+		StructureUpdate.send(p, StructureUpdate.Type.PROJECT_ADDED);
 		fireDynamicMenuChange();
 
 		nodeActions.addAction(new VPTNodeActivateAction(p));
@@ -387,10 +392,6 @@ public final class ProjectManager {
 						}
 					} else {
 						Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
-					}
-					// Adds the listeners to the project
-					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-						e.project.addProjectListener((ProjectListener)i.next());
 					}
 				}
 			}
@@ -437,11 +438,6 @@ public final class ProjectManager {
 	public void unloadProject(VPTProject p) {
 		Entry e = (Entry) projects.get(p.getName());
 		saveProject(e.project, true);
-		// remove the project's listeners
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			e.project.removeProjectListener((ProjectListener)i.next());
-		}
-		// remove all other things
 		e.project.removeAllChildren();
 		e.project.getProperties().clear();
 		e.project.clearOpenFiles();
@@ -472,49 +468,6 @@ public final class ProjectManager {
 	public void setGlobalFilterList(List globalFilterList) {
 		this.globalFilterList = globalFilterList;
 		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
-	} //}}}
-
-	//{{{ +addProjectListeners(PluginJAR) : void
-	/**
-	 *	Adds the plugin's declared project listeners to the list of project
-	 *	listeners to be added to a project when it's activated.
-	 */
-	public void addProjectListeners(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-						jar.getPlugin().getClassName() + ".prj-listeners");
-		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectListener.class);
-		if (aList != null && aList.size() > 0) {
-			listeners.addAll(aList);
-			// Add the listeners to loaded projects
-			if (projects.size() > 0)
-			for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
-				Entry e = (Entry) i.next();
-				if (e.isLoaded) {
-					for (Iterator j = aList.iterator(); j.hasNext(); ) {
-						e.project.addProjectListener((ProjectListener)j.next());
-					}
-				}
-			}
-		}
-	} //}}}
-
-	//{{{ +removeProjectListeners(PluginJAR) : void
-	/**
-	 *	Removes the project listeners of the given plugin from the list, and
-	 *	from any active project in ProjectViewer.
-	 */
-	public void removeProjectListeners(PluginJAR jar) {
-		Collection toRemove = PVActions.prune(listeners, jar);
-		if (toRemove != null)
-		for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
-			Entry e = (Entry) i.next();
-			if (e.isLoaded) {
-				for (Iterator j = toRemove.iterator(); j.hasNext(); ) {
-					e.project.removeProjectListener((ProjectListener)j.next());
-				}
-			}
-		}
 	} //}}}
 
 	//{{{ #unloadProjectProperties() : void

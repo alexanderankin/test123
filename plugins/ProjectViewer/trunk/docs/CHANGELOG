@@ -21,6 +21,9 @@ Version 3.0.0:
 		- Bump requirements: jEdit 4.3, Java 5
 		- Refactor the tree handling code into its own class, to try to
 		  simplify the ProjectViewer class.
+        - Get rid of the old listener-based event notification system,
+          reorganize the events into newer classes, and use the EditBus
+          to send events.
 
 
 ================================================================================

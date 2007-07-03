@@ -271,14 +271,15 @@ public class VPTContextMenu extends MouseAdapter {
 			JPopupMenu pm = GUIUtilities.loadPopupMenu("projectviewer.tmp_menu");
 			Component[] userActions = pm.getComponents();
 			if (userActions != null && userActions.length > 0) {
- 
+
 				if (!usersFirst) popupMenu.addSeparator();
 				int i=0;
 				for (i = 0; i < userActions.length; i++) {
-					if (usersFirst) 
+					if (usersFirst) {
 						popupMenu.insert(userActions[i], i);
-					else 
+					} else {
 						popupMenu.add(userActions[i]);
+					}
 				}
 				if (usersFirst) popupMenu.insert(new JPopupMenu.Separator(), i++);
 			}
@@ -287,11 +288,11 @@ public class VPTContextMenu extends MouseAdapter {
 		if (actions.size() > 0) {
 			List linkedActions = new ArrayList();
 			ActionSeparator sep = new ActionSeparator();
-			
+
 			separators.add(sep);
 			sep.setLinkedActions(linkedActions);
 			popupMenu.add(sep.getMenuItem());
-			
+
 			for (Iterator it = actions.iterator(); it.hasNext(); ) {
 				a = (Action) it.next();
 				a = (Action) a.clone();

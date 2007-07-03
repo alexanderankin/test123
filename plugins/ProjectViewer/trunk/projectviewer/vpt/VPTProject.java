@@ -32,12 +32,12 @@ import java.util.Set;
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
-import projectviewer.event.ProjectEvent;
-import projectviewer.event.ProjectListener;
+import projectviewer.event.ProjectUpdate;
 import projectviewer.persist.DeferredProperty;
 //}}}
 
@@ -413,84 +413,14 @@ public class VPTProject extends VPTNode {
 		return filterList;
 	} //}}}
 
-	//{{{ Listener Subscription and Event Dispatching
-
-	//{{{ +addProjectListener(ProjectListener) : void
-	/**
-	 *	Adds a new listener to the list. The list if listeners is global to
-	 *	all the projects, so listeners don't need to be registered to each
-	 *	individual project.
-	 */
-	public void addProjectListener(ProjectListener lstnr) {
-		if (listeners == null) {
-			listeners = new HashSet();
-		}
-		listeners.add(lstnr);
-	} //}}}
-
-	//{{{ +removeProjectListener(ProjectListener) : void
-	/** Removes a listener from the list. */
-	public void removeProjectListener(ProjectListener lstnr) {
-		if (listeners != null) {
-			listeners.remove(lstnr);
-		}
-	} //}}}
-
-	//{{{ +hasListeners() : boolean
-	/**
-	 *	Returns whether there are any listeners registered. Mainly for use to
-	 *	enhance performance by classes that would fire these events.
-	 */
-	public boolean hasListeners() {
-		return (listeners != null && listeners.size() > 0);
-	} //}}}
-
 	//{{{ +fireFilesChanged(ArrayList, ArrayList) : void
 	/**
 	 *	Notifies the listeners that a group of files has been added to and/or
 	 *	removed from the project.
 	 */
-	public void fireFilesChanged(ArrayList added, ArrayList removed) {
-		if (hasListeners()) {
-			ProjectEvent pe = new ProjectEvent(this, added, removed);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				ProjectListener lstnr = (ProjectListener) i.next();
-				if (added != null && added.size() > 0) {
-					lstnr.filesAdded(pe);
-				}
-				if (removed != null && removed.size() > 0) {
-					lstnr.filesRemoved(pe);
-				}
-			}
-		}
-	} //}}}
-
-	//{{{ +fireFileAdded(VPTFile) : void
-	/**
-	 *	Notifies the listeners that a single file has been added to the
-	 *	project.
-	 */
-	public void fireFileAdded(VPTFile file) {
-		if (hasListeners()) {
-			ProjectEvent pe = new ProjectEvent(this, file, true);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((ProjectListener)i.next()).fileAdded(pe);
-			}
-		}
-	} //}}}
-
-	//{{{ +fireFileRemoved(VPTFile) : void
-	/**
-	 *	Notifies the listeners that a single file has been added to the
-	 *	project.
-	 */
-	public void fireFileRemoved(VPTFile file) {
-		if (hasListeners()) {
-			ProjectEvent pe = new ProjectEvent(this, file, false);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((ProjectListener)i.next()).fileRemoved(pe);
-			}
-		}
+	public void fireFilesChanged(List<VPTFile> added, List<VPTFile> removed) {
+		ProjectUpdate up = new ProjectUpdate(this, added, removed);
+		EditBus.send(up);
 	} //}}}
 
 	//{{{ +firePropertiesChanged() : void
@@ -499,15 +429,9 @@ public class VPTProject extends VPTNode {
 	 *	project.
 	 */
 	public void firePropertiesChanged() {
-		if (hasListeners()) {
-			ProjectEvent pe = new ProjectEvent(this);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((ProjectListener)i.next()).propertiesChanged(pe);
-			}
-		}
+		ProjectUpdate up = new ProjectUpdate(this);
+		EditBus.send(up);
 	} //}}}
-
-	//}}}
 
 }
 

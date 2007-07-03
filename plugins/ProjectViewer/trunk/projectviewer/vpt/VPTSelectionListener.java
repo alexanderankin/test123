@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 
 import projectviewer.ProjectViewer;
+import projectviewer.event.ViewerUpdate;
 //}}}
 
 /**
@@ -81,7 +82,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		if (node == null) {
 			return;
 		}
-		ProjectViewer.fireNodeSelected(viewer, node);
+		viewer.sendUpdate(node, ViewerUpdate.Type.NODE_SELECTED);
 
 		boolean doubleClick = isDoubleClick(evt);
 		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);

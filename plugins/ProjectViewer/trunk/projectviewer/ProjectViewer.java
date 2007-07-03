@@ -84,6 +84,9 @@ import common.threads.WorkerThreadPool;
 import errorlist.ErrorSource;
 import errorlist.ErrorSourceUpdate;
 
+import projectviewer.event.StructureUpdate;
+import projectviewer.event.ViewerUpdate;
+
 import projectviewer.gui.ProjectComboBox;
 
 import projectviewer.vpt.VPTFile;
@@ -92,9 +95,6 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.ProjectTreePanel;
-
-import projectviewer.event.ProjectViewerEvent;
-import projectviewer.event.ProjectViewerListener;
 
 import projectviewer.action.Action;
 import projectviewer.action.ExpandAllAction;
@@ -121,8 +121,6 @@ public final class ProjectViewer extends JPanel
 	private static final ProjectViewerConfig config;
 	private static final Map<View,ViewerEntry> viewers;
 	private static final List<Action> actions;
-
-	private static final HashMap listeners		= new HashMap();
 
 	//{{{ Static Initialization
 	/**
@@ -207,232 +205,6 @@ public final class ProjectViewer extends JPanel
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
 		return (ve != null) ? ve.dockable : null;
 	} //}}}
-
-	//{{{ Event Handling
-
-	//{{{ +_addProjectViewerListener(ProjectViewerListener, View)_ : void
-	/**
-	 *	Add a listener for the instance of project viewer of the given
-	 *	view. If the given view is null, the listener will be called from
-	 *	all instances.
-	 *
-	 *	<p>Additionally, for listeners that are registered for all views, a
-	 *	ProjectViewerEvent is fired when a different view is selected.</p>
-	 *
-	 *	@param	lstnr	The listener to add.
-	 *	@param	view	The view that the lstnr is attached to, or <code>null</code>
-	 *					if the listener wants to be called from all views.
-	 */
-	public static void addProjectViewerListener(ProjectViewerListener lstnr, View view) {
-		ArrayList lst = (ArrayList) listeners.get(view);
-		if (lst == null) {
-			lst = new ArrayList();
-			listeners.put(view, lst);
-		}
-		lst.add(lstnr);
-	} //}}}
-
-	//{{{ +_removeProjectViewerListener(ProjectViewerListener, View)_ : void
-	/**
-	 *	Remove the listener from the list of listeners for the given view. As
-	 *	with the {@link #addProjectViewerListener(ProjectViewerListener, View) add}
-	 *	method, <code>view</code> can be <code>null</code>.
-	 */
-	public static void removeProjectViewerListener(ProjectViewerListener lstnr, View view) {
-		ArrayList lst = (ArrayList) listeners.get(view);
-		if (lst != null) {
-			lst.remove(lstnr);
-		}
-	} //}}}
-
-	//{{{ +_fireProjectLoaded(Object, VPTProject, View)_ : void
-	/**
-	 *	Fires an event for the loading of a project. Notify all the listeners
-	 *	registered for the given view and listeners registered for all
-	 *	views.
-	 *
-	 *	<p>If the view provided is null, only the listeners registered for the
-	 *	null View will receive the event.</p>
-	 *
-	 *	@param	src		The viewer that generated the change, or null.
-	 *	@param	p		The activated project.
-	 *	@param	v		The view where the change occured, or null.
-	 */
-	public static void fireProjectLoaded(final Object src,
-										 final VPTProject p,
-										 final View v)
-	{
-		SwingUtilities.invokeLater(
-			new Runnable() {
-				public void run() {
-					Object mySrc = (src != null) ? src : v;
-					ProjectViewerEvent evt = new ProjectViewerEvent(mySrc,
-																	getViewer(v),
-																	p);
-
-					Set listeners = getAllListeners(v);
-					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-						((ProjectViewerListener)i.next()).projectLoaded(evt);
-					}
-				}
-			}
-		);
-	} //}}}
-
-	//{{{ +_fireGroupActivated(VPTGroup, View)_ : void
-	/**
-	 *	Fires an event for the loading of a group. Notify all the listeners
-	 *	registered for the given view and listeners registered for all
-	 *	views.
-	 *
-	 *	<p>If the view provided is null, only the listeners registered for the
-	 *	null View will receive the event.</p>
-	 *
-	 *	@param	grp		The activated group.
-	 *	@param	v		The view where the change occured, or null.
-	 */
-	public static void fireGroupActivated(final VPTGroup grp, final View v) {
-		SwingUtilities.invokeLater(
-			new Runnable() {
-				public void run() {
-					ProjectViewer viewer = getViewer(v);
-					ProjectViewerEvent evt = new ProjectViewerEvent(grp, viewer);
-					Set listeners = getAllListeners(v);
-					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-						((ProjectViewerListener)i.next()).groupActivated(evt);
-					}
-				}
-			}
-		);
-	} //}}}
-
-	//{{{ +_fireNodeSelected(ProjectViewer, VPTNode)_ : void
-	public static void fireNodeSelected(ProjectViewer src, VPTNode node) {
-		View v = jEdit.getActiveView();
-		ProjectViewerEvent evt = new ProjectViewerEvent(node, src);
-		Set listeners = getAllListeners(v);
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).nodeSelected(evt);
-		}
-	} //}}}
-
-	//{{{ +_fireProjectAdded(Object, VPTProject)_ : void
-	/**
-	 *	Fires a "project added" event. All listeners, regardless of the view, are
-	 *	notified of this event.
-	 */
-	public static void fireProjectAdded(Object src, VPTProject p) {
-		Set notify = getAllListeners(null);
-		ProjectViewerEvent evt = new ProjectViewerEvent(src, p);
-		for (Iterator i = notify.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).projectAdded(evt);
-		}
-	} //}}}
-
-	//{{{ +_fireProjectRemoved(Object, VPTProject)_ : void
-	/**
-	 *	Fires a "project removed" event. All listeners, regardless of the view, are
-	 *	notified of this event.
-	 */
-	public static void fireProjectRemoved(Object src, VPTProject p) {
-		Set notify = getAllListeners(null);
-		ProjectViewerEvent evt = new ProjectViewerEvent(src, p);
-		for (Iterator i = notify.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).projectRemoved(evt);
-		}
-	} //}}}
-
-	//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
-	/**
-	 *	Removes the listeners loaded by the given plugin from the listener
-	 *	list. Meant to be called when said plugin is unloaded by jEdit.
-	 */
-	public static void removeProjectViewerListeners(PluginJAR jar) {
-		for (Iterator i = listeners.values().iterator(); i.hasNext();) {
-			PVActions.prune((Collection) i.next(), jar);
-		}
-	} //}}}
-
-	//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
-	/**
-	 *	Adds to the list of listeners for the given view the listeners that
-	 *	have been declared by the given plugin using properties. For global
-	 *	listeners, "view" should be null.
-	 */
-	public static void addProjectViewerListeners(PluginJAR jar, View view) {
-		if (jar.getPlugin() == null) return;
-		String list;
-		if (view == null) {
-			list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".global-pv-listeners");
-		} else {
-			list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".pv-listeners");
-		}
-
-		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectViewerListener.class);
-		if (aList != null && aList.size() > 0) {
-			ArrayList existing = (ArrayList) listeners.get(view);
-			if (existing == null) {
-				listeners.put(view, aList);
-			} else {
-				existing.addAll(aList);
-			}
-		}
-	} //}}}
-
-	//{{{ +_fireNodeMovedEvent(VPTNode, VPTGroup)_ : void
-	public static void fireNodeMovedEvent(VPTNode moved, VPTGroup oldParent) {
-		Set notify = getAllListeners(null);
-		ProjectViewerEvent pve = new ProjectViewerEvent(moved, oldParent);
-		for (Iterator i = notify.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).nodeMoved(pve);
-		}
-
-	} //}}}
-
-	//{{{ +_fireGroupAddedEvent(VPTGroup)_ : void
-	public static void fireGroupAddedEvent(VPTGroup group) {
-		Set notify = getAllListeners(null);
-		ProjectViewerEvent pve = new ProjectViewerEvent(group);
-		for (Iterator i = notify.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).groupAdded(pve);
-		}
-	} //}}}
-
-	//{{{ +_fireGroupRemovedEvent(VPTGroup)_ : void
-	public static void fireGroupRemovedEvent(VPTGroup group) {
-		Set notify = getAllListeners(null);
-		ProjectViewerEvent pve = new ProjectViewerEvent(group);
-		for (Iterator i = notify.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).groupRemoved(pve);
-		}
-	} //}}}
-
-	//{{{ -_getAllListeners(View)_ : Set
-	/**
-	 *	Returns a set of all registered ProjectViewerListeners. If a view
-	 *	is provided, return only the listeners registered to that view, plus
-	 *	the listeners registered globaly.
-	 */
-	private static Set getAllListeners(View v) {
-		HashSet all = new HashSet();
-		if (v == null) {
-			for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
-				all.addAll((ArrayList)i.next());
-			}
-		} else {
-			Object o = listeners.get(v);
-			if (o != null)
-				all.addAll((ArrayList)o);
-			o = listeners.get(null);
-			if (o != null)
-				all.addAll((ArrayList)o);
-		}
-		return all;
-	} //}}}
-
-	//}}}
 
 	//{{{ Tree Changes Broadcast Methods
 
@@ -530,8 +302,10 @@ public final class ProjectViewer extends JPanel
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
 	 *	a node's structure. Then, rebuild the project combo boxes.
+	 *
+	 *	@since PV 3.0.0
 	 */
-	public static void projectRemoved(Object src, VPTProject p) {
+	public static void projectRemoved(VPTProject p) {
 		VPTNode parent = (VPTNode) p.getParent();
 		int index = parent.getIndex(p);
 		int[] idx = new int[] { index };
@@ -553,7 +327,6 @@ public final class ProjectViewer extends JPanel
 				ve.dockable.getTreePanel().nodesWereRemoved(parent, idx, removed);
 			}
 		}
-		fireProjectRemoved(src, p);
 	} //}}}
 
 	//}}}
@@ -589,20 +362,19 @@ public final class ProjectViewer extends JPanel
 		}
 
 		if (ve.dockable == null) {
-			// Fires events if the dockable is not available
-			// (setRootNode() fires events when the dockable is available)
-			if (n.isProject()) {
-				fireProjectLoaded(ProjectViewer.class, (VPTProject) n, aView);
-			} else {
-				fireGroupActivated((VPTGroup)n, aView);
-			}
-
 			// Loads projects if not yet loaded
 			if (n.isProject()
 					&& !ProjectManager.getInstance().isLoaded(n.getName())) {
 				ProjectManager.getInstance().getProject(n.getName());
 			}
-		} else {
+
+			// Fires events if the dockable is not available
+			// (setRootNode() fires events when the dockable is available)
+			ViewerUpdate upd = new ViewerUpdate(aView,
+												n,
+												ViewerUpdate.Type.PROJECT_LOADED);
+			EditBus.send(upd);
+		} else if (!ve.dockable.isLoadingProject) {
 			ve.dockable.setRootNode(n);
 		}
 
@@ -736,13 +508,6 @@ public final class ProjectViewer extends JPanel
 
 		ccl = new ConfigChangeListener();
 		config.addPropertyChangeListener(ccl);
-
-		// Loads the listeners from plugins that register listeners using global
-		// properties instead of calling the addProjectViewerListener() method.
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			addProjectViewerListeners(plugins[i].getPluginJAR(), view);
-		}
 
 		// Register the dockable window in the viewer list
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
@@ -1106,12 +871,12 @@ public final class ProjectViewer extends JPanel
 			}
 			openProject(p);
 			if (ve.node != p) {
-				fireProjectLoaded(this, p, view);
+				sendUpdate(p, ViewerUpdate.Type.PROJECT_LOADED);
 				ve.node = p;
 			}
 		} else if (n.isGroup()){
 			if (ve.node != n) {
-				fireGroupActivated((VPTGroup)n, view);
+				sendUpdate(n, ViewerUpdate.Type.GROUP_ACTIVATED);
 				ve.node = n;
 			}
 		}
@@ -1174,6 +939,17 @@ public final class ProjectViewer extends JPanel
 	public ProjectTreePanel getTreePanel()
 	{
 		return treePanel;
+	}
+
+	/**
+	 *	Sends a project viewer update message with the given data.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public void sendUpdate(VPTNode n, ViewerUpdate.Type type)
+	{
+		ViewerUpdate update = new ViewerUpdate(this, n, type);
+		EditBus.send(update);
 	}
 
 	//}}}

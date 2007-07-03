@@ -19,11 +19,13 @@
 package projectviewer.action;
 
 //{{{ Imports
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 import java.awt.event.ActionEvent;
 
@@ -37,6 +39,8 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+
+import projectviewer.event.StructureUpdate;
 
 import projectviewer.vpt.VPTDirectory;
 import projectviewer.vpt.VPTFile;
@@ -73,7 +77,7 @@ public class NodeRemoverAction extends Action {
 	} //}}}
 
 	//{{{ Instance variables
-	private HashMap removedFiles;
+	private Map<VPTProject, List<VPTFile>> removedFiles;
 	private HashSet changed;
 	private boolean delete;
 	//}}}
@@ -128,14 +132,9 @@ public class NodeRemoverAction extends Action {
 		}
 
 		if (removedFiles != null)
-		for (Iterator i = removedFiles.keySet().iterator(); i.hasNext(); ) {
-			VPTProject p = (VPTProject) i.next();
-			ArrayList lst = (ArrayList) removedFiles.get(p);
-			if (lst.size() == 1) {
-				p.fireFileRemoved((VPTFile)lst.get(0));
-			} else {
-				p.fireFilesChanged(null, lst);
-			}
+		for (VPTProject p : removedFiles.keySet()) {
+			List<VPTFile> lst = (List<VPTFile>) removedFiles.get(p);
+			p.fireFilesChanged(null, lst);
 		}
 
 		// cleanup
@@ -318,7 +317,7 @@ public class NodeRemoverAction extends Action {
 				);
 			} else {
 				ProjectViewer.removeNodeFromParent(o);
-				ProjectViewer.fireGroupRemovedEvent((VPTGroup)o);
+				StructureUpdate.send(o, StructureUpdate.Type.GROUP_REMOVED);
 			}
 		} else {
 			VPTProject project = VPTNode.findProjectFor(o);
@@ -369,15 +368,15 @@ public class NodeRemoverAction extends Action {
 	//{{{ -addRemovedFile(VPTFile) : void
 	private void addRemovedFile(VPTFile f) {
 		VPTProject p = VPTProject.findProjectFor(f);
-		if (p.hasListeners()) {
-			if (removedFiles == null) removedFiles = new HashMap();
-			ArrayList lst = (ArrayList) removedFiles.get(p);
-			if (lst == null) {
-				lst = new ArrayList();
-				removedFiles.put(p, lst);
-			}
-			lst.add(f);
+		if (removedFiles == null) {
+			removedFiles = new HashMap<VPTProject, List<VPTFile>>();
 		}
+		List<VPTFile> lst = removedFiles.get(p);
+		if (lst == null) {
+			lst = new ArrayList<VPTFile>();
+			removedFiles.put(p, lst);
+		}
+		lst.add(f);
 	} //}}}
 
 }
