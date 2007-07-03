@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -99,7 +98,6 @@ public class JFuguePlugin extends EditPlugin {
 	}
 
 	public static void saveBuffer(View view) {
-		//Macros.message(view, "Saving Buffer");
 		JEditTextArea currentTextArea = view.getTextArea();
 		String bufferText = currentTextArea.getText();
 		if (StringUtils.isNotBlank(bufferText)) {
@@ -108,7 +106,6 @@ public class JFuguePlugin extends EditPlugin {
 	}
 
 	public static void saveSelection(View view) {
-		//Macros.message(view, "Saving Selection");
 		JEditTextArea currentTextArea = view.getTextArea();
 		String selectedText = currentTextArea.getSelectedText();
 		if (StringUtils.isNotBlank(selectedText)) {
