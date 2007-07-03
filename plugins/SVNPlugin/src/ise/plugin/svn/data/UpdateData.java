@@ -2,7 +2,7 @@ package ise.plugin.svn.data;
 
 import java.util.List;
 
-public class UpdateData {
+public class UpdateData extends SVNData {
     private List<String> conflictedFiles = null;
     private List<String> addedFiles = null;
     private List<String> deletedFiles = null;

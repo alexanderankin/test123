@@ -18,6 +18,10 @@ public class CheckoutData extends SVNData {
         setPassword(password);
     }
 
+    public String toString() {
+        return "CheckoutData[url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]";
+    }
+
     /**
      * Returns the value of url.
      */

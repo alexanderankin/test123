@@ -57,6 +57,7 @@ public class SVNAction extends projectviewer.action.Action {
             catch ( Exception e ) {
                 // class not found or instantiation exception, don't worry
                 // about it, assume it's a typo
+                e.printStackTrace();
                 continue;
             }
         }

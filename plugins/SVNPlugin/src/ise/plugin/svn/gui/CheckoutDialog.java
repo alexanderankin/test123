@@ -30,6 +30,7 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 public class CheckoutDialog extends JDialog {
     // instance fields
     private View view = null;
+    private String _url = null;
 
     private JTextField url = null;
     private JTextField path = null;
@@ -38,9 +39,10 @@ public class CheckoutDialog extends JDialog {
 
     private boolean cancelled = false;
 
-    public CheckoutDialog( View view ) {
+    public CheckoutDialog( View view, String url ) {
         super( ( JFrame ) view, "Checkout", true );
         this.view = view;
+        this._url = url;
         _init();
     }
 
@@ -52,7 +54,7 @@ public class CheckoutDialog extends JDialog {
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
-        url = new JTextField( jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" ), 30 );
+        url = new JTextField( _url != null ? _url : jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" ), 30 );
 
         // populate url field from existing svn info, if available
         List<String> info_path = new ArrayList<String>();

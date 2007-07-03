@@ -39,24 +39,28 @@ public class BrowseRepositoryPanel extends JPanel {
     private String username = null;
     private String password = null;
 
+    private String PREFIX = "ise.plugins.svn.repository.";
+
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
         this.view = view;
         String project_name = getProjectName( view );
 
-        chooser = new PropertyComboBox( "ise.plugins.svn.repository." );
-        chooser.setEditable( true );
-
-        if ( chooser.getItemCount() == 1 ) {
-            String url = jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" );
-            if ( url != null ) {
-                chooser.addItem( url );
-            }
-        }
+        chooser = new PropertyComboBox( PREFIX );
         if ( chooser.getItemCount() > 1 ) {
             chooser.setSelectedItem( 1 );
         }
 
+        chooser.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        CheckoutData data = createData();
+                        DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
+                        tree.setModel( new DefaultTreeModel( root ) );
+                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                        action.actionPerformed( ae );
+                    }
+                }
+                                 );
         tree = new JTree( new DefaultTreeModel( new DefaultMutableTreeNode( "SVN Browser" ) ) );
 
         tree.addTreeExpansionListener( new TreeExpansionListener() {
@@ -145,36 +149,60 @@ public class BrowseRepositoryPanel extends JPanel {
         tree.addMouseListener( new TreeMouseListener() );
         popupMenu = createPopupMenu();
 
-        JButton go = new JButton( "Go" );
-        go.addActionListener( new ActionListener() {
+        JButton new_btn = new JButton( "New" );
+        new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        CheckoutData data = createData();
+                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
+                        dialog.setVisible(true);
+                        CheckoutData data = dialog.getValues();
+                        chooser.addValue( data.getURL() );
                         DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
-                        chooser.addValue( chooser.getSelectedItem().toString() );
-                        chooser.save();
                     }
                 }
-                            );
+                                 );
 
         JPanel top_panel = new JPanel( new BorderLayout() );
         top_panel.add( chooser, BorderLayout.CENTER );
-        top_panel.add( go, BorderLayout.EAST );
+        top_panel.add( new_btn, BorderLayout.EAST );
         add( top_panel, BorderLayout.NORTH );
         add( new JScrollPane( tree ), BorderLayout.CENTER );
 
     }
 
+    private void saveData( CheckoutData data ) {
+        String url = data.getURL();
+        if ( url == null || url.length() == 0 ) {
+            return ;
+        }
+        int index = chooser.getSelectedIndex();
+        jEdit.setProperty( PREFIX + index, url );
+        if ( data.getUsername() != null && data.getPassword() != null ) {
+            jEdit.setProperty( PREFIX + "username." + index, data.getUsername() );
+            String pwd = null;
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                pwd = ph.encrypt( data.getPassword() );
+            }
+            catch ( Exception e ) {
+                // ignored
+            }
+            if ( pwd != null ) {
+                jEdit.setProperty( PREFIX + "password." + index, pwd );
+            }
+        }
+    }
+
     private CheckoutData createData() {
         CheckoutData data = new CheckoutData();
         String value = ( String ) chooser.getSelectedItem();
-        if ( value != null ) {
-            data.setURL( value );
-        }
-        username = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".username" );
-        password = jEdit.getProperty( SVNAction.PREFIX + getProjectName( getView() ) + ".password" );
+        int index = chooser.getSelectedIndex();
+        data.setURL( value );
+
+        username = jEdit.getProperty( PREFIX + "username." + index );
+        password = jEdit.getProperty( PREFIX + "password." + index );
         if ( password != null && password.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();
@@ -192,13 +220,6 @@ public class BrowseRepositoryPanel extends JPanel {
     public void setRoot( DefaultMutableTreeNode root ) {
         if ( root != null ) {
             tree.setModel( new DefaultTreeModel( root ) );
-        }
-    }
-
-    public void removeNotify() {
-        super.removeNotify();
-        if ( chooser != null ) {
-            chooser.save();
         }
     }
 
@@ -241,10 +262,68 @@ public class BrowseRepositoryPanel extends JPanel {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
 
-        JMenuItem mi = new JMenuItem( "Checkout" );
+        JMenuItem mi = new JMenuItem( "Edit" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
+                        CheckoutData data = createData();
+                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), data );
+                        dialog.setVisible(true);
+                        data = dialog.getValues();
+                        saveData(data);
+                        DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
+                        tree.setModel( new DefaultTreeModel( root ) );
+                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                        action.actionPerformed( ae );
+                    }
+                }
+                                 );
+
+        mi = new JMenuItem( "Delete" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        CheckoutData data = createData();
+                        chooser.setSelectedItem(data.getURL());
+                        int index = chooser.getSelectedIndex();
+                        chooser.removeItem(data.getURL());
+                        jEdit.unsetProperty(PREFIX + "username." + index);
+                        jEdit.unsetProperty(PREFIX + "password." + index);
+                    }
+                }
+                                 );
+
+        mi = new JMenuItem( "Checkout" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        String url = null;
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                                break;
+                            }
+                        }
+                        CheckoutData data = new CheckoutData();
+                        data.setURL( url );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        CheckoutAction action = new CheckoutAction( view, data );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
@@ -313,10 +392,12 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        JMenuItem mi = new JMenuItem( "Properties" );
+        mi = new JMenuItem( "Properties" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
+                        JOptionPane.showMessageDialog( view, "Sorry, this feature is not yet implemented.", "Darn", JOptionPane.ERROR_MESSAGE );
+                        return ;
                     }
                 }
                             );
