@@ -66,11 +66,16 @@ public class Plugin extends EditPlugin {
 				editPane = view.getContentPane();
 				JPanel mv = new JPanel(new BorderLayout());
 				viewport = new Viewport();
-				viewport.setSingleTabAllowed(false);
+				viewport.getDockingProperties().setSingleTabsAllowed(false);
 				mv.add(viewport, BorderLayout.CENTER);
 				view.setContentPane(mv);
-				PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
-				DockingManager.restoreLayout();
+				File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
+				if (! xml.exists()) {
+					DockingManager.restoreLayout();
+					PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
+				} else {
+					DockingManager.restoreLayout();
+				}
 			}
 		});
 
@@ -162,7 +167,7 @@ public class Plugin extends EditPlugin {
 			org.flexdock.view.View mainView =
 				new org.flexdock.view.View(MAIN_VIEW, null, null);
 
-			mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
+			//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
 			mainView.setTitlebar(null);
 			mainView.setContentPane(editPane);
 			return mainView;
