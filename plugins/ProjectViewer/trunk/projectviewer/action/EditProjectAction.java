@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.GUIUtilities;
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 
+import projectviewer.event.StructureUpdate;
+
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -185,7 +187,7 @@ public class EditProjectAction extends Action {
 					ProjectViewer.removeNodeFromParent(proj);
 					ProjectViewer.insertNodeInto(proj, parent);
 					ProjectManager.getInstance().saveProjectList();
-					ProjectViewer.fireNodeMovedEvent(proj, oldParent);
+					StructureUpdate.send(proj, oldParent);
 				} else if (notify) {
 					ProjectViewer.nodeChanged(proj);
 				}

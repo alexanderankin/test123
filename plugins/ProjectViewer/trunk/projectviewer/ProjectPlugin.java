@@ -191,19 +191,9 @@ public final class ProjectPlugin extends EBPlugin {
 	private void checkPluginUpdate(PluginUpdate msg) {
 		if (msg.getWhat() == PluginUpdate.LOADED) {
 			try {
-				ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
-				ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
 				ProjectViewer.addToolbarActions(msg.getPluginJAR());
 				VPTContextMenu.registerActions(msg.getPluginJAR());
 				ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
-
-				View[] v = jEdit.getViews();
-				for (int i = 0; i < v.length; i++) {
-					if (ProjectViewer.getViewer(v[i]) != null) {
-						ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
-					}
-				}
-
 			} catch (Exception e) {
 				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
 				Log.log(Log.ERROR, this, e);
@@ -215,8 +205,6 @@ public final class ProjectPlugin extends EBPlugin {
 				Log.log(Log.ERROR, this, eiie);
 			}
 		} else if (msg.getWhat() == PluginUpdate.UNLOADED) {
-			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
-			ProjectManager.getInstance().removeProjectListeners(msg.getPluginJAR());
 			ProjectManager.getInstance().unloadProjectProperties();
 			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
 			VPTContextMenu.unregisterActions(msg.getPluginJAR());

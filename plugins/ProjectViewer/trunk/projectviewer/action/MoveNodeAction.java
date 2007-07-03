@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.jEdit;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 
+import projectviewer.event.StructureUpdate;
 import projectviewer.gui.GroupMenu;
 
 import projectviewer.vpt.VPTGroup;
@@ -84,8 +85,7 @@ public class MoveNodeAction extends Action {
 		TreePath path = new TreePath(((DefaultTreeModel)tree.getModel()).getPathToRoot(toMove));
 		tree.expandPath(path);
 
-		// fire event
-		ProjectViewer.fireNodeMovedEvent(toMove, oldParent);
+		StructureUpdate.send(toMove, oldParent);
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method

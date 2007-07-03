@@ -318,9 +318,7 @@ public abstract class Importer implements Runnable {
 							importNode(n);
 						}
 						ProjectViewer.nodeStructureChangedFlat(project);
-						if (fireEvent && project.hasListeners()) {
-							fireProjectEvent();
-						}
+						fireProjectEvent();
 					}
 				});
 			} else if (fireEvent) {
@@ -353,15 +351,15 @@ public abstract class Importer implements Runnable {
 			return;
 		}
 
-		if (added == null || added.size() == 0) {
-			if (removed != null && removed.size() > 0) {
-				project.fireFilesChanged(null, removed);
-			}
-		} else if (added.size() == 1 && (removed == null || removed.size() == 0)) {
-			project.fireFileAdded((VPTFile)added.get(0));
-		} else {
-			project.fireFilesChanged(added, removed);
+		if (added != null && added.size() == 0) {
+			added = null;
 		}
+
+		if (removed != null && removed.size() == 0) {
+			removed = null;
+		}
+
+		project.fireFilesChanged(added, removed);
 	} //}}}
 
 	//{{{ #saveImportFilterStatus(VPTProject, ImportDialog) : void

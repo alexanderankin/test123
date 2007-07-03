@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.event.StructureUpdate;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 //}}}
@@ -55,7 +56,7 @@ public class EditGroupAction extends Action {
 	//{{{ +EditGroupAction(boolean) : <init>
 	public EditGroupAction(boolean add) {
 		this(add, null, null);
-	} //}}} 
+	} //}}}
 
 	//{{{ +EditGroupAction(boolean, VPTGroup) : <init>
 	public EditGroupAction(boolean add, VPTGroup parent, Component gui) {
@@ -101,8 +102,7 @@ public class EditGroupAction extends Action {
 				JTree tree = viewer.getCurrentTree();
 				TreePath path = new TreePath(((DefaultTreeModel)tree.getModel()).getPathToRoot(newGroup));
 				tree.expandPath(path);
-
-				ProjectViewer.fireGroupAddedEvent(newGroup);
+				StructureUpdate.send(newGroup, StructureUpdate.Type.GROUP_ADDED);
 			}
 		} else {
 			String name = getGroupName(grp.getName());

@@ -19,27 +19,17 @@
 package pvdebug;
 
 //{{{ Imports
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.List;
 
-import java.util.Vector;
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
 
 import org.gjt.sp.util.Log;
 
-import projectviewer.config.ContextOptionPane;
-import projectviewer.config.ProjectViewerConfig;
-import projectviewer.config.ProjectAppConfigPane;
-import projectviewer.config.ProjectViewerOptionsPane;
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.StructureUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTFile;
 //}}}
 
 /**
@@ -48,8 +38,58 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *	@author		Marcelo Vanzin
  *  @version	$Id$
  */
-public final class PVDebugPlugin extends EditPlugin {
+public final class PVDebugPlugin extends EBPlugin {
 
+	public void handleMessage(EBMessage msg)
+	{
+		if (msg instanceof ProjectUpdate) {
+			handleProjectUpdate((ProjectUpdate) msg);
+		} else if (msg instanceof StructureUpdate) {
+			handleStructureUpdate((StructureUpdate) msg);
+		} else if (msg instanceof ViewerUpdate) {
+			handleViewerUpdate((ViewerUpdate) msg);
+		}
+	}
+
+	private void handleProjectUpdate(ProjectUpdate msg)
+	{
+		System.err.println("========================================");
+		System.err.println("Event:   " + msg.getClass().getName());
+		System.err.println("Type:    " + msg.getType());
+
+		if (msg.getType() == ProjectUpdate.Type.FILES_CHANGED) {
+			List<VPTFile> added = msg.getAddedFiles();
+			List<VPTFile> removed = msg.getRemovedFiles();
+
+			if (added != null)
+			for (VPTFile f : added) {
+				System.err.println("Added:   " + f.getNodePath());
+			}
+
+			if (removed != null)
+			for (VPTFile f : removed) {
+				System.err.println("Removed: " + f.getNodePath());
+			}
+		}
+
+	}
+
+	private void handleStructureUpdate(StructureUpdate msg)
+	{
+		System.err.println("========================================");
+		System.err.println("Event:   " + msg.getClass().getName());
+		System.err.println("Type:    " + msg.getType());
+		System.err.println("Node:    " + msg.getNode());
+		System.err.println("Parent:  " + msg.getOldParent());
+	}
+
+	private void handleViewerUpdate(ViewerUpdate msg)
+	{
+		System.err.println("========================================");
+		System.err.println("Event:   " + msg.getClass().getName());
+		System.err.println("Type:    " + msg.getType());
+		System.err.println("Node:    " + msg.getNode());
+	}
 
 }
 
