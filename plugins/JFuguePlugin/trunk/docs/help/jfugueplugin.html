@@ -13,6 +13,7 @@
 				<li><a href="#about_jfugue">About JFugue</a></li>
 				<li><a href="#about_soundbanks">About Sound Banks</a></li>
 				<li><a href="#plugin_features">Plugin Features</a></li>
+				<li><a href="#music_generation">Music Generation</a></li>
 				<li><a href="#change_log">Change Log</a></li>
 			</ul>
 		</p>
@@ -147,11 +148,69 @@
 			<br>
 			Using any of the save functions will prompt you for the file name.
 		</p>
+		<p> <!-- Music Generation -->
+			<b>	<a name="music_generation">Music Generation</a></b>
+			<br>
+			Some basic music generation is available to beanshell scripts.
+			<br><br>
+			Special thanks to <a href="http://www.davekoelle.com/">David Koelle</a>
+			for the examples he provided. The examples shown use the 
+			LSysMusicGenerator to generate music using the 
+			<a href="http://en.wikipedia.org/wiki/L-system">Lindenmayer System</a>.
+			<br>
+			Essentially, you give the LSysMusicGenerator an axiom (starting string)
+			and add some transforms. Then the generator will go through and replace
+			any transform sources with the given transform targets.
+			<br><br>
+			For Example:<br>
+			Given origString = "A B C D" and transform1 = "A"->"A B", and 
+			transform2 = "D"->"A D". Using string replacement, after the first 
+			iteration you will have "<i>A B</i> B C <i>A D</i>". The "A" was replaced with "A B"
+			and the "D" was replaced with "A D". A second iteration will result in,
+			"<i>A B</i> B B C <i>A B</i> <i>A D</i>".
+			<br><br>
+			Eg. "Misiba"
+			<br><br>
+			<code><pre>
+				// import the music generation classes.
+				import com.townsfolkdesigns.jfugue.gen.*;
+				
+				// create a new LSysMusicGenerator
+				LSysMusicGenerator musicGenerator = new LSysMusicGenerator();
+			
+				// Create your axiom.
+				// This axiom has a Tempo of 120, and 4 voice pieces. 
+				String axiom = "T120 " +
+					"V1 I[SYNTHSTRINGS_1] C5q D5q E5q F5q G5q " +
+					"V2 I[FLUTE] B5q C5q E5q F5q G5q D4q " +
+					"V3 I[VOICE_OOHS] G5q B5q C5q B5q D5q " +
+					"V4 I[NEW_AGE] C5q B5q D5q G5q B5q";
+				
+				// Add 6 transforms
+				// Every instance of "G5q" in the axiom string transforms to 
+				// "B5q D4q C5q D4q", and "C5q" transforms to "G5s B5s C6s C6s"
+				// etc.. down the list.
+				musicGenerator.addTransform(new StringMusicTransform("G5q", "B5q D4q C5q D4q"));
+				musicGenerator.addTransform(new StringMusicTransform("C5q", "G5s B5s C6s C6s"));
+				musicGenerator.addTransform(new StringMusicTransform("D4q", "D4q B3q C5q"));
+				musicGenerator.addTransform(new StringMusicTransform("B3q", "B3i B3i"));
+				musicGenerator.addTransform(new StringMusicTransform("B5q", "B5q G5q D4i C5q"));
+				musicGenerator.addTransform(new StringMusicTransform("D5q", "E5q B5q F5q B5q G5q "));
+				
+				// pass the axiom to the music generator, to generate the music
+				// as well as how many times you want to run through the transforms
+				// (iterations).
+				String generatedMusic = musicGenerator.generate(axiom, 5);
+				
+				// play the music using the JFuguePlugin beanshell function.
+				playMusicString(generatedMusic);
+			</pre></code>
+		</p>
 		<p> <!-- Change Log -->
 			<b>	<a name="change_log">Change Log</a></b>
 			<br>
 			<ul>
-				<li>0.6.1 - Save buffer, selection and musicString were added.
+				<li>0.7.1 - Save buffer, selection and musicString were added. Music Generation was added.
 				<li>0.5.2 - Initial Release</li>
 			</ul>
 		</p>
