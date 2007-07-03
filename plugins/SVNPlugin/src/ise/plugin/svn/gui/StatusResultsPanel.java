@@ -204,6 +204,20 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
+        mi = new JMenuItem( "Diff" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length != 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        JOptionPane.showMessageDialog( view, "Sorry, this feature is not yet implemented.", "Darn", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+                            );
+
         mi = new JMenuItem( "Add" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {

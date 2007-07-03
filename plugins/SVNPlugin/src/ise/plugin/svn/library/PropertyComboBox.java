@@ -22,19 +22,18 @@ public class PropertyComboBox extends JComboBox {
         }
         this.propertyPrefix = propertyPrefix;
 
-        model = new DefaultComboBoxModel();
-        List<String> values = new ArrayList<String>();
-
+        // load the previous values
+        Stack<String> values = new Stack<String>();
         for ( int i = 1; i < 10; i++ ) {
             String name = jEdit.getProperty( propertyPrefix + i );
             if ( name == null ) {
                 break;
             }
-            values.add(0, name);
+            if ( values.search( name ) == -1 ) {
+                values.push( name );
+            }
         }
-        values = ListOps.toList(ListOps.toSet(values));   // remove dupes, keep order
-        Vector<String> v = new Vector<String>();
-        model = new DefaultComboBoxModel(v);
+        model = new DefaultComboBoxModel( (Vector)values );
 
         if ( model.getSize() > 0 && model.getIndexOf( SELECT ) < 0 ) {
             model.insertElementAt( SELECT, 0 );
@@ -44,10 +43,7 @@ public class PropertyComboBox extends JComboBox {
 
     @Override
     public void setEditable( boolean editable ) {
-        if ( editable ) {
-            model.removeElement( SELECT );
-        }
-        super.setEditable( editable );
+        super.setEditable(false);
     }
 
     /**
@@ -59,8 +55,10 @@ public class PropertyComboBox extends JComboBox {
         if ( value != null && value.length() > 0 ) {
             int index = model.getIndexOf( SELECT ) >= 0 ? 1 : 0;
             model.removeElement( value );
-            ( ( DefaultComboBoxModel ) getModel() ).insertElementAt( value, index );
+            model.insertElementAt( value, index );
+            model.setSelectedItem( value );
         }
+        save();
     }
 
     /**

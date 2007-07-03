@@ -108,7 +108,7 @@ public class UpdateAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new UpdateResultsPanel( get() );
+                        JPanel results_panel = new UpdateResultsPanel( view, get() );
                         panel.addTab("Update", results_panel);
                     }
                     catch ( Exception e ) {

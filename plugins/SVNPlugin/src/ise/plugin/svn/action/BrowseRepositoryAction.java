@@ -10,6 +10,7 @@ import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -51,8 +52,13 @@ public class BrowseRepositoryAction implements ActionListener {
 
         class Runner extends SwingWorker < List<DefaultMutableTreeNode>, Object> {
 
+            private Cursor cursor = null;
+
             @Override
             public List<DefaultMutableTreeNode> doInBackground() {
+                cursor = tree.getCursor();
+                tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                tree.setEditable(false);
                 try {
                     BrowseRepository br = new BrowseRepository( );
                     return br.getRepository( data );
@@ -82,6 +88,10 @@ public class BrowseRepositoryAction implements ActionListener {
                 }
                 catch ( Exception e ) {
                     // ignored
+                }
+                finally {
+                    tree.setCursor(cursor);
+                    tree.setEditable(true);
                 }
             }
         }

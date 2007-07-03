@@ -60,16 +60,14 @@ ise.plugin.svn.action.label.7=Resolve
 ise.plugin.svn.action.code.7=ise.plugin.svn.action.ResolvedAction
 ise.plugin.svn.action.label.8=-
 ise.plugin.svn.action.label.9=Info
-ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoAction
+ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoActor
 ise.plugin.svn.action.label.10=Log
 ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogActor
-ise.plugin.svn.action.label.11=Browse Repository
-ise.plugin.svn.action.code.11=ise.plugin.svn.action.BrowseRepositoryAction
-ise.plugin.svn.action.label.12=-
-ise.plugin.svn.action.label.13=Checkout...
-ise.plugin.svn.action.code.13=ise.plugin.svn.action.CheckoutAction
-ise.plugin.svn.action.label.14=Cleanup
-ise.plugin.svn.action.code.14=ise.plugin.svn.action.CleanupAction
+ise.plugin.svn.action.label.11=-
+ise.plugin.svn.action.label.12=Checkout...
+ise.plugin.svn.action.code.12=ise.plugin.svn.action.CheckoutActor
+ise.plugin.svn.action.label.13=Cleanup
+ise.plugin.svn.action.code.13=ise.plugin.svn.action.CleanupActor
 
 
 # register subversion commands with ProjectViewer

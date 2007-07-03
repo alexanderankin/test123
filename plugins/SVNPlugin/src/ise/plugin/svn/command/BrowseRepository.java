@@ -172,7 +172,7 @@ public class BrowseRepository {
         return newList;
     }
 
-    class DirTreeNode extends DefaultMutableTreeNode implements Comparable {
+    class DirTreeNode extends DefaultMutableTreeNode implements Comparable<DirTreeNode> {
         private boolean isLeaf = true;
         public DirTreeNode( Object userObject, boolean isLeaf ) {
             super(userObject);
@@ -183,7 +183,7 @@ public class BrowseRepository {
             return this.isLeaf;
         }
 
-        public int compareTo(Object node) {
+        public int compareTo(DirTreeNode node) {
             String a = this.getUserObject().toString();
             String b = ((DirTreeNode)node).getUserObject().toString();
             return a.compareTo(b);
