@@ -94,7 +94,6 @@ public class Parser extends SideKickParser {
 		return btn;
 	}
 	
-	@Override
 	public JPanel getPanel() {
 		if (panel != null)
 			return panel;
