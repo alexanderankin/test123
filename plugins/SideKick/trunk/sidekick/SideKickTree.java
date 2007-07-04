@@ -492,8 +492,11 @@ public class SideKickTree extends JPanel
                         tree.setSelectionPath(treePath);
                         if (jEdit.getBooleanProperty("sidekick.scrollToVisible")) {
 				Rectangle r = tree.getPathBounds(treePath);
-				r.width = 1;
-				tree.scrollRectToVisible(r);
+				if (r != null) {
+					r.width = 1;
+					tree.scrollRectToVisible(r);
+				} else
+	            	tree.scrollPathToVisible(treePath);
 			}
                 }
         } //}}}
