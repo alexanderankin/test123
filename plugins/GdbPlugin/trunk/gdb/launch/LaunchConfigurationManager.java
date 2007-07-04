@@ -286,6 +286,8 @@ public class LaunchConfigurationManager {
 			if (element == null)
 				return;
 			String s = new String(ch, start, len);
+			if (s == null)
+				s = "";
 			attributes.put(element, s);
 		}
 		public LaunchConfiguration getLaunchConfiguration() {
