@@ -1,7 +1,7 @@
 package ise.plugin.svn.gui;
 
-
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -16,6 +16,7 @@ import ise.plugin.svn.action.*;
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.FileUtilities;
+import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.action.SVNAction;
@@ -44,14 +45,9 @@ public class BrowseRepositoryPanel extends JPanel {
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
         this.view = view;
-        String project_name = getProjectName( view );
 
         chooser = new PropertyComboBox( PREFIX );
-        if ( chooser.getItemCount() > 1 ) {
-            chooser.setSelectedItem( 1 );
-        }
-
-        chooser.addActionListener( new ActionListener() {
+        ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         CheckoutData data = createData();
                         DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
@@ -59,8 +55,9 @@ public class BrowseRepositoryPanel extends JPanel {
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
                     }
-                }
-                                 );
+                };
+        chooser.addActionListener( al );
+
         tree = new JTree( new DefaultTreeModel( new DefaultMutableTreeNode( "SVN Browser" ) ) );
 
         tree.addTreeExpansionListener( new TreeExpansionListener() {
@@ -93,6 +90,11 @@ public class BrowseRepositoryPanel extends JPanel {
                             TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
                             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
                             if ( node.isLeaf() ) {
+                                // show the wait cursor
+                                Cursor cursor = tree.getCursor();
+                                tree.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                                tree.setEditable( false );
+
                                 // leaf nodes should be files, not directories.
                                 // get url and path for the selected file
                                 Object[] parts = path.getPath();
@@ -139,6 +141,11 @@ public class BrowseRepositoryPanel extends JPanel {
                                 catch ( Exception e ) {
                                     // ignored
                                 }
+                                finally {
+                                    tree.setCursor( cursor );
+                                    tree.setEditable( true );
+
+                                }
                             }
                         }
 
@@ -153,7 +160,8 @@ public class BrowseRepositoryPanel extends JPanel {
         new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
-                        dialog.setVisible(true);
+                        GUIUtils.center(getView(), dialog);
+                        dialog.setVisible( true );
                         CheckoutData data = dialog.getValues();
                         chooser.addValue( data.getURL() );
                         DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
@@ -169,7 +177,6 @@ public class BrowseRepositoryPanel extends JPanel {
         top_panel.add( new_btn, BorderLayout.EAST );
         add( top_panel, BorderLayout.NORTH );
         add( new JScrollPane( tree ), BorderLayout.CENTER );
-
     }
 
     private void saveData( CheckoutData data ) {
@@ -227,11 +234,6 @@ public class BrowseRepositoryPanel extends JPanel {
         return view;
     }
 
-    private String getProjectName( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getName();
-    }
-
     /**
      * MouseListener to popup context menu on the tree.
      */
@@ -268,30 +270,33 @@ public class BrowseRepositoryPanel extends JPanel {
                     public void actionPerformed( ActionEvent ae ) {
                         CheckoutData data = createData();
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), data );
-                        dialog.setVisible(true);
+                        dialog.setVisible( true );
                         data = dialog.getValues();
-                        saveData(data);
+                        saveData( data );
                         DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
                     }
                 }
-                                 );
+                            );
 
-        mi = new JMenuItem( "Delete" );
+        mi = new JMenuItem( "Remove" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         CheckoutData data = createData();
-                        chooser.setSelectedItem(data.getURL());
-                        int index = chooser.getSelectedIndex();
-                        chooser.removeItem(data.getURL());
-                        jEdit.unsetProperty(PREFIX + "username." + index);
-                        jEdit.unsetProperty(PREFIX + "password." + index);
+                        int delete = JOptionPane.showConfirmDialog( view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                        if ( delete == JOptionPane.YES_OPTION ) {
+                            chooser.setSelectedItem( data.getURL() );
+                            int index = chooser.getSelectedIndex();
+                            chooser.removeItem( data.getURL() );
+                            jEdit.unsetProperty( PREFIX + "username." + index );
+                            jEdit.unsetProperty( PREFIX + "password." + index );
+                        }
                     }
                 }
-                                 );
+                            );
 
         mi = new JMenuItem( "Checkout" );
         pm.add( mi );

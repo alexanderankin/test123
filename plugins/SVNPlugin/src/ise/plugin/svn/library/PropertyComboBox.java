@@ -39,10 +39,12 @@ public class PropertyComboBox extends JComboBox {
             model.insertElementAt( SELECT, 0 );
         }
         setModel( model );
+        setSelectedIndex(0);
     }
 
     @Override
     public void setEditable( boolean editable ) {
+        // never editable
         super.setEditable(false);
     }
 
