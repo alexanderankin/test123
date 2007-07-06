@@ -22,10 +22,10 @@
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
-
+    <property name="flexdock.jar" value="${src.dir}/flexdock-0.5.1.jar"/>
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${src.dir}/flexdock-0.5.1.jar"/>
+		<pathelement location="${flexdock.jar}" />
 		<pathelement location="${src.dir}"/>
 	</path>
 
@@ -42,6 +42,7 @@
 			message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/-->
+	    <copy file="${flexdock.jar}" todir="${install.dir}" />
 	</target>
 
 	<target name="compile" depends="init">
