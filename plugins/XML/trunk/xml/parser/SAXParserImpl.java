@@ -80,14 +80,15 @@ import xml.completion.XsdElementDecl;
  */
 public class SAXParserImpl extends XmlParser
 {
-	//{{{ SAXParserImpl constructor
+	//{{{ SAXParserImpl constructors
 	public SAXParserImpl()
 	{
 		super("xml");
-	} //}}}
+	} 
 	protected SAXParserImpl(String name) {
 		super(name);
-	}
+	} //}}}
+	
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{

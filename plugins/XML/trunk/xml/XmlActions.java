@@ -24,10 +24,13 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.text.Segment;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
@@ -39,13 +42,16 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.xml.sax.Attributes;
 
 import sidekick.SideKickParsedData;
 import xml.completion.ElementDecl;
 import xml.parser.TagParser;
+import xml.parser.XmlTag;
 //}}}
+import xml.parser.TagParser.Tag;
 
-// {{{ class XMLActions 
+// {{{ class XMLActions
 public class XmlActions
 {
 	//{{{ Static variables
@@ -54,11 +60,11 @@ public class XmlActions
 	private static boolean closeCompletionOpen;
 	private static boolean standaloneExtraSpace;
 	static final String brackets = "[](){}";
-	static final String xmlchars = "<>"; 	
+	static final String xmlchars = "<>";
 	//}}}
-	
+
 	//{{{ showEditTagDialog() methods
-	
+
 	public static void showEditTagDialog(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
@@ -91,7 +97,7 @@ public class XmlActions
 			return;
 		}
 
-		// use a StringTokenizer to parse the tag
+		// use a StringTokenizer to parse the tag - WTF?!?? Why not find data?
 		HashMap attributes = new HashMap();
 		String attributeName = null;
 		boolean seenEquals = false;
@@ -171,7 +177,7 @@ loop:			for(;;)
 		}
 		catch(IOException io)
 		{
-			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io); 
+			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io);
 		} //}}}
 
 		ElementDecl elementDecl = data.getElementDecl(tag.tag);
@@ -208,7 +214,8 @@ loop:			for(;;)
 	public static void showEditTagDialog(View view, ElementDecl elementDecl) {
 		showEditTagDialog(view, elementDecl, null);
 	}
-		
+
+
 	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag)
 	{
 		Buffer buffer = view.getBuffer();
@@ -320,8 +327,49 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	// {{{ splitTagAtCaret() method
+	public static void splitTag(Tag tag, JEditTextArea textArea) {
+		View view = textArea.getView();
+		textArea.setSelection(new Selection.Range(tag.start, tag.end));
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+		if(!(_data instanceof XmlParsedData))
+		{
+			GUIUtilities.error(view, "xml-no-data", null);
+			return;
+		}
+		Selection[] s = textArea.getSelection();
+		if (s.length != 1) return;
+		Selection sel = s[0];
+		int line = textArea.getLineOfOffset(tag.start);
+		int lineStartOffset = textArea.getLineStartOffset(line);
+		int indentChars = 2 + sel.getStart() - lineStartOffset;
+		StringBuffer indent = new StringBuffer("\n");
+		for (int i=indentChars; i>=0; --i) {
+			indent.append(" ");
+		}
+
+		XmlParsedData data = (XmlParsedData)_data;
+		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
+		int count = path.getPathCount();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(count-1);
+		XmlTag xmltag = (XmlTag) node.getUserObject();
+		StringBuffer result = new StringBuffer("<");
+		result.append(xmltag.getName() + " ");
+		Attributes attrs = xmltag.attributes;
+		count = attrs.getLength();
+		for (int i=0; i<count; ++i) {
+			String formatstr = String.format("%s = \"%s\"", new Object[] {attrs.getQName(i), attrs.getValue(i) });
+			result.append(formatstr);
+			if (i < count ) result.append(indent.toString());
+		}
+		result.append(">");
+		textArea.replaceSelection(result.toString());
+	}// }}}
+
 	//{{{ split() method
 	/**
+	 * If inside a tag, calls splitTagAtCaret.
+	 *
 	 * If the DTD allows this tag to be split, split at the cursor.
 	 *
 	 * Note that this can be used to do a kind of 'fast-editing', eg when
@@ -334,7 +382,13 @@ loop:			for(;;)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
-
+		int pos = textArea.getCaretPosition();
+		String text = buffer.getText(0,buffer.getLength());
+		Tag t = TagParser.getTagAtOffset(text, pos);
+		if (t != null) {
+			splitTag(t, textArea);
+			return;
+		}
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
@@ -357,8 +411,6 @@ loop:			for(;;)
 
 		if(tag != null)
 		{
-			int pos;
-
 			Segment wsBefore = new Segment();
 			pos = getPrevNonWhitespaceChar( buffer, tag.start - 1 ) + 1;
 			buffer.getText( pos, tag.start-pos, wsBefore );
@@ -443,17 +495,17 @@ loop:			for(;;)
 	//{{{ matchTag() method
 	public static void matchTag(JEditTextArea textArea) {
 	    int caretPos = textArea.getCaretPosition();
-	    for (int i=caretPos-1; i<caretPos+3; ++i) try 
+	    for (int i=caretPos-1; i<caretPos+3; ++i) try
 	    {
-	        String s = textArea.getText(i,1);
-	        if (brackets.indexOf(s) > -1) 
-	        {
-	            textArea.goToMatchingBracket();
-	            return;
-	        }
+		String s = textArea.getText(i,1);
+		if (brackets.indexOf(s) > -1)
+		{
+		    textArea.goToMatchingBracket();
+		    return;
+		}
 	    }
 	    catch (ArrayIndexOutOfBoundsException aiobe) {}
-	    xmlMatchTag(textArea);	
+	    xmlMatchTag(textArea);
 	}
 	// }}}
 
@@ -466,12 +518,12 @@ loop:			for(;;)
 		// De-Select previous selection
 		// textArea.select(caret, caret);
 		textArea.setSelection(new Selection.Range(caret, caret));
-		
+
 		// Move cursor inside tag, to help with matching
-		try { if (text.charAt(caret) == '<')  
+		try { if (text.charAt(caret) == '<')
 			textArea.goToNextCharacter(false);
-		} catch (Exception e ) {} 
-		
+		} catch (Exception e ) {}
+
 		TagParser.Tag tag = TagParser.getTagAtOffset(text,textArea.getCaretPosition());
 		if (tag != null)
 		{
@@ -563,6 +615,19 @@ loop:			for(;;)
 		}
 
 	} //}}}
+
+	//{{{ selectTag() method
+	/**
+	 *  Selects tag at caret. Also returns it. Returns null if there is no tag.
+	 * */
+	public static Tag selectTag(JEditTextArea textArea) {
+		String text = textArea.getText();
+		int pos = textArea.getCaretPosition();
+		Tag t = TagParser.getTagAtOffset(text, pos);
+		if (t == null) return null;
+		textArea.setSelection(new Selection.Range(t.start, t.end));
+		return t;
+	} // }}}
 
 	//{{{ selectBetweenTags() method
 	/**
@@ -772,7 +837,7 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
-	} 
+	}
 
 	public static void charactersToEntities(View view)
 	{
@@ -873,7 +938,7 @@ loop:			for(;;)
 	} //}}}
 
 	// {{{ non-public methods
-	
+
 	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
