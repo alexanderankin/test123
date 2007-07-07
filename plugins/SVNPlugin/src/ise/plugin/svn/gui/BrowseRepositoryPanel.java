@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
@@ -386,7 +387,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 paths.add( url );
                             }
                         }
-                        SVNData data = new SVNData();
+                        LogData data = new LogData();
                         data.setPaths( paths );
                         data.setPathsAreURLs( true );
                         data.setUsername( username );
