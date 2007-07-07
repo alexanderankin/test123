@@ -20,6 +20,7 @@ import javax.swing.text.Position;
 import javax.swing.Icon;
 import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
 import sidekick.Asset;
 import xml.XmlListCellRenderer;
 //}}}
@@ -38,7 +39,7 @@ public class XmlTag extends Asset
 	{
 		super(name);
 		this.start = this.end = start;
-		this.attributes = attributes;
+		this.attributes = new AttributesImpl(attributes);
 
 		StringBuffer buf = new StringBuffer();
 
