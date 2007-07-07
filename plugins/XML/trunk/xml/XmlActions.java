@@ -26,7 +26,10 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.*;
 
 import javax.swing.text.Segment;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -48,8 +51,12 @@ import sidekick.SideKickParsedData;
 import xml.completion.ElementDecl;
 import xml.parser.TagParser;
 import xml.parser.XmlTag;
-//}}}
 import xml.parser.TagParser.Tag;
+
+import sidekick.html.parser.html.HtmlDocument;
+import sidekick.util.SideKickElement;
+import sidekick.util.SideKickAsset;
+//}}}
 
 // {{{ class XMLActions
 public class XmlActions
@@ -352,19 +359,51 @@ loop:			for(;;)
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		int count = path.getPathCount();
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(count-1);
-		XmlTag xmltag = (XmlTag) node.getUserObject();
-		StringBuffer result = new StringBuffer("<");
-		result.append(xmltag.getName() + " ");
-		Attributes attrs = xmltag.attributes;
-		count = attrs.getLength();
-		for (int i=0; i<count; ++i) {
-			String formatstr = String.format("%s = \"%s\"", new Object[] {attrs.getQName(i), attrs.getValue(i) });
-			result.append(formatstr);
-			if (i < count ) result.append(indent.toString());
+		StringBuffer result = new StringBuffer();
+		Object user_object = node.getUserObject();
+		if (user_object instanceof XmlTag) {
+			XmlTag xmltag = (XmlTag) node.getUserObject();
+			result.append("<");
+			result.append(xmltag.getName() + " ");
+			Attributes attrs = xmltag.attributes;
+			count = attrs.getLength();
+			for (int i=0; i<count; ++i) {
+				String formatstr = String.format("%s = \"%s\"", new Object[] {attrs.getQName(i), attrs.getValue(i) });
+				result.append(formatstr);
+				if (i < count ) result.append(indent.toString());
+			}
+			result.append(">");
 		}
-		result.append(">");
+		else if (user_object instanceof SideKickAsset) {
+			SideKickElement element = ((SideKickAsset)user_object).getElement();
+			if (element instanceof HtmlDocument.Tag) {
+				HtmlDocument.Tag htmlTag = (HtmlDocument.Tag)element;
+				result.append(htmlTag.tagStart);
+				result.append(htmlTag.tagName).append(" ");
+				List attrs = ((HtmlDocument.Tag)element).attributeList.attributes;
+				for (Iterator it = attrs.iterator(); it.hasNext(); ) {
+					HtmlDocument.Attribute attr = (HtmlDocument.Attribute)it.next();
+					result.append(attr.name);
+					if (attr.hasValue) {
+						String value = attr.value;
+						if (!value.startsWith("\"")) {
+							value = "\"" + value;
+						}
+						if (!value.endsWith("\"")) {
+							value += "\"";
+						}
+						result.append(" = ").append(value);
+					}
+					if (it.hasNext()) {
+						result.append(indent.toString());
+					}
+				}
+				result.append(htmlTag.tagEnd);
+			}
+		}
 		textArea.replaceSelection(result.toString());
 	}// }}}
+
 
 	//{{{ split() method
 	/**
