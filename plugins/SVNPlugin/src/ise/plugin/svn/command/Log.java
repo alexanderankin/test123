@@ -12,11 +12,13 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import org.tmatesoft.svn.core.SVNException;
 
-import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.LogData;
 
 
 public class Log {
@@ -28,7 +30,7 @@ public class Log {
     /**
      * @return a list of paths that were scheduled to be added.
      */
-    public void doLog( SVNData data ) throws CommandInitializationException, SVNException {
+    public void doLog( LogData data ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( data.getPaths() == null ) {
@@ -60,6 +62,7 @@ public class Log {
 
         // get a commit client
         SVNLogClient client = clientManager.getLogClient();
+        SVNWCClient wc_client = clientManager.getWCClient();
 
         // set an event handler so that messages go to the commit data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
@@ -71,14 +74,27 @@ public class Log {
             for (String path : data.getPaths()) {
                 SVNURL svnurl = SVNURL.parseURIDecoded(path);
                 LogHandler handler = new LogHandler( path );
-                client.doLog( svnurl, null, SVNRevision.create( 0L ), SVNRevision.create( 0L ), SVNRevision.HEAD, true, false, 100, handler );
+                client.doLog( svnurl, null, SVNRevision.create( 0L ), data.getStartRevision(), data.getEndRevision(), true, false, 100, handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }
         else {
             for ( File file : localPaths ) {
+                // this feels like a kludge, I shouldn't have to do a substring
+                // call to figure out the path of the file
                 LogHandler handler = new LogHandler( file );
-                client.doLog( new File[] {file}, SVNRevision.create( 0L ), SVNRevision.HEAD, true, false, 100, handler );
+                SVNInfo info = wc_client.doInfo(file, SVNRevision.WORKING);
+                //System.out.println("+++++ repository url = " + info.getRepositoryRootURL());
+                //System.out.println("+++++ url = " + info.getURL());
+                //System.out.println("+++++ url.getPath = " + info.getURL().getPath());
+                String rep_url_string = info.getRepositoryRootURL().toString();
+                String file_url_string = info.getURL().toString();
+                String path = file_url_string.substring(rep_url_string.length());
+                SVNURL rep_url = SVNURL.parseURIDecoded(rep_url_string);
+                String[] rep_paths = new String[]{path};
+                // I should also be able to set the peg revision, but it seems that
+                // using anything beside 0 fails.
+                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(), data.getEndRevision(), false, false, 100, handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }
@@ -180,6 +196,38 @@ public class Log {
                             + entryPath.getCopyPath() + " revision "
                             + entryPath.getCopyRevision() + ")" : "" ) );
             }
+        }
+    }
+
+    public static void main (String[] args) {
+        // for testing
+        LogData data = new LogData();
+        data.setUsername("daleanson");
+        data.setPassword("");
+        List<String> paths = new ArrayList<String>();
+        paths.add("/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Log.java");
+        data.setPaths(paths);
+        data.setOut(new ise.plugin.svn.io.ConsolePrintStream(new ise.plugin.svn.io.LogOutputStream(null)));
+        long start_rev = 9795L;
+        long end_rev = 9810L;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(2007, 5, 1);
+        //SVNRevision start = SVNRevision.parse(String.valueOf(start_rev));
+        SVNRevision start = SVNRevision.create(cal.getTime());
+        cal.set(2007, 6, 1);
+        //SVNRevision end = SVNRevision.parse(String.valueOf(end_rev));
+        SVNRevision end = SVNRevision.create(cal.getTime());
+        data.setStartRevision(start);
+        data.setEndRevision(end);
+        Log log = new Log();
+        try {
+            org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory.setup();
+            org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
+            org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
+            log.doLog(data);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }

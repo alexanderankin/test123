@@ -16,8 +16,8 @@ public class ConsolePrintStream extends PrintStream {
 
     public static String LS = System.getProperty( "line.separator" );
 
-    public ConsolePrintStream(OutputStream os) {
-        super(os, true);
+    public ConsolePrintStream( OutputStream os ) {
+        super( os, true );
     }
 
     public ConsolePrintStream( View view ) {
@@ -37,9 +37,11 @@ public class ConsolePrintStream extends PrintStream {
         if ( level == null ) {
             level = Level.INFO;
         }
-        LogOutputStream los = (LogOutputStream)out;
-        los.setLevel(level);
-        super.print(msg);
+        if ( out instanceof LogOutputStream ) {
+            LogOutputStream los = ( LogOutputStream ) out;
+            los.setLevel( level );
+        }
+        super.print( msg );
     }
 
     public void println( String msg ) {

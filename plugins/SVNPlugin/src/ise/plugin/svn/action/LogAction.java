@@ -4,7 +4,8 @@ import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Log;
-import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.LogData;
+import ise.plugin.svn.gui.LogDialog;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -30,6 +31,7 @@ public class LogAction implements ActionListener {
     private boolean pathsAreUrls = false;
     private String username = null;
     private String password = null;
+    private LogData data = null;
 
     /**
      * @param view the View in which to display results
@@ -48,7 +50,7 @@ public class LogAction implements ActionListener {
         this.password = password;
     }
 
-    public LogAction(View view, SVNData data) {
+    public LogAction(View view, LogData data) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( data == null )
@@ -64,9 +66,17 @@ public class LogAction implements ActionListener {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            final SVNData data = new SVNData();
+            data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs(pathsAreUrls);
+
+            LogDialog dialog = new LogDialog(view, data);
+            GUIUtils.center( view, dialog );
+            dialog.setVisible(true);
+            data = dialog.getData();
+            if (data == null) {
+                return;     // null data signals user cancelled
+            }
 
             if ( username != null && password != null ) {
                 data.setUsername( username );

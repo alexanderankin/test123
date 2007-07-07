@@ -31,8 +31,6 @@ public class AddDialog extends JDialog {
     private View view = null;
     private List<String> nodes = null;
 
-    private JTextArea comment = null;
-
     private boolean cancelled = false;
 
     private SVNData addData = null;
@@ -135,7 +133,7 @@ public class AddDialog extends JDialog {
 
         // add the components to the option panel
         panel.add( "0, 0, 1, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_panel ) );
+        panel.add( "0, 1, 1, 1, W, w, 3", new JScrollPane( file_panel ) );
         panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true));
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
