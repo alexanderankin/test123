@@ -28,7 +28,6 @@ import javax.swing.JComponent;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
@@ -36,7 +35,7 @@ import projectviewer.vpt.VPTNode;
 
 /**
  *	An action defines an action to be taken when the user presses some menu
- *	item in the tree's context menu or a button on the toolbar.
+ *	item in the tree's context menu.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
@@ -46,7 +45,6 @@ public abstract class Action  implements ActionListener, Cloneable {
 	//{{{ Instance variables
 
 	protected ProjectViewer		viewer;
-	protected RolloverButton	tbButton;
 	protected JComponent		cmItem;
 	protected String			action;
 
@@ -96,16 +94,6 @@ public abstract class Action  implements ActionListener, Cloneable {
 
 	}//}}}
 
-	//{{{ +getIcon() : Icon
-	/**
-	 *	Returns the icon to be shown on the toolbar button. The default
-	 *	implementation returns "null" so that actions that will only be
-	 *	used in the context menu don't need to implement this.
-	 */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-
 	//{{{ +getMenuItem() : JComponent
 	/**
 	 *	Returns the menu item that triggers this action. This returns a
@@ -129,23 +117,6 @@ public abstract class Action  implements ActionListener, Cloneable {
 			((JMenuItem)cmItem).addActionListener(this);
 		}
 		return cmItem;
-	} //}}}
-
-	//{{{ +getButton() : RolloverButton
-	/** Returns the toolbar button that triggers this action. */
-	public RolloverButton getButton() {
-		if (tbButton == null) {
-			Icon i = getIcon();
-			if (i != null) {
-				tbButton = new RolloverButton(getIcon());
-			} else {
-				tbButton = new RolloverButton();
-				tbButton.setText(getText());
-			}
-			tbButton.setToolTipText(getText());
-			tbButton.addActionListener(this);
-		}
-		return tbButton;
 	} //}}}
 
 	//{{{ +clone() : Object

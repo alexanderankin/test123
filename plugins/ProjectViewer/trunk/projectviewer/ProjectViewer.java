@@ -48,7 +48,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -103,7 +102,6 @@ import projectviewer.action.EditProjectAction;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
-import projectviewer.action.OldStyleAddFileAction;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.NewFileImporter;
 //}}}
@@ -120,23 +118,11 @@ public final class ProjectViewer extends JPanel
 	//{{{ Static members
 	private static final ProjectViewerConfig config;
 	private static final Map<View,ViewerEntry> viewers;
-	private static final List<Action> actions;
 
-	//{{{ Static Initialization
-	/**
-	 *	Initializes the default actions, and gets the PV plugins from the list
-	 *	of active jEdit plugins.
-	 */
 	static {
-		// Default toolbar actions
 		config = ProjectViewerConfig.getInstance();
-		viewers = new WeakHashMap<View,ViewerEntry>();
-		actions = new ArrayList<Action>();
-		actions.add(new EditProjectAction());
-		actions.add(new ExpandAllAction());
-		actions.add(new CollapseAllAction());
-		actions.add(new OldStyleAddFileAction());
-	} //}}}
+		viewers = new HashMap<View,ViewerEntry>();
+	}
 
 	//{{{ +_getViewer(View)_ : ProjectViewer
 	/**
@@ -408,8 +394,6 @@ public final class ProjectViewer extends JPanel
 	private View					view;
 	private HashSet					dontAsk;
 
-	private JToolBar				toolBar;
-
 	private JPanel					topPane;
 	private ProjectTreePanel		treePanel;
 	private ProjectComboBox			pList;
@@ -468,40 +452,14 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Private methods
 
-	//{{{ -populateToolBar() : void
-	/** Loads the toolbar. */
-	private void populateToolBar() {
-		toolBar.removeAll();
-		for (Iterator i = actions.iterator(); i.hasNext(); ) {
-			Action a = (Action) i.next();
-			a = (Action) a.clone();
-			a.setViewer(this);
-			toolBar.add(a.getButton());
-		}
-		toolBar.repaint();
-	} //}}}
-
 	//{{{ -buildGUI() : void
 	/** Builds the viewer GUI. */
 	private void buildGUI() {
-		treePanel = new ProjectTreePanel(this);
-
-		topPane = new JPanel(new BorderLayout());
-
 		pList = new ProjectComboBox(view);
-
-		Box box = new Box(BoxLayout.Y_AXIS);
-		box.add(Box.createGlue());
-		box.add(pList);
-		box.add(Box.createGlue());
-
-		topPane.add(BorderLayout.CENTER, box);
-
+		treePanel = new ProjectTreePanel(this);
 		treePanel.loadGUI();
-		showToolBar(config.getShowToolBar());
 		add(BorderLayout.CENTER, treePanel);
-		add(BorderLayout.NORTH, topPane);
-
+		add(BorderLayout.NORTH, pList);
 	} //}}}
 
 	//{{{ -closeGroup(VPTGroup, VPTNode, boolean) : void
@@ -607,23 +565,6 @@ public final class ProjectViewer extends JPanel
 			);
 		}
 		setChangingBuffers(false);
-	} //}}}
-
-	//{{{ -showToolBar(boolean) : void
-	/** Shows/Hides the toolbar. */
-	private void showToolBar(boolean flag) {
-		if (toolBar != null) {
-			topPane.remove(toolBar);
-			toolBar.removeAll();
-			toolBar = null;
-		}
-
-		if (flag) {
-			toolBar = new JToolBar();
-			toolBar.setFloatable(false);
-			populateToolBar();
-			topPane.add(BorderLayout.EAST, toolBar);
-		}
 	} //}}}
 
 	//{{{ -unloadInactiveProjects(VPTNode) : void
@@ -856,11 +797,6 @@ public final class ProjectViewer extends JPanel
 	public void setEnabled(boolean flag) {
 		treePanel.setEnabled(flag);
 		pList.setEnabled(flag);
-		if (toolBar != null) {
-			Component[] buttons = toolBar.getComponents();
-			for (int i = 0; i < buttons.length; i++)
-				buttons[i].setEnabled(flag);
-		}
 		super.setEnabled(flag);
 	} //}}}
 
@@ -1095,18 +1031,11 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +propertyChange(PropertyChangeEvent) : void
 		/** Listens for property change events in the plugin's configuration.
-		 *	Shows/Hides the toolbar and the trees, according to the user's wish.
+		 *	Shows/Hides the trees, according to the user's wish.
 		 *
 		 * @param  evt	Description of Parameter
 		 */
 		public void propertyChange(PropertyChangeEvent evt) {
-			// Toolbar show/hide.
-			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
-				showToolBar(((Boolean)evt.getNewValue()).booleanValue()
-							&& treePanel.getTreeCount() > 0);
-				return;
-			}
-
 			if (evt.getPropertyName().equals(ProjectViewerConfig.ASK_IMPORT_OPT)) {
 				int opt = ((Integer)evt.getNewValue()).intValue();
 				if (opt == ProjectViewerConfig.ASK_NEVER ||
@@ -1154,7 +1083,6 @@ public final class ProjectViewer extends JPanel
 		 */
 		public void run() {
 			treePanel.loadGUI();
-			showToolBar(config.getShowToolBar());
 			willRun = false;
 		}//}}}
 

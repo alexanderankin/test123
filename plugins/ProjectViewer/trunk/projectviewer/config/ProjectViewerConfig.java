@@ -50,11 +50,10 @@ import projectviewer.vpt.VPTRoot;
  *
  *	<p>Note about property changing events: currently, these events are only
  *	generated for the properties regarding the ProjectViewer GUI (that is,
- *	SHOW_TOOLBAR_OPT, SHOW_FOLDERS_OPT, SHOW_FILES_OPT, SHOW_WFILES_OPT,
- *	USER_CONTEXT_MENU and USER_MENU_FIRST).If the change of another
- *	property needs to be notified to someone, please include the call to
- *	the appropriate "firePropertyChanged" method is the setter methods
- *	of the property.</p>
+ *	SHOW_FOLDERS_OPT, SHOW_FILES_OPT, SHOW_WFILES_OPT, USER_CONTEXT_MENU
+ *	and USER_MENU_FIRST).If the change of another property needs to be
+ *	notified to someone, please include the call to the appropriate
+ *	"firePropertyChanged" method is the setter methods of the property.</p>
  *
  *	<p>Also of note is that these events are for internal ProjectViewer use
  *	and are not meant to be used by other plugins interfacing with PV.</p>
@@ -92,7 +91,6 @@ public final class ProjectViewerConfig {
 	public static final String SHOW_FILES_OPT			  = "projectviewer.show_files_tree";
 	public static final String SHOW_FILTERED_OPT		  = "projectviewer.show_filtered_tree";
 	public static final String SHOW_FOLDERS_OPT			  = "projectviewer.show_folder_tree";
-	public static final String SHOW_TOOLBAR_OPT			  = "projectviewer.show_toolbar";
 	public static final String SHOW_WFILES_OPT			  = "projectviewer.show_working_files_tree";
 
 	public static final String USER_MENU_FIRST			  = "projectviewer.contextmenu.userfirst";
@@ -125,7 +123,6 @@ public final class ProjectViewerConfig {
 	private boolean followCurrentBuffer		= true;
 	private int		askImport				= ASK_ONCE;
 
-	private boolean showToolBar				= true;
 	private boolean showFoldersTree			= true;
 	private boolean showFilesTree			= true;
 	private boolean showWorkingFilesTree	= true;
@@ -195,12 +192,6 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(DELETE_NOT_FOUND_FILES_OPT);
 		if (tmp != null) {
 			setDeleteNotFoundFiles("true".equalsIgnoreCase(tmp));
-		}
-
-		 // show_toolbar
-		tmp = props.getProperty(SHOW_TOOLBAR_OPT);
-		if (tmp != null) {
-			setShowToolBar("true".equalsIgnoreCase(tmp));
 		}
 
 		// show_folders_tree
@@ -421,12 +412,6 @@ public final class ProjectViewerConfig {
 	  this.browserPath = newBrowserPath;
 	}
 
-	public void setShowToolBar(boolean newShowToolBar) {
-		boolean old = this.showToolBar;
-		this.showToolBar = newShowToolBar;
-		firePropertyChanged(SHOW_TOOLBAR_OPT, old, newShowToolBar);
-	}
-
 	public void setShowFoldersTree(boolean newShowFoldersTree) {
 		boolean old = this.showFoldersTree;
 		this.showFoldersTree = newShowFoldersTree;
@@ -487,11 +472,6 @@ public final class ProjectViewerConfig {
 
 	public String getBrowserPath() {
 		return browserPath;
-	}
-
-
-	public boolean getShowToolBar() {
-		return showToolBar;
 	}
 
 	public boolean getShowFoldersTree() {
@@ -691,7 +671,6 @@ public final class ProjectViewerConfig {
 		props.setProperty(CASE_INSENSITIVE_SORT_OPT, String.valueOf(caseInsensitiveSort));
 		props.setProperty(FOLLOW_BUFFER_OPT, String.valueOf(followCurrentBuffer));
 
-		props.setProperty(SHOW_TOOLBAR_OPT, String.valueOf(showToolBar));
 		props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));
 		props.setProperty(SHOW_FILES_OPT, String.valueOf(showFilesTree));
 		props.setProperty(SHOW_WFILES_OPT, String.valueOf(showWorkingFilesTree));

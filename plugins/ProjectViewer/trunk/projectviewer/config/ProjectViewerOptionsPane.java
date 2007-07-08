@@ -65,7 +65,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JRadioButton askOnce;
 	private JRadioButton askNever;
 
-	private JCheckBox showToolBar;
 	private JCheckBox showFoldersTree;
 	private JCheckBox showFilesTree;
 	private JCheckBox showWorkingFilesTree;
@@ -169,10 +168,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		//{{{ gui options
 		addSeparator("options.projectviewer.gui-opt.label");
 
-		showToolBar = new JCheckBox(jEdit.getProperty("projectviewer.options.show_toolbar"));
-		showToolBar.setSelected(config.getShowToolBar());
-		addComponent(showToolBar);
-
 		showFoldersTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_folders"));
 		showFoldersTree.setSelected(config.getShowFoldersTree());
 		addComponent(showFoldersTree);
@@ -261,7 +256,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setRememberOpen(rememberOpen.isSelected());
 		config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());
 
-		config.setShowToolBar(showToolBar.isSelected());
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());

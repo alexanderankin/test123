@@ -50,12 +50,6 @@ public class ExpandAllAction extends Action {
 		return jEdit.getProperty("projectviewer.action.expand_all");
 	} //}}}
 
-	//{{{ +getIcon() : Icon
-	/** Returns the icon for the action. */
-	public Icon getIcon() {
-		return GUIUtilities.loadIcon("ZoomIn.png");
-	} //}}}
-
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
