@@ -133,16 +133,11 @@ public class EditProjectAction extends Action {
 		}
 
 		boolean add = forceNew | (proj == null);
+		VPTGroup oldParent = (proj != null) ? ((VPTGroup) proj.getParent())
+											: null;
 		proj = ProjectOptions.run(proj, parent, lookupPath);
 
 		if (proj != null) {
-			boolean newParent = false;
-			if (proj.getObjectProperty("projectviewer.new-parent") != null) {
-				parent = (VPTGroup) proj.getObjectProperty("projectviewer.new-parent");
-				proj.removeProperty("projectviewer.new-parent");
-				newParent = true;
-			}
-
 			if (add) {
 				ProjectManager.getInstance().addProject(proj, parent);
 				ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
@@ -172,10 +167,11 @@ public class EditProjectAction extends Action {
 					notify = viewer.getRoot().isNodeDescendant(proj);
 				}
 
-				if (newParent) {
-					VPTGroup oldParent = (VPTGroup) proj.getParent();
+				if (proj.getParent() != oldParent) {
+					VPTGroup newParent = (VPTGroup) proj.getParent();
+					proj.setParent(oldParent);
 					ProjectViewer.removeNodeFromParent(proj);
-					ProjectViewer.insertNodeInto(proj, parent);
+					ProjectViewer.insertNodeInto(proj, newParent);
 					ProjectManager.getInstance().saveProjectList();
 					StructureUpdate.send(proj, oldParent);
 				} else if (notify) {

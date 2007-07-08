@@ -38,7 +38,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectUpdate;
-import projectviewer.persist.DeferredProperty;
 //}}}
 
 /**
@@ -53,10 +52,7 @@ import projectviewer.persist.DeferredProperty;
  */
 public class VPTProject extends VPTNode {
 
-	//{{{ Constants
-	private final static Icon 	projectIcon 		= GUIUtilities.loadIcon("DriveSmall.png");
-	private final static String	FILTER_LIST_PROP	= "projectviewer.project.filter_list";
-	//}}}
+	private final static Icon projectIcon = GUIUtilities.loadIcon("DriveSmall.png");
 
 	//{{{ Attributes
 
@@ -77,7 +73,7 @@ public class VPTProject extends VPTNode {
 		openableNodes	= new HashMap<String,VPTNode>();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
-		filterList		= null;
+		filterList		= Collections.EMPTY_LIST;
 	}
 
 	//}}}
@@ -119,19 +115,7 @@ public class VPTProject extends VPTNode {
 	//{{{ +getProperty(String) : String
 	/** Returns the property stored for the given key, as a String. */
 	public String getProperty(String property) {
-		Object o =  properties.get(property);
-		return (o != null) ? o.toString() : null;
-	} //}}}
-
-	//{{{ +getObjectProperty(String) : Object
-	/** Returns the property stored for the given key. */
-	public Object getObjectProperty(String property) {
-		Object val = properties.get(property);
-		if (val instanceof DeferredProperty) {
-			val = ((DeferredProperty)val).getValue();
-			properties.put(property, val);
-		}
-		return val;
+		return properties.getProperty(property);
 	} //}}}
 
 	//{{{ +setProperty(String, String) : String
@@ -141,21 +125,7 @@ public class VPTProject extends VPTNode {
 	 *	@return	The old value for the property (can be null).
 	 */
 	public String setProperty(String name, String value) {
-		Object old = properties.get(name);
-		properties.put(name, value);
-		return (old != null) ? old.toString() : null;
-	} //}}}
-
-	//{{{ +setProperty(String, Object) : Object
-	/**
-	 *	Sets a property.
-	 *
-	 *	@return	The old value for the property (can be null).
-	 */
-	public Object setProperty(String name, Object value) {
-		Object old = properties.get(name);
-		properties.put(name, value);
-		return old;
+		return (String) properties.setProperty(name, value);
 	} //}}}
 
 	//{{{ +getPropertyNames() : Set
@@ -306,28 +276,6 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ +unloadProperties() : void
-	/**
-	 *	This method will take all properties that are not Strings and
-	 *	serialize them into "DeferredProperty" instances. This is meant
-	 *	to be called internally by ProjectViewer and, while it wouldn't
-	 *	cause any problems, there's not much point in other plugins
-	 *	trying to call this method.
-	 *
-	 *	@since	PV 2.1.2
-	 */
-	public void unloadProperties() {
-		for (Iterator i = properties.keySet().iterator(); i.hasNext(); ) {
-			Object key = i.next();
-			Object val = properties.get(key);
-			if ( !(val instanceof String) && !(val instanceof DeferredProperty) ) {
-				String serialized = PVActions.serialize(val);
-				val = new DeferredProperty(serialized, (String) key);
-				properties.put(key, val);
-			}
-		}
-	} //}}}
-
 	//{{{ +addFilter(VPTFilterData) : void
 	/**
 	 *
@@ -344,12 +292,8 @@ public class VPTProject extends VPTNode {
 	 *	@since PV 2.2.2.0
 	 */
 	public void setFilterList(List filterList) {
-		if (filterList != null && !filterList.isEmpty()) {
-			setProperty(FILTER_LIST_PROP, filterList);
-		} else {
-			removeProperty(FILTER_LIST_PROP);
-		}
-		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
+		this.filterList = filterList;
+		ProjectViewer.nodeStructureChanged(this);
 	} //}}}
 
 	//{{{ +getFilterList() : List
@@ -360,9 +304,6 @@ public class VPTProject extends VPTNode {
 	 *	@since PV 2.2.2.0
 	 */
 	public List getFilterList() {
-		List filterList = (List) getObjectProperty(FILTER_LIST_PROP);
-		if (filterList == null)
-			return java.util.Collections.EMPTY_LIST;
 		return filterList;
 	} //}}}
 

@@ -29,6 +29,11 @@ Version 3.0.0:
           since those work differently inside jEdit and we'd like to
           reuse as much code from the core as possible.
         - Remove the toolbar from the PV GUI.
+        - Object properties in projects are not supported anymore. The
+          original idea was to save work when serializing / deserializing
+          config data from other plugins, but having PV do that causes
+          PV to hold references to other plugins' classes, and that
+          can cause ClassCastExceptions if a plugin is reloaded.
 
 
 ================================================================================

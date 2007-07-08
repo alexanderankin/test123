@@ -44,69 +44,8 @@ using base64 so that it's possible to save them in the XML config file.</p>
 "property" based configuration style, just like jEdit provides by
 <tt>jEdit.getProperty()</tt>, or in the same style of the <tt>java.util.Properties</tt> class. </p>
 
-<p>By having your option pane query a method for properties (instead of
-hardcoding <tt>jEdit.getProperty()</tt> calls inside your methods), you need only
-to extend the option pane class and make the <tt>getProperty()</tt> method query
-the project instead. For example:</p>
-
-<pre><code>
-
-
-class MyOptionPane extends AbstractOptionPane {
-
-	// implementation...
-
-	void myMethod() {
-		//...
-		String s = getProperty("property");
-	}
-
-	String getColor(String s) {
-		return jEdit.getProperty(s);
-	}
-}
-
-class MyProjectOptionPane extends MyOptionPane {
-    VPTProject p;
-
-    public MyProjectOptionPane() {
-        p = ProjectOptions.getProject();
-        config = (MyConfig) p.getObjectProperty(
-                   "<i>optionPaneName</i>.config");
-    }
-    
-    String getColor(String s) {
-        return p.getProperty("color").toString();
-    }
-}
-</code></pre>
-
-<p>So, virtually all the code is reused, just by creating a method for the
-actual getting and setting of properties.</p>
-
-<h3> Obtaining properties for the current project </h3>
-
-
-<p>A second option is to use a <tt>java.util.Properties</tt> object to get/set properties
-in the option pane. If called when the jEdit options dialog is shown, the method
-<tt>jEdit.getProperties()</tt> return such an object. If called from the ProjectViewer's
-project option dialog, the VPTProject instance also provides a
-{@link projectviewer.vpt.VPTProject#getProperties() getProperties()}
-method.</p>
-
-<h3> Obtaining the proejct-specific properties </h3>
-
-<p> From other locations of the code, you will want to get or set the values that are associated with the current project. </p>
-
-<pre>
-public static P4Config getProjectConfig(View v) {
-        VPTProject proj = ProjectViewer.getActiveProject(v);
-        try {
-            return (proj != null)
-                    ? (P4Config) proj.getObjectProperty(P4Config.KEY)
-                    : null;
-</pre>                    
-
+<p>For easier serialization of configuration data, take a look at the
+{@link org.gjt.sp.util.PropertiesBean} class shipped with jEdit.</p>
 
 </body>
 
