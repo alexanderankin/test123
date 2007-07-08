@@ -82,16 +82,6 @@ public class EditProjectAction extends Action {
 		return jEdit.getProperty("projectviewer.action.a_e_project");
 	} //}}}
 
-	//{{{ getIcon() method
-	/**
-	 *	Returns the icon to be shown on the toolbar button. The default
-	 *	implementation returns "null" so that actions that will only be
-	 *	used in the context menu don't need to implement this.
-	 */
-	public Icon getIcon() {
-		return GUIUtilities.loadIcon("Drive.png");
-	} //}}}
-
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {

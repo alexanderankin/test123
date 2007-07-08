@@ -57,7 +57,7 @@ public class OpenWithEncodingAction extends Action {
 	public JComponent getMenuItem() {
 		if (cmItem == null) {
 			JMenu item = new JMenu(getText());
-			String[] encodings = MiscUtilities.getEncodings();
+			String[] encodings = MiscUtilities.getEncodings(false);
 
 			if (encodings != null)
 			for (int i = 0; i < encodings.length; i++) {

@@ -50,12 +50,6 @@ public class CollapseAllAction extends Action {
 		return jEdit.getProperty("projectviewer.action.collapse_all");
 	} //}}}
 
-	//{{{ +getIcon() : Icon
-	/** Returns the icon for the action. */
-	public Icon getIcon() {
-		return GUIUtilities.loadIcon("ZoomOut.png");
-	} //}}}
-
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {

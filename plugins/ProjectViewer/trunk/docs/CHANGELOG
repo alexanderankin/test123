@@ -28,7 +28,7 @@ Version 3.0.0:
           This will be used for all extensions except option panes,
           since those work differently inside jEdit and we'd like to
           reuse as much code from the core as possible.
-
+        - Remove the toolbar from the PV GUI.
 
 
 ================================================================================
