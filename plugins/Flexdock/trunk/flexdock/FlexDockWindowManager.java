@@ -10,13 +10,13 @@ import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockableFactory;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.defaults.DockableComponentWrapper;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.state.PersistenceException;
@@ -78,19 +78,19 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		bottom = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
 		right = new PanelWindowContainer(this,RIGHT,config.rightPos);
 		editPane = view.getEditPane();
+		configureDocking();
 		setLayout(new BorderLayout());
 		viewport = new Viewport();
 		viewport.getDockingProperties().setSingleTabsAllowed(false);
 		setLayout(new BorderLayout());
 		add(viewport, BorderLayout.CENTER);
-		mainView = new org.flexdock.view.View(MAIN_VIEW, null, null);
+		mainView = new FlexDockMainView(MAIN_VIEW);
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
 		mainView.setTitlebar(null);
-		mainView.setContentPane(editPane);
+		mainView.add(editPane, 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
 		if (xml.exists())
 			dockMan.close();
-		configureDocking();
 		if (! xml.exists()) {
 			DockingManager.restoreLayout();
 			PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
@@ -103,7 +103,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		DockingManager.setDockableFactory(viewFactory);
 		DockingManager.setFloatingEnabled(true);
         EffectsManager.setPreview(new GhostPreview());
-        DockingManager.setSingleTabsAllowed(true);
+        DockingManager.setSingleTabsAllowed(false);
 		// configure the perspective manager
 		PerspectiveManager.setFactory(new DemoPerspectiveFactory(view));
 		PerspectiveManager.setRestoreFloatingOnLoad(true);
@@ -230,6 +230,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@Override
 	public void showDockableWindow(String name) {
 		Dockable d = DockingManager.getDockable(name);
+		viewport.dock(d, DockingConstants.SOUTH_REGION);
 		windows.put(name, (JComponent)d.getComponent());
 	}
 
@@ -304,10 +305,30 @@ public class FlexDockWindowManager extends DockableWindowManager {
 				c = window.createDockableWindow(view, DockableWindowManager.BOTTOM);
 			}
 			String title = getDockableTitle(id);
-			Dockable d = DockableComponentWrapper.create(c, id, title);
-			DockingManager.registerDockable(d);
-			return c;
+			org.flexdock.view.View d = new org.flexdock.view.View(id, title, title);
+			d.addAction(DockingConstants.CLOSE_ACTION);
+			d.addAction(DockingConstants.PIN_ACTION);
+			d.setContentPane(c);
+			//Dockable d = DockableComponentWrapper.create(c, id, title);
+			//DockingManager.registerDockable(d);
+			return d;
 		}
 	}
+	private class FlexDockMainView extends org.flexdock.view.View {
 
+		private JPanel panel;
+		
+		public FlexDockMainView(String persistentId) {
+			super(persistentId);
+			panel = new JPanel(new BorderLayout());
+			setContentPane(panel);
+		}
+
+		@Override
+		public Component add(Component comp, int index) {
+			panel.add(comp, BorderLayout.CENTER);
+			return comp;
+		}
+		
+	}
 }

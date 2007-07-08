@@ -17,7 +17,7 @@
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
-	<property name="jedit.install.dir"  value="/home/shlomy/jedit/4.3pre9"/>
+	<property name="jedit.install.dir"  value="/home/shlomy/jedit/dev"/>
 	<property name="jedit.plugin.dir"  value="${user.home}/.jedit/jars"/>
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
