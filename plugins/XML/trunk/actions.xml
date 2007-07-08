@@ -56,6 +56,11 @@
             xml.XmlActions.split(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="xml-join-tag">
+       <CODE>
+          xml.XmlActions.join(view);
+       </CODE>
+    </ACTION>
     <ACTION NAME="xml-match-tag">
         <CODE>
             xml.XmlActions.matchTag(textArea);

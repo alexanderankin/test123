@@ -11,7 +11,10 @@ plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4.2
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.6.7
 plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.2.1
-plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD or XSD. For all languages, it displays element trees in the sidekick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
+plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD or XSD. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
+
+# In addition to the above dependencies, this plugin only builds properly with
+# XML 1.6.5 - the AntCompleteTask is incompatible with Ant 1.7.0.
 
 # Menu bar stuff
 
@@ -25,6 +28,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
     xml-close-tag \
     xml-remove-tags \
     xml-split-tag \
+	xml-join-tag \
     - \
     xml-chars-to-entities \
     xml-entities-to-chars \
@@ -48,6 +52,7 @@ xml-edit-tag.label=Edit Tag at Caret...
 xml-close-tag.label=Close Last Open Tag
 xml-remove-tags.label=Remove All Tags
 xml-split-tag.label=Split Tag
+xml-join-tag.label=Join Tag
 xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
 xml-clear-cache.label=Clear Resource Cache
