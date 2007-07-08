@@ -89,7 +89,7 @@ public class ReImporter extends RootImporter {
 			ImportDialog id = getImportDialog();
 			id.setTitle(jEdit.getProperty("projectviewer.import.msg_reimport.title"));
 			loadImportFilterStatus(project, id);
-			id.show();
+			id.setVisible(true);
 
 			if (id.isApproved()) {
 				String state = viewer.getTreePanel().getFolderTreeState(selected);

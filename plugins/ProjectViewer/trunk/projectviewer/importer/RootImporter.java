@@ -94,7 +94,7 @@ public class RootImporter extends FileImporter {
 		ImportDialog id = getImportDialog();
 		id.setTitle(jEdit.getProperty(dlgTitle));
 		loadImportFilterStatus(project, id);
-		id.show();
+		id.setVisible(true);
 
 		if (!id.isApproved()) {
 			return null;
