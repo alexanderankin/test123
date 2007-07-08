@@ -36,7 +36,6 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import org.gjt.sp.util.Log;
@@ -44,6 +43,7 @@ import org.gjt.sp.util.Log;
 import projectviewer.vpt.VPTContextMenu;
 import projectviewer.vpt.VPTNode;
 
+import projectviewer.config.ExtensionManager;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.persist.ProjectPersistenceManager;
 //}}}
@@ -119,32 +119,20 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ +start() : void
 	/** Start the plugin. */
 	public void start() {
-		// work around for brokenness in JDK 1.4
-		if (OperatingSystem.hasJava14() && !OperatingSystem.hasJava15()
-			&& System.getProperty("org.xml.sax.driver") == null)
-		{
-			System.setProperty("org.xml.sax.driver",
-							   "org.apache.crimson.parser.XMLReaderImpl");
-		}
-
 		File f = new File(getResourcePath("projects/null"));
 		if (!f.getParentFile().exists()) {
 			if (!f.getParentFile().mkdirs()) {
 				Log.log(Log.ERROR, this, "Cannot create config directory; ProjectViewer will not function properly.");
 			}
 		}
-		// check plugins that are already loaded
+
+		/*
+		 * set up a task to check any available extensions after
+		 * jEdit is done loading.
+		 */
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				EditPlugin[] plugins = jEdit.getPlugins();
-				for (int i = 0; i < plugins.length; i++) {
-					// create a "fake" PluginUpdate message
-					PluginUpdate msg =
-						new PluginUpdate(plugins[i].getPluginJAR(),
-											PluginUpdate.LOADED,
-											false);
-					checkPluginUpdate(msg);
-				}
+				ExtensionManager.getInstance().reloadExtensions();
 			}
 		});
  	} //}}}
@@ -173,9 +161,7 @@ public final class ProjectPlugin extends EBPlugin {
 	/** Handles plugin load/unload messages in the EditBus. */
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof PluginUpdate) {
-			checkPluginUpdate((PluginUpdate)msg);
-		} else if (msg instanceof PropertiesChanged) {
-			VPTContextMenu.userMenuChanged();
+			ExtensionManager.getInstance().reloadExtensions();
 		} else if (msg instanceof ViewUpdate) {
 			ViewUpdate vu = (ViewUpdate) msg;
 			if (vu.getWhat() == ViewUpdate.CLOSED) {
@@ -184,31 +170,6 @@ public final class ProjectPlugin extends EBPlugin {
 					&& ProjectViewer.getViewer(vu.getView()) == null) {
 				ProjectViewer.setActiveNode(vu.getView(), config.getLastNode());
 			}
-		}
-	} //}}}
-
-	//{{{ -checkPluginUpdate(PluginUpdate) : void
-	private void checkPluginUpdate(PluginUpdate msg) {
-		if (msg.getWhat() == PluginUpdate.LOADED) {
-			try {
-				ProjectViewer.addToolbarActions(msg.getPluginJAR());
-				VPTContextMenu.registerActions(msg.getPluginJAR());
-				ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
-			} catch (Exception e) {
-				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
-				Log.log(Log.ERROR, this, e);
-			} catch (NoClassDefFoundError ncde) {
-				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
-				Log.log(Log.ERROR, this, ncde);
-			} catch (ExceptionInInitializerError eiie) {
-				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
-				Log.log(Log.ERROR, this, eiie);
-			}
-		} else if (msg.getWhat() == PluginUpdate.UNLOADED) {
-			ProjectManager.getInstance().unloadProjectProperties();
-			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
-			VPTContextMenu.unregisterActions(msg.getPluginJAR());
-			PVActions.cleanup(msg.getPluginJAR());
 		}
 	} //}}}
 

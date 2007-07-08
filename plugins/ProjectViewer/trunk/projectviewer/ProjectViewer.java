@@ -138,64 +138,6 @@ public final class ProjectViewer extends JPanel
 		actions.add(new OldStyleAddFileAction());
 	} //}}}
 
-	//{{{ Action Handling
-
-	//{{{ +_registerAction(Action)_ : void
-	/** Adds an action to be shown on the toolbar. */
-	public static void registerAction(Action action) {
-		actions.add(action);
-		actionsChanged();
-	} //}}}
-
-	//{{{ +_unregisterAction(Action)_ : void
-	/** Removes an action from the toolbar. */
-	public static void unregisterAction(Action action) {
-		actions.remove(action);
-		actionsChanged();
-	} //}}}
-
-	//{{{ +_removeToolbarActions(PluginJAR)_ : void
-	/**
-	 *	Removes the project listeners of the given plugin from the list, and
-	 *	from any active project in ProjectViewer.
-	 */
-	public static void removeToolbarActions(PluginJAR jar) {
-		Collection removed = PVActions.prune(actions, jar);
-		if (removed != null) {
-			actionsChanged();
-		}
-	} //}}}
-
-	//{{{ +_addToolbarActions(PluginJAR)_ : void
-	/**
-	 *	Adds to the list of listeners for the given view the listeners that
-	 *	have been declared by the given plugin using properties. For global
-	 *	listeners, "view" should be null.
-	 */
-	public static void addToolbarActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".toolbar-actions");
-		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
-		if (aList != null && aList.size() > 0) {
-			actions.addAll(aList);
-			actionsChanged();
-		}
-	} //}}}
-
-	//{{{ -_actionsChanged()_ : void
-	/** Reloads the action list for the toolbar. */
-	private static void actionsChanged() {
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-			if (v != null && v.toolBar != null)
-				v.populateToolBar();
-		}
-	} //}}}
-
-	//}}}
-
 	//{{{ +_getViewer(View)_ : ProjectViewer
 	/**
 	 *	Returns the viewer associated with the given view, or null if none
@@ -1194,6 +1136,13 @@ public final class ProjectViewer extends JPanel
 					SwingUtilities.invokeLater(this);
 					willRun = true;
 				}
+				return;
+			}
+
+			if (evt.getPropertyName().equals(ProjectViewerConfig.USER_CONTEXT_MENU) ||
+				evt.getPropertyName().equals(ProjectViewerConfig.USER_MENU_FIRST))
+			{
+				treePanel.getContextMenu().userMenuChanged();
 				return;
 			}
 

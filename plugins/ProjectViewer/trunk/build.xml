@@ -79,9 +79,9 @@
 			<fileset dir="${build.classes}">
 				<include name="pvdebug/**.*" />
 			</fileset>
-			<fileset dir="${basedir}">
-				<include name="pvdebug/**.*" />
-				<exclude name="**/*.java" />
+			<fileset dir="${basedir}/pvdebug">
+				<include name="*.*" />
+				<exclude name="*.java" />
 			</fileset>
 		</jar>
 	</target>

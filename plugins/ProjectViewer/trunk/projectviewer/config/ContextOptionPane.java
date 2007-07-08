@@ -62,8 +62,6 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.StandardUtilities;
 
 import common.gui.OkCancelButtons;
-
-import projectviewer.vpt.VPTContextMenu;
 //}}}
 
 /**
@@ -152,7 +150,7 @@ public class ContextOptionPane extends AbstractOptionPane {
 		buttons.add(moveDown);
 
 		showUserFirst = new JCheckBox(jEdit.getProperty("options.projectviewer.contextmenu.userfirst"));
-		showUserFirst.setSelected(jEdit.getBooleanProperty("projectviewer.contextmenu.userfirst"));
+		showUserFirst.setSelected(ProjectViewerConfig.getInstance().getUserMenuFirst());
 		buttons.add(showUserFirst);
 
 		buttons.add(Box.createHorizontalStrut(6));
@@ -185,8 +183,7 @@ public class ContextOptionPane extends AbstractOptionPane {
 			buf.append(((MenuItem)listModel.elementAt(i)).actionName);
 		}
 		ProjectViewerConfig.getInstance().setUserContextMenu(buf.toString());
-		jEdit.setBooleanProperty("projectviewer.contextmenu.userfirst", showUserFirst.isSelected());
-		VPTContextMenu.userMenuChanged();
+		ProjectViewerConfig.getInstance().setUserMenuFirst(showUserFirst.isSelected());
 	} //}}}
 
 	//{{{ updateButtons() method

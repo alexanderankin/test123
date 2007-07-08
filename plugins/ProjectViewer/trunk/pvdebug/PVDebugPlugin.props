@@ -13,11 +13,6 @@ plugin.pvdebug.PVDebugPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0.0
 
 #{{{ Debug
 
-plugin.projectviewer.pvdebug.PVDebugPlugin.prj-listeners=pvdebug.ProjectEventDumper
-plugin.projectviewer.pvdebug.PVDebugPlugin.global-pv-listeners=pvdebug.ProjectViewerEventDumper
-plugin.projectviewer.pvdebug.PVDebugPlugin.toolbar-actions=pvdebug.DummyAction
-plugin.projectviewer.pvdebug.PVDebugPlugin.context-menu-actions=pvdebug.DummyAction
-
 plugin.projectviewer.pvdebug.PVDebugPlugin.option-pane=dummy
 options.dummy.code=new pvdebug.DummyOptionPane("dummy");
 options.dummy.label=Dummy
