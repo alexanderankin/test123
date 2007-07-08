@@ -29,11 +29,6 @@ import java.io.ObjectOutputStream;
 import java.io.Writer;
 
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.StringTokenizer;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -49,7 +44,6 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.PluginJAR;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -68,8 +62,6 @@ import projectviewer.action.LaunchBrowserAction;
  *  @version	$Id$
  */
 public final class PVActions {
-
-	private static final HashMap PJAR_MAPPING = new HashMap();
 
 	//{{{ +_openAllProjectFiles(View)_ : void
 	/** If a project is currently active, open all its files. */
@@ -297,81 +289,6 @@ public final class PVActions {
 		v.getStatus().setMessageAndClear(
 			jEdit.getProperty("projectviewer.error.cannot_exec_action",
 							  new Object[] { a.getText() }));
-	} //}}}
-
-	//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection
-	/**
-	 *	Creates a collection of instances from a comma-separated list of class
-	 *	names. Classes that are not subclasses of "base" will be considered an
-	 *	error and will not be instantiated.
-	 *
-	 *	@param	list	Comma-separated list of class names of which to create instances.
-	 *	@param	jar		The plugin JAR that provides the class loader for the classes.
-	 *	@param	base	The minimal base class to accept for the created objects.
-	 */
-	public static Collection listToObjectCollection(String list, PluginJAR jar, Class base) {
-		if (list != null) {
-			ArrayList objs = new ArrayList();
-			StringTokenizer st = new StringTokenizer(list, ",");
-			while (st.hasMoreTokens()) {
-				String clazz = st.nextToken().trim();
-				try {
-					Class klazz = jar.getClassLoader().loadClass(clazz);
-					if (base.isAssignableFrom(klazz)) {
-						objs.add(klazz.newInstance());
-						Collection classes = (Collection) PJAR_MAPPING.get(jar);
-						if (classes == null) {
-							classes = new HashSet();
-							PJAR_MAPPING.put(jar, classes);
-						}
-						classes.add(clazz);
-					} else {
-						Log.log(Log.WARNING, PVActions.class,
-							"Class is not instance of " + base.getName() + ": " + clazz);
-					}
-				} catch (Exception e) {
-					Log.log(Log.WARNING, PVActions.class,
-						"Error instantiating: " + clazz + ", " + e.getMessage());
-				}
-			}
-			return objs;
-		}
-		return null;
-	} //}}}
-
-	//{{{ +_prune(Collection, PluginJAR)_ : Collection
-	/**
-	 *	Iterates through the objects in the given collection, removing
-	 *	any objects that were loaded from the given plugin. This assumes
-	 *	that the objects were loaded by calling the method
-	 *	{@link #listToObjectCollection(String,PluginJAR,Class)}, so that
-	 *	the relationship class -> pluginJAR is registered.
-	 *
-	 *	@return	A list with the removed objects (may be null).
-	 *	@since	PV 2.1.1
-	 */
-	public static Collection prune(Collection c, PluginJAR jar) {
-		Collection removed = null;
-		Collection classes = (Collection) PJAR_MAPPING.get(jar);
-		if (classes != null) {
-			for (Iterator i = c.iterator(); i.hasNext();) {
-				Object o = i.next();
-				Class clazz = o.getClass();
-				if (classes.contains(clazz.getName())) {
-					i.remove();
-					if (removed == null)
-						removed = new ArrayList();
-					removed.add(o);
-				}
-			}
-		}
-		return removed;
-	} //}}}
-
-	//{{{ #_cleanup(PluginJAR)_ : void
-	/** Used internally to clean up resources when unloading other plugins. */
-	protected static void cleanup(PluginJAR jar) {
-		PJAR_MAPPING.remove(jar);
 	} //}}}
 
 	//{{{ +_writeXML(String, Writer)_ : void
