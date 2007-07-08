@@ -84,10 +84,8 @@ public class ExtensionManager
 			 it.hasNext(); ) {
 			WeakReference<ManagedService> ref = it.next();
 			if (ref.get() != null) {
-				System.err.println("updating managed service: " + ref.get().getClass().getName());
 				ref.get().updateExtensions(loadExtensions(ref.get().getServiceClass()));
 			} else {
-				System.err.println("cleaning up gc'ed managed service");
 				it.remove();
 			}
 		}
@@ -95,11 +93,9 @@ public class ExtensionManager
 
 	private List<Object> loadExtensions(Class clazz)
 	{
-		System.err.println("Getting extensions for: " + clazz.getName());
 		String[] extensions = ServiceManager.getServiceNames(clazz.getName());
 		List<Object> lst = null;
 		for (String ext : extensions) {
-			System.err.println("Found extension: " + ext);
 			// XXX: check if extension is disabled
 			Object svc = ServiceManager.getService(clazz.getName(), ext);
 			if (svc != null) {
