@@ -36,14 +36,9 @@ that in mind when going through this path.</p>
 
 <h3>Registering a NodeHandler with the ProjectViewer plugin</h3>
 
-<p>There are two methods of registering node handlers with the PV plugin. The
-first one is to call the
-{@link projectviewer.persist.ProjectPersistenceManager#registerHandler(NodeHandler)
-registerHandler(NodeHandler)} method of the ProjectPersistenceManager class. The
-second one uses a jEdit 4.2-style API for registering the handler. Just declare
-a property named plugin.projectviewer.<i>class name</i>.context-menu-actions and
-provide a comma-separated list of class names that should be registered. The
-classes must extend the NodeHandler class.</p>
+<p>To register node handlers with ProjectViewer, add an entry to your
+plugin's <tt>services.xml</tt> file. The service class is
+<tt>projectviewer.persist.NodeHandler</tt>.</p>
 
 <p>Registering custom node handlers has one shortcoming: when your plugin is
 unloaded, the classes won't be able to be garbage collected. This happens
