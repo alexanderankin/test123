@@ -50,7 +50,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	public static Container editPane;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private boolean alternateLayout;
-	private org.flexdock.view.View mainView = null;
+	private FlexDockMainView mainView = null;
 
 	PanelWindowContainer top, bottom, left, right;
 	private Viewport viewport;
@@ -233,6 +233,9 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		viewport.dock(d, DockingConstants.SOUTH_REGION);
 		windows.put(name, (JComponent)d.getComponent());
 	}
+	public void add(Component comp, Object o, int index) {
+		mainView.add(comp, o, index);
+	}
 
 	private class DemoPerspectiveFactory implements PerspectiveFactory {
 		View view;
@@ -327,8 +330,16 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		@Override
 		public Component add(Component comp, int index) {
 			panel.add(comp, BorderLayout.CENTER);
+			panel.revalidate();
 			return comp;
 		}
-		
+		public void add(Component comp, Object o, int index) {
+			String s = (String)o;
+			if (s.equals(DockableLayout.TOP_TOOLBARS))
+				panel.add(comp, BorderLayout.NORTH);
+			else
+				panel.add(comp, BorderLayout.SOUTH);
+			panel.revalidate();
+		}
 	}
 }
