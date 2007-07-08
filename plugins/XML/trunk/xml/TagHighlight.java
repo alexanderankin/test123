@@ -40,14 +40,11 @@ public class TagHighlight implements StructureMatcher
 		}
 		else
 		{
-			TagParser.Tag tag = TagParser
-				.getMatchingTag(text,current);
+			TagParser.Tag tag = TagParser.getMatchingTag(text,current);
 			if(tag != null)
 			{
-				tag.startLine = textArea.getLineOfOffset(
-					tag.start);
-				tag.endLine = textArea.getLineOfOffset(
-					tag.end);
+				tag.startLine = textArea.getLineOfOffset(tag.start);
+				tag.endLine = textArea.getLineOfOffset(tag.end);
 				tag.matcher = this;
 			}
 			return tag;

@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
@@ -334,7 +335,10 @@ loop:			for(;;)
 		}
 	} //}}}
 
-	// {{{ splitTagAtCaret() method
+	// {{{ splitTag() method
+	/**
+	 * Splits tag at caret, so that attributes are on separate lines.
+	 */
 	public static void splitTag(Tag tag, JEditTextArea textArea) {
 		View view = textArea.getView();
 		textArea.setSelection(new Selection.Range(tag.start, tag.end));
@@ -347,6 +351,7 @@ loop:			for(;;)
 		Selection[] s = textArea.getSelection();
 		if (s.length != 1) return;
 		Selection sel = s[0];
+		if (sel.getEnd() - sel.getStart() < 2) return;
 		int line = textArea.getLineOfOffset(tag.start);
 		int lineStartOffset = textArea.getLineStartOffset(line);
 		int indentChars = 2 + sel.getStart() - lineStartOffset;
@@ -401,9 +406,88 @@ loop:			for(;;)
 				result.append(htmlTag.tagEnd);
 			}
 		}
+		else {
+			return;
+		}
 		textArea.replaceSelection(result.toString());
 	}// }}}
 
+	// {{{ join() method
+	/**
+	 * If inside a HTML or XML, join attributes and tagname all on one line. 
+	 * Otherwise do nothing.
+	 */
+	static public void join (View view) {
+		JEditTextArea textArea = view.getTextArea();
+		Buffer buffer = view.getBuffer();
+		int pos = textArea.getCaretPosition();
+		String text = buffer.getText(0,buffer.getLength());
+		Tag tag = TagParser.getTagAtOffset(text, pos);
+		if (tag == null) return; // we're not in a tag;
+		
+		// select it
+		textArea.setSelection(new Selection.Range(tag.start, tag.end));	
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+		if(!(_data instanceof XmlParsedData))
+		{
+			GUIUtilities.error(view, "xml-no-data", null);
+			return;
+		}
+		Selection[] s = textArea.getSelection();
+		if (s.length != 1) return;
+		Selection sel = s[0];
+		if (sel.getEnd() - sel.getStart() < 2) return;
+		int line = textArea.getLineOfOffset(tag.start);
+//		int lineStartOffset = textArea.getLineStartOffset(line);
+		XmlParsedData data = (XmlParsedData)_data;
+		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
+		int count = path.getPathCount();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(count-1);
+		StringBuffer result = new StringBuffer();
+		Object user_object = node.getUserObject();
+		if (user_object instanceof XmlTag) {
+			XmlTag xmltag = (XmlTag) node.getUserObject();
+			result.append("<");
+			result.append(xmltag.getName());
+			Attributes attrs = xmltag.attributes;
+			count = attrs.getLength();
+			for (int i=0; i<count; ++i) {
+				String formatstr = String.format(" %s = \"%s\"",
+					new Object[] {attrs.getQName(i), attrs.getValue(i) });
+				result.append(formatstr);
+			}
+			// TODO: WE NEED TO CHECK IF THIS IS A SELF_TERMINATING TAG, ending with /> 
+			result.append(">");
+		}
+		else if (user_object instanceof SideKickAsset) {
+			SideKickElement element = ((SideKickAsset)user_object).getElement();
+			if (element instanceof HtmlDocument.Tag) {
+				HtmlDocument.Tag htmlTag = (HtmlDocument.Tag)element;
+				result.append(htmlTag.tagStart);
+				result.append(htmlTag.tagName).append(" ");
+				List attrs = ((HtmlDocument.Tag)element).attributeList.attributes;
+				for (Iterator it = attrs.iterator(); it.hasNext(); ) {
+					HtmlDocument.Attribute attr = (HtmlDocument.Attribute)it.next();
+					result.append(attr.name);
+					if (attr.hasValue) {
+						String value = attr.value;
+						if (!value.startsWith("\"")) {
+							value = "\"" + value;
+						}
+						if (!value.endsWith("\"")) {
+							value += "\"";
+						}
+						result.append(" = ").append(value);
+					}
+				}
+				result.append(htmlTag.tagEnd.replaceAll("\\s", ""));
+			}
+		}
+		else {
+			return;
+		}
+		textArea.replaceSelection(result.toString());
+	}// }}}
 
 	//{{{ split() method
 	/**

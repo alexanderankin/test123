@@ -366,9 +366,15 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 	//{{{ Tag class
 	public static class Tag extends StructureMatcher.Match
 	{
+		/** Element name */
 		public String tag = null;
 		public int type = -1;
 
+		/**
+		 * 
+		 * @param start offset from start of buffer
+		 * @param end offset from start of buffer
+		 */
 		Tag(int start, int end)
 		{
 			this.start = start;
