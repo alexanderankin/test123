@@ -82,7 +82,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		if (node == null) {
 			return;
 		}
-		viewer.sendUpdate(node, ViewerUpdate.Type.NODE_SELECTED);
 
 		boolean doubleClick = isDoubleClick(evt);
 		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);
@@ -144,9 +143,15 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	 *	@param  e  The selection event.
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
+		VPTNode sel;
 		lastClickTarget = null;
-		if (!e.isAddedPath()) return;
-		viewer.setStatus(e.getPath().getLastPathComponent().toString());
+		if (!e.isAddedPath()) {
+			return;
+		}
+
+		sel = (VPTNode) e.getPath().getLastPathComponent();
+		viewer.sendUpdate(sel, ViewerUpdate.Type.NODE_SELECTED);
+		viewer.setStatus(sel.toString());
 	}
 
 	//}}}
