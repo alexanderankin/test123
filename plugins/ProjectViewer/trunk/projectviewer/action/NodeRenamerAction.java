@@ -20,7 +20,6 @@ package projectviewer.action;
 
 //{{{ Imports
 import java.io.File;
-import java.util.Iterator;
 
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -156,8 +155,7 @@ public class NodeRenamerAction extends Action {
 				dir.setFile(newFile);
 
 				// updates all files from the old directory to point to the new one
-				for (Iterator i = project.getOpenableNodes().iterator(); i.hasNext(); ) {
-					VPTNode n = (VPTNode) i.next();
+				for (VPTNode n : project.getOpenableNodes()) {
 					if (n.isFile() && n.getNodePath().startsWith(oldDir)) {
 						String oldPath = n.getNodePath();
 						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()), false);

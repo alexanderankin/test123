@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
 
-import java.util.Iterator;
-
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
@@ -68,8 +66,8 @@ public final class PVActions {
 	public static void openAllProjectFiles(View view) {
 		VPTProject active = ProjectViewer.getActiveProject(view);
 		if (active != null) {
-			for (Iterator i = active.getOpenableNodes().iterator(); i.hasNext(); ) {
-				((VPTNode)i.next()).open();
+			for (VPTNode n : active.getOpenableNodes()) {
+				n.open();
 			}
 		}
 	} //}}}

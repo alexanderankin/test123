@@ -32,7 +32,6 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -125,11 +124,6 @@ public final class ProjectPersistenceManager {
 		}
 
 		p.sortChildren();
-		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-		for (Iterator i = p.getOpenableNodes().iterator(); i.hasNext(); ) {
-			VPTNode n = (VPTNode) i.next();
-			String path = n.getNodePath();
-		}
 		return p;
 	} //}}}
 
