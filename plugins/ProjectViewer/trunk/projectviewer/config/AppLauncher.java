@@ -163,15 +163,6 @@ public class AppLauncher {
 		out.close();
 	} //}}}
 
-	//{{{ +launchApp(File, Component) : void
-	/**
-	 *	@deprecated	Use {@link #launchApp(String, Component)
-	 *	launchApp(String, Component)} instead.
-	 */
-	public void launchApp(File f, Component comp) {
-		launchApp(f.getAbsolutePath(), comp);
-	} //}}}
-
 	//{{{ +launchApp(String, Component) : void
 	/**
 	 *	Launches an external app depending on the extension of the path
@@ -231,16 +222,6 @@ public class AppLauncher {
 			Object key = it.next();
 			appCol.put(key, other.appCol.get(key));
 		}
-	} //}}}
-
-	//{{{ +getAppName(File) : String
-	/**
-	 *	Returns the application name associated to the given file extension.
-	 *
-	 *	@deprecated	Use {@link #getAppName(String) getAppName(String)} instead.
-	 */
-	public String getAppName(File f) {
-		return getAppName(f.getAbsolutePath());
 	} //}}}
 
 	//{{{ +getAppName(String) : String

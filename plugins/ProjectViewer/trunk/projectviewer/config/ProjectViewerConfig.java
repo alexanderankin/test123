@@ -400,14 +400,6 @@ public final class ProjectViewerConfig {
 		this.excludeDirs = newExcludeDirs;
 	}
 
-	/**
-	 * @deprecated	Not used by PV anymore. Superseded by
-	 *				{@link #setLastNode(VPTNode) setLastNode(VPTNode)}.
-	 */
-	public void setLastProject(String newLastProject) {
-		this.lastProject = newLastProject;
-	}
-
 	public void setBrowserpath(String newBrowserPath) {
 	  this.browserPath = newBrowserPath;
 	}
@@ -460,14 +452,6 @@ public final class ProjectViewerConfig {
 
 	public String getExcludeDirs() {
 		return excludeDirs;
-	}
-
-	/**
-	 * @deprecated	Not used by PV anymore. Superseded by
-	 *				{@link #getLastNode() getLastNode()}.
-	 */
-	public String getLastProject() {
-		return lastProject;
 	}
 
 	public String getBrowserPath() {

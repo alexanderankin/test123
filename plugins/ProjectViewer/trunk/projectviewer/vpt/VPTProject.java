@@ -83,22 +83,6 @@ public class VPTProject extends VPTNode {
 
 	//}}}
 
-	//{{{ +getFile(String) : VPTFile
-	/**
-	 *	Returns a VPTFile included in this project that references the given
-	 *	path.
-	 *
-	 *	@deprecated Use {@link #getChildNode(String) getChildNode(String)}
-	 *				instead.
-	 */
-	public VPTFile getFile(String path) {
-		VPTNode o = getChildNode(path);
-		if (o.isFile()) {
-			return (VPTFile) o;
-		}
-		return null;
-	} //}}}
-
 	//{{{ +getChildNode(String) : VPTNode
 	/**
 	 *	Returns the node that matches the given path. Despite the name (too
@@ -109,25 +93,6 @@ public class VPTProject extends VPTNode {
 	public VPTNode getChildNode(String path) {
 		return (VPTNode) openableNodes.get(path);
 	} //}}}
-
-	//{{{ +getFiles() : Collection
-	/**
-	 *	Returns a read-only collection of the files contained in this
-	 *	project.
-	 *
-	 *	@deprecated Use {@link #getOpenableNodes() getOpenableNodes()} instead.
-	 */
-	public Collection getFiles() {
-		ArrayList lst = new ArrayList();
-		for (Iterator i = openableNodes.values().iterator(); i.hasNext(); ) {
-			VPTNode node = (VPTNode) i.next();
-			if (node.isFile()) {
-				lst.add(node);
-			}
-		}
-		return Collections.unmodifiableCollection(lst);
-	}
-	//}}}
 
 	//{{{ +getOpenableNodes() : Collection
 	/**
@@ -243,17 +208,6 @@ public class VPTProject extends VPTNode {
 	/** Clears the list of open files. */
 	public void clearOpenFiles() {
 		openFiles.clear();
-	} //}}}
-
-	//{{{ +isProjectFile(String) : boolean
-	/**
-	 *	Returns whether the file denoted by the given path is part of this
-	 *	project.
-	 *
-	 *	@deprecated Use {@link #isInProject(String) isInProject(String)} instead.
-	 */
-	public boolean isProjectFile(String path) {
-		return isInProject(path);
 	} //}}}
 
 	//{{{ +isInProject(String) : boolean
