@@ -71,7 +71,7 @@
 
 	<ACTION NAME="projectviewer_set-active">
 	<CODE>
-	p = projectviewer.ProjectViewer.getProjectViewer(view);
+	p = projectviewer.ProjectViewer.getViewer(view);
 	if (p == null) return;
 	n = p.getSelectedNode();
 	if (n == null) return;

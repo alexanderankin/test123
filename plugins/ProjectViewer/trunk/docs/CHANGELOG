@@ -24,6 +24,11 @@ Version 3.0.0:
         - Get rid of the old listener-based event notification system,
           reorganize the events into newer classes, and use the EditBus
           to send events.
+        - Use jEdit's service framework to register extensions to PV.
+          This will be used for all extensions except option panes,
+          since those work differently inside jEdit and we'd like to
+          reuse as much code from the core as possible.
+
 
 
 ================================================================================

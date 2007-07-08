@@ -50,10 +50,11 @@ import projectviewer.vpt.VPTRoot;
  *
  *	<p>Note about property changing events: currently, these events are only
  *	generated for the properties regarding the ProjectViewer GUI (that is,
- *	SHOW_TOOLBAR_OPT, SHOW_FOLDERS_OPT, SHOW_FILES_OPT and SHOW_WFILES_OPT).
- *	If the change of another property needs to be notified to someone, please
- *	include the call to the appropriate "firePropertyChanged" method is the
- *	setter methods of the property.</p>
+ *	SHOW_TOOLBAR_OPT, SHOW_FOLDERS_OPT, SHOW_FILES_OPT, SHOW_WFILES_OPT,
+ *	USER_CONTEXT_MENU and USER_MENU_FIRST).If the change of another
+ *	property needs to be notified to someone, please include the call to
+ *	the appropriate "firePropertyChanged" method is the setter methods
+ *	of the property.</p>
  *
  *	<p>Also of note is that these events are for internal ProjectViewer use
  *	and are not meant to be used by other plugins interfacing with PV.</p>
@@ -94,6 +95,7 @@ public final class ProjectViewerConfig {
 	public static final String SHOW_TOOLBAR_OPT			  = "projectviewer.show_toolbar";
 	public static final String SHOW_WFILES_OPT			  = "projectviewer.show_working_files_tree";
 
+	public static final String USER_MENU_FIRST			  = "projectviewer.contextmenu.userfirst";
 	public static final String USER_CONTEXT_MENU		  = "projectviewer.user_context_menu";
 
 	public static final int ASK_ALWAYS	= 0;
@@ -139,6 +141,7 @@ public final class ProjectViewerConfig {
 	private String lastProject				= null;
 	private String browserPath				= "mozilla";
 
+	private boolean userMenuFirst			= false;
 	private String userContextMenu			= null;
 	private String lastInitVersion			= null;
 
@@ -319,6 +322,10 @@ public final class ProjectViewerConfig {
 		if (tmp != null && jEdit.getPlugin(INFOVIEWER_PLUGIN) != null) {
 			setUseInfoViewer("true".equalsIgnoreCase(tmp));
 		}
+
+		// projectviewer.contextmenu.userfirst
+		tmp = props.getProperty(USER_MENU_FIRST);
+		userMenuFirst = "true".equalsIgnoreCase(tmp);
 
 		// projectviewer.user_context_menu
 		tmp = props.getProperty(USER_CONTEXT_MENU);
@@ -517,9 +524,23 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ property userMenuFirst
+	public void setUserMenuFirst(boolean userMenuFirst) {
+		boolean oldValue = this.userMenuFirst;
+		this.userMenuFirst = userMenuFirst;
+		firePropertyChanged(USER_CONTEXT_MENU, oldValue, userMenuFirst);
+	}
+
+	public boolean getUserMenuFirst() {
+		return userMenuFirst;
+	}
+	//}}}
+
 	//{{{ property userContextMenu
 	public void setUserContextMenu(String userContextMenu) {
+		String oldMenu = this.userContextMenu;
 		this.userContextMenu = userContextMenu;
+		firePropertyChanged(USER_CONTEXT_MENU, oldMenu, userContextMenu);
 	}
 
 	public String getUserContextMenu() {
@@ -684,6 +705,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(BROWSER_PATH_OPT, String.valueOf(browserPath));
 		props.setProperty(BROWSER_USE_INFOVIEWER, String.valueOf(useInfoViewer));
 
+		props.setProperty(USER_MENU_FIRST, String.valueOf(userMenuFirst));
 		if (userContextMenu != null) {
 			props.setProperty(USER_CONTEXT_MENU, userContextMenu);
 		}
@@ -759,7 +781,9 @@ public final class ProjectViewerConfig {
 
 	/** Fires and event when a property is changed. */
 	private void firePropertyChanged(String property, Object oldValue, Object newValue) {
-		if (!oldValue.equals(newValue) && listeners.size() > 0) {
+		if (((oldValue == null && newValue != null) ||
+			 (oldValue != null && newValue != null) ||
+			 !oldValue.equals(newValue)) && listeners.size() > 0) {
 			PropertyChangeEvent evt =
 				new PropertyChangeEvent(this,property,oldValue,newValue);
 			for (Iterator i = listeners.iterator(); i.hasNext(); ) {

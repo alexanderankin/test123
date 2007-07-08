@@ -19,12 +19,7 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import java.awt.Component;
@@ -36,10 +31,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
 
 import projectviewer.action.Action;
@@ -58,7 +51,7 @@ import projectviewer.action.LaunchBrowserAction;
 import projectviewer.action.VFSFileImportAction;
 import projectviewer.action.OpenWithEncodingAction;
 
-import projectviewer.config.AppLauncher;
+import projectviewer.config.ExtensionManager;
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -69,149 +62,68 @@ import projectviewer.config.ProjectViewerConfig;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTContextMenu extends MouseAdapter {
+public class VPTContextMenu extends MouseAdapter
+							implements ExtensionManager.ManagedService
+{
 
-	//{{{ Static Members
-
-	private static final ArrayList actions = new ArrayList();
-	private static final ArrayList intActions = new ArrayList();
-	private static long lastMod = System.currentTimeMillis();
-
-	/** Initializes the internal action list. */
-	static {
-		intActions.add(new EditProjectAction());
-		intActions.add(new EditGroupAction(true));
-		intActions.add(new EditGroupAction(false));
-		intActions.add(new FileImportAction());
-		intActions.add(new VFSFileImportAction());
-		intActions.add(new ReimportAction());
-		intActions.add(new NodeRemoverAction(false));
-		intActions.add(new NodeRemoverAction(true));
-		intActions.add(new NodeRenamerAction());
-		intActions.add(new MoveNodeAction());
-		intActions.add(new LaunchBrowserAction());
-		intActions.add(new OpenWithAppAction());
-		intActions.add(new OpenWithEncodingAction());
-		intActions.add(new SearchAction());
-		intActions.add(new ArchiveAction());
-	}
-
-	//{{{ +_registerAction(Action)_ : void
-	/**
-	 *	Adds an action to be shown on the context menu. Actions are shown in the
-	 *	same order as they are registered.
-	 *
-	 *	@deprecated	Use the property system to add context menu actions.
-	 */
-	public static void registerAction(Action action) {
-		actions.add(action);
-		sortMenu();
-		lastMod = System.currentTimeMillis();
-	} //}}}
-
-	//{{{ +_unregisterAction(Action)_ : void
-	/**
-	 *	Removes an action from the context menu.
-	 *
-	 *	@deprecated	Use the property system to add context menu actions.
-	 */
-	public static void unregisterAction(Action action) {
-		actions.remove(action);
-		lastMod = System.currentTimeMillis();
-	} //}}}
-
-	//{{{ +_unregisterActions(PluginJAR)_ : void
-	/** Removes all actions from the given plugin. */
-	public static void unregisterActions(PluginJAR jar) {
-		Collection removed = PVActions.prune(actions, jar);
-		if (removed != null) {
-			lastMod = System.currentTimeMillis();
-		}
-	} //}}}
-
-	//{{{ +_registerActions(PluginJAR)_ : void
-	/** Registers actions from the given plugin. */
-	public static void registerActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".context-menu-actions");
-		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
-		if (aList != null && aList.size() > 0) {
-			actions.addAll(aList);
-			sortMenu();
-			lastMod = System.currentTimeMillis();
-		}
-	} //}}}
-
-	//{{{ +_userMenuChanged()_ : void
-	/** Updates "lastMod" so that the menu is rebuilt at the next invocation. */
-	public static void userMenuChanged() {
-		lastMod = System.currentTimeMillis();
-	} //}}}
-
-	//{{{ -_sortMenu()_ : void
-	/** Sorts the menu in alphabetical order. */
-	private static void sortMenu() {
-		class ActionComparer implements Comparator {
-
-			public int compare(Object o1, Object o2) {
-				return ((Action)o1).getText().compareTo(
-							((Action)o2).getText());
-			}
-
-		}
-		Collections.sort(actions, new ActionComparer());
-	} //}}}
-
-	//}}}
-
-	//{{{ Instance Variables
 	private final ProjectViewer viewer;
-	private final AppLauncher 	appList;
-	private final JPopupMenu	 popupMenu;
-	private final List			internalActions;
-	private final List			separators;
-	private long 				pmLastBuilt;
-	//}}}
-
-	//{{{ +VPTContextMenu(ProjectViewer) : <init>
+	private final JPopupMenu	popupMenu;
+	private final List<Action>	intActions;
+	private final List<Action>	extActions;
+	private final List<Action>	separators;
 
 	/**
 	 *  Constructs a listener that will ask the provided viewer instance for
 	 *  information about the nodes clicked.
 	 */
-	public VPTContextMenu(ProjectViewer viewer) {
+	public VPTContextMenu(ProjectViewer viewer)
+	{
 		this.viewer = viewer;
-		appList = AppLauncher.getInstance();
-		internalActions = new ArrayList();
-		separators		= new LinkedList();
+		intActions = new ArrayList<Action>();
+		extActions = new ArrayList<Action>();
+		separators = new ArrayList<Action>();
 		popupMenu = new JPopupMenu();
-		loadGUI();
+
+		addAction(new EditProjectAction(), true);
+		addAction(new EditGroupAction(true), false);
+		addAction(new EditGroupAction(false), true);
+		addAction(new FileImportAction(), false);
+		addAction(new VFSFileImportAction(), false);
+		addAction(new ReimportAction(), false);
+		addAction(new NodeRemoverAction(false), false);
+		addAction(new NodeRemoverAction(true), false);
+		addAction(new NodeRenamerAction(), true);
+		addAction(new MoveNodeAction(), false);
+		addAction(new LaunchBrowserAction(), false);
+		addAction(new OpenWithAppAction(), false);
+		addAction(new OpenWithEncodingAction(), false);
+		addAction(new SearchAction(), false);
+		addAction(new ArchiveAction(), false);
+
+		/* Separator for the list of external actions added to the menu. */
+		ActionSeparator sep = new ActionSeparator();
+		separators.add(sep);
+		sep.setLinkedActions(extActions);
+		popupMenu.add(sep.getMenuItem());
+
+		ExtensionManager.getInstance().register(this);
 	}
 
-	//}}}
-
-	//{{{ Event Handling
-
-	//{{{ +mousePressed(MouseEvent) : void
 	/** Context-menus are shown on the "pressed" event. */
-	public void mousePressed(MouseEvent me) {
+	public void mousePressed(MouseEvent me)
+	{
 		handleMouseEvent(me);
-	} //}}}
+	}
 
-	//{{{ +mouseReleased(MouseEvent) : void
 	/** Context-menus are shown on the "pressed" event. */
-	public void mouseReleased(MouseEvent me) {
+	public void mouseReleased(MouseEvent me)
+	{
 		handleMouseEvent(me);
-	} //}}}
+	}
 
-	//}}}
-
-	//{{{ Private Methods
-
-	//{{{ -handleMouseEvent(MouseEvent) : void
 	/** Handles the mouse event internally. */
-	private void handleMouseEvent(MouseEvent me) {
+	private void handleMouseEvent(MouseEvent me)
+	{
 		if (!viewer.isEnabled())
 			return;
 		if (me.isPopupTrigger()) {
@@ -225,112 +137,110 @@ public class VPTContextMenu extends MouseAdapter {
 				}
 			}
 			if (tree.getSelectionCount() != 0) {
-				prepareMenu( tree.getSelectionCount() > 1 ? null : viewer.getSelectedNode() );
+				VPTNode n = tree.getSelectionCount() > 1 ? null : viewer.getSelectedNode();
+				for (Action a : intActions) {
+					a.prepareForNode(n);
+				}
+				for (Action a : extActions) {
+					a.prepareForNode(n);
+				}
+				for (Action a : separators) {
+					a.prepareForNode(n);
+				}
 				popupMenu.show(me.getComponent(), me.getX(), me.getY());
 			}
 		}
-	} //}}}
+	}
 
-	//{{{ -loadGUI() : void
-	/** Constructs the menus' GUI. */
-	private void loadGUI() {
-		internalActions.clear();
+	/**
+	 *	Called when the user context menu (or a config option related to
+	 *	that menu) has changed.
+	 */
+	public void userMenuChanged()
+	{
+		updateExtensions(new ArrayList(extActions));
+	}
+
+	/**
+	 *	ManagedService implementation.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public Class getServiceClass()
+	{
+		return Action.class;
+	}
+
+	/**
+	 *	ManagedService implementation.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public void updateExtensions(List<Object> l)
+	{
+		ProjectViewerConfig cfg = ProjectViewerConfig.getInstance();
+
+		extActions.clear();
 		popupMenu.removeAll();
 
-		Action a;
-
-		for (Iterator it = intActions.iterator(); it.hasNext(); ) {
-			a = (Action) it.next();
-			a = (Action) a.clone();
-			a.setViewer(viewer);
-			internalActions.add(a);
+		for (Action a : intActions) {
 			popupMenu.add(a.getMenuItem());
-
-			// hacks to add some separators to the menu...
-			if (a instanceof EditProjectAction) {
-				ActionSeparator as = new ActionSeparator();
-				as.setLinkedAction(a);
-				as.setViewer(viewer);
-				separators.add(as);
-				popupMenu.add(as.getMenuItem());
-			}
-
-			if (a instanceof NodeRenamerAction) {
-				ActionSeparator as = new ActionSeparator();
-				as.setViewer(viewer);
-				separators.add(as);
-				popupMenu.add(as.getMenuItem());
-			}
-
 		}
 
+		if (l != null && l.size() > 0) {
+			for (Object _a : l) {
+				Action a = (Action) _a;
+				a = (Action) a.clone();
+				a.setViewer(viewer);
+				extActions.add(a);
+				popupMenu.add(a.getMenuItem());
+			}
+		}
+
+		/* Insert the user-defined context menu items into the popup menu. */
 		String menu = ProjectViewerConfig.getInstance().getUserContextMenu();
-		boolean usersFirst =jEdit.getBooleanProperty("projectviewer.contextmenu.userfirst");
 		if (menu != null) {
 			jEdit.setTemporaryProperty("projectviewer.tmp_menu", menu);
-			JPopupMenu pm = GUIUtilities.loadPopupMenu("projectviewer.tmp_menu");
-			Component[] userActions = pm.getComponents();
-			if (userActions != null && userActions.length > 0) {
+			JPopupMenu userMenu = GUIUtilities.loadPopupMenu("projectviewer.tmp_menu");
+			jEdit.unsetProperty("projectviewer.tmp_menu");
+			Component[] userActions = userMenu.getComponents();
 
-				if (!usersFirst) popupMenu.addSeparator();
-				int i=0;
+			if (userActions != null && userActions.length > 0) {
+				int i = 0;
+
+				if (!cfg.getUserMenuFirst()) {
+					popupMenu.addSeparator();
+				}
+
 				for (i = 0; i < userActions.length; i++) {
-					if (usersFirst) {
+					if (cfg.getUserMenuFirst()) {
 						popupMenu.insert(userActions[i], i);
 					} else {
 						popupMenu.add(userActions[i]);
 					}
 				}
-				if (usersFirst) popupMenu.insert(new JPopupMenu.Separator(), i++);
+
+				if (cfg.getUserMenuFirst()) {
+					popupMenu.insert(new JPopupMenu.Separator(), i++);
+				}
 			}
 		}
 
-		if (actions.size() > 0) {
-			List linkedActions = new ArrayList();
-			ActionSeparator sep = new ActionSeparator();
+	}
 
-			separators.add(sep);
-			sep.setLinkedActions(linkedActions);
-			popupMenu.add(sep.getMenuItem());
+	private void addAction(Action a, boolean addSep)
+	{
+		a.setViewer(viewer);
+ 		intActions.add(a);
 
-			for (Iterator it = actions.iterator(); it.hasNext(); ) {
-				a = (Action) it.next();
-				a = (Action) a.clone();
-				linkedActions.add(a);
-				a.setViewer(viewer);
-				internalActions.add(a);
-				popupMenu.add(a.getMenuItem());
-			}
+		if (addSep) {
+			ActionSeparator as = new ActionSeparator();
+			as.setLinkedAction(a);
+			as.setViewer(viewer);
+			intActions.add(as);
+			separators.add(as);
 		}
-
-		pmLastBuilt = System.currentTimeMillis();
-	} //}}}
-
-	//{{{ -prepareMenu(VPTNode) : void
-	/**
-	 *	Prepares the context menu for the given node. Shows only menu items
-	 *	that are allowed for the node (e.g., "Add Project" only applies for
-	 *	the root node). If the node is null, the method guesses that multiple
-	 *	nodes are selected, and chooses the appropriate entries.
-	 */
-	private void prepareMenu(VPTNode selectedNode) {
-
-		if (pmLastBuilt < lastMod) {
-			loadGUI();
-		}
-
-		for (Iterator it = internalActions.iterator(); it.hasNext(); ) {
-			((Action)it.next()).prepareForNode(selectedNode);
-		}
-
-		// need to prepare the separators last since they might refer
-		// to items added after them.
-		for (Iterator it = separators.iterator(); it.hasNext(); ) {
-			((Action)it.next()).prepareForNode(selectedNode);
-		}
-	} //}}}
-
-	//}}}
+	}
 
 }
 

@@ -248,6 +248,13 @@ public class ProjectTreePanel extends JPanel
 		}
 	}
 
+    /**
+     *  Returns the context menu.
+     */
+    public VPTContextMenu getContextMenu()
+    {
+        return contextMenu;
+    }
 
     //{{{ Tree notification methods
 
