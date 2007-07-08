@@ -802,6 +802,11 @@ public final class ProjectViewer extends JPanel
 		isChangingBuffers = flag;
 	} //}}}
 
+	/**
+	 *	Returns the component that manages the trees shown in the UI.
+	 *
+	 *	@since PV 3.0.0
+	 */
 	public ProjectTreePanel getTreePanel()
 	{
 		return treePanel;
