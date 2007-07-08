@@ -7,6 +7,11 @@
 			flexdock.Plugin.doStart(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="flexdock-save" NO_REPEAT="TRUE">
+		<CODE>
+			flexdock.Plugin.doSave();
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 

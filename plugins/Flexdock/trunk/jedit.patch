@@ -1,0 +1,82 @@
+Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
+===================================================================
+--- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 9931)
++++ org/gjt/sp/jedit/gui/DockableWindowFactory.java	(working copy)
+@@ -166,11 +166,16 @@
+ 	} //}}}
+ 
+ 	//{{{ getDockableWindowIterator() method
+-	Iterator<Window> getDockableWindowIterator()
++	public Iterator<Window> getDockableWindowIterator()
+ 	{
+ 		return dockableWindowFactories.values().iterator();
+ 	} //}}}
+ 
++	public Window getDockableWindowFactory(String name)
++	{
++		return dockableWindowFactories.get(name);
++	}
++	
+ 	//{{{ DockableListHandler class
+ 	class DockableListHandler extends DefaultHandler
+ 	{
+@@ -328,7 +333,7 @@
+ 	} //}}}
+ 
+ 	//{{{ Window class
+-	class Window
++	public class Window
+ 	{
+ 		PluginJAR plugin;
+ 		String name;
+@@ -386,7 +391,7 @@
+ 		} //}}}
+ 
+ 		//{{{ createDockableWindow() method
+-		JComponent createDockableWindow(View view, String position)
++		public JComponent createDockableWindow(View view, String position)
+ 		{
+ 			load();
+ 
+Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
+===================================================================
+--- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 9931)
++++ org/gjt/sp/jedit/gui/DockableWindowManager.java	(working copy)
+@@ -198,7 +198,7 @@
+ 	 * @param config A docking configuration
+ 	 * @since jEdit 2.6pre3
+ 	 */
+-	public DockableWindowManager(View view, DockableWindowFactory factory,
++	public void construct(View view, DockableWindowFactory factory,
+ 		View.ViewConfig config)
+ 	{
+ 		setLayout(new DockableLayout());
+Index: org/gjt/sp/jedit/View.java
+===================================================================
+--- org/gjt/sp/jedit/View.java	(revision 9931)
++++ org/gjt/sp/jedit/View.java	(working copy)
+@@ -197,6 +197,14 @@
+ 
+ 	//}}}
+ 
++	public void setDockableWindowManager(DockableWindowManager dwm)
++	{
++		getContentPane().add(dwm,0);
++		getContentPane().remove(dockableWindowManager);
++		dockableWindowManager = dwm;
++		getContentPane().validate();
++	}
++	
+ 	//{{{ getDockableWindowManager() method
+ 	/**
+ 	 * Returns the dockable window manager associated with this view.
+@@ -1150,7 +1158,8 @@
+ 
+ 		setIconImage(GUIUtilities.getEditorIcon());
+ 
+-		dockableWindowManager = new DockableWindowManager(this,
++		dockableWindowManager = new DockableWindowManager();
++		dockableWindowManager.construct(this,
+ 			DockableWindowFactory.getInstance(),config);
+ 
+ 		topToolBars = new JPanel(new VariableGridLayout(

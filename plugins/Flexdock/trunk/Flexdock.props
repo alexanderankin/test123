@@ -19,10 +19,11 @@ plugin.flexdock.Plugin.depend.1=jedit 04.03.09.00
 #options.CtagsSideKick.code=new ctags.sidekick.OptionPane();
 
 # action labels
-flexdock-start.label=Start
+flexdock-start.label=Start (load layout)
+flexdock-save.label=Save layout
 
 # menus
-plugin.flexdock.Plugin.menu=flexdock-start
+plugin.flexdock.Plugin.menu=flexdock-start flexdock-save
 
 # docs
 plugin.ctags.sidekick.Plugin.docs=index.html
