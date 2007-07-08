@@ -773,18 +773,6 @@ public final class ProjectViewer extends JPanel
 		modifyViewTitle(view, treeRoot);
 	} //}}}
 
-	//{{{ +setProject(VPTProject) : void
-	/**
-	 *	Sets the given project to be the root of the tree. If "p" is null,
-	 *	then the root node is set to the "VPTRoot" node.
-	 *
-	 *	@deprecated		Use {@link #setRootNode(VPTNode) setRootNode(VPTNode)}
-	 *					instead.
-	 */
-	public void setProject(VPTProject p) {
-		setRootNode(p);
-	} //}}}
-
 	//{{{ +getRoot() : VPTNode
 	/** Returns the root node of the current tree. */
 	public VPTNode getRoot() {

@@ -80,15 +80,6 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 
 	//}}}
 
-	//{{{ #VPTNode(String) : <init>
-	/**
-	 *	@deprecated	Use {@link #VPTNode(String,boolean)}
-	 */
-	protected VPTNode(String name) {
-		this.name = name;
-		setAllowsChildren(false);
-	} //}}}
-
 	//{{{ #VPTNode(String, boolean) : <init>
 	protected VPTNode(String name, boolean allowsChildren) {
 		this.name = name;

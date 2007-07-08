@@ -158,18 +158,6 @@ public final class PVActions {
 		);
 	} //}}}
 
-	//{{{ +_getCurrentProject(View)_ : VPTProject
-	/**
-	 *	Returns the active project for the given view.
-	 *
-	 *	@return	The currently active project, or null if no project is active.
-	 *
-	 *	@deprecated	Use {@link ProjectViewer#getActiveProject(View)} instead.
-	 */
-	public static VPTProject getCurrentProject(View view) {
-		return ProjectViewer.getActiveProject(view);
-	} //}}}
-
 	//{{{ +_launchCurrentBuffer(View)_ : void
 	/**
 	 *	Tries to launch the current buffer in the configured browser for
