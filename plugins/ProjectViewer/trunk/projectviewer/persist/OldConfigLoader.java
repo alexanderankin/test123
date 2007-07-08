@@ -145,7 +145,7 @@ public final class OldConfigLoader {
 				File f = new File(props.getProperty(key));
 				VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
 				VPTFile vf = new VPTFile(f);
-				p.registerFile(vf);
+				p.registerNodePath(vf);
 				parent.add(vf);
 			} else if (key.startsWith("open_files")) {
 				p.addOpenFile(props.getProperty(key));
@@ -174,7 +174,7 @@ public final class OldConfigLoader {
 			File f = new File(fileName);
 			VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
 			VPTFile vf = new VPTFile(f);
-			p.registerFile(vf);
+			p.registerNodePath(vf);
 			parent.add(vf);
 			fileName = props.getProperty(prefix + (++counter) + suffix);
 		}

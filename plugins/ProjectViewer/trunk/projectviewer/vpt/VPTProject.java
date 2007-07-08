@@ -216,25 +216,16 @@ public class VPTProject extends VPTNode {
 		rootPath = path;
 	} //}}}
 
-	//{{{ +registerFile(VPTFile) : void
-	/**
-	 *	Register a file in the project, adding it to the list of files that
-	 *	belong to the project
-	 */
-	public void registerFile(VPTFile file) {
-		registerNodePath(file);
-	}
-	//}}}
-
 	//{{{ +registerNodePath(VPTNode) : void
 	/**
-	 *	Register a node in the project, adding it to the mapping of paths to
-	 *	nodes kept internally.
+	 *	Register a node in the project, adding it to the mapping of
+	 *	paths to nodes kept internally. Only openable nodes are mapped.
 	 */
 	public void registerNodePath(VPTNode node) {
-		openableNodes.put(node.getNodePath(), node);
-	}
-	//}}}
+		if (node.canOpen()) {
+			openableNodes.put(node.getNodePath(), node);
+		}
+	} //}}}
 
 	//{{{ +removeAllChildren() : void
 	/** Removes all children from the project, and unregisters all files. */

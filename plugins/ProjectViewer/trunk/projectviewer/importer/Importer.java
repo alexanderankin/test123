@@ -249,7 +249,7 @@ public abstract class Importer implements Runnable {
 	 *	in the project in case they differ.
 	 */
 	protected void registerFile(VPTFile file) {
-		project.registerFile(file);
+		project.registerNodePath(file);
 		if (!contains(removed, file)) {
 			if (added == null) added = new ArrayList();
 			added.add(file);
