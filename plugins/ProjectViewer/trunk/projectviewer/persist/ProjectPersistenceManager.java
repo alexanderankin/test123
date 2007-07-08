@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.swing.SwingUtilities;
@@ -57,6 +59,7 @@ import projectviewer.ProjectManager;
 import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.config.ExtensionManager;
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -71,48 +74,26 @@ public final class ProjectPersistenceManager {
 
 	private final static String CONFIG_DIR		= "projects" + File.separator;
 
-	//{{{ -ProjectPersistenceManager() : <init>
-
 	/** Private constructor. No instances! */
-	private ProjectPersistenceManager() { } //}}}
+	private ProjectPersistenceManager() { }
 
 	/** The map of handlers based on nome names. */
-	private static final HashMap handlerNames = new HashMap();
+	private static final Map<String,NodeHandler> handlerNames;
 
 	/** the map of handlers based on classes. */
-	private static final HashMap handlerClasses = new HashMap();
+	private static final HashMap<Class,NodeHandler> handlerClasses;
 
 	/** the node handler for projects (cannot be changed). */
 	private static final NodeHandler projHandler = new ProjectNodeHandler();
 
 	/** static initializer, registers the default handlers. */
 	static {
-		registerHandler(new FileNodeHandler());
-		registerHandler(new DirectoryNodeHandler());
-		registerHandler(new PropertyNodeHandler());
-		registerHandler(new OpenFileNodeHandler());
-		registerHandler(new VFSFileNodeHandler());
+		handlerNames = new HashMap<String,NodeHandler>();
+		handlerClasses = new HashMap<Class,NodeHandler>();
+		ExtensionManager.getInstance().register(new MService());
 	}
 
 	//}}}
-
-	//{{{ +_loadNodeHandlers(PluginJAR)_ : void
-	/**
-	 *	Checks the plugin's properties to see if it declares any node
-	 *	handlers, and register those node handlers within this class.
-	 */
-	public static void loadNodeHandlers(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-						jar.getPlugin().getClassName() + ".node-handlers");
-		Collection aList = PVActions.listToObjectCollection(list, jar, NodeHandler.class);
-		if (aList != null && aList.size() > 0) {
-			for (Iterator i = aList.iterator(); i.hasNext(); ) {
-				NodeHandler nh = (NodeHandler) i.next();
-				registerHandler(nh);
-			}
-		}
-	} //}}}
 
 	//{{{ +_registerHandler(NodeHandler)_ : void
 	/**
@@ -171,7 +152,7 @@ public final class ProjectPersistenceManager {
 
 			out.write("</" + projHandler.getNodeName() + ">\n");
 		} else {
-			NodeHandler handler = (NodeHandler) handlerClasses.get(node.getClass());
+			NodeHandler handler = handlerClasses.get(node.getClass());
 			if (handler != null) {
 				handler.saveNode(node, out);
 				if (node.getAllowsChildren() && node.persistChildren()) {
@@ -216,7 +197,7 @@ public final class ProjectPersistenceManager {
 			if (qName.equals(ProjectNodeHandler.NODE_NAME)) {
 				projHandler.createNode(attrs, proj);
 			} else {
-				NodeHandler nh = (NodeHandler) handlerNames.get(qName);
+				NodeHandler nh = handlerNames.get(qName);
 				if (nh == null) {
 					Log.log(Log.WARNING,this, "Unknown node: " + qName);
 				} else {
@@ -313,5 +294,28 @@ public final class ProjectPersistenceManager {
 
 	} //}}}
 
+	private static class MService implements ExtensionManager.ManagedService
+	{
+		public Class getServiceClass()
+		{
+			return NodeHandler.class;
+		}
+
+		public void updateExtensions(List<Object> l)
+		{
+			handlerClasses.clear();
+			handlerNames.clear();
+			registerHandler(new FileNodeHandler());
+			registerHandler(new DirectoryNodeHandler());
+			registerHandler(new PropertyNodeHandler());
+			registerHandler(new OpenFileNodeHandler());
+			registerHandler(new VFSFileNodeHandler());
+			if (l != null && l.size() > 0) {
+				for (Object o : l) {
+					registerHandler((NodeHandler)o);
+				}
+			}
+		}
+	}
 }
 
