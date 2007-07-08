@@ -91,7 +91,13 @@ public class ExtensionManager
 		}
 	}
 
-	private List<Object> loadExtensions(Class clazz)
+
+	/**
+	 *	Returns the extensions that implement the given service class.
+	 *	The returned list is pruned to only include services that were
+	 *	not disabled by the user.
+	 */
+	public List<Object> loadExtensions(Class clazz)
 	{
 		String[] extensions = ServiceManager.getServiceNames(clazz.getName());
 		List<Object> lst = null;

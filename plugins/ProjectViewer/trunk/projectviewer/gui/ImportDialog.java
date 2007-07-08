@@ -67,6 +67,7 @@ import projectviewer.importer.ImporterFileFilter;
 import projectviewer.importer.NonProjectFileFilter;
 
 import projectviewer.PVActions;
+import projectviewer.config.ExtensionManager;
 
 import projectviewer.vpt.VPTDirectory;
 import projectviewer.vpt.VPTNode;
@@ -422,12 +423,12 @@ public class ImportDialog extends EnhancedDialog
 			for (int i = 0; i < plugins.length; i++) {
 				String list = jEdit.getProperty("plugin.projectviewer." +
 								plugins[i].getClassName() + ".file-filters");
-				Collection aList =
-					PVActions.listToObjectCollection(list, plugins[i].getPluginJAR(),
-						ImporterFileFilter.class);
 
-				if (aList != null && aList.size() > 0) {
-					ffilters.addAll(aList);
+				List<Object> exts = ExtensionManager.getInstance()
+													.loadExtensions(ImporterFileFilter.class);
+
+				if (exts != null && exts.size() > 0) {
+					ffilters.addAll(exts);
 				}
 			}
 		}
