@@ -43,15 +43,7 @@ import projectviewer.event.ViewerUpdate;
  */
 public final class VPTSelectionListener implements TreeSelectionListener, MouseListener {
 
-	//{{{ Instance Variables
 	private ProjectViewer viewer;
-
-	private int lastClickButton;
-	private long lastClickTime;
-	private Object lastClickTarget;
-
-	private boolean reportsClickCountCorrectly;
-	//}}}
 
 	//{{{ +VPTSelectionListener(ProjectViewer) : <init>
 	/**
@@ -59,8 +51,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	 */
 	public VPTSelectionListener(ProjectViewer aViewer) {
 		viewer = aViewer;
-		lastClickTime = 0L;
-		reportsClickCountCorrectly = false;
 	} //}}}
 
 	//{{{ MouseListener interfaces
@@ -83,8 +73,9 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 			return;
 		}
 
-		boolean doubleClick = isDoubleClick(evt);
 		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);
+		boolean doubleClick = SwingUtilities.isLeftMouseButton(evt) &&
+							  (evt.getClickCount() == 2);
 		if (middleClick || doubleClick) {
 			viewer.setChangingBuffers(true);
 			if(node.canOpen()) {
@@ -144,7 +135,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
 		VPTNode sel;
-		lastClickTarget = null;
 		if (!e.isAddedPath()) {
 			return;
 		}
@@ -155,44 +145,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	}
 
 	//}}}
-
-	//{{{ -isDoubleClick(MouseEvent) : boolean
-	/**
-	 *	Because IBM's JDK doesn't support <code>getClickCount()</code> for <code>JTree</code>
-	 *	properly, we have to do this.
-	 *
-	 *	@param  evt  Description of Parameter
-	 *	@return      The doubleClick value
-	 */
-	private boolean isDoubleClick(MouseEvent evt) {
-		if (reportsClickCountCorrectly)
-			return evt.getClickCount() == 2;
-		if (evt.getClickCount() == 2) {
-			reportsClickCountCorrectly = true;
-			return true;
-		}
-
-		TreePath path = viewer.getCurrentTree().getPathForLocation(evt.getX(), evt.getY());
-		if(path == null) {
-			lastClickTarget = null;
-			return false;
-		}
-
-		Object target = path.getLastPathComponent();
-
-		if(target == lastClickTarget &&
-				target == viewer.getSelectedNode() &&
-				lastClickButton == evt.getModifiers() &&
-				(System.currentTimeMillis() - lastClickTime < 500L)) {
-			lastClickTarget = null;
-			return true;
-		}
-
-		lastClickButton = evt.getModifiers();
-		lastClickTarget = target;
-		lastClickTime = System.currentTimeMillis();
-		return false;
-	} //}}}
 
 }
 
