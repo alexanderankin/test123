@@ -358,15 +358,16 @@ public class ImportDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ +show() : void
-	public void show() {
-		PVActions.swingInvoke(
-			new Runnable() {
-				public void run() {
-					internalShow();
+	public void setVisible(boolean v) {
+		if (v && !isVisible()) {
+			PVActions.swingInvoke(
+				new Runnable() {
+					public void run() {
+						internalShow();
+					}
 				}
-			}
-		);
-		return;
+			);
+		}
 	} //}}}
 
 	//{{{ -internalShow() : void
@@ -398,7 +399,7 @@ public class ImportDialog extends EnhancedDialog
 		}
 
 		pack();
-		super.show();
+		super.setVisible(true);
 	} //}}}
 
 	//{{{ +isApproved() : boolean

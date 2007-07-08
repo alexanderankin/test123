@@ -84,7 +84,7 @@ public class FileImporter extends Importer {
 
 		ImportDialog id = getImportDialog();
 		loadImportFilterStatus(project, id);
-		id.show();
+		id.setVisible(true);
 
 		ArrayList lst = new ArrayList();
 		File[] chosen = id.getSelectedFiles();
