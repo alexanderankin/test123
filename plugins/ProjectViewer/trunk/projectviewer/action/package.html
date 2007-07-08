@@ -12,29 +12,13 @@ toolbar for new actions.</p>
 <li>Create a new class that extends {@link projectviewer.action.Action Action}.</li>
 <li>Implement the {@link projectviewer.action.Action#actionPerformed(ActionEvent)
 	actionPerformed()} method to execute the desired operations.</li>
-<li>Register the action in the context menu
-	({@link projectviewer.vpt.VPTContextMenu#registerAction(Action) registerAction()})
-	or in the toolbar
-	({@link projectviewer.ProjectViewer#registerAction(Action) registerAction()})
-	by calling the appropriate method.</li>
-</ul>
-
-<p>It's recommended to use the new API to register actions. Create the
-following properties to automatically register actions with
-ProjectViewer:</p>
-
-<ul>
-	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions:<br>
-	list of classes that provide {@link projectviewer.action.Action Action}s that
-	will be added to the toolbar of the ProjectViewer dockable. One instance is
-	created for each class, and for each jEdit view the instance is cloned,
-	and then the "projectViewer" instance is set for the cloned object.</li>
-
-	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions:<br>
-	list of classes that provide {@link projectviewer.action.Action Action}s that
-	will be added to the tree's context menu. One instance is created for each
-	class, and for each jEdit view the instance is cloned, and then the
-	"projectViewer" instance is set for the cloned object.</li>
+<li>In your plugin's <tt>services.xml</tt> file, add aen entry like the following:
+    <blockquote><tt>
+	&lt;SERVICE CLASS="projectviewer.action.Action" NAME="My Action Name"&gt;
+		code_that_returns_instance_of_action();
+	&lt;/SERVICE&gt;
+    </tt></blockquote>
+</li>
 </ul>
 
 <p>The menu item show in the context menu is provided by the
