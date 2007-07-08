@@ -22,11 +22,11 @@ package projectviewer.vpt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.Icon;
@@ -61,13 +61,12 @@ public class VPTProject extends VPTNode {
 	//{{{ Attributes
 
 	private List		openFiles;
-	private HashSet		listeners;
 	private List 		filterList;
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
 
-	protected HashMap		openableNodes;
+	protected Map<String,VPTNode> openableNodes;
 
 	//}}}
 
@@ -75,7 +74,7 @@ public class VPTProject extends VPTNode {
 
 	public VPTProject(String name) {
 		super(name, true);
-		openableNodes	= new HashMap();
+		openableNodes	= new HashMap<String,VPTNode>();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
 		filterList		= null;
@@ -91,7 +90,7 @@ public class VPTProject extends VPTNode {
 	 *	and which are correcty registered with their respective projects.
 	 */
 	public VPTNode getChildNode(String path) {
-		return (VPTNode) openableNodes.get(path);
+		return openableNodes.get(path);
 	} //}}}
 
 	//{{{ +getOpenableNodes() : Collection
@@ -99,7 +98,7 @@ public class VPTProject extends VPTNode {
 	 *	Returns a read-only collection of the nodes that can be opened contained
 	 *	in this project.
 	 */
-	public Collection getOpenableNodes() {
+	public Collection<VPTNode> getOpenableNodes() {
 		return Collections.unmodifiableCollection(openableNodes.values());
 	}
 	//}}}
