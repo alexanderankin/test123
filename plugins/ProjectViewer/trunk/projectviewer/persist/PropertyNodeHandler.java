@@ -40,7 +40,6 @@ public class PropertyNodeHandler extends NodeHandler {
 	private final static String NODE_NAME		= "property";
 	private final static String PROP_NAME_ATTR	= "name";
 	private final static String PROP_VALUE_ATTR	= "value";
-	private final static String PROP_DATA_ATTR	= "data";
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -81,11 +80,6 @@ public class PropertyNodeHandler extends NodeHandler {
 		String name = attrs.getValue(PROP_NAME_ATTR);
 		if (attrs.getValue(PROP_VALUE_ATTR) != null) {
 			project.setProperty(name, attrs.getValue(PROP_VALUE_ATTR));
-		} else {
-			String data = attrs.getValue(PROP_DATA_ATTR);
-			if (data != null) {
-				project.setProperty(name, new DeferredProperty(data, name));
-			}
 		}
 		return null;
 	}
@@ -105,15 +99,7 @@ public class PropertyNodeHandler extends NodeHandler {
 		if (value != null) {
 			startElement(out);
 			writeAttr(PROP_NAME_ATTR, name, out);
-
-			if (value instanceof String) {
-				writeAttr(PROP_VALUE_ATTR, (String) value, out);
-			} else if (value instanceof DeferredProperty) {
-				writeAttr(PROP_DATA_ATTR, ((DeferredProperty)value).getData(), out);
-			} else {
-				String serialized = PVActions.serialize(value);
-				writeAttr(PROP_DATA_ATTR, serialized, out);
-			}
+			writeAttr(PROP_VALUE_ATTR, (String) value, out);
 			out.write(" />\n");
 		}
 	}

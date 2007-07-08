@@ -365,19 +365,16 @@ public abstract class Importer implements Runnable {
 	//{{{ #saveImportFilterStatus(VPTProject, ImportDialog) : void
 	protected void saveImportFilterStatus(VPTProject project, ImportDialog dlg) {
 		project.setProperty("projectviewer.import.filteridx",
-						    new Integer(dlg.getImportFilterIndex()));
+						    String.valueOf(dlg.getImportFilterIndex()));
 	} //}}}
 
 	//{{{ #loadImportFilterStatus(VPTProject, ImportDialog) : void
 	protected void loadImportFilterStatus(VPTProject project, ImportDialog dlg) {
-		Object idx = project.getObjectProperty("projectviewer.import.filteridx");
-		if (idx != null) {
-			if (idx instanceof Integer) {
-				dlg.setImportFilterIndex(((Integer)idx).intValue());
-			} else {
-				Log.log(Log.WARNING, this, "someone overwrote a PV project property...");
-				project.removeProperty("projectviewer.import.filteridx");
-			}
+		try {
+			int idx = Integer.parseInt(project.getProperty("projectviewer.import.filteridx"));
+			dlg.setImportFilterIndex(idx);
+		} catch (NumberFormatException nfe) {
+			project.removeProperty("projectviewer.import.filteridx");
 		}
 	} //}}}
 

@@ -470,24 +470,6 @@ public final class ProjectManager {
 		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
 	} //}}}
 
-	//{{{ #unloadProjectProperties() : void
-	/**
-	 *	Called when a plugin is unloaded so that object properties are
-	 *	serialized, avoiding ClassCastExceptions later.
-	 */
-	protected void unloadProjectProperties() {
-		for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
-			Entry e = (Entry) i.next();
-			if (e.isLoaded) {
-				synchronized (e) {
-					if (e.isLoaded) {
-						e.project.unloadProperties();
-					}
-				}
-			}
-		}
-	} //}}}
-
 	//{{{ +fireDynamicMenuChange() : void
 	public void fireDynamicMenuChange() {
 		DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");

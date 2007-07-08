@@ -146,8 +146,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			Point p = chooseGroup.getLocation();
 			groupPopupMenu.show(this, (int) p.getX(), (int) p.getY() + chooseGroup.getHeight());
 		} else if (ae.getSource() instanceof VPTGroup) {
-			project.setProperty("projectviewer.new-parent", ae.getSource());
-			chooseGroup.setText(((VPTGroup)ae.getSource()).getName());
+			project.setParent((VPTGroup) ae.getSource());
+			chooseGroup.setText(((VPTGroup) ae.getSource()).getName());
 			groupPopupMenu.setVisible(false);
 		}
 
@@ -288,10 +288,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		projURLRoot.setToolTipText(jEdit.getProperty("projectviewer.project.options.url_root.tooltip"));
 		if (project.getURL() != null) {
 			projURLRoot.setText(project.getURL());
-			projURLRoot.setToolTipText(project.getURL());
 		} else {
 			projURLRoot.setText(DEFAULT_URL);
-			projURLRoot.setToolTipText(DEFAULT_URL);
 		}
 
 		gc.weightx = 1;
