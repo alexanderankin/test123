@@ -368,13 +368,13 @@ class SideKick implements EBComponent
 		editPane = epu.getEditPane();
 		View v = editPane.getView();
 		if (v == null) v=jEdit.getActiveView();
-		if (v != view)
+		if (v == null || v != view )
 			return;
 
 		if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 		{
 			// check if this is the currently focused edit pane
-			if(editPane == editPane.getView().getEditPane())
+			if(editPane == v.getEditPane())
 			{
 				removeBufferChangeListener(this.buffer);
 				deactivateParser();
