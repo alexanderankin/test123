@@ -92,8 +92,11 @@ public class SearchAction extends Action {
 				node = (VPTNode) node.getParent();
 			}
 
+			String selected = jEdit.getActiveView().getTextArea().getSelectedText();
 			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
-			SearchDialog.showSearchDialog(jEdit.getActiveView(), null, SearchDialog.DIRECTORY);
+			SearchDialog.showSearchDialog(jEdit.getActiveView(),
+										  selected,
+										  SearchDialog.DIRECTORY);
 		} else {
 			JOptionPane.showMessageDialog(
 					(viewer != null) ? (Component) viewer : (Component) jEdit.getActiveView(),
