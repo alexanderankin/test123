@@ -57,7 +57,14 @@ public class FlexDockWindowManager extends DockableWindowManager {
 
 		@Override
 		protected int getInitTabPlacement() {
-			return JTabbedPane.TOP;
+			String placement = jEdit.getProperty(OptionPane.TAB_PLACEMENT_OPTION);
+			if (placement.equalsIgnoreCase("top"))
+				return JTabbedPane.TOP;
+			if (placement.equalsIgnoreCase("bottom"))
+				return JTabbedPane.BOTTOM;
+			if (placement.equalsIgnoreCase("left"))
+				return JTabbedPane.LEFT;
+			return JTabbedPane.RIGHT;
 		}
 		
 	}

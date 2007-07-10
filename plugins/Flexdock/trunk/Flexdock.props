@@ -15,8 +15,10 @@ plugin.flexdock.Plugin.depend.0=jdk 1.5
 plugin.flexdock.Plugin.depend.1=jedit 04.03.09.00
 
 # Options
-#plugin.ctags.sidekick.Plugin.option-pane=CtagsSideKick
-#options.CtagsSideKick.code=new ctags.sidekick.OptionPane();
+plugin.flexdock.Plugin.option-pane=Flexdock
+options.Flexdock.code=new flexdock.OptionPane();
+options.Flexdock.tabPlacement=Top
+options.Flexdock.label=Flexdock
 
 # action labels
 flexdock-start.label=Start (load layout)
