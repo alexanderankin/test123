@@ -17,8 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package flexdock;
-import java.awt.Container;
-
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
@@ -26,7 +24,7 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 
 public class Plugin extends EditPlugin {
 	public static final String NAME = "Flexdock";
-	public static Container editPane;
+	public static final String OPTION_PREFIX = "options.Flexdock.";
 	private static FlexDockWindowManager fdwm;
 	
 	public static void doSave() {
