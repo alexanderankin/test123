@@ -96,7 +96,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
-		String[] encodings = MiscUtilities.getEncodings();
+		String[] encodings = MiscUtilities.getEncodings(true);
 		Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
 		encoding = new JComboBox(encodings);
 		encoding.setEditable(true);
