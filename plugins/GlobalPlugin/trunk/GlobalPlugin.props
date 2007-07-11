@@ -1,0 +1,18 @@
+plugin.browser.GlobalPlugin.activate=defer
+
+# general plugin information
+plugin.browser.GlobalPlugin.name=GlobalPlugin
+plugin.browser.GlobalPlugin.author=Shlomy Reinstein
+plugin.browser.GlobalPlugin.version=1.0
+plugin.browser.GlobalPlugin.depend.0=jdk 1.4
+plugin.browser.GlobalPlugin.depend.1=jedit 04.03.03.00
+
+# action labels
+show-call-tree.label=Show call tree
+
+# menu items
+plugin.browser.GlobalPlugin.menu=show-call-tree
+
+# dockables
+call-tree-browser.title=Call Tree
+call-tree-browser.label=Call Tree
