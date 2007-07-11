@@ -1,0 +1,14 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
+
+<ACTIONS>
+
+	<ACTION NAME="show-call-tree" NO_REPEAT="TRUE">
+		<CODE>
+			wm.addDockableWindow(browser.GlobalPlugin.CALL_TREE_BROWSER);
+			wm.getDockableWindow(browser.GlobalPlugin.CALL_TREE_BROWSER).show(view);
+		</CODE>
+	</ACTION>
+	
+</ACTIONS>
+

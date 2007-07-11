@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<!--
+
+ This is the build.xml file for building the Tags plugin.
+
+ It is based on the standard build.xml file for jEdit plugins.
+
+-->
+
+<project name="GlobalPlugin" default="dist" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<property name="jar.name"  value="${ant.project.name}.jar"/>
+	<property name="docs-proc.target"  value="xsltproc"/>
+
+	<property name="jedit.install.dir"  value="/home/shlomy/jedit/4.3pre9"/>
+	<property name="src.dir" value="."/>
+	<property name="install.dir"  value=".."/>
+	<property name="build.dir" value="build"/>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${src.dir}"/>
+		<pathelement location="${user.home}/.jedit/jars/Tags.jar"/>
+	</path>
+
+	<target name="compile">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			deprecation="on"
+			debug="yes"
+			includeJavaRuntime="yes"
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile">
+		<mkdir dir="${install.dir}"/>
+
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="dockables.xml"/>
+				<include name="**/*.props"/>
+				<include name="**/*.html"/>
+				<include name="**/*.txt"/>
+				<include name="**/*.png"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~"/>
+		</delete>
+		<delete file="doc/index.html"/>
+		<delete file="doc/docbook-wrapper.xsl"/>
+	</target>
+
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-f" />
+			<arg path="tags_" />
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
