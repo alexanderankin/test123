@@ -20,6 +20,8 @@ package browser;
 
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -30,8 +32,10 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,7 +46,6 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
 import tags.TagsPlugin;
@@ -53,10 +56,10 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 		new HashMap<View, CallTree>();
 	private View view;
 	private JTree tree;
-	private JPanel topPanel;
 	FunctionNode root = null;
 	Pattern spaces = Pattern.compile("\\s+");
-	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>(); 
+	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>();
+	private JTextField symbolTF; 
 
 	static public CallTree instanceFor(View view, String position) {
 		CallTree instance = viewMap.get(view);
@@ -67,19 +70,29 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 		return instance;
 	}
 	
-	private CallTree(View view) {
+	private CallTree(final View view) {
 		super(new BorderLayout());
 
 		this.view = view;
 		buildTree();
 		
-		JScrollPane treePane = new JScrollPane(tree);
-		
-		topPanel = new JPanel(new BorderLayout());
-		topPanel.add(BorderLayout.CENTER, treePane);
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.add(BorderLayout.CENTER, new JScrollPane(tree));
 
 		setLayout(new BorderLayout());
 		add(topPanel, BorderLayout.CENTER);
+		
+		JPanel symbolPanel = new JPanel(new BorderLayout());
+		symbolPanel.add(new JLabel("Symbol:"), BorderLayout.WEST);
+		symbolTF = new JTextField(40);
+		symbolTF.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					showCallTree(view, symbolTF.getText());
+			}
+		});
+		symbolPanel.add(symbolTF, BorderLayout.CENTER);
+		add(symbolPanel, BorderLayout.NORTH);
 	}
 
 	private void showCallTree(View view, String function) {

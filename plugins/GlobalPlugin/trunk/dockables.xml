@@ -3,6 +3,12 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
+	<DOCKABLE NAME="reference-browser">
+		browser.ReferenceList.instanceFor(view, position);
+	</DOCKABLE>
+	<DOCKABLE NAME="definition-browser">
+		browser.DefinitionList.instanceFor(view, position);
+	</DOCKABLE>
 	<DOCKABLE NAME="call-tree-browser">
 		browser.CallTree.instanceFor(view, position);
 	</DOCKABLE>

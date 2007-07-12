@@ -9,10 +9,16 @@ plugin.browser.GlobalPlugin.depend.1=jedit 04.03.03.00
 
 # action labels
 show-call-tree.label=Show call tree
+show-references.label=Show references
+show-definitions.label=Show definitions
 
 # menu items
-plugin.browser.GlobalPlugin.menu=show-call-tree
+plugin.browser.GlobalPlugin.menu=show-call-tree show-references show-definitions
 
 # dockables
 call-tree-browser.title=Call Tree
 call-tree-browser.label=Call Tree
+reference-browser.title=References
+reference-browser.title=References
+definition-browser.title=Definitions
+definition-browser.title=Definitions

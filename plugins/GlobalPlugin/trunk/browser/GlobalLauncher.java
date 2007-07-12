@@ -8,6 +8,12 @@ import java.util.Vector;
 
 public class GlobalLauncher {
 
+	static GlobalLauncher instance = new GlobalLauncher();
+	
+	static public GlobalLauncher instance() {
+		return instance;
+	}
+	
 	public Vector<GlobalRecord> run(String options, String workingDirectory) {
         Vector<GlobalRecord> records = new Vector<GlobalRecord>();
 		try {
