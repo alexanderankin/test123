@@ -9,6 +9,18 @@
 			wm.getDockableWindow(browser.GlobalPlugin.CALL_TREE_BROWSER).show(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="show-references" NO_REPEAT="TRUE">
+		<CODE>
+			wm.addDockableWindow(browser.GlobalPlugin.REFERENCE_BROWSER);
+			wm.getDockableWindow(browser.GlobalPlugin.REFERENCE_BROWSER).show(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="show-definitions" NO_REPEAT="TRUE">
+		<CODE>
+			wm.addDockableWindow(browser.GlobalPlugin.DEFINITION_BROWSER);
+			wm.getDockableWindow(browser.GlobalPlugin.DEFINITION_BROWSER).show(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 

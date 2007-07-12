@@ -26,6 +26,8 @@ public class GlobalPlugin extends EditPlugin
 	//{{{ EBPlugin methods
 
 	public static final String CALL_TREE_BROWSER = "call-tree-browser";
+	public static final String REFERENCE_BROWSER = "reference-browser";
+	public static final String DEFINITION_BROWSER = "definition-browser";
 
 	//{{{ start() method
 	public void start()

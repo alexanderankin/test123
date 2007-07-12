@@ -52,8 +52,7 @@ public class FunctionTag implements Comparable
 		{
 			if (other.file == null)
 				return 0;
-			else
-				return -1;
+			return -1;
 		}
 		if (other.file == null)
 			return 1;
