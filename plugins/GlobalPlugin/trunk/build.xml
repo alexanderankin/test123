@@ -2,7 +2,7 @@
 
 <!--
 
- This is the build.xml file for building the Tags plugin.
+ This is the build.xml file for building the GlobalPlugin plugin.
 
  It is based on the standard build.xml file for jEdit plugins.
 
@@ -16,6 +16,7 @@
 	<property file="${user.home}/build.properties"/>
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
+	<property name="jedit.plugin.dir"  value="${user.home}/.jedit/jars"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
 
 	<property name="jedit.install.dir"  value="/home/shlomy/jedit/4.3pre9"/>
@@ -25,11 +26,26 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${src.dir}"/>
 		<pathelement location="${user.home}/.jedit/jars/Tags.jar"/>
+		<pathelement location="${src.dir}"/>
 	</path>
 
-	<target name="compile">
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<!--delete file="doc/docbook-wrapper.xsl" />
+		<echo file="doc/docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true"
+			message=" version='1.0'&gt;"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/-->
+	</target>
+
+	<target name="compile" depends="init">
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
@@ -47,8 +63,7 @@
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
+				<include name="**/*.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.txt"/>
