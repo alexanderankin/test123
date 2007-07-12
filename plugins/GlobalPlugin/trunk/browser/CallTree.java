@@ -61,7 +61,6 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 	static public CallTree instanceFor(View view, String position) {
 		CallTree instance = viewMap.get(view);
 		if (instance == null) {
-			System.err.println("Creating a new inst");
 			instance = new CallTree(view);
 			viewMap.put(view, instance);
 		}
