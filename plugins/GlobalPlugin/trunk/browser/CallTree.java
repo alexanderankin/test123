@@ -23,7 +23,7 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -42,12 +42,15 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
 import tags.TagsPlugin;
 
 @SuppressWarnings("serial")
 public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeActions {
+	static private HashMap<View, CallTree> viewMap =
+		new HashMap<View, CallTree>();
 	private View view;
 	private JTree tree;
 	private JPanel topPanel;
@@ -55,7 +58,17 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 	Pattern spaces = Pattern.compile("\\s+");
 	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>(); 
 
-	public CallTree(View view) {
+	static public CallTree instanceFor(View view, String position) {
+		CallTree instance = viewMap.get(view);
+		if (instance == null) {
+			System.err.println("Creating a new inst");
+			instance = new CallTree(view);
+			viewMap.put(view, instance);
+		}
+		return instance;
+	}
+	
+	private CallTree(View view) {
 		super(new BorderLayout());
 
 		this.view = view;
