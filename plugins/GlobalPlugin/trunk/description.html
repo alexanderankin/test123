@@ -1,6 +1,9 @@
 GlobalPlugin provides an interface to the GNU Global source tagging tool:
 http://www.gnu.org/software/global
-It provides a static function call tree using Global. The call tree is not
-context-sensitive since it is generated from references to plain function
-names. Hence, although it can be used for all the languages supported by Global,
-it is most useful for C than for object oriented languages.
+It provides dockables for viewing:
+1. A static function call tree
+2. A list of definitions of a symbol
+3. A list of references to a symbol
+All this information is extracted from GNU Global. As such, it is not context-
+sensitive and therefore more useful with non object-oriented languages such as
+C.
