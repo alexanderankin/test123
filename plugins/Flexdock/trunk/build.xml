@@ -69,6 +69,7 @@
 				<include name="**/*.txt"/>
 				<include name="**/*.png"/>
 			</fileset>
+			<zipfileset src="${src.dir}/flexdock-0.5.1.jar" />
 		</jar>
 	</target>
 
