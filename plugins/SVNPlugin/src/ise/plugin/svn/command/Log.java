@@ -94,7 +94,7 @@ public class Log {
                 String[] rep_paths = new String[]{path};
                 // I should also be able to set the peg revision, but it seems that
                 // using anything beside 0 fails.
-                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(), data.getEndRevision(), false, false, 100, handler );
+                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(), data.getEndRevision(), false, false, data.getMaxLogs(), handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }

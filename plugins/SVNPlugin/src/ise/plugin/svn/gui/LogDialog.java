@@ -119,6 +119,10 @@ public class LogDialog extends JDialog {
                 }
                                   );
 
+        final JSpinner max_logs = new JSpinner();
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setMinimum(new Integer(1));
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setValue(new Integer(100));
+
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -154,6 +158,7 @@ public class LogDialog extends JDialog {
                             data.setStartRevision( start_revision_panel.getRevision() );
                             data.setEndRevision( end_revision_panel.getRevision() );
                         }
+                        data.setMaxLogs(((Integer)max_logs.getValue()).intValue());
                         LogDialog.this.setVisible( false );
                         LogDialog.this.dispose();
                     }
@@ -185,10 +190,14 @@ public class LogDialog extends JDialog {
         panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
         panel.add( "0, 8, 1, 1, W,  , 3", start_revision_panel );
         panel.add( "1, 8, 1, 1, E   , 3", end_revision_panel );
+        panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 10, 1, 1, E,  , 3", new JLabel( "Maximum log entries to show:" ) );
+        panel.add( "1, 10, 1, 1, W,  , 3", max_logs );
 
-        panel.add( "0, 10, 2, 1, E,  , 0", btn_panel );
+        panel.add( "0, 11, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 12, 2, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();

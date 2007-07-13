@@ -4,7 +4,7 @@
 
 # general plugin properites
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
-plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
+plugin.ise.plugin.svn.SVNPlugin.name=Subversion
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
 plugin.ise.plugin.svn.SVNPlugin.version=1.0
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
@@ -34,15 +34,20 @@ plugin.ise.plugin.svn.SVNPlugin.activate=defer
 
 
 # ProjectViewer option pane
-plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugins.svn.pv.options
-options.ise.plugins.svn.pv.options.label=Subversion settings
-options.ise.plugins.svn.pv.options.code=new ise.plugin.svn.gui.PVSVNOptionPane()
+plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugin.svn.pv.options
+options.ise.plugin.svn.pv.options.label=Subversion settings
+options.ise.plugin.svn.pv.options.code=new ise.plugin.svn.gui.PVSVNOptionPane()
 
 # ProjectViewer option pane labels
 ise.plugin.svn.pv.url.label=URL:
 ise.plugin.svn.pv.path.label=Path:
 ise.plugin.svn.pv.username.label=Username:
 ise.plugin.svn.pv.password.label=Password:
+
+# plugin menu items
+plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
+plugin.ise.plugin.svn.SVNPlugin.menu=subversion.checkout
+subversion.checkout.label=Checkout
 
 # subversion commands
 ise.plugin.svn.action.label.1=Synchronize

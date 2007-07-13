@@ -7,9 +7,18 @@ public class LogData extends CheckoutData {
 
     private SVNRevision startRevision = SVNRevision.create(0L);
     private SVNRevision endRevision = SVNRevision.HEAD;
+    private int maxLogs = 100;
 
     public String toString() {
         return "LogData[startRevision=" + startRevision + ", endRevision=" + endRevision + "]";
+    }
+
+    public void setMaxLogs(int n) {
+        maxLogs = Math.max(0, n);
+    }
+
+    public int getMaxLogs() {
+        return maxLogs;
     }
 
     /**

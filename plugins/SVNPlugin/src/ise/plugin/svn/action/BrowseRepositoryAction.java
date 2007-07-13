@@ -5,6 +5,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -24,10 +25,10 @@ public class BrowseRepositoryAction implements ActionListener {
 
     private View view = null;
     private JTree tree = null;
-    private DefaultMutableTreeNode node = null;
+    private DirTreeNode node = null;
     private CheckoutData data = null;
 
-    public BrowseRepositoryAction( View view, JTree tree, DefaultMutableTreeNode node, CheckoutData data ) {
+    public BrowseRepositoryAction( View view, JTree tree, DirTreeNode node, CheckoutData data ) {
         this.view = view;
         this.tree = tree;
         this.node = node;
@@ -50,18 +51,18 @@ public class BrowseRepositoryAction implements ActionListener {
             handler.flush();
         }
 
-        class Runner extends SwingWorker < List<DefaultMutableTreeNode>, Object> {
+        class Runner extends SwingWorker < List<DirTreeNode>, Object> {
 
             private Cursor cursor = null;
 
             @Override
-            public List<DefaultMutableTreeNode> doInBackground() {
+            public List<DirTreeNode> doInBackground() {
                 cursor = tree.getCursor();
                 tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 tree.setEditable(false);
                 try {
                     BrowseRepository br = new BrowseRepository( );
-                    return br.getRepository( data );
+                    return node.isExternal() ? br.getRepository(node, data) : br.getRepository( data );
                 }
                 catch ( Exception e ) {
                     data.getOut().printError( e.getMessage() );
@@ -75,8 +76,8 @@ public class BrowseRepositoryAction implements ActionListener {
             @Override
             protected void done() {
                 try {
-                    List<DefaultMutableTreeNode> children = get();
-                    for (DefaultMutableTreeNode child : children) {
+                    List<DirTreeNode> children = get();
+                    for (DirTreeNode child : children) {
                         node.add(child);
                     }
                     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
@@ -96,6 +97,5 @@ public class BrowseRepositoryAction implements ActionListener {
             }
         }
         ( new Runner() ).execute();
-//https://svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin
     }
 }
