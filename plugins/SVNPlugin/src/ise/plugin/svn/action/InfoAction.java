@@ -46,7 +46,7 @@ public class InfoAction implements ActionListener {
         this.password = password;
     }
 
-    public InfoAction(View view, SVNData data) {
+    public InfoAction( View view, SVNData data ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( data == null )
@@ -66,7 +66,7 @@ public class InfoAction implements ActionListener {
         if ( paths != null && paths.size() > 0 ) {
             final SVNData data = new SVNData();
             data.setPaths( paths );
-            data.setPathsAreURLs(pathsAreUrls);
+            data.setPathsAreURLs( pathsAreUrls );
 
             if ( username != null && password != null ) {
                 data.setUsername( username );
@@ -107,14 +107,15 @@ public class InfoAction implements ActionListener {
                         JPanel info_panel = new SVNInfoPanel( get() );
                         //panel.setResultsPanel( info_panel );
                         //panel.showTab( OutputPanel.RESULTS );
-                        panel.addTab("Info", info_panel);
+                        panel.addTab( "Info", info_panel );
+
                     }
-                    catch(Exception e) {
+                    catch ( Exception e ) {
                         // ignored
                     }
                 }
             }
-            (new Runner()).execute();
+            ( new Runner() ).execute();
         }
     }
 }

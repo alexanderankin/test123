@@ -1,6 +1,7 @@
 package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.*;
 import java.io.*;
@@ -51,7 +52,7 @@ public class BrowseRepositoryPanel extends JPanel {
         ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         CheckoutData data = createData();
-                        DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
+                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
@@ -60,22 +61,30 @@ public class BrowseRepositoryPanel extends JPanel {
         chooser.addActionListener( al );
 
         tree = new JTree( new DefaultTreeModel( new DefaultMutableTreeNode( "SVN Browser" ) ) );
+        tree.setCellRenderer(new CellRenderer());
+        ToolTipManager.sharedInstance().registerComponent(tree);
 
         tree.addTreeExpansionListener( new TreeExpansionListener() {
                     public void treeCollapsed( TreeExpansionEvent event ) {}
 
                     public void treeExpanded( TreeExpansionEvent event ) {
                         TreePath path = event.getPath();
-                        DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+                        DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                         if ( node.getChildCount() == 0 ) {
                             CheckoutData data = createData();
-                            Object[] parts = path.getPath();
-                            StringBuilder sb = new StringBuilder();
-                            sb.append( parts[ 0 ] );
-                            for ( int i = 1; i < parts.length; i++ ) {
-                                sb.append( "/" ).append( parts[ i ].toString() );
+                            String url;
+                            if ( node.isExternal() ) {
+                                url = node.getRepositoryLocation();
                             }
-                            String url = sb.toString();
+                            else {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                            }
                             data.setURL( url );
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
                             action.actionPerformed( null );
@@ -89,23 +98,31 @@ public class BrowseRepositoryPanel extends JPanel {
                         if ( me.getClickCount() == 2 ) {
                             // for double-click on a text file, open the file in jEdit
                             TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+                            DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                             if ( node.isLeaf() ) {
                                 // show the wait cursor
-                                Cursor cursor = tree.getCursor();
                                 tree.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
                                 tree.setEditable( false );
 
                                 // leaf nodes should be files, not directories.
                                 // get url and path for the selected file
+                                CheckoutData data = createData();
+                                String url;
+                                String filepath;
                                 Object[] parts = path.getPath();
                                 StringBuilder sb = new StringBuilder();
                                 for ( int i = 1; i < parts.length; i++ ) {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
-                                CheckoutData data = createData();
-                                String filepath = sb.toString().substring( 1 );
-                                String url = data.getURL();
+                                filepath = sb.toString().substring( 1 );
+                                if ( node.isExternal() ) {
+                                    String rep = node.getRepositoryLocation();
+                                    url = rep.substring( 0, rep.lastIndexOf( "/" ) );
+                                    filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
+                                }
+                                else {
+                                    url = data.getURL();
+                                }
 
                                 // fetch the file contents
                                 NodeActor.setupLibrary();
@@ -143,7 +160,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     // ignored
                                 }
                                 finally {
-                                    tree.setCursor( cursor );
+                                    tree.setCursor( Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR) );
                                     tree.setEditable( true );
 
                                 }
@@ -161,11 +178,11 @@ public class BrowseRepositoryPanel extends JPanel {
         new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
-                        GUIUtils.center(getView(), dialog);
+                        GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
                         CheckoutData data = dialog.getValues();
                         chooser.addValue( data.getURL() );
-                        DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
+                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
@@ -274,7 +291,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         dialog.setVisible( true );
                         data = dialog.getValues();
                         saveData( data );
-                        DefaultMutableTreeNode root = new DefaultMutableTreeNode( data.getURL() );
+                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                         action.actionPerformed( ae );
@@ -409,5 +426,32 @@ public class BrowseRepositoryPanel extends JPanel {
                             );
 
         return pm;
+    }
+
+    class CellRenderer extends DefaultTreeCellRenderer {
+        public Component getTreeCellRendererComponent(
+            JTree tree,
+            Object value,
+            boolean sel,
+            boolean expanded,
+            boolean leaf,
+            int row,
+            boolean hasFocus ) {
+
+            Component r = super.getTreeCellRendererComponent(
+                        tree, value, sel,
+                        expanded, leaf, row,
+                        hasFocus );
+
+            if ( r instanceof JLabel ) {
+                JLabel label = ( JLabel ) r;
+                DirTreeNode node = ( DirTreeNode ) value;
+                if ( node.isExternal() ) {
+                    label.setText("<html><font color=blue>" + node.toString());
+                    label.setToolTipText("<html><b>External: </b> " + node.getRepositoryLocation());
+                }
+            }
+            return r;
+        }
     }
 }

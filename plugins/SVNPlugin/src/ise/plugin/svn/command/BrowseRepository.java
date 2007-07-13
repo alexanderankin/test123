@@ -6,6 +6,7 @@ import java.util.*;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -16,17 +17,22 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CheckoutData;
-import javax.swing.tree.*;
+import ise.plugin.svn.gui.DirTreeNode;
 
 
 public class BrowseRepository {
 
-    public List<DefaultMutableTreeNode> getRepository( CheckoutData cd ) throws CommandInitializationException, SVNException {
+    public List<DirTreeNode> getRepository( CheckoutData cd ) throws CommandInitializationException, SVNException {
+        return getRepository(null, cd);
+    }
+
+    public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd) throws CommandInitializationException, SVNException {
 
         // validate data values
-        if ( cd.getURL() == null ) {
+        if ( node == null && cd.getURL() == null ) {
             return null;     // nothing to do
         }
+        String url = node == null ? cd.getURL() : node.getRepositoryLocation();
         if ( cd.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
         }
@@ -37,12 +43,12 @@ public class BrowseRepository {
 
         SVNRepository repository = null;
         try {
-            repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( cd.getURL() ) );
+            repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
         }
         catch ( SVNException svne ) {
             // perhaps a malformed URL is the cause of this exception
             cd.getOut().printError( "Error while creating an SVNRepository for location '"
-                    + cd.getURL() + "': " + svne.getMessage() );
+                    + url + "': " + svne.getMessage() );
             return null;
         }
 
@@ -50,8 +56,14 @@ public class BrowseRepository {
         repository.setAuthenticationManager( authManager );
 
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( cd.getURL() );
-        List<DefaultMutableTreeNode> children = null;
+        DirTreeNode root;
+        if (node == null) {
+            root = new DirTreeNode( url, false );
+        }
+        else {
+            root = node;
+        }
+        List<DirTreeNode> children = null;
         try {
             /*
              * Checks up if the specified path/to/repository part of the URL
@@ -61,11 +73,11 @@ public class BrowseRepository {
              */
             SVNNodeKind nodeKind = repository.checkPath( "", -1 );
             if ( nodeKind == SVNNodeKind.NONE ) {
-                cd.getOut().printError( "There is no entry at '" + cd.getURL() + "'." );
+                cd.getOut().printError( "There is no entry at '" + url + "'." );
                 return null;
             }
             else if ( nodeKind == SVNNodeKind.FILE ) {
-                cd.getOut().printError( "The entry at '" + cd.getURL() + "' is a file while a directory was expected." );
+                cd.getOut().printError( "The entry at '" + url + "' is a file while a directory was expected." );
                 return null;
             }
             /*
@@ -86,7 +98,11 @@ public class BrowseRepository {
              * Displays the repository tree at the current path - "" (what means
              * the path/to/repository directory)
              */
-            children = listEntries( repository, "", out );
+            boolean isExternal = false;
+            if (node != null) {
+                isExternal = node.isExternal();
+            }
+            children = listEntries( repository, isExternal, "", out );
         }
         catch ( SVNException svne ) {
             cd.getOut().printError( "error while listing entries: "
@@ -126,7 +142,7 @@ public class BrowseRepository {
      * is a part of the URL used to create an SVNRepository instance);
      *
      */
-    public List<DefaultMutableTreeNode> listEntries( SVNRepository repository, String path, PrintStream out )
+    public List<DirTreeNode> listEntries( SVNRepository repository,  boolean isExternal, String path, PrintStream out )
     throws SVNException {
         /*
          * Gets the contents of the directory specified by path at the latest
@@ -144,50 +160,53 @@ public class BrowseRepository {
          * by getDir.
          */
         List<DirTreeNode> list = new ArrayList<DirTreeNode>();
-        Collection entries = repository.getDir( path, -1, null,
-                ( Collection ) null );
+        Map dir_props = new HashMap();
+        Collection entries = repository.getDir( path, -1, dir_props, ( Collection ) null );
         Iterator iterator = entries.iterator();
         while ( iterator.hasNext() ) {
             SVNDirEntry entry = ( SVNDirEntry ) iterator.next();
             out.println( "/" + ( path.equals( "" ) ? "" : path + "/" )
                     + entry.getName() + " (author: '" + entry.getAuthor()
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
-            DirTreeNode node = new DirTreeNode( entry.getName(), !(entry.getKind() == SVNNodeKind.DIR) );
+            DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
+            if (isExternal) {
+                node.setExternal(true);
+                node.setRepositoryLocation(repository.getLocation().toString() + "/" + entry.getName());
+            }
             list.add( node );
-            /*
-             * Checking up if the entry is a directory.
-             */
-            /*
-            if ( entry.getKind() == SVNNodeKind.DIR ) {
-                listEntries( repository, ( path.equals( "" ) ) ? entry.getName()
-                        : path + "/" + entry.getName(), out );
         }
-            */
+
+        // if the directory entry has svn:externals property, load those external
+        // entries also and add them to the list
+        if ( dir_props.size() > 0 ) {
+            String value = ( String ) dir_props.get( SVNProperty.EXTERNALS );
+            try {
+                if ( value != null ) {
+                    BufferedReader br = new BufferedReader( new StringReader( value ) );
+                    String line = br.readLine();
+                    while ( line != null ) {
+                        String dir = line.substring( 0, line.indexOf( " " ) );
+                        String rep = line.substring( line.indexOf( " " ) + 1 );
+                        DirTreeNode node = new DirTreeNode( dir, false );
+                        node.setExternal( true );
+                        node.setRepositoryLocation( rep );
+                        list.add( node );
+                        line = br.readLine();
+                    }
+                    br.close();
+                }
+            }
+            catch ( Exception e ) {
+                //e.printStackTrace();
+                // ignored
+            }
         }
         Collections.sort( list );
-        List<DefaultMutableTreeNode> newList = new ArrayList<DefaultMutableTreeNode>();
-        for (DirTreeNode node : list) {
-            newList.add((DefaultMutableTreeNode)node);
+        List<DirTreeNode> newList = new ArrayList<DirTreeNode>();
+        for ( DirTreeNode node : list ) {
+            newList.add( ( DirTreeNode ) node );
         }
         return newList;
-    }
-
-    class DirTreeNode extends DefaultMutableTreeNode implements Comparable<DirTreeNode> {
-        private boolean isLeaf = true;
-        public DirTreeNode( Object userObject, boolean isLeaf ) {
-            super(userObject);
-            this.isLeaf = isLeaf;
-        }
-
-        public boolean isLeaf() {
-            return this.isLeaf;
-        }
-
-        public int compareTo(DirTreeNode node) {
-            String a = this.getUserObject().toString();
-            String b = ((DirTreeNode)node).getUserObject().toString();
-            return a.compareTo(b);
-        }
     }
 
 }
