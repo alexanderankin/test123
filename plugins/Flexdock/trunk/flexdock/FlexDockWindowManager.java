@@ -59,8 +59,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private static final String MAIN_PERSPECTIVE = "jEdit";
 	public static Container editPane;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
-	private HashMap<String, DockingPort> closedDockablePorts =
-		new HashMap<String, DockingPort>();
 	private boolean alternateLayout;
 	private FlexDockMainView mainView = null;
 
