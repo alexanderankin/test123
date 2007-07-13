@@ -1,22 +1,13 @@
 <?xml version="1.0"?>
-
 <!--
-
- This is the build.xml file for building the CtagsSideKick plugin.
-
- It is based on the standard build.xml file for jEdit plugins.
-
+ This is the build.xml file for building the FlexDock plugin.
 -->
-
 <project name="Flexdock" default="dist" basedir=".">
-
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
-
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-
 	<property name="jedit.install.dir"  value="/home/shlomy/jedit/dev"/>
 	<property name="jedit.plugin.dir"  value="${user.home}/.jedit/jars"/>
 	<property name="src.dir" value="."/>
@@ -42,7 +33,8 @@
 			message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/-->
-	    <copy file="${flexdock.jar}" todir="${install.dir}" />
+	    <!-- No longer needed since we zip it up in the jar -->
+		<copy file="${flexdock.jar}" todir="${install.dir}" /> -->
 	</target>
 
 	<target name="compile" depends="init">
@@ -51,8 +43,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			debug="yes"
-			includeJavaRuntime="yes"
-		>
+			includeJavaRuntime="yes" >
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
