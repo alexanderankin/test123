@@ -23,6 +23,8 @@ import org.gjt.sp.jedit.EditPlugin;
 
 public class GlobalPlugin extends EditPlugin
 {
+	public static final String OPTION_PREFIX = "options.GlobalPlugin.";
+
 	//{{{ EBPlugin methods
 
 	public static final String CALL_TREE_BROWSER = "call-tree-browser";

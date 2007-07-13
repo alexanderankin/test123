@@ -20,9 +20,14 @@ package browser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
+
+import javax.swing.JOptionPane;
+
+import options.GlobalOptionPane;
+
+import org.gjt.sp.jedit.jEdit;
 
 public class GlobalLauncher {
 
@@ -34,8 +39,9 @@ public class GlobalLauncher {
 	
 	public Vector<GlobalRecord> run(String options, String workingDirectory) {
         Vector<GlobalRecord> records = new Vector<GlobalRecord>();
+        String globalPath = jEdit.getProperty(GlobalOptionPane.GLOBAL_PATH_OPTION);
 		try {
-			String command = "global " + options;
+			String command = globalPath + " " + options;
 			File dir = new File(workingDirectory);
 			Process p = Runtime.getRuntime().exec(command, null, dir);
 	        BufferedReader stdInput = new BufferedReader(new 
@@ -45,8 +51,11 @@ public class GlobalLauncher {
 	        while ((s = stdInput.readLine()) != null)
 	        	records.add(new GlobalRecord(s));
 	        stdInput.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			 JOptionPane.showMessageDialog(null, 
+					 jEdit.getProperty("messages.GlobalPlugin.cannot_run_global"),
+					 "Error",
+					 JOptionPane.ERROR_MESSAGE);
 		}
 		return records;
 	}
