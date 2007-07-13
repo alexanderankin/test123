@@ -297,7 +297,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			windows.put(dockables[0], dockMan.getDockable(dockables[0]));
 			for (int i = 1; i < dockables.length; i++) {
 				sequence.add(dockables[i], dockables[0]);
-				windows.put(dockables[0], dockMan.getDockable(dockables[i]));
+				windows.put(dockables[i], dockMan.getDockable(dockables[i]));
 			}
 		}
 	}
