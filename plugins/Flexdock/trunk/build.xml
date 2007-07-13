@@ -34,7 +34,7 @@
 		<echo file="doc/docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/-->
 	    <!-- No longer needed since we zip it up in the jar -->
-		<copy file="${flexdock.jar}" todir="${install.dir}" /> -->
+	    <!-- <copy file="${flexdock.jar}" todir="${install.dir}" /> -->
 	</target>
 
 	<target name="compile" depends="init">
