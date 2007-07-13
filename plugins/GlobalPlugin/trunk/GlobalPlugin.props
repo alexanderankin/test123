@@ -6,6 +6,17 @@ plugin.browser.GlobalPlugin.author=Shlomy Reinstein
 plugin.browser.GlobalPlugin.version=0.1
 plugin.browser.GlobalPlugin.depend.0=jdk 1.5
 plugin.browser.GlobalPlugin.depend.1=jedit 04.03.10.00
+plugin.browser.GlobalPlugin.depend.2=plugin tags.TagsPlugin 2.0.2
+
+# Label for options/actions/whatever of the plugin
+GlobalPlugin.label=GlobalPlugin
+
+# Options
+plugin.browser.GlobalPlugin.option-pane=GlobalPlugin
+options.GlobalPlugin.code=new options.GlobalOptionPane();
+options.GlobalPlugin.label=GlobalPlugin
+options.GlobalPlugin.global_path=global
+options.GlobalPlugin.global_path.label='global' path:
 
 # action labels
 show-call-tree.label=Show call tree
@@ -22,3 +33,6 @@ reference-browser.title=References
 reference-browser.title=References
 definition-browser.title=Definitions
 definition-browser.title=Definitions
+
+# messages
+messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path to 'global' in the plugin options.
