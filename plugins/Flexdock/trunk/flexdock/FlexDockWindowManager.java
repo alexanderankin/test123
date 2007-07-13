@@ -294,8 +294,10 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			else
 				split = 1 - dimension / (dockMan.getHeight() - dockMan.getTopDockingArea().getDimension());
 			sequence.add(dockables[0], MAIN_VIEW, region, split);
+			windows.put(dockables[0], dockMan.getDockable(dockables[0]));
 			for (int i = 1; i < dockables.length; i++) {
 				sequence.add(dockables[i], dockables[0]);
+				windows.put(dockables[0], dockMan.getDockable(dockables[i]));
 			}
 		}
 	}
