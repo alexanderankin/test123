@@ -12,7 +12,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
 
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockableFactory;
@@ -49,24 +48,9 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	public class MyDockingStrategy extends DefaultDockingStrategy {
 		@Override
 		public DockingPort createDockingPortImpl(DockingPort base) {
-			DockingPort p = new MyDockingPort();
+			DockingPort p = new MyDockingPort(FlexDockWindowManager.this);
 			return p;
 		}
-	}
-	public class MyDockingPort extends DefaultDockingPort {
-
-		@Override
-		protected int getInitTabPlacement() {
-			String placement = jEdit.getProperty(OptionPane.TAB_PLACEMENT_OPTION);
-			if (placement.equalsIgnoreCase("top"))
-				return JTabbedPane.TOP;
-			if (placement.equalsIgnoreCase("bottom"))
-				return JTabbedPane.BOTTOM;
-			if (placement.equalsIgnoreCase("left"))
-				return JTabbedPane.LEFT;
-			return JTabbedPane.RIGHT;
-		}
-		
 	}
 	View view;
 	DockableWindowFactory factory;
@@ -75,6 +59,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private static final String MAIN_PERSPECTIVE = "jEdit";
 	public static Container editPane;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
+	private HashMap<String, DockingPort> closedDockablePorts =
+		new HashMap<String, DockingPort>();
 	private boolean alternateLayout;
 	private FlexDockMainView mainView = null;
 
@@ -106,7 +92,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		editPane = view.getEditPane();
 		configureDocking();
 		setLayout(new BorderLayout());
-		mainport = new MyDockingPort();
+		mainport = new MyDockingPort(this);
 		mainport.getDockingProperties().setSingleTabsAllowed(false);
 		setLayout(new BorderLayout());
 		add(mainport, BorderLayout.CENTER);
@@ -217,11 +203,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		//super.handleMessage(msg);
 	}
 	@Override
-	public void hideDockableWindow(String name) {
-		// TODO Auto-generated method stub
-		//super.hideDockableWindow(name);
-	}
-	@Override
 	public boolean isDockableWindowDocked(String name) {
 		return getDockable(name) != null;
 	}
@@ -252,13 +233,17 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			DockingManager.restoreLayout();
 		}
 	}
-	
-	
+	@Override
+	public void hideDockableWindow(String name) {
+		Dockable d = DockingManager.getDockable(name);
+		DockingManager.close(d);
+		DockingManager.unregisterDockable(d);
+		windows.remove(name);
+	}
 	@Override
 	public void showDockableWindow(String name) {
-		Dockable d = DockingManager.getDockable(name);
-		mainport.dock(d, DockingConstants.SOUTH_REGION);
-		windows.put(name, (JComponent)d.getComponent());
+		DockingManager.display(name);
+		//mainport.dock(DockingManager.getDockable(name), DockingConstants.SOUTH_REGION);
 	}
 	public void add(Component comp, Object o, int index) {
 		mainView.add(comp, o, index);
@@ -307,10 +292,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			else
 				split = 1 - dimension / (dockMan.getHeight() - dockMan.getTopDockingArea().getDimension());
 			sequence.add(dockables[0], MAIN_VIEW, region, split);
-			windows.put(dockables[0], dockMan.getDockable(dockables[0]));
 			for (int i = 1; i < dockables.length; i++) {
 				sequence.add(dockables[i], dockables[0]);
-				windows.put(dockables[i], dockMan.getDockable(dockables[i]));
 			}
 		}
 	}
@@ -337,6 +320,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			String title = getDockableTitle(id);
 			Dockable d = DockableComponentWrapper.create(c, id, title);
 			DockingManager.registerDockable(d);
+			windows.put(id, c);
 			return c;
 		}
 	}
