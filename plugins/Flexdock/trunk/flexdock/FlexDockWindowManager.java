@@ -41,6 +41,7 @@ import org.gjt.sp.jedit.gui.DockableWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
@@ -233,6 +234,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void hideDockableWindow(String name) {
+		Object reason = DockableWindowUpdate.DEACTIVATED;
+		EditBus.send(new DockableWindowUpdate(this, reason, name));
 		Dockable d = DockingManager.getDockable(name);
 		DockingManager.close(d);
 		DockingManager.unregisterDockable(d);
@@ -241,7 +244,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@Override
 	public void showDockableWindow(String name) {
 		DockingManager.display(name);
-		//mainport.dock(DockingManager.getDockable(name), DockingConstants.SOUTH_REGION);
+		Object reason = DockableWindowUpdate.ACTIVATED;
+		EditBus.send(new DockableWindowUpdate(this, reason, name));
 	}
 	public void add(Component comp, Object o, int index) {
 		mainView.add(comp, o, index);
