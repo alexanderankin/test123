@@ -2,7 +2,6 @@ package flexdock;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +50,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	public class MyDockingStrategy extends DefaultDockingStrategy {
 		@Override
 		public DockingPort createDockingPortImpl(DockingPort base) {
-			DockingPort p = new MyDockingPort(FlexDockWindowManager.this);
-			return p;
+			return new MyDockingPort(FlexDockWindowManager.this);
 		}
 	}
 	View view;
@@ -60,7 +58,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private static final String PERSPECTIVE_FILE = "jedit.xml";
 	private static final String MAIN_VIEW = "Main";
 	private static final String MAIN_PERSPECTIVE = "jEdit";
-	public static Container editPane;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private boolean alternateLayout;
 	private FlexDockMainView mainView = null;
@@ -68,9 +65,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private HashMap<String, Float> split = null;
 	
 	PanelWindowContainer top, bottom, left, right;
-	private DefaultDockingPort mainport;
-	private DockableWindowManager dockMan;
-	private ViewFactory viewFactory;
 	
 	public void save() {
 		try {
@@ -86,25 +80,24 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		this.view = view;
 		this.factory = factory;
 
-		dockMan = view.getDockableWindowManager();
+		DockableWindowManager dockMan = view.getDockableWindowManager();
 		alternateLayout = ((DockableLayout)dockMan.getLayout()).isAlternateLayout();
 		top = new PanelWindowContainer(this,TOP,config.topPos);
 		left = new PanelWindowContainer(this,LEFT,config.leftPos);
 		bottom = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
 		right = new PanelWindowContainer(this,RIGHT,config.rightPos);
-		editPane = view.getEditPane();
 		configureDocking();
 		setLayout(new BorderLayout());
-		mainport = new MyDockingPort(this);
+		DefaultDockingPort mainport = new MyDockingPort(this);
 		mainport.getDockingProperties().setSingleTabsAllowed(false);
 		setLayout(new BorderLayout());
 		add(mainport, BorderLayout.CENTER);
 		mainView = new FlexDockMainView(MAIN_VIEW);
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
-		mainView.add(editPane, 0);
+		mainView.add(view.getEditPane(), 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
 		if (! xml.exists())
-			getDockableStates();
+			getDockableStates(dockMan);
 		dockMan.close();
 		if (! xml.exists()) {
 			PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
@@ -119,7 +112,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			DockingManager.restoreLayout();
 		}
 	}
-	private void getDockableStates() {
+	private void getDockableStates(DockableWindowManager dockMan) {
 		dockables = new HashMap<String, Vector<String>>();
 		dockables.put(DockingConstants.WEST_REGION,
 				new Vector<String>(Arrays.asList(dockMan.getLeftDockingArea().getDockables())));
@@ -143,8 +136,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		split.put(DockingConstants.SOUTH_REGION, new Float(1 - (bottomDim + bd) / (h - topDim)));
 	}
 	private void configureDocking() {
-		viewFactory = new ViewFactory(view);
-		DockingManager.setDockableFactory(viewFactory);
+		DockingManager.setDockableFactory(new ViewFactory(view));
 		DockingManager.setFloatingEnabled(true);
         EffectsManager.setPreview(new GhostPreview());
         DockingManager.setSingleTabsAllowed(true);
@@ -287,7 +279,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		public Perspective getPerspective(String persistentId) {
 			if(! MAIN_PERSPECTIVE.equals(persistentId))
 				return null;
-			Perspective perspective = new Perspective(MAIN_PERSPECTIVE, "jEdit");
+			Perspective perspective = new Perspective(MAIN_PERSPECTIVE, MAIN_PERSPECTIVE);
 			sequence = perspective.getInitialSequence(true);
 			sequence.add(MAIN_VIEW);
 			if (! alternateLayout) {
