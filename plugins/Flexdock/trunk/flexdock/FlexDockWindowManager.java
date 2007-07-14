@@ -171,10 +171,15 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent floatDockableWindow(String name) {
-		DockableWindowFactory.Window window = factory.getDockableWindowFactory(name);
-		JComponent c = window.createDockableWindow(view, DockableWindowManager.FLOATING);
+//		DockableWindowFactory.Window window = factory.getDockableWindowFactory(name);
+		showDockableWindow(name);
+		Dockable d = DockingManager.getDockable(name);
+		DockingManager.close(d);
+		JComponent c = (JComponent) d.getComponent();
 		JFrame f = new JFrame(getDockableTitle(name));
 		f.setContentPane(c);
+		f.pack();
+		f.setVisible(true);
 		return c;
 	}
 	@Override
