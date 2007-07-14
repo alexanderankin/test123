@@ -60,9 +60,9 @@ public class MyDockingPort extends DefaultDockingPort {
 			if (ev.getButton() != MouseEvent.BUTTON3)
 				return;
 			JPopupMenu popup = new JPopupMenu();
-			JMenuItem closeItem = new JMenuItem("close");
 			JTabbedPane pane = (JTabbedPane)ev.getComponent();
 			final Component c = pane.getSelectedComponent();
+			JMenuItem closeItem = new JMenuItem("Close");
 			closeItem.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent evt)
@@ -72,6 +72,16 @@ public class MyDockingPort extends DefaultDockingPort {
 				}
 			});
 			popup.add(closeItem);
+			JMenuItem floatItem = new JMenuItem("Float");
+			floatItem.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					String id = DockingManager.getDockable(c).getPersistentId();
+					dwm.floatDockableWindow(id);
+				}
+			});
+			popup.add(floatItem);
 			popup.show(MyDockingPort.this.getDockedComponent(), ev.getX(), ev.getY());
 		}
 	}
