@@ -1,6 +1,6 @@
 Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 9931)
+--- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 10020)
 +++ org/gjt/sp/jedit/gui/DockableWindowFactory.java	(working copy)
 @@ -166,11 +166,16 @@
  	} //}}}
@@ -29,7 +29,22 @@ Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
  	{
  		PluginJAR plugin;
  		String name;
-@@ -386,7 +391,7 @@
+@@ -376,6 +381,14 @@
+ 			}
+ 		} //}}}
+ 
++		public PluginJAR getPlugin()
++		{
++			return plugin;
++		}
++		public String getName()
++		{
++			return name;
++		}
+ 		//{{{ load() method
+ 		void load()
+ 		{
+@@ -386,7 +399,7 @@
  		} //}}}
  
  		//{{{ createDockableWindow() method
@@ -40,7 +55,7 @@ Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
  
 Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 9931)
+--- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 10020)
 +++ org/gjt/sp/jedit/gui/DockableWindowManager.java	(working copy)
 @@ -198,7 +198,7 @@
  	 * @param config A docking configuration
@@ -53,7 +68,7 @@ Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
  		setLayout(new DockableLayout());
 Index: org/gjt/sp/jedit/View.java
 ===================================================================
---- org/gjt/sp/jedit/View.java	(revision 9931)
+--- org/gjt/sp/jedit/View.java	(revision 10020)
 +++ org/gjt/sp/jedit/View.java	(working copy)
 @@ -197,6 +197,14 @@
  

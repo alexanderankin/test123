@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -34,6 +35,7 @@ import org.flexdock.perspective.persist.PersistenceHandler;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
@@ -42,7 +44,9 @@ import org.gjt.sp.jedit.gui.DockableWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowFactory.Window;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
@@ -99,18 +103,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		if (! xml.exists())
 			getDockableStates(dockMan);
 		dockMan.close();
-		if (! xml.exists()) {
-			PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
-		} else {
-			try {
-				DockingManager.loadLayoutModel();
-			} catch(IOException ex) {
-				ex.printStackTrace();
-			} catch (PersistenceException ex) {
-	            ex.printStackTrace();
-	        }
-			DockingManager.restoreLayout();
-		}
+		init();
 	}
 	private void getDockableStates(DockableWindowManager dockMan) {
 		dockables = new HashMap<String, Vector<String>>();
@@ -217,8 +210,26 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void handleMessage(EBMessage msg) {
-		// TODO Auto-generated method stub
-		//super.handleMessage(msg);
+		if(msg instanceof PluginUpdate) {
+			PluginUpdate pmsg = (PluginUpdate)msg;
+			if (pmsg.isExiting())
+			{
+				// we don't care
+			}
+			else if (pmsg.getWhat() == PluginUpdate.DEACTIVATED ||
+					pmsg.getWhat() == PluginUpdate.UNLOADED)
+			{
+				// Close all plugin dockables
+				PluginJAR jar = pmsg.getPluginJAR();
+				Iterator<Window> iter = factory.getDockableWindowIterator();
+				while (iter.hasNext()) {
+					Window w = iter.next();
+					if (w.getPlugin() == jar)
+						hideDockableWindow(w.getName());
+				}
+				
+			}
+		}
 	}
 	@Override
 	public boolean isDockableWindowDocked(String name) {
@@ -242,12 +253,17 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	public void init() {
 		EditBus.addToBus(this);
-
 		File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
 		if (! xml.exists()) {
-			DockingManager.restoreLayout();
 			PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
 		} else {
+			try {
+				DockingManager.loadLayoutModel();
+			} catch(IOException ex) {
+				ex.printStackTrace();
+			} catch (PersistenceException ex) {
+	            ex.printStackTrace();
+	        }
 			DockingManager.restoreLayout();
 		}
 	}
