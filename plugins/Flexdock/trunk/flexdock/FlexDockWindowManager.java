@@ -6,7 +6,9 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -62,7 +64,9 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private boolean alternateLayout;
 	private FlexDockMainView mainView = null;
-
+	private HashMap<String, Vector<String>> dockables = null;
+	private HashMap<String, Float> split = null;
+	
 	PanelWindowContainer top, bottom, left, right;
 	private DefaultDockingPort mainport;
 	private DockableWindowManager dockMan;
@@ -99,14 +103,44 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
 		mainView.add(editPane, 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
-		if (xml.exists())
-			dockMan.close();
+		if (! xml.exists())
+			getDockableStates();
+		dockMan.close();
 		if (! xml.exists()) {
-			DockingManager.restoreLayout();
 			PerspectiveManager.getInstance().loadPerspective(MAIN_PERSPECTIVE);
 		} else {
+			try {
+				DockingManager.loadLayoutModel();
+			} catch(IOException ex) {
+				ex.printStackTrace();
+			} catch (PersistenceException ex) {
+	            ex.printStackTrace();
+	        }
 			DockingManager.restoreLayout();
 		}
+	}
+	private void getDockableStates() {
+		dockables = new HashMap<String, Vector<String>>();
+		dockables.put(DockingConstants.WEST_REGION,
+				new Vector<String>(Arrays.asList(dockMan.getLeftDockingArea().getDockables())));
+		dockables.put(DockingConstants.EAST_REGION,
+				new Vector<String>(Arrays.asList(dockMan.getRightDockingArea().getDockables())));
+		dockables.put(DockingConstants.NORTH_REGION,
+				new Vector<String>(Arrays.asList(dockMan.getTopDockingArea().getDockables())));
+		dockables.put(DockingConstants.SOUTH_REGION,
+				new Vector<String>(Arrays.asList(dockMan.getBottomDockingArea().getDockables())));
+		float topDim = dockMan.getTopDockingArea().getDimension();
+		float bottomDim = dockMan.getBottomDockingArea().getDimension();
+		float leftDim = dockMan.getLeftDockingArea().getDimension();
+		float rightDim = dockMan.getRightDockingArea().getDimension();
+		int w = dockMan.getWidth();
+		int h = dockMan.getHeight();
+		float bd = (float)w * 0.016f; // Button panel dimension
+		split = new HashMap<String, Float>();
+		split.put(DockingConstants.WEST_REGION, new Float((leftDim + bd) / w));
+		split.put(DockingConstants.EAST_REGION, new Float(1 - (rightDim + bd) / (w - leftDim)));
+		split.put(DockingConstants.NORTH_REGION, new Float((topDim + bd) / h));
+		split.put(DockingConstants.SOUTH_REGION, new Float(1 - (bottomDim + bd) / (h - topDim)));
 	}
 	private void configureDocking() {
 		viewFactory = new ViewFactory(view);
@@ -122,13 +156,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		// load any previously persisted layouts
 		PersistenceHandler persister = new FilePersistenceHandler(new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE), XMLPersister.newDefaultInstance());
 		PerspectiveManager.setPersistenceHandler(persister);
-		try {
-			DockingManager.loadLayoutModel();
-		} catch(IOException ex) {
-			ex.printStackTrace();
-		} catch (PersistenceException ex) {
-            ex.printStackTrace();
-        }
 		// remember to store on shutdown
 		//DockingManager.setAutoPersist(true);
 	}
@@ -262,42 +289,29 @@ public class FlexDockWindowManager extends DockableWindowManager {
 				return null;
 			Perspective perspective = new Perspective(MAIN_PERSPECTIVE, "jEdit");
 			sequence = perspective.getInitialSequence(true);
-			DockableWindowManager dockMan = view.getDockableWindowManager();
 			sequence.add(MAIN_VIEW);
 			if (! alternateLayout) {
-				addDockables(DockingConstants.WEST_REGION, dockMan.getLeftDockingArea());
-				addDockables(DockingConstants.EAST_REGION, dockMan.getRightDockingArea());
-				addDockables(DockingConstants.NORTH_REGION, dockMan.getTopDockingArea());
-				addDockables(DockingConstants.SOUTH_REGION, dockMan.getBottomDockingArea());
+				addDockables(DockingConstants.WEST_REGION);
+				addDockables(DockingConstants.EAST_REGION);
+				addDockables(DockingConstants.NORTH_REGION);
+				addDockables(DockingConstants.SOUTH_REGION);
 			} else {
-				addDockables(DockingConstants.NORTH_REGION, dockMan.getTopDockingArea());
-				addDockables(DockingConstants.SOUTH_REGION, dockMan.getBottomDockingArea());
-				addDockables(DockingConstants.WEST_REGION, dockMan.getLeftDockingArea());
-				addDockables(DockingConstants.EAST_REGION, dockMan.getRightDockingArea());
+				addDockables(DockingConstants.NORTH_REGION);
+				addDockables(DockingConstants.SOUTH_REGION);
+				addDockables(DockingConstants.WEST_REGION);
+				addDockables(DockingConstants.EAST_REGION);
 			}
 			return perspective;
 		}
-		private void addDockables(String region, PanelWindowContainer dockingArea) {
-			String [] dockables = dockingArea.getDockables();
-			if (dockables.length == 0)
+		private void addDockables(String region) {
+			Vector<String> regionDockables = dockables.get(region);
+			if (regionDockables.isEmpty())
 				return;
-			DockableWindowManager dockMan = dockingArea.getDockableWindowManager();
-			float split;
-			float dimension = (float)dockingArea.getDimension() +
-				(float)dockMan.getWidth() * 0.016f;	// For the buttons
-			if (region.equals(DockingConstants.WEST_REGION))
-				split = dimension / dockMan.getWidth();
-			else if (region.equals(DockingConstants.EAST_REGION))
-				split = 1 - dimension / (dockMan.getWidth() - dockMan.getLeftDockingArea().getDimension());
-			else if (region.equals(DockingConstants.NORTH_REGION))
-				split = dimension / dockMan.getHeight();
-			else
-				split = 1 - dimension / (dockMan.getHeight() - dockMan.getTopDockingArea().getDimension());
-			sequence.add(dockables[0], MAIN_VIEW, region, split);
-			windows.put(dockables[0], dockMan.getDockable(dockables[0]));
-			for (int i = 1; i < dockables.length; i++) {
-				sequence.add(dockables[i], dockables[0]);
-				windows.put(dockables[i], dockMan.getDockable(dockables[i]));
+			float splitVal = split.get(region).floatValue();
+			String first = regionDockables.get(0);
+			sequence.add(first, MAIN_VIEW, region, splitVal);
+			for (int i = 1; i < regionDockables.size(); i++) {
+				sequence.add(regionDockables.get(i), first);
 			}
 		}
 	}
