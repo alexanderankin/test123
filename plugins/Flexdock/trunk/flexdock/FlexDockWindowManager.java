@@ -121,7 +121,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		float rightDim = dockMan.getRightDockingArea().getDimension();
 		int w = dockMan.getWidth();
 		int h = dockMan.getHeight();
-		float bd = (float)w * 0.016f; // Button panel dimension
+		float bd = w * 0.016f; // Button panel dimension
 		split = new HashMap<String, Float>();
 		split.put(DockingConstants.WEST_REGION, new Float((leftDim + bd) / w));
 		split.put(DockingConstants.EAST_REGION, new Float(1 - (rightDim + bd) / (w - leftDim)));

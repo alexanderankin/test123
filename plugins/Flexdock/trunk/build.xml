@@ -61,6 +61,9 @@
 				<include name="**/*.png"/>
 			</fileset>
 			<zipfileset src="${src.dir}/flexdock-0.5.1.jar" />
+			<zipfileset src="${src.dir}/looks-2.1.1.jar" />
+			<zipfileset src="${src.dir}/skinlf.jar" />
+			<zipfileset src="${src.dir}/commons-logging-1.1.jar" />
 		</jar>
 	</target>
 
