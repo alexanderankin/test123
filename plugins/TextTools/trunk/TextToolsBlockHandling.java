@@ -80,6 +80,9 @@ public class TextToolsBlockHandling
 		// check anything is selected
 		if (selCount == 0 )
 		{
+			//Note: The TextToolsPlugin class now prevents 
+			//this case from happening.
+			
 			selBegin = bsu.getVisibleRow(textArea.getCaretPosition());
 			// Log.log(Log.DEBUG, BeanShell.class,"selBegin = "+selBegin);
 			selEnd = selBegin + insertText.length();
@@ -87,16 +90,25 @@ public class TextToolsBlockHandling
 		} else {
 			// get range, maybe different per line ico multiple/ rect selections
 			// for several reasons, we take the width of the first selected line, and apply it to all selections
-			selBegin = bsu.getVisibleRow(sel[0].getStart());
-			selEnd = bsu.getVisibleRow(sel[0].getEnd(buffer, sel[0].getStartLine()));
+			// selBegin = bsu.getVisibleRow(sel[0].getStart());
+			// selEnd = bsu.getVisibleRow(sel[0].getEnd(buffer, sel[0].getStartLine()));
+			
+			//Get the correct start column and end column of the selection.
+			//Note: The TextToolsPlugin class ensures
+			//that the selection is rectangular.
+			selBegin = ((Selection.Rect)sel[0]).getStartColumn(buffer);
+			selEnd = ((Selection.Rect)sel[0]).getEndColumn(buffer);
 		}
+		
 		/*********************************************************
 		 * check if only one line selected ==> select form cursor to eof
 		 *********************************************************/
 		if (selCount == 1 && (sel[0].getStartLine() == sel[0].getEndLine()))
 		{
+			//Note: The TextToolsPlugin now prevents 
+			//this case from happening.
 			if (trace)
-				Log.log(Log.DEBUG, BeanShell.class,"only one selection line");
+				Log.log(Log.DEBUG, TextToolsBlockHandling.class,"only one selection line");
 			textArea.setCaretPosition(sel[0].getStart());
 			textArea.goToBufferEnd(true);
 		}
