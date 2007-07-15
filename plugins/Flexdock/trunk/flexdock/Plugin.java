@@ -17,9 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package flexdock;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 
 public class Plugin extends EditPlugin {
@@ -37,6 +39,7 @@ public class Plugin extends EditPlugin {
 		fdwm.construct(view, DockableWindowFactory.getInstance(),
 				view.getViewConfig());
 		view.setDockableWindowManager(fdwm);
+		EditBus.send(new PropertiesChanged(null));
 	}
 
 }
