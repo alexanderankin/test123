@@ -10,7 +10,7 @@ plugin.projectviewer.ProjectPlugin.description=The ProjectViewer plugin provides
 	for managing a "project", i.e. a related group of \
 	source files.
 
-plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.03.10.00
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.03.11.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.5
 
 plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
