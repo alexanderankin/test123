@@ -115,11 +115,12 @@ public class LogAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new LogResultsPanel( get() );
+                        JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths() );
                         panel.addTab( "Log", results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored
+                        e.printStackTrace();
                     }
                 }
             }

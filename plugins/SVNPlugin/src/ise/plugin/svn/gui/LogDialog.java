@@ -4,6 +4,7 @@ package ise.plugin.svn.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
@@ -123,6 +124,9 @@ public class LogDialog extends JDialog {
         ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setMinimum(new Integer(1));
         ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setValue(new Integer(100));
 
+        final JCheckBox stopOnCopy = new JCheckBox("Stop on copy");
+        final JCheckBox showPaths = new JCheckBox("Show paths");
+
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -134,7 +138,7 @@ public class LogDialog extends JDialog {
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        // get the paths
+                        // fill in the log data object -- get the paths
                         List<String> paths = new ArrayList<String>();
                         Component[] files = file_panel.getComponents();
                         for ( Component file : files ) {
@@ -150,6 +154,8 @@ public class LogDialog extends JDialog {
                         else {
                             data.setPaths( paths );
                         }
+
+                        // set revision range
                         if ( show_all.isSelected() ) {
                             data.setStartRevision( SVNRevision.create( 0L ) );
                             data.setEndRevision( SVNRevision.HEAD );
@@ -158,7 +164,18 @@ public class LogDialog extends JDialog {
                             data.setStartRevision( start_revision_panel.getRevision() );
                             data.setEndRevision( end_revision_panel.getRevision() );
                         }
+
+                        // set number of logs to show
                         data.setMaxLogs(((Integer)max_logs.getValue()).intValue());
+
+                        // set whether or not to recurse past copy points in the
+                        // revision history
+                        data.setStopOnCopy(stopOnCopy.isSelected());
+
+                        // set whether or not to show the other files that were part
+                        // of the revision history
+                        data.setShowPaths(showPaths.isSelected());
+
                         LogDialog.this.setVisible( false );
                         LogDialog.this.dispose();
                     }
@@ -192,12 +209,17 @@ public class LogDialog extends JDialog {
         panel.add( "1, 8, 1, 1, E   , 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 10, 1, 1, E,  , 3", new JLabel( "Maximum log entries to show:" ) );
-        panel.add( "1, 10, 1, 1, W,  , 3", max_logs );
+        panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy);
+        panel.add( "0, 11, 1, 1, W, , 3", showPaths);
 
-        panel.add( "0, 11, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        JPanel max_logs_panel = new JPanel(new FlowLayout());
+        max_logs_panel.add(new JLabel("Maximum log entries to show:"));
+        max_logs_panel.add(max_logs);
+        panel.add( "0, 12, 2, 1, W,  , 3", max_logs_panel );
 
-        panel.add( "0, 12, 2, 1, E,  , 0", btn_panel );
+        panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 14, 2, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();

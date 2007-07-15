@@ -69,12 +69,14 @@ public class Log {
 
         out = data.getOut();
 
-        // files for logs, start revision, end revision, stop on copy, report paths, number of entries, handler
         if ( data.pathsAreURLs() ) {
             for (String path : data.getPaths()) {
                 SVNURL svnurl = SVNURL.parseURIDecoded(path);
                 LogHandler handler = new LogHandler( path );
-                client.doLog( svnurl, null, SVNRevision.create( 0L ), data.getStartRevision(), data.getEndRevision(), true, false, 100, handler );
+                // files for logs, paths, peg revision, start revision,
+                // end revision, stop on copy, report paths, number of entries, handler
+                client.doLog( svnurl, null, SVNRevision.create( 0L ), data.getStartRevision(),
+                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }
@@ -94,7 +96,8 @@ public class Log {
                 String[] rep_paths = new String[]{path};
                 // I should also be able to set the peg revision, but it seems that
                 // using anything beside 0 fails.
-                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(), data.getEndRevision(), false, false, data.getMaxLogs(), handler );
+                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(),
+                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }
@@ -132,6 +135,10 @@ public class Log {
         }
     }
 
+    /**
+     * @return a map with the path of a file as the key and a list of associated
+     * log entries as the value.
+     */
     public TreeMap < String, List < SVNLogEntry >> getLogEntries() {
         return entries;
     }
@@ -141,52 +148,34 @@ public class Log {
             return ;
 
         out.println( "path: " + path );
-        /*
-         * gets the revision number
-         */
         out.println( "revision: " + logEntry.getRevision() );
-        /*
-         * gets the author of the changes made in that revision
-         */
         out.println( "author: " + logEntry.getAuthor() );
-        /*
-         * gets the time moment when the changes were committed
-         */
         out.println( "date: " + logEntry.getDate() );
-        /*
-         * gets the commit log message
-         */
         out.println( "log message: " + logEntry.getMessage() );
-        /*
-         * displaying all paths that were changed in that revision; cahnged
-         * path information is represented by SVNLogEntryPath.
-         */
+
+        // displaying all paths that were changed in that revision, changed
+        // path information is represented by SVNLogEntryPath.
         if ( logEntry.getChangedPaths().size() > 0 ) {
             out.println();
             out.println( "changed paths:" );
-            /*
-             * keys are changed paths
-             */
+
+            // keys are changed paths
             Set changedPathsSet = logEntry.getChangedPaths().keySet();
 
-            for ( Iterator changedPaths = changedPathsSet.iterator(); changedPaths
-                    .hasNext(); ) {
+            for ( Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext(); ) {
+                SVNLogEntryPath entryPath = ( SVNLogEntryPath ) logEntry.getChangedPaths().get( changedPaths.next() );
+
                 /*
-                 * obtains a next SVNLogEntryPath
-                 */
-                SVNLogEntryPath entryPath = ( SVNLogEntryPath ) logEntry
-                        .getChangedPaths().get( changedPaths.next() );
-                /*
-                 * SVNLogEntryPath.getPath returns the changed path itself;
-                 *
-                 * SVNLogEntryPath.getType returns a charecter describing
-                 * how the path was changed ('A' - added, 'D' - deleted or
-                 * 'M' - modified);
-                 *
-                 * If the path was copied from another one (branched) then
-                 * SVNLogEntryPath.getCopyPath &
-                 * SVNLogEntryPath.getCopyRevision tells where it was copied
-                 * from and what revision the origin path was at.
+                 SVNLogEntryPath.getPath returns the changed path itself
+
+                 SVNLogEntryPath.getType returns a character describing
+                 how the path was changed ('A' - added, 'D' - deleted or
+                 'M' - modified);
+
+                 If the path was copied from another one (branched) then
+                 SVNLogEntryPath.getCopyPath and
+                 SVNLogEntryPath.getCopyRevision tells where it was copied
+                 from and what revision the origin path was at.
                  */
                 out.println( " "
                         + entryPath.getType()
