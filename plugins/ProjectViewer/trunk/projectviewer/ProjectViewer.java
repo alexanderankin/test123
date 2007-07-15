@@ -38,7 +38,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -113,7 +112,7 @@ import projectviewer.importer.NewFileImporter;
  *	@version	$Id$
  */
 public final class ProjectViewer extends JPanel
-	implements HierarchyListener, DefaultFocusComponent, EBComponent {
+	implements DefaultFocusComponent, EBComponent {
 
 	//{{{ Static members
 	private static final ProjectViewerConfig config;
@@ -427,8 +426,6 @@ public final class ProjectViewer extends JPanel
 		view = aView;
 		treeRoot = VPTRoot.getInstance();
 		isLoadingProject = false;
-
-		addHierarchyListener(this);
 
 		buildGUI();
 
@@ -878,7 +875,6 @@ public final class ProjectViewer extends JPanel
 			if (vu.getView() == view) {
 				config.setLastNode(treeRoot);
 				unload();
-				removeHierarchyListener(this);
 			}
 			viewers.remove(vu.getView());
 		}
@@ -1004,17 +1000,6 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//}}}
-
-	//{{{ +hierarchyChanged(HierarchyEvent) : void
-	public void hierarchyChanged(HierarchyEvent he) {
-		if (he.getChanged() == this && !isDisplayable() &&
-				((he.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED)
-					== HierarchyEvent.DISPLAYABILITY_CHANGED))
-		{
-			config.setLastNode(treeRoot);
-			unload();
-		}
-	} //}}}
 
 	//{{{ -class ConfigChangeListener
 	/** Listens for changes in the PV configuration. */
