@@ -37,7 +37,7 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
 
-	<property name="jedit.install.dir"  value="../.."/>
+	<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.3pre10/"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>

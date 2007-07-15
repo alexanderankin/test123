@@ -461,8 +461,13 @@ public class TextToolsPlugin extends EditPlugin
 	//{{{ textToolsBlockHandling()
 	public static void textToolsBlockHandling(View view, JEditTextArea textArea)
 	{
-		if (isTextAreaEditable(view, textArea) && isSelectedAndRectangular(view, textArea))
+		if (isTextAreaEditable(view, textArea) && isSelectedAndRectangular(view, textArea)) {
 			new TextToolsBlockHandlingDialog(view);
+		} else {
+			GUIUtilities.error(view, "texttoolsplugin.error.no-rect-selection", null);
+		}
+		
+		//TODO: Should there be some sort of message given to the user?
 	} //}}}
 	
 	//{{{ spacesToTabsXT() method

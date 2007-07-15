@@ -43,7 +43,8 @@ text-tools.sortadvanced.delete-identic-lines=delete identic lines
 text-tools.sortadvanced.dont-sort=do not sort
 text-tools.sortadvanced.sort-only-selection=sort selected block
 
-texttoolsplugin.error.no-rect-selection.message=no rectangular selection
+texttoolsplugin.error.no-rect-selection.message=Please use a rectangular selection
+texttoolsplugin.error.no-rect-selection.title=Rectangular selection
 view.status.textTools.buffer-not-editable=buffer not editable
 view.status.textTools.selection-required=selection required
 view.status.textTools.rectangular-selection-required=rectangular selection required
