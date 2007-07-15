@@ -47,6 +47,7 @@ import org.gjt.sp.jedit.gui.PanelWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory.Window;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
