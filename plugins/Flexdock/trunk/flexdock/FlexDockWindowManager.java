@@ -98,7 +98,11 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		add(mainport, BorderLayout.CENTER);
 		mainView = new FlexDockMainView(MAIN_VIEW);
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
-		mainView.add(view.getEditPane(), 0);
+		// Find the edit panes
+		Component c = view.getEditPane();
+		while (! (c.getParent() instanceof DockableWindowManager))
+			c = c.getParent();
+		mainView.add(c, 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
 		if (! xml.exists())
 			getDockableStates(dockMan);
