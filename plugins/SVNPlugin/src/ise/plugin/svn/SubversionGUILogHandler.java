@@ -54,9 +54,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-
-import ise.library.*;
-import ise.library.Log;
+import ise.plugin.svn.library.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
@@ -250,7 +248,7 @@ public class SubversionGUILogHandler extends Handler {
                 _text.getDocument().insertString( index, getFormatter().getHead( SubversionGUILogHandler.this ), null );
             }
             catch ( Exception e ) {
-                Log.log( e );
+                //Log.log( e );
             }
         }
     }
@@ -310,7 +308,7 @@ public class SubversionGUILogHandler extends Handler {
                     _text.setCaretPosition( caret_position );
             }
             catch ( Exception e ) {
-                Log.log( e );
+                //Log.log( e );
             }
             /*
         }
@@ -320,7 +318,7 @@ public class SubversionGUILogHandler extends Handler {
         }
         catch ( Exception ignored ) {
             // ignored
-            Log.log( ignored );
+            //Log.log( ignored );
         }
     }
 
