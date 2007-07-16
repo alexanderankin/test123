@@ -53,11 +53,8 @@ public class BrowseRepositoryAction implements ActionListener {
 
         class Runner extends SwingWorker < List<DirTreeNode>, Object> {
 
-            private Cursor cursor = null;
-
             @Override
             public List<DirTreeNode> doInBackground() {
-                cursor = tree.getCursor();
                 tree.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 tree.setEditable(false);
                 try {
@@ -91,7 +88,7 @@ public class BrowseRepositoryAction implements ActionListener {
                     // ignored
                 }
                 finally {
-                    tree.setCursor(cursor);
+                    tree.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     tree.setEditable(true);
                 }
             }
