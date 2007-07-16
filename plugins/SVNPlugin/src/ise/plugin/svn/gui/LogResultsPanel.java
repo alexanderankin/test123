@@ -85,7 +85,7 @@ public class LogResultsPanel extends JPanel {
             column3.setCellRenderer( new CommentCellRenderer() );
             if ( showPaths ) {
                 TableColumn column4 = column_model.getColumn( 4 );    // paths
-                column4.setCellRenderer( new TextCellRenderer() );
+                column4.setCellRenderer( new PathCellRenderer() );
             }
 
             add( label, con );
@@ -105,7 +105,20 @@ public class LogResultsPanel extends JPanel {
 
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             textArea.setText( value == null ? "" : value.toString() );
-            textArea.setToolTipText("<html><pre>" + textArea.getText());
+            table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
+            return textArea;
+        }
+    }
+
+    /**
+     * Non-wrapping text area cell renderer for the paths column.
+     */
+    public class PathCellRenderer implements TableCellRenderer {
+        private MeasurableTextArea textArea = new MeasurableTextArea();
+
+        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
+            textArea.setText( value == null ? "" : value.toString() );
+            textArea.setToolTipText("<html><b>Other files in this revision:</b><br><pre>" + textArea.getText());
             table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
             return textArea;
         }
