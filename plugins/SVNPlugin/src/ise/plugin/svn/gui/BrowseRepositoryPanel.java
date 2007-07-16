@@ -60,7 +60,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 };
         chooser.addActionListener( al );
 
-        tree = new JTree( new DefaultTreeModel( new DefaultMutableTreeNode( "SVN Browser" ) ) );
+        tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
         tree.setCellRenderer(new CellRenderer());
         ToolTipManager.sharedInstance().registerComponent(tree);
 
@@ -242,9 +242,9 @@ public class BrowseRepositoryPanel extends JPanel {
         return data;
     }
 
-    public void setRoot( DefaultMutableTreeNode root ) {
+    public void setRoot( DirTreeNode root ) {
         if ( root != null ) {
-            tree.setModel( new DefaultTreeModel( root ) );
+            tree.setModel( new DefaultTreeModel( root, false ) );
         }
     }
 
