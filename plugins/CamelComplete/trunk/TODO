@@ -1,0 +1,3 @@
+-Write an IdentifierProvider to collect words from currently opened buffers.
+  *This will entail adding a "transient" engine to the plugin class.
+-Use reflection in the Jar provider to read method names.

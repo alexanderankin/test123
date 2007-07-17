@@ -1,0 +1,40 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.activate=defer
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.usePluginHome=true
+
+# These two properties are required for all plugins
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.name=CamelComplete
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.author=Jesse Pavel
+
+# version number
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=1.1.1
+
+# online help
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.docs=CamelComplete.html
+
+# we only have one dependency, jEdit 4.3
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.depend.0=jedit 04.03.10.00
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.depend.1=jdk 1.5
+
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.description=This plugin provides for \
+		code-completion in a CamelCase or underscore_separated_identifier style.
+
+# plugin menu
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete
+# plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete \
+#   							    camelcomplete.reload_transients \
+# 							    camelcomplete.full_complete
+
+# action labels for actions supplied by actions.xml
+camelcomplete.complete.label=CamelComplete Word
+# camelcomplete.reload_transients.label=Reload Transient Identifiers
+# camelcomplete.full_complete.label=Reload and Complete
+
+# plugin option pane
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.option-pane=camelcomplete
+options.camelcomplete.label=CamelComplete
+options.camelcomplete.code=new com.illengineer.jcc.jedit.OptionPanel();
+
+# default settings
+options.camelcomplete.sampleoption=true
