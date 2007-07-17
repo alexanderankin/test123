@@ -1,0 +1,97 @@
+<project name="CamelComplete" default="build" basedir=".">
+    <description>
+        A plugin/standalone server to complete code CamelCase style.
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="doc" location="doc"/>
+  <property name="lib" location="lib"/>
+  
+  <property name="jedit.install.dir"  value="/Users/jpavel/Programs/jEdit.app/Contents/Resources/Java"/>
+  <property name="jedit.windows_install.dir" value="C:\\Program Files\\jEdit"/>
+  
+  <path id="libraries">
+      <fileset dir="${lib}">
+          <include name="*.jar"/>
+      </fileset>
+      <fileset file="${jedit.install.dir}/jedit.jar"/>
+  </path>
+
+  <path id="libraries_windows">
+      <fileset dir="${lib}">
+          <include name="*.jar"/>
+      </fileset>
+      <fileset file="${jedit.windows_install.dir}/jedit.jar"/>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="build" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" debug="true" verbose="false" deprecation="on"
+	   source="1.5" target="1.5" classpathref="libraries">
+       <!-- <compilerarg value="-Xlint:unchecked"/> -->
+    </javac>
+  </target>
+
+  <target name="buildwin" depends="init"
+        description="compile the source on Windows" >
+    <javac srcdir="${src}" destdir="${build}" debug="true" verbose="false" deprecation="on"
+	   source="1.5" target="1.5" classpathref="libraries_windows">
+    </javac>
+  </target>
+
+  <target name="dist" depends="build"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+    <copy todir="${dist}">
+      <fileset dir="${build}"/>
+    </copy>
+    <unjar src="${lib}/forms-1.0.7.jar" dest="${dist}"/> 
+    <copy todir="${dist}" file="doc/CamelComplete.html"/>
+    <copy todir="${dist}">
+      <fileset dir="${src}/com/illengineer/jcc/jedit">
+        <include name="CamelComplete.props"/>
+	<include name="actions.xml"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="jar" depends="dist" description="Create the plugin JAR">
+    <jar destfile="CamelComplete.jar" basedir="${dist}"/>
+  </target>
+  
+  <target name="bundlesrc" description="Create a source bundle">
+    <zip destfile="CamelComplete-src.zip" update="false">
+      <zipfileset dir="src" prefix="CamelComplete/src" excludes="**/.*.marks" />
+      <zipfileset dir="doc" prefix="CamelComplete/doc"/>
+      <zipfileset dir="lib" prefix="CamelComplete/lib" excludes="jedit.jar"/>
+      <zipfileset dir="." prefix="CamelComplete" 
+	    includes="TODO,NOTES,build.xml,jcc.sh,JCodeComplete.jfdproj"/>
+    </zip>
+  </target>
+  
+  <target name="run" description="Run the program">
+    <java classname="com.illengineer.jcc.CLI" fork="true">
+      <classpath>
+        <path refid="libraries"/>
+	<pathelement location="build"/>
+	<pathelement path="${java.class.path}"/>
+      </classpath>
+    </java>
+  </target>
+  
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}/com"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
+
