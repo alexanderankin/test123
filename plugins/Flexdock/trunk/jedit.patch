@@ -1,3 +1,18 @@
+Index: org/gjt/sp/jedit/services.xml
+===================================================================
+--- org/gjt/sp/jedit/services.xml	(revision 10020)
++++ org/gjt/sp/jedit/services.xml	(working copy)
+@@ -50,4 +50,10 @@
+ 	<SERVICE CLASS="org.gjt.sp.jedit.io.EncodingDetector" NAME="buffer-local-property">
+ 		new BufferLocalEncodingDetector();
+ 	</SERVICE>
++
++	<!-- Dockable window manager -->
++	<SERVICE CLASS="org.gjt.sp.jedit.gui.DockableWindowManager" NAME="Basic">
++		new org.gjt.sp.jedit.gui.DockableWindowManager();
++	</SERVICE>
++
+ </SERVICES>
 Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
 ===================================================================
 --- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 10020)
@@ -70,7 +85,78 @@ Index: org/gjt/sp/jedit/View.java
 ===================================================================
 --- org/gjt/sp/jedit/View.java	(revision 10020)
 +++ org/gjt/sp/jedit/View.java	(working copy)
-@@ -197,6 +197,14 @@
+@@ -23,24 +23,59 @@
+ package org.gjt.sp.jedit;
+ 
+ //{{{ Imports
+-import javax.swing.event.*;
+-import javax.swing.*;
+-import java.awt.*;
+-import java.awt.event.*;
++import java.awt.AWTEvent;
++import java.awt.BorderLayout;
++import java.awt.Component;
++import java.awt.Container;
++import java.awt.Cursor;
++import java.awt.Dimension;
++import java.awt.Frame;
++import java.awt.event.FocusAdapter;
++import java.awt.event.FocusEvent;
++import java.awt.event.KeyEvent;
++import java.awt.event.KeyListener;
++import java.awt.event.WindowAdapter;
++import java.awt.event.WindowEvent;
+ import java.io.IOException;
+ import java.io.StreamTokenizer;
+ import java.io.StringReader;
+ import java.net.Socket;
+-import java.util.*;
++import java.util.ArrayList;
+ import java.util.List;
++import java.util.Stack;
+ 
+-import org.gjt.sp.jedit.msg.*;
+-import org.gjt.sp.jedit.gui.*;
+-import org.gjt.sp.jedit.search.*;
+-import org.gjt.sp.jedit.textarea.*;
++import javax.swing.Box;
++import javax.swing.JComponent;
++import javax.swing.JFrame;
++import javax.swing.JPanel;
++import javax.swing.JSplitPane;
++import javax.swing.LayoutFocusTraversalPolicy;
++import javax.swing.SwingUtilities;
++import javax.swing.event.CaretEvent;
++import javax.swing.event.CaretListener;
++
++import org.gjt.sp.jedit.gui.ActionBar;
++import org.gjt.sp.jedit.gui.DefaultInputHandler;
++import org.gjt.sp.jedit.gui.DockableLayout;
++import org.gjt.sp.jedit.gui.DockableWindowFactory;
++import org.gjt.sp.jedit.gui.DockableWindowManager;
++import org.gjt.sp.jedit.gui.HistoryModel;
++import org.gjt.sp.jedit.gui.InputHandler;
++import org.gjt.sp.jedit.gui.StatusBar;
++import org.gjt.sp.jedit.gui.ToolBarManager;
++import org.gjt.sp.jedit.gui.VariableGridLayout;
++import org.gjt.sp.jedit.input.InputHandlerProvider;
++import org.gjt.sp.jedit.msg.BufferUpdate;
++import org.gjt.sp.jedit.msg.EditPaneUpdate;
++import org.gjt.sp.jedit.msg.PropertiesChanged;
++import org.gjt.sp.jedit.msg.SearchSettingsChanged;
++import org.gjt.sp.jedit.msg.ViewUpdate;
++import org.gjt.sp.jedit.search.CurrentBufferSet;
++import org.gjt.sp.jedit.search.SearchAndReplace;
++import org.gjt.sp.jedit.search.SearchBar;
++import org.gjt.sp.jedit.textarea.JEditTextArea;
++import org.gjt.sp.jedit.textarea.ScrollListener;
+ import org.gjt.sp.jedit.textarea.TextArea;
+-import org.gjt.sp.jedit.input.InputHandlerProvider;
+-//}}}
+ 
+ /**
+  * A <code>View</code> is jEdit's top-level frame window.<p>
+@@ -197,6 +232,14 @@
  
  	//}}}
  
@@ -85,12 +171,14 @@ Index: org/gjt/sp/jedit/View.java
  	//{{{ getDockableWindowManager() method
  	/**
  	 * Returns the dockable window manager associated with this view.
-@@ -1150,7 +1158,8 @@
+@@ -1150,7 +1193,10 @@
  
  		setIconImage(GUIUtilities.getEditorIcon());
  
 -		dockableWindowManager = new DockableWindowManager(this,
-+		dockableWindowManager = new DockableWindowManager();
++		dockableWindowManager = (DockableWindowManager)
++			ServiceManager.getService("org.gjt.sp.jedit.gui.DockableWindowManager",
++				"Basic");
 +		dockableWindowManager.construct(this,
  			DockableWindowFactory.getInstance(),config);
  
