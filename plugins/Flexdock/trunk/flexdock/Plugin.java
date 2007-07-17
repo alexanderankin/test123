@@ -36,7 +36,7 @@ public class Plugin extends EditPlugin {
 	}
 	public static void doStart(final View view) {
 		fdwm = new FlexDockWindowManager();
-		fdwm.construct(view, DockableWindowFactory.getInstance(),
+		fdwm.convert(view, DockableWindowFactory.getInstance(),
 				view.getViewConfig());
 		view.setDockableWindowManager(fdwm);
 		EditBus.send(new PropertiesChanged(null));
