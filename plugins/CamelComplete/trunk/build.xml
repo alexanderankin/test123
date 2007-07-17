@@ -8,20 +8,22 @@
   <property name="dist"  location="dist"/>
   <property name="doc" location="doc"/>
   <property name="lib" location="lib"/>
-
+  
+  <property name="jedit.install.dir"  value="/Users/jpavel/Programs/jEdit.app/Contents/Resources/Java"/>
+  <property name="jedit.windows_install.dir" value="C:\\Program Files\\jEdit"/>
+  
   <path id="libraries">
       <fileset dir="${lib}">
           <include name="*.jar"/>
       </fileset>
+      <fileset file="${jedit.install.dir}/jedit.jar"/>
   </path>
 
   <path id="libraries_windows">
       <fileset dir="${lib}">
           <include name="*.jar"/>
       </fileset>
-      <fileset dir="C:\\Program Files\\jEdit">
-        <include name="jedit.jar"/>
-      </fileset>
+      <fileset file="${jedit.windows_install.dir}/jedit.jar"/>
   </path>
 
   <target name="init">
