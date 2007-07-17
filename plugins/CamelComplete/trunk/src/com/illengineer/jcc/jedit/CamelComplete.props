@@ -23,13 +23,11 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.description=This plugin pro
 # plugin menu
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete
 # plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete \
-#   							    camelcomplete.reload_transients \
-# 							    camelcomplete.full_complete
+#   							    camelcomplete.reload_transients
 
 # action labels for actions supplied by actions.xml
 camelcomplete.complete.label=CamelComplete Word
 # camelcomplete.reload_transients.label=Reload Transient Identifiers
-# camelcomplete.full_complete.label=Reload and Complete
 
 # plugin option pane
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.option-pane=camelcomplete

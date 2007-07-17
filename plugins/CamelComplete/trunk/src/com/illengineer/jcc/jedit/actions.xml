@@ -12,12 +12,6 @@
 		    com.illengineer.jcc.jedit.CamelCompletePlugin.reloadTransientIdentifiers();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="camelcomplete.full_complete">
-		<CODE>
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.reloadTransientIdentifiers();
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);
-		</CODE>
-	</ACTION>
 	-->
 
 </ACTIONS>
