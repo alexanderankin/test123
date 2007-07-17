@@ -47,7 +47,6 @@ import org.gjt.sp.jedit.gui.PanelWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory.Window;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
@@ -176,13 +175,14 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent floatDockableWindow(String name) {
-//		DockableWindowFactory.Window window = factory.getDockableWindowFactory(name);
 		showDockableWindow(name);
 		Dockable d = DockingManager.getDockable(name);
 		DockingManager.close(d);
 		JComponent c = (JComponent) d.getComponent();
 		JFrame f = new JFrame(getDockableTitle(name));
-		f.setContentPane(c);
+		DefaultDockingPort floatingPort = new DefaultDockingPort();
+		f.getContentPane().add(BorderLayout.CENTER, floatingPort);
+		floatingPort.dock(c, DockingConstants.CENTER_REGION);
 		f.pack();
 		f.setVisible(true);
 		return c;
