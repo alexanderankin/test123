@@ -84,6 +84,24 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		this.view = view;
 		this.factory = factory;
 
+		top = new PanelWindowContainer(this,TOP,config.topPos);
+		left = new PanelWindowContainer(this,LEFT,config.leftPos);
+		bottom = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
+		right = new PanelWindowContainer(this,RIGHT,config.rightPos);
+		configureDocking();
+		DefaultDockingPort mainport = new MyDockingPort(this);
+		mainport.getDockingProperties().setSingleTabsAllowed(false);
+		setLayout(new BorderLayout());
+		add(mainport, BorderLayout.CENTER);
+		mainView = new FlexDockMainView(MAIN_VIEW);
+		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
+		//mainView.add(view.getEditPane(), 0);
+	}
+	public void convert(View view, DockableWindowFactory factory,
+			ViewConfig config) {
+		this.view = view;
+		this.factory = factory;
+
 		DockableWindowManager dockMan = view.getDockableWindowManager();
 		alternateLayout = ((DockableLayout)dockMan.getLayout()).isAlternateLayout();
 		top = new PanelWindowContainer(this,TOP,config.topPos);
@@ -98,11 +116,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		add(mainport, BorderLayout.CENTER);
 		mainView = new FlexDockMainView(MAIN_VIEW);
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
-		// Find the edit panes
-		Component c = view.getEditPane();
-		while (! (c.getParent() instanceof DockableWindowManager))
-			c = c.getParent();
-		mainView.add(c, 0);
+		mainView.add(view.getEditPane(), 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
 		if (! xml.exists())
 			getDockableStates(dockMan);
@@ -125,7 +139,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		float rightDim = dockMan.getRightDockingArea().getDimension();
 		int w = dockMan.getWidth();
 		int h = dockMan.getHeight();
-		float bd = w * 0.016f; // Button panel dimension
+		float bd = (float)w * 0.016f; // Button panel dimension
 		split = new HashMap<String, Float>();
 		split.put(DockingConstants.WEST_REGION, new Float((leftDim + bd) / w));
 		split.put(DockingConstants.EAST_REGION, new Float(1 - (rightDim + bd) / (w - leftDim)));
@@ -165,7 +179,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void closeCurrentArea() {
-		// This is never called.
+		// TODO Auto-generated method stub
 	}
 	@Override
 	public JPopupMenu createPopupMenu(DockableWindowContainer container,
@@ -175,14 +189,13 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent floatDockableWindow(String name) {
+//		DockableWindowFactory.Window window = factory.getDockableWindowFactory(name);
 		showDockableWindow(name);
 		Dockable d = DockingManager.getDockable(name);
 		DockingManager.close(d);
 		JComponent c = (JComponent) d.getComponent();
 		JFrame f = new JFrame(getDockableTitle(name));
-		DefaultDockingPort floatingPort = new DefaultDockingPort();
-		f.getContentPane().add(BorderLayout.CENTER, floatingPort);
-		floatingPort.dock(c, DockingConstants.CENTER_REGION);
+		f.setContentPane(c);
 		f.pack();
 		f.setVisible(true);
 		return c;
@@ -295,6 +308,9 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	public void add(Component comp, Object o, int index) {
 		mainView.add(comp, o, index);
 	}
+	public Component add(Component comp, int index) {
+		return mainView.add(comp, index);
+	}
 
 	private class DemoPerspectiveFactory implements PerspectiveFactory {
 		View view;
@@ -308,16 +324,18 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			Perspective perspective = new Perspective(MAIN_PERSPECTIVE, MAIN_PERSPECTIVE);
 			sequence = perspective.getInitialSequence(true);
 			sequence.add(MAIN_VIEW);
-			if (! alternateLayout) {
-				addDockables(DockingConstants.WEST_REGION);
-				addDockables(DockingConstants.EAST_REGION);
-				addDockables(DockingConstants.NORTH_REGION);
-				addDockables(DockingConstants.SOUTH_REGION);
-			} else {
-				addDockables(DockingConstants.NORTH_REGION);
-				addDockables(DockingConstants.SOUTH_REGION);
-				addDockables(DockingConstants.WEST_REGION);
-				addDockables(DockingConstants.EAST_REGION);
+			if (dockables != null) {
+				if (! alternateLayout) {
+					addDockables(DockingConstants.WEST_REGION);
+					addDockables(DockingConstants.EAST_REGION);
+					addDockables(DockingConstants.NORTH_REGION);
+					addDockables(DockingConstants.SOUTH_REGION);
+				} else {
+					addDockables(DockingConstants.NORTH_REGION);
+					addDockables(DockingConstants.SOUTH_REGION);
+					addDockables(DockingConstants.WEST_REGION);
+					addDockables(DockingConstants.EAST_REGION);
+				}
 			}
 			return perspective;
 		}
@@ -336,7 +354,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@SuppressWarnings("unused")
 	private class ViewFactory extends DockableFactory.Stub {
 		
-		private static final String DOCK_POSITION = ".dock-position";
 		View view;
 		
 		public ViewFactory(View view) {
@@ -352,8 +369,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			if (c == null)
 			{
 				DockableWindowFactory.Window window = factory.getDockableWindowFactory(id);
-				String position = jEdit.getProperty(id + DOCK_POSITION);
-				c = window.createDockableWindow(view, position);
+				c = window.createDockableWindow(view, DockableWindowManager.BOTTOM);
 			}
 			String title = getDockableTitle(id);
 			Dockable d = DockableComponentWrapper.create(c, id, title);
