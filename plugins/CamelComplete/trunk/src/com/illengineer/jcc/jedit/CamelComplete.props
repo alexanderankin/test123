@@ -33,6 +33,3 @@ camelcomplete.complete.label=CamelComplete Word
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.option-pane=camelcomplete
 options.camelcomplete.label=CamelComplete
 options.camelcomplete.code=new com.illengineer.jcc.jedit.OptionPanel();
-
-# default settings
-options.camelcomplete.sampleoption=true
