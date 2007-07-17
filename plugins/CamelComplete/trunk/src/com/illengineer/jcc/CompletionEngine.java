@@ -165,6 +165,12 @@ public class CompletionEngine
     }
     //    }}}
     
+    //	  {{{ getIdentifiers()
+    public List<String> getIdentifiers() {
+	return allIdentifiers;
+    }
+    //	  }}}
+    
     //	  {{{ Serialization Routines
     /**
 	This method writes the data store to stream in some undefined

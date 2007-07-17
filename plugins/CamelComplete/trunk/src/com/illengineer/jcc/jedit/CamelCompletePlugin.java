@@ -212,4 +212,4 @@ public class CamelCompletePlugin extends EditPlugin {
 
 }
 
-//:folding=explicit:
+//:folding=explicit:collapseFolds-1:
