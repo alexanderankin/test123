@@ -166,7 +166,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void closeCurrentArea() {
-		// TODO Auto-generated method stub
+		// This is never called.
 	}
 	@Override
 	public JPopupMenu createPopupMenu(DockableWindowContainer container,
@@ -336,6 +336,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@SuppressWarnings("unused")
 	private class ViewFactory extends DockableFactory.Stub {
 		
+		private static final String DOCK_POSITION = ".dock-position";
 		View view;
 		
 		public ViewFactory(View view) {
@@ -351,7 +352,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			if (c == null)
 			{
 				DockableWindowFactory.Window window = factory.getDockableWindowFactory(id);
-				c = window.createDockableWindow(view, DockableWindowManager.BOTTOM);
+				String position = jEdit.getProperty(id + DOCK_POSITION);
+				c = window.createDockableWindow(view, position);
 			}
 			String title = getDockableTitle(id);
 			Dockable d = DockableComponentWrapper.create(c, id, title);
