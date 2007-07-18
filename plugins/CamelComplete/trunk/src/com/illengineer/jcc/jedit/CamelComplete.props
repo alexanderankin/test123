@@ -18,7 +18,7 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.depend.0=jedit 04.03.10.00
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.depend.1=jdk 1.5
 
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.description=This plugin provides for \
-		code-completion in a CamelCase or underscore_separated_identifier style.
+		code-completion in a CamelCase or regex_separated_identifier style.
 
 # plugin menu
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete
