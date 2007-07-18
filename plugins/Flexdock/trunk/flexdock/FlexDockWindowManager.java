@@ -139,7 +139,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		float rightDim = dockMan.getRightDockingArea().getDimension();
 		int w = dockMan.getWidth();
 		int h = dockMan.getHeight();
-		float bd = (float)w * 0.016f; // Button panel dimension
+		float bd = w * 0.016f; // Button panel dimension
 		split = new HashMap<String, Float>();
 		split.put(DockingConstants.WEST_REGION, new Float((leftDim + bd) / w));
 		split.put(DockingConstants.EAST_REGION, new Float(1 - (rightDim + bd) / (w - leftDim)));
@@ -179,7 +179,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void closeCurrentArea() {
-		// TODO Auto-generated method stub
+		// This is never called.
 	}
 	@Override
 	public JPopupMenu createPopupMenu(DockableWindowContainer container,
@@ -189,13 +189,14 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent floatDockableWindow(String name) {
-//		DockableWindowFactory.Window window = factory.getDockableWindowFactory(name);
 		showDockableWindow(name);
 		Dockable d = DockingManager.getDockable(name);
 		DockingManager.close(d);
 		JComponent c = (JComponent) d.getComponent();
 		JFrame f = new JFrame(getDockableTitle(name));
-		f.setContentPane(c);
+		DefaultDockingPort floatingPort = new DefaultDockingPort();
+		f.getContentPane().add(BorderLayout.CENTER, floatingPort);
+		floatingPort.dock(c, DockingConstants.CENTER_REGION);
 		f.pack();
 		f.setVisible(true);
 		return c;
@@ -354,6 +355,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@SuppressWarnings("unused")
 	private class ViewFactory extends DockableFactory.Stub {
 		
+		private static final String DOCK_POSITION = ".dock-position";
 		View view;
 		
 		public ViewFactory(View view) {
@@ -369,7 +371,8 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			if (c == null)
 			{
 				DockableWindowFactory.Window window = factory.getDockableWindowFactory(id);
-				c = window.createDockableWindow(view, DockableWindowManager.BOTTOM);
+				String position = jEdit.getProperty(id + DOCK_POSITION);
+				c = window.createDockableWindow(view, position);
 			}
 			String title = getDockableTitle(id);
 			Dockable d = DockableComponentWrapper.create(c, id, title);
