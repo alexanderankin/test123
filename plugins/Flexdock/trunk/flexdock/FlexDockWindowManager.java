@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -51,6 +50,7 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
 
+	private static final String ALTERNATE_LAYOUT_PROPERTY = "view.docking.alternateLayout";
 	public class MyDockingStrategy extends DefaultDockingStrategy {
 		@Override
 		public DockingPort createDockingPortImpl(DockingPort base) {
@@ -62,6 +62,7 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	private static final String PERSPECTIVE_FILE = "jedit.xml";
 	private static final String MAIN_VIEW = "Main";
 	private static final String MAIN_PERSPECTIVE = "jEdit";
+	private static final String DOCK_POSITION = ".dock-position";
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private boolean alternateLayout;
 	private FlexDockMainView mainView = null;
@@ -94,45 +95,50 @@ public class FlexDockWindowManager extends DockableWindowManager {
 		setLayout(new BorderLayout());
 		add(mainport, BorderLayout.CENTER);
 		mainView = new FlexDockMainView(MAIN_VIEW);
+		getDockableStates();
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
 		//mainView.add(view.getEditPane(), 0);
 	}
 	public void convert(View view, DockableWindowFactory factory,
 			ViewConfig config) {
-		this.view = view;
-		this.factory = factory;
-
+		construct(view, factory, config);
 		DockableWindowManager dockMan = view.getDockableWindowManager();
-		alternateLayout = ((DockableLayout)dockMan.getLayout()).isAlternateLayout();
-		top = new PanelWindowContainer(this,TOP,config.topPos);
-		left = new PanelWindowContainer(this,LEFT,config.leftPos);
-		bottom = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
-		right = new PanelWindowContainer(this,RIGHT,config.rightPos);
-		configureDocking();
-		setLayout(new BorderLayout());
-		DefaultDockingPort mainport = new MyDockingPort(this);
-		mainport.getDockingProperties().setSingleTabsAllowed(false);
-		setLayout(new BorderLayout());
-		add(mainport, BorderLayout.CENTER);
-		mainView = new FlexDockMainView(MAIN_VIEW);
+		alternateLayout = jEdit.getBooleanProperty(ALTERNATE_LAYOUT_PROPERTY);
 		//mainView.setTerritoryBlocked(DockingConstants.CENTER_REGION, true);
-		mainView.add(view.getEditPane(), 0);
+		// Find the edit panes
+		Component c = view.getEditPane();
+		while (! (c.getParent() instanceof DockableWindowManager))
+			c = c.getParent();
+		mainView.add(c, 0);
 		final File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
-		if (! xml.exists())
-			getDockableStates(dockMan);
+		if (! xml.exists()) {
+			getDockableStates();
+			getDockingAreaSplits(dockMan);
+		}
 		dockMan.close();
 		init();
 	}
-	private void getDockableStates(DockableWindowManager dockMan) {
+	private void getDockableStates() {
 		dockables = new HashMap<String, Vector<String>>();
-		dockables.put(DockingConstants.WEST_REGION,
-				new Vector<String>(Arrays.asList(dockMan.getLeftDockingArea().getDockables())));
-		dockables.put(DockingConstants.EAST_REGION,
-				new Vector<String>(Arrays.asList(dockMan.getRightDockingArea().getDockables())));
-		dockables.put(DockingConstants.NORTH_REGION,
-				new Vector<String>(Arrays.asList(dockMan.getTopDockingArea().getDockables())));
-		dockables.put(DockingConstants.SOUTH_REGION,
-				new Vector<String>(Arrays.asList(dockMan.getBottomDockingArea().getDockables())));
+		dockables.put(DockingConstants.WEST_REGION, new Vector<String>());
+		dockables.put(DockingConstants.EAST_REGION, new Vector<String>());
+		dockables.put(DockingConstants.NORTH_REGION, new Vector<String>());
+		dockables.put(DockingConstants.SOUTH_REGION, new Vector<String>());
+		String[] windowList = factory.getRegisteredDockableWindows();
+		HashMap<String, String> posMap = new HashMap<String, String>();
+		posMap.put(DockableWindowManager.TOP, DockingConstants.NORTH_REGION);
+		posMap.put(DockableWindowManager.BOTTOM, DockingConstants.SOUTH_REGION);
+		posMap.put(DockableWindowManager.LEFT, DockingConstants.WEST_REGION);
+		posMap.put(DockableWindowManager.RIGHT, DockingConstants.EAST_REGION);
+		for(int i = 0; i < windowList.length; i++)
+		{
+			String id = windowList[i];
+			String position = posMap.get(jEdit.getProperty(id + DOCK_POSITION));
+			if (position != null)
+				dockables.get(position).add(id);
+		}
+	}
+	private void getDockingAreaSplits(DockableWindowManager dockMan) {
 		float topDim = dockMan.getTopDockingArea().getDimension();
 		float bottomDim = dockMan.getBottomDockingArea().getDimension();
 		float leftDim = dockMan.getLeftDockingArea().getDimension();
@@ -355,7 +361,6 @@ public class FlexDockWindowManager extends DockableWindowManager {
 	@SuppressWarnings("unused")
 	private class ViewFactory extends DockableFactory.Stub {
 		
-		private static final String DOCK_POSITION = ".dock-position";
 		View view;
 		
 		public ViewFactory(View view) {
