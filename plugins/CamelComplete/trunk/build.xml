@@ -16,14 +16,7 @@
       <fileset dir="${lib}">
           <include name="*.jar"/>
       </fileset>
-      <fileset file="${jedit.install.dir}/jedit.jar"/>
-  </path>
-
-  <path id="libraries_windows">
-      <fileset dir="${lib}">
-          <include name="*.jar"/>
-      </fileset>
-      <fileset file="${jedit.windows_install.dir}/jedit.jar"/>
+      <fileset file=""/>
   </path>
 
   <target name="init">
@@ -34,15 +27,14 @@
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="true" verbose="false" deprecation="on"
-	   source="1.5" target="1.5" classpathref="libraries">
+	   source="1.5" target="1.5">
        <!-- <compilerarg value="-Xlint:unchecked"/> -->
-    </javac>
-  </target>
-
-  <target name="buildwin" depends="init"
-        description="compile the source on Windows" >
-    <javac srcdir="${src}" destdir="${build}" debug="true" verbose="false" deprecation="on"
-	   source="1.5" target="1.5" classpathref="libraries_windows">
+       <classpath>
+         <path refid="libraries"/>
+	 <pathelement path="${classpath}"/>
+	 <pathelement location="${jedit.install.dir}/jedit.jar"/>
+	 <pathelement location="${jedit.windows_install.dir}/jedit.jar"/>
+       </classpath>
     </javac>
   </target>
 
