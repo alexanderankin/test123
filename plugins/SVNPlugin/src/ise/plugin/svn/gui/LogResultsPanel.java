@@ -1,26 +1,37 @@
 package ise.plugin.svn.gui;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
+import ise.plugin.svn.action.DiffAction;
 import ise.plugin.svn.library.GUIUtils;
 import org.tmatesoft.svn.core.SVNLogEntry;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
 public class LogResultsPanel extends JPanel {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() );
+    private View view = null;
+    private String username = null;
+    private String password = null;
 
     /**
      * @param map with path/file name as key, a list of associated log entries as the value
      * @param showPaths whether or not path information for other files associated with each
      * revision are included in the log entries
      */
-    public LogResultsPanel( TreeMap < String, List < SVNLogEntry >> results, boolean showPaths ) {
+    public LogResultsPanel( TreeMap < String, List < SVNLogEntry >> results, boolean showPaths, View view, String username, String password ) {
         super( new LambdaLayout() );
+        this.view = view;
+        this.username = username;
+        this.password = password;
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
         boolean top = false;
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
@@ -64,8 +75,10 @@ public class LogResultsPanel extends JPanel {
             String[] col_names = showPaths ?
                     new String[] {"Revision", "Date", "Author", "Comment", "Paths"} :
                     new String[] {"Revision", "Date", "Author", "Comment"};
-            JTable table = new JTable( data, col_names );
-            ToolTipManager.sharedInstance().registerComponent(table);
+            LogTable table = new LogTable( data, col_names );
+            table.setPath( path );
+            table.addMouseListener(new TableMouseListener(table));
+            ToolTipManager.sharedInstance().registerComponent( table );
 
             // set column widths and cell renderers
             TableColumnModel column_model = table.getColumnModel();
@@ -97,6 +110,20 @@ public class LogResultsPanel extends JPanel {
         }
     }
 
+    public class LogTable extends JTable {
+        private String path = null;
+        public LogTable( Object[][] data, Object[] columnNames ) {
+            super( data, columnNames );
+        }
+        public void setPath( String path ) {
+            LogTable.this.path = path;
+        }
+
+        public String getPath() {
+            return LogTable.this.path;
+        }
+    }
+
     /**
      * Non-wrapping text area cell renderer.
      */
@@ -106,6 +133,7 @@ public class LogResultsPanel extends JPanel {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             textArea.setText( value == null ? "" : value.toString() );
             table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
+            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
             return textArea;
         }
     }
@@ -118,7 +146,8 @@ public class LogResultsPanel extends JPanel {
 
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             textArea.setText( value == null ? "" : value.toString() );
-            textArea.setToolTipText("<html><b>Other files in this revision:</b><br><pre>" + textArea.getText());
+            textArea.setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + textArea.getText() );
+            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
             table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
             return textArea;
         }
@@ -134,6 +163,7 @@ public class LogResultsPanel extends JPanel {
             textArea.setText( value == null ? "" : value.toString() );
             textArea.setLineWrap( true );
             textArea.setWrapStyleWord( true );
+            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
             table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
             return textArea;
         }
@@ -155,5 +185,57 @@ public class LogResultsPanel extends JPanel {
             Long l2 = new Long( o2.getRevision() );
             return l2.compareTo( l1 );
         }
+    }
+
+    /**
+     * MouseListener to popup context menu on the table.
+     */
+    class TableMouseListener extends MouseAdapter {
+        private LogTable table = null;
+        public TableMouseListener(LogTable table) {
+            TableMouseListener.this.table = table;
+        }
+
+        public void mouseReleased( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        public void mousePressed( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        private void handleClick( MouseEvent me ) {
+            if ( me.isPopupTrigger() ) {
+                JPopupMenu popup = getPopupMenu(table);
+                if ( popup != null ) {
+                    GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+                }
+            }
+        }
+    }
+
+    /**
+     * Create the context menu.
+     */
+    private JPopupMenu getPopupMenu( final LogTable table ) {
+        int[] rows = table.getSelectedRows();
+        if ( rows.length != 2 ) {
+            return null;
+        }
+        final String path = table.getPath();
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem mi = new JMenuItem( "Diff" );
+        popup.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        int[] rows = table.getSelectedRows();
+                        String revision1 = (String)table.getValueAt( rows[ 0 ], 0 );
+                        String revision2 = (String)table.getValueAt( rows[ 1 ], 0 );
+                        DiffAction action = new DiffAction( view, path, revision1, revision2, username, password );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+        return popup;
     }
 }

@@ -15,10 +15,11 @@ plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 
 # dependencies
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.5.0
-plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.03.00
+plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.10.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin console.ConsolePlugin 4.3.2
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
+plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 1.5.1
 #plugin.ise.plugin.svn.SVNPluginPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4.2
 
 plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar svnkit-javahl.jar
@@ -56,23 +57,25 @@ ise.plugin.svn.action.label.2=Update
 ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateActor
 ise.plugin.svn.action.label.3=Commit...
 ise.plugin.svn.action.code.3=ise.plugin.svn.action.CommitActor
-ise.plugin.svn.action.label.4=-
-ise.plugin.svn.action.label.5=Revert...
-ise.plugin.svn.action.code.5=ise.plugin.svn.action.RevertActor
-ise.plugin.svn.action.label.6=Add
-ise.plugin.svn.action.code.6=ise.plugin.svn.action.AddActor
-ise.plugin.svn.action.label.7=Resolve
-ise.plugin.svn.action.code.7=ise.plugin.svn.action.ResolvedAction
-ise.plugin.svn.action.label.8=-
-ise.plugin.svn.action.label.9=Info
-ise.plugin.svn.action.code.9=ise.plugin.svn.action.InfoActor
-ise.plugin.svn.action.label.10=Log...
-ise.plugin.svn.action.code.10=ise.plugin.svn.action.LogActor
-ise.plugin.svn.action.label.11=-
-ise.plugin.svn.action.label.12=Checkout...
-ise.plugin.svn.action.code.12=ise.plugin.svn.action.CheckoutActor
-ise.plugin.svn.action.label.13=Cleanup
-ise.plugin.svn.action.code.13=ise.plugin.svn.action.CleanupActor
+ise.plugin.svn.action.label.4=Diff..
+ise.plugin.svn.action.code.4=ise.plugin.svn.action.DiffActor
+ise.plugin.svn.action.label.5=-
+ise.plugin.svn.action.label.6=Revert...
+ise.plugin.svn.action.code.6=ise.plugin.svn.action.RevertActor
+ise.plugin.svn.action.label.7=Add
+ise.plugin.svn.action.code.7=ise.plugin.svn.action.AddActor
+ise.plugin.svn.action.label.8=Resolve
+ise.plugin.svn.action.code.8=ise.plugin.svn.action.ResolvedAction
+ise.plugin.svn.action.label.9=-
+ise.plugin.svn.action.label.10=Info
+ise.plugin.svn.action.code.10=ise.plugin.svn.action.InfoActor
+ise.plugin.svn.action.label.11=Log...
+ise.plugin.svn.action.code.11=ise.plugin.svn.action.LogActor
+ise.plugin.svn.action.label.12=-
+ise.plugin.svn.action.label.13=Checkout...
+ise.plugin.svn.action.code.13=ise.plugin.svn.action.CheckoutActor
+ise.plugin.svn.action.label.14=Cleanup
+ise.plugin.svn.action.code.14=ise.plugin.svn.action.CleanupActor
 
 
 # register subversion commands with ProjectViewer

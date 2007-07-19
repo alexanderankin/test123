@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
 import jdiff.DualDiff;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
@@ -37,8 +38,9 @@ public class DiffAction implements ActionListener {
     private DiffDialog dialog = null;
 
     private View view = null;
-    private String path1 = null;    // local or remote file
-    private String path2 = null;    // remote file
+    private String path = null;
+    private String revision1 = null;
+    private String revision2 = null;
     private String username = null;
     private String password = null;
 
@@ -55,19 +57,47 @@ public class DiffAction implements ActionListener {
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
         this.view = view;
-        this.path1 = path;
+        this.path = path;
+        this.username = username;
+        this.password = password;
+    }
+
+    public DiffAction( View view, String path, String revision1, String revision2, String username, String password ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( path == null || path.length() == 0 )
+            throw new IllegalArgumentException( "path may not be null" );
+        this.view = view;
+        this.path = path;
+        this.revision1 = revision1;
+        this.revision2 = revision2;
         this.username = username;
         this.password = password;
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( path1 != null && path1.length() > 0 ) {
-            dialog = new DiffDialog( view, path1 );
-            GUIUtils.center( view, dialog );
-            dialog.setVisible( true );
-            final DiffData data = dialog.getData();
-            if ( data == null ) {
-                return ;     // null means user cancelled
+        if ( path != null && path.length() > 0 ) {
+            final DiffData data;
+            if ( revision1 == null ) {
+                // diffing a working copy against a repository version
+                dialog = new DiffDialog( view, path );
+                GUIUtils.center( view, dialog );
+                dialog.setVisible( true );
+                data = dialog.getData();
+                if ( data == null ) {
+                    return ;     // null means user cancelled
+                }
+            }
+            else {
+                // diffing two repository versions
+                if (revision2 == null) {
+                    // need 2 revisions to diff
+                    return;
+                }
+                data = new DiffData();
+                data.addPath(path);
+                data.setRevision1(SVNRevision.parse(revision1));
+                data.setRevision2(SVNRevision.parse(revision2));
             }
 
             if ( username != null && password != null ) {
@@ -90,10 +120,11 @@ public class DiffAction implements ActionListener {
                 @Override
                 public SVNInfo doInBackground() {
                     try {
+                        // fetch info about the file to get repository and path
                         Info info = new Info( );
-                        List<SVNInfo> infos = info.getInfo(data);
-                        if (infos.size() > 0) {
-                            return infos.get(0);
+                        List<SVNInfo> infos = info.getInfo( data );
+                        if ( infos.size() > 0 ) {
+                            return infos.get( 0 );
                         }
                         return null;
                     }
@@ -111,18 +142,40 @@ public class DiffAction implements ActionListener {
                     try {
                         SVNInfo info = get();
                         SVNURL url = info.getRepositoryRootURL();
-                        String path = info.getPath();
-                        if (info.getRevision().equals(data.getRevision())) {
-                            JOptionPane.showMessageDialog(view, "There is no difference between the local copy and the repository copy", "No Difference", JOptionPane.INFORMATION_MESSAGE);
-                            return;
+                        String svn_path = info.getPath();
+                        /* needs work, convert -1 to HEAD before comparison?
+                        if ( info.getRevision().equals( data.getRevision1() ) ) {
+                            JOptionPane.showMessageDialog( view, "There is no difference between the local copy and the repository copy", "No Difference", JOptionPane.INFORMATION_MESSAGE );
+                            return ;
                         }
+                        */
 
                         BrowseRepository br = new BrowseRepository();
-                        File remote = br.getFile(url.toString(), path, data.getRevision().getNumber(), data.getUsername(), data.getPassword());
-                        DualDiff.toggleFor(view);
+                        // there should always be one remote revision to fetch for diffing against a working copy
+                        // or for diffing against another revision
+                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1().getNumber(), data.getUsername(), data.getPassword() );
+
+                        // there may be a second remote revision for diffing between 2 remote revisions
+                        File remote2 = null;
+                        if (data.getRevision2() != null) {
+                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2().getNumber(), data.getUsername(), data.getPassword() );
+                        }
+
+                        // show JDiff
+                        DualDiff.toggleFor( view );
+
+                        // set the edit panes in the view
                         EditPane[] editPanes = view.getEditPanes();
-                        editPanes[0].setBuffer(jEdit.openFile(view, path1));
-                        editPanes[1].setBuffer(jEdit.openFile(view, remote.getAbsolutePath()));
+                        if (remote2 != null) {
+                            // show the 2nd remote revision in the first edit pane
+                            editPanes[0].setBuffer( jEdit.openFile( view, remote2.getAbsolutePath()));
+                        }
+                        else {
+                            // or show the local working copy in the first edit pane
+                            editPanes[ 0 ].setBuffer( jEdit.openFile( view, path ) );
+                        }
+                        // always show the 1st remote revision in the 2nd edit pane
+                        editPanes[ 1 ].setBuffer( jEdit.openFile( view, remote1.getAbsolutePath() ) );
                     }
                     catch ( Exception e ) {
                         // ignored
