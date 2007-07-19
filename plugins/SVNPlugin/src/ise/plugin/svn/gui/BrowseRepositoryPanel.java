@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
+import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.SVNData;
@@ -61,8 +62,8 @@ public class BrowseRepositoryPanel extends JPanel {
         chooser.addActionListener( al );
 
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
-        tree.setCellRenderer(new CellRenderer());
-        ToolTipManager.sharedInstance().registerComponent(tree);
+        tree.setCellRenderer( new CellRenderer() );
+        ToolTipManager.sharedInstance().registerComponent( tree );
 
         tree.addTreeExpansionListener( new TreeExpansionListener() {
                     public void treeCollapsed( TreeExpansionEvent event ) {}
@@ -124,46 +125,14 @@ public class BrowseRepositoryPanel extends JPanel {
                                     url = data.getURL();
                                 }
 
-                                // fetch the file contents
-                                NodeActor.setupLibrary();
-                                SVNRepository repository = null;
-                                try {
-                                    repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
-                                    ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( data.getUsername() , data.getPassword() );
-                                    repository.setAuthenticationManager( authManager );
-
-                                    SVNNodeKind nodeKind = repository.checkPath( filepath , -1 );
-                                    if ( nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR ) {
-                                        return ;
-                                    }
-                                    Map fileproperties = new HashMap( );
-                                    ByteArrayOutputStream baos = new ByteArrayOutputStream( );
-                                    repository.getFile( filepath , -1 , fileproperties , baos );
-
-                                    String mimeType = ( String ) fileproperties.get( SVNProperty.MIME_TYPE );
-                                    boolean isTextType = SVNProperty.isTextMimeType( mimeType );
-
-                                    // ignore non-text files for now
-                                    if ( isTextType ) {
-                                        // copy the file contents to a temp file.  Preserve
-                                        // the file name so that jEdit can apply highlighting
-                                        StringReader reader = new StringReader( baos.toString() );
-                                        File outfile = new File( System.getProperty( "java.io.tmpdir" ), parts[ parts.length - 1 ].toString() );
-                                        outfile.deleteOnExit();     // automatic cleanup
-                                        BufferedWriter writer = new BufferedWriter( new FileWriter( outfile ) );
-                                        FileUtilities.copy( reader, writer );
-                                        writer.close();
-                                        jEdit.openFile( getView(), outfile.getAbsolutePath() );
-                                    }
+                                // fetch the file contents, use -1 for HEAD revision
+                                BrowseRepository br = new BrowseRepository();
+                                File outfile = br.getFile( url, filepath, -1, data.getUsername(), data.getPassword() );
+                                if (outfile != null) {
+                                    jEdit.openFile( getView(), outfile.getAbsolutePath() );
                                 }
-                                catch ( Exception e ) {
-                                    // ignored
-                                }
-                                finally {
-                                    tree.setCursor( Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR) );
-                                    tree.setEditable( true );
-
-                                }
+                                tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+                                tree.setEditable( true );
                             }
                         }
 
@@ -447,8 +416,8 @@ public class BrowseRepositoryPanel extends JPanel {
                 JLabel label = ( JLabel ) r;
                 DirTreeNode node = ( DirTreeNode ) value;
                 if ( node.isExternal() ) {
-                    label.setText("<html><font color=blue>" + node.toString());
-                    label.setToolTipText("<html><b>External: </b> " + node.getRepositoryLocation());
+                    label.setText( "<html><font color=blue>" + node.toString() );
+                    label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
                 }
             }
             return r;

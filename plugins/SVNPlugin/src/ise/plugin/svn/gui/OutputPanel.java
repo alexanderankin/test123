@@ -63,11 +63,23 @@ public class OutputPanel extends JPanel {
                         }
                         final Component c = tabs.getComponentAt(index);
                         final JPopupMenu pm = new JPopupMenu();
-                        JMenuItem mi = new JMenuItem( "Close" );
-                        pm.add( mi );
-                        mi.addActionListener( new ActionListener() {
+                        JMenuItem close_mi = new JMenuItem( "Close" );
+                        pm.add( close_mi );
+                        close_mi.addActionListener( new ActionListener() {
                                     public void actionPerformed( ActionEvent ae ) {
                                         tabs.remove( c );
+                                    }
+                                }
+                                            );
+                        JMenuItem close_all_mi = new JMenuItem( "Close All" );
+                        pm.add( close_all_mi );
+                        close_all_mi.addActionListener( new ActionListener() {
+                                    public void actionPerformed( ActionEvent ae ) {
+                                        for (int i = 1; i < tabs.getTabCount(); ) {
+                                            Component comp = tabs.getComponentAt(i);
+                                            tabs.remove( comp );
+                                            comp = null;
+                                        }
                                     }
                                 }
                                             );

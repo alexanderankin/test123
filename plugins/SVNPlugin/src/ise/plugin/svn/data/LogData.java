@@ -1,6 +1,5 @@
 package ise.plugin.svn.data;
 
-import java.util.Date;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class LogData extends CheckoutData {

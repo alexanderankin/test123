@@ -213,7 +213,9 @@ public class StatusResultsPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        JOptionPane.showMessageDialog( view, "Sorry, this feature is not yet implemented.", "Darn", JOptionPane.ERROR_MESSAGE );
+                        String path = ( String ) ( ( DefaultMutableTreeNode ) tree_paths[0].getLastPathComponent() ).getUserObject();
+                        DiffAction action = new DiffAction(view, path, username, password);
+                        action.actionPerformed(ae);
                     }
                 }
                             );

@@ -77,6 +77,13 @@ public class SVNData {
         this.paths = paths;
     }
 
+    public void addPath(String path) {
+        if (paths == null) {
+            paths = new ArrayList<String>();
+        }
+        paths.add(path);
+    }
+
     public boolean pathsAreURLs() {
         return pathsAreUrls;
     }
