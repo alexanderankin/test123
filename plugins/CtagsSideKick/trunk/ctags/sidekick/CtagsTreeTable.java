@@ -10,7 +10,9 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +32,7 @@ import treetable.TreeTableModel;
 
 @SuppressWarnings("serial")
 public class CtagsTreeTable extends JPanel {
-	private static final String GROUP = "group";
+	private static final String GROUP = "";
 
 	private static class CtagsTreeTableNode
 	{
@@ -123,7 +125,7 @@ public class CtagsTreeTable extends JPanel {
 			for (int i = 0; i < keys.size(); i++) {
 				String val = (String) tag.getInfo().get(keys.get(i));
 				if (val == null)
-					val = "";
+					val = "<none>";
 				path.add(val);
 			}
 			path.add(tag);
@@ -203,25 +205,10 @@ public class CtagsTreeTable extends JPanel {
 		});
 		JButton groupBtn = new JButton("Group...");
 		buttons.add(groupBtn);
-		groupBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Vector<String> keys = new Vector<String>();
-				int c = 0;
-				int i = 1;
-				while (c != JOptionPane.CLOSED_OPTION) {
-					c = JOptionPane.showOptionDialog(
-						null, "Column " + i + ":",
-						"Select grouping column", 0,
-						JOptionPane.QUESTION_MESSAGE, null,
-						columns.toArray(), columns.get(0));
-					i++;
-					if (c != JOptionPane.CLOSED_OPTION)
-						keys.add(columns.get(c));
-				}
-				mapper = new CtagsTreeTableMapper(keys);
-				createTree(parse(), mapper);
-			}
-		});
+		groupBtn.addActionListener(new GroupingListener());
+		JButton filterBtn = new JButton("Filter...");
+		buttons.add(filterBtn);
+		filterBtn.addActionListener(new FilterListener());
 	}
 
 	private void createTree(Vector<Tag> tags, ITreeMapper mapper) {
@@ -356,6 +343,15 @@ public class CtagsTreeTable extends JPanel {
 	}
 	
 	void add(Tag tag, ITreeMapper mapper) {
+		if (filter != null) {
+			Enumeration<String> keys = filter.keys();
+			while (keys.hasMoreElements()) {
+				String col = keys.nextElement();
+				String value = (String) tag.getInfo().get(col);
+				if (filter.get(col).contains(value))
+					return;
+			}
+		}
 		if (mapper == null) {
 			root.addChild(tag);
 			return;
@@ -380,4 +376,76 @@ public class CtagsTreeTable extends JPanel {
 		}
 	}
 	
+	private class GroupingListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			Vector<String> keys = new Vector<String>();
+			Vector<String> cols = new Vector<String>();
+			for (int j = 0; j < columns.size(); j++)
+				cols.add(columns.get(j));
+			cols.remove(GROUP);
+			int i = 1;
+			while (true) {
+				String column = (String) JOptionPane.showInputDialog(
+					null,
+					"Select column for grouping at level " + i + ":\n" +
+					"(Click Cancel to end the column selection)",
+					"Grouping",
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					cols.toArray(), cols.get(0));
+				i++;
+				if (column == null)
+					break;
+				keys.add(column);
+				cols.remove(column);
+			}
+			mapper = new CtagsTreeTableMapper(keys);
+			createTree(parse(), mapper);
+		}
+	}
+	
+	private Hashtable<String, HashSet<String>> filter = null;
+	private void setFilter(String filterString) {
+		if (filterString == null) {
+			if (filter != null)
+				filter.clear();
+			return;
+		}
+		if (filter == null)
+			filter = new Hashtable<String, HashSet<String>>();
+		String [] filterStrings = filterString.split(",");
+		for (int i = 0; i < filterStrings.length; i++) {
+			String [] pair = filterStrings[i].split("=");
+			if (pair.length == 2) {
+				if (! filter.containsKey(pair[0]))
+					filter.put(pair[0], new HashSet<String>());
+				filter.get(pair[0]).add(pair[1]);
+			}
+		}		
+	}
+	private String getFilterString() {
+		if (filter == null)
+			return "";
+		StringBuffer buf = new StringBuffer("");
+		Enumeration<String> keys = filter.keys();
+		while (keys.hasMoreElements()) {
+			String col = keys.nextElement();
+			Iterator<String> values = filter.get(col).iterator();
+			while (values.hasNext()) {
+				buf.append(col + "=" + values.next());
+				if (values.hasNext())
+					buf.append(",");
+			}
+		}
+		return buf.toString();
+	}
+	private class FilterListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			String s = (String) JOptionPane.showInputDialog(
+					"Enter (column,value) pairs to be filtered.\n" +
+					"The pairs should be entered in the form column1=value1,column2=value2,...",
+					getFilterString());
+			setFilter(s);
+		}
+	}
 }
