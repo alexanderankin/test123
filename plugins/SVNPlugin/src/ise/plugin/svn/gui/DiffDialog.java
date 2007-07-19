@@ -50,7 +50,7 @@ public class DiffDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         // get revision to diff against
-                        data.setRevision( rsp.getRevision() );
+                        data.setRevision1( rsp.getRevision() );
 
                         DiffDialog.this.setVisible( false );
                         DiffDialog.this.dispose();

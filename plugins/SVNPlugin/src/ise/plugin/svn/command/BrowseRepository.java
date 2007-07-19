@@ -244,7 +244,7 @@ public class BrowseRepository {
                         index = slash_index + 1;
                     }
                 }
-                String filename = filepath.substring( 0, index ) + revision + filepath.substring( index );
+                String filename = filepath.substring( 0, index ) + "-" + (revision < 0L ? "HEAD" : String.valueOf(revision)) + filepath.substring( index );
                 filename = System.getProperty("java.io.tmpdir") + "/" + filename;
                 outfile = new File(filename);
                 if (outfile.exists()) {
