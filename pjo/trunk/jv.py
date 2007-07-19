@@ -15,7 +15,7 @@ import urllib
 JEDIT_HOME = {
     'darwin': '/Users/orutherfurd/Code/jEdit',
     'win32': 'C:/jEdit',
-    'linux2' : '/home/ezust/workspace/plugins/pjo'
+    'linux2' : '/home/ezust/workspace/jedit/pjo'
 }
 
 DOWNLOAD_URL = 'http://easynews.dl.sourceforge.net/sourceforge/jedit/'
