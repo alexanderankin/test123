@@ -124,7 +124,7 @@ class SvnCheckout(Checkout):
     svn-specific Checkout action.
     """
     # template for svn checkout command
-    CMD = 'svn co https://svn.sourceforge.net/svnroot/jedit/plugins/%(name)s/tags/%(tag)s/ %(name)s'
+    CMD = 'svn co https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/%(name)s/tags/%(tag)s/ %(name)s'
 
 
 
