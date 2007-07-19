@@ -49,8 +49,11 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 			return object;
 		}
 		Object getColumn(String colName) {
-			if (object instanceof Tag)
-				return ((Tag)object).getInfo().get(colName);
+			boolean groupCol = colName.equals(GROUP);
+			if (object instanceof Tag) {
+				String name = groupCol ? "k_tag" : colName;
+				return ((Tag)object).getInfo().get(name);
+			}
 			if (colName.equals(GROUP))
 				return object;
 			return null;
@@ -121,6 +124,9 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		public int getChildCount() {
 			return children.size();
 		}
+		public String toString() {
+			return object.toString();
+		}
 	}
 
 	public static class CtagsTreeTableMapper implements ITreeMapper {
@@ -139,6 +145,7 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 					val = "";
 				path.add(val);
 			}
+			path.add(tag);
 			return path;
 		}
 
@@ -150,11 +157,12 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 
 		Vector<String> columns = new Vector<String>();
 		ITreeMapper mapper = null;
-		static CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode("/");
+		static CtagsSideKickTreeNode tree;
 		
 		@SuppressWarnings("unchecked")
 		public CtagsTreeTableModel(Vector<Tag> tags, ITreeMapper mapper) {
-			super(tree);
+			super(new CtagsSideKickTreeNode("/"));
+			tree = (CtagsSideKickTreeNode) getRoot();
 			this.mapper = mapper;
 			columns.add(GROUP);
 			for (int i = 0; i < tags.size(); i++) {
@@ -234,7 +242,7 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		super(new BorderLayout());
 		this.view = view;
 		Vector<String> keys = new Vector<String>();
-		keys.add("k_tag");
+		keys.add("class");
 		mapper = new CtagsTreeTableMapper(keys);
 		createTree(new Vector<Tag>());
 		EditBus.addToBus(this);
@@ -255,7 +263,6 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		Buffer buffer = view.getBuffer();
 		if (! buffer.isLoaded())
 			return data;
-		System.err.println("Parsing");
 		String ctagsExe = jEdit.getProperty("options.CtagsSideKick.ctags_path");
 		String path = buffer.getPath();
 		String mode = buffer.getMode().getName();
