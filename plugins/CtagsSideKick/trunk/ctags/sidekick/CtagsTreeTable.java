@@ -1,6 +1,9 @@
 package ctags.sidekick;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,34 +15,30 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 import treetable.AbstractTreeTableModel;
 import treetable.JTreeTable;
 import treetable.TreeTableModel;
 
 @SuppressWarnings("serial")
-public class CtagsTreeTable extends JPanel implements EBComponent {
+public class CtagsTreeTable extends JPanel {
 	private static final String GROUP = "group";
 
-	private static class CtagsSideKickTreeNode
+	private static class CtagsTreeTableNode
 	{
-		private Vector<CtagsSideKickTreeNode> children =
-			new Vector<CtagsSideKickTreeNode>();
+		private Vector<CtagsTreeTableNode> children =
+			new Vector<CtagsTreeTableNode>();
 		private Object object = null;
 		
-		public CtagsSideKickTreeNode(Object obj) {
+		public CtagsTreeTableNode(Object obj) {
 			object = obj;
 		}
 		void setUserObject(Object obj) {
@@ -59,12 +58,11 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 			return null;
 		}
 		public void addChildCounts() {
-			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsSideKickTreeNode> children =
+			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsTreeTableNode> children =
 				this.children.elements();
 			while (children.hasMoreElements())
 			{
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
+				CtagsTreeTableNode child = children.nextElement();
 				Object obj = child.getUserObject();
 				if (obj instanceof String)
 				{
@@ -73,8 +71,8 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 				}
 			}
 		}
-		CtagsSideKickTreeNode addChild(Object obj) {
-			CtagsSideKickTreeNode node = new CtagsSideKickTreeNode(obj);
+		CtagsTreeTableNode addChild(Object obj) {
+			CtagsTreeTableNode node = new CtagsTreeTableNode(obj);
 			children.add(node);
 			return node;
 		}
@@ -82,39 +80,22 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 			return (children.size() > 0);
 		}
 		Object findChild(Object obj) {
-			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsSideKickTreeNode> children =
+			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsTreeTableNode> children =
 				this.children.elements();
 			while (children.hasMoreElements()) {
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
+				CtagsTreeTableNode child = children.nextElement();
 				if (child.getUserObject().equals(obj) ||
 						((String)child.getColumn(GROUP)).equals(obj))
 					return child;
 			}
 			return null;			
 		}
-		void addToTree(DefaultMutableTreeNode root) {
-			addChildrenToTree(root);
-		}
-		void addChildrenToTree(DefaultMutableTreeNode node) {
-			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsSideKickTreeNode> children =
-				this.children.elements();
-			while (children.hasMoreElements()) {
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
-				DefaultMutableTreeNode newNode = 
-					new DefaultMutableTreeNode(child.getUserObject());
-				node.add(newNode);
-				child.addChildrenToTree(newNode);
-			}
-		}
-		void sort(Comparator<CtagsSideKickTreeNode> sorter) {
+		void sort(Comparator<CtagsTreeTableNode> sorter) {
 			Collections.sort(children, sorter);
-			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsSideKickTreeNode> children =
+			Enumeration<ctags.sidekick.CtagsTreeTable.CtagsTreeTableNode> children =
 				this.children.elements();
 			while (children.hasMoreElements()) {
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
+				CtagsTreeTableNode child = children.nextElement();
 				child.sort(sorter);
 			}			
 		}
@@ -157,49 +138,11 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 
 		Vector<String> columns = new Vector<String>();
 		ITreeMapper mapper = null;
-		static CtagsSideKickTreeNode tree;
 		
 		@SuppressWarnings("unchecked")
-		public CtagsTreeTableModel(Vector<Tag> tags, ITreeMapper mapper) {
-			super(new CtagsSideKickTreeNode("/"));
-			tree = (CtagsSideKickTreeNode) getRoot();
-			this.mapper = mapper;
-			columns.add(GROUP);
-			for (int i = 0; i < tags.size(); i++) {
-				Tag tag = tags.get(i);
-				Enumeration<String> info = tag.getInfo().keys();
-				while (info.hasMoreElements()) {
-					String key = info.nextElement();
-					if (! columns.contains(key))
-						columns.add(key);
-				}
-				add(tag);
-			}
-		}
-		
-		void add(Tag tag) {
-			if (mapper == null) {
-				tree.addChild(tag);
-				return;
-			}
-			Vector<Object> path = mapper.getPath(tag);
-			CtagsSideKickTreeNode node = tree; 
-			for (int i = 0; i < path.size(); i++) {
-				Object obj = path.get(i);
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) node.findChild(obj);
-				if (child == null) {
-					child = node.addChild(obj);
-				} else {
-					// Let real tags take over String placeholders
-					if ((child.getUserObject() instanceof String) &&
-						(!(obj instanceof String)))
-					{
-						child.setUserObject(obj);
-					}
-				}
-				node = child;
-			}
+		public CtagsTreeTableModel(CtagsTreeTableNode root, Vector<String> columns) {
+			super(root);
+			this.columns = columns;
 		}
 		
 		public int getColumnCount() {
@@ -211,15 +154,20 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		}
 
 		public Object getValueAt(Object node, int column) {
-			return ((CtagsSideKickTreeNode)node).getColumn(columns.get(column));
+			Object value = ((CtagsTreeTableNode)node).getColumn(columns.get(column));
+			if (value == null)
+				return "";
+			return value;
 		}
 
 		public Object getChild(Object node, int index) {
-			return ((CtagsSideKickTreeNode)node).getChild(index);
+			Object child = ((CtagsTreeTableNode)node).getChild(index);
+			return child;
 		}
 
 		public int getChildCount(Object node) {
-			return ((CtagsSideKickTreeNode)node).getChildCount();
+			int count = ((CtagsTreeTableNode)node).getChildCount();
+			return count;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -244,25 +192,55 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		Vector<String> keys = new Vector<String>();
 		keys.add("class");
 		mapper = new CtagsTreeTableMapper(keys);
-		createTree(new Vector<Tag>());
-		EditBus.addToBus(this);
+		JPanel buttons = new JPanel(new GridLayout(1, 0));
+		add(buttons, BorderLayout.NORTH);
+		JButton parseBtn = new JButton("Parse");
+		buttons.add(parseBtn);
+		parseBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				createTree(parse(), mapper);
+			}
+		});
+		JButton groupBtn = new JButton("Group...");
+		buttons.add(groupBtn);
+		groupBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Vector<String> keys = new Vector<String>();
+				int c = 0;
+				int i = 1;
+				while (c != JOptionPane.CLOSED_OPTION) {
+					c = JOptionPane.showOptionDialog(
+						null, "Column " + i + ":",
+						"Select grouping column", 0,
+						JOptionPane.QUESTION_MESSAGE, null,
+						columns.toArray(), columns.get(0));
+					i++;
+					if (c != JOptionPane.CLOSED_OPTION)
+						keys.add(columns.get(c));
+				}
+				for (i = 0; i < keys.size(); i++)
+					System.err.println("Key " + (i+1) + ":" + keys.get(i));
+				mapper = new CtagsTreeTableMapper(keys);
+				createTree(parse(), mapper);
+			}
+		});
 	}
 
-	private void createTree(Vector<Tag> tags) {
+	private void createTree(Vector<Tag> tags, ITreeMapper mapper) {
 		if (sp != null)
 			remove(tree);
-		model = new CtagsTreeTableModel(tags, mapper );
+		buildTree(tags, mapper);
+		model = new CtagsTreeTableModel(root, columns);
 		tree = new JTreeTable(model);
 		sp = new JScrollPane(tree);
 		add(sp, BorderLayout.CENTER);
+		revalidate();
 	}
 
 	private static final String SPACES = "\\s+";
 	private Vector<Tag> parse() {
 		Vector<Tag> data = new Vector<Tag>();
 		Buffer buffer = view.getBuffer();
-		if (! buffer.isLoaded())
-			return data;
 		String ctagsExe = jEdit.getProperty("options.CtagsSideKick.ctags_path");
 		String path = buffer.getPath();
 		String mode = buffer.getMode().getName();
@@ -359,13 +337,49 @@ public class CtagsTreeTable extends JPanel implements EBComponent {
 		}
 		return data;
 	}
-	public void handleMessage(EBMessage message) {
-		if ((message instanceof BufferUpdate &&
-			((BufferUpdate)message).getWhat() == BufferUpdate.LOADED) ||
-			(message instanceof EditPaneUpdate &&
-			((EditPaneUpdate)message).getWhat() == EditPaneUpdate.BUFFER_CHANGED))
-		{
-			createTree(parse());
+
+	CtagsTreeTableNode root;
+	Vector<String> columns;
+	@SuppressWarnings("unchecked")
+	public void buildTree(Vector<Tag> tags, ITreeMapper mapper) {
+		root = new CtagsTreeTableNode("/");
+		columns = new Vector<String>();
+		columns.add(GROUP);
+		for (int i = 0; i < tags.size(); i++) {
+			Tag tag = tags.get(i);
+			Enumeration<String> info = tag.getInfo().keys();
+			while (info.hasMoreElements()) {
+				String key = info.nextElement();
+				if (! columns.contains(key))
+					columns.add(key);
+			}
+			add(tag, mapper);
 		}
 	}
+	
+	void add(Tag tag, ITreeMapper mapper) {
+		if (mapper == null) {
+			root.addChild(tag);
+			return;
+		}
+		Vector<Object> path = mapper.getPath(tag);
+		CtagsTreeTableNode node = root; 
+		for (int i = 0; i < path.size(); i++) {
+			Object obj = path.get(i);
+			CtagsTreeTableNode child =
+				(CtagsTreeTableNode) node.findChild(obj);
+			if (child == null) {
+				child = node.addChild(obj);
+			} else {
+				// Let real tags take over String placeholders
+				if ((child.getUserObject() instanceof String) &&
+					(!(obj instanceof String)))
+				{
+					child.setUserObject(obj);
+				}
+			}
+			node = child;
+		}
+	}
+	
 }
