@@ -79,7 +79,8 @@ options.CtagsSideKick.icons.constant=macro.png
 options.CtagsSideKick.icons.label=variable.png
 
 # menu
-plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
+plugin.ctags.sidekick.Plugin.menu=ctags-tree-table \
+								  sidekick-tree \
 								  - \
 								  group-by-kind \
 								  group-by-namespace \
@@ -91,3 +92,9 @@ plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
 
 # docs
 plugin.ctags.sidekick.Plugin.docs=index.html
+
+# dockables
+ctags-tree-table.title=Ctags Outline
+ctags-tree-table.longtitle=Ctags Outline
+ctags-tree-table.label=Ctags Outline
+
