@@ -218,8 +218,6 @@ public class CtagsTreeTable extends JPanel {
 					if (c != JOptionPane.CLOSED_OPTION)
 						keys.add(columns.get(c));
 				}
-				for (i = 0; i < keys.size(); i++)
-					System.err.println("Key " + (i+1) + ":" + keys.get(i));
 				mapper = new CtagsTreeTableMapper(keys);
 				createTree(parse(), mapper);
 			}
@@ -228,7 +226,7 @@ public class CtagsTreeTable extends JPanel {
 
 	private void createTree(Vector<Tag> tags, ITreeMapper mapper) {
 		if (sp != null)
-			remove(tree);
+			remove(sp);
 		buildTree(tags, mapper);
 		model = new CtagsTreeTableModel(root, columns);
 		tree = new JTreeTable(model);
