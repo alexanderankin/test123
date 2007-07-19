@@ -35,15 +35,24 @@ jEdit standard Utilities - Global Options - Docking dialog.
 <p>The "SVN" dockable
 shows an SVN console, which displays the detailed raw output of each plugin action,
 and a tab for the results of each subversion action.  The tabs may be removed by
-right-clicking on the tab, then clicking "Close".  The SVN Console tab cannot be
-closed.
+right-clicking on the tab, then clicking "Close" or "Close All".  The SVN Console
+tab cannot be closed.
 </p>
 <p>The "SVN Browser" dockable allows the user to enter the URL to a Subversion
 repository and drill down into the various folders of that repository via a tree
 interface.  Click the "New" button to enter a new repository location.  The
 last 10 locations are stored in the drop-down for reuse.  There are a number
 of actions available by right-clicking on items in the tree, including the
-ability to edit the repository location and to checkout files.
+ability to edit the repository location and to checkout files.  Double-clicking
+on a file will open the file as a temporary file in jEdit.  The file name will
+be slightly different than the file name in the repository, the browser adds the
+revision number to the file name.  This is done so that two different revisions
+can exist in the same directory without overwriting each other.  For example,
+if you double click on a file named /path/to/my/filename.java, you'll get a file
+in your temp directory with the same directory structure like
+/tmp/path/to/my/filename-1.java.  The "-1" in the filename indicates you have
+the head revision of the file.  If you get revision 123 of the file, then it
+would be /tmp/path/to/my/filename123.java.
 </p>
 <hr/>
 <p>
@@ -68,7 +77,7 @@ Eclipse:
 <ul>
 <li>synchronize - in progress (status + actions, need more actions).  Right-click
 on entries in the results panels for actions.</li>
-<li>update - done, does an update on the selected item with an option to recursively update.  Also available from the synchronize results.</li>
+<li>update - in progress, does an update on the selected item with an option to recursively update.  Also available from the synchronize results.  Still need to add a dialog to allow an update at a specific revision.</li>
 <li>commit - done, lets the user enter a comment or choose a previously entered comment, and optionally do a recursive commit.  Also available from the synchronize results.</li>
 <li>create patch</li>
 <li>apply patch</li>

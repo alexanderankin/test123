@@ -18,15 +18,16 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.gui.DirTreeNode;
+import ise.plugin.svn.library.FileUtilities;
 
 
 public class BrowseRepository {
 
     public List<DirTreeNode> getRepository( CheckoutData cd ) throws CommandInitializationException, SVNException {
-        return getRepository(null, cd);
+        return getRepository( null, cd );
     }
 
-    public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd) throws CommandInitializationException, SVNException {
+    public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd ) throws CommandInitializationException, SVNException {
 
         // validate data values
         if ( node == null && cd.getURL() == null ) {
@@ -57,7 +58,7 @@ public class BrowseRepository {
 
 
         DirTreeNode root;
-        if (node == null) {
+        if ( node == null ) {
             root = new DirTreeNode( url, false );
         }
         else {
@@ -99,7 +100,7 @@ public class BrowseRepository {
              * the path/to/repository directory)
              */
             boolean isExternal = false;
-            if (node != null) {
+            if ( node != null ) {
                 isExternal = node.isExternal();
             }
             children = listEntries( repository, isExternal, "", out );
@@ -142,7 +143,7 @@ public class BrowseRepository {
      * is a part of the URL used to create an SVNRepository instance);
      *
      */
-    public List<DirTreeNode> listEntries( SVNRepository repository,  boolean isExternal, String path, PrintStream out )
+    public List<DirTreeNode> listEntries( SVNRepository repository, boolean isExternal, String path, PrintStream out )
     throws SVNException {
         /*
          * Gets the contents of the directory specified by path at the latest
@@ -169,9 +170,9 @@ public class BrowseRepository {
                     + entry.getName() + " (author: '" + entry.getAuthor()
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
             DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
-            if (isExternal) {
-                node.setExternal(true);
-                node.setRepositoryLocation(repository.getLocation().toString() + "/" + entry.getName());
+            if ( isExternal ) {
+                node.setExternal( true );
+                node.setRepositoryLocation( repository.getLocation().toString() + "/" + entry.getName() );
             }
             list.add( node );
         }
@@ -209,4 +210,79 @@ public class BrowseRepository {
         return newList;
     }
 
+    public File getFile( String url, String filepath, long revision, String username, String password ) {
+        setupLibrary();
+        SVNRepository repository = null;
+        File outfile = null;
+        try {
+            repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, password );
+            repository.setAuthenticationManager( authManager );
+
+            SVNNodeKind nodeKind = repository.checkPath( filepath , revision );
+            if ( nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR ) {
+                return null;
+            }
+            Map fileproperties = new HashMap( );
+            ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+            repository.getFile( filepath , revision , fileproperties , baos );
+
+            String mimeType = ( String ) fileproperties.get( SVNProperty.MIME_TYPE );
+            boolean isTextType = SVNProperty.isTextMimeType( mimeType );
+
+            // ignore non-text files for now
+            if ( isTextType ) {
+                // copy the file contents to a temp file.  Preserve
+                // the file name extension so that jEdit can apply highlighting.
+                // Insert the revision number into the file name just before the
+                // file extension (if any) to prevent overwriting.
+                int index = filepath.lastIndexOf( "." );
+                index = index < 0 ? 0 : index;
+                if ( index == 0 ) {
+                    int slash_index = filepath.lastIndexOf( "/" );
+                    if ( slash_index > 0 && slash_index < filepath.length() ) {
+                        index = slash_index + 1;
+                    }
+                }
+                String filename = filepath.substring( 0, index ) + revision + filepath.substring( index );
+                filename = System.getProperty("java.io.tmpdir") + "/" + filename;
+                outfile = new File(filename);
+                if (outfile.exists()) {
+                    outfile.delete();
+                }
+                outfile.deleteOnExit();     // automatic cleanup
+                outfile.getParentFile().mkdirs();
+                StringReader reader = new StringReader( baos.toString() );
+                BufferedWriter writer = new BufferedWriter( new FileWriter( outfile ) );
+                FileUtilities.copy( reader, writer );
+                writer.close();
+                return outfile;
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            outfile = null;
+        }
+        return outfile;
+    }
+
+    /*
+     * Initializes the svnkit library to work with a repository via
+     * different protocols.
+     */
+    public static void setupLibrary() {
+        /*
+         * For using over http:// and https://
+         */
+        DAVRepositoryFactory.setup();
+        /*
+         * For using over svn:// and svn+xxx://
+         */
+        SVNRepositoryFactoryImpl.setup();
+
+        /*
+         * For using over file:///
+         */
+        FSRepositoryFactory.setup();
+    }
 }
