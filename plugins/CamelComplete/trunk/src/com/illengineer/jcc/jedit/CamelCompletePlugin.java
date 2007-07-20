@@ -24,12 +24,10 @@ public class CamelCompletePlugin extends EditPlugin {
 	    Keys/Vals:
 	      providers -> List<OptionPane.OptionGroup>
 	      groups -> Map<String, List<OptionPane.OptionGroup>>
-	      transients -> List<OptionPane.OptionGroup>
 	*/
 	private static HashMap<String,Object> optionsMap;
 	
-	private static CompletionEngine engine, transientEngine;
-	private static ArrayList<ProviderSettings> transientProviderSettings;
+	private static CompletionEngine engine;
 	private static boolean modified = false;  // Was the static identifier list changed?
 	
 	// }}}
@@ -46,7 +44,6 @@ public class CamelCompletePlugin extends EditPlugin {
 	    optionsMap = new HashMap<String,Object>();
 	    
 	    engine = new CompletionEngine();
-	    transientEngine = new CompletionEngine();
 	    
 	    // Load CompletionEngine data and optionsMap, if present
 	    InputStream i = getResourceAsStream(CamelCompletePlugin.class, "cache/engine");
@@ -75,9 +72,6 @@ public class CamelCompletePlugin extends EditPlugin {
 		if (failed)
 		    optionsMap = new HashMap<String,Object>();
 	    }
-	    
-	    transientProviderSettings = reconstituteTransientProviders
-		    ((List<OptionPanel.OptionGroup>)getOption("transients"));
 	}
 	
 	public void stop() {
@@ -107,8 +101,6 @@ public class CamelCompletePlugin extends EditPlugin {
 		debugWriter.close();
 
 	    engine = null;
-	    transientEngine = null;
-	    transientProviderSettings = null;
 	    optionsMap = null;
 	}
 	
@@ -159,33 +151,9 @@ public class CamelCompletePlugin extends EditPlugin {
 	}
 	// }}}
 	
-	// {{{ Routines for transients
-	public static void reloadTransientIdentifiers() {
-	    transientEngine.clearTokens();
-	    for (ProviderSettings is : transientProviderSettings) {
-		is.provider.process();
-		transientEngine.loadIdentifiers(is.provider, is.tokenizers,
-				    is.minparts, is.ignoreCase, is.filterRegex);
-		is.provider.forget();
-	    }
-	}
-	
-	private static ArrayList<ProviderSettings> 
-		reconstituteTransientProviders(List<OptionPanel.OptionGroup> settings) 
-	{
-	    ArrayList<ProviderSettings> providerSettings = new ArrayList<ProviderSettings>();
-	    if (settings != null) {
-		for (OptionPanel.OptionGroup og : settings) {
-		}
-	    }
-	    return providerSettings;
-	}
-	
-	// }}}
-	
 	// {{{ completion methods
 	public static void complete(View view, JEditTextArea textArea) {
-	    CompleteWord.completeWord(view, engine, transientEngine);
+	    CompleteWord.completeWord(view, engine);
 	}
 	
 	// }}}

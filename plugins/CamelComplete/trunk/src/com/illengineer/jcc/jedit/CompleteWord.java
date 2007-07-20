@@ -64,7 +64,7 @@ public class CompleteWord extends CompletionPopup
 	
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
-	public static void completeWord(View view, CompletionEngine engine, CompletionEngine transientEngine)
+	public static void completeWord(View view, CompletionEngine engine)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -85,8 +85,6 @@ public class CompleteWord extends CompletionPopup
 		}
 
 		List<String> completions = engine.complete(word, true);
-		// Here we will get the completions returned by transientEngine and merge them
-		// into our list.
 		if (completions == null)
 			return;
 
