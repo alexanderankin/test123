@@ -17,7 +17,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	public static final String NAME = "camelcomplete";
 	public static final String OPTION_PREFIX = "options.camelcomplete.";
 
-	private static boolean debug = true;
+	private static boolean debug = false;
 	private static PrintWriter debugWriter;
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
@@ -94,8 +94,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	    }
 	    
 	    // } catch (Exception ex) {
-		// ex.printStackTrace(debugWriter);
-		// debugWriter.flush();
+		// debugPrintStacktrace(ex);
 	    // }
 	}
 	
@@ -230,6 +229,14 @@ public class CamelCompletePlugin extends EditPlugin {
 		debugWriter.flush();
 	    }
 	}
+
+	public static void debugPrintStacktrace(Exception ex) {
+	    if (debug) {
+		ex.printStackTrace(debugWriter);
+		debugWriter.flush();
+	    }
+	}
+
 	// }}}
 	
 	// {{{ Inner Classes
