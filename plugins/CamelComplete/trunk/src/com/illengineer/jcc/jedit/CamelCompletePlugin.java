@@ -22,13 +22,14 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
 	    Keys/Vals:
-	      providers -> List<OptionPane.OptionGroup>
-	      groups -> Map<String, List<OptionPane.OptionGroup>>
+	      engines -> Map<String (enginename), (providers)>
+	      	(providers) -> List<OptionPanel.OptionGroup>
+	      groups -> Map<String (groupname), List<OptionPanel.OptionGroup>>
 	*/
 	private static HashMap<String,Object> optionsMap;
 	
-	private static CompletionEngine engine;
-	private static boolean modified = false;  // Was the static identifier list changed?
+	private static HashMap<String,EngineGroup> engineMap;
+	private static ArrayList<CompletionEngine> engines;
 	
 	// }}}
 	
@@ -41,22 +42,9 @@ public class CamelCompletePlugin extends EditPlugin {
 		} catch (IOException ex) {}
 	    }
 	    
-	    optionsMap = new HashMap<String,Object>();
-	    
-	    engine = new CompletionEngine();
-	    
-	    // Load CompletionEngine data and optionsMap, if present
-	    InputStream i = getResourceAsStream(CamelCompletePlugin.class, "cache/engine");
-	    if (i != null) {
-		try {
-		    engine.deserializeData(i);
-		    i.close();
-		} catch (IOException ex) {
-		    engine = new CompletionEngine();
-		}
-	    }
-	    modified = false;
-	    
+	    optionsMap = null;
+	    InputStream i;
+
 	    i = getResourceAsStream(CamelCompletePlugin.class, "options");
 	    if (i != null) {
 		boolean failed = false;
@@ -70,20 +58,51 @@ public class CamelCompletePlugin extends EditPlugin {
 		    failed = true;
 		}
 		if (failed)
-		    optionsMap = new HashMap<String,Object>();
+		    optionsMap = null;
+	    }
+	    if (optionsMap == null) {
+		optionsMap = new HashMap<String,Object>();
+		HashMap<String,List<OptionPanel.OptionGroup>> _enginesMap = 
+		    new HashMap<String,List<OptionPanel.OptionGroup>>();
+		_enginesMap.put("default", new ArrayList<OptionPanel.OptionGroup>());
+		optionsMap.put("engines", _enginesMap);
+	    }
+	    
+	    engineMap = new HashMap<String,EngineGroup>();
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
+		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
+	    for (String engineName : _enginesMap.keySet()) {
+		EngineGroup eg = new EngineGroup();
+		eg.engine = new CompletionEngine();
+		eg.modified = false;
+		
+		i = getResourceAsStream(CamelCompletePlugin.class, "cache/engine-"+engineName);
+		if (i != null) {
+		    try {
+			eg.engine.deserializeData(i);
+			i.close();
+		    } catch (IOException ex) {
+			eg.engine = new CompletionEngine();
+		    }
+		}
+		engineMap.put(engineName, eg);
+		engines.add(eg.engine);
 	    }
 	}
 	
 	public void stop() {
 	    // Persist CompletionEngine data and optionsMap
 	    OutputStream out;
-	    if (modified) {
-		out = getResourceAsOutputStream(CamelCompletePlugin.class, "cache/engine");
-		if (out != null) {
-		    try {
-			engine.serializeData(out);
-			out.close();
-		    } catch (IOException ex) {}
+	    for (String engineName : engineMap.keySet()) {
+		EngineGroup eg = engineMap.get(engineName);
+		if (eg.modified) {
+		    out = getResourceAsOutputStream(CamelCompletePlugin.class, "cache/engine-"+engineName);
+		    if (out != null) {
+			try {
+			    eg.engine.serializeData(out);
+			    out.close();
+			} catch (IOException ex) {}
+		    }
 		}
 	    }
 	    
@@ -100,7 +119,8 @@ public class CamelCompletePlugin extends EditPlugin {
 	    if (debug)
 		debugWriter.close();
 
-	    engine = null;
+	    engineMap = null;
+	    engines = null;
 	    optionsMap = null;
 	}
 	
@@ -113,11 +133,33 @@ public class CamelCompletePlugin extends EditPlugin {
 	    appropriate IdentifierProviders and Tokenizers, and sends them to the CompletionEngine.
 	*/
 	static void processConfiguration() {
-	    List<OptionPanel.OptionGroup> groups = (List<OptionPanel.OptionGroup>)optionsMap.get("providers");
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
+		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
+	    for (String engineName : _enginesMap.keySet())
+		processConfiguration(engineName);
+	    
+	}  
+	
+	static void processConfiguration(String engineName) {
+	    EngineGroup eg;
+	    if (engineMap.containsKey(engineName))
+		eg = engineMap.get(engineName);
+	    else {
+		eg = new EngineGroup();
+		eg.engine = new CompletionEngine();
+		eg.modified = false;
+		engineMap.put(engineName, eg);
+		engines.add(eg.engine);
+	    }
+
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
+		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
+	    List<OptionPanel.OptionGroup> groups = 
+			(List<OptionPanel.OptionGroup>)_enginesMap.get(engineName);
 	    if (groups != null) {
 		IdentifierProvider provider = null;
 		ArrayList<Tokenizer> tokenizers;
-		engine.clearTokens();
+		eg.engine.clearTokens();
 		for (OptionPanel.OptionGroup og : groups) {
 		    tokenizers = new ArrayList<Tokenizer>(og.tokenizers.size());
 		    
@@ -133,13 +175,15 @@ public class CamelCompletePlugin extends EditPlugin {
 			    tokenizers.add(new RegexpTokenizer(t[1], t[2].equals("y")));
 		    }
 		    provider.process();
-		    engine.loadIdentifiers(provider, tokenizers, og.minparts, 
-					   og.ignoreCase, og.filterRegex);
+		    eg.engine.loadIdentifiers(provider, tokenizers, og.minparts, 
+					      og.ignoreCase, og.filterRegex);
 		    provider.forget();
 		}
 	    }
-	    modified = true;
-	}  // }}}
+	    eg.modified = true;
+	}
+	
+	// }}}
 	
 	// {{{ Option routines
 	public static void setOption(String key, Object val) {
@@ -153,7 +197,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	// {{{ completion methods
 	public static void complete(View view, JEditTextArea textArea) {
-	    CompleteWord.completeWord(view, engine);
+	    // TODO: CompleteWord.completeWord(view, engines);
 	}
 	
 	// }}}
@@ -175,6 +219,12 @@ public class CamelCompletePlugin extends EditPlugin {
 	    int minparts;
 	    boolean ignoreCase;
 	    String filterRegex;
+	}
+	
+	private static class EngineGroup
+	{
+	    CompletionEngine engine;
+	    boolean modified;
 	}
 	// }}}
 
