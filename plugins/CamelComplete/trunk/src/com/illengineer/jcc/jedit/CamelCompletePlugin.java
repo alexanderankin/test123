@@ -17,7 +17,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	public static final String NAME = "camelcomplete";
 	public static final String OPTION_PREFIX = "options.camelcomplete.";
 
-	private static boolean debug = false;
+	private static boolean debug = true;
 	private static PrintWriter debugWriter;
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
@@ -42,6 +42,8 @@ public class CamelCompletePlugin extends EditPlugin {
 		} catch (IOException ex) {}
 	    }
 	    
+	    // try {
+	    
 	    optionsMap = null;
 	    InputStream i;
 
@@ -60,7 +62,7 @@ public class CamelCompletePlugin extends EditPlugin {
 		if (failed)
 		    optionsMap = null;
 	    }
-	    if (optionsMap == null) {
+	    if (optionsMap == null || !optionsMap.containsKey("engines")) {
 		optionsMap = new HashMap<String,Object>();
 		HashMap<String,List<OptionPanel.OptionGroup>> _enginesMap = 
 		    new HashMap<String,List<OptionPanel.OptionGroup>>();
@@ -69,6 +71,8 @@ public class CamelCompletePlugin extends EditPlugin {
 	    }
 	    
 	    engineMap = new HashMap<String,EngineGroup>();
+	    engines = new ArrayList<CompletionEngine>();
+	    
 	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
 		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
 	    for (String engineName : _enginesMap.keySet()) {
@@ -88,6 +92,11 @@ public class CamelCompletePlugin extends EditPlugin {
 		engineMap.put(engineName, eg);
 		engines.add(eg.engine);
 	    }
+	    
+	    // } catch (Exception ex) {
+		// ex.printStackTrace(debugWriter);
+		// debugWriter.flush();
+	    // }
 	}
 	
 	public void stop() {
@@ -184,6 +193,9 @@ public class CamelCompletePlugin extends EditPlugin {
 	}
 	
 	static void deleteEngine(String engineName) {
+	    if (engineName.equals("default"))
+		return;
+		
 	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
 		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
 	    _enginesMap.remove(engineName);
