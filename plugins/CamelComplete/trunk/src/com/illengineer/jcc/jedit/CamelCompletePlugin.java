@@ -126,7 +126,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	// }}}
 	
-	// {{{ processConfiguration()
+	// {{{ processConfiguration() & helpers
 	
 	/**
 	    This routine reads all the configuration options in the optionsMap and creates the
@@ -183,6 +183,15 @@ public class CamelCompletePlugin extends EditPlugin {
 	    eg.modified = true;
 	}
 	
+	static void deleteEngine(String engineName) {
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap = 
+		(Map<String,List<OptionPanel.OptionGroup>>)optionsMap.get("engines");
+	    _enginesMap.remove(engineName);
+	    EngineGroup eg = engineMap.remove(engineName);
+	    if (eg != null)
+		engines.remove(eg.engine);
+	}
+	
 	// }}}
 	
 	// {{{ Option routines
@@ -197,7 +206,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	// {{{ completion methods
 	public static void complete(View view, JEditTextArea textArea) {
-	    // TODO: CompleteWord.completeWord(view, engines);
+	    CompleteWord.completeWord(view, engines);
 	}
 	
 	// }}}

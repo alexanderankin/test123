@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
@@ -64,7 +65,7 @@ public class CompleteWord extends CompletionPopup
 	
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
-	public static void completeWord(View view, CompletionEngine engine)
+	public static void completeWord(View view, List<CompletionEngine> engines)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -84,8 +85,15 @@ public class CompleteWord extends CompletionPopup
 			return;
 		}
 
-		List<String> completions = engine.complete(word, true);
-		if (completions == null)
+		
+		ArrayList<String> completions = new ArrayList<String>();
+		for (CompletionEngine engine : engines) {
+			List<String> c = engine.complete(word, true);
+			if (c != null)
+				completions.addAll(c);
+		}
+			
+		if (completions.size() == 0)
 			return;
 
 		//{{{ if there is only one competion, insert in buffer
