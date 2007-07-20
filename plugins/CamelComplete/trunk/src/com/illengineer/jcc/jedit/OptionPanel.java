@@ -25,6 +25,7 @@ public class OptionPanel extends AbstractOptionPane
 	private DefaultListModel providerModel, tokenizerModel;
 	
 	private HashMap<String, List<OptionGroup>> optionGroupMap;
+	private String currentEngineName = "default";
 	
 	private MessageDialog msgDialog;
 	// }}}
@@ -57,12 +58,12 @@ public class OptionPanel extends AbstractOptionPane
 		b.addActionListener(this);
 	    
 	    loadOptionGroups();
-	    loadOptions((List<OptionGroup>)CamelCompletePlugin.getOption("providers"));
+	    loadCurrentEngine();
 	    addComponent(mainPanel);
 	}
 	
 	protected void _save() {
-	    CamelCompletePlugin.setOption("providers", saveOptions());
+	    saveCurrentEngine(); // TODO, save all engines
 	    saveOptionGroups();
 	}
 	
@@ -174,10 +175,10 @@ public class OptionPanel extends AbstractOptionPane
 	    }
 	    // }}}
 	    else if (source == processButton) {
-		CamelCompletePlugin.setOption("providers", saveOptions());
+		saveCurrentEngine();
 		showMsg("Updating identifier lists...");
 		try {
-		    CamelCompletePlugin.processConfiguration();
+		    CamelCompletePlugin.processConfiguration(currentEngineName);
 		} catch (Exception ex) {
 		    showMsg("Error: " + ex.getMessage());
 		    return;
@@ -275,6 +276,19 @@ public class OptionPanel extends AbstractOptionPane
 		    optionGroupCombo.addItem(key);
 	    }
 	}
+	
+	private void saveCurrentEngine() {
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap =
+		(Map<String,List<OptionPanel.OptionGroup>>)CamelCompletePlugin.getOption("engines");
+	    _enginesMap.put(currentEngineName, saveOptions());
+	}
+	
+	private void loadCurrentEngine() {
+	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap =
+		(Map<String,List<OptionPanel.OptionGroup>>)CamelCompletePlugin.getOption("engines");
+	    loadOptions((List<OptionGroup>)_enginesMap.get(currentEngineName));
+	}
+	    
 	// }}}
 
 	// }}}

@@ -168,7 +168,7 @@ public class CompletionPopup extends JWindow
 
 		this.candidates = candidates;
 		list.setModel(new CandidateListModel());
-		list.setVisibleRowCount(Math.min(candidates.getSize(),8));
+		list.setVisibleRowCount(Math.min(candidates.getSize(),12));
 		pack();
 		setLocation(fitInScreen(getLocation(null),this,
 			view.getTextArea().getPainter().getFontMetrics().getHeight()));
