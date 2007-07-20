@@ -1,3 +1,4 @@
+-Allow multiple engines, so that one can hold unchanging identifiers, like libraries, and
+ one can hold identifiers from the program one is working on, etc.
 -Write an IdentifierProvider to collect words from currently opened buffers.
-  *This will entail adding a "transient" engine to the plugin class.
 -Use reflection in the Jar provider to read method names.

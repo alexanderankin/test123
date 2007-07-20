@@ -8,7 +8,7 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.name=CamelComplete
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.author=Jesse Pavel
 
 # version number
-plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=1.2
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=1.2.1
 
 # online help
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.docs=CamelComplete.html
@@ -22,12 +22,9 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.description=This plugin pro
 
 # plugin menu
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete
-# plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete \
-#   							    camelcomplete.reload_transients
 
 # action labels for actions supplied by actions.xml
 camelcomplete.complete.label=CamelComplete Word
-# camelcomplete.reload_transients.label=Reload Transient Identifiers
 
 # plugin option pane
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.option-pane=camelcomplete
