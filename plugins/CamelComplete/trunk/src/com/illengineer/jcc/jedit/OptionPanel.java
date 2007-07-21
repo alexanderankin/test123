@@ -299,6 +299,11 @@ public class OptionPanel extends AbstractOptionPane
 		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
+		label7 = new JLabel();
+		enginesCombo = new JComboBox();
+		panel6 = new JPanel();
+		newEngineButton = new JButton();
+		deleteEngineButton = new JButton();
 		label6 = new JLabel();
 		label1 = new JLabel();
 		panel5 = new JPanel();
@@ -358,6 +363,8 @@ public class OptionPanel extends AbstractOptionPane
 					},
 					new RowSpec[] {
 						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.PARAGRAPH_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
 						FormFactory.LINE_GAP_ROWSPEC,
 						new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
 						FormFactory.PARAGRAPH_GAP_ROWSPEC,
@@ -372,13 +379,33 @@ public class OptionPanel extends AbstractOptionPane
 						new RowSpec("fill:max(default;12dlu)")
 					}));
 
+				//---- label7 ----
+				label7.setText("Engines");
+				label7.setHorizontalAlignment(SwingConstants.TRAILING);
+				optionPanel.add(label7, cc.xy(1, 1));
+				optionPanel.add(enginesCombo, cc.xy(3, 1));
+
+				//======== panel6 ========
+				{
+					panel6.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+					//---- newEngineButton ----
+					newEngineButton.setText("New");
+					panel6.add(newEngineButton);
+
+					//---- deleteEngineButton ----
+					deleteEngineButton.setText("Delete");
+					panel6.add(deleteEngineButton);
+				}
+				optionPanel.add(panel6, cc.xy(5, 1));
+
 				//---- label6 ----
 				label6.setText("Option Sets");
-				optionPanel.add(label6, cc.xy(1, 1));
+				optionPanel.add(label6, cc.xy(1, 3));
 
 				//---- label1 ----
 				label1.setText("Identifier Providers");
-				optionPanel.add(label1, cc.xy(3, 1));
+				optionPanel.add(label1, cc.xy(3, 3));
 
 				//======== panel5 ========
 				{
@@ -404,7 +431,7 @@ public class OptionPanel extends AbstractOptionPane
 					newOptionsButton.setText("New");
 					panel5.add(newOptionsButton);
 				}
-				optionPanel.add(panel5, cc.xy(1, 3));
+				optionPanel.add(panel5, cc.xy(1, 5));
 
 				//======== scrollPane1 ========
 				{
@@ -414,7 +441,7 @@ public class OptionPanel extends AbstractOptionPane
 					providerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					scrollPane1.setViewportView(providerList);
 				}
-				optionPanel.add(scrollPane1, cc.xy(3, 3));
+				optionPanel.add(scrollPane1, cc.xy(3, 5));
 
 				//======== panel2 ========
 				{
@@ -465,7 +492,7 @@ public class OptionPanel extends AbstractOptionPane
 					editProviderButton.setText("Edit");
 					panel2.add(editProviderButton, cc.xy(5, 7));
 				}
-				optionPanel.add(panel2, cc.xy(5, 3));
+				optionPanel.add(panel2, cc.xy(5, 5));
 
 				//======== panel1 ========
 				{
@@ -493,11 +520,11 @@ public class OptionPanel extends AbstractOptionPane
 					radioButton2.setText("JAR");
 					panel1.add(radioButton2, cc.xy(3, 1));
 				}
-				optionPanel.add(panel1, cc.xy(5, 3));
+				optionPanel.add(panel1, cc.xy(5, 5));
 
 				//---- label2 ----
 				label2.setText("Tokenizers for Provider");
-				optionPanel.add(label2, cc.xy(3, 5));
+				optionPanel.add(label2, cc.xy(3, 7));
 
 				//======== scrollPane2 ========
 				{
@@ -507,7 +534,7 @@ public class OptionPanel extends AbstractOptionPane
 					tokenizerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					scrollPane2.setViewportView(tokenizerList);
 				}
-				optionPanel.add(scrollPane2, cc.xy(3, 7));
+				optionPanel.add(scrollPane2, cc.xy(3, 9));
 
 				//======== panel3 ========
 				{
@@ -550,7 +577,7 @@ public class OptionPanel extends AbstractOptionPane
 					removeTokenizerButton.setText("Remove");
 					panel3.add(removeTokenizerButton, cc.xy(3, 7));
 				}
-				optionPanel.add(panel3, cc.xy(5, 7));
+				optionPanel.add(panel3, cc.xy(5, 9));
 
 				//======== panel4 ========
 				{
@@ -585,12 +612,12 @@ public class OptionPanel extends AbstractOptionPane
 					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
 					panel4.add(minpartsSpinner, cc.xy(5, 3));
 				}
-				optionPanel.add(panel4, cc.xywh(3, 9, 3, 1));
+				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
 
 				//---- processButton ----
 				processButton.setText("Update Engine");
-				optionPanel.add(processButton, cc.xy(3, 11));
-				optionPanel.add(messageLabel, cc.xywh(3, 13, 3, 1));
+				optionPanel.add(processButton, cc.xy(3, 13));
+				optionPanel.add(messageLabel, cc.xywh(3, 15, 3, 1));
 			}
 			mainPanel.add(optionPanel, BorderLayout.CENTER);
 		}
@@ -614,6 +641,11 @@ public class OptionPanel extends AbstractOptionPane
 	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
+	JLabel label7;
+	JComboBox enginesCombo;
+	JPanel panel6;
+	JButton newEngineButton;
+	JButton deleteEngineButton;
 	JLabel label6;
 	JLabel label1;
 	JPanel panel5;
