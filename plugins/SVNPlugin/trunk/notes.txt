@@ -37,7 +37,8 @@ cleanup - done
 There should be a "compare" to open a diff.  This needs a dialog to be
 able to pick a specific revision to compare the local file to, or to
 diff two non-local revisions.  Need to pop this as an option in the log
-viewer. - done, I called it "diff" rather than "compare".
+viewer. - done, I called it "diff" rather than "compare" and am using JDiff
+plugin rather than svn diff.
 
 
 
