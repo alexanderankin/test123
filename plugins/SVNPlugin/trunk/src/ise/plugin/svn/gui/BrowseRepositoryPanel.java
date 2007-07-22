@@ -3,6 +3,7 @@ package ise.plugin.svn.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.*;
@@ -152,7 +153,11 @@ public class BrowseRepositoryPanel extends JPanel {
         // create the control buttons
         Icon new_icon = GUIUtilities.loadIcon("New.png");
         JButton new_btn = new JButton( new_icon );
-        new_btn.setSize(new_icon.getIconWidth(), new_icon.getIconHeight());
+        Dimension dim = new Dimension(new_icon.getIconWidth() + (new_btn.getInsets().top * 2), new_icon.getIconHeight() + (new_btn.getInsets().top * 2));
+        new_btn.setSize(dim);
+        new_btn.setPreferredSize(dim);
+        new_btn.setMaximumSize(dim);
+        new_btn.setToolTipText("Add new repository");
         new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
@@ -169,7 +174,11 @@ public class BrowseRepositoryPanel extends JPanel {
                                  );
         Icon refresh_icon = GUIUtilities.loadIcon("Reload.png");
         JButton refresh_btn = new JButton( refresh_icon );
-        refresh_btn.setSize(refresh_icon.getIconWidth(), refresh_icon.getIconHeight());
+        dim = new Dimension(refresh_icon.getIconWidth() + (refresh_btn.getInsets().top * 2), refresh_icon.getIconHeight() + (refresh_btn.getInsets().top * 2));
+        refresh_btn.setSize(dim);
+        refresh_btn.setPreferredSize(dim);
+        refresh_btn.setMaximumSize(dim);
+        refresh_btn.setToolTipText("Refresh");
         refresh_btn.addActionListener( al );
 
         // create a panel to hold the buttons
