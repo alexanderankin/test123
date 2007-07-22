@@ -117,7 +117,6 @@ public class UpdateAction implements ActionListener {
                         JPanel results_panel = new UpdateResultsPanel( view, data );
                         panel.addTab( "Update", results_panel );
                         for ( String path : data.getPaths() ) {
-                            System.out.println("+++++ path: " + path);
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload(view);
