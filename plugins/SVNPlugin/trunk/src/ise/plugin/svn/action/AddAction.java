@@ -95,7 +95,7 @@ public class AddAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), true );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD );
                         panel.addTab("Add", results_panel);
                     }
                     catch ( Exception e ) {
