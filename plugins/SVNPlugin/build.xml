@@ -68,7 +68,9 @@
             <pathelement location="${install.dir}/ProjectViewer.jar"/>
             <pathelement location="${install.dir}/kappalayout.jar"/>
             <pathelement location="${install.dir}/Console.jar"/>
-
+            <pathelement location="${install.dir}/xml-apis.jar"/>
+            <pathelement location="${install.dir}/xercesImpl.jar"/>
+            <pathelement location="${install.dir}/JDiffPlugin.jar"/>
         </path>
     </target>
 
@@ -165,6 +167,7 @@
             <fileset dir="${basedir}">
                 <include name="SVNPlugin.props"/>
                 <include name="dockables.xml"/>
+                <include name="actions.xml"/>
             </fileset>
         </copy>
 
@@ -228,7 +231,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.gui.UpdateResultsPanel">
+        <java classname="ise.plugin.svn.action.ProjectGroupLoader">
             <classpath refid="classpathref" />
         </java>
     </target>
