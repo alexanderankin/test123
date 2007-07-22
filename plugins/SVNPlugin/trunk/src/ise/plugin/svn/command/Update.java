@@ -21,31 +21,31 @@ public class Update {
 
     /**
      * Performs an update on the paths provided by the SVNData object.
-     * @param cd the data needed by svn to perform an update, must have paths
+     * @param data the data needed by svn to perform an update, must have paths
      * and output stream set at minimum.
      * @return an UpdateData containing a list of the updated files
      */
-    public UpdateData doUpdate( SVNData cd ) throws CommandInitializationException, SVNException {
+    public UpdateData doUpdate( UpdateData data ) throws CommandInitializationException, SVNException {
 
         // validate data values
-        if ( cd.getPaths() == null ) {
+        if ( data.getPaths() == null ) {
             return null;     // nothing to do
         }
-        if ( cd.getOut() == null ) {
+        if ( data.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
         }
-        if ( cd.getErr() == null ) {
-            cd.setErr( cd.getOut() );
+        if ( data.getErr() == null ) {
+            data.setErr( data.getOut() );
         }
 
         // convert paths to Files
         boolean recursive = false;
-        List<String> paths = cd.getPaths();
+        List<String> paths = data.getPaths();
         File[] localPaths = new File[ paths.size() ];
         for ( int i = 0; i < paths.size(); i++ ) {
             localPaths[ i ] = new File( paths.get( i ) );
             // check for file existence?
-            if (localPaths[i].isDirectory()) {
+            if ( localPaths[ i ].isDirectory() ) {
                 recursive = true;
             }
         }
@@ -54,28 +54,28 @@ public class Update {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
 
         // get a commit client
         SVNUpdateClient client = clientManager.getUpdateClient();
 
         // set an event handler so that messages go to the streams for display
-        UpdateEventHandler handler = new UpdateEventHandler(cd.getOut(), cd.getErr());
+        UpdateEventHandler handler = new UpdateEventHandler( data );
         client.setEventHandler( handler );
 
-        PrintStream out = cd.getOut();
+        PrintStream out = data.getOut();
         long revision = -1;
 
         for ( File file : localPaths ) {
-            revision = client.doUpdate(file, SVNRevision.HEAD, recursive);
+            revision = client.doUpdate( file, data.getSVNRevision(), recursive );
         }
 
         out.flush();
         out.close();
 
         // fetch the accumulated data from the handler
-        UpdateData data = handler.getData();
-        data.setRevision(revision);
+        data = handler.getData();
+        data.setRevision( revision );
 
         return data;
     }

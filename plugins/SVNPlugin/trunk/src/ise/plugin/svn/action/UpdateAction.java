@@ -6,6 +6,7 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Update;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.UpdateData;
+import ise.plugin.svn.gui.UpdateDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -16,6 +17,8 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
 /**
@@ -26,6 +29,7 @@ public class UpdateAction implements ActionListener {
 
     private View view = null;
     private List<String> paths = null;
+    private UpdateData data = null;
     private String username = null;
     private String password = null;
 
@@ -49,28 +53,19 @@ public class UpdateAction implements ActionListener {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            final SVNData data = new SVNData();
+            data = new UpdateData();
 
             boolean recursive = false;
             for ( String path : paths ) {
                 if ( path != null ) {
-                    File file = new File(path);
+                    File file = new File( path );
                     if ( file.isDirectory() ) {
                         recursive = true;
                     }
                 }
             }
             data.setPaths( paths );
-
-            // user confirmations
-            if ( recursive ) {
-                // have the user verify they want a recursive update
-                int response = JOptionPane.showConfirmDialog( view, "Recursively update all files in selected directories?", "Recursive Update?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.CANCEL_OPTION ) {
-                    return ;
-                }
-                recursive = response == JOptionPane.YES_OPTION;
-            }
+            data.setRecursive( recursive );
 
             if ( username != null && password != null ) {
                 data.setUsername( username );
@@ -78,6 +73,16 @@ public class UpdateAction implements ActionListener {
             }
 
             data.setOut( new ConsolePrintStream( view ) );
+
+            // show dialog
+            UpdateDialog dialog = new UpdateDialog( view, data );
+            GUIUtils.center( view, dialog );
+            dialog.setVisible( true );
+            data = dialog.getData();
+            if ( data == null ) {
+                return ;     // null data signals user cancelled
+            }
+
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
@@ -108,8 +113,16 @@ public class UpdateAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new UpdateResultsPanel( view, get() );
-                        panel.addTab("Update", results_panel);
+                        UpdateData data = get();
+                        JPanel results_panel = new UpdateResultsPanel( view, data );
+                        panel.addTab( "Update", results_panel );
+                        for ( String path : data.getPaths() ) {
+                            System.out.println("+++++ path: " + path);
+                            Buffer buffer = jEdit.getBuffer( path );
+                            if ( buffer != null ) {
+                                buffer.reload(view);
+                            }
+                        }
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();
@@ -119,5 +132,9 @@ public class UpdateAction implements ActionListener {
             ( new Runner() ).execute();
 
         }
+    }
+
+    public UpdateData getData() {
+        return data;
     }
 }
