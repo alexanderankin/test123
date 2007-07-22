@@ -1,19 +1,35 @@
 package ise.plugin.svn.data;
 
 import java.util.List;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class UpdateData extends SVNData {
     private List<String> conflictedFiles = null;
     private List<String> addedFiles = null;
     private List<String> deletedFiles = null;
     private List<String> updatedFiles = null;
-    private long revision = -1;
+    private SVNRevision revision = SVNRevision.HEAD;
 
 
     /**
      * Returns the value of revision.
      */
     public long getRevision() {
+        return revision.getNumber();
+    }
+
+    /**
+     * Sets the value of revision.
+     * @param revision The value to assign revision.
+     */
+    public void setRevision( long number ) {
+        this.revision = SVNRevision.create(number);
+    }
+
+    /**
+     * Returns the value of revision.
+     */
+    public SVNRevision getSVNRevision() {
         return revision;
     }
 
@@ -21,11 +37,9 @@ public class UpdateData extends SVNData {
      * Sets the value of revision.
      * @param revision The value to assign revision.
      */
-    public void setRevision( long revision ) {
+    public void setSVNRevision( SVNRevision revision ) {
         this.revision = revision;
     }
-
-
 
     /**
      * Returns the value of conflictedFiles.

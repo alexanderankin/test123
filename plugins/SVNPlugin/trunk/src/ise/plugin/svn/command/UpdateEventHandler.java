@@ -45,9 +45,9 @@ public class UpdateEventHandler implements ISVNEventHandler {
     private boolean myIsExternalChanged;
     private boolean myIsCheckout = false;
     private boolean myIsExport = false;
-    ;
     private boolean myIsDelta;
 
+    private UpdateData data = null;
     private final PrintStream myPrintStream;
     private PrintStream myErrStream;
 
@@ -56,9 +56,10 @@ public class UpdateEventHandler implements ISVNEventHandler {
     private List<String> deletedFiles;
     private List<String> updatedFiles;
 
-    public UpdateEventHandler( PrintStream out, PrintStream err ) {
-        myPrintStream = out;
-        myErrStream = err;
+    public UpdateEventHandler( UpdateData data ) {
+        this.data = data;
+        myPrintStream = data.getOut();
+        myErrStream = data.getErr();
     }
 
     public void handleEvent( SVNEvent event, double progress ) {
@@ -209,12 +210,11 @@ public class UpdateEventHandler implements ISVNEventHandler {
     public void checkCancelled() throws SVNCancelException {}
 
     public UpdateData getData() {
-        UpdateData ud = new UpdateData();
-        ud.setAddedFiles(addedFiles);
-        ud.setConflictedFiles(conflictedFiles);
-        ud.setDeletedFiles(deletedFiles);
-        ud.setUpdatedFiles(updatedFiles);
-        return ud;
+        data.setAddedFiles(addedFiles);
+        data.setConflictedFiles(conflictedFiles);
+        data.setDeletedFiles(deletedFiles);
+        data.setUpdatedFiles(updatedFiles);
+        return data;
     }
 
 }
