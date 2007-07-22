@@ -53,7 +53,7 @@ subversion.checkout.label=Checkout
 # subversion commands
 ise.plugin.svn.action.label.1=Synchronize
 ise.plugin.svn.action.code.1=ise.plugin.svn.action.StatusAction
-ise.plugin.svn.action.label.2=Update
+ise.plugin.svn.action.label.2=Update...
 ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateActor
 ise.plugin.svn.action.label.3=Commit...
 ise.plugin.svn.action.code.3=ise.plugin.svn.action.CommitActor
