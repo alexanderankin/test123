@@ -1,0 +1,156 @@
+<html>
+<body>
+<h1>Subversion Plugin</h1>
+<p>
+Author: Dale Anson
+<p>
+A plugin for using Subversion from within jEdit.  This is an all Java implementation,
+no external libraries or subversion clients are required.  This plugin is tightly
+integrated with ProjectViewer, and most commands are available by right clicking on
+files or folders in the ProjectViewer trees.
+</p>
+
+<p>
+<strong>
+This plugin complies with Subversion 1.4.  If you use an older Subversion
+client that is pre-1.4, you may have some problems.  Subversion changed the
+format of the files stored in the .svn directories with 1.4.  All 1.4
+compliant clients will automatically and silently convert the format of
+those files, which will render them unreadable by older clients.  If you
+must continue to use your older client and are unable to upgrade it to be
+Subversion 1.4 compatible, you should not use this plugin.
+</strong>
+</p>
+
+<hr/>
+<p>
+<b>Usage:</b> Most actions are accessed directly from the "Folders" tree in
+ProjectViewer by right-clicking on an item.  Most items should be obvious to
+Subversion users as to what those actions do.
+</p>
+<p>
+There are 2 dockables, "SVN" and "SVN Browser".  These are available via the
+jEdit standard Utilities - Global Options - Docking dialog.
+</p>
+<p>The "SVN" dockable
+shows an SVN console, which displays the detailed raw output of each plugin action,
+and a tab for the results of each subversion action.  The tabs may be removed by
+right-clicking on the tab, then clicking "Close" or "Close All".  The SVN Console
+tab cannot be closed.
+</p>
+<p>The "SVN Browser" dockable allows the user to enter the URL to a Subversion
+repository and drill down into the various folders of that repository via a tree
+interface.  Click the "New" button to enter a new repository location.  The
+last 10 locations are stored in the drop-down for reuse.  There are a number
+of actions available by right-clicking on items in the tree, including the
+ability to edit the repository location and to checkout files.  Double-clicking
+on a file will open the file as a temporary file in jEdit.  The file name will
+be slightly different than the file name in the repository, the browser adds the
+revision number to the file name.  This is done so that two different revisions
+can exist in the same directory without overwriting each other.  For example,
+if you double click on a file named /path/to/my/filename.java, you'll get a file
+in your temp directory with the same directory structure like
+/tmp/path/to/my/filename-1.java.  The "-1" in the filename indicates you have
+the head revision of the file.  If you get revision 123 of the file, then it
+would be /tmp/path/to/my/filename123.java.
+</p>
+<hr/>
+<p>
+To check out a project that already exists in a Subversion repository:
+<ol>
+<li>Click on Plugins - Subversion - Checkout, or alternately, use the SVN Browser
+to open a repository, right click on the appropriate folder and choose "Checkout"
+from the popup menu.</li>
+<li>Enter the repository URL, username, and password.  Leave username and password
+blank if the repository allows anonymous access.  Don't forget to add "/trunk" to the
+end of the URL, unless you want all the branch and tag info locally.</li>
+<li>Click the "OK" button.</li>
+<li>Wait for the files to be checked out.</li>
+<li>Follow the remaining dialogs to create a project in ProjectViewer from these files.</li>
+</ol>
+</p>
+
+<hr/>
+<p>
+Here's my "to do" list, which is basically to emulate the "Team" menu in
+Eclipse:
+<ul>
+<li>synchronize - in progress (status + actions, need more actions).  Right-click
+on entries in the results panels for actions.</li>
+<li>update - in progress, does an update on the selected item with an option to recursively update.  Also available from the synchronize results.  Still need to add a dialog to allow an update at a specific revision.</li>
+<li>commit - done, lets the user enter a comment or choose a previously entered comment, and optionally do a recursive commit.  Also available from the synchronize results.</li>
+<li>create patch</li>
+<li>apply patch</li>
+<li>--</li>
+<li>revert - done, does a simple revert of the selected item, can recurse if the item is a directory.  Also available from the synchronize results.</li>
+<li>add - done, optionally allows an add.  Also available from the synchronize results.</li>
+<li>ignore</li>
+<li>edit conflicts</li>
+<li>resolved - done</li>
+<li>--</li>
+<li>lock</li>
+<li>unlock</li>
+<li>--</li>
+<li>tag</li>
+<li>branch</li>
+<li>merge</li>
+<li>switch</li>
+<li>--</li>
+<li>show properties</li>
+<li>set properties</li>
+<li>set keywords</li>
+<li>--</li>
+<li>history - done</li>
+<li>annotations</li>
+<li>--</li>
+<li>copy</li>
+<li>export</li>
+<li>cleanup - done</li>
+</ul>
+</p>
+
+<p>
+There will be a "compare" to open a diff.  This needs a dialog to be
+able to pick a specific revision to compare the local file to, or to
+diff two non-local revisions.  Need to pop this as an option in the log
+viewer.
+</p>
+
+<p>
+<pre>
+The basic subversion commands:
+
+svn add - done
+svn blame
+svn cat
+svn checkout - done
+svn cleanup - done
+svn commit - done
+svn copy
+svn delete
+svn diff
+svn export
+svn help
+svn import
+svn info - done
+svn list
+svn lock
+svn log - done
+svn merge
+svn mkdir
+svn move
+svn propdel
+svn propedit
+svn propget
+svn proplist
+svn propset
+svn resolved - done
+svn revert - done
+svn status - done
+svn switch
+svn unlock
+svn update - done
+</pre>
+</p>
+</body>
+</html>
