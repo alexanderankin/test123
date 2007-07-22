@@ -17,7 +17,6 @@ plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.5.0
 plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.10.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3
-plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin console.ConsolePlugin 4.3.2
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 1.5.1
 plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar svnkit-javahl.jar
