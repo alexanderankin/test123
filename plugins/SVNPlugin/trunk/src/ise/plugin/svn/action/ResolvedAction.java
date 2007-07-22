@@ -94,7 +94,7 @@ public class ResolvedAction extends NodeActor {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), true );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED );
                         panel.addTab("Resolved", results_panel);
                     }
                     catch ( Exception e ) {

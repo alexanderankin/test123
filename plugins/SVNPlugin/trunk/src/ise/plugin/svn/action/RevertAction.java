@@ -124,7 +124,7 @@ public class RevertAction implements ActionListener {
                 protected void done() {
                     try {
                         AddResults results = get();
-                        JPanel results_panel = new AddResultsPanel( results, false );
+                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT );
                         panel.addTab("Revert", results_panel);
                         for (String path : results.getPaths()) {
                             Buffer buffer = jEdit.getBuffer(path);

@@ -15,6 +15,8 @@ public class SVNData {
     private String username = "";
     private String password = "";
     private boolean recursive = false;
+    private boolean force = false;
+    private boolean dryRun = false;
 
     public SVNData(){}
 
@@ -135,6 +137,36 @@ public class SVNData {
      */
     public void setRecursive( boolean recursive ) {
         this.recursive = recursive;
+    }
+
+    /**
+     * Returns the value of force.
+     */
+    public boolean getForce() {
+        return force;
+    }
+
+    /**
+     * Sets the value of force.
+     * @param force The value to assign force.
+     */
+    public void setForce( boolean force ) {
+        this.force = force;
+    }
+
+    /**
+     * Returns the value of dryRun.
+     */
+    public boolean getDryRun() {
+        return dryRun;
+    }
+
+    /**
+     * Sets the value of dryRun.
+     * @param dryRun The value to assign dryRun.
+     */
+    public void setDryRun( boolean dryRun ) {
+        this.dryRun = dryRun;
     }
 
 }
