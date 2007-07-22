@@ -1,0 +1,79 @@
+Eclipse has these in the Team menu, I'm using that as my model for user actions for the context menu in ProjectViewer:
+
+synchronize - in progress (status + actions, need more actions)
+update - done
+commit - done
+(not in Eclipse, I added "diff" here)
+create patch
+apply patch
+--
+revert - done
+add - done
+ignore
+edit conflicts
+resolved - done
+(not in Eclipse, I added "delete" here)
+--
+lock
+unlock
+--
+tag
+branch
+merge
+switch
+--
+show properties
+set properties
+set keywords
+--
+history - done, this is the same as "log"
+annotations
+--
+copy
+export
+cleanup - done
+
+
+There should be a "compare" to open a diff.  This needs a dialog to be
+able to pick a specific revision to compare the local file to, or to
+diff two non-local revisions.  Need to pop this as an option in the log
+viewer. - done, I called it "diff" rather than "compare" and am using JDiff
+plugin rather than svn diff.
+
+
+
+The basic subversion commands:
+
+svn add - done
+svn blame
+svn cat
+svn checkout - done
+svn cleanup - done
+svn commit - done
+svn copy
+svn delete - done
+svn diff - done
+svn export
+svn help
+svn import
+svn info - done
+svn list
+svn lock
+svn log - done
+svn merge
+svn mkdir
+svn move
+svn propdel
+svn propedit
+svn propget
+svn proplist
+svn propset
+svn resolved - done
+svn revert - done
+svn status - done
+svn switch
+svn unlock
+svn update - done
+
+
+

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="subversion">
+        return ise.plugin.svn.SVNPlugin.getOutputPanel(view);
+    </DOCKABLE>
+
+    <DOCKABLE NAME="subversion.browser">
+        return new ise.plugin.svn.gui.BrowseRepositoryPanel(view);
+    </DOCKABLE>
+
+</DOCKABLES>
+
