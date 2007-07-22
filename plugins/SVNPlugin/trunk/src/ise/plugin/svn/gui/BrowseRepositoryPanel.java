@@ -3,6 +3,7 @@ package ise.plugin.svn.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -49,6 +50,7 @@ public class BrowseRepositoryPanel extends JPanel {
         super( new BorderLayout() );
         this.view = view;
 
+        // repository chooser
         chooser = new PropertyComboBox( PREFIX );
         ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -61,10 +63,12 @@ public class BrowseRepositoryPanel extends JPanel {
                 };
         chooser.addActionListener( al );
 
+        // the repository tree.  This is lazy loaded.
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
         tree.setCellRenderer( new CellRenderer() );
         ToolTipManager.sharedInstance().registerComponent( tree );
 
+        // on expansion, call the repository and fetch the children
         tree.addTreeExpansionListener( new TreeExpansionListener() {
                     public void treeCollapsed( TreeExpansionEvent event ) {}
 
@@ -94,6 +98,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                                      );
 
+        // on double click on a text file, fetch the file contents and show the file in jEdit
         tree.addMouseListener( new MouseAdapter() {
                     public void mouseClicked( MouseEvent me ) {
                         if ( me.getClickCount() == 2 ) {
@@ -125,7 +130,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     url = data.getURL();
                                 }
 
-                                // fetch the file contents, use -1 for HEAD revision
+                                // fetch the file contents, -1 shorthand for HEAD revision
                                 BrowseRepository br = new BrowseRepository();
                                 File outfile = br.getFile( url, filepath, -1, data.getUsername(), data.getPassword() );
                                 if (outfile != null) {
@@ -139,11 +144,15 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 }
                              );
-
         tree.addMouseListener( new TreeMouseListener() );
+
+        // create the ocntext menu
         popupMenu = createPopupMenu();
 
-        JButton new_btn = new JButton( "New" );
+        // create the control buttons
+        Icon new_icon = GUIUtilities.loadIcon("New.png");
+        JButton new_btn = new JButton( new_icon );
+        new_btn.setSize(new_icon.getIconWidth(), new_icon.getIconHeight());
         new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
@@ -158,10 +167,22 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 }
                                  );
+        Icon refresh_icon = GUIUtilities.loadIcon("Reload.png");
+        JButton refresh_btn = new JButton( refresh_icon );
+        refresh_btn.setSize(refresh_icon.getIconWidth(), refresh_icon.getIconHeight());
+        refresh_btn.addActionListener( al );
 
+        // create a panel to hold the buttons
+        JPanel button_panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 1));
+        button_panel.add(new_btn);
+        button_panel.add(refresh_btn);
+
+        // create a panel to hold the buttons and the repository chooser
         JPanel top_panel = new JPanel( new BorderLayout() );
+        top_panel.add( button_panel, BorderLayout.NORTH );
         top_panel.add( chooser, BorderLayout.CENTER );
-        top_panel.add( new_btn, BorderLayout.EAST );
+
+        // fill in the main panel
         add( top_panel, BorderLayout.NORTH );
         add( new JScrollPane( tree ), BorderLayout.CENTER );
     }
