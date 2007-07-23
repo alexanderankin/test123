@@ -264,6 +264,16 @@ public class CamelCompletePlugin extends EditPlugin {
 	    CompleteWord.completeWord(view, engines);
 	}
 	
+	public static List<String> getCompletions(String word) {
+	    ArrayList<String> completions = new ArrayList<String>();
+	    for (CompletionEngine engine : engines) {
+		List<String> c = engine.complete(word, true);
+		if (c != null)
+		    completions.addAll(c);
+	    }
+	    return completions;
+	}
+	
 	// }}}
 	
 	// {{{ Debugging methods
