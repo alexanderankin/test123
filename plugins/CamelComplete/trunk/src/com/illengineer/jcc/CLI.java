@@ -9,6 +9,7 @@ import jargs.gnu.CmdLineParser;
 public class CLI
 {
     private static boolean debug = false;
+    private static final int MAXPARTS = 8;
     
     public static void usage() {
 	System.err.println("Usage: CLI  {-f ctags_file | -j jar_file} [[-r split_regex] ... ]\n" +
@@ -112,12 +113,12 @@ public class CLI
 	if (ctagsFile != null) {
 	    provider = new CTagsFileProvider(ctagsFile);
 	    provider.process();
-	    engine.loadIdentifiers(provider, tokenizers, minparts, ignoreCase, filterRegex);
+	    engine.loadIdentifiers(provider, tokenizers, minparts, MAXPARTS, ignoreCase, filterRegex);
 	}
 	if (jarFile != null) {
 	    provider = new JarFileProvider(jarFile);
 	    provider.process();
-	    engine.loadIdentifiers(provider, tokenizers, minparts, ignoreCase, filterRegex);
+	    engine.loadIdentifiers(provider, tokenizers, minparts, MAXPARTS, ignoreCase, filterRegex);
 	}
 	
 	debugPrint(engine.numIdentifiers() + " identifiers loaded.");
