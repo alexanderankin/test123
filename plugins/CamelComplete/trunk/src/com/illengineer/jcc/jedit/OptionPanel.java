@@ -53,12 +53,15 @@ public class OptionPanel extends AbstractOptionPane
 	    selectedProvider = selectedTokenizer = -1;  // no currently selected items
 	    
 	    JButton[] buttons = {saveProviderButton, deleteProviderButton, editProviderButton, chooseButton,
+	    			 	copyProviderButton,
 	    			 addTokenizerButton, removeTokenizerButton, processButton, processAllButton,
-				 loadOptionsButton, saveOptionsButton, appendOptionsButton, 
-				 		deleteOptionsButton, newOptionsButton,
-				 loadEngineButton, saveEngineButton, deleteEngineButton, newEngineButton};
+				 saveOptionsButton, appendOptionsButton,  deleteOptionsButton, newOptionsButton,
+				 saveEngineButton, deleteEngineButton, newEngineButton};
 	    for (JButton b : buttons)
 		b.addActionListener(this);
+		
+	    enginesCombo.addActionListener(this);
+	    optionGroupCombo.addActionListener(this);
 	    
 	    loadOptionGroups();
 	    loadEngines();
@@ -91,6 +94,8 @@ public class OptionPanel extends AbstractOptionPane
 			og.provider = "ctags";
 		    else if (jarButton.isSelected())
 			og.provider = "jar";
+		    else if (textFileButton.isSelected())
+			og.provider = "text";
 		    else if (codeButton.isSelected())
 			og.provider = "code";
 		    og.fileName = fileName;
@@ -114,7 +119,17 @@ public class OptionPanel extends AbstractOptionPane
 		    tokenizerModel.clear();
 		    resetComponents(true, true);
 		}
-		
+	    } else if (source == copyProviderButton) {
+		selectedProvider = providerList.getSelectedIndex();
+		if (selectedProvider != -1) {
+		    OptionGroup og = ((OptionGroup)providerModel.get(selectedProvider)).copy();
+		    providerModel.addElement(og);
+		    
+		    // Now it will be as though we hit edit.
+		    providerList.setSelectedValue(og, true);
+		    selectedProvider = providerList.getSelectedIndex();
+		    fillFieldsFromOptions(og);
+		}
 	    } else if (source == deleteProviderButton) {
 		selectedProvider = providerList.getSelectedIndex();
 		if (selectedProvider != -1) {
@@ -161,11 +176,6 @@ public class OptionPanel extends AbstractOptionPane
 		tokenizerModel.clear();
 		providerModel.clear();
 		resetComponents(true, true);
-	    } else if (source == loadOptionsButton) {
-		String key = (String)optionGroupCombo.getSelectedItem();
-		if (key != null && key.length() > 0) {
-		    loadOptions(optionGroupMap.get(key));
-		}
 	    } else if (source == appendOptionsButton) {
 		String key = (String)optionGroupCombo.getSelectedItem();
 		if (key != null && key.length() > 0) {
@@ -195,14 +205,6 @@ public class OptionPanel extends AbstractOptionPane
 		tokenizerModel.clear();
 		providerModel.clear();
 		resetComponents(true, true);
-	    } else if (source == loadEngineButton) {
-		String engineName = (String)enginesCombo.getSelectedItem();
-		if (engineName != null && engineName.length() > 0) {
-		    if (enginesOptionsMap.containsKey(engineName)) {
-			loadOptions(enginesOptionsMap.get(engineName));
-			currentEngineName = engineName;
-		    }
-		}
 	    } else if (source == saveEngineButton) {
 		String engineName = (String)enginesCombo.getSelectedItem();
 		if (engineName != null && engineName.length() > 0) {
@@ -242,6 +244,22 @@ public class OptionPanel extends AbstractOptionPane
 		}
 		showMsg("");
 	    } // }}}
+	    // {{{ Combo boxes
+	    else if (source == enginesCombo) {
+		String engineName = (String)enginesCombo.getSelectedItem();
+		if (engineName != null && engineName.length() > 0) {
+		    if (enginesOptionsMap.containsKey(engineName)) {
+			loadOptions(enginesOptionsMap.get(engineName));
+			currentEngineName = engineName;
+		    }
+		}
+	    } else if (source == optionGroupCombo) {
+		String key = (String)optionGroupCombo.getSelectedItem();
+		if (key != null && key.length() > 0) {
+		    loadOptions(optionGroupMap.get(key));
+		}
+	    }
+	    // }}}
 	}
 	
 	// }}}
@@ -281,6 +299,8 @@ public class OptionPanel extends AbstractOptionPane
 		ctagsButton.setSelected(true);
 	    else if (og.provider.equals("jar"))
 		jarButton.setSelected(true);
+	    else if (og.provider.equals("text"))
+		textFileButton.setSelected(true);
 	    else if (og.provider.equals("code"))
 		codeButton.setSelected(true);
 	    if (og.fileName != null)
@@ -379,7 +399,6 @@ public class OptionPanel extends AbstractOptionPane
 		panel7 = new JPanel();
 		label7 = new JLabel();
 		enginesCombo = new JComboBox();
-		loadEngineButton = new JButton();
 		saveEngineButton = new JButton();
 		deleteEngineButton = new JButton();
 		newEngineButton = new JButton();
@@ -389,16 +408,16 @@ public class OptionPanel extends AbstractOptionPane
 		panel5 = new JPanel();
 		panel9 = new JPanel();
 		optionGroupCombo = new JComboBox();
-		loadOptionsButton = new JButton();
-		newOptionsButton = new JButton();
 		saveOptionsButton = new JButton();
-		deleteOptionsButton = new JButton();
+		newOptionsButton = new JButton();
 		appendOptionsButton = new JButton();
+		deleteOptionsButton = new JButton();
 		scrollPane1 = new JScrollPane();
 		providerList = new JList();
 		panel2 = new JPanel();
 		ctagsButton = new JRadioButton();
 		jarButton = new JRadioButton();
+		textFileButton = new JRadioButton();
 		codeButton = new JRadioButton();
 		label3 = new JLabel();
 		filenameField = new JTextField();
@@ -409,9 +428,7 @@ public class OptionPanel extends AbstractOptionPane
 		saveProviderButton = new JButton();
 		deleteProviderButton = new JButton();
 		editProviderButton = new JButton();
-		panel1 = new JPanel();
-		radioButton1 = new JRadioButton();
-		radioButton2 = new JRadioButton();
+		copyProviderButton = new JButton();
 		label2 = new JLabel();
 		scrollPane2 = new JScrollPane();
 		tokenizerList = new JList();
@@ -485,10 +502,6 @@ public class OptionPanel extends AbstractOptionPane
 					enginesCombo.setPrototypeDisplayValue("Java Engine");
 					panel7.add(enginesCombo);
 
-					//---- loadEngineButton ----
-					loadEngineButton.setText("Load");
-					panel7.add(loadEngineButton);
-
 					//---- saveEngineButton ----
 					saveEngineButton.setText("Save");
 					panel7.add(saveEngineButton);
@@ -548,25 +561,21 @@ public class OptionPanel extends AbstractOptionPane
 					}
 					panel5.add(panel9, cc.xywh(1, 1, 3, 1));
 
-					//---- loadOptionsButton ----
-					loadOptionsButton.setText("Load");
-					panel5.add(loadOptionsButton, cc.xy(1, 3));
+					//---- saveOptionsButton ----
+					saveOptionsButton.setText("Save");
+					panel5.add(saveOptionsButton, cc.xy(1, 3));
 
 					//---- newOptionsButton ----
 					newOptionsButton.setText("New");
 					panel5.add(newOptionsButton, cc.xy(3, 3));
 
-					//---- saveOptionsButton ----
-					saveOptionsButton.setText("Save");
-					panel5.add(saveOptionsButton, cc.xy(1, 5));
+					//---- appendOptionsButton ----
+					appendOptionsButton.setText("Append");
+					panel5.add(appendOptionsButton, cc.xy(1, 5));
 
 					//---- deleteOptionsButton ----
 					deleteOptionsButton.setText("Delete");
 					panel5.add(deleteOptionsButton, cc.xy(3, 5));
-
-					//---- appendOptionsButton ----
-					appendOptionsButton.setText("Append");
-					panel5.add(appendOptionsButton, cc.xy(1, 7));
 				}
 				optionPanel.add(panel5, cc.xy(1, 5));
 
@@ -586,11 +595,13 @@ public class OptionPanel extends AbstractOptionPane
 						new ColumnSpec[] {
 							new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT, FormSpec.NO_GROW),
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							FormFactory.DEFAULT_COLSPEC,
+							new ColumnSpec(ColumnSpec.CENTER, Sizes.DEFAULT, FormSpec.NO_GROW),
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+							FormFactory.DEFAULT_COLSPEC
 						},
 						new RowSpec[] {
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.LINE_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.LINE_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
@@ -598,7 +609,9 @@ public class OptionPanel extends AbstractOptionPane
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.RELATED_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
-							new RowSpec(RowSpec.TOP, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+							FormFactory.RELATED_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.LINE_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC
 						}));
 
@@ -610,18 +623,22 @@ public class OptionPanel extends AbstractOptionPane
 					jarButton.setText("JAR");
 					panel2.add(jarButton, cc.xy(3, 1));
 
+					//---- textFileButton ----
+					textFileButton.setText("Text");
+					panel2.add(textFileButton, cc.xy(5, 1));
+
 					//---- codeButton ----
 					codeButton.setText("Bsh Code");
-					panel2.add(codeButton, cc.xy(5, 1));
+					panel2.add(codeButton, cc.xywh(1, 3, 3, 1));
 
 					//---- label3 ----
 					label3.setText("Filename");
-					panel2.add(label3, cc.xy(1, 3));
-					panel2.add(filenameField, cc.xywh(1, 5, 3, 1));
+					panel2.add(label3, cc.xy(1, 5));
+					panel2.add(filenameField, cc.xywh(1, 7, 3, 1));
 
 					//---- chooseButton ----
 					chooseButton.setText("Choose");
-					panel2.add(chooseButton, cc.xy(5, 5));
+					panel2.add(chooseButton, cc.xy(5, 7));
 
 					//======== panel10 ========
 					{
@@ -632,49 +649,25 @@ public class OptionPanel extends AbstractOptionPane
 						panel10.add(extraLabel, BorderLayout.WEST);
 						panel10.add(extraField, BorderLayout.CENTER);
 					}
-					panel2.add(panel10, cc.xywh(1, 7, 5, 1));
+					panel2.add(panel10, cc.xywh(1, 9, 5, 1));
 
 					//---- saveProviderButton ----
 					saveProviderButton.setText("Save");
-					panel2.add(saveProviderButton, cc.xy(1, 9));
+					panel2.add(saveProviderButton, cc.xy(1, 11));
 
 					//---- deleteProviderButton ----
 					deleteProviderButton.setText("Delete");
-					panel2.add(deleteProviderButton, cc.xy(3, 9));
+					panel2.add(deleteProviderButton, cc.xy(3, 11));
 
 					//---- editProviderButton ----
 					editProviderButton.setText("Edit");
-					panel2.add(editProviderButton, cc.xy(5, 9));
+					panel2.add(editProviderButton, cc.xy(5, 11));
+
+					//---- copyProviderButton ----
+					copyProviderButton.setText("Copy");
+					panel2.add(copyProviderButton, cc.xy(1, 13));
 				}
 				optionPanel.add(panel2, cc.xy(5, 5));
-
-				//======== panel1 ========
-				{
-					panel1.setLayout(new FormLayout(
-						new ColumnSpec[] {
-							FormFactory.DEFAULT_COLSPEC,
-							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							FormFactory.DEFAULT_COLSPEC,
-							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							FormFactory.DEFAULT_COLSPEC
-						},
-						new RowSpec[] {
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC
-						}));
-
-					//---- radioButton1 ----
-					radioButton1.setText("Ctags");
-					panel1.add(radioButton1, cc.xy(1, 1));
-
-					//---- radioButton2 ----
-					radioButton2.setText("JAR");
-					panel1.add(radioButton2, cc.xy(3, 1));
-				}
-				optionPanel.add(panel1, cc.xy(5, 5));
 
 				//---- label2 ----
 				label2.setText("Tokenizers for Provider");
@@ -808,6 +801,7 @@ public class OptionPanel extends AbstractOptionPane
 		ButtonGroup buttonGroup1 = new ButtonGroup();
 		buttonGroup1.add(ctagsButton);
 		buttonGroup1.add(jarButton);
+		buttonGroup1.add(textFileButton);
 		buttonGroup1.add(codeButton);
 
 		//---- buttonGroup2 ----
@@ -826,7 +820,6 @@ public class OptionPanel extends AbstractOptionPane
 	JPanel panel7;
 	JLabel label7;
 	JComboBox enginesCombo;
-	JButton loadEngineButton;
 	JButton saveEngineButton;
 	JButton deleteEngineButton;
 	JButton newEngineButton;
@@ -836,16 +829,16 @@ public class OptionPanel extends AbstractOptionPane
 	JPanel panel5;
 	JPanel panel9;
 	JComboBox optionGroupCombo;
-	JButton loadOptionsButton;
-	JButton newOptionsButton;
 	JButton saveOptionsButton;
-	JButton deleteOptionsButton;
+	JButton newOptionsButton;
 	JButton appendOptionsButton;
+	JButton deleteOptionsButton;
 	JScrollPane scrollPane1;
 	JList providerList;
 	JPanel panel2;
 	JRadioButton ctagsButton;
 	JRadioButton jarButton;
+	JRadioButton textFileButton;
 	JRadioButton codeButton;
 	JLabel label3;
 	JTextField filenameField;
@@ -856,9 +849,7 @@ public class OptionPanel extends AbstractOptionPane
 	JButton saveProviderButton;
 	JButton deleteProviderButton;
 	JButton editProviderButton;
-	JPanel panel1;
-	JRadioButton radioButton1;
-	JRadioButton radioButton2;
+	JButton copyProviderButton;
 	JLabel label2;
 	JScrollPane scrollPane2;
 	JList tokenizerList;
@@ -890,7 +881,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ Inner Classes
 	public static class OptionGroup implements Serializable
 	{
-	    String provider;  //"ctags", "jar", or "code"
+	    String provider;  //"ctags", "jar", "text", or "code"
 	    String fileName;
 	    String extra;
 	    java.util.List<String[]> tokenizers;
@@ -900,7 +891,7 @@ public class OptionPanel extends AbstractOptionPane
 	    String filterRegex;
 	    
 	    public String toString() {
-		if (provider.equals("ctags") || provider.equals("jar")) {
+		if (provider.equals("ctags") || provider.equals("jar") || provider.equals("text")) {
 		    int i = fileName.lastIndexOf(File.separatorChar);
 		    i++;
 		    return provider + ", " + fileName.substring(i);
@@ -908,6 +899,19 @@ public class OptionPanel extends AbstractOptionPane
 		    return "BeanShell";
 		}
 		return "";
+	    }
+	    
+	    public OptionGroup copy() {
+		OptionGroup og = new OptionGroup();
+		og.provider = provider;
+		og.fileName = fileName;
+		og.extra = extra;
+		og.tokenizers = new ArrayList(tokenizers);
+		og.minparts = minparts;
+		og.maxparts = maxparts;
+		og.ignoreCase = ignoreCase;
+		og.filterRegex = filterRegex;
+		return og;
 	    }
 	}
 	
