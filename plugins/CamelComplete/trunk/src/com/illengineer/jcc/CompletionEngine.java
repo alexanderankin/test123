@@ -44,6 +44,8 @@ public class CompletionEngine
 	@param tokenizers Used to split identifiers into their constituent parts.
 	@param minparts Any identifiers with fewer than minparts tokens are discarded from
 			our internal store.
+	@param maxparts Any identifiers with more than maxparts tokens are discarded from
+			our internal store.
 	@param ignoreCase Should our matching be case insensitive? If subsequent calls
 			  to this method pass different values of ignoreCase, completion
 			  probabaly won't work well.
@@ -52,7 +54,7 @@ public class CompletionEngine
     */
     public void loadIdentifiers(IdentifierProvider provider,
     				List<Tokenizer> tokenizers,
-				int minparts,
+				int minparts, int maxparts,
 				boolean ignoreCase,
 				String filterRegex) {
 	if (provider == null) {
@@ -82,7 +84,7 @@ public class CompletionEngine
 	
 	    for(Tokenizer t : tokenizers) {
 		char[] prefixes = t.splitIdentifer(identifier);
-		if (prefixes.length >= minparts) {
+		if (prefixes.length >= minparts && prefixes.length <= maxparts) {
 		    if (ignoreCase) {
 			for (int i = 0; i < prefixes.length; i++)
 			    prefixes[i] = Character.toLowerCase(prefixes[i]);
@@ -104,9 +106,9 @@ public class CompletionEngine
 	
 	@see loadIdentifiers
     */
-    public void retokenize(List<Tokenizer> tokenizers, int minparts, boolean ignoreCase,
-    				String filterRegex) {
-	loadIdentifiers(null, tokenizers, minparts, ignoreCase, filterRegex);
+    public void retokenize(List<Tokenizer> tokenizers, int minparts, int maxparts,
+			    boolean ignoreCase, String filterRegex) {
+	loadIdentifiers(null, tokenizers, minparts, maxparts, ignoreCase, filterRegex);
     }
     //    }}}
     

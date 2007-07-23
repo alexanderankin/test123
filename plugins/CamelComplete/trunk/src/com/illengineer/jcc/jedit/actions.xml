@@ -6,13 +6,28 @@
 		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);
 		</CODE>
 	</ACTION>
-	<!--
-	<ACTION NAME="camelcomplete.reload_transients">
+	<ACTION NAME="camelcomplete.process_engine">
 		<CODE>
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.reloadTransientIdentifiers();
+		    import javax.swing.JOptionPane;
+		    
+		    String [] names = 
+			com.illengineer.jcc.jedit.CamelCompletePlugin.getEngineNames().toArray(new String[0]);
+		    String engineName = JOptionPane.showInputDialog(textArea, "Select Engine",
+					"CamelComplete", JOptionPane.PLAIN_MESSAGE, null,
+					names, names[0]);
+		    if (engineName != null)
+			com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration(engineName);
 		</CODE>
 	</ACTION>
-	-->
-
+	<ACTION NAME="camelcomplete.process_all_engines">
+		<CODE>
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="camelcomplete.clear_cache">
+		<CODE>
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.clearCacheDir();
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
