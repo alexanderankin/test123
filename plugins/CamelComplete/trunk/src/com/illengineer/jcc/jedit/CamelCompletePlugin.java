@@ -10,6 +10,7 @@ import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.StatusBar;
 
+import bsh.Interpreter;
 
 public class CamelCompletePlugin extends EditPlugin {
 
@@ -19,7 +20,7 @@ public class CamelCompletePlugin extends EditPlugin {
 
 	public static final String DEFAULT_ENGINE_NAME = "default";
 	
-	private static boolean debug = false;
+	private static boolean debug = true;
 	private static PrintWriter debugWriter;
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
@@ -194,7 +195,21 @@ public class CamelCompletePlugin extends EditPlugin {
 			provider = new CTagsFileProvider(new File(og.fileName));
 		    else if (og.provider.equals("jar"))
 			provider = new JarFileProvider(new File(og.fileName));
-			
+		    else if (og.provider.equals("code")) {
+			boolean failed = false;
+			Interpreter bsh = new Interpreter();
+			try {
+			    provider = (IdentifierProvider)bsh.eval(og.extra);
+			} catch (bsh.EvalError ex) {
+			    failed = true;
+			    debugPrintStacktrace(ex);
+			} catch (Exception ex) {
+			    failed = true;
+			    debugPrintStacktrace(ex);
+			}
+			if (failed)
+			    provider = new NullProvider();
+		    }
 		    for (String [] t : og.tokenizers) {
 			if (t[0].equals("camelcase"))
 			    tokenizers.add(new CamelCaseTokenizer());
