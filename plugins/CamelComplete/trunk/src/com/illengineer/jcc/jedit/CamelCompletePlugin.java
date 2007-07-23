@@ -196,12 +196,16 @@ public class CamelCompletePlugin extends EditPlugin {
 			provider = new CTagsFileProvider(new File(og.fileName));
 		    else if (og.provider.equals("jar"))
 			provider = new JarFileProvider(new File(og.fileName));
+		    else if (og.provider.equals("text"))
+			provider = new TextFileProvider(new File(og.fileName));
 		    else if (og.provider.equals("code")) {
 			boolean failed = false;
 			Interpreter bsh = new Interpreter();
 			try {
 			    bsh.eval("import com.illengineer.jcc.*;");
-			    provider = (IdentifierProvider)bsh.eval("(IdentifierProvider)" + og.extra);
+			    bsh.eval("IdentifierProvider __ip;");
+			    bsh.eval("__ip = (IdentifierProvider)" + og.extra);
+			    provider = (IdentifierProvider)bsh.get("__ip");
 			} catch (bsh.EvalError ex) {
 			    failed = true;
 			    View v = jEdit.getActiveView();
