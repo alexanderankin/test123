@@ -20,7 +20,7 @@ public class CamelCompletePlugin extends EditPlugin {
 
 	public static final String DEFAULT_ENGINE_NAME = "default";
 	
-	private static boolean debug = true;
+	private static boolean debug = false;
 	private static PrintWriter debugWriter;
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
