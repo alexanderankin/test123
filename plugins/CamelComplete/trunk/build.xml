@@ -45,7 +45,7 @@
     <copy todir="${dist}">
       <fileset dir="${build}"/>
     </copy>
-    <unjar src="${lib}/forms-1.0.7.jar" dest="${dist}"/> 
+    <unjar src="${lib}/forms.jar" dest="${dist}"/> 
     <copy todir="${dist}" file="doc/CamelComplete.html"/>
     <copy todir="${dist}">
       <fileset dir="${src}/com/illengineer/jcc/jedit">

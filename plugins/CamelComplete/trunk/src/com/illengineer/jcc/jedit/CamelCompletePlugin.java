@@ -5,10 +5,10 @@ import com.illengineer.jcc.*;
 import java.util.*;
 import java.io.*;
 
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.StatusBar;
+import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 
 import bsh.Interpreter;
 
@@ -202,9 +202,15 @@ public class CamelCompletePlugin extends EditPlugin {
 			    provider = (IdentifierProvider)bsh.eval(og.extra);
 			} catch (bsh.EvalError ex) {
 			    failed = true;
+			    View v = jEdit.getActiveView();
+			    if (v != null)
+				new BeanShellErrorDialog(v, ex);
 			    debugPrintStacktrace(ex);
 			} catch (Exception ex) {
 			    failed = true;
+			    View v = jEdit.getActiveView();
+			    if (v != null)
+				new BeanShellErrorDialog(v, ex);
 			    debugPrintStacktrace(ex);
 			}
 			if (failed)
