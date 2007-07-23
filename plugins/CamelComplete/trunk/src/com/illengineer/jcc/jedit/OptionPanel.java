@@ -25,6 +25,7 @@ public class OptionPanel extends AbstractOptionPane
 	private DefaultListModel providerModel, tokenizerModel;
 	
 	private HashMap<String, List<OptionGroup>> optionGroupMap;
+	private Map<String,List<OptionPanel.OptionGroup>> enginesOptionsMap;
 	private String currentEngineName = "default";
 	
 	private MessageDialog msgDialog;
@@ -52,19 +53,25 @@ public class OptionPanel extends AbstractOptionPane
 	    selectedProvider = selectedTokenizer = -1;  // no currently selected items
 	    
 	    JButton[] buttons = {saveProviderButton, deleteProviderButton, editProviderButton, chooseButton,
-	    			 addTokenizerButton, removeTokenizerButton, processButton,
-				 loadOptionsButton, saveOptionsButton, deleteOptionsButton, newOptionsButton};
+	    			 addTokenizerButton, removeTokenizerButton, processButton, processAllButton,
+				 loadOptionsButton, saveOptionsButton, appendOptionsButton, 
+				 		deleteOptionsButton, newOptionsButton,
+				 loadEngineButton, saveEngineButton, deleteEngineButton, newEngineButton};
 	    for (JButton b : buttons)
 		b.addActionListener(this);
 	    
 	    loadOptionGroups();
-	    loadCurrentEngine();
+	    loadEngines();
+	    cacheCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("cache")).booleanValue());
+	    updateCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("update")).booleanValue());
 	    addComponent(mainPanel);
 	}
 	
 	protected void _save() {
-	    saveCurrentEngine(); // TODO, save all engines
+	    saveCurrentEngine();
 	    saveOptionGroups();
+	    CamelCompletePlugin.setOption("cache", Boolean.valueOf(cacheCheck.isSelected()));
+	    CamelCompletePlugin.setOption("update", Boolean.valueOf(updateCheck.isSelected()));
 	}
 	
 	// }}}
@@ -88,6 +95,7 @@ public class OptionPanel extends AbstractOptionPane
 		    for (Enumeration e = tokenizerModel.elements(); e.hasMoreElements(); )
 			og.tokenizers.add(((TokenizerHolder)e.nextElement()).tokenizer);
 		    og.minparts = ((Integer)minpartsSpinner.getValue()).intValue();
+		    og.maxparts = ((Integer)maxpartsSpinner.getValue()).intValue();
 		    og.ignoreCase = ignoreCaseCheck.isSelected();
 		    og.filterRegex = filterField.getText();
 		    if (og.filterRegex.length() == 0)
@@ -152,10 +160,12 @@ public class OptionPanel extends AbstractOptionPane
 	    } else if (source == loadOptionsButton) {
 		String key = (String)optionGroupCombo.getSelectedItem();
 		if (key != null && key.length() > 0) {
-		    tokenizerModel.clear();
-		    providerModel.clear();
-		    resetComponents(true, true);
 		    loadOptions(optionGroupMap.get(key));
+		}
+	    } else if (source == appendOptionsButton) {
+		String key = (String)optionGroupCombo.getSelectedItem();
+		if (key != null && key.length() > 0) {
+		    loadOptions(optionGroupMap.get(key), true);
 		}
 	    } else if (source == saveOptionsButton) {
 		String key = (String)optionGroupCombo.getSelectedItem();
@@ -174,17 +184,60 @@ public class OptionPanel extends AbstractOptionPane
 		}
 	    }
 	    // }}}
-	    else if (source == processButton) {
+	    // {{{ Engines Buttons
+	    else if (source == newEngineButton) {
+		currentEngineName = null;
+		enginesCombo.setSelectedItem("");
+		tokenizerModel.clear();
+		providerModel.clear();
+		resetComponents(true, true);
+	    } else if (source == loadEngineButton) {
+		String engineName = (String)enginesCombo.getSelectedItem();
+		if (engineName != null && engineName.length() > 0) {
+		    if (enginesOptionsMap.containsKey(engineName)) {
+			loadOptions(enginesOptionsMap.get(engineName));
+			currentEngineName = engineName;
+		    }
+		}
+	    } else if (source == saveEngineButton) {
+		String engineName = (String)enginesCombo.getSelectedItem();
+		if (engineName != null && engineName.length() > 0) {
+		    currentEngineName = engineName;
+		    if (!enginesOptionsMap.containsKey(engineName))
+			enginesCombo.addItem(engineName);
+		    saveCurrentEngine();
+		}
+	    } else if (source == deleteEngineButton) {
+		String engineName = (String)enginesCombo.getSelectedItem();
+		if (engineName != null && engineName.length() > 0) {
+		    if (enginesOptionsMap.size() > 1 && enginesOptionsMap.containsKey(engineName)) {
+			CamelCompletePlugin.deleteEngine(engineName);
+			enginesCombo.removeItem(engineName);
+			currentEngineName = null;
+			
+			// Standard clear the fields stuff.
+			enginesCombo.setSelectedItem("");
+			tokenizerModel.clear();
+			providerModel.clear();
+			resetComponents(true, true);
+		    }
+		}
+	    } // }}}
+	    // {{{ Process Buttons
+	    else if (source == processButton || source == processAllButton) {
 		saveCurrentEngine();
 		showMsg("Updating identifier lists...");
 		try {
-		    CamelCompletePlugin.processConfiguration(currentEngineName);
+		    if (source == processButton)
+			CamelCompletePlugin.processConfiguration(currentEngineName);
+		    else
+			CamelCompletePlugin.processConfiguration();
 		} catch (Exception ex) {
 		    showMsg("Error: " + ex.getMessage());
 		    return;
 		}
 		showMsg("");
-	    }
+	    } // }}}
 	}
 	
 	// }}}
@@ -203,6 +256,7 @@ public class OptionPanel extends AbstractOptionPane
 		filterField.setText("");
 		ignoreCaseCheck.setSelected(false);
 		((SpinnerNumberModel)minpartsSpinner.getModel()).setValue(new Integer(2));
+		((SpinnerNumberModel)maxpartsSpinner.getModel()).setValue(new Integer(8));
 	    }
 
 	    if (clearTokenizerFields) {
@@ -226,6 +280,7 @@ public class OptionPanel extends AbstractOptionPane
 	    for (String [] t : og.tokenizers)
 		tokenizerModel.addElement(new TokenizerHolder(t));
 	    ((SpinnerNumberModel)minpartsSpinner.getModel()).setValue(new Integer(og.minparts));
+	    ((SpinnerNumberModel)maxpartsSpinner.getModel()).setValue(new Integer(og.maxparts));
 	    ignoreCaseCheck.setSelected(og.ignoreCase);
 	    filterField.setText(og.filterRegex);
 	}
@@ -257,9 +312,18 @@ public class OptionPanel extends AbstractOptionPane
 	}
 	
 	private void loadOptions(List<OptionGroup> options) {
-	    if (options != null)
+	    loadOptions(options, false);
+	}
+	
+	private void loadOptions(List<OptionGroup> options, boolean append) {
+	    if (options != null) {
+		tokenizerModel.clear();
+		if (!append)
+		    providerModel.clear();
+		resetComponents(true, true);
 		for (OptionGroup og : options)
 		    providerModel.addElement(og);
+	    }
 	}
 	
 	private void saveOptionGroups() {
@@ -278,15 +342,19 @@ public class OptionPanel extends AbstractOptionPane
 	}
 	
 	private void saveCurrentEngine() {
-	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap =
-		(Map<String,List<OptionPanel.OptionGroup>>)CamelCompletePlugin.getOption("engines");
-	    _enginesMap.put(currentEngineName, saveOptions());
+	    if (currentEngineName != null && currentEngineName.length() > 0)
+		enginesOptionsMap.put(currentEngineName, saveOptions());
 	}
 	
-	private void loadCurrentEngine() {
-	    Map<String,List<OptionPanel.OptionGroup>> _enginesMap =
+	private void loadEngines() {
+	    enginesOptionsMap = 
 		(Map<String,List<OptionPanel.OptionGroup>>)CamelCompletePlugin.getOption("engines");
-	    loadOptions((List<OptionGroup>)_enginesMap.get(currentEngineName));
+	    for (String engineName : enginesOptionsMap.keySet()) {
+		enginesCombo.addItem(engineName);
+	    }
+	    enginesCombo.setSelectedIndex(0);
+	    currentEngineName = (String)enginesCombo.getSelectedItem();
+	    loadOptions(enginesOptionsMap.get(currentEngineName));
 	}
 	    
 	// }}}
@@ -296,22 +364,26 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
+		panel7 = new JPanel();
 		label7 = new JLabel();
 		enginesCombo = new JComboBox();
-		panel6 = new JPanel();
-		newEngineButton = new JButton();
+		loadEngineButton = new JButton();
+		saveEngineButton = new JButton();
 		deleteEngineButton = new JButton();
+		newEngineButton = new JButton();
+		panel6 = new JPanel();
 		label6 = new JLabel();
 		label1 = new JLabel();
 		panel5 = new JPanel();
+		panel9 = new JPanel();
 		optionGroupCombo = new JComboBox();
 		loadOptionsButton = new JButton();
+		newOptionsButton = new JButton();
 		saveOptionsButton = new JButton();
 		deleteOptionsButton = new JButton();
-		newOptionsButton = new JButton();
+		appendOptionsButton = new JButton();
 		scrollPane1 = new JScrollPane();
 		providerList = new JList();
 		panel2 = new JPanel();
@@ -338,11 +410,17 @@ public class OptionPanel extends AbstractOptionPane
 		removeTokenizerButton = new JButton();
 		panel4 = new JPanel();
 		ignoreCaseCheck = new JCheckBox();
-		label4 = new JLabel();
-		filterField = new JTextField();
 		label5 = new JLabel();
 		minpartsSpinner = new JSpinner();
+		label4 = new JLabel();
+		filterField = new JTextField();
+		label8 = new JLabel();
+		maxpartsSpinner = new JSpinner();
+		panel8 = new JPanel();
+		cacheCheck = new JCheckBox();
+		updateCheck = new JCheckBox();
 		processButton = new JButton();
+		processAllButton = new JButton();
 		messageLabel = new JLabel();
 		CellConstraints cc = new CellConstraints();
 
@@ -379,23 +457,41 @@ public class OptionPanel extends AbstractOptionPane
 						new RowSpec("fill:max(default;12dlu)")
 					}));
 
-				//---- label7 ----
-				label7.setText("Engines");
-				label7.setHorizontalAlignment(SwingConstants.TRAILING);
-				optionPanel.add(label7, cc.xy(1, 1));
-				optionPanel.add(enginesCombo, cc.xy(3, 1));
+				//======== panel7 ========
+				{
+					panel7.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+					//---- label7 ----
+					label7.setText("Engines:");
+					label7.setHorizontalAlignment(SwingConstants.TRAILING);
+					panel7.add(label7);
+
+					//---- enginesCombo ----
+					enginesCombo.setEditable(true);
+					enginesCombo.setPrototypeDisplayValue("Java Engine");
+					panel7.add(enginesCombo);
+
+					//---- loadEngineButton ----
+					loadEngineButton.setText("Load");
+					panel7.add(loadEngineButton);
+
+					//---- saveEngineButton ----
+					saveEngineButton.setText("Save");
+					panel7.add(saveEngineButton);
+
+					//---- deleteEngineButton ----
+					deleteEngineButton.setText("Delete");
+					panel7.add(deleteEngineButton);
+
+					//---- newEngineButton ----
+					newEngineButton.setText("New");
+					panel7.add(newEngineButton);
+				}
+				optionPanel.add(panel7, cc.xywh(1, 1, 5, 1));
 
 				//======== panel6 ========
 				{
 					panel6.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-					//---- newEngineButton ----
-					newEngineButton.setText("New");
-					panel6.add(newEngineButton);
-
-					//---- deleteEngineButton ----
-					deleteEngineButton.setText("Delete");
-					panel6.add(deleteEngineButton);
 				}
 				optionPanel.add(panel6, cc.xy(5, 1));
 
@@ -409,27 +505,54 @@ public class OptionPanel extends AbstractOptionPane
 
 				//======== panel5 ========
 				{
-					panel5.setLayout(new GridLayout(0, 1, 0, 2));
+					panel5.setLayout(new FormLayout(
+						new ColumnSpec[] {
+							FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC,
+							FormFactory.DEFAULT_COLSPEC
+						},
+						new RowSpec[] {
+							new RowSpec(RowSpec.TOP, Sizes.DEFAULT, FormSpec.NO_GROW),
+							FormFactory.LINE_GAP_ROWSPEC,
+							new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.NO_GROW),
+							FormFactory.LINE_GAP_ROWSPEC,
+							new RowSpec(RowSpec.FILL, Sizes.DEFAULT, FormSpec.NO_GROW),
+							FormFactory.LINE_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.LINE_GAP_ROWSPEC,
+							new RowSpec(RowSpec.CENTER, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+						}));
 
-					//---- optionGroupCombo ----
-					optionGroupCombo.setEditable(true);
-					panel5.add(optionGroupCombo);
+					//======== panel9 ========
+					{
+						panel9.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+						//---- optionGroupCombo ----
+						optionGroupCombo.setEditable(true);
+						optionGroupCombo.setPrototypeDisplayValue("Java Set");
+						panel9.add(optionGroupCombo);
+					}
+					panel5.add(panel9, cc.xywh(1, 1, 3, 1));
 
 					//---- loadOptionsButton ----
 					loadOptionsButton.setText("Load");
-					panel5.add(loadOptionsButton);
-
-					//---- saveOptionsButton ----
-					saveOptionsButton.setText("Save");
-					panel5.add(saveOptionsButton);
-
-					//---- deleteOptionsButton ----
-					deleteOptionsButton.setText("Delete");
-					panel5.add(deleteOptionsButton);
+					panel5.add(loadOptionsButton, cc.xy(1, 3));
 
 					//---- newOptionsButton ----
 					newOptionsButton.setText("New");
-					panel5.add(newOptionsButton);
+					panel5.add(newOptionsButton, cc.xy(3, 3));
+
+					//---- saveOptionsButton ----
+					saveOptionsButton.setText("Save");
+					panel5.add(saveOptionsButton, cc.xy(1, 5));
+
+					//---- deleteOptionsButton ----
+					deleteOptionsButton.setText("Delete");
+					panel5.add(deleteOptionsButton, cc.xy(3, 5));
+
+					//---- appendOptionsButton ----
+					appendOptionsButton.setText("Append");
+					panel5.add(appendOptionsButton, cc.xy(1, 7));
 				}
 				optionPanel.add(panel5, cc.xy(1, 5));
 
@@ -584,10 +707,12 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.setLayout(new FormLayout(
 						new ColumnSpec[] {
 							FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC,
+							new ColumnSpec(Sizes.dluX(54)),
 							new ColumnSpec(ColumnSpec.LEFT, Sizes.DLUX7, FormSpec.NO_GROW),
 							new ColumnSpec(ColumnSpec.RIGHT, Sizes.DEFAULT, FormSpec.NO_GROW),
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							new ColumnSpec(Sizes.dluX(70))
+							new ColumnSpec(Sizes.dluX(41))
 						},
 						new RowSpec[] {
 							FormFactory.DEFAULT_ROWSPEC,
@@ -597,26 +722,52 @@ public class OptionPanel extends AbstractOptionPane
 
 					//---- ignoreCaseCheck ----
 					ignoreCaseCheck.setText("Provider Ignore Case");
-					panel4.add(ignoreCaseCheck, cc.xy(1, 1));
-
-					//---- label4 ----
-					label4.setText("Filter Regexp");
-					panel4.add(label4, cc.xy(3, 1));
-					panel4.add(filterField, cc.xy(5, 1));
+					panel4.add(ignoreCaseCheck, cc.xywh(1, 1, 3, 1));
 
 					//---- label5 ----
 					label5.setText("Minimum Parts");
-					panel4.add(label5, cc.xy(3, 3));
+					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
-					panel4.add(minpartsSpinner, cc.xy(5, 3));
+					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
+					panel4.add(minpartsSpinner, cc.xy(7, 1));
+
+					//---- label4 ----
+					label4.setText("Filter Regexp");
+					panel4.add(label4, cc.xy(1, 3));
+					panel4.add(filterField, cc.xy(3, 3));
+
+					//---- label8 ----
+					label8.setText("Maximum Parts");
+					panel4.add(label8, cc.xy(5, 3));
+
+					//---- maxpartsSpinner ----
+					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
+					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
 
-				//---- processButton ----
-				processButton.setText("Update Engine");
-				optionPanel.add(processButton, cc.xy(3, 13));
+				//======== panel8 ========
+				{
+					panel8.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+					//---- cacheCheck ----
+					cacheCheck.setText("Cache Data");
+					panel8.add(cacheCheck);
+
+					//---- updateCheck ----
+					updateCheck.setText("Update on Startup");
+					panel8.add(updateCheck);
+
+					//---- processButton ----
+					processButton.setText("Update Engine");
+					panel8.add(processButton);
+
+					//---- processAllButton ----
+					processAllButton.setText("Update All Engines");
+					panel8.add(processAllButton);
+				}
+				optionPanel.add(panel8, cc.xywh(1, 13, 5, 1));
 				optionPanel.add(messageLabel, cc.xywh(3, 15, 3, 1));
 			}
 			mainPanel.add(optionPanel, BorderLayout.CENTER);
@@ -638,22 +789,26 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
+	JPanel panel7;
 	JLabel label7;
 	JComboBox enginesCombo;
-	JPanel panel6;
-	JButton newEngineButton;
+	JButton loadEngineButton;
+	JButton saveEngineButton;
 	JButton deleteEngineButton;
+	JButton newEngineButton;
+	JPanel panel6;
 	JLabel label6;
 	JLabel label1;
 	JPanel panel5;
+	JPanel panel9;
 	JComboBox optionGroupCombo;
 	JButton loadOptionsButton;
+	JButton newOptionsButton;
 	JButton saveOptionsButton;
 	JButton deleteOptionsButton;
-	JButton newOptionsButton;
+	JButton appendOptionsButton;
 	JScrollPane scrollPane1;
 	JList providerList;
 	JPanel panel2;
@@ -680,11 +835,17 @@ public class OptionPanel extends AbstractOptionPane
 	JButton removeTokenizerButton;
 	JPanel panel4;
 	JCheckBox ignoreCaseCheck;
-	JLabel label4;
-	JTextField filterField;
 	JLabel label5;
 	JSpinner minpartsSpinner;
+	JLabel label4;
+	JTextField filterField;
+	JLabel label8;
+	JSpinner maxpartsSpinner;
+	JPanel panel8;
+	JCheckBox cacheCheck;
+	JCheckBox updateCheck;
 	JButton processButton;
+	JButton processAllButton;
 	JLabel messageLabel;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	
@@ -697,7 +858,7 @@ public class OptionPanel extends AbstractOptionPane
 	    String fileName;
 	    java.util.List<String[]> tokenizers;
 	    // Either ["camelcase"] or ["regex", <regex>, "y"|"n" (ignore case)]
-	    int minparts;
+	    int minparts, maxparts;
 	    boolean ignoreCase;
 	    String filterRegex;
 	    
