@@ -151,9 +151,10 @@ public class CamelCompletePlugin extends EditPlugin {
 	    if (debug)
 		debugWriter.close();
 
+	    optionsMap = null;
+	    enginesOptionsMap = null;
 	    engineMap = null;
 	    engines = null;
-	    optionsMap = null;
 	}
 	
 	// }}}
@@ -199,7 +200,8 @@ public class CamelCompletePlugin extends EditPlugin {
 			boolean failed = false;
 			Interpreter bsh = new Interpreter();
 			try {
-			    provider = (IdentifierProvider)bsh.eval(og.extra);
+			    bsh.eval("import com.illengineer.jcc.*;");
+			    provider = (IdentifierProvider)bsh.eval("(IdentifierProvider)" + og.extra);
 			} catch (bsh.EvalError ex) {
 			    failed = true;
 			    View v = jEdit.getActiveView();
