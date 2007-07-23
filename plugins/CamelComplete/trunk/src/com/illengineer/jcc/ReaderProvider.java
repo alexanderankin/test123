@@ -8,12 +8,12 @@ import java.io.*;
     and uses them as identifier names. This could be useful when reading from
     a plain text file, or over a network stream.
 */
-class ReaderProvider implements IdentifierProvider, Serializable
+public class ReaderProvider implements IdentifierProvider, Serializable
 {
     private ArrayList<String> identifierList;
     private Reader inputReader;
     
-    ReaderProvider(Reader r) {
+    public ReaderProvider(Reader r) {
 	inputReader = r;
     }
     

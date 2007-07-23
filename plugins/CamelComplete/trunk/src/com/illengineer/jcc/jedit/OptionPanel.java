@@ -84,13 +84,17 @@ public class OptionPanel extends AbstractOptionPane
 	    if (source == saveProviderButton) {
 		// we need at least one tokenizer and a file name
 		String fileName = filenameField.getText();
-		if (tokenizerModel.size() > 0 && fileName.length() > 0) {
+		String extra = extraField.getText();
+		if (tokenizerModel.size() > 0 && (fileName.length() > 0 || extra.length() > 0)) {
 		    OptionGroup og = new OptionGroup();
 		    if (ctagsButton.isSelected())
 			og.provider = "ctags";
 		    else if (jarButton.isSelected())
 			og.provider = "jar";
+		    else if (codeButton.isSelected())
+			og.provider = "code";
 		    og.fileName = fileName;
+		    og.extra = extra;
 		    og.tokenizers = new ArrayList<String[]>(tokenizerModel.size()+1);
 		    for (Enumeration e = tokenizerModel.elements(); e.hasMoreElements(); )
 			og.tokenizers.add(((TokenizerHolder)e.nextElement()).tokenizer);
@@ -254,6 +258,7 @@ public class OptionPanel extends AbstractOptionPane
 		ctagsButton.setSelected(true);
 		filenameField.setText("");
 		filterField.setText("");
+		extraField.setText("");
 		ignoreCaseCheck.setSelected(false);
 		((SpinnerNumberModel)minpartsSpinner.getModel()).setValue(new Integer(2));
 		((SpinnerNumberModel)maxpartsSpinner.getModel()).setValue(new Integer(8));
@@ -276,7 +281,12 @@ public class OptionPanel extends AbstractOptionPane
 		ctagsButton.setSelected(true);
 	    else if (og.provider.equals("jar"))
 		jarButton.setSelected(true);
-	    filenameField.setText(og.fileName);
+	    else if (og.provider.equals("code"))
+		codeButton.setSelected(true);
+	    if (og.fileName != null)
+		filenameField.setText(og.fileName);
+	    if (og.extra != null)
+		extraField.setText(og.extra);
 	    for (String [] t : og.tokenizers)
 		tokenizerModel.addElement(new TokenizerHolder(t));
 	    ((SpinnerNumberModel)minpartsSpinner.getModel()).setValue(new Integer(og.minparts));
@@ -389,9 +399,13 @@ public class OptionPanel extends AbstractOptionPane
 		panel2 = new JPanel();
 		ctagsButton = new JRadioButton();
 		jarButton = new JRadioButton();
+		codeButton = new JRadioButton();
 		label3 = new JLabel();
 		filenameField = new JTextField();
 		chooseButton = new JButton();
+		panel10 = new JPanel();
+		extraLabel = new JLabel();
+		extraField = new JTextField();
 		saveProviderButton = new JButton();
 		deleteProviderButton = new JButton();
 		editProviderButton = new JButton();
@@ -574,11 +588,13 @@ public class OptionPanel extends AbstractOptionPane
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
 							FormFactory.DEFAULT_COLSPEC,
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
+							new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT, FormSpec.DEFAULT_GROW)
 						},
 						new RowSpec[] {
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.LINE_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.RELATED_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
@@ -594,6 +610,10 @@ public class OptionPanel extends AbstractOptionPane
 					jarButton.setText("JAR");
 					panel2.add(jarButton, cc.xy(3, 1));
 
+					//---- codeButton ----
+					codeButton.setText("Bsh Code");
+					panel2.add(codeButton, cc.xy(5, 1));
+
 					//---- label3 ----
 					label3.setText("Filename");
 					panel2.add(label3, cc.xy(1, 3));
@@ -603,17 +623,28 @@ public class OptionPanel extends AbstractOptionPane
 					chooseButton.setText("Choose");
 					panel2.add(chooseButton, cc.xy(5, 5));
 
+					//======== panel10 ========
+					{
+						panel10.setLayout(new BorderLayout(4, 0));
+
+						//---- extraLabel ----
+						extraLabel.setText("Extra");
+						panel10.add(extraLabel, BorderLayout.WEST);
+						panel10.add(extraField, BorderLayout.CENTER);
+					}
+					panel2.add(panel10, cc.xywh(1, 7, 5, 1));
+
 					//---- saveProviderButton ----
 					saveProviderButton.setText("Save");
-					panel2.add(saveProviderButton, cc.xy(1, 7));
+					panel2.add(saveProviderButton, cc.xy(1, 9));
 
 					//---- deleteProviderButton ----
 					deleteProviderButton.setText("Delete");
-					panel2.add(deleteProviderButton, cc.xy(3, 7));
+					panel2.add(deleteProviderButton, cc.xy(3, 9));
 
 					//---- editProviderButton ----
 					editProviderButton.setText("Edit");
-					panel2.add(editProviderButton, cc.xy(5, 7));
+					panel2.add(editProviderButton, cc.xy(5, 9));
 				}
 				optionPanel.add(panel2, cc.xy(5, 5));
 
@@ -777,6 +808,7 @@ public class OptionPanel extends AbstractOptionPane
 		ButtonGroup buttonGroup1 = new ButtonGroup();
 		buttonGroup1.add(ctagsButton);
 		buttonGroup1.add(jarButton);
+		buttonGroup1.add(codeButton);
 
 		//---- buttonGroup2 ----
 		ButtonGroup buttonGroup2 = new ButtonGroup();
@@ -814,9 +846,13 @@ public class OptionPanel extends AbstractOptionPane
 	JPanel panel2;
 	JRadioButton ctagsButton;
 	JRadioButton jarButton;
+	JRadioButton codeButton;
 	JLabel label3;
 	JTextField filenameField;
 	JButton chooseButton;
+	JPanel panel10;
+	JLabel extraLabel;
+	JTextField extraField;
 	JButton saveProviderButton;
 	JButton deleteProviderButton;
 	JButton editProviderButton;
@@ -854,8 +890,9 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ Inner Classes
 	public static class OptionGroup implements Serializable
 	{
-	    String provider;  //"ctags" or "jar"
+	    String provider;  //"ctags", "jar", or "code"
 	    String fileName;
+	    String extra;
 	    java.util.List<String[]> tokenizers;
 	    // Either ["camelcase"] or ["regex", <regex>, "y"|"n" (ignore case)]
 	    int minparts, maxparts;
@@ -863,9 +900,14 @@ public class OptionPanel extends AbstractOptionPane
 	    String filterRegex;
 	    
 	    public String toString() {
-		int i = fileName.lastIndexOf(File.separatorChar);
-		i++;
-		return provider + ", " + fileName.substring(i);
+		if (provider.equals("ctags") || provider.equals("jar")) {
+		    int i = fileName.lastIndexOf(File.separatorChar);
+		    i++;
+		    return provider + ", " + fileName.substring(i);
+		} else if (provider.equals("code")) {
+		    return "BeanShell";
+		}
+		return "";
 	    }
 	}
 	
