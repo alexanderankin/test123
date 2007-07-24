@@ -168,7 +168,8 @@ public class CompletionPopup extends JWindow
 
 		this.candidates = candidates;
 		list.setModel(new CandidateListModel());
-		list.setVisibleRowCount(Math.min(candidates.getSize(),12));
+		list.setVisibleRowCount(Math.min(candidates.getSize(),
+			((Integer)CamelCompletePlugin.getOption("popup-rows")).intValue()));
 		pack();
 		setLocation(fitInScreen(getLocation(null),this,
 			view.getTextArea().getPainter().getFontMetrics().getHeight()));

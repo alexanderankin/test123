@@ -11,6 +11,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import com.illengineer.com.jgoodies.forms.factories.*;
 import com.illengineer.com.jgoodies.forms.layout.*;
+// import com.jgoodies.forms.factories.*;
+// import com.jgoodies.forms.layout.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -67,6 +69,8 @@ public class OptionPanel extends AbstractOptionPane
 	    loadEngines();
 	    cacheCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("cache")).booleanValue());
 	    updateCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("update")).booleanValue());
+	    ((SpinnerNumberModel)popupRowsSpinner.getModel()).setValue(
+		      (Integer)CamelCompletePlugin.getOption("popup-rows"));
 	    addComponent(mainPanel);
 	}
 	
@@ -75,6 +79,7 @@ public class OptionPanel extends AbstractOptionPane
 	    saveOptionGroups();
 	    CamelCompletePlugin.setOption("cache", Boolean.valueOf(cacheCheck.isSelected()));
 	    CamelCompletePlugin.setOption("update", Boolean.valueOf(updateCheck.isSelected()));
+	    CamelCompletePlugin.setOption("popup-rows", popupRowsSpinner.getValue());
 	}
 	
 	// }}}
@@ -394,6 +399,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -439,6 +445,9 @@ public class OptionPanel extends AbstractOptionPane
 		regexIgnoreCaseCheck = new JCheckBox();
 		addTokenizerButton = new JButton();
 		removeTokenizerButton = new JButton();
+		panel1 = new JPanel();
+		label9 = new JLabel();
+		popupRowsSpinner = new JSpinner();
 		panel4 = new JPanel();
 		ignoreCaseCheck = new JCheckBox();
 		label5 = new JLabel();
@@ -726,6 +735,21 @@ public class OptionPanel extends AbstractOptionPane
 				}
 				optionPanel.add(panel3, cc.xy(5, 9));
 
+				//======== panel1 ========
+				{
+					panel1.setLayout(new BorderLayout(3, 3));
+
+					//---- label9 ----
+					label9.setText("Popup List Rows");
+					panel1.add(label9, BorderLayout.NORTH);
+
+					//---- popupRowsSpinner ----
+					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
+					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
+					panel1.add(popupRowsSpinner, BorderLayout.WEST);
+				}
+				optionPanel.add(panel1, cc.xy(1, 11));
+
 				//======== panel4 ========
 				{
 					panel4.setLayout(new FormLayout(
@@ -753,7 +777,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
+					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -766,7 +790,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -815,6 +839,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
@@ -860,6 +885,9 @@ public class OptionPanel extends AbstractOptionPane
 	JCheckBox regexIgnoreCaseCheck;
 	JButton addTokenizerButton;
 	JButton removeTokenizerButton;
+	JPanel panel1;
+	JLabel label9;
+	JSpinner popupRowsSpinner;
 	JPanel panel4;
 	JCheckBox ignoreCaseCheck;
 	JLabel label5;

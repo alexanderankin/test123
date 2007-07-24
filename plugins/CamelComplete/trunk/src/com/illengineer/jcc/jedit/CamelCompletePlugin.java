@@ -30,6 +30,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	      groups -> Map<String (groupname), List<OptionPanel.OptionGroup>>
 	      cache -> Boolean.(TRUE|FALSE)
 	      update -> Boolean.(TRUE|FALSE)
+	      popup-rows -> Integer
 	*/
 	private static HashMap<String,Object> optionsMap;
 	
@@ -87,6 +88,9 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("cache", Boolean.TRUE);
 	    if (!optionsMap.containsKey("update"))
 		optionsMap.put("update", Boolean.FALSE);
+	    if (!optionsMap.containsKey("popup-rows"))
+		optionsMap.put("popup-rows", new Integer(12));
+
 	    
 	    for (String engineName : enginesOptionsMap.keySet()) {
 		EngineGroup eg = new EngineGroup();
@@ -238,7 +242,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	}
 	
 	static void deleteEngine(String engineName) {
-	    if (engineMap.size() <= 1)
+	    if (enginesOptionsMap.size() <= 1)
 		return;
 		
 	    enginesOptionsMap.remove(engineName);
