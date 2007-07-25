@@ -8,7 +8,7 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.name=CamelComplete
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.author=Jesse Pavel
 
 # version number
-plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=2.0
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=2.2
 
 # online help
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.docs=CamelComplete.html
