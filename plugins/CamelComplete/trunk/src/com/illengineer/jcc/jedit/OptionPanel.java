@@ -11,8 +11,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import com.illengineer.com.jgoodies.forms.factories.*;
 import com.illengineer.com.jgoodies.forms.layout.*;
-// import com.jgoodies.forms.factories.*;
-// import com.jgoodies.forms.layout.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -54,12 +52,14 @@ public class OptionPanel extends AbstractOptionPane
 	    resetComponents();
 	    selectedProvider = selectedTokenizer = -1;  // no currently selected items
 	    
-	    JButton[] buttons = {saveProviderButton, deleteProviderButton, editProviderButton, chooseButton,
-	    			 	copyProviderButton,
-	    			 addTokenizerButton, removeTokenizerButton, processButton, processAllButton,
-				 saveOptionsButton, appendOptionsButton,  deleteOptionsButton, newOptionsButton,
-				 saveEngineButton, deleteEngineButton, newEngineButton};
-	    for (JButton b : buttons)
+	    AbstractButton[] buttons 
+		 = {saveProviderButton, deleteProviderButton, editProviderButton, chooseButton,
+		    	copyProviderButton,
+		    addTokenizerButton, removeTokenizerButton, processButton, processAllButton,
+		    saveOptionsButton, appendOptionsButton,  deleteOptionsButton, newOptionsButton,
+		    saveEngineButton, deleteEngineButton, newEngineButton,
+		    ctagsButton, jarButton, textFileButton, codeButton, bufferWordsButton};
+	    for (AbstractButton b : buttons)
 		b.addActionListener(this);
 		
 	    enginesCombo.addActionListener(this);
@@ -103,6 +103,8 @@ public class OptionPanel extends AbstractOptionPane
 			og.provider = "text";
 		    else if (codeButton.isSelected())
 			og.provider = "code";
+		    else if (bufferWordsButton.isSelected())
+			og.provider = "buffer";
 		    og.fileName = fileName;
 		    og.extra = extra;
 		    og.tokenizers = new ArrayList<String[]>(tokenizerModel.size()+1);
@@ -265,6 +267,22 @@ public class OptionPanel extends AbstractOptionPane
 		}
 	    }
 	    // }}}
+	    // {{{ Provider Type buttons
+	    else if (source == ctagsButton || source == jarButton || source == textFileButton) {
+		filenameField.setEnabled(true);
+		chooseButton.setEnabled(true);
+		extraLabel.setText("Extra");
+		extraField.setEnabled(false);
+	    } else if (source == codeButton || source == bufferWordsButton) {
+		filenameField.setEnabled(false);
+		chooseButton.setEnabled(false);
+		extraField.setEnabled(true);
+		if (source == codeButton)
+		    extraLabel.setText("Code");
+		else if (source == bufferWordsButton)
+		    extraLabel.setText("Regex");
+	    }
+	    // }}}
 	}
 	
 	// }}}
@@ -278,7 +296,7 @@ public class OptionPanel extends AbstractOptionPane
 	
 	private void resetComponents(boolean clearProviderFields, boolean clearTokenizerFields) {
 	    if (clearProviderFields) {
-		ctagsButton.setSelected(true);
+		ctagsButton.doClick();
 		filenameField.setText("");
 		filterField.setText("");
 		extraField.setText("");
@@ -288,7 +306,7 @@ public class OptionPanel extends AbstractOptionPane
 	    }
 
 	    if (clearTokenizerFields) {
-		camelCaseButton.setSelected(true);
+		camelCaseButton.doClick();
 		regexField.setText("");
 		regexIgnoreCaseCheck.setSelected(false);
 	    }
@@ -301,13 +319,15 @@ public class OptionPanel extends AbstractOptionPane
 	    tokenizerModel.clear();
 	    
 	    if (og.provider.equals("ctags"))
-		ctagsButton.setSelected(true);
+		ctagsButton.doClick();
 	    else if (og.provider.equals("jar"))
-		jarButton.setSelected(true);
+		jarButton.doClick();
 	    else if (og.provider.equals("text"))
-		textFileButton.setSelected(true);
+		textFileButton.doClick();
 	    else if (og.provider.equals("code"))
-		codeButton.setSelected(true);
+		codeButton.doClick();
+	    else if (og.provider.equals("buffer"))
+		bufferWordsButton.doClick();
 	    if (og.fileName != null)
 		filenameField.setText(og.fileName);
 	    if (og.extra != null)
@@ -399,7 +419,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -424,7 +443,9 @@ public class OptionPanel extends AbstractOptionPane
 		ctagsButton = new JRadioButton();
 		jarButton = new JRadioButton();
 		textFileButton = new JRadioButton();
+		panel11 = new JPanel();
 		codeButton = new JRadioButton();
+		bufferWordsButton = new JRadioButton();
 		label3 = new JLabel();
 		filenameField = new JTextField();
 		chooseButton = new JButton();
@@ -636,9 +657,19 @@ public class OptionPanel extends AbstractOptionPane
 					textFileButton.setText("Text");
 					panel2.add(textFileButton, cc.xy(5, 1));
 
-					//---- codeButton ----
-					codeButton.setText("Bsh Code");
-					panel2.add(codeButton, cc.xywh(1, 3, 3, 1));
+					//======== panel11 ========
+					{
+						panel11.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+						//---- codeButton ----
+						codeButton.setText("Bsh Code");
+						panel11.add(codeButton);
+
+						//---- bufferWordsButton ----
+						bufferWordsButton.setText("Buffer Words");
+						panel11.add(bufferWordsButton);
+					}
+					panel2.add(panel11, cc.xywh(1, 3, 5, 1));
 
 					//---- label3 ----
 					label3.setText("Filename");
@@ -744,7 +775,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel1.add(label9, BorderLayout.NORTH);
 
 					//---- popupRowsSpinner ----
-					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
+					popupRowsSpinner.setModel(new SpinnerNumberModel(12, 4, null, 1));
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
@@ -777,7 +808,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
+					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -790,7 +821,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -827,6 +858,7 @@ public class OptionPanel extends AbstractOptionPane
 		buttonGroup1.add(jarButton);
 		buttonGroup1.add(textFileButton);
 		buttonGroup1.add(codeButton);
+		buttonGroup1.add(bufferWordsButton);
 
 		//---- buttonGroup2 ----
 		ButtonGroup buttonGroup2 = new ButtonGroup();
@@ -839,7 +871,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
@@ -864,7 +895,9 @@ public class OptionPanel extends AbstractOptionPane
 	JRadioButton ctagsButton;
 	JRadioButton jarButton;
 	JRadioButton textFileButton;
+	JPanel panel11;
 	JRadioButton codeButton;
+	JRadioButton bufferWordsButton;
 	JLabel label3;
 	JTextField filenameField;
 	JButton chooseButton;
@@ -909,7 +942,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ Inner Classes
 	public static class OptionGroup implements Serializable
 	{
-	    String provider;  //"ctags", "jar", "text", or "code"
+	    String provider;  //"ctags", "jar", "text", "buffer", or "code"
 	    String fileName;
 	    String extra;
 	    java.util.List<String[]> tokenizers;
@@ -925,6 +958,8 @@ public class OptionPanel extends AbstractOptionPane
 		    return provider + ", " + fileName.substring(i);
 		} else if (provider.equals("code")) {
 		    return "BeanShell";
+		} else if (provider.equals("buffer")) {
+		    return "Buffer Words, " + extra;
 		}
 		return "";
 	    }

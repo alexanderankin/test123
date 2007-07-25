@@ -225,6 +225,8 @@ public class CamelCompletePlugin extends EditPlugin {
 			}
 			if (failed)
 			    provider = new NullProvider();
+		    } else if (og.provider.equals("buffer")) {
+			provider = new BufferWordsProvider(og.extra);
 		    }
 		    for (String [] t : og.tokenizers) {
 			if (t[0].equals("camelcase"))
