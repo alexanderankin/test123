@@ -1,3 +1,3 @@
--Write an IdentifierProvider to collect words from currently opened buffers.
--Write an IdentifierProvider to read words from a plain text file.
--Use reflection in the Jar provider to read method names.
+-Use reflection in the Jar provider to read method names. (maybe?)
+  It's not too hard, but the identifier list would be gigantic.
+
