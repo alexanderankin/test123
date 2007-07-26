@@ -207,6 +207,7 @@ public class CamelCompletePlugin extends EditPlugin {
 			Interpreter bsh = new Interpreter();
 			try {
 			    bsh.eval("import com.illengineer.jcc.*;");
+			    bsh.eval("import com.illengineer.jcc.jedit.*;");
 			    bsh.eval("IdentifierProvider __ip;");
 			    bsh.eval("__ip = (IdentifierProvider)" + og.extra);
 			    provider = (IdentifierProvider)bsh.get("__ip");
