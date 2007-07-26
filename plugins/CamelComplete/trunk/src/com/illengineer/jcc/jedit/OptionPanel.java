@@ -273,12 +273,14 @@ public class OptionPanel extends AbstractOptionPane
 	    // {{{ Provider Type buttons
 	    else if (source == ctagsButton || source == jarButton || source == textFileButton) {
 		filenameField.setEnabled(true);
+		label3.setEnabled(true);	// The "Filename" label
 		chooseButton.setEnabled(true);
-		extraLabel.setText("Extra");
+		extraLabel.setText("");
 		extraField.setEnabled(false);
 		currentViewCheck.setVisible(false);
 	    } else if (source == codeButton || source == bufferWordsButton) {
 		filenameField.setEnabled(false);
+		label3.setEnabled(false);
 		chooseButton.setEnabled(false);
 		extraField.setEnabled(true);
 		if (source == codeButton) {
@@ -430,6 +432,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -646,7 +649,7 @@ public class OptionPanel extends AbstractOptionPane
 							FormFactory.LINE_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
+							new RowSpec(Sizes.dluY(12)),
 							FormFactory.RELATED_GAP_ROWSPEC,
 							FormFactory.DEFAULT_ROWSPEC,
 							FormFactory.RELATED_GAP_ROWSPEC,
@@ -791,7 +794,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel1.add(label9, BorderLayout.NORTH);
 
 					//---- popupRowsSpinner ----
-					popupRowsSpinner.setModel(new SpinnerNumberModel(12, 4, null, 1));
+					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
@@ -824,7 +827,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
+					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -837,7 +840,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -887,6 +890,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
