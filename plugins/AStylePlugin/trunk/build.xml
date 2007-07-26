@@ -31,7 +31,7 @@
        
 -->
 
-<project name="AStyle" default="dist" basedir=".">
+<project name="AStylePlugin" default="dist" basedir=".">
 
    <property file="../build.properties"/>
    <property file="build.properties"/>
