@@ -41,6 +41,7 @@ public class OptionPanel extends AbstractOptionPane
 	
 	protected void _init() {
 	    initComponents();
+	    currentViewCheck.setVisible(false);
 	    
 	    providerModel = new DefaultListModel();
 	    tokenizerModel = new DefaultListModel();
@@ -103,8 +104,10 @@ public class OptionPanel extends AbstractOptionPane
 			og.provider = "text";
 		    else if (codeButton.isSelected())
 			og.provider = "code";
-		    else if (bufferWordsButton.isSelected())
+		    else if (bufferWordsButton.isSelected()) {
 			og.provider = "buffer";
+			og.config = Boolean.valueOf(!currentViewCheck.isSelected());
+		    }
 		    og.fileName = fileName;
 		    og.extra = extra;
 		    og.tokenizers = new ArrayList<String[]>(tokenizerModel.size()+1);
@@ -273,14 +276,19 @@ public class OptionPanel extends AbstractOptionPane
 		chooseButton.setEnabled(true);
 		extraLabel.setText("Extra");
 		extraField.setEnabled(false);
+		currentViewCheck.setVisible(false);
 	    } else if (source == codeButton || source == bufferWordsButton) {
 		filenameField.setEnabled(false);
 		chooseButton.setEnabled(false);
 		extraField.setEnabled(true);
-		if (source == codeButton)
+		if (source == codeButton) {
 		    extraLabel.setText("Code");
-		else if (source == bufferWordsButton)
+		    currentViewCheck.setVisible(false);
+		} else if (source == bufferWordsButton) {
 		    extraLabel.setText("Regex");
+		    currentViewCheck.setVisible(true);
+		    currentViewCheck.setSelected(false);
+		}
 	    }
 	    // }}}
 	}
@@ -326,8 +334,11 @@ public class OptionPanel extends AbstractOptionPane
 		textFileButton.doClick();
 	    else if (og.provider.equals("code"))
 		codeButton.doClick();
-	    else if (og.provider.equals("buffer"))
+	    else if (og.provider.equals("buffer")) {
 		bufferWordsButton.doClick();
+		if (og.config != null)
+		    currentViewCheck.setSelected(!((Boolean)og.config).booleanValue());
+	    }
 	    if (og.fileName != null)
 		filenameField.setText(og.fileName);
 	    if (og.extra != null)
@@ -447,6 +458,7 @@ public class OptionPanel extends AbstractOptionPane
 		codeButton = new JRadioButton();
 		bufferWordsButton = new JRadioButton();
 		label3 = new JLabel();
+		currentViewCheck = new JCheckBox();
 		filenameField = new JTextField();
 		chooseButton = new JButton();
 		panel10 = new JPanel();
@@ -674,6 +686,10 @@ public class OptionPanel extends AbstractOptionPane
 					//---- label3 ----
 					label3.setText("Filename");
 					panel2.add(label3, cc.xy(1, 5));
+
+					//---- currentViewCheck ----
+					currentViewCheck.setText("Only Active Views");
+					panel2.add(currentViewCheck, cc.xywh(3, 5, 3, 1));
 					panel2.add(filenameField, cc.xywh(1, 7, 3, 1));
 
 					//---- chooseButton ----
@@ -899,6 +915,7 @@ public class OptionPanel extends AbstractOptionPane
 	JRadioButton codeButton;
 	JRadioButton bufferWordsButton;
 	JLabel label3;
+	JCheckBox currentViewCheck;
 	JTextField filenameField;
 	JButton chooseButton;
 	JPanel panel10;
@@ -942,6 +959,8 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ Inner Classes
 	public static class OptionGroup implements Serializable
 	{
+	    static final long serialVersionUID = 3023920492517680506L;
+	    
 	    String provider;  //"ctags", "jar", "text", "buffer", or "code"
 	    String fileName;
 	    String extra;
@@ -950,6 +969,8 @@ public class OptionPanel extends AbstractOptionPane
 	    int minparts, maxparts;
 	    boolean ignoreCase;
 	    String filterRegex;
+	    Object config; // Extra options, see below
+	    // For "buffer", Boolean: search all buffers (true), or only active view (false)
 	    
 	    public String toString() {
 		if (provider.equals("ctags") || provider.equals("jar") || provider.equals("text")) {
@@ -974,6 +995,7 @@ public class OptionPanel extends AbstractOptionPane
 		og.maxparts = maxparts;
 		og.ignoreCase = ignoreCase;
 		og.filterRegex = filterRegex;
+		og.config = config;
 		return og;
 	    }
 	}
