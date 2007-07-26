@@ -3,11 +3,15 @@
 <head>
 
 
+
+  
   
   
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
 
+
+  
   
   
   <title>CamelComplete Documentation</title>
@@ -17,11 +21,15 @@
 <body>
 
 
+
 <h2>CamelComplete Plugin for JEdit<br>
+
 </h2>
 
 
+
 <br>
+
 
 
 This plugin provides a "CamelComplete Word" command for jEdit. This can
@@ -29,77 +37,56 @@ expand abbreviations into their full words as shown &nbsp;by these
 examples, which show identifiers and their abbreviations:<br>
 
 
+
 <pre>	SwingUtilities 	-&gt; SU<br>	GtkMessageBox 	-&gt; GMB<br>	IOException	-&gt; IOE<br>	G_ModelScan	-&gt; GMS<br>	G_modelScan	-&gt; GmS<br>	G3openFile	-&gt; GoF<br>	_kml_openFile	-&gt; koF</pre>
+
 
 The plugin also comes with a Regular Expression parser, so that you can
 break words apart using a regexp. This is useful for C and Lisp, among
 others.<br>
 
+
 <pre>Regexp: [_-]<br><br>	gtk_check_menu_item_set_inconsistent -&gt; gcmisi<br>	gtk_menu_item_new 		     -&gt; gmin<br>	multi-define-syntax 		     -&gt; mds</pre>
 
+
 To use this command, configure the plugin on the Options... screen,
-described below, and then invoke the CamelComplete Word. You can bind
+described below, and then invoke the CamelComplete Word action. You can bind
 this to a shortcut key by going to Utilities -&gt; Global Options -&gt;
 Shortcuts.<br>
-
 <br>
-
 <h3>Options</h3>
-
-The options pane has two lists, one for providers (where the plugin
-finds the identifiers to use) and one for tokenizers (the mini-programs
-used to find abbreviations for identifiers). Each provider can have
-multiple tokenizers working on it--this is useful in cases in which one
-file has words formatted like GtkMessageBox and gtk_message_box_new.
-The way the plugin determines which tokenizer is valid is by using the
-"minimum parts" field. If a word's abbreviation is less than this
-value, the abbreviation will be considered invalid and discarded.<br>
-
-<h4>Creating a Provider</h4>
-
-To create a new provider, choose either Ctags (see <a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a>)
-or JAR (a standard Java JAR) and Choose the filename. Next, go to the
-Tokenizers section and add one or more tokenizers to the list. The
-regex field is for you to type the regular expression using which an
-identifier is split up. If you type in an invalid regex, the default
-value of <span style="font-family: monospace;">&nbsp;[_-] </span>(underscore and dash) will be used. Click Add to see the tokenizer in the list. <br>
-
+The fundamental concepts are engines, providers, tokenizers, and option sets.<br>
 <br>
-
-Below tokenizers are options that apply to the whole provider.<br>
-
 <ul>
-
-  <li>Provider Ignore Case -- this stores identifiers in such a way
-that both "AIOOBE" and "aioobe", or any case combination between, will
-expand to "ArrayIndexOutOfBoundsException".</li>
-
-  <li>Filter Regexp -- any identifier matching this regular expression will not be considered for inclusion.</li>
-
-  <li>Minimum Parts -- described above, as a way to choose which tokenizer works.</li>
-
+  <li>An <span style="font-style: italic;">Engine </span>is an object
+that keeps track of a list of identifiers and the abbreviations used to
+find those identifiers. An engine comprises a number of providers,
+along with a few options that apply to the whole engine.</li>
+  <li>A <span style="font-style: italic;">Provider</span> is a program
+that generates a list of identifiers for an engine to remember. The
+providers that come with the plugin include one that reads the output
+of Ctags(see  <a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a>) files, a JAR reader, a plain text file reader, and a provider that collects identifiers from all open buffers.</li>
+  <li>A <span style="font-style: italic;">Tokenizer</span> is what
+takes an identifier and determines the abbreviation that should be
+used. The two available are one for CamelCase words, and one that uses
+a supplied regular expression to break apart an identifier.</li>
+  <li>An <span style="font-style: italic;">Option Set</span> is a group
+of providers and their associated tokenizers. You can use option sets
+to remember settings that you might want to use over and over in a
+number of engines.</li>
 </ul>
-
-When you've set all these options, click "Save" next to the provider
-list, and you'll see it appear. To Edit an existing provider, select
-it, click Edit, make your changes, and click Save.<br>
-
 <br>
-
-<h4>Updating the Engine</h4>
-
-Now that you've set up your providers, click "Update Engine" to have
-the plugin parse the sources and remember the identifiers. When you
-start jEdit, the plugin will load the list of identifiers you were
-using last. <br>
-
-<span style="font-style: italic;">Note that clicking Save in the options window will </span>not <span style="font-style: italic;">cause the identifiers to be reloaded. You must click Update Engine.</span><br>
-
+<h3>Interface</h3>
+The options pane started out simple, but now looks like a labyrinth of buttons. Ah well.<br>
 <br>
-
+<span style="font-weight: bold;">Engines</span><br>
+On the top is a combo box with the engines you've created, along with
+buttons for editing that list. Having multiple engines is useful
+because each can be updated or deleted independently.<br>
+<br>
 <h3>Option Groups</h3>
-Often you'll use different sets of providers for different tasks, and
-Option Groups makes it easy to save a set of providers under a name. <br>
+Along the left is a combo box and buttons for working with options groups<br>
+
 <ul>
   <li>Saving a Group: &nbsp;use the options controls to set up your
 providers, and then type a name in the Option Groups combo box, and
@@ -107,23 +94,124 @@ click Save.</li>
   <li>Loading a Group: &nbsp;choose a saved group from the combo box, and click Load.</li>
   <li>Deleting a Group: &nbsp;choose a saved group from the combo box, and click Delete.</li>
   <li>New Group: &nbsp;this button is a convenient way to clear all the provider and tokenizer fields.</li>
+  <li>Append a Group: the currently selected option set will be appended to your list of providers.</li>
 </ul>
-Remember to click "Update Engine" once your done setting up your group!
-<h3>Room for Improvement</h3>
-
-<ul>
-
-  
-  <li>Write an IdentifierProvider to collect words from currently opened buffers.</li>
-
-  <li>Use reflection in the Jar provider to read method names.</li>
-</ul>
-<h3>Contact Info</h3>
-This plugin was written by Jesse Pavel (<a href="mailto:jesse@humidmail.com">jesse@humidmail.com)</a>.<br>
 <br>
+<span style="font-weight: bold;">Provider &amp; Tokenizer Lists</span><br>
+The options pane has two lists, one for providers&nbsp;and one for
+tokenizers. Each provider can have
+multiple tokenizers working on it--this is useful in cases in which one
+file has words formatted like GtkMessageBox and gtk_message_box_new.
+The way the plugin determines which tokenizer is valid is by using the
+"minimum" and "maximum parts" field. If a word's abbreviation is not
+within this range of characters, the abbreviation will be considered
+invalid and discarded.<br>
+
+
+<h4>Creating a Provider</h4>
+To create a new provider, choose one of the provider radio buttons and
+either give a filename (Ctags, JAR, and Text),&nbsp;a snippet of
+BeanShell code, or a regex to find words in buffers. Next, go to the
+Tokenizers section and add one or more tokenizers to the list. The
+regex field is for you to type the regular expression using which an
+identifier is split up. If you type in an invalid regex, the default
+value of <span style="font-family: monospace;">&nbsp;[_-] </span>(underscore and dash) will be used. Click Add to see the tokenizer in the list. <br>
+
+
+<br>
+
+
+Below tokenizers are options that apply to the whole provider.<br>
+
+
 <ul>
 
+
+  <li>Provider Ignore Case -- this stores identifiers in such a way
+that both "AIOOBE" and "aioobe", or any case combination between, will
+expand to "ArrayIndexOutOfBoundsException".</li>
+
+
+  <li>Filter Regexp -- any identifier matching this regular expression will not be considered for inclusion.</li>
+
+
+  <li>Minimum and Maximum Parts -- described above, as a way to choose which tokenizer works.</li>
+
+
 </ul>
+
+
+When you've set all these options, click "Save" next to the provider
+list, and you'll see it appear. To Edit an existing provider, select
+it, click Edit, make your changes, and click Save.<br>
+<br>
+*If you're working with multiple engines, remember to click "Save" next to the engine name to save your changes*<br>
+<br>
+<h3>Global Options</h3>
+<ul>
+  <li>Popup List Rows -- how big should the completion popup be?</li>
+  <li>Cache Data -- the engines will be serialized to disk in your
+JEdit settings directory. This can take a few seconds on startup and
+shutdown, but then you won't have to worry about keeping your original
+sources around.</li>
+  <li>Update on Startup -- if you choose not to cache the data, you can
+have your providers load their lists when the plugin starts up. You
+might do this because it's usually faster than the cache data option.</li>
+</ul>
+
+
+<br>
+
+
+<h4>Updating the Engine</h4>
+
+
+Now that you've set up your providers, click "Update Engine" to have
+the plugin parse the sources and remember the identifiers. When you
+start jEdit, the plugin will load the list of identifiers you were
+using last. <br>
+
+
+<span style="font-style: italic;">Note that clicking Save in the options window will </span>not <span style="font-style: italic;">cause the identifiers to be reloaded. You must click Update Engine.</span><br>
+
+
+<br>
+<h3>Tips</h3>
+The Buffer Words provider is very useful, and will scan through all
+open buffers for words defined by the regexp you supply. However, as
+the buffers change you might want to rescan often, or even before every
+completion. What you can do is:<br>
+<br>
+<ol>
+  <li>In the Options dialog, make a new engine, which we'll name "Buffers".</li>
+  <li>Choose the Buffer Words provider and use a good regexp like <span style="font-family: monospace;">\w{4,} </span>in the regex field.</li>
+  <li>Add some tokenizers, like CamelCase and Regex "_".</li>
+  <li>Save the Provider.</li>
+  <li>Save the Engine.</li>
+  <li>Now we'll make a macro that will update this engine and bind a keystroke to that macro.</li>
+  <li>Create a file "Update_Buffer_Words.bsh" in the macros directory of your JEdit settings.</li>
+  <li>Put this line in it<br>
+    <br>
+    <span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");<br>
+    </span></li>
+  <li>If you want the macro to open the completion popup as well, you can use two lines:<br>
+    <br>
+    <span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");<br>
+    </span><span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);<br>
+    </span></li>
+  <li>Now bind a shortcut key to that macro, and you can easily reload all the words in open buffers.</li>
+</ol>
+<h3>Contact Info</h3>
+
+This plugin was written by Jesse Pavel (<a href="mailto:jesse@humidmail.com">jesse@humidmail.com)</a>.<br>
+
+<br>
+
+<ul>
+
+
+</ul>
+
 
 
 </body>
