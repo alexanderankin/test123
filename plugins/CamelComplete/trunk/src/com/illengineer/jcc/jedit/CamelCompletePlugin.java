@@ -28,9 +28,10 @@ public class CamelCompletePlugin extends EditPlugin {
 	      engines -> Map<String (enginename), (providers)>
 	      	(providers) -> List<OptionPanel.OptionGroup>
 	      groups -> Map<String (groupname), List<OptionPanel.OptionGroup>>
-	      cache -> Boolean.(TRUE|FALSE)
-	      update -> Boolean.(TRUE|FALSE)
+	      cache -> Boolean
+	      update -> Boolean
 	      popup-rows -> Integer
+	      remove-dups -> Boolean
 	*/
 	private static HashMap<String,Object> optionsMap;
 	
@@ -90,6 +91,8 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("update", Boolean.FALSE);
 	    if (!optionsMap.containsKey("popup-rows"))
 		optionsMap.put("popup-rows", new Integer(12));
+	    if (!optionsMap.containsKey("remove-dups"))
+		optionsMap.put("remove-dups", Boolean.FALSE);
 
 	    
 	    for (String engineName : enginesOptionsMap.keySet()) {
@@ -269,17 +272,17 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	// {{{ completion methods
 	public static void complete(View view, JEditTextArea textArea) {
-	    CompleteWord.completeWord(view, engines);
+	    CompleteWord.completeWord(view);
 	}
 	
 	public static List<String> getCompletions(String word) {
-	    ArrayList<String> completions = new ArrayList<String>();
+	    TreeSet<String> t = new TreeSet<String>();
 	    for (CompletionEngine engine : engines) {
-		List<String> c = engine.complete(word, true);
+		List<String> c = engine.complete(word, false);
 		if (c != null)
-		    completions.addAll(c);
+		    t.addAll(c);
 	    }
-	    return completions;
+	    return new ArrayList<String>(t);
 	}
 	
 	// }}}
