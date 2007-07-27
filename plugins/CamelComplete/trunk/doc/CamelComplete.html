@@ -177,7 +177,8 @@ using last. <br>
 
 <br>
 <h3>Tips</h3>
-The Buffer Words provider is very useful, and will scan through all
+
+#1. The Buffer Words provider is very useful, and will scan through all
 open buffers for words defined by the regexp you supply. However, as
 the buffers change you might want to rescan often, or even before every
 completion. What you can do is:<br>
@@ -192,15 +193,27 @@ completion. What you can do is:<br>
   <li>Create a file "Update_Buffer_Words.bsh" in the macros directory of your JEdit settings.</li>
   <li>Put this line in it<br>
     <br>
-    <span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");<br>
-    </span></li>
+    <pre>
+      com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");
+    </pre>
+    </li>
   <li>If you want the macro to open the completion popup as well, you can use two lines:<br>
     <br>
-    <span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");<br>
-    </span><span style="font-family: monospace;">com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);<br>
-    </span></li>
+    <pre>
+    com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");
+    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);
+    </pre>
+    </li>
   <li>Now bind a shortcut key to that macro, and you can easily reload all the words in open buffers.</li>
 </ol>
+<br/>
+<p>
+#2. If you'd like to split identifiers like "IOException" or "ASTSyntaxError" into IE and ASE rather than IOE and ASTSE (which is what the CamelCase tokenizer would do), you can add a regex tokenizer with this regex:<br>
+<br>
+<pre>
+  (?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])
+</pre>
+</p>
 <h3>Contact Info</h3>
 
 This plugin was written by Jesse Pavel (<a href="mailto:jesse@humidmail.com">jesse@humidmail.com)</a>.<br>
