@@ -78,7 +78,9 @@ public class CompleteWord extends CompletionPopup
 			return;
 		}
 
-		String word = getWordToComplete(buffer,caretLine, caret);
+		// Only if we're in normal completion mode will we use the buffer's
+		// noWordSep property.
+		String word = getWordToComplete(buffer,caretLine, caret, normal);
 		if(word == null)
 		{
 			textArea.getToolkit().beep();
@@ -131,7 +133,8 @@ public class CompleteWord extends CompletionPopup
 
 	//{{{ getWordToComplete() method
 	// MODIFIED - jpavel
-	private static String getWordToComplete(Buffer buffer, int caretLine, int caret)
+	private static String getWordToComplete(Buffer buffer, int caretLine, int caret,
+						boolean useNoWordsSep)
 	{
 	    String line = buffer.getLineText(caretLine);
 	    int dot = caret - buffer.getLineStartOffset(caretLine);
@@ -144,7 +147,10 @@ public class CompleteWord extends CompletionPopup
 		    return null;
 	    }
 
-	    int wordStart = TextUtilities.findWordStart(line,dot-1,"");
+	    String noWordSep = "";
+	    if (useNoWordsSep)
+		noWordSep = buffer.getStringProperty("noWordSep");
+	    int wordStart = TextUtilities.findWordStart(line,dot-1, noWordSep);
 	    String word = line.substring(wordStart,dot);
 	    if(word.length() == 0)
 		    return null;
