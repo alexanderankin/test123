@@ -34,12 +34,12 @@ import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.util.Log;
 
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
+import ise.plugin.svn.library.swingworker.SwingWorker;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.io.*;
