@@ -4,7 +4,7 @@
 
 # general plugin properites
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
-plugin.ise.plugin.svn.SVNPlugin.name=Subversion
+plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
 plugin.ise.plugin.svn.SVNPlugin.version=0.5
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
