@@ -1,6 +1,6 @@
 /*
  * CompleteWord.java - Complete word dialog
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=8:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2001 Slava Pestov
@@ -65,7 +65,7 @@ public class CompleteWord extends CompletionPopup
 	
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
-	public static void completeWord(View view, List<CompletionEngine> engines)
+	public static void completeWord(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -85,14 +85,7 @@ public class CompleteWord extends CompletionPopup
 			return;
 		}
 
-		
-		ArrayList<String> completions = new ArrayList<String>();
-		for (CompletionEngine engine : engines) {
-			List<String> c = engine.complete(word, true);
-			if (c != null)
-				completions.addAll(c);
-		}
-			
+		List<String> completions = CamelCompletePlugin.getCompletions(word);
 		if (completions.size() == 0)
 			return;
 
