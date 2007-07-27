@@ -211,8 +211,9 @@ completion. What you can do is:<br>
 #2. If you'd like to split identifiers like "IOException" or "ASTSyntaxError" into IE and ASE rather than IOE and ASTSE (which is what the CamelCase tokenizer would do), you can add a regex tokenizer with this regex:<br>
 <br>
 <pre>
-  (?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])
+  (?<=[A-Z])(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|_
 </pre>
+The underscore is in the regex to match words like APR_OpenFile.
 </p>
 <h3>Contact Info</h3>
 
