@@ -40,6 +40,8 @@ import ise.plugin.svn.gui.DeleteDialog;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.SwingWorker;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;

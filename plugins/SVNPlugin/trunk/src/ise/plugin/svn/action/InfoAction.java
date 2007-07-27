@@ -28,26 +28,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import javax.swing.JPanel;
-import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.gui.OutputPanel;
-
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
-import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.*;
+import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.swingworker.SwingWorker;
 
-import org.tmatesoft.svn.core.wc.SVNInfo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JPanel;
+
 import org.gjt.sp.jedit.View;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
 public class InfoAction implements ActionListener {
 
@@ -88,8 +87,6 @@ public class InfoAction implements ActionListener {
         this.password = data.getPassword();
     }
 
-
-    @Override
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
             final SVNData data = new SVNData();
@@ -146,4 +143,5 @@ public class InfoAction implements ActionListener {
             ( new Runner() ).execute();
         }
     }
+
 }
