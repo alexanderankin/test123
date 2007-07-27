@@ -3,7 +3,12 @@
 <ACTIONS>
 	<ACTION NAME="camelcomplete.complete">
 		<CODE>
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea);
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="camelcomplete.normal_complete">
+		<CODE>
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="camelcomplete.process_engine">

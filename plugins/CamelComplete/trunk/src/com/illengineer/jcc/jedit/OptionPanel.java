@@ -26,6 +26,7 @@ public class OptionPanel extends AbstractOptionPane
 	
 	private HashMap<String, List<OptionGroup>> optionGroupMap;
 	private Map<String,List<OptionPanel.OptionGroup>> enginesOptionsMap;
+	private HashMap<String, OptionPanel.EngineOpts> eoMap;
 	private String currentEngineName = "default";
 	
 	private MessageDialog msgDialog;
@@ -215,6 +216,7 @@ public class OptionPanel extends AbstractOptionPane
 		tokenizerModel.clear();
 		providerModel.clear();
 		resetComponents(true, true);
+		disabledNormalButton.setSelected(true);
 	    } else if (source == saveEngineButton) {
 		String engineName = (String)enginesCombo.getSelectedItem();
 		if (engineName != null && engineName.length() > 0) {
@@ -236,6 +238,7 @@ public class OptionPanel extends AbstractOptionPane
 			tokenizerModel.clear();
 			providerModel.clear();
 			resetComponents(true, true);
+			disabledNormalButton.setSelected(true);
 		    }
 		}
 	    } // }}}
@@ -261,6 +264,18 @@ public class OptionPanel extends AbstractOptionPane
 		    if (enginesOptionsMap.containsKey(engineName)) {
 			loadOptions(enginesOptionsMap.get(engineName));
 			currentEngineName = engineName;
+			EngineOpts eo = eoMap.get(engineName);
+			switch(eo.normalCompletionMode) {
+			  case 0:
+			    disabledNormalButton.setSelected(true);
+			    break;
+			  case 1:
+			    startsNormalButton.setSelected(true);
+			    break;
+			  case 2:
+			    containsNormalButton.setSelected(true);
+			    break;
+			}
 		    }
 		}
 	    } else if (source == optionGroupCombo) {
@@ -410,13 +425,23 @@ public class OptionPanel extends AbstractOptionPane
 	}
 	
 	private void saveCurrentEngine() {
-	    if (currentEngineName != null && currentEngineName.length() > 0)
+	    if (currentEngineName != null && currentEngineName.length() > 0) {
 		enginesOptionsMap.put(currentEngineName, saveOptions());
+		EngineOpts eo = new EngineOpts();
+		if (disabledNormalButton.isSelected())
+		    eo.normalCompletionMode = 0;
+		else if (startsNormalButton.isSelected())
+		    eo.normalCompletionMode = 1;
+		else if (containsNormalButton.isSelected())
+		    eo.normalCompletionMode = 2;
+		eoMap.put(currentEngineName, eo);
+	    }
 	}
 	
 	private void loadEngines() {
 	    enginesOptionsMap = 
 		(Map<String,List<OptionPanel.OptionGroup>>)CamelCompletePlugin.getOption("engines");
+	    eoMap = (HashMap<String, EngineOpts>)CamelCompletePlugin.getOption("engine-opts");
 	    for (String engineName : enginesOptionsMap.keySet()) {
 		enginesCombo.addItem(engineName);
 	    }
@@ -432,7 +457,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -472,6 +496,11 @@ public class OptionPanel extends AbstractOptionPane
 		editProviderButton = new JButton();
 		copyProviderButton = new JButton();
 		label2 = new JLabel();
+		panel12 = new JPanel();
+		label10 = new JLabel();
+		disabledNormalButton = new JRadioButton();
+		startsNormalButton = new JRadioButton();
+		containsNormalButton = new JRadioButton();
 		scrollPane2 = new JScrollPane();
 		tokenizerList = new JList();
 		panel3 = new JPanel();
@@ -732,6 +761,39 @@ public class OptionPanel extends AbstractOptionPane
 				label2.setText("Tokenizers for Provider");
 				optionPanel.add(label2, cc.xy(3, 7));
 
+				//======== panel12 ========
+				{
+					panel12.setLayout(new FormLayout(
+						ColumnSpec.decodeSpecs("left:default"),
+						new RowSpec[] {
+							new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+							FormFactory.LINE_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.LINE_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.LINE_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC
+						}));
+
+					//---- label10 ----
+					label10.setText("<html>Normal Completion<br>Mode</html>");
+					panel12.add(label10, cc.xy(1, 1));
+
+					//---- disabledNormalButton ----
+					disabledNormalButton.setText("Disabled");
+					disabledNormalButton.setSelected(true);
+					panel12.add(disabledNormalButton, cc.xy(1, 3));
+
+					//---- startsNormalButton ----
+					startsNormalButton.setText("Starts With");
+					panel12.add(startsNormalButton, cc.xy(1, 5));
+
+					//---- containsNormalButton ----
+					containsNormalButton.setText("Contains");
+					panel12.add(containsNormalButton, cc.xy(1, 7));
+				}
+				optionPanel.add(panel12, cc.xy(1, 9));
+
 				//======== scrollPane2 ========
 				{
 
@@ -794,7 +856,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel1.add(label9, BorderLayout.NORTH);
 
 					//---- popupRowsSpinner ----
-					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
+					popupRowsSpinner.setModel(new SpinnerNumberModel(12, 4, null, 1));
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
@@ -827,7 +889,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
+					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -840,7 +902,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -879,6 +941,12 @@ public class OptionPanel extends AbstractOptionPane
 		buttonGroup1.add(codeButton);
 		buttonGroup1.add(bufferWordsButton);
 
+		//---- buttonGroup3 ----
+		ButtonGroup buttonGroup3 = new ButtonGroup();
+		buttonGroup3.add(disabledNormalButton);
+		buttonGroup3.add(startsNormalButton);
+		buttonGroup3.add(containsNormalButton);
+
 		//---- buttonGroup2 ----
 		ButtonGroup buttonGroup2 = new ButtonGroup();
 		buttonGroup2.add(camelCaseButton);
@@ -890,7 +958,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
@@ -930,6 +997,11 @@ public class OptionPanel extends AbstractOptionPane
 	JButton editProviderButton;
 	JButton copyProviderButton;
 	JLabel label2;
+	JPanel panel12;
+	JLabel label10;
+	JRadioButton disabledNormalButton;
+	JRadioButton startsNormalButton;
+	JRadioButton containsNormalButton;
 	JScrollPane scrollPane2;
 	JList tokenizerList;
 	JPanel panel3;
@@ -1002,6 +1074,13 @@ public class OptionPanel extends AbstractOptionPane
 		og.config = config;
 		return og;
 	    }
+	}
+	
+	public static class EngineOpts implements Serializable
+	{
+	    static final long serialVersionUID = 2989263505948239743L;
+	    
+	    int normalCompletionMode;  // 0 = disabled, 1 = starts with, 2 = contains
 	}
 	
 	private static class TokenizerHolder

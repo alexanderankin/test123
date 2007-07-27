@@ -8,7 +8,7 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.name=CamelComplete
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.author=Jesse Pavel
 
 # version number
-plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=2.3
+plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.version=2.4
 
 # online help
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.docs=CamelComplete.html
@@ -22,10 +22,12 @@ plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.description=This plugin pro
 
 # plugin menu
 plugin.com.illengineer.jcc.jedit.CamelCompletePlugin.menu=camelcomplete.complete \
+    camelcomplete.normal_complete \
     camelcomplete.process_engine camelcomplete.process_all_engines camelcomplete.clear_cache
 
 # action labels for actions supplied by actions.xml
 camelcomplete.complete.label=CamelComplete Word
+camelcomplete.normal_complete.label=Normal Complete Word
 camelcomplete.process_engine.label=Update an Engine...
 camelcomplete.process_all_engines.label=Update All Engines
 camelcomplete.clear_cache.label=Clear Cache Dir

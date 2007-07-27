@@ -65,7 +65,7 @@ public class CompleteWord extends CompletionPopup
 	
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
-	public static void completeWord(View view)
+	public static void completeWord(View view, boolean normal)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -85,7 +85,12 @@ public class CompleteWord extends CompletionPopup
 			return;
 		}
 
-		List<String> completions = CamelCompletePlugin.getCompletions(word);
+		List<String> completions;
+		if (!normal)
+		    completions = CamelCompletePlugin.getCompletions(word);
+		else
+		    completions = CamelCompletePlugin.getNormalCompletions(word);
+		    
 		if (completions.size() == 0)
 			return;
 
