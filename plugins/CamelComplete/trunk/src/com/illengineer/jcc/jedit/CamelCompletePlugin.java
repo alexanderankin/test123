@@ -27,6 +27,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	    Keys/Vals:
 	      engines -> Map<String (enginename), (providers)>
 	      	(providers) -> List<OptionPanel.OptionGroup>
+	      engine-opts -> Map<String (enginename), OptionPanel.EngineOpts>
 	      groups -> Map<String (groupname), List<OptionPanel.OptionGroup>>
 	      cache -> Boolean
 	      update -> Boolean
@@ -36,6 +37,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	private static HashMap<String,Object> optionsMap;
 	
 	private static HashMap<String,List<OptionPanel.OptionGroup>> enginesOptionsMap;
+	private static HashMap<String, OptionPanel.EngineOpts> eoMap;
 	private static HashMap<String,EngineGroup> engineMap;
 	private static ArrayList<CompletionEngine> engines;
 	
@@ -93,6 +95,15 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("popup-rows", new Integer(12));
 	    if (!optionsMap.containsKey("remove-dups"))
 		optionsMap.put("remove-dups", Boolean.FALSE);
+	    if (!optionsMap.containsKey("engine-opts")) {
+		eoMap = new HashMap<String, OptionPanel.EngineOpts>();
+		// We'll sync our maps.
+		for (String engineName : enginesOptionsMap.keySet())
+		    eoMap.put(engineName, new OptionPanel.EngineOpts());
+		optionsMap.put("engine-opts", eoMap);
+	    } else
+		eoMap = (HashMap<String, OptionPanel.EngineOpts>)optionsMap.get("engine-opts");
+		
 
 	    
 	    for (String engineName : enginesOptionsMap.keySet()) {
@@ -271,8 +282,8 @@ public class CamelCompletePlugin extends EditPlugin {
 	// }}}
 	
 	// {{{ completion methods
-	public static void complete(View view, JEditTextArea textArea) {
-	    CompleteWord.completeWord(view);
+	public static void complete(View view, JEditTextArea textArea, boolean normal) {
+	    CompleteWord.completeWord(view, normal);
 	}
 	
 	public static List<String> getCompletions(String word) {
@@ -281,6 +292,27 @@ public class CamelCompletePlugin extends EditPlugin {
 		List<String> c = engine.complete(word, false);
 		if (c != null)
 		    t.addAll(c);
+	    }
+	    return new ArrayList<String>(t);
+	}
+	
+	public static List<String> getNormalCompletions(String word) {
+	    TreeSet<String> t = new TreeSet<String>();
+	    for (String engineName : eoMap.keySet()) {
+		OptionPanel.EngineOpts eo = eoMap.get(engineName);
+		if (eo.normalCompletionMode != 0) {
+		    CompletionEngine engine = engineMap.get(engineName).engine;
+		    List<String> ids = engine.getIdentifiers();
+		    for (String id : ids) {
+			if (eo.normalCompletionMode == 1) { // starts with
+			    if (id.startsWith(word))
+				t.add(id);
+			} else if (eo.normalCompletionMode == 2) {  // contains
+			    if (id.contains(word))
+				t.add(id);
+			}
+		    }
+		}
 	    }
 	    return new ArrayList<String>(t);
 	}
