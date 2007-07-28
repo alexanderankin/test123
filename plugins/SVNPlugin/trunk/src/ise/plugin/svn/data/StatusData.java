@@ -41,6 +41,7 @@ public class StatusData {
     private List<SVNStatus> unversioned;
     private List<SVNStatus> missing;
     private List<SVNStatus> outOfDate;
+
     /**
      * Returns the value of revision.
      */
