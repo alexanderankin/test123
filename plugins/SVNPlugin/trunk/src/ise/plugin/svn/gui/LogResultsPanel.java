@@ -40,6 +40,7 @@ import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.action.DiffAction;
 import ise.plugin.svn.library.GUIUtils;
 import org.tmatesoft.svn.core.SVNLogEntry;
+import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
@@ -88,13 +89,22 @@ public class LogResultsPanel extends JPanel {
                 data[ i ][ 2 ] = author;
                 data[ i ][ 3 ] = comment;
 
-                StringBuffer associated_files;
+                StringBuffer associated_files;      // Perforce calls this a "changelist"
                 if ( showPaths && entry.getChangedPaths().size() > 0 ) {
                     associated_files = new StringBuffer();
                     String ls = System.getProperty( "line.separator" );
+                    // entry.changedPaths has the path as a string as the key,
+                    // and an SVNLogEntryPath as the value
                     Set changedPaths = entry.getChangedPaths().keySet();
                     for ( Iterator iter = changedPaths.iterator(); iter.hasNext(); ) {
                         String cp = ( String ) iter.next();
+                        SVNLogEntryPath lep = (SVNLogEntryPath)entry.getChangedPaths().get(cp);
+                        if (lep != null) {
+                            // type is one of A (add), M (modified), D (deleted), or R (replaced)
+                            // show this along with the path
+                            char type = lep.getType();
+                            associated_files.append(type).append(" ");
+                        }
                         associated_files.append( cp ).append( ls );
                     }
                     data[ i ][ 4 ] = associated_files.toString();
