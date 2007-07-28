@@ -1,0 +1,46 @@
+These are the notes to my currently jEdit-specific plugin to perform
+code-completion similar to the CamelCase completion offered by Java IDE's. It
+will take a word such as "AIOOBE" and, based on an internal dictionary, look up
+possible completions, in this case "ArrayIndexOutOfBoundsException". It will
+also work with C/C++ identifier names, taking "gcmisi" and expanding it to
+"gtk_check_menu_item_set_inconsistent".
+
+--Ideas--
+
+-Configurable delimiter for splitting word names, so one can use both C-style
+underscores and Lisp-style dashes, for instance. One can choose between simple
+character splitting and regexes. Note that for more complex splitting, as in
+CamelCase, a pluggable custom routine is used.
+
+-An interface-based method of acquiring identifier names, so that they may come
+from the current file, current project, or some external source. Since I don't
+initially plan to support interaction with any other plugins, I will be
+providing only a class that will accept a CTags list as a File, and read in
+tokens from that.
+
+-Identifier names will be stored in a number of hash tables, one for each number
+of constituent words in identifiers, so that if the user wants to expand "gmbn"
+I can immediately use the 4-length hash. Within each hash, identifiers will be
+keyed by the first letter of each word. So "gtk_check_menu_item_set_inconsistent"
+would be filed in (6-word Hash)->g->c->m->i->s->i
+
+-The hashes will be case sensitive, and the user will have the option of
+searching both ways.
+
+-If the method of splitting identifiers is changed, the hash tables will of
+course need to be rebuilt.
+
+-Multiple methods of splitting identifiers can be used simultaneously, with
+an option to set the minimum number of constituent words required to save the
+results. This is needed because one file can contain both GtkMessageBox and
+gtk_message_box_new. If words are both split via CamelCase and underscores,
+and results less than two words long are discarded, both identifiers will be
+stored properly.
+
+-I can write the engine first, and provide a command-line interface, before
+turning it into an actual editor plugin.
+
+-Take a look at jedit/org/gjt/sp/jedit/gui/CompleteWord.java for guidance on
+implementing the plugin. It seems that the SideKick plugin just copies code
+from that file as well.
+

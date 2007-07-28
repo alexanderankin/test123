@@ -1,0 +1,3 @@
+-Use reflection in the Jar provider to read method names. (maybe?)
+  It's not too hard, but the identifier list would be gigantic.
+
