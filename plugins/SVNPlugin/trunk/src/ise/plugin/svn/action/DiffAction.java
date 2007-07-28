@@ -190,6 +190,7 @@ public class DiffAction implements ActionListener {
                         }
 
                         // show JDiff
+                        view.unsplit();
                         DualDiff.toggleFor( view );
 
                         // set the edit panes in the view
