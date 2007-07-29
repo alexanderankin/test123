@@ -87,7 +87,7 @@ add - done
 ignore
 edit conflicts
 resolved - done
-(not in Eclipse, I added "delete" here)
+(not in Eclipse, I added "delete" here, see how to "undelete" below)
 --
 lock
 unlock
@@ -104,7 +104,7 @@ set keywords
 history - done, this is the same as "log"
 annotations
 --
-copy
+copy - in progress
 export
 cleanup - done
 
@@ -158,7 +158,7 @@ svn update - done
 There will be a "compare" to open a diff.  This needs a dialog to be
 able to pick a specific revision to compare the local file to, or to
 diff two non-local revisions.  Need to pop this as an option in the log
-viewer.
+viewer. - done
 </p>
 
 <p>
@@ -196,6 +196,19 @@ svn switch
 svn unlock
 svn update - done
 </pre>
+</p>
+<hr/>
+<p>
+How to undelete a deleted file:
+<ol>
+<li>First, run the log command on the directory containing the deleted file or directory.  Be sure "Show paths" is checked.</li>
+<li>Find the deleted file in the log output.</li>
+<li>Right click on the deleted file and select "Undelete" from the popup menu.</li>
+<li>Use the dialog to confirm the file that is to be undeleted.</li>
+<li>Your file should be restored to its original location.</li>
+<li>At this point, the file is scheduled for add, so you'll still need to commit.</li>
+<li>That's it!</li>
+</ol>
 </p>
 <hr/>
 <b>License:</b>

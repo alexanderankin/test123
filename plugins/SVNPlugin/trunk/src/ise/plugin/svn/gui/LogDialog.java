@@ -154,6 +154,7 @@ public class LogDialog extends JDialog {
 
         final JCheckBox stopOnCopy = new JCheckBox("Stop on copy");
         final JCheckBox showPaths = new JCheckBox("Show paths");
+        showPaths.setSelected(true);
 
         // buttons
         KappaLayout kl = new KappaLayout();

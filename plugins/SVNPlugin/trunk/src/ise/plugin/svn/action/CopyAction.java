@@ -31,106 +31,67 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
-import ise.plugin.svn.data.LogData;
-import ise.plugin.svn.data.LogResults;
-import ise.plugin.svn.gui.LogDialog;
-import ise.plugin.svn.gui.LogResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
+import ise.plugin.svn.command.Copy;
+import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
-import org.tmatesoft.svn.core.SVNLogEntry;
+
 import org.gjt.sp.jedit.View;
 
+import org.tmatesoft.svn.core.SVNCommitInfo;
+
+
 /**
- * ActionListener to perform an svn log.
+ * ActionListener to perform an svn copy.
  * This is not dependent on ProjectViewer.
  */
-public class LogAction implements ActionListener {
+public class CopyAction implements ActionListener {
 
     private View view = null;
-    private List<String> paths = null;
-    private boolean pathsAreUrls = false;
-    private String username = null;
-    private String password = null;
-    private LogData data = null;
+    private CopyData data = null;
 
     /**
      * @param view the View in which to display results
-     * @param paths a list of paths to be added
-     * @param username the username for the svn repository
-     * @param password the password for the username
+     * @param data CopyData object containing the info for a copy of some sort
      */
-    public LogAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        if ( paths == null )
-            throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
-        this.paths = paths;
-        this.username = username;
-        this.password = password;
-    }
-
-    public LogAction(View view, LogData data) {
+    public CopyAction( View view, CopyData data ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        if ( data.getPaths() == null )
-            throw new IllegalArgumentException( "paths may not be null" );
         this.view = view;
-        this.paths = data.getPaths();
-        this.pathsAreUrls = data.pathsAreURLs();
-        this.username = data.getUsername();
-        this.password = data.getPassword();
+        this.data = data;
     }
 
+
     public void actionPerformed( ActionEvent ae ) {
-        if ( paths != null && paths.size() > 0 ) {
-            data = new LogData();
-            data.setPaths( paths );
-            data.setPathsAreURLs(pathsAreUrls);
-
-            LogDialog dialog = new LogDialog(view, data);
-            GUIUtils.center( view, dialog );
-            dialog.setVisible(true);
-            data = dialog.getData();
-            if (data == null) {
-                return;     // null data signals user cancelled
-            }
-
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
-
+        if ( data != null ) {
             data.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
-            Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching log ..." );
+            final Logger logger = panel.getLogger();
+            logger.log( Level.INFO, "Copying ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker < LogResults , Object > {
+            class Runner extends SwingWorker<SVNCommitInfo, Object> {
 
                 @Override
-                public LogResults doInBackground() {
+                public SVNCommitInfo doInBackground() {
                     try {
-                        Log log = new Log( );
-                        log.doLog( data );
-                        return log.getLogEntries();
+                        Copy copy = new Copy();
+                        return copy.copy(data);
                     }
                     catch ( Exception e ) {
                         data.getOut().printError( e.getMessage() );
@@ -144,12 +105,14 @@ public class LogAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), view, username, password );
-                        panel.addTab( "Log", results_panel );
+                        SVNCommitInfo results = get();
+                        if ( results != null ) {
+                            //JPanel results_panel = new CommitResultsPanel( results );
+                            //panel.addTab( "Copy", results_panel );
+                        }
                     }
                     catch ( Exception e ) {
                         // ignored
-                        e.printStackTrace();
                     }
                 }
             }

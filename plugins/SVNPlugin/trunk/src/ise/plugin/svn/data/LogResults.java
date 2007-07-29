@@ -26,30 +26,50 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn;
+package ise.plugin.svn.data;
 
-import org.gjt.sp.jedit.*;
-import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectViewer;
+import java.util.List;
+import java.util.TreeMap;
+import org.tmatesoft.svn.core.SVNLogEntry;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
-public class PVHelper {
+public class LogResults {
+    private SVNInfo info;
+    private TreeMap < String, List < SVNLogEntry >> entries;
+    /**
+     * Returns the value of info.
+     */
+    public SVNInfo getInfo()
+    {
+        return info;
+    }
 
     /**
-     * @return true if the ProjectViewer plugin is loaded
+     * Sets the value of info.
+     * @param info The value to assign info.
      */
-    public static boolean isProjectViewerAvailable() {
-        EditPlugin pv = jEdit.getPlugin( "projectviewer.ProjectPlugin", false );
-        return pv != null;
+    public void setInfo(SVNInfo info)
+    {
+        this.info = info;
     }
 
-    public static String getProjectName( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getName();
+    /**
+     * @return map with the path of a file as the key and a list of associated
+     * log entries as the value (in Perforce terms, the rest of the changelist).
+     */
+    public TreeMap < String, List < SVNLogEntry >> getEntries()
+    {
+        return entries;
     }
 
-    public static String getProjectRoot( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getRootPath();
+    /**
+     * Sets the value of entries.
+     * @param entries The value to assign entries.
+     */
+    public void setEntries(TreeMap < String, List < SVNLogEntry >> entries)
+    {
+        this.entries = entries;
     }
+
 
 }

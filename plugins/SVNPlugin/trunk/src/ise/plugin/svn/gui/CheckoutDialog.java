@@ -44,6 +44,7 @@ import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.action.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
@@ -78,7 +79,7 @@ public class CheckoutDialog extends JDialog {
     protected void _init() {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
-        String project_name = getProjectName();
+        String project_name = PVHelper.getProjectName(view);
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
@@ -86,7 +87,7 @@ public class CheckoutDialog extends JDialog {
 
         // populate url field from existing svn info, if available
         List<String> info_path = new ArrayList<String>();
-        info_path.add(getProjectRoot());
+        info_path.add(PVHelper.getProjectRoot(view));
         SVNData info_data = new SVNData();
         info_data.setPaths(info_path);
         String url_text = null;
@@ -109,11 +110,11 @@ public class CheckoutDialog extends JDialog {
 
         // local destination directory
         JLabel path_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "path.label" ) );
-        path = new JTextField( getProjectRoot(), 30 );
+        path = new JTextField( PVHelper.getProjectRoot(view), 30 );
         JButton browse_btn = new JButton( "Browse" );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, getProjectRoot(), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
                         if (dirs != null && dirs.length > 0) {
                             path.setText(dirs[0]);
                         }
@@ -209,16 +210,6 @@ public class CheckoutDialog extends JDialog {
         paths.add(path.getText());
         cd.setPaths(paths);
         return cd;
-    }
-
-    private String getProjectName() {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getName();
-    }
-
-    private String getProjectRoot() {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getRootPath();
     }
 
 }
