@@ -34,8 +34,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectViewer;
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.PasswordHandler;
 import org.gjt.sp.jedit.jEdit;
@@ -108,8 +107,8 @@ public class SVNAction extends projectviewer.action.Action {
     // act accordingly.
     public void prepareForNode( VPTNode node ) {
         View view = viewer.getView();
-        String project_name = getProjectName( view );
-        String project_root = getProjectRoot( view );
+        String project_name = PVHelper.getProjectName( view );
+        String project_root = PVHelper.getProjectRoot( view );
         String username = jEdit.getProperty( PREFIX + project_name + ".username" );
         String password = jEdit.getProperty( PREFIX + project_name + ".password" );
         if ( password != null && password.length() > 0 ) {
@@ -143,16 +142,6 @@ public class SVNAction extends projectviewer.action.Action {
     public void actionPerformed( ActionEvent ae ) {
         // does nothing, this is the top of a pull out menu so has no specific
         // action other than to display the pull out.
-    }
-
-    private String getProjectName( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getName();
-    }
-
-    private String getProjectRoot( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
-        return project == null ? "" : project.getRootPath();
     }
 
     private List<VPTNode> getSelectedNodes() {

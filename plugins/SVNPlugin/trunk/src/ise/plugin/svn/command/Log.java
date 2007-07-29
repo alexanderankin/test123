@@ -47,10 +47,12 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.LogData;
+import ise.plugin.svn.data.LogResults;
 
 
 public class Log {
 
+    private LogResults results = new LogResults();
     private TreeMap < String, List < SVNLogEntry >> entries = new TreeMap < String, List < SVNLogEntry >> ();
 
     private PrintStream out = null;
@@ -114,13 +116,14 @@ public class Log {
                 // call to figure out the path of the file
                 LogHandler handler = new LogHandler( file );
                 SVNInfo info = wc_client.doInfo(file, SVNRevision.WORKING);
+                results.setInfo(info);
                 //System.out.println("+++++ repository url = " + info.getRepositoryRootURL());
                 //System.out.println("+++++ url = " + info.getURL());
                 //System.out.println("+++++ url.getPath = " + info.getURL().getPath());
                 String rep_url_string = info.getRepositoryRootURL().toString();
                 String file_url_string = info.getURL().toString();
                 String path = file_url_string.substring(rep_url_string.length());
-                SVNURL rep_url = SVNURL.parseURIDecoded(rep_url_string);
+                SVNURL rep_url = SVNURL.parseURIEncoded(rep_url_string);
                 String[] rep_paths = new String[]{path};
                 // I should also be able to set the peg revision, but it seems that
                 // using anything beside 0 fails.
@@ -129,6 +132,7 @@ public class Log {
                 entries.put( handler.getPath(), handler.getEntries() );
             }
         }
+        results.setEntries(entries);
         out.flush();
         out.close();
     }
@@ -164,11 +168,10 @@ public class Log {
     }
 
     /**
-     * @return a map with the path of a file as the key and a list of associated
-     * log entries as the value.
+     * @return a log results object
      */
-    public TreeMap < String, List < SVNLogEntry >> getLogEntries() {
-        return entries;
+    public LogResults getLogEntries() {
+        return results;
     }
 
     public void printLogEntry( String path, SVNLogEntry logEntry ) {

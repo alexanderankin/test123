@@ -189,6 +189,15 @@ public class DiffAction implements ActionListener {
                             remote2 = br.getFile( url.toString(), svn_path, data.getRevision2().getNumber(), data.getUsername(), data.getPassword() );
                         }
 
+                        if (remote1 == null || remote2 == null) {
+                            JOptionPane.showMessageDialog(view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if ((remote1 != null && remote1.isDirectory()) || (remote2 != null && remote2.isDirectory())) {
+                            JOptionPane.showMessageDialog(view, "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
                         // show JDiff
                         view.unsplit();
                         DualDiff.toggleFor( view );
