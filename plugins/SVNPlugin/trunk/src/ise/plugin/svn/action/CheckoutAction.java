@@ -141,7 +141,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
                         throw new Exception( "Checkout failed." );
                     }
                     cd.getOut().print( "Checkout completed, revision " + revision );
-                    firePropertyChange( "done", revision.toString(), "false" );
+                    firePropertyChange( "done", "false", revision.toString() );
                 }
                 catch ( Exception e ) {
                     cd.getOut().printError( e.getMessage() );
