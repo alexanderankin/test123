@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+     This is the standard build.xml file for building the Archive plugin.
+     The 'dist' target compiles the plugin, generates documentation, and creates
+     the JAR file.  Before running the 'dist' target, you will need to choose
+     whether to generate the documentation using one of these two targets:
+-->
+
+<project name="Archive" default="build" basedir=".">
+
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property name="compiler.source" value="1.4" />
+    <property name="compiler.target" value="1.4" />
+    
+
+    <property name="jedit.install.dir"  value="../.."/>
+    <property name="jar.name"  value="${ant.project.name}.jar"/>
+    <property name="docs-proc.target"  value="xsltproc"/>
+	<property name="user-doc.xml" location = "users-guide.xml"/>
+    
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value=".."/>
+    <import file="${build.support}/plugin-build.xml" />
+
+
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${src.dir}"/>
+    </path>
+
+</project>
+
