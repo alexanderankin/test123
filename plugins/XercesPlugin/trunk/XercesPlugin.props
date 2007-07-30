@@ -6,3 +6,5 @@ plugin.xerces.XercesPlugin.version=2.9.0
 plugin.xerces.XercesPlugin.docs=docs/index.html
 plugin.xerces.XercesPlugin.jars=resolver.jar xercesImpl.jar
 plugin.xerces.XercesPlugin.depend.0=jedit 04.02.99.00
+plugin.xerces.XercesPlugin.depend.1=jdk 1.4
+plugin.xerces.XercesPlugin.description=Apache Xerces-J v2 packaged as a jEdit plugin.
