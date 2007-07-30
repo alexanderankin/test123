@@ -15,6 +15,6 @@ public class PropertyComparator implements Comparator {
 	}
 	
 	public int compare(Object first, Object second) {
-		return first.toString().compareTo(second);
+		return first.toString().compareTo(second.toString());
 	}
 }
