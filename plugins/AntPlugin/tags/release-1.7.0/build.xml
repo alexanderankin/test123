@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+
+<project name="AntPlugin" default="install" basedir=".">
+<!--
+Use this ant script to build the Jedit ant plugin.
+This is based on the build-support plugin-build.xml file for building a jEdit plugin.
+-->
+
+  <property file="../build.properties"/>
+  <property file="build.properties"/>  
+  <property name="build.dir" value="${basedir}/build" />
+  
+  <property name="jar.file" value="AntPlugin.jar"/>
+
+  <target name="clean" >
+    <delete dir="${build.dir}" />
+  </target>
+  
+  <target name="prepare" >
+    <unzip src="ant-current-bin.zip" dest="${basedir}" />
+    <copy todir="${build.dir}">
+       <fileset dir="${basedir}/apache-ant-1.7.0/docs">
+         <include name="**/**" />
+       </fileset>
+       <fileset dir="${basedir}">
+         <include name="AntPlugin.props" />
+       </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile" >
+    <javac srcdir="ant" destdir="${build.dir}" 
+           classpath="${jedit.install.dir}/jedit.jar"/>
+  </target>
+  
+  <target name="jar" depends="prepare, compile">
+   <jar jarfile="${install.dir}/${jar.file}" 
+        basedir="${build.dir}" 
+        index="true" 
+        includes="**/*" />
+   
+  </target>
+	
+  <target name="install" depends="jar" >
+    <copy todir="${install.dir}">
+      <fileset dir="apache-ant-1.7.0/lib">
+        <include name="ant.jar"/>
+        <include name="ant-nodeps.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  
+</project>
