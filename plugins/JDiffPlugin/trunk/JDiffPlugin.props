@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=Andre Kaplan/Mark Wickens
-plugin.jdiff.JDiffPlugin.version=1.5.1
+plugin.jdiff.JDiffPlugin.version=1.5.2
 plugin.jdiff.JDiffPlugin.docs=users-guide.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff utility for jEdit.
 
@@ -22,7 +22,8 @@ plugin.jdiff.JDiffPlugin.menu=\
     - \
     jdiff.toggle-ignore-case \
     jdiff.toggle-trim-whitespace \
-    jdiff.toggle-ignore-whitespace \
+    jdiff.toggle-ignore-amount-whitespace \
+    jdiff.toggle-ignore-all-whitespace \
     - \
     jdiff.diff-normal-output
 
@@ -39,12 +40,14 @@ jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
 jdiff.toggle-ignore-case.label=Ignore case
 jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
-jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
+jdiff.toggle-ignore-amount-whitespace.label=Ignore amount of whitespace
+jdiff.toggle-ignore-all-whitespace.label=Ignore all whitespace
 jdiff.diff-normal-output.label=Normal Diff Output
 
 jdiff.ignore-case=false
 jdiff.trim-whitespace=false
-jdiff.ignore-whitespace=false
+jdiff.ignore-amount-whitespace=false
+jdiff.ignore-all-whitespace=false
 
 jdiff.global-virtual-overview=false
 
@@ -70,7 +73,8 @@ options.jdiff.highlight.label=Highlight colors
 
 options.jdiff.ignore-case=Ignore case
 options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
-options.jdiff.ignore-whitespace=Ignore all whitespace
+options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
+options.jdiff.ignore-all-whitespace=Ignore all whitespace
 
 options.jdiff.overview-display=Global overview display:
 options.jdiff.physical-overview=Physical overview

@@ -54,6 +54,7 @@
         <listitem>Synchronized scrolling</listitem>
         <listitem>Ignore case option</listitem>
         <listitem>Ignore leading and trailing whitespace option</listitem>
+        <listitem>Ignore amount of whitespace option</listitem>
         <listitem>Ignore all whitespace option</listitem>
         <listitem>Normal diff output</listitem>
     </itemizedlist>
@@ -194,6 +195,11 @@
         </listitem>
 
         <listitem>
+            <guimenuitem>Ignore amount of whitespace</guimenuitem>:
+            toggles the &quot;Ignore amount of whitespace&quot; option for the current diff
+        </listitem>
+        
+        <listitem>
             <guimenuitem>Ignore all whitespace</guimenuitem>:
             toggles the &quot;Ignore all whitespace&quot; option for the current diff
         </listitem>
@@ -227,10 +233,17 @@
             </listitem>
 
             <listitem>
-                Ignore all whitespace: lines are compared as if any
+                Ignore amount of whitespace: lines are compared as if any
                 <itemizedlist>
                     <listitem>leading and trailing whitespaces were removed</listitem>
                     <listitem>sequence of whitespaces were replaced by one single space.</listitem>
+                </itemizedlist>
+            </listitem>
+            
+            <listitem>
+                Ignore all whitespace: lines are compared as if any
+                <itemizedlist>
+                    <listitem>leading, trailing and inner whitespaces were removed</listitem>
                 </itemizedlist>
             </listitem>
         </itemizedlist>

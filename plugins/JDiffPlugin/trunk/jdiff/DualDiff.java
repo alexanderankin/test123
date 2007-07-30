@@ -20,10 +20,6 @@
 
 package jdiff;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -34,14 +30,9 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 
 import java.util.Hashtable;
-import java.util.Enumeration;
-
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
@@ -72,8 +63,11 @@ public class DualDiff implements EBComponent
 	private static boolean trimWhitespaceDefault = jEdit.getBooleanProperty(
 		"jdiff.trim-whitespace", false);
 
-	private static boolean ignoreWhitespaceDefault = jEdit.getBooleanProperty(
-		"jdiff.ignore-whitespace", false);
+	private static boolean ignoreAmountOfWhitespaceDefault = jEdit.getBooleanProperty(
+		"jdiff.ignore-amount-whitespace", false);
+
+	private static boolean ignoreAllWhitespaceDefault = jEdit.getBooleanProperty(
+		"jdiff.ignore-all-whitespace", false);
 
 	private static Hashtable dualDiffs = new Hashtable();
 
@@ -81,7 +75,9 @@ public class DualDiff implements EBComponent
 
 	private boolean trimWhitespace;
 
-	private boolean ignoreWhitespace;
+	private boolean ignoreAmountOfWhitespace;
+
+	private boolean ignoreAllWhitespace;
 
 	private View view;
 
@@ -107,15 +103,17 @@ public class DualDiff implements EBComponent
 
 	private DualDiff(View view)
 	{
-		this(view, ignoreCaseDefault, trimWhitespaceDefault, ignoreWhitespaceDefault);
+		this(view, ignoreCaseDefault, trimWhitespaceDefault,
+			ignoreAmountOfWhitespaceDefault, ignoreAllWhitespaceDefault);
 	}
 
 	private DualDiff(View view, boolean ignoreCase, boolean trimWhitespace,
-		boolean ignoreWhiteSpace)
+		boolean ignoreAmountOfWhiteSpace, boolean ignoreAllWhiteSpace)
 	{
 		this.ignoreCase = ignoreCase;
 		this.trimWhitespace = trimWhitespace;
-		this.ignoreWhitespace = ignoreWhiteSpace;
+		this.ignoreAmountOfWhitespace = ignoreAmountOfWhiteSpace;
+		this.ignoreAllWhitespace = ignoreAllWhiteSpace;
 
 		this.view = view;
 
@@ -205,19 +203,34 @@ public class DualDiff implements EBComponent
 		this.trimWhitespace = !this.trimWhitespace;
 	}
 
-	public boolean getIgnoreWhitespace()
+	public boolean getIgnoreAmountOfWhitespace()
 	{
-		return this.ignoreWhitespace;
+		return this.ignoreAmountOfWhitespace;
 	}
 
-	public void setIgnoreWhitespace(boolean ignoreWhitespace)
+	public void setIgnoreAmountOfWhitespace(boolean ignoreAmountOfWhitespace)
 	{
-		this.ignoreWhitespace = ignoreWhitespace;
+		this.ignoreAmountOfWhitespace = ignoreAmountOfWhitespace;
 	}
 
-	public void toggleIgnoreWhitespace()
+	public void toggleIgnoreAmountOfWhitespace()
 	{
-		this.ignoreWhitespace = !this.ignoreWhitespace;
+		this.ignoreAmountOfWhitespace = !this.ignoreAmountOfWhitespace;
+	}
+
+	public boolean getIgnoreAllWhitespace()
+	{
+		return this.ignoreAllWhitespace;
+	}
+
+	public void setIgnoreAllWhitespace(boolean ignoreAllWhitespace)
+	{
+		this.ignoreAllWhitespace = ignoreAllWhitespace;
+	}
+
+	public void toggleIgnoreAllWhitespace()
+	{
+		this.ignoreAllWhitespace = !this.ignoreAllWhitespace;
 	}
 
 	private void initOverviews()
@@ -424,13 +437,17 @@ public class DualDiff implements EBComponent
 			{
 				canonical = canonical.toUpperCase();
 			}
-			if (trimWhitespace)
+			if (trimWhitespace && !ignoreAllWhitespace)
 			{
 				canonical = trimWhitespaces(canonical);
 			}
-			if (ignoreWhitespace)
+			if (ignoreAmountOfWhitespace && !ignoreAllWhitespace)
 			{
 				canonical = squeezeRepeatedWhitespaces(canonical);
+			}
+			if (ignoreAllWhitespace)
+			{
+				canonical = removeWhitespaces(canonical);
 			}
 
 			lines[i] = new FileLine(text, canonical);
@@ -470,6 +487,26 @@ public class DualDiff implements EBComponent
 				space = false;
 			}
 			outStr[outLen++] = inStr[idx];
+		}
+
+		return new String(outStr, 0, outLen);
+	}
+
+	public static String removeWhitespaces(String str)
+	{
+		int inLen = str.length();
+		int outLen = 0;
+		char[] inStr = new char[inLen];
+		char[] outStr = new char[inLen];
+		str.getChars(0, inLen, inStr, 0);
+
+		for (int i = 0; i < inLen; i++)
+		{
+			if (!Character.isWhitespace(inStr[i]))
+			{
+				outStr[outLen] = inStr[i];
+				outLen++;
+			}
 		}
 
 		return new String(outStr, 0, outLen);
@@ -630,7 +667,7 @@ public class DualDiff implements EBComponent
 		}
 	}
 
-	public static boolean getIgnoreWhitespaceFor(View view)
+	public static boolean getIgnoreAmountOfWhitespaceFor(View view)
 	{
 		DualDiff dualDiff = DualDiff.getDualDiffFor(view);
 		if (dualDiff == null)
@@ -638,15 +675,43 @@ public class DualDiff implements EBComponent
 			return false;
 		}
 
-		return dualDiff.getIgnoreWhitespace();
+		return dualDiff.getIgnoreAmountOfWhitespace();
 	}
 
-	public static void toggleIgnoreWhitespaceFor(View view)
+	public static void toggleIgnoreAmountOfWhitespaceFor(View view)
 	{
 		DualDiff dualDiff = DualDiff.getDualDiffFor(view);
 		if (dualDiff != null)
 		{
-			dualDiff.toggleIgnoreWhitespace();
+			dualDiff.toggleIgnoreAmountOfWhitespace();
+			dualDiff.refresh();
+
+			view.invalidate();
+			view.validate();
+		}
+		else
+		{
+			view.getToolkit().beep();
+		}
+	}
+
+	public static boolean getIgnoreAllWhitespaceFor(View view)
+	{
+		DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+		if (dualDiff == null)
+		{
+			return false;
+		}
+
+		return dualDiff.getIgnoreAllWhitespace();
+	}
+
+	public static void toggleIgnoreAllWhitespaceFor(View view)
+	{
+		DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+		if (dualDiff != null)
+		{
+			dualDiff.toggleIgnoreAllWhitespace();
 			dualDiff.refresh();
 
 			view.invalidate();
@@ -1054,7 +1119,6 @@ public class DualDiff implements EBComponent
 			Log.log(Log.DEBUG, this, "**** mouseReleased " + e);
 		}
 
-
 	}
 
 	public static void propertiesChanged()
@@ -1062,16 +1126,20 @@ public class DualDiff implements EBComponent
 		boolean newIgnoreCaseDefault = jEdit.getBooleanProperty("jdiff.ignore-case", false);
 		boolean newTrimWhitespaceDefault = jEdit.getBooleanProperty(
 			"jdiff.trim-whitespace", false);
-		boolean newIgnoreWhitespaceDefault = jEdit.getBooleanProperty(
-			"jdiff.ignore-whitespace", false);
+		boolean newIgnoreAmountOfWhitespaceDefault = jEdit.getBooleanProperty(
+			"jdiff.ignore-amount-whitespace", false);
+		boolean newIgnoreAllWhitespaceDefault = jEdit.getBooleanProperty(
+			"jdiff.ignore-all-whitespace", false);
 
 		if ((newIgnoreCaseDefault != ignoreCaseDefault)
 			|| (newTrimWhitespaceDefault != trimWhitespaceDefault)
-			|| (newIgnoreWhitespaceDefault != ignoreWhitespaceDefault))
+			|| (newIgnoreAmountOfWhitespaceDefault != ignoreAmountOfWhitespaceDefault)
+			|| (newIgnoreAllWhitespaceDefault != ignoreAllWhitespaceDefault))
 		{
 			ignoreCaseDefault = newIgnoreCaseDefault;
 			trimWhitespaceDefault = newTrimWhitespaceDefault;
-			ignoreWhitespaceDefault = newIgnoreWhitespaceDefault;
+			ignoreAmountOfWhitespaceDefault = newIgnoreAmountOfWhitespaceDefault;
+			ignoreAllWhitespaceDefault = newIgnoreAllWhitespaceDefault;
 		}
 	}
 }
