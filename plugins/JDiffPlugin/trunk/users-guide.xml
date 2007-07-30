@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
-
-<!-- JDiff plugin user's guide -->
-<!-- (C) 2002 Andre Kaplan -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-"file:///c:/develop/docbook-xml-4.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <book>
 
@@ -14,7 +10,7 @@
 
     <authorgroup>
         <author>
-            <firstname>Andr&eacute;</firstname>
+            <firstname>André</firstname>
             <surname>Kaplan</surname>
         </author>
         <author>
@@ -50,20 +46,15 @@
     <para>It features:</para>
 
     <itemizedlist>
-        <listitem>Diff overviews (local and global)</listitem>
-        <listitem>Synchronized scrolling</listitem>
-        <listitem>Ignore case option</listitem>
-        <listitem>Ignore leading and trailing whitespace option</listitem>
-        <listitem>Ignore amount of whitespace option</listitem>
-        <listitem>Ignore all whitespace option</listitem>
-        <listitem>Normal diff output</listitem>
+        <listitem><para>Diff overviews (local and global)</para></listitem>
+        <listitem><para>Synchronized scrolling</para></listitem>
+        <listitem><para>Ignore case option</para></listitem>
+        <listitem><para>Ignore leading and trailing whitespace option</para></listitem>
+        <listitem><para>Ignore amount of whitespace option</para></listitem>
+        <listitem><para>Ignore all whitespace option</para></listitem>
+        <listitem><para>Normal diff output</para></listitem>
     </itemizedlist>
 
-    <para>It requires:</para>
-    <itemizedlist>
-        <listitem>JDK 1.3</listitem>
-        <listitem>jEdit 4.2+</listitem>
-    </itemizedlist>
 
 </chapter>
 
@@ -75,35 +66,34 @@
     <para>The simplest method is to open the Dual Diff Dialog
     (<guimenu>Plugins</guimenu>&gt;
      <guisubmenu>JDiff</guisubmenu>&gt;
-     <guimenuitem>Show&nbsp;dual&nbsp;diff&nbsp;dialog</guimenuitem>)
+     <guimenuitem>Show dual diff dialog</guimenuitem>)
     and choose the files to compare. But you can also:
     </para>
 
     <orderedlist>
-        <listitem>Split your view in two (vertically)</listitem>
+        <listitem><para>Split your view in two (vertically)</para></listitem>
 
-        <listitem>Edit the buffers you want to compare:
+        <listitem><para>Edit the buffers you want to compare:</para>
             <itemizedlist>
-                <listitem>the buffer on the left is the original</listitem>
-                <listitem>the buffer on the right is the revision</listitem>
+                <listitem><para>the buffer on the left is the original</para></listitem>
+                <listitem><para>the buffer on the right is the revision</para></listitem>
             </itemizedlist>
         </listitem>
 
-        <listitem>Activate JDiff:
+        <listitem><para>Activate JDiff:
             <guimenu>Plugins</guimenu>&gt;
             <guisubmenu>JDiff</guisubmenu>&gt;
-            <guimenuitem>Dual&nbsp;Diff</guimenuitem>
+            <guimenuitem>Dual Diff</guimenuitem> </para>
         </listitem>
     </orderedlist>
 
-    <para>Figure&nbsp;1 shows the result</para>
+    <para>Figure 1 shows the result</para>
 
     <mediaobject>
-        <caption>Figure&nbsp;1 - JDiff Plugin</caption>
-        <alt>JDiff Plugin snapshot</alt>
         <imageobject>
-            <imagedata fileref="diff_snapshot.jpg" format="jpg"/>
-        </imageobject>
+            <imagedata fileref="diff_snapshot.jpg" format="JPG"/>
+        </imageobject>    
+        <caption><para>Figure 1 - JDiff Plugin</para></caption>
     </mediaobject>
 
 </chapter>
@@ -112,11 +102,11 @@
 <chapter id="display">
     <title>Display</title>
 
-    <para>Once JDiff is activated as in Figure&nbsp;1, you should see:</para>
+    <para>Once JDiff is activated as in Figure 1, you should see:</para>
     <itemizedlist>
-        <listitem>Text Highlights</listitem>
-        <listitem>A local overview (right of the original)</listitem>
-        <listitem>A global overview (right of the revision)</listitem>
+        <listitem><para>Text Highlights</para></listitem>
+        <listitem><para>A local overview (right of the original)</para></listitem>
+        <listitem><para>A global overview (right of the revision)</para></listitem>
     </itemizedlist>
 
 
@@ -126,17 +116,17 @@
         <para>By default:</para>
 
         <itemizedlist>
-            <listitem>Changed lines appear in yellow</listitem>
-            <listitem>Deleted (from the original) lines appear in red</listitem>
-            <listitem>Inserted (to the revision) lines appear in green</listitem>
+            <listitem><para>Changed lines appear in yellow</para></listitem>
+            <listitem><para>Deleted (from the original) lines appear in red</para></listitem>
+            <listitem><para>Inserted (to the revision) lines appear in green</para></listitem>
 
-            <listitem>Invalid lines appear as thin dark grey lines.
+            <listitem><para>Invalid lines appear as thin dark grey lines.</para>
             <itemizedlist>
-                <listitem>In the original, invalid lines indicate where a block was inserted
-                in the revision.
+                <listitem><para>In the original, invalid lines indicate where a block was inserted
+                in the revision.</para>
                 </listitem>
-                <listitem>In the revision, invalid lines indicate where a block was deleted in
-                the original.
+                <listitem><para>In the revision, invalid lines indicate where a block was deleted in
+                the original. </para>
                 </listitem>
             </itemizedlist>
             </listitem>
@@ -175,39 +165,39 @@
     <title>Other commands</title>
 
     <itemizedlist>
-        <listitem>
+        <listitem><para>
             <guimenuitem>Refresh</guimenuitem>:
-            refreshes the diff display
+            refreshes the diff display </para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Go to previous/next difference</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Go to previous/next difference</guimenuitem> </para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenuitem>Ignore case</guimenuitem>:
             toggles the &quot;Ignore case&quot; option for the current diff
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenuitem>Ignore leading and trailing whitespace</guimenuitem>:
             toggles the &quot;Ignore leading and trailing whitespace&quot; option for the current diff
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenuitem>Ignore amount of whitespace</guimenuitem>:
             toggles the &quot;Ignore amount of whitespace&quot; option for the current diff
-        </listitem>
+        </para></listitem>
         
-        <listitem>
+        <listitem><para>
             <guimenuitem>Ignore all whitespace</guimenuitem>:
             toggles the &quot;Ignore all whitespace&quot; option for the current diff
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenuitem>Normal Diff Output</guimenuitem>:
             generates a diff file using the normal method
-        </listitem>
+        </para></listitem>
     </itemizedlist>
 
 </chapter>
@@ -223,29 +213,29 @@
         <para>You can configure how JDiff compares lines by default. JDiff can:</para>
 
         <itemizedlist>
-            <listitem>
+            <listitem><para>
                 Ignore case: upper-cased lines are compared.
-            </listitem>
+            </para></listitem>
 
-            <listitem>
+            <listitem><para>
                 Ignore leading and trailing whitespace: lines are compared as if
                 leading and trailing whitespaces were removed.
-            </listitem>
+            </para></listitem>
 
-            <listitem>
-                Ignore amount of whitespace: lines are compared as if any
+            <listitem><para>
+                Ignore amount of whitespace: lines are compared as if any</para>
                 <itemizedlist>
-                    <listitem>leading and trailing whitespaces were removed</listitem>
-                    <listitem>sequence of whitespaces were replaced by one single space.</listitem>
+                    <listitem><para>leading and trailing whitespaces were removed</para></listitem>
+                    <listitem><para>sequence of whitespaces were replaced by one single space.</para></listitem>
                 </itemizedlist>
             </listitem>
             
-            <listitem>
+            <listitem><para>
                 Ignore all whitespace: lines are compared as if any
                 <itemizedlist>
-                    <listitem>leading, trailing and inner whitespaces were removed</listitem>
+                    <listitem><para>leading, trailing and inner whitespaces were removed</para></listitem>
                 </itemizedlist>
-            </listitem>
+            </para></listitem>
         </itemizedlist>
 
     </simplesect>
@@ -255,12 +245,10 @@
         <title>Global overview display</title>
 
         <itemizedlist>
-            <listitem>Virtual overview: uses the virtual representation of
-            buffers for its display
+            <listitem><para>Virtual overview: uses the virtual representation of buffers for its display </para>
             </listitem>
 
-            <listitem>Physical overview: uses the physical representation of
-            buffers for its display
+            <listitem><para>Physical overview: uses the physical representation of buffers for its display </para>
             </listitem>
         </itemizedlist>
 
@@ -273,12 +261,12 @@
         <para>You can configure the colors of:</para>
 
         <itemizedlist>
-            <listitem>Changed lines</listitem>
-            <listitem>Deleted lines</listitem>
-            <listitem>Inserted lines</listitem>
-            <listitem>Invalid lines</listitem>
-            <listitem>Left cursor in the global overview</listitem>
-            <listitem>Right cursor in the global overview</listitem>
+            <listitem><para>Changed lines</para></listitem>
+            <listitem><para>Deleted lines</para></listitem>
+            <listitem><para>Inserted lines</para></listitem>
+            <listitem><para>Invalid lines</para></listitem>
+            <listitem><para>Left cursor in the global overview</para></listitem>
+            <listitem><para>Right cursor in the global overview</para></listitem>
         </itemizedlist>
 
     </simplesect>
@@ -290,10 +278,10 @@
         <para>You can configure the colors of:</para>
 
         <itemizedlist>
-            <listitem>Changed lines</listitem>
-            <listitem>Deleted lines</listitem>
-            <listitem>Inserted lines</listitem>
-            <listitem>Invalid lines</listitem>
+            <listitem><para>Changed lines</para></listitem>
+            <listitem><para>Deleted lines</para></listitem>
+            <listitem><para>Inserted lines</para></listitem>
+            <listitem><para>Invalid lines</para></listitem>
         </itemizedlist>
 
     </simplesect>
@@ -327,22 +315,22 @@
 
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
-            Mark Wickens <email>m.wickens@rhodium-consulting.com</email>;
+        <listitem><para>
+            Mark Wickens <email>m.wickens@rhodium-consulting.com</email>; </para>
         </listitem>
 
-        <listitem>
-            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        <listitem><para>
+            André Kaplan <email>akaplan@jedit.org</email>; </para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             or jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email>;
+            <email>jedit-users@lists.sourceforge.net</email>; </para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             or jEdit-devel mailing-list
-            <email>jedit-devel@lists.sourceforge.net</email>.
+            <email>jedit-devel@lists.sourceforge.net</email>. </para>
         </listitem>
     </itemizedlist>
 </chapter>
@@ -351,13 +339,13 @@
     <title>History</title>
 
     <itemizedlist>
-        <listitem>
+        <listitem> <para>
 				Version 1.4. Updated to work with jEdit v4.2+, including edits for new
-				JEditTextArea handling and new plugin API.
+				JEditTextArea handling and new plugin API. </para>
         </listitem>
 
-        <listitem>
-				Version 1.3.2. Last pre-jEdit v4.2 version of plugin by Andr&eacute;.
+        <listitem><para>
+				Version 1.3.2. Last pre-jEdit v4.2 version of plugin by André. </para>
         </listitem>
     </itemizedlist>
 </chapter>
@@ -366,20 +354,20 @@
     <title>Credits</title>
 
     <itemizedlist>
-        <listitem>
+        <listitem><para>
             Stuart D. Gathman ported the GNU diff algorithm to Java.
             See
             <ulink url="http://www.bmsi.com/java/">
                 http://www.bmsi.com/java/
-            </ulink>
+            </ulink></para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             Some code and ideas borrowed from JDiff by
             Mike Dillon <email>mdillon@jedit.org</email>.
             See <ulink url="http://sourceforge.net/projects/jdiff">
                 http://sourceforge.net/projects/jdiff
-            </ulink>
+            </ulink> </para>
         </listitem>
     </itemizedlist>
 
