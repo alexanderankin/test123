@@ -1,0 +1,8 @@
+# Plugin properties
+plugin.xerces.XercesPlugin.name=XercesPlugin
+plugin.xerces.XercesPlugin.activate=defer
+plugin.xerces.XercesPlugin.author=
+plugin.xerces.XercesPlugin.version=2.9.0
+plugin.xerces.XercesPlugin.docs=docs/index.html
+plugin.xerces.XercesPlugin.jars=resolver.jar xercesImpl.jar
+plugin.xerces.XercesPlugin.depend.0=jedit 04.02.99.00
