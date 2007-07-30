@@ -33,7 +33,8 @@ public class JDiffOptionPane extends AbstractOptionPane
 {
     private JCheckBox ignoreCase;
     private JCheckBox trimWhitespace;
-    private JCheckBox ignoreWhitespace;
+    private JCheckBox ignoreAmountOfWhitespace;
+    private JCheckBox ignoreAllWhitespace;
 
     private JRadioButton virtualOverview;
     private JRadioButton physicalOverview;
@@ -47,7 +48,8 @@ public class JDiffOptionPane extends AbstractOptionPane
     public void _init() {
         this.ignoreCase        = this.createCheckBox("jdiff.ignore-case", false);
         this.trimWhitespace    = this.createCheckBox("jdiff.trim-whitespace", false);
-        this.ignoreWhitespace  = this.createCheckBox("jdiff.ignore-whitespace", false);
+        this.ignoreAmountOfWhitespace  = this.createCheckBox("jdiff.ignore-amount-whitespace", false);
+        this.ignoreAllWhitespace  = this.createCheckBox("jdiff.ignore-all-whitespace", false);
 
         this.virtualOverview  = new JRadioButton(jEdit.getProperty(
             "options.jdiff.virtual-overview"
@@ -67,7 +69,8 @@ public class JDiffOptionPane extends AbstractOptionPane
 
         addComponent(this.ignoreCase);
         addComponent(this.trimWhitespace);
-        addComponent(this.ignoreWhitespace);
+        addComponent(this.ignoreAmountOfWhitespace);
+        addComponent(this.ignoreAllWhitespace);
 
         addComponent(new JLabel(jEdit.getProperty(
             "options.jdiff.overview-display"
@@ -84,8 +87,11 @@ public class JDiffOptionPane extends AbstractOptionPane
         jEdit.setBooleanProperty("jdiff.trim-whitespace",
             this.trimWhitespace.isSelected()
         );
-        jEdit.setBooleanProperty("jdiff.ignore-whitespace",
-            this.ignoreWhitespace.isSelected()
+        jEdit.setBooleanProperty("jdiff.ignore-amount-whitespace",
+            this.ignoreAmountOfWhitespace.isSelected()
+        );
+        jEdit.setBooleanProperty("jdiff.ignore-all-whitespace",
+            this.ignoreAllWhitespace.isSelected()
         );
 
         jEdit.setBooleanProperty("jdiff.global-virtual-overview",

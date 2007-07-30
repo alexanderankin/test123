@@ -47,12 +47,21 @@
     </ACTION>
 
 
-    <ACTION NAME="jdiff.toggle-ignore-whitespace">
+    <ACTION NAME="jdiff.toggle-ignore-amount-whitespace">
         <CODE>
-            jdiff.DualDiff.toggleIgnoreWhitespaceFor(view);
+            jdiff.DualDiff.toggleIgnoreAmountOfWhitespaceFor(view);
         </CODE>
         <IS_SELECTED>
-            return jdiff.DualDiff.getIgnoreWhitespaceFor(view);
+            return jdiff.DualDiff.getIgnoreAmountOfWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+    
+    <ACTION NAME="jdiff.toggle-ignore-all-whitespace">
+        <CODE>
+            jdiff.DualDiff.toggleIgnoreAllWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiff.getIgnoreAllWhitespaceFor(view);
         </IS_SELECTED>
     </ACTION>
 
