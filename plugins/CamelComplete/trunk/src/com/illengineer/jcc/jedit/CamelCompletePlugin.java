@@ -293,6 +293,7 @@ public class CamelCompletePlugin extends EditPlugin {
 		if (c != null)
 		    t.addAll(c);
 	    }
+	    t.remove(word);  // just in case
 	    return new ArrayList<String>(t);
 	}
 	
@@ -314,6 +315,7 @@ public class CamelCompletePlugin extends EditPlugin {
 		    }
 		}
 	    }
+	    t.remove(word);  // just in case
 	    return new ArrayList<String>(t);
 	}
 	
