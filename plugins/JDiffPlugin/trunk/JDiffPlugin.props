@@ -1,9 +1,9 @@
 # JDiffPlugin properties
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
-plugin.jdiff.JDiffPlugin.author=Andre Kaplan/Mark Wickens
+plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens
 plugin.jdiff.JDiffPlugin.version=1.5.2
-plugin.jdiff.JDiffPlugin.docs=users-guide.html
+plugin.jdiff.JDiffPlugin.docs=index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff utility for jEdit.
 
 # Dependencies
