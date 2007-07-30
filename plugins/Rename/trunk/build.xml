@@ -1,5 +1,7 @@
 <project name="Rename" default="dist" basedir=".">
-
+  
+  <property file="build.properties" />
+  <property file="../build.properties" />
   <property name="jedit.install.dir"  value="../.." />
   <property name="jar.name"  value="Rename"/>
 
