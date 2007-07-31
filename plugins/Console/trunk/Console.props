@@ -291,7 +291,7 @@ console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
-console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\.|, (.+))
+console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\\.|, (.+))
 console.error.perl.message=$1 $4
 console.error.perl.filename=$2
 console.error.perl.line=$3
