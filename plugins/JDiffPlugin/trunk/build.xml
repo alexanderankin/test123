@@ -28,5 +28,12 @@
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${src.dir}"/>
     </path>
+    
+    <selector id="packageFiles">
+	  <or>
+		<filename name="*.png" />
+		<filename name="*.jpg" />
+	  </or>
+    </selector>
 
 </project>
