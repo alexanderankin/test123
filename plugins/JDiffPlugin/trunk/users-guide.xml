@@ -339,6 +339,10 @@
     <title>History</title>
 
     <itemizedlist>
+        <listitem><para> Version 1.5.2. Fixes to ignore whitespace options (1522563 - aconnor78) </para></listitem>
+        <listitem><para> 
+            Version 1.5, updated to work with jEdit 4.3pre3+
+        </para></listitem>
         <listitem> <para>
 				Version 1.4. Updated to work with jEdit v4.2+, including edits for new
 				JEditTextArea handling and new plugin API. </para>
