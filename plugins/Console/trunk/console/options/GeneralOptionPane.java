@@ -47,11 +47,37 @@ import console.ProcessRunner;
 
 public class GeneralOptionPane extends AbstractOptionPane
 {
+
+	// {{{ data members
+	
+	private JCheckBox commandoToolBar;
+	private JComboBox prefix;
+	private FontSelector font;
+	private JComboBox encoding;
+	private JButton bgColor;
+	private JButton plainColor;
+	private JButton caretColor;
+	private JButton infoColor;
+	private JButton warningColor;
+	private JButton errorColor;
+	private JCheckBox nodeselect;
+	private JCheckBox mergeError;
+	private JCheckBox showExitStatus;
+	private JCheckBox showWelcomeMessage;
+	private JTextField pathDirs ;
+	private JTextField limit ;
+	private JCheckBox pvselect;
+	private JCheckBox pvchange;
+	
+	
+	// }}}
+
 	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane()
 	{
 		super("console.general");
 	} //}}}
+
 	//{{{ _init() method
 	protected void _init()
 	{
@@ -123,6 +149,16 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
 
+		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
+		addSeparator("options.console.general.changedir");
+		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
+		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
+		
+		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
+		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
+	
+		addComponent(pvchange);
+		addComponent(pvselect);
 		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 		
@@ -132,7 +168,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-
+		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
+		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
 		
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
@@ -193,23 +230,4 @@ public class GeneralOptionPane extends AbstractOptionPane
 		return b;
 	} //}}}
 	
-	// {{{ private members
-	
-	private JCheckBox commandoToolBar;
-	private JComboBox prefix;
-	private FontSelector font;
-	private JComboBox encoding;
-	private JButton bgColor;
-	private JButton plainColor;
-	private JButton caretColor;
-	private JButton infoColor;
-	private JButton warningColor;
-	private JButton errorColor;
-	private JCheckBox nodeselect;
-	private JCheckBox mergeError;
-	private JCheckBox showExitStatus;
-	private JCheckBox showWelcomeMessage;
-	private JTextField pathDirs ;
-	private JTextField limit ;
-	// }}}
 }
