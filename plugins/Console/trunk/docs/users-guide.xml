@@ -1502,6 +1502,17 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
 
   <itemizedlist>
 
+  <listitem id="ver4.3.4">
+  <para>
+    <emphasis role="bold">Verison 4.3.4</emphasis> Requires jEdit 4.3pre11, JDK 1.5, ErrorList 1.4, and possibly PV 3.0.
+    <itemizedlist>
+    <listitem><para> Listens to new VFSPathSelected EBMessage. Removed old PV Listener. This is meant to be compatible with PV 3.0+
+    </para> </listitem>
+    </itemizedlist>
+   </para>
+   </listitem>
+    
+  
   <listitem id="ver4.3.3">
    <para>
      <emphasis role="bold">Version 4.3.3 </emphasis>
