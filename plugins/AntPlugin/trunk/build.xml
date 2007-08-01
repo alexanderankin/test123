@@ -42,9 +42,9 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
    
   </target>
 	
-  <target name="install" depends="jar" >
-    <copy todir="${install.dir}">
-      <fileset dir="apache-ant-1.7.0/lib">
+  <target name="install" depends="jar">
+    <copy todir="${install.dir}" overwrite="true">
+      <fileset dir="${basedir}/apache-ant-1.7.0/lib">
         <include name="ant.jar"/>
         <include name="ant-nodeps.jar"/>
         <include name="ant-launcher.jar"/>
