@@ -35,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,10 +48,10 @@ import javax.swing.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
-
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
@@ -281,6 +282,10 @@ implements EBComponent, DefaultFocusComponent
 			propertiesChanged();
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
+		else if (msg instanceof VFSPathSelected)
+			handleNodeSelected((VFSPathSelected)msg);
+		
+
 	} //}}}
 
 	//{{{ getErrorSource() method
@@ -624,6 +629,24 @@ implements EBComponent, DefaultFocusComponent
 		plainColor = jEdit.getColorProperty("console.plainColor");
 	} //}}}
 
+	public void handleNodeSelected(VFSPathSelected msg) {
+		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
+		String path = msg.getPath();
+		File f = new File(path);
+		if (!f.isDirectory()) 
+		{
+			path = f.getParent();
+			f = new File(path);
+			if (!f.isDirectory()) return;
+		}
+		Shell sysShell = Shell.getShell("System");
+		Output output = getShellState(sysShell);
+		String cmd = "cd \"" + path + "\"";
+		sysShell.execute(this, cmd, output);
+		output.print(getPlainColor(), "\n");
+		sysShell.printPrompt(this, output);		
+	}
+	
 	//{{{ handlePluginUpdate() method
 	public void handlePluginUpdate(PluginUpdate pmsg)
 	{

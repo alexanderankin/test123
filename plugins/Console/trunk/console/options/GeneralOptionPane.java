@@ -41,7 +41,6 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
 
-import console.ProjectTreeListener;
 import console.gui.Label;
 import console.ProcessRunner;
 //}}}
@@ -126,13 +125,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 //		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
 		addSeparator("options.console.general.changedir");
 		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
-		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
+		nodeselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.nodeselect"));
 		
 		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
-		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
+		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
 	
 		addComponent(pvchange);
-		addComponent(pvselect);
+		addComponent(nodeselect);
 
 	} //}}}
 
@@ -141,7 +140,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
-		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
+		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
 		
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
@@ -174,7 +173,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			warningColor.getBackground());
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
-		ProjectTreeListener.reset();
+		
 		
 	}
 	//}}}
@@ -213,7 +212,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;
-	private JCheckBox pvselect;
+	private JCheckBox nodeselect;
 	private JCheckBox pvchange;
 	private JCheckBox mergeError;
 	private JCheckBox showExitStatus;
