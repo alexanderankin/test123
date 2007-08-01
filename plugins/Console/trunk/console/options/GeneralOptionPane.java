@@ -117,9 +117,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(showExitStatus);
 		
 		
-		nodeselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.nodeselect"));
-		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
-		addComponent(nodeselect);
 		
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
@@ -151,12 +148,14 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 		addSeparator("options.console.general.changedir");
+		nodeselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.nodeselect"));
+		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
 		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
-		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
-		
 		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
+		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
 		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
-	
+
+		addComponent(nodeselect);
 		addComponent(pvchange);
 		addComponent(pvselect);
 		
