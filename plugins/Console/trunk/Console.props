@@ -15,6 +15,9 @@ plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.depend.0=jedit 04.03.11.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.5
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.4
+# ProjectViewer is optional because Console only listens to events from it.
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.1.1
+plugin.projectviewer.console.ConsolePlugin.global-pv-listeners=console.ProjectTreeListener
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
@@ -85,6 +88,8 @@ options.console.general.infoColor=Information messages:
 options.console.general.changedir=ProjectViewer Event Options:
 options.console.general.changedir.pvchange=On Project change, cd to root project dir
 options.console.general.changedir.nodeselect=On VFS node select, cd to node dir (File Browser/ProjectViewer)
+options.console.general.changedir.pvchange=On Project change, cd to root project dir
+options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
 options.console.general.mergeError=Merge stdout and stderr
 options.console.general.welcome=Show welcome message
 options.console.general.showExitStatus=Show exit status
