@@ -18,8 +18,9 @@
  */
 package projectviewer.event;
 
-import org.gjt.sp.jedit.EBMessage;
+
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.VFSPathSelected;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTGroup;
@@ -32,7 +33,7 @@ import projectviewer.vpt.VPTNode;
  *  @version    $Id$
  *  @since      PV 3.0.0
  */
-public final class ViewerUpdate extends EBMessage
+public final class ViewerUpdate extends VFSPathSelected
 {
 
     public static enum Type
@@ -44,11 +45,10 @@ public final class ViewerUpdate extends EBMessage
         PROJECT_LOADED,
 
         /** Notifies that a group has been activated, or selected. */
-        GROUP_ACTIVATED,
+        GROUP_ACTIVATED
     }
 
     private final boolean isViewer;
-    private final VPTNode node;
     private final VPTGroup oldParent;
     private final Type type;
 
@@ -61,9 +61,9 @@ public final class ViewerUpdate extends EBMessage
                         VPTNode n,
                         Type type)
     {
-        super(v);
-        this.node = n;
+        super(v, n);
         this.type = type;
+        this.path = n.getNodePath();
         this.oldParent = null;
         this.isViewer = false;
     }
@@ -76,9 +76,9 @@ public final class ViewerUpdate extends EBMessage
                         VPTNode n,
                         Type type)
     {
-        super(v);
-        this.node = n;
+        super(v, n);
         this.type = type;
+        this.path = n.getNodePath();
         this.oldParent = null;
         this.isViewer = true;
     }
@@ -112,15 +112,6 @@ public final class ViewerUpdate extends EBMessage
         } else {
             return (View) getSource();
         }
-    }
-
-    /**
-     *  Returns the node affected by the event being notified. The
-     *  node can be null, a project or a group.
-     */
-    public VPTNode getNode()
-    {
-        return node;
     }
 
     /**
