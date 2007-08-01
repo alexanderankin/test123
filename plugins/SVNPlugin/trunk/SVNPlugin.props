@@ -44,7 +44,7 @@ ise.plugin.svn.pv.password.label=Password:
 
 # plugin menu items
 plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
-plugin.ise.plugin.svn.SVNPlugin.menu=subversion.checkout
+plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser subversion.checkout
 subversion.checkout.label=Checkout
 
 # subversion commands
