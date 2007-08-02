@@ -76,7 +76,7 @@ public final class ViewerUpdate extends VFSPathSelected
                         VPTNode n,
                         Type type)
     {
-        super(v, n);
+        super(v.getView(), n);
         this.type = type;
         this.path = n.getNodePath();
         this.oldParent = null;
