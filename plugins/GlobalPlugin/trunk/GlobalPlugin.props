@@ -36,3 +36,6 @@ definition-browser.title=Definitions
 
 # messages
 messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path to 'global' in the plugin options.
+
+# docs
+plugin.browser.GlobalPlugin.docs=index.html
