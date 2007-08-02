@@ -629,7 +629,9 @@ implements EBComponent, DefaultFocusComponent
 		plainColor = jEdit.getColorProperty("console.plainColor");
 	} //}}}
 
+	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
+		if (view != msg.getSource()) return;
 		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 		String path = msg.getPath();
 		File f = new File(path);
@@ -645,7 +647,7 @@ implements EBComponent, DefaultFocusComponent
 		sysShell.execute(this, cmd, output);
 		output.print(getPlainColor(), "\n");
 		sysShell.printPrompt(this, output);		
-	}
+	} //}}}
 	
 	//{{{ handlePluginUpdate() method
 	public void handlePluginUpdate(PluginUpdate pmsg)
