@@ -52,6 +52,8 @@ import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
+
+import console.SystemShell.ConsoleState;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
@@ -642,10 +644,13 @@ implements EBComponent, DefaultFocusComponent
 			if (!f.isDirectory()) return;
 		}
 		Shell sysShell = Shell.getShell("System");
+		SystemShell ss = (SystemShell) sysShell;
+		ConsoleState cs = ss.getConsoleState(this);
+		if (cs.currentDirectory.equals(path)) return;
 		Output output = getShellState(sysShell);
 		String cmd = "cd \"" + path + "\"";
 		sysShell.execute(this, cmd, output);
-		output.print(getPlainColor(), "\n");
+//		output.print(getPlainColor(), "\n");
 		sysShell.printPrompt(this, output);		
 	} //}}}
 	
