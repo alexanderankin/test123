@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.5.0_07" class="java.beans.XMLDecoder"> 
+<java version="1.5.0_11" class="java.beans.XMLDecoder"> 
  <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -128,6 +128,18 @@
             </void> 
             <void property="name"> 
              <string>newEngineButton</string> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JCheckBox</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Enabled</string> 
+            </void> 
+            <void property="name"> 
+             <string>engineEnabledCheck</string> 
             </void> 
            </object> 
           </void> 

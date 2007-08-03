@@ -111,7 +111,7 @@ public class CamelCompletePlugin extends EditPlugin {
 		eg.engine = new CompletionEngine();
 		eg.modified = false;
 		
-		if (((Boolean)optionsMap.get("cache")).booleanValue()) {
+		if (((Boolean)optionsMap.get("cache")).booleanValue() && eoMap.get(engineName).enabled) {
 		    i = getResourceAsStream(CamelCompletePlugin.class, "cache/engine-"+engineName);
 		    if (i != null) {
 			try {
@@ -141,8 +141,9 @@ public class CamelCompletePlugin extends EditPlugin {
 	    // Persist CompletionEngine data and optionsMap
 	    OutputStream out;
 	    
-	    if ((((Boolean)optionsMap.get("cache")).booleanValue())) {
+	    if (((Boolean)optionsMap.get("cache")).booleanValue()) {
 		for (String engineName : engineMap.keySet()) {
+		    if (!eoMap.get(engineName).enabled) continue;
 		    EngineGroup eg = engineMap.get(engineName);
 		    if (eg.modified) {
 			out = getResourceAsOutputStream(CamelCompletePlugin.class, "cache/engine-"+engineName);
@@ -171,6 +172,7 @@ public class CamelCompletePlugin extends EditPlugin {
 
 	    optionsMap = null;
 	    enginesOptionsMap = null;
+	    eoMap = null;
 	    engineMap = null;
 	    engines = null;
 	}
@@ -190,6 +192,10 @@ public class CamelCompletePlugin extends EditPlugin {
 	}  
 	
 	static void processConfiguration(String engineName) {
+	    OptionPanel.EngineOpts eo = eoMap.get(engineName);
+	    if (eo != null && !eo.enabled)
+		return;
+		
 	    EngineGroup eg;
 	    if (engineMap.containsKey(engineName))
 		eg = engineMap.get(engineName);
@@ -288,10 +294,17 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	public static List<String> getCompletions(String word) {
 	    TreeSet<String> t = new TreeSet<String>();
-	    for (CompletionEngine engine : engines) {
-		List<String> c = engine.complete(word, false);
-		if (c != null)
-		    t.addAll(c);
+	    for (String engineName : eoMap.keySet()) {
+		OptionPanel.EngineOpts eo = eoMap.get(engineName);
+		if (eo.enabled) {
+		    EngineGroup eg = engineMap.get(engineName);
+		    if (eg != null) {
+			CompletionEngine engine = eg.engine;
+			List<String> c = engine.complete(word, false);
+			if (c != null)
+			    t.addAll(c);
+		    }
+		}
 	    }
 	    t.remove(word);  // just in case
 	    return new ArrayList<String>(t);
@@ -301,8 +314,10 @@ public class CamelCompletePlugin extends EditPlugin {
 	    TreeSet<String> t = new TreeSet<String>();
 	    for (String engineName : eoMap.keySet()) {
 		OptionPanel.EngineOpts eo = eoMap.get(engineName);
-		if (eo.normalCompletionMode != 0) {
-		    CompletionEngine engine = engineMap.get(engineName).engine;
+		if (eo.enabled && eo.normalCompletionMode != 0) {
+		    EngineGroup eg = engineMap.get(engineName);
+		    if (eg == null) continue;
+		    CompletionEngine engine = eg.engine;
 		    List<String> ids = engine.getIdentifiers();
 		    for (String id : ids) {
 			if (eo.normalCompletionMode == 1) { // starts with

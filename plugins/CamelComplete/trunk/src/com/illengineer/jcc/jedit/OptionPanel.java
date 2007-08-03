@@ -217,6 +217,7 @@ public class OptionPanel extends AbstractOptionPane
 		providerModel.clear();
 		resetComponents(true, true);
 		disabledNormalButton.setSelected(true);
+		engineEnabledCheck.setSelected(true);
 	    } else if (source == saveEngineButton) {
 		String engineName = (String)enginesCombo.getSelectedItem();
 		if (engineName != null && engineName.length() > 0) {
@@ -276,6 +277,7 @@ public class OptionPanel extends AbstractOptionPane
 			    containsNormalButton.setSelected(true);
 			    break;
 			}
+			engineEnabledCheck.setSelected(eo.enabled);
 		    }
 		}
 	    } else if (source == optionGroupCombo) {
@@ -434,6 +436,7 @@ public class OptionPanel extends AbstractOptionPane
 		    eo.normalCompletionMode = 1;
 		else if (containsNormalButton.isSelected())
 		    eo.normalCompletionMode = 2;
+		eo.enabled = engineEnabledCheck.isSelected();
 		eoMap.put(currentEngineName, eo);
 	    }
 	}
@@ -457,6 +460,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -465,6 +469,7 @@ public class OptionPanel extends AbstractOptionPane
 		saveEngineButton = new JButton();
 		deleteEngineButton = new JButton();
 		newEngineButton = new JButton();
+		engineEnabledCheck = new JCheckBox();
 		panel6 = new JPanel();
 		label6 = new JLabel();
 		label1 = new JLabel();
@@ -587,6 +592,10 @@ public class OptionPanel extends AbstractOptionPane
 					//---- newEngineButton ----
 					newEngineButton.setText("New");
 					panel7.add(newEngineButton);
+
+					//---- engineEnabledCheck ----
+					engineEnabledCheck.setText("Enabled");
+					panel7.add(engineEnabledCheck);
 				}
 				optionPanel.add(panel7, cc.xywh(1, 1, 5, 1));
 
@@ -856,7 +865,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel1.add(label9, BorderLayout.NORTH);
 
 					//---- popupRowsSpinner ----
-					popupRowsSpinner.setModel(new SpinnerNumberModel(12, 4, null, 1));
+					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
@@ -889,7 +898,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
+					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -902,7 +911,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 2, null, 1));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -958,6 +967,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
@@ -966,6 +976,7 @@ public class OptionPanel extends AbstractOptionPane
 	JButton saveEngineButton;
 	JButton deleteEngineButton;
 	JButton newEngineButton;
+	JCheckBox engineEnabledCheck;
 	JPanel panel6;
 	JLabel label6;
 	JLabel label1;
@@ -1079,7 +1090,8 @@ public class OptionPanel extends AbstractOptionPane
 	public static class EngineOpts implements Serializable
 	{
 	    static final long serialVersionUID = 2989263505948239743L;
-	    
+
+	    boolean enabled = true;
 	    int normalCompletionMode;  // 0 = disabled, 1 = starts with, 2 = contains
 	}
 	
