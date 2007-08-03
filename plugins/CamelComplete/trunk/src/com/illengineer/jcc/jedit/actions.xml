@@ -3,14 +3,20 @@
 <ACTIONS>
 	<ACTION NAME="camelcomplete.complete">
 		<CODE>
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, false);
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, 1);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="camelcomplete.normal_complete">
 		<CODE>
-		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, true);
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, 2);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="camelcomplete.total_complete">
+		<CODE>
+		    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, 3);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="camelcomplete.process_engine">
 		<CODE>
 		    import javax.swing.JOptionPane;
