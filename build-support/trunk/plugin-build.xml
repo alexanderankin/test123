@@ -434,6 +434,7 @@
         <mkdir dir="${build.javadoc}" />
         <javadoc sourcepath="${src.dir}"
                     destdir="${build.javadoc}"
+                    locale="en"
                     packagenames="${javadoc.packagenames}"
                     windowtitle="${javadoc.title}">
             <classpath refid="default.class.path" />
