@@ -65,7 +65,7 @@
       <zipfileset dir="doc" prefix="CamelComplete/doc"/>
       <zipfileset dir="lib" prefix="CamelComplete/lib" excludes="jedit.jar"/>
       <zipfileset dir="." prefix="CamelComplete" 
-	    includes="TODO,NOTES,build.xml,jcc.sh,JCodeComplete.jfdproj"/>
+	    includes="TODO,NOTES,build.xml,private-build.xml,jcc.sh,JCodeComplete.jfdproj"/>
     </zip>
   </target>
   
