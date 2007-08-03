@@ -66,7 +66,7 @@ public class CompleteWord extends CompletionPopup
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
 	// completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
-	public static void completeWord(View view, int completionType)
+	public static void completeWord(View view, int completionType, List<String> engineNames)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -92,13 +92,13 @@ public class CompleteWord extends CompletionPopup
 		List<String> completions = null;
 		switch (completionType) {
 		  case 1:
-		    completions = CamelCompletePlugin.getCompletions(word);
+		    completions = CamelCompletePlugin.getCompletions(word, engineNames);
 		    break;
 		  case 2:
-		    completions = CamelCompletePlugin.getNormalCompletions(word);
+		    completions = CamelCompletePlugin.getNormalCompletions(word, engineNames);
 		    break;
 		  case 3:
-		    completions = CamelCompletePlugin.getTotalCompletions(word);
+		    completions = CamelCompletePlugin.getTotalCompletions(word, engineNames);
 		    break;
 		}
 		if (completions == null || completions.size() == 0)
