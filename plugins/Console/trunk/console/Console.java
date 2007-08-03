@@ -650,7 +650,7 @@ implements EBComponent, DefaultFocusComponent
 		Output output = getShellState(sysShell);
 		String cmd = "cd \"" + path + "\"";
 		sysShell.execute(this, cmd, output);
-//		output.print(getPlainColor(), "\n");
+		output.print(getPlainColor(), "\n");
 		sysShell.printPrompt(this, output);		
 	} //}}}
 	
