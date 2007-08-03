@@ -133,7 +133,7 @@ public class ErrorMatcher implements Cloneable
 			if ((label == null) && (errorRE != null))
 			{
 				matcher = errorRE.matcher(text);
-				if (matcher.matches())
+				if (matcher.find())
 				{
 					label = jEdit.getProperty("options.console.errors.match");
 					type = ErrorSource.ERROR;
@@ -142,6 +142,7 @@ public class ErrorMatcher implements Cloneable
 
 			if (label != null)
 			{
+				matcher.reset(matcher.group());
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
 				message = matcher.replaceAll(messageBackref);
