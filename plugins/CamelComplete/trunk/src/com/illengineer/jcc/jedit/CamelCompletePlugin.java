@@ -290,33 +290,41 @@ public class CamelCompletePlugin extends EditPlugin {
 	// {{{ completion methods
 	public static void complete(View view, JEditTextArea textArea, int completionType) {
 	    // completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
-	    CompleteWord.completeWord(view, completionType);
+	    CompleteWord.completeWord(view, completionType, null);
 	}
 	
-	public static List<String> getCompletions(String word) {
+	public static void complete(View view, JEditTextArea textArea, int completionType,
+				    List<String> engineNames) {
+	    // completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
+	    CompleteWord.completeWord(view, completionType, engineNames);
+	}
+	
+	
+	public static List<String> getCompletions(String word, List<String> engineNames) {
 	    TreeSet<String> t = new TreeSet<String>();
-	    _addCompletions(word, t);
+	    _addCompletions(word, t, engineNames);
 	    t.remove(word);  // just in case
 	    return new ArrayList<String>(t);
 	}
 	
-	public static List<String> getNormalCompletions(String word) {
+	public static List<String> getNormalCompletions(String word, List<String> engineNames) {
 	    TreeSet<String> t = new TreeSet<String>();
-	    _addNormalCompletions(word, t);
+	    _addNormalCompletions(word, t, engineNames);
 	    t.remove(word);  // just in case
 	    return new ArrayList<String>(t);
 	}
 	
-	public static List<String> getTotalCompletions(String word) {
+	public static List<String> getTotalCompletions(String word, List<String> engineNames) {
 	    TreeSet<String> t = new TreeSet<String>();
-	    _addCompletions(word, t);
-	    _addNormalCompletions(word, t);
+	    _addCompletions(word, t, engineNames);
+	    _addNormalCompletions(word, t, engineNames);
 	    t.remove(word);
 	    return new ArrayList<String>(t);
 	}
 	
-	private static void _addCompletions(String word, TreeSet<String> t) {
-	    for (String engineName : eoMap.keySet()) {
+	private static void _addCompletions(String word, TreeSet<String> t, List<String> engineNames) {
+	    Iterable<String> is = (engineNames != null ? engineNames : eoMap.keySet());
+	    for (String engineName : is) {
 		OptionPanel.EngineOpts eo = eoMap.get(engineName);
 		if (eo.enabled) {
 		    EngineGroup eg = engineMap.get(engineName);
@@ -330,8 +338,9 @@ public class CamelCompletePlugin extends EditPlugin {
 	    }
 	}
 	
-	private static void _addNormalCompletions(String word, TreeSet<String> t) {
-	    for (String engineName : eoMap.keySet()) {
+	private static void _addNormalCompletions(String word, TreeSet<String> t, List<String> engineNames) {
+	    Iterable<String> is = (engineNames != null ? engineNames : eoMap.keySet());
+	    for (String engineName : is) {
 		OptionPanel.EngineOpts eo = eoMap.get(engineName);
 		if (eo.enabled && eo.normalCompletionMode != 0) {
 		    EngineGroup eg = engineMap.get(engineName);
