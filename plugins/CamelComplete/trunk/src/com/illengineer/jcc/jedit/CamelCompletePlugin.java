@@ -288,12 +288,34 @@ public class CamelCompletePlugin extends EditPlugin {
 	// }}}
 	
 	// {{{ completion methods
-	public static void complete(View view, JEditTextArea textArea, boolean normal) {
-	    CompleteWord.completeWord(view, normal);
+	public static void complete(View view, JEditTextArea textArea, int completionType) {
+	    // completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
+	    CompleteWord.completeWord(view, completionType);
 	}
 	
 	public static List<String> getCompletions(String word) {
 	    TreeSet<String> t = new TreeSet<String>();
+	    _addCompletions(word, t);
+	    t.remove(word);  // just in case
+	    return new ArrayList<String>(t);
+	}
+	
+	public static List<String> getNormalCompletions(String word) {
+	    TreeSet<String> t = new TreeSet<String>();
+	    _addNormalCompletions(word, t);
+	    t.remove(word);  // just in case
+	    return new ArrayList<String>(t);
+	}
+	
+	public static List<String> getTotalCompletions(String word) {
+	    TreeSet<String> t = new TreeSet<String>();
+	    _addCompletions(word, t);
+	    _addNormalCompletions(word, t);
+	    t.remove(word);
+	    return new ArrayList<String>(t);
+	}
+	
+	private static void _addCompletions(String word, TreeSet<String> t) {
 	    for (String engineName : eoMap.keySet()) {
 		OptionPanel.EngineOpts eo = eoMap.get(engineName);
 		if (eo.enabled) {
@@ -306,12 +328,9 @@ public class CamelCompletePlugin extends EditPlugin {
 		    }
 		}
 	    }
-	    t.remove(word);  // just in case
-	    return new ArrayList<String>(t);
 	}
 	
-	public static List<String> getNormalCompletions(String word) {
-	    TreeSet<String> t = new TreeSet<String>();
+	private static void _addNormalCompletions(String word, TreeSet<String> t) {
 	    for (String engineName : eoMap.keySet()) {
 		OptionPanel.EngineOpts eo = eoMap.get(engineName);
 		if (eo.enabled && eo.normalCompletionMode != 0) {
@@ -330,8 +349,6 @@ public class CamelCompletePlugin extends EditPlugin {
 		    }
 		}
 	    }
-	    t.remove(word);  // just in case
-	    return new ArrayList<String>(t);
 	}
 	
 	// }}}

@@ -65,7 +65,8 @@ public class CompleteWord extends CompletionPopup
 	
 	//{{{ completeWord() method
 	// MODIFIED - jpavel
-	public static void completeWord(View view, boolean normal)
+	// completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
+	public static void completeWord(View view, int completionType)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
@@ -80,21 +81,28 @@ public class CompleteWord extends CompletionPopup
 
 		// Only if we're in normal completion mode will we use the buffer's
 		// noWordSep property.
-		String word = getWordToComplete(buffer,caretLine, caret, normal);
+		String word = getWordToComplete(buffer,caretLine, caret, 
+				    (completionType == 2 || completionType == 3));
 		if(word == null)
 		{
 			textArea.getToolkit().beep();
 			return;
 		}
 
-		List<String> completions;
-		if (!normal)
+		List<String> completions = null;
+		switch (completionType) {
+		  case 1:
 		    completions = CamelCompletePlugin.getCompletions(word);
-		else
+		    break;
+		  case 2:
 		    completions = CamelCompletePlugin.getNormalCompletions(word);
-		    
-		if (completions.size() == 0)
-			return;
+		    break;
+		  case 3:
+		    completions = CamelCompletePlugin.getTotalCompletions(word);
+		    break;
+		}
+		if (completions == null || completions.size() == 0)
+		    return;
 
 		//{{{ if there is only one competion, insert in buffer
 		if(completions.size() == 1)
