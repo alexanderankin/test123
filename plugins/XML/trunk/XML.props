@@ -11,10 +11,8 @@ plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4.2
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.6.7
 plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.2.1
-plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD or XSD. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
 
-# In addition to the above dependencies, this plugin only builds properly with
-# XML 1.6.5 - the AntCompleteTask is incompatible with Ant 1.7.0.
+plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD or XSD. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
 
 # Menu bar stuff
 
