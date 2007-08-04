@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 
 /**
@@ -120,8 +121,7 @@ public class SessionsPlugin extends EBPlugin
 		}
 		else if (message instanceof EditorExitRequested)
 		{
-			EditorExitRequested eemsg = (EditorExitRequested) message;
-			handleEditorExit(eemsg.getView());
+			handleEditorExit((EditorExitRequested)message);
 		}
 		else if (message instanceof PropertiesChanged)
 		{
@@ -144,7 +144,7 @@ public class SessionsPlugin extends EBPlugin
 
 		// check version, 0.8 is required
 		String version = jEdit.getProperty("plugin.bufferlist.BufferListPlugin.version");
-		if(version == null || version.length() == 0 || MiscUtilities.compareStrings(version, "0.8", true) < 0)
+		if(version == null || version.length() == 0 || StandardUtilities.compareStrings(version, "0.8", true) < 0)
 			return false;
 
 		// check if docked
@@ -162,11 +162,15 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
-	private void handleEditorExit(View view)
+	private void handleEditorExit(EditorExitRequested eemsg)
 	{
 		// call SessionManager to save the current session
 		SessionManager mgr = SessionManager.getInstance();
-		mgr.autosaveCurrentSession(view);
+		if (!mgr.autosaveCurrentSession(eemsg.getView()))
+		{
+			// User doesn't want to close jEdit
+			eemsg.cancelExit();
+		}
 	}
 
 

@@ -196,9 +196,25 @@ public class Session implements Cloneable
 	}
 
 
+	/**
+	 * Returns a <code>java.util.Enumeration</code> containing 
+	 * <code>java.io.File</code> objects corresponding to the files 
+	 * managed by this <code>Session</code> object.
+	 */
 	public Enumeration getAllFiles()
 	{
 		return sessionFiles.elements();
+	}
+
+
+	/**
+	 * Returns a <code>java.util.Enumeration</code> containing 
+	 * <code>String</code> objects corresponding to the names of the files 
+	 * managed by this <code>Session</code> object.
+	 */
+	public Enumeration getAllFilenames()
+	{
+		return sessionFiles.keys();
 	}
 
 
