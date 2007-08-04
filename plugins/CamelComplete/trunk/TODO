@@ -1,3 +1,5 @@
 -Use reflection in the Jar provider to read method names. (maybe?)
   It's not too hard, but the identifier list would be gigantic.
-
+-A solution, for the long term: use some sort of database, like BerkeleyDB,
+ to maintain the identifier hashes in the CompletionEngines, rather than
+ HashMaps.
