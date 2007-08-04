@@ -1417,7 +1417,7 @@
              <string>model</string> 
              <object class="javax.swing.SpinnerNumberModel"> 
               <void property="minimum"> 
-               <int>2</int> 
+               <int>1</int> 
               </void> 
               <void property="value"> 
                <int>8</int> 

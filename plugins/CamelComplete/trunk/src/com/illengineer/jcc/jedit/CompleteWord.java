@@ -142,7 +142,7 @@ public class CompleteWord extends CompletionPopup
 	//{{{ getWordToComplete() method
 	// MODIFIED - jpavel
 	private static String getWordToComplete(Buffer buffer, int caretLine, int caret,
-						boolean useNoWordsSep)
+						boolean useExtraChars)
 	{
 	    String line = buffer.getLineText(caretLine);
 	    int dot = caret - buffer.getLineStartOffset(caretLine);
@@ -150,13 +150,13 @@ public class CompleteWord extends CompletionPopup
 		    return null;
 
 	    char ch = line.charAt(dot-1);
-	    if(!Character.isLetter(ch)) {
-		    // I only expand letters
+	    if(!useExtraChars && !Character.isLetter(ch)) {
+		    // I only expand letters in CamelCase mode
 		    return null;
 	    }
 
 	    String noWordSep = "";
-	    if (useNoWordsSep)
+	    if (useExtraChars)
 		noWordSep = buffer.getStringProperty("noWordSep");
 	    int wordStart = TextUtilities.findWordStart(line,dot-1, noWordSep);
 	    String word = line.substring(wordStart,dot);

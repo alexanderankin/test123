@@ -911,7 +911,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(2), null, new Integer(1)));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(1), null, new Integer(1)));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
