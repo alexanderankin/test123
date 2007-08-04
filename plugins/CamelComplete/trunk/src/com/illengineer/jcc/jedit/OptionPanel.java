@@ -57,7 +57,8 @@ public class OptionPanel extends AbstractOptionPane
 	    AbstractButton[] buttons 
 		 = {saveProviderButton, deleteProviderButton, editProviderButton, chooseButton,
 		    	copyProviderButton,
-		    addTokenizerButton, removeTokenizerButton, processButton, processAllButton,
+		    addTokenizerButton, removeTokenizerButton, editTokenizerButton,
+		    processButton, processAllButton,
 		    saveOptionsButton, appendOptionsButton,  deleteOptionsButton, newOptionsButton,
 		    saveEngineButton, deleteEngineButton, newEngineButton,
 		    ctagsButton, jarButton, textFileButton, codeButton, bufferWordsButton};
@@ -180,6 +181,21 @@ public class OptionPanel extends AbstractOptionPane
 		if (selectedTokenizer != -1)
 		    tokenizerModel.removeElementAt(selectedTokenizer);
 		resetComponents(false, true);
+	    } else if (source == editTokenizerButton) {
+		selectedTokenizer = tokenizerList.getSelectedIndex();
+		if (selectedTokenizer != -1) {
+		    resetComponents(false, true);
+		    String [] tokenizer = ((TokenizerHolder)tokenizerModel.
+		    				get(selectedTokenizer)).tokenizer;
+		    if (tokenizer[0].equals("camelcase"))
+			camelCaseButton.setSelected(true);
+		    else if (tokenizer[0].equals("regex")) {
+			regexButton.setSelected(true);
+			regexField.setText(tokenizer[1]);
+			regexIgnoreCaseCheck.setSelected(tokenizer[2].equals("y"));
+			tokenizerModel.removeElementAt(selectedTokenizer);
+		    }
+		}
 	    } // }}} 
 	    // {{{ Option Groups buttons
 	    else if (source == newOptionsButton) {
@@ -460,7 +476,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner non-commercial license
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -513,8 +528,10 @@ public class OptionPanel extends AbstractOptionPane
 		regexButton = new JRadioButton();
 		regexField = new JTextField();
 		regexIgnoreCaseCheck = new JCheckBox();
+		panel13 = new JPanel();
 		addTokenizerButton = new JButton();
 		removeTokenizerButton = new JButton();
+		editTokenizerButton = new JButton();
 		panel1 = new JPanel();
 		label9 = new JLabel();
 		popupRowsSpinner = new JSpinner();
@@ -821,7 +838,7 @@ public class OptionPanel extends AbstractOptionPane
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
 							new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT, FormSpec.NO_GROW),
 							FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-							new ColumnSpec(Sizes.dluX(21))
+							new ColumnSpec(ColumnSpec.FILL, Sizes.dluX(21), FormSpec.DEFAULT_GROW)
 						},
 						new RowSpec[] {
 							FormFactory.DEFAULT_ROWSPEC,
@@ -846,13 +863,23 @@ public class OptionPanel extends AbstractOptionPane
 					regexIgnoreCaseCheck.setText("Regex Ignore Case");
 					panel3.add(regexIgnoreCaseCheck, cc.xywh(1, 5, 5, 1));
 
-					//---- addTokenizerButton ----
-					addTokenizerButton.setText("Add");
-					panel3.add(addTokenizerButton, cc.xy(1, 7));
+					//======== panel13 ========
+					{
+						panel13.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-					//---- removeTokenizerButton ----
-					removeTokenizerButton.setText("Remove");
-					panel3.add(removeTokenizerButton, cc.xy(3, 7));
+						//---- addTokenizerButton ----
+						addTokenizerButton.setText("Add");
+						panel13.add(addTokenizerButton);
+
+						//---- removeTokenizerButton ----
+						removeTokenizerButton.setText("Remove");
+						panel13.add(removeTokenizerButton);
+
+						//---- editTokenizerButton ----
+						editTokenizerButton.setText("Edit");
+						panel13.add(editTokenizerButton);
+					}
+					panel3.add(panel13, cc.xywh(1, 7, 5, 1));
 				}
 				optionPanel.add(panel3, cc.xy(5, 9));
 
@@ -865,7 +892,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel1.add(label9, BorderLayout.NORTH);
 
 					//---- popupRowsSpinner ----
-					popupRowsSpinner.setModel(new SpinnerNumberModel(new Integer(12), new Integer(4), null, new Integer(1)));
+					popupRowsSpinner.setModel(new SpinnerNumberModel(12, 4, null, 1));
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
@@ -898,7 +925,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label5, cc.xy(5, 1));
 
 					//---- minpartsSpinner ----
-					minpartsSpinner.setModel(new SpinnerNumberModel(new Integer(2), new Integer(1), null, new Integer(1)));
+					minpartsSpinner.setModel(new SpinnerNumberModel(2, 1, null, 1));
 					panel4.add(minpartsSpinner, cc.xy(7, 1));
 
 					//---- label4 ----
@@ -911,7 +938,7 @@ public class OptionPanel extends AbstractOptionPane
 					panel4.add(label8, cc.xy(5, 3));
 
 					//---- maxpartsSpinner ----
-					maxpartsSpinner.setModel(new SpinnerNumberModel(new Integer(8), new Integer(1), null, new Integer(1)));
+					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 1, null, 1));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
 				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
@@ -967,7 +994,6 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner variables
 	
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner non-commercial license
 	JPanel mainPanel;
 	JPanel optionPanel;
 	JPanel panel7;
@@ -1020,8 +1046,10 @@ public class OptionPanel extends AbstractOptionPane
 	JRadioButton regexButton;
 	JTextField regexField;
 	JCheckBox regexIgnoreCaseCheck;
+	JPanel panel13;
 	JButton addTokenizerButton;
 	JButton removeTokenizerButton;
+	JButton editTokenizerButton;
 	JPanel panel1;
 	JLabel label9;
 	JSpinner popupRowsSpinner;
