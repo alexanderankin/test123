@@ -106,7 +106,7 @@ public class CSS2SideKickParser extends SideKickParser {
     public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource) {
 
         String filename = buffer.getPath();
-        SideKickParsedData parsedData = new SideKickParsedData(buffer.getName());
+        SideKickParsedData parsedData = new CSSParsedData(buffer.getName());
         DefaultMutableTreeNode root = parsedData.root;
 
         StringReader reader = new StringReader(text);
@@ -115,7 +115,7 @@ public class CSS2SideKickParser extends SideKickParser {
             CSS2Parser parser = new CSS2Parser(reader);
 
             // set line offset, the parser uses this to adjust line numbers in the
-            // case of a partial file, like when they stylesheet is embedded inside an
+            // case of a partial file, like when the stylesheet is embedded inside an
             // html document
             parser.setLineOffset(lineOffset);
 
