@@ -25,7 +25,8 @@ package sessions;
 
 import java.util.Enumeration;
 import java.util.Vector;
-import org.gjt.sp.jedit.MiscUtilities;
+import java.util.Collections;
+import java.util.Comparator;
 import org.gjt.sp.util.Log;
 
 
@@ -98,7 +99,7 @@ public class SessionPropertyGroup
 
 	void sort()
 	{
-		MiscUtilities.quicksort(children, new PaneCompare());
+		Collections.sort(children, new PaneCompare());
 	}
 
 
@@ -107,10 +108,10 @@ public class SessionPropertyGroup
 
 
 	/**
-	 * A comparator for MiscUtilities.quicksort() that always sorts
+	 * A comparator for property pane sorting that always sorts
 	 * the DefaultSessionPropertyPane first.
 	 */
-	private class PaneCompare implements MiscUtilities.Compare
+	private class PaneCompare implements Comparator
 	{
 		public int compare(Object obj1, Object obj2)
 		{
@@ -124,5 +125,5 @@ public class SessionPropertyGroup
 				return obj1.toString().compareTo(obj2.toString());
 		}
 	}
-
+	
 }
