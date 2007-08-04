@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
@@ -140,7 +141,11 @@ public class SessionManager implements EBComponent
 		if(currentSessionFile.exists())
 		{
 			// Auto-save the current session, subject to user preferences.
-			autosaveCurrentSession(view);
+			if (!autosaveCurrentSession(view))
+			{
+				// User doesn't want to switch the session
+				return;
+			}
 		}
 		else
 		{
@@ -219,13 +224,16 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Save current session without showing the save confirmation dialog. This is the method 
-	 * that is called for "autosave" functionality (ie. switching sessions, renaming a 
-	 * session, or shutting down the plugin).
+	 * Save current session without showing the save confirmation dialog, 
+	 * unless the "display confirmation dialog" flag has been set in the 
+	 * plugin properties pane. This is the method that is called for "autosave" 
+	 * functionality (ie. switching sessions, renaming a session, or shutting 
+	 * down the plugin).
 	 *
 	 * @param view  view for displaying error messages
+	 * @return <code>false</code> if the autosave process has been cancelled
 	 */
-	public void autosaveCurrentSession(View view)
+	public boolean autosaveCurrentSession(View view)
 	{
 		if (currentSession.hasFileListChanged())
 		{
@@ -240,14 +248,18 @@ public class SessionManager implements EBComponent
 					if (!ok)
 					{
 						// User doesn't want to save the session
-						return;
+						return false;
 					}
 				}
-				// Save the session.
-				Log.log(Log.DEBUG, this, "autosaving current session...");
-				saveCurrentSession(view, true);
+				else
+				{
+					// Save the session.
+					Log.log(Log.DEBUG, this, "autosaving current session...");
+					saveCurrentSession(view, true);
+				}
 			}
 		}
+		return true;
 	}
 
 
@@ -402,7 +414,7 @@ public class SessionManager implements EBComponent
 			}
 		});
 
-		MiscUtilities.quicksort(files, new MiscUtilities.StringICaseCompare());
+		Arrays.sort(files, new MiscUtilities.StringICaseCompare());
 
 		Vector v = new Vector();
 		boolean foundDefault = false;

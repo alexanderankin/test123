@@ -1,3 +1,8 @@
+VERSION 1.4.1 (Davide Del Vento, Steve Jakob)
+- fixed bug (#1724376) the code submitted by strank conflicted with the behaviour of save confirmation dialog
+- minor improvements in the save confirmation dialog (ask only if there are changes and show two separate lists)
+- removed calls to deprecated jEdit MiscUtilities classes/methods
+
 VERSION 1.4.0 (Steve Jakob)
 - show more sessions in the SessionManagerDialog (based on code submitted by SourceForge user strank)
 - retain file character encoding when saving/retrieving sessions

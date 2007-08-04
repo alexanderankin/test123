@@ -5,9 +5,9 @@
 plugin.sessions.SessionsPlugin.activate=startup
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>, Steve Jakob
-plugin.sessions.SessionsPlugin.version=1.4.0
+plugin.sessions.SessionsPlugin.version=1.4.1
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
-plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.02.00
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.03.10.00
 
 
 #
@@ -143,12 +143,14 @@ sessions.manager.info.dontShowAgain=\
 #
 
 session.savedialog.title=Session has been changed!
-session.savedialog.caption=<html>The file list for the current session has \
-	changed (see differences below). </br>Save the session?</html>
+session.savedialog.caption=The file list for the current session has \
+	changed (see differences below).
+session.savedialog.question=Save the session?
 session.savedialog.added=Opened files:
 session.savedialog.removed=Closed files:
 session.savedialog.dontsave=Don't save
 session.savedialog.save=Save
+session.savedialog.cancel=Cancel
 
 
 #
