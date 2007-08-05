@@ -67,7 +67,9 @@ public class PropertyComboBox extends JComboBox {
             model.insertElementAt( SELECT, 0 );
         }
         setModel( model );
-        setSelectedIndex(0);
+        if (model.getSize() > 0) {
+            setSelectedIndex(0);
+        }
     }
 
     @Override
