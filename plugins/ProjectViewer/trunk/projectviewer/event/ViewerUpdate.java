@@ -19,8 +19,8 @@
 package projectviewer.event;
 
 
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.VFSPathSelected;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTGroup;
@@ -33,14 +33,11 @@ import projectviewer.vpt.VPTNode;
  *  @version    $Id$
  *  @since      PV 3.0.0
  */
-public final class ViewerUpdate extends VFSPathSelected
+public final class ViewerUpdate extends EBMessage
 {
 
     public static enum Type
     {
-        /** Notifies that a node has been selected. */
-        NODE_SELECTED,
-
         /** Notifies the changing of the active project. */
         PROJECT_LOADED,
 
@@ -49,7 +46,6 @@ public final class ViewerUpdate extends VFSPathSelected
     }
 
     private final boolean isViewer;
-    private final VPTGroup oldParent;
     private final Type type;
 
     /**
@@ -61,10 +57,8 @@ public final class ViewerUpdate extends VFSPathSelected
                         VPTNode n,
                         Type type)
     {
-        super(v, n);
+        super(v);
         this.type = type;
-        this.path = n.getNodePath();
-        this.oldParent = null;
         this.isViewer = false;
     }
 
@@ -76,10 +70,8 @@ public final class ViewerUpdate extends VFSPathSelected
                         VPTNode n,
                         Type type)
     {
-        super(v.getView(), n);
+        super(v.getView());
         this.type = type;
-        this.path = n.getNodePath();
-        this.oldParent = null;
         this.isViewer = true;
     }
 
@@ -112,15 +104,6 @@ public final class ViewerUpdate extends VFSPathSelected
         } else {
             return (View) getSource();
         }
-    }
-
-    /**
-     *  When firing a NODE_MOVED message, returns the old parent of the
-     *  affected node (which can be retrieved by getSource()).
-     */
-    public VPTGroup getOldParent()
-    {
-        return oldParent;
     }
 
 }
