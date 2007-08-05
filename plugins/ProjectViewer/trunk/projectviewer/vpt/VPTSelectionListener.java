@@ -29,9 +29,10 @@ import javax.swing.event.TreeSelectionListener;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 
 import projectviewer.ProjectViewer;
-import projectviewer.event.ViewerUpdate;
+import projectviewer.event.NodeSelectionUpdate;
 //}}}
 
 /**
@@ -140,7 +141,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 
 		sel = (VPTNode) e.getPath().getLastPathComponent();
-		viewer.sendUpdate(sel, ViewerUpdate.Type.NODE_SELECTED);
+		EditBus.send(new NodeSelectionUpdate(viewer, sel));
 		viewer.setStatus(sel.toString());
 	}
 
