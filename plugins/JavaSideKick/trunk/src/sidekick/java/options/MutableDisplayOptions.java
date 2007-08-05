@@ -31,18 +31,17 @@ package sidekick.java.options;
 public class MutableDisplayOptions implements DisplayOptions {
     // Display Style options (HOW)
 
-    private boolean showIcons;
-    private boolean showIconsLikeEclipse;
-    private boolean showArguments;
-    private boolean showArgumentNames;
-    private boolean showNestedName;
-    private boolean showIconKeywords;
-    private boolean showMiscMod;
-    private boolean showLineNum;
-    private String sortBy;
-    private boolean showTypeArgs;
-    private boolean showErrors;
-
+    private boolean showIcons = true;;
+    private boolean showIconsLikeEclipse = false;
+    private boolean showArguments = true;
+    private boolean showArgumentNames = false;
+    private boolean showNestedName = true;
+    private boolean showIconKeywords = true;
+    private boolean showMiscMod = true;
+    private boolean showLineNum = false;
+    private String sortBy = "Name";
+    private boolean showTypeArgs = false;
+    private boolean showErrors = true;
 
     private int styleIndex = STYLE_UML;
 

@@ -6,6 +6,7 @@ import sidekick.java.node.*;
 import sidekick.java.classloader.*;
 import errorlist.*;
 import org.gjt.sp.jedit.*;
+import sidekick.util.Range;
 
 
 public class CheckImports {
