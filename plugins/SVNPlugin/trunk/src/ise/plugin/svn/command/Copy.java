@@ -82,7 +82,7 @@ public class Copy {
         SVNCommitInfo results = null;
 
         if (sourceFile != null && destinationFile != null) {
-            // copy working copy to working copy, this is a local move
+            // copy working copy to working copy, this is a local copy or move
             SVNRevision revision = data.getRevision();
             if (revision == null) {
                 revision = SVNRevision.WORKING;
@@ -100,7 +100,7 @@ public class Copy {
         }
         else if (sourceURL != null && destinationURL != null) {
             // copy a repository file or directory to another repository file or
-            // directory with immediate commit, this can also be used to make a
+            // directory with immediate commit, this could be used to make a
             // branch or tag
             SVNRevision revision = data.getRevision();
             if (revision == null) {
