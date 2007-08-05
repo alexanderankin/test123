@@ -40,6 +40,8 @@ import sidekick.java.parser.*;
 import sidekick.java.tools.CheckImports;
 
 import sidekick.util.ElementUtil;
+import sidekick.util.Location;
+import sidekick.util.Range;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
@@ -188,8 +190,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // set some properties
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setResults( parser.getResults() );
-            compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
-            compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
+            compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
+            compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
             buffer.setProperty("javasidekick.compilationUnit", compilationUnit);
         }
         catch ( Exception e ) {
@@ -247,8 +249,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setFilename( filename );
             compilationUnit.setResults( parser.getResults() );
-            compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
-            compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
+            compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
+            compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
             buffer.setProperty("javasidekick.compilationUnit", compilationUnit);
 
@@ -266,8 +268,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     root.add( importsNode );
                     for ( Iterator it = imports.iterator(); it.hasNext(); ) {
                         TigerNode anImport = ( TigerNode ) it.next();
-                        anImport.setStart( createStartPosition( buffer, anImport ) );
-                        anImport.setEnd( createEndPosition( buffer, anImport ) );
+                        anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
+                        anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
                         importsNode.add( new DefaultMutableTreeNode( anImport ) );
                     }
                 }
@@ -279,8 +281,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
                     if ( canShow( child ) ) {
-                        child.setStart( createStartPosition( buffer, child ) );
-                        child.setEnd( createEndPosition( buffer, child ) );
+                        child.setStart( ElementUtil.createStartPosition( buffer, child ) );
+                        child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                         DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
                         root.add( cuChild );
                         addChildren( buffer, cuChild, child );
@@ -300,10 +302,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 // not to worry
             }
         }
-        if ( !buffer.isDirty() && errorSource != null ) {
-            /* only handle errors when buffer is saved. Otherwise, there will be a lot
-            of spurious errors shown when code completion is on and the user is in the
-            middle of typing something. */
+
+        /* only handle errors when buffer is saved or code completion is off. Otherwise,
+        there will be a lot of spurious errors shown when code completion is on and the
+        user is in the middle of typing something. */
+        boolean complete_instant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle", true);
+        boolean complete_delay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle", true);
+        boolean complete_on = complete_instant || complete_delay;
+        if ( !complete_on && errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
 
             // maybe check imports -- should have an option setting for this
@@ -348,8 +354,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
             Collections.sort( children, nodeSorter );
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
-                child.setStart( createStartPosition( buffer, child ) );
-                child.setEnd( createEndPosition( buffer, child ) );
+                child.setStart( ElementUtil.createStartPosition( buffer, child ) );
+                child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                 if ( canShow( child ) ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( child );
                     parent.add( treeNode );
@@ -368,81 +374,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private void setChildPositions( Buffer buffer, TigerNode tn ) {
         for ( int i = 0; i < tn.getChildCount(); i++ ) {
             TigerNode child = tn.getChildAt( i );
-            child.setStart( createStartPosition( buffer, child ) );
-            child.setEnd( createEndPosition( buffer, child ) );
+            child.setStart( ElementUtil.createStartPosition( buffer, child ) );
+            child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
             setChildPositions( buffer, child );
         }
-    }
-
-
-    /**
-     * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The
-     * TigerNode contains a column offset based on the current tab size as set in
-     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
-     * hard tab handling.
-     */
-    private Position createStartPosition( Buffer buffer, TigerNode node ) {
-        int line_offset = buffer.getLineStartOffset(
-                Math.max(node.getStartLocation().line - 1, 0));
-        int[] totalVirtualWidth = new int[1];
-        int column_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(node.getStartLocation().line - 1, 0),
-                Math.max(node.getStartLocation().column - 1, 0),
-                totalVirtualWidth);
-        if (column_offset == -1) {
-            column_offset = totalVirtualWidth[0];
-        }
-        Position p = ElementUtil.createPosition(line_offset, column_offset);
-        return p;
-
-
-        /*
-        final int line_offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),
-                Math.max( child.getStartLocation().column - 1, 0 ), null );
-        return new Position() {
-                   public int getOffset() {
-                       return line_offset + col_offset;
-                   }
-               };
-               */
-    }
-
-
-    /**
-     * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The
-     * TigerNode contains a column offset based on the current tab size as set in
-     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
-     * hard tab handling.
-     */
-    private Position createEndPosition( Buffer buffer, TigerNode node ) {
-        //System.out.println(node.toString() + ": " + node.getEndLocation());
-        int line_offset = buffer.getLineStartOffset(
-                Math.max(node.getEndLocation().line - 1, 0));
-        int[] totalVirtualWidth = new int[1];
-        int column_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(node.getEndLocation().line - 1, 0),
-                Math.max(node.getEndLocation().column - 1, 0),
-                totalVirtualWidth);
-        if (column_offset == -1) {
-            column_offset = totalVirtualWidth[0];
-        }
-        Position p = ElementUtil.createPosition(line_offset, column_offset);
-        return p;
-
-
-        /*
-        final int line_offset = buffer.getLineStartOffset( Math.max( child.getEndLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getEndLocation().line - 1, 0 ),
-                Math.max( child.getEndLocation().column - 1, 0 ), null );
-        return new Position() {
-                   public int getOffset() {
-                       return line_offset + col_offset;
-                   }
-               };
-               */
     }
 
     /**

@@ -29,10 +29,12 @@ package sidekick.java.node;
 
 
 import javax.swing.*;
+import javax.swing.text.Position;
 import java.util.*;
 
 import sidekick.Asset;
-
+import sidekick.util.SideKickElement;
+import sidekick.util.Location;
 
 /**
  * Base class for all "node's" in a file.  A single file is represented by a
@@ -50,7 +52,7 @@ import sidekick.Asset;
  * those are represented by Locations.  Locations can be converted to Positions
  * by calling Buffer.getLineOffset(Location.line) + Location.column.
  */
-public class TigerNode extends Asset {
+public class TigerNode extends Asset implements SideKickElement {
 
     // these values are used for sorting nodes and for easy type identification.
     public static final int ERROR = -1;
@@ -152,10 +154,10 @@ public class TigerNode extends Asset {
         return endLocation;
     }
 
-    public javax.swing.text.Position getStart() {
-        javax.swing.text.Position start = super.getStart();
+    public Position getStart() {
+        Position start = super.getStart();
         if ( start == null ) {
-            return new javax.swing.text.Position() {
+            return new Position() {
                        public int getOffset() {
                            return 0;
                        }
@@ -166,9 +168,25 @@ public class TigerNode extends Asset {
         }
     }
 
+    public Position getStartPosition() {
+        return getStart();
+    }
 
-    public void setEnd( javax.swing.text.Position p ) {
+    public void setStartPosition(Position p) {
+        super.setStart(p);
+    }
+
+
+    public void setEnd( Position p ) {
         super.setEnd( p );
+    }
+
+    public void setEndPosition(Position p) {
+        setEnd(p);
+    }
+
+    public Position getEndPosition() {
+        return super.getEnd();
     }
 
     public void setModifiers( int m ) {
