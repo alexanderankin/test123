@@ -21,6 +21,8 @@
 package gatchan.jedit.hyperlinks;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -109,7 +111,7 @@ public class HyperlinkManager
 			if (!active)
 				return;
 			Buffer buffer = (Buffer) textArea.getBuffer();
-			HyperlinkSource hyperlinkSource = (HyperlinkSource) buffer.getProperty(HyperlinkSource.PROPERTY);
+			HyperlinkSource hyperlinkSource = getHyperlinkSource(buffer);
 			if (hyperlinkSource == null)
 			{
 				painter.setHyperLink(null);
@@ -118,6 +120,24 @@ public class HyperlinkManager
 			int offset = textArea.xyToOffset(e.getX(), e.getY());
 			Hyperlink link = hyperlinkSource.getHyperlink(buffer, offset);
 			painter.setHyperLink(link);
+		}
+
+		private HyperlinkSource getHyperlinkSource(Buffer buffer)
+		{
+			String hyperlinkSourceName = buffer.getStringProperty(HyperlinkSource.PROPERTY);
+			if (hyperlinkSourceName == null)
+			{
+				hyperlinkSourceName = jEdit.getProperty("mode." + buffer.getMode() + '.' + HyperlinkSource.PROPERTY);
+			}
+			if (hyperlinkSourceName == null)
+			{
+				hyperlinkSourceName = jEdit.getProperty(HyperlinkSource.DEFAULT_PROPERTY);
+			}
+
+			if (hyperlinkSourceName == null)
+				return null;
+
+			return (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName);
 		}
 	}
 }
