@@ -37,7 +37,7 @@ import java.net.URL;
  */
 public class URLHyperlinkSource implements HyperlinkSource
 {
-	private static final String NO_WORD_SEP = "/.-_&;:%#";
+	private static final String NO_WORD_SEP = "/.-_&;:%#?=";
 
 	private Hyperlink currentLink;
 

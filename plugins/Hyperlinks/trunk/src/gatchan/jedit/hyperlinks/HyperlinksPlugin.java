@@ -49,12 +49,6 @@ public class HyperlinksPlugin extends EBPlugin
 
 	public void stop()
 	{
-		Buffer[] buffers = jEdit.getBuffers();
-		for (int i = 0; i < buffers.length; i++)
-		{
-			buffers[i].unsetProperty(HyperlinkSource.PROPERTY);
-		}
-
 		View view = jEdit.getFirstView();
 		while (view != null)
 		{
@@ -71,7 +65,6 @@ public class HyperlinksPlugin extends EBPlugin
 	private static void uninitTextArea(JEditTextArea textArea)
 	{
 		HyperlinkManager clientProperty = (HyperlinkManager) textArea.getClientProperty(HyperlinkManager.class);
-
 		clientProperty.dispose();
 	}
 
@@ -87,52 +80,11 @@ public class HyperlinksPlugin extends EBPlugin
 		{
 			handleEditPaneMessage((EditPaneUpdate) message);
 		}
-		else if (message instanceof BufferUpdate)
-		{
-			BufferUpdate bufferUpdate = (BufferUpdate) message;
-			Buffer buffer = bufferUpdate.getBuffer();
-			if (bufferUpdate.getWhat() == BufferUpdate.LOADED)
-			{
-				setSource(buffer);
-			}
-			if (bufferUpdate.getWhat() == BufferUpdate.CLOSED)
-			{
-				buffer.unsetProperty(HyperlinkSource.PROPERTY);
-			}
-			else if (bufferUpdate.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
-			{
-				buffer.unsetProperty(HyperlinkSource.PROPERTY);
-				setSource(buffer);
-			}
-		}
 		else if (message instanceof PropertiesChanged)
 		{
 			HyperlinkTextAreaPainter.color = jEdit.getColorProperty("options.hyperlink.color.value");
 		}
 	}
-
-	private static void setSource(Buffer buffer)
-	{
-		String prop = "mode." + buffer.getMode() + HyperlinkSource.PROPERTY;
-		String sourceName = jEdit.getProperty(prop);
-		HyperlinkSource service = null;
-		if (sourceName != null)
-		{
-			service = (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, sourceName);
-		}
-
-		if (service == null)
-		{
-			sourceName = jEdit.getProperty(HyperlinkSource.DEFAULT_PROPERTY);
-			if (sourceName != null)
-				service = (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, sourceName);
-		}
-		if (service != null)
-		{
-			buffer.setProperty(HyperlinkSource.PROPERTY, service);
-		}
-	}
-
 
 	private static void handleEditPaneMessage(EditPaneUpdate message)
 	{
