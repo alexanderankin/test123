@@ -48,8 +48,8 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			return;
 		if (link.getLine() != physicalLine)
 			return;
-		int startX = textArea.offsetToXY(link.getStartOffset() - start).x;
-		int endX = textArea.offsetToXY(link.getEndOffset() - start).x;
+        int startX = textArea.offsetToXY(link.getStartOffset()).x;
+		int endX = textArea.offsetToXY(link.getEndOffset()).x;
 		gfx.setColor(color);
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		y += fm.getAscent();
