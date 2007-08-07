@@ -309,7 +309,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         boolean complete_instant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle", true);
         boolean complete_delay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle", true);
         boolean complete_on = complete_instant || complete_delay;
-        if ( !complete_on && errorSource != null ) {
+        if ( complete_on && errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
 
             // maybe check imports -- should have an option setting for this
