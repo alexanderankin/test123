@@ -21,7 +21,8 @@ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
 ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ANY THEORY OF LIABILITY,ant
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
@@ -305,13 +306,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
         /* only handle errors when buffer is saved or code completion is off. Otherwise,
         there will be a lot of spurious errors shown when code completion is on and the
-        user is in the middle of typing something. */
+        user is in the middle of typing something. 
         boolean complete_instant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle", true);
         boolean complete_delay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle", true);
-        boolean complete_on = complete_instant || complete_delay;
-        if ( complete_on && errorSource != null ) {
+        boolean complete_on = complete_instant || complete_delay; */
+        if ( errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
-
             // maybe check imports -- should have an option setting for this
             // this is slow, so it will cause a huge problem when code completion is
             // on.
@@ -340,7 +340,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Range range = new Range();
                 if ( e instanceof ParseException ) {
                     pe = ( ParseException ) e;
-                    pe.printStackTrace();
+                    // pe.printStackTrace();
                     range = getExceptionLocation( pe );
                 }
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
