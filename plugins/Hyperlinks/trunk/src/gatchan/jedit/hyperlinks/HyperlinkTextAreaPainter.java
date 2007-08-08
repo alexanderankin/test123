@@ -46,7 +46,7 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 		Hyperlink link = hyperLink;
 		if (link == null)
 			return;
-		if (link.getLine() != physicalLine)
+		if (link.getStartLine() != physicalLine)
 			return;
         int startX = textArea.offsetToXY(link.getStartOffset()).x;
 		int endX = textArea.offsetToXY(link.getEndOffset()).x;
@@ -82,11 +82,11 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			int line;
 			if (hyperLink == null)
 			{
-				line = this.hyperLink.getLine();
+				line = this.hyperLink.getStartLine();
 			}
 			else
 			{
-				line = hyperLink.getLine();
+				line = hyperLink.getStartLine();
 			}
 			this.hyperLink = hyperLink;
 			textArea.invalidateLine(line);
