@@ -30,6 +30,9 @@ package ise.plugin.svn.data;
 
 import java.io.*;
 import java.util.*;
+
+import org.gjt.sp.jedit.MiscUtilities;
+
 import ise.plugin.svn.io.ConsolePrintStream;
 
 public class CheckoutData extends SVNData {
@@ -54,7 +57,7 @@ public class CheckoutData extends SVNData {
      * Returns the value of url.
      */
     public String getURL() {
-        return url;
+        return MiscUtilities.expandVariables(url);
     }
 
     /**

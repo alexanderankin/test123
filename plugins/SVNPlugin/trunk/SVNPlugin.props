@@ -46,9 +46,10 @@ ise.plugin.svn.pv.password.label=Password:
 plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
 plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser subversion.checkout
 subversion.checkout.label=Checkout
+subversion.label=SVN Console
 
 # subversion commands
-ise.plugin.svn.action.label.1=Synchronize
+ise.plugin.svn.action.label.1=Status
 ise.plugin.svn.action.code.1=ise.plugin.svn.action.StatusAction
 ise.plugin.svn.action.label.2=Update...
 ise.plugin.svn.action.code.2=ise.plugin.svn.action.UpdateActor
