@@ -40,11 +40,19 @@ public interface Hyperlink
 	int getEndOffset();
 
 	/**
-	 * Returns the physical line where the hyperlink is.
+	 * Returns the start physical line where the hyperlink is.
 	 *
-	 * @return the physical line
+	 * @return the start physical line
 	 */
-	int getLine();
+	int getStartLine();
+
+
+	/**
+	 * Returns the end physical line where the hyperlink is.
+	 *
+	 * @return the end physical line
+	 */
+	int getEndLine();
 
 	/**
 	 * Returns the tooltip that must be displayed for this tooltip.

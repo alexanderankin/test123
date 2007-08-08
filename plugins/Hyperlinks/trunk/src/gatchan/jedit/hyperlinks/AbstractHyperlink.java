@@ -30,15 +30,23 @@ public abstract class AbstractHyperlink implements Hyperlink
 
 	private int end;
 
-	private int line;
+	private int startLine;
+
+	private int endLine;
 
 	private String tooltip;
 
-	protected AbstractHyperlink(int start, int end, int line, String tooltip)
+	protected AbstractHyperlink(int start, int end, int startLine, String tooltip)
+	{
+		this(start, end, startLine, startLine, tooltip);
+	}
+
+	protected AbstractHyperlink(int start, int end, int startLine, int endLine, String tooltip)
 	{
 		this.start = start;
 		this.end = end;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 		this.tooltip = tooltip;
 	}
 
@@ -59,9 +67,14 @@ public abstract class AbstractHyperlink implements Hyperlink
 		return end;
 	}
 
-	public int getLine()
+	public int getStartLine()
 	{
-		return line;
+		return startLine;
+	}
+
+	public int getEndLine()
+	{
+		return endLine;
 	}
 
 	public String getTooltip()
