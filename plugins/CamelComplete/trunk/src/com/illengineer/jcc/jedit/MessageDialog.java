@@ -19,26 +19,36 @@ public class MessageDialog extends JDialog {
 	public MessageDialog(Dialog owner) {
 		super(owner);
 		initComponents();
+		pack();
 	}
 	
 	public void showDlg(String title, String msg) {
+	    setSize(365, 165);
 	    setTitle(title);
 	    messageLabel.setText(msg);
 	    setVisible(true);
-	    _repaintImmediately(panel1);
+	    repaintDlg();
+	    try {
+		// Forgive this crusty hack, but without a little sleep, Mac OS X
+		// displays a blank window about 75% of the time.
+		Thread.sleep(300);
+	    } catch (Exception ex) {}
+	    repaintDlg();
 	}
 	
 	public void closeDlg() {
 	    setVisible(false);
 	}
 	
+	public void repaintDlg() {
+	    _repaintImmediately(panel1);
+	}
+	
 	static void _repaintImmediately(JComponent component) {
 	    component.paintImmediately(0, 0, component.getWidth(), component.getHeight());
 	}
 
-
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 		panel1 = new JPanel();
 		messageLabel = new JLabel();
 
@@ -67,8 +77,6 @@ public class MessageDialog extends JDialog {
 		
 	}
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
 	public JPanel panel1;
 	public JLabel messageLabel;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
 }
