@@ -106,22 +106,31 @@ public class TextToolsComments
 
 			// loop through each line
 			boolean noCommentableLines = true;
+			String lineComment = null;
 			for(int i = 0; i < lines.length; i++)
 			{
+				Log.log(Log.DEBUG, TextToolsComments.class, "looping line: "+lines[i]);
 				line = buffer.getLineText(lines[i]);
+				
+				int lineStart = buffer.getLineStartOffset(lines[i]);
+				// get position after any leading whitespace
+				int pos = lineStart + MiscUtilities.getLeadingWhiteSpace(line);
+				if (i == 0) 
+				{
+					//first time through get the line comment.
+					lineComment = buffer.getContextSensitiveProperty(pos + 1, "lineComment");
+				}
+				
 				// skip over blank lines
 				if(line.trim().length() < 1)
 				{
 					continue;
 				}
-				int lineStart = buffer.getLineStartOffset(lines[i]);
-				// get position after any leading whitespace
-				int pos = lineStart + MiscUtilities.getLeadingWhiteSpace(line);
-
+				
 				// re-get the lineComment property as it can vary
-				String lineComment = buffer.getContextSensitiveProperty(pos + 1, "lineComment");
 				if(lineComment == null || lineComment.length() == 0)
 				{
+					Log.log(Log.DEBUG, TextToolsComments.class, "No line comment: "+lines[i]);
 					continue;
 				}
 				else
@@ -155,6 +164,7 @@ public class TextToolsComments
 					{
 						Segment seg = new Segment();
 						buffer.getLineText(lines[i], seg);
+						Log.log(Log.DEBUG, TextToolsComments.class, "commenting line: "+lines[i]);
 						buffer.insert(lineStart + MiscUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
 					}
 					// - or after all leading whitespace
