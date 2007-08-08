@@ -10,3 +10,25 @@ plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.1=jedit 04.03.10.00
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.1=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 0.9.0
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that provide some folding modes for rfc
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.usePluginHome=true
+
+
+# Option pane
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.option-pane=rfcreader
+
+options.rfcreader.label=RFC Reader
+options.rfcreader.code=new gatchan.jedit.rfcreader.RFCReaderOptionPane();
+
+options.rfcreader.rfcsources.0=rfc.net
+options.rfcreader.rfcsources.1=ietf.org
+
+
+
+options.rfcreader.rfcsources.rfc.net.label=http://www.rfc.net/
+options.rfcreader.rfcsources.rfc.net.url=http://www.rfc.net/rfc{0}.txt
+options.rfcreader.rfcsources.ietf.org.label=http://www.ietf.org/
+options.rfcreader.rfcsources.ietf.org.url=http://www.ietf.org/rfc/rfc{0}.txt
+
+
+#the rfc site that will be used
+options.rfcreader.source=rfc.net
+

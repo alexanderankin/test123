@@ -1,13 +1,9 @@
 package gatchan.jedit.rfcreader;
 
-import gatchan.jedit.hyperlinks.HyperlinkSource;
 import gatchan.jedit.hyperlinks.Hyperlink;
-import gatchan.jedit.hyperlinks.jEditOpenFileHyperlink;
+import gatchan.jedit.hyperlinks.HyperlinkSource;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
-
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * @author Matthieu Casanova
@@ -45,28 +41,19 @@ public class RFCHyperlinkSource implements HyperlinkSource
 							NO_WORD_SEP, true, false, false);
 
 
-		String path = lineText.substring(wordStart, wordEnd).toLowerCase();
-		if (!path.startsWith("[rfc") || path.charAt(path.length() - 1) != ']')
+		String currentWord = lineText.substring(wordStart, wordEnd).toLowerCase();
+		if (!currentWord.startsWith("[rfc") || currentWord.charAt(currentWord.length() - 1) != ']')
 		{
 			return null;
 		}
-		for (int i = 4; i < path.length() - 1; i++)
+		for (int i = 4; i < currentWord.length() - 1; i++)
 		{
-			if (!Character.isDigit(path.charAt(i)))
+			if (!Character.isDigit(currentWord.charAt(i)))
 				return null;
 		}
-		String rfcNum = path.substring(4, path.length() - 1);
+		int rfcNum = Integer.parseInt(currentWord.substring(4, currentWord.length() - 1));
 
-		try
-		{
-			path = "http://rfc.net/rfc" + rfcNum + ".txt";
-			new URL(path);
-			currentLink = new jEditOpenFileHyperlink(lineStart + wordStart + 1, lineStart + wordEnd - 1, line, path);
-		}
-		catch (MalformedURLException e)
-		{
-			currentLink = null;
-		}
+		currentLink = new RFCHyperlink(lineStart + wordStart + 1, lineStart + wordEnd - 1, line,"rfc"+ rfcNum, rfcNum);
 		return currentLink;
 	}
 }
