@@ -72,6 +72,7 @@ public class OptionPanel extends AbstractOptionPane
 	    loadEngines();
 	    cacheCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("cache")).booleanValue());
 	    updateCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("update")).booleanValue());
+	    loadDialogCheck.setSelected(((Boolean)CamelCompletePlugin.getOption("loading-dlg")).booleanValue());
 	    ((SpinnerNumberModel)popupRowsSpinner.getModel()).setValue(
 		      (Integer)CamelCompletePlugin.getOption("popup-rows"));
 	    addComponent(mainPanel);
@@ -82,6 +83,7 @@ public class OptionPanel extends AbstractOptionPane
 	    saveOptionGroups();
 	    CamelCompletePlugin.setOption("cache", Boolean.valueOf(cacheCheck.isSelected()));
 	    CamelCompletePlugin.setOption("update", Boolean.valueOf(updateCheck.isSelected()));
+	    CamelCompletePlugin.setOption("loading-dlg", Boolean.valueOf(loadDialogCheck.isSelected()));
 	    CamelCompletePlugin.setOption("popup-rows", popupRowsSpinner.getValue());
 	}
 	
@@ -476,6 +478,7 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ JFormDesigner initComponents()
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+		DefaultComponentFactory compFactory = DefaultComponentFactory.getInstance();
 		mainPanel = new JPanel();
 		optionPanel = new JPanel();
 		panel7 = new JPanel();
@@ -495,6 +498,12 @@ public class OptionPanel extends AbstractOptionPane
 		newOptionsButton = new JButton();
 		appendOptionsButton = new JButton();
 		deleteOptionsButton = new JButton();
+		separator1 = compFactory.createSeparator("");
+		panel12 = new JPanel();
+		label10 = new JLabel();
+		disabledNormalButton = new JRadioButton();
+		startsNormalButton = new JRadioButton();
+		containsNormalButton = new JRadioButton();
 		scrollPane1 = new JScrollPane();
 		providerList = new JList();
 		panel2 = new JPanel();
@@ -516,11 +525,8 @@ public class OptionPanel extends AbstractOptionPane
 		editProviderButton = new JButton();
 		copyProviderButton = new JButton();
 		label2 = new JLabel();
-		panel12 = new JPanel();
-		label10 = new JLabel();
-		disabledNormalButton = new JRadioButton();
-		startsNormalButton = new JRadioButton();
-		containsNormalButton = new JRadioButton();
+		panel14 = new JPanel();
+		loadDialogCheck = new JCheckBox();
 		scrollPane2 = new JScrollPane();
 		tokenizerList = new JList();
 		panel3 = new JPanel();
@@ -676,6 +682,40 @@ public class OptionPanel extends AbstractOptionPane
 					//---- deleteOptionsButton ----
 					deleteOptionsButton.setText("Delete");
 					panel5.add(deleteOptionsButton, cc.xy(3, 5));
+					panel5.add(separator1, cc.xywh(1, 7, 3, 1));
+
+					//======== panel12 ========
+					{
+						panel12.setLayout(new FormLayout(
+							ColumnSpec.decodeSpecs("left:default"),
+							new RowSpec[] {
+								new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+								FormFactory.LINE_GAP_ROWSPEC,
+								FormFactory.DEFAULT_ROWSPEC,
+								FormFactory.LINE_GAP_ROWSPEC,
+								FormFactory.DEFAULT_ROWSPEC,
+								FormFactory.LINE_GAP_ROWSPEC,
+								FormFactory.DEFAULT_ROWSPEC
+							}));
+
+						//---- label10 ----
+						label10.setText("<html>Normal Completion<br>Mode</html>");
+						panel12.add(label10, cc.xy(1, 1));
+
+						//---- disabledNormalButton ----
+						disabledNormalButton.setText("Disabled");
+						disabledNormalButton.setSelected(true);
+						panel12.add(disabledNormalButton, cc.xy(1, 3));
+
+						//---- startsNormalButton ----
+						startsNormalButton.setText("Starts With");
+						panel12.add(startsNormalButton, cc.xy(1, 5));
+
+						//---- containsNormalButton ----
+						containsNormalButton.setText("Contains");
+						panel12.add(containsNormalButton, cc.xy(1, 7));
+					}
+					panel5.add(panel12, cc.xywh(1, 9, 3, 1));
 				}
 				optionPanel.add(panel5, cc.xy(1, 5));
 
@@ -787,38 +827,15 @@ public class OptionPanel extends AbstractOptionPane
 				label2.setText("Tokenizers for Provider");
 				optionPanel.add(label2, cc.xy(3, 7));
 
-				//======== panel12 ========
+				//======== panel14 ========
 				{
-					panel12.setLayout(new FormLayout(
-						ColumnSpec.decodeSpecs("left:default"),
-						new RowSpec[] {
-							new RowSpec(RowSpec.BOTTOM, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
-							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.LINE_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC
-						}));
+					panel14.setLayout(new BorderLayout());
 
-					//---- label10 ----
-					label10.setText("<html>Normal Completion<br>Mode</html>");
-					panel12.add(label10, cc.xy(1, 1));
-
-					//---- disabledNormalButton ----
-					disabledNormalButton.setText("Disabled");
-					disabledNormalButton.setSelected(true);
-					panel12.add(disabledNormalButton, cc.xy(1, 3));
-
-					//---- startsNormalButton ----
-					startsNormalButton.setText("Starts With");
-					panel12.add(startsNormalButton, cc.xy(1, 5));
-
-					//---- containsNormalButton ----
-					containsNormalButton.setText("Contains");
-					panel12.add(containsNormalButton, cc.xy(1, 7));
+					//---- loadDialogCheck ----
+					loadDialogCheck.setText("<html>Show \"Loading\"<br>Dialog</html>");
+					panel14.add(loadDialogCheck, BorderLayout.SOUTH);
 				}
-				optionPanel.add(panel12, cc.xy(1, 9));
+				optionPanel.add(panel14, cc.xywh(1, 9, 1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 
 				//======== scrollPane2 ========
 				{
@@ -969,6 +986,12 @@ public class OptionPanel extends AbstractOptionPane
 			mainPanel.add(optionPanel, BorderLayout.CENTER);
 		}
 
+		//---- buttonGroup3 ----
+		ButtonGroup buttonGroup3 = new ButtonGroup();
+		buttonGroup3.add(disabledNormalButton);
+		buttonGroup3.add(startsNormalButton);
+		buttonGroup3.add(containsNormalButton);
+
 		//---- buttonGroup1 ----
 		ButtonGroup buttonGroup1 = new ButtonGroup();
 		buttonGroup1.add(ctagsButton);
@@ -976,12 +999,6 @@ public class OptionPanel extends AbstractOptionPane
 		buttonGroup1.add(textFileButton);
 		buttonGroup1.add(codeButton);
 		buttonGroup1.add(bufferWordsButton);
-
-		//---- buttonGroup3 ----
-		ButtonGroup buttonGroup3 = new ButtonGroup();
-		buttonGroup3.add(disabledNormalButton);
-		buttonGroup3.add(startsNormalButton);
-		buttonGroup3.add(containsNormalButton);
 
 		//---- buttonGroup2 ----
 		ButtonGroup buttonGroup2 = new ButtonGroup();
@@ -1013,6 +1030,12 @@ public class OptionPanel extends AbstractOptionPane
 	JButton newOptionsButton;
 	JButton appendOptionsButton;
 	JButton deleteOptionsButton;
+	JComponent separator1;
+	JPanel panel12;
+	JLabel label10;
+	JRadioButton disabledNormalButton;
+	JRadioButton startsNormalButton;
+	JRadioButton containsNormalButton;
 	JScrollPane scrollPane1;
 	JList providerList;
 	JPanel panel2;
@@ -1034,11 +1057,8 @@ public class OptionPanel extends AbstractOptionPane
 	JButton editProviderButton;
 	JButton copyProviderButton;
 	JLabel label2;
-	JPanel panel12;
-	JLabel label10;
-	JRadioButton disabledNormalButton;
-	JRadioButton startsNormalButton;
-	JRadioButton containsNormalButton;
+	JPanel panel14;
+	JCheckBox loadDialogCheck;
 	JScrollPane scrollPane2;
 	JList tokenizerList;
 	JPanel panel3;

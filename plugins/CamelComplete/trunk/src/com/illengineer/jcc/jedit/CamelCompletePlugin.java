@@ -33,6 +33,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	      update -> Boolean
 	      popup-rows -> Integer
 	      remove-dups -> Boolean
+	      loading-dlg -> Boolean
 	*/
 	private static HashMap<String,Object> optionsMap;
 	
@@ -95,6 +96,8 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("popup-rows", new Integer(12));
 	    if (!optionsMap.containsKey("remove-dups"))
 		optionsMap.put("remove-dups", Boolean.FALSE);
+	    if (!optionsMap.containsKey("loading-dlg"))
+		optionsMap.put("loading-dlg", Boolean.TRUE);
 	    if (!optionsMap.containsKey("engine-opts")) {
 		eoMap = new HashMap<String, OptionPanel.EngineOpts>();
 		// We'll sync our maps.
@@ -105,12 +108,21 @@ public class CamelCompletePlugin extends EditPlugin {
 		eoMap = (HashMap<String, OptionPanel.EngineOpts>)optionsMap.get("engine-opts");
 		
 
+	    MessageDialog mdlg = null;
+	    if (((Boolean)optionsMap.get("loading-dlg")).equals(Boolean.TRUE)) {
+		View v = jEdit.getActiveView();
+		if (v != null) {
+		    mdlg = new MessageDialog(jEdit.getActiveView());
+		    mdlg.showDlg("CamelComplete", "Loading CamelComplete data...");
+		}
+	    }
 	    
 	    for (String engineName : enginesOptionsMap.keySet()) {
 		EngineGroup eg = new EngineGroup();
 		eg.engine = new CompletionEngine();
 		eg.modified = false;
 		
+
 		if (((Boolean)optionsMap.get("cache")).booleanValue() && eoMap.get(engineName).enabled) {
 		    i = getResourceAsStream(CamelCompletePlugin.class, "cache/engine-"+engineName);
 		    if (i != null) {
@@ -124,6 +136,10 @@ public class CamelCompletePlugin extends EditPlugin {
 		}
 		engineMap.put(engineName, eg);
 		engines.add(eg.engine);
+	    }
+	    if (mdlg != null) {
+		mdlg.closeDlg();
+		mdlg = null;
 	    }
 	    
 	    homeDir = getPluginHome();
@@ -175,6 +191,11 @@ public class CamelCompletePlugin extends EditPlugin {
 	    eoMap = null;
 	    engineMap = null;
 	    engines = null;
+	}
+	
+	// This exists just so that the user can force the plugin to be loaded,
+	// which can take a long time if the caches are large.
+	public static void noop() {
 	}
 	
 	// }}}
