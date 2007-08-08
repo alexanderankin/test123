@@ -34,8 +34,7 @@ three different places on sf.net.  `pjo.py`
 is a `Python`_ script which cuts down on some of the grunt work.
 It can checkout plugins from CVS or SVN, fetch dependencies, create
 packages, verify JAR file integrity, ensure that required jars
-are included in the created packages, perform Upload Step 1,
-and verify package downloads.
+are included in the created packages, and verify package downloads.
 
 In addition, this project serves as the documentation and
 scripts repository for anything else related to packaging and
@@ -156,6 +155,8 @@ instead. Everything else is the same::
 
   $ pjo.py -c svnco Highlight-1.4.1 V_1_4_1
 
+   
+  
 
 Installing Plugins
 ==================
@@ -233,38 +234,6 @@ Example::
   creating JakartaCommons-0.4.2-bin.tgz ... OK
   creating JakartaCommons-0.4.2.tgz ... OK
   creating CHECKSUMS... OK
-
-
-
-
-Upload Step #1
-==============
-
-`upload` (or `up`) uploads one or more plugins' package files
-to a "batch" directory as specified by the -b option.
-
-.. NOTE: `upload` assumes that a batch directory will 
-         already exist on the sf.net shell server, and that
-         you have write permissions to it. If these are
-         not true, you will get an error at this point.
-         
-         The directory it uploads to is of the form:
-         
-         ``/home/groups/j/je/jedit-plugins/batch-yyyy-mm-dd``.
-
-Usage: ``upload -b yyyy-mm-dd <name-version> [<name>-<version>]+``
-
-Example::
-
-  2004-03-19 $ pjo.py -c upload -b 2006-03-19 JTools-1.6.2 
-  Uploading JTools 1.6.2
-
-  scp JTools-1.6.2/JTools-1.6.2.zip plugins.jedit.org:/home/groups/j/je/jedit-plugins/batch-2006-03-19/
-
-  [..scp output...]
-
-  
-.. _sf.net: http://sf.net/
 
 
 Help
@@ -360,16 +329,16 @@ cd to "incoming", and upload all package files.
 
 Example::
     
-  /home/groups/j/je/jedit-plugins/batch-2006-03-18> ncftp ftp://upload.sf.net/incoming
+  /home/ezust/workspace/jedit/pjo/Highlight-1.4.1> ncftp ftp://upload.sf.net/incoming
   Login successful.
   Logged in to upload.sf.net.
   Current remote directory is /incoming.
-  ncftp /incoming > mput Highlight*
+  ncftp /incoming > mput *.tgz *.zip
 
 Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.
 
-Upload Step 3 - Submitting files
+Upload Step 2 - Submitting files
 ================================
 
 Now we are ready to submit the files to sf.net and all of its
@@ -380,21 +349,6 @@ As you create releases in the web form,
 you select checkboxes next to files listed in the
 uploads directory, and the sf.net file release system sucks
 them up and distributes them to all the mirrors.
-
-
-.. Hint:: After Upload #3, you have a webpage with 4 new
-          files to describe. This file submission page creates 
-          one <form> on the page for each file, which is
-          a very icky user interface. At first, I was 
-          setting the two combo boxes for each file, 
-          clicking the submit button, and waiting for
-          a response, repeating 4 times.
-
-          In fact, if you set all 8 combo boxes, and 
-          then click each of the 4 submit buttons
-          within a half-second of each other, you can submit the values of all 4 forms in one
-          shot. Sometimes it misses one, and then you gotta do it again, but it is still a huge
-          timesaver.
 
 PLUGIN MANAGER DATABASE
 =======================
@@ -408,12 +362,13 @@ This is the data which is used to generate a `plugin list`_.
 .. _plugin list: http://plugins.jedit.org/list.php 
 .. _wiz: http://plugins.jedit.org/wiz
 
-There are two branches for each plugin possible. If the plugin
-has split into a 4.2final adn a 4.3preX version, then the
-version that works for 4.2final should be the head of branch
-"main" while the one that requires 4.3prex should be the head
-of "devel" branch. If the plugin works for both versions, you
-do not need two branches.
+Each plugin defines one or more branches. If the plugin has
+split into a 4.2final adn a 4.3preX version, then you might
+find the last final marked as "main" while the latest
+development version is marked as "devel". In other cases, we
+may see branches which are marked by version number. The key
+is, each branch can be displayed on PluginManager and be
+offered to jedit users running under different released versions. 
 
 Go to `wiz`_ and update the database, adding
 entries/dependency info for the plugin you just released. After you are finished,
