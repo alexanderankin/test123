@@ -30,9 +30,9 @@ plugin.browser.GlobalPlugin.menu=show-call-tree show-references show-definitions
 call-tree-browser.title=Call Tree
 call-tree-browser.label=Call Tree
 reference-browser.title=References
-reference-browser.title=References
+reference-browser.label=References
 definition-browser.title=Definitions
-definition-browser.title=Definitions
+definition-browser.label=Definitions
 
 # messages
 messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path to 'global' in the plugin options.
