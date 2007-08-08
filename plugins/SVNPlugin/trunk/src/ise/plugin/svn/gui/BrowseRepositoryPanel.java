@@ -175,7 +175,7 @@ public class BrowseRepositoryPanel extends JPanel {
                              );
         tree.addMouseListener( new TreeMouseListener() );
 
-        // create the ocntext menu
+        // create the context menu
         popupMenu = createPopupMenu();
 
         // create the control buttons
