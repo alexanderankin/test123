@@ -43,7 +43,7 @@ public class DefinitionList extends GlobalResultsView {
 	
 	@Override
 	protected String getParam() {
-		return "-x";
+		return "-x -a";
 	}
 
 }

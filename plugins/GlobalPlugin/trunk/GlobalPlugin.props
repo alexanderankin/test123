@@ -39,3 +39,5 @@ messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path
 
 # docs
 plugin.browser.GlobalPlugin.docs=index.html
+plugin.browser.GlobalPlugin.description=GlobalPlugin provides an interface to the GNU Global source code tag system.
+
