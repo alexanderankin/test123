@@ -139,7 +139,7 @@ public class TextToolsSortDialog extends EnhancedDialog implements ActionListene
 		pack();
 		GUIUtilities.loadGeometry(this, "texttools-sort-control");
 		setLocationRelativeTo(view);
-		show();
+		setVisible(true);
 	} //}}}
 	
 	//{{{ EnhancedDialog methods
