@@ -63,6 +63,28 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 				}
 			}
 		});
+		list.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent ev) {
+				if (ev.getKeyCode() == KeyEvent.VK_ENTER)
+					ev.consume();
+			}
+			@Override
+			public void keyReleased(KeyEvent ev) {
+				if (ev.getKeyCode() == KeyEvent.VK_ENTER)
+					ev.consume();
+			}
+			@Override
+			public void keyPressed(KeyEvent ev) {
+				if (ev.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					Object obj = list.getModel().getElementAt(list.getSelectedIndex());
+					if (obj instanceof GlobalReference)
+						((GlobalReference) obj).jump(view);
+					ev.consume();
+				}	
+			}
+		});
 		model = new DefaultListModel();
 		list.setModel(model);
 		setLayout(new BorderLayout());
