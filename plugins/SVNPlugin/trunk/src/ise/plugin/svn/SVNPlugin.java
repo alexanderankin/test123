@@ -29,22 +29,42 @@ package ise.plugin.svn;
 
 import java.util.*;
 
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import ise.plugin.svn.gui.OutputPanel;
 
-public class SVNPlugin extends EditPlugin {
+public class SVNPlugin extends EBPlugin {
+
     public final static String NAME = "subversion";
 
-    private static HashMap<View, OutputPanel> panelMap = new HashMap<View, OutputPanel>();
+    private static HashMap<View, OutputPanel> panelMap = null;
 
     public static OutputPanel getOutputPanel(View view) {
+        if (panelMap == null) {
+            panelMap = new HashMap<View, OutputPanel>();
+        }
         OutputPanel panel = panelMap.get(view);
         if (panel == null) {
             panel = new OutputPanel();
             panelMap.put(view, panel);
         }
         return panel;
+    }
+
+    public void handleMessage(EBMessage message) {
+        if (message instanceof ViewUpdate) {
+            ViewUpdate vu = (ViewUpdate)message;
+            if (ViewUpdate.CLOSED == vu.getWhat()) {
+                panelMap.remove(vu.getView());
+            }
+        }
+    }
+
+    public void stop() {
+        panelMap.clear();
+        panelMap = null;
     }
 
 }
