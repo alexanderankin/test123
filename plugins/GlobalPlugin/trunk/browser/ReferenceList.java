@@ -43,6 +43,6 @@ public class ReferenceList extends GlobalResultsView {
 
 	@Override
 	protected String getParam() {
-		return "-r -x";
+		return "-r -x -a";
 	}
 }
