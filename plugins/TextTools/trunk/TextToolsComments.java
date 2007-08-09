@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 /**
@@ -80,7 +81,7 @@ public class TextToolsComments
 					{
 						continue;
 					}
-					leftmost = Math.min(leftmost, MiscUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize()));
+					leftmost = Math.min(leftmost, StandardUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize()));
 				}
 			}
 
@@ -114,7 +115,7 @@ public class TextToolsComments
 				
 				int lineStart = buffer.getLineStartOffset(lines[i]);
 				// get position after any leading whitespace
-				int pos = lineStart + MiscUtilities.getLeadingWhiteSpace(line);
+				int pos = lineStart + StandardUtilities.getLeadingWhiteSpace(line);
 				if (i == 0) 
 				{
 					//first time through get the line comment.
@@ -165,7 +166,7 @@ public class TextToolsComments
 						Segment seg = new Segment();
 						buffer.getLineText(lines[i], seg);
 						Log.log(Log.DEBUG, TextToolsComments.class, "commenting line: "+lines[i]);
-						buffer.insert(lineStart + MiscUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
+						buffer.insert(lineStart + StandardUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
 					}
 					// - or after all leading whitespace
 					else
@@ -341,8 +342,8 @@ public class TextToolsComments
 		{
 			int line = buffer.getLineOfOffset(offset);
 			String lineTxt = buffer.getLineText(line);
-			int start = buffer.getLineStartOffset(line) + MiscUtilities.getLeadingWhiteSpace(lineTxt);
-			int end = buffer.getLineEndOffset(line) - (MiscUtilities.getTrailingWhiteSpace(lineTxt) + 1); // the +1 catches the \n
+			int start = buffer.getLineStartOffset(line) + StandardUtilities.getLeadingWhiteSpace(lineTxt);
+			int end = buffer.getLineEndOffset(line) - (StandardUtilities.getTrailingWhiteSpace(lineTxt) + 1); // the +1 catches the \n
 			toggleRangeComment(buffer, start, end);
 		}
 	} //}}}

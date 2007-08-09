@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
@@ -119,7 +120,7 @@ public class TextToolsBlockHandling
 		if (!increment && overwriteBlock) // insert shall match selection exactly
 		{
 			if (insertText.length() < targetLen)
-				insertText = insertText + MiscUtilities.createWhiteSpace(targetLen - insertText.length(), 0);
+				insertText = insertText + StandardUtilities.createWhiteSpace(targetLen - insertText.length(), 0);
 			else if (insertText.length() > targetLen)
 				insertText = insertText.substring(0,targetLen);
 		}
@@ -137,7 +138,7 @@ public class TextToolsBlockHandling
 					nulBuf.append("0000000000");
 				nullsBlanksString = nulBuf.toString();
 			} else {
-				nullsBlanksString = MiscUtilities.createWhiteSpace(targetLen, 0);
+				nullsBlanksString = StandardUtilities.createWhiteSpace(targetLen, 0);
 			}
 		}
 		/*********************************************************
