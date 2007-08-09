@@ -98,11 +98,11 @@ public class TextToolsSorting
 			lines[i] = d.getLineText(lIndices[i]);
 		}
 		
-		MiscUtilities.Compare compare = new MiscUtilities.StringCompare();
+		java.util.Comparator compare = new MiscUtilities.StringCompare();
 		if (reverse)
 			compare = new ReverseCompare(compare);
 		
-		MiscUtilities.quicksort(lines, compare);
+		Arrays.sort(lines, compare);
 		
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < lines.length - 1 ; ++i)
@@ -121,10 +121,10 @@ public class TextToolsSorting
 	/**
 	 * A wrapper that reverses a sort.
 	 */
-	static class ReverseCompare implements MiscUtilities.Compare
+	static class ReverseCompare implements java.util.Comparator
 	{
 		//{{{ ReverseCompare constructor
-		ReverseCompare(MiscUtilities.Compare comp)
+		ReverseCompare(java.util.Comparator comp)
 		{
 			this.comp = comp;
 		} //}}}
@@ -136,7 +136,7 @@ public class TextToolsSorting
 		}//}}}
 		
 		//{{{ Private members
-		private MiscUtilities.Compare comp;
+		private java.util.Comparator comp;
 		//}}}
 	} //}}}
 	
