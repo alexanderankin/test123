@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 public class TextToolsBlockMove
@@ -297,11 +298,11 @@ public class TextToolsBlockMove
 											}
 										}
 										if (fillNbrWs > 0)
-											fillLeft = MiscUtilities.createWhiteSpace(fillNbrWs, 0);
+											fillLeft = StandardUtilities.createWhiteSpace(fillNbrWs, 0);
 										else
 											fillLeft = "";
 										if (insWidth < selWidth)
-											fillRight = MiscUtilities.createWhiteSpace(selWidth-insWidth, 0);
+											fillRight = StandardUtilities.createWhiteSpace(selWidth-insWidth, 0);
 										else
 											fillRight = "";
 										if (debug)
@@ -368,7 +369,7 @@ public class TextToolsBlockMove
 										rsso = buffer.getLength();
 										//fillLeft = "\n"+MiscUtilities.createWhiteSpace(vssr, 0);
 										fillLeft = System.getProperty("line.separator")+
-										MiscUtilities.createWhiteSpace(vssr, 0);
+										StandardUtilities.createWhiteSpace(vssr, 0);
 										if (lastWidth > 0)
 											buffer.insert(rsso, fillLeft+lastLine);
 										moveExceedsBuffer = false;  // for further lines
@@ -430,11 +431,11 @@ public class TextToolsBlockMove
 												}
 											}
 											if (fillNbrWs > 0)
-												fillLeft = MiscUtilities.createWhiteSpace(fillNbrWs, 0);
+												fillLeft = StandardUtilities.createWhiteSpace(fillNbrWs, 0);
 											else
 												fillLeft = "";
 											if (lastWidth < selWidth)
-												fillRight = MiscUtilities.createWhiteSpace(selWidth-lastWidth, 0);
+												fillRight = StandardUtilities.createWhiteSpace(selWidth-lastWidth, 0);
 											else
 												fillRight = "";
 											
@@ -487,7 +488,7 @@ public class TextToolsBlockMove
 											if (insNbrWs == 1)
 												buffer.insert(reso," ");
 											else
-												buffer.insert(reso,MiscUtilities.createWhiteSpace(insNbrWs, 0));
+												buffer.insert(reso,StandardUtilities.createWhiteSpace(insNbrWs, 0));
 										}
 									}
 									/*******************************************************************
@@ -545,7 +546,7 @@ public class TextToolsBlockMove
 											if (insNbrWs > 0) 
 											{
 												buffer.remove(rsso-1,1);
-												buffer.insert(rsso-1,MiscUtilities.createWhiteSpace(insNbrWs, 0));
+												buffer.insert(rsso-1,StandardUtilities.createWhiteSpace(insNbrWs, 0));
 											}
 											else
 												buffer.remove(rsso-1,1);

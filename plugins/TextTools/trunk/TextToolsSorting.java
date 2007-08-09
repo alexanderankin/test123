@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 public class TextToolsSorting
@@ -337,9 +338,9 @@ public class TextToolsSorting
 		int actLen = s.length();
 		int reqLen = endIndex - beginIndex;
 		if (actLen <= beginIndex) 
-			return MiscUtilities.createWhiteSpace(reqLen, 0);
+			return StandardUtilities.createWhiteSpace(reqLen, 0);
 		if (actLen < endIndex) 
-			return s.substring(beginIndex) + MiscUtilities.createWhiteSpace(reqLen-actLen, 0);
+			return s.substring(beginIndex) + StandardUtilities.createWhiteSpace(reqLen-actLen, 0);
 		return s.substring(beginIndex, endIndex); 
 	} //}}}
 	
