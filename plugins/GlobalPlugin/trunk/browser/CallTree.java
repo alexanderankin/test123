@@ -48,8 +48,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
-import tags.TagsPlugin;
-
 @SuppressWarnings("serial")
 public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeActions {
 	static private HashMap<View, CallTree> viewMap =
@@ -162,8 +160,6 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 
 	public void show(View view) {
 		String selected = view.getTextArea().getSelectedText();
-		if (selected == null)
-			selected = TagsPlugin.getTagNameAtCursor(view.getTextArea());
 		if (selected == null) {
 			Log.log(Log.ERROR, CallTree.class,
 					"No function selected");
@@ -261,7 +257,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 				//System.err.println("Double-click on " + obj.toString());
 				if (obj instanceof FunctionTag) {
 					//System.err.println("... jumping");
-					((FunctionTag) obj).jump();
+					((FunctionTag) obj).jump(view);
 				}
 			}
 		}

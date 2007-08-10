@@ -17,12 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package browser;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.buffer.BufferAdapter;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 public class GlobalReference {
@@ -40,36 +35,10 @@ public class GlobalReference {
 		s.append(rec.getText());
 		return s.toString();
 	}
-	public void jump(final View view)
+	public void jump(View view)
 	{
 		String file = rec.getFile();
-		if (file == null)
-			return;
-		final int line = rec.getLine();
-		final Buffer buffer = jEdit.openFile(view, file);
-		if(buffer == null) {
-			view.getStatus().setMessage("Unable to open: " + file);
-			return;
-		}
-		final Runnable moveCaret = new Runnable() {
-			@Override
-			public void run() {
-				JEditTextArea ta = view.getTextArea();
-				ta.setCaretPosition(ta.getLineStartOffset(line - 1));
-			}
-		};
-		if (buffer.isLoaded())
-		{
-			moveCaret.run();
-		}
-		else
-		{
-			buffer.addBufferListener(new BufferAdapter() {
-				@Override
-				public void bufferLoaded(JEditBuffer buffer) {
-					moveCaret.run();
-				}
-			});
-		}
+		int line = rec.getLine();
+		GlobalPlugin.jump(view, file, line);
 	}
 }
