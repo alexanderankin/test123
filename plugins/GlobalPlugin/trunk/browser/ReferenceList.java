@@ -34,6 +34,7 @@ public class ReferenceList extends GlobalResultsView {
 			instance = new ReferenceList(view);
 			viewMap.put(view, instance);
 		}
+		instance.invalidate();
 		return instance;
 	}
 	
