@@ -38,8 +38,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
-import tags.TagsPlugin;
-
 abstract public class GlobalResultsView extends JPanel implements DefaultFocusComponent {
 
 	private View view;
@@ -124,8 +122,6 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 	
 	public void show(View view) {
 		String selected = view.getTextArea().getSelectedText();
-		if (selected == null)
-			selected = TagsPlugin.getTagNameAtCursor(view.getTextArea());
 		if (selected == null) {
 			Log.log(Log.ERROR, CallTree.class,
 					"No function selected");

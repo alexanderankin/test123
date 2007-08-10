@@ -18,10 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package browser;
 
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 
-import tags.TagLine;
-import tags.TagsPlugin;
 
 @SuppressWarnings("unchecked")
 public class FunctionTag implements Comparable
@@ -49,12 +47,9 @@ public class FunctionTag implements Comparable
 			s.append(" [" + file + ":" + line + "]");
 		return s.toString();
 	}
-	public void jump()
+	public void jump(View view)
 	{
-		if (file == null)
-			return;
-		TagLine tagLine = new TagLine(name, file, "", line, "");
-		TagsPlugin.goToTagLine(jEdit.getActiveView(), tagLine, false, name);
+		GlobalPlugin.jump(view, file, line);
 	}
 	public int compareTo(Object o) {
 		if (! (o instanceof FunctionTag))
