@@ -20,6 +20,8 @@ package browser;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
@@ -38,18 +40,36 @@ public class GlobalReference {
 		s.append(rec.getText());
 		return s.toString();
 	}
-	public void jump(View view)
+	public void jump(final View view)
 	{
 		String file = rec.getFile();
 		if (file == null)
 			return;
-		int line = rec.getLine();
-		Buffer buffer = jEdit.openFile(view, file);
+		final int line = rec.getLine();
+		final Buffer buffer = jEdit.openFile(view, file);
 		if(buffer == null) {
 			view.getStatus().setMessage("Unable to open: " + file);
 			return;
 		}
-		JEditTextArea ta = view.getTextArea();
-		ta.setCaretPosition(ta.getLineStartOffset(line - 1));
+		final Runnable moveCaret = new Runnable() {
+			@Override
+			public void run() {
+				JEditTextArea ta = view.getTextArea();
+				ta.setCaretPosition(ta.getLineStartOffset(line - 1));
+			}
+		};
+		if (buffer.isLoaded())
+		{
+			moveCaret.run();
+		}
+		else
+		{
+			buffer.addBufferListener(new BufferAdapter() {
+				@Override
+				public void bufferLoaded(JEditBuffer buffer) {
+					moveCaret.run();
+				}
+			});
+		}
 	}
 }
