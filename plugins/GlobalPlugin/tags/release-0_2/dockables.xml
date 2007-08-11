@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="reference-browser">
+		browser.ReferenceList.getViewDockable(view, position);
+	</DOCKABLE>
+	<DOCKABLE NAME="definition-browser">
+		browser.DefinitionList.getViewDockable(view, position);
+	</DOCKABLE>
+	<DOCKABLE NAME="call-tree-browser">
+		browser.CallTree.getViewDockable(view, position);
+	</DOCKABLE>
+</DOCKABLES>
+
