@@ -3,7 +3,7 @@ plugin.browser.GlobalPlugin.activate=defer
 # general plugin information
 plugin.browser.GlobalPlugin.name=GlobalPlugin
 plugin.browser.GlobalPlugin.author=Shlomy Reinstein
-plugin.browser.GlobalPlugin.version=0.1
+plugin.browser.GlobalPlugin.version=0.2
 plugin.browser.GlobalPlugin.depend.0=jdk 1.5
 plugin.browser.GlobalPlugin.depend.1=jedit 04.03.10.00
 
