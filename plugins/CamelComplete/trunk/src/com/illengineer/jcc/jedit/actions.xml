@@ -26,13 +26,22 @@
 		    String engineName = JOptionPane.showInputDialog(textArea, "Select Engine",
 					"CamelComplete", JOptionPane.PLAIN_MESSAGE, null,
 					names, names[0]);
-		    if (engineName != null)
+		    if (engineName != null) {
+			com.illengineer.jcc.jedit.MessageDialog mdlg = 
+				new com.illengineer.jcc.jedit.MessageDialog(jEdit.getActiveView());
+			mdlg.showDlg("CamelComplete", "Processing engine...");
 			com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration(engineName);
+			mdlg.closeDlg();
+		    }
 		</CODE>
 	</ACTION>
 	<ACTION NAME="camelcomplete.process_all_engines">
 		<CODE>
+		    com.illengineer.jcc.jedit.MessageDialog mdlg = 
+			    new com.illengineer.jcc.jedit.MessageDialog(jEdit.getActiveView());
+		    mdlg.showDlg("CamelComplete", "Processing engines...");
 		    com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration();
+		    mdlg.closeDlg();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="camelcomplete.clear_cache">
