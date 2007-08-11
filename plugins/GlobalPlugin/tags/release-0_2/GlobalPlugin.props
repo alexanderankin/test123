@@ -1,0 +1,42 @@
+plugin.browser.GlobalPlugin.activate=defer
+
+# general plugin information
+plugin.browser.GlobalPlugin.name=GlobalPlugin
+plugin.browser.GlobalPlugin.author=Shlomy Reinstein
+plugin.browser.GlobalPlugin.version=0.2
+plugin.browser.GlobalPlugin.depend.0=jdk 1.5
+plugin.browser.GlobalPlugin.depend.1=jedit 04.03.10.00
+
+# Label for options/actions/whatever of the plugin
+GlobalPlugin.label=GlobalPlugin
+
+# Options
+plugin.browser.GlobalPlugin.option-pane=GlobalPlugin
+options.GlobalPlugin.code=new options.GlobalOptionPane();
+options.GlobalPlugin.label=GlobalPlugin
+options.GlobalPlugin.global_path=global
+options.GlobalPlugin.global_path.label='global' path:
+
+# action labels
+show-call-tree.label=Show call tree
+show-references.label=Show references
+show-definitions.label=Show definitions
+
+# menu items
+plugin.browser.GlobalPlugin.menu=show-call-tree show-references show-definitions
+
+# dockables
+call-tree-browser.title=Call Tree
+call-tree-browser.label=Call Tree
+reference-browser.title=References
+reference-browser.label=References
+definition-browser.title=Definitions
+definition-browser.label=Definitions
+
+# messages
+messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path to 'global' in the plugin options.
+
+# docs
+plugin.browser.GlobalPlugin.docs=index.html
+plugin.browser.GlobalPlugin.description=GlobalPlugin provides an interface to the GNU Global source code tag system.
+
