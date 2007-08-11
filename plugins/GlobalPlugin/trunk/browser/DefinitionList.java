@@ -18,7 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package browser;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
+
+import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 
@@ -28,7 +31,13 @@ public class DefinitionList extends GlobalResultsView {
 	static private HashMap<View, DefinitionList> viewMap =
 		new HashMap<View, DefinitionList>();
 	
-	static public DefinitionList instanceFor(View view, String position) {
+	static public JPanel getViewDockable(View view, String position) {
+		DefinitionList instance = instanceFor(view);
+		JPanel p = new JPanel(new BorderLayout());
+		p.add(instance, BorderLayout.CENTER);
+		return p;
+	}
+	static public DefinitionList instanceFor(View view) {
 		DefinitionList instance = viewMap.get(view);
 		if (instance == null) {
 			instance = new DefinitionList(view);
