@@ -23,7 +23,6 @@ public class MessageDialog extends JDialog {
 	}
 	
 	public void showDlg(String title, String msg) {
-	    setSize(365, 165);
 	    setTitle(title);
 	    messageLabel.setText(msg);
 	    setVisible(true);
@@ -31,7 +30,7 @@ public class MessageDialog extends JDialog {
 	    try {
 		// Forgive this crusty hack, but without a little sleep, Mac OS X
 		// displays a blank window about 75% of the time.
-		Thread.sleep(300);
+		Thread.sleep(100);
 	    } catch (Exception ex) {}
 	    repaintDlg();
 	}

@@ -23,6 +23,8 @@ public class OptionPanel extends AbstractOptionPane
 	// {{{ Member variables
 	private int selectedProvider, selectedTokenizer;
 	private DefaultListModel providerModel, tokenizerModel;
+	private DefaultListModel impExpListModel;
+	private JButton impExpButtonClicked;
 	
 	private HashMap<String, List<OptionGroup>> optionGroupMap;
 	private Map<String,List<OptionPanel.OptionGroup>> enginesOptionsMap;
@@ -46,8 +48,10 @@ public class OptionPanel extends AbstractOptionPane
 	    
 	    providerModel = new DefaultListModel();
 	    tokenizerModel = new DefaultListModel();
+	    impExpListModel = new DefaultListModel();
 	    providerList.setModel(providerModel);
 	    tokenizerList.setModel(tokenizerModel);
+	    impExpList.setModel(impExpListModel);
 	    optionGroupCombo.setModel(new DefaultComboBoxModel());
 	    
 	    
@@ -61,6 +65,7 @@ public class OptionPanel extends AbstractOptionPane
 		    processButton, processAllButton,
 		    saveOptionsButton, appendOptionsButton,  deleteOptionsButton, newOptionsButton,
 		    saveEngineButton, deleteEngineButton, newEngineButton,
+		    importEnginesButton, exportEnginesButton, impExpButton, cancelImpExpButton,
 		    ctagsButton, jarButton, textFileButton, codeButton, bufferWordsButton};
 	    for (AbstractButton b : buttons)
 		b.addActionListener(this);
@@ -260,6 +265,19 @@ public class OptionPanel extends AbstractOptionPane
 			disabledNormalButton.setSelected(true);
 		    }
 		}
+	    } // }}} 
+	    // {{{ Import/Export buttons
+	    else if (source == importEnginesButton) {
+		String[] paths = GUIUtilities.showVFSFileDialog(jEdit.getFirstView(), null, 
+						    VFSBrowser.OPEN_DIALOG, false);
+		if (paths == null)
+		    return;
+		importEngines(paths[0]);
+	    } else if (source == exportEnginesButton) {
+		exportEngines();
+	    } else if (source == impExpButton || source == cancelImpExpButton) {
+		impExpButtonClicked = (JButton)source;
+		impExpDialog.setVisible(false);
 	    } // }}}
 	    // {{{ Process Buttons
 	    else if (source == processButton || source == processAllButton) {
@@ -404,6 +422,11 @@ public class OptionPanel extends AbstractOptionPane
 	    messageLabel.setText(msg);
 	    MessageDialog._repaintImmediately(messageLabel);
 	}
+	
+	private void displayMessage(String msg) {
+	    JOptionPane.showMessageDialog(jEdit.getFirstView(), msg, "CamelComplete",
+	    				  JOptionPane.INFORMATION_MESSAGE);
+	}
 	//	}}}
 
 	// 	{{{ Options routines
@@ -473,6 +496,100 @@ public class OptionPanel extends AbstractOptionPane
 	    
 	// }}}
 
+	//	{{{ Import/Export routines
+	private void importEngines(String filename) {
+	    FileInputStream in = null;
+	    HashMap<String,Object> import_optionsMap = null;
+	    HashMap<String,List<OptionPanel.OptionGroup>> import_enginesOptionsMap = null;
+	    HashMap<String, OptionPanel.EngineOpts> import_eoMap = null;
+	    
+	    try {
+		in = new FileInputStream(filename);
+		ObjectInputStream ois = new ObjectInputStream(in);
+		import_optionsMap = (HashMap<String,Object>)ois.readObject();
+		ois.close();
+	    } catch (FileNotFoundException ex) {
+		displayMessage("The file " + filename + " doesn't exist.");
+		import_optionsMap = null;
+	    } catch (IOException ex) {
+		displayMessage("I had trouble reading valid engine data from that file.");
+		import_optionsMap = null;
+	    } catch (ClassNotFoundException ex) {
+		displayMessage("This doesn't look like valid engine data.");
+		import_optionsMap = null;
+	    }
+	    
+	    if (import_optionsMap == null)
+		return;
+		
+	    import_enginesOptionsMap = (HashMap<String,List<OptionPanel.OptionGroup>>)
+					    import_optionsMap.get("engines");
+	    import_eoMap = (HashMap<String, OptionPanel.EngineOpts>)import_optionsMap.get("engine-opts");
+	    impExpListModel.clear();
+	    impExpList.clearSelection();
+	    for (String engineName : import_enginesOptionsMap.keySet())
+		impExpListModel.addElement(engineName);
+	    
+	    impExpButtonClicked = null;
+	    impExpButton.setText("Import");
+	    // Show the modal dialog.
+	    impExpDialog.setVisible(true);
+	    
+	    if (impExpButtonClicked == impExpButton) {
+		for (Object o : impExpList.getSelectedValues()) {
+		    String engineName = (String)o;
+		    if (!enginesOptionsMap.containsKey(engineName))
+			enginesCombo.addItem(engineName);
+		    enginesOptionsMap.put(engineName, import_enginesOptionsMap.get(engineName));
+		    eoMap.put(engineName, import_eoMap.get(engineName));
+		}
+	    }
+	}
+	
+	private void exportEngines() {
+	    FileOutputStream out = null;
+	    HashMap<String,Object> export_optionsMap = null;
+	    HashMap<String,List<OptionPanel.OptionGroup>> export_enginesOptionsMap = null;
+	    HashMap<String, OptionPanel.EngineOpts> export_eoMap = null;
+	    
+	    impExpListModel.clear();
+	    impExpList.clearSelection();
+	    for (String engineName : enginesOptionsMap.keySet())
+		impExpListModel.addElement(engineName);
+		
+	    impExpButtonClicked = null;
+	    impExpButton.setText("Export");
+	    impExpDialog.setVisible(true);
+	    
+	    if (impExpButtonClicked == impExpButton) {
+		export_enginesOptionsMap = new HashMap<String,List<OptionPanel.OptionGroup>>();
+		export_eoMap = new HashMap<String, OptionPanel.EngineOpts>();
+		export_optionsMap = new HashMap<String,Object>();
+		export_optionsMap.put("engines", export_enginesOptionsMap);
+		export_optionsMap.put("engine-opts", export_eoMap);
+		
+		for (Object o : impExpList.getSelectedValues()) {
+		    String engineName = (String)o;
+		    export_enginesOptionsMap.put(engineName, enginesOptionsMap.get(engineName));
+		    export_eoMap.put(engineName, eoMap.get(engineName));
+		}
+	
+		String[] paths = GUIUtilities.showVFSFileDialog(jEdit.getFirstView(), null, 
+						    VFSBrowser.SAVE_DIALOG, false);
+		if (paths == null)
+		    return;
+		try {
+		    out = new FileOutputStream(paths[0]);
+		    ObjectOutputStream oos = new ObjectOutputStream(out);
+		    oos.writeObject(export_optionsMap);
+		    oos.close();
+		} catch (IOException ex) {
+		    displayMessage("I had an error writing to that file.");
+		}
+	    }
+	}
+	//	}}}
+
 	// }}}
 	
 	// {{{ JFormDesigner initComponents()
@@ -488,7 +605,9 @@ public class OptionPanel extends AbstractOptionPane
 		deleteEngineButton = new JButton();
 		newEngineButton = new JButton();
 		engineEnabledCheck = new JCheckBox();
-		panel6 = new JPanel();
+		panel16 = new JPanel();
+		importEnginesButton = new JButton();
+		exportEnginesButton = new JButton();
 		label6 = new JLabel();
 		label1 = new JLabel();
 		panel5 = new JPanel();
@@ -555,6 +674,12 @@ public class OptionPanel extends AbstractOptionPane
 		processButton = new JButton();
 		processAllButton = new JButton();
 		messageLabel = new JLabel();
+		impExpDialog = new JDialog();
+		scrollPane3 = new JScrollPane();
+		impExpList = new JList();
+		panel15 = new JPanel();
+		impExpButton = new JButton();
+		cancelImpExpButton = new JButton();
 		CellConstraints cc = new CellConstraints();
 
 		//======== mainPanel ========
@@ -573,6 +698,8 @@ public class OptionPanel extends AbstractOptionPane
 						FormFactory.DEFAULT_COLSPEC
 					},
 					new RowSpec[] {
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.LINE_GAP_ROWSPEC,
 						FormFactory.DEFAULT_ROWSPEC,
 						FormFactory.PARAGRAPH_GAP_ROWSPEC,
 						FormFactory.DEFAULT_ROWSPEC,
@@ -622,19 +749,27 @@ public class OptionPanel extends AbstractOptionPane
 				}
 				optionPanel.add(panel7, cc.xywh(1, 1, 5, 1));
 
-				//======== panel6 ========
+				//======== panel16 ========
 				{
-					panel6.setLayout(new FlowLayout(FlowLayout.LEFT));
+					panel16.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+					//---- importEnginesButton ----
+					importEnginesButton.setText("Import");
+					panel16.add(importEnginesButton);
+
+					//---- exportEnginesButton ----
+					exportEnginesButton.setText("Export");
+					panel16.add(exportEnginesButton);
 				}
-				optionPanel.add(panel6, cc.xy(5, 1));
+				optionPanel.add(panel16, cc.xywh(1, 3, 3, 1));
 
 				//---- label6 ----
 				label6.setText("Option Sets");
-				optionPanel.add(label6, cc.xy(1, 3));
+				optionPanel.add(label6, cc.xy(1, 5));
 
 				//---- label1 ----
 				label1.setText("Identifier Providers");
-				optionPanel.add(label1, cc.xy(3, 3));
+				optionPanel.add(label1, cc.xy(3, 5));
 
 				//======== panel5 ========
 				{
@@ -717,7 +852,7 @@ public class OptionPanel extends AbstractOptionPane
 					}
 					panel5.add(panel12, cc.xywh(1, 9, 3, 1));
 				}
-				optionPanel.add(panel5, cc.xy(1, 5));
+				optionPanel.add(panel5, cc.xy(1, 7));
 
 				//======== scrollPane1 ========
 				{
@@ -727,7 +862,7 @@ public class OptionPanel extends AbstractOptionPane
 					providerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					scrollPane1.setViewportView(providerList);
 				}
-				optionPanel.add(scrollPane1, cc.xy(3, 5));
+				optionPanel.add(scrollPane1, cc.xy(3, 7));
 
 				//======== panel2 ========
 				{
@@ -821,11 +956,11 @@ public class OptionPanel extends AbstractOptionPane
 					copyProviderButton.setText("Copy");
 					panel2.add(copyProviderButton, cc.xy(1, 13));
 				}
-				optionPanel.add(panel2, cc.xy(5, 5));
+				optionPanel.add(panel2, cc.xy(5, 7));
 
 				//---- label2 ----
 				label2.setText("Tokenizers for Provider");
-				optionPanel.add(label2, cc.xy(3, 7));
+				optionPanel.add(label2, cc.xy(3, 9));
 
 				//======== panel14 ========
 				{
@@ -835,7 +970,7 @@ public class OptionPanel extends AbstractOptionPane
 					loadDialogCheck.setText("<html>Show \"Loading\"<br>Dialog</html>");
 					panel14.add(loadDialogCheck, BorderLayout.SOUTH);
 				}
-				optionPanel.add(panel14, cc.xywh(1, 9, 1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
+				optionPanel.add(panel14, cc.xywh(1, 11, 1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 
 				//======== scrollPane2 ========
 				{
@@ -845,7 +980,7 @@ public class OptionPanel extends AbstractOptionPane
 					tokenizerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					scrollPane2.setViewportView(tokenizerList);
 				}
-				optionPanel.add(scrollPane2, cc.xy(3, 9));
+				optionPanel.add(scrollPane2, cc.xy(3, 11));
 
 				//======== panel3 ========
 				{
@@ -898,7 +1033,7 @@ public class OptionPanel extends AbstractOptionPane
 					}
 					panel3.add(panel13, cc.xywh(1, 7, 5, 1));
 				}
-				optionPanel.add(panel3, cc.xy(5, 9));
+				optionPanel.add(panel3, cc.xy(5, 11));
 
 				//======== panel1 ========
 				{
@@ -913,7 +1048,7 @@ public class OptionPanel extends AbstractOptionPane
 					popupRowsSpinner.setPreferredSize(new Dimension(60, 20));
 					panel1.add(popupRowsSpinner, BorderLayout.WEST);
 				}
-				optionPanel.add(panel1, cc.xy(1, 11));
+				optionPanel.add(panel1, cc.xy(1, 13));
 
 				//======== panel4 ========
 				{
@@ -958,7 +1093,7 @@ public class OptionPanel extends AbstractOptionPane
 					maxpartsSpinner.setModel(new SpinnerNumberModel(8, 1, null, 1));
 					panel4.add(maxpartsSpinner, cc.xy(7, 3));
 				}
-				optionPanel.add(panel4, cc.xywh(3, 11, 3, 1));
+				optionPanel.add(panel4, cc.xywh(3, 13, 3, 1));
 
 				//======== panel8 ========
 				{
@@ -980,10 +1115,54 @@ public class OptionPanel extends AbstractOptionPane
 					processAllButton.setText("Update All Engines");
 					panel8.add(processAllButton);
 				}
-				optionPanel.add(panel8, cc.xywh(1, 13, 5, 1));
-				optionPanel.add(messageLabel, cc.xywh(3, 15, 3, 1));
+				optionPanel.add(panel8, cc.xywh(1, 15, 5, 1));
+				optionPanel.add(messageLabel, cc.xywh(3, 17, 3, 1));
 			}
 			mainPanel.add(optionPanel, BorderLayout.CENTER);
+		}
+
+		//======== impExpDialog ========
+		{
+			impExpDialog.setTitle("Engines");
+			impExpDialog.setModal(true);
+			Container impExpDialogContentPane = impExpDialog.getContentPane();
+			impExpDialogContentPane.setLayout(new FormLayout(
+				new ColumnSpec[] {
+					FormFactory.UNRELATED_GAP_COLSPEC,
+					new ColumnSpec("max(default;63dlu)"),
+					FormFactory.UNRELATED_GAP_COLSPEC
+				},
+				new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.LINE_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.LINE_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.LINE_GAP_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC
+				}));
+
+			//======== scrollPane3 ========
+			{
+				scrollPane3.setViewportView(impExpList);
+			}
+			impExpDialogContentPane.add(scrollPane3, cc.xy(2, 3));
+
+			//======== panel15 ========
+			{
+				panel15.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 1));
+
+				//---- impExpButton ----
+				impExpButton.setText("ImpExp");
+				panel15.add(impExpButton);
+
+				//---- cancelImpExpButton ----
+				cancelImpExpButton.setText("Cancel");
+				panel15.add(cancelImpExpButton);
+			}
+			impExpDialogContentPane.add(panel15, cc.xy(2, 5));
+			impExpDialog.setSize(200, 200);
+			impExpDialog.setLocationRelativeTo(impExpDialog.getOwner());
 		}
 
 		//---- buttonGroup3 ----
@@ -1020,7 +1199,9 @@ public class OptionPanel extends AbstractOptionPane
 	JButton deleteEngineButton;
 	JButton newEngineButton;
 	JCheckBox engineEnabledCheck;
-	JPanel panel6;
+	JPanel panel16;
+	JButton importEnginesButton;
+	JButton exportEnginesButton;
 	JLabel label6;
 	JLabel label1;
 	JPanel panel5;
@@ -1087,6 +1268,12 @@ public class OptionPanel extends AbstractOptionPane
 	JButton processButton;
 	JButton processAllButton;
 	JLabel messageLabel;
+	JDialog impExpDialog;
+	JScrollPane scrollPane3;
+	JList impExpList;
+	JPanel panel15;
+	JButton impExpButton;
+	JButton cancelImpExpButton;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	
 	// }}} 
