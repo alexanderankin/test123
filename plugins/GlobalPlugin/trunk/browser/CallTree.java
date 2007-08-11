@@ -59,7 +59,13 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>();
 	private JTextField symbolTF; 
 
-	static public CallTree instanceFor(View view, String position) {
+	static public JPanel getViewDockable(View view, String position) {
+		CallTree instance = instanceFor(view);
+		JPanel p = new JPanel(new BorderLayout());
+		p.add(instance, BorderLayout.CENTER);
+		return p;
+	}
+	static public CallTree instanceFor(View view) {
 		CallTree instance = viewMap.get(view);
 		if (instance == null) {
 			instance = new CallTree(view);

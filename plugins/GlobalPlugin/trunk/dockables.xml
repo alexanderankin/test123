@@ -4,13 +4,13 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="reference-browser">
-		browser.ReferenceList.instanceFor(view, position);
+		browser.ReferenceList.getViewDockable(view, position);
 	</DOCKABLE>
 	<DOCKABLE NAME="definition-browser">
-		browser.DefinitionList.instanceFor(view, position);
+		browser.DefinitionList.getViewDockable(view, position);
 	</DOCKABLE>
 	<DOCKABLE NAME="call-tree-browser">
-		browser.CallTree.instanceFor(view, position);
+		browser.CallTree.getViewDockable(view, position);
 	</DOCKABLE>
 </DOCKABLES>
 

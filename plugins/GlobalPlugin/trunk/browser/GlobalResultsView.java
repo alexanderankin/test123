@@ -85,7 +85,6 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 		});
 		model = new DefaultListModel();
 		list.setModel(model);
-		setLayout(new BorderLayout());
 		add(new JScrollPane(list), BorderLayout.CENTER);
 		JPanel symbolPanel = new JPanel(new BorderLayout());
 		symbolPanel.add(new JLabel("Symbol:"), BorderLayout.WEST);
