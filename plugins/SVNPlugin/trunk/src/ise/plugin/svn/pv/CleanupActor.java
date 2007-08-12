@@ -26,17 +26,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
 import ise.plugin.svn.gui.OutputPanel;
+
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Add;
-import ise.plugin.svn.command.Info;
+import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.data.AddResults;
-import ise.plugin.svn.gui.AddDialog;
-import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
@@ -45,13 +41,13 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
+import ise.plugin.svn.action.CleanupAction;
 
 /**
- * Action for ProjectViewer's context menu to execute an svn add.
+ * Action for ProjectViewer's context menu to execute an svn cleanup.
  */
-public class AddActor extends NodeActor {
+public class CleanupActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
@@ -62,7 +58,7 @@ public class AddActor extends NodeActor {
                 }
             }
 
-            AddAction action = new AddAction(view, paths, username, password);
+            CleanupAction action = new CleanupAction(view, paths, username, password);
             action.actionPerformed(ae);
         }
     }

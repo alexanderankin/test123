@@ -26,27 +26,43 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.action.CheckoutAction;
-import ise.plugin.svn.gui.CheckoutDialog;
 import ise.plugin.svn.gui.OutputPanel;
-import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.io.*;
-import ise.plugin.svn.data.*;
-import ise.plugin.svn.*;
-import java.util.logging.*;
-import ise.plugin.svn.command.*;
-import ise.plugin.svn.library.swingworker.*;
 
-public class CheckoutActor extends NodeActor {
+import ise.plugin.svn.SVNPlugin;
+import ise.plugin.svn.command.Log;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.LogResultsPanel;
+import ise.plugin.svn.gui.SVNInfoPanel;
+import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.JPanel;
+import projectviewer.vpt.VPTNode;
+import ise.plugin.svn.action.LogAction;
+
+/**
+ * Action for ProjectViewer's context menu to execute an svn log.
+ */
+public class LogActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        CheckoutAction la = new CheckoutAction( view, username, password );
-        la.actionPerformed( ae );
+        if ( nodes != null && nodes.size() > 0 ) {
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
+
+            LogAction la = new LogAction(view, paths, username, password);
+            la.actionPerformed(ae);
+        }
     }
 }

@@ -49,6 +49,7 @@ public class Resolved {
      * @return a list of paths to be resolved.  This is very similar to an "add".
      */
     public AddResults resolve( SVNData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null ) {

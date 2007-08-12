@@ -48,6 +48,7 @@ import ise.plugin.svn.data.CheckoutData;
 public class Checkout {
 
     public long doCheckout( CheckoutData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null || cd.getURL() == null ) {

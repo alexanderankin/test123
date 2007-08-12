@@ -52,7 +52,6 @@ import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.action.SVNAction;
 import ise.plugin.svn.action.BrowseRepositoryAction;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -233,14 +232,7 @@ public class BrowseRepositoryPanel extends JPanel {
         jEdit.setProperty( PREFIX + index, url );
         if ( data.getUsername() != null && data.getPassword() != null ) {
             jEdit.setProperty( PREFIX + "username." + index, data.getUsername() );
-            String pwd = null;
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.encrypt( data.getPassword() );
-            }
-            catch ( Exception e ) {
-                // ignored
-            }
+            String pwd = data.getPassword();    // password should already be encrypted
             if ( pwd != null ) {
                 jEdit.setProperty( PREFIX + "password." + index, pwd );
             }
@@ -255,17 +247,9 @@ public class BrowseRepositoryPanel extends JPanel {
 
         username = jEdit.getProperty( PREFIX + "username." + index );
         password = jEdit.getProperty( PREFIX + "password." + index );
-        if ( password != null && password.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                password = ph.decrypt( password );
-            }
-            catch ( Exception e ) {
-                password = "";
-            }
-        }
         data.setUsername( username );
         data.setPassword( password );
+        System.out.println("+++++ BrowseRepositoryPanel: " + data.toString());
         return data;
     }
 
@@ -315,13 +299,16 @@ public class BrowseRepositoryPanel extends JPanel {
                     public void actionPerformed( ActionEvent ae ) {
                         CheckoutData data = createData();
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), data );
+                        GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
-                        data = dialog.getValues();
-                        saveData( data );
-                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                        tree.setModel( new DefaultTreeModel( root ) );
-                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                        action.actionPerformed( ae );
+                        data = dialog.getValues();  // null indicates user cancelled
+                        if (data != null) {
+                            saveData( data );
+                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                            tree.setModel( new DefaultTreeModel( root ) );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                            action.actionPerformed( ae );
+                        }
                     }
                 }
                             );

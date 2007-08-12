@@ -46,6 +46,7 @@ import ise.plugin.svn.data.DeleteResults;
 public class Delete {
 
     public DeleteResults delete( DeleteData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( data.getPaths() == null ) {

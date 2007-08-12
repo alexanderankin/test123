@@ -41,6 +41,7 @@ diff two non-local revisions.  Need to pop this as an option in the log
 viewer. - done, I called it "diff" rather than "compare" and am using JDiff
 plugin rather than svn diff.
 
+Need to check, doesn't Eclipse have a "Move"?
 
 
 The basic subversion commands:

@@ -26,7 +26,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
 import ise.plugin.svn.gui.OutputPanel;
 
@@ -47,6 +47,7 @@ import javax.swing.*;
 import projectviewer.vpt.VPTNode;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.gjt.sp.jedit.View;
+import ise.plugin.svn.action.DeleteAction;
 
 /**
  * Action for ProjectViewer's context menu to execute an svn delete.

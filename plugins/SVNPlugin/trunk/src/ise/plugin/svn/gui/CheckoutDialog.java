@@ -45,7 +45,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.PVHelper;
-import ise.plugin.svn.action.SVNAction;
+import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.PasswordHandler;

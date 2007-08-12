@@ -26,32 +26,28 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
-import ise.plugin.svn.gui.OutputPanel;
-
-import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Update;
-import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.data.UpdateData;
-import ise.plugin.svn.gui.UpdateResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
-import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
+import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
-import org.tmatesoft.svn.core.SVNLogEntry;
-import org.gjt.sp.jedit.View;
+import ise.plugin.svn.gui.OutputPanel;
 
-/**
- * Action for ProjectViewer's context menu to execute an svn update.
- */
-public class UpdateActor extends NodeActor {
+import ise.plugin.svn.SVNPlugin;
+import ise.plugin.svn.command.Info;
+import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
+import ise.plugin.svn.gui.SVNInfoPanel;
+import ise.plugin.svn.io.ConsolePrintStream;
+
+import ise.plugin.svn.action.InfoAction;
+
+public class InfoActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
@@ -62,8 +58,8 @@ public class UpdateActor extends NodeActor {
                 }
             }
 
-            UpdateAction action = new UpdateAction(view, paths, username, password);
-            action.actionPerformed(ae);
+            InfoAction la = new InfoAction(view, paths, username, password);
+            la.actionPerformed(ae);
         }
     }
 }

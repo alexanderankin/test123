@@ -50,6 +50,7 @@ public class Cleanup {
      * @return a list of paths that were scheduled to be added.
      */
     public String cleanup( SVNData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null ) {

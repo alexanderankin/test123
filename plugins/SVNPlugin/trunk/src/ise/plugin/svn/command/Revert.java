@@ -49,6 +49,7 @@ public class Revert {
      * @return a list of paths to be reverted.  This is very similar to an "add".
      */
     public AddResults revert( SVNData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null ) {

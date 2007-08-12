@@ -61,6 +61,7 @@ import ise.plugin.svn.data.StatusData;
 public class Status {
 
     public StatusData getStatus( SVNData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null ) {

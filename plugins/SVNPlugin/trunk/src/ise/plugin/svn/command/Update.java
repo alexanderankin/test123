@@ -54,6 +54,7 @@ public class Update {
      * @return an UpdateData containing a list of the updated files
      */
     public UpdateData doUpdate( UpdateData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( data.getPaths() == null ) {

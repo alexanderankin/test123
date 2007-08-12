@@ -52,6 +52,7 @@ import ise.plugin.svn.data.CopyData;
 public class Copy {
 
     public SVNCommitInfo copy( CopyData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( data.getOut() == null ) {
