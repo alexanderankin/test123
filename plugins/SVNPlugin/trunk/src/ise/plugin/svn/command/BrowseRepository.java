@@ -56,6 +56,7 @@ public class BrowseRepository {
     }
 
     public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( node == null && cd.getURL() == null ) {

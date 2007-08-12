@@ -53,6 +53,7 @@ public class Add {
      * @return a list of paths that were scheduled to be added.
      */
     public AddResults add( SVNData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( cd.getPaths() == null ) {

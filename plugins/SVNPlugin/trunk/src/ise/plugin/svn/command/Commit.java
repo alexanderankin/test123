@@ -47,6 +47,7 @@ import ise.plugin.svn.data.CommitData;
 public class Commit {
 
     public CommitData commit( CommitData cd ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate commit data values
         if (cd.getPaths() == null) {

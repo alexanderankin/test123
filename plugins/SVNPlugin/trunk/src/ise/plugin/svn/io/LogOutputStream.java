@@ -36,7 +36,6 @@ import org.gjt.sp.jedit.View;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.action.NodeActor;
 
 public class LogOutputStream extends OutputStream {
 

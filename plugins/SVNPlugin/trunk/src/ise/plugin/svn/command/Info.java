@@ -71,6 +71,7 @@ public class Info {
     }
 
     public List<SVNInfo> getInfo( SVNData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate commit data values
         if ( data.getPaths() == null ) {

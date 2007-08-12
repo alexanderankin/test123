@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import ise.plugin.svn.action.NodeActor;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
@@ -64,7 +63,6 @@ public class BrowseRepositoryAction implements ActionListener {
         if (view == null || tree == null || node == null || data == null || data.getURL() == null) {
             throw new IllegalArgumentException("neither view, tree, node, nor url can be null");
         }
-        NodeActor.setupLibrary();
     }
 
     public void actionPerformed( ActionEvent ae ) {

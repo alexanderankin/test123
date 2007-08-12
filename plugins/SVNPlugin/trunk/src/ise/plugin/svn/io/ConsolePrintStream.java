@@ -30,15 +30,12 @@ package ise.plugin.svn.io;
 
 import java.awt.Color;
 import java.io.*;
-
 import java.util.logging.*;
 
 import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.gui.OutputPanel;
-
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.action.NodeActor;
 
 public class ConsolePrintStream extends PrintStream {
 

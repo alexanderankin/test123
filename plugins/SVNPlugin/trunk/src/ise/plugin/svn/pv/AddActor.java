@@ -26,8 +26,9 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
+import ise.plugin.svn.action.AddAction;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Add;
@@ -47,17 +48,23 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
+import ise.plugin.svn.action.AddAction;
 
 /**
- * Action for ProjectViewer's context menu to execute an svn diff between a
- * working copy and a remote revision.  Allows just one node to be selected in
- * PV, and that node must be a file, not a directory.
+ * Action for ProjectViewer's context menu to execute an svn add.
  */
-public class DiffActor extends NodeActor {
+public class AddActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() == 1 && nodes.get(0).isFile() ) {
-            DiffAction action = new DiffAction(view, nodes.get(0).getNodePath(), username, password);
+        if ( nodes != null && nodes.size() > 0 ) {
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
+
+            AddAction action = new AddAction(view, paths, username, password);
             action.actionPerformed(ae);
         }
     }

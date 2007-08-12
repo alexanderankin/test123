@@ -26,7 +26,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -37,10 +37,6 @@ import console.ConsolePlugin;
 import console.Console;
 import console.Output;
 import org.gjt.sp.jedit.View;
-
-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
-import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
-import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 
 /**
  * The various action classes in this package extend this class.  The action
@@ -77,7 +73,6 @@ public abstract class NodeActor implements ActionListener {
         projectRoot = project_root;
         this.username = username;
         this.password = password;
-        setupLibrary();
     }
 
     public View getView() {
@@ -124,26 +119,6 @@ public abstract class NodeActor implements ActionListener {
      */
     public void printError(String msg) {
         print(msg, Color.RED);
-    }
-
-    /*
-     * Initializes the svnkit library to work with a repository via
-     * different protocols.
-     */
-    public static void setupLibrary() {
-        /*
-         * For using over http:// and https://
-         */
-        DAVRepositoryFactory.setup();
-        /*
-         * For using over svn:// and svn+xxx://
-         */
-        SVNRepositoryFactoryImpl.setup();
-
-        /*
-         * For using over file:///
-         */
-        FSRepositoryFactory.setup();
     }
 
 }

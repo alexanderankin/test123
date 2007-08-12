@@ -61,6 +61,7 @@ public class Log {
      * @return a list of paths that were scheduled to be added.
      */
     public void doLog( LogData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
 
         // validate data values
         if ( data.getPaths() == null ) {

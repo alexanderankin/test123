@@ -96,7 +96,6 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        NodeActor.setupLibrary();
         CheckoutDialog dialog = new CheckoutDialog( view, url );
         GUIUtils.center( view, dialog );
         dialog.setVisible( true );

@@ -44,7 +44,7 @@ import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
-import ise.plugin.svn.action.SVNAction;
+import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.PasswordHandler;
@@ -95,6 +95,7 @@ public class AddRepositoryDialog extends JDialog {
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String password_value = data != null && data.getPassword() != null ? data.getPassword() : "";
+        // if there is a password, it should be encrypted, so attempt to decrypt
         if ( password_value != null && password_value.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();
@@ -164,7 +165,19 @@ public class AddRepositoryDialog extends JDialog {
         CheckoutData data = new CheckoutData();
         data.setURL(url.getText());
         data.setUsername(username.getText());
-        data.setPassword(new String(password.getPassword()));
+
+        // encrypt the password if there is one
+        String pwd = new String(password.getPassword());
+        if ( pwd != null && pwd.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                pwd = ph.encrypt( pwd );
+            }
+            catch ( Exception e ) {
+                // ignore?
+            }
+        }
+        data.setPassword(pwd);
         return data;
     }
 

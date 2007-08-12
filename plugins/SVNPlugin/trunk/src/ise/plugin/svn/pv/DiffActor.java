@@ -26,14 +26,16 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
 import ise.plugin.svn.gui.OutputPanel;
-
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
+import ise.plugin.svn.command.Add;
+import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.gui.LogResultsPanel;
+import ise.plugin.svn.data.AddResults;
+import ise.plugin.svn.gui.AddDialog;
+import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
@@ -45,24 +47,19 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
-import org.tmatesoft.svn.core.SVNLogEntry;
+import ise.plugin.svn.action.DiffAction;
 
 /**
- * Action for ProjectViewer's context menu to execute an svn log.
+ * Action for ProjectViewer's context menu to execute an svn diff between a
+ * working copy and a remote revision.  Allows just one node to be selected in
+ * PV, and that node must be a file, not a directory.
  */
-public class LogActor extends NodeActor {
+public class DiffActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() > 0 ) {
-            List<String> paths = new ArrayList<String>();
-            for ( VPTNode node : nodes ) {
-                if ( node != null ) {
-                    paths.add( node.getNodePath() );
-                }
-            }
-
-            LogAction la = new LogAction(view, paths, username, password);
-            la.actionPerformed(ae);
+        if ( nodes != null && nodes.size() == 1 && nodes.get(0).isFile() ) {
+            DiffAction action = new DiffAction(view, nodes.get(0).getNodePath(), username, password);
+            action.actionPerformed(ae);
         }
     }
 }
