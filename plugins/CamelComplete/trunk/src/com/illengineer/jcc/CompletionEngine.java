@@ -9,7 +9,7 @@ public class CompletionEngine
 {
     // {{{ member variables
     private static int HASH_CAPACITY = 30;
-    private static float HASH_LOAD_FACTOR = 0.8f;
+    private static float HASH_LOAD_FACTOR = 0.93f;
     
     // lengthArray[n] will contain the tree of HashMaps for identifiers with n
     // prefixes. It will be resized as necessary

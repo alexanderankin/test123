@@ -81,6 +81,8 @@ public class OptionPanel extends AbstractOptionPane
 	    ((SpinnerNumberModel)popupRowsSpinner.getModel()).setValue(
 		      (Integer)CamelCompletePlugin.getOption("popup-rows"));
 	    addComponent(mainPanel);
+	    
+	    CamelCompletePlugin.rememberOptionPanel(this);
 	}
 	
 	protected void _save() {
@@ -90,6 +92,13 @@ public class OptionPanel extends AbstractOptionPane
 	    CamelCompletePlugin.setOption("update", Boolean.valueOf(updateCheck.isSelected()));
 	    CamelCompletePlugin.setOption("loading-dlg", Boolean.valueOf(loadDialogCheck.isSelected()));
 	    CamelCompletePlugin.setOption("popup-rows", popupRowsSpinner.getValue());
+	}
+	
+	void forgetStaticThings() {
+	    // These are actually references to static members of CamelCompletePlugin
+	    optionGroupMap = null;
+	    enginesOptionsMap = null;
+	    eoMap = null;
 	}
 	
 	// }}}
@@ -503,11 +512,11 @@ public class OptionPanel extends AbstractOptionPane
 	    HashMap<String,List<OptionPanel.OptionGroup>> import_enginesOptionsMap = null;
 	    HashMap<String, OptionPanel.EngineOpts> import_eoMap = null;
 	    
+	    ObjectInputStream  ois = null;
 	    try {
 		in = new FileInputStream(filename);
-		ObjectInputStream ois = new ObjectInputStream(in);
+		ois = new ObjectInputStream(in);
 		import_optionsMap = (HashMap<String,Object>)ois.readObject();
-		ois.close();
 	    } catch (FileNotFoundException ex) {
 		displayMessage("The file " + filename + " doesn't exist.");
 		import_optionsMap = null;
@@ -517,6 +526,12 @@ public class OptionPanel extends AbstractOptionPane
 	    } catch (ClassNotFoundException ex) {
 		displayMessage("This doesn't look like valid engine data.");
 		import_optionsMap = null;
+	    } finally {
+		if (ois != null) {
+		    try {
+			ois.close();
+		    } catch (IOException ex) {}
+		}
 	    }
 	    
 	    if (import_optionsMap == null)

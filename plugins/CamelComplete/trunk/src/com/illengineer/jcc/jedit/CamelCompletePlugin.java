@@ -22,6 +22,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	
 	private static boolean debug = false;
 	private static PrintWriter debugWriter;
+	private static OptionPanel cachedOptionPanel;
 	
 	/*  This Map will contain all the options and configuration set in the OptionPane
 	    Keys/Vals:
@@ -62,6 +63,8 @@ public class CamelCompletePlugin extends EditPlugin {
 	    InputStream i;
 
 	    i = getResourceAsStream(CamelCompletePlugin.class, "options");
+	    if (i == null)
+		i = CamelCompletePlugin.class.getResourceAsStream("/default.options");
 	    if (i != null) {
 		boolean failed = false;
 		try {
@@ -191,11 +194,19 @@ public class CamelCompletePlugin extends EditPlugin {
 	    eoMap = null;
 	    engineMap = null;
 	    engines = null;
+	    
+	    if (cachedOptionPanel != null) {
+		cachedOptionPanel.forgetStaticThings();
+		cachedOptionPanel = null;
+	    }
+	    
+	    // And just for the heck of it.
+	    debugWriter = null;
+	    homeDir = null;
 	}
 	
-	// This exists just so that the user can force the plugin to be loaded,
-	// which can take a long time if the caches are large.
-	public static void noop() {
+	static void rememberOptionPanel(OptionPanel panel) {
+	    cachedOptionPanel = panel;
 	}
 	
 	// }}}

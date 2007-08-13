@@ -10,6 +10,8 @@
 
 
 
+
+  
   
   
   
@@ -29,6 +31,8 @@
 
 
 
+
+  
   
   
   
@@ -52,7 +56,9 @@
 
 
 
+
 <h2>CamelComplete Plugin for JEdit<br>
+
 
 
 
@@ -70,7 +76,9 @@
 
 
 
+
 <br>
+
 
 
 
@@ -92,7 +100,9 @@ examples, which show identifiers and their abbreviations:<br>
 
 
 
+
 <pre>	SwingUtilities 	-&gt; SU<br>	GtkMessageBox 	-&gt; GMB<br>	IOException	-&gt; IOE<br>	G_ModelScan	-&gt; GMS<br>	G_modelScan	-&gt; GmS<br>	G3openFile	-&gt; GoF<br>	_kml_openFile	-&gt; koF</pre>
+
 
 
 
@@ -112,7 +122,9 @@ others.<br>
 
 
 
+
 <pre>Regexp: [_-]<br><br>	gtk_check_menu_item_set_inconsistent -&gt; gcmisi<br>	gtk_menu_item_new 		     -&gt; gmin<br>	multi-define-syntax 		     -&gt; mds</pre>
+
 
 
 
@@ -131,7 +143,9 @@ Shortcuts.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -143,7 +157,9 @@ Shortcuts.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -158,10 +174,15 @@ getEnabled and setEnabled as identifiers, you can type "Ena", activate
 normal completion, and have both getEnabled and setEnabled be offered
 in the popup. Starts With-style normal completion is the type that
 JEdit usually uses.<br>
+
 <br>
+
 *New with Version 2.6: <span style="font-weight: bold;"><span style="font-style: italic;">Import and Export of Engines</span></span><br>
+
 <br>
+
 On the options screen there are two buttons that let you save your engines to a file, and load them again.<br>
+
 <span style="font-weight: bold;"><span style="font-style: italic;">
 
 
@@ -171,16 +192,21 @@ On the options screen there are two buttons that let you save your engines to a 
 <h3>Options</h3>
 
 
+
 <span style="font-style: italic;"></span><br>
+
 
 
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
 
 
+
   <tbody>
 
 
+
     <tr>
+
 
 
       <td style="background-color: rgb(204, 204, 204);"><span style="font-style: italic;">Note: </span>Before you begin with
@@ -188,34 +214,46 @@ this powerful but complex option configuration, I'd recommend you
 download my example&nbsp;macros file from<br>
 
 
+
 &nbsp;&nbsp;&nbsp; <a href="http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Example-Macros.zip">http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Example-Macros.zip</a><br>
+
 
 
 and
 unzip it into your .jedit settings directory. Also, definitely download <br>
-&nbsp; &nbsp; <a href="http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Examples.engines">http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Examples.engines</a><br>
+
+&nbsp; &nbsp; <a href="http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Example-engines.zip">http://www.illengineer.com/jpavel/Prog/CamelCompletePlugin/Example-engines.zip</a><br>
 and use the Import feature on the Options screen to load these sample
 engines. They demonstrate many of the most common ways to configure the
-plugin.&nbsp;You'll have to eventually change the paths to your JDK's
+plugin. If you have version 2.6.1 or higher, it will load some useful
+defaults automatically the first time you start. You'll have to
+eventually change the paths to your JDK's
 rt.jar file if you want to use completion for Java classes.<br>
 
+
       <br>
+
 
 Edit the macros to add your own personal engine names, bind them to
 keystrokes (I use A+c and A+n for Camel and normal completion macros,
 respectively), and soon writing code will feel swift.</td>
 
 
+
     </tr>
 
 
+
+  
   
   
   </tbody>
 </table>
 
 
+
 <br>
+
 
 
 
@@ -229,6 +267,7 @@ The fundamental concepts are engines, providers, tokenizers, and option sets.<br
 
 
 
+
 <br>
 
 
@@ -236,7 +275,9 @@ The fundamental concepts are engines, providers, tokenizers, and option sets.<br
 
 
 
+
 <ul>
+
 
 
 
@@ -253,10 +294,12 @@ along with a few options that apply to the whole engine.</li>
 
 
 
+
   <li>A <span style="font-style: italic;">Provider</span> is a program
 that generates a list of identifiers for an engine to remember. The
 providers that come with the plugin include one that reads the output
 of Ctags(see  <a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a>) files, a JAR reader, a plain text file reader, and a provider that collects identifiers from all open buffers.</li>
+
 
 
 
@@ -273,10 +316,12 @@ a supplied regular expression to break apart an identifier.</li>
 
 
 
+
   <li>An <span style="font-style: italic;">Option Set</span> is a group
 of providers and their associated tokenizers. You can use option sets
 to remember settings that you might want to use over and over in a
 number of engines.</li>
+
 
 
 
@@ -290,7 +335,9 @@ number of engines.</li>
 
 
 
+
 <br>
+
 
 
 
@@ -304,7 +351,9 @@ number of engines.</li>
 
 
 
+
 The options pane started out simple, but now looks like a labyrinth of buttons. Ah well.<br>
+
 
 
 
@@ -318,7 +367,9 @@ The options pane started out simple, but now looks like a labyrinth of buttons. 
 
 
 
+
 <span style="font-weight: bold;">Engines</span><br>
+
 
 
 
@@ -334,6 +385,7 @@ because each can be updated or deleted independently.<br>
 
 
 
+
 <br>
 
 
@@ -341,7 +393,9 @@ because each can be updated or deleted independently.<br>
 
 
 
+
 <h3>Option Groups</h3>
+
 
 
 
@@ -356,7 +410,9 @@ Along the left is a combo box and buttons for working with options groups<br>
 
 
 
+
 <ul>
+
 
 
 
@@ -372,7 +428,9 @@ click Save.</li>
 
 
 
+
   <li>Loading a Group: &nbsp;choose a saved group from the combo box, and click Load.</li>
+
 
 
 
@@ -386,7 +444,9 @@ click Save.</li>
 
 
 
+
   <li>New Group: &nbsp;this button is a convenient way to clear all the provider and tokenizer fields.</li>
+
 
 
 
@@ -400,7 +460,9 @@ click Save.</li>
 
 
 
+
 </ul>
+
 
 
 
@@ -414,7 +476,9 @@ click Save.</li>
 
 
 
+
 <span style="font-weight: bold;">Provider &amp; Tokenizer Lists</span><br>
+
 
 
 
@@ -437,7 +501,9 @@ invalid and discarded.<br>
 
 
 
+
 <h4>Creating a Provider</h4>
+
 
 
 
@@ -459,7 +525,9 @@ value of <span style="font-family: monospace;">&nbsp;[_-] </span>(underscore and
 
 
 
+
 <br>
+
 
 
 
@@ -477,7 +545,9 @@ Below tokenizers are options that apply to the whole provider.<br>
 
 
 
+
 <ul>
+
 
 
 
@@ -497,7 +567,9 @@ expand to "ArrayIndexOutOfBoundsException".</li>
 
 
 
+
   <li>Filter Regexp -- any identifier matching this regular expression will not be considered for inclusion.</li>
+
 
 
 
@@ -515,7 +587,9 @@ expand to "ArrayIndexOutOfBoundsException".</li>
 
 
 
+
 </ul>
+
 
 
 
@@ -533,7 +607,9 @@ it, click Edit, make your changes, and click Save.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -547,7 +623,9 @@ it, click Edit, make your changes, and click Save.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -561,6 +639,7 @@ it, click Edit, make your changes, and click Save.<br>
 
 
 
+
 <ul>
 
 
@@ -568,7 +647,9 @@ it, click Edit, make your changes, and click Save.<br>
 
 
 
+
   <li>Popup List Rows -- how big should the completion popup be?</li>
+
 
 
 
@@ -585,6 +666,7 @@ sources around.</li>
 
 
 
+
   <li>Update on Startup -- if you choose not to cache the data, you can
 have your providers load their lists when the plugin starts up. You
 might do this because it's usually faster than the cache data option.</li>
@@ -594,7 +676,9 @@ might do this because it's usually faster than the cache data option.</li>
 
 
 
+
 </ul>
+
 
 
 
@@ -612,7 +696,9 @@ might do this because it's usually faster than the cache data option.</li>
 
 
 
+
 <h4>Updating the Engine</h4>
+
 
 
 
@@ -633,7 +719,9 @@ using last. <br>
 
 
 
+
 <span style="font-style: italic;">Note that clicking Save in the options window will </span>not <span style="font-style: italic;">cause the identifiers to be reloaded. You must click Update Engine.</span><br>
+
 
 
 
@@ -649,7 +737,9 @@ using last. <br>
 
 
 
+
 <h3>Tips</h3>
+
 
 
 
@@ -667,7 +757,9 @@ completion. What you can do is:<br>
 
 
 
+
 <br>
+
 
 
 
@@ -681,7 +773,9 @@ completion. What you can do is:<br>
 
 
 
+
   <li>In the Options dialog, make a new engine, which we'll name "Buffers".</li>
+
 
 
 
@@ -698,7 +792,9 @@ buffers.</li>
 
 
 
+
   <li>Add some tokenizers, like CamelCase and Regex "_".</li>
+
 
 
 
@@ -712,7 +808,9 @@ buffers.</li>
 
 
 
+
   <li>Save the Engine.</li>
+
 
 
 
@@ -726,7 +824,9 @@ buffers.</li>
 
 
 
+
   <li>Create a file "Update_Buffer_Words.bsh" in the macros directory of your JEdit settings.</li>
+
 
 
 
@@ -740,6 +840,7 @@ buffers.</li>
 
 
 
+
     <br>
 
 
@@ -747,6 +848,8 @@ buffers.</li>
 
 
 
+
+    
     
     
     
@@ -760,7 +863,9 @@ buffers.</li>
 
 
 
+
     </li>
+
 
 
 
@@ -774,6 +879,7 @@ buffers.</li>
 
 
 
+
     <br>
 
 
@@ -781,6 +887,8 @@ buffers.</li>
 
 
 
+
+    
     
     
     
@@ -788,6 +896,7 @@ buffers.</li>
     
     
     <pre>    com.illengineer.jcc.jedit.CamelCompletePlugin.processConfiguration("Buffers");<br>    com.illengineer.jcc.jedit.CamelCompletePlugin.complete(view, textArea, 1);<br><br></pre>
+
 
 
 
@@ -800,7 +909,9 @@ for Camel and one for Normal, and bind these to keystrokes.<br>
 
 
 
+
     <br>
+
 
 
 
@@ -814,7 +925,9 @@ for Camel and one for Normal, and bind these to keystrokes.<br>
 
 
 
+
   <li>Now bind a shortcut key to that macro, and you can easily reload all the words in open buffers.</li>
+
 
 
 
@@ -828,7 +941,9 @@ for Camel and one for Normal, and bind these to keystrokes.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -842,13 +957,16 @@ with this regex:<br>
 
 
 
+
 </p>
 
 
 
 
 
+
 <pre>  (?&lt;=[A-Z])(?=[A-Z][a-z])|(?&lt;=[a-z0-9])(?=[A-Z])|_<br></pre>
+
 
 
 
@@ -861,7 +979,9 @@ If you develop a useful one, please let me know!<br>
 
 
 
+
 <br>
+
 
 
 
@@ -874,13 +994,16 @@ these lines<br>
 
 
 
+
 <pre>import java.util.ArrayList;<br>import com.illengineer.jcc.jedit.CamelCompletePlugin;<br><br>CamelCompletePlugin.processConfiguration("Buffers");<br>ArrayList list = new ArrayList(4);<br>list.add("Buffers");<br>list.add("Java");<br>CamelCompletePlugin.complete(view, textArea, 1, list);<br></pre>
 
 
 
 
 
+
 <p></p>
+
 
 
 
@@ -895,7 +1018,9 @@ these lines<br>
 
 
 
+
 This plugin was written by Jesse Pavel (<a href="mailto:jesse@humidmail.com">jesse@humidmail.com)</a>.<br>
+
 
 
 
@@ -905,7 +1030,9 @@ This plugin was written by Jesse Pavel (<a href="mailto:jesse@humidmail.com">jes
 
 
 
+
 You can get the latest version of the plugin, before it's pushed to JEdit's plugin-central, at<br>
+
 
 
 
@@ -918,7 +1045,9 @@ You can get the latest version of the plugin, before it's pushed to JEdit's plug
 
 
 
+
 <br>
+
 
 
 
@@ -935,7 +1064,9 @@ You can get the latest version of the plugin, before it's pushed to JEdit's plug
 
 
 
+
 </ul>
+
 
 
 
