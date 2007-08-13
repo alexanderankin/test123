@@ -54,6 +54,7 @@
       <fileset dir="${src}/com/illengineer/jcc/jedit">
         <include name="CamelComplete.props"/>
 	<include name="actions.xml"/>
+	<include name="default.options"/>
       </fileset>
     </copy>
   </target>
