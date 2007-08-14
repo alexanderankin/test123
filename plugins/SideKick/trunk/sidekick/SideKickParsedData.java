@@ -157,14 +157,14 @@ public class SideKickParsedData
 			}
 		}
 		IAsset asset = getAsset(parent);
-		if ((asset != null) && assetContains(asset, offset))
+		if (asset != null && assetContains(asset, offset))
 			return parent;
 		return null;
 	}
 
 	private static boolean assetContains(IAsset asset, int offset)
 	{
-		return offset >= asset.getStart().getOffset()
+		return offset > asset.getStart().getOffset()
 		    && offset < asset.getEnd().getOffset();
 	}
 
@@ -193,7 +193,7 @@ public class SideKickParsedData
         //{{{ getAssetAtOffset() method
         /**
          *
-         * @param pos TODO: explain what pos means.
+         * @param pos the offset from the beginning of the buffer
          */
         public IAsset getAssetAtOffset(int pos)
         {
