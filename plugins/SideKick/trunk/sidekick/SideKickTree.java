@@ -231,8 +231,9 @@ public class SideKickTree extends JPanel
                 EditPane[] editPanes = view.getEditPanes();
                 for(int i = 0; i < editPanes.length; i++)
                 {
-                        editPanes[i].getTextArea().addCaretListener(
-                                caretListener);
+			JEditTextArea textArea = editPanes[i].getTextArea();
+			textArea.putClientProperty(CaretHandler.class, caretListener);
+			textArea.addCaretListener(caretListener);
                 }
 
                 update();
