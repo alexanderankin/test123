@@ -80,12 +80,13 @@ public class AncestorToolBar extends JToolBar
 		}
 		int i = 0;
 		int nb = list.size();
+		boolean browseable = (_vfs.getCapabilities() & VFS.BROWSE_CAP) != 0;
 		for (String fileName : list)
 		{
 			AncestorButton button = (AncestorButton) getComponent(i);
 			button.setAncestor(new Ancestor(view, fileName, _vfs.getFileName(fileName)));
 			i++;
-			button.setEnabled(nb != i);
+			button.setEnabled(browseable && nb != i);
 		}
 	}
 }
