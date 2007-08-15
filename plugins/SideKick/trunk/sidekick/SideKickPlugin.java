@@ -23,12 +23,19 @@
 package sidekick;
 
 //{{{ Imports
-import java.util.*;
 
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.WorkThreadPool;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 //}}}
 
 /**
@@ -312,6 +319,9 @@ public class SideKickPlugin extends EBPlugin
 			SideKickBindings.class);
 		textArea.putClientProperty(SideKickBindings.class,null);
 		textArea.removeKeyListener(b);
+		SideKickTree.CaretHandler caretHandler = (SideKickTree.CaretHandler) textArea.getClientProperty(SideKickTree.CaretHandler.class);
+		if (caretHandler != null)
+			textArea.removeCaretListener(caretHandler);
 	} //}}}
 
 	//}}}
