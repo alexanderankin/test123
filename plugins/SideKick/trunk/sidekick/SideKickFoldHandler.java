@@ -23,10 +23,13 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.text.Segment;
-import javax.swing.tree.TreePath;
+
 import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+
+import javax.swing.text.Segment;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 //}}}
 
 /**
@@ -50,11 +53,18 @@ public class SideKickFoldHandler extends FoldHandler
 			SideKickPlugin.PARSED_DATA_PROPERTY);
 		if(data == null)
 			return 0;
-		int offset = buffer.getLineStartOffset(lineIndex); 
-		TreePath path = data.getTreePathForPosition(offset);
+		int lineStartOffset = buffer.getLineStartOffset(lineIndex); 
+		TreePath path = data.getTreePathForPosition(lineStartOffset);
 		if(path == null)
 			return 0;
 		else
+		{
+			TreeNode treeNode = (TreeNode) path.getLastPathComponent();
+			IAsset asset = SideKickParsedData.getAsset(treeNode);
+			if (asset.getStart().getOffset() == lineStartOffset)
+				return path.getPathCount() - 2;
+			
 			return path.getPathCount() - 1;
+		}
 	} //}}}
 }

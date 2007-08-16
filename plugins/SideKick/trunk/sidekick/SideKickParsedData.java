@@ -164,7 +164,7 @@ public class SideKickParsedData
 
 	private static boolean assetContains(IAsset asset, int offset)
 	{
-		return offset > asset.getStart().getOffset()
+		return offset >= asset.getStart().getOffset()
 		    && offset < asset.getEnd().getOffset();
 	}
 
@@ -211,7 +211,7 @@ public class SideKickParsedData
 	 * to return null.
 	 * @return the IAsset contained in the user object in the node.
 	 */
-        public IAsset getAsset( TreeNode node ) {
+        public static IAsset getAsset( TreeNode node ) {
 	       if ( !( node instanceof DefaultMutableTreeNode ) )
 	       {
 	       	       return null;
