@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="vfs.browser.hex">
+		<CODE>
+			if(files == null)
+			{
+				view.getToolkit().beep();
+				return;
+			}
+
+            for (int i = 0;i &lt; files.length;i++)
+            {
+                entry = files[i];
+                if(entry.type == VFSFile.FILE)
+                {
+                    jEdit.openFile(view, "hex:"+entry.path);
+                }
+            }
+		</CODE>
+	</ACTION>
+</ACTIONS>

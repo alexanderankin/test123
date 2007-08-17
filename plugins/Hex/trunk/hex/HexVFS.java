@@ -20,17 +20,14 @@
 
 package hex;
 
-import java.awt.Component;
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStream;
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
-
 import org.gjt.sp.util.Log;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class HexVFS extends VFS
@@ -39,18 +36,8 @@ public class HexVFS extends VFS
 
 
     public HexVFS() {
-        super(PROTOCOL);
+        super(PROTOCOL, VFS.BROWSE_CAP | VFS.READ_CAP);
     }
-
-
-    public int getCapabilities() {
-        return (
-              VFS.BROWSE_CAP
-            | VFS.READ_CAP
-        //  | VFS.WRITE_CAP
-        );
-    }
-
 
     public char getFileSeparator() {
         return File.separatorChar;
@@ -103,30 +90,6 @@ public class HexVFS extends VFS
             return vfs.constructPath(parent, path);
         }
     }
-
-
-    public String showBrowseDialog(Object[] session, Component comp) {
-        String protocol = this.getName();
-
-        VFSBrowser browser = (VFSBrowser) comp;
-
-        VFS.DirectoryEntry[] selected = browser.getSelectedFiles();
-        if (selected == null || selected.length != 1) {
-            // TODO: error message
-            browser.getView().getToolkit().beep();
-            return null;
-        }
-
-        VFS.DirectoryEntry entry = selected[0];
-        if (entry.type == VFS.DirectoryEntry.FILE) {
-            VFS vfs = VFSManager.getVFSForPath(entry.path);
-            jEdit.openFile(browser.getView(), protocol + ':' + entry.path);
-            return vfs.getParentOfPath(entry.path);
-        }
-
-        return entry.path;
-    }
-
 
     public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
         Component comp)
@@ -191,12 +154,12 @@ public class HexVFS extends VFS
             }
 
             return new VFS.DirectoryEntry(
-                directoryEntry.name,
-                protocol + ':' + directoryEntry.path,
-                protocol + ':' + directoryEntry.deletePath,
-                directoryEntry.type,
-                directoryEntry.length,
-                directoryEntry.hidden
+                directoryEntry.getName(),
+                protocol + ':' + directoryEntry.getPath(),
+                protocol + ':' + directoryEntry.getDeletePath(),
+                directoryEntry.getType(),
+                directoryEntry.getLength(),
+                directoryEntry.isHidden()
             );
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
