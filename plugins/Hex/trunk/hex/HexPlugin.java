@@ -20,30 +20,22 @@
 
 package hex;
 
-import java.util.Vector;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.util.Log;
 
 
 public class HexPlugin extends EBPlugin
 {
     public void start() {
-        VFSManager.registerVFS(HexVFS.PROTOCOL, new HexVFS());
     }
 
 
     public void stop() {}
-
-
-    public void createMenuItems(Vector menuItems) {}
 
 
     public void handleMessage(EBMessage message) {
@@ -59,7 +51,7 @@ public class HexPlugin extends EBPlugin
                     if (mode == null) {
                         mode = jEdit.getMode("text");
                     }
-                } else {}
+                }
 
                 if ((mode != null) && (mode != buffer.getMode())) {
                     buffer.setMode(mode);

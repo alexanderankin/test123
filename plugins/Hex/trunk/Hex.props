@@ -1,11 +1,12 @@
+plugin.hex.HexPlugin.activate=defer
+
 plugin.hex.HexPlugin.name=Hex
-plugin.hex.HexPlugin.author=André Kaplan
-plugin.hex.HexPlugin.version=0.1
+plugin.hex.HexPlugin.author=André Kaplan, Matthieu Casanova
+plugin.hex.HexPlugin.version=1.0
 plugin.hex.HexPlugin.docs=users-guide.html
 
-plugin.hex.HexPlugin.depend.0=jdk 1.1
-plugin.hex.HexPlugin.depend.1=jedit 04.00.01.00
-
+plugin.hex.HexPlugin.depend.0=jdk 1.5
+plugin.hex.HexPlugin.depend.1=jedit 04.03.10.00
+plugin.hex.HexPlugin.browser-menu=vfs.browser.hex
 # vfs actions
-vfs.hex.label=Hex dump
-
+vfs.browser.hex.label=Hex dump
