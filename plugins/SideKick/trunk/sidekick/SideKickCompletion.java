@@ -100,6 +100,12 @@ public abstract class SideKickCompletion
 	} //}}}
 
 	//{{{ isCompletionSelectable() method
+	/**
+	 * @deprecated
+	 *   Do not return false from this method. Unselectable completion
+	 *   is not useful.
+	 */
+	@Deprecated
 	public boolean isCompletionSelectable(int index)
 	{
 		return true;
@@ -153,8 +159,7 @@ public abstract class SideKickCompletion
 
 	//{{{ handleKeystroke() method
 	/**
-	 * @param selectedIndex -1 if the popup is empty, otherwise the index of
-	 * the selected completion.
+	 * @param selectedIndex The index of the selected completion.
 	 * @param keyChar the character typed by the user.
 	 * @return True if completion should continue, false otherwise.
 	 * @since SideKick 0.3.2
