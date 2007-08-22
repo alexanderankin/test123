@@ -35,13 +35,14 @@ package typoscript;
 
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
-import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.gjt.sp.util.Log;
 
 /**
@@ -61,13 +62,19 @@ public class RemoteCallWorker {
 	
 	public RemoteCallWorker(T3Site parent) {
 		site = parent;
-		xmlrpc = new XmlRpcClient(site.getUrlFull());
-		xmlrpc.setBasicAuthentication(site.getUsername(), site.getPassword());
+		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+		config.setServerURL(site.getUrlFull());
+		config.setEncoding("UTF-8");
+		config.setBasicUserName(site.getUsername());
+		config.setBasicPassword(site.getPassword());
+		
+		xmlrpc = new XmlRpcClient();
+		xmlrpc.setConfig(config);
 	}
 	
-	public Hashtable getPageTree() throws XmlRpcException, IOException {
-		Hashtable result = null;
-		result = (Hashtable)remoteCall("vfs.getList", null);
+	public HashMap getPageTree() throws XmlRpcException, IOException {
+		HashMap result = null;
+		result = (HashMap)remoteCall("vfs.getList", null);
 		return result;
 	}
 	
@@ -79,7 +86,7 @@ public class RemoteCallWorker {
 	
 	public String getConstants(Integer templateuid) throws IOException, XmlRpcException {
 		String result = null;
-		Vector params = new Vector(1);
+		ArrayList params = new ArrayList(1);
 		params.add(templateuid);
 		result = (String)remoteCall("vfs.getConstants", params);
 		return result;
@@ -87,14 +94,14 @@ public class RemoteCallWorker {
 	
 	public String getSetup(Integer templateuid) throws IOException, XmlRpcException {
 		String result = null;
-		Vector params = new Vector(1);
+		ArrayList params = new ArrayList(1);
 		params.add(templateuid);
 		result = (String)remoteCall("vfs.getSetup", params);
 		return result;
 	}
 	
 	public void putConstants(Integer templateuid, String constants) throws IOException, XmlRpcException {
-		Vector params = new Vector(3);
+		ArrayList params = new ArrayList(3);
 		params.add(templateuid);
 		params.add(constants);
 		Boolean clearCache = new Boolean(site.clearCacheOnSave());
@@ -103,7 +110,7 @@ public class RemoteCallWorker {
 	}
 	
 	public void putSetup(Integer templateuid, String setup) throws IOException, XmlRpcException {
-		Vector params = new Vector(3);
+		ArrayList params = new ArrayList(3);
 		params.add(templateuid);
 		params.add(setup);
 		Boolean clearCache = new Boolean(site.clearCacheOnSave());
@@ -111,7 +118,7 @@ public class RemoteCallWorker {
 		remoteCall("vfs.putSetup", params);
 	}
 	
-	private Object remoteCall(String methodName, Vector params) throws IOException, XmlRpcException {
+	private Object remoteCall(String methodName, ArrayList params) throws IOException, XmlRpcException {
 		if (!protocolVersionTested) {
 			protocolVersionTested = true;
 			
@@ -139,7 +146,7 @@ public class RemoteCallWorker {
 			Log.log(Log.DEBUG, this, "Procotol version check passed");
 		}
 		
-		if (params == null) params = new Vector(0);
+		if (params == null) params = new ArrayList(0);
 		
 		// Append the protocol version to the request to prove we know about this (version 1 clients didn't do this, so will get
 		// and XmlRpcException from a modern server for not providing it)

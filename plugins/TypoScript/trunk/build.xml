@@ -8,8 +8,9 @@
 
   <path id="project.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="../xmlrpc-2.0.1.jar"/>
-    <pathelement location="../commons-httpclient-2.0.1.jar"/>
+    <pathelement location="../xmlrpc-client-3.0.jar"/>
+    <pathelement location="../commons-httpclient-3.0.1.jar"/>
+  	<pathelement location="../xmlrpc-common-3.0.jar"/>
     <pathelement location="."/>
   </path>
 
