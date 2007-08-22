@@ -77,7 +77,8 @@
 	<property name="build.dir" value="build"/>
 	<property name="docs.dir" value="docs"/>
 
-	<property name="velocity.jar" value="${src.lib}/velocity-1.4.jar"/>
+	<property name="velocity.jar" value="${src.lib}/velocity-1.5.jar"/>
+	<property name="oro.jar" value="${src.lib}/oro-2.8.jar"/>
 	<!-- }}} -->
 
 	<!-- {{{ Patterns -->
@@ -98,6 +99,7 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
 		<pathelement location="${velocity.jar}"/>
+		<pathelement location="${oro.jar}"/>
 	</path>
 	<!-- }}} -->
 

@@ -1,5 +1,11 @@
 CHANGES file for Templates plugin.
 
+Version 4.1.0 (22-AUG-2007)
+=============================
+CHANGES:
+- updated Velocity version from 1.4 to 1.5
+- updated dependencies as a result of the Velocity update (now requires JakartaCommons plugin 0.5, oro-2.0.8)
+
 Version 4.0.0 (11-OCT-2006)
 =============================
 CHANGES:
