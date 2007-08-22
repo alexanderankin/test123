@@ -32,8 +32,9 @@
 -->
 
 <project name="Hex" default="dist" basedir=".">
+    <property file="../build.properties"/>
+	<property file="build.properties"/>
 
-    <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
     <property name="docs-proc.target"  value="xsltproc"/>
 
@@ -65,7 +66,7 @@
     </target>
 
 
-    <target name="dist" depends="compile, docs">
+    <target name="dist" depends="compile">
         <mkdir dir="${install.dir}"/>
 
         <jar jarfile="${install.dir}/${jar.name}">
