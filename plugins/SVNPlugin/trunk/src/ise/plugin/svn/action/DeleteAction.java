@@ -135,7 +135,7 @@ public class DeleteAction implements ActionListener {
                 protected void done() {
                     try {
                         AddResults results = (AddResults)get();
-                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.DELETE );
+                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.DELETE, view, username, password );
                         panel.addTab("Delete", results_panel);
                     }
                     catch ( Exception e ) {

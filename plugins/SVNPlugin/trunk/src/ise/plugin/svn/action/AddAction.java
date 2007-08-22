@@ -123,7 +123,7 @@ public class AddAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, view, username, password );
                         panel.addTab("Add", results_panel);
                     }
                     catch ( Exception e ) {
