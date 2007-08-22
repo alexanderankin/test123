@@ -1,5 +1,0 @@
-## template=Paragraph
-<para>
-${_jeditIndentation}${_jeditTab}
-#caret ()
-${_jeditIndentation}</para>
