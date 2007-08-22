@@ -1,0 +1,113 @@
+<!-- Templates plugin user's guide: Introduction chapter -->
+<!-- (C) 2002 Steve Jakob -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!-- {{{ Chapter: Introduction -->
+<chapter id="intro"><title>Introduction</title>
+
+ <para>
+  The Templates plugin can be used to insert code (or text, markup, etc.) 
+  templates into the current buffer. As of version 3.0.0, the Templates plugin 
+  uses <ulink url="http://jakarta.apache.org/velocity/">Apache Velocity</ulink> 
+  as its underlying templating engine. The inclusion of the Apache engine 
+  provides many advantages over the previous approach, including:
+ </para>
+
+ <itemizedlist>
+  <listitem><para>Templates can prompt for values for variables</para></listitem>
+  <listitem><para>Beanshell snippets can be embedded in templates</para></listitem>
+  <listitem><para>Templates may <quote>include</quote> nested templates</para></listitem>
+  <listitem><para>jEdit-specific directives allow changes to the current buffer 
+  (eg. set caret position, change buffer mode, etc.)</para></listitem>
+  <listitem><para>Easily extensible</para></listitem>
+ </itemizedlist>
+
+ <!-- {{{ Section: Configuration -->
+ <sect1><title>Configuration</title>
+  <para>
+   In order to function properly, the Templates plugin requires two directories 
+   in which to store files. These two directories are:
+   <itemizedlist>
+    <listitem><para>Velocity resources directory</para></listitem>
+    <listitem><para>templates directory</para></listitem>
+   </itemizedlist>
+  </para>
+  <para>
+   The Velocity directory is used to store files which control the operation 
+   of the Velocity engine, as well as the template accelerators file (refer to 
+   <link linkend="accelerators">Template Accelerators</link>). Most users will have 
+   no need to modify files in this directory. Advanced users, though, should 
+   note that if they wish to use a <filename>velocity.properties</filename> 
+   file (refer to the Velocity User's Guide for further information) 
+   to affect the operation of the templating engine, this directory is 
+   where it would go. The default Velocity directory is 
+   <filename>$USER_SETTINGS/velocity</filename>, 
+   where $USER_SETTINGS is the user's jEdit settings directory (refer to jEdit 
+   help documentation for more information about the settings directory).
+  </para>
+  <para>
+   The templates directory defines where the plugin should look 
+   for user templates. All 
+   files found in this directory or any of its subdirectories, with the 
+   exception of jEdit backup files, are assumed to be template files. For this 
+   reason, the Velocity directory may not be a subdirectory of the templates 
+   directory,although the templates directory may be a subdirectory of the 
+   Velocity directory. The default templates directory is 
+   <filename>$USER_SETTINGS/templates</filename>.
+  </para>
+  <para>
+   The location of these directories may be modified under 
+   <guimenu>Utilities</guimenu>&gt;<guisubmenu>Global Options</guisubmenu>&gt;
+   <guisubmenu>Plugin Options</guisubmenu>&gt;<guisubmenu>Templates</guisubmenu>
+   &gt;<guimenuitem>General</guimenuitem>.
+  </para>
+ </sect1>
+ <!-- }}} -->
+
+ <!-- {{{ Section: Creating a template file -->
+ <sect1><title>Creating a template file</title>
+  <para>
+   A template file is simply plain text which may contain optional elements 
+   which hold special meaning for the templating engine. These special 
+   elements include directives, references and comments, and are described 
+   in the section of this help document titled 
+   <link linkend="vtl">Velocity Template Language</link>.
+  </para>
+  <para>
+   After creating a new template file in a jEdit buffer, the file must be 
+   saved into the templates directory or one of its subdirectories. This can 
+   be done using <guimenu>File</guimenu>&gt;
+   <guimenuitem>Save As ...</guimenuitem>, but the easiest method is to use the 
+   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Templates</guisubmenu>&gt;
+   <guimenuitem>Save template</guimenuitem> menu item. The latter method has 
+   the advantage that the Templates menu and dockable tree view are both 
+   updated automatically. If a template is saved by another method, it is 
+   possible to force the templates list to update by using the 
+   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Templates</guisubmenu>&gt;
+   <guimenuitem>Refresh templates</guimenuitem> menu item, or by using the 
+   <guimenuitem>Refresh templates</guimenuitem> menu item in the popup menu 
+   accessed by clicking the right mouse button in the dockable templates 
+   tree view.
+  </para>
+  <para>
+   <emphasis>TIP:</emphasis> by saving a template file with the file extension 
+   ".vm", jEdit should automatically use the Velocity mode for editing the 
+   tempate file. In this way, elements to be processed by the templating 
+   engine will be highlighted by jEdit's syntax highlighting engine.
+  </para>
+  <para>
+   After refreshing the Templates menu, the filename of the template file should 
+   appear on both the Templates menu, and in the dockable tree view. Filenames 
+   are often not very descriptive, though, so the Templates plugin supports 
+   labelling of templates using a special commenting syntax (refer to 
+   <link linkend="template-label">Special Comment: Template Label</link> in the 
+   <link linkend="vtl">Velocity Template Language</link> section of 
+   this help document).
+  </para>
+ </sect1>
+ <!-- }}} -->
+
+</chapter>
+<!-- }}} -->
+
