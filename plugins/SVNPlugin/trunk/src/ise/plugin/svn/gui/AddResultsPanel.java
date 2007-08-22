@@ -29,11 +29,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import ise.plugin.svn.action.CommitAction;
+import ise.plugin.svn.action.RevertAction;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.java.awt.LambdaLayout;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Used for both Add and Revert, and now Delete and Resolved.
@@ -44,11 +49,19 @@ public class AddResultsPanel extends JPanel {
     public static final int DELETE = 2;
     public static final int RESOLVED = 3;
 
-    public AddResultsPanel( AddResults results, int action ) {
+    private View view = null;
+    private String username = null;
+    private String password = null;
+
+    public AddResultsPanel( AddResults results, int action, View view, String username, String password  ) {
         super( new LambdaLayout() );
         if ( action < 0 || action > 3 ) {
             throw new IllegalArgumentException( "invalid action: " + action );
         }
+        this.view = view;
+        this.username = username;
+        this.password = password;
+
         boolean top = false;
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
@@ -83,6 +96,9 @@ public class AddResultsPanel extends JPanel {
                 data[ i ][ 0 ] = path;
             }
             JTable good_table = new JTable( data, new String[] {"Path"} );
+            if ( action == ADD || action == DELETE ) {
+                good_table.addMouseListener( new TableMouseListener( good_table ) );
+            }
 
             top_panel.add( good_label, BorderLayout.NORTH );
             top_panel.add( GUIUtils.createTablePanel( good_table ), BorderLayout.CENTER );
@@ -130,5 +146,58 @@ public class AddResultsPanel extends JPanel {
             add( bottom_panel, con );
         }
 
+    }
+
+    /**
+     * MouseListener to popup context menu on the table.
+     */
+    class TableMouseListener extends MouseAdapter {
+        private JTable table = null;
+        public TableMouseListener( JTable table ) {
+            TableMouseListener.this.table = table;
+        }
+
+        public void mouseReleased( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        public void mousePressed( MouseEvent me ) {
+            handleClick( me );
+        }
+
+        private void handleClick( MouseEvent me ) {
+            if ( me.isPopupTrigger() ) {
+                JPopupMenu popup = getPopupMenu( table );
+                if ( popup != null ) {
+                    GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+                }
+            }
+        }
+    }
+
+    /**
+     * Create the context menu.
+     */
+    private JPopupMenu getPopupMenu( final JTable table ) {
+        int[] rows = table.getSelectedRows();
+        if (rows.length == 0) {
+            return null;
+        }
+
+        JPopupMenu popup = new JPopupMenu();
+        List<String> paths = new ArrayList<String>();
+        for (int row : rows) {
+            paths.add((String) table.getValueAt(rows[row], 0));
+        }
+
+        JMenuItem mi = new JMenuItem("Commit");
+        popup.add(mi);
+        mi.addActionListener(new CommitAction( view, paths, username, password ) );
+
+        mi = new JMenuItem("Revert");
+        popup.add(mi);
+        mi.addActionListener( new RevertAction( view, paths, username, password ) );
+
+        return popup;
     }
 }
