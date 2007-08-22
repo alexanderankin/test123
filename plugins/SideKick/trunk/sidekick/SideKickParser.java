@@ -222,7 +222,7 @@ public abstract class SideKickParser {
 	 */
 	public SideKickCompletion complete( EditPane editPane, int caret ) {
 		try {
-			String[] keywords = editPane.getBuffer().getMode().getTokenMarker().getMainRuleSet().getKeywords().getKeywords();
+			String[] keywords = editPane.getBuffer().getKeywordMapAtOffset(caret).getKeywords();
 			if (keywords.length > 0) {
 				String word = getWordAtCaret( editPane, caret );
 				if (word != null && word.length() > 0) {

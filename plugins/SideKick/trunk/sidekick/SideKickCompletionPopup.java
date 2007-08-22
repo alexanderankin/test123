@@ -17,350 +17,180 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+import org.gjt.sp.jedit.gui.CompletionPopup;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 //}}}
 
-public class SideKickCompletionPopup extends JWindow
+public class SideKickCompletionPopup extends CompletionPopup
 {
-	// (largely copied from gui/CompleteWord.java)
-	// we should probably factor out the CompletionPopup
-	
 	//{{{ Instance variables
 	private View view;
-	private JEditTextArea textArea;
-	private JList list;
 	private SideKickParser parser;
 	private SideKickCompletion complete;
-	private FocusListener textAreaFocusListener;
-	private boolean handleFocusOnDispose;
 	//}}}
-
 
 	//{{{ SideKickCompletionPopup constructor
 	public SideKickCompletionPopup(View view, SideKickParser parser,
 		int caret, SideKickCompletion complete)
 	{
-		super(view);
+		super(view, getLocation(view.getTextArea(), caret, complete));
 
 		this.view = view;
 		this.parser = parser;
-		this.textArea = view.getTextArea();
 		this.complete = complete;
 
-		JPanel panel = new JPanel(new BorderLayout());
-		setContentPane(panel);
-		
-		list = new JList();
-
-		// make TAB key work
-		setFocusTraversalKeysEnabled(false);
-		panel.setFocusTraversalKeysEnabled(false);
-		list.setFocusTraversalKeysEnabled(false);
-		
-		list.addListSelectionListener(new ListHandler());
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		/* stupid scrollbar policy is an attempt to work around
-		   bugs people have been seeing with IBM's JDK -- 7 Sep 2000 */
-		JScrollPane scroller = new JScrollPane(list,
-			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		getContentPane().add(scroller, BorderLayout.CENTER);
-
-		GUIUtilities.requestFocus(this,list);
-
-		updateListModel();
-
-		Point location = textArea.offsetToXY(caret - complete.getTokenLength());
-		location.y += textArea.getPainter().getFontMetrics().getHeight();
-		SwingUtilities.convertPointToScreen(location,
-			textArea.getPainter());
-		setLocation(fitInScreen(location,this,
-			textArea.getPainter().getFontMetrics()
-			.getHeight()));
-		setVisible(true);
-
-		MouseHandler mouseHandler = new MouseHandler();
-		list.addMouseListener(mouseHandler);
-
-		KeyHandler keyHandler = new KeyHandler();
-		addKeyListener(keyHandler);
-		getRootPane().addKeyListener(keyHandler);
-		list.addKeyListener(keyHandler);
-		view.setKeyEventInterceptor(keyHandler);
-
+		reset(new Candidates(), false);
 	} //}}}
 
-	//{{{ fitInScreen() method
-	public static Point fitInScreen(Point p, Window w, int lineHeight)
+	//{{{ keyPressed() method
+	protected void keyPressed(KeyEvent evt)
 	{
-		Rectangle screenSize = w.getGraphicsConfiguration().getBounds();
-		if(p.y + w.getHeight() >= screenSize.height)
+		// These code should be reduced to make this popup behave
+		// like a builtin popup. But these are here to keep
+		// compatibility with the old implementation before
+		// ractoring out of CompletionPopup.
+		switch(evt.getKeyCode())
 		{
-			p.y = p.y - w.getHeight() - lineHeight;
+		case KeyEvent.VK_ENTER:
+			keyTyped('\n');
+			evt.consume();
+			break;
+		case KeyEvent.VK_TAB:
+			keyTyped('\t');
+			evt.consume();
+			break;
+		case KeyEvent.VK_SPACE:
+			evt.consume();
+			break;
+		case KeyEvent.VK_BACK_SPACE:
+			 if(!parser.canHandleBackspace())
+			 {
+				 dispose();
+			 }
+			 break;
+		case KeyEvent.VK_DELETE:
+			dispose();
+			break;
+		default:
+			break;
 		}
-		return p;
 	} //}}}
 
-
-	//{{{ dispose() method
-	public void dispose()
+	//{{{ keyTyped() method
+	public void keyTyped(KeyEvent evt)
 	{
-		view.setKeyEventInterceptor(null);
-		super.dispose();
-		SwingUtilities.invokeLater(new Runnable()
+		char ch = evt.getKeyChar();
+		if(ch == '\b' && !parser.canHandleBackspace())
 		{
-			public void run()
-			{
-				view.getTextArea().requestFocus();
-			}
-		});
+			evt.consume();
+			return;
+		}
+
+		keyTyped(ch);
+
+		evt.consume();
 	} //}}}
 
 	//{{{ Private members
 
-
-	//{{{ updateListModel() method
-	private void updateListModel()
+	//{{{ getLocation() method
+	private static Point getLocation(JEditTextArea textArea, int caret,
+		SideKickCompletion complete)
 	{
-		if(complete == null || complete.size() == 0)
+		Point location = textArea.offsetToXY(caret - complete.getTokenLength());
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
+		SwingUtilities.convertPointToScreen(location,
+			textArea.getPainter());
+		return location;
+	} //}}}
+
+	//{{{ Candidates class
+	private class Candidates implements CompletionPopup.Candidates
+	{
+		private final ListCellRenderer renderer;
+
+		public Candidates()
 		{
-			list.setListData(new String[] {
-				jEdit.getProperty("sidekick-complete.none")
-			});
-			list.setCellRenderer(new DefaultListCellRenderer());
-			list.setVisibleRowCount(1);
+			renderer = complete.getRenderer();
+		}
+
+		public int getSize()
+		{
+			return complete.size();
+		}
+
+		public boolean isValid()
+		{
+			return complete != null && complete.size() > 0;
+		}
+
+		public void complete(int index)
+		{
+			complete.insert(index);
+		}
+	
+		public Component getCellRenderer(JList list, int index,
+			boolean isSelected, boolean cellHasFocus)
+		{
+			return renderer.getListCellRendererComponent(list,
+				complete.get(index), index,
+				isSelected, cellHasFocus);
+		}
+
+		public String getDescription(int index)
+		{
+			return complete.getCompletionDescription(index);
+		}
+	} //}}}
+
+	//{{{ keyTyped() method
+	private void keyTyped(char ch)
+	{
+		// If no completion is selected, do not pass the key to
+		// handleKeystroke() method. This avoids interfering
+		// between a bit intermittent user typing and automatic
+		// completion (which is not selected initially).
+		int selected = getSelectedIndex();
+		if(selected == -1)
+		{
+			view.getTextArea().userInput(ch);
+			updateCompletion();
+		}
+		else if(complete.handleKeystroke(selected, ch))
+		{
+			updateCompletion();
+		}
+		else {
+			dispose();
+		}
+	} //}}}
+
+	//{{{ updateCompletion() method
+	private void updateCompletion()
+	{
+		SideKickCompletion newComplete = complete;
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
+		int caret = textArea.getCaretPosition();
+		if(!newComplete.updateInPlace(editPane, caret))
+		{
+			newComplete = parser.complete(editPane, caret);
+		}
+		if(newComplete == null || newComplete.size() == 0)
+		{
+			dispose();
 		}
 		else
 		{
-			setListModel(complete);
-			list.setCellRenderer(complete.getRenderer());
-
-			list.setVisibleRowCount(Math.min(8,complete.size()));
-			list.setFixedCellHeight(list.getCellBounds(0,0).height);
+			complete = newComplete;
+			setLocation(getLocation(textArea, caret, complete));
+			reset(new Candidates(), false);
 		}
-
-		pack();
-	} //}}}
-
-	//{{{ setListModel() method
-	private void setListModel(final SideKickCompletion items)
-	{
-		ListModel model = new ListModel()
-		{
-			public int getSize()
-			{
-				return items.size();
-			}
-
-			public Object getElementAt(int index)
-			{
-				return items.get(index);
-			}
-
-			public void addListDataListener(ListDataListener l) {}
-			public void removeListDataListener(ListDataListener l) {}
-		};
-
-		list.setModel(model);
-		list.setSelectedIndex(0);
-	} //}}}
-
-	//{{{ updateSelection() method
-	void updateSelection()
-	{
-		int index = list.getSelectedIndex();
-		if(index == -1)
-			return;
-
-		String description = complete.getCompletionDescription(index);
-		view.getStatus().setMessageAndClear(description);
 	} //}}}
 
 	//}}}
-
-
-	//{{{ KeyHandler class
-	class KeyHandler extends KeyAdapter
-	{
-		//{{{ keyPressed() method
-		public void keyPressed(KeyEvent evt)
-		{
-			evt = KeyEventWorkaround.processKeyEvent(evt);
-			if(evt == null)
-				return;
-
-			int selected = list.getSelectedIndex();
-			int numRows = list.getVisibleRowCount()-1;
-			int newSelect = -1;
-			switch(evt.getKeyCode())
-			{
-			case KeyEvent.VK_PAGE_UP:
-				newSelect = selected - numRows;
-				if (newSelect < 0) newSelect = 0;
-				list.setSelectedIndex(newSelect);
-				list.ensureIndexIsVisible(newSelect);
-				evt.consume();
-				break;
-			case KeyEvent.VK_PAGE_DOWN:
-				newSelect = selected + numRows;
-				if (newSelect >= list.getModel().getSize()) newSelect = list.getModel().getSize() - 1;
-				list.setSelectedIndex(newSelect);
-				list.ensureIndexIsVisible(newSelect);
-				evt.consume();
-				break;
-			case KeyEvent.VK_ENTER:
-				keyTyped('\n');
-				evt.consume();
-				break;
-			case KeyEvent.VK_TAB:
-				keyTyped('\t');
-				evt.consume();
-				break;
-			case KeyEvent.VK_ESCAPE:
-				dispose();
-				evt.consume();
-				break;
-			case KeyEvent.VK_UP:
-				evt.consume();
-				if(selected == 0)
-					break;
-				// if(getFocusOwner() == list)
-				//	break;
-				selected = selected - 1;
-				list.setSelectedIndex(selected);
-				list.ensureIndexIsVisible(selected);
-
-				break;
-			case KeyEvent.VK_DOWN:
-				evt.consume();
-				if(selected >= list.getModel().getSize())
-					break;
-				// if(getFocusOwner() == list)
-				//	break;
-				selected = selected + 1;
-				list.setSelectedIndex(selected);
-				list.ensureIndexIsVisible(selected);
-				break;
-			case KeyEvent.VK_SPACE:
-				break;
-			case KeyEvent.VK_BACK_SPACE:
-				 if(parser.canHandleBackspace())
-				 {
-					 keyPressedDefault(evt);
-				 }
-				 else {
-					 dispose();
-					 view.processKeyEvent(evt,true);
-				 }
-				 break;
-			case KeyEvent.VK_DELETE:
-				dispose();
-				view.processKeyEvent(evt,true);
-				break;
-			default:
-				keyPressedDefault(evt);
-				break;
-			}
-		} //}}}
-
-		private void keyPressedDefault(KeyEvent evt) {
-			// from DefaultInputHandler
-			if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
-			{
-				if(!evt.isActionKey())
-				{
-					return;
-				}
-			}
-
-			dispose();
-			view.processKeyEvent(evt,true);
-			return;
-		}
-
-		//{{{ keyTyped() method
-		public void keyTyped(KeyEvent evt)
-		{
-			evt = KeyEventWorkaround.processKeyEvent(evt);
-			if(evt == null)
-				return;
-
-			char ch = evt.getKeyChar();
-			if(ch == '\b' && !parser.canHandleBackspace())
-				return;
-
-			keyTyped(ch);
-
-			evt.consume();
-		} //}}}
-
-		//{{{ keyTyped() method
-		private void keyTyped(char ch)
-		{
-			if(complete == null || complete.size() == 0)
-			{
-				if (ch == '\b')
-				{
-					view.getTextArea().backspace();
-				}
-				else
-				{
-					view.getTextArea().userInput(ch);
-				}
-				dispose();
-			}
-			else if(complete.handleKeystroke(list.getSelectedIndex(), ch))
-			{
-				EditPane editPane = view.getEditPane();
-				int caret = editPane.getTextArea().getCaretPosition();
-				if(!complete.updateInPlace(editPane, caret))
-				{
-					complete = parser.complete(editPane, caret);
-				}
-				updateListModel();
-			}
-			else {
-				dispose();
-			}
-		} //}}}
-	} //}}}
-
-	//{{{ ListHandler class
-	class ListHandler implements ListSelectionListener
-	{
-		public void valueChanged(ListSelectionEvent evt)
-		{
-			updateSelection();
-		}
-	} //}}}
-
-	//{{{ MouseHandler class
-	class MouseHandler extends MouseAdapter
-	{
-
-		/* (non-Javadoc)
-		 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
-		 */
-		public void mousePressed(MouseEvent e)
-		{
-			if(complete != null) {
-				e.consume();
-				complete.handleKeystroke(list.getSelectedIndex(),'\n');
-			}
-			dispose();
-		}
-		public void mouseClicked(MouseEvent e) {
-			mousePressed(e);
-		}
-
-	} //}}}
 }

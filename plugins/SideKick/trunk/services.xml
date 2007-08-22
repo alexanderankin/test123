@@ -2,8 +2,6 @@
 
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 
-
-
 <SERVICES>
 	<SERVICE CLASS="org.gjt.sp.jedit.options.ModeOptionPane" NAME="sidekick">
 		new sidekick.SideKickModeOptionsPane();
