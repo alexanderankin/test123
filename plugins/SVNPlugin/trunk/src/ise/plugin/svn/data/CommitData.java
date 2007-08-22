@@ -31,13 +31,12 @@ package ise.plugin.svn.data;
 import java.io.*;
 import java.util.*;
 import ise.plugin.svn.io.ConsolePrintStream;
-import org.tmatesoft.svn.core.SVNCommitInfo;
 
 
 public class CommitData extends SVNData {
     private boolean keepLocks = true;
     private String commitMessage = "";
-    private SVNCommitInfo info = null;
+    private CommitInfo info = null;
 
     public CommitData(){}
 
@@ -84,11 +83,11 @@ public class CommitData extends SVNData {
         this.commitMessage = commitMessage;
     }
 
-    public SVNCommitInfo getInfo() {
+    public CommitInfo getInfo() {
         return info;
     }
 
-    public void setInfo(SVNCommitInfo info) {
+    public void setInfo(CommitInfo info) {
         this.info = info;
     }
 

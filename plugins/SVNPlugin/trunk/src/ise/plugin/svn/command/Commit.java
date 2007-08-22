@@ -43,6 +43,7 @@ import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.CommitInfo;
 
 public class Commit {
 
@@ -116,8 +117,14 @@ public class Commit {
         }
         out.close();
 
+        CommitInfo ci = new CommitInfo();
+        ci.setAuthor(info.getAuthor());
+        ci.setDate(info.getDate());
+        ci.setRevision(info.getNewRevision());
+        ci.setException(info.getErrorMessage() == null ? "" : info.getErrorMessage().toString());
+
         cd.setPaths(result_paths);
-        cd.setInfo(info);
+        cd.setInfo(ci);
         return cd;
     }
 }

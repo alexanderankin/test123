@@ -28,40 +28,75 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
-
-import java.util.*;
+import java.util.Date;
 
 /**
- * Data returned from an "add" command.
+ * Data transfer object to mimic org.tmatesoft.core.wc.SVNCommitInfo.
  */
-public class AddResults {
-
-    // paths to be added
-    private List<String> paths = new ArrayList<String>();
-
-    // paths that can't be added and the reason why
-    private TreeMap<String, String> error_paths = new TreeMap<String, String>();
+public class CommitInfo {
+    private String author = null;
+    private Date date = null;
+    private String exception = null;
+    private long revision = 0L;
 
     /**
-     * @param path a path to add to these results
+     * Returns the value of author.
      */
-    public void addPath(String path) {
-        paths.add(path);
-    }
-
-    public List<String> getPaths() {
-        return paths;
+    public String getAuthor() {
+        return author;
     }
 
     /**
-     * @param path a path that cannot be added
-     * @param msg the reason why the path can't be added
+     * Sets the value of author.
+     * @param author The value to assign author.
      */
-    public void addErrorPath(String path, String msg) {
-        error_paths.put(path, msg);
+    public void setAuthor( String author ) {
+        this.author = author;
     }
 
-    public Map<String, String> getErrorPaths() {
-        return error_paths;
+    /**
+     * Returns the value of date.
+     */
+    public Date getDate() {
+        return date;
     }
+
+    /**
+     * Sets the value of date.
+     * @param date The value to assign date.
+     */
+    public void setDate( Date date ) {
+        this.date = date;
+    }
+
+    /**
+     * Returns the value of exception.
+     */
+    public String getException() {
+        return exception;
+    }
+
+    /**
+     * Sets the value of exception.
+     * @param exception The value to assign exception.
+     */
+    public void setException( String exception ) {
+        this.exception = exception;
+    }
+
+    /**
+     * Returns the value of revision.
+     */
+    public long getRevision() {
+        return revision;
+    }
+
+    /**
+     * Sets the value of revision.
+     * @param revision The value to assign revision.
+     */
+    public void setRevision( long revision ) {
+        this.revision = revision;
+    }
+
 }
