@@ -37,6 +37,7 @@ import javax.swing.border.EmptyBorder;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.ListOps;
 import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.data.CommitInfo;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 
 public class CommitResultsPanel extends JPanel {
@@ -49,8 +50,8 @@ public class CommitResultsPanel extends JPanel {
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
         JLabel label = new JLabel( "Committed:" );
-        SVNCommitInfo info = results.getInfo();
-        String revision = String.valueOf( info.getNewRevision() );
+        CommitInfo info = results.getInfo();
+        String revision = String.valueOf( info.getRevision() );
         String author = info.getAuthor();
         String date = DATE_FORMAT.format( info.getDate() );
 
