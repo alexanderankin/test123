@@ -3,14 +3,14 @@
 plugin.templates.TemplatesPlugin.activate=startup
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=4.0.0
+plugin.templates.TemplatesPlugin.version=4.1.0
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
 plugin.templates.TemplatesPlugin.depend.0=jedit 04.03.03.00
 plugin.templates.TemplatesPlugin.depend.1=jdk 1.5
-plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.4.4
-plugin.templates.TemplatesPlugin.jars=velocity-1.4.jar
+plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.5
+plugin.templates.TemplatesPlugin.jars=oro-2.0.8.jar
 
 # Action labels
 Templates.refresh-templates.label=Refresh templates
