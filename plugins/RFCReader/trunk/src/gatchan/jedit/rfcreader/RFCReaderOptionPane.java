@@ -69,7 +69,7 @@ public class RFCReaderOptionPane extends AbstractOptionPane
 			mirrorList.setSelectedValue(currentMirror, true);
 		else
 			mirrorList.setSelectedIndex(0);
-		addComponent("Mirror : ", mirrorList);
+		addComponent("Mirror : ", new JScrollPane(mirrorList));
 	} //}}}
 
 
