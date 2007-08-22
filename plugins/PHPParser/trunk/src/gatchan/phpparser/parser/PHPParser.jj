@@ -1635,7 +1635,7 @@ List FieldDeclaration() :
     }
   }
   try {
-    variableDeclaration = VariableDeclaratorNoSuffix()
+    variableDeclaration = field()
       {
         arrayList.add(new FieldDeclaration(path,
                                            variableDeclaration,
@@ -1664,7 +1664,7 @@ List FieldDeclaration() :
   }
 
   (
-    <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
+    <COMMA> variableDeclaration = field()
       {
         arrayList.add(new FieldDeclaration(path,
                                            variableDeclaration,
@@ -1707,7 +1707,7 @@ List fieldDeclarationPHP5(List modifiers) :
   //{{{ first field 
   try 
   {
-    variableDeclaration = VariableDeclaratorNoSuffix()
+    variableDeclaration = field()
     {
       fields.add(new FieldDeclaration(modifiers,
                                       path,
@@ -1720,6 +1720,7 @@ List fieldDeclarationPHP5(List modifiers) :
                                       variableDeclaration.getBeginColumn(),
                                       variableDeclaration.getEndColumn()));
 
+      //{{{ missing var token
       if (!php5Enabled && varToken == null) 
       {
         fireParseError(new PHPParseErrorEvent(ERROR,
@@ -1733,7 +1734,7 @@ List fieldDeclarationPHP5(List modifiers) :
                                               variableDeclaration.getBeginLine(),
                                               variableDeclaration.getBeginColumn()-1,
                                               variableDeclaration.getBeginColumn()));
-      }
+      } //}}}
     }
   } 
   catch (ParseException e) 
@@ -1747,7 +1748,7 @@ List fieldDeclarationPHP5(List modifiers) :
     //{{{ additional fields
     try 
     {
-      variableDeclaration = VariableDeclaratorNoSuffix()
+      variableDeclaration = field()
       {
         fields.add(new FieldDeclaration(modifiers,
                                       path,
@@ -1760,6 +1761,7 @@ List fieldDeclarationPHP5(List modifiers) :
                                       variableDeclaration.getBeginColumn(),
                                       variableDeclaration.getEndColumn()));
 
+        //{{{ missing var token
         if (!php5Enabled && varToken == null) 
         {
           fireParseError(new PHPParseErrorEvent(ERROR,
@@ -1773,7 +1775,7 @@ List fieldDeclarationPHP5(List modifiers) :
                                                 variableDeclaration.getBeginLine(),
                                                 variableDeclaration.getBeginColumn()-1,
                                                 variableDeclaration.getBeginColumn()));
-        }
+        } //}}}
       }
     } 
     catch (ParseException e) 
@@ -1829,8 +1831,111 @@ List fieldDeclarationPHP5(List modifiers) :
 
 //{{{ Variables
 
-//{{{ VariableDeclaratorNoSuffix()
+//{{{ field()
+/**                                          
+ * One field declaration
+ */
+VariableDeclaration field() :
+{
+  final Token identifierToken, lbrace,rbrace;
+  final Expression expr;
+  Expression initializer = null;
+  Token assignToken = null;
+  final Token dollarToken;
+  Variable variable = null;
+}
+{
+  dollarToken = <DOLLAR>
+  try {
+    (
+       identifierToken = methodIdentifier()
+       {
+         variable = new Variable(identifierToken.image,
+                                 dollarToken.sourceStart,
+                                 identifierToken.sourceEnd,
+                                 dollarToken.beginLine,
+                                 identifierToken.endLine,
+                                 dollarToken.beginColumn,
+                                 identifierToken.endColumn);
+       }
+       |
+       lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+       {
+         variable = new Variable(expr,
+                                 lbrace.sourceStart,
+                                 rbrace.sourceEnd,
+                                 lbrace.beginLine,
+                                 rbrace.endLine,
+                                 lbrace.beginColumn,
+                                 rbrace.endColumn);
+       }
+    )
+  } catch (ParseException e) {
+    fireParseError("identifier expected", "", e.currentToken);
+    variable = new Variable("",
+                            e.currentToken.sourceStart,
+                            e.currentToken.sourceEnd,
+                            e.currentToken.beginLine,
+                            e.currentToken.endLine,
+                            e.currentToken.beginColumn,
+                            e.currentToken.endColumn);
+  }
+  [
+    assignToken = <ASSIGN>
+    try {
+      initializer = VariableInitializer()
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "Literal expression expected in variable initializer",
+                                            "literal",
+                                            e.currentToken.image,
+                                            assignToken.sourceEnd,
+                                            assignToken.sourceEnd +1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  ]
+  {
+    setTypeFromScope(variable);
+    if (assignToken == null) {
+      return new VariableDeclaration(currentSegment,
+                                     variable,
+                                     variable.getSourceStart(),
+                                     variable.getSourceEnd(),
+                                     variable.getBeginLine(),
+                                     variable.getEndLine(),
+                                     variable.getBeginColumn(),
+                                     variable.getEndColumn());
+    }
+    if (initializer == null) {
+      return new VariableDeclaration(currentSegment,
+                                     variable,
+                                     null,
+                                     "=",
+                                     variable.getSourceStart(),
+                                     assignToken.sourceEnd,
+                                     variable.getBeginLine(),
+                                     assignToken.endLine,
+                                     variable.getBeginColumn(),
+                                     assignToken.endColumn);
+    }
+    return new VariableDeclaration(currentSegment,
+                                   variable,
+                                   initializer,
+                                   "=",
+                                   variable.getSourceStart(),
+                                   initializer.getSourceEnd(),
+                                   variable.getBeginLine(),
+                                   initializer.getEndLine(),
+                                   variable.getBeginColumn(),
+                                   initializer.getEndColumn());
+    }
+} //}}}
 
+//{{{ VariableDeclaratorNoSuffix()
 /**                                          
  * a strict variable declarator : there cannot be a suffix here.
  * It will be used by fields and formal parameters
@@ -1933,9 +2038,8 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
                                    variable.getBeginColumn(),
                                    initializer.getEndColumn());
     }
-}
+} //}}}
 
-//}}}
 //{{{ VariableDeclarator()
 
 /**
@@ -2297,7 +2401,7 @@ MethodDeclaration methodDeclaration(int type, List modifiers) :
 MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
 {
   Token reference = null;
-  final ArrayList formalParameters = new ArrayList();
+  final List formalParameters = new ArrayList();
   final Token methodNameToken;
   String identifierChar = SYNTAX_ERROR_CHAR;
 }
@@ -2355,10 +2459,10 @@ MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
  */
 Token functionIdentifier() :
 {
-  Token methodIdentifier;
+  Token functionIdentifier;
 }
 {
-  methodIdentifier = <IDENTIFIER> { return methodIdentifier; }
+  functionIdentifier = <IDENTIFIER> { return functionIdentifier; }
 } //}}}
 
 //{{{ methodIdentifier()
@@ -2368,7 +2472,7 @@ Token functionIdentifier() :
  *
  * @return an identifier for a function
  */
- Token methodIdentifier() :
+Token methodIdentifier() :
 {
   Token methodIdentifier;
 }
@@ -2391,6 +2495,7 @@ Token functionIdentifier() :
     | methodIdentifier = <FLOAT>
     | methodIdentifier = <INT>
     | methodIdentifier = <INTEGER>
+    | methodIdentifier = <CLASS>
   )
   {
     return methodIdentifier;
@@ -2436,7 +2541,7 @@ Token functionIdentifier() :
  * FormalParameters follows method identifier.
  * (FormalParameter())
  */
-void FormalParameters(ArrayList parameters) :
+void FormalParameters(List parameters) :
 {
   FormalParameter var;
 }
