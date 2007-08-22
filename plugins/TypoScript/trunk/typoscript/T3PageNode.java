@@ -37,12 +37,9 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.HashMap;
 
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -101,23 +98,24 @@ public class T3PageNode extends DefaultMutableTreeNode {
 	 * @param data xmlrpc data for this node
 	 * @param site parent site
 	 */
-	public T3PageNode(Hashtable data, T3Site site) {
+	public T3PageNode(HashMap data, T3Site site) {
 		super();
 	
 		title = (String)data.get("title");
 		uid = ((Integer)data.get("uid")).intValue();
 		type = ((Integer)data.get("doktype")).intValue();
-		Vector templates = (Vector)data.get("templates");
-		if (templates.isEmpty()) {
+		Object[] templates = (Object[])data.get("templates");
+		
+		if (templates.length == 0) {
 			hasTemplate = false;
 			setupLines = -1;
 			constantsLines = -1;
 			templateUID = -1;
 			templateTitle = "";
-		} else if (templates.size() == 1){
+		} else if (templates.length == 1){
 			// Only one template, display it directly in the tree
 			hasTemplate = true;
-			Hashtable templateInfo = (Hashtable)templates.get(0);
+			HashMap templateInfo = (HashMap)templates[0];
 			setupLines = Integer.parseInt(templateInfo.get("setuplines").toString());
 			constantsLines = Integer.parseInt(templateInfo.get("constantslines").toString());
 			templateUID = Integer.parseInt(templateInfo.get("templateuid").toString());
@@ -126,23 +124,22 @@ public class T3PageNode extends DefaultMutableTreeNode {
 			// More than one template, display a sublist of templates, but also make the top-level one
 			// point to the first template
 			hasTemplate = true;
-			Hashtable templateInfo = (Hashtable)templates.get(0);
+			HashMap templateInfo = (HashMap)templates[0];
 			setupLines = Integer.parseInt(templateInfo.get("setuplines").toString());
 			constantsLines = Integer.parseInt(templateInfo.get("constantslines").toString());
 			templateUID = Integer.parseInt(templateInfo.get("templateuid").toString());
 			templateTitle = (String)templateInfo.get("templatetitle");
 			
-			for (int i = 0; i < templates.size(); i++) {
-				templateInfo = (Hashtable)templates.get(i);
+			for (int i = 0; i < templates.length; i++) {
+				templateInfo = (HashMap)templates[i];
 				this.add(new T3PageNode(site, data, templateInfo));
 			}
 		}
 		
 		// Look for children
-		Vector ourChildren = (Vector)data.get("children");
-		Iterator it = ourChildren.iterator();
-		while (it.hasNext()) {
-			Hashtable childNode = (Hashtable)it.next();
+		Object[] ourChildren = (Object[])data.get("children");
+		for(int i = 0; i < ourChildren.length; i++) {
+			HashMap childNode = (HashMap)ourChildren[i];
 			this.add(new T3PageNode(childNode, site));
 		}
 		
@@ -161,7 +158,7 @@ public class T3PageNode extends DefaultMutableTreeNode {
 	 * @param parentData the page data
 	 * @param templateInfo contains information such as title, uid
 	 */
-	public T3PageNode(T3Site site, Hashtable parentData, Hashtable templateInfo) {
+	public T3PageNode(T3Site site, HashMap parentData, HashMap templateInfo) {
 		super();
 		
 		title = (String)parentData.get("title");
@@ -285,7 +282,7 @@ class TreeFetchWorker extends Thread {
 		curNode.add(new DefaultMutableTreeNode("Retrieving site tree..."));
 		treeModel.nodeStructureChanged(curNode);
 		
-		Hashtable data = null;
+		HashMap data = null;
 		try {
 			data = curSite.getWorker().getPageTree();
 		} catch (Exception e) {
@@ -308,10 +305,9 @@ class TreeFetchWorker extends Thread {
 		curNode.removeAllChildren();		
 		
 		// Add all children of the data we loaded (which is the root node of this site)
-		Vector ourChildren = (Vector)data.get("children");
-		Iterator it = ourChildren.iterator();
-		while (it.hasNext()) {
-			Hashtable childNode = (Hashtable)it.next();
+		Object[] ourChildren = (Object[])data.get("children");
+		for(int i = 0; i < ourChildren.length; i++) {
+			HashMap childNode = (HashMap)ourChildren[i];
 			curNode.add(new T3PageNode(childNode, curSite));
 		}
 		

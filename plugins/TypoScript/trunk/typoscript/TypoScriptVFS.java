@@ -45,7 +45,6 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.gjt.sp.jedit.Buffer;
