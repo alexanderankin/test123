@@ -23,9 +23,6 @@ package gatchan.jedit.rfcreader;
 
 import gatchan.jedit.hyperlinks.AbstractHyperlink;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-
-import java.text.MessageFormat;
 
 /**
  * @author Matthieu Casanova
@@ -54,9 +51,6 @@ public class RFCHyperlink extends AbstractHyperlink
 	 */
 	public void click(View view)
 	{
-		String mirrorId = jEdit.getProperty(MIRROR_PROPERTY);
-		String pattern = jEdit.getProperty("options.rfcreader.rfcsources."+mirrorId+".url");
-		String url = MessageFormat.format(pattern, String.valueOf(rfcNum));
-		jEdit.openFile(view, url);
+        RFCReaderPlugin.openRFC(view, rfcNum);
 	}
 }
