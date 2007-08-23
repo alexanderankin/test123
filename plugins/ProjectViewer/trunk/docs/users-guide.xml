@@ -104,8 +104,8 @@
         <bridgehead renderas='sect3'>Creating your first project</bridgehead>
 
         <para>
-           Create a project with the "Add/Edit Project" button, also available from the context menu. After you have created a few projects, you organize them into groups later.
-        </para>
+           Create a project with the "Add/Edit Project" button, also available from the context menu. Next, select the project from the ProjectViewer combobox so that it is your "active" project for that View. Right click on the Project node to add files. </para>
+        
         
 		<bridgehead renderas='sect3'>Organizing Your Projects</bridgehead>
 
