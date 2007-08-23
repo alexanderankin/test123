@@ -83,6 +83,7 @@
 	<chapter id="usage">
 		<title>Using the ProjectViewer plugin</title>
 
+        
 		<para>
 			The plugin interface consists of a tool bar, containing some
 			command buttons, a menu containing the currently
@@ -100,6 +101,12 @@
 			if one is not already opened.
 		</para>
 
+        <bridgehead renderas='sect3'>Creating your first project</bridgehead>
+
+        <para>
+           Create a project with the "Add/Edit Project" button, also available from the context menu. After you have created a few projects, you organize them into groups later.
+        </para>
+        
 		<bridgehead renderas='sect3'>Organizing Your Projects</bridgehead>
 
 		<para>
