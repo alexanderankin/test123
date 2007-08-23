@@ -23,6 +23,7 @@
 //{{{ Imports
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -63,133 +64,158 @@ public class TextToolsComments
 
 			// get an array of all selected lines, or if there are no selections,
 			// just the line of the caret
-			int[] lines = textArea.getSelectedLines();
-			if(lines.length < 1)
+			Selection[] selections = textArea.getSelection();
+			
+			int selectionNo;
+			if (selections.length < 1)
 			{
-				lines = new int[]{textArea.getCaretLine()};
+				selectionNo = 1;
+			} 
+			else
+			{
+				selectionNo = selections.length;
 			}
-
-			// if we're inserting as block find the leftmost indent
-			int leftmost = Integer.MAX_VALUE;
-			String line;
-			if(jEdit.getBooleanProperty("options.toggle-comments.indentAsBlock"))
+			
+			int[] lines;
+			
+			for (int j=0; j < selectionNo; j++)
 			{
+				
+				//Get the lines for this selection.
+				if (selections.length < 1)
+				{
+					lines = new int[]{textArea.getCaretLine()};
+				}
+				else
+				{
+					lines = new int[selections[j].getEndLine() - selections[j].getStartLine() + 1];
+					for (int i=0; i < lines.length; i++) {
+						lines[i] = i + selections[j].getStartLine();
+					}
+				}
+				
+				// If we're inserting as block find the leftmost indent
+				int leftmost = Integer.MAX_VALUE;
+				String line;
+				if(jEdit.getBooleanProperty("options.toggle-comments.indentAsBlock"))
+				{
+					for(int i = 0; i < lines.length; i++)
+					{
+						line = buffer.getLineText(lines[i]);
+						if(line.trim().length() < 1)
+						{
+							continue;
+						}
+						leftmost = Math.min(leftmost, StandardUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize()));
+					}
+				}
+	
+				// if block commenting we need to check for un-commented lines, if
+				// any are found NO lines will be uncommented
+				boolean doUncomment = true;
+				if(jEdit.getBooleanProperty("options.toggle-comments.commentAsBlock"))
+				{
+					for(int i = 0; doUncomment && i < lines.length; i++)
+					{
+						line = buffer.getLineText(lines[i]).trim();
+						String lineComment = buffer.getContextSensitiveProperty(buffer.getLineStartOffset(lines[i]), "lineComment");
+						if(lineComment == null || lineComment.length() == 0)
+						{
+							continue;
+						}
+						if(line.length() > 0 && !line.startsWith(lineComment))
+						{
+							doUncomment = false;
+						}
+					}
+				}
+	
+				// loop through each line
+				boolean noCommentableLines = true;
+				String lineComment = null;
 				for(int i = 0; i < lines.length; i++)
 				{
+					Log.log(Log.DEBUG, TextToolsComments.class, "looping line: "+lines[i]);
 					line = buffer.getLineText(lines[i]);
+					
+					int lineStart = buffer.getLineStartOffset(lines[i]);
+					// get position after any leading whitespace
+					int pos = lineStart + StandardUtilities.getLeadingWhiteSpace(line);
+					if (i == 0) 
+					{
+						//first time through get the line comment.
+						lineComment = buffer.getContextSensitiveProperty(pos + 1, "lineComment");
+					}
+					
+					// skip over blank lines
 					if(line.trim().length() < 1)
 					{
 						continue;
 					}
-					leftmost = Math.min(leftmost, StandardUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize()));
-				}
-			}
-
-			// if block commenting we need to check for un-commented lines, if
-			// any are found NO lines will be uncommented
-			boolean doUncomment = true;
-			if(jEdit.getBooleanProperty("options.toggle-comments.commentAsBlock"))
-			{
-				for(int i = 0; doUncomment && i < lines.length; i++)
-				{
-					line = buffer.getLineText(lines[i]).trim();
-					String lineComment = buffer.getContextSensitiveProperty(buffer.getLineStartOffset(lines[i]), "lineComment");
+					
+					// re-get the lineComment property as it can vary
 					if(lineComment == null || lineComment.length() == 0)
 					{
+						Log.log(Log.DEBUG, TextToolsComments.class, "No line comment: "+lines[i]);
 						continue;
 					}
-					if(line.length() > 0 && !line.startsWith(lineComment))
-					{
-						doUncomment = false;
-					}
-				}
-			}
-
-			// loop through each line
-			boolean noCommentableLines = true;
-			String lineComment = null;
-			for(int i = 0; i < lines.length; i++)
-			{
-				Log.log(Log.DEBUG, TextToolsComments.class, "looping line: "+lines[i]);
-				line = buffer.getLineText(lines[i]);
-				
-				int lineStart = buffer.getLineStartOffset(lines[i]);
-				// get position after any leading whitespace
-				int pos = lineStart + StandardUtilities.getLeadingWhiteSpace(line);
-				if (i == 0) 
-				{
-					//first time through get the line comment.
-					lineComment = buffer.getContextSensitiveProperty(pos + 1, "lineComment");
-				}
-				
-				// skip over blank lines
-				if(line.trim().length() < 1)
-				{
-					continue;
-				}
-				
-				// re-get the lineComment property as it can vary
-				if(lineComment == null || lineComment.length() == 0)
-				{
-					Log.log(Log.DEBUG, TextToolsComments.class, "No line comment: "+lines[i]);
-					continue;
-				}
-				else
-				{
-					noCommentableLines = false;
-				}
-
-				lockBuffer(buffer);
-				
-				// if the first non-whitespace char in the line is the line
-				// comment symbol and we are doing an uncomment
-				// then, remove, otherwise insert
-				if(line.trim().startsWith(lineComment) && doUncomment)
-				{
-					buffer.remove(pos, lineComment.length());
-					if(Character.isWhitespace(buffer.getText(pos, 1).charAt(0)))
-					{
-						buffer.remove(pos, 1);
-					}
-				}
-				else
-				{
-					// depending on options, add comment symbol at:
-					// - start of line
-					if(jEdit.getBooleanProperty("options.toggle-comments.indentAtLineStart"))
-					{
-						buffer.insert(lineStart, lineComment + " ");
-					}
-					// - leftmost indent of selected lines
-					else if(jEdit.getBooleanProperty("options.toggle-comments.indentAsBlock"))
-					{
-						Segment seg = new Segment();
-						buffer.getLineText(lines[i], seg);
-						Log.log(Log.DEBUG, TextToolsComments.class, "commenting line: "+lines[i]);
-						buffer.insert(lineStart + StandardUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
-					}
-					// - or after all leading whitespace
 					else
 					{
-						buffer.insert(pos, lineComment + " ");
+						noCommentableLines = false;
+					}
+	
+					lockBuffer(buffer);
+					
+					// if the first non-whitespace char in the line is the line
+					// comment symbol and we are doing an uncomment
+					// then, remove, otherwise insert
+					if(line.trim().startsWith(lineComment) && doUncomment)
+					{
+						buffer.remove(pos, lineComment.length());
+						if(Character.isWhitespace(buffer.getText(pos, 1).charAt(0)))
+						{
+							buffer.remove(pos, 1);
+						}
+					}
+					else
+					{
+						// depending on options, add comment symbol at:
+						// - start of line
+						if(jEdit.getBooleanProperty("options.toggle-comments.indentAtLineStart"))
+						{
+							buffer.insert(lineStart, lineComment + " ");
+						}
+						// - leftmost indent of selected lines
+						else if(jEdit.getBooleanProperty("options.toggle-comments.indentAsBlock"))
+						{
+							Segment seg = new Segment();
+							buffer.getLineText(lines[i], seg);
+							Log.log(Log.DEBUG, TextToolsComments.class, "commenting line: "+lines[i]);
+							buffer.insert(lineStart + StandardUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
+						}
+						// - or after all leading whitespace
+						else
+						{
+							buffer.insert(pos, lineComment + " ");
+						}
 					}
 				}
-			}
-
-			// if there were no commentable lines, beep & return
-			if(noCommentableLines)
-			{
-				view.getToolkit().beep();
-				return;
-			}
-
-			// optionally retain selection - by default behave as jEdit
-			if(!jEdit.getBooleanProperty("options.toggle-comments.keepSelected"))
-			{
-				Selection[] sArr = textArea.getSelection();
-				if(sArr.length > 0)
+	
+				// if there were no commentable lines, beep & return
+				if(noCommentableLines)
 				{
-					textArea.setCaretPosition(sArr[sArr.length - 1].getEnd());
+					view.getToolkit().beep();
+					return;
+				}
+	
+				// optionally retain selection - by default behave as jEdit
+				if(!jEdit.getBooleanProperty("options.toggle-comments.keepSelected"))
+				{
+					Selection[] sArr = textArea.getSelection();
+					if(sArr.length > 0)
+					{
+						textArea.setCaretPosition(sArr[sArr.length - 1].getEnd());
+					}
 				}
 			}
 		}
