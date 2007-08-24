@@ -78,7 +78,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
             int start = -1;
             int j = 0;
             char[] rfcChars = new char[]{'c','f','r'};
-            for (int i = wordStart -1 ;i> 0;i--)
+            for (int i = wordStart -1 ;i>= 0;i--)
             {
                 char ch = lineText.charAt(i);
                 if (Character.isWhitespace(ch))
@@ -90,7 +90,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
                     {
                         start = i;
                         j++;
-                        if (j == 4)
+                        if (j == 3)
                             break;
                         continue;
                     }
@@ -98,7 +98,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
                 }
                 break;
             }
-            if (start == -1)
+            if (start == -1 || j != 3)
                 return null;
             wordStart = start;
             rfcNum = Integer.parseInt(currentWord);
