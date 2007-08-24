@@ -11,7 +11,7 @@ import org.gjt.sp.jedit.TextUtilities;
  */
 public class RFCHyperlinkSource implements HyperlinkSource
 {
-	private static final String NO_WORD_SEP = "[]";
+	private static final String NO_WORD_SEP = "";
 
 	private Hyperlink currentLink;
 
@@ -34,7 +34,6 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		if (offset == lineLength)
 			offset--;
 
-
 		int wordStart = TextUtilities.findWordStart(lineText, offset,
 							    NO_WORD_SEP, true, false, false);
 		int wordEnd = TextUtilities.findWordEnd(lineText, offset + 1,
@@ -42,18 +41,78 @@ public class RFCHyperlinkSource implements HyperlinkSource
 
 
 		String currentWord = lineText.substring(wordStart, wordEnd).toLowerCase();
-		if (!currentWord.startsWith("[rfc") || currentWord.charAt(currentWord.length() - 1) != ']')
-		{
-			return null;
-		}
-		for (int i = 4; i < currentWord.length() - 1; i++)
-		{
-			if (!Character.isDigit(currentWord.charAt(i)))
-				return null;
-		}
-		int rfcNum = Integer.parseInt(currentWord.substring(4, currentWord.length() - 1));
+        int rfcNum;
 
-		currentLink = new RFCHyperlink(lineStart + wordStart + 1, lineStart + wordEnd - 1, line,"rfc"+ rfcNum, rfcNum);
+        // todo : rewrite this crap 
+        if (currentWord.equals("rfc"))
+        {
+            int rfcStart = -1;
+            int rfcEnd = -1;
+            for (int i = wordEnd;i<lineText.length();i++)
+            {
+                char ch = lineText.charAt(i);
+                if (Character.isWhitespace(ch))
+                    continue;
+
+                if (Character.isDigit(ch))
+                {
+                    if (rfcStart == -1)
+                    {
+                        rfcStart = i;
+                    }
+                    rfcEnd = i+1;
+                    continue;
+                }
+                break;
+            }
+            if (rfcStart != -1)
+            {
+                rfcNum = Integer.parseInt(lineText.substring(rfcStart, rfcEnd));
+                wordEnd = rfcEnd;
+            }
+            else
+                return null;
+        }
+        else if (currentWord.matches("\\d+"))
+        {
+            int start = -1;
+            int j = 0;
+            char[] rfcChars = new char[]{'c','f','r'};
+            for (int i = wordStart -1 ;i> 0;i--)
+            {
+                char ch = lineText.charAt(i);
+                if (Character.isWhitespace(ch))
+                    continue;
+
+                if (Character.isLetter(ch))
+                {
+                    if (rfcChars[j] == Character.toLowerCase(ch))
+                    {
+                        start = i;
+                        j++;
+                        if (j == 4)
+                            break;
+                        continue;
+                    }
+                    break;
+                }
+                break;
+            }
+            if (start == -1)
+                return null;
+            wordStart = start;
+            rfcNum = Integer.parseInt(currentWord);
+        }
+        else if (currentWord.matches("rfc\\d+"))
+        {
+            rfcNum = Integer.parseInt(currentWord.substring(3, currentWord.length()));
+        }
+        else
+        {
+            return null;
+        }
+
+        currentLink = new RFCHyperlink(lineStart + wordStart, lineStart + wordEnd, line,"rfc"+ rfcNum, rfcNum);
 		return currentLink;
 	}
 }
