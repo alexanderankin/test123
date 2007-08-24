@@ -45,8 +45,9 @@ public class HyperlinkManager
 	private MyMouseAdapter mouseAdapter;
 
 	private MyMouseMotionAdapter mouseMotionAdapter;
+    private HyperlinkManager.MyFocusListener focusListener;
 
-	public HyperlinkManager(JEditTextArea textArea)
+    public HyperlinkManager(JEditTextArea textArea)
 	{
 		this.textArea = textArea;
 		painter = new HyperlinkTextAreaPainter(textArea);
@@ -58,7 +59,9 @@ public class HyperlinkManager
 		textArea.getPainter().addMouseListener(mouseAdapter);
 		mouseMotionAdapter = new MyMouseMotionAdapter();
 		textArea.getPainter().addMouseMotionListener(mouseMotionAdapter);
-	}
+        focusListener = new MyFocusListener();
+        textArea.addFocusListener(focusListener);
+    }
 
 	public void dispose()
 	{
@@ -66,6 +69,7 @@ public class HyperlinkManager
 		textArea.removeKeyListener(keyListener);
 		textArea.removeMouseListener(mouseAdapter);
 		textArea.removeMouseMotionListener(mouseMotionAdapter);
+		textArea.removeFocusListener(focusListener);
 	}
 
 	private class MyKeyListener extends KeyAdapter
@@ -90,7 +94,16 @@ public class HyperlinkManager
 		}
 	}
 
-	private class MyMouseAdapter extends MouseAdapter
+    private class MyFocusListener extends FocusAdapter
+    {
+        public void focusLost(FocusEvent e)
+        {
+            Log.log(Log.DEBUG, this, "Link tracking inactive");
+            active = false;
+        }
+    }
+
+    private class MyMouseAdapter extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent e)
 		{
@@ -111,7 +124,9 @@ public class HyperlinkManager
 			if (!active)
 				return;
 			Buffer buffer = (Buffer) textArea.getBuffer();
-			HyperlinkSource hyperlinkSource = getHyperlinkSource(buffer);
+            if (!buffer.isLoaded())
+                return;
+            HyperlinkSource hyperlinkSource = getHyperlinkSource(buffer);
 			if (hyperlinkSource == null)
 			{
 				painter.setHyperLink(null);
