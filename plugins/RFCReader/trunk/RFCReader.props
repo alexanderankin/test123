@@ -8,10 +8,12 @@ plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.version=0.9.1
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.1=jedit 04.03.10.00
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.2=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 0.9.0
-plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that provide some folding modes for rfc
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that makes rfc reading more pleasant
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.usePluginHome=true
 
 
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.menu=openRFC
+openRFC.label=Open RFC
 # Option pane
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.option-pane=rfcreader
 
