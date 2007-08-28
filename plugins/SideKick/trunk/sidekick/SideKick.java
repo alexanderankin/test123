@@ -351,7 +351,9 @@ class SideKick implements EBComponent
 			setParser(view.getBuffer());
 		}
 
-		if (bmsg.getView() != view ) return;
+		if (bmsg.getView() != view &&
+			(bmsg.getView() != null || bmsg.getBuffer() != view.getBuffer()))
+			return;
 		
 		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
 			parse(true);
