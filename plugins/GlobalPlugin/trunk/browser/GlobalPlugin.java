@@ -57,7 +57,6 @@ public class GlobalPlugin extends EditPlugin
 			return;
 		}
 		final Runnable moveCaret = new Runnable() {
-			@Override
 			public void run() {
 				JEditTextArea ta = view.getTextArea();
 				ta.setCaretPosition(ta.getLineStartOffset(line - 1));
