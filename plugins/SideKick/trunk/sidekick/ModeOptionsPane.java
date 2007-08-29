@@ -44,7 +44,7 @@ import org.gjt.sp.jedit.jEdit;
 	&lt;/SERVICE&gt;
  </pre>    
  * 
- * @author Alan Ezust alan@jedit.org
+ * @author Alan Ezust ezust@users.sourceforge.net
  * @since SideKick 0.7.1
  *
  */
