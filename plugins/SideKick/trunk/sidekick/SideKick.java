@@ -348,6 +348,7 @@ class SideKick implements EBComponent
 	{
 		if (bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED &&
 			view.getBuffer() == bmsg.getBuffer()) {
+			buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
 			setParser(view.getBuffer());
 		}
 
