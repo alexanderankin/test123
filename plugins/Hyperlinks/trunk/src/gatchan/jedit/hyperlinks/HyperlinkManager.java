@@ -21,10 +21,10 @@
 package gatchan.jedit.hyperlinks;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
 
 import java.awt.event.*;
 
@@ -40,75 +40,53 @@ public class HyperlinkManager
 
 	private HyperlinkTextAreaPainter painter;
 
-	private boolean active;
-	private MyKeyListener keyListener;
 	private MyMouseAdapter mouseAdapter;
 
 	private MyMouseMotionAdapter mouseMotionAdapter;
-    private HyperlinkManager.MyFocusListener focusListener;
+	private MyFocusListener focusListener;
 
-    public HyperlinkManager(JEditTextArea textArea)
+	public HyperlinkManager(JEditTextArea textArea)
 	{
 		this.textArea = textArea;
 		painter = new HyperlinkTextAreaPainter(textArea);
-		keyListener = new MyKeyListener();
 		mouseAdapter = new MyMouseAdapter();
 
 		textArea.getPainter().addExtension(painter);
-		textArea.addKeyListener(keyListener);
 		textArea.getPainter().addMouseListener(mouseAdapter);
 		mouseMotionAdapter = new MyMouseMotionAdapter();
 		textArea.getPainter().addMouseMotionListener(mouseMotionAdapter);
-        focusListener = new MyFocusListener();
-        textArea.addFocusListener(focusListener);
-    }
+		focusListener = new MyFocusListener();
+		textArea.addFocusListener(focusListener);
+	}
 
 	public void dispose()
 	{
 		textArea.getPainter().removeExtension(painter);
-		textArea.removeKeyListener(keyListener);
 		textArea.removeMouseListener(mouseAdapter);
 		textArea.removeMouseMotionListener(mouseMotionAdapter);
 		textArea.removeFocusListener(focusListener);
 	}
 
-	private class MyKeyListener extends KeyAdapter
+	private class MyFocusListener extends FocusAdapter
 	{
-		public void keyPressed(KeyEvent e)
+		public void focusLost(FocusEvent e)
 		{
-			if (!active && e.getKeyCode() == KeyEvent.VK_CONTROL)
-			{
-				Log.log(Log.DEBUG, this, "Link tracking active");
-				active = true;
-			}
-		}
-
-		public void keyReleased(KeyEvent e)
-		{
-			if (active && e.getKeyCode() == KeyEvent.VK_CONTROL)
-			{
-				Log.log(Log.DEBUG, this, "Link tracking inactive");
-				active = false;
-				painter.setHyperLink(null);
-			}
+			painter.setHyperLink(null);
 		}
 	}
 
-    private class MyFocusListener extends FocusAdapter
-    {
-        public void focusLost(FocusEvent e)
-        {
-            Log.log(Log.DEBUG, this, "Link tracking inactive");
-            active = false;
-        }
-    }
-
-    private class MyMouseAdapter extends MouseAdapter
+	private class MyMouseAdapter extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent e)
 		{
-			if (!active)
+			boolean control = (OperatingSystem.isMacOS() && e.isMetaDown())
+					  || (!OperatingSystem.isMacOS() && e.isControlDown());
+
+			if (!control)
+			{
+				painter.setHyperLink(null);
 				return;
+			}
 			Hyperlink hyperlink = painter.getHyperLink();
 			if (hyperlink != null)
 			{
@@ -121,12 +99,19 @@ public class HyperlinkManager
 	{
 		public void mouseMoved(MouseEvent e)
 		{
-			if (!active)
+			boolean control = (OperatingSystem.isMacOS() && e.isMetaDown())
+					  || (!OperatingSystem.isMacOS() && e.isControlDown());
+
+			if (!control)
+			{
+				painter.setHyperLink(null);
 				return;
+			}
+
 			Buffer buffer = (Buffer) textArea.getBuffer();
-            if (!buffer.isLoaded())
-                return;
-            HyperlinkSource hyperlinkSource = getHyperlinkSource(buffer);
+			if (!buffer.isLoaded())
+				return;
+			HyperlinkSource hyperlinkSource = getHyperlinkSource(buffer);
 			if (hyperlinkSource == null)
 			{
 				painter.setHyperLink(null);

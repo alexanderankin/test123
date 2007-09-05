@@ -48,12 +48,12 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			return;
 		if (link.getStartLine() != physicalLine)
 			return;
-        int startX = textArea.offsetToXY(link.getStartOffset()).x;
+		int startX = textArea.offsetToXY(link.getStartOffset()).x;
 		int endX = textArea.offsetToXY(link.getEndOffset()).x;
 		gfx.setColor(color);
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		y += fm.getAscent();
-		gfx.drawLine(startX,y + 1,endX,y + 1);
+		gfx.drawLine(startX, y + 1, endX, y + 1);
 	}
 
 	public String getToolTipText(int x, int y)
@@ -68,7 +68,7 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			return hyperLink.getTooltip();
 		}
 		return null;
-	} 
+	}
 
 	public Hyperlink getHyperLink()
 	{
