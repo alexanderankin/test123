@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="syntax-highlighting-editor">
+		new syntax.SyntaxHighlightingEditor(view, position);
+	</DOCKABLE>
+</DOCKABLES>
+
