@@ -3,14 +3,14 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="reference-browser">
-		browser.ReferenceList.getViewDockable(view, position);
+	<DOCKABLE NAME="reference-browser" MOVABLE="true">
+		new browser.ReferenceList(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="definition-browser">
-		browser.DefinitionList.getViewDockable(view, position);
+	<DOCKABLE NAME="definition-browser" MOVABLE="true">
+		browser.DefinitionList(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="call-tree-browser">
-		browser.CallTree.getViewDockable(view, position);
+	<DOCKABLE NAME="call-tree-browser" MOVABLE="true">
+		browser.CallTree(view);
 	</DOCKABLE>
 </DOCKABLES>
 
