@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class GlobalPlugin extends EditPlugin
@@ -47,6 +48,25 @@ public class GlobalPlugin extends EditPlugin
 	{
 	} //}}}
 
+	static public void showCallTree(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager(); 
+		dwm.showDockableWindow(CALL_TREE_BROWSER);
+		((CallTree)dwm.getDockableWindow(CALL_TREE_BROWSER)).show(view);
+		
+	}
+	static public void showReferences(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager(); 
+		dwm.showDockableWindow(REFERENCE_BROWSER);
+		((ReferenceList)dwm.getDockableWindow(REFERENCE_BROWSER)).show(view);
+	}
+	static public void showDefinitions(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager(); 
+		dwm.showDockableWindow(DEFINITION_BROWSER);
+		((DefinitionList)dwm.getDockableWindow(DEFINITION_BROWSER)).show(view);
+	}
 	static public void jump(final View view, final String file, final int line)
 	{
 		if (file == null)

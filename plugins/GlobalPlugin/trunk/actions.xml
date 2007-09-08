@@ -5,20 +5,17 @@
 
 	<ACTION NAME="show-call-tree" NO_REPEAT="TRUE">
 		<CODE>
-			wm.addDockableWindow(browser.GlobalPlugin.CALL_TREE_BROWSER);
-			browser.CallTree.instanceFor(view).show(view);
+			browser.GlobalPlugin.showCallTree(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="show-references" NO_REPEAT="TRUE">
 		<CODE>
-			wm.addDockableWindow(browser.GlobalPlugin.REFERENCE_BROWSER);
-			browser.ReferenceList.instanceFor(view).show(view);
+			browser.GlobalPlugin.showReferences(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="show-definitions" NO_REPEAT="TRUE">
 		<CODE>
-			wm.addDockableWindow(browser.GlobalPlugin.DEFINITION_BROWSER);
-			browser.DefinitionList.instanceFor(view).show(view);
+			browser.GlobalPlugin.showDefinitions(view);
 		</CODE>
 	</ACTION>
 	

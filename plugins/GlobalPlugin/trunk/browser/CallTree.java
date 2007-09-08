@@ -25,7 +25,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -50,8 +49,6 @@ import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeActions {
-	static private HashMap<View, CallTree> viewMap =
-		new HashMap<View, CallTree>();
 	private View view;
 	private JTree tree;
 	FunctionNode root = null;
@@ -59,22 +56,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>();
 	private JTextField symbolTF; 
 
-	static public JPanel getViewDockable(View view, String position) {
-		CallTree instance = instanceFor(view);
-		JPanel p = new JPanel(new BorderLayout());
-		p.add(instance, BorderLayout.CENTER);
-		return p;
-	}
-	static public CallTree instanceFor(View view) {
-		CallTree instance = viewMap.get(view);
-		if (instance == null) {
-			instance = new CallTree(view);
-			viewMap.put(view, instance);
-		}
-		return instance;
-	}
-	
-	private CallTree(final View view) {
+	public CallTree(View view) {
 		super(new BorderLayout());
 
 		this.view = view;
@@ -92,7 +74,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 		symbolTF.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					showCallTree(view, symbolTF.getText());
+					showCallTree(CallTree.this.view, symbolTF.getText());
 			}
 		});
 		symbolPanel.add(symbolTF, BorderLayout.CENTER);
