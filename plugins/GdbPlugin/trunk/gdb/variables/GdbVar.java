@@ -74,7 +74,6 @@ public class GdbVar extends DefaultMutableTreeNode {
 		this.leaf = leaf;
 		getValue();
 	}
-	
 	public static void addChangeListener(ChangeListener l) {
 		listeners.add(l);
 	}
@@ -206,6 +205,13 @@ public class GdbVar extends DefaultMutableTreeNode {
 			add(child);
 			from = to + 1; 
 		} while (from <= numChildren);
+	}
+	public void reset() {
+		gdbName = null;
+		value = "";
+		numChildren = 0;
+		removeAllChildren();
+		notifyListener();
 	}
 	public void update() {
 		if (gdbName == null)

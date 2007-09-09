@@ -37,6 +37,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.gjt.sp.jedit.jEdit;
+
 @SuppressWarnings("serial")
 public class Watches extends GdbView implements ChangeListener {
 	private JTree tree;
@@ -54,7 +56,8 @@ public class Watches extends GdbView implements ChangeListener {
 		JButton add = new JButton("Add");
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String expr = JOptionPane.showInputDialog("Expression:");
+				String expr = JOptionPane.showInputDialog(jEdit.getActiveView(),
+						"Expression:");
 				if (expr == null)
 					return;
 				addWatch(expr);
@@ -118,8 +121,8 @@ public class Watches extends GdbView implements ChangeListener {
 		}
 	}
 	public void sessionEnded() {
-		root.removeAllChildren();
-		model.reload(root);
+		for (int i = 0; i < vars.size(); i++)
+			vars.get(i).reset();
 	}
 
 	public void updateTree() {
@@ -141,7 +144,6 @@ public class Watches extends GdbView implements ChangeListener {
 			}
 		});
 		vars.add(v);
-		root.add(v);
 		updateTree();
 	}
 }
