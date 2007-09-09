@@ -103,14 +103,14 @@ public class ConstantsEditor extends JDialog {
                      catch ( Exception e ) {
                         JOptionPane.showMessageDialog( parent, "Unable to save: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
                      }
-                     hide();
+                     setVisible(false);;
                      dispose();
                   }
                }
                                    );
          cancel_btn.addActionListener( new ActionListener() {
                   public void actionPerformed( ActionEvent ae ) {
-                     hide();
+                     setVisible(false);
                      dispose();
                   }
                }
