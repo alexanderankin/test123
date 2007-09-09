@@ -10,9 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import javax.print.Doc;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -23,16 +23,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.StyleEditor;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.options.SyntaxHiliteOptionPane;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-public class SyntaxHighlightingEditor extends JPanel {
+@SuppressWarnings("serial")
+public class SyntaxHighlightingEditor extends JPanel implements EBComponent {
 	
 	private final class TokenChangeListener implements CaretListener {
 		public void caretUpdate(CaretEvent arg0) {
@@ -72,7 +77,7 @@ public class SyntaxHighlightingEditor extends JPanel {
 			Window w = arg0.getWindow();
 			if (w instanceof StyleEditor) {
 				optionPane.save();
-				jEdit.propertiesChanged();
+				firePropertiesChanged();
 				w.removeWindowListener(this);
 			}
 		}
@@ -85,12 +90,16 @@ public class SyntaxHighlightingEditor extends JPanel {
 	private TokenChangeListener caretListener;
 	private JTable table;
 	
+	@Override
+	protected void finalize() throws Throwable {
+		EditBus.removeFromBus(this);
+		super.finalize();
+	}
 	public SyntaxHighlightingEditor(final View view, String position) {
 		super(new BorderLayout());
-		
+		EditBus.addToBus(this);
 		this.view = view;
-		styles = new HashMap<String, String>();
-		apply();
+		styles = getCurrentStyles();
 		initOptionPane();
 		JButton apply = new JButton(jEdit.getProperty("messages.SyntaxHelper.apply"));
 		JButton cancel = new JButton(jEdit.getProperty("messages.SyntaxHelper.cancel"));
@@ -110,6 +119,8 @@ public class SyntaxHighlightingEditor extends JPanel {
 				}
 			});
 		}
+		else
+			caretListener = null;
 		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		buttons.add(apply);
 		buttons.add(cancel);
@@ -140,7 +151,7 @@ public class SyntaxHighlightingEditor extends JPanel {
 		});
 		apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				apply();
+				styles = getCurrentStyles();
 			}
 		});
 		cancel.addActionListener(new ActionListener() {
@@ -161,7 +172,7 @@ public class SyntaxHighlightingEditor extends JPanel {
 			String propName = "view.style." + tokenName.toLowerCase();
 			jEdit.setProperty(propName, styles.get(propName));
 		}
-		jEdit.propertiesChanged();
+		firePropertiesChanged();
 		initOptionPane();
 	}
 	private void initOptionPane() {
@@ -171,8 +182,11 @@ public class SyntaxHighlightingEditor extends JPanel {
 		add(optionPane, BorderLayout.CENTER);
 		optionPane.init();
 		table = findTable(optionPane);
-		if (table != null)
+		if (table != null) {
 				table.setRowSelectionAllowed(true);
+				if (caretListener != null)
+					caretListener.update();
+		}
 	}
 	private JTable findTable(Container c) {
 		for (int i = 0; i < c.getComponentCount(); i++) {
@@ -187,17 +201,42 @@ public class SyntaxHighlightingEditor extends JPanel {
 		}
 		return null;
 	}
-	private void apply() {
+	private Map<String, String> getCurrentStyles() {
+		Map<String, String> current = new HashMap<String, String>();
 		for (int i = 0; i < 4; i++)
 		{
 			String propName = "view.style.foldLine." + i;
-			styles.put(propName, jEdit.getProperty(propName));
+			current.put(propName, jEdit.getProperty(propName));
 		}
 		for(int i = 1; i < Token.ID_COUNT; i++)
 		{
 			String tokenName = Token.tokenToString((byte)i);
 			String propName = "view.style." + tokenName.toLowerCase();
-			styles.put(propName, jEdit.getProperty(propName));
+			current.put(propName, jEdit.getProperty(propName));
+		}
+		return current;
+	}
+	private void firePropertiesChanged() {
+		EditBus.send(new PropertiesChanged(this));		
+	}
+	public void handleMessage(EBMessage message) {
+		if (message instanceof PropertiesChanged &&
+			message.getSource() != this)
+		{
+			Map<String, String> current = getCurrentStyles();
+			Iterator<String> keys = current.keySet().iterator();
+			boolean stylesChanged = false;
+			while (keys.hasNext()) {
+				String key = keys.next();
+				if (! current.get(key).equals(styles.get(key))) {
+					stylesChanged = true;
+					break;
+				}
+			}
+			if (stylesChanged) {
+				styles = current;
+				initOptionPane();
+			}
 		}
 	}
 }
