@@ -115,7 +115,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
             EcmaScript parser = new EcmaScript( reader );
 
             // set line offset, the parser uses this to adjust line numbers in the
-            // case of a partial file, like when they stylesheet is embedded inside an
+            // case of a partial file, like when the javascript is embedded inside an
             // html document
             parser.setLineOffset( lineOffset );
 
