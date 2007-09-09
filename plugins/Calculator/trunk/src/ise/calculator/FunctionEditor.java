@@ -30,7 +30,7 @@ public class FunctionEditor extends JDialog {
             desc = fr.getDescription();
             function = fr.getFunction();
          }
-         
+
          final JTextField name_field = new JTextField( name );
          final JButton name_view = new JButton( "View" );
          name_view.setToolTipText( "Shows how the function name will look in the menu." );
@@ -87,7 +87,7 @@ public class FunctionEditor extends JDialog {
                            throw new Exception("Function steps must be entered.");
                         FunctionWriter fw = new FunctionWriter(function_file);
                         fw.write(name, desc, function);
-                        hide();
+                        setVisible(false);
                         dispose();
                      }
                      catch ( Exception e ) {
@@ -98,7 +98,7 @@ public class FunctionEditor extends JDialog {
                                    );
          cancel_btn.addActionListener( new ActionListener() {
                   public void actionPerformed( ActionEvent ae ) {
-                     hide();
+                     setVisible(false);
                      dispose();
                   }
                }
