@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
@@ -41,7 +42,13 @@ public class SyntaxHighlightingEditor extends JPanel implements EBComponent {
 	
 	private final class TokenChangeListener implements CaretListener {
 		public void caretUpdate(CaretEvent arg0) {
-			update();
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					update();
+				}
+			});
 		}
 		public void update() {
 			JEditTextArea textArea = view.getTextArea();
