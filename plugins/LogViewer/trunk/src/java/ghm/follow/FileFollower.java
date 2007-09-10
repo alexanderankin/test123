@@ -327,7 +327,7 @@ public class FileFollower {
                 int cnt = refresh();
                 if (cnt == 0)
                     break;
-                else 
+                else
                     charsRead += cnt;
                 Thread.currentThread().yield();
             }
@@ -358,12 +358,12 @@ public class FileFollower {
                 //    print( new String( charArray, 0, numCharsRead ) );
                 //}
                 //return numCharsRead;
-                
-                
+
+
                 // danson, changed to reading by log entries, I'm assuming log files will
                 // be text and not binary, so reading by entries/lines is reasonable.
                 // The default entry separator is \n, so if none is explicitly set, this
-                // does the same as reading by lines.  Sending a batch of entries may be 
+                // does the same as reading by lines.  Sending a batch of entries may be
                 // an optimization for the destination
                 int numCharsRead = bufferedReader.read(charArray, 0, charArray.length);
                 if (numCharsRead > 0) {
@@ -374,15 +374,18 @@ public class FileFollower {
                         String[] entries = logEntryPattern.split(s);
 
                         // pushback the last entry as it may not be complete
+                        /*
                         if (entries.length > 0) {
                             int pushback_length = entries[entries.length - 1].length();
                             numCharsRead -= pushback_length;
                             bufferedReader.unread(charArray, numCharsRead, pushback_length);
                         }
+                        */
+
                         // send the entries to the destination(s).
                         List toPrint = new ArrayList();
                         boolean append_nl = logEntrySeparator.equals("\n");
-                        for (int i = 0; i < entries.length - 1; i++) {
+                        for (int i = 0; i < entries.length; i++) {
                             toPrint.add(entries[i].trim() + (append_nl ? "\n" : ""));
                         }
                         print((String[])(toPrint.toArray(new String[]{})));
@@ -396,8 +399,8 @@ public class FileFollower {
                             toPrint.add(m.group() + "\n");
                             end = m.end();
                         }
-                        bufferedReader.unread(charArray, end, numCharsRead - end);
-                        numCharsRead = end;
+                        //bufferedReader.unread(charArray, end, numCharsRead - end);
+                        //numCharsRead = end;
                         print((String[])(toPrint.toArray(new String[]{})));
                     }
                 }
