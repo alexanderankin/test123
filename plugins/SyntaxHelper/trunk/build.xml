@@ -19,7 +19,6 @@
 	<property name="jedit.plugin.dir"  value="${user.home}/.jedit/jars"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
 
-	<property name="jedit.install.dir"  value="/home/shlomy/jedit/dev"/>
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
