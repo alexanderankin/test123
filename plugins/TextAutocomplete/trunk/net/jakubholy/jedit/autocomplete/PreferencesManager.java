@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import net.jakubholy.jedit.autocomplete.WordTypedListener.Filter;
 
@@ -18,6 +19,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import bsh.BshMethod;
 import bsh.NameSpace;
@@ -72,6 +74,11 @@ public class PreferencesManager {
     List selectionUpKeys 		= null;
     List selectionDownKeys 		= null;
 
+	/**
+	 * Holds the filename filter pattern.
+	 */
+	Pattern filenameFilter = null;
+	
     /////////////////////////////////////////////////////////////////////////////////////
     // getPreferencesManager {{{
     /** Create a new Pref.Manager or return the existing one if exists. */
@@ -116,6 +123,14 @@ public class PreferencesManager {
         disposeKeys 		= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "disposeKey");
         selectionUpKeys 	= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "selectionUpKey");
         selectionDownKeys	= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "selectionDownKey");
+        
+        // Update the filename filter pattern
+        String filter = getFilenameFilter();
+        if (filter.length() > 0)
+        	filenameFilter = Pattern.compile(StandardUtilities.globToRE(filter));
+        else
+        	filenameFilter = null;
+        
     } // }}} getPreferencesManager
 
 
@@ -296,13 +311,63 @@ public class PreferencesManager {
     /**
      * True if the autocompletion should be started automatically for
      * new buffers.
-     * TODO: Make it possible to start only for buffers matching some condition
-     * (edit mode, file name extension, ...)
      */
     public boolean
     isStartForBuffers()
     { return jEdit.getBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + "isStartForBuffers", false); }
-    // getMaxCountOfWords }}}
+    // isStartForBuffers }}}
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ getFilenameFilterPattern
+    /**
+     * Returns the filename filter pattern.
+     * completion. Use 'isIncludeFilter' or 'isExcludeFilter' to find whether
+     * filenames matching the filter should be included or excluded.
+     */
+    public Pattern
+    getFilenameFilterPattern()
+    {
+    	return filenameFilter;
+    }
+    // getFilenameFilterPattern }}}
+   
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ getFilenameFilter
+    /**
+     * Returns the filename filter registered for inclusion or exclusion from auto
+     * completion. Use 'isIncludeFilter' or 'isExcludeFilter' to find whether
+     * filenames matching the filter should be included or excluded.
+     */
+    public String
+    getFilenameFilter()
+    {
+    	return jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "filenameFilter", "");
+    }
+    // getFilenameFilter }}}
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ isInclusionFilter
+    /**
+     * Returns whether filenames matching the filename filter should be included.
+     */
+    public boolean
+    isInclusionFilter()
+    {
+    	return jEdit.getBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + "isInclusionFilter", false);
+    }
+    // isInclusionFilter }}}
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ isExclusionFilter
+    /**
+     * Returns whether filenames matching the filename filter should be excluded.
+     */
+    public boolean
+    isExclusionFilter()
+    {
+    	return !isInclusionFilter();
+    }
+    // isExclusionFilter }}}
 
     /////////////////////////////////////////////////////////////////////////////////////
     //	{{{ getLogLevel
