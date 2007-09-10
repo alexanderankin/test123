@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -98,6 +99,13 @@ implements java.util.Observer
 	 */
 	public static AutoComplete CreateAutoCompleteAction( Buffer buffer )
 	{
+		Pattern filter = PreferencesManager.getPreferencesManager().getFilenameFilterPattern(); 
+		if (filter != null) {
+			String path = buffer.getPath();
+			boolean match = filter.matcher(path).matches();
+			if (match == PreferencesManager.getPreferencesManager().isExclusionFilter())
+				return null;
+		}
 		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null)
 		{

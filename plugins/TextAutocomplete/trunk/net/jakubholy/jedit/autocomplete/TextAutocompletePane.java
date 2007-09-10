@@ -20,15 +20,20 @@
 package net.jakubholy.jedit.autocomplete;
 
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.event.InputEvent;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -37,7 +42,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 /**
- * OptionPane for the TextAutocomplete lugin.
+ * OptionPane for the TextAutocomplete plugin.
  * @author Jakub Holý
  *
  */
@@ -72,6 +77,9 @@ public class TextAutocompletePane extends AbstractOptionPane
 	private JCheckBox  	isSelectionByNumberEnabled;
 	private JComboBox 	selectionByNumberModifierMask;
 	private JButton 	resetButton;
+	private JTextField	filenameFilter;
+	private JRadioButton isInclusionFilter;
+	private JRadioButton isExclusionFilter;
 
 	public TextAutocompletePane() {
 		super("TextAutocomplete");
@@ -85,7 +93,20 @@ public class TextAutocompletePane extends AbstractOptionPane
 		isStartForBuffers = new JCheckBox();
 		isStartForBuffers.setToolTipText("Start the autocompletion automatically for every new buffer [false]");
 		addComponent("Start autom. for new buffers", isStartForBuffers);
-
+		isInclusionFilter = new JRadioButton("Include filenames matching glob patterns");
+		isExclusionFilter = new JRadioButton("Exclude filenames matching glob patterns");
+		ButtonGroup group = new ButtonGroup();
+		group.add(isInclusionFilter);
+		group.add(isExclusionFilter);
+		JPanel filterPane = new JPanel(new GridLayout(0, 1));
+		TitledBorder filterBorder = new TitledBorder("Filename filters");
+		filterPane.setBorder(filterBorder);
+		filterPane.add(isInclusionFilter);
+		filterPane.add(isExclusionFilter);
+		filenameFilter = new JTextField();
+		filterPane.add(filenameFilter);
+		addComponent(filterPane);
+		
 		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.words-and-completions.label"); // -------------------------------------------------
 
 		maxCountOfWords = new JTextField();
@@ -188,6 +209,9 @@ public class TextAutocompletePane extends AbstractOptionPane
 
 		setJEditProperty("isStartForBuffers", isStartForBuffers.isSelected());
 
+		setJEditProperty("isInclusionFilter", isInclusionFilter.isSelected());
+		setJEditProperty("filenameFilter", filenameFilter.getText());
+		
 		propertyValue = maxCountOfWords.getText();
 		if( isInteger("maxCountOfWords", propertyValue) )
 		{ setJEditProperty("maxCountOfWords", propertyValue); }
@@ -273,6 +297,13 @@ public class TextAutocompletePane extends AbstractOptionPane
 		isStartForBuffers.setSelected(
 				PreferencesManager.getPreferencesManager().isStartForBuffers() );
 
+		isInclusionFilter.setSelected(
+				PreferencesManager.getPreferencesManager().isInclusionFilter() );
+		isExclusionFilter.setSelected(
+				PreferencesManager.getPreferencesManager().isExclusionFilter() );
+		filenameFilter.setText(
+				PreferencesManager.getPreferencesManager().getFilenameFilter() );
+		
 		maxCountOfWords.setText(
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "maxCountOfWords") );
 
@@ -339,7 +370,9 @@ public class TextAutocompletePane extends AbstractOptionPane
 				"isWordToRemember-code",
 				"minWordToRememberLength",
 				"isSelectionByNumberEnabled",
-				"selectionByNumberModifierMask"
+				"selectionByNumberModifierMask",
+				"isInclusionFilter",
+				"filenameFilter"
 		};
 
 		for (int i = 0; i < properties.length; i++) {
