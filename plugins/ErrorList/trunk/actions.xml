@@ -45,4 +45,16 @@
 			}
 		</CODE>
 	</ACTION>
+	<ACTION NAME="error-list-toggle-errors">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").toggleErrors();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-toggle-warnings">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").toggleWarnings();
+		</CODE>
+	</ACTION>
 </ACTIONS>

@@ -3,7 +3,7 @@ plugin.errorlist.ErrorListPlugin.activate=defer
 
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov
-plugin.errorlist.ErrorListPlugin.version=1.5
+plugin.errorlist.ErrorListPlugin.version=1.6
 plugin.errorlist.ErrorListPlugin.docs=index.html
 plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.99.00
 plugin.errorlist.ErrorListPlugin.depend.1=jdk 1.4
@@ -20,7 +20,10 @@ plugin.errorlist.ErrorListPlugin.menu=error-list-show \
 	error-list-previous-error-file \
 	error-list-next-error-file \
 	- \
-	error-list-clear
+	error-list-clear \
+	- \
+	error-list-toggle-errors \
+	error-list-toggle-warnings
 
 error-list.label=Error List
 error-overview.label=Error Overview
@@ -30,6 +33,8 @@ error-list-previous-error.label=Go to Previous Error
 error-list-next-error-file.label=Go to Next File With Errors
 error-list-previous-error-file.label=Go to Previous File With Errors
 error-list-clear.label=Clear Error List
+error-list-toggle-errors.label=Toggle Display of Errors
+error-list-toggle-warnings.label=Toggle Display of Warnings
 
 # Option pane
 plugin.errorlist.ErrorListPlugin.option-pane=error-list

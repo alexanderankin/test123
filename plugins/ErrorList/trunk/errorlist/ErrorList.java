@@ -32,6 +32,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -50,6 +54,8 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.Selection;
+
+import errorlist.ErrorSource.Error;
 //}}}
 
 public class ErrorList extends JPanel implements EBComponent,
@@ -67,11 +73,36 @@ public class ErrorList extends JPanel implements EBComponent,
 
 		setLayout(new BorderLayout());
 
+		errors = new Vector();
+		filteredTypes = new Vector();
+		
 		Box toolBar = new Box(BoxLayout.X_AXIS);
 		status = new JLabel();
 		toolBar.add(status);
-		toolBar.add(Box.createGlue());
+		toolBar.add(Box.createHorizontalStrut(30));
+		toggleButtons = new HashMap();
+		
+		JToggleButton toggleBtn = new JToggleButton(ERROR_ICON, true);
+		toggleBtn.setToolTipText(jEdit.getProperty(
+			"error-list-toggle-errors.label"));
+		toggleBtn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-toggle-errors"));
+		toolBar.add(toggleBtn);
+		toggleButtons.put(Integer.valueOf(ErrorSource.ERROR), toggleBtn);
 
+		toolBar.add(Box.createHorizontalStrut(3));
+
+		toggleBtn = new JToggleButton(WARNING_ICON, true);
+		toggleBtn.setToolTipText(jEdit.getProperty(
+			"error-list-toggle-warnings.label"));
+		toggleBtn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-toggle-warnings"));
+		toolBar.add(toggleBtn);
+		toggleButtons.put(Integer.valueOf(ErrorSource.WARNING), toggleBtn);
+		toolBar.add(Box.createGlue());
+		
 		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
 			"PreviousFile.png"));
 		btn.setToolTipText(jEdit.getProperty(
@@ -116,6 +147,11 @@ public class ErrorList extends JPanel implements EBComponent,
 			"error-list-clear"));
 		toolBar.add(btn);
 
+		toolBar.add(Box.createHorizontalStrut(6));
+		
+
+		
+		
 		add(BorderLayout.NORTH,toolBar);
 
 		// Can't just use "" since the renderer expects string nodes
@@ -466,36 +502,71 @@ public class ErrorList extends JPanel implements EBComponent,
 		openError((ErrorSource.Error)prev.getUserObject());
 	} //}}}
 
+	//{{{ toggleErrors() method
+	public void toggleErrors()
+	{
+		toggleType(ErrorSource.ERROR);
+	} //}}}
+	
+	//{{{ toggleWarnings() method
+	public void toggleWarnings()
+	{
+		toggleType(ErrorSource.WARNING);
+	} //}}}
+
 	//{{{ Private members
 	private View view;
 	private JLabel status;
 	private DefaultMutableTreeNode errorRoot;
 	private DefaultTreeModel errorModel;
 	private JTree errorTree;
-
+	private Vector errors;
+	private Vector filteredTypes;
+	private Map toggleButtons;
+	
+	//{{{ toggleType() method
+	private void toggleType(int errType)
+	{
+		Integer type = Integer.valueOf(errType);
+		boolean filtered = filteredTypes.contains(type);
+		JToggleButton toggleBtn = (JToggleButton) toggleButtons.get(type);
+		toggleBtn.setSelected(filtered);
+		if (filtered)
+			filteredTypes.remove(type);
+		else
+			filteredTypes.add(type);
+		updateList();
+	}
+	//}}}
+	
+	//{{{ updateList() method
+	private void updateList()
+	{
+		errorRoot.removeAllChildren();
+		errorModel.reload(errorRoot);
+		for (int i = 0; i < errors.size(); i++) {
+			Error error = (Error) errors.get(i);
+			Integer type = Integer.valueOf(error.getErrorType());
+			if (! filteredTypes.contains(type))
+				addFilteredError(error, false);
+		}
+		updateStatus();
+	}
+	//}}}
+	
 	//{{{ updateStatus() method
 	private void updateStatus()
 	{
 		int warningCount = 0;
 		int errorCount = 0;
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		for (int i = 0; i < errors.size(); i++)
 		{
-			DefaultMutableTreeNode fileNode = (DefaultMutableTreeNode)
-				errorRoot.getChildAt(i);
-			for(int j = 0; j < fileNode.getChildCount(); j++)
-			{
-				DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
-					fileNode.getChildAt(j);
-				ErrorSource.Error error = (ErrorSource.Error)
-					errorNode.getUserObject();
-
-				if(error.getErrorType() == ErrorSource.ERROR)
-					errorCount++;
-				else
-					warningCount++;
-			}
+			ErrorSource.Error error = (ErrorSource.Error) errors.get(i);
+			if(error.getErrorType() == ErrorSource.ERROR)
+				errorCount++;
+			else
+				warningCount++;
 		}
-
 		Integer[] args = { new Integer(errorCount),
 			new Integer(warningCount) };
 		status.setText(jEdit.getProperty(getStatusProperty(errorCount, warningCount),args));
@@ -554,6 +625,14 @@ public class ErrorList extends JPanel implements EBComponent,
 	//{{{ removeErrorSource() method
 	private void removeErrorSource(ErrorSource source)
 	{
+		Iterator it = errors.iterator();
+		while (it.hasNext())
+		{
+			ErrorSource.Error error = (Error) it.next();
+			if (error.getErrorSource() == source)
+				it.remove();
+		}
+				
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -605,6 +684,17 @@ public class ErrorList extends JPanel implements EBComponent,
 
 	//{{{ addError() method
 	private void addError(ErrorSource.Error error,
+			boolean init)
+	{
+		errors.add(error);
+		if (filteredTypes.contains(Integer.valueOf(error.getErrorType())))
+			return;
+		addFilteredError(error, init);
+	}
+	//}}}
+	
+	//{{{ addFilteredError() method
+	private void addFilteredError(ErrorSource.Error error,
 		boolean init)
 	{
 		String[] extras = error.getExtraMessages();
@@ -658,6 +748,14 @@ public class ErrorList extends JPanel implements EBComponent,
 
 	//{{{ removeError() method
 	private void removeError(ErrorSource.Error error)
+	{
+		errors.remove(error);
+		removeFilteredError(error);
+	}
+	//}}}
+	
+	//{{{ removeError() method
+	private void removeFilteredError(ErrorSource.Error error)
 	{
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
