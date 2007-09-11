@@ -198,6 +198,13 @@
      <glossterm> Show Error Overview </glossterm>
      <glossdef><para> Show totals (errors/warnings) at top of errorlist </para></glossdef>
   </glossentry>
+  
+  <glossentry>
+     <glossterm> Filename Filters </glossterm>
+     <glossdef><para> Select whether you want the glob pattern to be for inclusion or exclusion, and enter a glob pattern below. For example: <literal>*.{c,h}</literal> specifies all C source and header files.  See Appendix D. "Glob Patterns" in the jEdit users guide for more details.
+     </para></glossdef>
+  </glossentry>
+  
   </glosslist>
   
 
