@@ -105,7 +105,7 @@ public class TextAutocompletePane extends AbstractOptionPane
 		filterPane.add(isExclusionFilter);
 		filenameFilter = new JTextField();
 		filterPane.add(filenameFilter);
-		addComponent(filterPane);
+		addComponent(filterPane, GridBagConstraints.HORIZONTAL);
 		
 		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.words-and-completions.label"); // -------------------------------------------------
 
