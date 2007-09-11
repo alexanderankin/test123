@@ -61,6 +61,11 @@
  </para>
 
  <para>
+  The buttons with the error and warning icons on the right of the window
+  toolbar enable you to toggle the display of errors and warnings.
+ </para>
+
+ <para>
   The error reporting API supports two types of errors; genuine errors and
   warnings. The two are differentiated with different-colored icons in the
   tree; errors have a red icon, warnings have a yellow one.
@@ -153,6 +158,18 @@
   List</guisubmenu>&gt;<guimenuitem>Go to Next File With Errors</guimenuitem>
   opens the file immediately after the one currently selected in the error
   list window. If no file is selected, the first file with errors is chosen.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Toggle Display of Errors</guimenuitem>
+  toggles the display of errors in the tree.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Toggle Display of Warnings</guimenuitem>
+  toggles the display of warnings in the tree.
  </para>
 
 </chapter>
@@ -403,6 +420,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  <listitem>
  <formalpara><title>Version 1.6</title> <para>requires JDK 1.4, and jEdit 4.2 final. </para> </formalpara> 
  <itemizedlist>
+ <listitem><para> New option to hide warnings (patch 1719791 by Shlomy Reinstein) </para></listitem>
  <listitem><para> Improved keyboard Handling when ErrorList has focus (patch 1729970 by k_satoda) </para></listitem>
  </itemizedlist>
  </listitem>
