@@ -25,14 +25,20 @@ package errorlist;
 //{{{ Imports
 import java.awt.*;
 import java.util.*;
+import java.util.regex.Pattern;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 //}}}
+import org.gjt.sp.util.StandardUtilities;
 
 public class ErrorListPlugin extends EBPlugin
 {
+	static final String FILENAME_FILTER = "error-list.filenameFilter";
+	static final String IS_INCLUSION_FILTER = "error-list.isInclusionFilter";
+
 	//{{{ start() method
 	public void start()
 	{
@@ -133,12 +139,26 @@ public class ErrorListPlugin extends EBPlugin
 		return (type == ErrorSource.WARNING ? warningColor : errorColor);
 	} //}}}
 
+	//{{{ getFilenameFilter() method
+	static Pattern getFilenameFilter()
+	{
+		return filter;
+	} //}}}
+
+	//{{{ isInclusionFilter() method
+	static boolean isInclusionFilter()
+	{
+		return isInclusionFilter;
+	} //}}}
+
 	//{{{ Private members
 	private static boolean showOnError;
 	private static boolean showErrorOverview;
 	private static Color warningColor;
 	private static Color errorColor;
-
+	private static Pattern filter;
+	private static boolean isInclusionFilter;
+	
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
@@ -148,6 +168,12 @@ public class ErrorListPlugin extends EBPlugin
 			"error-list.warningColor"));
 		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
 			"error-list.errorColor"));
+		String globFilter = jEdit.getProperty(FILENAME_FILTER);
+		if (globFilter != null && globFilter.length() > 0)
+			filter = Pattern.compile(StandardUtilities.globToRE(globFilter));
+		else
+			filter = null;
+		isInclusionFilter = jEdit.getBooleanProperty(IS_INCLUSION_FILTER, false);
 
 		View view = jEdit.getFirstView();
 		while(view != null)

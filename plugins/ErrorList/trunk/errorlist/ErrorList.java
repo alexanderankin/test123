@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -524,6 +525,20 @@ public class ErrorList extends JPanel implements EBComponent,
 	private Vector filteredTypes;
 	private Map toggleButtons;
 	
+	//{{{ updateList() method
+	private void updateList()
+	{
+		errorRoot.removeAllChildren();
+		errorModel.reload(errorRoot);
+		for (int i = 0; i < errors.size(); i++) {
+			Error error = (Error) errors.get(i);
+			if (! isFiltered(error))
+				addErrorToTree(error, false);
+		}
+		updateStatus();
+	}
+	//}}}
+	
 	//{{{ toggleType() method
 	private void toggleType(int errType)
 	{
@@ -536,21 +551,6 @@ public class ErrorList extends JPanel implements EBComponent,
 		else
 			filteredTypes.add(type);
 		updateList();
-	}
-	//}}}
-	
-	//{{{ updateList() method
-	private void updateList()
-	{
-		errorRoot.removeAllChildren();
-		errorModel.reload(errorRoot);
-		for (int i = 0; i < errors.size(); i++) {
-			Error error = (Error) errors.get(i);
-			Integer type = Integer.valueOf(error.getErrorType());
-			if (! filteredTypes.contains(type))
-				addFilteredError(error, false);
-		}
-		updateStatus();
 	}
 	//}}}
 	
@@ -567,9 +567,34 @@ public class ErrorList extends JPanel implements EBComponent,
 			else
 				warningCount++;
 		}
-		Integer[] args = { new Integer(errorCount),
-			new Integer(warningCount) };
-		status.setText(jEdit.getProperty(getStatusProperty(errorCount, warningCount),args));
+		
+		int shownWarningCount = 0;
+		int shownErrorCount = 0;
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+			for(int j = 0; j < node.getChildCount(); j++)
+			{
+				DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
+					node.getChildAt(j);
+				ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
+				if (error.getErrorType() == ErrorSource.ERROR)
+					shownErrorCount++;
+				else
+					shownWarningCount++;
+			}
+		}
+
+		StringBuffer errorStr = new StringBuffer(String.valueOf(shownErrorCount));
+		if (shownErrorCount != errorCount)
+			errorStr.append("(" + String.valueOf(errorCount) + ")");
+		StringBuffer warningStr = new StringBuffer(String.valueOf(shownWarningCount));
+		if (shownWarningCount != warningCount)
+			warningStr.append("(" + String.valueOf(warningCount) + ")");
+		StringBuffer[] args = { errorStr, warningStr };
+		status.setText(jEdit.getProperty(
+			getStatusProperty(errorCount, warningCount),args));
 	} //}}}
 
 	//{{{ handleErrorSourceMessage() method
@@ -682,19 +707,35 @@ public class ErrorList extends JPanel implements EBComponent,
 		}
 	} //}}}
 
+	//{{{ checkFilter() method
+	private boolean isFiltered(ErrorSource.Error error)
+	{
+		// Check if the type of error should be hidden
+		if (filteredTypes.contains(Integer.valueOf(error.getErrorType())))
+			return true;
+		// Check if the filename pattern should be excluded
+		Pattern filter = ErrorListPlugin.getFilenameFilter(); 
+		if (filter != null) {
+			String path = error.getFilePath();
+			boolean match = filter.matcher(path).matches();
+			if (match != ErrorListPlugin.isInclusionFilter())
+				return true;
+		}
+		return false;
+	}
+	//}}}
+	
 	//{{{ addError() method
-	private void addError(ErrorSource.Error error,
-			boolean init)
+	private void addError(ErrorSource.Error error, boolean init)
 	{
 		errors.add(error);
-		if (filteredTypes.contains(Integer.valueOf(error.getErrorType())))
-			return;
-		addFilteredError(error, init);
+		if (! isFiltered(error))
+			addErrorToTree(error, init);
 	}
 	//}}}
 	
 	//{{{ addFilteredError() method
-	private void addFilteredError(ErrorSource.Error error,
+	private void addErrorToTree(ErrorSource.Error error,
 		boolean init)
 	{
 		String[] extras = error.getExtraMessages();
@@ -750,12 +791,12 @@ public class ErrorList extends JPanel implements EBComponent,
 	private void removeError(ErrorSource.Error error)
 	{
 		errors.remove(error);
-		removeFilteredError(error);
+		removeErrorFromTree(error);
 	}
 	//}}}
 	
 	//{{{ removeError() method
-	private void removeFilteredError(ErrorSource.Error error)
+	private void removeErrorFromTree(ErrorSource.Error error)
 	{
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{

@@ -23,7 +23,12 @@
 package errorlist;
 
 //{{{ Imports
+import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
@@ -65,6 +70,25 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.error-list.errorColor"),
 			errorColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.errorColor")));
+
+		boolean inclusion = jEdit.getBooleanProperty(ErrorListPlugin.IS_INCLUSION_FILTER);
+		isInclusionFilter = new JRadioButton(jEdit.getProperty(
+			"options.error-list.isInclusionFilter"), inclusion);
+		isExclusionFilter = new JRadioButton(jEdit.getProperty(
+			"options.error-list.isExclusionFilter"), (! inclusion));
+		ButtonGroup group = new ButtonGroup();
+		group.add(isInclusionFilter);
+		group.add(isExclusionFilter);
+		JPanel filterPane = new JPanel(new GridLayout(0, 1));
+		TitledBorder filterBorder = new TitledBorder(jEdit.getProperty(
+			"options.error-list.filenameFilters"));
+		filterPane.setBorder(filterBorder);
+		filterPane.add(isInclusionFilter);
+		filterPane.add(isExclusionFilter);
+		filenameFilter = new JTextField(jEdit.getProperty(
+			ErrorListPlugin.FILENAME_FILTER));
+		filterPane.add(filenameFilter);
+		addComponent(filterPane, GridBagConstraints.HORIZONTAL);
 	} //}}}
 
 	//{{{ _save() method
@@ -82,6 +106,10 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			warningColor.getSelectedColor());
 		jEdit.setColorProperty("error-list.errorColor",
 			errorColor.getSelectedColor());
+		jEdit.setBooleanProperty(ErrorListPlugin.IS_INCLUSION_FILTER,
+			isInclusionFilter.isSelected());
+		jEdit.setProperty(ErrorListPlugin.FILENAME_FILTER,
+			filenameFilter.getText());
 	} //}}}
 
 	//{{{ Private members
@@ -91,5 +119,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JCheckBox autoRefocusTextArea; 
 	private ColorWellButton warningColor;
 	private ColorWellButton errorColor;
+	private JRadioButton isInclusionFilter;
+	private JRadioButton isExclusionFilter;
+	private JTextField filenameFilter;
 	//}}}
 }
