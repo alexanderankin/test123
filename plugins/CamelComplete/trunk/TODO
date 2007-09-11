@@ -2,4 +2,6 @@
   It's not too hard, but the identifier list would be gigantic.
 -A solution, for the long term: use some sort of database, like BerkeleyDB,
  to maintain the identifier hashes in the CompletionEngines, rather than
- HashMaps.
+ HashMaps. This would allow completion to scale to huge identifier sets,
+ such as would be required if all Java method names were saved.
+
