@@ -707,7 +707,7 @@ public class ErrorList extends JPanel implements EBComponent,
 		}
 	} //}}}
 
-	//{{{ checkFilter() method
+	//{{{ isFiltered() method
 	private boolean isFiltered(ErrorSource.Error error)
 	{
 		// Check if the type of error should be hidden
@@ -734,7 +734,7 @@ public class ErrorList extends JPanel implements EBComponent,
 	}
 	//}}}
 	
-	//{{{ addFilteredError() method
+	//{{{ addErrorToTree() method
 	private void addErrorToTree(ErrorSource.Error error,
 		boolean init)
 	{
@@ -795,7 +795,7 @@ public class ErrorList extends JPanel implements EBComponent,
 	}
 	//}}}
 	
-	//{{{ removeError() method
+	//{{{ removeErrorFromTree() method
 	private void removeErrorFromTree(ErrorSource.Error error)
 	{
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
