@@ -205,6 +205,11 @@
      </para></glossdef>
   </glossentry>
   
+  <glossentry>
+    <glossterm> Show Icons instead of Underlines </glossterm>
+    <glossdef><para> To make jEdit more "eclipse-like" put icons in the gutter instead of underlines. </para></glossdef>
+    </glossentry>
+  
   </glosslist>
   
 
@@ -457,7 +462,8 @@ errorSource.addError(new ErrorSource.DefaultError(
  <formalpara><title>Version 1.6</title> <para>requires JDK 1.4, and jEdit 4.2 final. </para> </formalpara> 
  <itemizedlist>
  <listitem><para> New option to hide warnings (patch 1719791 by Shlomy Reinstein) </para></listitem>
- <listitem><para> New options to filter errorlist files based on filename globs. (Shlomy Reinstein) </para></listitem>
+ <listitem><para> New options to filter files based on filename globs. (Shlomy Reinstein) </para></listitem>
+ <listitem><para> New option to show icons instead of underlines under errors (Shlomy Reinstein, 1653073) </para></listitem>
  <listitem><para> Improved keyboard Handling when ErrorList has focus (patch 1729970 by k_satoda) </para></listitem>
  </itemizedlist>
  </listitem>
