@@ -24,13 +24,14 @@ package errorlist;
 
 //{{{ Imports
 import java.awt.*;
-import java.util.*;
 import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 //}}}
 import org.gjt.sp.util.StandardUtilities;
 
@@ -38,6 +39,7 @@ public class ErrorListPlugin extends EBPlugin
 {
 	static final String FILENAME_FILTER = "error-list.filenameFilter";
 	static final String IS_INCLUSION_FILTER = "error-list.isInclusionFilter";
+	static final String SHOW_ICONS_IN_GUTTER = "error-list.showIconsInGutter";
 
 	//{{{ start() method
 	public void start()
@@ -66,7 +68,7 @@ public class ErrorListPlugin extends EBPlugin
 			EditPane[] panes = view.getEditPanes();
 			for(int i = 0; i < panes.length; i++)
 			{
-				uninitTextArea(panes[i].getTextArea());
+				uninitEditPane(panes[i]);
 				removeErrorOverview(panes[i]);
 			}
 			view = view.getNext();
@@ -151,6 +153,12 @@ public class ErrorListPlugin extends EBPlugin
 		return isInclusionFilter;
 	} //}}}
 
+	//{{{ showIconsInGutter() method
+	static boolean showIconsInGutter()
+	{
+		return jEdit.getBooleanProperty(SHOW_ICONS_IN_GUTTER, false);
+	} //}}}
+
 	//{{{ Private members
 	private static boolean showOnError;
 	private static boolean showErrorOverview;
@@ -174,13 +182,17 @@ public class ErrorListPlugin extends EBPlugin
 		else
 			filter = null;
 		isInclusionFilter = jEdit.getBooleanProperty(IS_INCLUSION_FILTER, false);
-
+		
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
 			EditPane[] panes = view.getEditPanes();
 			for(int i = 0; i < panes.length; i++)
+			{
+				uninitEditPane(panes[i]);
+				initEditPane(panes[i]);
 				addErrorOverviewIfErrors(panes[i]);
+			}
 			view = view.getNext();
 		}
 	} //}}}
@@ -188,21 +200,40 @@ public class ErrorListPlugin extends EBPlugin
 	//{{{ initEditPane() method
 	private void initEditPane(EditPane editPane)
 	{
-		ErrorHighlight highlight = new ErrorHighlight(editPane);
 		JEditTextArea textArea = editPane.getTextArea();
-		textArea.getPainter().addExtension(highlight);
-		textArea.putClientProperty("ErrorHighlight",highlight);
+		TextAreaExtension ext;
+		if (showIconsInGutter())
+		{
+			ext = new ErrorGutterIcon(editPane);
+			Gutter gutter = textArea.getGutter();
+			gutter.addExtension(ext);
+			gutter.putClientProperty("ErrorHighlight", ext);
+		}
+		else
+		{
+			ext = new ErrorHighlight(editPane);
+			textArea.getPainter().addExtension(ext);
+			textArea.putClientProperty("ErrorHighlight", ext);
+		}
 	} //}}}
 
 	//{{{ uninitTextArea() method
-	private void uninitTextArea(JEditTextArea textArea)
+	private void uninitEditPane(EditPane editPane)
 	{
-		ErrorHighlight highlight = (ErrorHighlight)textArea.getPainter()
-			.getClientProperty("ErrorHighlight");
-		if(highlight != null)
+		JEditTextArea textArea = editPane.getTextArea();
+		TextAreaExtension ext = (TextAreaExtension)
+			textArea.getClientProperty("ErrorHighlight");
+		if (ext != null)
 		{
-			textArea.getPainter().removeExtension(highlight);
+			textArea.getPainter().removeExtension(ext);
 			textArea.putClientProperty("ErrorHighlight",null);
+		}
+		Gutter gutter = textArea.getGutter();
+		ext = (TextAreaExtension)gutter.getClientProperty("ErrorHighlight");
+		if (ext != null)
+		{
+			gutter.removeExtension(ext);
+			gutter.putClientProperty("ErrorHighlight",null);
 		}
 	} //}}}
 
@@ -298,7 +329,6 @@ public class ErrorListPlugin extends EBPlugin
 	private void handleEditPaneMessage(EditPaneUpdate message)
 	{
 		EditPane editPane = message.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
 		Object what = message.getWhat();
 
 		if(what == EditPaneUpdate.CREATED)
@@ -308,7 +338,7 @@ public class ErrorListPlugin extends EBPlugin
 		}
 		else if(what == EditPaneUpdate.DESTROYED)
 		{
-			uninitTextArea(textArea);
+			uninitEditPane(editPane);
 			removeErrorOverview(editPane);
 		}
 		else if(what == EditPaneUpdate.BUFFER_CHANGED)
