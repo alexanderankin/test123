@@ -13,7 +13,9 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 public class ErrorGutterIcon extends TextAreaExtension {
 
 	private EditPane editPane;
-
+	private static final int FOLD_MARKER_SIZE = 12;
+		// Taken from Gutter... Unfortunately it is private there
+	
 	//{{{ ErrorGutterIcon constructor
 	public ErrorGutterIcon(EditPane editPane)
 	{
@@ -46,10 +48,14 @@ public class ErrorGutterIcon extends TextAreaExtension {
 				}
 			}
 			JEditTextArea textArea = editPane.getTextArea();
-			Point p = textArea.offsetToXY(textArea.getLineStartOffset(physicalLine));
 			ImageIcon icon = isError ? ErrorList.ERROR_ICON : ErrorList.WARNING_ICON;
-			gfx.setColor(Color.blue);
-			gfx.drawImage(icon.getImage(), p.x, p.y, null);
+			// Center the icon in the gutter line
+			Point p = textArea.offsetToXY(textArea.getLineStartOffset(physicalLine));
+			int lineHeight = textArea.getPainter().getFontMetrics().getHeight();
+			Point iconPos = new Point(
+					(FOLD_MARKER_SIZE - icon.getIconWidth()) / 2,
+					p.y + (lineHeight - icon.getIconHeight()) / 2);
+			gfx.drawImage(icon.getImage(), iconPos.x, iconPos.y, null);
 		}
 	}
 
