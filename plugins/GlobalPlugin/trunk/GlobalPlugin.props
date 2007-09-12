@@ -16,6 +16,8 @@ options.GlobalPlugin.code=new options.GlobalOptionPane();
 options.GlobalPlugin.label=GlobalPlugin
 options.GlobalPlugin.global_path=global
 options.GlobalPlugin.global_path.label='global' path:
+options.GlobalPlugin.identifier_regexp=\\w+
+options.GlobalPlugin.identifier_regexp.label=Regular expression of identifiers:
 
 # action labels
 show-call-tree.label=Show call tree

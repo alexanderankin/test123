@@ -5,17 +5,17 @@
 
 	<ACTION NAME="show-call-tree" NO_REPEAT="TRUE">
 		<CODE>
-			browser.GlobalPlugin.showCallTree(view);
+			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.CALL_TREE_BROWSER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="show-references" NO_REPEAT="TRUE">
 		<CODE>
-			browser.GlobalPlugin.showReferences(view);
+			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.REFERENCE_BROWSER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="show-definitions" NO_REPEAT="TRUE">
 		<CODE>
-			browser.GlobalPlugin.showDefinitions(view);
+			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.DEFINITION_BROWSER);
 		</CODE>
 	</ACTION>
 	

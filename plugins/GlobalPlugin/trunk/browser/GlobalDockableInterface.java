@@ -20,6 +20,6 @@ package browser;
 
 import org.gjt.sp.jedit.View;
 
-public interface CallTreeActions {
-	void show(View view);
+public interface GlobalDockableInterface {
+	void show(View view, String identifier);
 }
