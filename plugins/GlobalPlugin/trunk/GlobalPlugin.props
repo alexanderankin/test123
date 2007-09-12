@@ -20,12 +20,18 @@ options.GlobalPlugin.identifier_regexp=\\w+
 options.GlobalPlugin.identifier_regexp.label=Regular expression of identifiers:
 
 # action labels
-show-call-tree.label=Show call tree
-show-references.label=Show references
-show-definitions.label=Show definitions
+show-call-tree.label=Show selection in Call Tree window
+show-references.label=Show selection in References window
+show-definitions.label=Show selection in Definitions window
 
 # menu items
-plugin.browser.GlobalPlugin.menu=show-call-tree show-references show-definitions
+plugin.browser.GlobalPlugin.menu=call-tree-browser \
+	reference-browser \
+	definition-browser \
+	- \
+	show-call-tree \
+	show-references \
+	show-definitions
 
 # dockables
 call-tree-browser.title=Call Tree
