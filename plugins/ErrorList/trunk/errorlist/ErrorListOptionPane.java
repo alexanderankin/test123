@@ -63,6 +63,11 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showErrorOverview"));
 
+		addComponent(showIconsInGutter = new JCheckBox(jEdit.getProperty(
+			"options.error-list.gutterIcons")));
+		showIconsInGutter.setSelected(jEdit.getBooleanProperty(
+			ErrorListPlugin.SHOW_ICONS_IN_GUTTER));
+		
 		addComponent(jEdit.getProperty("options.error-list.warningColor"),
 			warningColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.warningColor")));
@@ -110,6 +115,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			isInclusionFilter.isSelected());
 		jEdit.setProperty(ErrorListPlugin.FILENAME_FILTER,
 			filenameFilter.getText());
+		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_ICONS_IN_GUTTER,
+			showIconsInGutter.isSelected());
 	} //}}}
 
 	//{{{ Private members
@@ -122,5 +129,6 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JRadioButton isInclusionFilter;
 	private JRadioButton isExclusionFilter;
 	private JTextField filenameFilter;
+	private JCheckBox showIconsInGutter;
 	//}}}
 }
