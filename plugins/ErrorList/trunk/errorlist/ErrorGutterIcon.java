@@ -23,7 +23,38 @@ public class ErrorGutterIcon extends TextAreaExtension {
 	} //}}}
 	
 	public String getToolTipText(int x, int y) {
-		return null;
+		ErrorSource[] errorSources = ErrorSource.getErrorSources();
+		if(!editPane.getBuffer().isLoaded())
+			return null;
+
+		JEditTextArea textArea = editPane.getTextArea();
+
+		int offset = textArea.xyToOffset(x,y);
+		if(offset == -1)
+			return null;
+
+		int line = textArea.getLineOfOffset(offset);
+
+		StringBuffer errMsg = new StringBuffer();
+		for(int i = 0; i < errorSources.length; i++)
+		{
+			ErrorSource.Error[] lineErrors =
+				errorSources[i].getLineErrors(
+				editPane.getBuffer().getSymlinkPath(),
+				line,line);
+
+			if(lineErrors == null)
+				continue;
+
+			for(int j = 0; j < lineErrors.length; j++)
+			{
+				ErrorSource.Error error = lineErrors[j];
+				errMsg.append("<html>" + error.getErrorMessage() + "<br>");
+			}
+			errMsg.append("</html>");
+		}
+
+		return errMsg.toString();
 	}
 
 	public void paintValidLine(Graphics2D gfx, int screenLine,
@@ -50,11 +81,10 @@ public class ErrorGutterIcon extends TextAreaExtension {
 			JEditTextArea textArea = editPane.getTextArea();
 			ImageIcon icon = isError ? ErrorList.ERROR_ICON : ErrorList.WARNING_ICON;
 			// Center the icon in the gutter line
-			Point p = textArea.offsetToXY(textArea.getLineStartOffset(physicalLine));
 			int lineHeight = textArea.getPainter().getFontMetrics().getHeight();
 			Point iconPos = new Point(
 					(FOLD_MARKER_SIZE - icon.getIconWidth()) / 2,
-					p.y + (lineHeight - icon.getIconHeight()) / 2);
+					y + (lineHeight - icon.getIconHeight()) / 2);
 			gfx.drawImage(icon.getImage(), iconPos.x, iconPos.y, null);
 		}
 	}
