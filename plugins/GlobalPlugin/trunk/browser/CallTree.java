@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package browser;
 
 import java.awt.BorderLayout;
-import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -48,7 +47,7 @@ import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
-public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeActions {
+public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDockableInterface {
 	private View view;
 	private JTree tree;
 	FunctionNode root = null;
@@ -74,23 +73,23 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 		symbolTF.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					showCallTree(CallTree.this.view, symbolTF.getText());
+					show(CallTree.this.view, symbolTF.getText());
 			}
 		});
 		symbolPanel.add(symbolTF, BorderLayout.CENTER);
 		add(symbolPanel, BorderLayout.NORTH);
 	}
 
-	private void showCallTree(View view, String function) {
+	public void show(View view, String identifier) {
 		long start = System.currentTimeMillis();
-		FunctionTag tag = new FunctionTag(function, null, 0);
+		FunctionTag tag = new FunctionTag(identifier, null, 0);
 		root = new FunctionNode(tag);
 		updateTree();
 		long end = System.currentTimeMillis();
-		Log.log(Log.DEBUG, CallTree.class, "Callers of '" + function
+		Log.log(Log.DEBUG, CallTree.class, "Callers of '" + identifier
 				+ "' took " + (end - start) * .001 + " seconds.");
 	}
-
+	
 	private TreeSet<FunctionTag> getCallers(FunctionTag func)
 	{
 		TreeSet<FunctionTag> callers = new TreeSet<FunctionTag>();
@@ -144,17 +143,6 @@ public class CallTree extends JPanel implements DefaultFocusComponent, CallTreeA
 			tags.add(func);
 		}
 		return tags;
-	}
-
-	public void show(View view) {
-		String selected = view.getTextArea().getSelectedText();
-		if (selected == null) {
-			Log.log(Log.ERROR, CallTree.class,
-					"No function selected");
-			Toolkit.getDefaultToolkit().beep();
-			return;
-		}
-		showCallTree(view, selected);
 	}
 
 	private void updateTree() {

@@ -7,10 +7,10 @@
 		new browser.ReferenceList(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="definition-browser" MOVABLE="TRUE">
-		browser.DefinitionList(view);
+		new browser.DefinitionList(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="call-tree-browser" MOVABLE="TRUE">
-		browser.CallTree(view);
+		new browser.CallTree(view);
 	</DOCKABLE>
 </DOCKABLES>
 
