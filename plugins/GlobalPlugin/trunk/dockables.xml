@@ -3,13 +3,13 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="reference-browser" MOVABLE="true">
+	<DOCKABLE NAME="reference-browser" MOVABLE="TRUE">
 		new browser.ReferenceList(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="definition-browser" MOVABLE="true">
+	<DOCKABLE NAME="definition-browser" MOVABLE="TRUE">
 		browser.DefinitionList(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="call-tree-browser" MOVABLE="true">
+	<DOCKABLE NAME="call-tree-browser" MOVABLE="TRUE">
 		browser.CallTree(view);
 	</DOCKABLE>
 </DOCKABLES>
