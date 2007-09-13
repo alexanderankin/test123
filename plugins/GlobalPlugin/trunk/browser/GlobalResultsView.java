@@ -29,7 +29,6 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
@@ -39,12 +38,14 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
+import common.gui.HelpfulJTable;
+
 abstract public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	GlobalDockableInterface
 {
 
 	private View view;
-	private JTable table;
+	private HelpfulJTable table;
 	private GlobalTableModel model;
 	private JTextField symbolTF;
 	
@@ -52,9 +53,11 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 		super(new BorderLayout());
 	
 		this.view = view;
-		table = new JTable();
+		table = new HelpfulJTable();
+		table.setAutoResizeWithHeaders(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(false);
 		table.setCellEditor(null);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
