@@ -41,4 +41,7 @@ public class GlobalReference {
 		int line = rec.getLine();
 		GlobalPlugin.jump(view, file, line);
 	}
+	public GlobalRecord getRec() {
+		return rec;
+	}
 }
