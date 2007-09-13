@@ -18,6 +18,8 @@ options.GlobalPlugin.global_path=global
 options.GlobalPlugin.global_path.label='global' path:
 options.GlobalPlugin.identifier_regexp=\\w+
 options.GlobalPlugin.identifier_regexp.label=Regular expression of identifiers:
+options.GlobalPlugin.jump_immediately=true
+options.GlobalPlugin.jump_immediately.label=Jump immediately to single definition / reference
 
 # action labels
 show-call-tree.label=Show selection in Call Tree window
