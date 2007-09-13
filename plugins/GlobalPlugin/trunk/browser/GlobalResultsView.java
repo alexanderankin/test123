@@ -26,12 +26,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Vector;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import options.GlobalOptionPane;
 
@@ -44,27 +44,29 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 {
 
 	private View view;
-	private JList list;
-	private DefaultListModel model;
+	private JTable table;
+	private GlobalTableModel model;
 	private JTextField symbolTF;
 	
 	protected GlobalResultsView(final View view) {
 		super(new BorderLayout());
 	
 		this.view = view;
-		list = new JList();
-		list.addMouseListener(new MouseAdapter() {
+		table = new JTable();
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setCellSelectionEnabled(false);
+		table.setCellEditor(null);
+		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					int index = list.locationToIndex(e.getPoint());
-					Object obj = list.getModel().getElementAt(index);
-					if (obj instanceof GlobalReference)
-						((GlobalReference) obj).jump(view);
+					int index = table.rowAtPoint(e.getPoint());
+					GlobalReference ref = ((GlobalTableModel)table.getModel()).getRef(index);
+					ref.jump(view);
 				}
 			}
 		});
-		list.addKeyListener(new KeyAdapter() {
+		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent ev) {
 				if (ev.getKeyCode() == KeyEvent.VK_ENTER)
@@ -79,16 +81,16 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 			public void keyPressed(KeyEvent ev) {
 				if (ev.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					Object obj = list.getModel().getElementAt(list.getSelectedIndex());
-					if (obj instanceof GlobalReference)
-						((GlobalReference) obj).jump(view);
+					int index = table.getSelectedRow();
+					GlobalReference ref = ((GlobalTableModel)table.getModel()).getRef(index);
+					ref.jump(view);
 					ev.consume();
 				}	
 			}
 		});
-		model = new DefaultListModel();
-		list.setModel(model);
-		add(new JScrollPane(list), BorderLayout.CENTER);
+		model = new GlobalTableModel();
+		table.setModel(model);
+		add(new JScrollPane(table), BorderLayout.CENTER);
 		JPanel symbolPanel = new JPanel(new BorderLayout());
 		symbolPanel.add(new JLabel("Symbol:"), BorderLayout.WEST);
 		symbolTF = new JTextField(40);
@@ -111,14 +113,14 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 	
 	public void show(View view, String identifier) {
 		long start = System.currentTimeMillis();
-		model.removeAllElements();
+		model.clear();
 		symbolTF.setText(identifier);
 		Vector<GlobalRecord> refs = GlobalLauncher.instance().run(
 			getParam() + " " + identifier, getBufferDirectory());
 		GlobalReference ref = null;
 		for (int i = 0; i < refs.size(); i++)
-			model.addElement(ref = new GlobalReference(refs.get(i)));
-		if (ref != null && model.size() == 1 && GlobalOptionPane.isJumpImmediately())
+			model.add(ref = new GlobalReference(refs.get(i)));
+		if (ref != null && model.getRowCount() == 1 && GlobalOptionPane.isJumpImmediately())
 			ref.jump(view);
 		long end = System.currentTimeMillis();
 		Log.log(Log.DEBUG, this.getClass(), "GlobalResultsView(" + getParam() +
@@ -126,6 +128,6 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 	}
 	
 	public void focusOnDefaultComponent() {
-		list.requestFocus();
+		table.requestFocus();
 	}
 }
