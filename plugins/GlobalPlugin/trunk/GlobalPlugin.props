@@ -6,6 +6,7 @@ plugin.browser.GlobalPlugin.author=Shlomy Reinstein
 plugin.browser.GlobalPlugin.version=0.2
 plugin.browser.GlobalPlugin.depend.0=jdk 1.5
 plugin.browser.GlobalPlugin.depend.1=jedit 04.03.10.00
+plugin.browser.GlobalPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 
 # Label for options/actions/whatever of the plugin
 GlobalPlugin.label=GlobalPlugin
