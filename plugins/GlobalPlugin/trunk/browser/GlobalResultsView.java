@@ -33,6 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import options.GlobalOptionPane;
+
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
@@ -112,9 +114,12 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 		model.removeAllElements();
 		symbolTF.setText(identifier);
 		Vector<GlobalRecord> refs = GlobalLauncher.instance().run(
-			getParam() + " " + identifier, getBufferDirectory()); 
+			getParam() + " " + identifier, getBufferDirectory());
+		GlobalReference ref = null;
 		for (int i = 0; i < refs.size(); i++)
-			model.addElement(new GlobalReference(refs.get(i)));
+			model.addElement(ref = new GlobalReference(refs.get(i)));
+		if (ref != null && model.size() == 1 && GlobalOptionPane.isJumpImmediately())
+			ref.jump(view);
 		long end = System.currentTimeMillis();
 		Log.log(Log.DEBUG, this.getClass(), "GlobalResultsView(" + getParam() +
 			", " + identifier + "' took " + (end - start) * .001 + " seconds.");
