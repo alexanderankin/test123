@@ -1502,9 +1502,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <para>
     <emphasis role="bold">Verison 4.3.4</emphasis> Requires jEdit 4.3pre11, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.1 (optional).
     <itemizedlist>
-    <listitem><para> New Geenral Option: chdir VFS node select events. Listens to new VFSPathSelected EBMessage (jEdit 4.3pre11). 
+    <listitem><para> New General Option: chdir VFS node select events. Listens to new VFSPathSelected EBMessage (jEdit 4.3pre11). 
     </para> </listitem>
     <listitem><para> Fixes to perl error pattern, and to the ErrorMatcher regex routine, to allow for partial line matches (#1764455 - Shlomy Reinstein). </para></listitem>
+    <listitem><para> ErrorPatternOptionPane buttons to add/remove/up/down error patterns work better now (#1715796 - Shlomy Reinstein). </para></listitem>
     </itemizedlist>
    </para>
    </listitem>
