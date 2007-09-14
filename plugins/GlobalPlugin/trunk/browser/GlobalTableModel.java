@@ -16,17 +16,15 @@ public class GlobalTableModel extends AbstractTableModel {
 		return COLUMNS[col];
 	}
 
-	@Override
 	public int getColumnCount() {
 		return COLUMNS.length;
 	}
 
-	@Override
+	
 	public int getRowCount() {
 		return refs.size();
 	}
 
-	@Override
 	public Object getValueAt(int row, int col) {
 		GlobalRecord rec = ((GlobalReference)refs.get(row)).getRec();
 		switch (col) {
