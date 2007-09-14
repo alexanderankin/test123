@@ -193,20 +193,17 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	
 	private void updateButtons()
 	{
-		int index = errorList.getSelectedIndex();
-		
-		if(index == -1)
-		{
-			index = 1;
-		}
 		ErrorMatcher matcher = (ErrorMatcher)errorList.getSelectedValue();
-		String internalName = matcher.internalName();
-		if (!panelStack.raise(internalName)) {
-			ErrorMatcherPanel panel = new ErrorMatcherPanel(internalName, matcher);
-			
-			panelStack.add(internalName, panel);
-			panelStack.raise(internalName);
-			validateTree();
+		if (matcher != null)
+		{
+			String internalName = matcher.internalName();
+			if (!panelStack.raise(internalName)) {
+				ErrorMatcherPanel panel = new ErrorMatcherPanel(internalName, matcher);
+				
+				panelStack.add(internalName, panel);
+				panelStack.raise(internalName);
+				validateTree();
+			}
 		}
 	} //}}}
 
@@ -241,7 +238,12 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			}
 			else if(source == remove)
 			{
-				errorListModel.removeElementAt(errorList.getSelectedIndex());
+				int index = errorList.getSelectedIndex();
+				errorListModel.removeElementAt(index);
+				if (errorListModel.size() > index)
+					errorList.setSelectedIndex(index);
+				else if (! errorListModel.isEmpty())
+					errorList.setSelectedIndex(errorListModel.size() - 1);
 				errorList.repaint();
 			}
 			
