@@ -7,7 +7,7 @@
 <!-- ProjectViewser dockable windows -->
 
 <DOCKABLES>
-	<DOCKABLE NAME="projectviewer">
+	<DOCKABLE NAME="projectviewer" MOVABLE="TRUE">
 		new projectviewer.ProjectViewer(view);
 	</DOCKABLE>
 </DOCKABLES>
