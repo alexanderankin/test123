@@ -49,7 +49,7 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDockableInterface {
 	private View view;
-	private JTree tree;
+	protected JTree tree;
 	FunctionNode root = null;
 	Pattern spaces = Pattern.compile("\\s+");
 	Hashtable<String, Vector<FunctionTag>> fileTags = new Hashtable<String, Vector<FunctionTag>>();
@@ -155,7 +155,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDoc
 		tree = new JTree();
 		//tree.setModel(emptyHierarchy);
 		tree.setCellRenderer(renderer);
-		tree.addMouseListener(new HierarchyCellActionHandler(tree));
+		tree.addMouseListener(new HierarchyCellActionHandler());
 		renderer.setLeafIcon(null);
 		renderer.setOpenIcon(null);
 		renderer.setClosedIcon(null);
@@ -219,10 +219,8 @@ public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDoc
 	 * HierarchyCellActionHandler
 	 **************************************************************************/
 	class HierarchyCellActionHandler extends MouseAdapter {
-		protected JTree tree;
 
-		public HierarchyCellActionHandler(JTree t) {
-			tree = t;
+		public HierarchyCellActionHandler() {
 		}
 
 		public void mouseClicked(MouseEvent e) {
