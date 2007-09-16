@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
+@SuppressWarnings("serial")
 public class ModeMapperPane extends JPanel implements IModeOptionPane {
 	JList mapperList;
 	DefaultListModel mapperModel;

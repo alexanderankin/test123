@@ -1,67 +1,55 @@
 package ctags.sidekick;
 
+import java.awt.GridLayout;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class ModeOptionsPane extends sidekick.ModeOptionsPane {
 
-	static private final String CTAGS_MODE_OPTIONS_LABEL = "options.CtagsSideKick.mode.ctags_options_label";
+	Vector<IModeOptionPane> modePanes;
 	
-	private JTextField ctagsOptions;
-	//private JComboBox mapper;
-
 	public ModeOptionsPane() 
 	{
 		super("CtagsSideKick.mode");
 	}
 		
 	protected void _init() {
-		JPanel panel = new JPanel();
-		JLabel optionsLabel = new JLabel(jEdit.getProperty(CTAGS_MODE_OPTIONS_LABEL));
-		ctagsOptions = new JTextField(30);
-		panel.add(optionsLabel);
-		panel.add(ctagsOptions);
-		addComponent(panel);
-/*
-		Vector<String> mappers = new Vector<String>();
-		mappers.add(jEdit.getProperty(GeneralOptionPane.KIND_MAPPER_NAME));
-		mappers.add(jEdit.getProperty(GeneralOptionPane.NAMESPACE_MAPPER_NAME));
-		mappers.add(jEdit.getProperty(GeneralOptionPane.FLAT_NAMESPACE_MAPPER_NAME));
-		JPanel mapperPanel = new JPanel();
-		JLabel mapperLabel = new JLabel(jEdit.getProperty(GeneralOptionPane.MAPPER +
-				GeneralOptionPane.LABEL));
-		mapperPanel.add(mapperLabel);
-		mapper = new JComboBox(mappers);
-		mapperPanel.add(mapper);
-		addComponent(mapperPanel);
-*/
+		modePanes = new Vector<IModeOptionPane>();
+		
+		ModeCtagsInvocationPane invocationPane = new ModeCtagsInvocationPane();
+		addComponent(invocationPane);
+		modePanes.add(invocationPane);
+		
+		JPanel optionPanes = new JPanel(new GridLayout(1, 0));
+		addComponent(optionPanes);
+		ModeMapperPane mapperPane = new ModeMapperPane();
+		optionPanes.add(mapperPane);
+		modePanes.add(mapperPane);
+		
 		_load();
-	}
-	
-	protected void _load() 
-	{
-		ctagsOptions.setText(getProperty(Plugin.CTAGS_MODE_OPTIONS));
-//		mapper.setSelectedItem(getProperty(GeneralOptionPane.MAPPER));
 	}
 	
 	protected void _save() 
 	{
-		setProperty(Plugin.CTAGS_MODE_OPTIONS, ctagsOptions.getText());
-//		setProperty(GeneralOptionPane.MAPPER, (String)mapper.getSelectedItem());
+		for (int i = 0; i < modePanes.size(); i++)
+			modePanes.get(i).save();
 		jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}
 
 	protected void _reset()
 	{
-		clearModeProperty(Plugin.CTAGS_MODE_OPTIONS);
-//		clearModeProperty(GeneralOptionPane.MAPPER);
+		for (int i = 0; i < modePanes.size(); i++)
+			modePanes.get(i).resetCurrentMode();
+	}
+
+	protected void _load()
+	{
+		for (int i = 0; i < modePanes.size(); i++)
+			modePanes.get(i).modeSelected(getMode());
 	}	
 
 }
