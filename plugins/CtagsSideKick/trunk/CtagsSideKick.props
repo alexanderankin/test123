@@ -16,8 +16,9 @@ plugin.ctags.sidekick.Plugin.depend.1=jedit 04.03.08.00
 plugin.ctags.sidekick.Plugin.depend.2=plugin sidekick.SideKickPlugin 0.7.1
 
 # Options
-plugin.ctags.sidekick.Plugin.option-pane=CtagsSideKick
-options.CtagsSideKick.code=new ctags.sidekick.OptionPane();
+plugin.ctags.sidekick.Plugin.option-group=CtagsSideKick-general CtagsSideKick-mappers
+options.CtagsSideKick-general.code=new ctags.sidekick.GeneralOptionPane();
+options.CtagsSideKick-mappers.code=new ctags.sidekick.MapperOptionPane();
 
 options.CtagsSideKick.ctags_path_note=NOTE: CtagsSideKick requires Exuberant ctags Version 5.5 or later from http://ctags.sourceforge.net, the standard ctags program will not work!
 options.CtagsSideKick.ctags_path_label=ctags Path:
@@ -33,7 +34,8 @@ options.CtagsSideKick.mapper.flat_namespace.name=namespace (flat)
 options.CtagsSideKick.mapper.kind.name=kind
 options.CtagsSideKick.show_icons_label=Show icons
 options.CtagsSideKick.show_icons=true
-options.CtagsSideKick.label=Ctags SideKick
+options.CtagsSideKick-general.label=General
+options.CtagsSideKick-mappers.label=Mappers
 options.CtagsSideKick.mode.label=CtagsSideKick
 options.CtagsSideKick.mode.ctags_options_label=Ctags invocation options:
 

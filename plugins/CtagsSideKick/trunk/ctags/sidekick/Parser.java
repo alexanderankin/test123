@@ -21,8 +21,6 @@ plugin by Gerd Knops.
 
 package ctags.sidekick;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -33,10 +31,9 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.ButtonGroup;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.gjt.sp.jedit.Buffer;
@@ -54,13 +51,8 @@ public class Parser extends SideKickParser {
 
 	private static final String SPACES = "\\s+";
 	private JPanel panel = null;
-	private ButtonGroup groupingBG = null;
-	private JToggleButton groupByKindButton;
-	private JToggleButton groupByNamespaceButton;
-	private JToggleButton groupByNamespaceFlatButton;
-	private JToggleButton sortByLineButton;
-	private JToggleButton sortByNameButton;
-	private JToggleButton sortByNameFoldsFirstButton;
+	private JComboBox groupingCB;
+	private JComboBox sortingCB;
 
 	public Parser(String serviceName)
 	{
@@ -81,56 +73,36 @@ public class Parser extends SideKickParser {
 		}
 	}
 
-	private JToggleButton createButton(final String action, String title) {
-		JToggleButton btn = new JToggleButton(title);
-		btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				jEdit.getAction(action).invoke(jEdit.getActiveView());
-			}
-		});
-		String tooltip = jEdit.getProperty(action + ".label");
-		if (tooltip != null)
-			btn.setToolTipText(tooltip);
-		return btn;
-	}
-	
 	public JPanel getPanel() {
+		/*
 		if (panel != null)
 			return panel;
 		panel = new JPanel(new GridLayout(1, 1));
 		JToolBar toolbar = new JToolBar();
+		toolbar.setLayout(new GridLayout(0, 1));
 		toolbar.setFloatable(false);
-		toolbar.add(new JLabel("Grouping:"));
-		groupingBG = new ButtonGroup();
-		groupByKindButton = createButton("group-by-kind", "K");
-		toolbar.add(groupByKindButton);
-		groupingBG.add(groupByKindButton);
-		groupByNamespaceButton = createButton("group-by-namespace", "N");
-		toolbar.add(groupByNamespaceButton);
-		groupingBG.add(groupByNamespaceButton);
-		groupByNamespaceFlatButton = createButton("group-by-namespace-flat", "NF");
-		toolbar.add(groupByNamespaceFlatButton);
-		groupingBG.add(groupByNamespaceFlatButton);
-		toolbar.add(new JLabel("Sorting:"));
-		ButtonGroup sortingBG = new ButtonGroup();
-		sortByLineButton = createButton("sort-by-line", "L");
-		toolbar.add(sortByLineButton);
-		sortingBG.add(sortByLineButton);
-		sortByNameButton = createButton("sort-by-name", "N");
-		toolbar.add(sortByNameButton);
-		sortingBG.add(sortByNameButton);
-		sortByNameFoldsFirstButton = createButton("sort-by-name-folds-first", "NF");
-		toolbar.add(sortByNameFoldsFirstButton);
-		sortingBG.add(sortByNameFoldsFirstButton);
+		JPanel groupPanel = new JPanel();
+		groupPanel.add(new JLabel("Grouping:"));
+		groupingCB = new JComboBox();
+		groupPanel.add(groupingCB);
+		toolbar.add(groupPanel);
+		JPanel sortPanel = new JPanel();
+		sortPanel.add(new JLabel("Sorting:"));
+		sortingCB = new JComboBox();
+		sortPanel.add(sortingCB);
+		toolbar.add(sortPanel);
 		panel.add(toolbar);
 		return panel;
+		*/
+		return null;
 	}
 
 	private void updatePanel(Buffer buffer) {
+		/*
 		if (panel == null)
 			return;
 		String mode = buffer.getMode().getName();
-		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.MAPPER);
+		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.TREE_BUILDER);
 		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
 			groupByNamespaceButton.setSelected(true);
 		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))
@@ -146,6 +118,7 @@ public class Parser extends SideKickParser {
 		}
 		else
 			sortByLineButton.setSelected(true);
+			*/
 	}
 	@Override
 	public SideKickParsedData parse(Buffer buffer,

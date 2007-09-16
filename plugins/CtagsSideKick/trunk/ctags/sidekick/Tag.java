@@ -54,10 +54,10 @@ public class Tag extends SourceAsset
 		if (signature != null && signature.length() > 0)
 			setShortDescription(tag + signature);
 		kind = (String)info.get("kind");
-		if (jEdit.getBooleanProperty(OptionPane.SHOW_ICONS, true))
+		if (jEdit.getBooleanProperty(GeneralOptionPane.SHOW_ICONS, true))
 		{
 			String iconName =
-				jEdit.getProperty(OptionPane.ICONS + kind);
+				jEdit.getProperty(GeneralOptionPane.ICONS + kind);
 			if (iconName == null || iconName.length() == 0)
 				iconName = "unknown.png";
 			ImageIcon icon = (ImageIcon) icons.get(kind);

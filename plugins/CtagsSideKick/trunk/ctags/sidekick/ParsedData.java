@@ -42,17 +42,11 @@ public class ParsedData extends SideKickParsedData
 	{
 		super(buffer.getName());
 		String mode = buffer.getMode().getName();
-		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.MAPPER);
-		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
-			mapper = new NamespaceTreeMapper();
-		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))
-			mapper = new FlatNamespaceTreeMapper();
-		else
-			mapper = new KindTreeMapper();
+		mapper = MapperManager.getMapperForMode(mode);
 		mapper.setLang(lang);
-		if (jEdit.getBooleanProperty(OptionPane.SORT, false))
+		if (jEdit.getBooleanProperty(GeneralOptionPane.SORT, false))
 		{
-			if (jEdit.getBooleanProperty(OptionPane.FOLDS_BEFORE_LEAFS, true))
+			if (jEdit.getBooleanProperty(GeneralOptionPane.FOLDS_BEFORE_LEAFS, true))
 				sorter = new FoldNameComparator();
 			else
 				sorter = new NameComparator();
@@ -69,6 +63,7 @@ public class ParsedData extends SideKickParsedData
 			return;
 		}
 		Vector<Object> path = mapper.getPath(tag);
+		path.add(tag);
 		CtagsSideKickTreeNode node = tree; 
 		for (int i = 0; i < path.size(); i++)
 		{
