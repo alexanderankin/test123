@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.jEdit;
 
+@SuppressWarnings("serial")
 public class ModeCtagsInvocationPane extends JPanel implements IModeOptionPane {
 
 	static private final String CTAGS_MODE_OPTIONS_LABEL = "options.CtagsSideKick.mode.ctags_options_label";
