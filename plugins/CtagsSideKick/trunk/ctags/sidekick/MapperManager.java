@@ -45,19 +45,23 @@ public class MapperManager {
 		return getMapper(mapper);
 	}
 	static public void setMapperForMode(String mode, ITreeMapper mapper) {
-		String name = getMapperName(mapper);
+		String name = getMapperName(mode, mapper);
 		ModeOptionsPane.setProperty(mode, GeneralOptionPane.MAPPER, name);
 		save(name, mapper);
 	}
 	static public void setDefaultMapper(ITreeMapper mapper) {
-		String name = getMapperName(mapper);
+		String name = getMapperName(null, mapper);
 		jEdit.setProperty(GeneralOptionPane.MAPPER, name);
 		save(name, mapper);
 	}
-	private static String getMapperName(ITreeMapper mapper) {
+	private static String getMapperName(String mode, ITreeMapper mapper) {
 		String name = mapper.getName();
-		if (name == null || name.length() == 0)
-			name = "current";
+		if (name == null || name.length() == 0) {
+			if (mode == null)
+				name = "current";
+			else
+				name = mode + "_" + "current";
+		}
 		return name;
 	}
 	static public void register(String name, ITreeMapper mapper) {
