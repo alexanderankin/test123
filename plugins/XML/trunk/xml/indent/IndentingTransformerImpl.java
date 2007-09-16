@@ -193,7 +193,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
    * Output white space to reflect the current indentation level
    */
   protected void indent(int levelAdjustment) throws SAXException {
-    char[] indent = new char[(indentLevel + levelAdjustment) * indentAmount + 1];
+    int arraySize = (indentLevel + levelAdjustment) * indentAmount + 1;
+    arraySize = arraySize <= 0 ? 1 : arraySize;
+    char[] indent = new char[arraySize];
     indent[0] = '\n';
 
     for(int i = 1; i < indent.length; i++) {

@@ -95,29 +95,46 @@ public class XmlIndenterPlugin {
         buffer.beginCompoundEdit();
 
         try {
+            // remember the caret position
+            int caretPosition = view.getTextArea().getCaretPosition();
+
+            // do the indenting
             String inputString = buffer.getText( 0, buffer.getLength() );
             String resultString = XmlIndenterPlugin.indent( inputString, indentAmount, indentWithTabs );
 
-            int caretPosition = view.getTextArea().getCaretPosition();
+            // insert the indented text into the buffer
             buffer.remove( 0, buffer.getLength() );
             buffer.insert( 0, resultString );
 
-            if ( caretPosition > ( buffer.getLength() - 1 ) ) {
-                view.getTextArea().setCaretPosition( buffer.getLength() - 1 );
+            // reset caret position as close to where it was as possible
+            if ( caretPosition > resultString.length() - 1 ) {
+                // old position was beyond the end of the reformatted buffer, so
+                // set to end of buffer
+                caretPosition = resultString.length() - 1;
             }
             else {
+                // make sure caret isn't in the middle of a tag to prevent xml
+                // autocomplete from popping up after a reformat
                 char c = resultString.charAt( caretPosition );
-
                 while ( caretPosition < buffer.getLength() && !( c == '>' || c == '<' ) ) {
-                    caretPosition++; //hack to prevent XML autocomplete of end element name
+                    caretPosition++;
                     c = resultString.charAt( caretPosition );
                 }
-
                 if ( c == '>' ) {
                     caretPosition++;
                 }
-                view.getTextArea().setCaretPosition( caretPosition );
             }
+
+            // double check caret position is within the bounds of the buffer
+            if (caretPosition < 0) {
+                caretPosition = 0;
+            }
+            else if (caretPosition > buffer.getLength() - 1) {
+                caretPosition = buffer.getLength() - 1;
+            }
+
+            // finally, set the caret position
+            view.getTextArea().setCaretPosition( caretPosition );
         }
         catch ( Exception e ) {
             Log.log( Log.ERROR, IndentingTransformerImpl.class, e );
@@ -152,7 +169,6 @@ public class XmlIndenterPlugin {
     protected static String indent( String inputString, int indentAmount, boolean indentWithTabs ) throws Exception {
         List preserveWhitespaceList = getEnumeratedProperty( "xmlindenter.preserve-whitespace-element" );
         StringWriter writer = new StringWriter();
-        Log.log( Log.ERROR, XmlIndenterPlugin.class, "" + preserveWhitespaceList.size() );
         TRANSFORMER.indentXml( inputString, writer, indentAmount, indentWithTabs, preserveWhitespaceList );
         String resultString = writer.toString();
         //    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
