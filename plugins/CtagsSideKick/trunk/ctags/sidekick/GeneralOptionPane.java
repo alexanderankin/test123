@@ -21,11 +21,8 @@ was taken from the CodeBrowser plugin by Gerd Knops.
 
 package ctags.sidekick;
 import java.awt.Color;
-import java.util.Vector;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -50,19 +47,13 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private JTextField ctagsPathTF;
 	private JCheckBox sort;
 	private JCheckBox folds_first;
-	private JComboBox mapper;
 	private JCheckBox show_icons;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String SORT = PREFIX + "sort";
 	static final String FOLDS_BEFORE_LEAFS = PREFIX + "sort_folds_first";
-	static final String MAPPER = PREFIX + "mapper";
 	static final String SHOW_ICONS = PREFIX + "show_icons";
 	static final String LABEL = "_label";
-	
-	static final String NAMESPACE_MAPPER_NAME = MAPPER + ".namespace.name";
-	static final String FLAT_NAMESPACE_MAPPER_NAME = MAPPER + ".flat_namespace.name";
-	static final String KIND_MAPPER_NAME = MAPPER + ".kind.name";
 	
 	static final String ICONS = PREFIX + "icons.";
 	
@@ -110,17 +101,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			}			
 		});
 		addComponent(sortPanel);
-		Vector<String> mappers = new Vector<String>();
-		mappers.add(jEdit.getProperty(KIND_MAPPER_NAME));
-		mappers.add(jEdit.getProperty(NAMESPACE_MAPPER_NAME));
-		mappers.add(jEdit.getProperty(FLAT_NAMESPACE_MAPPER_NAME));
-		JPanel mapperPanel = new JPanel();
-		JLabel mapperLabel = new JLabel(jEdit.getProperty(MAPPER + LABEL));
-		mapperPanel.add(mapperLabel);
-		mapper = new JComboBox(mappers);
-		mapper.setSelectedItem(jEdit.getProperty(MAPPER));
-		mapperPanel.add(mapper);
-		addComponent(mapperPanel);
 		show_icons = new JCheckBox(
 				jEdit.getProperty(SHOW_ICONS + LABEL),
 				jEdit.getBooleanProperty(SHOW_ICONS, false));
@@ -136,7 +116,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				.getText());
 		jEdit.setBooleanProperty(SORT, sort.isSelected());
 		jEdit.setBooleanProperty(FOLDS_BEFORE_LEAFS, folds_first.isSelected());
-		jEdit.setProperty(MAPPER, (String)mapper.getSelectedItem());
 		jEdit.setBooleanProperty(SHOW_ICONS, show_icons.isSelected());
 		jEdit.getAction(jEdit.getProperty(PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}

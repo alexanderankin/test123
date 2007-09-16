@@ -27,11 +27,6 @@ options.CtagsSideKick.sort_label=Sort tags by name
 options.CtagsSideKick.sort=false
 options.CtagsSideKick.sort_folds_first_label=When sorting, folders precede leafs in same level
 options.CtagsSideKick.sort_folds_first=true
-options.CtagsSideKick.mapper_label=Group tags by:
-options.CtagsSideKick.mapper=kind
-options.CtagsSideKick.mapper.namespace.name=namespace (multi-level)
-options.CtagsSideKick.mapper.flat_namespace.name=namespace (flat)
-options.CtagsSideKick.mapper.kind.name=kind
 options.CtagsSideKick.show_icons_label=Show icons
 options.CtagsSideKick.show_icons=true
 options.CtagsSideKick-general.label=General
@@ -43,9 +38,6 @@ options.CtagsSideKick.mode.ctags_options_label=Ctags invocation options:
 CtagsSideKick.label=CtagsSideKick
 
 # other action labels
-group-by-kind.label=Group tags by kind
-group-by-namespace.label=Group tags by namespace (multi-level)
-group-by-namespace-flat.label=Group tags by namespace (flat)
 sort-by-line.label=Sort tags by line number
 sort-by-name.label=Sort tags by name
 sort-by-name-folds-first.label=Sort tags by name, folds preceding leafs
@@ -82,10 +74,6 @@ options.CtagsSideKick.icons.label=variable.png
 
 # menu
 plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
-								  - \
-								  group-by-kind \
-								  group-by-namespace \
-								  group-by-namespace-flat \
 								  - \
 								  sort-by-line \
 								  sort-by-name \
