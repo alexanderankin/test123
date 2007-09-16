@@ -21,13 +21,15 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.sidekick.options.GeneralOptionPane;
+
 import sidekick.SideKickPlugin;
 
 
 public class Plugin extends EditPlugin {
 	public static final String NAME = "CtagsSideKick";
 	public static final String OPTION_PREFIX = "options.CtagsSideKick.";
-	static final String CTAGS_MODE_OPTIONS = "options.CtagsSideKick.mode.ctags_options";
+	public static final String CTAGS_MODE_OPTIONS = "options.CtagsSideKick.mode.ctags_options";
 
 	@Override
 	public void start() {

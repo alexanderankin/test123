@@ -1,4 +1,4 @@
-package ctags.sidekick;
+package ctags.sidekick.options;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.jEdit;
+
+import ctags.sidekick.Plugin;
 
 @SuppressWarnings("serial")
 public class ModeCtagsInvocationPane extends JPanel implements IModeOptionPane {

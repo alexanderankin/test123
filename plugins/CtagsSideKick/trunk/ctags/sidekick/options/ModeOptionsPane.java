@@ -1,4 +1,4 @@
-package ctags.sidekick;
+package ctags.sidekick.options;
 
 import java.awt.GridLayout;
 import java.util.Vector;
@@ -6,6 +6,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
+
 
 @SuppressWarnings("serial")
 public class ModeOptionsPane extends sidekick.ModeOptionsPane {

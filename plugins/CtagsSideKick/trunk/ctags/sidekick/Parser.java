@@ -41,6 +41,8 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import ctags.sidekick.options.ModeOptionsPane;
+
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 import sidekick.SideKickPlugin;

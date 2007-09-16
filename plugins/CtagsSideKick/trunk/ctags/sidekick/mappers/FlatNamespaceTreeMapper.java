@@ -16,34 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-package ctags.sidekick;
+package ctags.sidekick.mappers;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class NamespaceTreeMapper extends AbstractTreeMapper {
+import ctags.sidekick.Tag;
 
-	static final String [] Keywords = {
-		"namespace", "class", "union", "struct", "enum"
-	};
-	
-	String separator, separatorRegExp;
 
-	public String getName()
-	{
-		return "Namespace";
+public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
+{
+	public String getName() {
+		return "FlatNamespace";
 	}
-	public void setLang(String lang)
-	{
-		if (lang.equals("c++") || lang.equals("c"))
-		{
-			separatorRegExp = separator = "::";
-		}
-		else
-		{
-			separator = ".";
-			separatorRegExp = "\\.";
-		}			
-	}
+
 	public Vector<Object> getPath(Tag tag)
 	{
 		Vector<Object> path = new Vector<Object>();
@@ -53,9 +38,25 @@ public class NamespaceTreeMapper extends AbstractTreeMapper {
 			String ns = (String)info.get(Keywords[i]);
 			if (ns != null)
 			{
-				String [] parts = ns.split(separatorRegExp);
-				for (int j = 0; j < parts.length; j++)
-					path.add(parts[j]);
+				// If the tag is also a namespace, concatenate it
+				// to its own namespace.
+				boolean tagIsNamespace = false;
+				String kind = (String) info.get("kind");
+				if (kind != null && kind.length() > 0)
+				{
+					for (int j = 0; j < Keywords.length; j++)
+					{
+						if (kind.equals(Keywords[j]))
+						{
+							tagIsNamespace = true;
+							break;
+						}
+					}
+				}
+				if (tagIsNamespace)
+					tag.setShort(ns + separator + tag.getShortString());
+				else
+					path.add(ns);
 				break;
 			}
 		}

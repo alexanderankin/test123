@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 */
 
-package ctags.sidekick;
+package ctags.sidekick.options;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +24,7 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
+
 
 public class TreeStyleOptionPane extends AbstractOptionPane implements ActionListener {
 	/**
