@@ -20,7 +20,7 @@ package ctags.sidekick;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class NamespaceTreeMapper implements ITreeMapper {
+public class NamespaceTreeMapper extends AbstractTreeMapper {
 
 	static final String [] Keywords = {
 		"namespace", "class", "union", "struct", "enum"
@@ -28,6 +28,14 @@ public class NamespaceTreeMapper implements ITreeMapper {
 	
 	String separator, separatorRegExp;
 
+	public NamespaceTreeMapper()
+	{
+		super("Namespace");
+	}
+	public NamespaceTreeMapper(String name)
+	{
+		super(name);
+	}
 	public void setLang(String lang)
 	{
 		if (lang.equals("c++") || lang.equals("c"))
@@ -55,7 +63,6 @@ public class NamespaceTreeMapper implements ITreeMapper {
 				break;
 			}
 		}
-		path.add(tag);
 		return path;		
 	}
 }

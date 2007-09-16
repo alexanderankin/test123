@@ -20,18 +20,17 @@ package ctags.sidekick;
 import java.util.Vector;
 
 
-public class KindTreeMapper implements ITreeMapper {
+public class KindTreeMapper extends AbstractTreeMapper {
 
-	public void setLang(String lang)
+	public KindTreeMapper()
 	{
+		super("Kind");
 	}
 	public Vector<Object> getPath(Tag tag) {
 		Vector<Object> path = new Vector<Object>();
 		String kind = tag.getKind();
 		if (kind != null && kind.length() > 0)
 			path.add(kind);
-		path.add(tag);
 		return path;
 	}
-
 }

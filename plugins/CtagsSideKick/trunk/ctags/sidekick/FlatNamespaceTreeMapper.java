@@ -23,6 +23,10 @@ import java.util.Vector;
 
 public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
 {
+	public FlatNamespaceTreeMapper() {
+		super("FlatNamespace");
+	}
+
 	public Vector<Object> getPath(Tag tag)
 	{
 		Vector<Object> path = new Vector<Object>();
@@ -54,8 +58,6 @@ public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
 				break;
 			}
 		}
-		path.add(tag);
 		return path;		
 	}
-
 }

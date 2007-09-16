@@ -29,18 +29,30 @@ public class Plugin extends EditPlugin {
 	public static final String OPTION_PREFIX = "options.CtagsSideKick.";
 	static final String CTAGS_MODE_OPTIONS = "options.CtagsSideKick.mode.ctags_options";
 
+	@Override
+	public void start() {
+		MapperManager.start();
+		super.start();
+	}
+	
+	@Override
+	public void stop() {
+		MapperManager.stop();
+		super.stop();
+	}
+
 	public static void groupBy(View view, String mapper)
 	{
-		jEdit.setProperty(OptionPane.MAPPER, mapper);
+		jEdit.setProperty(GeneralOptionPane.MAPPER, mapper);
 		String mode = view.getBuffer().getMode().getName();
-		ModeOptionsPane.setProperty(mode, OptionPane.MAPPER, mapper);
+		ModeOptionsPane.setProperty(mode, GeneralOptionPane.MAPPER, mapper);
 		SideKickPlugin.parse(view, true);
 	}
 	public static void setSorting(View view, boolean sort, boolean foldsFirst)
 	{
-		jEdit.setBooleanProperty(OptionPane.SORT, sort);
+		jEdit.setBooleanProperty(GeneralOptionPane.SORT, sort);
 		if (sort)
-			jEdit.setBooleanProperty(OptionPane.FOLDS_BEFORE_LEAFS, foldsFirst);
+			jEdit.setBooleanProperty(GeneralOptionPane.FOLDS_BEFORE_LEAFS, foldsFirst);
 		SideKickPlugin.parse(view, true);
 	}
 }
