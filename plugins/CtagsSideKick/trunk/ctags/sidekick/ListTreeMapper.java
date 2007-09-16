@@ -1,16 +1,11 @@
 package ctags.sidekick;
 import java.util.Vector;
 
-import org.gjt.sp.jedit.jEdit;
-
-
-
 public class ListTreeMapper extends AbstractTreeMapper {
 
 	Vector <ITreeMapper> mappers; 
 	
-	public ListTreeMapper(String name) {
-		super(name);
+	public ListTreeMapper() {
 		mappers = new Vector<ITreeMapper>();
 	}
 	
@@ -37,13 +32,7 @@ public class ListTreeMapper extends AbstractTreeMapper {
 		return mappers;
 	}
 
-	public void save(String name) {
-		jEdit.setIntegerProperty(
-			MapperManager.MAPPER_OPTION + "." + name + ".size",
-			mappers.size());
-		for (int i = 0; i < mappers.size(); i++) {
-			ITreeMapper mapper = mappers.get(i);
-			mapper.save(name + "." + i);
-		}
+	public String getName() {
+		return "Composite";
 	}
 }

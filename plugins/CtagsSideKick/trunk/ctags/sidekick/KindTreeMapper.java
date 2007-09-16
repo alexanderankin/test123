@@ -19,12 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package ctags.sidekick;
 import java.util.Vector;
 
-
 public class KindTreeMapper extends AbstractTreeMapper {
 
-	public KindTreeMapper()
+	public String getName()
 	{
-		super("Kind");
+		return "Kind";
 	}
 	public Vector<Object> getPath(Tag tag) {
 		Vector<Object> path = new Vector<Object>();

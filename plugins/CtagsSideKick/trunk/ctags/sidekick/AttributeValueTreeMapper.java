@@ -2,17 +2,12 @@ package ctags.sidekick;
 
 import java.util.Vector;
 
-import org.gjt.sp.jedit.jEdit;
-
 public class AttributeValueTreeMapper extends AbstractTreeMapper {
 
 	String attr;
 	String defVal;
 	static private final String BASE_NAME = "AttributeValue";
 	
-	public AttributeValueTreeMapper() {
-		super(BASE_NAME);
-	}
 	public AttributeValueTreeMapper(String params) {
 		setParams(params);
 	}
@@ -42,23 +37,13 @@ public class AttributeValueTreeMapper extends AbstractTreeMapper {
 			path.add(val);
 		return path;
 	}
-	public void save(String name) {
-		jEdit.setProperty(
-			MapperManager.MAPPER_OPTION + "." + name + ".base", BASE_NAME);
-		String params = getParamString();
-		if (params.length() > 0)
-		{
-			jEdit.setProperty(
-				MapperManager.MAPPER_OPTION + "." + name + ".params", params);
-		}
+	public String getName() {
+		return BASE_NAME;
 	}
 	public String toString() {
-		String n = getName();
-		if (n == null || n.length() == 0)
-			return BASE_NAME + "(" + getParamString() + ")";
-		return n;
+		return BASE_NAME + "(" + getParams() + ")";
 	}
-	private String getParamString() {
+	public String getParams() {
 		StringBuffer params = new StringBuffer();
 		if (attr != null)
 			params.append(attr);
