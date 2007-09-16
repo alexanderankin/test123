@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -124,7 +123,7 @@ public class MapperOptionPane extends AbstractOptionPane {
 			mapperModels.put(mode, mapperModel);
 			ListTreeMapper mapper;
 			if (index == 0)
-				mapper = (ListTreeMapper) MapperManager.getDefaultMapper();
+				mapper = (ListTreeMapper) MapperManager.getMapperForMode(null);
 			else
 				mapper = (ListTreeMapper) MapperManager.getMapperForMode(mode);
 			Vector<ITreeMapper> components = mapper.getComponents();
@@ -174,9 +173,6 @@ public class MapperOptionPane extends AbstractOptionPane {
 		}
 	}
 
-	/***************************************************************************
-	 * Implementation
-	 **************************************************************************/
 	public void save()
 	{
 		Iterator models = mapperModels.entrySet().iterator();
@@ -184,14 +180,13 @@ public class MapperOptionPane extends AbstractOptionPane {
 			Entry e = (Entry) models.next();
 			String mode = (String) e.getKey();
 			DefaultListModel model = (DefaultListModel) e.getValue();
-			ListTreeMapper mapper = new ListTreeMapper(null);
+			ListTreeMapper mapper = new ListTreeMapper();
 			for (int i = 0; i < model.getSize(); i++)
 				mapper.add((ITreeMapper) model.get(i));
 			if (mode.equals(modeCB.getItemAt(0)))
-				MapperManager.setDefaultMapper(mapper);
+				MapperManager.setMapperForMode(null, mapper);
 			else
 				MapperManager.setMapperForMode(mode, mapper);
-			MapperManager.propertiesChanged();
 		}
 	}
 }

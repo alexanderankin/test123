@@ -28,13 +28,9 @@ public class NamespaceTreeMapper extends AbstractTreeMapper {
 	
 	String separator, separatorRegExp;
 
-	public NamespaceTreeMapper()
+	public String getName()
 	{
-		super("Namespace");
-	}
-	public NamespaceTreeMapper(String name)
-	{
-		super(name);
+		return "Namespace";
 	}
 	public void setLang(String lang)
 	{

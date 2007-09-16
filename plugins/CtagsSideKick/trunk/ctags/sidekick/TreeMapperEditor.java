@@ -23,7 +23,6 @@ public class TreeMapperEditor extends JDialog {
 	private ITreeMapper mapper;
 	private JComboBox mapperList;
 	private JTextField paramTF;
-	private JTextField nameTF;
 	
 	public TreeMapperEditor(JDialog parent) {
 		super(parent, "Mapper Editor", true);
@@ -51,11 +50,6 @@ public class TreeMapperEditor extends JDialog {
 		paramTF = new JTextField(40);
 		paramPanel.add(paramTF);
 		add(paramPanel);
-		JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		namePanel.add(new JLabel("Assign new name:"));
-		nameTF = new JTextField(40);
-		namePanel.add(nameTF);
-		add(namePanel);
 		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton ok = new JButton("Ok");
 		ok.addActionListener(new ActionListener() {
@@ -80,12 +74,8 @@ public class TreeMapperEditor extends JDialog {
 		if (b) {
 			String name = (String) mapperList.getSelectedItem();
 			mapper = MapperManager.getMapper(name);
-			if (mapper != null) {
+			if (mapper != null)
 				mapper = mapper.getMapper(paramTF.getText());
-				String newName = nameTF.getText(); 
-				if (newName.length() > 0)
-					mapper.setName(newName);
-			}
 		} else
 			mapper = null;
 		saveGeometry();

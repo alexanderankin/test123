@@ -25,7 +25,6 @@ public interface ITreeMapper {
 	Vector<Object> getPath(Tag tag);
 	ITreeMapper getMapper(String params);
 	void setLang(String lang);
-	void setName(String name);
-	void save(String name);
+	String getParams();
 }
 
