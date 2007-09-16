@@ -16,6 +16,8 @@ import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.GUIUtilities;
 
+import ctags.sidekick.mappers.ITreeMapper;
+
 @SuppressWarnings("serial")
 public class TreeMapperEditor extends JDialog {
 

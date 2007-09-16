@@ -28,6 +28,10 @@ import javax.swing.tree.TreeNode;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.sidekick.mappers.ITreeMapper;
+import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.options.GeneralOptionPane;
+
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 

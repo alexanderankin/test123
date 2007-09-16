@@ -1,5 +1,7 @@
-package ctags.sidekick;
+package ctags.sidekick.mappers;
 import java.util.Vector;
+
+import ctags.sidekick.Tag;
 
 public class ListTreeMapper extends AbstractTreeMapper {
 

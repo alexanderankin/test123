@@ -1,4 +1,5 @@
-package ctags.sidekick;
+package ctags.sidekick.mappers;
+
 
 
 public abstract class AbstractTreeMapper implements ITreeMapper {

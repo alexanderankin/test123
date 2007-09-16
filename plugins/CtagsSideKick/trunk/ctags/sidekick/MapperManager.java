@@ -5,6 +5,14 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import ctags.sidekick.mappers.AttributeValueTreeMapper;
+import ctags.sidekick.mappers.FlatNamespaceTreeMapper;
+import ctags.sidekick.mappers.ITreeMapper;
+import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.mappers.ListTreeMapper;
+import ctags.sidekick.mappers.NamespaceTreeMapper;
+import ctags.sidekick.options.ModeOptionsPane;
+
 public class MapperManager {
 	
 	static public String MAPPER_OPTION = "options.CtagsSideKick.mapper";

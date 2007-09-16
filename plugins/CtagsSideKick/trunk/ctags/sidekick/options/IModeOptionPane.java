@@ -1,4 +1,4 @@
-package ctags.sidekick;
+package ctags.sidekick.options;
 
 public interface IModeOptionPane {
 	// Mode has changed

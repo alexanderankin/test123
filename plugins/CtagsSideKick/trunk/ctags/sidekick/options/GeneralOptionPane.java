@@ -19,7 +19,7 @@ Note: The code for the ctags path and the ctags version notice
 was taken from the CodeBrowser plugin by Gerd Knops. 
 */
 
-package ctags.sidekick;
+package ctags.sidekick.options;
 import java.awt.Color;
 
 import javax.swing.JCheckBox;
@@ -32,6 +32,8 @@ import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
+
+import ctags.sidekick.Plugin;
 
 /** ************************************************************************** */
 public class GeneralOptionPane extends AbstractOptionPane {
@@ -50,12 +52,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private JCheckBox show_icons;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
-	static final String SORT = PREFIX + "sort";
-	static final String FOLDS_BEFORE_LEAFS = PREFIX + "sort_folds_first";
-	static final String SHOW_ICONS = PREFIX + "show_icons";
+	public static final String SORT = PREFIX + "sort";
+	public static final String FOLDS_BEFORE_LEAFS = PREFIX + "sort_folds_first";
+	public static final String SHOW_ICONS = PREFIX + "show_icons";
 	static final String LABEL = "_label";
 	
-	static final String ICONS = PREFIX + "icons.";
+	public static final String ICONS = PREFIX + "icons.";
 	
 	static final String PARSE_ACTION_PROP = "CtagsSideKick.parse.action";
 	

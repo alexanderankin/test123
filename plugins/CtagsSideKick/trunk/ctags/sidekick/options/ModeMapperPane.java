@@ -1,4 +1,4 @@
-package ctags.sidekick;
+package ctags.sidekick.options;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -19,6 +19,11 @@ import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
+
+import ctags.sidekick.MapperManager;
+import ctags.sidekick.TreeMapperEditor;
+import ctags.sidekick.mappers.ITreeMapper;
+import ctags.sidekick.mappers.ListTreeMapper;
 
 @SuppressWarnings("serial")
 public class ModeMapperPane extends JPanel implements IModeOptionPane {
