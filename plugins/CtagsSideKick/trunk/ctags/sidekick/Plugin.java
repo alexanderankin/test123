@@ -18,12 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package ctags.sidekick;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-
-import ctags.sidekick.options.GeneralOptionPane;
-
-import sidekick.SideKickPlugin;
 
 
 public class Plugin extends EditPlugin {
@@ -45,11 +39,4 @@ public class Plugin extends EditPlugin {
 		super.stop();
 	}
 
-	public static void setSorting(View view, boolean sort, boolean foldsFirst)
-	{
-		jEdit.setBooleanProperty(GeneralOptionPane.SORT, sort);
-		if (sort)
-			jEdit.setBooleanProperty(GeneralOptionPane.FOLDS_BEFORE_LEAFS, foldsFirst);
-		SideKickPlugin.parse(view, true);
-	}
 }
