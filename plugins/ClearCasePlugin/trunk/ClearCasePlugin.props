@@ -1,0 +1,44 @@
+#
+# General options
+#
+plugin.ClearCasePlugin.name=ClearCase Plugin
+plugin.ClearCasePlugin.author=Christian Hellsten and Ken Gentry
+plugin.ClearCasePlugin.contributors=...
+plugin.ClearCasePlugin.version=0.27
+plugin.ClearCasePlugin.docs=ClearCasePlugin.html
+plugin.ClearCasePlugin.activate=defer
+
+plugin.ClearCasePlugin.depend.0=jedit 04.02.99.00
+plugin.ClearCasePlugin.depend.1=plugin console.ConsolePlugin 4.3
+plugin.ClearCasePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.ClearCasePlugin.depend.3=jdk 1.5
+
+
+#
+# Plugin Menu Settings
+#
+plugin.ClearCasePlugin.menu=ClearCasePlugin-addtocontrol - ClearCasePlugin-checkin ClearCasePlugin-checkout ClearCasePlugin-uncheckout - ClearCasePlugin-diffpred ClearCasePlugin-history ClearCasePlugin-version - ClearCasePlugin-updatebuffer - ClearCasePlugin-findcheckout ClearCasePlugin-details - ClearCasePlugin-merge 
+plugin.ClearCasePlugin.menu.label=ClearCase
+
+# 4.2 option pane options
+plugin.ClearCasePlugin.option-pane=ClearCase
+options.ClearCase.label=ClearCase
+options.ClearCase.code=new clearcase.OptionsPane();
+
+ClearCasePlugin-addtocontrol.label=Add to Source Control (mkelem)
+ClearCasePlugin-checkin.label=Checkin (checkin)
+ClearCasePlugin-checkout.label=Checkout (checkout)
+ClearCasePlugin-uncheckout.label=Undo Checkout (uncheckout)
+ClearCasePlugin-history.label=Show History (lshistory)
+ClearCasePlugin-diffpred.label=Compare to Previous Version (diff -pred)
+ClearCasePlugin-version.label=Show Version Tree (lsvtree)
+ClearCasePlugin-findcheckout.label=Find Checkouts (clearfindco)
+ClearCasePlugin-details.label=Show Details (cleardetails)
+ClearCasePlugin-updatebuffer.label=Update Buffer (update)
+ClearCasePlugin-merge.label=Merge (clearmrgman)
+
+
+#
+# Global Plugin Options
+#
+options.ClearCase.label=ClearCase
