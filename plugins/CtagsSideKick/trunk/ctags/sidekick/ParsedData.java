@@ -17,29 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package ctags.sidekick;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
-
-import ctags.sidekick.mappers.ITreeMapper;
-import ctags.sidekick.mappers.KindTreeMapper;
-import ctags.sidekick.options.GeneralOptionPane;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
+import ctags.sidekick.mappers.ITreeMapper;
+import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.sorters.FoldsFirstSorter;
+import ctags.sidekick.sorters.ListSorter;
+import ctags.sidekick.sorters.NameSorter;
 
 
 public class ParsedData extends SideKickParsedData
 {
 	ITreeMapper mapper = null;
-	Comparator<CtagsSideKickTreeNode> sorter = null;
+	ListSorter sorter = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
 	public ParsedData(Buffer buffer, String lang)
@@ -48,15 +44,9 @@ public class ParsedData extends SideKickParsedData
 		String mode = buffer.getMode().getName();
 		mapper = MapperManager.getMapperForMode(mode);
 		mapper.setLang(lang);
-		if (jEdit.getBooleanProperty(GeneralOptionPane.SORT, false))
-		{
-			if (jEdit.getBooleanProperty(GeneralOptionPane.FOLDS_BEFORE_LEAFS, true))
-				sorter = new FoldNameComparator();
-			else
-				sorter = new NameComparator();
-		}
-		else
-			sorter = null;
+		sorter = new ListSorter();
+		sorter.add(new FoldsFirstSorter());
+		sorter.add(new NameSorter());
 	}
 	
 	void add(Tag tag)
@@ -122,103 +112,4 @@ public class ParsedData extends SideKickParsedData
 			return parent;
 		return null;
 	}
-
-	private class CtagsSideKickTreeNode
-	{
-		private Vector<CtagsSideKickTreeNode> children =
-			new Vector<CtagsSideKickTreeNode>();
-		private Object object = null;
-		void setUserObject(Object obj)
-		{
-			object = obj;
-		}
-		public void addChildCounts()
-		{
-			Enumeration children = this.children.elements();
-			while (children.hasMoreElements())
-			{
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
-				Object obj = child.getUserObject();
-				if (obj instanceof String)
-				{
-					int num = child.children.size();
-					child.setUserObject((String)obj + " (" + num + ")");
-				}
-			}
-		}
-		Object getUserObject()
-		{
-			return object;
-		}		
-		CtagsSideKickTreeNode add(Object obj)
-		{
-			CtagsSideKickTreeNode node = new CtagsSideKickTreeNode();
-			node.setUserObject(obj);
-			children.add(node);
-			return node;
-		}
-		boolean hasChildren()
-		{
-			return (children.size() > 0);
-		}
-		Object findChild(Object obj)
-		{
-			Enumeration children = this.children.elements();
-			while (children.hasMoreElements())
-			{
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
-				if (child.getUserObject().equals(obj))
-					return child;
-			}
-			return null;			
-		}
-		void addToTree(DefaultMutableTreeNode root)
-		{
-			addChildrenToTree(root);
-		}
-		void addChildrenToTree(DefaultMutableTreeNode node)
-		{
-			Enumeration children = this.children.elements();
-			while (children.hasMoreElements())
-			{
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
-				DefaultMutableTreeNode newNode = 
-					new DefaultMutableTreeNode(child.getUserObject());
-				node.add(newNode);
-				child.addChildrenToTree(newNode);
-			}
-		}
-		void sort(Comparator<CtagsSideKickTreeNode> sorter)
-		{
-			Collections.sort(children, sorter);
-			Enumeration children = this.children.elements();
-			while (children.hasMoreElements())
-			{
-				CtagsSideKickTreeNode child =
-					(CtagsSideKickTreeNode) children.nextElement();
-				child.sort(sorter);
-			}			
-		}
-	}
-	static class NameComparator implements Comparator<CtagsSideKickTreeNode>	
-	{
-		public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b)
-		{
-			return a.getUserObject().toString().compareTo(b.getUserObject().toString());
-		}
-	}
-	static class FoldNameComparator implements Comparator<CtagsSideKickTreeNode>	
-	{
-		public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b)
-		{
-			if (a.hasChildren() == b.hasChildren())
-				return a.getUserObject().toString().compareTo(b.getUserObject().toString());
-			if (a.hasChildren())
-				return (-1);
-			return 1;
-		}
-	}	
 }
