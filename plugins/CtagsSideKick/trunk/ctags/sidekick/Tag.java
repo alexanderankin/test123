@@ -94,6 +94,10 @@ public class Tag extends SourceAsset
 	{
 		return info;
 	}
+	public String getField(String name)
+	{
+		return (String) info.get(name);
+	}
 	public boolean equals(Object obj)
 	{
 		if (this == obj)

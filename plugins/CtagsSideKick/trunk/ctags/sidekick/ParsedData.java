@@ -27,15 +27,13 @@ import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import ctags.sidekick.mappers.ITreeMapper;
 import ctags.sidekick.mappers.KindTreeMapper;
-import ctags.sidekick.sorters.FoldsFirstSorter;
-import ctags.sidekick.sorters.ListSorter;
-import ctags.sidekick.sorters.NameSorter;
+import ctags.sidekick.sorters.ITreeSorter;
 
 
 public class ParsedData extends SideKickParsedData
 {
 	ITreeMapper mapper = null;
-	ListSorter sorter = null;
+	ITreeSorter sorter = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
 	public ParsedData(Buffer buffer, String lang)
@@ -44,9 +42,7 @@ public class ParsedData extends SideKickParsedData
 		String mode = buffer.getMode().getName();
 		mapper = MapperManager.getMapperForMode(mode);
 		mapper.setLang(lang);
-		sorter = new ListSorter();
-		sorter.add(new FoldsFirstSorter());
-		sorter.add(new NameSorter());
+		sorter = SorterManager.getSorterForMode(mode);
 	}
 	
 	void add(Tag tag)

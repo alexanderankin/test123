@@ -63,9 +63,14 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		
 		JPanel optionPanes = new JPanel(new GridLayout(1, 0));
 		addComponent(optionPanes);
+
 		ModeMapperPane mapperPane = new ModeMapperPane();
 		optionPanes.add(mapperPane);
 		modePanes.add(mapperPane);
+		
+		ModeSorterPane sorterPane = new ModeSorterPane();
+		optionPanes.add(sorterPane);
+		modePanes.add(sorterPane);
 		
 		addSeparator();
 		
