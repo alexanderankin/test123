@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------------
+Project started 16 July 2002
+
+Current version 0.27
+-------------------------------------------------------------------------------
+
+Version 0.4 / x-x-2002
+-------------------------------------------------------------------------------
+    New Features:
+    - (PLANNED) Tested on some/all Unix, Linux, Windows NT+/98+
+    - (PLANNED) Tested on some/all ClearCase versions.
+    - (PLANNED) More generic. So that support for other systems can be added easily.
+    - (PLANNED) Option to edit command before execution.
+    
+    Bug fixes:
+
+Version 0.3 / x-x-2002
+-------------------------------------------------------------------------------
+    New Features:
+    - (PLANNED) Cleanup/Refactor code.
+    - (PLANNED) Better ClearTool shell.
+    - (PLANNED) JavaDoc and User documentation created.
+    - (PLANNED) Integrated with the "File System Browser". Able to work on directories.
+    - (PLANNED) Checkin if identical with previous possible.
+     
+    Bug fixes:
+	
+Version 0.27 / 27-November-2002
+-------------------------------------------------------------------------------
+    Bug fixes:
+	- Forgot to add ComparePreviousVersion.java to CVS
+	
+Version 0.26 / 3-October-2002
+-------------------------------------------------------------------------------
+    Bug fixes:
+	- Fixed version and author fields shown in jEdit plugin manager
+	
+Version 0.25 / 2-October-2002
+-------------------------------------------------------------------------------
+    New Features:
+    - (DONE) Diff command added. Only compares to previously checked-in version.
+    - (DONE) Parent checkout option added to "Add to source control" command
+    - (DONE) Checkout file's parent directory first when adding a file to source control.
+    - (DONE) Reload buffer after ClearCase operation
+    - (DONE) Added comment field to checkout dialog
+    - (DONE) Added Reload buffer delay property to plugin's Global Options panel
+    - (DONE) Tested on ClearCase v3.2.1, v4.1 and v4.2 on Windows NT v4.0
+
+    Bug fixes:
+    - Fixed search for cleartool application on Windows platform
+    - Strip out newline characters from comments to prevent command from getting 
+      fragmented and failing 
+
+Version 0.2 / 12-August-2002
+-------------------------------------------------------------------------------
+    New Features:
+    - (DONE) Options dialog for uncheckout implemented
+    - (DONE) Options dialog for checkin implemented
+    - (DONE) Options dialog for checkout implemented
+    - (DONE) Options pane for plugin implemented.
+    - (DONE) "Add to source control" command implemented. NOTE. Directory not checkedout.
+    - (DONE) Executed command shown in ClearTool shell for most important commands.
+    - (DONE) Docs added to jEdit help menu.
+    
+    Bug fixes:
+    - Most ClearTool shell problems fixed. Restarting shell.
+    - Options dialog. No need to restart after changes.
+
+Version 0.1 / 02-August-2002
+-------------------------------------------------------------------------------
+    New Features:
+    - (DONE) ClearTool shell implemented. Only one ClearTool instance is started. 
+             This ClearTool is shared with the commands run from the menus and the shell.
+    - (DONE) uncheckout, checkout, checkin, lshistory, lvstree, update, cleardetails, clearmrgman commands implemented
+    - (DONE) Tested on ClearCase version 4.1 Windows NT4

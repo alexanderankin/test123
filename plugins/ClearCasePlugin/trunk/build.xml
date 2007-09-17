@@ -1,0 +1,20 @@
+<project name="ClearCasePlugin" default="dist" basedir=".">
+	<property name="docs-proc.target" value="none" />
+
+	
+	<property file="build.properties" />
+	<property file="../build.properties" />
+    <property name="build.support" value="../../build-support" />
+		
+    <property name="compiler.source" value="1.4" />
+    <property name="compiler.target" value="1.4" />
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<path id="project.class.path">
+	<pathelement location="${dir.jedit}/jedit.jar"/>
+        <pathelement location="${install.dir}/ErrorList.jar"/>
+        <pathelement location="${install.dir}/Console.jar"/>
+	</path>
+
+
+</project>

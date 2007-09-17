@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="ClearCasePlugin-uncheckout">
+		<CODE>
+			ClearCasePlugin.unCheckOut(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-checkin">
+		<CODE>
+			ClearCasePlugin.checkIn(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-checkout">
+		<CODE>
+			ClearCasePlugin.checkOut(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-addtocontrol">
+		<CODE>
+			ClearCasePlugin.addToSourceControl(view);
+		</CODE>
+	</ACTION>
+    
+	<ACTION NAME="ClearCasePlugin-history">
+		<CODE>
+			ClearCasePlugin.showHistory(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-diffpred">
+		<CODE>
+			ClearCasePlugin.compareToPreviousVersion(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-version">
+		<CODE>
+			ClearCasePlugin.showVersionTree(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-updatebuffer">
+		<CODE>
+			ClearCasePlugin.updateBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-findcheckout">
+		<CODE>
+			ClearCasePlugin.findCheckouts(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-details">
+		<CODE>
+			ClearCasePlugin.showDetails(view);
+		</CODE>
+	</ACTION>
+    
+	<ACTION NAME="ClearCasePlugin-merge">
+		<CODE>
+			ClearCasePlugin.merge(view);
+		</CODE>
+	</ACTION>
+        
+	<ACTION NAME="ClearCasePlugin-option">
+		<CODE>
+			new OptionDialog(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
