@@ -2,23 +2,5 @@
 
 <ACTIONS>
 
-	<ACTION NAME="sort-by-line" NO_REPEAT="TRUE">
-		<CODE>
-			ctags.sidekick.Plugin.setSorting(view, false, false);
-		</CODE>
-	</ACTION>
-
-	<ACTION NAME="sort-by-name" NO_REPEAT="TRUE">
-		<CODE>
-			ctags.sidekick.Plugin.setSorting(view, true, false);
-		</CODE>
-	</ACTION>
-
-	<ACTION NAME="sort-by-name-folds-first" NO_REPEAT="TRUE">
-		<CODE>
-			ctags.sidekick.Plugin.setSorting(view, true, true);
-		</CODE>
-	</ACTION>
-
 </ACTIONS>
 
