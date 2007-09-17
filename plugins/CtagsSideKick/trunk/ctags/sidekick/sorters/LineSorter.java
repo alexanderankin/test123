@@ -1,11 +1,9 @@
 package ctags.sidekick.sorters;
 
-import java.util.Comparator;
-
 import ctags.sidekick.CtagsSideKickTreeNode;
 import ctags.sidekick.Tag;
 
-public class LineSorter implements Comparator<CtagsSideKickTreeNode> {
+public class LineSorter extends AbstractTreeSorter {
 
 	public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b) {
 		if ((a.getUserObject() instanceof Tag) &&
@@ -17,6 +15,10 @@ public class LineSorter implements Comparator<CtagsSideKickTreeNode> {
 				Integer.valueOf(bt.getLine()));
 		}
 		return 0;
+	}
+
+	public String getName() {
+		return "Line";
 	}
 
 }

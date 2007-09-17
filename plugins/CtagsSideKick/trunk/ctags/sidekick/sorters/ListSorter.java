@@ -5,14 +5,14 @@ import java.util.Vector;
 
 import ctags.sidekick.CtagsSideKickTreeNode;
 
-public class ListSorter implements Comparator<CtagsSideKickTreeNode> {
+public class ListSorter extends AbstractTreeSorter {
 
-	Vector<Comparator<CtagsSideKickTreeNode>> sorters;
+	Vector<ITreeSorter> sorters;
 	
 	public ListSorter() {
-		sorters = new Vector<Comparator<CtagsSideKickTreeNode>>();
+		sorters = new Vector<ITreeSorter>();
 	}
-	public void add(Comparator<CtagsSideKickTreeNode> sorter) {
+	public void add(ITreeSorter sorter) {
 		sorters.add(sorter);
 	}
 	public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b) {
@@ -23,5 +23,11 @@ public class ListSorter implements Comparator<CtagsSideKickTreeNode> {
 				return res;
 		}
 		return 0;
+	}
+	public String getName() {
+		return "Composite";
+	}
+	public Vector<ITreeSorter> getComponents() {
+		return sorters;
 	}
 }

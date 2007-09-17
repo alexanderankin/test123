@@ -34,12 +34,14 @@ public class Plugin extends EditPlugin {
 	@Override
 	public void start() {
 		MapperManager.start();
+		SorterManager.start();
 		super.start();
 	}
 	
 	@Override
 	public void stop() {
 		MapperManager.stop();
+		SorterManager.stop();
 		super.stop();
 	}
 
