@@ -54,6 +54,8 @@ public class LinePosition implements Position
 	{
 		if (buffer != null)
 		{
+			if (buffer.getLineCount() <= line)
+				return 0;
 			try
 			{
 				if (eob)
