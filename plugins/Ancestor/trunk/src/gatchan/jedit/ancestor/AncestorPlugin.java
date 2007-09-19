@@ -78,6 +78,13 @@ public class AncestorPlugin extends EBPlugin
 			{
 				viewAncestorToolBar.remove(viewUpdate.getView());
 			}
+			else if (viewUpdate.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+			{
+				View view = viewUpdate.getView();
+				EditPane editPane = view.getEditPane();
+				AncestorToolBar bar = viewAncestorToolBar.get(view);
+				bar.setBuffer(editPane.getBuffer());
+			}
 		}
 		if (message instanceof EditPaneUpdate)
 		{
