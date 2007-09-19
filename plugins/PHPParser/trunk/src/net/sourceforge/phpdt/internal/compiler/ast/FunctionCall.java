@@ -9,99 +9,125 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public class FunctionCall extends AbstractSuffixExpression {
-  /** the function name. */
-  private final Expression functionName;
+public class FunctionCall extends AbstractSuffixExpression
+{
+	/**
+	 * the function name.
+	 */
+	private final Expression functionName;
 
-  /** the arguments. */
-  private final Expression[] args;
+	/**
+	 * the arguments.
+	 */
+	private final Expression[] args;
 
-  private static final long serialVersionUID = 1510966294246368800L;
+	private static final long serialVersionUID = 1510966294246368800L;
 
 
-  public FunctionCall(Expression functionName,
-                      Expression[] args,
-                      int sourceEnd,
-                      int endLine,
-                      int endColumn) {
-    super(Type.UNKNOWN,
-          functionName.getSourceStart(),
-          sourceEnd,
-          functionName.getBeginLine(),
-          endLine,
-          functionName.getBeginColumn(),
-          endColumn);
-    this.functionName = functionName;
-    this.args = args;
-  }
+	public FunctionCall(Expression functionName,
+			    Expression[] args,
+			    int sourceEnd,
+			    int endLine,
+			    int endColumn)
+	{
+		super(Type.UNKNOWN,
+		      functionName.getSourceStart(),
+		      sourceEnd,
+		      functionName.getBeginLine(),
+		      endLine,
+		      functionName.getBeginColumn(),
+		      endColumn);
+		this.functionName = functionName;
+		this.args = args;
+	}
 
-  /**
-   * Return the expression as String.
-   *
-   * @return the expression
-   */
-  public String toStringExpression() {
-    StringBuffer buff = new StringBuffer(functionName.toStringExpression());
-    buff.append('(');
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        Expression arg = args[i];
-        if (i != 0) {
-          buff.append(',');
-        }
-        buff.append(arg.toStringExpression());
-      }
-    }
-    buff.append(')');
-    return buff.toString();
-  }
+	public Expression getFunctionName()
+	{
+		return functionName;
+	}
 
-  /**
-   * Get the variables from outside (parameters, globals ...)
-   *
-   * @param list the list where we will put variables
-   */
-  public void getOutsideVariable(List list) {
-  }
+	/**
+	 * Return the expression as String.
+	 *
+	 * @return the expression
+	 */
+	public String toStringExpression()
+	{
+		StringBuffer buff = new StringBuffer(functionName.toStringExpression());
+		buff.append('(');
+		if (args != null)
+		{
+			for (int i = 0; i < args.length; i++)
+			{
+				Expression arg = args[i];
+				if (i != 0)
+				{
+					buff.append(',');
+				}
+				buff.append(arg.toStringExpression());
+			}
+		}
+		buff.append(')');
+		return buff.toString();
+	}
 
-  /**
-   * get the modified variables.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getModifiedVariable(List list) {
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        args[i].getModifiedVariable(list);
-      }
-    }
-  }
+	/**
+	 * Get the variables from outside (parameters, globals ...)
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getOutsideVariable(List list)
+	{
+	}
 
-  /**
-   * Get the variables used.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getUsedVariable(List list) {
-    functionName.getUsedVariable(list);
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        args[i].getUsedVariable(list);
-      }
-    }
-  }
+	/**
+	 * get the modified variables.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getModifiedVariable(List list)
+	{
+		if (args != null)
+		{
+			for (int i = 0; i < args.length; i++)
+			{
+				args[i].getModifiedVariable(list);
+			}
+		}
+	}
 
-  public Expression expressionAt(int line, int column) {
-    if (functionName.isAt(line, column)) return functionName;
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        Expression arg = args[i];
-        if (arg.isAt(line, column)) return arg;
-      }
-    }
-    return null;
-  }
+	/**
+	 * Get the variables used.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getUsedVariable(List list)
+	{
+		functionName.getUsedVariable(list);
+		if (args != null)
+		{
+			for (int i = 0; i < args.length; i++)
+			{
+				args[i].getUsedVariable(list);
+			}
+		}
+	}
 
-  public void analyzeCode(PHPParser parser) {
-  }
+	public Expression expressionAt(int line, int column)
+	{
+		if (functionName.isAt(line, column)) return functionName;
+		if (args != null)
+		{
+			for (int i = 0; i < args.length; i++)
+			{
+				Expression arg = args[i];
+				if (arg.isAt(line, column)) return arg;
+			}
+		}
+		return null;
+	}
+
+	public void analyzeCode(PHPParser parser)
+	{
+	}
 }

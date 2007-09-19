@@ -5,6 +5,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
 import net.sourceforge.phpdt.internal.compiler.ast.Statement;
 import net.sourceforge.phpdt.internal.compiler.ast.Expression;
+import gatchan.phpparser.sidekick.PHPSideKickParser;
 
 /**
  * @author Matthieu Casanova
@@ -17,7 +18,7 @@ public class PHPParserTextAreaExtension extends TextAreaExtension {
   }
 
   public String getToolTipText(int x, int y) {
-    PHPDocument phpDocument = (PHPDocument) textArea.getBuffer().getProperty("PHPDocument");
+    PHPDocument phpDocument = (PHPDocument) textArea.getBuffer().getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
     if (phpDocument == null) {
       return null;
     }

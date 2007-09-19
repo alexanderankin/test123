@@ -2,6 +2,7 @@ package gatchan.phpparser.project.itemfinder;
 
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
+import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
@@ -116,7 +117,7 @@ public final class FrameFindItem extends JFrame {
           Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
         } else {
           Buffer buffer = jEdit.getActiveView().getBuffer();
-          PHPDocument document = (PHPDocument) buffer.getProperty("PHPDocument");
+          PHPDocument document = (PHPDocument) buffer.getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
           itemContaining = new ArrayList();
           if (document != null) {
             for (int i = 0; i < document.size(); i++) {
