@@ -53,6 +53,7 @@ public final class PHPSideKickParser extends SideKickParser
 	 * the error source.
 	 */
 	private final PHPErrorSource phpErrorSource = new PHPErrorSource();
+	public static final String PHPDOCUMENT_PROPERTY = "PHPDocument";
 
 	/**
 	 * Instantiate the PHPSideKickParser.
@@ -101,11 +102,11 @@ public final class PHPSideKickParser extends SideKickParser
 			}
 			PHPDocument phpDocument = parser.getPHPDocument();
 			updateProject(phpDocument, path);
+			buffer.setProperty(PHPDOCUMENT_PROPERTY, phpDocument);
 			parser = null;
 			SideKickParsedData data = new SideKickParsedData(buffer.getName());
 
 			buildChildNodes(data.root, phpDocument, buffer);
-			buffer.setProperty("PHPDocument", phpDocument);
 			EditBus.send(new PHPProjectChangedMessage(this, projectManager.getProject(), PHPProjectChangedMessage.UPDATED));
 			return data;
 		}
@@ -189,7 +190,7 @@ public final class PHPSideKickParser extends SideKickParser
 	{
 		Log.log(Log.DEBUG, this, "Requesting sidekick complete");
 		Buffer buffer = editPane.getBuffer();
-		PHPDocument phpDocument = (PHPDocument) buffer.getProperty("PHPDocument");
+		PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
 		if (phpDocument == null)
 		{
 			Log.log(Log.DEBUG, this, "No php document for this buffer");
