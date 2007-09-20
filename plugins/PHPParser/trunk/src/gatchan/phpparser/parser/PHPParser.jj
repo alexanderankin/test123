@@ -4958,64 +4958,85 @@ ListExpression ListExpression() :
 //{{{ STATEMENTS
 
 //{{{ EchoStatement()
-
 /**
  * An echo statement.
  * echo anyexpression (, otherexpression)*
  */
 EchoStatement EchoStatement() :
 {
-  final ArrayList expressions = new ArrayList();
-  Expression expr;
-  final Token echoToken;
-  Token semicolonToken = null;
+	List expressions = new ArrayList();
+	Expression expr;
+	Token echoToken;
+	Token semicolonToken = null;
 }
 {
-  echoToken = <ECHO> expr = Expression()
-  {expressions.add(expr);}
-  (
-    <COMMA> expr = Expression()
-    {expressions.add(expr);}
-  )*
-  try {
-    semicolonToken = <SEMICOLON>
-  } catch (ParseException e) {
-    if (e.currentToken.next.kind != 4) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "';' expected",
-                                            ";",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.sourceEnd+1,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
-    }
-  }
-  {
-   final Expression[] exprs = new Expression[expressions.size()];
-   expressions.toArray(exprs);
-   if (semicolonToken == null) {
-     return new EchoStatement(exprs,
-                              echoToken.sourceStart,
-                              exprs[exprs.length-1].getSourceEnd(),
-                              echoToken.beginLine,
-                              exprs[exprs.length-1].getEndLine(),
-                              echoToken.beginColumn,
-                              exprs[exprs.length-1].getEndColumn());
-   }
-   return new EchoStatement(exprs,
-                            echoToken.sourceStart,
-                            semicolonToken.sourceEnd,
-                            echoToken.beginLine,
-                            semicolonToken.endLine,
-                            echoToken.beginColumn,
-                            semicolonToken.endColumn);
-   }
-}
+	//{{{ echo 
+	echoToken = <ECHO>
+	//}}}
+ 
+	//{{{ expression 
+	expr = Expression()
+	{expressions.add(expr);}
+	//}}}
 
+	//{{{ [,expression]*
+	(
+		<COMMA> expr = Expression()
+		{expressions.add(expr);}
+	)* 
+	//}}}
+
+	//{{{ ;
+	try 
+	{
+		semicolonToken = <SEMICOLON>
+	}
+	catch (ParseException e) 
+	{
+		if (e.currentToken.next.kind != 4) 
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"';' expected",
+				";",
+				e.currentToken.image,
+				e.currentToken.sourceEnd,
+				e.currentToken.sourceEnd,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn));
+		}
+	} //}}}
+
+	//{{{ returning the echo expression
+	{
+		Expression[] exprs = new Expression[expressions.size()];
+		expressions.toArray(exprs);
+		
+		//{{{ missing ;
+		if (semicolonToken == null)
+		{
+			Expression lastExpression = exprs[exprs.length-1];
+			return new EchoStatement(exprs,
+				echoToken.sourceStart,
+				lastExpression.getSourceEnd(),
+				echoToken.beginLine,
+				lastExpression.getEndLine(),
+				echoToken.beginColumn,
+				lastExpression.getEndColumn());
+		} //}}}
+
+		return new EchoStatement(exprs,
+			echoToken.sourceStart,
+			semicolonToken.sourceEnd,
+			echoToken.beginLine,
+			semicolonToken.endLine,
+			echoToken.beginColumn,
+			semicolonToken.endColumn);
+	} //}}}
+
+}
 //}}}
 //{{{ GlobalStatement()
 
