@@ -140,8 +140,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 
 	private int rootLevel = 0;
 
-	private static ClassHierarchy theInstance = null;
-
 	private Vector<Object> emptyMembers = new Vector<Object>();
 	
 	public ClassHierarchy(View view) {
@@ -183,13 +181,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		db = new TagDB();
 	}
 
-	static public ClassHierarchy getInstance(View view)
-	{
-		if (theInstance == null)
-			theInstance = new ClassHierarchy(view);
-		return theInstance;
-	}
-	
 	private void updateDB(View view) {
 		boolean updated = db.removeTemporaryTagFiles();
 		TagFileManager tagFileManager = TagsPlugin.getTagFileManager();
