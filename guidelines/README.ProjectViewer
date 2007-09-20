@@ -1,7 +1,10 @@
 CVS policy file
 
 plugin: ProjectViewer
-author/maintainer: Stefan Kost <ensonic@sonicpulse.de>
 original author: Kevin A. Burton <burton@relativity.yi.org>
+maintainer: Stefan Kost <ensonic@sonicpulse.de>
+maintainer: Marcelo Vanzin <vanza@users.sourceforge.net>
+committer: Alan Ezust <alan.ezust@gmail.com>
 
-please do not commit changes to this plugin without first consulting the author.
+Others can submit patches to the jedit patches tracker.
+
