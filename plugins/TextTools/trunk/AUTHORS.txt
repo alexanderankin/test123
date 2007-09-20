@@ -25,3 +25,6 @@ Rudolf Widmann <Rudi.Widmann@web.de>
 Robert Fletcher <rfletch6@yahoo.co.uk>
 	Toggle Line Comment
 	Toggle Range Comment
+
+Ian Lewis <IanLewis@member.fsf.org>
+    Bug Fixes
