@@ -1,8 +1,9 @@
-CVS policy file
+SVN policy file
 
 plugin: Console
 author: Slava Pestov <sp@gjt.org>
 Maintainer: Alan Ezust <alan.ezust@gmail.com>
+Committers: Marcelo Vanzin <vanza@users.sourceforge.net>
 
-Submit patches to the jedit patches tracker.
+Please submit patches to the jedit patches tracker.
 

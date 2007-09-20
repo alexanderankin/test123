@@ -1,0 +1,8 @@
+SVN policy file
+
+plugin: SideKick
+author: Slava Pestov
+Committers: Alan Ezust, Dale Anson, Shlomy Reinstein, Kazutoshi Satoda, Matthieu Casanova, Martin Raspe
+
+Others please send patches via the jEdit patches tracker.
+
