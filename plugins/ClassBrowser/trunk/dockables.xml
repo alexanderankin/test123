@@ -4,8 +4,8 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="class-browser-class-hierarchy">
-		browser.ClassHierarchy.getInstance(view);
+	<DOCKABLE NAME="class-browser-class-hierarchy" MOVABLE="TRUE">
+		new browser.ClassHierarchy(view);
 	</DOCKABLE>
 </DOCKABLES>
 
