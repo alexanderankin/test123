@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="syntax-highlighting-editor">
+	<DOCKABLE NAME="syntax-highlighting-editor" MOVABLE="TRUE">
 		new syntax.SyntaxHighlightingEditor(view, position);
 	</DOCKABLE>
 </DOCKABLES>
