@@ -3,7 +3,7 @@ plugin.hex.HexPlugin.activate=defer
 plugin.hex.HexPlugin.name=Hex
 plugin.hex.HexPlugin.author=André Kaplan, Matthieu Casanova
 plugin.hex.HexPlugin.version=1.0
-plugin.hex.HexPlugin.docs=users-guide.html
+plugin.hex.HexPlugin.docs=index.html
 
 plugin.hex.HexPlugin.description=An hex file system will enable jEdit to open files as hex view
 plugin.hex.HexPlugin.depend.0=jdk 1.5
