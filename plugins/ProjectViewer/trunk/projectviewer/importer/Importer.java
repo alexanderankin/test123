@@ -197,14 +197,7 @@ public abstract class Importer implements Runnable {
 			if (n.getNodePath().equals(dir.getAbsolutePath())) {
 				return n;
 			} else if (n.isFile()) {
-				try {
-					if (((VPTFile)n).getFile().getCanonicalPath().equals(dir.getAbsolutePath())) {
-						return n;
-					}
-				} catch (java.io.IOException ioe) {
-					// shouldn't happen
-					Log.log(Log.WARNING, this, ioe);
-				}
+				return n;
 			}
 		}
 		return (create) ? new VPTDirectory(dir) : null;

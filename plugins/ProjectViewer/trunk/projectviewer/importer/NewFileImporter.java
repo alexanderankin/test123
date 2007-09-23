@@ -68,7 +68,7 @@ public class NewFileImporter extends Importer {
 		ArrayList added = new ArrayList();
 		VPTNode where = makePathTo(f.getParent(), added);
 
-		VPTFile vf = new VPTFile(f);
+		VPTFile vf = new VPTFile(f.getAbsolutePath());
 		if (where == project) {
 			added.add(vf);
 		} else if (added.size() != 0) {

@@ -76,7 +76,7 @@ public class ReImporter extends RootImporter {
 				// check whether the node is under the root (new or old)
 				if (!path.startsWith(project.getRootPath())) {
 					if (node.isFile()) {
-						if (!((VPTFile)node).getFile().exists()) {
+						if (!((VPTFile)node).getFile().isReadable()) {
 							unregisterFile((VPTFile)node);
 							project.remove(i--);
 						}
@@ -121,7 +121,7 @@ public class ReImporter extends RootImporter {
 			for (int i = 0; i < dir.getChildCount(); i++) {
 				VPTNode node = (VPTNode) dir.getChildAt(i);
 				if (node.isFile()) {
-					if (!((VPTFile)node).getFile().exists()) {
+					if (!((VPTFile)node).getFile().isReadable()) {
 						unregisterFile((VPTFile)node);
 						dir.remove(i--);
 					}

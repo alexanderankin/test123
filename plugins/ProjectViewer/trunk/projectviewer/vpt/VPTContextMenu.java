@@ -48,7 +48,6 @@ import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OpenWithAppAction;
 import projectviewer.action.LaunchBrowserAction;
-import projectviewer.action.VFSFileImportAction;
 import projectviewer.action.OpenWithEncodingAction;
 
 import projectviewer.config.ExtensionManager;
@@ -88,7 +87,6 @@ public class VPTContextMenu extends MouseAdapter
 		addAction(new EditGroupAction(true), false);
 		addAction(new EditGroupAction(false), true);
 		addAction(new FileImportAction(), false);
-		addAction(new VFSFileImportAction(), false);
 		addAction(new ReimportAction(), false);
 		addAction(new NodeRemoverAction(false), false);
 		addAction(new NodeRemoverAction(true), false);
