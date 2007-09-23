@@ -1,11 +1,10 @@
 package ctags.sidekick.sorters;
 
-import java.awt.GridLayout;
 import java.util.HashMap;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import ctags.sidekick.AbstractObjectEditor;
@@ -13,6 +12,7 @@ import ctags.sidekick.IObjectProcessor;
 
 public class AttributeValueSorter extends AbstractAttributeValueSorter {
 
+	@SuppressWarnings("serial")
 	public class Editor extends AbstractObjectEditor {
 
 		private JTextField name;
@@ -20,19 +20,23 @@ public class AttributeValueSorter extends AbstractAttributeValueSorter {
 
 		public Editor() {
 			super(AttributeValueSorter.this);
-			setLayout(new GridLayout(0, 1));
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 			JPanel p = new JPanel();
+			p.setAlignmentX(LEFT_ALIGNMENT);
 			add(p);
 			p.add(new JLabel("Attribute:"));
-			name = new JTextField(40);
+			name = new JTextField(20);
 			p.add(name);
-
+			p.setMaximumSize(p.getPreferredSize());
+			
 			p = new JPanel();
+			p.setAlignmentX(LEFT_ALIGNMENT);
 			add(p);
 			p.add(new JLabel("Values:"));
 			values = new JTextField(40);
 			p.add(values);
+			p.setMaximumSize(p.getPreferredSize());
 		}
 		
 		@Override
@@ -48,7 +52,8 @@ public class AttributeValueSorter extends AbstractAttributeValueSorter {
 	private static final String NAME = "AttributeValue";
 	private static final String DESCRIPTION =
 		"Sort tags by attribute value. An optional list of values may be " +
-		"provided to specify the order in which these values should be sorted.";
+		"specified (space-separated) to set the order in which these " +
+		"values should be sorted.";
 	
 	private String attr;
 	private HashMap<String, Integer> valueOrder;

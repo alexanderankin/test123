@@ -28,7 +28,7 @@ public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
 {
 	private static final String NAME = "FlatNamespace";
 	private static final String DESCRIPTION =
-		"Adds the tag flat-namespace to the tree path.";
+		"Adds the tag namespace (flat) to the tree path.";
 
 	public FlatNamespaceTreeMapper() {
 		super(NAME, DESCRIPTION);

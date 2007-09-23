@@ -1,9 +1,9 @@
 package ctags.sidekick;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class ObjectProcessorEditor extends JDialog {
 		setLayout(new GridBagLayout());
 		JPanel processorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.WEST;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		c.gridx = c.gridy = 0;
 		add(processorPanel, c);
 		processorPanel.add(new JLabel("Name:"));
@@ -67,10 +67,10 @@ public class ObjectProcessorEditor extends JDialog {
 		add(descriptionPanel, c);
 		
 		editor = null;
-		editorWrapper = new JPanel();
+		editorWrapper = new JPanel(new BorderLayout());
 		c.gridy = 4;
 		c.gridheight = 1;
-		c.fill = GridBagConstraints.BOTH;
+		c.fill = GridBagConstraints.NONE;
 		add(editorWrapper, c);
 
 		Vector<String> names = manager.getProcessorNames();
@@ -111,7 +111,7 @@ public class ObjectProcessorEditor extends JDialog {
 			processor = processor.getClone();
 			editor = processor.getEditor();
 			if (editor != null)
-				editorWrapper.add(editor);
+				editorWrapper.add(editor, BorderLayout.CENTER);
 		}
 		pack();
 	}
