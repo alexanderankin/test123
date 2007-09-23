@@ -80,12 +80,8 @@ public class FileNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		File f = new File(attrs.getValue(PATH_ATTR));
-		if (ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() &&
-				!f.exists()) {
-			return null;
-		}
-		VPTFile vf = new VPTFile(f);
+		String url = attrs.getValue(PATH_ATTR);
+		VPTFile vf = new VPTFile(url);
 		if (attrs.getValue(NAME_ATTR) != null) {
 			vf.setName(attrs.getValue(NAME_ATTR));
 		}
@@ -102,7 +98,7 @@ public class FileNodeHandler extends NodeHandler {
 		if (!file.getName().equals(file.getFile().getName())) {
 			writeAttr(NAME_ATTR, file.getName(), out);
 		}
-		writeAttr(PATH_ATTR, translatePath(file.getFile().getAbsolutePath()), out);
+		writeAttr(PATH_ATTR, translatePath(file.getURL()), out);
 	}
 }
 

@@ -303,7 +303,15 @@ public final class ProjectPersistenceManager {
 			registerHandler(new DirectoryNodeHandler());
 			registerHandler(new PropertyNodeHandler());
 			registerHandler(new OpenFileNodeHandler());
-			registerHandler(new VFSFileNodeHandler());
+
+			/*
+			 * To maintain compatibility with config files that have
+			 * old VFSFile entries, we add this to the name map, but
+			 * not to the class map, since they'll be translated to
+			 * plain file entries when saving the project data.
+			 */
+			handlerNames.put("vfsfile", handlerNames.get("file"));
+
 			if (l != null && l.size() > 0) {
 				for (Object o : l) {
 					registerHandler((NodeHandler)o);

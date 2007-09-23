@@ -187,7 +187,7 @@ public class SearchAction extends Action {
 						continue;
 					}
 
-					if (!((VPTFile)n).getFile().exists()) {
+					if (!((VPTFile)n).getFile().isReadable()) {
 						continue;
 					}
 

@@ -113,7 +113,7 @@ public class FileImporter extends Importer {
 					addTree(chosen[i], node, fnf, id.getFlattenFilePaths());
 				}
 			} else if (findDirectory(chosen[i], root, false) == null) {
-				node = new VPTFile(chosen[i]);
+				node = new VPTFile(chosen[i].getAbsolutePath());
 				registerFile((VPTFile) node);
 				fileCount++;
 			}
@@ -165,7 +165,7 @@ public class FileImporter extends Importer {
 				child = (flatten) ? where : findDirectory(children[i], where, true);
 				addTree(children[i], child, filter, flatten);
 			} else {
-				child = new VPTFile(children[i]);
+				child = new VPTFile(children[i].getAbsolutePath());
 				if (where.getIndex(child) != -1) {
 					continue;
 				}

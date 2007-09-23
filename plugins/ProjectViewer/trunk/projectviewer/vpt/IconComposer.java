@@ -19,7 +19,6 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.io.File;
 import java.util.HashMap;
 
 import java.awt.Graphics;
@@ -35,6 +34,7 @@ import javax.swing.ImageIcon;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.Log;
 
 import errorlist.ErrorSource;
@@ -93,8 +93,8 @@ public final class IconComposer {
 		vcProvider = vc;
 	} //}}}
 
-	//{{{ +_composeIcon(File, String, Icon)_ : Icon
-	public static Icon composeIcon(File f, String path, Icon baseIcon) {
+	//{{{ +_composeIcon(VFSFile, String, Icon)_ : Icon
+	public static Icon composeIcon(VFSFile f, String path, Icon baseIcon) {
 		Icon[][][][] cache = getIconCache(baseIcon);
 
 		int msg_state = MSG_STATE_NONE;
@@ -275,9 +275,9 @@ public final class IconComposer {
 		return cache;
 	} //}}}
 
-	//{{{ -_getFileState(File, String)_ : int
-	private static int getFileState(File f, String path) {
-		if (f != null && !f.exists())
+	//{{{ -_getFileState(VFSFile, String)_ : int
+	private static int getFileState(VFSFile f, String path) {
+		if (f != null && !f.isReadable())
 			return FILE_STATE_NOT_FOUND;
 		Buffer buffer = jEdit.getBuffer(path);
 		int file_state = IconComposer.FILE_STATE_NORMAL;
@@ -287,7 +287,7 @@ public final class IconComposer {
 			} else if (!buffer.isEditable()) {
 				return FILE_STATE_READONLY;
 			}
-		} else if (!f.canWrite()) {
+		} else if (!f.isWriteable()) {
 			return FILE_STATE_READONLY;
 		}
 		return FILE_STATE_NORMAL;
@@ -348,7 +348,7 @@ public final class IconComposer {
 		 *	@param	path	The path to the file (absolute path if local, VFS
 		 *					URL otherwise).
 		 */
-		public int getFileState(File f, String path); //}}}
+		public int getFileState(VFSFile f, String path); //}}}
 
 		//{{{ +*getIcon(int)* : Icon
 		/**

@@ -44,7 +44,6 @@ import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VFSFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
@@ -124,6 +123,7 @@ public class NodeRenamerAction extends Action {
 			reinsert(node, project);
 			return;
 		} else if (node.isFile()) {
+			/* XXX: need to fix now that we're working with VFS.
 			VPTFile f = (VPTFile) node;
 			String oldPath = node.getNodePath();
 			// updates all files from the old directory to point to the new one
@@ -137,6 +137,7 @@ public class NodeRenamerAction extends Action {
 			}
 			project.unregisterNodePath(oldPath);
 			reinsert(f, project);
+			*/
 		} else if (node.isDirectory() ) {
 			VPTDirectory dir = (VPTDirectory) node;
 			if (dir.getFile().exists()) {
@@ -189,13 +190,13 @@ public class NodeRenamerAction extends Action {
 				dirty = b.isDirty();
 		}
 		cmItem.setVisible(!dirty && node != null &&
-			(node.isFile() || node.isDirectory() || node.isProject() ||
-			 node.getClass() == VFSFile.class));
+			(node.isFile() || node.isDirectory() || node.isProject()));
 	} //}}}
 
 	//{{{ -renameFile(VPTFile, File) : boolean
 	/** Renames a file and tries not to mess up jEdit's current buffer. */
 	private boolean renameFile(VPTFile f, File newFile, boolean rename) {
+		/* XXX: need to fix this for VFS.
 		Buffer b = jEdit.getActiveView().getBuffer();
 		if (b.getPath().equals(f.getNodePath())) {
 			b = null;
@@ -214,7 +215,9 @@ public class NodeRenamerAction extends Action {
 			if (b != null) {
 				jEdit.getActiveView().setBuffer(b);
 			}
+
 		}
+		*/
 		return true;
 	} //}}}
 
