@@ -1,33 +1,33 @@
 package ctags.sidekick.sorters;
 
-import java.util.Comparator;
 import java.util.Vector;
 
 import ctags.sidekick.CtagsSideKickTreeNode;
+import ctags.sidekick.IObjectProcessor;
+import ctags.sidekick.ListObjectProcessor;
 
-public class ListSorter extends AbstractTreeSorter {
+public class ListSorter extends ListObjectProcessor implements ITreeSorter {
 
-	Vector<ITreeSorter> sorters;
+	private static final String NAME = "Composite";
+	private static final String DESCRIPTION =
+		"Sorts tree nodes using a list of other sorters.";
 	
 	public ListSorter() {
-		sorters = new Vector<ITreeSorter>();
+		super(NAME, DESCRIPTION);
 	}
-	public void add(ITreeSorter sorter) {
-		sorters.add(sorter);
-	}
+	
 	public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b) {
+		Vector<IObjectProcessor> sorters = getProcessors();
 		for (int i = 0; i < sorters.size(); i++) {
-			Comparator<CtagsSideKickTreeNode> sorter = sorters.get(i);
+			ITreeSorter sorter = (ITreeSorter) sorters.get(i);
 			int res = sorter.compare(a, b);
 			if (res != 0)
 				return res;
 		}
 		return 0;
 	}
-	public String getName() {
-		return "Composite";
-	}
-	public Vector<ITreeSorter> getComponents() {
-		return sorters;
+
+	public IObjectProcessor getClone() {
+		return new ListSorter();
 	}
 }

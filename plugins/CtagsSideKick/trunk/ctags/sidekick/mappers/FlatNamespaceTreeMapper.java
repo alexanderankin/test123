@@ -20,15 +20,20 @@ package ctags.sidekick.mappers;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.Tag;
 
 
 public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
 {
-	public String getName() {
-		return "FlatNamespace";
-	}
+	private static final String NAME = "FlatNamespace";
+	private static final String DESCRIPTION =
+		"Adds the tag flat-namespace to the tree path.";
 
+	public FlatNamespaceTreeMapper() {
+		super(NAME, DESCRIPTION);
+	}
+	
 	public Vector<Object> getPath(Tag tag)
 	{
 		Vector<Object> path = new Vector<Object>();
@@ -61,5 +66,8 @@ public class FlatNamespaceTreeMapper extends NamespaceTreeMapper
 			}
 		}
 		return path;		
+	}
+	public IObjectProcessor getClone() {
+		return new FlatNamespaceTreeMapper();
 	}
 }

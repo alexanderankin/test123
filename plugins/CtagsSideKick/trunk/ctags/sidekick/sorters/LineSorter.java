@@ -1,9 +1,19 @@
 package ctags.sidekick.sorters;
 
+import ctags.sidekick.AbstractObjectProcessor;
 import ctags.sidekick.CtagsSideKickTreeNode;
+import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.Tag;
 
-public class LineSorter extends AbstractTreeSorter {
+public class LineSorter extends AbstractObjectProcessor implements ITreeSorter {
+
+	private static final String NAME = "Line";
+	private static final String DESCRIPTION =
+		"Sort tags by line number.";
+	
+	public LineSorter() {
+		super(NAME, DESCRIPTION);
+	}
 
 	public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b) {
 		if ((a.getUserObject() instanceof Tag) &&
@@ -17,8 +27,8 @@ public class LineSorter extends AbstractTreeSorter {
 		return 0;
 	}
 
-	public String getName() {
-		return "Line";
+	public IObjectProcessor getClone() {
+		return new LineSorter();
 	}
 
 }

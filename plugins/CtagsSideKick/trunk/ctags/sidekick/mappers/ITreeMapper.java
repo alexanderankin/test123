@@ -19,14 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package ctags.sidekick.mappers;
 import java.util.Vector;
 
+import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.Tag;
 
 
-public interface ITreeMapper {
-	String getName();
+public interface ITreeMapper extends IObjectProcessor {
 	Vector<Object> getPath(Tag tag);
-	ITreeMapper getMapper(String params);
 	void setLang(String lang);
-	String getParams();
 }
 

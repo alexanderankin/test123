@@ -40,9 +40,9 @@ public class ParsedData extends SideKickParsedData
 	{
 		super(buffer.getName());
 		String mode = buffer.getMode().getName();
-		mapper = MapperManager.getMapperForMode(mode);
+		mapper = (ITreeMapper) MapperManager.getInstance().getProcessorForMode(mode);
 		mapper.setLang(lang);
-		sorter = SorterManager.getSorterForMode(mode);
+		sorter = (ITreeSorter) SorterManager.getInstance().getProcessorForMode(mode);
 	}
 	
 	void add(Tag tag)

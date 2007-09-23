@@ -1,9 +1,16 @@
 package ctags.sidekick.sorters;
 
+import ctags.sidekick.AbstractParameterizedObjectProcessor;
 import ctags.sidekick.CtagsSideKickTreeNode;
 import ctags.sidekick.Tag;
 
-public abstract class AbstractAttributeValueSorter extends AbstractTreeSorter {
+public abstract class AbstractAttributeValueSorter extends AbstractParameterizedObjectProcessor
+	implements ITreeSorter
+{
+
+	public AbstractAttributeValueSorter(String name, String description) {
+		super(name, description);
+	}
 
 	public int compare(CtagsSideKickTreeNode a, CtagsSideKickTreeNode b) {
 		if ((a.getUserObject() instanceof Tag) &&
