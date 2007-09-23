@@ -5,12 +5,8 @@
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-
-<book>
-
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <bookinfo><title>ErrorList plugin user's guide</title>
 
  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -459,7 +455,7 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
  <listitem>
- <formalpara><title>Version 1.6</title> <para>requires JDK 1.4, and jEdit 4.2 final. </para> </formalpara> 
+ <formalpara><title>Version 1.6</title> <para>requires JDK 1.5, and jEdit 4.3pre7 final. </para> </formalpara> 
  <itemizedlist>
  <listitem><para> New option to hide warnings (patch 1719791 by Shlomy Reinstein) </para></listitem>
  <listitem><para> New options to filter files based on filename globs. (Shlomy Reinstein) </para></listitem>
