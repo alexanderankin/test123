@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="textfilter_run_filter">
+		<CODE>
+			new textfilter.ApplicationChooserDialog(false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="text_filter_create_filter">
+		<CODE>
+			new textfilter.ApplicationChooserDialog(true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="text_filter_remove_filter">
+		<CODE>
+			new textfilter.RemoveFilterDialog();
+		</CODE>
+	</ACTION>
+
+</ACTIONS>

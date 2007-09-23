@@ -1,0 +1,4 @@
+TODO:
+
+- create a "CmdExec" class that properly uses threads to feed data, read from
+  stderr and stdout to avoid deadlocks.
