@@ -1,40 +1,39 @@
 package ctags.sidekick.mappers;
 import java.util.Vector;
 
+import ctags.sidekick.IObjectProcessor;
+import ctags.sidekick.ListObjectProcessor;
 import ctags.sidekick.Tag;
 
-public class ListTreeMapper extends AbstractTreeMapper {
+public class ListTreeMapper extends ListObjectProcessor implements ITreeMapper {
 
-	Vector <ITreeMapper> mappers; 
+	private static final String NAME = "Composite";
+	private static final String DESCRIPTION =
+		"A list of tree mappers, each adds its own nodes to the tree path.";
 	
 	public ListTreeMapper() {
-		mappers = new Vector<ITreeMapper>();
-	}
-	
-	public void add(ITreeMapper mapper) {
-		mappers.add(mapper);
+		super(NAME, DESCRIPTION);
 	}
 	
 	public Vector<Object> getPath(Tag tag) {
 		Vector<Object> path = new Vector<Object>();
-		for (int i = 0; i < mappers.size(); i++) {
-			ITreeMapper mapper = mappers.get(i);
+		Vector<IObjectProcessor> processors = getProcessors();
+		for (int i = 0; i < processors.size(); i++) {
+			ITreeMapper mapper = (ITreeMapper) processors.get(i);
 			path.addAll(mapper.getPath(tag));
 		}
 		return path;
 	}
 
 	public void setLang(String lang) {
-		for (int i = 0; i < mappers.size(); i++) {
-			ITreeMapper mapper = mappers.get(i);
+		Vector<IObjectProcessor> processors = getProcessors();
+		for (int i = 0; i < processors.size(); i++) {
+			ITreeMapper mapper = (ITreeMapper) processors.get(i);
 			mapper.setLang(lang);
 		}
 	}
-	public Vector <ITreeMapper> getComponents() {
-		return mappers;
-	}
 
-	public String getName() {
-		return "Composite";
+	public IObjectProcessor getClone() {
+		return new ListTreeMapper();
 	}
 }

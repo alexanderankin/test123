@@ -1,19 +1,14 @@
 package ctags.sidekick.mappers;
 
+import ctags.sidekick.AbstractObjectProcessor;
 
-
-public abstract class AbstractTreeMapper implements ITreeMapper {
+public abstract class AbstractTreeMapper extends AbstractObjectProcessor implements ITreeMapper {
 	
-	public ITreeMapper getMapper(String params) {
-		return this;
+	public AbstractTreeMapper(String name, String description) {
+		super(name, description);
 	}
+
 	public void setLang(String lang) {
 	}
 
-	public String toString() {
-		return getName();
-	}
-	public String getParams() {
-		return null;
-	}
 }

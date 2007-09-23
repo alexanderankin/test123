@@ -25,6 +25,9 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.sidekick.MapperManager;
+import ctags.sidekick.SorterManager;
+
 
 public class TreeStyleOptionPane extends AbstractOptionPane implements ActionListener {
 	/**
@@ -64,11 +67,13 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		JPanel optionPanes = new JPanel(new GridLayout(1, 0));
 		addComponent(optionPanes);
 
-		ModeMapperPane mapperPane = new ModeMapperPane();
+		ObjectProcessorListEditor mapperPane =
+			new ObjectProcessorListEditor(MapperManager.getInstance());
 		optionPanes.add(mapperPane);
 		modePanes.add(mapperPane);
 		
-		ModeSorterPane sorterPane = new ModeSorterPane();
+		ObjectProcessorListEditor sorterPane =
+			new ObjectProcessorListEditor(SorterManager.getInstance());
 		optionPanes.add(sorterPane);
 		modePanes.add(sorterPane);
 		

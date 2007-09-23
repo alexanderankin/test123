@@ -20,20 +20,29 @@ package ctags.sidekick.mappers;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.Tag;
 
 public class NamespaceTreeMapper extends AbstractTreeMapper {
 
+	private static final String NAME = "Namespace";
+	private static final String DESCRIPTION =
+		"Adds the tag (multi-level) namespace to the tree path.";
+	
 	static final String [] Keywords = {
 		"namespace", "class", "union", "struct", "enum"
 	};
 	
 	String separator, separatorRegExp;
 
-	public String getName()
-	{
-		return "Namespace";
+	public NamespaceTreeMapper(String name, String description) {
+		super(name, description);
 	}
+
+	public NamespaceTreeMapper() {
+		super(NAME, DESCRIPTION);
+	}
+	
 	public void setLang(String lang)
 	{
 		if (lang.equals("c++") || lang.equals("c"))
@@ -62,5 +71,8 @@ public class NamespaceTreeMapper extends AbstractTreeMapper {
 			}
 		}
 		return path;		
+	}
+	public IObjectProcessor getClone() {
+		return new NamespaceTreeMapper();
 	}
 }

@@ -2,19 +2,27 @@ package ctags.sidekick.mappers;
 
 import java.util.Vector;
 
+import ctags.sidekick.AbstractObjectEditor;
+import ctags.sidekick.AbstractParameterizedObjectProcessor;
+import ctags.sidekick.IObjectProcessor;
+import ctags.sidekick.StringParamEditor;
 import ctags.sidekick.Tag;
 
-public class AttributeValueTreeMapper extends AbstractTreeMapper {
+public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcessor 
+	implements ITreeMapper {
 
 	String attr;
 	String defVal;
-	static private final String BASE_NAME = "AttributeValue";
+	static private final String NAME = "AttributeValue";
+	static private final String DESCRIPTION =
+		"Adds the value of a tag attribute to the tree path. " +
+		"Accepts a default value if the attribute does not exist for the tag.";
 	
-	public AttributeValueTreeMapper(String params) {
-		setParams(params);
+	public AttributeValueTreeMapper() {
+		super(NAME, DESCRIPTION);
 	}
 	
-	private void setParams(String params) {
+	private void parseParams(String params) {
 		if (params != null) {
 			String [] parts = params.split(" ", 2);
 			attr = parts[0];
@@ -26,8 +34,10 @@ public class AttributeValueTreeMapper extends AbstractTreeMapper {
 			attr = defVal = null;
 	}
 	
-	public ITreeMapper getMapper(String params) {
-		return new AttributeValueTreeMapper(params);
+	@Override
+	public void setParams(String params) {
+		super.setParams(params);
+		parseParams(params);
 	}
 
 	public Vector<Object> getPath(Tag tag) {
@@ -39,11 +49,8 @@ public class AttributeValueTreeMapper extends AbstractTreeMapper {
 			path.add(val);
 		return path;
 	}
-	public String getName() {
-		return BASE_NAME;
-	}
 	public String toString() {
-		return BASE_NAME + "(" + getParams() + ")";
+		return NAME + "(" + getParams() + ")";
 	}
 	public String getParams() {
 		StringBuffer params = new StringBuffer();
@@ -53,4 +60,17 @@ public class AttributeValueTreeMapper extends AbstractTreeMapper {
 			params.append(" " + defVal);
 		return params.toString();
 	}
+
+	public IObjectProcessor getClone() {
+		return new AttributeValueTreeMapper();
+	}
+
+	@Override
+	public AbstractObjectEditor getEditor() {
+		return new StringParamEditor(this, "Attribute:");
+	}
+
+	public void setLang(String lang) {
+	}
+	
 }

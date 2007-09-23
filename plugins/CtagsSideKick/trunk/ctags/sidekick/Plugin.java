@@ -27,15 +27,15 @@ public class Plugin extends EditPlugin {
 
 	@Override
 	public void start() {
-		MapperManager.start();
-		SorterManager.start();
+		MapperManager.getInstance().start();
+		SorterManager.getInstance().start();
 		super.start();
 	}
 	
 	@Override
 	public void stop() {
-		MapperManager.stop();
-		SorterManager.stop();
+		MapperManager.getInstance().stop();
+		SorterManager.getInstance().stop();
 		super.stop();
 	}
 
