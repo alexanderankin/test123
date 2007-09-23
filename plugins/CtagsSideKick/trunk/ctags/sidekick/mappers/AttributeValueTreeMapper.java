@@ -2,10 +2,14 @@ package ctags.sidekick.mappers;
 
 import java.util.Vector;
 
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import ctags.sidekick.AbstractObjectEditor;
 import ctags.sidekick.AbstractParameterizedObjectProcessor;
 import ctags.sidekick.IObjectProcessor;
-import ctags.sidekick.StringParamEditor;
 import ctags.sidekick.Tag;
 
 public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcessor 
@@ -67,10 +71,47 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 
 	@Override
 	public AbstractObjectEditor getEditor() {
-		return new StringParamEditor(this, "Attribute:");
+		return new Editor();
 	}
 
 	public void setLang(String lang) {
+	}
+	
+	@SuppressWarnings("serial")
+	public class Editor extends AbstractObjectEditor {
+
+		private JTextField name;
+		private JTextField defaultValue;
+
+		public Editor() {
+			super(AttributeValueTreeMapper.this);
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+			JPanel p = new JPanel();
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			add(p);
+			p.add(new JLabel("Attribute:"));
+			name = new JTextField(20);
+			p.add(name);
+			p.setMaximumSize(p.getPreferredSize());
+
+			p = new JPanel();
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			add(p);
+			p.add(new JLabel("Default value:"));
+			defaultValue = new JTextField(20);
+			p.add(defaultValue);
+			p.setMaximumSize(p.getPreferredSize());
+		}
+		
+		@Override
+		public void save() {
+			String params = name.getText(); 
+			if (defaultValue.getText().length() > 0)
+				params = params + " " + defaultValue.getText();
+			setParams(params);
+		}
+
 	}
 	
 }

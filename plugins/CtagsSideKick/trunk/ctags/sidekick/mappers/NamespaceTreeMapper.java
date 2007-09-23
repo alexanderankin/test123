@@ -27,7 +27,7 @@ public class NamespaceTreeMapper extends AbstractTreeMapper {
 
 	private static final String NAME = "Namespace";
 	private static final String DESCRIPTION =
-		"Adds the tag (multi-level) namespace to the tree path.";
+		"Adds the tag namespace (multi-level) to the tree path.";
 	
 	static final String [] Keywords = {
 		"namespace", "class", "union", "struct", "enum"
