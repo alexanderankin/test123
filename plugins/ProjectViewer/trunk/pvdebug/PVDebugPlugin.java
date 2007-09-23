@@ -88,7 +88,6 @@ public final class PVDebugPlugin extends EBPlugin {
 		System.err.println("========================================");
 		System.err.println("Event:   " + msg.getClass().getName());
 		System.err.println("Type:    " + msg.getType());
-		System.err.println("Node:    " + msg.getNode());
 	}
 
 }
