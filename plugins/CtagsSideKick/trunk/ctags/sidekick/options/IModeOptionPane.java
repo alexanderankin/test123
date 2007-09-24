@@ -5,6 +5,6 @@ public interface IModeOptionPane {
 	void modeSelected(String mode);
 	// Save all changes (in all modes)
 	void save();
-	// Reset current mode options to the defaults
-	void resetCurrentMode();
+	// Sets whether the mode uses the default settings
+	void setUseDefaults(boolean b);
 }

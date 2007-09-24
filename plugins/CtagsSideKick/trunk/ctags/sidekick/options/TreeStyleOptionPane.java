@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
 
-import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -38,7 +38,7 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 
 	JComboBox modeCB;
 	Vector<IModeOptionPane> modePanes;
-	JButton resetBtn;
+	JCheckBox useDefaultsCheck;
 	
 	public TreeStyleOptionPane()
 	{
@@ -61,7 +61,7 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 
 		modePanes = new Vector<IModeOptionPane>();
 		
-		ModeCtagsInvocationPane invocationPane = new ModeCtagsInvocationPane();
+		CtagsCmdOptionsPane invocationPane = new CtagsCmdOptionsPane();
 		addComponent(invocationPane);
 		modePanes.add(invocationPane);
 		
@@ -85,9 +85,9 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		
 		addSeparator();
 		
-		resetBtn = new JButton("Reset to defaults");
-		resetBtn.addActionListener(this);
-		addComponent(resetBtn);
+		useDefaultsCheck = new JCheckBox("Use default settings");
+		useDefaultsCheck.addActionListener(this);
+		addComponent(useDefaultsCheck);
 
 		modeCB.setSelectedIndex(0);
 	}
@@ -97,10 +97,10 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		String mode;
 		if (index == 0) {
 			mode = null;
-			resetBtn.setEnabled(false);
+			useDefaultsCheck.setEnabled(false);
 		} else {
 			mode = (String) modeCB.getItemAt(index); 
-			resetBtn.setEnabled(true);
+			useDefaultsCheck.setEnabled(true);
 		}
 		for (int i = 0; i < modePanes.size(); i++)
 			modePanes.get(i).modeSelected(mode);
@@ -113,9 +113,9 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == resetBtn) {
+		if (e.getSource() == useDefaultsCheck) {
 			for (int i = 0; i < modePanes.size(); i++)
-				modePanes.get(i).resetCurrentMode();
+				modePanes.get(i).setUseDefaults(useDefaultsCheck.isSelected());
 		}
 		
 	}
