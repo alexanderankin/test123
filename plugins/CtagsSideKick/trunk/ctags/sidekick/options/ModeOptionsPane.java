@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.sidekick.FilterManager;
 import ctags.sidekick.MapperManager;
 import ctags.sidekick.SorterManager;
 
@@ -40,6 +41,11 @@ public class ModeOptionsPane extends sidekick.ModeOptionsPane {
 			new ObjectProcessorListEditor(SorterManager.getInstance());
 		optionPanes.add(sorterPane);
 		modePanes.add(sorterPane);
+		
+		ObjectProcessorListEditor filterPane =
+			new ObjectProcessorListEditor(FilterManager.getInstance());
+		optionPanes.add(filterPane);
+		modePanes.add(filterPane);
 		
 		_load();
 	}

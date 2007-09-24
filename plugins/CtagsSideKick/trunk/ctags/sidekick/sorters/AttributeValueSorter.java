@@ -69,8 +69,7 @@ public class AttributeValueSorter extends AbstractAttributeValueSorter {
 		hasParams = true;
 	}
 
-	public void setParams(String params) {
-		super.setParams(params);
+	public void parseParams(String params) {
 		if (params == null) {
 			attr = null;
 			valueOrder = null;
