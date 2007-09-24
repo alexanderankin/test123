@@ -25,7 +25,7 @@ public class ModeOptionsPane extends sidekick.ModeOptionsPane {
 	protected void _init() {
 		modePanes = new Vector<IModeOptionPane>();
 		
-		ModeCtagsInvocationPane invocationPane = new ModeCtagsInvocationPane();
+		CtagsCmdOptionsPane invocationPane = new CtagsCmdOptionsPane();
 		addComponent(invocationPane);
 		modePanes.add(invocationPane);
 		
@@ -60,7 +60,7 @@ public class ModeOptionsPane extends sidekick.ModeOptionsPane {
 	protected void _reset()
 	{
 		for (int i = 0; i < modePanes.size(); i++)
-			modePanes.get(i).resetCurrentMode();
+			modePanes.get(i).setUseDefaults(true);
 	}
 
 	protected void _load()

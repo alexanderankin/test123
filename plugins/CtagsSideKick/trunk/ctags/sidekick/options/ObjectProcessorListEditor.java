@@ -164,4 +164,9 @@ public class ObjectProcessorListEditor extends JPanel implements
 			processorModel.addElement(model.elementAt(i)); 
 	}
 
+	public void setUseDefaults(boolean b) {
+		if (b)
+			resetCurrentMode();
+	}
+
 }
