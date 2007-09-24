@@ -26,7 +26,7 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 		super(NAME, DESCRIPTION);
 	}
 	
-	private void parseParams(String params) {
+	protected void parseParams(String params) {
 		if (params != null) {
 			String [] parts = params.split(" ", 2);
 			attr = parts[0];
@@ -38,12 +38,6 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 			attr = defVal = null;
 	}
 	
-	@Override
-	public void setParams(String params) {
-		super.setParams(params);
-		parseParams(params);
-	}
-
 	public Vector<Object> getPath(Tag tag) {
 		Vector<Object> path = new Vector<Object>();
 		Object val = tag.getInfo().get(attr);

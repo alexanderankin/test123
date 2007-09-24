@@ -22,6 +22,9 @@ public abstract class AbstractParameterizedObjectProcessor extends
 	@Override
 	public void setParams(String params) {
 		this.params = params;
+		parseParams(params);
 	}
 
+	protected void parseParams(String params) {
+	}
 }

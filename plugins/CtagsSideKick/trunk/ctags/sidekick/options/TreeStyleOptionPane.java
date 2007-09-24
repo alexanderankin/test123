@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.sidekick.FilterManager;
 import ctags.sidekick.MapperManager;
 import ctags.sidekick.SorterManager;
 
@@ -76,6 +77,11 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 			new ObjectProcessorListEditor(SorterManager.getInstance());
 		optionPanes.add(sorterPane);
 		modePanes.add(sorterPane);
+		
+		ObjectProcessorListEditor filterPane =
+			new ObjectProcessorListEditor(FilterManager.getInstance());
+		optionPanes.add(filterPane);
+		modePanes.add(filterPane);
 		
 		addSeparator();
 		

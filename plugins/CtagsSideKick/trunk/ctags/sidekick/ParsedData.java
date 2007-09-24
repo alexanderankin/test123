@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.Buffer;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
+import ctags.sidekick.filters.ITreeFilter;
 import ctags.sidekick.mappers.ITreeMapper;
 import ctags.sidekick.mappers.KindTreeMapper;
 import ctags.sidekick.sorters.ITreeSorter;
@@ -34,6 +35,7 @@ public class ParsedData extends SideKickParsedData
 {
 	ITreeMapper mapper = null;
 	ITreeSorter sorter = null;
+	ITreeFilter filter = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
 	public ParsedData(Buffer buffer, String lang)
@@ -43,10 +45,13 @@ public class ParsedData extends SideKickParsedData
 		mapper = (ITreeMapper) MapperManager.getInstance().getProcessorForMode(mode);
 		mapper.setLang(lang);
 		sorter = (ITreeSorter) SorterManager.getInstance().getProcessorForMode(mode);
+		filter = (ITreeFilter) FilterManager.getInstance().getProcessorForMode(mode);
 	}
 	
 	void add(Tag tag)
 	{
+		if (filter != null && filter.pass(tag) == false)
+			return;
 		if (mapper == null)
 		{
 			tree.add(tag);
