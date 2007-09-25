@@ -59,6 +59,20 @@ public abstract class ObjectProcessorManager {
 		return lop;
 	}
 
+	public void resetProcessorForMode(String mode) {
+		String optionPath = getProcessorOptionPath();
+		String sizeOption = optionPath + ".size";
+		if (! ModeOptionsPane.modePropertyExists(mode, sizeOption))
+			return;
+		int size = ModeOptionsPane.getIntegerProperty(mode, sizeOption, 0);
+		ModeOptionsPane.clearModeProperty(mode, sizeOption);
+		for (int i = 0; i < size; i++) {
+			String prefix = optionPath + "." + i + ".";
+			ModeOptionsPane.clearModeProperty(mode, prefix + "name");
+			ModeOptionsPane.clearModeProperty(mode, prefix + "params");
+		}
+	}
+	
 	public void setProcessorForMode(String mode, ListObjectProcessor lop) {
 		Vector<IObjectProcessor> ops = lop.getProcessors();
 		String optionPath = getProcessorOptionPath();
