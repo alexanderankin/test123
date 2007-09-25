@@ -59,6 +59,10 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		});
 		addComponent("Change settings for mode:", modeCB);
 
+		useDefaultsCheck = new JCheckBox("Use default settings");
+		useDefaultsCheck.addActionListener(this);
+		addComponent(useDefaultsCheck);
+
 		modePanes = new Vector<IModeOptionPane>();
 		
 		CtagsCmdOptionsPane invocationPane = new CtagsCmdOptionsPane();
@@ -83,12 +87,6 @@ public class TreeStyleOptionPane extends AbstractOptionPane implements ActionLis
 		optionPanes.add(filterPane);
 		modePanes.add(filterPane);
 		
-		addSeparator();
-		
-		useDefaultsCheck = new JCheckBox("Use default settings");
-		useDefaultsCheck.addActionListener(this);
-		addComponent(useDefaultsCheck);
-
 		modeCB.setSelectedIndex(0);
 	}
 
