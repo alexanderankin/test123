@@ -4,10 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -26,14 +23,11 @@ import ctags.sidekick.ObjectProcessorEditor;
 import ctags.sidekick.ObjectProcessorManager;
 
 @SuppressWarnings("serial")
-public class ObjectProcessorListEditor extends JPanel implements
-		IModeOptionPane {
+public class ObjectProcessorListEditor extends ModeOptionPanel<DefaultListModel> {
 
 	JList list;
-	DefaultListModel processorModel;
-	HashMap<String, DefaultListModel> modeModels;
-	String mode;
 	ObjectProcessorManager manager;
+	DefaultListModel model;
 	
 	public ObjectProcessorListEditor(ObjectProcessorManager manager)
 	{
@@ -46,7 +40,6 @@ public class ObjectProcessorListEditor extends JPanel implements
 		topPanel.setBorder(b);
 		add(topPanel);
 		
-		modeModels = new HashMap<String, DefaultListModel>();
 		list = new JList();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		topPanel.add(new JScrollPane(list), BorderLayout.CENTER);
@@ -82,36 +75,14 @@ public class ObjectProcessorListEditor extends JPanel implements
 		buttons.add(up);
 		buttons.add(down);
 		topPanel.add(buttons, BorderLayout.SOUTH);
-		
-		mode = null;
 	}
 
-	public void modeSelected(String mode) {
-		this.mode = mode;
-		processorModel = getModelForMode(mode);
-		modeModels.put(mode, processorModel);
-		list.setModel(processorModel);
-	}
-
-	private DefaultListModel getModelForMode(String mode) {
-		DefaultListModel model = modeModels.get(mode);
-		if (model == null)
-		{
-			model = new DefaultListModel();
-			ListObjectProcessor processor = manager.getProcessorForMode(mode);
-			Vector<IObjectProcessor> processors = processor.getProcessors();
-			for (int i = 0; i < processors.size(); i++)
-				model.addElement(processors.get(i));
-		}
-		return model;
-	}
-	
 	protected void addProcessor() {
 		IObjectProcessor processor = new ObjectProcessorEditor(
 				GUIUtilities.getParentDialog(this), manager).getProcessor();
 		if (processor != null) {
 			int index = list.getSelectedIndex();
-			processorModel.add(index + 1, processor);
+			model.add(index + 1, processor);
 			list.setSelectedIndex(index + 1);
 		}
 	}
@@ -119,15 +90,15 @@ public class ObjectProcessorListEditor extends JPanel implements
 	protected void removeProcessor() {
 		int index = list.getSelectedIndex();
 		if (index >= 0) {
-			processorModel.remove(index);
-			if (index < processorModel.size())
+			model.remove(index);
+			if (index < model.size())
 				list.setSelectedIndex(index);
 		}
 	}
 
 	private void moveProcessorDown() {
 		int index = list.getSelectedIndex();
-		if (index < processorModel.size() - 1)
+		if (index < model.size() - 1)
 			moveProcessor(index, index + 1);
 	}
 	private void moveProcessorUp() {
@@ -136,37 +107,45 @@ public class ObjectProcessorListEditor extends JPanel implements
 			moveProcessor(index, index - 1);
 	}
 	private void moveProcessor(int from, int to) {
-		IObjectProcessor current = (IObjectProcessor) processorModel.get(from);
-		IObjectProcessor other = (IObjectProcessor) processorModel.get(to);
-		processorModel.set(to, current);
-		processorModel.set(from, other);
+		IObjectProcessor current = (IObjectProcessor) model.get(from);
+		IObjectProcessor other = (IObjectProcessor) model.get(to);
+		model.set(to, current);
+		model.set(from, other);
 		list.setSelectedIndex(to);
 	}
 
-	public void save()
-	{
-		Iterator models = modeModels.entrySet().iterator();
-		while (models.hasNext()) {
-			Entry e = (Entry) models.next();
-			String mode = (String) e.getKey();
-			DefaultListModel model = (DefaultListModel) e.getValue();
-			ListObjectProcessor processor = manager.createProcessorForMode(mode);
-			for (int i = 0; i < model.getSize(); i++)
-				processor.add((IObjectProcessor) model.get(i));
-			manager.setProcessorForMode(mode, processor);
-		}
+	@Override
+	protected DefaultListModel createModeProps(String mode) {
+		DefaultListModel model = new DefaultListModel();
+		ListObjectProcessor processor = manager.getProcessorForMode(mode);
+		Vector<IObjectProcessor> processors = processor.getProcessors();
+		for (int i = 0; i < processors.size(); i++)
+			model.addElement(processors.get(i));
+		return model;
 	}
 
-	public void resetCurrentMode() {
-		DefaultListModel model = getModelForMode(null);
-		processorModel.clear();
-		for (int i = 0; i < model.size(); i++)
-			processorModel.addElement(model.elementAt(i)); 
+	@Override
+	protected void resetModeProps(String mode) {
+		manager.resetProcessorForMode(mode);
 	}
 
-	public void setUseDefaults(boolean b) {
-		if (b)
-			resetCurrentMode();
+	@Override
+	protected void saveModeProps(String mode, DefaultListModel props) {
+		ListObjectProcessor processor = manager.createProcessorForMode(mode);
+		for (int i = 0; i < props.getSize(); i++)
+			processor.add((IObjectProcessor) props.get(i));
+		manager.setProcessorForMode(mode, processor);
+	}
+
+	@Override
+	protected void updatePropsFromUI(DefaultListModel props) {
+		// Nothing to do, the model is connected directly to the table 
+	}
+
+	@Override
+	protected void updateUIFromProps(DefaultListModel props) {
+		model = props;
+		list.setModel(model);
 	}
 
 }
