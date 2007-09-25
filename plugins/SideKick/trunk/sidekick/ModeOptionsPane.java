@@ -91,6 +91,10 @@ abstract public class ModeOptionsPane
 		jEdit.unsetProperty(modePrefix(mode, key));
 	}
 
+	public static boolean modePropertyExists(String mode, String key) {
+		return (jEdit.getProperty(modePrefix(mode, key)) != null);
+	}
+	
 	public static String modePrefix(String mode, String key) {
 		if (mode != null && !mode.equals(ModeOptionsDialog.ALL)) 
 			return "mode." +mode + "." + key;
