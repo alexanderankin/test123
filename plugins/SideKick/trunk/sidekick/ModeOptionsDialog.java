@@ -64,7 +64,7 @@ public class ModeOptionsDialog extends OptionsDialog
 {
 	// {{{ data members
 	public static final String SERVICECLASS="org.gjt.sp.jedit.options.ModeOptionPane";
-	public static final String ALL="ALL";
+	public static final String ALL=jEdit.getProperty("options.editing.global");
 
 	OptionTreeModel paneTreeModel;
 	StringList modes;
