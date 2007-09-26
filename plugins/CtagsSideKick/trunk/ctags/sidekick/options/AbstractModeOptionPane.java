@@ -64,7 +64,7 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane
 		pane.modeSelected(mode);
 	}
 
-	public void save()
+	public void _save()
 	{
 		pane.save();
 	}
