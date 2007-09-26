@@ -8,7 +8,7 @@ import org.gjt.sp.jedit.jEdit;
 import ctags.sidekick.Plugin;
 
 @SuppressWarnings("serial")
-public class CtagsCmdOptionsPane extends ModeOptionPanel<CtagsCmdOptionsPane.Props> {
+public class CtagsCmdOptionsPane extends ModeOptionPanel {
 
 	public static class Props {
 		Props(String s) {
@@ -26,29 +26,29 @@ public class CtagsCmdOptionsPane extends ModeOptionPanel<CtagsCmdOptionsPane.Pro
 	}
 	
 	@Override
-	protected Props createModeProps(String mode) {
-		return new Props(ModeOptionsPane.getProperty(mode,
+	protected Object createModeProps(String mode) {
+		return new Props(SideKickModeOptionsPane.getProperty(mode,
 			Plugin.CTAGS_MODE_OPTIONS));
 	}
 
 	@Override
 	protected void resetModeProps(String mode) {
-		ModeOptionsPane.clearModeProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
+		SideKickModeOptionsPane.clearModeProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
 	}
 
 	@Override
-	protected void saveModeProps(String mode, Props props) {
-		ModeOptionsPane.setProperty(mode, Plugin.CTAGS_MODE_OPTIONS, props.options);
+	protected void saveModeProps(String mode, Object props) {
+		SideKickModeOptionsPane.setProperty(mode, Plugin.CTAGS_MODE_OPTIONS, ((Props)props).options);
 	}
 
 	@Override
-	protected void updatePropsFromUI(Props props) {
-		props.options = ctagsCmdOptions.getText();
+	protected void updatePropsFromUI(Object props) {
+		((Props)props).options = ctagsCmdOptions.getText();
 	}
 
 	@Override
-	protected void updateUIFromProps(Props props) {
-		ctagsCmdOptions.setText(props.options);
+	protected void updateUIFromProps(Object props) {
+		ctagsCmdOptions.setText(((Props)props).options);
 	}
 
 }

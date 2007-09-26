@@ -41,7 +41,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import ctags.sidekick.options.ModeOptionsPane;
+import ctags.sidekick.options.SideKickModeOptionsPane;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
@@ -104,7 +104,7 @@ public class Parser extends SideKickParser {
 		if (panel == null)
 			return;
 		String mode = buffer.getMode().getName();
-		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.TREE_BUILDER);
+		String mapperName = SideKickModeOptionsPane.getProperty(mode, OptionPane.TREE_BUILDER);
 		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
 			groupByNamespaceButton.setSelected(true);
 		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))
@@ -183,7 +183,7 @@ public class Parser extends SideKickParser {
 			path = f.getAbsolutePath();
 		}
 		String mode = buffer.getMode().getName();
-		String options = ModeOptionsPane.getProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
+		String options = SideKickModeOptionsPane.getProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
 		if (options == null)
 			options = "";
 		Vector<String> cmdLine = new Vector<String>();

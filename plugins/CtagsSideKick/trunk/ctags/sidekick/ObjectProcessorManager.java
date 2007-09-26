@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import ctags.sidekick.options.ModeOptionsPane;
+import ctags.sidekick.options.SideKickModeOptionsPane;
 
 public abstract class ObjectProcessorManager {
 	
@@ -37,11 +37,11 @@ public abstract class ObjectProcessorManager {
 		ListObjectProcessor lop = getListObjectProcessor();
 		String optionPath = getProcessorOptionPath();
 		String type = " " + getProcessorTypeName() + " ";
-		int size = ModeOptionsPane.getIntegerProperty(
+		int size = SideKickModeOptionsPane.getIntegerProperty(
 			mode, optionPath + ".size", 0);
 		for (int i = 0; i < size; i++) {
 			String prefix = optionPath + "." + i + ".";
-			String name = ModeOptionsPane.getProperty(mode, prefix + "name");
+			String name = SideKickModeOptionsPane.getProperty(mode, prefix + "name");
 			if (name == null) {
 				error("" + i + "'th" + type + "not specified for mode " + mode);
 				continue;
@@ -51,7 +51,7 @@ public abstract class ObjectProcessorManager {
 				error("Unknown" + type + name + " used for mode " + mode);
 				continue;
 			}
-			String params = ModeOptionsPane.getProperty(mode, prefix + "params");
+			String params = SideKickModeOptionsPane.getProperty(mode, prefix + "params");
 			p = p.getClone();
 			p.setParams(params);
 			lop.add(p);
@@ -62,28 +62,28 @@ public abstract class ObjectProcessorManager {
 	public void resetProcessorForMode(String mode) {
 		String optionPath = getProcessorOptionPath();
 		String sizeOption = optionPath + ".size";
-		if (! ModeOptionsPane.modePropertyExists(mode, sizeOption))
+		if (! SideKickModeOptionsPane.modePropertyExists(mode, sizeOption))
 			return;
-		int size = ModeOptionsPane.getIntegerProperty(mode, sizeOption, 0);
-		ModeOptionsPane.clearModeProperty(mode, sizeOption);
+		int size = SideKickModeOptionsPane.getIntegerProperty(mode, sizeOption, 0);
+		SideKickModeOptionsPane.clearModeProperty(mode, sizeOption);
 		for (int i = 0; i < size; i++) {
 			String prefix = optionPath + "." + i + ".";
-			ModeOptionsPane.clearModeProperty(mode, prefix + "name");
-			ModeOptionsPane.clearModeProperty(mode, prefix + "params");
+			SideKickModeOptionsPane.clearModeProperty(mode, prefix + "name");
+			SideKickModeOptionsPane.clearModeProperty(mode, prefix + "params");
 		}
 	}
 	
 	public void setProcessorForMode(String mode, ListObjectProcessor lop) {
 		Vector<IObjectProcessor> ops = lop.getProcessors();
 		String optionPath = getProcessorOptionPath();
-		ModeOptionsPane.setIntegerProperty(mode, optionPath + ".size", ops.size());
+		SideKickModeOptionsPane.setIntegerProperty(mode, optionPath + ".size", ops.size());
 		for (int i = 0; i < ops.size(); i++) {
 			String prefix = optionPath + "." + i + ".";
 			IObjectProcessor p = ops.get(i);
-			ModeOptionsPane.setProperty(mode, prefix + "name", p.getName());
+			SideKickModeOptionsPane.setProperty(mode, prefix + "name", p.getName());
 			String params = p.getParams();
 			if (params != null && params.length() > 0)
-				ModeOptionsPane.setProperty(mode, prefix + "params", params);
+				SideKickModeOptionsPane.setProperty(mode, prefix + "params", params);
 		}
 	}
 
