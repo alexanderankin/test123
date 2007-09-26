@@ -27,7 +27,7 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 		Mode[] modes = jEdit.getModes();
 		Arrays.sort(modes,new MiscUtilities.StringICaseCompare());
 		String[] modeNames = new String[modes.length + 1];
-		modeNames[0] = "<global defaults>";
+		modeNames[0] = jEdit.getProperty("options.editing.global");
 		for(int i = 0; i < modes.length; i++)
 			modeNames[i + 1] = modes[i].getName();
 		modeCB = new JComboBox(modeNames);
@@ -36,9 +36,9 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 				modeSelected();
 			}
 		});
-		addComponent("Change settings for mode:", modeCB);
+		addComponent(jEdit.getProperty("options.editing.mode"), modeCB);
 
-		useDefaultsCheck = new JCheckBox("Use default settings");
+		useDefaultsCheck = new JCheckBox(jEdit.getProperty("options.editing.useDefaults"));
 		useDefaultsCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				useDefaultsChanged();
