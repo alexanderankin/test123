@@ -14,8 +14,7 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
-public abstract class AbstractModeOptionPane extends AbstractOptionPane
-	implements ActionListener {
+public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 
 	JComboBox modeCB;
 	JCheckBox useDefaultsCheck;
@@ -40,7 +39,11 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane
 		addComponent("Change settings for mode:", modeCB);
 
 		useDefaultsCheck = new JCheckBox("Use default settings");
-		useDefaultsCheck.addActionListener(this);
+		useDefaultsCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				useDefaultsChanged();
+			}
+		});
 		addComponent(useDefaultsCheck);
 
 		pane = addOptionPane();
@@ -69,9 +72,8 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane
 		pane.save();
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == useDefaultsCheck)
-			pane.setUseDefaults(useDefaultsCheck.isSelected());
+	public void useDefaultsChanged() {
+		pane.setUseDefaults(useDefaultsCheck.isSelected());
 	}
 
 }

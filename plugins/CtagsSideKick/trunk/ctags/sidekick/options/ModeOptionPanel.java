@@ -1,10 +1,12 @@
 package ctags.sidekick.options;
 
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane {
@@ -49,8 +51,17 @@ abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane 
 		else
 			useDefaults.remove(mode);
 		setEnabled(! b);
+		setEnabled(this, (! b));
 	}
 
+	public void setEnabled(JComponent c, boolean enabled) {
+		c.setEnabled(enabled);
+		Component [] children = c.getComponents();
+		for (int i = 0; i < children.length; i++)
+			if (children[i] instanceof JComponent)
+				setEnabled((JComponent) children[i], enabled);
+	}
+	
 	public void save() {
 		updatePropsFromUI(props);
 		Iterator<String> modes = modeProps.keySet().iterator();
