@@ -10,7 +10,6 @@ public class ModeOptionPanelGroup extends ModeOptionPanel {
 	
 	public ModeOptionPanelGroup() {
 		panels = new Vector<ModeOptionPanel>();
-		props = new Vector<Object>();
 	}
 	
 	protected void addModePanel(ModeOptionPanel panel) {
