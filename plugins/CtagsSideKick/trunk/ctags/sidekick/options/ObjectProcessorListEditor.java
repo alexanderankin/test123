@@ -23,7 +23,7 @@ import ctags.sidekick.ObjectProcessorEditor;
 import ctags.sidekick.ObjectProcessorManager;
 
 @SuppressWarnings("serial")
-public class ObjectProcessorListEditor extends ModeOptionPanel<DefaultListModel> {
+public class ObjectProcessorListEditor extends ModeOptionPanel {
 
 	JList list;
 	ObjectProcessorManager manager;
@@ -115,7 +115,7 @@ public class ObjectProcessorListEditor extends ModeOptionPanel<DefaultListModel>
 	}
 
 	@Override
-	protected DefaultListModel createModeProps(String mode) {
+	protected Object createModeProps(String mode) {
 		DefaultListModel model = new DefaultListModel();
 		ListObjectProcessor processor = manager.getProcessorForMode(mode);
 		Vector<IObjectProcessor> processors = processor.getProcessors();
@@ -130,21 +130,22 @@ public class ObjectProcessorListEditor extends ModeOptionPanel<DefaultListModel>
 	}
 
 	@Override
-	protected void saveModeProps(String mode, DefaultListModel props) {
+	protected void saveModeProps(String mode, Object props) {
+		DefaultListModel m = (DefaultListModel) props;
 		ListObjectProcessor processor = manager.createProcessorForMode(mode);
-		for (int i = 0; i < props.getSize(); i++)
-			processor.add((IObjectProcessor) props.get(i));
+		for (int i = 0; i < m.getSize(); i++)
+			processor.add((IObjectProcessor) m.get(i));
 		manager.setProcessorForMode(mode, processor);
 	}
 
 	@Override
-	protected void updatePropsFromUI(DefaultListModel props) {
+	protected void updatePropsFromUI(Object props) {
 		// Nothing to do, the model is connected directly to the table 
 	}
 
 	@Override
-	protected void updateUIFromProps(DefaultListModel props) {
-		model = props;
+	protected void updateUIFromProps(Object props) {
+		model = (DefaultListModel) props;
 		list.setModel(model);
 	}
 
