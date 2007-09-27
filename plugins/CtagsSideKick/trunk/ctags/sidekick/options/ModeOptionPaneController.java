@@ -7,42 +7,47 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
-abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane {
+public class ModeOptionPaneController implements IModeOptionPane {
 
+	interface ModeOptionPane {
+		// Returns the UI component of the option pane
+		JComponent getComponent();
+		// Update the given properties from the UI
+		void updatePropsFromUI(Object props);
+		// Update the UI from the given properties
+		void updateUIFromProps(Object props);
+		// Create a new, initialized properties object for the specified mode
+		Object createModeProps(String mode);
+		// Save (commit) mode properties
+		void saveModeProps(String mode, Object props);
+		// Reset mode properties to the default settings
+		void resetModeProps(String mode);
+	}
+	
 	private HashMap<String, Object> modeProps;
 	private Set<String> useDefaults;	// Modes that use default settings
 	private Object props;	// Properties of current mode
 	private String mode;	// Currently selected mode
-
-	// Update the given properties from the UI
-	abstract protected void updatePropsFromUI(Object props);
-	// Update the UI from the given properties
-	abstract protected void updateUIFromProps(Object props);
-	// Create a new, initialized properties object for the specified mode
-	abstract protected Object createModeProps(String mode);
-	// Save (commit) mode properties
-	abstract protected void saveModeProps(String mode, Object props);
-	// Reset mode properties to the default settings
-	abstract protected void resetModeProps(String mode);
+	ModeOptionPane pane;		// The UI pane controlled by this controller
 	
-	public ModeOptionPanel() {
+	public ModeOptionPaneController(ModeOptionPane mop) {
 		modeProps = new HashMap<String, Object>();
 		useDefaults = new HashSet<String>();
+		pane = mop;
 	}
 	
 	public void modeSelected(String mode) {
 		if (this.mode != null)
-			updatePropsFromUI(props);
+			pane.updatePropsFromUI(props);
 		this.mode = mode;
 		props = modeProps.get(mode);
 		if (props == null) {
-			props = createModeProps(mode);
+			props = pane.createModeProps(mode);
 			modeProps.put(mode, props);
 		}
-		updateUIFromProps(props);
-		setEnabled(this, ! useDefaults.contains(mode));
+		pane.updateUIFromProps(props);
+		setEnabled(pane.getComponent(), ! useDefaults.contains(mode));
 	}
 
 	public void setUseDefaults(boolean b) {
@@ -50,7 +55,7 @@ abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane 
 			useDefaults.add(mode);
 		else
 			useDefaults.remove(mode);
-		setEnabled(this, ! b);
+		setEnabled(pane.getComponent(), ! b);
 	}
 
 	public void setEnabled(JComponent c, boolean enabled) {
@@ -62,14 +67,14 @@ abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane 
 	}
 	
 	public void save() {
-		updatePropsFromUI(props);
+		pane.updatePropsFromUI(props);
 		Iterator<String> modes = modeProps.keySet().iterator();
 		while (modes.hasNext()) {
 			String m = modes.next();
 			if (useDefaults.contains(m))
-				resetModeProps(m);
+				pane.resetModeProps(m);
 			else
-				saveModeProps(m, modeProps.get(m));
+				pane.saveModeProps(m, modeProps.get(m));
 		}
 	}
 }
