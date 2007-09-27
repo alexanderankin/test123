@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +24,8 @@ import ctags.sidekick.ObjectProcessorEditor;
 import ctags.sidekick.ObjectProcessorManager;
 
 @SuppressWarnings("serial")
-public class ObjectProcessorListEditor extends ModeOptionPanel {
+public class ObjectProcessorListEditor extends JPanel
+	implements ModeOptionPaneController.ModeOptionPane {
 
 	JList list;
 	ObjectProcessorManager manager;
@@ -114,8 +116,11 @@ public class ObjectProcessorListEditor extends ModeOptionPanel {
 		list.setSelectedIndex(to);
 	}
 
-	@Override
-	protected Object createModeProps(String mode) {
+	public JComponent getComponent() {
+		return this;
+	}
+
+	public Object createModeProps(String mode) {
 		DefaultListModel model = new DefaultListModel();
 		ListObjectProcessor processor = manager.getProcessorForMode(mode);
 		Vector<IObjectProcessor> processors = processor.getProcessors();
@@ -124,13 +129,11 @@ public class ObjectProcessorListEditor extends ModeOptionPanel {
 		return model;
 	}
 
-	@Override
-	protected void resetModeProps(String mode) {
+	public void resetModeProps(String mode) {
 		manager.resetProcessorForMode(mode);
 	}
 
-	@Override
-	protected void saveModeProps(String mode, Object props) {
+	public void saveModeProps(String mode, Object props) {
 		DefaultListModel m = (DefaultListModel) props;
 		ListObjectProcessor processor = manager.createProcessorForMode(mode);
 		for (int i = 0; i < m.getSize(); i++)
@@ -138,13 +141,11 @@ public class ObjectProcessorListEditor extends ModeOptionPanel {
 		manager.setProcessorForMode(mode, processor);
 	}
 
-	@Override
-	protected void updatePropsFromUI(Object props) {
+	public void updatePropsFromUI(Object props) {
 		// Nothing to do, the model is connected directly to the table 
 	}
 
-	@Override
-	protected void updateUIFromProps(Object props) {
+	public void updateUIFromProps(Object props) {
 		model = (DefaultListModel) props;
 		list.setModel(model);
 	}
