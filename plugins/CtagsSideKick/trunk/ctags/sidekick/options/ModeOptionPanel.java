@@ -42,7 +42,7 @@ abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane 
 			modeProps.put(mode, props);
 		}
 		updateUIFromProps(props);
-		setEnabled(! useDefaults.contains(mode));
+		setEnabled(this, ! useDefaults.contains(mode));
 	}
 
 	public void setUseDefaults(boolean b) {
@@ -50,8 +50,7 @@ abstract public class ModeOptionPanel extends JPanel implements IModeOptionPane 
 			useDefaults.add(mode);
 		else
 			useDefaults.remove(mode);
-		setEnabled(! b);
-		setEnabled(this, (! b));
+		setEnabled(this, ! b);
 	}
 
 	public void setEnabled(JComponent c, boolean enabled) {
