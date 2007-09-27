@@ -424,6 +424,11 @@ public class CamelCompletePlugin extends EditPlugin {
 	    return enginesOptionsMap.keySet();
 	}
 	
+	public static boolean isEngineEnabled(String engineName) {
+	    return (eoMap.containsKey(engineName) && eoMap.get(engineName).enabled);
+		
+	}
+	
 	public static void clearCacheDir() {
 	    if (homeDir != null) {
 		File cacheDir = new File(homeDir, "cache");
