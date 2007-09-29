@@ -23,18 +23,18 @@ package sidekick;
 
 // {{{ imports
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Vector;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.event.TreeSelectionEvent;
 
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OptionGroup;
@@ -42,8 +42,6 @@ import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.gui.OptionsDialog.OptionTreeModel;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 // }}}
 
@@ -64,12 +62,14 @@ public class ModeOptionsDialog extends OptionsDialog
 {
 	// {{{ data members
 	public static final String SERVICECLASS="org.gjt.sp.jedit.options.ModeOptionPane";
-	public static final String ALL=jEdit.getProperty("options.editing.global");
+	public static final String DEFAULT=jEdit.getProperty("options.editing.global"); 
+	public static final String ALL="ALL";
 
+	Vector<IModeOptionPane> panes;
 	OptionTreeModel paneTreeModel;
 	StringList modes;
 	JComboBox modeCombo;	
-	JButton useDefaultsCheck;
+	JCheckBox useDefaultsCheck;
 	// }}}
 	
 	// {{{ ModeOptionsDialog ctor
@@ -88,9 +88,9 @@ public class ModeOptionsDialog extends OptionsDialog
 		modes = new StringList(jEdit.getModes());
 		
 		Collections.sort(modes,new MiscUtilities.StringICaseCompare());
-		modes.add(0, ALL);
+		modes.add(0, DEFAULT);
 		modeCombo = new JComboBox(modes.toArray());
-		useDefaultsCheck = new JButton(jEdit.getProperty("options.editing.useDefaults"));
+		useDefaultsCheck = new JCheckBox(jEdit.getProperty("options.editing.useDefaults"));
 		JLabel editModeLabel = new JLabel(jEdit.getProperty("buffer-options.mode"));
 		
 		GridLayout gl = new GridLayout(1, 3);
@@ -102,30 +102,72 @@ public class ModeOptionsDialog extends OptionsDialog
 		editModePanel.add(editModeLabel);
 		editModePanel.add(modeCombo);
 		
-		
 		JPanel content = (JPanel) getContentPane();
 		content.add(editModePanel, BorderLayout.NORTH);
 				
 		paneTreeModel = new OptionTreeModel();
 		OptionGroup root = (OptionGroup) (paneTreeModel.getRoot());
 		
-		// iterate through all parsers and get their name, attempt to get an option pane. 
+		panes = new Vector<IModeOptionPane>();
+		// iterate through all parsers and get their name, attempt to get an option pane.
 		for (String service: ServiceManager.getServiceNames(SERVICECLASS)) 
 		{
 			ModeOptionsPane mop = (ModeOptionsPane) ServiceManager.getService(SERVICECLASS, service);
-			modeCombo.addItemListener(mop);
-			root.addOptionPane(mop);	
+			root.addOptionPane(mop);
+			panes.add(mop);
 		}
-		ActionHandler actionListener = new ActionHandler();
 
-		modeCombo.addActionListener(actionListener);
-		useDefaultsCheck.addActionListener(actionListener);
+		modeCombo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				modeSelected();
+			}
+		});
+		useDefaultsCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				useDefaultsChanged();
+			}
+		});
 
 		String currentMode = jEdit.getActiveView().getBuffer().getMode().getName();
 		modeCombo.setSelectedItem(currentMode);
 
 		return paneTreeModel;
 	} // }}}
+
+	private void useDefaultsChanged() {
+		if (currentPane instanceof ModeOptionsPane)
+			((ModeOptionsPane)currentPane).setUseDefaults(
+				useDefaultsCheck.isSelected());
+	}
+
+	private void modeSelected()
+	{
+		int index = modeCombo.getSelectedIndex();
+		String mode;
+		if (index == 0) {
+			mode = null;
+			useDefaultsCheck.setEnabled(false);
+		} else {
+			mode = (String) modeCombo.getItemAt(index); 
+			useDefaultsCheck.setEnabled(true);
+		}
+		if (currentPane instanceof ModeOptionsPane)
+		{
+			ModeOptionsPane current = (ModeOptionsPane)currentPane; 
+			current.modeSelected(mode);
+			useDefaultsCheck.setSelected(current.getUseDefaults(mode));
+		}
+		else
+		{
+			useDefaultsCheck.setSelected(false);
+		}
+	}
+	
+	@Override
+	public void valueChanged(TreeSelectionEvent evt) {
+		super.valueChanged(evt);
+		modeSelected();	// Update the current pane with the dialog state
+	}
 
 	// {{{ load() methods
 	private void load(Object obj)
@@ -139,19 +181,6 @@ public class ModeOptionsDialog extends OptionsDialog
 				load(members.nextElement());
 			}
 		}
-		else if(obj instanceof ModeOptionsPane)
-		{
-			try
-			{
-				((ModeOptionsPane)obj)._load();
-			}
-			catch(Throwable t)
-			{
-				Log.log(Log.ERROR,this,"Error loading options:");
-				Log.log(Log.ERROR,this,t);
-			}
-		}
-		
 	} 
 	
 	protected void load() {
@@ -164,31 +193,13 @@ public class ModeOptionsDialog extends OptionsDialog
 		return (OptionGroup) paneTreeModel.getRoot();
 	} // }}}
 
-	// {{{ ActionHandler class
-	class ActionHandler implements ActionListener
-	{
-		//{{{ actionPerformed() method
-		public void actionPerformed(ActionEvent evt)
-		{
-			Object source = evt.getSource();
-			if(source == modeCombo)
-			{
-				String m = getMode();
-				useDefaultsCheck.setEnabled(!m.equals(ALL));			
-			}
-			else if (source == useDefaultsCheck) try 
-			{
-				ModeOptionsPane spp = ((ModeOptionsPane)currentPane);
-				spp._reset();
-				spp._load();
-			}
-			catch (ClassCastException cce) 
-			{
-					Log.log(Log.NOTICE, this, "Wrong kind of pane?", cce);
-			}
-				
-		}
-	} //}}}
+	@Override
+	public void cancel() {
+		// Clear the temporary mode data in the panes
+		for (int i = 0; i < panes.size(); i++)
+			panes.get(i).cancel();
+		super.cancel();
+	}
 
 } // }}}
 
