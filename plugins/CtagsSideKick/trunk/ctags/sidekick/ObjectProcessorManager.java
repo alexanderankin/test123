@@ -59,6 +59,11 @@ public abstract class ObjectProcessorManager {
 		return lop;
 	}
 
+	public boolean hasProcessorForMode(String mode) {
+		return SideKickModeOptionsPane.modePropertyExists(
+			mode, getProcessorOptionPath() + ".size");
+	}
+	
 	public void resetProcessorForMode(String mode) {
 		String optionPath = getProcessorOptionPath();
 		String sizeOption = optionPath + ".size";

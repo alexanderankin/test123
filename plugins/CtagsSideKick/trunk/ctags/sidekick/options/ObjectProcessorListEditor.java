@@ -18,6 +18,8 @@ import javax.swing.border.TitledBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
+import sidekick.ModeOptionPaneController;
+
 import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.ListObjectProcessor;
 import ctags.sidekick.ObjectProcessorEditor;
@@ -116,7 +118,7 @@ public class ObjectProcessorListEditor extends JPanel
 		list.setSelectedIndex(to);
 	}
 
-	public JComponent getComponent() {
+	public JComponent getUIComponent() {
 		return this;
 	}
 
@@ -148,6 +150,10 @@ public class ObjectProcessorListEditor extends JPanel
 	public void updateUIFromProps(Object props) {
 		model = (DefaultListModel) props;
 		list.setModel(model);
+	}
+
+	public boolean hasModeProps(String mode) {
+		return manager.hasProcessorForMode(mode);
 	}
 
 }

@@ -1,7 +1,5 @@
 package ctags.sidekick.options;
 
-import org.gjt.sp.jedit.jEdit;
-
 @SuppressWarnings("serial")
 public class SideKickModeOptionsPane extends sidekick.ModeOptionsPane {
 
@@ -10,28 +8,33 @@ public class SideKickModeOptionsPane extends sidekick.ModeOptionsPane {
 	public SideKickModeOptionsPane() 
 	{
 		super("CtagsSideKick.mode");
-	}
-		
-	protected void _init() {
 		pane = new ModeOptionsPane();
 		addComponent(pane);
-		_load();
+	}
+		
+	public void init() {
 	}
 	
-	protected void _save() 
+	public void save() 
 	{
 		pane.save();
-		jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
+		//jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}
 
-	protected void _reset()
-	{
-		pane.setUseDefaults(true);
+	public void modeSelected(String mode) {
+		pane.modeSelected(mode);
 	}
 
-	protected void _load()
-	{
-		pane.modeSelected(getMode());
-	}	
+	public void setUseDefaults(boolean b) {
+		pane.setUseDefaults(b);
+	}
+
+	public void cancel() {
+		pane.cancel();
+	}
+
+	public boolean getUseDefaults(String mode) {
+		return pane.getUseDefaults(mode);
+	}
 
 }
