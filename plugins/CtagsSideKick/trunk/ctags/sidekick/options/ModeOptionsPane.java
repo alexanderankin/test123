@@ -7,10 +7,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import sidekick.IModeOptionPane;
+import sidekick.ModeOptionPaneController;
+import sidekick.ModeOptionPaneController.ModeOptionPane;
+
 import ctags.sidekick.FilterManager;
 import ctags.sidekick.MapperManager;
 import ctags.sidekick.SorterManager;
-import ctags.sidekick.options.ModeOptionPaneController.ModeOptionPane;
 
 @SuppressWarnings("serial")
 public class ModeOptionsPane extends JPanel
@@ -58,8 +61,16 @@ public class ModeOptionsPane extends JPanel
 		controller.save();
 	}
 
+	public void cancel() {
+		controller.cancel();
+	}
+
 	public void setUseDefaults(boolean b) {
 		controller.setUseDefaults(b);
+	}
+
+	public boolean getUseDefaults(String mode) {
+		return controller.getUseDefaults(mode);
 	}
 
 	public Object createModeProps(String mode) {
@@ -69,7 +80,7 @@ public class ModeOptionsPane extends JPanel
 		return props;
 	}
 
-	public JComponent getComponent() {
+	public JComponent getUIComponent() {
 		return this;
 	}
 
@@ -97,6 +108,13 @@ public class ModeOptionsPane extends JPanel
 		Vector<Object> v = (Vector<Object>) props;
 		for (int i = 0; i < subPanes.size(); i++)
 			subPanes.get(i).updateUIFromProps(v.get(i));
+	}
+
+	public boolean hasModeProps(String mode) {
+		for (int i = 0; i < subPanes.size(); i++)
+			if (subPanes.get(i).hasModeProps(mode))
+				return true;
+		return false;
 	}
 
 }

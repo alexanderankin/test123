@@ -7,6 +7,8 @@ import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.jEdit;
 
+import sidekick.ModeOptionPaneController;
+
 import ctags.sidekick.Plugin;
 
 @SuppressWarnings("serial")
@@ -28,7 +30,7 @@ public class CtagsCmdOptionsPane extends JPanel
 		add(ctagsCmdOptions = new JTextField(30));
 	}
 	
-	public JComponent getComponent() {
+	public JComponent getUIComponent() {
 		return this;
 	}
 
@@ -51,6 +53,10 @@ public class CtagsCmdOptionsPane extends JPanel
 
 	public void updateUIFromProps(Object props) {
 		ctagsCmdOptions.setText(((Props)props).options);
+	}
+
+	public boolean hasModeProps(String mode) {
+		return SideKickModeOptionsPane.modePropertyExists(mode, Plugin.CTAGS_MODE_OPTIONS);
 	}
 
 }

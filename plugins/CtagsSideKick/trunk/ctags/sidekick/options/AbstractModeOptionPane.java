@@ -13,6 +13,8 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
+import sidekick.IModeOptionPane;
+
 @SuppressWarnings("serial")
 public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 
@@ -65,6 +67,7 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 			useDefaultsCheck.setEnabled(true);
 		}
 		pane.modeSelected(mode);
+		useDefaultsCheck.setSelected(pane.getUseDefaults(mode));
 	}
 
 	public void _save()
