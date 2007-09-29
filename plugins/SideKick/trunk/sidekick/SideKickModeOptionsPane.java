@@ -27,7 +27,11 @@ package sidekick;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+
 import org.gjt.sp.jedit.jEdit;
+
+import sidekick.ModeOptionPaneController.ModeOptionPane;
 
 // {{{ SideKickModeOptionsPane
 /**
@@ -39,8 +43,11 @@ import org.gjt.sp.jedit.jEdit;
  * @author Alan Ezust
  *
  */
-public class SideKickModeOptionsPane extends ModeOptionsPane
+@SuppressWarnings("serial")
+public class SideKickModeOptionsPane extends ModeOptionsPane implements ModeOptionPane
 {
+	ModeOptionPaneController controller;
+	
 	JCheckBox showStatusWindow;
 	JCheckBox treeFollowsCaret;
 	JComboBox autoExpandTreeDepth;
@@ -50,10 +57,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 	public SideKickModeOptionsPane() 
 	{
 		super("sidekick.mode");
-	} // }}}
-		
-	// {{{ init()
-	protected void _init() {
+		controller = new ModeOptionPaneController(this);
 		
 		showStatusWindow = new JCheckBox(jEdit.getProperty("options." + SideKick.SHOW_STATUS));
 		addComponent(showStatusWindow);
@@ -73,45 +77,94 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		
 		addComponent(jEdit.getProperty("options.sidekick.parser.parser"), defaultParser);
 		
-		_load();
 	} // }}}
 	
-	// {{{ _load()
-	protected void _load() 
-	{
-		
-		boolean tfc = getBooleanProperty(SideKick.FOLLOW_CARET);
-		treeFollowsCaret.setSelected(tfc);
-		showStatusWindow.setSelected(getBooleanProperty(SideKick.SHOW_STATUS));
-		int item = getIntegerProperty(SideKick.AUTO_EXPAND_DEPTH, 1) + 1;
-		autoExpandTreeDepth.setSelectedIndex(item);
-		String parser = getProperty(SideKickPlugin.PARSER_PROPERTY);
-		defaultParser.setSelectedItem(parser);
+
+	// {{{ init()
+	protected void _init() {
 	} // }}}
 	
-	// {{{ _save()
-	protected void _save() 
-	{
-		setBooleanProperty(SideKick.FOLLOW_CARET, treeFollowsCaret.isSelected());
-		setBooleanProperty(SideKick.SHOW_STATUS, showStatusWindow.isSelected());
+	class Props {
+		boolean treeFollowsCaret;
+		boolean showStatusWindow;
+		int autoExpandTreeDepth;
+		String parser;
+	}
+	
+	public Object createModeProps(String mode) {
+		Props p = new Props();
+		p.treeFollowsCaret = getBooleanProperty(mode, SideKick.FOLLOW_CARET);
+		p.showStatusWindow = getBooleanProperty(mode, SideKick.SHOW_STATUS);
+		p.autoExpandTreeDepth = getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
+		p.parser = getProperty(mode, SideKickPlugin.PARSER_PROPERTY);
+		return p;
+	}
+
+	public void resetModeProps(String mode) {
+		clearModeProperty(mode, SideKick.FOLLOW_CARET);
+		clearModeProperty(mode, SideKick.AUTO_EXPAND_DEPTH);
+		clearModeProperty(mode, SideKick.SHOW_STATUS);
+		clearModeProperty(mode, SideKickPlugin.PARSER_PROPERTY);
+	}
+
+	public void saveModeProps(String mode, Object props) {
+		Props p = (Props) props;
+		setBooleanProperty(mode, SideKick.FOLLOW_CARET, p.treeFollowsCaret);
+		setBooleanProperty(mode, SideKick.SHOW_STATUS, p.showStatusWindow);
+		setIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, p.autoExpandTreeDepth);
+		if (p.parser == SideKickPlugin.DEFAULT)
+			clearModeProperty(mode, SideKickPlugin.PARSER_PROPERTY);
+		else
+			setProperty(mode, SideKickPlugin.PARSER_PROPERTY, p.parser);
+	}
+
+	public void updatePropsFromUI(Object props) {
+		Props p = (Props) props;
+		p.treeFollowsCaret = treeFollowsCaret.isSelected();
+		p.showStatusWindow = showStatusWindow.isSelected();
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		String depth = value.equals(ModeOptionsDialog.ALL) ? "-1" : value;
-		setProperty(SideKick.AUTO_EXPAND_DEPTH, depth);
+		p.autoExpandTreeDepth = Integer.valueOf(depth); 
 		Object parser = defaultParser.getSelectedItem();
-		if (parser == null) return;
-		String ps = parser.toString();
-		if (ps == SideKickPlugin.DEFAULT) clearModeProperty(SideKickPlugin.PARSER_PROPERTY);
-		else setProperty(SideKickPlugin.PARSER_PROPERTY, defaultParser.getSelectedItem().toString());
-	} // }}}
+		p.parser = (parser == null) ? null : parser.toString();
+	}
 
-	// {{{ reset()
-	protected void _reset()
-	{
-		clearModeProperty(SideKick.FOLLOW_CARET);
-		clearModeProperty(SideKick.AUTO_EXPAND_DEPTH);
-		clearModeProperty(SideKick.SHOW_STATUS);
-		clearModeProperty(SideKickPlugin.PARSER_PROPERTY);
-	} // }}}
+	public void updateUIFromProps(Object props) {
+		Props p = (Props) props;
+		treeFollowsCaret.setSelected(p.treeFollowsCaret);
+		showStatusWindow.setSelected(p.showStatusWindow);
+		autoExpandTreeDepth.setSelectedIndex(p.autoExpandTreeDepth + 1);
+		defaultParser.setSelectedItem(p.parser);
+	}
+
+	public void modeSelected(String mode) {
+		controller.modeSelected(mode);
+	}
+
+	public void cancel() {
+		controller.cancel();
+	}
+	
+	public void setUseDefaults(boolean b) {
+		controller.setUseDefaults(b);
+	}
+
+	public boolean getUseDefaults(String mode) {
+		return controller.getUseDefaults(mode);
+	}
+
+	public JComponent getUIComponent() {
+		return this;
+	}
+
+
+	public boolean hasModeProps(String mode) {
+		return modePropertyExists(mode, SideKick.FOLLOW_CARET) ||
+			modePropertyExists(mode, SideKick.AUTO_EXPAND_DEPTH) ||
+			modePropertyExists(mode, SideKick.SHOW_STATUS) ||
+			modePropertyExists(mode, SideKickPlugin.PARSER_PROPERTY);
+	}
+
 
 } // }}}
 

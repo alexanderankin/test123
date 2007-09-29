@@ -22,12 +22,7 @@
 
 package sidekick;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import javax.swing.JComboBox;
-
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -50,8 +45,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 
 abstract public class ModeOptionsPane 
-	extends AbstractOptionPane implements ItemListener
-{
+	extends AbstractOptionPane implements IModeOptionPane {
 
 	String mode = ModeOptionsDialog.ALL;
 
@@ -61,6 +55,10 @@ abstract public class ModeOptionsPane
 		jEdit.setIntegerProperty(modePrefix(mode, key), value);
 	}
 
+	public static void setBooleanProperty(String mode, String key, boolean value) {
+		jEdit.setBooleanProperty(modePrefix(mode, key), value);
+	}
+	
 	public static boolean getBooleanProperty(String mode, String key) {
 		if (jEdit.getProperty(modePrefix(mode, key)) == null)
 			return jEdit.getBooleanProperty(key);
@@ -109,37 +107,12 @@ abstract public class ModeOptionsPane
 	 *
 	 */
 	
-	final public void load() {
-		if (initialized) _load();
-	}
-
-	/**
-	 * Override this method. Called by @ref load().
-	 */
-	protected abstract void _load();
-	
-	/**
-	 * Un-sets all mode properties, so that the global defaults will be used instead.
-	 *
-	 */
-	protected abstract void _reset();
-	
-	
 	protected ModeOptionsPane(String name) {
 		super(name);
 	}
 
 	protected String getMode() {
 		return mode;
-	}
-
-	public void itemStateChanged(ItemEvent e)
-	{
-		if (e.getSource() instanceof JComboBox) {
-			save();
-			mode = e.getItem().toString();
-			load();
-		}
 	}
 
 	// }}}
