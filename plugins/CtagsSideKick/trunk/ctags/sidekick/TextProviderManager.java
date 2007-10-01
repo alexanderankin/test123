@@ -7,7 +7,7 @@ import ctags.sidekick.renderers.NameAndSignatureTextProvider;
 public class TextProviderManager extends ObjectProcessorManager {
 
 	static public final String PROVIDER_OPTION = "options.CtagsSideKick.textProvider";
-	static public final String TYPE_NAME = "textProvider";
+	static public final String TYPE_NAME = "Text Provider";
 	static private TextProviderManager instance = null;
 	
 	static public TextProviderManager getInstance() {
