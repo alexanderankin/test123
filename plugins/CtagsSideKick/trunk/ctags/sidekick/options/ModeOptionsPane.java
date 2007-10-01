@@ -55,6 +55,8 @@ public class ModeOptionsPane extends JPanel
 
 		ObjectProcessorListEditor textProviderPane =
 			new ObjectProcessorListEditor(TextProviderManager.getInstance());
+		textProviderPane.setMaximumSize(textProviderPane.getPreferredSize());
+		textProviderPane.setAlignmentX(LEFT_ALIGNMENT);
 		add(textProviderPane);
 		subPanes.add(textProviderPane);
 	}
