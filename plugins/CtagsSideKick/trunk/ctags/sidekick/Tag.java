@@ -25,10 +25,9 @@ import javax.swing.ImageIcon;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 
-import ctags.sidekick.options.GeneralOptionPane;
-
-
 import sidekick.enhanced.SourceAsset;
+import ctags.sidekick.options.GeneralOptionPane;
+import ctags.sidekick.renderers.ITextProvider;
 
 public class Tag extends SourceAsset
 {
@@ -41,7 +40,7 @@ public class Tag extends SourceAsset
 	String kind = null;
 	static Hashtable<String, ImageIcon> icons =
 		new Hashtable<String, ImageIcon>();
-		
+	
 	public Tag(final Buffer buffer, final Hashtable info)
 	{
 		super((String)info.get("k_tag"),
@@ -79,6 +78,10 @@ public class Tag extends SourceAsset
 			if (icon != null)
 				setIcon(icon);
 		}
+	}
+	public void setTextProvider(ITextProvider provider)
+	{
+		setShortDescription(provider.getString(this));
 	}
 	
 	public int getLine()

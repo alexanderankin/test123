@@ -30,6 +30,7 @@ public class Plugin extends EditPlugin {
 		MapperManager.getInstance().start();
 		SorterManager.getInstance().start();
 		FilterManager.getInstance().start();
+		TextProviderManager.getInstance().start();
 		super.start();
 	}
 	
@@ -38,6 +39,7 @@ public class Plugin extends EditPlugin {
 		MapperManager.getInstance().stop();
 		SorterManager.getInstance().stop();
 		FilterManager.getInstance().stop();
+		TextProviderManager.getInstance().stop();
 		super.stop();
 	}
 

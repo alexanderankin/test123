@@ -28,6 +28,8 @@ import sidekick.SideKickParsedData;
 import ctags.sidekick.filters.ITreeFilter;
 import ctags.sidekick.mappers.ITreeMapper;
 import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.renderers.ITextProvider;
+import ctags.sidekick.renderers.NameAndSignatureTextProvider;
 import ctags.sidekick.sorters.ITreeSorter;
 
 
@@ -36,6 +38,7 @@ public class ParsedData extends SideKickParsedData
 	ITreeMapper mapper = null;
 	ITreeSorter sorter = null;
 	ITreeFilter filter = null;
+	ITextProvider textProvider = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
 	public ParsedData(Buffer buffer, String lang)
@@ -46,12 +49,17 @@ public class ParsedData extends SideKickParsedData
 		mapper.setLang(lang);
 		sorter = (ITreeSorter) SorterManager.getInstance().getProcessorForMode(mode);
 		filter = (ITreeFilter) FilterManager.getInstance().getProcessorForMode(mode);
+		textProvider = (ITextProvider) TextProviderManager.getInstance().getProcessorForMode(mode);
+		if (textProvider == null)
+			textProvider = new NameAndSignatureTextProvider();
 	}
 	
 	void add(Tag tag)
 	{
 		if (filter != null && filter.pass(tag) == false)
 			return;
+		if (textProvider != null)
+			tag.setTextProvider(textProvider);
 		if (mapper == null)
 		{
 			tree.add(tag);
