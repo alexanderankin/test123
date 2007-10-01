@@ -14,6 +14,7 @@ import sidekick.ModeOptionPaneController.ModeOptionPane;
 import ctags.sidekick.FilterManager;
 import ctags.sidekick.MapperManager;
 import ctags.sidekick.SorterManager;
+import ctags.sidekick.TextProviderManager;
 
 @SuppressWarnings("serial")
 public class ModeOptionsPane extends JPanel
@@ -51,6 +52,11 @@ public class ModeOptionsPane extends JPanel
 			new ObjectProcessorListEditor(FilterManager.getInstance());
 		optionPanes.add(filterPane);
 		subPanes.add(filterPane);
+
+		ObjectProcessorListEditor textProviderPane =
+			new ObjectProcessorListEditor(TextProviderManager.getInstance());
+		add(textProviderPane);
+		subPanes.add(textProviderPane);
 	}
 
 	public void modeSelected(String mode) {
