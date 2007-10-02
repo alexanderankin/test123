@@ -20,7 +20,6 @@ plugin by Gerd Knops.
 */
 
 package ctags.sidekick;
-import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,31 +30,25 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import ctags.sidekick.options.SideKickModeOptionsPane;
-
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 import sidekick.SideKickPlugin;
+import ctags.sidekick.options.SideKickModeOptionsPane;
 import errorlist.DefaultErrorSource;
 
 
 public class Parser extends SideKickParser {
 
 	private static final String SPACES = "\\s+";
-	private JPanel panel = null;
-	private JComboBox groupingCB;
-	private JComboBox sortingCB;
-
+	private ToolBar toolbar = null;
+	
 	public Parser(String serviceName)
 	{
 		super(serviceName);
@@ -76,57 +69,17 @@ public class Parser extends SideKickParser {
 	}
 
 	public JPanel getPanel() {
-		/*
-		if (panel != null)
-			return panel;
-		panel = new JPanel(new GridLayout(1, 1));
-		JToolBar toolbar = new JToolBar();
-		toolbar.setLayout(new GridLayout(0, 1));
-		toolbar.setFloatable(false);
-		JPanel groupPanel = new JPanel();
-		groupPanel.add(new JLabel("Grouping:"));
-		groupingCB = new JComboBox();
-		groupPanel.add(groupingCB);
-		toolbar.add(groupPanel);
-		JPanel sortPanel = new JPanel();
-		sortPanel.add(new JLabel("Sorting:"));
-		sortingCB = new JComboBox();
-		sortPanel.add(sortingCB);
-		toolbar.add(sortPanel);
-		panel.add(toolbar);
-		return panel;
-		*/
-		return null;
+		if (toolbar == null)
+			toolbar = new ToolBar();
+		return toolbar;
 	}
 
-	private void updatePanel(Buffer buffer) {
-		/*
-		if (panel == null)
-			return;
-		String mode = buffer.getMode().getName();
-		String mapperName = SideKickModeOptionsPane.getProperty(mode, OptionPane.TREE_BUILDER);
-		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
-			groupByNamespaceButton.setSelected(true);
-		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))
-			groupByNamespaceFlatButton.setSelected(true);
-		else
-			groupByKindButton.setSelected(true);
-		if (jEdit.getBooleanProperty(OptionPane.SORT, false))
-		{
-			if (jEdit.getBooleanProperty(OptionPane.FOLDS_BEFORE_LEAFS, true))
-				sortByNameFoldsFirstButton.setSelected(true);
-			else
-				sortByNameButton.setSelected(true);
-		}
-		else
-			sortByLineButton.setSelected(true);
-			*/
-	}
 	@Override
 	public SideKickParsedData parse(Buffer buffer,
 									DefaultErrorSource errorSource)
 	{		
-		updatePanel(buffer);
+		if (toolbar != null)
+			toolbar.update();
 		ParsedData data =
 			new ParsedData(buffer, buffer.getMode().getName());
 		runctags(buffer, errorSource, data);

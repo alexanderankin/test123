@@ -27,8 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -47,11 +46,21 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	 **************************************************************************/
 
 	private JTextField ctagsPathTF;
-	private JCheckBox sort;
-	private JCheckBox folds_first;
+	private JCheckBox showGroupSelector;
+	private JCheckBox showSortSelector;
+	private JCheckBox showFilterSelector;
+	private JCheckBox showTextProviderSelector;
 	private JCheckBox show_icons;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
+	public static final String SHOW_GROUP_SELECTOR = PREFIX + "showGroupSelector";
+	private static final String SHOW_GROUP_SELECTOR_LABEL = SHOW_GROUP_SELECTOR + ".label";
+	public static final String SHOW_FILTER_SELECTOR = PREFIX + "showFilterSelector";
+	private static final String SHOW_FILTER_SELECTOR_LABEL = SHOW_FILTER_SELECTOR + ".label";
+	public static final String SHOW_SORT_SELECTOR = PREFIX + "showSortSelector";
+	private static final String SHOW_SORT_SELECTOR_LABEL = SHOW_SORT_SELECTOR + ".label";
+	public static final String SHOW_TEXT_PROVIDER_SELECTOR = PREFIX + "showTextProviderSelector";
+	private static final String SHOW_TEXT_PROVIDER_SELECTOR_LABEL = SHOW_TEXT_PROVIDER_SELECTOR + ".label";
 	public static final String SORT = PREFIX + "sort";
 	public static final String FOLDS_BEFORE_LEAFS = PREFIX + "sort_folds_first";
 	public static final String SHOW_ICONS = PREFIX + "show_icons";
@@ -59,7 +68,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	
 	public static final String ICONS = PREFIX + "icons.";
 	
-	static final String PARSE_ACTION_PROP = "CtagsSideKick.parse.action";
+	public static final String PARSE_ACTION_PROP = "CtagsSideKick.parse.action";
 	
 	/***************************************************************************
 	 * Factory methods
@@ -87,22 +96,26 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 		addSeparator();
 		
-		JPanel sortPanel = new JPanel();
-		sort = new JCheckBox(
-				jEdit.getProperty(SORT + LABEL),
-				jEdit.getBooleanProperty(SORT, false));
-		sortPanel.add(sort);
-		folds_first = new JCheckBox(
-				jEdit.getProperty(FOLDS_BEFORE_LEAFS + LABEL),
-				jEdit.getBooleanProperty(FOLDS_BEFORE_LEAFS, true));
-		sortPanel.add(folds_first);
-		sort.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent arg0) {
-				folds_first.setEnabled(sort.isSelected());
-			}			
-		});
-		addComponent(sortPanel);
+		JPanel toolBarPanel = new JPanel();
+		toolBarPanel.setBorder(new TitledBorder("Show in dockable toolbar:"));
+		showGroupSelector = new JCheckBox(
+				jEdit.getProperty(SHOW_GROUP_SELECTOR_LABEL),
+				jEdit.getBooleanProperty(SHOW_GROUP_SELECTOR, true));
+		toolBarPanel.add(showGroupSelector);
+		showSortSelector = new JCheckBox(
+				jEdit.getProperty(SHOW_SORT_SELECTOR_LABEL),
+				jEdit.getBooleanProperty(SHOW_SORT_SELECTOR, true));
+		toolBarPanel.add(showSortSelector);
+		showFilterSelector = new JCheckBox(
+				jEdit.getProperty(SHOW_FILTER_SELECTOR_LABEL),
+				jEdit.getBooleanProperty(SHOW_FILTER_SELECTOR, true));
+		toolBarPanel.add(showFilterSelector);
+		showTextProviderSelector = new JCheckBox(
+				jEdit.getProperty(SHOW_TEXT_PROVIDER_SELECTOR_LABEL),
+				jEdit.getBooleanProperty(SHOW_TEXT_PROVIDER_SELECTOR, true));
+		toolBarPanel.add(showTextProviderSelector);
+		
+		addComponent(toolBarPanel);
 		show_icons = new JCheckBox(
 				jEdit.getProperty(SHOW_ICONS + LABEL),
 				jEdit.getBooleanProperty(SHOW_ICONS, false));
@@ -114,10 +127,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	 **************************************************************************/
 	public void save()
 	{
-		jEdit.setProperty("options.CtagsSideKick.ctags_path", ctagsPathTF
-				.getText());
-		jEdit.setBooleanProperty(SORT, sort.isSelected());
-		jEdit.setBooleanProperty(FOLDS_BEFORE_LEAFS, folds_first.isSelected());
+		jEdit.setProperty(PREFIX + "ctags_path", ctagsPathTF.getText());
+		jEdit.setBooleanProperty(SHOW_GROUP_SELECTOR, showGroupSelector.isSelected());
+		jEdit.setBooleanProperty(SHOW_SORT_SELECTOR, showSortSelector.isSelected());
+		jEdit.setBooleanProperty(SHOW_FILTER_SELECTOR, showFilterSelector.isSelected());
+		jEdit.setBooleanProperty(SHOW_TEXT_PROVIDER_SELECTOR, showTextProviderSelector.isSelected());
 		jEdit.setBooleanProperty(SHOW_ICONS, show_icons.isSelected());
 		jEdit.getAction(jEdit.getProperty(PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}
