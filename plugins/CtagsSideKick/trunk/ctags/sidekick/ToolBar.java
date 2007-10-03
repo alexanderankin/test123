@@ -35,8 +35,6 @@ public class ToolBar extends JPanel {
 	private void updateSelector(final ObjectProcessorManager manager,
 			String option, String name)
 	{
-		if (! jEdit.getBooleanProperty(option, true))
-			return;
 		JPanel p = selectors.get(name);
 		if (p == null) {
 			p = new JPanel();
@@ -71,14 +69,12 @@ public class ToolBar extends JPanel {
 			});
 			p.add(cb);
 		}
-		toolbar.add(p);
+		toolbar.remove(p);
+		if (jEdit.getBooleanProperty(option, true))
+			toolbar.add(p);
 	}
 	
 	public void update() {
-		Collection<JPanel> panels = selectors.values();
-		Iterator<JPanel> i = panels.iterator();
-		while (i.hasNext())
-			toolbar.remove(i.next());
 		updateSelector(MapperManager.getInstance(),
 				GeneralOptionPane.SHOW_GROUP_SELECTOR, "Grouping");
 		updateSelector(SorterManager.getInstance(),
