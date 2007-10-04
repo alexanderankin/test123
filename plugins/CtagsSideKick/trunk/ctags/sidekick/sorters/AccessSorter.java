@@ -18,4 +18,9 @@ public class AccessSorter extends AttributeValueSorter {
 		return new AccessSorter();
 	}
 
+	@Override
+	public boolean takesParameters() {
+		return false;
+	}
+
 }

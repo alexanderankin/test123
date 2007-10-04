@@ -3,13 +3,11 @@ package ctags.sidekick;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
@@ -20,14 +18,15 @@ import ctags.sidekick.options.GeneralOptionPane;
 @SuppressWarnings("serial")
 public class ToolBar extends JPanel {
 
-	private HashMap<String, JPanel> selectors;
 	private JToolBar toolbar;
+	private JMenuBar menubar;
 	
 	public ToolBar() {
 		toolbar = new JToolBar();
 		toolbar.setLayout(new GridLayout(0, 1));
 		toolbar.setFloatable(false);
-		selectors = new HashMap<String, JPanel>();
+		menubar = new JMenuBar();
+		toolbar.add(menubar);
 		update();
 		add(toolbar);
 	}
@@ -35,46 +34,13 @@ public class ToolBar extends JPanel {
 	private void updateSelector(final ObjectProcessorManager manager,
 			String option, String name)
 	{
-		JPanel p = selectors.get(name);
-		if (p == null) {
-			p = new JPanel();
-			selectors.put(name, p);
-			p.add(new JLabel(name + ":"));
-			final JComboBox cb = new JComboBox();
-			cb.addItem("Custom");
-			final String mode =
-				jEdit.getActiveView().getBuffer().getMode().getName();
-			final ListObjectProcessor custom = manager.getProcessorForMode(mode);
-			Vector<String> items = manager.getProcessorNames();
-			for (int i = 0; i < items.size(); i++)
-			{
-				String item = items.get(i);
-				IObjectProcessor op = manager.getProcessor(item);
-				if (! (op instanceof AbstractParameterizedObjectProcessor))
-					cb.addItem(item);
-			}
-			cb.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					if (cb.getSelectedIndex() == 0) {
-						manager.setProcessorForMode(mode, custom);
-					} else {
-						String item = (String) cb.getSelectedItem();
-						IObjectProcessor op = manager.getProcessor(item);
-						ListObjectProcessor lop = manager.createProcessorForMode(mode);
-						lop.add(op);
-						manager.setProcessorForMode(mode, lop);
-					}
-					jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
-				}
-			});
-			p.add(cb);
-		}
-		toolbar.remove(p);
-		if (jEdit.getBooleanProperty(option, true))
-			toolbar.add(p);
+		ObjectProcessorMenu m = new ObjectProcessorMenu(manager, name);
+		if (jEdit.getBooleanProperty(option, true) && m.getItemCount() > 0)
+			menubar.add(m);
 	}
 	
 	public void update() {
+		menubar.removeAll();
 		updateSelector(MapperManager.getInstance(),
 				GeneralOptionPane.SHOW_GROUP_SELECTOR, "Grouping");
 		updateSelector(SorterManager.getInstance(),
@@ -83,5 +49,43 @@ public class ToolBar extends JPanel {
 				GeneralOptionPane.SHOW_FILTER_SELECTOR, "Filtering");
 		updateSelector(TextProviderManager.getInstance(),
 				GeneralOptionPane.SHOW_TEXT_PROVIDER_SELECTOR, "Text provider");
+	}
+	
+	static class ObjectProcessorMenu extends JMenu {
+		
+		private ObjectProcessorManager manager;
+		
+		public ObjectProcessorMenu(ObjectProcessorManager manager, String name)
+		{
+			super(name);
+			this.manager = manager;
+			populate();
+		}
+
+		public void populate()
+		{
+ 			final String mode =
+				jEdit.getActiveView().getBuffer().getMode().getName();
+			Vector<String> items = manager.getProcessorNames();
+			for (int i = 0; i < items.size(); i++)
+			{
+				final String item = items.get(i);
+				final IObjectProcessor op = manager.getProcessor(item);
+				if (! op.takesParameters())
+				{
+					JMenuItem mi = new JMenuItem(item);
+					mi.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							ListObjectProcessor lop =
+								manager.createProcessorForMode(mode);
+							lop.add(op);
+							manager.setProcessorForMode(mode, lop);
+							jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
+						}
+					});
+					this.add(mi);
+				}
+			}
+		}
 	}
 }

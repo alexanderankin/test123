@@ -27,4 +27,10 @@ public abstract class AbstractParameterizedObjectProcessor extends
 
 	protected void parseParams(String params) {
 	}
+
+	@Override
+	public boolean takesParameters() {
+		return true;
+	}
+	
 }

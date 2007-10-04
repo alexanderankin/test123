@@ -20,4 +20,9 @@ public class KindSorter extends AttributeValueSorter {
 		return new KindSorter();
 	}
 
+	@Override
+	public boolean takesParameters() {
+		return false;
+	}
+
 }

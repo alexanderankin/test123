@@ -34,4 +34,8 @@ public abstract class AbstractObjectProcessor implements IObjectProcessor {
 	public String toString() {
 		return getName();
 	}
+	
+	public boolean takesParameters() {
+		return false;
+	}
 }
