@@ -23,13 +23,12 @@
 package console;
 
 //{{{ Imports
-import bsh.*;
+import org.gjt.sp.jedit.bsh.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
 //}}}
 
 public class ConsoleBeanShell extends Shell

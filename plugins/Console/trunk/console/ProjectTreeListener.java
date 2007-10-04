@@ -34,7 +34,7 @@ import projectviewer.event.ProjectViewerAdapter;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
-import bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.NameSpace;
 // }}}
 
 // {{{ ProjectTreeListener class

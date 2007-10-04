@@ -59,11 +59,11 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.util.Log;
 
-import bsh.EvalError;
-import bsh.NameSpace;
-import bsh.Primitive;
-import bsh.This;
-import bsh.UtilEvalError;
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.Primitive;
+import org.gjt.sp.jedit.bsh.This;
+import org.gjt.sp.jedit.bsh.UtilEvalError;
 
 import com.microstar.xml.XmlException;
 import com.microstar.xml.XmlParser;
