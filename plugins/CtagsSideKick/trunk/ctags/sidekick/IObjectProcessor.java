@@ -7,4 +7,5 @@ public interface IObjectProcessor {
 	void setParams(String params);
 	String getParams();
 	AbstractObjectEditor getEditor();
+	boolean takesParameters();
 }
