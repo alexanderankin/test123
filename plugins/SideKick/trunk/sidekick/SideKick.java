@@ -105,7 +105,13 @@ class SideKick implements EBComponent
 
 	// {{{ property getters/setters
 	public static boolean isFollowCaret() {
-		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
+		try {
+			String currentMode = jEdit.getActiveView().getBuffer().getMode().getName();
+			return ModeOptionsPane.getBooleanProperty(currentMode, SideKick.FOLLOW_CARET);
+		}
+		catch (NullPointerException npe) {
+			return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
+		}
 	}
 	public static void setFollowCaret(boolean fc) {
 		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
