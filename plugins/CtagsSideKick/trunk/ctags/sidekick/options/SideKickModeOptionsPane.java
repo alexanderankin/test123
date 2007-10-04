@@ -12,10 +12,10 @@ public class SideKickModeOptionsPane extends sidekick.ModeOptionsPane {
 		addComponent(pane);
 	}
 		
-	public void init() {
+	public void _init() {
 	}
 	
-	public void save() 
+	public void _save() 
 	{
 		pane.save();
 		//jEdit.getAction(jEdit.getProperty(GeneralOptionPane.PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
