@@ -11,6 +11,11 @@ import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 
 import bsh.Interpreter;
+/*
+This will be the new Beanshell package in 4.3pre12 and above
+
+import org.gjt.sp.jedit.bsh.Interpreter;
+*/
 
 public class CamelCompletePlugin extends EditPlugin {
 
