@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.NameSpace;
 
 import com.microstar.xml.HandlerBase;
 //}}}
