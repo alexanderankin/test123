@@ -9,7 +9,7 @@ import ctags.sidekick.mappers.NamespaceTreeMapper;
 public class MapperManager extends ObjectProcessorManager {
 	
 	static public final String MAPPER_OPTION = "options.CtagsSideKick.mapper";
-	static public final String TYPE_NAME = "mapper";
+	static public final String TYPE_NAME = "grouper";
 	static private MapperManager instance = null;
 	
 	static public MapperManager getInstance() {
