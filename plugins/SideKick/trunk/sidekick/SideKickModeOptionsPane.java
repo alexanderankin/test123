@@ -165,6 +165,11 @@ public class SideKickModeOptionsPane extends ModeOptionsPane implements ModeOpti
 			modePropertyExists(mode, SideKickPlugin.PARSER_PROPERTY);
 	}
 
+	@Override
+	public void _save() {
+		controller.save();
+	}
+
 
 } // }}}
 
