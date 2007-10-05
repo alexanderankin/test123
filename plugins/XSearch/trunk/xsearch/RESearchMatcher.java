@@ -24,16 +24,9 @@
 package xsearch;
 
 //{{{ Imports
-import bsh.BshMethod;
-import bsh.NameSpace;
 import gnu.regexp.*;
-import javax.swing.text.Segment;
-import org.gjt.sp.jedit.BeanShell;
-import org.gjt.sp.jedit.MiscUtilities;
 // only for test output
-import org.gjt.sp.util.Log;
 
-import xsearch.SearchMatcher.Match;
 //}}}
 
 /**

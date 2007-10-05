@@ -24,13 +24,11 @@ package xsearch;
 
 //{{{ Imports
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.*;

@@ -28,26 +28,10 @@
  */
 package xsearch;
 
-import java.util.*;
-
-import bsh.BshMethod;
-import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.util.Log;
-
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import javax.swing.JDialog;
-import javax.swing.JTextField;
-import javax.swing.border.*;
 
 public class XSearchBeanShellUtility {
     View 		view;

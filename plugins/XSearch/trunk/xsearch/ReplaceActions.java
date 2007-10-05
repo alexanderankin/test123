@@ -1,6 +1,5 @@
 package xsearch;
 
-import java.awt.PageAttributes.OriginType;
 import java.util.HashMap;
 import java.util.Iterator;
 
