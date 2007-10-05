@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <menu name="C">
+    <item name="GPL">/*
+ * $filename - Short Description
+ * Copyright (C) $date $author
+ * $email
+ * $webaddress
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */ </item>
+    <item name="function" type="xinsert_script">{%functionname "Function Name:"}{%returns "returns:" "void" ?}
+
+{$=returns} {$=functionname}()
+{
+	/* {$=functionname} main comment */
+  |
+}
+</item>
+    <item name="main">int main(char ** argv, int argc)\n{\n\t|\n}\n</item>
+		
+    <menu name="Documentation">
+      <item name="author" type="xinsert_script">/* Author      : {$?author} */</item>
+      <item name="email" type="xinsert_script">/* Email       : {$?email} */</item>
+      <item name="web" type="xinsert_script">/* Web address : {$?webaddress} */</item>
+      <item name="description">/* Description : | */</item>
+      <item name="version">/* Version     : | */</item>
+      <item name="see also">/* See also    : | */</item>
+      <item name="written" type="xinsert_script">/* Written     : {$=date} */</item>
+      <item name="modified" type="xinsert_script">/* Modified    : On - {$=date}, By - {$?author}, Details - | */</item>
+      <item name="deprecated" type="xinsert_script">/* Deprecated  : {$=date} */</item>
+      <item name="tested" type="xinsert_script">/* Tested : {$=date} */</item>
+      <item name="param">/* Parameter - | */</item>
+      <item name="returns">/* Returns - | */</item>
+      <item name="pre-condition">/* PRE | */</item>
+      <item name="post-condition">/* POST | */</item>
+      <item name="error conditions">/* Error conditions - | */</item>
+    </menu>
+
+    <menu name="Selection">
+      <item name="{ }">{\n|\n}</item>
+      <item name="if">if (|)\n\t</item>
+      <item name="if..else">if (|)\n{\n\t\n}\nelse\n{\n\t\n}</item>
+      <item name="switch">switch()\n{\n\tcase:\n\t\t|\n\t\tbreak;\n\tdefault:\n}</item>
+      <item name="case">\tcase:\n\t\t|\n\t\tbreak;\n</item>
+    </menu>
+
+    <menu name="Iteration">
+      <item name="do">do\n{\n\t|\n} while()</item>
+      <item name="for">for( ; ; )\n{\n\t|\n}</item>
+      <item name="while">while()\n{\n\t|\n}</item>
+    </menu>
+
+    <menu name="Includes">
+      <item name="assert">#include &lt;assert.h>\n</item>
+      <item name="ctype">#include &lt;ctype.h>\n</item>
+      <item name="math">#include &lt;math.h>\n</item>
+			<item name="stdio">#include &lt;stdio.h>\n</item>
+      <item name="stdlib">#include &lt;stdlib.h>\n</item>
+      <item name="string">#include &lt;string.h>\n</item>
+      <item name="time">#include &lt;time.h>\n</item>
+    </menu>
+
+    <menu name="Library Functions">
+      <item name="ascii to float">atof(|)</item>
+      <item name="ascii to int">atoi(|)</item>
+      <item name="ascii to long">atol(|)</item>
+      <item name="assert">assert(|);</item>
+      <item name="calloc" type="xinsert_script">{%type "type:"}{%size "items:"}({$=type} *) calloc({$=size}, sizeof({$=type}))</item>
+      <item name="fclose" type="xinsert_script">{%fd "file descriptor:"}fclose({$=fd});</item>
+      <item name="fopen" type="xinsert_script">{%fd "file descriptor:"}{%fn "file name:"}{%mode "mode:" "w" ?}{$=fd} = fopen({$=fn}, "{$=mode}");</item>
+      <item name="fprintf" type="xinsert_script">{%file "file descriptor:"}fprintf({$=file}, "|" , );</item>
+      <item name="free">free(|);</item>
+      <item name="fscanf" type="xinsert_script">{%file "file descriptor:"}fscanf({$=file}, "|", );</item>
+      <item name="malloc" type="xinsert_script">{%type "type:"}({$=type} *) malloc(sizeof({$=type}))</item>
+      <item name="max" type="xinsert_script">{%one "Compare:"}{%two "with:"}max({$=one}, {$=two})</item>
+      <item name="min" type="xinsert_script">{%one "Compare:"}{%two "with:"}min({$=one}, {$=two})</item>
+      <item name="memset" type="xinsert_script">{%string "String variable:"}{%char "Char value:" "0" ?}{%size "length"}memset({$=string}, '{$=char}', {$=size});</item>
+      <item name="printf">printf("|", );</item>
+      <item name="scanf">scanf("|", );</item>
+      <item name="sscanf" type="xinsert_script">{%string "string:"}sscanf({$=string}, "|" , );</item>
+      <item name="strcmp" type="xinsert_script">{%one "Compare:"}{%two "with:"}(strcmp({$=one}, {$=two}) == 0)</item>
+      <item name="strncmp" type="xinsert_script">{%one "Compare:"}{%two "with:"}{%chars "characters:"}(strncmp({$=one}, {$=two}, {$=chars}) == 0)</item>
+      <item name="strcpy" type="xinsert_script">{%from "From:"}{%into "into:"}strcpy({$=into}, {%=$from})</item>
+      <item name="strncpy" type="xinsert_script">{%from "From:"}{%into "into:"}{%chars "characters:"}strncpy({$=into}, {$=from}, {$=chars})</item>
+      <item name="strlen">strlen(|)</item>
+      <item name="tolower">tolower(|)</item>
+      <item name="toupper">toupper(|)</item>
+    </menu>
+
+    <menu name="Macros">
+      <item name="#include file">#include "|"</item>
+      <item name="#include library">#include &lt;|></item>
+      <item name="#ifdef">#ifdef _|</item>
+      <item name="#ifndef">#ifndef _|</item>
+      <item name="#else">#else\n</item>
+      <item name="#endif">#endif /* _| */</item>
+      <item name="#ifdef..#endif">#ifdef _|\n\n#endif</item>
+      <item name="#ifdef..#else..#endif">#ifdef _|\n\n#else\n\n#endif /* */\n</item>
+      <item name="#define">#define |</item>
+      <item name="#define macro">#define | ( )\n</item>
+      <item name="#define macro()">#define |( ) ( )\n</item>
+      <item name="boolean type">#ifndef _BOOL\n#define _BOOL\ntypedef int BOOL\n#define TRUE 0\n#define FALSE 0\n#endif /* _BOOL */\n</item>
+    </menu>
+
+    <menu name="Types/Values">
+      <item name="BOOL">BOOL</item>
+      <item name="char">char</item>
+      <item name="char[]">char |[]</item>
+      <item name="const">const </item>
+      <item name="double">double</item>
+      <item name="double[]">double |[]</item>
+      <item name="FALSE">FALSE</item>
+      <item name="FILE">FILE *</item>
+      <item name="float">float</item>
+      <item name="float[]">float |[]</item>
+      <item name="int">int</item>
+      <item name="int[]">int |[]</item>
+      <item name="long">long</item>
+      <item name="NULL">NULL</item>
+      <item name="short">short</item>
+      <item name="TRUE">TRUE</item>
+      <item name="unsigned int">unsigned int</item>
+      <item name="unsigned long">unsigned long</item>
+      <item name="unsigned short">unsigned short</item>
+      <item name="void">void</item>
+    </menu>
+
+    <menu name="Type Casts">
+      <menu name="Closed">
+        <item name="(char)">((char) |)</item>
+        <item name="(char *)">((char *) |)</item>
+        <item name="(double)">((double) |)</item>
+        <item name="(double *)">((double *) |)</item>
+        <item name="(float)">((float) |)</item>
+        <item name="(float*)">((float *) |)</item>
+        <item name="(int)">((int) |)</item>
+        <item name="(int *)">((int *) |)</item>
+        <item name="(long)">((long) |)</item>
+        <item name="(long *)">((long *) |)</item>
+        <item name="(short)">((short) |)</item>
+        <item name="(short *)">((short *) |)</item>
+        <item name="(unsigned int)">((unsigned int) |)</item>
+        <item name="(unsigned int *)">((unsigned int *) |)</item>
+        <item name="(unsigned long)">((unsigned long) |)</item>
+        <item name="(unsigned long *)">((unsigned long *) |)</item>
+        <item name="(unsigned short)">((unsigned short) |)</item>
+        <item name="(unsigned short *)">((unsigned short *) |)</item>
+        <item name="(void)">((void) |)</item>
+        <item name="(void *)">((void *) |)</item>
+      </menu>
+      <menu name="Open">
+        <item name="(char)">(char)</item>
+        <item name="(char *)">(char *)</item>
+        <item name="(double)">(double)</item>
+        <item name="(double *)">(double *)</item>
+        <item name="(float)">(float)</item>
+        <item name="(float*)">(float *)</item>
+        <item name="(int)">(int)</item>
+        <item name="(int *)">(int *)</item>
+        <item name="(long)">(long)</item>
+        <item name="(long *)">(long *)</item>
+        <item name="(short)">(short)</item>
+        <item name="(short *)">(short *)</item>
+        <item name="(unsigned int)">(unsigned int)</item>
+        <item name="(unsigned int *)">(unsigned int *)</item>
+        <item name="(unsigned long)">(unsigned long)</item>
+        <item name="(unsigned long *)">(unsigned long *)</item>
+        <item name="(unsigned short)">(unsigned short)</item>
+        <item name="(unsigned short *)">(unsigned short *)</item>
+        <item name="(void)">(void)</item>
+        <item name="(void *)">(void *)</item>
+      </menu>
+    </menu>
+
+</menu>

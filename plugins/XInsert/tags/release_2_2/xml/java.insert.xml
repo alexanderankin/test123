@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <menu name="Java">
+    <item name="GPL">/*
+ * $filename - Short Description
+ * Copyright (C) $date $author
+ * $email
+ * $webaddress
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */ </item>
+    <item name="Class" type="xinsert_script">{%classname "Class Name:"}{%extends "Extends:" "java.lang.Object" ?}/**
+*@author {$$author}
+*/
+
+public class {$=classname} extends {$=extends}
+{
+	/* constructor */
+	public {$=classname}()
+	{
+	  |
+	}
+	
+}</item>	
+		<item name="Application" type="xinsert_script">{%classname "Class Name:"}public class {$=classname}
+	{  
+		public static void main(String args[])
+		{
+			|
+		}
+	}</item>
+    <item name="Applet" type="xinsert_script">{%classname "Class Name:"}import java.awt.*;
+
+public class {$=classname} extends java.applet.Applet implements Runnable
+{
+	private Thread runner;
+	
+	public void start()
+	{
+		if (runner == null)
+		{
+			runner = new Thread(this);
+			runner.start();
+		}	
+	}
+	
+	public void init()
+	{
+	}
+	
+	public void run()
+	{
+	}
+	
+	public void stop()
+	{
+		runner = null;
+	}
+	public void destroy()
+	{
+	}
+	public void paint(Graphics g)
+	{
+	}
+}</item>
+    <menu name="Blocks">
+      <item name="{ }">{\n|\n}</item>
+      <item name="if">if (|)\n{\n} else {\n}</item>
+      <item name="try">try\n{\n|\n} catch (Exception e) { }</item>
+    </menu>
+
+    <menu name="Javadoc">
+      <item name="author">@author $author</item>
+      <item name="version">@version |</item>
+      <item name="see">@see |</item>
+      <item name="since">@since |</item>
+      <item name="deprecated">@deprecated |</item>
+      <item name="param">@param |</item>
+      <item name="return">@return |</item>
+      <item name="exception">@exception |</item>
+      <item name="link">@link |</item>
+    </menu>
+
+    <menu name="Loops">
+      <item name="do">do\n{\n|\n} while()</item>
+      <item name="for">for( ; ; )\n{\n|\n}</item>
+      <item name="while">while()\n{\n|\n}</item>
+      <item name="switch">switch()\n{\n  case:\n  |\n  default:\n}</item>
+    </menu>
+
+    <menu name="Methods/Classes">
+      <item name="abstract">abstract</item>
+      <item name="class">class</item>
+      <item name="extends">extends</item>
+      <item name="final">final</item>
+      <item name="import">import</item>
+      <item name="implements">implements</item>
+      <item name="interface">interface</item>
+      <item name="native">native</item>
+      <item name="new">new</item>
+      <item name="package">package</item>
+      <item name="private">private</item>
+      <item name="protected">protected</item>
+      <item name="public">public</item>
+      <item name="return">return</item>
+      <item name="synchronized">synchronized</item>
+      <item name="static">static</item>
+      <item name="super">super</item>
+      <item name="this">this</item>
+      <item name="throw">throw</item>
+      <item name="throws">throws</item>
+      <item name="threadsafe">threadsafe</item>
+      <item name="transient">transient</item>
+    </menu>
+		<menu name="Wizards">
+			<item name="constructor" type="xinsert_script">{%className "Class Name:"}{%identifier "Choose an identifier:" "public" "protected" "private" ""}{$=identifier} {$=className}
+{
+	|
+}</item>
+			<item name="method" type="xinsert_script">{%methodname "Method Name:"}{%identifier "Choose an identifier:" "public" "protected" "private" ""}{%return "Return type:" "void" "int" "double" "long" "short" "float" "String" ?}{$=identifier} {$=return} {$=methodname}()
+{
+	|
+}</item>
+			<item name="variable" type="xinsert_script">{%varname "Variable Name:"}{%vartype "Variable Type:" "int" "double" "float" "long" "short" "byte" "char" "String" ?}{%identifier "Choose an identifier:" "public" "protected" "private" ""}{$=identifier} {$=vartype} {$=varname};</item>
+		</menu>		
+    <menu name="Misc">
+      <item name="profiling">long ttim = System.currentTimeMillis();\n// ...\nSystem.out.println("time taken (millis): " + (System.currentTimeMillis() - ttim));</item>
+    </menu>
+
+    <menu name="Types/Values">
+      <item name="byte">byte</item>
+      <item name="boolean">boolean</item>
+      <item name="char">char</item>
+      <item name="double">double</item>
+      <item name="false">false</item>
+      <item name="float">float</item>
+      <item name="int">int</item>
+      <item name="long">long</item>
+      <item name="null">null</item>
+      <item name="short">short</item>
+      <item name="true">true</item>
+      <item name="void">void</item>
+    </menu>
+
+    <menu name="Imports">
+			<item name="java.applet">import java.applet.*;</item>
+      <item name="java.io">import java.io.*;</item>
+      <item name="java.math">import java.math.*;</item>
+      <item name="java.net">import java.net.*;</item>
+			<item name="java.util">import java.util.*;</item>
+			<item name="java.text">import java.text.*;</item>
+			<item name="java.awt">import java.awt.*;</item>
+			<item name="java.awt.event">import java.awt.event.*;</item>
+			<item name="javax.swing">import javax.swing.*;</item>
+			<menu name="java.awt...">
+				<item name="java.awt.color">import java.awt.color.*;</item>
+				<item name="java.awt.datatransfer">import java.awt.datatransfer.*;</item>
+				<item name="java.awt.dnd">import java.awt.dnd.*;</item>
+				<item name="java.awt.font">import java.awt.font.*;</item>
+				<item name="java.awt.geom">import java.awt.geom.*;</item>
+				<item name="java.awt.im">import java.im.*;</item>
+				<item name="java.awt.image">import java.image.*;</item>
+				<item name="java.awt.image.renderable">import java.image.renderable.*;</item>
+				<item name="java.awt.print">import java.print.*;</item>
+      </menu>
+			<menu name="javax...">
+				<item name="javax.accessibility">import javax.accessibility.*;</item>
+				<item name="javax.swing.border">import javax.swing.border.*;</item>
+				<item name="javax.swing.colorchooser">import javax.swing.colorchooser.*;</item>
+				<item name="javax.swing.event">import javax.swing.event.*;</item>
+				<item name="javax.swing.filechooser">import javax.swing.filechooser.*;</item>
+				<item name="javax.swing.plaf">import javax.swing.plaf.*;</item>
+				<item name="javax.swing.table">import javax.swing.table.*;</item>
+				<item name="javax.swing.text">import javax.swing.text.*;</item>
+				<item name="javax.swing.text.html">import javax.swing.text.html.*;</item>
+				<item name="javax.swing.text.html.parser">import javax.swing.text.html.parser.*;</item>
+				<item name="javax.swing.text.rtf">import javax.swing.text.rtf.*;</item>
+				<item name="javax.swing.tree">import javax.swing.tree.*;</item>
+				<item name="javax.swing.undo">import javax.swing.undo.*;</item>
+			</menu>
+			<menu name="Other">
+      	<item name="java.rmi">import java.rmi.*;</item>
+				<item name="java.rmi.activation">import java.rmi.activation.*;</item>
+				<item name="java.rmi.dgc">import java.rmi.dgc.*;</item>
+				<item name="java.rmi.registry">import java.rmi.registry.*;</item>
+				<item name="java.rmi.server">import java.rmi.server.*;</item>
+				<item name="java.security">import java.security.*;</item>
+				<item name="java.security.acl">import java.security.acl.*;</item>
+				<item name="java.security.cert">import java.security.cert.*;</item>
+				<item name="java.security.interfaces">import java.security.interfaces.*;</item>
+				<item name="java.security.spec">import java.security.spec.*;</item>
+				<item name="java.sql">import java.sql.*;</item>
+				<item name="java.util.jar">import java.util.jar.*;</item>
+				<item name="java.util.zip">import java.util.zip.*;</item>
+				<item name="java.beans">import java.beans.*;</item>
+				<item name="java.beans.beancontext">import java.beancontext.*;</item>
+			</menu>
+      </menu>
+      <menu name="GridBag Layout">
+        <variable name="gridbag" value="gridbag" />
+        <variable name="constraints" value="c" />
+        <item name="Set Up...">GridBagLayout $gridbag = new GridBagLayout();\nGridBagConstraints $constraints = new GridBagConstraints();</item>
+        <item name="gridx">$constraints.gridx = |;</item>
+        <item name="gridy">$constraints.gridy = |;</item>
+        <item name="gridwidth" type="xinsert_script">{$$constraints}.gridwidth = {%val "Grid Width:" "GridBagConstraints.RELATIVE" "GridBagConstraints.REMAINDER" ?}{$=val}|;</item>
+        <item name="gridheight" type="xinsert_script">{$$constraints}.gridheight = {%val "Grid Width:" "GridBagConstraints.RELATIVE" "GridBagConstraints.REMAINDER" ?}{$=val}|;</item>
+        <item name="fill" type="xinsert_script">{%filltype "Fill Type:" "GridBagConstraints.NONE" "GridBagConstraints.HORIZONTAL" "GridBagConstraints.VERTICAL" "GridBagConstraints.BOTH"}{$$constraints}.fill = {$=filltype}|;</item>
+        <item name="ipadx">$constraints.ipadx = |;</item>
+        <item name="ipady">$constraints.ipady = |;</item>
+        <item name="insets">$constraints.insets = |;</item>
+        <item name="anchor" type="xinsert_script">{$$constraints}.anchor = {%anchor "Anchor to:" "GridBagConstraints.CENTER" "GridBagConstraints.NORTH" "GridBagConstraints.NORTHEAST" "GridBagConstraints.EAST" "GridBagConstraints.SOUTHEAST" "GridBagConstraints.SOUTH" "GridBagConstraints.SOUTHWEST" "GridBagConstraints.WEST" "GridBagConstraints.NORTHWEST"}{$=anchor}|;</item>
+        <item name="weightx">$constraints.weightx = |;</item>
+        <item name="weighty">$constraints.weighty = |;</item>
+        <item name="RELATIVE">GridBagConstraints.RELATIVE</item>
+        <item name="REMAINDER">GridBagConstraints.REMAINDER</item>
+        <item name="new insets">new Insets(0,0,0,0)</item>
+        <item name="setConstraints">$gridbag.setConstraints(|, c);</item>
+		</menu>
+</menu>

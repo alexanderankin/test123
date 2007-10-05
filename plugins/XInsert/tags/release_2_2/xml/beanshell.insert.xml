@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<!DOCTYPE xinsert SYSTEM  "xinsert.dtd">
+<!--
+ beanshell.insert.xml
+ Copyright (c) 2006 by Martin Raspe (hertzhaft@biblhertz.it)
+ Bibliotheca Hertziana (Max Planck Institute for Art History), Rome, Italy
+ $Id$
+
+-->
+<!--
+ License: German Free Software License (D-FSL)
+ (see http://www.d-fsl.org)
+
+ This license conforms to the GNU General Public License and is 
+ adapted to the particular requirements of German and European law. 
+ It was inspired by the 'Berlin Declaration on Open Access to 
+ Knowledge in the Sciences and Humanities' which was signed by the 
+ 'Max Planck Society for the Advancement of Science'.
+-->
+<xinsert>
+<menu name="BeanShell snippets">
+
+<item name="java: for">for (int i = 0; i &lt; text.length(); i++) {};
+</item>
+
+<item name="mode: lineComment">buffer.getMode().getProperty("lineComment");
+</item>
+
+<item name="view: getDockable">view.getDockableWindowManager().showDockableWindow("console");
+</item>
+
+<item name="jEdit: getProperty">jEdit.getProperty("macro.standard_values.tag")
+</item>
+
+<item name="jEdit: status">
+view.getStatus().setMessage("Hello");
+view.getStatus().setMessageAndClear(|);
+view.getStatus().setMessageComponent()
+</item>
+
+<item name="jEdit: context menu">caretOffset = textArea.getCaretPosition();
+caretPos = textArea.offsetToXY(caretOffset);
+GUIUtilities.showPopupMenu(
+	textArea.getRightClickPopup(),
+		textArea, 
+		caretPos.x + 10, caretPos.y + 20
+		);
+</item>
+
+<item name="jEdit: run in shell">runInSystemShell(view, command + params);
+</item>
+
+<item name="jEdit: focus to textArea">
+	view.getTextArea().requestFocus();
+	view.getStatus().setMessage(null);
+	view.getStatus().setMessageAndClear(null);
+</item>
+
+<item name="jEdit: get markers">buffer.getMarkers().isEmpty()
+</item>
+
+<item name="jEdit: invoke action">view.getInputHandler().getRepeatCount();
+	view.getInputHandler().invokeAction("|");
+</item>
+
+<item name="jEdit: actions">jEdit.getBuiltInActionSet()
+	jEdit.getActionContext().getActionSets()
+	jEdit.getActionSets()
+	jEdit.getActionNames()
+	view.getInputHandler().invokeAction("|");
+</item>
+
+<item name="macros: input">Macros.input(view, "Enter ...", "default_value");
+</item>
+
+<item name="macros: message">Macros.message(view, "Message");
+</item>
+
+<item name="macros: error">Macros.error(view, msg.toString());
+</item>
+
+<item name="text: getText">textArea.getText(textArea.getCaretPosition(), length);
+</item>
+
+<item name="text: getSelection">
+Selection[] selection = textArea.getSelection();
+if (selection.length == 0) {
+	|
+	};
+</item>
+
+<item name="text: getCaret">int caret = textArea.getCaretPosition();
+</item>
+
+<item name="text: search">
+SearchAndReplace.setAutoWrapAround(true);
+SearchAndReplace.setReverseSearch(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(false);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.setSearchString(|);
+SearchAndReplace.find(view);
+</item>
+
+<item name="text: compoundEdit">
+buffer.beginCompoundEdit();
+|
+buffer.endCompoundEdit();
+</item>
+
+<item name="text: save to clipboard">Registers.setRegister('$', buffer.toString());
+</item>
+
+<item name="text: getLineCount">buffer.getLineCount();
+</item>
+
+<item name="text: getLineText">buffer.getLineText(index);
+</item>
+
+<item name="text: open file">jEdit.openFile(view, "|");
+</item>
+
+<item name="log: DEBUG">Log.log(Log.DEBUG, Macros.class, "test");
+</item>
+
+<item name="gui: message dialog">
+	JOptionPane.showMessageDialog(null, "Here comes a message", "ALERT", JOptionPane.ERROR_MESSAGE);
+</item>
+
+<item name="gui: JOptionPane dialog">
+	JCheckBox cbCase  = new JCheckBox("Ignore Case", true);
+	JCheckBox cbRegEx = new JCheckBox("Regular Expression", true);
+	Object[] options = { "OK", "No", cbCase, cbRegEx };
+	result = JOptionPane.showOptionDialog(view, "Click OK to continue", "Attention", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, null);
+</item>
+
+<item name="gui: shortcut handling">
+    import org.gjt.sp.jedit.gui.DefaultInputHandler;
+    import javax.swing.KeyStroke;
+	private String _shortcutAddMarker = jEdit.getProperty("add-marker.shortcut");
+	private String _shortcutRemoveMarker = jEdit.getProperty("remove-all-markers.shortcut");
+	private String _shortcutNextMarker = jEdit.getProperty("next-marker.shortcut");
+	view.getInputHandler().handleKey(KeyEventTranslator.parseKey("C+F2"));
+	view.getInputHandler().getKeyBinding("C+F2");
+	e = KeyEventTranslator.parseKey("C+F2");
+	e.equals(KeyEventTranslator.parseKey("C+F2"));
+
+public static void processJEditCommand(View argView, BasePopup argPopup, KeyEvent argEvent){
+        if (hasBinding(argView,argEvent)){
+            argPopup.dispose();
+            KeyEventTranslator.Key keyStroke = KeyEventTranslator.translateKeyEvent(argEvent);
+            argView.getInputHandler().handleKey(keyStroke);
+        }
+        if (!argEvent.isConsumed() &amp;&amp; argEvent.isActionKey()){
+            argPopup.dispose();
+            argView.processKeyEvent(argEvent);
+        }
+    }
+
+getKeystrokeString(View view, KeyEvent e){
+        StringBuffer s = new StringBuffer();
+        s.append(view.getInputHandler.getModifierString(argEvent));
+        sbBinding.append("+");
+        String strSym = getSymbolicName(argEvent.getKeyCode());
+        if (strSym != null){
+            sbBinding.append(strSym);
+            DefaultInputHandler inputHandler = 
+                (DefaultInputHandler) argView.getInputHandler();
+            Object obj = inputHandler.getKeyBinding(sbBinding.toString());
+            bHasBinding = obj!=null;
+        }
+
+        return bHasBinding;
+</item>
+
+
+<item name="plugins: unload dockable window">
+	import org.gjt.sp.jedit.gui.DockableWindowFactory;
+	DockableWindowFactory.getInstance().unloadDockableWindows(jEdit.getPlugin("sidekick.SideKickPlugin").getPluginJAR())
+	jEdit.getProperty("sidekick-tree.dock-position")
+	view.getDockableWindowManager().getDockableWindow("sidekick-tree")
+</item>
+
+<item name="plugins: get plugin">
+	EditPlugin hi = jEdit.getPlugin("gatchan.highlight.HighlightPlugin");
+</item>
+</menu>
+</xinsert>
+
