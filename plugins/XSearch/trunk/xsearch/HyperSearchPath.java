@@ -22,12 +22,8 @@
 
 package xsearch;
 
-//{{{ Imports
-import javax.swing.text.*;
-//import org.gjt.sp.jedit.search.HyperSearchResult;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-//}}}
+
 
 /**
  * class for the hyper search path

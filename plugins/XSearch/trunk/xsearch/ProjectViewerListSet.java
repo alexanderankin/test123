@@ -23,7 +23,6 @@ package xsearch;
 
 //{{{ Imports
 import java.util.*;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.search.BufferListSet;
 import projectviewer.vpt.*;

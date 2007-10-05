@@ -26,6 +26,7 @@ package xsearch;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.search.AllBufferSet;
 import org.gjt.sp.jedit.search.CurrentBufferSet;

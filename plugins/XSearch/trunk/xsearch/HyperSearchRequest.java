@@ -36,7 +36,6 @@ import org.gjt.sp.jedit.View;
 //import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.util.*;
 import org.gjt.sp.util.Log;  // for debugging
-import org.gjt.sp.jedit.BeanShell;
 
 //}}}
 

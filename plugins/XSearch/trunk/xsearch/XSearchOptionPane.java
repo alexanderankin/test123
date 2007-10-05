@@ -25,7 +25,6 @@ import java.awt.GridLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;

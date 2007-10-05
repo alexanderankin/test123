@@ -51,7 +51,6 @@ public class BoyerMooreSearchMatcher extends SearchMatcher
 			}
 		}
 
-		this.replace = replace;
 		this.ignoreCase = ignoreCase;
 
 		pattern_end = this.pattern.length - 1;

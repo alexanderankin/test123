@@ -52,6 +52,7 @@ import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.bsh.*;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.gui.TextAreaDialog;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -65,8 +66,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
-import bsh.BshMethod;
-import bsh.NameSpace;
+
 
 //}}}
 
@@ -2143,7 +2143,7 @@ public class SearchAndReplace
 	// word part search
 	private static int wordPart = XSearch.SEARCH_PART_NONE;
 
-	private static final String keyboard = "12345567890ß qwertzuiopü+ asdfghjklöä# <yxcvbnm,.-";
+	private static final String keyboard = "12345567890ï¿½ qwertzuiopï¿½+ asdfghjklï¿½ï¿½# <yxcvbnm,.-";
 
 	// }}}
 
