@@ -27,6 +27,7 @@ options.CtagsSideKick.showGroupSelector.label=Grouping selector
 options.CtagsSideKick.showSortSelector.label=Sorting selector
 options.CtagsSideKick.showFilterSelector.label=Filtering selector
 options.CtagsSideKick.showTextProviderSelector.label=Text provider selector
+options.CtagsSideKick.showIconProviderSelector.label=Icon provider selector
 options.CtagsSideKick.show_icons_label=Show icons
 options.CtagsSideKick.show_icons=true
 options.CtagsSideKick-general.label=General

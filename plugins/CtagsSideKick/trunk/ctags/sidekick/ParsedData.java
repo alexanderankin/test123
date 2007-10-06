@@ -28,6 +28,7 @@ import sidekick.SideKickParsedData;
 import ctags.sidekick.filters.ITreeFilter;
 import ctags.sidekick.mappers.ITreeMapper;
 import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.renderers.IIconProvider;
 import ctags.sidekick.renderers.ITextProvider;
 import ctags.sidekick.renderers.NameAndSignatureTextProvider;
 import ctags.sidekick.sorters.ITreeSorter;
@@ -39,6 +40,7 @@ public class ParsedData extends SideKickParsedData
 	ITreeSorter sorter = null;
 	ITreeFilter filter = null;
 	ITextProvider textProvider = null;
+	IIconProvider iconProvider = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
 	public ParsedData(Buffer buffer, String lang)
@@ -52,6 +54,7 @@ public class ParsedData extends SideKickParsedData
 		textProvider = (ITextProvider) TextProviderManager.getInstance().getProcessorForMode(mode);
 		if (textProvider == null)
 			textProvider = new NameAndSignatureTextProvider();
+		iconProvider = (IIconProvider) IconProviderManager.getInstance().getProcessorForMode(mode);
 	}
 	
 	void add(Tag tag)
@@ -60,6 +63,8 @@ public class ParsedData extends SideKickParsedData
 			return;
 		if (textProvider != null)
 			tag.setTextProvider(textProvider);
+		if (iconProvider != null)
+			tag.setIcon(iconProvider.getIcon(tag));
 		if (mapper == null)
 		{
 			tree.add(tag);

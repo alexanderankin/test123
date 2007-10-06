@@ -12,6 +12,7 @@ import sidekick.ModeOptionPaneController;
 import sidekick.ModeOptionPaneController.ModeOptionPane;
 
 import ctags.sidekick.FilterManager;
+import ctags.sidekick.IconProviderManager;
 import ctags.sidekick.MapperManager;
 import ctags.sidekick.SorterManager;
 import ctags.sidekick.TextProviderManager;
@@ -53,12 +54,19 @@ public class ModeOptionsPane extends JPanel
 		optionPanes.add(filterPane);
 		subPanes.add(filterPane);
 
+		optionPanes = new JPanel(new GridLayout(1, 0));
+		optionPanes.setAlignmentX(LEFT_ALIGNMENT);
+		add(optionPanes);
+
 		ObjectProcessorListEditor textProviderPane =
 			new ObjectProcessorListEditor(TextProviderManager.getInstance());
-		textProviderPane.setMaximumSize(textProviderPane.getPreferredSize());
-		textProviderPane.setAlignmentX(LEFT_ALIGNMENT);
-		add(textProviderPane);
+		optionPanes.add(textProviderPane);
 		subPanes.add(textProviderPane);
+
+		ObjectProcessorListEditor iconProviderPane =
+			new ObjectProcessorListEditor(IconProviderManager.getInstance());
+		optionPanes.add(iconProviderPane);
+		subPanes.add(iconProviderPane);
 	}
 
 	public void modeSelected(String mode) {
