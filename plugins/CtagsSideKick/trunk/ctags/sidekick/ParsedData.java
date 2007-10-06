@@ -22,12 +22,14 @@ import java.util.Vector;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import ctags.sidekick.filters.ITreeFilter;
 import ctags.sidekick.mappers.ITreeMapper;
 import ctags.sidekick.mappers.KindTreeMapper;
+import ctags.sidekick.options.GeneralOptionPane;
 import ctags.sidekick.renderers.IIconProvider;
 import ctags.sidekick.renderers.ITextProvider;
 import ctags.sidekick.renderers.NameAndSignatureTextProvider;
@@ -54,7 +56,9 @@ public class ParsedData extends SideKickParsedData
 		textProvider = (ITextProvider) TextProviderManager.getInstance().getProcessorForMode(mode);
 		if (textProvider == null)
 			textProvider = new NameAndSignatureTextProvider();
-		iconProvider = (IIconProvider) IconProviderManager.getInstance().getProcessorForMode(mode);
+		if (jEdit.getBooleanProperty(GeneralOptionPane.SHOW_ICONS, false))
+			iconProvider = (IIconProvider)
+				IconProviderManager.getInstance().getProcessorForMode(mode);
 	}
 	
 	void add(Tag tag)
