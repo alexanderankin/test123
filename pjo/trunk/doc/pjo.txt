@@ -10,6 +10,16 @@ Since you are reading this document, you are probably interested in plugin packa
 This must mean you have written a plugin, or fixed bugs in one, and want to release
 it yourself.
 
+First, since you are going to make very frequent use of the sourceforge.net
+website, and it is notorious for embedding a lot of extra javascript that
+does nothing but invade your privacy, flash ads at you, and in general, slow
+down your browser in a most obnoxious way, it is highly recommended that you
+install the firefox extension, mozilla-noscript (www.noscript.net), allow
+javascript by sourceforge.net, and deny from doubleclick.net or
+google-analytics.com. Problem solved, and sourceforge is nice and fast
+again.
+
+
 In order to gain access to the tools and files that allow you to release plugins to the
 general public, you must join the sourceforge project, 
 `jedit-plugins`_.
