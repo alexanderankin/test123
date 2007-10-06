@@ -1,14 +1,9 @@
 <?xml version="1.0"?>
-
 <!--
-
  This is the build.xml file for building the GlobalPlugin plugin.
-
  It is based on the standard build.xml file for jEdit plugins.
-
 -->
-
-<project name="SyntaxHelperPlugin" default="dist" basedir=".">
+<project name="SyntaxHelper" default="dist" basedir=".">
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
