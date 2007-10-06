@@ -17,13 +17,12 @@ import net.jakubholy.jedit.autocomplete.WordTypedListener.Filter;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.bsh.BshMethod;
+import org.gjt.sp.jedit.bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.UtilEvalError;
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
-
-import bsh.BshMethod;
-import bsh.NameSpace;
-import bsh.UtilEvalError;
 
 
 /**
