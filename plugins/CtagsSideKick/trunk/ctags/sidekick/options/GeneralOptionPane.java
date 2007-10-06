@@ -50,6 +50,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private JCheckBox showSortSelector;
 	private JCheckBox showFilterSelector;
 	private JCheckBox showTextProviderSelector;
+	private JCheckBox showIconProviderSelector;
 	private JCheckBox show_icons;
 	
 	static final String PREFIX = Plugin.OPTION_PREFIX;
@@ -61,6 +62,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	private static final String SHOW_SORT_SELECTOR_LABEL = SHOW_SORT_SELECTOR + ".label";
 	public static final String SHOW_TEXT_PROVIDER_SELECTOR = PREFIX + "showTextProviderSelector";
 	private static final String SHOW_TEXT_PROVIDER_SELECTOR_LABEL = SHOW_TEXT_PROVIDER_SELECTOR + ".label";
+	public static final String SHOW_ICON_PROVIDER_SELECTOR = PREFIX + "showIconProviderSelector";
+	private static final String SHOW_ICON_PROVIDER_SELECTOR_LABEL = SHOW_ICON_PROVIDER_SELECTOR + ".label";
 	public static final String SORT = PREFIX + "sort";
 	public static final String FOLDS_BEFORE_LEAFS = PREFIX + "sort_folds_first";
 	public static final String SHOW_ICONS = PREFIX + "show_icons";
@@ -114,6 +117,10 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				jEdit.getProperty(SHOW_TEXT_PROVIDER_SELECTOR_LABEL),
 				jEdit.getBooleanProperty(SHOW_TEXT_PROVIDER_SELECTOR, true));
 		toolBarPanel.add(showTextProviderSelector);
+		showIconProviderSelector = new JCheckBox(
+				jEdit.getProperty(SHOW_ICON_PROVIDER_SELECTOR_LABEL),
+				jEdit.getBooleanProperty(SHOW_ICON_PROVIDER_SELECTOR, true));
+		toolBarPanel.add(showIconProviderSelector);
 		
 		addComponent(toolBarPanel);
 		show_icons = new JCheckBox(
@@ -132,6 +139,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(SHOW_SORT_SELECTOR, showSortSelector.isSelected());
 		jEdit.setBooleanProperty(SHOW_FILTER_SELECTOR, showFilterSelector.isSelected());
 		jEdit.setBooleanProperty(SHOW_TEXT_PROVIDER_SELECTOR, showTextProviderSelector.isSelected());
+		jEdit.setBooleanProperty(SHOW_ICON_PROVIDER_SELECTOR, showIconProviderSelector.isSelected());
 		jEdit.setBooleanProperty(SHOW_ICONS, show_icons.isSelected());
 		jEdit.getAction(jEdit.getProperty(PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}

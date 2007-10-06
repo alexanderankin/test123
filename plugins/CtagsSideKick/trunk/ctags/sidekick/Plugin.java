@@ -31,6 +31,7 @@ public class Plugin extends EditPlugin {
 		SorterManager.getInstance().start();
 		FilterManager.getInstance().start();
 		TextProviderManager.getInstance().start();
+		IconProviderManager.getInstance().start();
 		super.start();
 	}
 	
@@ -40,6 +41,7 @@ public class Plugin extends EditPlugin {
 		SorterManager.getInstance().stop();
 		FilterManager.getInstance().stop();
 		TextProviderManager.getInstance().stop();
+		IconProviderManager.getInstance().stop();
 		super.stop();
 	}
 

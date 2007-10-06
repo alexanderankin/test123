@@ -17,16 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 package ctags.sidekick;
-import java.net.URL;
 import java.util.Hashtable;
 
-import javax.swing.ImageIcon;
-
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
 
 import sidekick.enhanced.SourceAsset;
-import ctags.sidekick.options.GeneralOptionPane;
 import ctags.sidekick.renderers.ITextProvider;
 
 public class Tag extends SourceAsset
@@ -38,8 +33,6 @@ public class Tag extends SourceAsset
 	int line;
 	String signature = null;
 	String kind = null;
-	static Hashtable<String, ImageIcon> icons =
-		new Hashtable<String, ImageIcon>();
 	
 	public Tag(final Buffer buffer, final Hashtable info)
 	{
@@ -55,29 +48,6 @@ public class Tag extends SourceAsset
 		if (signature != null && signature.length() > 0)
 			setShortDescription(tag + signature);
 		kind = (String)info.get("kind");
-		if (jEdit.getBooleanProperty(GeneralOptionPane.SHOW_ICONS, true))
-		{
-			String iconName =
-				jEdit.getProperty(GeneralOptionPane.ICONS + kind);
-			if (iconName == null || iconName.length() == 0)
-				iconName = "unknown.png";
-			ImageIcon icon = (ImageIcon) icons.get(kind);
-			if (icon == null)
-			{
-				URL url = Tag.class.getClassLoader().getResource(
-						"icons/" + iconName);
-		        try {
-		            icon = new ImageIcon(url);
-		        }
-		        catch (Exception e) {
-		        	e.printStackTrace();
-		        }
-				if (icon != null)
-					icons.put(kind, icon);
-			}
-			if (icon != null)
-				setIcon(icon);
-		}
 	}
 	public void setTextProvider(ITextProvider provider)
 	{
