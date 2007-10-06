@@ -8,7 +8,7 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.author=Jakub Hol√
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.4
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.docs=TextAutocomplete.html
 
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.0=jedit 04.03.03.00
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.0=jedit 04.03.12.00
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.1=jdk 1.4
 # NOTE: The tests require JDK 5.0
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.activate=defer
