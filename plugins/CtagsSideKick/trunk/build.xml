@@ -27,6 +27,7 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${jedit.plugin.dir}/SideKick.jar"/>
 		<pathelement location="${jedit.plugin.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugin.dir}/CommonControls.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 
