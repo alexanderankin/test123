@@ -1,5 +1,6 @@
 package ctags.sidekick;
 
+import ctags.sidekick.renderers.AttributeIconProvider;
 import ctags.sidekick.renderers.KindIconProvider;
 import ctags.sidekick.renderers.ListIconProvider;
 
@@ -32,6 +33,7 @@ public class IconProviderManager extends ObjectProcessorManager {
 
 	@Override
 	protected void registerBuiltProcessors() {
+		addProcessor(new AttributeIconProvider());
 		addProcessor(new KindIconProvider());
 	}
 
