@@ -3,13 +3,12 @@ package superabbrevs;
 import java.util.*;
 import java.io.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.bsh.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.Buffer;
-import javax.swing.event.*;
 import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
-import bsh.*;
 import javax.swing.JOptionPane;
 
 
