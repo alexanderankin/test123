@@ -1,7 +1,7 @@
 package superabbrevs.template;
 import superabbrevs.SuperAbbrevsIO;
 
-import bsh.*;
+import org.gjt.sp.jedit.bsh.*;
 import java.io.*;
 
 /**
