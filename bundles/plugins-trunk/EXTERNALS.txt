@@ -1,7 +1,9 @@
 # This bundle should collect the trunk versions of all jEdit plugins/trunk
 AStylePlugin    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AStylePlugin/trunk
 Activator       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Activator/trunk
+Ancestor        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Ancestor/trunk
 AntFarm         https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AntFarm/trunk
+Background    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Background/trunk
 Beauty          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Beauty/trunk
 BufferLocal     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferLocal/trunk
 Calculator      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk
@@ -21,7 +23,9 @@ FastOpen        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FastOpen
 FoldViewer      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer
 GdbPlugin       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GdbPlugin/trunk
 HelperLauncher  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/HelperLauncher/trunk
+Hex                     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hex/trunk
 Highlight       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Highlight/trunk
+Hyperlinks       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hyperlinks/trunk
 InfoViewer      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/InfoViewer/trunk
 JCompiler       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JCompiler/trunk
 JDiffPlugin     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JDiffPlugin/trunk
@@ -40,6 +44,7 @@ P4Plugin        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/P4Plugin
 PerlSideKick    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PerlSideKick/trunk
 ProjectOptions  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk
 ProjectViewer   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectViewer/trunk
+RFCReader       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk
 RubyPlugin      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk
 SQL             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk
 Sessions        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Sessions/trunk
