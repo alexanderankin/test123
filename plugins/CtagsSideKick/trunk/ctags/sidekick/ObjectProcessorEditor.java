@@ -119,7 +119,10 @@ public class ObjectProcessorEditor extends JDialog {
 	protected void close(boolean b) {
 		if (b) {
 			if (editor != null)
-				editor.save();
+				if (editor.canClose())
+					editor.save();
+				else
+					return;
 		} else
 			processor = null;
 		saveGeometry();
