@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+
+<dtd>
+
+<element-list>
+
+<element name="apply-imports"
+content="EMPTY" />
+<element name="apply-templates"
+content="(sort|with-param)">
+<attribute name="mode" type="NMTOKEN" />
+<attribute name="select" value="node()" type="CDATA" />
+</element>
+<element name="attribute"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
+<attribute name="name" type="CDATA" required="true" />
+<attribute name="namespace" type="CDATA" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="attribute-set"
+content="(attribute)">
+<attribute name="name" type="NMTOKEN" required="true" />
+<attribute name="use-attribute-sets" type="NMTOKENS" />
+</element>
+<element name="call-template"
+content="(with-param)">
+<attribute name="name" type="NMTOKEN" required="true" />
+</element>
+<element name="choose"
+content="(when|otherwise)">
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="comment"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="copy"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="use-attribute-sets" type="NMTOKENS" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="copy-of"
+content="EMPTY">
+<attribute name="select" type="CDATA" required="true" />
+</element>
+<element name="decimal-format"
+content="EMPTY">
+<attribute name="NaN" value="NaN" type="CDATA" />
+<attribute name="decimal-separator" value="." type="CDATA" />
+<attribute name="digit" value="#" type="CDATA" />
+<attribute name="grouping-separator" value="," type="CDATA" />
+<attribute name="infinity" value="Infinity" type="CDATA" />
+<attribute name="minus-sign" value="-" type="CDATA" />
+<attribute name="name" type="NMTOKEN" />
+<attribute name="pattern-separator" value=";" type="CDATA" />
+<attribute name="per-mille" value="?" type="CDATA" />
+<attribute name="percent" value="%" type="CDATA" />
+<attribute name="zero-digit" value="0" type="CDATA" />
+</element>
+<element name="element"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="name" type="CDATA" required="true" />
+<attribute name="namespace" type="CDATA" />
+<attribute name="use-attribute-sets" type="NMTOKENS" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="fallback"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="for-each"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute|sort)">
+<attribute name="select" type="CDATA" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="if"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="test" type="CDATA" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="import"
+content="EMPTY">
+<attribute name="href" type="CDATA" required="true" />
+</element>
+<element name="include"
+content="EMPTY">
+<attribute name="href" type="CDATA" required="true" />
+</element>
+<element name="key"
+content="EMPTY">
+<attribute name="match" type="CDATA" required="true" />
+<attribute name="name" type="NMTOKEN" required="true" />
+<attribute name="use" type="CDATA" required="true" />
+</element>
+<element name="message"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="terminate" value="no" type="(yes|no)" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="namespace-alias"
+content="EMPTY">
+<attribute name="result-prefix" type="CDATA" required="true" />
+<attribute name="stylesheet-prefix" type="CDATA" required="true" />
+</element>
+<element name="number"
+content="EMPTY">
+<attribute name="count" type="CDATA" />
+<attribute name="format" value="1" type="CDATA" />
+<attribute name="from" type="CDATA" />
+<attribute name="grouping-separator" type="CDATA" />
+<attribute name="grouping-size" type="CDATA" />
+<attribute name="lang" type="CDATA" />
+<attribute name="letter-value" type="CDATA" />
+<attribute name="level" value="single" type="(single|multiple|any)" />
+<attribute name="value" type="CDATA" />
+</element>
+<element name="otherwise"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="output"
+content="EMPTY">
+<attribute name="cdata-section-elements" type="NMTOKENS" />
+<attribute name="doctype-public" type="CDATA" />
+<attribute name="doctype-system" type="CDATA" />
+<attribute name="encoding" type="CDATA" />
+<attribute name="indent" type="(yes|no)" />
+<attribute name="media-type" type="CDATA" />
+<attribute name="method" type="NMTOKEN" />
+<attribute name="omit-xml-declaration" type="(yes|no)" />
+<attribute name="standalone" type="(yes|no)" />
+<attribute name="version" type="NMTOKEN" />
+</element>
+<element name="param"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="name" type="NMTOKEN" required="true" />
+<attribute name="select" type="CDATA" />
+</element>
+<element name="preserve-space"
+content="EMPTY">
+<attribute name="elements" type="CDATA" required="true" />
+</element>
+<element name="processing-instruction"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
+<attribute name="name" type="CDATA" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="sort"
+content="EMPTY">
+<attribute name="case-order" type="CDATA" />
+<attribute name="data-type" value="text" type="CDATA" />
+<attribute name="lang" type="CDATA" />
+<attribute name="order" value="ascending" type="CDATA" />
+<attribute name="select" value="." type="CDATA" />
+</element>
+<element name="strip-space"
+content="EMPTY">
+<attribute name="elements" type="CDATA" required="true" />
+</element>
+<element name="stylesheet"
+content="(import|include|strip-space|preserve-space|output|key|decimal-format|attribute-set|variable|param|template|namespace-alias)">
+<attribute name="exclude-result-prefixes" type="CDATA" />
+<attribute name="extension-element-prefixes" type="CDATA" />
+<attribute name="id" type="ID" />
+<attribute name="version" type="NMTOKEN" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+<attribute name="xmlns:xsl" value="http://www.w3.org/1999/XSL/Transform" type="CDATA" />
+</element>
+<element name="template"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute|param)">
+<attribute name="match" type="CDATA" />
+<attribute name="mode" type="NMTOKEN" />
+<attribute name="name" type="NMTOKEN" />
+<attribute name="priority" type="NMTOKEN" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="text"
+content="()">
+<attribute name="disable-output-escaping" value="no" type="(yes|no)" />
+</element>
+<element name="transform"
+content="(import|include|strip-space|preserve-space|output|key|decimal-format|attribute-set|variable|param|template|namespace-alias)">
+<attribute name="exclude-result-prefixes" type="CDATA" />
+<attribute name="extension-element-prefixes" type="CDATA" />
+<attribute name="id" type="ID" />
+<attribute name="version" type="NMTOKEN" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+<attribute name="xmlns:xsl" value="http://www.w3.org/1999/XSL/Transform" type="CDATA" />
+</element>
+<element name="value-of"
+content="EMPTY">
+<attribute name="disable-output-escaping" value="no" type="(yes|no)" />
+<attribute name="select" type="CDATA" required="true" />
+</element>
+<element name="variable"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="name" type="NMTOKEN" required="true" />
+<attribute name="select" type="CDATA" />
+</element>
+<element name="when"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="test" type="CDATA" required="true" />
+<attribute name="xml:space" type="(default|preserve)" />
+</element>
+<element name="with-param"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
+<attribute name="name" type="NMTOKEN" required="true" />
+<attribute name="select" type="CDATA" />
+</element>
+
+</element-list>
+
+</dtd>
