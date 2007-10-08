@@ -11,5 +11,9 @@ public abstract class AbstractObjectEditor extends JPanel {
 		this.processor = processor;
 	}
 	public abstract void save();
+	public boolean canClose()
+	{
+		return true;
+	}
 	
 }

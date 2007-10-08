@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -134,6 +135,18 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 		});
 	}
 	
+	@Override
+	public boolean canClose() {
+		String attr = name.getText();
+		if (attr == null || attr.length() == 0)
+		{
+			JOptionPane.showMessageDialog(this,
+					"Please specify the attribute name.");
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public void save() {
 		StringBuffer buf = new StringBuffer(name.getText());
