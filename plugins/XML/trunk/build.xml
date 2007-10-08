@@ -57,7 +57,8 @@
     </path>
 
 
-    <!-- Generate ant-complete.xml file with AntComplete task -->
+    <!-- Generate ant-complete.xml file with AntComplete task --> 
+         
     <target name="ant-complete" depends="compile">
         <taskdef name="antcomplete" classname="xml.completion.AntCompleteTask" classpath="${build.classes}"/>
         <antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
