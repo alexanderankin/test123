@@ -303,7 +303,7 @@ options.sidekick.html.showJspElements.label=Show JSP Tags
 # {{{ JavaScript Properties
 
 # Default Javascript Parser
-mode.javascript.sidekick.parser=ecmascript
+mode.javascript.sidekick.parser=javascript
 
 sidekick.parser.javascript.label=javascript
 sidekick.parser.ecmascript.label=ecmascript
