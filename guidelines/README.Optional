@@ -1,0 +1,9 @@
+SVN Policy File
+
+plugin: Optional
+Author: Alan Ezust
+
+Allowed Committers:
+Anyone who has contributed to the core.
+
+Others may submit patches to the jedit-patches tracker.
