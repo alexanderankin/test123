@@ -35,8 +35,7 @@
 	  srcdir="${src.classes}"
 	  destdir="${build.classes}"
 	  deprecation="on"
-	  includeJavaRuntime="yes"
-	>
+	  includejavaruntime="yes">
 	  <classpath refid="project.class.path"/>
 	</javac>
   </target>
@@ -70,6 +69,7 @@
 		<include name="actions.xml"/>
 		<include name="build.xml"/>
 		<include name="dockables.xml"/>
+        <include name="index.html" />
 	  </fileset>
 	  <fileset dir="${src.dir}">
 		<include name="**/*.java" />

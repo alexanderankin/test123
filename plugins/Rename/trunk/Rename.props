@@ -4,6 +4,8 @@ plugin.rename.RenamePlugin.version=1.0.1
 plugin.rename.RenamePlugin.depend.0=jdk 1.4.1
 plugin.rename.RenamePlugin.depend.1=jedit 04.02.08.00
 plugin.rename.RenamePlugin.activate=defer
+plugin.rename.RenamePlugin.docs=index.html
+plugin.rename.RenamePlugin.description=Allows you to rename dockable windows, actions, plugins, and option panes.
 
 options.rename.actions.label=Actions
 options.rename.actions.code=new rename.PropertyOptionPane("Action",jEdit.getActionNames(),"label");
