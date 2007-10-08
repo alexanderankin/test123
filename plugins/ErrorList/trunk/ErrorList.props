@@ -35,6 +35,7 @@ error-list-previous-error-file.label=Go to Previous File With Errors
 error-list-clear.label=Clear Error List
 error-list-toggle-errors.label=Toggle Display of Errors
 error-list-toggle-warnings.label=Toggle Display of Warnings
+error-list.showOnError=true
 
 # Option pane
 plugin.errorlist.ErrorListPlugin.option-pane=error-list
