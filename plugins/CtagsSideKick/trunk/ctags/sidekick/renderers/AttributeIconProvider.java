@@ -39,8 +39,10 @@ public class AttributeIconProvider extends AbstractParameterizedObjectProcessor
 			return null;
 		String val = tag.getField(attr);
 		if (val == null)
-			return null;
-		return icons.get(val);
+			return missing;
+		if (icons.containsKey(val))
+			return icons.get(val);
+		return unspecified;
 	}
 
 	protected void parseParams(String params) {
@@ -56,9 +58,9 @@ public class AttributeIconProvider extends AbstractParameterizedObjectProcessor
 		for (int i = 0; i < values.length - 1; i += 2)
 			icons.put(values[i], new ImageIcon(values[i+1]));
 		if (parts[2] != null && parts[2].length() > 0)
-			unspecified = new ImageIcon(parts[1]); 
-		if (parts[3] != null && parts[3].length() > 0)
 			unspecified = new ImageIcon(parts[2]); 
+		if (parts[3] != null && parts[3].length() > 0)
+			missing = new ImageIcon(parts[3]); 
 	}
 	
 	public String toString() {
