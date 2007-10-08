@@ -701,6 +701,14 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 2.0.7</emphasis>
+ Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+ </para>
+ <itemizedlist>
+ <listitem><para> From HTML sidekick, delegates to Ecmascript only when ecmascript is the preferred parser for the javascript edit mode. (Dale Anson) </para></listitem>
+ </itemizedlist>
+ </listitem>
+  
  <listitem><para><emphasis role="bold">Version 2.0.6</emphasis>
  Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. </para>
  <itemizedlist>
