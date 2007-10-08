@@ -51,7 +51,15 @@ public abstract class ObjectProcessorManager {
 				error("Unknown" + type + name + " used for mode " + mode);
 				continue;
 			}
-			String params = SideKickModeOptionsPane.getProperty(mode, prefix + "params");
+			String paramBase = prefix + "params.";
+			int nParams = SideKickModeOptionsPane.getIntegerProperty(mode,
+					paramBase + "size", 0);
+			Vector<String> params = new Vector<String>();
+			for (int j = 0; j < nParams; j++)
+			{
+				String param = SideKickModeOptionsPane.getProperty(mode, paramBase + j);
+				params.add(param);
+			}
 			p = p.getClone();
 			p.setParams(params);
 			lop.add(p);
@@ -86,9 +94,15 @@ public abstract class ObjectProcessorManager {
 			String prefix = optionPath + "." + i + ".";
 			IObjectProcessor p = ops.get(i);
 			SideKickModeOptionsPane.setProperty(mode, prefix + "name", p.getName());
-			String params = p.getParams();
-			if (params != null && params.length() > 0)
-				SideKickModeOptionsPane.setProperty(mode, prefix + "params", params);
+			Vector<String> params = p.getParams();
+			if (params != null && params.size() > 0)
+			{
+				String paramBase = prefix + "params.";
+				int nParams = params.size();
+				SideKickModeOptionsPane.setIntegerProperty(mode, paramBase + "size", nParams);
+				for (int j = 0; j < nParams; j++)
+					SideKickModeOptionsPane.setProperty(mode, paramBase + j, params.get(j));
+			}
 		}
 	}
 

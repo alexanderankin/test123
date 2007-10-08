@@ -1,5 +1,7 @@
 package ctags.sidekick.sorters;
 
+import java.util.Vector;
+
 import ctags.sidekick.IObjectProcessor;
 
 public class KindSorter extends AttributeValueSorter {
@@ -10,9 +12,23 @@ public class KindSorter extends AttributeValueSorter {
 
 	public KindSorter() {
 		super(NAME, DESCRIPTION);
-		setParams(
-			"kind namespace typedef struct union class macro enum enumerator prototype " +
-			"function member field variable local");
+		Vector<String> params = new Vector<String>();
+		params.add("kind");
+		params.add("namespace");
+		params.add("typedef");
+		params.add("struct");
+		params.add("union");
+		params.add("class");
+		params.add("macro");
+		params.add("enum");
+		params.add("enumerator");
+		params.add("prototype");
+		params.add("function");
+		params.add("member");
+		params.add("field");
+		params.add("variable");
+		params.add("local");
+		setParams(params);
 	}
 
 	@Override

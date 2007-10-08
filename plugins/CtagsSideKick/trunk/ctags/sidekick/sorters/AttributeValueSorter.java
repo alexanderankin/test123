@@ -1,6 +1,7 @@
 package ctags.sidekick.sorters;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -41,9 +42,11 @@ public class AttributeValueSorter extends AbstractAttributeValueSorter {
 		
 		@Override
 		public void save() {
-			String params = name.getText(); 
-			if (values.getText().length() > 0)
-				params = params + " " + values.getText();
+			Vector<String> params = new Vector<String>();
+			params.add(name.getText());
+			String [] parts = values.getText().split(" ");
+			for (int i = 0; i < parts.length; i++)
+				params.add(parts[i]);
 			setParams(params);
 		}
 
@@ -69,17 +72,11 @@ public class AttributeValueSorter extends AbstractAttributeValueSorter {
 		hasParams = true;
 	}
 
-	public void parseParams(String params) {
-		if (params == null) {
-			attr = null;
-			valueOrder = null;
-		} else {
-			String [] parts = params.split(" ");
-			attr = parts[0];
-			valueOrder = new HashMap<String, Integer>();
-			for (int i = 1; i < parts.length; i++)
-				valueOrder.put(parts[i], Integer.valueOf(i));
-		}
+	public void parseParams(Vector<String> params) {
+		attr = params.get(0);
+		valueOrder = new HashMap<String, Integer>();
+		for (int i = 1; i < params.size(); i++)
+			valueOrder.put(params.get(i), Integer.valueOf(i));
 	}
 	
 	@Override

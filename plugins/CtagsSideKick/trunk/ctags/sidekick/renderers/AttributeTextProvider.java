@@ -1,5 +1,7 @@
 package ctags.sidekick.renderers;
 
+import java.util.Vector;
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,7 +15,6 @@ import ctags.sidekick.Tag;
 public class AttributeTextProvider extends AbstractParameterizedObjectProcessor
 	implements ITextProvider {
 
-	private static final String SEPARATOR = "\\|\\|";
 	public String attr;
 	public String prefix = "";
 	public String suffix = "";
@@ -23,17 +24,12 @@ public class AttributeTextProvider extends AbstractParameterizedObjectProcessor
 	static final String DESCRIPTION = "Creates a tag string from an attribute " +
 		"value, with an optional prefix and suffix and an optional default value.";
 	
-	protected void parseParams(String params) {
-		if (params == null) {
-			attr = null;
-			return;
-		}
-		String [] parts = params.split(SEPARATOR);
-		attr = parts[0];
-		prefix = parts[1];
-		suffix = parts[2];
-		if (parts.length > 3)
-			missing = parts[3];
+	protected void parseParams(Vector<String> params) {
+		attr = params.get(0);
+		prefix = params.get(1);
+		suffix = params.get(2);
+		if (params.size() > 3)
+			missing = params.get(3);
 	}
 	
 	public AttributeTextProvider() {
@@ -114,14 +110,12 @@ public class AttributeTextProvider extends AbstractParameterizedObjectProcessor
 		
 		@Override
 		public void save() {
-			StringBuffer buf = new StringBuffer(name.getText());
-			buf.append("||");
-			buf.append(prefix.getText());
-			buf.append("||");
-			buf.append(suffix.getText());
-			buf.append("||");
-			buf.append(missing.getText());
-			setParams(buf.toString());
+			Vector<String> params = new Vector<String>();  
+			params.add(name.getText());
+			params.add(prefix.getText());
+			params.add(suffix.getText());
+			params.add(missing.getText());
+			setParams(params);
 		}
 
 	}

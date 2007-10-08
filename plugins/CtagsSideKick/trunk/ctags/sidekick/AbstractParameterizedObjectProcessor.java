@@ -1,9 +1,11 @@
 package ctags.sidekick;
 
+import java.util.Vector;
+
 public abstract class AbstractParameterizedObjectProcessor extends
 		AbstractObjectProcessor {
 
-	private String params;
+	private Vector<String> params;
 
 	public AbstractParameterizedObjectProcessor(String name, String description) {
 		super(name, description);
@@ -15,17 +17,17 @@ public abstract class AbstractParameterizedObjectProcessor extends
 	}
 
 	@Override
-	public String getParams() {
+	public Vector<String> getParams() {
 		return params;
 	}
 
 	@Override
-	public void setParams(String params) {
+	public void setParams(Vector<String> params) {
 		this.params = params;
 		parseParams(params);
 	}
 
-	protected void parseParams(String params) {
+	protected void parseParams(Vector<String> params) {
 	}
 
 	@Override
