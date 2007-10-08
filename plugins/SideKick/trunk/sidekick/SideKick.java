@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
@@ -354,7 +355,11 @@ class SideKick implements EBComponent
 	{
 		if (bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED &&
 			view.getBuffer() == bmsg.getBuffer()) {
-			buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
+			String prevMode =
+				buffer.getStringProperty(SideKickPlugin.PARSER_MODE_PROPERTY);
+			String currMode = (buffer.getMode() != null) ? buffer.getMode().getName() : ""; 
+			if (! currMode.equals(prevMode))
+				buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
 			setParser(view.getBuffer());
 		}
 

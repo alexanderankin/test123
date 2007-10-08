@@ -49,6 +49,7 @@ public class SideKickPlugin extends EBPlugin
 	public static final String NAME = "sidekick-tree";
 	
 	//{{{ Some constants
+	public static final String PARSER_MODE_PROPERTY = "sidekick.parser-mode";
 	public static final String PARSER_PROPERTY = "sidekick.parser";
 	public static final String PARSED_DATA_PROPERTY = "sidekick.parsed-data";
 	public static final String PARSE_COUNT = "sidekick.parse-count";
@@ -217,8 +218,10 @@ public class SideKickPlugin extends EBPlugin
 	public static SideKickParser getParserForBuffer(Buffer buffer)
 	{
 		String parserName = buffer.getStringProperty(PARSER_PROPERTY);
+		Mode mode = buffer.getMode();
+		String modeName = (mode != null) ? mode.getName() : "";
+		buffer.setStringProperty(PARSER_MODE_PROPERTY, modeName);
 		if(parserName == null || parserName.equals(DEFAULT) || parserName.length() == 0) {
-			Mode mode = buffer.getMode();
 			if (mode != null) 
 				return getParserForMode(mode);
 			else return null;
