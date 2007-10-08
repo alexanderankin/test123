@@ -26,16 +26,12 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 		super(NAME, DESCRIPTION);
 	}
 	
-	protected void parseParams(String params) {
-		if (params != null) {
-			String [] parts = params.split(" ", 2);
-			attr = parts[0];
-			if (parts.length > 1)
-				defVal = parts[1];
-			else
-				defVal = null;
-		} else
-			attr = defVal = null;
+	protected void parseParams(Vector<String> params) {
+		attr = params.get(0);
+		if (params.size() > 1)
+			defVal = params.get(1);
+		else
+			defVal = null;
 	}
 	
 	public Vector<Object> getPath(Tag tag) {
@@ -49,14 +45,6 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 	}
 	public String toString() {
 		return NAME + "(" + getParams() + ")";
-	}
-	public String getParams() {
-		StringBuffer params = new StringBuffer();
-		if (attr != null)
-			params.append(attr);
-		if (defVal != null)
-			params.append(" " + defVal);
-		return params.toString();
 	}
 
 	public IObjectProcessor getClone() {
@@ -100,9 +88,10 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 		
 		@Override
 		public void save() {
-			String params = name.getText(); 
+			Vector<String> params = new Vector<String>();
+			params.add(name.getText()); 
 			if (defaultValue.getText().length() > 0)
-				params = params + " " + defaultValue.getText();
+				params.add(defaultValue.getText());
 			setParams(params);
 		}
 

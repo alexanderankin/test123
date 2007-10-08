@@ -1,6 +1,7 @@
 package ctags.sidekick.renderers;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
@@ -45,22 +46,18 @@ public class AttributeIconProvider extends AbstractParameterizedObjectProcessor
 		return unspecified;
 	}
 
-	protected void parseParams(String params) {
-		if (params == null) {
-			attr = null;
-			return;
-		}
-		// Format:
-		// attribute,value icon ...,unspecified value icon,missing attribute icon  
-		String [] parts = params.split(SECTION_SEPARATOR, 4);
-		attr = parts[0];
-		String [] values = parts[1].split(VALUE_SEPARATOR);
-		for (int i = 0; i < values.length - 1; i += 2)
-			icons.put(values[i], new ImageIcon(values[i+1]));
-		if (parts[2] != null && parts[2].length() > 0)
-			unspecified = new ImageIcon(parts[2]); 
-		if (parts[3] != null && parts[3].length() > 0)
-			missing = new ImageIcon(parts[3]); 
+	protected void parseParams(Vector<String> params) {
+		// attribute,value,icon,...,unspecified value icon,missing attribute icon  
+		attr = params.get(0);
+		int size = params.size();
+		for (int i = 1; i < size - 2; i += 2)
+			icons.put(params.get(i), new ImageIcon(params.get(i+1)));
+		String s = params.get(size - 2);
+		if (s != null && s.length() > 0)
+			unspecified = new ImageIcon(s);
+		s = params.get(size - 1);
+		if (s != null && s.length() > 0)
+			missing = new ImageIcon(s); 
 	}
 	
 	public String toString() {

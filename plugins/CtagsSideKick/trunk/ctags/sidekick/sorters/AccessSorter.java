@@ -1,5 +1,7 @@
 package ctags.sidekick.sorters;
 
+import java.util.Vector;
+
 import ctags.sidekick.IObjectProcessor;
 
 public class AccessSorter extends AttributeValueSorter {
@@ -10,7 +12,13 @@ public class AccessSorter extends AttributeValueSorter {
 	
 	public AccessSorter() {
 		super(NAME, DESCRIPTION);
-		setParams("access public package protected private");
+		Vector<String> params = new Vector<String>();
+		params.add("access");
+		params.add("public");
+		params.add("package");
+		params.add("protected");
+		params.add("private");
+		setParams(params);
 	}
 
 	@Override

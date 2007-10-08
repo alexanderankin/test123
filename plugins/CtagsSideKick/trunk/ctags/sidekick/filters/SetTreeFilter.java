@@ -3,6 +3,7 @@ package ctags.sidekick.filters;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -33,13 +34,12 @@ public class SetTreeFilter extends AbstractParameterizedObjectProcessor
 	}
 
 	@Override
-	protected void parseParams(String params) {
-		String [] parts = params.split(" ");
-		attribute = parts[0];
-		includes = parts[1].equalsIgnoreCase("true");
+	protected void parseParams(Vector<String> params) {
+		attribute = params.get(0);
+		includes = params.get(1).equalsIgnoreCase("true");
 		values = new HashSet<String>();
-		for (int i = 2; i < parts.length; i++)
-			values.add(parts[i]);
+		for (int i = 2; i < params.size(); i++)
+			values.add(params.get(i));
 	}
 
 	public boolean pass(Tag tag) {
@@ -116,10 +116,12 @@ public class SetTreeFilter extends AbstractParameterizedObjectProcessor
 		
 		@Override
 		public void save() {
-			String params = name.getText();
-			params = params + (includes.isSelected() ? " true " : " false "); 
-			if (values.getText().length() > 0)
-				params = params + values.getText();
+			Vector<String> params = new Vector<String>();
+			params.add(name.getText());
+			params.add(includes.isSelected() ? "true" : "false");
+			String [] parts = values.getText().split(" ");
+			for (int i = 0; i < parts.length; i++)
+				params.add(parts[i]);
 			setParams(params);
 		}
 

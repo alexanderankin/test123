@@ -149,11 +149,10 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 
 	@Override
 	public void save() {
-		StringBuffer buf = new StringBuffer(name.getText());
-		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
+		Vector<String> params = new Vector<String>();
+		params.add(name.getText());
 		String missingIcon = null;
 		String otherIcon = null;
-		boolean firstValue = true;
 		for (int i = 0; i < items.getRowCount(); i++)
 		{
 			String value = items.getValueAt(i, 1).toString();
@@ -163,19 +162,13 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 			else if (value.equals(MISSING))
 				missingIcon = icon;
 			else {
-				if (! firstValue)
-					buf.append(AttributeIconProvider.VALUE_SEPARATOR);
-				firstValue = false;
-				buf.append(value);
-				buf.append(AttributeIconProvider.VALUE_SEPARATOR);
-				buf.append(icon);
+				params.add(value);
+				params.add(icon);
 			}
 		}
-		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
-		buf.append(otherIcon);
-		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
-		buf.append(missingIcon);
-		processor.setParams(buf.toString());
+		params.add(otherIcon);
+		params.add(missingIcon);
+		processor.setParams(params);
 	}
 	
 	public static class IconTableModel extends AbstractTableModel {

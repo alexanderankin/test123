@@ -1,5 +1,7 @@
 package ctags.sidekick;
 
+import java.util.Vector;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -17,7 +19,9 @@ public class StringParamEditor extends AbstractObjectEditor {
 
 	@Override
 	public void save() {
-		processor.setParams(paramsTF.getText());
+		Vector<String> params = new Vector<String>();
+		params.add(paramsTF.getText());
+		processor.setParams(params);
 	}
 
 }

@@ -1,5 +1,6 @@
 package ctags.sidekick.filters;
 
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
@@ -31,11 +32,10 @@ public class RegExpTreeFilter extends AbstractParameterizedObjectProcessor
 	}
 
 	@Override
-	protected void parseParams(String params) {
-		String [] parts = params.split(" ");
-		attribute = parts[0];
-		matches = parts[1].equalsIgnoreCase("true");
-		pattern = Pattern.compile(parts[2]);
+	protected void parseParams(Vector<String> params) {
+		attribute = params.get(0);
+		matches = params.get(1).equalsIgnoreCase("true");
+		pattern = Pattern.compile(params.get(2));
 	}
 
 	public boolean pass(Tag tag) {
@@ -106,10 +106,10 @@ public class RegExpTreeFilter extends AbstractParameterizedObjectProcessor
 		
 		@Override
 		public void save() {
-			String params = name.getText();
-			params = params + (matches.isSelected() ? " true " : " false "); 
-			if (regexp.getText().length() > 0)
-				params = params + regexp.getText();
+			Vector<String> params = new Vector<String>();
+			params.add(name.getText());
+			params.add(matches.isSelected() ? "true" : "false"); 
+			params.add(regexp.getText());
 			setParams(params);
 		}
 

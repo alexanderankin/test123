@@ -1,5 +1,7 @@
 package ctags.sidekick;
 
+import java.util.Vector;
+
 // A parameterless (and therefore editor-less) object processor
 
 public abstract class AbstractObjectProcessor implements IObjectProcessor {
@@ -24,11 +26,11 @@ public abstract class AbstractObjectProcessor implements IObjectProcessor {
 		return name;
 	}
 
-	public String getParams() {
+	public Vector<String> getParams() {
 		return null;
 	}
 
-	public void setParams(String params) {
+	public void setParams(Vector<String> params) {
 	}
 
 	public String toString() {
