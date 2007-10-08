@@ -29,6 +29,8 @@ import ctags.sidekick.AbstractObjectEditor;
 @SuppressWarnings("serial")
 public class AttributeIconEditor extends AbstractObjectEditor {
 
+	private static final String MISSING = "<missing attribute>";
+	private static final String OTHER = "<other>";
 	/**
 	 * 
 	 */
@@ -37,8 +39,6 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 	private JTable values;
 	private JTextField value;
 	private FileTextField icon;
-	private FileTextField unspecified;
-	private FileTextField missing;
 	private static final int FileFieldColumns = 20;
 	
 	public AttributeIconEditor(AttributeIconProvider provider) {
@@ -60,7 +60,8 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 		c.gridy++;
 		add(new JLabel("Values with associated icons:"), c);
 		items = new IconTableModel();
-		items.add("Dummy", "");
+		items.add(OTHER, null);
+		items.add(MISSING, null);
 		values = new JTable(items);
 		c.gridy++;
 		c.gridwidth = 1;
@@ -72,8 +73,6 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 		add(buttons, c);
 		JButton add = new JButton("Add");
 		buttons.add(add);
-		JButton edit = new JButton("Edit");
-		buttons.add(edit);
 		JButton del = new JButton("Remove");
 		buttons.add(del);
 
@@ -81,22 +80,6 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 		c.gridy += c.gridheight;
 		c.gridheight = 1;
 		c.gridwidth = 2;
-		p = new JPanel();
-		add(p, c);
-		p.add(new JLabel("Icon for unspecified value:"));
-		unspecified = new FileTextField(true);
-		unspecified.getTextField().setColumns(FileFieldColumns);
-		p.add(unspecified, c);
-
-		c.gridy++;
-		p = new JPanel();
-		add(p, c);
-		p.add(new JLabel("Icon if attribute is missing:"), c);
-		missing = new FileTextField(true);
-		missing.getTextField().setColumns(FileFieldColumns);
-		p.add(missing, c);
-		
-		c.gridy++;
 		p = new JPanel();
 		add(p, c);
 		p.add(new JLabel("Value:"));
@@ -150,18 +133,30 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 	public void save() {
 		StringBuffer buf = new StringBuffer(name.getText());
 		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
+		String missingIcon = null;
+		String otherIcon = null;
+		boolean firstValue = true;
 		for (int i = 0; i < items.getRowCount(); i++)
 		{
-			if (i > 0)
+			String value = items.getValueAt(i, 1).toString();
+			String icon = items.getValueAt(i, 2).toString();
+			if (value.equals(OTHER))
+				otherIcon = icon;
+			else if (value.equals(MISSING))
+				missingIcon = icon;
+			else {
+				if (! firstValue)
+					buf.append(AttributeIconProvider.VALUE_SEPARATOR);
+				firstValue = false;
+				buf.append(value);
 				buf.append(AttributeIconProvider.VALUE_SEPARATOR);
-			buf.append(items.getValueAt(i, 1).toString());
-			buf.append(AttributeIconProvider.VALUE_SEPARATOR);
-			buf.append(items.getValueAt(i, 2).toString());
+				buf.append(icon);
+			}
 		}
 		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
-		buf.append(unspecified.getTextField().getText());
+		buf.append(otherIcon);
 		buf.append(AttributeIconProvider.SECTION_SEPARATOR);
-		buf.append(missing.getTextField().getText());
+		buf.append(missingIcon);
 		processor.setParams(buf.toString());
 	}
 	
@@ -169,6 +164,8 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 
 		public static class IconTableRow {
 			IconTableRow(String v, String f) {
+				if (f == null)
+					f = "";
 				icon = new ImageIcon(f);
 				value = v;
 				file = f;
