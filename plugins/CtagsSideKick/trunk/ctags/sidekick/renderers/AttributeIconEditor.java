@@ -111,6 +111,11 @@ public class AttributeIconEditor extends AbstractObjectEditor {
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				items.add("<value>", "<icon>");
+				int index = items.getRowCount() - 1;
+				values.getSelectionModel().setSelectionInterval(
+						index, index);
+				value.selectAll();
+				value.requestFocus();
 			}
 		});
 		del.addActionListener(new ActionListener() {
