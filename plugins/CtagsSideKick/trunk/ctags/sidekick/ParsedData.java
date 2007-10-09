@@ -23,6 +23,7 @@ import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.FoldHandler;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
@@ -38,6 +39,7 @@ import ctags.sidekick.sorters.ITreeSorter;
 
 public class ParsedData extends SideKickParsedData
 {
+	static FoldHandler foldHandler = new ctags.sidekick.FoldHandler();
 	ITreeMapper mapper = null;
 	ITreeSorter sorter = null;
 	ITreeFilter filter = null;
@@ -129,5 +131,10 @@ public class ParsedData extends SideKickParsedData
 		if ((asset != null) && assetContains(asset, offset))
 			return parent;
 		return null;
+	}
+
+	@Override
+	protected FoldHandler getFoldHandler() {
+		return foldHandler;
 	}
 }

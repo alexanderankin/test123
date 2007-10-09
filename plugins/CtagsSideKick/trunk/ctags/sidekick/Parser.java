@@ -63,7 +63,7 @@ public class Parser extends SideKickParser {
 		}
 		public void run() {
 			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
-			if(buffer.getProperty("folding").equals(FoldHandler.CTAGS_SIDE_KICK_FOLD_HANDLER))
+			if(buffer.getProperty("folding").equals("sidekick"))
 				buffer.invalidateCachedFoldLevels();
 		}
 	}
