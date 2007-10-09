@@ -36,20 +36,25 @@ public class Ancestor
 
 	private String path;
 	private String name;
+	
+	//{{{ Ancestor constructor
 	public Ancestor(View view, String path, String name)
 	{
 		this.view = view;
 		this.path = path;
 		this.name = name;
-	}
+	} //}}}
 
+	//{{{ getName() method 
 	public String getName()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ doAction() method
 	public void doAction()
 	{
 		VFSBrowser.browseDirectory(view, path);
-	}
+	} //}}}
+
 }

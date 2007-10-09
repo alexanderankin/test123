@@ -40,13 +40,15 @@ public class AncestorToolBar extends JToolBar
 	private Component glue = Box.createGlue();
 	private final LinkedList<String> list = new LinkedList<String>();
 
+	//{{{ AncestorToolBar constructor
 	public AncestorToolBar(View view)
 	{
 		this.view = view;
 		add(glue);
 		setFloatable(false);
-	}
+	} //}}}
 
+	//{{{ setBuffer() method
 	void setBuffer(Buffer buffer)
 	{
 		String path = buffer.getPath();
@@ -88,5 +90,6 @@ public class AncestorToolBar extends JToolBar
 			i++;
 			button.setEnabled(browseable && nb != i);
 		}
-	}
+	} //}}}
+
 }
