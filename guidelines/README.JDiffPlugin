@@ -1,6 +1,10 @@
-CVS policy file
+SVN policy file
 
 plugin: JDiffPlugin
-author: Andre Kaplan <akaplan@jedit.org>
+Original author: Andre Kaplan <akaplan@jedit.org>
+committers: Slava Pestov, Alan Ezust
 
-please do not commit changes to this plugin without first consulting the author.
+There is no current maintainer for this plugin. Please submit patches to the patches tracker.
+If you want to volunteer to take over maintenance of this plugin, please contact Alan Ezust.
+
+
