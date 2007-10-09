@@ -53,6 +53,9 @@ public class SideKickFoldHandler extends FoldHandler
 			SideKickPlugin.PARSED_DATA_PROPERTY);
 		if(data == null)
 			return 0;
+		FoldHandler override = data.getFoldHandler();
+		if (override != null)
+			return override.getFoldLevel(buffer, lineIndex, seg);
 		int lineStartOffset = buffer.getLineStartOffset(lineIndex); 
 		TreePath path = data.getTreePathForPosition(lineStartOffset);
 		if(path == null)
