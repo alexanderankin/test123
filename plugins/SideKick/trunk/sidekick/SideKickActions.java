@@ -185,7 +185,14 @@ public class SideKickActions
                         return;
                 }
 
-                textArea.setCaretPosition(asset.getEnd().getOffset());
+                int pos = asset.getEnd().getOffset();
+                if (pos > textArea.getBuffer().getLength())
+                {
+                    view.getToolkit().beep();
+                    return;
+                }
+                	
+                textArea.setCaretPosition(pos);
                 textArea.addToSelection(
                         new Selection.Range(
                                 asset.getStart().getOffset(),
