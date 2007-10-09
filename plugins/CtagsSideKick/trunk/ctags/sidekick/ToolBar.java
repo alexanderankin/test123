@@ -48,9 +48,9 @@ public class ToolBar extends JPanel {
 		updateSelector(FilterManager.getInstance(),
 				GeneralOptionPane.SHOW_FILTER_SELECTOR, "Filtering");
 		updateSelector(TextProviderManager.getInstance(),
-				GeneralOptionPane.SHOW_TEXT_PROVIDER_SELECTOR, "Text provider");
+				GeneralOptionPane.SHOW_TEXT_PROVIDER_SELECTOR, "Text");
 		updateSelector(IconProviderManager.getInstance(),
-				GeneralOptionPane.SHOW_ICON_PROVIDER_SELECTOR, "Icon provider");
+				GeneralOptionPane.SHOW_ICON_PROVIDER_SELECTOR, "Icon");
 	}
 	
 	static class ObjectProcessorMenu extends JMenu {
