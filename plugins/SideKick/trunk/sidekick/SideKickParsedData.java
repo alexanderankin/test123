@@ -26,6 +26,7 @@ package sidekick;
 import javax.swing.tree.*;
 import java.util.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.util.Log;
 
 import javax.swing.text.Position;
@@ -162,6 +163,11 @@ public class SideKickParsedData
 		return null;
 	}
 
+	protected FoldHandler getFoldHandler()
+	{
+		return null;
+	}
+	
 	private static boolean assetContains(IAsset asset, int offset)
 	{
 		return offset >= asset.getStart().getOffset()
