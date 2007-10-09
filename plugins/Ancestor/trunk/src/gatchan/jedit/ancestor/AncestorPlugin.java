@@ -35,6 +35,7 @@ public class AncestorPlugin extends EBPlugin
 {
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
+	//{{{ start() method
 	public void start()
 	{
 		View[] views = jEdit.getViews();
@@ -42,8 +43,9 @@ public class AncestorPlugin extends EBPlugin
 		{
 			addAncestorToolBar(views[i]);
 		}
-	}
+	} //}}}
 
+	//{{{ addAncestorToolBar() method
 	private void addAncestorToolBar(View view)
 	{
 		AncestorToolBar ancestorToolBar = new AncestorToolBar(view);
@@ -51,19 +53,17 @@ public class AncestorPlugin extends EBPlugin
 		ancestorToolBar.setBuffer(editPane.getBuffer());
 		view.addToolBar(ancestorToolBar);
 		viewAncestorToolBar.put(view, ancestorToolBar);
-	}
+	} //}}}
 
-
+	//{{{ removeAncestorToolBar() method
 	private void removeAncestorToolBar(View view)
 	{
 		AncestorToolBar toolBar = viewAncestorToolBar.get(view);
 		view.removeToolBar(toolBar);
 		viewAncestorToolBar.remove(view);
-	}
-	/**
-	 * Handles a message sent on the EditBus.
-	 */
-	// next version: remove this
+	} //}}}
+
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage message)
 	{
 		if (message instanceof ViewUpdate)
@@ -71,7 +71,7 @@ public class AncestorPlugin extends EBPlugin
 			ViewUpdate viewUpdate = (ViewUpdate) message;
 			if (viewUpdate.getWhat() == ViewUpdate.CREATED)
 			{
-				final View view = viewUpdate.getView();
+				View view = viewUpdate.getView();
 				addAncestorToolBar(view);
 			}
 			else if (viewUpdate.getWhat() == ViewUpdate.CLOSED)
@@ -97,9 +97,9 @@ public class AncestorPlugin extends EBPlugin
 				bar.setBuffer(editPane.getBuffer());
 			}
 		}
-	}
+	} //}}}
 
-
+	//{{{ stop() method
 	public void stop()
 	{
 		View[] views = jEdit.getViews();
@@ -107,5 +107,6 @@ public class AncestorPlugin extends EBPlugin
 		{
 			removeAncestorToolBar(views[i]);
 		}
-	}
+	} //}}}
+
 }

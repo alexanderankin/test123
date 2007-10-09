@@ -32,6 +32,7 @@ public class AncestorButton extends JButton
 {
 	private Ancestor ancestor;
 
+	//{{{ AncestorButton constructor
 	/**
 	 * Creates a button with no set text or icon.
 	 */
@@ -47,13 +48,12 @@ public class AncestorButton extends JButton
 				}
 			}
 		});
-	}
+	} //}}}
 
+	//{{{ setAncestor() method
 	public void setAncestor(Ancestor ancestor)
 	{
 		this.ancestor = ancestor;
 		setText(ancestor.getName());
-	}
-
-
+	} //}}}
 }
