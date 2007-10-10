@@ -51,7 +51,7 @@ implements Comparable
      * the given string.
      */
     public boolean hasPrefix(String prefix) {
-        return word.startsWith(prefix);
+        return word.startsWith(prefix) && (! word.equals(prefix));
     }
 
     /* (non-Javadoc)
