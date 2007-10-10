@@ -1,3 +1,28 @@
+/*
+ * TagsPlugin.java
+ * Copyright (c) 2001, 2002 Kenrick Drew (kdrew@earthlink.net)
+ * Copyright (c) 2003, 2004 Ollie Rutherfurd (oliver@jedit.org)
+ * Copyright (c) 2007 Shlomy Reinstein (shlomy@users.sourceforge.net)
+ *
+ * This file is part of the Tags plugin.
+ *
+ * TagsPlugin is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * TagsPlugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA	02111-1307, USA.
+ *
+ * $Id: TagsPlugin.java 10867 2007-10-10 13:01:00Z shlomy $
+ */
+
 package tags;
 
 import java.awt.BorderLayout;
