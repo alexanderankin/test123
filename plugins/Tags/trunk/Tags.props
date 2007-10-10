@@ -28,6 +28,8 @@ plugin.tags.TagsPlugin.menu=tags-follow-tag \
 							tags-push-position \
 							tags-pop-tag \
 							- \
+							tags-taglist \
+							- \
 							tags-tagstack \
 							tags-tagstack-toggle \
 							tags-tagstack-float \
@@ -43,6 +45,9 @@ tags.tagstack-goto=Go to
 tags.tagstack-remove=Remove
 tags.tagstack-pop=Pop
 tags.tagstack-clear=Clear
+
+tags-taglist.title=Tag List
+tags-taglist.label=Tag List
 
 
 # Messages

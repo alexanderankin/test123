@@ -124,7 +124,10 @@ choices. You can select the desired tag by either using the
 mouse, keyboard arrow keys or number keys (1 - 9 only).  The
 tag collision list can be dismissed with the Escape (<citetitle>Esc</citetitle>) key.
 The tag collision list can also be converted to a dialog
-with the Space key.</para></section>
+with the Space key.</para>
+<para>If the <citetitle>Tag List</citetitle> dockable window is open, the list
+will be shown in the dockable window instead of in a pop-up window.</para>
+</section>
 </section>
 <section>
 <title>Configuration</title>

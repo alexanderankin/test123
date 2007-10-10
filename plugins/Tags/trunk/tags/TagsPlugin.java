@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -490,7 +491,19 @@ public class TagsPlugin extends EBPlugin
 			for(int i=0; i < allTagLines.size(); i++)
 				((TagLine)allTagLines.elementAt(i)).setIndex(i+1);
 
-			if(usePopup)
+			String dockableName = "tags-taglist";
+			DockableWindowManager dwm = view.getDockableWindowManager();
+			JComponent dockable = null;
+			if (dwm.isDockableWindowDocked(dockableName))
+				dwm.showDockableWindow(dockableName);
+			dockable = dwm.getDockable(dockableName);
+			if (dockable != null)
+			{
+				if (! dwm.isDockableWindowDocked(dockableName))
+					dwm.showDockableWindow(dockableName);
+				((ChooseTagListDockable)dockable).setTagLines(allTagLines);
+			}
+			else if(usePopup)
 				new ChooseTagListPopup(view, allTagLines, newView);
 			else
 				new ChooseTagListDialog(view, allTagLines, newView);
