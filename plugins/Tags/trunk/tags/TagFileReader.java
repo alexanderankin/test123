@@ -1,6 +1,7 @@
 /*
  * TagFileReader.java
  *
+ * Copyright 2007 Shlomy Reinstein <shlomy@users.sourceforge.net>
  * Copyright 2004 Ollie Rutherfurd <oliver@jedit.org>
  * Portions Copyright (c) 2001, 2002 Kenrick Drew
  *
@@ -214,6 +215,14 @@ public abstract class TagFileReader
 		while(st.hasMoreTokens())
 		{
 			String info = st.nextToken("\t");
+			if (info.startsWith("line:"))
+			{
+				try {
+					int l = Integer.parseInt(info.substring(5));
+					lineNumber = l;
+				}
+				catch(NumberFormatException nfe) {}
+			}
 			exuberantInfoItems.addElement(new ExuberantInfoItem(info));
 			Log.log(Log.DEBUG, this, "added ExuberantInfoItem: " + info);
 		}
