@@ -213,7 +213,7 @@ public abstract class TagFileReader
 		}
 		while(st.hasMoreTokens())
 		{
-			String info = st.nextToken();
+			String info = st.nextToken("\t");
 			exuberantInfoItems.addElement(new ExuberantInfoItem(info));
 			Log.log(Log.DEBUG, this, "added ExuberantInfoItem: " + info);
 		}
