@@ -2,7 +2,7 @@ plugin.tags.TagsPlugin.activate=defer
 
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
-plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew
+plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew, Shlomy Reinstein
 plugin.tags.TagsPlugin.version=2.0.3
 plugin.tags.TagsPlugin.docs=doc/index.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.4
