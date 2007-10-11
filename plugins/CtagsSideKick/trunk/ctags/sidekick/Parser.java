@@ -69,8 +69,7 @@ public class Parser extends SideKickParser {
 	}
 
 	public JPanel getPanel() {
-		if (toolbar == null)
-			toolbar = new ToolBar();
+		toolbar = new ToolBar();
 		return toolbar;
 	}
 
