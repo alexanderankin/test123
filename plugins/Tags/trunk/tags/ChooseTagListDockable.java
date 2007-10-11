@@ -26,12 +26,21 @@
 package tags;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -44,14 +53,60 @@ public class ChooseTagListDockable extends JPanel
 	private View view;
 	private ChooseTagList chooseTagList = null;
 	private JScrollPane scroller = null;
+	private JMenu filterMenu = null; 
+	private Vector<TagLine> origTagLines = null;
 	
 	public ChooseTagListDockable(View view) {
 		super(new BorderLayout());
 		this.view = view;
+		JMenuBar menuBar = new JMenuBar();
+		add(menuBar, BorderLayout.NORTH);
+		filterMenu = new JMenu("Filter");
+		menuBar.add(filterMenu);
 		setTagLines(new Vector());
 	}
 	
 	public void setTagLines(Vector tagLines) {
+		origTagLines = tagLines;
+		updateTagLines(tagLines);
+		Map<String, HashSet<String>> attributes =
+			new HashMap<String, HashSet<String>>();
+		for (int i = 0; i < tagLines.size(); i++) {
+			TagLine l = (TagLine) tagLines.get(i);
+			Vector items = l.getExuberantInfoItems();
+			for (int j = 0; j < items.size(); j++) {
+				ExuberantInfoItem item = (ExuberantInfoItem) items.get(j);
+				String [] parts = item.toString().split(":", 2);
+				if (parts.length < 2)
+					continue;
+				HashSet<String> set = attributes.get(parts[0]);
+				if (set == null) {
+					set = new HashSet<String>();
+					attributes.put(parts[0], set);
+				}
+				set.add(parts[1]);
+			}
+		}
+		Iterator<String> it = attributes.keySet().iterator();
+		while (it.hasNext()) {
+			String att = it.next();
+			HashSet<String> valueSet = attributes.get(att);
+			if (valueSet.size() > 1 && valueSet.size() <= 20) {
+				JMenu attrMenu = new JMenu(att);
+				filterMenu.add(attrMenu);
+				Iterator<String> valueIt = valueSet.iterator();
+				while (valueIt.hasNext()) {
+					String val = valueIt.next();
+					JMenuItem valItem = new JMenuItem(val);
+					attrMenu.add(valItem);
+					valItem.addActionListener(new FilterHandler(att, val));
+				}
+			}
+		}
+		revalidate();
+	}
+
+	private void updateTagLines(Vector tagLines) {
 		if (scroller != null)
 			remove(scroller);
 		chooseTagList = new ChooseTagList(tagLines);
@@ -79,9 +134,7 @@ public class ChooseTagListDockable extends JPanel
 					}
 				}
 			}
-			
 		});
-		revalidate();
 	}
 	
 	private void selected()
@@ -93,5 +146,36 @@ public class ChooseTagListDockable extends JPanel
 	public void focusOnDefaultComponent() {
 		if (chooseTagList != null)
 			chooseTagList.requestFocus();
+	}
+	
+	private class FilterHandler implements ActionListener {
+		private String att;
+		private String val;
+		public FilterHandler(String attr, String value) {
+			att = attr;
+			val = value;
+		}
+		public void actionPerformed(ActionEvent e) {
+			filter(att, val);
+		}
+	}
+
+	public void filter(String att, String val) {
+		Vector<TagLine> tagLines = origTagLines;
+		Vector<TagLine> filtered = new Vector<TagLine>();
+		for (int i = 0; i < tagLines.size(); i++) {
+			TagLine l = (TagLine) tagLines.get(i);
+			Vector items = l.getExuberantInfoItems();
+			for (int j = 0; j < items.size(); j++) {
+				ExuberantInfoItem item = (ExuberantInfoItem) items.get(j);
+				String [] parts = item.toString().split(":", 2);
+				if (parts.length < 2)
+					continue;
+				if (parts[0].equals(att) && parts[1].equals(val))
+					filtered.add(l);
+			}
+		}
+		updateTagLines(filtered);
+		revalidate();
 	}
 }
