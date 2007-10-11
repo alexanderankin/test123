@@ -3,7 +3,8 @@ Tags Plugin
 =============
 
 :Authors: Kenrick Drew,
-			Ollie Rutherfurd
+			Ollie Rutherfurd,
+			Shlomy Reinstein
 :Version: 2.0.2
 
 .. $Id$
@@ -127,6 +128,9 @@ tag collision list can be dismissed with the Escape (`Esc`) key.
 The tag collision list can also be converted to a dialog
 with the Space key.
 
+If the `Tag List` dockable window is open, the list will be shown
+in the dockable window instead of in a pop-up window.
+
 Configuration
 =============
 
@@ -159,6 +163,31 @@ General
     if a tag collision occurs) found will stop the search.
     Using this option will allow all tag files to be searched,
     results in searches taking longer.
+
+`Use line numbers when following tags, if specified in the tag files`:
+
+    Invoking Ctags with:
+	
+	--fields=+l
+	
+    causes it to add a "line" attribute to each tag, specifying
+    the line number in which the tag is defined. By default,
+    the "follow tag" operation ignores the line attribute of the
+    tag and uses the pattern to locate the tag. This has the
+    advantage that the tag may be located even if the file has
+    changed since it was indexed by Ctags.
+    However, using the pattern to locate the
+    tag does not work if there are multiple tags with the same
+    name and pattern in the file, which is common in object
+    oriented languages (e.g. an actionPerformed method in
+    several anonymous Java classes defined in the same file, or
+    a C function definition and forward declaration in the same
+    file).
+    In such cases, the line numbers can be used to locate the
+    tags. If the line attributes are specified in the tag files,
+    using this option causes the "follow tag" operation to jump
+    to the specified line number instead of searching for the
+    pattern.
 
 `Number of tag files to keep in memory`:
 
