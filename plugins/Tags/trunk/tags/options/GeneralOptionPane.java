@@ -2,6 +2,7 @@
  * GeneralOptionPane.java
  *
  * Copyright 2004 Ollie Rutherfurd <oliver@jedit.org>
+ * Copyright 2007 Shlomy Reinstein <shlomy@users.sourceforge.net>
  *
  * This file is part of TagsPlugin
  *
@@ -26,17 +27,7 @@ package tags.options;
 
 //{{{ imports
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.*;
-
-import java.util.Vector;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.border.*;
-
 import tags.*;
 //}}}
 
@@ -66,6 +57,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("options.tags.tag-search-all-files",false));
 		addComponent(searchAll);
 
+		useLineNumbers = new JCheckBox(
+			jEdit.getProperty("options.tags.general.tag-use-line-numbers.label"),
+			jEdit.getBooleanProperty("options.tags.tag-use-line-numbers",false));
+		addComponent(useLineNumbers);
+		
 		cacheSize = new JTextField("" + 
 			jEdit.getIntegerProperty("options.tags.cache-size",TagFileManager.CACHE_SIZE));
 		addComponent(jEdit.getProperty("options.tags.general.cache-size.label"),
@@ -85,6 +81,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			extendThroughDot.isSelected());
 		jEdit.setBooleanProperty("options.tags.tag-search-all-files", 
 			searchAll.isSelected());
+		jEdit.setBooleanProperty("options.tags.tag-use-line-numbers", 
+			useLineNumbers.isSelected());
 		jEdit.setIntegerProperty("options.tags.cache-size", 
 			Integer.parseInt(cacheSize.getText()));
 		jEdit.setBooleanProperty("options.tags.cache-all", 
@@ -95,6 +93,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	JCheckBox dialogsUnderCursor;
 	JCheckBox extendThroughDot;
 	JCheckBox searchAll;
+	JCheckBox useLineNumbers;
 	JTextField cacheSize;
 	JCheckBox cacheAll;
 	//}}}

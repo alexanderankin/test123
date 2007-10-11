@@ -2,6 +2,7 @@
  * TagsPlugin.java
  * Copyright (c) 2001, 2002 Kenrick Drew (kdrew@earthlink.net)
  * Copyright (c) 2003, 2004 Ollie Rutherfurd (oliver@jedit.org)
+ * Copyright (c) 2007 Shlomy Reinstein (shlomy@users.sourceforge.net)
  *
  * This file is part of the Tags plugin.
  *
@@ -26,7 +27,6 @@ package tags;
 
 //{{{ imports
 import java.io.*;
-import java.lang.System.*;
 import java.util.*;
 import java.awt.event.*;
 import java.awt.Toolkit;
@@ -45,7 +45,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -521,7 +520,6 @@ public class TagsPlugin extends EBPlugin
 	{
 		Log.log(Log.DEBUG, TagsPlugin.class, 
 			"goToTag: " + tagLine + ", tagName: " + tagName); // ##
-		JEditTextArea textArea = null;
 		Buffer buffer = null;
 
 		TagsPlugin.pushPosition(view);	// push current position onto the stack
@@ -529,7 +527,6 @@ public class TagsPlugin extends EBPlugin
 		if(newView)
 			view = jEdit.newView(view, view.getBuffer());
 
-		textArea = view.getTextArea();
 		buffer = jEdit.openFile(view, tagLine.getDefinitionFileName());
 		if(buffer == null)
 		{
@@ -668,6 +665,17 @@ public class TagsPlugin extends EBPlugin
 		jEdit.setBooleanProperty("options.tags.tag-search-all-files", value);
 	} //}}}
 
+	//{{{ getUseLineNumbers() method
+	public static boolean getUseLineNumbers()
+	{
+		return jEdit.getBooleanProperty("options.tags.tag-use-line-numbers", false);
+	} //}}}
+
+	//{{{ setUseLineNumbers() method
+	public static void setUseLineNumbers(boolean value)
+	{
+		jEdit.setBooleanProperty("options.tags.tag-use-line-numbers", value);
+	} //}}}
 	//}}}
 
 }
