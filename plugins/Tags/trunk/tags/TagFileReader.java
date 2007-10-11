@@ -38,8 +38,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 //}}}
@@ -215,7 +213,8 @@ public abstract class TagFileReader
 		while(st.hasMoreTokens())
 		{
 			String info = st.nextToken("\t");
-			if (info.startsWith("line:"))
+			if (TagsPlugin.getUseLineNumbers() &&
+				info.startsWith("line:"))
 			{
 				try {
 					int l = Integer.parseInt(info.substring(5));

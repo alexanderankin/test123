@@ -82,6 +82,7 @@ options.tags.general.code=new tags.options.GeneralOptionPane();
 options.tags.general.open-dialogs-under-cursor.label=Position dialogs under cursor
 options.tags.general.tag-extends-through-dot.label=Tags extend through member access operator
 options.tags.general.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files
+options.tags.general.tag-use-line-numbers.label=Use line numbers when following tags, if specified in the tag files 
 options.tags.general.cache-size.label=Number of tags files to keep in memory: 
 options.tags.general.cache-local.label=Keep local tags files in memory
 # tag files
@@ -101,6 +102,7 @@ options.tags.current-buffer-file-name=tags
 options.tags.tag-search-current-buff-tag-file=true
 options.tags.tags-search-parent-dirs=true
 options.tags.tag-search-all-files=false
+options.tags.tag-use-line-numbers=false 
 options.tags.note-all-tags-in-tag-history=true
 options.tags.open-dialogs-under-cursor=false
 options.tags.tag-extends-through-dot=true
