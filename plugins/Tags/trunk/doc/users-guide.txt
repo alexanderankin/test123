@@ -129,7 +129,10 @@ The tag collision list can also be converted to a dialog
 with the Space key.
 
 If the `Tag List` dockable window is open, the list will be shown
-in the dockable window instead of in a pop-up window.
+in the dockable window instead of in a pop-up window. The
+`Tag List` dockable window provides a 'Filter' menu using which
+you can quickly filter the list of tags by the available attribute
+values.
 
 Configuration
 =============

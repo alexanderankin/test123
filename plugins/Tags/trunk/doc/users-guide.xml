@@ -24,14 +24,14 @@ cursor on the tag, or entering the tag.</para><para>Tag index files are created 
 <section>
 <title>Creating Tag Index Files</title>
 <para>For the Tags plugin to be useful, you must generate tag index files
-using <citetitle>ctags</citetitle>.</para><para>To generate a tag index file for all source files in the 
+using <citetitle>ctags</citetitle>.</para><para>To generate a tag index file for all source files in the
 current directory:</para><programlisting>
 ctags *</programlisting>
 <para>To generate a tag index file or all source files in the
 current directory and child directories:</para><programlisting>
 ctags -R</programlisting>
 <para>See the man page or documentation that comes with your version
-of <citetitle>ctags</citetitle> for more information on using <citetitle>ctags</citetitle>.</para><para>Note that file paths in tag index file are relative to the 
+of <citetitle>ctags</citetitle> for more information on using <citetitle>ctags</citetitle>.</para><para>Note that file paths in tag index file are relative to the
 generated file, unless you pass absolute paths to <citetitle>ctags</citetitle>.</para><para><emphasis role="strong">Tag index files must be sorted, as the Tags plugin searches
 using a binary search. By default Exuberant CTags sorts generated
 tag index files.</emphasis></para></section>
@@ -53,8 +53,8 @@ to the entered tag in an new view.</para></listitem>
 <section>
 <title>The Tag Stack</title>
 <para>The <citetitle>Tag Stack</citetitle> provides a visual history of tags you've followed
-and where you've jumped from.  When you jump to (or <citetitle>follow</citetitle>) a 
-tag, both the location you jumped from and the location of the 
+and where you've jumped from.  When you jump to (or <citetitle>follow</citetitle>) a
+tag, both the location you jumped from and the location of the
 tag you followed are pushed onto the <citetitle>Tag Stack</citetitle>.  Aside from
 seeing how you've moved through buffers, the <citetitle>Tag Stack</citetitle> enables
 you to jump to any of the positions in the stack.</para><para>For each position, the <citetitle>Tag Stack</citetitle> displays the line number, filename
@@ -125,10 +125,11 @@ choices. You can select the desired tag by either using the
 mouse, keyboard arrow keys or number keys (1 - 9 only).  The
 tag collision list can be dismissed with the Escape (<citetitle>Esc</citetitle>) key.
 The tag collision list can also be converted to a dialog
-with the Space key.</para>
-<para>If the <citetitle>Tag List</citetitle> dockable window is open, the list
-will be shown in the dockable window instead of in a pop-up window.</para>
-</section>
+with the Space key.</para><para>If the <citetitle>Tag List</citetitle> dockable window is open, the list will be shown
+in the dockable window instead of in a pop-up window. The
+<citetitle>Tag List</citetitle> dockable window provides a 'Filter' menu using which
+you can quickly filter the list of tags by the available attribute
+values.</para></section>
 </section>
 <section>
 <title>Configuration</title>
@@ -153,20 +154,27 @@ under the cursor as well as any member access.</para></blockquote>
 if a tag collision occurs) found will stop the search.
 Using this option will allow all tag files to be searched,
 results in searches taking longer.</para></blockquote>
-<para><citetitle>Use line numbers when following tags, if specified in the tag files</citetitle></para><blockquote>
-<para>Invoking Ctags with "--fields=+l" causes it to add a "line" attribute to
-each tag, specifying the line number in which the tag is defined. By default,
-the "follow tag" operation ignores the line attribute of the tag and uses the
-pattern to locate the tag. This has the advantage that the tag may be located
-even if the file has changed since it was indexed by Ctags. However, using
-the pattern to locate the tag does not work if there are multiple tags with the
-same name and pattern in the file, which is common in object oriented languages
-(e.g. an actionPerformed method in several anonymous Java classes defined in the
-same file, or a C function definition and forward declaration in the same file).
-In such cases, the line numbers can be used to locate the tags. If the line
-attributes are specified in the tag files, using this option causes the "follow
-tag" operation to jump to the specified line number instead of searching for
-the pattern.</para></blockquote>
+<para><citetitle>Use line numbers when following tags, if specified in the tag files</citetitle>:</para><blockquote>
+<para>Invoking Ctags with:</para><blockquote>
+<para>--fields=+l</para></blockquote>
+<para>causes it to add a &quot;line&quot; attribute to each tag, specifying
+the line number in which the tag is defined. By default,
+the &quot;follow tag&quot; operation ignores the line attribute of the
+tag and uses the pattern to locate the tag. This has the
+advantage that the tag may be located even if the file has
+changed since it was indexed by Ctags.
+However, using the pattern to locate the
+tag does not work if there are multiple tags with the same
+name and pattern in the file, which is common in object
+oriented languages (e.g. an actionPerformed method in
+several anonymous Java classes defined in the same file, or
+a C function definition and forward declaration in the same
+file).
+In such cases, the line numbers can be used to locate the
+tags. If the line attributes are specified in the tag files,
+using this option causes the &quot;follow tag&quot; operation to jump
+to the specified line number instead of searching for the
+pattern.</para></blockquote>
 <para><citetitle>Number of tag files to keep in memory</citetitle>:</para><blockquote>
 <para>The tags plugin caches remote tag index files, when
 editing over FTP, SFTP, etc...  To avoid loading remote
@@ -182,11 +190,11 @@ memory usage.</para></blockquote>
 </section>
 <section>
 <title>Tag Files</title>
-<para>List of tag index files the Tags plugin uses to search for 
-tag definitions.</para><para>&quot;tags&quot; is a special entry that doesn't represent an actual 
+<para>List of tag index files the Tags plugin uses to search for
+tag definitions.</para><para>&quot;tags&quot; is a special entry that doesn't represent an actual
 file but rather the name of the file to look for in the current
 buffer's directory.  The Tags plugin can also search for this
-file in the current buffer's parent directories.  Double-click 
+file in the current buffer's parent directories.  Double-click
 on the entry to edit it.</para><para>The order of entries in the list is the order in which files
 will be searched.</para></section>
 </section>
@@ -297,7 +305,7 @@ to use the Sourceforge Bug Tracker at
 <listitem>
 <para>Version 2.0 (Nov 2004)</para><itemizedlist>
 <listitem>
-<para>Tags plugin now uses jEdit's Virtual File Systems 
+<para>Tags plugin now uses jEdit's Virtual File Systems
 (enabling the plugin to work over FTP, SFTP, etc...).</para></listitem>
 <listitem>
 <para>Tags plugin can no longer be used stand-alone (outside of jEdit).</para></listitem>
