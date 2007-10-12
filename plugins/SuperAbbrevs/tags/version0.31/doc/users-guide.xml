@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=2:indentSize=2:noTabs=true:wrap=hard: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<!-- <book> -->
+<book>
+  <bookinfo>
+    <title>SuperAbbrevs plugin user's guide</title>
+
+    <copyright>
+      <year>2005</year>
+      <year>2010</year>
+      <holder>Sune Simonsen</holder>
+    </copyright>
+
+    <legalnotice><title>Legal Notice</title>
+      <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1 or
+        any later version published by the Free Software Foundation; with no
+        <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>, each as defined in the license. A copy
+        of the license can be found in the file <filename>COPYING.txt</filename>
+        included with jEdit.
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="Introduction"><title>Introduction</title>
+    <para>
+      This plugin gives you the ability to expand an abbreviations to userdefined
+      code template. When expanded you can jump between the variables in the
+      template using the TAB key. If you change the text of a variable, the text
+      will change everywhere the variable is placed in the template.
+    </para>
+    <para>
+      There is already some predefined abbreviations when you install the plugin, 
+      you can find them in the <application>SuperAbbrevs</application>
+      optionpane. Each mode have a list of defined abbreviations, you can change
+      between the mode in the dropdown menu at the top of the optionpane, an the
+      abbreviations associated with the mode will be shown in the table below.
+      There is a special mode added, <emphasis>global</emphasis>, that defines
+      abbreviations that works across all modes. 
+    </para>
+    <para>
+    	You can defined, edit or delete the abbreviations from the optionpane,
+      this will be explained further in <xref linkend="Using the plugin"/>. 
+    </para>
+  </chapter>
+
+  <chapter id="Using the plugin"><title>Using the plugin</title>
+    <sect1 id="expand"><title>Expand an abbreviation</title>
+      To expand an abbreviation, you have to be in the mode the abbreviation is
+      associated with, and the cursor should be placed after the abbreviation.
+      Then press the TAB key, the template will be
+      inserted and the first variable will be selected. If you change the text
+      of the variable it changes everywhere the variable is placed in the
+      template. By pressing the TAB key once more, the
+      next variable is selected. If you want to jump back to a earlier variable 
+      you should just press S+TAB.
+    </sect1>
+    <sect1 id="expand selection"><title>Expand an abbreviation on a selection</title>
+      To expand an abbreviation when you have selected some text, you should invoke 
+      the <guimenu>Show expandsion dialog</guimenu> action in the 
+      <guimenu>Plugins</guimenu> menu. Type in the abbreviation and press ENTER.
+      The abbreviation will be expanded and the selection will be available to
+      the template generating code.
+    </sect1>
+    <sect1 id="add"><title>Add a new abbreviation</title>
+      In the SuperAbbrevs optionpane, find the mode in the dropdown menu, for which
+      you want to add the abbreviation. Then press the plus button below the
+      abbreviation table, a abbreviation editor will appear. Type in the
+      abbreviation and the template according to the syntax explained in <xref
+      linkend="Writing templates"/>. Press the Ok button. The abbreviation is not saved
+      yet, you have to press Apply or the Ok button, at the button of the
+      optionpane, to save all the changes you made to the abbreviations.
+    </sect1>
+    <sect1 id="add inline"><title>Add a new abbreviation from the buffer</title>
+      If you want to add a new abbreviation from the buffer, type the abbreviation and press
+      S+TAB a abbreviation editor dialog will be shown. This dialog is used the
+      same way as <xref linkend="add"/>, the only difference is that there is to
+      buttons instead of the Ok button, one for adding the abbreviation to the
+      <emphasis>global</emphasis> mode and one for the current mode.
+    </sect1>
+    <sect1 id="edit"><title>Edit a existing abbreviation</title>
+      To edit an abbreviation, double click it, an abbreviation editor dialog
+      will appear, Type in the abbreviation and the template according to the 
+      syntax explained in <xref linkend="Writing templates"/>. Press the Ok button. 
+      The abbreviation is not saved yet, you have to press Apply or the Ok button, 
+      at the button of the optionpane, to save all the changes you made to the 
+      abbreviations. 
+    </sect1>
+    <sect1 id="edit inline"><title>Add a new abbreviation from the buffer</title>
+      If you want to edit an abbreviation from the buffer, type the abbreviation 
+      and press S+TAB a abbreviation editor dialog will be shown. This dialog is 
+      used the same way as <xref linkend="edit"/>, the only difference is that there is to
+      buttons instead of the ok button, one for adding the abbreviation to the
+      <emphasis>global</emphasis> mode and one for the current mode.
+    </sect1>
+  </chapter>
+
+  <chapter id="Writing templates"><title>Writing templates</title>
+
+    <para>
+      A template can consist of the following things:
+    </para>  
+    <itemizedlist>
+      <listitem>Variable
+        <para>
+          Variables is the essential part of a template, you write a variable
+          in a template as ${number:value} where number is the TAB index of the 
+          variable, and value is the text that will be inserted in the
+          variable when the template is expanded. The value will be inserted
+          instead of the variable when the template is expanded.
+        </para>
+        <para>
+        	The characters \ { } have to be escaped in the value as \\ \{ \}.
+        </para>
+      </listitem>
+      <listitem>Variable reference
+        <para>
+          You can refere to a variable by inserting $number, where number is
+          the TAB index of the variable you are referring to. This inserts the
+          text of the variable instead of the reference.
+        </para>
+      </listitem>
+      <listitem>Transformation variable reference
+        <para>
+          This is a special kind of reference where you can run beanshell code
+          on the text of the referred variable. You insert it in the template
+          as ${number=code} where number is the TAB index of the variable you
+          are referring to, and code is arbitrary beanshell code. In the code
+          the beanshell variable <emphasis>s</emphasis> holds the text of the
+          referred variable. The functions in the file 
+          <emphasis>.jedit/SuperAbbrevs/abbrevs_functions.bsh</emphasis> is also available in the
+          code.
+        </para>
+      </listitem>
+      <listitem>The end variable
+        <para>
+          A special variable is $end, this variable will always be defined for a
+          template, and represents the last place the cursor will jump to in the
+          template. If the $end variable is not explicit defined, it will be
+          inserted at the end of the template. When you type in the end variable
+          the template becomes inactive and the TAB key functions as normal.
+        </para>
+      </listitem>
+      <listitem>Normal text
+        <para>
+          Everywhere thing else is just normal text that's inserted and not
+          manipulated by the template engine. 
+        </para>
+        <para>
+          One thing to be aware of is that there is some character sequences that 
+          have to be escaped.
+        	If you want to write $ in the text you have to escape it as \$. As well
+          \ should be escapes as \\.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+    	This example shows you how to make a java field with getter and setters.
+      The firstUp function makes the first character of the variable uppercase.
+    </para>
+    <para>
+      <programlisting><![CDATA[
+private ${2:Type} ${1:field};
+
+/**
+ * Getter function for the field $1
+ */ 
+public $2 get${1=firstUp(s)}() {
+	return $1;
+}
+
+/**
+ * Setter function for the field $1
+ */
+public void set${1=firstUp(s)}($2 $1){
+	this.$1 = $1;
+}
+]]></programlisting>
+    </para>
+    <para>
+    	The best advice I can give you is to look at the already defined,
+      templates and play around with them.
+    </para>
+  </chapter>
+  <chapter id="Template generation"><title>Template generation</title>
+    <para>
+    	This is only for advanced users.
+    </para>
+    <para>
+    	It's possible to generate a template with beanshell code, 
+      you embed code into the template in between &lt;# code #&gt;, the template 
+      is then turned inside out, so all the normal text is turn into print 
+      statements, and the code will be executed. It's possible to print new code
+      to the template with &lt;#= code #&gt; where the code have to evaluate to
+      a string. All the functions in the files 
+      <emphasis>.jedit/SuperAbbrevs/template_generation_functions.bsh</emphasis>
+      <emphasis>.jedit/SuperAbbrevs/abbrevs_functions.bsh</emphasis> is
+      available, as well as a variable <emphasis>selection</emphasis>, holding
+      the selection.
+    </para>
+    <para>
+    	This example shows how to generate a HTML multiplying table of 5 rows and
+      5 columns, not that usefull but only imagination hold you back.
+    </para>
+    <para>
+      <programlisting><![CDATA[
+<table>
+<# for(i=0; i<=5; i++){ #>
+  <tr>
+  <# for(j=0; j<=5; j++){ #>
+    <td><#= i*j #></td>
+  <# } #>
+  </tr>
+<# } #>
+</table>
+]]></programlisting>
+    </para>
+  </chapter>
+</book>

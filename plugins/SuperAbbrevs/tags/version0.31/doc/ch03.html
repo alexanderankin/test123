@@ -1,0 +1,67 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Writing templates</title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="ch02s06.html" title="Add a new abbreviation from the buffer"><link rel="next" href="ch04.html" title="Template generation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Writing%20templates"></a>Chapter 3. Writing templates</h2></div></div></div><p>
+      A template can consist of the following things:
+    </p><div class="itemizedlist"><ul type="disc"><li>Variable
+        <p>
+          Variables is the essential part of a template, you write a variable
+          in a template as ${number:value} where number is the TAB index of the 
+          variable, and value is the text that will be inserted in the
+          variable when the template is expanded. The value will be inserted
+          instead of the variable when the template is expanded.
+        </p><p>
+        	The characters \ { } have to be escaped in the value as \\ \{ \}.
+        </p></li><li>Variable reference
+        <p>
+          You can refere to a variable by inserting $number, where number is
+          the TAB index of the variable you are referring to. This inserts the
+          text of the variable instead of the reference.
+        </p></li><li>Transformation variable reference
+        <p>
+          This is a special kind of reference where you can run beanshell code
+          on the text of the referred variable. You insert it in the template
+          as ${number=code} where number is the TAB index of the variable you
+          are referring to, and code is arbitrary beanshell code. In the code
+          the beanshell variable <span class="emphasis"><em>s</em></span> holds the text of the
+          referred variable. The functions in the file 
+          <span class="emphasis"><em>.jedit/SuperAbbrevs/abbrevs_functions.bsh</em></span> is also available in the
+          code.
+        </p></li><li>The end variable
+        <p>
+          A special variable is $end, this variable will always be defined for a
+          template, and represents the last place the cursor will jump to in the
+          template. If the $end variable is not explicit defined, it will be
+          inserted at the end of the template. When you type in the end variable
+          the template becomes inactive and the TAB key functions as normal.
+        </p></li><li>Normal text
+        <p>
+          Everywhere thing else is just normal text that's inserted and not
+          manipulated by the template engine. 
+        </p><p>
+          One thing to be aware of is that there is some character sequences that 
+          have to be escaped.
+        	If you want to write $ in the text you have to escape it as \$. As well
+          \ should be escapes as \\.
+        </p></li></ul></div><p>
+    	This example shows you how to make a java field with getter and setters.
+      The firstUp function makes the first character of the variable uppercase.
+    </p><p>
+      </p><pre class="programlisting">
+private ${2:Type} ${1:field};
+
+/**
+ * Getter function for the field $1
+ */ 
+public $2 get${1=firstUp(s)}() {
+	return $1;
+}
+
+/**
+ * Setter function for the field $1
+ */
+public void set${1=firstUp(s)}($2 $1){
+	this.$1 = $1;
+}
+</pre><p>
+    </p><p>
+    	The best advice I can give you is to look at the already defined,
+      templates and play around with them.
+    </p></div></body></html>
