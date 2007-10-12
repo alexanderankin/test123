@@ -68,10 +68,10 @@ public class PreferencesManager {
     NameSpace bsNameSpace		= new NameSpace(BeanShell.getNameSpace(), "PreferencesManager");
 
     /** List of keys used to accept the selected completion. */
-    List acceptKeys 			= null;
-    List disposeKeys 			= null;
-    List selectionUpKeys 		= null;
-    List selectionDownKeys 		= null;
+    List<Integer> acceptKeys 			= null;
+    List<Integer> disposeKeys 			= null;
+    List<Integer> selectionUpKeys 		= null;
+    List<Integer> selectionDownKeys 		= null;
 
 	/**
 	 * Holds the filename filter pattern.
@@ -393,15 +393,15 @@ public class PreferencesManager {
      * set or contains no valid keys.
      * @see KeyEvent
      */
-	private java.util.ArrayList
+	private java.util.ArrayList<Integer>
 	propertyToKeyCodes(String propertyName)
 	{
-		java.util.ArrayList keyCodes = null;
+		java.util.ArrayList<Integer> keyCodes = null;
     	String acceptkeysProp = jEdit.getProperty(propertyName);
     	if(acceptkeysProp != null)
     	{
     		StringTokenizer token = new StringTokenizer( acceptkeysProp, ", ");
-    		keyCodes = new java.util.ArrayList( token.countTokens() );
+    		keyCodes = new java.util.ArrayList<Integer>( token.countTokens() );
     		Field key = null;
     		while(token.hasMoreTokens())
     		{

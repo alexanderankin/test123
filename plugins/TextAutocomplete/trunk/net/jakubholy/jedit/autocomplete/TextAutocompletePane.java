@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.jEdit;
  * @author Jakub Holý
  *
  */
+@SuppressWarnings("serial")
 public class TextAutocompletePane extends AbstractOptionPane
 {
 	/*

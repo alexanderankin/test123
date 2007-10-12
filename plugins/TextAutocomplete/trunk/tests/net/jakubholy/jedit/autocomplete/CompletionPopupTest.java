@@ -65,6 +65,7 @@ public class CompletionPopupTest extends AbstractJEditBufferTest
 	 * inserted by typing its number.
 	 * @see CompletionPopup.KeyHandler
 	 */
+	@SuppressWarnings("deprecation")
 	public void testSelectCompletionByNumber() {
 		KeyEvent numTwoEvt = new KeyEvent(
 				thePopup,

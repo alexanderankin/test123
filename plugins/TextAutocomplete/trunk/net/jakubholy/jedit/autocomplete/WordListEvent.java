@@ -7,6 +7,7 @@ import java.util.EventObject;
  * @see net.jakubholy.jedit.autocomplete.WordList 
  * @author Jakub Holy
  */
+@SuppressWarnings("serial")
 public class WordListEvent extends EventObject 
 {
 

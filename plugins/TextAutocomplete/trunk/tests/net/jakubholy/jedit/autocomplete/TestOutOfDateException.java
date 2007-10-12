@@ -10,6 +10,7 @@ package net.jakubholy.jedit.autocomplete;
  * 
  * @author Jakub Holy
  */
+@SuppressWarnings("serial")
 public class TestOutOfDateException extends RuntimeException
 {
 

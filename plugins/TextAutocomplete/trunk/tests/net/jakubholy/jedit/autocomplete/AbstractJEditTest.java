@@ -2,8 +2,6 @@ package net.jakubholy.jedit.autocomplete;
 
 import junit.framework.TestCase;
 
-import org.gjt.sp.jedit.msg.BufferUpdate;
-
 /**
  * Parent of all jEdit test cases that need running jEdit.
  * @author Jakub Holy

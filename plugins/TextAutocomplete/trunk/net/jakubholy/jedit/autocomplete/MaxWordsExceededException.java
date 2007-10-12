@@ -8,6 +8,7 @@ package net.jakubholy.jedit.autocomplete;
  * remembered words would exceed the maximum allowed (set in preferences).
  * @author Jakub Holy
  */
+@SuppressWarnings("serial")
 public class MaxWordsExceededException extends Exception 
 {
 	/** The word that we wanted to remember but couldn't because of the limit. */
