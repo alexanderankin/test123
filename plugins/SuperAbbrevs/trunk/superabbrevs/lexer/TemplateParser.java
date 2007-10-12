@@ -3,7 +3,7 @@ package superabbrevs.lexer;
 import superabbrevs.template.*;
 import java.io.*;
 import java.util.*;
-import org.gjt.sp.jedit.bsh.*;
+import bsh.*;
 
 /**
  * @author Sune Simonsen

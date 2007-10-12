@@ -33,6 +33,7 @@ import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.StandardUtilities;
 
 import superabbrevs.SuperAbbrevs;
 //}}}
@@ -256,7 +257,7 @@ class VariablesModel extends AbstractTableModel {
 	void sort(int col)
 	{
 		lastSort = col;
-		MiscUtilities.quicksort(variables,new VariableCompare(col));
+		Collections.sort(variables,new VariableCompare(col));
 		fireTableDataChanged();
 	} //}}}
 
@@ -354,9 +355,17 @@ class VariablesModel extends AbstractTableModel {
 	} //}}}
 
 	//{{{ VariableCompare class
-	class VariableCompare implements MiscUtilities.Compare
+	class VariableCompare implements Comparator
 	{
-		int col;
+		//{{{ field int col
+		private int col;
+		/**
+		 * Getter function for the field col
+		 */ 
+		public int getCol() {
+			return col;
+		}
+		//}}}
 
 		VariableCompare(int col)
 		{
@@ -373,7 +382,7 @@ class VariablesModel extends AbstractTableModel {
 				String name1 = v1.name.toLowerCase();
 				String name2 = v2.name.toLowerCase();
 
-				return MiscUtilities.compareStrings(
+				return StandardUtilities.compareStrings(
 					name1,name2,true);
 			}
 			else
@@ -381,9 +390,19 @@ class VariablesModel extends AbstractTableModel {
 				String value1 = v1.value.toLowerCase();
 				String value2 = v2.value.toLowerCase();
 
-				return MiscUtilities.compareStrings(
+				return StandardUtilities.compareStrings(
 					value1,value2,true);
 			}
+			
+			
+		}
+		
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof VariableCompare)) return false;
+			
+			VariableCompare variableCompare = (VariableCompare)obj;
+			
+			return col == variableCompare.col;
 		}
 	} //}}}
 } //}}}

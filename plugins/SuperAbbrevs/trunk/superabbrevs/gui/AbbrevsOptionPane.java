@@ -37,6 +37,7 @@ import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import superabbrevs.SuperAbbrevs;
 import superabbrevs.SuperAbbrevsIO;
@@ -503,7 +504,7 @@ class AbbrevsModel extends AbstractTableModel
 	void sort(int col)
 	{
 		lastSort = col;
-		MiscUtilities.quicksort(abbrevs,new AbbrevCompare(col));
+		Collections.sort(abbrevs,new AbbrevCompare(col));
 		fireTableDataChanged();
 	} //}}}
 
@@ -612,10 +613,18 @@ class AbbrevsModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ AbbrevCompare class
-	class AbbrevCompare implements MiscUtilities.Compare
+	class AbbrevCompare implements Comparator
 	{
-		int col;
-
+		//{{{ field int col
+		private int col;
+		/**
+		 * Getter function for the field col
+		 */ 
+		public int getCol() {
+			return col;
+		}
+		//}}}
+		
 		AbbrevCompare(int col)
 		{
 			this.col = col;
@@ -631,17 +640,23 @@ class AbbrevsModel extends AbstractTableModel
 				String abbrev1 = a1.abbrev.toLowerCase();
 				String abbrev2 = a2.abbrev.toLowerCase();
 
-				return MiscUtilities.compareStrings(
-					abbrev1,abbrev2,true);
+				return StandardUtilities.compareStrings(abbrev1,abbrev2,true);
 			}
 			else
 			{
 				String expand1 = a1.expand.toLowerCase();
 				String expand2 = a2.expand.toLowerCase();
 
-				return MiscUtilities.compareStrings(
-					expand1,expand2,true);
+				return StandardUtilities.compareStrings(expand1,expand2,true);
 			}
+		}
+		
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof AbbrevCompare)) return false;
+			
+			AbbrevCompare abbrevCompare = (AbbrevCompare)obj;
+			
+			return col == abbrevCompare.col;
 		}
 	} //}}}
 } //}}}
