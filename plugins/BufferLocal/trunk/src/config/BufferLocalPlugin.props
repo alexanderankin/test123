@@ -9,8 +9,8 @@ plugin.ise.plugin.bmp.BufferLocalPlugin.version=1.2.7
 plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
 
 # dependencies
-plugin.ise.plugin.bmp.BufferLocalPlugin.jdk=1.4
-plugin.ise.plugin.bmp.BufferLocalPlugin.jedit=04.02.01.00
+plugin.ise.plugin.bmp.BufferLocalPlugin.depend.0=jdk 1.4
+plugin.ise.plugin.bmp.BufferLocalPlugin.depend.1=jedit 04.02.01.00
 
 # docs
 plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
