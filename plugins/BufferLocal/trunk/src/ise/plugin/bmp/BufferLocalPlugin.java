@@ -145,6 +145,7 @@ public class BufferLocalPlugin extends EBPlugin {
      * (if writable) otherwise, in $user.home.
      */
     public void start() {
+        //Log.log(Log.DEBUG, this, "+++++ start");
         loadProperties();
 
         String dir = jEdit.getSettingsDirectory();
@@ -197,13 +198,16 @@ public class BufferLocalPlugin extends EBPlugin {
      * @param message
      */
     public void handleMessage( EBMessage message ) {
+        //Log.log(Log.DEBUG, this, "+++++ got a message");
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
             String file = buffer.getPath();
-            if ( BufferUpdate.LOADED.equals( what ) ) {
+            //Log.log(Log.DEBUG, this, "+++++ file: " + file);
+            if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
                 String props = map.getProperty( file );
+                //Log.log(Log.DEBUG, this, "+++++ props: " + props);
                 if ( props != null ) {
                     // parse the stored properties
                     StringTokenizer st = new StringTokenizer( props, "|" );
@@ -211,6 +215,7 @@ public class BufferLocalPlugin extends EBPlugin {
                     String enc = st.nextToken();
                     String gz = st.nextToken();
                     String em = st.nextToken();
+                    //Log.log(Log.DEBUG, this, "+++++ edit mode: " + em);
                     String fm = st.nextToken();
                     String wm = st.nextToken();
                     String ll = st.nextToken();
@@ -222,12 +227,15 @@ public class BufferLocalPlugin extends EBPlugin {
                     /// see comments above, don't need this right now
                     /// 13 Dec 2005, more comments, looks like there is a use case for this
                     /// stuff after all
-                    if ( "n".equals( ls ) )
-                    ls = "\n";
-                    else if ( "r".equals( ls ) )
-                    ls = "\r";
-                    else
-                    ls = "\r\n";
+                    if ( "n".equals( ls ) ) {
+                        ls = "\n";
+                    }
+                    else if ( "r".equals( ls ) ) {
+                        ls = "\r";
+                    }
+                    else {
+                        ls = "\r\n";
+                    }
                     buffer.setStringProperty( "lineSeparator", ls );
                     buffer.setStringProperty( Buffer.ENCODING, enc );
                     ///
@@ -264,7 +272,8 @@ public class BufferLocalPlugin extends EBPlugin {
                 // only save if changed, no need to save if not. Doing it this way
                 // rather than on PROPERTY_CHANGED as jEdit sends lots of
                 // PROPERTY_CHANGED messages even though the properties really
-                // haven't changed
+                // haven't changed.  It seems like PROPERTY_CHANGED is more like
+                // "properties might have changed".
                 if ( !getBufferLocalString( buffer ).equals( tempMap.getProperty( file ) ) ) {
                     map.setProperty( file, getBufferLocalString( buffer ) );
                 }
@@ -414,12 +423,7 @@ public class BufferLocalPlugin extends EBPlugin {
      * stale files should be closed after the staleTime has been reached.
      */
     private void loadProperties() {
-        int st = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime);
-        if (st < 1) {
-            st = 30;
-            jEdit.setIntegerProperty( NAME + ".staleTime", 30);
-        }
-        staleTime = st * ONE_MINUTE;
+        staleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
         removeStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
     }
 
