@@ -1,0 +1,29 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Template generation</title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="ch03.html" title="Writing templates"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Template%20generation"></a>Chapter 4. Template generation</h2></div></div></div><p>
+    	This is only for advanced users.
+    </p><p>
+    	It's possible to generate a template with beanshell code, 
+      you embed code into the template in between &lt;# code #&gt;, the template 
+      is then turned inside out, so all the normal text is turn into print 
+      statements, and the code will be executed. It's possible to print new code
+      to the template with &lt;#= code #&gt; where the code have to evaluate to
+      a string. All the functions in the files 
+      <span class="emphasis"><em>.jedit/SuperAbbrevs/template_generation_functions.bsh</em></span>
+      <span class="emphasis"><em>.jedit/SuperAbbrevs/abbrevs_functions.bsh</em></span> is
+      available, as well as a variable <span class="emphasis"><em>selection</em></span>, holding
+      the selection.
+    </p><p>
+    	This example shows how to generate a HTML multiplying table of 5 rows and
+      5 columns, not that usefull but only imagination hold you back.
+    </p><p>
+      </p><pre class="programlisting">
+&lt;table&gt;
+&lt;# for(i=0; i&lt;=5; i++){ #&gt;
+  &lt;tr&gt;
+  &lt;# for(j=0; j&lt;=5; j++){ #&gt;
+    &lt;td&gt;&lt;#= i*j #&gt;&lt;/td&gt;
+  &lt;# } #&gt;
+  &lt;/tr&gt;
+&lt;# } #&gt;
+&lt;/table&gt;
+</pre><p>
+    </p></div></body></html>
