@@ -9,13 +9,11 @@ package net.jakubholy.jedit.autocomplete;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -28,6 +26,7 @@ import org.gjt.sp.jedit.jEdit;
  * GUI to display and edit the list of remembered words of a buffer.
  * @author  Jakub Holy
  */
+@SuppressWarnings("serial")
 public class WordListEditorUI extends JDialog implements Observer {
 	
 	/** Name of property used to store window geometry. */
@@ -231,7 +230,7 @@ public class WordListEditorUI extends JDialog implements Observer {
         // Set the content of the word list
         this.rereadWords();
         
-        GUIUtilities.centerOnScreen(this);
+        //this.setLocationRelativeTo(null);
         GUIUtilities.loadGeometry(this, GEOMETRY_PROP);
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -363,10 +362,6 @@ public class WordListEditorUI extends JDialog implements Observer {
 		GUIUtilities.saveGeometry(this, GEOMETRY_PROP);
 		autoComplete.getWordList().deleteObserver(this);
 		super.dispose();
-	}
-
-	private boolean isIgnoreWordListEvents() {
-		return ignoreWordListEvents;
 	}
 
 	private void setIgnoreWordListEvents(boolean ignoreWordListEvents) {

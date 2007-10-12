@@ -16,8 +16,9 @@ import java.util.Vector;
  */
 public class WordListTreeSet implements WordList {
     
-    protected java.util.TreeSet treeSet = new java.util.TreeSet();
-    private Vector tmpVector = new Vector( 10 );
+    protected java.util.TreeSet<Completion> treeSet =
+    	new java.util.TreeSet<Completion>();
+    private Vector<Completion> tmpVector = new Vector<Completion>( 10 );
 
     /* (non-Javadoc)
      * @see net.jakubholy.jedit.autocomplete.WordList#getCompletions(java.lang.String)
@@ -31,11 +32,11 @@ public class WordListTreeSet implements WordList {
         
         // Find the first matching element
         //
-        Iterator iter  = treeSet.iterator();
+        Iterator<Completion> iter  = treeSet.iterator();
         Completion completion = null;
         boolean found = false;
         while (iter.hasNext()) {
-            completion = (Completion) iter.next();
+            completion = iter.next();
             if ( completion.hasPrefix(prefix) ) {
                 found = true;
                 break;
@@ -49,7 +50,7 @@ public class WordListTreeSet implements WordList {
             // Find all consecutive matching elements
             tmpVector.add( completion );
             while (iter.hasNext()) {
-                completion = (Completion) iter.next();
+                completion = iter.next();
                 
                 if ( completion.hasPrefix(prefix) ) {
                     tmpVector.add( completion );
@@ -61,7 +62,7 @@ public class WordListTreeSet implements WordList {
             
             // Return the result
             Completion[] words = new Completion[ tmpVector.size() ];
-            words = (Completion[]) tmpVector.toArray( words );
+            words = tmpVector.toArray( words );
             return words;
         } 
         else 
@@ -75,11 +76,11 @@ public class WordListTreeSet implements WordList {
      */
     public synchronized Completion[] getAllWords() {
         Completion[] words = new Completion[ treeSet.size() ];
-        Iterator     iter  = treeSet.iterator();
+        Iterator<Completion>     iter  = treeSet.iterator();
         int i = 0;
         
         while (iter.hasNext()) {
-            words[ i++ ] = (Completion) iter.next();
+            words[ i++ ] = iter.next();
         }
         return words;
     } // getAllWords

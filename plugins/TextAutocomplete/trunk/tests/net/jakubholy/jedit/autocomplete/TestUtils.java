@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 

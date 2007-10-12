@@ -91,7 +91,8 @@ implements java.util.Observer
 	/**
 	 * Holds an instance of AutoComplete for each buffer that has got one.
 	 */
-	static Map bufferToAutoComplete = new IdentityHashMap();
+	static Map<Buffer, AutoComplete> bufferToAutoComplete =
+		new IdentityHashMap<Buffer, AutoComplete>();
 
 	/**
 	 * Create a new AutoComplete that starts working for the given buffer if the buffer has none.
@@ -336,7 +337,8 @@ implements java.util.Observer
 	public static void destroyAllAutoCompletes()
 	{
 		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Detaching and destroying all autocompletes...");
-		for (Iterator acIter = bufferToAutoComplete.values().iterator(); acIter.hasNext();)
+		for (Iterator<AutoComplete> acIter =
+				bufferToAutoComplete.values().iterator(); acIter.hasNext();)
 		{
 			AutoComplete autoComplete = (AutoComplete) acIter.next();
 			autoComplete.detach();
@@ -666,12 +668,4 @@ implements java.util.Observer
 		return buffer;
 	}
 
-	/**
-	 * Set the buffer this AutoComplete is attached to.
-	 * This won't attach the AutoComplete to the buffer.
-	 * @param buffer
-	 */
-	private void setBuffer(Buffer buffer) {
-		this.buffer = buffer;
-	}
 } // AutoComplete }}} **********************************************************

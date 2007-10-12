@@ -8,6 +8,7 @@ package net.jakubholy.jedit.autocomplete;
  * @author aja
  *
  */
+@SuppressWarnings("serial")
 public class ActionException extends Exception {
 	
 	/** No cause type given for this exception. */

@@ -9,7 +9,7 @@ package net.jakubholy.jedit.autocomplete;
  */
 //{{{ Completion class
 class Completion
-implements Comparable
+implements Comparable<Object>
 {
     private final String word;
     

@@ -74,6 +74,7 @@ import org.gjt.sp.util.Log;
 //		the popup
 // TODO: (medium) Dispose the popup whenever sb. else than the popup/the textArea gains the focus
 //		- add 2 focus listeners for that;
+@SuppressWarnings("serial")
 public class CompletionPopup extends JWindow
 {
 
