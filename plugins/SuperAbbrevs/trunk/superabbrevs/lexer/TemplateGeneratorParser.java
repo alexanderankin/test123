@@ -4,7 +4,7 @@ import superabbrevs.SuperAbbrevsIO;
 import superabbrevs.TextUtil;
 import java.io.*;
 
-import org.gjt.sp.jedit.bsh.*;
+import bsh.*;
 /**
  * @author Sune Simonsen
  * class TemplateGeneratorParser
