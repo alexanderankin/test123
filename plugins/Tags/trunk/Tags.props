@@ -10,6 +10,7 @@ plugin.tags.TagsPlugin.depend.1=jedit 04.03.03.00
 
 # option panes
 plugin.tags.TagsPlugin.option-group=tags.general \
+										 tags.actions \
 										 tags.files
 
 # action labels
@@ -85,6 +86,9 @@ options.tags.general.tag-search-all-files.label=If tag match is found continue s
 options.tags.general.tag-use-line-numbers.label=Use line numbers when following tags, if specified in the tag files 
 options.tags.general.cache-size.label=Number of tags files to keep in memory: 
 options.tags.general.cache-local.label=Keep local tags files in memory
+# actions
+options.tags.actions.label=Actions
+options.tags.actions.code=new tags.options.ActionOptionPane();
 # tag files
 options.tags.files.label=Tag Files
 options.tags.files.code=new tags.options.TagFilesOptionPane();

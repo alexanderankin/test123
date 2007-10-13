@@ -35,6 +35,8 @@ import java.awt.Component;
 import java.awt.Point;
 import javax.swing.*;
 
+import org.gjt.sp.jedit.ActionSet;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
@@ -64,9 +66,11 @@ public class TagsPlugin extends EBPlugin
 
 	//{{{ declarations
 	private static TagFileManager tagFileManager = null;
-	private static HashMap tagStacks;
+	private static HashMap<View, TagStackModel> tagStacks;
 	private MouseHandler mouseHandler;
 	private static Point mousePointer = null;
+	private static ActionSet actions;
+	private static AttributeValueCollisionResolver resolver = null;
 	//}}}
 
 	//{{{ EBPlugin methods
@@ -76,6 +80,9 @@ public class TagsPlugin extends EBPlugin
 	{
 		mouseHandler = new MouseHandler();
 		installMouseListener();
+		actions = new ActionSet("Plugin: Tags - Collision resolvers");
+		reloadActions();
+		jEdit.addActionSet(actions);
 	} //}}}
 
 	//{{{ stop()
@@ -85,6 +92,18 @@ public class TagsPlugin extends EBPlugin
 		mouseHandler = null;
 	} //}}}
 
+	//{{{ loadActions()
+	static public void reloadActions() {
+		actions.removeAllActions();
+		int n = jEdit.getIntegerProperty("options.tags.actions.size", 0);
+		for (int i = 0; i < n; i++) {
+			AttributeValueCollisionResolver resolver =
+				new AttributeValueCollisionResolver(i);
+			actions.addAction(new CollisionResolverAction(resolver));
+		}
+		actions.initKeyBindings();
+	} //}}}
+	
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage ebmsg)
 	{
@@ -110,11 +129,11 @@ public class TagsPlugin extends EBPlugin
 			BufferUpdate bu = (BufferUpdate)ebmsg;
 			if(bu.getWhat() == BufferUpdate.CLOSED)
 			{
-				HashMap models = getTagStackModels();
+				HashMap<View, TagStackModel> models = getTagStackModels();
 				View[] views = jEdit.getViews();
 				for(int i=0; i < views.length; i++)
 				{
-					TagStackModel model = (TagStackModel)models.get(views[i]);
+					TagStackModel model = models.get(views[i]);
 					if(model != null)
 					{
 						model.releaseBuffer(bu.getBuffer());
@@ -211,6 +230,23 @@ public class TagsPlugin extends EBPlugin
 		} //}}}
 	} //}}}
 
+	//{{{ CollisionResolverAction class
+	static class CollisionResolverAction extends EditAction {
+		AttributeValueCollisionResolver resolver;
+		public CollisionResolverAction(AttributeValueCollisionResolver resolver) {
+			super(resolver.getName());
+			this.resolver = resolver;
+			String name = resolver.getName();
+			jEdit.setTemporaryProperty(name + ".label", name);
+		}
+		@Override
+		public void invoke(View view) {
+			TagsPlugin.resolver = resolver;
+			followTag(view, false);
+			TagsPlugin.resolver = null;
+		}
+	} //}}}
+	
 	//}}}
 
 	//{{{ TagStack methods
@@ -306,8 +342,8 @@ public class TagsPlugin extends EBPlugin
 	//{{{ getTagStack() method
 	public static TagStackModel getTagStack(View view)
 	{
-		HashMap models = getTagStackModels();
-		TagStackModel model = (TagStackModel)models.get(view);
+		HashMap<View, TagStackModel> models = getTagStackModels();
+		TagStackModel model = models.get(view);
 		if(model == null)
 		{
 			model = new TagStackModel();
@@ -317,10 +353,10 @@ public class TagsPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ getTagStackModels() method
-	private static HashMap getTagStackModels()
+	private static HashMap<View, TagStackModel> getTagStackModels()
 	{
 		if(tagStacks == null)
-			tagStacks = new HashMap();
+			tagStacks = new HashMap<View, TagStackModel>();
 		return tagStacks;
 	} //}}}
 
@@ -444,7 +480,7 @@ public class TagsPlugin extends EBPlugin
 									Vector tagIndexFiles)
 	{
 		String bufferPath = view.getBuffer().getPath();
-		Vector allTagLines = new Vector();
+		Vector<TagLine> allTagLines = new Vector<TagLine>();
 		for(int i=0; i < tagIndexFiles.size(); i++)
 		{
 			String tagIndexFile = (String)tagIndexFiles.elementAt(i);
@@ -459,7 +495,7 @@ public class TagsPlugin extends EBPlugin
 				}
 				long start, end = 0;
 				start = System.currentTimeMillis();
-				Vector tagLines = reader.findTagLines(function);
+				Vector<TagLine> tagLines = reader.findTagLines(function);
 				end = System.currentTimeMillis();
 				Log.log(Log.DEBUG, TagsPlugin.class, "Searching '" + reader.getPath() + 
 								"' took " + (end - start) * .001 + " seconds.");
@@ -479,6 +515,9 @@ public class TagsPlugin extends EBPlugin
 			}
 		}
 
+		if (allTagLines.size() > 1 && resolver != null)
+			allTagLines = resolver.resolve(allTagLines);
+		
 		if(allTagLines.size() == 0)
 		{
 			Object args[] = { function };
@@ -488,7 +527,7 @@ public class TagsPlugin extends EBPlugin
 		{
 			// XXX this should probably be done by the rendering component
 			for(int i=0; i < allTagLines.size(); i++)
-				((TagLine)allTagLines.elementAt(i)).setIndex(i+1);
+				allTagLines.elementAt(i).setIndex(i+1);
 
 			String dockableName = "tags-taglist";
 			DockableWindowManager dwm = view.getDockableWindowManager();
@@ -509,7 +548,7 @@ public class TagsPlugin extends EBPlugin
 		}
 		else
 		{
-			TagLine tagLine = (TagLine)allTagLines.elementAt(0);
+			TagLine tagLine = allTagLines.elementAt(0);
 			goToTagLine(view, tagLine, newView, tagLine.getTag());
 		}
 	} //}}}
