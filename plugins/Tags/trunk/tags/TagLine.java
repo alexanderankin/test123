@@ -37,7 +37,7 @@ public class TagLine
 	private String definitionFile;
 	private String searchString;
 	private int definitionLineNumber = -1;
-	private Vector exuberantInfoItems;
+	private Vector<ExuberantInfoItem> exuberantInfoItems;
 	//}}}
 
 	//{{{ TagLine constructor
@@ -53,13 +53,13 @@ public class TagLine
 	} //}}}
 
 	//{{{ getExuberantInfoItems() method
-	public Vector getExuberantInfoItems()
+	public Vector<ExuberantInfoItem> getExuberantInfoItems()
 	{
 		return exuberantInfoItems;
 	} //}}}
 
 	//{{{ setExuberantInfoItems() method
-	public void setExuberantInfoItems(Vector exuberantInfoItems)
+	public void setExuberantInfoItems(Vector<ExuberantInfoItem> exuberantInfoItems)
 	{
 		this.exuberantInfoItems = exuberantInfoItems;
 	} //}}}

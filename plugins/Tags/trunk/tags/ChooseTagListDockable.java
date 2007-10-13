@@ -47,6 +47,7 @@ import javax.swing.JScrollPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 
+@SuppressWarnings("serial")
 public class ChooseTagListDockable extends JPanel
 	implements DefaultFocusComponent {
 
@@ -63,17 +64,17 @@ public class ChooseTagListDockable extends JPanel
 		add(menuBar, BorderLayout.NORTH);
 		filterMenu = new JMenu("Filter");
 		menuBar.add(filterMenu);
-		setTagLines(new Vector());
+		setTagLines(new Vector<TagLine>());
 	}
 	
-	public void setTagLines(Vector tagLines) {
+	public void setTagLines(Vector<TagLine> tagLines) {
 		origTagLines = tagLines;
 		updateTagLines(tagLines);
 		Map<String, HashSet<String>> attributes =
 			new HashMap<String, HashSet<String>>();
 		for (int i = 0; i < tagLines.size(); i++) {
 			TagLine l = (TagLine) tagLines.get(i);
-			Vector items = l.getExuberantInfoItems();
+			Vector<ExuberantInfoItem> items = l.getExuberantInfoItems();
 			for (int j = 0; j < items.size(); j++) {
 				ExuberantInfoItem item = (ExuberantInfoItem) items.get(j);
 				String [] parts = item.toString().split(":", 2);
@@ -87,6 +88,7 @@ public class ChooseTagListDockable extends JPanel
 				set.add(parts[1]);
 			}
 		}
+		filterMenu.removeAll();
 		Iterator<String> it = attributes.keySet().iterator();
 		while (it.hasNext()) {
 			String att = it.next();
@@ -106,7 +108,7 @@ public class ChooseTagListDockable extends JPanel
 		revalidate();
 	}
 
-	private void updateTagLines(Vector tagLines) {
+	private void updateTagLines(Vector<TagLine> tagLines) {
 		if (scroller != null)
 			remove(scroller);
 		chooseTagList = new ChooseTagList(tagLines);
@@ -161,19 +163,13 @@ public class ChooseTagListDockable extends JPanel
 	}
 
 	public void filter(String att, String val) {
+		AttributeValueFilter filter = new AttributeValueFilter(att, val);
 		Vector<TagLine> tagLines = origTagLines;
 		Vector<TagLine> filtered = new Vector<TagLine>();
 		for (int i = 0; i < tagLines.size(); i++) {
 			TagLine l = (TagLine) tagLines.get(i);
-			Vector items = l.getExuberantInfoItems();
-			for (int j = 0; j < items.size(); j++) {
-				ExuberantInfoItem item = (ExuberantInfoItem) items.get(j);
-				String [] parts = item.toString().split(":", 2);
-				if (parts.length < 2)
-					continue;
-				if (parts[0].equals(att) && parts[1].equals(val))
-					filtered.add(l);
-			}
+			if (filter.pass(l))
+				filtered.add(l);
 		}
 		updateTagLines(filtered);
 		revalidate();
