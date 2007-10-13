@@ -23,7 +23,7 @@
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
 
-	<property name="rst2docbook" value="C:/Python24/Scripts/rst2docbook.py"/>
+	<property name="rst2docbook" value="/usr/bin/rst2docbook.py"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -84,7 +84,7 @@
 	<target name="users-guide-to-docbook"
 		description="convert users-guide from reStructuredText to DocBook XML"
 	>
-		<exec executable="python.exe">
+		<exec executable="python">
 			<arg value="${rst2docbook}"/>
 			<arg value="doc/users-guide.txt"/>
 			<arg value="doc/users-guide.xml"/>

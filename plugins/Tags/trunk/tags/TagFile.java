@@ -25,10 +25,6 @@
 package tags;
 
 //{{{ imports
-import java.io.*;
-import java.lang.System.*;
-import java.util.*;
-//}}}
 
 public class TagFile
 {
