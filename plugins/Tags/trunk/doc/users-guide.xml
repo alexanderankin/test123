@@ -189,6 +189,25 @@ in slightly faster searching, but can dramatically increase
 memory usage.</para></blockquote>
 </section>
 <section>
+<title>Actions</title>
+<para>List of actions that provide the &quot;follow tag&quot; functionality with
+filtering of the tag list in case of collisions. For example,
+you can create an action that jumps only to function prototypes,
+or only to tags that belong to a certain class.
+The filtering is based on tag attributes. Ctags provides command-
+line options for adding various tag attributes (fields) to its
+tag files, such as access, class, kind, scope etc. For custom
+actions to work, this attribute information must exist in the tag
+files.</para><para>Each action that you add has a name, an associated attribute and
+a list of values for that attribute. When the action is invoked,
+it first runs the &quot;follow tag&quot; action, and if tags are found,
+it goes over the list of values one by one, and for each value
+it reduces the list to only those tags having this value for
+the attribute. If tags were found to have this value for the
+attribute, these tags are then used for jumping or for the tag
+collision popup/dockable. If no tags in the list have any of
+the values, the action indicates that no tags were found.</para></section>
+<section>
 <title>Tag Files</title>
 <para>List of tag index files the Tags plugin uses to search for
 tag definitions.</para><para>&quot;tags&quot; is a special entry that doesn't represent an actual
