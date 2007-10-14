@@ -89,6 +89,9 @@ options.tags.general.cache-local.label=Keep local tags files in memory
 # actions
 options.tags.actions.label=Actions
 options.tags.actions.code=new tags.options.ActionOptionPane();
+options.tags.actions.help=<html><body>\
+  Specify a list of space-separated attribute values in decreasing priority order.<br>\
+  The action will use the first value found in the list of tags.</html>  
 # tag files
 options.tags.files.label=Tag Files
 options.tags.files.code=new tags.options.TagFilesOptionPane();
