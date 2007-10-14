@@ -99,7 +99,7 @@ public class AttributeValueCollisionResolver {
 		private AttributeValueCollisionResolver resolver = null;
 		
 		public Editor(JDialog dialog) {
-			super(dialog, "Collision Resolver Editor", true);
+			super(dialog, "Tag Collision Resolver Action Editor", true);
 			setLayout(new GridBagLayout());
 
 			GridBagConstraints c = new GridBagConstraints();
@@ -108,14 +108,20 @@ public class AttributeValueCollisionResolver {
 			c.gridheight = c.gridwidth = 1;
 			JPanel p = new JPanel();
 			add(p, c);
-			p.add(new JLabel("Resolver name:"));
+			p.add(new JLabel(jEdit.getProperty("options.tags.actions.help")));
+			
+			c.gridy++;
+			c.gridheight = 1;
+			p = new JPanel();
+			add(p, c);
+			p.add(new JLabel("Action name:"));
 			name = new JTextField(20);
 			p.add(name);
 
 			c.gridy++;
 			p = new JPanel();
 			add(p, c);
-			p.add(new JLabel("Attribute:"));
+			p.add(new JLabel("Attribute name:"));
 			attr = new JTextField(20);
 			p.add(attr);
 

@@ -65,6 +65,8 @@ public class TagsPlugin extends EBPlugin
 {
 
 	//{{{ declarations
+	public static final String ACTION_SET_NAME =
+		"Plugin: Tags - Collision resolvers";
 	private static TagFileManager tagFileManager = null;
 	private static HashMap<View, TagStackModel> tagStacks;
 	private MouseHandler mouseHandler;
@@ -80,7 +82,7 @@ public class TagsPlugin extends EBPlugin
 	{
 		mouseHandler = new MouseHandler();
 		installMouseListener();
-		actions = new ActionSet("Plugin: Tags - Collision resolvers");
+		actions = new ActionSet(ACTION_SET_NAME);
 		reloadActions();
 		jEdit.addActionSet(actions);
 	} //}}}
@@ -92,6 +94,11 @@ public class TagsPlugin extends EBPlugin
 		mouseHandler = null;
 	} //}}}
 
+	//{{{ getAllActions()
+	static public EditAction[] getAllActions() {
+		return actions.getActions();
+	} //}}}
+	
 	//{{{ loadActions()
 	static public void reloadActions() {
 		actions.removeAllActions();

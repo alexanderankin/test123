@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
@@ -45,12 +46,9 @@ public class ActionOptionPane extends AbstractOptionPane implements ActionListen
 		buttons.add(add);
 		buttons.add(remove);
 		addComponent(buttons);
-		int n = jEdit.getIntegerProperty("options.tags.actions.size", 0);
-		for (int i = 0; i < n; i++) {
-			AttributeValueCollisionResolver resolver =
-				new AttributeValueCollisionResolver(i);
-			actionModel.addElement(resolver);
-		}
+		EditAction [] actions = TagsPlugin.getAllActions();
+		for (int i = 0; i < actions.length; i++)
+			actionModel.addElement(actions[i]);
 	}
 
 	@Override
