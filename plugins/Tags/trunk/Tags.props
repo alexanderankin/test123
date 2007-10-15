@@ -1,12 +1,12 @@
-plugin.tags.TagsPlugin.activate=defer
+plugin.tags.TagsPlugin.activate=options.tags.hasDynamicActions
 
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew, Shlomy Reinstein
-plugin.tags.TagsPlugin.version=2.0.3
+plugin.tags.TagsPlugin.version=2.1
 plugin.tags.TagsPlugin.docs=doc/index.html
-plugin.tags.TagsPlugin.depend.0=jdk 1.4
-plugin.tags.TagsPlugin.depend.1=jedit 04.03.03.00
+plugin.tags.TagsPlugin.depend.0=jdk 1.5
+plugin.tags.TagsPlugin.depend.1=jedit 04.03.11.00
 
 # option panes
 plugin.tags.TagsPlugin.option-group=tags.general \

@@ -67,6 +67,10 @@ public class TagsPlugin extends EBPlugin
 	//{{{ declarations
 	public static final String ACTION_SET_NAME =
 		"Plugin: Tags - Collision resolvers";
+	public static final String OPTION_HAS_DYNAMIC_ACTIONS =
+		"options.tags.hasDynamicActions";
+	public static final String OPTION_NUM_DYNAMIC_ACTIONS =
+		"options.tags.actions.size";
 	private static TagFileManager tagFileManager = null;
 	private static HashMap<View, TagStackModel> tagStacks;
 	private MouseHandler mouseHandler;
@@ -95,14 +99,20 @@ public class TagsPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ getAllActions()
-	static public EditAction[] getAllActions() {
-		return actions.getActions();
+	static public AttributeValueCollisionResolver[] getAllActions() {
+		EditAction [] editActions = actions.getActions();
+		AttributeValueCollisionResolver [] resolvers =
+			new AttributeValueCollisionResolver[editActions.length];
+		for (int i = 0; i < editActions.length; i++)
+			resolvers[i] =
+				((CollisionResolverAction)editActions[i]).getResolver();
+		return resolvers;
 	} //}}}
 	
 	//{{{ loadActions()
 	static public void reloadActions() {
 		actions.removeAllActions();
-		int n = jEdit.getIntegerProperty("options.tags.actions.size", 0);
+		int n = jEdit.getIntegerProperty(OPTION_NUM_DYNAMIC_ACTIONS, 0);
 		for (int i = 0; i < n; i++) {
 			AttributeValueCollisionResolver resolver =
 				new AttributeValueCollisionResolver(i);
@@ -245,6 +255,9 @@ public class TagsPlugin extends EBPlugin
 			this.resolver = resolver;
 			String name = resolver.getName();
 			jEdit.setTemporaryProperty(name + ".label", name);
+		}
+		public AttributeValueCollisionResolver getResolver() {
+			return resolver;
 		}
 		@Override
 		public void invoke(View view) {
