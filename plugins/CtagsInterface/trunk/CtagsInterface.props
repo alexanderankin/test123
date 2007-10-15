@@ -1,0 +1,32 @@
+plugin.ctags.CtagsInterfacePlugin.activate=defer
+
+# general plugin information
+plugin.ctags.CtagsInterfacePlugin.name=CtagsInterface
+plugin.ctags.CtagsInterfacePlugin.author=Shlomy Reinstein
+plugin.ctags.CtagsInterfacePlugin.version=0.1
+plugin.ctags.CtagsInterfacePlugin.description=\
+	CtagsInterface provides common Ctags services to interested plugins.
+
+plugin.ctags.CtagsInterfacePlugin.depend.0=jdk 1.5
+plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.11.00
+
+# action labels
+ctags-interface-add-file.label=Add tag file...
+
+# menu items
+plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file
+#  class-browser-show-selected-hierarchy
+
+# dockables
+#class-browser-class-hierarchy.title=ClassBrowser
+#class-browser-class-hierarchy.longtitle=Class Hierarchy Browser
+#class-browser-class-hierarchy.label=Class Hierarchy Browser
+# docs
+#plugin.ctags.CtagsInterfacePlugin.docs=index.html
+
+# icons
+#options.ClassBrowser.icons.class=class.png
+
+# messages
+#class-browser.msg.title=Class Browser
+#class-browser.msg.no-selected-class=For this action to work, you must either \
