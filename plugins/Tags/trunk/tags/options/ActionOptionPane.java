@@ -46,14 +46,16 @@ public class ActionOptionPane extends AbstractOptionPane implements ActionListen
 		buttons.add(add);
 		buttons.add(remove);
 		addComponent(buttons);
-		EditAction [] actions = TagsPlugin.getAllActions();
+		AttributeValueCollisionResolver[] actions = TagsPlugin.getAllActions();
 		for (int i = 0; i < actions.length; i++)
 			actionModel.addElement(actions[i]);
 	}
 
 	@Override
 	protected void _save() {
-		jEdit.setIntegerProperty("options.tags.actions.size", actionModel.size());
+		jEdit.setBooleanProperty(TagsPlugin.OPTION_HAS_DYNAMIC_ACTIONS,
+			(! actionModel.isEmpty()));
+		jEdit.setIntegerProperty(TagsPlugin.OPTION_NUM_DYNAMIC_ACTIONS, actionModel.size());
 		for (int i = 0; i < actionModel.size(); i++) {
 			AttributeValueCollisionResolver resolver =
 				(AttributeValueCollisionResolver) actionModel.get(i);
