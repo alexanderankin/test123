@@ -3,19 +3,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
@@ -25,84 +18,28 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import db.TagDB;
+
 public class CtagsInterfacePlugin extends EditPlugin {
 	
-	private static Connection conn;
-	private static Set<String> columns;
-	private static final String TABLE_NAME = "tags";
+	private static TagDB db;
 	
 	public void start()
 	{
-        try {
-			Class.forName("org.hsqldb.jdbcDriver");
-			conn = DriverManager.getConnection("jdbc:hsqldb:file:" +
-					getDBFilePath(), "sa", "");
-        } catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			update("CREATE CACHED TABLE " + TABLE_NAME +
-					"(name VARCHAR, file VARCHAR, pattern VARCHAR)");
-		} catch (SQLException e) {
-			// Table already exists
-		}
-		getColumns();
+		db = new TagDB();
 	}
 
 	public void stop()
 	{
-        Statement st;
-		try {
-			st = conn.createStatement();
-	        st.execute("SHUTDOWN");
-	        conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		db.shutdown();
 	}
 	
-	private void getColumns() {
-		columns = new HashSet<String>();
-		try {
-			ResultSet rs = query("SELECT * FROM " + TABLE_NAME +
-					" WHERE name=''");
-			ResultSetMetaData meta = rs.getMetaData();
-			int cols = meta.getColumnCount();
-			for (int i = 0; i < cols; i++)
-				columns.add(meta.getColumnName(i + 1));
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
-	}
-	static public String getDBFilePath() {
-		return jEdit.getSettingsDirectory() + "/CtagsInterface/tagdb";
-	}
-	
-    static public synchronized void update(String expression) throws SQLException {
-    	//System.err.println("update(" + expression + ")");
-        Statement st = null;
-        st = conn.createStatement();
-        int i = st.executeUpdate(expression);
-        if (i == -1)
-            System.out.println("db error : " + expression);
-        st.close();
-    }
     static public void dumpQuery(String expression) {
     	try {
-			dump(query(expression));
+			dump(db.query(expression));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-    }
-    static public synchronized ResultSet query(String expression) throws SQLException {
-    	//System.err.println("query(" + expression + ")");
-        Statement st = null;
-        ResultSet rs = null;
-        st = conn.createStatement();
-        rs = st.executeQuery(expression);
-        st.close();
-        return rs;
     }
     public static void dump(ResultSet rs) throws SQLException {
         ResultSetMetaData meta   = rs.getMetaData();
@@ -120,13 +57,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
         }
     }
     static void printTags() {
-		dumpQuery("SELECT * FROM " + TABLE_NAME);
+		dumpQuery("SELECT * FROM " + TagDB.TABLE_NAME);
     }
     static void printTagsContaining(View view) {
 		String s = JOptionPane.showInputDialog("Substring:");
 		if (s == null || s.length() == 0)
 			return;
-		dumpQuery("SELECT * FROM " + TABLE_NAME +
+		dumpQuery("SELECT * FROM " + TagDB.TABLE_NAME +
 				" WHERE name LIKE '%" + s + "%'");
     }
 	static void addTagFile(View view) {
@@ -147,7 +84,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				Hashtable<String, String> info = parse(line);
 				if (info == null)
 					continue;
-				insertTag(info);
+				db.insertTag(info);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -158,42 +95,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	private static void insertTag(Hashtable<String, String> info) {
-		// Find missing columns and build the inserted value string
-		StringBuffer valueStr = new StringBuffer();
-		StringBuffer columnStr = new StringBuffer();
-		Set<Entry<String,String>> entries = info.entrySet();
-		Iterator<Entry<String, String>> it = entries.iterator();
-		while (it.hasNext()) {
-			Entry<String, String> entry = it.next();
-			String col = entry.getKey().toUpperCase();
-			String val = entry.getValue();
-			if (! columns.contains(col)) {
-				try {
-					update("ALTER TABLE " + TABLE_NAME + " ADD " +
-						col + " VARCHAR;");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				columns.add(col);
-			}
-			if (columnStr.length() > 0)
-				columnStr.append(",");
-			columnStr.append(col);
-			if (valueStr.length() > 0)
-				valueStr.append(",");
-			valueStr.append(getValueString(val));
-		}
-		// Add missing columns, then insert the record
-		try {
-			update("INSERT INTO " + TABLE_NAME + " (" +
-					columnStr.toString() + ") VALUES (" +
-					valueStr.toString() + ")");
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -219,9 +120,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return info;
 	}
 
-	private static String getValueString(String string) {
-		return "'" + string.replaceAll("'", "''") + "'";
-	}
 	public static void jumpToTag(final View view)
 	{
 		String tag = view.getTextArea().getSelectedText();
@@ -229,14 +127,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		Vector<String> files = new Vector<String>();
 		Vector<String> lines = new Vector<String>();
 		try {
-			ResultSet rs = query("SELECT FILE, LINE FROM " + TABLE_NAME +
-					" WHERE NAME=" + getValueString(tag));
+			ResultSet rs = db.query("SELECT FILE, LINE FROM " + TagDB.TABLE_NAME +
+					" WHERE NAME=" + db.getValueString(tag));
 			while (rs.next()) {
 				files.add(rs.getString(1));
 				lines.add(rs.getString(2));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (files.size() == 0) {
