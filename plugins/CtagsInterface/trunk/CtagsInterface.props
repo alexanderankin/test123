@@ -16,10 +16,12 @@ plugin.ctags.CtagsInterfacePlugin.usePluginHome=true
 # action labels
 ctags-interface-add-file.label=Add tag file...
 ctags-interface-print-tags.label=Print tags
+ctags-interface-print-tags-containing.label=Print tags with substring...
 
 # menu items
 plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
-	ctags-interface-print-tags
+	ctags-interface-print-tags \
+	ctags-interface-print-tags-containing
 #  class-browser-show-selected-hierarchy
 
 # dockables

@@ -90,6 +90,17 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			e.printStackTrace();
 		}
     }
+    static void printTagsContaining(View view) {
+		String s = JOptionPane.showInputDialog("Substring:");
+		if (s == null || s.length() == 0)
+			return;
+		try {
+			query("SELECT * FROM tags WHERE name LIKE '%" + s + "%'");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 	static void addTagFile(View view) {
 		String tagFile = JOptionPane.showInputDialog("Tag file:");
 		if (tagFile == null || tagFile.length() == 0)
