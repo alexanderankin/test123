@@ -18,6 +18,11 @@
 			ctags.CtagsInterfacePlugin.printTagsContaining(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-jump-to-tag" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.jumpToTag(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 
