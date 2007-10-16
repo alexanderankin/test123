@@ -13,6 +13,11 @@
 			ctags.CtagsInterfacePlugin.printTags();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-print-tags-containing" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.printTagsContaining(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 
