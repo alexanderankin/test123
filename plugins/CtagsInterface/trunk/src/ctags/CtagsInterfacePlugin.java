@@ -9,17 +9,21 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
@@ -217,5 +221,50 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	private static String getValueString(String string) {
 		return "'" + string.replaceAll("'", "''") + "'";
+	}
+	public static void jumpToTag(final View view)
+	{
+		String tag = view.getTextArea().getSelectedText();
+		System.err.println("Selected tag: " + tag);
+		Vector<String> files = new Vector<String>();
+		Vector<String> lines = new Vector<String>();
+		try {
+			ResultSet rs = query("SELECT FILE, LINE FROM " + TABLE_NAME +
+					" WHERE NAME=" + getValueString(tag));
+			while (rs.next()) {
+				files.add(rs.getString(1));
+				lines.add(rs.getString(2));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (files.size() == 0) {
+			JOptionPane.showMessageDialog(view, "No records found");
+			return;
+		}
+		int index = 0;
+		if (files.size() > 1) {
+			String [] positions = new String[files.size()];
+			for (int i = 0; i < files.size(); i++)
+				positions[i] = files.get(i) + ":" + lines.get(i);
+			String s = (String) JOptionPane.showInputDialog(view, "Select position:",
+				"Tag collision", JOptionPane.QUESTION_MESSAGE, null,
+				positions, positions[0]);
+			index = Arrays.asList(positions).indexOf(s);
+		}
+		String file = files.get(index);
+		final int line = Integer.valueOf(lines.get(index));
+		Buffer buffer = jEdit.openFile(view, file);
+		if (buffer == null) {
+			System.err.println("Unable to open: " + file);
+			return;
+		}
+		VFSManager.runInAWTThread(new Runnable() {
+			public void run() {
+				view.getTextArea().setCaretPosition(
+					view.getTextArea().getLineStartOffset(line - 1));
+			}
+		});
 	}
 }
