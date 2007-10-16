@@ -1,6 +1,7 @@
 package ctags;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,9 +11,12 @@ import db.TagDB;
 
 public class Parser {
 	
+	String tagFileDir;
+	
 	void parseTagFile(String tagFile, TagDB db) {
 		if (tagFile == null || tagFile.length() == 0)
 			return;
+		tagFileDir = new File(tagFile).getAbsoluteFile().getParent();
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(tagFile));
@@ -48,9 +52,13 @@ public class Parser {
 		String fields[] = line.split("\t");
 		if (fields.length < 3)
 			return null;
-		info.put("name", fields[0]);
-		info.put("file", fields[1]);
-		info.put("pattern", fields[2]);
+		info.put(TagDB.NAME_COL, fields[0]);
+		String file = fields[1];
+		if (new File(file).isAbsolute())
+			info.put(TagDB.FILE_COL, fields[1]);
+		else
+			info.put(TagDB.FILE_COL, tagFileDir + "/" + fields[1]);
+		info.put(TagDB.PATTERN_COL, fields[2]);
 		// extensions
 		for (int i = 3; i < fields.length; i++)
 		{

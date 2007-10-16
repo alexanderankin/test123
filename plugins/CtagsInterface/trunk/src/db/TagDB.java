@@ -18,6 +18,9 @@ public class TagDB {
 	private Connection conn;
 	private Set<String> columns;
 	public static final String TABLE_NAME = "tags";
+	public static final String NAME_COL = "k_name";
+	public static final String FILE_COL = "k_file";
+	public static final String PATTERN_COL = "k_pattern";
 	
 	public TagDB() {
         try {
@@ -99,8 +102,10 @@ public class TagDB {
 	private void createTables() {
 		try {
 			update("CREATE CACHED TABLE " + TABLE_NAME +
-					"(name VARCHAR, file VARCHAR, pattern VARCHAR)");
-			update("CREATE INDEX tagName ON " + TABLE_NAME + "(name)");
+				"(" + NAME_COL + " VARCHAR, " +
+				FILE_COL + " VARCHAR, " +
+				PATTERN_COL + " VARCHAR)");
+			update("CREATE INDEX tagName ON " + TABLE_NAME + "(" + NAME_COL + ")");
 		} catch (SQLException e) {
 			// Table already exists
 		}
@@ -110,7 +115,7 @@ public class TagDB {
 		columns = new HashSet<String>();
 		try {
 			ResultSet rs = query("SELECT * FROM " + TABLE_NAME +
-					" WHERE name=''");
+				" WHERE " + NAME_COL + "=''");
 			ResultSetMetaData meta = rs.getMetaData();
 			int cols = meta.getColumnCount();
 			for (int i = 0; i < cols; i++)
@@ -124,5 +129,5 @@ public class TagDB {
 	private String getDBFilePath() {
 		return jEdit.getSettingsDirectory() + "/CtagsInterface/tagdb";
 	}
-	
+
 }
