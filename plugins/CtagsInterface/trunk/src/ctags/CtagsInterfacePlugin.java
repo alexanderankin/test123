@@ -1,13 +1,8 @@
 package ctags;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -66,7 +61,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (s == null || s.length() == 0)
 			return;
 		dumpQuery("SELECT * FROM " + TagDB.TABLE_NAME +
-				" WHERE name LIKE '%" + s + "%'");
+				" WHERE " + TagDB.NAME_COL + " LIKE '%" + s + "%'");
     }
 	static void addTagFile(View view) {
 		String tagFile = JOptionPane.showInputDialog("Tag file:");
@@ -82,8 +77,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		Vector<String> files = new Vector<String>();
 		Vector<String> lines = new Vector<String>();
 		try {
-			ResultSet rs = db.query("SELECT FILE, LINE FROM " + TagDB.TABLE_NAME +
-					" WHERE NAME=" + db.getValueString(tag));
+			ResultSet rs = db.query("SELECT " + TagDB.FILE_COL + ", LINE FROM " +
+				TagDB.TABLE_NAME + " WHERE " + TagDB.NAME_COL + "=" + db.getValueString(tag));
 			while (rs.next()) {
 				files.add(rs.getString(1));
 				lines.add(rs.getString(2));
