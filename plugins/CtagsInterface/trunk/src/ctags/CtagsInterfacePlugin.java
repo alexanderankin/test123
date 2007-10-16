@@ -27,7 +27,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			Class.forName("org.hsqldb.jdbcDriver");
 			conn = DriverManager.getConnection("jdbc:hsqldb:file:" +
 					getDBFilePath(), "sa", "");
-			update("CREATE CACHED TABLE tags (name VARCHAR(256), file VARCHAR(256), pattern VARCHAR(256))");
+			update("CREATE CACHED TABLE tags " +
+					"(name VARCHAR, file VARCHAR, pattern VARCHAR)");
         } catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,8 +135,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 						continue;
 					info.put(pair[0], pair[1]);
 				}
-				update("INSERT INTO tags(name,file) VALUES('" + info.get("name") + "','"
-						+ info.get("file") + "')");
+				update("INSERT INTO tags(name,file,pattern) VALUES(" +
+						getValueString(info.get("name")) + "," +
+						getValueString(info.get("file")) + "," +
+						getValueString(info.get("pattern")) +
+						")");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,5 +153,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private static String getValueString(String string) {
+		return "'" + string.replaceAll("'", "''") + "'";
 	}
 }
