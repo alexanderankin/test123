@@ -11,7 +11,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
@@ -21,8 +25,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
         try {
 			Class.forName("org.hsqldb.jdbcDriver");
-			conn = DriverManager.getConnection("jdbc:hsqldb:tagdb", "sa", "");
-			update("CREATE TABLE tags (name VARCHAR(256), file VARCHAR(256), pattern VARCHAR(256))");
+			conn = DriverManager.getConnection("jdbc:hsqldb:file:" +
+					getDBFilePath(), "sa", "");
+			update("CREATE CACHED TABLE tags (name VARCHAR(256), file VARCHAR(256), pattern VARCHAR(256))");
         } catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -40,8 +45,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 	}
 	
+	static public String getDBFilePath() {
+		return jEdit.getSettingsDirectory() + "/CtagsInterface/tagdb";
+	}
+	
     static public synchronized void update(String expression) throws SQLException {
-    	System.err.println("update(" + expression + ")");
+    	//System.err.println("update(" + expression + ")");
         Statement st = null;
         st = conn.createStatement();
         int i = st.executeUpdate(expression);
@@ -50,7 +59,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
         st.close();
     }
     static public synchronized void query(String expression) throws SQLException {
-    	System.err.println("query(" + expression + ")");
+    	//System.err.println("query(" + expression + ")");
         Statement st = null;
         ResultSet rs = null;
         st = conn.createStatement();
@@ -73,8 +82,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
             System.err.println(buf.toString());
         }
     }
-
-	static void addTagFile(String tagFile) {
+    static void printTags() {
+		try {
+			query("SELECT * FROM tags");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	static void addTagFile(View view) {
+		String tagFile = JOptionPane.showInputDialog("Tag file:");
+		if (tagFile == null || tagFile.length() == 0)
+			return;
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(tagFile));
@@ -107,7 +126,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				update("INSERT INTO tags(name,file) VALUES('" + info.get("name") + "','"
 						+ info.get("file") + "')");
 			}
-			query("SELECT * FROM tags");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {

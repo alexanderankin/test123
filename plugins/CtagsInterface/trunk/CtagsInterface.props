@@ -10,11 +10,16 @@ plugin.ctags.CtagsInterfacePlugin.description=\
 plugin.ctags.CtagsInterfacePlugin.depend.0=jdk 1.5
 plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.11.00
 
+# Use the plugin home directory for the tag database
+plugin.ctags.CtagsInterfacePlugin.usePluginHome=true
+
 # action labels
 ctags-interface-add-file.label=Add tag file...
+ctags-interface-print-tags.label=Print tags
 
 # menu items
-plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file
+plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
+	ctags-interface-print-tags
 #  class-browser-show-selected-hierarchy
 
 # dockables

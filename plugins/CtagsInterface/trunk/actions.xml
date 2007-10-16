@@ -5,7 +5,12 @@
 
 	<ACTION NAME="ctags-interface-add-file" NO_REPEAT="TRUE">
 		<CODE>
-			ctags.CtagsInterfacePlugin.addTagFile("/home/shlomy/topcoder/tags");
+			ctags.CtagsInterfacePlugin.addTagFile(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="ctags-interface-print-tags" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.printTags();
 		</CODE>
 	</ACTION>
 	
