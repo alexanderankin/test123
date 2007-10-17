@@ -19,6 +19,8 @@ import db.TagDB;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
+	static public final String OPTION = "options.CtagsInterface.";
+	static public final String MESSAGE = "messages.CtagsInterface.";
 	private static TagDB db;
 	private static Parser parser;
 	private static BufferWatcher watcher;
