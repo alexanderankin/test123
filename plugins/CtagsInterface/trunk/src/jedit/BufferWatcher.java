@@ -3,6 +3,7 @@ package jedit;
 import java.util.Vector;
 
 import options.DirsOptionPane;
+import options.GeneralOptionPane;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -32,11 +33,13 @@ public class BufferWatcher implements EBComponent {
 		if (! (message instanceof BufferUpdate))
 			return;
 		BufferUpdate bu = (BufferUpdate) message;
-		if (bu.getWhat() != BufferUpdate.SAVED)
-			return;
-		String file = bu.getBuffer().getPath();
-		if (monitored(file))
-			update(file);
+		if ((GeneralOptionPane.getUpdateOnSave() && bu.getWhat() == BufferUpdate.SAVED) ||
+			(GeneralOptionPane.getUpdateOnLoad() && bu.getWhat() == BufferUpdate.LOADED))
+		{
+			String file = bu.getBuffer().getPath();
+			if (monitored(file))
+				update(file);
+		}
 	}
 
 	private void update(String file) {

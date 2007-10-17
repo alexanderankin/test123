@@ -48,4 +48,6 @@ options.CtagsInterface.cmd=--fields=+anzKiS
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
 messages.CtagsInterface.cmd=Ctags invocation options:
+messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
+messages.CtagsInterface.updateOnSave=Refresh file tags when saved
 messages.CtagsInterface.dirs=Source trees to monitor:
