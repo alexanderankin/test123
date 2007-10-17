@@ -1,5 +1,9 @@
 package jedit;
 
+import java.util.Vector;
+
+import options.DirsOptionPane;
+
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -43,7 +47,16 @@ public class BufferWatcher implements EBComponent {
 	}
 
 	private boolean monitored(String file) {
-		return db.containsValue(TagDB.FILE_COL, file);
+		return isInMonitoredTree(file) ||
+			db.containsValue(TagDB.FILE_COL, file);
+	}
+
+	private boolean isInMonitoredTree(String file) {
+		Vector<String> dirs = DirsOptionPane.getDirs();
+		for (int i = 0; i < dirs.size(); i++)
+			if (file.startsWith(dirs.get(i)))
+				return true;
+		return false;
 	}
 
 }

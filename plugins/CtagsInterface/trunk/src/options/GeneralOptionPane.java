@@ -5,11 +5,13 @@ import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.CtagsInterfacePlugin;
+
 @SuppressWarnings("serial")
 public class GeneralOptionPane extends AbstractOptionPane {
 
-	static public final String OPTION = "options.CtagsInterface.";
-	static public final String MESSAGE = "messages.CtagsInterface.";
+	static public final String OPTION = CtagsInterfacePlugin.OPTION;
+	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String CTAGS = OPTION + "ctags";
 	static public final String CMD = OPTION + "cmd";
 	JTextField ctags;
