@@ -1,5 +1,6 @@
 package db;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,6 +24,7 @@ public class TagDB {
 	public static final String PATTERN_COL = "k_pattern";
 	
 	public TagDB() {
+		removeStaleLock();
         try {
 			Class.forName("org.hsqldb.jdbcDriver");
 			conn = DriverManager.getConnection("jdbc:hsqldb:file:" +
@@ -151,4 +153,9 @@ public class TagDB {
 		return jEdit.getSettingsDirectory() + "/CtagsInterface/tagdb";
 	}
 
+	private void removeStaleLock() {
+		File lock = new File(getDBFilePath() + ".lck");
+		if (lock.exists())
+			lock.delete();
+	}
 }
