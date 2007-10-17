@@ -1,4 +1,5 @@
 package options;
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -14,8 +15,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String CTAGS = OPTION + "ctags";
 	static public final String CMD = OPTION + "cmd";
+	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
+	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	JTextField ctags;
 	JTextField cmd;
+	JCheckBox updateOnLoad;
+	JCheckBox updateOnSave;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -26,12 +31,21 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 		cmd = new JTextField(jEdit.getProperty(CMD), 40);
 		addComponent(jEdit.getProperty(MESSAGE + "cmd"), cmd);
+		
+		updateOnLoad = new JCheckBox(jEdit.getProperty(MESSAGE + "updateOnLoad"),
+			jEdit.getBooleanProperty(UPDATE_ON_LOAD));
+		addComponent(updateOnLoad);
+		updateOnSave = new JCheckBox(jEdit.getProperty(MESSAGE + "updateOnSave"),
+				jEdit.getBooleanProperty(UPDATE_ON_SAVE));
+			addComponent(updateOnSave);
 	}
 
 	@Override
 	public void _save() {
 		jEdit.setProperty(CTAGS, ctags.getText());
 		jEdit.setProperty(CMD, cmd.getText());
+		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
+		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 	}
 
 	public static String getCtags() {
@@ -45,5 +59,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		if (s == null)
 			return "";
 		return s;
+	}
+	public static boolean getUpdateOnSave() {
+		return jEdit.getBooleanProperty(UPDATE_ON_SAVE, true);
+	}
+	public static boolean getUpdateOnLoad() {
+		return jEdit.getBooleanProperty(UPDATE_ON_LOAD, true);
 	}
 }
