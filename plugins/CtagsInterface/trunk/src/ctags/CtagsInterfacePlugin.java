@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import jedit.BufferWatcher;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
@@ -19,15 +21,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	private static TagDB db;
 	private static Parser parser;
+	private static BufferWatcher watcher;
 	
 	public void start()
 	{
 		db = new TagDB();
 		parser = new Parser();
+		watcher = new BufferWatcher(db);
 	}
 
 	public void stop()
 	{
+		watcher.shutdown();
 		db.shutdown();
 	}
 	
@@ -102,6 +107,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		String file = files.get(index);
 		final int line = Integer.valueOf(lines.get(index));
+		jumpTo(view, file, line);
+	}
+
+	private static void jumpTo(final View view, String file, final int line) {
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
 			System.err.println("Unable to open: " + file);

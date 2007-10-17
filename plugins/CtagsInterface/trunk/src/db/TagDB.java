@@ -99,6 +99,26 @@ public class TagDB {
 		return "'" + string.replaceAll("'", "''") + "'";
 	}
 	
+	public boolean containsValue(String column, String value) {
+		try {
+			ResultSet rs = query("SELECT TOP 1 " + column + " FROM " +
+				TABLE_NAME + " WHERE " + column + "=" + getValueString(value));
+			return rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public void deleteRowsWithValue(String column, String value) {
+		try {
+			query("DELETE FROM " + TABLE_NAME + " WHERE " + column +
+				"=" + getValueString(value));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void createTables() {
 		try {
 			update("CREATE CACHED TABLE " + TABLE_NAME +
@@ -106,6 +126,7 @@ public class TagDB {
 				FILE_COL + " VARCHAR, " +
 				PATTERN_COL + " VARCHAR)");
 			update("CREATE INDEX tagName ON " + TABLE_NAME + "(" + NAME_COL + ")");
+			update("CREATE INDEX fileName ON " + TABLE_NAME + "(" + FILE_COL + ")");
 		} catch (SQLException e) {
 			// Table already exists
 		}

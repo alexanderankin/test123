@@ -1,4 +1,4 @@
-plugin.ctags.CtagsInterfacePlugin.activate=defer
+plugin.ctags.CtagsInterfacePlugin.activate=startup
 
 # general plugin information
 plugin.ctags.CtagsInterfacePlugin.name=CtagsInterface
@@ -26,6 +26,11 @@ plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-jump-to-tag
 #  class-browser-show-selected-hierarchy
 
+# option panes
+plugin.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-General
+options.CtagsInterface-General.label=CtagsInterface
+options.CtagsInterface-General.code=new options.GeneralOptionPane();
+
 # dockables
 #class-browser-class-hierarchy.title=ClassBrowser
 #class-browser-class-hierarchy.longtitle=Class Hierarchy Browser
@@ -33,9 +38,10 @@ plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 # docs
 #plugin.ctags.CtagsInterfacePlugin.docs=index.html
 
-# icons
-#options.ClassBrowser.icons.class=class.png
+# options
+options.CtagsInterface.ctags=ctags
+options.CtagsInterface.cmd=--fields=+anzKiS
 
 # messages
-#class-browser.msg.title=Class Browser
-#class-browser.msg.no-selected-class=For this action to work, you must either \
+messages.CtagsInterface.ctags=Ctags executable path:
+messages.CtagsInterface.cmd=Ctags invocation options:
