@@ -15,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
@@ -57,8 +58,8 @@ public class DirsOptionPane extends AbstractOptionPane {
 				int ret = fc.showOpenDialog(DirsOptionPane.this);
 				if (ret != JFileChooser.APPROVE_OPTION)
 					return;
-				dirsModel.addElement(
-					fc.getSelectedFile().getAbsolutePath());
+				String dir = fc.getSelectedFile().getAbsolutePath();
+				dirsModel.addElement(MiscUtilities.resolveSymlinks(dir));
 			}
 		});
 		remove.addActionListener(new ActionListener() {

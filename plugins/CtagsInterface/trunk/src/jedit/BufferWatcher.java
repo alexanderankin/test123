@@ -7,10 +7,10 @@ import options.DirsOptionPane;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import ctags.Runner;
-
 import db.TagDB;
 
 public class BufferWatcher implements EBComponent {
@@ -53,6 +53,7 @@ public class BufferWatcher implements EBComponent {
 
 	private boolean isInMonitoredTree(String file) {
 		Vector<String> dirs = DirsOptionPane.getDirs();
+		file = MiscUtilities.resolveSymlinks(file);
 		for (int i = 0; i < dirs.size(); i++)
 			if (file.startsWith(dirs.get(i)))
 				return true;
