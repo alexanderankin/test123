@@ -11,18 +11,16 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
-import ctags.Runner;
+import ctags.CtagsInterfacePlugin;
 import db.TagDB;
 
 public class BufferWatcher implements EBComponent {
 
 	private TagDB db;
-	private Runner runner;
 	
 	public BufferWatcher(TagDB db) {
 		EditBus.addToBus(this);
 		this.db = db;
-		runner = null;
 	}
 	
 	public void shutdown() {
@@ -43,15 +41,19 @@ public class BufferWatcher implements EBComponent {
 	}
 
 	private void update(String file) {
-		db.deleteRowsWithValue(TagDB.FILE_COL, file);
-		if (runner == null)
-			runner = new Runner(db);
-		runner.run(file);
+		CtagsInterfacePlugin.tagSourceFile(file);
 	}
 
 	private boolean monitored(String file) {
-		return isInMonitoredTree(file) ||
-			db.containsValue(TagDB.FILE_COL, file);
+		if (isInMonitoredTree(file)) {
+			System.err.println(file + " in monitored tree");
+			return true;
+		}
+		if (db.containsValue(TagDB.FILE_COL, file)) {
+			System.err.println(file + " in db");
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isInMonitoredTree(String file) {

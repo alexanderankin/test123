@@ -37,9 +37,14 @@ public class TagDB {
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
-        Statement st = conn.createStatement();
-        if (st.executeUpdate(expression) == -1)
-            System.err.println("db error : " + expression);
+		Statement st = conn.createStatement();
+		try {
+			if (st.executeUpdate(expression) == -1)
+	            System.err.println("db error : " + expression);
+		} catch (SQLException e) {
+			System.err.println("SQL update: " + expression);
+			throw e;
+		}
         st.close();
     }
 	
@@ -116,6 +121,15 @@ public class TagDB {
 		try {
 			query("DELETE FROM " + TABLE_NAME + " WHERE " + column +
 				"=" + getValueString(value));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteRowsWithValuePrefix(String column, String prefix) {
+		try {
+			query("DELETE FROM " + TABLE_NAME + " WHERE " + column +
+				" LIKE " + getValueString(prefix + "%"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

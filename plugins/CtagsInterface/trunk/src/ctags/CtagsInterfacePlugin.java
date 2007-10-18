@@ -23,6 +23,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	static public final String MESSAGE = "messages.CtagsInterface.";
 	private static TagDB db;
 	private static Parser parser;
+	private static Runner runner;
 	private static BufferWatcher watcher;
 	private static Vector<String> projects = null;
 	
@@ -30,6 +31,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
 		db = new TagDB();
 		parser = new Parser();
+		runner = new Runner(db);
 		watcher = new BufferWatcher(db);
 		try {
 			Class.forName("projects.ProjectWatcher").newInstance();;
@@ -132,6 +134,33 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			}
 		});
 	}
+	
+	private static void setStatusMessage(String msg) {
+		//jEdit.getActiveView().getStatus().setMessage(msg);
+	}
+	private static void removeStatusMessage() {
+		//jEdit.getActiveView().getStatus().setMessage("");
+	}
+	
+	/* Source file support */
+	
+	public static void tagSourceFile(String file) {
+		setStatusMessage("Tagging file: " + file);
+		db.deleteRowsWithValue(TagDB.FILE_COL, file);
+		runner.runOnFile(file);
+		removeStatusMessage();
+	}
+
+	/* Source tree support */
+	
+	public static void tagSourceTree(String tree) {
+		setStatusMessage("Tagging source tree: " + tree);
+		db.deleteRowsWithValuePrefix(TagDB.FILE_COL, tree);
+		runner.runOnTree(tree);
+		removeStatusMessage();
+	}
+	
+	/* Project support */
 	
 	public static void setProjects(Vector<String> projects) {
 		CtagsInterfacePlugin.projects = projects;

@@ -19,7 +19,21 @@ public class Runner {
 		parser = null;
 	}
 	
-	public void run(String file) {
+	public void runOnFile(String file) {
+		Vector<String> what = new Vector<String>();
+		what.add(file);
+		run(what);
+	}
+	public void runOnTree(String tree) {
+		Vector<String> what = new Vector<String>();
+		what.add("-R");
+		what.add(tree);
+		run(what);
+	}
+	public void runOnFiles(Vector<String> files) {
+		run(files);
+	}
+	private void run(Vector<String> what) {
 		String ctags = GeneralOptionPane.getCtags();
 		String cmd = GeneralOptionPane.getCmd();
 		String tagFile = getTempTagFilePath();
@@ -30,7 +44,7 @@ public class Runner {
 		String [] customOptions = cmd.split(SPACES);
 		for (int i = 0; i < customOptions.length; i++)
 			cmdLine.add(customOptions[i]);
-		cmdLine.add(file);
+		cmdLine.addAll(what);
 		String [] args = new String[cmdLine.size()]; 
 		cmdLine.toArray(args);
 		try {
