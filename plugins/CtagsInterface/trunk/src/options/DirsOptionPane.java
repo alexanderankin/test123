@@ -48,6 +48,8 @@ public class DirsOptionPane extends AbstractOptionPane {
 		buttons.add(add);
 		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
 		buttons.add(remove);
+		JButton tag = new JButton("Tag");
+		buttons.add(tag);
 		addComponent(buttons);
 
 		add.addActionListener(new ActionListener() {
@@ -67,6 +69,15 @@ public class DirsOptionPane extends AbstractOptionPane {
 				int i = dirs.getSelectedIndex();
 				if (i >= 0)
 					dirsModel.removeElementAt(i);
+			}
+		});
+		tag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				int i = dirs.getSelectedIndex();
+				if (i >= 0) {
+					String tree = (String) dirsModel.getElementAt(i);
+					CtagsInterfacePlugin.tagSourceTree(tree);
+				}
 			}
 		});
 	}
