@@ -16,8 +16,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import projects.ProjectViewerInterface;
-
+import projects.ProjectWatcher;
 import db.TagDB;
 
 public class CtagsInterfacePlugin extends EditPlugin {
@@ -28,7 +27,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static Parser parser;
 	private static Runner runner;
 	private static BufferWatcher watcher;
-	private static ProjectViewerInterface pvi;
+	private static ProjectWatcher pvi;
 	
 	public void start()
 	{
@@ -39,16 +38,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
 		if(p == null)
 			pvi = null;
-		else {
-			try {
-				pvi = (ProjectViewerInterface)
-					Class.forName("projects.ProjectWatcher").newInstance();;
-			} catch (Exception e) {
-				// ok, no project support
-				e.printStackTrace();
-				pvi = null;
-			}
-		}
+		else
+			pvi = new ProjectWatcher();
 	}
 
 	public void stop()
@@ -172,7 +163,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	/* Project support */
 	
-	public static ProjectViewerInterface getProjectViewerInterface() {
+	public static ProjectWatcher getProjectWatcher() {
 		return pvi;
 	}
 	

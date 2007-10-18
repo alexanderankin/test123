@@ -1,5 +1,6 @@
 package options;
 
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -18,8 +19,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
-import projects.ProjectViewerInterface;
-
+import projects.ProjectWatcher;
 import ctags.CtagsInterfacePlugin;
 
 @SuppressWarnings("serial")
@@ -30,7 +30,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String PROJECTS = OPTION + "projects.";
 	JList projects;
 	DefaultListModel projectsModel;
-	ProjectViewerInterface pvi;
+	ProjectWatcher pvi;
 	
 	public ProjectsOptionPane() {
 		super("CtagsInterface-Projects");
@@ -44,7 +44,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		JScrollPane scroller = new JScrollPane(projects);
 		scroller.setBorder(BorderFactory.createTitledBorder(
 				jEdit.getProperty(MESSAGE + "projects")));
-		addComponent(scroller);
+		addComponent(scroller, GridBagConstraints.HORIZONTAL);
 		JPanel buttons = new JPanel();
 		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		buttons.add(add);
@@ -54,7 +54,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		buttons.add(tag);
 		addComponent(buttons);
 
-		pvi = CtagsInterfacePlugin.getProjectViewerInterface();
+		pvi = CtagsInterfacePlugin.getProjectWatcher();
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Vector<String> nameVec = pvi.getProjects();
