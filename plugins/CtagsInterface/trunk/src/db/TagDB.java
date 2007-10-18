@@ -36,14 +36,14 @@ public class TagDB {
 		}
 		createTables();
 		getColumns();
-		project = null;
+		project = "";
 	}
 	
 	public void setProject(String project) {
 		this.project = project;
 	}
 	public void unsetProject() {
-		project = null;
+		project = "";
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
