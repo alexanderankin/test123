@@ -1,5 +1,6 @@
 package options;
 
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -42,7 +43,7 @@ public class DirsOptionPane extends AbstractOptionPane {
 		JScrollPane scroller = new JScrollPane(dirs);
 		scroller.setBorder(BorderFactory.createTitledBorder(
 				jEdit.getProperty(MESSAGE + "dirs")));
-		addComponent(scroller);
+		addComponent(scroller, GridBagConstraints.HORIZONTAL);
 		JPanel buttons = new JPanel();
 		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		buttons.add(add);

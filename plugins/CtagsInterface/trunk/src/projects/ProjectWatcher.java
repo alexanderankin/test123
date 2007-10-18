@@ -16,7 +16,7 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
-public class ProjectWatcher implements ProjectViewerInterface, EBComponent {
+public class ProjectWatcher implements EBComponent {
 
 	public ProjectWatcher() {
 		EditBus.addToBus(this);
