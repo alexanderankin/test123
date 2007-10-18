@@ -1,0 +1,18 @@
+- Decide on the functionality of the plugin:
+  - What kind of project support to provide?
+    Clearly, need to know for each tag which project it belongs to.
+    Either add a project column, or different tables for different projects.
+    Project support means:
+    1. Option pane in the plugin to define "watched" projects.
+    2. A watched project is monitored for changes (add/remove file) and the DB updated
+       accordingly.
+    3. Files belonging to a watched project are monitored for changes inside jEdit.
+    4. Project dependency: Currently will be defined by CtagsInterface, later integrated
+       into PV.
+    5. Option whether a watched project causes dependency projects to be watched.
+  - What kind of plugin support to provide?
+  - What options to provide?
+    - DB update events:
+      - Buffer saved
+      - Buffer reloaded
+- Events on which to update
