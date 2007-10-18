@@ -24,12 +24,19 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static TagDB db;
 	private static Parser parser;
 	private static BufferWatcher watcher;
+	private static Vector<String> projects = null;
 	
 	public void start()
 	{
 		db = new TagDB();
 		parser = new Parser();
 		watcher = new BufferWatcher(db);
+		try {
+			Class.forName("projects.ProjectWatcher").newInstance();;
+		} catch (Exception e) {
+			// ok, no project support
+			e.printStackTrace();
+		}
 	}
 
 	public void stop()
@@ -124,5 +131,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 					view.getTextArea().getLineStartOffset(line - 1));
 			}
 		});
+	}
+	
+	public static void setProjects(Vector<String> projects) {
+		CtagsInterfacePlugin.projects = projects;
+	}
+	public static Vector<String> getProjects() {
+		return projects;
 	}
 }
