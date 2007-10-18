@@ -2,16 +2,15 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import jedit.BufferWatcher;
-
 import options.GeneralOptionPane;
 
 import org.gjt.sp.jedit.Buffer;
@@ -26,6 +25,7 @@ import db.TagDB;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
+	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
 	private static TagDB db;
@@ -98,34 +98,41 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (tag == null || tag.length() == 0)
 			tag = getTagAtCaret(view);
 		System.err.println("Selected tag: " + tag);
-		Vector<String> files = new Vector<String>();
-		Vector<String> lines = new Vector<String>();
+		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
 		try {
-			ResultSet rs = db.query("SELECT " + TagDB.FILE_COL + ", LINE FROM " +
-				TagDB.TABLE_NAME + " WHERE " + TagDB.NAME_COL + "=" + db.getValueString(tag));
+			ResultSet rs = db.query("SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
+				TagDB.NAME_COL + "=" + db.getValueString(tag));
+			ResultSetMetaData meta;
+			meta = rs.getMetaData();
+			String [] cols = new String[meta.getColumnCount()];
+			for (int i = 0; i < cols.length; i++)
+				cols[i] = meta.getColumnName(i + 1);
 			while (rs.next()) {
-				files.add(rs.getString(1));
-				lines.add(rs.getString(2));
+				Hashtable<String, String> values = new Hashtable<String, String>();
+				for (int i = 0; i < cols.length; i++) {
+					String value = rs.getString(i + 1); 
+					if (value != null && value.length() > 0)
+						values.put(cols[i], value);
+				}
+				tags.add(values);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (files.size() == 0) {
-			JOptionPane.showMessageDialog(view, "No records found");
+		if (tags.size() == 0) {
+			JOptionPane.showMessageDialog(view, "No tags found");
 			return;
 		}
 		int index = 0;
-		if (files.size() > 1) {
-			String [] positions = new String[files.size()];
-			for (int i = 0; i < files.size(); i++)
-				positions[i] = files.get(i) + ":" + lines.get(i);
-			String s = (String) JOptionPane.showInputDialog(view, "Select position:",
-				"Tag collision", JOptionPane.QUESTION_MESSAGE, null,
-				positions, positions[0]);
-			index = Arrays.asList(positions).indexOf(s);
+		if (tags.size() > 1) {
+			view.getDockableWindowManager().showDockableWindow(DOCKABLE);
+			JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
+			((TagList)c).setTags(tags);
+			return;
 		}
-		String file = files.get(index);
-		final int line = Integer.valueOf(lines.get(index));
+		Hashtable<String, String> info = tags.get(index);
+		String file = info.get(TagDB.FILE_COL);
+		final int line = Integer.valueOf(info.get("LINE"));
 		jumpTo(view, file, line);
 	}
 

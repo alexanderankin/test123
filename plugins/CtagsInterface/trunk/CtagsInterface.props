@@ -39,9 +39,9 @@ options.CtagsInterface-Projects.label=Projects
 options.CtagsInterface-Projects.code=new options.ProjectsOptionPane();
 
 # dockables
-#class-browser-class-hierarchy.title=ClassBrowser
-#class-browser-class-hierarchy.longtitle=Class Hierarchy Browser
-#class-browser-class-hierarchy.label=Class Hierarchy Browser
+ctags-interface-tag-list.title=Tag List
+ctags-interface-tag-list.label=Tag List
+
 # docs
 #plugin.ctags.CtagsInterfacePlugin.docs=index.html
 
