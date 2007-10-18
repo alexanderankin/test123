@@ -19,11 +19,11 @@ public class TagDB {
 	private Connection conn;
 	private Set<String> columns;
 	private String project;
-	public static final String TABLE_NAME = "tags";
-	public static final String NAME_COL = "k_name";
-	public static final String FILE_COL = "k_file";
-	public static final String PATTERN_COL = "k_pattern";
-	public static final String PROJECT_COL = "k_project";
+	public static final String TABLE_NAME = "TAGS";
+	public static final String NAME_COL = "K_NAME";
+	public static final String FILE_COL = "K_FILE";
+	public static final String PATTERN_COL = "K_PATTERN";
+	public static final String PROJECT_COL = "K_PROJECT";
 	
 	public TagDB() {
 		removeStaleLock();

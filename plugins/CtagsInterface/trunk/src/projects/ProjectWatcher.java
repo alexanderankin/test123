@@ -36,6 +36,7 @@ public class ProjectWatcher implements EBComponent {
 		return files;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<String> getProjects() {
 		ProjectManager pm = ProjectManager.getInstance();
 		Vector<String> projects = new Vector<String>();
