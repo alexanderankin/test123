@@ -18,6 +18,8 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
+import projects.ProjectViewerInterface;
+
 import ctags.CtagsInterfacePlugin;
 
 @SuppressWarnings("serial")
@@ -28,6 +30,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String PROJECTS = OPTION + "projects.";
 	JList projects;
 	DefaultListModel projectsModel;
+	ProjectViewerInterface pvi;
 	
 	public ProjectsOptionPane() {
 		super("CtagsInterface-Projects");
@@ -48,10 +51,14 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
 		buttons.add(remove);
 		addComponent(buttons);
+		JButton tag = new JButton("Tag");
+		buttons.add(tag);
+		addComponent(buttons);
 
+		pvi = CtagsInterfacePlugin.getProjectViewerInterface();
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				Vector<String> nameVec = CtagsInterfacePlugin.getProjects();
+				Vector<String> nameVec = pvi.getProjects();
 				String [] names = new String[nameVec.size()];
 				nameVec.toArray(names);
 				String selected = (String) JOptionPane.showInputDialog(
@@ -66,6 +73,15 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 				int i = projects.getSelectedIndex();
 				if (i >= 0)
 					projectsModel.removeElementAt(i);
+			}
+		});
+		tag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				int i = projects.getSelectedIndex();
+				if (i >= 0) {
+					String project = (String) projectsModel.getElementAt(i);
+					CtagsInterfacePlugin.tagProject(project);
+				}
 			}
 		});
 	}

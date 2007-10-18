@@ -18,10 +18,12 @@ import org.gjt.sp.jedit.jEdit;
 public class TagDB {
 	private Connection conn;
 	private Set<String> columns;
+	private String project;
 	public static final String TABLE_NAME = "tags";
 	public static final String NAME_COL = "k_name";
 	public static final String FILE_COL = "k_file";
 	public static final String PATTERN_COL = "k_pattern";
+	public static final String PROJECT_COL = "k_project";
 	
 	public TagDB() {
 		removeStaleLock();
@@ -34,6 +36,14 @@ public class TagDB {
 		}
 		createTables();
 		getColumns();
+		project = null;
+	}
+	
+	public void setProject(String project) {
+		this.project = project;
+	}
+	public void unsetProject() {
+		project = null;
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
@@ -68,6 +78,7 @@ public class TagDB {
 
 	public void insertTag(Hashtable<String, String> info) {
 		// Find missing columns and build the inserted value string
+		info.put(PROJECT_COL, project);
 		StringBuffer valueStr = new StringBuffer();
 		StringBuffer columnStr = new StringBuffer();
 		Set<Entry<String,String>> entries = info.entrySet();
@@ -92,7 +103,7 @@ public class TagDB {
 				valueStr.append(",");
 			valueStr.append(getValueString(val));
 		}
-		// Add missing columns, then insert the record
+		// Insert the record
 		try {
 			update("INSERT INTO " + TABLE_NAME + " (" +
 					columnStr.toString() + ") VALUES (" +
@@ -140,9 +151,11 @@ public class TagDB {
 			update("CREATE CACHED TABLE " + TABLE_NAME +
 				"(" + NAME_COL + " VARCHAR, " +
 				FILE_COL + " VARCHAR, " +
-				PATTERN_COL + " VARCHAR)");
+				PATTERN_COL + " VARCHAR, " +
+				PROJECT_COL + " VARCHAR)");
 			update("CREATE INDEX tagName ON " + TABLE_NAME + "(" + NAME_COL + ")");
 			update("CREATE INDEX fileName ON " + TABLE_NAME + "(" + FILE_COL + ")");
+			update("CREATE INDEX projName ON " + TABLE_NAME + "(" + PROJECT_COL + ")");
 		} catch (SQLException e) {
 			// Table already exists
 		}
