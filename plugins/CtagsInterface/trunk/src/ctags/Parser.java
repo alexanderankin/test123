@@ -49,7 +49,12 @@ public class Parser {
 			new Hashtable<String, String>();
 		if (line.endsWith("\n") || line.endsWith("\r"))
 			line = line.substring(0, line.length() - 1);
-		String fields[] = line.split("\t");
+		// Find the end of the pattern (pattern may include "\t")
+		int idx = line.lastIndexOf(";\"\t");
+		if (idx < 0)
+			return null;
+		// Fixed fields (tag, file, pattern/line number)
+		String fields[] = line.substring(0, idx).split("\t");
 		if (fields.length < 3)
 			return null;
 		info.put(TagDB.NAME_COL, fields[0]);
@@ -59,8 +64,9 @@ public class Parser {
 		else
 			info.put(TagDB.FILE_COL, tagFileDir + "/" + fields[1]);
 		info.put(TagDB.PATTERN_COL, fields[2]);
-		// extensions
-		for (int i = 3; i < fields.length; i++)
+		// Extensions
+		fields = line.substring(idx + 3).split("\t");
+		for (int i = 0; i < fields.length; i++)
 		{
 			String pair[] = fields[i].split(":", 2);
 			if (pair.length != 2)
@@ -69,5 +75,4 @@ public class Parser {
 		}
 		return info;
 	}
-
 }
