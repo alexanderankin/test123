@@ -15,6 +15,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import projects.ProjectViewerInterface;
+
 import db.TagDB;
 
 public class CtagsInterfacePlugin extends EditPlugin {
@@ -25,7 +27,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static Parser parser;
 	private static Runner runner;
 	private static BufferWatcher watcher;
-	private static Vector<String> projects = null;
+	private static ProjectViewerInterface pvi;
 	
 	public void start()
 	{
@@ -33,11 +35,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		parser = new Parser();
 		runner = new Runner(db);
 		watcher = new BufferWatcher(db);
-		try {
-			Class.forName("projects.ProjectWatcher").newInstance();;
-		} catch (Exception e) {
-			// ok, no project support
-			e.printStackTrace();
+		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
+		if(p == null)
+			pvi = null;
+		else {
+			try {
+				pvi = (ProjectViewerInterface)
+					Class.forName("projects.ProjectWatcher").newInstance();;
+			} catch (Exception e) {
+				// ok, no project support
+				e.printStackTrace();
+				pvi = null;
+			}
 		}
 	}
 
@@ -162,10 +171,17 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	/* Project support */
 	
-	public static void setProjects(Vector<String> projects) {
-		CtagsInterfacePlugin.projects = projects;
+	public static ProjectViewerInterface getProjectViewerInterface() {
+		return pvi;
 	}
-	public static Vector<String> getProjects() {
-		return projects;
+	
+	public static void tagProject(String project) {
+		setStatusMessage("Tagging project: " + project);
+		db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
+		db.setProject(project);
+		Vector<String> files = pvi.getFiles(project);
+		if (files != null)
+			runner.runOnFiles(files);
+		removeStatusMessage();
 	}
 }
