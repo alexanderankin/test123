@@ -137,6 +137,27 @@ public class TagDB {
 		}
 	}
 	
+	public void deleteRowsWithValues(Hashtable<String, String> values) {
+		StringBuffer where = new StringBuffer();
+		Iterator<Entry<String, String>> it = values.entrySet().iterator();
+		boolean first = true;
+		while (it.hasNext()) {
+			if (first)
+				first = false;
+			else
+				where.append(" AND ");
+			Entry<String, String> entry = it.next();
+			where.append(entry.getKey());
+			where.append("=");
+			where.append(getValueString(entry.getValue()));
+		}
+		try {
+			query("DELETE FROM " + TABLE_NAME + " WHERE " + where);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void deleteRowsWithValuePrefix(String column, String prefix) {
 		try {
 			query("DELETE FROM " + TABLE_NAME + " WHERE " + column +

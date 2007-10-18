@@ -50,7 +50,6 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		buttons.add(add);
 		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
 		buttons.add(remove);
-		addComponent(buttons);
 		JButton tag = new JButton("Tag");
 		buttons.add(tag);
 		addComponent(buttons);

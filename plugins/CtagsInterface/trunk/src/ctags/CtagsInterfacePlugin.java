@@ -3,6 +3,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -175,13 +176,41 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return pvi;
 	}
 	
+	private static void removeProject(String project) {
+		db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
+	}
+	private static void removeProjectFiles(String project,
+		Vector<String> files)
+	{
+		Hashtable<String, String> values = new Hashtable<String, String>();
+		values.put(TagDB.PROJECT_COL, project);
+		for (int i = 0; i < files.size(); i++) {
+			values.put(TagDB.FILE_COL, files.get(i));
+			db.deleteRowsWithValues(values);
+		}
+	}
+	private static void addProjectFiles(String project,
+		Vector<String> files)
+	{
+		db.setProject(project);
+		runner.runOnFiles(files);
+		db.unsetProject();
+	}
 	public static void tagProject(String project) {
 		setStatusMessage("Tagging project: " + project);
-		db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
-		db.setProject(project);
+		removeProject(project);
 		Vector<String> files = pvi.getFiles(project);
-		if (files != null)
-			runner.runOnFiles(files);
+		addProjectFiles(project, files);
+		removeStatusMessage();
+	}
+	public static void updateProject(String project,
+		Vector<String> added, Vector<String> removed)
+	{
+		setStatusMessage("Updating project: " + project);
+		if (removed != null)
+			removeProjectFiles(project, removed);
+		if (added != null)
+			addProjectFiles(project, added);
 		removeStatusMessage();
 	}
 }
