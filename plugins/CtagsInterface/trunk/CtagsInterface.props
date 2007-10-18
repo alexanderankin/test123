@@ -48,10 +48,12 @@ options.CtagsInterface-Projects.code=new options.ProjectsOptionPane();
 # options
 options.CtagsInterface.ctags=ctags
 options.CtagsInterface.cmd=--fields=+anzKiS
+options.CtagsInterface.pattern=\\w+
 
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
 messages.CtagsInterface.cmd=Ctags invocation options:
+messages.CtagsInterface.pattern=Tag pattern (to extract tag at caret):
 messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
 messages.CtagsInterface.updateOnSave=Refresh file tags when saved
 messages.CtagsInterface.dirs=Source trees to monitor:

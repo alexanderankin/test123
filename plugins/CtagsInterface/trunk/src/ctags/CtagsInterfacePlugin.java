@@ -5,16 +5,21 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
 import jedit.BufferWatcher;
+
+import options.GeneralOptionPane;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import projects.ProjectWatcher;
 import db.TagDB;
@@ -90,6 +95,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void jumpToTag(final View view)
 	{
 		String tag = view.getTextArea().getSelectedText();
+		if (tag == null || tag.length() == 0)
+			tag = getTagAtCaret(view);
 		System.err.println("Selected tag: " + tag);
 		Vector<String> files = new Vector<String>();
 		Vector<String> lines = new Vector<String>();
@@ -120,6 +127,28 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		String file = files.get(index);
 		final int line = Integer.valueOf(lines.get(index));
 		jumpTo(view, file, line);
+	}
+
+	private static String getTagAtCaret(View view) {
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine();
+		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile(GeneralOptionPane.getPattern());
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		String selected = "";
+		while (end <= index) {
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if (start > index || selected.length() == 0)
+			return null;
+		return selected;
 	}
 
 	private static void jumpTo(final View view, String file, final int line) {

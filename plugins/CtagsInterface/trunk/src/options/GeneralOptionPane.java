@@ -15,10 +15,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String CTAGS = OPTION + "ctags";
 	static public final String CMD = OPTION + "cmd";
+	static public final String PATTERN = OPTION + "pattern";
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	JTextField ctags;
 	JTextField cmd;
+	JTextField pattern;
 	JCheckBox updateOnLoad;
 	JCheckBox updateOnSave;
 	
@@ -32,6 +34,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		cmd = new JTextField(jEdit.getProperty(CMD), 40);
 		addComponent(jEdit.getProperty(MESSAGE + "cmd"), cmd);
 		
+		pattern = new JTextField(jEdit.getProperty(PATTERN), 40);
+		addComponent(jEdit.getProperty(MESSAGE + "pattern"), pattern);
+		
 		updateOnLoad = new JCheckBox(jEdit.getProperty(MESSAGE + "updateOnLoad"),
 			jEdit.getBooleanProperty(UPDATE_ON_LOAD));
 		addComponent(updateOnLoad);
@@ -44,6 +49,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public void _save() {
 		jEdit.setProperty(CTAGS, ctags.getText());
 		jEdit.setProperty(CMD, cmd.getText());
+		jEdit.setProperty(PATTERN, pattern.getText());
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 	}
@@ -56,6 +62,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static String getCmd() {
 		String s = jEdit.getProperty(CMD);
+		if (s == null)
+			return "";
+		return s;
+	}
+	public static String getPattern() {
+		String s = jEdit.getProperty(PATTERN);
 		if (s == null)
 			return "";
 		return s;
