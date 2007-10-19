@@ -2,7 +2,13 @@ package ctags;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
@@ -20,6 +26,7 @@ import db.TagDB;
 @SuppressWarnings("serial")
 public class TagList extends JPanel implements DefaultFocusComponent {
 
+	private static final String LINE_COL = "LINE";
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
@@ -39,6 +46,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				Hashtable<String, String> tag = (Hashtable<String, String>)
 					tagModel.getElementAt(index);
 				l.setText(getHtmlText(tag, index));
+				l.setFont(new Font("Monospaced", Font.PLAIN, 12));
 				return l;
 			}
 			private String getHtmlText(Hashtable<String, String> tag, int index) {
@@ -47,13 +55,34 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				s.append(": <b>");
 				s.append(tag.get(TagDB.NAME_COL));
 				s.append("</b>  ");
+				String project = tag.get(TagDB.PROJECT_COL);
+				if (project != null && project.length() > 0) {
+					s.append("(<i>");
+					s.append(project);
+					s.append("</i>)  ");
+				}
 				s.append(tag.get(TagDB.FILE_COL));
-				s.append(tag.containsKey("LINE") ? ":" + tag.get("LINE") : "");
-				s.append("<br>");
-				s.append(tag.get(TagDB.PROJECT_COL));
-				s.append("<br><u>");
+				s.append(tag.containsKey(LINE_COL) ? ":" + tag.get(LINE_COL) : "");
+				s.append("<br>Pattern: ");
 				s.append(tag.get(TagDB.PATTERN_COL));
-				s.append("</u>");
+				s.append("<br>");
+				TreeSet<String> keys = new TreeSet<String>(tag.keySet());
+				keys.remove(TagDB.NAME_COL);
+				keys.remove(TagDB.FILE_COL);
+				keys.remove(TagDB.PROJECT_COL);
+				keys.remove(LINE_COL);
+				keys.remove(TagDB.PATTERN_COL);
+				Iterator<String> it = keys.iterator();
+				boolean first = true;
+				while (it.hasNext()) {
+					if (! first)
+						s.append("  ");
+					first = false;
+					String key = (String) it.next();
+					s.append(key);
+					s.append(": ");
+					s.append(tag.get(key));
+				}
 				return s.toString();
 			}
 		});
