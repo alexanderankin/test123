@@ -95,8 +95,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void jumpToTag(final View view)
 	{
 		String tag = view.getTextArea().getSelectedText();
-		if (tag == null || tag.length() == 0)
+		if (tag == null || tag.length() == 0) {
 			tag = getTagAtCaret(view);
+			if (tag == null || tag.length() == 0) {
+				JOptionPane.showMessageDialog(view, "No tag selected nor identified at caret");
+				return;
+			}
+		} 
 		System.err.println("Selected tag: " + tag);
 		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
 		try {
@@ -173,10 +178,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	private static void setStatusMessage(String msg) {
-		//jEdit.getActiveView().getStatus().setMessage(msg);
+		jEdit.getActiveView().getStatus().setMessage(msg);
 	}
 	private static void removeStatusMessage() {
-		//jEdit.getActiveView().getStatus().setMessage("");
+		jEdit.getActiveView().getStatus().setMessage("");
 	}
 	
 	/* Source file support */
