@@ -158,7 +158,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return selected;
 	}
 
-	private static void jumpTo(final View view, String file, final int line) {
+	public static void jumpTo(final View view, String file, final int line) {
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
 			System.err.println("Unable to open: " + file);

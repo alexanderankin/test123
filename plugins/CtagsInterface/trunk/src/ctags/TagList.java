@@ -3,11 +3,12 @@ package ctags;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.util.Collections;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -37,58 +38,37 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
 		add(new JScrollPane(tags), BorderLayout.CENTER);
-		tags.setCellRenderer(new DefaultListCellRenderer() {
-			@SuppressWarnings("unchecked")
-			public Component getListCellRendererComponent(JList list, Object value,
-					int index, boolean isSelected, boolean cellHasFocus) {
-				JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
-					isSelected, cellHasFocus);
-				Hashtable<String, String> tag = (Hashtable<String, String>)
-					tagModel.getElementAt(index);
-				l.setText(getHtmlText(tag, index));
-				l.setFont(new Font("Monospaced", Font.PLAIN, 12));
-				return l;
+		tags.setCellRenderer(new TagListCellRenderer());
+		tags.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				jumpTo(tags.getSelectedIndex());
 			}
-			private String getHtmlText(Hashtable<String, String> tag, int index) {
-				StringBuffer s = new StringBuffer("<html>");
-				s.append(index + 1);
-				s.append(": <b>");
-				s.append(tag.get(TagDB.NAME_COL));
-				s.append("</b>  ");
-				String project = tag.get(TagDB.PROJECT_COL);
-				if (project != null && project.length() > 0) {
-					s.append("(<i>");
-					s.append(project);
-					s.append("</i>)  ");
-				}
-				s.append(tag.get(TagDB.FILE_COL));
-				s.append(tag.containsKey(LINE_COL) ? ":" + tag.get(LINE_COL) : "");
-				s.append("<br>Pattern: ");
-				s.append(tag.get(TagDB.PATTERN_COL));
-				s.append("<br>");
-				TreeSet<String> keys = new TreeSet<String>(tag.keySet());
-				keys.remove(TagDB.NAME_COL);
-				keys.remove(TagDB.FILE_COL);
-				keys.remove(TagDB.PROJECT_COL);
-				keys.remove(LINE_COL);
-				keys.remove(TagDB.PATTERN_COL);
-				Iterator<String> it = keys.iterator();
-				boolean first = true;
-				while (it.hasNext()) {
-					if (! first)
-						s.append("  ");
-					first = false;
-					String key = (String) it.next();
-					s.append(key);
-					s.append(": ");
-					s.append(tag.get(key));
-				}
-				return s.toString();
+		});
+		tags.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent ke) {
+				ke.consume();
+				char c = ke.getKeyChar();
+				if (c == ' ')
+					jumpTo(tags.getSelectedIndex());
+				else if (c >= '1' && c <= '9')
+					jumpTo(c - '1');
 			}
 		});
 		setTags(null);
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected void jumpTo(int selectedIndex) {
+		Hashtable<String, String> tag = (Hashtable<String, String>)
+			tagModel.getElementAt(selectedIndex);
+		String file = tag.get(TagDB.FILE_COL);
+		String lineStr = tag.get(LINE_COL);
+		if (lineStr != null) {
+			int line = Integer.valueOf(lineStr);
+			CtagsInterfacePlugin.jumpTo(view, file, line);
+		}
+	}
+
 	public void setTags(Vector<Hashtable<String, String>> tags) {
 		tagModel.removeAllElements();
 		if (tags == null)
@@ -98,6 +78,58 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	}
 	
 	public void focusOnDefaultComponent() {
+		tags.requestFocus();
+	}
+
+	private final class TagListCellRenderer extends DefaultListCellRenderer {
+		@SuppressWarnings("unchecked")
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
+				isSelected, cellHasFocus);
+			Hashtable<String, String> tag = (Hashtable<String, String>)
+				tagModel.getElementAt(index);
+			l.setText(getHtmlText(tag, index));
+			l.setFont(new Font("Monospaced", Font.PLAIN, 12));
+			return l;
+		}
+
+		private String getHtmlText(Hashtable<String, String> tag, int index) {
+			StringBuffer s = new StringBuffer("<html>");
+			s.append(index + 1);
+			s.append(": <b>");
+			s.append(tag.get(TagDB.NAME_COL));
+			s.append("</b>  ");
+			String project = tag.get(TagDB.PROJECT_COL);
+			if (project != null && project.length() > 0) {
+				s.append("(<i>");
+				s.append(project);
+				s.append("</i>)  ");
+			}
+			s.append(tag.get(TagDB.FILE_COL));
+			s.append(tag.containsKey(LINE_COL) ? ":" + tag.get(LINE_COL) : "");
+			s.append("<br>Pattern: ");
+			s.append(tag.get(TagDB.PATTERN_COL));
+			s.append("<br>");
+			TreeSet<String> keys = new TreeSet<String>(tag.keySet());
+			keys.remove(TagDB.NAME_COL);
+			keys.remove(TagDB.FILE_COL);
+			keys.remove(TagDB.PROJECT_COL);
+			keys.remove(LINE_COL);
+			keys.remove(TagDB.PATTERN_COL);
+			Iterator<String> it = keys.iterator();
+			boolean first = true;
+			while (it.hasNext()) {
+				if (! first)
+					s.append("  ");
+				first = false;
+				String key = (String) it.next();
+				s.append(key);
+				s.append(": ");
+				s.append(tag.get(key));
+			}
+			return s.toString();
+		}
 	}
 
 }
