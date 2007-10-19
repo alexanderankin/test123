@@ -8,6 +8,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,9 +29,11 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
+	static public final String AUTO_UPDATE = OPTION + "autoUpdateProjects";
 	JList projects;
 	DefaultListModel projectsModel;
 	ProjectWatcher pvi;
+	JCheckBox autoUpdate;
 	
 	public ProjectsOptionPane() {
 		super("CtagsInterface-Projects");
@@ -53,6 +56,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		JButton tag = new JButton("Tag");
 		buttons.add(tag);
 		addComponent(buttons);
+		autoUpdate = new JCheckBox(jEdit.getProperty(MESSAGE + "autoUpdateProjects"),
+			jEdit.getBooleanProperty(AUTO_UPDATE));
+		addComponent(autoUpdate);
 
 		pvi = CtagsInterfacePlugin.getProjectWatcher();
 		add.addActionListener(new ActionListener() {
@@ -90,6 +96,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		jEdit.setIntegerProperty(PROJECTS + "size", nProjects);
 		for (int i = 0; i < nProjects; i++)
 			jEdit.setProperty(PROJECTS + i, (String)projectsModel.getElementAt(i));
+		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 	}
 	
 	static public Vector<String> getProjects() {
@@ -98,6 +105,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		for (int i = 0; i < nProjects; i++)
 			projects.add(jEdit.getProperty(PROJECTS + i));
 		return projects;
+	}
+	static public boolean getAutoUpdateProjects() {
+		return jEdit.getBooleanProperty(AUTO_UPDATE);
 	}
 
 }
