@@ -56,6 +56,7 @@ messages.CtagsInterface.cmd=Ctags invocation options:
 messages.CtagsInterface.pattern=Tag pattern (to extract tag at caret):
 messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
 messages.CtagsInterface.updateOnSave=Refresh file tags when saved
+messages.CtagsInterface.background=Perform tag updates in background
 messages.CtagsInterface.dirs=Source trees:
 messages.CtagsInterface.projects=Projects:
 messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projects are changed

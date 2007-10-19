@@ -19,6 +19,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.WorkThreadPool;
 
 import projects.ProjectWatcher;
 import db.TagDB;
@@ -33,6 +34,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static Runner runner;
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
+	private static WorkThreadPool worker;
 	
 	public void start()
 	{
@@ -177,6 +179,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		});
 	}
 	
+	private static void addWorkRequest(Runnable run, boolean inAWT) {
+		if (! GeneralOptionPane.getUpdateInBackground()) {
+			run.run();
+			return;
+		}
+		if (worker == null) {
+			worker = new WorkThreadPool("CtagsInterface", 1);
+			worker.start();
+		}
+		worker.addWorkRequest(run, inAWT);
+	}
+
 	private static void setStatusMessage(String msg) {
 		jEdit.getActiveView().getStatus().setMessage(msg);
 	}
@@ -186,19 +200,28 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	/* Source file support */
 	
-	public static void tagSourceFile(String file) {
+	public static void tagSourceFile(final String file) {
 		setStatusMessage("Tagging file: " + file);
-		db.deleteRowsWithValue(TagDB.FILE_COL, file);
-		runner.runOnFile(file);
+		addWorkRequest(new Runnable() {
+			public void run() {
+				db.deleteRowsWithValue(TagDB.FILE_COL, file);
+				runner.runOnFile(file);
+			}
+		}, false);
 		removeStatusMessage();
+		
 	}
 
 	/* Source tree support */
 	
-	public static void tagSourceTree(String tree) {
+	public static void tagSourceTree(final String tree) {
 		setStatusMessage("Tagging source tree: " + tree);
-		db.deleteRowsWithValuePrefix(TagDB.FILE_COL, tree);
-		runner.runOnTree(tree);
+		addWorkRequest(new Runnable() {
+			public void run() {
+				db.deleteRowsWithValuePrefix(TagDB.FILE_COL, tree);
+				runner.runOnTree(tree);
+			}
+		}, false);
 		removeStatusMessage();
 	}
 	
@@ -228,11 +251,15 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		runner.runOnFiles(files);
 		db.unsetProject();
 	}
-	public static void tagProject(String project) {
+	public static void tagProject(final String project) {
 		setStatusMessage("Tagging project: " + project);
-		removeProject(project);
-		Vector<String> files = pvi.getFiles(project);
-		addProjectFiles(project, files);
+		addWorkRequest(new Runnable() {
+			public void run() {
+				removeProject(project);
+				Vector<String> files = pvi.getFiles(project);
+				addProjectFiles(project, files);
+			}
+		}, false);
 		removeStatusMessage();
 	}
 	public static void updateProject(String project,

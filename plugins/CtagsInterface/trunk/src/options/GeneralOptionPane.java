@@ -18,11 +18,13 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PATTERN = OPTION + "pattern";
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
+	static public final String BACKGROUND = OPTION + "background";
 	JTextField ctags;
 	JTextField cmd;
 	JTextField pattern;
 	JCheckBox updateOnLoad;
 	JCheckBox updateOnSave;
+	JCheckBox background;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -41,8 +43,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			jEdit.getBooleanProperty(UPDATE_ON_LOAD));
 		addComponent(updateOnLoad);
 		updateOnSave = new JCheckBox(jEdit.getProperty(MESSAGE + "updateOnSave"),
-				jEdit.getBooleanProperty(UPDATE_ON_SAVE));
-			addComponent(updateOnSave);
+			jEdit.getBooleanProperty(UPDATE_ON_SAVE));
+		addComponent(updateOnSave);
+		
+		background = new JCheckBox(jEdit.getProperty(MESSAGE + "background"),
+			jEdit.getBooleanProperty(BACKGROUND));
+		addComponent(background);
 	}
 
 	@Override
@@ -52,6 +58,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setProperty(PATTERN, pattern.getText());
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
+		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
 	}
 
 	public static String getCtags() {
@@ -77,5 +84,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getUpdateOnLoad() {
 		return jEdit.getBooleanProperty(UPDATE_ON_LOAD, true);
+	}
+	public static boolean getUpdateInBackground() {
+		return jEdit.getBooleanProperty(BACKGROUND, true);
 	}
 }
