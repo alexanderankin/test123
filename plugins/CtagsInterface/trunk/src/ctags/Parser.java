@@ -54,7 +54,7 @@ public class Parser {
 		if (idx < 0)
 			return null;
 		// Fixed fields (tag, file, pattern/line number)
-		String fields[] = line.substring(0, idx).split("\t");
+		String fields[] = line.substring(0, idx).split("\t", 3);
 		if (fields.length < 3)
 			return null;
 		info.put(TagDB.NAME_COL, fields[0]);
