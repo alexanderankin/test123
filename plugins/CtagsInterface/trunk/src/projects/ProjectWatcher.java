@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import options.ProjectsOptionPane;
+
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -60,13 +62,15 @@ public class ProjectWatcher implements EBComponent {
 		return files;
 	}
 	public void handleMessage(EBMessage message) {
-		if (message instanceof ProjectUpdate) {
-			ProjectUpdate msg = (ProjectUpdate) message;
-			String project = msg.getProject().getName();
-			if (msg.getType() == ProjectUpdate.Type.FILES_CHANGED) {
-				CtagsInterfacePlugin.updateProject(project,
-					getFileList(msg.getAddedFiles()),
-					getFileList(msg.getRemovedFiles()));
+		if (ProjectsOptionPane.getAutoUpdateProjects()) {
+			if (message instanceof ProjectUpdate) {
+				ProjectUpdate msg = (ProjectUpdate) message;
+				String project = msg.getProject().getName();
+				if (msg.getType() == ProjectUpdate.Type.FILES_CHANGED) {
+					CtagsInterfacePlugin.updateProject(project,
+						getFileList(msg.getAddedFiles()),
+						getFileList(msg.getRemovedFiles()));
+				}
 			}
 		}
 		return;
