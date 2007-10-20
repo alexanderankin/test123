@@ -2,7 +2,9 @@
   + Option pane in the plugin to define "watched" projects.
   + Monitor watched projects for changes (add/remove files) and auto-update DB.
   + Update DB when files belonging to a watched project are saved/loaded.
-  - Option to limit searches to active project.
+  + Option to limit searches to active project.
+  - Actions option pane. Let the user write SQL queries to associated with "Jump to tag"
+    action.
   - Add project dependency properties. (To be integrated into PV later)
   - Option whether to limit tag searches to active project and its dependencies.
   - Option whether to include de 
