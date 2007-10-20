@@ -60,3 +60,4 @@ messages.CtagsInterface.background=Perform tag updates in background
 messages.CtagsInterface.dirs=Source trees:
 messages.CtagsInterface.projects=Projects:
 messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projects are changed
+messages.CtagsInterface.searchActiveProjectOnly=Jump to tags in active project only

@@ -9,10 +9,12 @@ import options.ProjectsOptionPane;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
 
 import ctags.CtagsInterfacePlugin;
 
 import projectviewer.ProjectManager;
+import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectUpdate;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -50,6 +52,10 @@ public class ProjectWatcher implements EBComponent {
 		return projects;
 	}
 
+	public String getActiveProject(View view) {
+		return ProjectViewer.getActiveProject(view).getName();
+	}
+	
 	private Vector<String> getFileList(List<VPTFile> list) {
 		if (list == null)
 			return null;

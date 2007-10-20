@@ -30,10 +30,12 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
 	static public final String AUTO_UPDATE = OPTION + "autoUpdateProjects";
+	static public final String ACTIVE_ONLY = OPTION + "searchActiveProjectOnly";
 	JList projects;
 	DefaultListModel projectsModel;
 	ProjectWatcher pvi;
 	JCheckBox autoUpdate;
+	JCheckBox activeOnly;
 	
 	public ProjectsOptionPane() {
 		super("CtagsInterface-Projects");
@@ -59,6 +61,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		autoUpdate = new JCheckBox(jEdit.getProperty(MESSAGE + "autoUpdateProjects"),
 			jEdit.getBooleanProperty(AUTO_UPDATE));
 		addComponent(autoUpdate);
+		activeOnly = new JCheckBox(jEdit.getProperty(MESSAGE + "searchActiveProjectOnly"),
+			jEdit.getBooleanProperty(ACTIVE_ONLY));
+		addComponent(activeOnly);
 
 		pvi = CtagsInterfacePlugin.getProjectWatcher();
 		add.addActionListener(new ActionListener() {
@@ -97,6 +102,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		for (int i = 0; i < nProjects; i++)
 			jEdit.setProperty(PROJECTS + i, (String)projectsModel.getElementAt(i));
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
+		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
 	}
 	
 	static public Vector<String> getProjects() {
@@ -109,5 +115,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public boolean getAutoUpdateProjects() {
 		return jEdit.getBooleanProperty(AUTO_UPDATE);
 	}
-
+	static public boolean getSearchActiveProjectOnly() {
+		return jEdit.getBooleanProperty(ACTIVE_ONLY);
+	}
 }
