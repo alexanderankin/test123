@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import jedit.BufferWatcher;
 import options.GeneralOptionPane;
+import options.ProjectsOptionPane;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
@@ -102,11 +103,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				return;
 			}
 		} 
-		System.err.println("Selected tag: " + tag);
+		//System.err.println("Selected tag: " + tag);
 		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
 		try {
-			ResultSet rs = db.query("SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
-				TagDB.NAME_COL + "=" + db.getValueString(tag));
+			StringBuffer query = new StringBuffer(
+					"SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
+					TagDB.NAME_COL + "=" + db.getValueString(tag));
+			if (ProjectsOptionPane.getSearchActiveProjectOnly())
+				query.append(" AND " + TagDB.PROJECT_COL + "='" +
+						pvi.getActiveProject(view) + "'");
+			ResultSet rs = db.query(query.toString());
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
 			String [] cols = new String[meta.getColumnCount()];
