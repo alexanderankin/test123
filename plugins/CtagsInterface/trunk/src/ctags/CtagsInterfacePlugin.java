@@ -19,7 +19,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.WorkThreadPool;
 
 import projects.ProjectWatcher;
 import db.TagDB;
@@ -34,7 +33,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static Runner runner;
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
-	private static WorkThreadPool worker;
 	
 	public void start()
 	{
@@ -184,11 +182,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			run.run();
 			return;
 		}
-		if (worker == null) {
-			worker = new WorkThreadPool("CtagsInterface", 1);
-			worker.start();
-		}
-		worker.addWorkRequest(run, inAWT);
+		VFSManager.getIOThreadPool().addWorkRequest(run, inAWT);
 	}
 
 	private static void setStatusMessage(String msg) {
