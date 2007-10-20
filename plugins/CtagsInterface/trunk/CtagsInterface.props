@@ -29,10 +29,13 @@ plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 
 # option panes
 plugin.ctags.CtagsInterfacePlugin.option-group=CtagsInterface-General \
+	CtagsInterface-Actions \
 	CtagsInterface-Dirs \
 	CtagsInterface-Projects
 options.CtagsInterface-General.label=General
 options.CtagsInterface-General.code=new options.GeneralOptionPane();
+options.CtagsInterface-Actions.label=Actions
+options.CtagsInterface-Actions.code=new options.ActionsOptionPane();
 options.CtagsInterface-Dirs.label=Source trees
 options.CtagsInterface-Dirs.code=new options.DirsOptionPane();
 options.CtagsInterface-Projects.label=Projects
@@ -57,6 +60,10 @@ messages.CtagsInterface.pattern=Tag pattern (to extract tag at caret):
 messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
 messages.CtagsInterface.updateOnSave=Refresh file tags when saved
 messages.CtagsInterface.background=Perform tag updates in background
+messages.CtagsInterface.actions=Actions:
+messages.CtagsInterface.actionEditorTitle=Action Editor
+messages.CtagsInterface.actionName=Action name:
+messages.CtagsInterface.sqlQuery=SQL query:
 messages.CtagsInterface.dirs=Source trees:
 messages.CtagsInterface.projects=Projects:
 messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projects are changed

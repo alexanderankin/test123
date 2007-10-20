@@ -11,10 +11,13 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import jedit.BufferWatcher;
+import options.ActionsOptionPane;
 import options.GeneralOptionPane;
 import options.ProjectsOptionPane;
 
+import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -29,12 +32,14 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
+	static public final String ACTION_SET = "Plugin: CtagsInterface - Actions";
 	private static TagDB db;
 	private static Parser parser;
 	private static Runner runner;
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
-	
+	private static ActionSet actions;
+
 	public void start()
 	{
 		db = new TagDB();
@@ -46,12 +51,33 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			pvi = null;
 		else
 			pvi = new ProjectWatcher();
+		actions = new ActionSet(ACTION_SET);
+		reloadActions();
+		jEdit.addActionSet(actions);
 	}
 
 	public void stop()
 	{
 		watcher.shutdown();
 		db.shutdown();
+	}
+	
+	static public void reloadActions() {
+		actions.removeAllActions();
+		int n = jEdit.getIntegerProperty(ActionsOptionPane.ACTIONS + "size", 0);
+		for (int i = 0; i < n; i++) {
+			QueryAction qa = new QueryAction(i);
+			actions.addAction(qa);
+		}
+		actions.initKeyBindings();
+	}
+	
+	static public QueryAction[] getActions() {
+		EditAction [] a = actions.getActions();
+		QueryAction[] qa = new QueryAction[a.length];
+		for (int i = 0; i < a.length; i++)
+			qa[i] = (QueryAction) a[i];
+		return qa;
 	}
 	
     static public void dumpQuery(String expression) {
@@ -93,26 +119,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		parser.parseTagFile(tagFile, db);
 	}
 
-	public static void jumpToTag(final View view)
+	public static void jumpToQueryResults(final View view, String query)
 	{
-		String tag = view.getTextArea().getSelectedText();
-		if (tag == null || tag.length() == 0) {
-			tag = getTagAtCaret(view);
-			if (tag == null || tag.length() == 0) {
-				JOptionPane.showMessageDialog(view, "No tag selected nor identified at caret");
-				return;
-			}
-		} 
-		//System.err.println("Selected tag: " + tag);
 		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
 		try {
-			StringBuffer query = new StringBuffer(
-					"SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
-					TagDB.NAME_COL + "=" + db.getValueString(tag));
-			if (ProjectsOptionPane.getSearchActiveProjectOnly())
-				query.append(" AND " + TagDB.PROJECT_COL + "='" +
-						pvi.getActiveProject(view) + "'");
-			ResultSet rs = db.query(query.toString());
+			ResultSet rs = db.query(query);
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
 			String [] cols = new String[meta.getColumnCount()];
@@ -145,6 +156,26 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		String file = info.get(TagDB.FILE_COL);
 		final int line = Integer.valueOf(info.get("LINE"));
 		jumpTo(view, file, line);
+	}
+	
+	public static void jumpToTag(final View view)
+	{
+		String tag = view.getTextArea().getSelectedText();
+		if (tag == null || tag.length() == 0) {
+			tag = getTagAtCaret(view);
+			if (tag == null || tag.length() == 0) {
+				JOptionPane.showMessageDialog(view, "No tag selected nor identified at caret");
+				return;
+			}
+		} 
+		//System.err.println("Selected tag: " + tag);
+		StringBuffer query = new StringBuffer(
+				"SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
+				TagDB.NAME_COL + "=" + db.getValueString(tag));
+		if (ProjectsOptionPane.getSearchActiveProjectOnly())
+			query.append(" AND " + TagDB.PROJECT_COL + "='" +
+					pvi.getActiveProject(view) + "'");
+		jumpToQueryResults(view, query.toString());
 	}
 
 	private static String getTagAtCaret(View view) {
