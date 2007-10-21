@@ -4,11 +4,16 @@
   + Update DB when files belonging to a watched project are saved/loaded.
   + Option to limit searches to active project.
   --> Actions option pane: SQL query "Jump to tag" actions.
-  - Separate tag info from projects. Same source file may belong to multiple
-    projects and also to source trees. We don't want to duplicate the info
-    for the file, as it would be more difficult to update later.
-    The "update on save" would first need to collect the list of "project"
-    values for the file and then add one copy for each. Ugly.
+  - Remove project column from tags table. The same source file may be
+    in multiple projects and also under a source tree listed separately.
+    We don't want to include multiple copies of the record, one for each
+    project, or otherwise we also need to update all copies when this
+    file is updated in the DB.
+    - Create PROJECTS table, to map project names to id's.
+    - Create PROJ_TAG table, to map tag id's to project id's.
+    - Replace PROJECT column in TAGS table with ID column (and column index).
+  - Change column names to A_<attribute name>. Some attributes are also
+    reserved words in SQL and cannot be used as column names (e.g. union).
   - Add project dependency properties. (To be integrated into PV later)
   - Option whether to limit tag searches to active project and its dependencies.
   - Option whether to include de 

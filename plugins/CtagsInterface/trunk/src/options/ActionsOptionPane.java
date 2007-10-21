@@ -1,7 +1,7 @@
 package options;
 
-import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,9 +38,8 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		super("CtagsInterface-Actions");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		
-		actionsModel = new DefaultListModel(
-				);
-		QueryAction[] queries = CtagsInterfacePlugin.getActions();
+		actionsModel = new DefaultListModel();
+		QueryAction[] queries = loadActions();
 		for (int i = 0; i < queries.length; i++)
 			actionsModel.addElement(queries[i]);
 		actions = new JList(actionsModel);
@@ -70,13 +69,21 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		});
 	}
 
+	static public QueryAction[] loadActions() {
+		int n = jEdit.getIntegerProperty(ACTIONS + "size", 0);
+		QueryAction[] actionArr = new QueryAction[n];
+		for (int i = 0; i < n; i++)
+			actionArr[i] = new QueryAction(i);
+		return actionArr;
+	}
+	
 	public void save() {
 		jEdit.setIntegerProperty(ACTIONS + "size", actionsModel.size());
 		for (int i = 0; i < actionsModel.size(); i++) {
 			QueryAction qa = (QueryAction) actionsModel.getElementAt(i);
 			qa.save(i);
 		}
-		CtagsInterfacePlugin.reloadActions();
+		CtagsInterfacePlugin.updateActions();
 	}
 
 	public class ActionEditor extends JDialog {
@@ -90,26 +97,32 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		public ActionEditor() {
 			super(jEdit.getActiveView(), jEdit.getProperty(MESSAGE + "actionEditorTitle"),
 				true);
-			setLayout(new BorderLayout());
+			setLayout(new GridBagLayout());
+			GridBagConstraints c = new GridBagConstraints();
 			JPanel p = new JPanel();
-			p.setAlignmentX(LEFT_ALIGNMENT);
-			add(p, BorderLayout.NORTH);
 			p.add(new JLabel(jEdit.getProperty(MESSAGE + "actionName")));
-			name = new JTextField(40);
+			name = new JTextField(30);
 			p.add(name);
-			p = new JPanel();
 			p.setAlignmentX(LEFT_ALIGNMENT);
-			add(p, BorderLayout.CENTER);
+			c.anchor = GridBagConstraints.NORTHWEST;
+			c.gridx = c.gridy = 0;
+			c.gridwidth = c.gridheight = 1;
+			add(p, c);
+			p = new JPanel();
 			p.add(new JLabel(jEdit.getProperty(MESSAGE + "sqlQuery")));
-			query = new JTextField(80);
+			query = new JTextField(60);
 			p.add(query);
-			p = new JPanel();
 			p.setAlignmentX(LEFT_ALIGNMENT);
-			add(p, BorderLayout.SOUTH);
+			c.gridy++;
+			add(p, c);
+			p = new JPanel();
 			JButton ok = new JButton("Ok");
 			p.add(ok);
 			JButton cancel = new JButton("Cancel");
 			p.add(cancel);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			c.gridy++;
+			add(p, c);
 			
 			ok.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
