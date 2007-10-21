@@ -130,17 +130,20 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		view.getDockableWindowManager().showDockableWindow(DOCKABLE);
+		JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
+		TagList tl = (TagList) c;
 		if (tags.size() == 0) {
+			tl.setTags(null);
 			JOptionPane.showMessageDialog(view, "No tags found");
 			return;
 		}
 		int index = 0;
 		if (tags.size() > 1) {
-			view.getDockableWindowManager().showDockableWindow(DOCKABLE);
-			JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
-			((TagList)c).setTags(tags);
+			tl.setTags(tags);
 			return;
 		}
+		tl.setTags(null);
 		Hashtable<String, String> info = tags.get(index);
 		String file = info.get(TagDB.FILE_COL);
 		final int line = Integer.valueOf(info.get("LINE"));
