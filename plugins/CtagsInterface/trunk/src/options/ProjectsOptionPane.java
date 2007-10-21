@@ -66,32 +66,38 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		addComponent(activeOnly);
 
 		pvi = CtagsInterfacePlugin.getProjectWatcher();
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				Vector<String> nameVec = pvi.getProjects();
-				String [] names = new String[nameVec.size()];
-				nameVec.toArray(names);
-				String selected = (String) JOptionPane.showInputDialog(
-					ProjectsOptionPane.this, "Select project:", "Projects",
-					JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
-				if (selected != null)
-					projectsModel.addElement(selected);
-			}
-		});
+		if (pvi == null) {
+			add.setEnabled(false);
+			tag.setEnabled(false);
+		}
+		else {
+			add.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					Vector<String> nameVec = pvi.getProjects();
+					String [] names = new String[nameVec.size()];
+					nameVec.toArray(names);
+					String selected = (String) JOptionPane.showInputDialog(
+						ProjectsOptionPane.this, "Select project:", "Projects",
+						JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
+					if (selected != null)
+						projectsModel.addElement(selected);
+				}
+			});
+			tag.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					int i = projects.getSelectedIndex();
+					if (i >= 0) {
+						String project = (String) projectsModel.getElementAt(i);
+						CtagsInterfacePlugin.tagProject(project);
+					}
+				}
+			});
+		}
 		remove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int i = projects.getSelectedIndex();
 				if (i >= 0)
 					projectsModel.removeElementAt(i);
-			}
-		});
-		tag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				int i = projects.getSelectedIndex();
-				if (i >= 0) {
-					String project = (String) projectsModel.getElementAt(i);
-					CtagsInterfacePlugin.tagProject(project);
-				}
 			}
 		});
 	}
