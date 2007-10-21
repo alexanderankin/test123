@@ -71,7 +71,7 @@ public class Parser {
 			String pair[] = fields[i].split(":", 2);
 			if (pair.length != 2)
 				continue;
-			info.put(pair[0], pair[1]);
+			info.put(TagDB.attr2col(pair[0]), pair[1]);
 		}
 		return info;
 	}

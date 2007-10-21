@@ -27,7 +27,6 @@ import db.TagDB;
 @SuppressWarnings("serial")
 public class TagList extends JPanel implements DefaultFocusComponent {
 
-	private static final String LINE_COL = "LINE";
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
@@ -62,7 +61,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		Hashtable<String, String> tag = (Hashtable<String, String>)
 			tagModel.getElementAt(selectedIndex);
 		String file = tag.get(TagDB.FILE_COL);
-		String lineStr = tag.get(LINE_COL);
+		String lineStr = tag.get(TagDB.LINE_COL);
 		if (lineStr != null) {
 			int line = Integer.valueOf(lineStr);
 			CtagsInterfacePlugin.jumpTo(view, file, line);
@@ -107,7 +106,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				s.append("</i>)  ");
 			}
 			s.append(tag.get(TagDB.FILE_COL));
-			s.append(tag.containsKey(LINE_COL) ? ":" + tag.get(LINE_COL) : "");
+			s.append(tag.containsKey(TagDB.LINE_COL) ? ":" +
+				tag.get(TagDB.LINE_COL) : "");
 			s.append("<br>Pattern: ");
 			s.append(tag.get(TagDB.PATTERN_COL));
 			s.append("<br>");
@@ -115,7 +115,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			keys.remove(TagDB.NAME_COL);
 			keys.remove(TagDB.FILE_COL);
 			keys.remove(TagDB.PROJECT_COL);
-			keys.remove(LINE_COL);
+			keys.remove(TagDB.LINE_COL);
 			keys.remove(TagDB.PATTERN_COL);
 			Iterator<String> it = keys.iterator();
 			boolean first = true;

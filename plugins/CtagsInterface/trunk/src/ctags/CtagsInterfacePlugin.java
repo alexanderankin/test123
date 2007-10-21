@@ -146,7 +146,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		tl.setTags(null);
 		Hashtable<String, String> info = tags.get(index);
 		String file = info.get(TagDB.FILE_COL);
-		final int line = Integer.valueOf(info.get("LINE"));
+		final int line = Integer.valueOf(info.get(TagDB.LINE_COL));
 		jumpTo(view, file, line);
 	}
 	
