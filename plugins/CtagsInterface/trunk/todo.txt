@@ -3,7 +3,9 @@
   + Monitor watched projects for changes (add/remove files) and auto-update DB.
   + Update DB when files belonging to a watched project are saved/loaded.
   + Option to limit searches to active project.
-  --> Actions option pane: SQL query "Jump to tag" actions.
+  + Actions option pane: SQL query "Jump to tag" actions.
+  + Change column names to A_<attribute name>. Some attributes are also
+    reserved words in SQL and cannot be used as column names (e.g. union).
   - Remove project column from tags table. The same source file may be
     in multiple projects and also under a source tree listed separately.
     We don't want to include multiple copies of the record, one for each
@@ -12,8 +14,6 @@
     - Create PROJECTS table, to map project names to id's.
     - Create PROJ_TAG table, to map tag id's to project id's.
     - Replace PROJECT column in TAGS table with ID column (and column index).
-  - Change column names to A_<attribute name>. Some attributes are also
-    reserved words in SQL and cannot be used as column names (e.g. union).
   - Add project dependency properties. (To be integrated into PV later)
   - Option whether to limit tag searches to active project and its dependencies.
   - Option whether to include de 
