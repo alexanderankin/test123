@@ -24,6 +24,8 @@ public class TagDB {
 	public static final String FILE_COL = "K_FILE";
 	public static final String PATTERN_COL = "K_PATTERN";
 	public static final String PROJECT_COL = "K_PROJECT";
+	public static final String LINE_COL = "A_LINE";
+	public static final String ATTR_PREFIX = "A_";
 	
 	public TagDB() {
 		removeStaleLock();
@@ -165,6 +167,10 @@ public class TagDB {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	static public String attr2col(String attributeName) {
+		return ATTR_PREFIX + attributeName.toUpperCase();
 	}
 	
 	private void createTables() {

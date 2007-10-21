@@ -52,12 +52,15 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		buttons.add(add);
 		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
 		buttons.add(remove);
+		JButton edit = new JButton("Edit");
+		buttons.add(edit);
 		addComponent(buttons);
 
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				EditAction action = new ActionEditor().getAction();
-				actionsModel.addElement(action);
+				if (action != null)
+					actionsModel.addElement(action);
 			}
 		});
 		remove.addActionListener(new ActionListener() {
@@ -65,6 +68,17 @@ public class ActionsOptionPane extends AbstractOptionPane {
 				int i = actions.getSelectedIndex();
 				if (i >= 0)
 					actionsModel.removeElementAt(i);
+			}
+		});
+		edit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				int i = actions.getSelectedIndex();
+				if (i < 0)
+					return;
+				QueryAction action = (QueryAction) actionsModel.getElementAt(i);
+				action = new ActionEditor(action).getAction();
+				if (action != null)
+					actionsModel.setElementAt(action, i);
 			}
 		});
 	}
@@ -88,13 +102,13 @@ public class ActionsOptionPane extends AbstractOptionPane {
 
 	public class ActionEditor extends JDialog {
 		
-		EditAction action;
+		QueryAction action;
 		JTextField query;
 		JTextField name;
 		JButton ok;
 		JButton cancel;
 		
-		public ActionEditor() {
+		public ActionEditor(QueryAction qa) {
 			super(jEdit.getActiveView(), jEdit.getProperty(MESSAGE + "actionEditorTitle"),
 				true);
 			setLayout(new GridBagLayout());
@@ -135,13 +149,20 @@ public class ActionsOptionPane extends AbstractOptionPane {
 					dispose();
 				}
 			});
-			action = null;
-			
+			action = qa;
+			if (action != null) {
+				name.setText(action.getName());
+				query.setText(action.getQuery());
+			}
 			pack();
 			setVisible(true);
 		}
 
-		public EditAction getAction() {
+		public ActionEditor() {
+			this(null);
+		}
+		
+		public QueryAction getAction() {
 			return action;
 		}
 	}
