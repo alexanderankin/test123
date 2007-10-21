@@ -22,8 +22,10 @@ public class QueryAction extends EditAction {
 
 	public QueryAction(int index) {
 		super(jEdit.getProperty(ActionsOptionPane.ACTIONS + index + ".name"));
+		String name = getName();
 		jEdit.setTemporaryProperty(getName() + ".label", getName());
 		query = jEdit.getProperty(ActionsOptionPane.ACTIONS + index + ".query");
+		desc = name + " (" + query + ")";
 	}
 	
 	@Override
