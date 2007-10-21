@@ -155,6 +155,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 				query.setText(action.getQuery());
 			}
 			pack();
+			setLocationRelativeTo(null);
 			setVisible(true);
 		}
 
