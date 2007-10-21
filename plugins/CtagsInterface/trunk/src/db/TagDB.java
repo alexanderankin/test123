@@ -172,6 +172,9 @@ public class TagDB {
 	static public String attr2col(String attributeName) {
 		return ATTR_PREFIX + attributeName.toUpperCase();
 	}
+	static public String col2attr(String columnName) {
+		return columnName.substring(ATTR_PREFIX.length()).toLowerCase();
+	}
 	
 	private void createTables() {
 		try {

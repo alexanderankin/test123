@@ -124,7 +124,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 					s.append("  ");
 				first = false;
 				String key = (String) it.next();
-				s.append(key);
+				s.append(TagDB.col2attr(key));
 				s.append(": ");
 				s.append(tag.get(key));
 			}
