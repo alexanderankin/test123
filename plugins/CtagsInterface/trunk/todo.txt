@@ -3,8 +3,12 @@
   + Monitor watched projects for changes (add/remove files) and auto-update DB.
   + Update DB when files belonging to a watched project are saved/loaded.
   + Option to limit searches to active project.
-  - Actions option pane. Let the user write SQL queries to associated with "Jump to tag"
-    action.
+  --> Actions option pane: SQL query "Jump to tag" actions.
+  - Separate tag info from projects. Same source file may belong to multiple
+    projects and also to source trees. We don't want to duplicate the info
+    for the file, as it would be more difficult to update later.
+    The "update on save" would first need to collect the list of "project"
+    values for the file and then add one copy for each. Ugly.
   - Add project dependency properties. (To be integrated into PV later)
   - Option whether to limit tag searches to active project and its dependencies.
   - Option whether to include de 
