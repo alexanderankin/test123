@@ -20,17 +20,17 @@ MAP: Table of source file origins
   ORIGIN_ID: ID of origin (from ORIGINS table)
   
 Use cases:
-- Checking if a saved/loaded buffer needs to be updated:
++ Checking if a saved/loaded buffer needs to be updated:
   Check if:
   SELECT TOP 1 FILE FROM FILES WHERE FILE={path}
   Returns non-empty result.
-- Updating a saved/loaded buffer:
++ Updating a saved/loaded buffer:
   id = SELECT ID FROM FILES WHERE FILE={path}
   DELETE FROM TAGS WHERE ID={id}
   Run Ctags on buffer
   For each tag:
   INSERT INTO TAGS (FILE_ID, ...) VALUES ({id}, ...)
-- Adding a temp tag file:
++ Adding a temp tag file:
   For each tag:
   id = SELECT ID FROM FILES WHERE FILE={path}
   if (id < 0) {

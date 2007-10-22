@@ -21,10 +21,12 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import ctags.CtagsInterfacePlugin;
+import db.TagDB;
 
 @SuppressWarnings("serial")
 public class DirsOptionPane extends AbstractOptionPane {
 
+	private static final String DIR_ORIGIN = TagDB.DIR_ORIGIN;
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String DIRS = OPTION + "dirs.";
@@ -84,17 +86,14 @@ public class DirsOptionPane extends AbstractOptionPane {
 	}
 
 	public void save() {
+		Vector<String> names = new Vector<String>();
 		int nDirs = dirsModel.size(); 
-		jEdit.setIntegerProperty(DIRS + "size", nDirs);
 		for (int i = 0; i < nDirs; i++)
-			jEdit.setProperty(DIRS + i, (String)dirsModel.getElementAt(i));
+			names.add((String) dirsModel.getElementAt(i));
+		CtagsInterfacePlugin.getDB().updateOrigins(DIR_ORIGIN, names);
 	}
 	
 	static public Vector<String> getDirs() {
-		Vector<String> dirs = new Vector<String>();
-		int nDirs = jEdit.getIntegerProperty(DIRS + "size");
-		for (int i = 0; i < nDirs; i++)
-			dirs.add(jEdit.getProperty(DIRS + i));
-		return dirs;
+		return CtagsInterfacePlugin.getDB().getOrigins(DIR_ORIGIN);
 	}
 }

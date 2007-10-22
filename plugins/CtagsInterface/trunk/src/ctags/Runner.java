@@ -5,35 +5,35 @@ import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.Parser.TagHandler;
+
 import options.GeneralOptionPane;
 import db.TagDB;
 
 public class Runner {
 
 	private static final String SPACES = "\\s+";
-	private TagDB db;
 	private Parser parser;
 	
 	public Runner(TagDB db) {
-		this.db = db;
 		parser = null;
 	}
 	
-	public void runOnFile(String file) {
+	public void runOnFile(String file, TagHandler handler) {
 		Vector<String> what = new Vector<String>();
 		what.add(file);
-		run(what);
+		run(what, handler);
 	}
-	public void runOnTree(String tree) {
+	public void runOnTree(String tree, TagHandler handler) {
 		Vector<String> what = new Vector<String>();
 		what.add("-R");
 		what.add(tree);
-		run(what);
+		run(what, handler);
 	}
-	public void runOnFiles(Vector<String> files) {
-		run(files);
+	public void runOnFiles(Vector<String> files, TagHandler handler) {
+		run(files, handler);
 	}
-	private void run(Vector<String> what) {
+	private void run(Vector<String> what, TagHandler handler) {
 		String ctags = GeneralOptionPane.getCtags();
 		String cmd = GeneralOptionPane.getCmd();
 		String tagFile = getTempTagFilePath();
@@ -58,7 +58,7 @@ public class Runner {
 		}
 		if (parser == null)
 			parser = new Parser();
-		parser.parseTagFile(tagFile, db);
+		parser.parseTagFile(tagFile, handler);
 	}
 	
 	private String getTempTagFilePath() {
