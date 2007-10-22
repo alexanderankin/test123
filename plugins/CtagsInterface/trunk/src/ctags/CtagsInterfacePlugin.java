@@ -2,6 +2,8 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -23,6 +25,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+import ctags.Parser.TagHandler;
+
 import projects.ProjectWatcher;
 import db.TagDB;
 
@@ -38,7 +42,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
 	private static ActionSet actions;
-
+	private static TagHandler tagHandler;
+	
 	public void start()
 	{
 		db = new TagDB();
@@ -53,12 +58,21 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		actions = new ActionSet(ACTION_SET);
 		updateActions();
 		jEdit.addActionSet(actions);
+		tagHandler = new TagHandler() {
+			public void processTag(Hashtable<String, String> info) {
+				db.insertTag(info, -1);
+			}
+		};
 	}
 
 	public void stop()
 	{
 		watcher.shutdown();
 		db.shutdown();
+	}
+	
+	static public TagDB getDB() {
+		return db;
 	}
 	
 	static public void updateActions() {
@@ -92,20 +106,37 @@ public class CtagsInterfacePlugin extends EditPlugin {
         }
     }
     static void printTags() {
-		dumpQuery("SELECT * FROM " + TagDB.TABLE_NAME);
+		dumpQuery("SELECT * FROM TAGS");
     }
     static void printTagsContaining(View view) {
 		String s = JOptionPane.showInputDialog("Substring:");
 		if (s == null || s.length() == 0)
 			return;
-		dumpQuery("SELECT * FROM " + TagDB.TABLE_NAME +
-				" WHERE " + TagDB.NAME_COL + " LIKE '%" + s + "%'");
+		dumpQuery("SELECT * FROM TAGS WHERE NAME LIKE '%" + s + "%'");
     }
-	static void addTagFile(View view) {
+    // Adds a temporary tag file to the DB
+    // Existing tags from source files in the tag file are removed first.  
+    static private void addTempTagFile(String tagFile) {
+		parser.parseTagFile(tagFile, new TagHandler() {
+			public void processTag(Hashtable<String, String> info) {
+				HashSet<String> fileSet = new HashSet<String>();
+				String file = info.get(TagDB.TAGS_FILE_ID);
+				if (! fileSet.contains(file)) {
+					if (db.hasSourceFile(file))
+						db.deleteTagsFromSourceFile(file);
+					fileSet.add(file);
+				}
+				db.insertTag(info, -1);
+			}
+		});
+    }
+    
+    // Action: Prompt for a temporary tag file to add to the DB
+	static public void addTagFile(View view) {
 		String tagFile = JOptionPane.showInputDialog("Tag file:");
 		if (tagFile == null || tagFile.length() == 0)
 			return;
-		parser.parseTagFile(tagFile, db);
+		addTempTagFile(tagFile);
 	}
 
 	public static void jumpToQueryResults(final View view, String query)
@@ -116,11 +147,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
 			String [] cols = new String[meta.getColumnCount()];
-			for (int i = 0; i < cols.length; i++)
+			int [] types = new int[meta.getColumnCount()];
+			for (int i = 0; i < cols.length; i++) {
 				cols[i] = meta.getColumnName(i + 1);
+				types[i] = meta.getColumnType(i + 1);
+			}
 			while (rs.next()) {
 				Hashtable<String, String> values = new Hashtable<String, String>();
 				for (int i = 0; i < cols.length; i++) {
+					if (types[i] != Types.VARCHAR)
+						continue;
 					String value = rs.getString(i + 1); 
 					if (value != null && value.length() > 0)
 						values.put(cols[i], value);
@@ -145,8 +181,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		tl.setTags(null);
 		Hashtable<String, String> info = tags.get(index);
-		String file = info.get(TagDB.FILE_COL);
-		final int line = Integer.valueOf(info.get(TagDB.LINE_COL));
+		String file = info.get(TagDB.TAGS_FILE_ID);
+		final int line = Integer.valueOf(info.get(TagDB.TAGS_LINE));
 		jumpTo(view, file, line);
 	}
 	
@@ -154,16 +190,25 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
 		String tag = getDestinationTag(view);
 		if (tag == null || tag.length() == 0) {
-			JOptionPane.showMessageDialog(view, "No tag selected nor identified at caret");
+			JOptionPane.showMessageDialog(
+				view, "No tag selected nor identified at caret");
 			return;
 		} 
 		//System.err.println("Selected tag: " + tag);
-		StringBuffer query = new StringBuffer(
-				"SELECT * FROM " + TagDB.TABLE_NAME + " WHERE " +
-				TagDB.NAME_COL + "=" + db.getValueString(tag));
-		if (pvi != null && ProjectsOptionPane.getSearchActiveProjectOnly())
-			query.append(" AND " + TagDB.PROJECT_COL + "='" +
-					pvi.getActiveProject(view) + "'");
+		StringBuffer query = new StringBuffer("SELECT * FROM TAGS, FILES");
+		boolean projectScope = (pvi != null &&
+			ProjectsOptionPane.getSearchActiveProjectOnly()); 
+		if (projectScope)
+			query.append(", MAP, ORIGINS");
+		query.append(" WHERE TAGS.NAME= " + db.quote(tag) +
+			" AND TAGS.FILE_ID=FILES.ID");
+		if (projectScope) {
+			String project = pvi.getActiveProject(view);
+			query.append(" AND ORIGINS.TYPE=PROJECT ");
+			query.append(" AND ORIGINS.ID=MAP.ORIGIN_ID ");
+			query.append(" AND FILES.ID=MAP.FILE_ID ");
+			query.append(" AND ORIGINS.NAME=" + db.quote(project));
+		}
 		jumpToQueryResults(view, query.toString());
 	}
 
@@ -230,12 +275,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		setStatusMessage("Tagging file: " + file);
 		addWorkRequest(new Runnable() {
 			public void run() {
-				db.deleteRowsWithValue(TagDB.FILE_COL, file);
-				runner.runOnFile(file);
+				db.deleteTagsFromSourceFile(file);
+				final int fileId = db.getSourceFileID(file);
+				runner.runOnFile(file, new TagHandler() {
+					public void processTag(Hashtable<String, String> info) {
+						db.insertTag(info, fileId);
+					}
+				});
 			}
 		}, false);
 		removeStatusMessage();
-		
 	}
 
 	/* Source tree support */
@@ -244,8 +293,26 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		setStatusMessage("Tagging source tree: " + tree);
 		addWorkRequest(new Runnable() {
 			public void run() {
-				db.deleteRowsWithValuePrefix(TagDB.FILE_COL, tree);
-				runner.runOnTree(tree);
+				int originId = db.queryInteger(TagDB.ORIGINS_ID,
+					"SELECT ID FROM ORIGINS WHERE TYPE='DIR' AND " +
+					"NAME=" + db.quote(tree), -1);
+				if (originId < 0)
+					return;
+				// Find file ids - required for cleanup
+				Vector<Integer> fileIds = db.queryIntegerList(
+					TagDB.MAP_FILE_ID,
+					"SELECT FILE_ID FROM MAP WHERE ORIGIN_ID=" + originId);
+				db.deleteRowsWithValue(TagDB.MAP_TABLE, TagDB.MAP_ORIGIN_ID,
+						Integer.valueOf(originId));
+				db.deleteRowsWithValueList(TagDB.TAGS_TABLE,
+						TagDB.TAGS_FILE_ID, fileIds);
+				try {
+					db.query("DELETE FROM FILES WHERE NOT EXISTS (" +
+							"SELECT FILE_ID FROM MAP WHERE ID=FILE_ID)");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				runner.runOnTree(tree, tagHandler);
 			}
 		}, false);
 		removeStatusMessage();
@@ -258,7 +325,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	private static void removeProject(String project) {
-		db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
+		//db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
 	}
 	private static void removeProjectFiles(String project,
 		Vector<String> files)
@@ -266,7 +333,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		Hashtable<String, String> values = new Hashtable<String, String>();
 		values.put(TagDB.PROJECT_COL, project);
 		for (int i = 0; i < files.size(); i++) {
-			values.put(TagDB.FILE_COL, files.get(i));
+			values.put(TagDB.TAGS_FILE_ID, files.get(i));
 			db.deleteRowsWithValues(values);
 		}
 	}
@@ -274,7 +341,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		Vector<String> files)
 	{
 		db.setProject(project);
-		runner.runOnFiles(files);
+		runner.runOnFiles(files, tagHandler);
 		db.unsetProject();
 	}
 	public static void tagProject(final String project) {

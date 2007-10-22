@@ -60,8 +60,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	protected void jumpTo(int selectedIndex) {
 		Hashtable<String, String> tag = (Hashtable<String, String>)
 			tagModel.getElementAt(selectedIndex);
-		String file = tag.get(TagDB.FILE_COL);
-		String lineStr = tag.get(TagDB.LINE_COL);
+		String file = tag.get(TagDB.TAGS_FILE_ID);
+		String lineStr = tag.get(TagDB.TAGS_LINE);
 		if (lineStr != null) {
 			int line = Integer.valueOf(lineStr);
 			CtagsInterfacePlugin.jumpTo(view, file, line);
@@ -97,7 +97,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			StringBuffer s = new StringBuffer("<html>");
 			s.append(index + 1);
 			s.append(": <b>");
-			s.append(tag.get(TagDB.NAME_COL));
+			s.append(tag.get(TagDB.TAGS_NAME));
 			s.append("</b>  ");
 			String project = tag.get(TagDB.PROJECT_COL);
 			if (project != null && project.length() > 0) {
@@ -105,18 +105,18 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				s.append(project);
 				s.append("</i>)  ");
 			}
-			s.append(tag.get(TagDB.FILE_COL));
-			s.append(tag.containsKey(TagDB.LINE_COL) ? ":" +
-				tag.get(TagDB.LINE_COL) : "");
+			s.append(tag.get(TagDB.TAGS_FILE_ID));
+			s.append(tag.containsKey(TagDB.TAGS_LINE) ? ":" +
+				tag.get(TagDB.TAGS_LINE) : "");
 			s.append("<br>Pattern: ");
-			s.append(tag.get(TagDB.PATTERN_COL));
+			s.append(tag.get(TagDB.TAGS_PATTERN));
 			s.append("<br>");
 			TreeSet<String> keys = new TreeSet<String>(tag.keySet());
-			keys.remove(TagDB.NAME_COL);
-			keys.remove(TagDB.FILE_COL);
+			keys.remove(TagDB.TAGS_NAME);
+			keys.remove(TagDB.TAGS_FILE_ID);
 			keys.remove(TagDB.PROJECT_COL);
-			keys.remove(TagDB.LINE_COL);
-			keys.remove(TagDB.PATTERN_COL);
+			keys.remove(TagDB.TAGS_LINE);
+			keys.remove(TagDB.TAGS_PATTERN);
 			Iterator<String> it = keys.iterator();
 			boolean first = true;
 			while (it.hasNext()) {

@@ -49,7 +49,7 @@ public class BufferWatcher implements EBComponent {
 			System.err.println(file + " in monitored tree");
 			return true;
 		}
-		if (db.containsValue(TagDB.FILE_COL, file)) {
+		if (db.hasSourceFile(file)) {
 			System.err.println(file + " in db");
 			return true;
 		}

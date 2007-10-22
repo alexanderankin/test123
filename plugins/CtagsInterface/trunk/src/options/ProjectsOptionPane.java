@@ -22,10 +22,12 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projects.ProjectWatcher;
 import ctags.CtagsInterfacePlugin;
+import db.TagDB;
 
 @SuppressWarnings("serial")
 public class ProjectsOptionPane extends AbstractOptionPane {
 	
+	private static final String PROJECT_ORIGIN = TagDB.PROJECT_ORIGIN;
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
@@ -103,20 +105,17 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	}
 
 	public void save() {
+		Vector<String> names = new Vector<String>();
 		int nProjects = projectsModel.size(); 
-		jEdit.setIntegerProperty(PROJECTS + "size", nProjects);
 		for (int i = 0; i < nProjects; i++)
-			jEdit.setProperty(PROJECTS + i, (String)projectsModel.getElementAt(i));
+			names.add((String) projectsModel.getElementAt(i));
+		CtagsInterfacePlugin.getDB().updateOrigins(PROJECT_ORIGIN, names);
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
 	}
 	
 	static public Vector<String> getProjects() {
-		Vector<String> projects = new Vector<String>();
-		int nProjects = jEdit.getIntegerProperty(PROJECTS + "size");
-		for (int i = 0; i < nProjects; i++)
-			projects.add(jEdit.getProperty(PROJECTS + i));
-		return projects;
+		return CtagsInterfacePlugin.getDB().getOrigins(PROJECT_ORIGIN);
 	}
 	static public boolean getAutoUpdateProjects() {
 		return jEdit.getBooleanProperty(AUTO_UPDATE);
