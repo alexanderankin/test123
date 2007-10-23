@@ -60,7 +60,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	protected void jumpTo(int selectedIndex) {
 		Hashtable<String, String> tag = (Hashtable<String, String>)
 			tagModel.getElementAt(selectedIndex);
-		String file = tag.get(TagDB.TAGS_FILE_ID);
+		String file = tag.get(TagDB.FILES_NAME);
 		String lineStr = tag.get(TagDB.TAGS_LINE);
 		if (lineStr != null) {
 			int line = Integer.valueOf(lineStr);
@@ -105,7 +105,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				s.append(project);
 				s.append("</i>)  ");
 			}
-			s.append(tag.get(TagDB.TAGS_FILE_ID));
+			s.append(tag.get(TagDB.FILES_NAME));
 			s.append(tag.containsKey(TagDB.TAGS_LINE) ? ":" +
 				tag.get(TagDB.TAGS_LINE) : "");
 			s.append("<br>Pattern: ");
