@@ -114,21 +114,31 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		dumpQuery("SELECT * FROM TAGS WHERE NAME LIKE '%" + s + "%'");
     }
+
+    static private class TagFileHandler implements TagHandler {
+		private HashSet<Integer> files = new HashSet<Integer>();
+		public void processTag(Hashtable<String, String> info) {
+			String file = info.get(TagDB.TAGS_FILE_ID);
+			int fileId = db.getSourceFileID(file);
+			if (! files.contains(fileId)) {
+				if (fileId < 0) {
+					// Add source file to DB
+					db.insertSourceFile(file);
+					fileId = db.getSourceFileID(file);
+				} else {
+					// Delete all tags from this source file
+					db.deleteTagsFromSourceFile(fileId);
+				}
+				files.add(fileId);
+			}
+			db.insertTag(info, fileId);
+		}
+    }
+    
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
     static private void addTempTagFile(String tagFile) {
-		parser.parseTagFile(tagFile, new TagHandler() {
-			public void processTag(Hashtable<String, String> info) {
-				HashSet<String> fileSet = new HashSet<String>();
-				String file = info.get(TagDB.TAGS_FILE_ID);
-				if (! fileSet.contains(file)) {
-					if (db.hasSourceFile(file))
-						db.deleteTagsFromSourceFile(file);
-					fileSet.add(file);
-				}
-				db.insertTag(info, -1);
-			}
-		});
+		parser.parseTagFile(tagFile, new TagFileHandler());
     }
     
     // Action: Prompt for a temporary tag file to add to the DB
@@ -139,11 +149,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		addTempTagFile(tagFile);
 	}
 
-	public static void jumpToQueryResults(final View view, String query)
+	// If query results contain a single tag, jump to it, otherwise
+	// present the list of tags in the Tag List dockable.
+	public static void jumpToQueryResults(final View view, ResultSet rs)
 	{
 		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
 		try {
-			ResultSet rs = db.query(query);
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
 			String [] cols = new String[meta.getColumnCount()];
@@ -181,11 +192,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		tl.setTags(null);
 		Hashtable<String, String> info = tags.get(index);
-		String file = info.get(TagDB.TAGS_FILE_ID);
+		String file = info.get(TagDB.FILES_NAME);
 		final int line = Integer.valueOf(info.get(TagDB.TAGS_LINE));
 		jumpTo(view, file, line);
 	}
 	
+	// Action: Jump to the selected tag (or tag at caret).
 	public static void jumpToTag(final View view)
 	{
 		String tag = getDestinationTag(view);
@@ -194,22 +206,22 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				view, "No tag selected nor identified at caret");
 			return;
 		} 
-		//System.err.println("Selected tag: " + tag);
-		StringBuffer query = new StringBuffer("SELECT * FROM TAGS, FILES");
 		boolean projectScope = (pvi != null &&
-			ProjectsOptionPane.getSearchActiveProjectOnly()); 
-		if (projectScope)
-			query.append(", MAP, ORIGINS");
-		query.append(" WHERE TAGS.NAME= " + db.quote(tag) +
-			" AND TAGS.FILE_ID=FILES.ID");
-		if (projectScope) {
-			String project = pvi.getActiveProject(view);
-			query.append(" AND ORIGINS.TYPE=PROJECT ");
-			query.append(" AND ORIGINS.ID=MAP.ORIGIN_ID ");
-			query.append(" AND FILES.ID=MAP.FILE_ID ");
-			query.append(" AND ORIGINS.NAME=" + db.quote(project));
+				ProjectsOptionPane.getSearchActiveProjectOnly()); 
+		ResultSet rs;
+		try {
+			if (projectScope) {
+				String project = pvi.getActiveProject(view);
+				rs = db.queryTagInProject(tag, project);
+			}
+			else
+				rs = db.queryTag(tag);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
 		}
-		jumpToQueryResults(view, query.toString());
+		//System.err.println("Selected tag: " + tag);
+		jumpToQueryResults(view, rs);
 	}
 
 	static public String getDestinationTag(View view) {
@@ -275,8 +287,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		setStatusMessage("Tagging file: " + file);
 		addWorkRequest(new Runnable() {
 			public void run() {
-				db.deleteTagsFromSourceFile(file);
 				final int fileId = db.getSourceFileID(file);
+				db.deleteTagsFromSourceFile(fileId);
 				runner.runOnFile(file, new TagHandler() {
 					public void processTag(Hashtable<String, String> info) {
 						db.insertTag(info, fileId);
