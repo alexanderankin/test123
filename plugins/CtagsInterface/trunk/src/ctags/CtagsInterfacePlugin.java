@@ -106,13 +106,15 @@ public class CtagsInterfacePlugin extends EditPlugin {
         }
     }
     static void printTags() {
-		dumpQuery("SELECT * FROM TAGS");
+		dumpQuery("SELECT * FROM " + TagDB.TAGS_TABLE);
     }
     static void printTagsContaining(View view) {
 		String s = JOptionPane.showInputDialog("Substring:");
 		if (s == null || s.length() == 0)
 			return;
-		dumpQuery("SELECT * FROM TAGS WHERE NAME LIKE '%" + s + "%'");
+		dumpQuery("SELECT * FROM " + TagDB.TAGS_TABLE +
+			" WHERE " + TagDB.TAGS_NAME + " LIKE " +
+			db.quote("%" + s + "%"));
     }
 
     static private class TagFileHandler implements TagHandler {

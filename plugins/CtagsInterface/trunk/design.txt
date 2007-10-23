@@ -71,9 +71,9 @@ Use cases:
   Rest is the same as removing a source tree.
 - Updating a project:
   Same as updating a source tree.
-- Finding a tag by name:
++ Finding a tag by name:
   SELECT * FROM TAGS, FILES WHERE TAGS.FILE_ID=FILES.ID
-- Finding a tag from the active project:
++ Finding a tag from the active project:
   SELECT * FROM TAGS, FILES WHERE TAGS.TAG={tag} TAGS.FILE_ID=FILES.ID AND EXISTS
     (SELECT FILE_ID FROM MAP WHERE MAP.FILE_ID=FILES.ID AND MAP.ORIGIN_ID=
       (SELECT ID FROM ORIGINS WHERE NAME={project} AND TYPE='Project'))
