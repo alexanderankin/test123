@@ -113,10 +113,12 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			s.append("<br>");
 			TreeSet<String> keys = new TreeSet<String>(tag.keySet());
 			keys.remove(TagDB.TAGS_NAME);
-			keys.remove(TagDB.TAGS_FILE_ID);
+			keys.remove(TagDB.FILES_NAME);
 			keys.remove(TagDB.PROJECT_COL);
 			keys.remove(TagDB.TAGS_LINE);
 			keys.remove(TagDB.TAGS_PATTERN);
+			keys.remove(TagDB.TAGS_FILE_ID);
+			keys.remove(TagDB.FILES_ID);
 			Iterator<String> it = keys.iterator();
 			boolean first = true;
 			while (it.hasNext()) {
