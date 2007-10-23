@@ -22,3 +22,5 @@
   + Watched buffer is saved
   + Watched buffer is loaded
 + Add project name or id to each tag in the table.
+
+Update to released PV: tags/pv_2_1_3_7

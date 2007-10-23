@@ -44,7 +44,7 @@ Use cases:
   	}
   }
   INSERT INTO TAGS (TAG, FILE_ID, ...) VALUES {tag}, {id}, ...
-- Adding a source tree:
++ Adding a source tree:
   INSERT INTO ORIGINS (NAME, TYPE) VALUES {tree}, 'SourceTree'
   originId = SELECT ID FROM ORIGINS WHERE TYPE='SourceTree' and NAME={tree}
   Run "ctags -R" on source tree
@@ -52,24 +52,24 @@ Use cases:
   For each element in fileSet:
   id = SELECT ID FROM FILES WHERE FILE={path}
   INSERT INTO MAP (FILE_ID, ORIGIN_ID) VALUES {id}, {originId}
-- Removing a source tree:
++ Removing a source tree:
   originId = SELECT ID FROM ORIGINS WHERE TYPE='SourceTree' and NAME={tree}
   DELETE FROM ORIGINS WHERE ID={originId}
   DELETE FROM MAP WHERE ORIGIN_ID={originId}
   DELETE FROM TAGS WHERE FILE_ID IN (
     SELECT ID FROM FILES WHERE NOT EXISTS (SELECT FILE_ID FROM MAP WHERE ID=FILE_ID))
   DELETE FROM FILES WHERE NOT EXISTS (SELECT FILE_ID FROM MAP WHERE ID=FILE_ID)
-- Updating a source tree:
++ Updating a source tree:
   Same as removing and then adding, except no changes to the ORIGINS table (same ID used).
-- Adding a project:
++ Adding a project:
   INSERT INTO ORIGINS (NAME, TYPE) VALUES {project}, 'Project'
   originId = SELECT ID FROM ORIGINS WHERE TYPE='Project' and NAME={project}
   Run "ctags" on project files
   Rest is the same as adding a source tree.
-- Removing a project:
++ Removing a project:
   originId = SELECT ID FROM ORIGINS WHERE TYPE='Project' and NAME={project}
   Rest is the same as removing a source tree.
-- Updating a project:
++ Updating a project:
   Same as updating a source tree.
 + Finding a tag by name:
   SELECT * FROM TAGS, FILES WHERE TAGS.FILE_ID=FILES.ID

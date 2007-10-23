@@ -90,7 +90,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 					int i = projects.getSelectedIndex();
 					if (i >= 0) {
 						String project = (String) projectsModel.getElementAt(i);
-						CtagsInterfacePlugin.tagProject(project);
+						CtagsInterfacePlugin.refreshOrigin(PROJECT_ORIGIN, project);
 					}
 				}
 			});
@@ -109,7 +109,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		int nProjects = projectsModel.size(); 
 		for (int i = 0; i < nProjects; i++)
 			names.add((String) projectsModel.getElementAt(i));
-		CtagsInterfacePlugin.getDB().updateOrigins(PROJECT_ORIGIN, names);
+		CtagsInterfacePlugin.updateOrigins(PROJECT_ORIGIN, names);
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
 	}

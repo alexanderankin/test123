@@ -79,7 +79,7 @@ public class DirsOptionPane extends AbstractOptionPane {
 				int i = dirs.getSelectedIndex();
 				if (i >= 0) {
 					String tree = (String) dirsModel.getElementAt(i);
-					CtagsInterfacePlugin.tagSourceTree(tree);
+					CtagsInterfacePlugin.refreshOrigin(DIR_ORIGIN, tree);
 				}
 			}
 		});
@@ -90,7 +90,7 @@ public class DirsOptionPane extends AbstractOptionPane {
 		int nDirs = dirsModel.size(); 
 		for (int i = 0; i < nDirs; i++)
 			names.add((String) dirsModel.getElementAt(i));
-		CtagsInterfacePlugin.getDB().updateOrigins(DIR_ORIGIN, names);
+		CtagsInterfacePlugin.updateOrigins(DIR_ORIGIN, names);
 	}
 	
 	static public Vector<String> getDirs() {
