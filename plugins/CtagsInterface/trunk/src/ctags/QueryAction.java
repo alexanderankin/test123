@@ -3,6 +3,8 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JOptionPane;
+
 import options.ActionsOptionPane;
 
 import org.gjt.sp.jedit.EditAction;
@@ -33,11 +35,22 @@ public class QueryAction extends EditAction {
 	
 	@Override
 	public void invoke(View view) {
-		String s = query.replace(TAG,
-			CtagsInterfacePlugin.getDestinationTag(view));
+		String tag = CtagsInterfacePlugin.getDestinationTag(view);
+		if (tag == null && query.contains(TAG)) {
+			JOptionPane.showMessageDialog(view,
+				"No tag selected nor identified at caret");
+			return;
+		}
+		String s = (tag == null) ? query : query.replace(TAG, tag);
 		projects.ProjectWatcher pvi = CtagsInterfacePlugin.getProjectWatcher();
-		String project = (pvi == null) ? "" : pvi.getActiveProject(view);
-		s = s.replace(PROJECT, project);
+		String project = (pvi == null) ? null : pvi.getActiveProject(view);
+		if (project == null && s.contains(PROJECT)) {
+			JOptionPane.showMessageDialog(view,
+				"No active project exists");
+			return;
+		}
+		if (project != null)
+			s = s.replace(PROJECT, project);
 		ResultSet rs;
 		try {
 			rs = CtagsInterfacePlugin.getDB().query(s);
