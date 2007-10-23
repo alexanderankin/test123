@@ -48,7 +48,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
 		db = new TagDB();
 		parser = new Parser();
-		runner = new Runner(db);
+		runner = new Runner();
 		watcher = new BufferWatcher(db);
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
 		if(p == null)
@@ -119,6 +119,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
     static private class TagFileHandler implements TagHandler {
 		private HashSet<Integer> files = new HashSet<Integer>();
+		private int originId;
+		public TagFileHandler(int originId) {
+			this.originId = originId;
+		}
 		public void processTag(Hashtable<String, String> info) {
 			String file = info.get(TagDB.TAGS_FILE_ID);
 			int fileId = db.getSourceFileID(file);
@@ -132,6 +136,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 					db.deleteTagsFromSourceFile(fileId);
 				}
 				files.add(fileId);
+				db.insertSourceFileOrigin(fileId, originId);
 			}
 			db.insertTag(info, fileId);
 		}
@@ -140,7 +145,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
     static private void addTempTagFile(String tagFile) {
-		parser.parseTagFile(tagFile, new TagFileHandler());
+		parser.parseTagFile(tagFile, new TagFileHandler(TagDB.TEMP_ORIGIN_INDEX));
     }
     
     // Action: Prompt for a temporary tag file to add to the DB
@@ -226,13 +231,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jumpToQueryResults(view, rs);
 	}
 
+	// Returns the tag to jump to: The selected tag or the one at the caret.
 	static public String getDestinationTag(View view) {
 		String tag = view.getTextArea().getSelectedText();
 		if (tag == null || tag.length() == 0)
 			tag = getTagAtCaret(view);
 		return tag;
 	}
-	private static String getTagAtCaret(View view) {
+	
+	// Returns the tag at the caret.
+	static private String getTagAtCaret(View view) {
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine();
 		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
@@ -254,6 +262,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return selected;
 	}
 
+	// Jumps to the specified location
 	public static void jumpTo(final View view, String file, final int line) {
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
@@ -266,6 +275,65 @@ public class CtagsInterfacePlugin extends EditPlugin {
 					view.getTextArea().getLineStartOffset(line - 1));
 			}
 		});
+	}
+	
+	// Updates the given origins in the DB
+	static public void updateOrigins(String type, Vector<String> names) {
+		// Remove obsolete origins
+		Vector<String> current = db.getOrigins(type);
+		for (int i = 0; i < current.size(); i++) {
+			String name = current.get(i);
+			if (! names.contains(name))
+				deleteOrigin(type, name);
+		}
+		// Add new origins
+		for (int i = 0; i < names.size(); i++) {
+			String name = names.get(i);
+			if (! current.contains(name))
+				insertOrigin(type, name);
+		}
+	}
+	
+	// Refreshes the given origin in the DB
+	static public void refreshOrigin(String type, String name) {
+		try {
+			db.deleteOriginAssociatedData(type, name);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		tagOrigin(type, name);
+	}
+	
+	// Deletes an origin with all associated data from the DB
+	private static void deleteOrigin(String type, String name) {
+		try {
+			db.deleteOrigin(type, name);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
+	// to the DB.
+	private static void insertOrigin(String type, String name) {
+		try {
+			db.insertOrigin(type, name);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		tagOrigin(type, name);
+	}
+	// Runs Ctags on the specified origin and adds the tags to the DB.
+	private static void tagOrigin(String type, String name) {
+		int originId = db.getOriginID(type, name);
+		if (originId < 0) {
+			System.err.println("Cannot find newly inserted origin " + name + " in DB.");
+			return;
+		}
+		TagFileHandler handler = new TagFileHandler(originId);
+		if (type.equals(TagDB.PROJECT_ORIGIN))
+			tagProject(name, handler);
+		else if (type.equals(TagDB.DIR_ORIGIN))
+			tagSourceTree(name, handler);
 	}
 	
 	private static void addWorkRequest(Runnable run, boolean inAWT) {
@@ -291,11 +359,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			public void run() {
 				final int fileId = db.getSourceFileID(file);
 				db.deleteTagsFromSourceFile(fileId);
-				runner.runOnFile(file, new TagHandler() {
+				String tagFile = runner.runOnFile(file);
+				TagHandler handler = new TagHandler() {
 					public void processTag(Hashtable<String, String> info) {
 						db.insertTag(info, fileId);
 					}
-				});
+				};
+				parser.parseTagFile(tagFile, handler);
 			}
 		}, false);
 		removeStatusMessage();
@@ -303,30 +373,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	/* Source tree support */
 	
-	public static void tagSourceTree(final String tree) {
+	// Runs Ctags on a source tree and add the tags and associated data to the DB
+	public static void tagSourceTree(final String tree, final TagHandler handler) {
 		setStatusMessage("Tagging source tree: " + tree);
 		addWorkRequest(new Runnable() {
 			public void run() {
-				int originId = db.queryInteger(TagDB.ORIGINS_ID,
-					"SELECT ID FROM ORIGINS WHERE TYPE='DIR' AND " +
-					"NAME=" + db.quote(tree), -1);
-				if (originId < 0)
-					return;
-				// Find file ids - required for cleanup
-				Vector<Integer> fileIds = db.queryIntegerList(
-					TagDB.MAP_FILE_ID,
-					"SELECT FILE_ID FROM MAP WHERE ORIGIN_ID=" + originId);
-				db.deleteRowsWithValue(TagDB.MAP_TABLE, TagDB.MAP_ORIGIN_ID,
-						Integer.valueOf(originId));
-				db.deleteRowsWithValueList(TagDB.TAGS_TABLE,
-						TagDB.TAGS_FILE_ID, fileIds);
-				try {
-					db.query("DELETE FROM FILES WHERE NOT EXISTS (" +
-							"SELECT FILE_ID FROM MAP WHERE ID=FILE_ID)");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				runner.runOnTree(tree, tagHandler);
+				String tagFile = runner.runOnTree(tree);
+				parser.parseTagFile(tagFile, handler);
 			}
 		}, false);
 		removeStatusMessage();
@@ -338,9 +391,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return pvi;
 	}
 	
-	private static void removeProject(String project) {
-		//db.deleteRowsWithValue(TagDB.PROJECT_COL, project);
-	}
 	private static void removeProjectFiles(String project,
 		Vector<String> files)
 	{
@@ -351,34 +401,35 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			db.deleteRowsWithValues(values);
 		}
 	}
-	private static void addProjectFiles(String project,
-		Vector<String> files)
+	
+	// Runs Ctags on a list of files and add the tags and associated data to the DB
+	private static void tagFiles(Vector<String> files, TagHandler handler)
 	{
-		db.setProject(project);
-		runner.runOnFiles(files, tagHandler);
-		db.unsetProject();
+		String tagFile = runner.runOnFiles(files);
+		parser.parseTagFile(tagFile, handler);
 	}
-	public static void tagProject(final String project) {
+	
+	// Runs Ctags on a project and inserts the tags and associated data to the DB
+	public static void tagProject(final String project, final TagHandler handler) {
 		if (pvi == null)
 			return;
 		setStatusMessage("Tagging project: " + project);
 		addWorkRequest(new Runnable() {
 			public void run() {
-				removeProject(project);
 				Vector<String> files = pvi.getFiles(project);
-				addProjectFiles(project, files);
+				tagFiles(files, handler);
 			}
 		}, false);
 		removeStatusMessage();
 	}
-	public static void updateProject(String project,
-		Vector<String> added, Vector<String> removed)
+	public static void updateProject(String project, Vector<String> added,
+		Vector<String> removed)
 	{
 		setStatusMessage("Updating project: " + project);
 		if (removed != null)
 			removeProjectFiles(project, removed);
 		if (added != null)
-			addProjectFiles(project, added);
+			tagFiles(added, tagHandler);
 		removeStatusMessage();
 	}
 }

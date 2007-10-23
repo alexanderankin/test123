@@ -44,6 +44,9 @@ public class TagDB {
 	public static final String MAP_FILE_ID = "FILE_ID";
 	public static final String MAP_ORIGIN_ID = "ORIGIN_ID";
 	// Origin types
+	public static final int TEMP_ORIGIN_INDEX = 0;
+	public static final String TEMP_ORIGIN_NAME = "Temp";
+	public static final String TEMP_ORIGIN = "Temp";
 	public static final String PROJECT_ORIGIN = "Project";
 	public static final String DIR_ORIGIN = "Dir";
 
@@ -78,6 +81,21 @@ public class TagDB {
 		try {
 			update("INSERT INTO " + FILES_TABLE + " (" + FILES_NAME +
 				") VALUES (" + quote(file) + ")");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Inserts a source file -> origin mapping to the DB
+	public void insertSourceFileOrigin(int fileId, int originId) {
+		try {
+			ResultSet rs = query("SELECT * FROM " + MAP_TABLE + " WHERE " +
+				MAP_FILE_ID + "=" + quote(fileId) + " AND " +
+				MAP_ORIGIN_ID + "=" + quote(originId));
+			if (rs.next())
+				return;
+			update("INSERT INTO " + MAP_TABLE + " (" + MAP_FILE_ID + "," + MAP_ORIGIN_ID +
+				") VALUES (" + quote(fileId) + "," + quote(originId) + ")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -140,14 +158,14 @@ public class TagDB {
 	public ResultSet queryTag(String tag) throws SQLException {
 		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
 			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
-			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" +
-				field(FILES_TABLE, FILES_ID);
+			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID);
 		return query(query);
 	}
 	// Runs a query for the specified tag name in the specified project
 	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
 		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
 			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
+			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID) +
 			" AND EXISTS " +
 				"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE +
 				" WHERE " + field(MAP_TABLE, MAP_FILE_ID) + "=" +
@@ -160,6 +178,49 @@ public class TagDB {
 		return query(query);
 	}
 
+	// Returns the ID of an origin
+	public int getOriginID(String type, String name) {
+		return queryInteger(ORIGINS_ID, "SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE +
+			" WHERE " + ORIGINS_TYPE + "=" + quote(type) + " AND " + ORIGINS_NAME + "=" +
+			quote(name), -1);
+	}
+	
+	// Inserts a new origin to the DB
+	public void insertOrigin(String type, String name) throws SQLException {
+		update("INSERT INTO " + ORIGINS_TABLE + " (" +
+			ORIGINS_TYPE + "," + ORIGINS_NAME + ") VALUES (" +
+			quote(type) + "," + quote(name) + ")");
+	}
+
+	// Delete all data associated with the specified origin
+	public void deleteOriginAssociatedData(String type, String name) throws SQLException {
+		int originId = queryInteger(ORIGINS_ID,
+			"SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE + " WHERE " +
+			ORIGINS_TYPE + "=" + quote(type) + " AND " +
+			ORIGINS_NAME + "=" + quote(name), -1);
+		if (originId < 0)
+			return;
+		// Remove all mappings to the origin
+		query("DELETE FROM " + MAP_TABLE + " WHERE " + MAP_ORIGIN_ID + "=" +
+			quote(originId));
+		// Remove all orphaned (with no origin) files
+		query("DELETE FROM " + FILES_TABLE + " WHERE NOT EXIST " +
+			"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE + " WHERE " +
+			MAP_FILE_ID + "=" + FILES_ID);
+		// Remove all orphaned (with no file) tags
+		query("DELETE FROM " + TAGS_TABLE + " WHERE NOT EXIST " +
+			"(SELECT " + FILES_ID + " FROM " + FILES_TABLE + " WHERE " +
+			FILES_ID + "=" + TAGS_FILE_ID);
+	}
+	
+	// Deletes an origin and all its associated data from the DB
+	public void deleteOrigin(String type, String name) throws SQLException {
+		query("DELETE FROM " + ORIGINS_TABLE + " WHERE " +
+			ORIGINS_TYPE + "=" + quote(type) + " AND " +
+			ORIGINS_NAME + "=" + quote(name));
+		deleteOriginAssociatedData(type, name); 
+	}
+	
 	private String field(String table, String column) {
 		return table + "." + column;
 	}
@@ -199,32 +260,6 @@ public class TagDB {
 		return queryStringList(ORIGINS_NAME,
 			"SELECT * FROM " + ORIGINS_TABLE + " WHERE " +
 			ORIGINS_TYPE + "=" + quote(type));
-	}
-	public void updateOrigins(String type, Vector<String> values) {
-		// Remove obsolete origins
-		Vector<String> current = queryStringList(ORIGINS_NAME,
-			"SELECT * FROM " + ORIGINS_TABLE + " WHERE " +
-			ORIGINS_TYPE + "=" + quote(type));
-		for (int i = 0; i < current.size(); i++) {
-			String name = current.get(i);
-			if (! values.contains(name))
-				deleteOrigin(type, name);
-		}
-		// Add new origins
-		for (int i = 0; i < values.size(); i++) {
-			String name = values.get(i);
-			if (! current.contains(name))
-				try {
-					insertOrigin(type, name);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-	}
-	
-	public void setProject(String project) {
-	}
-	public void unsetProject() {
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
@@ -418,6 +453,9 @@ public class TagDB {
 				ORIGINS_NAME, VARCHAR_TYPE,
 				ORIGINS_TYPE, VARCHAR_TYPE
 			});
+			update("INSERT INTO " + ORIGINS_TABLE + " (" + ORIGINS_ID + "," +
+				ORIGINS_NAME + "," + ORIGINS_TYPE + ") VALUES (" + TEMP_ORIGIN_INDEX +
+				"," + quote(TEMP_ORIGIN_NAME) + ", " + quote(TEMP_ORIGIN) + ")");
 			// Create Map table
 			createTable(MAP_TABLE, new String [] {
 				MAP_FILE_ID, INTEGER_TYPE,
@@ -427,32 +465,6 @@ public class TagDB {
 			createIndex("MAP_ORIGIN_ID", MAP_TABLE, MAP_ORIGIN_ID);
 		} catch (SQLException e) {
 			// Table already exists
-		}
-	}
-	
-	private void insertOrigin(String type, String name) throws SQLException {
-		update("INSERT INTO " + ORIGINS_TABLE + " (" +
-			ORIGINS_TYPE + "," + ORIGINS_NAME + ") VALUES (" +
-			type + "," + name + ")");
-	}
-	private void deleteOrigin(String type, String name) {
-		// TODO: Remove origin from origins table, remove all files
-		// originated in the removed origin only, and remove all tags
-		// from the removed files.
-		int originId = queryInteger(ORIGINS_ID,
-			"SELECT * FROM " + ORIGINS_TABLE + " WHERE " +
-			ORIGINS_TYPE + "=" + quote(type) + " AND " +
-			ORIGINS_NAME + "=" + quote(name), -1);
-		if (originId < 0)
-			return;
-		String fileIds = "SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE +
-			" WHERE " + MAP_ORIGIN_ID + "=" + quote(originId);
-		String deleteTags = "DELETE FROM TAGS WHERE FILE_ID IN (" +
-			fileIds + ")";
-		try {
-			query(deleteTags);
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 	

@@ -3,37 +3,32 @@ package ctags;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.gjt.sp.jedit.jEdit;
-
-import ctags.Parser.TagHandler;
-
 import options.GeneralOptionPane;
-import db.TagDB;
+
+import org.gjt.sp.jedit.jEdit;
 
 public class Runner {
 
 	private static final String SPACES = "\\s+";
-	private Parser parser;
 	
-	public Runner(TagDB db) {
-		parser = null;
-	}
-	
-	public void runOnFile(String file, TagHandler handler) {
+	// Runs Ctags on a single file. Returns the tag file.
+	public String runOnFile(String file) {
 		Vector<String> what = new Vector<String>();
 		what.add(file);
-		run(what, handler);
+		return run(what);
 	}
-	public void runOnTree(String tree, TagHandler handler) {
+	// Runs Ctags on a source tree. Returns the tag file.
+	public String runOnTree(String tree) {
 		Vector<String> what = new Vector<String>();
 		what.add("-R");
 		what.add(tree);
-		run(what, handler);
+		return run(what);
 	}
-	public void runOnFiles(Vector<String> files, TagHandler handler) {
-		run(files, handler);
+	// Runs Ctags on a list of files. Returns the tag file.
+	public String runOnFiles(Vector<String> files) {
+		return run(files);
 	}
-	private void run(Vector<String> what, TagHandler handler) {
+	private String run(Vector<String> what) {
 		String ctags = GeneralOptionPane.getCtags();
 		String cmd = GeneralOptionPane.getCmd();
 		String tagFile = getTempTagFilePath();
@@ -52,13 +47,12 @@ public class Runner {
 			p.waitFor();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return;
+			return null;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			return null;
 		}
-		if (parser == null)
-			parser = new Parser();
-		parser.parseTagFile(tagFile, handler);
+		return tagFile;
 	}
 	
 	private String getTempTagFilePath() {
