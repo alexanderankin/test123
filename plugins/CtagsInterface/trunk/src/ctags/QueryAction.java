@@ -1,5 +1,8 @@
 package ctags;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import options.ActionsOptionPane;
 
 import org.gjt.sp.jedit.EditAction;
@@ -35,7 +38,14 @@ public class QueryAction extends EditAction {
 		projects.ProjectWatcher pvi = CtagsInterfacePlugin.getProjectWatcher();
 		String project = (pvi == null) ? "" : pvi.getActiveProject(view);
 		s = s.replace(PROJECT, project);
-		CtagsInterfacePlugin.jumpToQueryResults(view, s);
+		ResultSet rs;
+		try {
+			rs = CtagsInterfacePlugin.getDB().query(s);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+		CtagsInterfacePlugin.jumpToQueryResults(view, rs);
 	}
 	
 	public String toString() {

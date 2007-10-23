@@ -73,9 +73,18 @@ public class TagDB {
 			" WHERE " + FILES_NAME + "=" + quote(file), -1);
 	}
 	
+	// Inserts a source file to the DB
+	public void insertSourceFile(String file) {
+		try {
+			update("INSERT INTO " + FILES_TABLE + " (" + FILES_NAME +
+				") VALUES (" + quote(file) + ")");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Delete tags from source file
-	public void deleteTagsFromSourceFile(String file) {
-		int fileId = getSourceFileID(file);
+	public void deleteTagsFromSourceFile(int fileId) {
 		if (fileId < 0)
 			return;
 		deleteRowsWithValue(TAGS_TABLE, TAGS_FILE_ID, Integer.valueOf(fileId));
@@ -88,19 +97,8 @@ public class TagDB {
 	 */
 	public void insertTag(Hashtable<String, String> info, int fileId) {
 		if (fileId < 0) {
-			String file = info.get(TAGS_FILE_ID);
-			fileId = getSourceFileID(file);
-			if (fileId < 0) {	// Need to insert the file
-				try {
-					update("INSERT INTO " + FILES_TABLE + " (" + FILES_NAME + ") VALUES (" +
-						quote(file) + ")");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				fileId = getSourceFileID(file);
-				if (fileId < 0)
-					return;
-			}
+			System.err.println("insertTag called with fileId=-1");
+			return;
 		}
 		info.remove(TAGS_FILE_ID);
 		// Find missing columns and build the inserted value string
@@ -138,6 +136,34 @@ public class TagDB {
 		}
 	}
 	
+	// Runs a query for the specified tag name
+	public ResultSet queryTag(String tag) throws SQLException {
+		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
+			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
+			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" +
+				field(FILES_TABLE, FILES_ID);
+		return query(query);
+	}
+	// Runs a query for the specified tag name in the specified project
+	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
+		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
+			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
+			" AND EXISTS " +
+				"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE +
+				" WHERE " + field(MAP_TABLE, MAP_FILE_ID) + "=" +
+					field(FILES_TABLE, FILES_ID) +
+				" AND " + field(MAP_TABLE, MAP_ORIGIN_ID) + "=" +
+					"(SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE +
+					" WHERE " + ORIGINS_NAME + "=" + quote(project) +
+					" AND " + ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN) +
+					"))";
+		return query(query);
+	}
+
+	private String field(String table, String column) {
+		return table + "." + column;
+	}
+
 	/*
 	 * Check if the table contains a row with the specified value in the specified column.
 	 * Used for checking if a buffer is in the DB. 
