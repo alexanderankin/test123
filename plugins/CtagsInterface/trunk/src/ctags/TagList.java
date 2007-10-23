@@ -123,7 +123,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			boolean first = true;
 			while (it.hasNext()) {
 				if (! first)
-					s.append("  ");
+					s.append(",  ");
 				first = false;
 				String key = (String) it.next();
 				s.append(TagDB.col2attr(key));

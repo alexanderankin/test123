@@ -353,7 +353,8 @@ public class TagDB {
 	private void getColumns() {
 		columns = new HashSet<String>();
 		try {
-			ResultSet rs = query("SELECT * FROM TAGS WHERE NAME=''");
+			ResultSet rs = query("SELECT * FROM " + TAGS_TABLE +
+				" WHERE " + TAGS_NAME + "=''");
 			ResultSetMetaData meta = rs.getMetaData();
 			int cols = meta.getColumnCount();
 			for (int i = 0; i < cols; i++)
@@ -444,8 +445,8 @@ public class TagDB {
 			ORIGINS_NAME + "=" + quote(name), -1);
 		if (originId < 0)
 			return;
-		String fileIds = "SELECT FILE_ID FROM MAP WHERE ORIGIN_ID=" +
-			quote(originId);
+		String fileIds = "SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE +
+			" WHERE " + MAP_ORIGIN_ID + "=" + quote(originId);
 		String deleteTags = "DELETE FROM TAGS WHERE FILE_ID IN (" +
 			fileIds + ")";
 		try {
