@@ -204,6 +204,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jumpTo(view, file, line);
 	}
 	
+	// Action: Search for a tag containing a substring
+	public static void searchTag(final View view)
+	{
+		new QuickSearchTagDialog(view);
+	}
+	
 	// Action: Jump to the selected tag (or tag at caret).
 	public static void jumpToTag(final View view)
 	{
@@ -394,12 +400,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static void removeProjectFiles(String project,
 		Vector<String> files)
 	{
-		Hashtable<String, String> values = new Hashtable<String, String>();
-		values.put(TagDB.PROJECT_COL, project);
-		for (int i = 0; i < files.size(); i++) {
-			values.put(TagDB.TAGS_FILE_ID, files.get(i));
-			db.deleteRowsWithValues(values);
-		}
 	}
 	
 	// Runs Ctags on a list of files and add the tags and associated data to the DB

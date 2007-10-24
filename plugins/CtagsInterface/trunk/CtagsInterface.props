@@ -19,12 +19,12 @@ ctags-interface-add-file.label=Add tag file...
 ctags-interface-print-tags.label=Print tags
 ctags-interface-print-tags-containing.label=Print tags with substring...
 ctags-interface-jump-to-tag.label=Jump to tag
+ctags-interface-search-tag.label=Search for a tag with substring...
 
 # menu items
 plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
-	ctags-interface-print-tags \
-	ctags-interface-print-tags-containing \
-	ctags-interface-jump-to-tag
+	ctags-interface-jump-to-tag \
+	ctags-interface-search-tag
 #  class-browser-show-selected-hierarchy
 
 # option panes
