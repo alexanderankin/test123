@@ -6,21 +6,14 @@
   + Actions option pane: SQL query "Jump to tag" actions.
   + Change column names to A_<attribute name>. Some attributes are also
     reserved words in SQL and cannot be used as column names (e.g. union).
-  - Remove project column from tags table. The same source file may be
-    in multiple projects and also under a source tree listed separately.
-    We don't want to include multiple copies of the record, one for each
-    project, or otherwise we also need to update all copies when this
-    file is updated in the DB.
-    - Create PROJECTS table, to map project names to id's.
-    - Create PROJ_TAG table, to map tag id's to project id's.
-    - Replace PROJECT column in TAGS table with ID column (and column index).
+  + Redesign DB tables.
+  + Option to limit tag searches to active project.
   - Add project dependency properties. (To be integrated into PV later)
-  - Option whether to limit tag searches to active project and its dependencies.
+  - Option to include dependencies in active project tag searches.
   - Option whether to include de 
 - Design plugin support. 
---> Auto-update DB when:
++ Auto-update DB when:
   + Watched buffer is saved
   + Watched buffer is loaded
 + Add project name or id to each tag in the table.
-
-Update to released PV: tags/pv_2_1_3_7
++ Update to released PV: tags/pv_2_1_3_7
