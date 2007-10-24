@@ -1,6 +1,10 @@
 package ctags;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -24,9 +28,11 @@ public class QuickSearchTagDialog extends JDialog {
 	JTextField name;
 	JList tags;
 	DefaultListModel model;
+	View view;
 	
 	public QuickSearchTagDialog(View view) {
 		super(view, "Search tag", false);
+		this.view = view;
 		JPanel p = new JPanel();
 		p.add(new JLabel("Type part of the tag name:"));
 		name = new JTextField(30);
@@ -47,8 +53,26 @@ public class QuickSearchTagDialog extends JDialog {
 				setFilter();
 			}
 		});
+		tags.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent arg0) {
+				jumpToSelected();
+			}
+		});
+		tags.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					e.consume();
+					jumpToSelected();
+				}
+			}
+		});
 		pack();
 		setVisible(true);
+	}
+
+	protected void jumpToSelected() {
+		Tag t = (Tag) tags.getSelectedValue();
+		CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
 	}
 
 	protected void setFilter() {
@@ -62,17 +86,43 @@ public class QuickSearchTagDialog extends JDialog {
 		try {
 			ResultSet rs = CtagsInterfacePlugin.getDB().query(query);
 			while (rs.next()) {
-				String name = rs.getString(TagDB.TAGS_NAME);
-				String kind = rs.getString(TagDB.attr2col("kind"));
-				if (kind == null)
-					kind = "";
-				else
-					kind = " (" + kind + ")";
-				model.addElement(name + kind);
+				Tag t = new Tag(rs);
+				if (t.isValid())
+					model.addElement(t);
 			}
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	static private class Tag {
+		String file;
+		int line;
+		String desc;
+		public Tag(ResultSet rs) {
+			StringBuffer text = new StringBuffer();
+			try {
+				text.append(rs.getString(TagDB.TAGS_NAME));
+				String kind = rs.getString(TagDB.attr2col("kind"));
+				if (kind != null)
+					text.append(" (" + kind + ")");
+				file = rs.getString(TagDB.FILES_NAME);
+				String lineStr = rs.getString(TagDB.attr2col("line"));
+				if (lineStr != null)
+					line = Integer.valueOf(lineStr);
+				else
+					line = -1;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			desc = text.toString();
+		}
+		public boolean isValid() {
+			return (desc.length() > 0 && file != null && line >= 0);
+		}
+		public String toString() {
+			return desc;
 		}
 	}
 }
