@@ -50,8 +50,6 @@ public class TagDB {
 	public static final String PROJECT_ORIGIN = "Project";
 	public static final String DIR_ORIGIN = "Dir";
 
-	public static final String PROJECT_COL = "K_PROJECT";
-	
 	public TagDB() {
 		removeStaleLock();
         try {
@@ -156,9 +154,19 @@ public class TagDB {
 	
 	// Runs a query for the specified tag name
 	public ResultSet queryTag(String tag) throws SQLException {
-		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
+		String query = "SELECT " + field(TAGS_TABLE, "*") + "," +
+				field(FILES_TABLE, FILES_NAME) + "," +
+				field(ORIGINS_TABLE, ORIGINS_TYPE) + " AS O_TYPE," +
+				field(ORIGINS_TABLE, ORIGINS_NAME) + " AS O_NAME " +
+			" FROM " + TAGS_TABLE + "," + FILES_TABLE +
+				"," + MAP_TABLE + "," + ORIGINS_TABLE +
 			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
-			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID);
+			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" +
+				field(FILES_TABLE, FILES_ID) +
+			" AND " + field(MAP_TABLE, MAP_FILE_ID) + "=" +
+				field(FILES_TABLE, FILES_ID) +
+			" AND " + field(MAP_TABLE, MAP_ORIGIN_ID) + "=" +
+				field(ORIGINS_TABLE, ORIGINS_ID);
 		return query(query);
 	}
 	// Runs a query for the specified tag name in the specified project

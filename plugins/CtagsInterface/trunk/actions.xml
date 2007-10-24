@@ -23,6 +23,11 @@
 			ctags.CtagsInterfacePlugin.jumpToTag(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-search-tag" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.searchTag(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 

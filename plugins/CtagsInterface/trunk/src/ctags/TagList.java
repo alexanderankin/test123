@@ -99,11 +99,16 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			s.append(": <b>");
 			s.append(tag.get(TagDB.TAGS_NAME));
 			s.append("</b>  ");
-			String project = tag.get(TagDB.PROJECT_COL);
-			if (project != null && project.length() > 0) {
-				s.append("(<i>");
-				s.append(project);
-				s.append("</i>)  ");
+			String originType = tag.get("O_TYPE");
+			if (originType != null &&
+				originType.equals(TagDB.PROJECT_ORIGIN))
+			{
+				String project = tag.get("O_NAME");
+				if (project != null && project.length() > 0) {
+					s.append("(<i>");
+					s.append(project);
+					s.append("</i>)  ");
+				}
 			}
 			s.append(tag.get(TagDB.FILES_NAME));
 			s.append(tag.containsKey(TagDB.TAGS_LINE) ? ":" +
@@ -114,7 +119,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			TreeSet<String> keys = new TreeSet<String>(tag.keySet());
 			keys.remove(TagDB.TAGS_NAME);
 			keys.remove(TagDB.FILES_NAME);
-			keys.remove(TagDB.PROJECT_COL);
+			keys.remove(TagDB.ORIGINS_TYPE);
+			keys.remove(TagDB.ORIGINS_NAME);
 			keys.remove(TagDB.TAGS_LINE);
 			keys.remove(TagDB.TAGS_PATTERN);
 			keys.remove(TagDB.TAGS_FILE_ID);
