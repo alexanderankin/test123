@@ -1,31 +1,26 @@
 package projects;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
-import options.ProjectsOptionPane;
-
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
-
-import ctags.CtagsInterfacePlugin;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
-import projectviewer.event.ProjectUpdate;
+import projectviewer.event.ProjectEvent;
+import projectviewer.event.ProjectListener;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import ctags.CtagsInterfacePlugin;
 
-public class ProjectWatcher implements EBComponent {
+public class ProjectWatcher implements ProjectListener {
 
 	public ProjectWatcher() {
-		EditBus.addToBus(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<String> getFiles(String project) {
 		ProjectManager pm = ProjectManager.getInstance();
 		VPTProject p = pm.getProject(project);
@@ -56,29 +51,54 @@ public class ProjectWatcher implements EBComponent {
 		return ProjectViewer.getActiveProject(view).getName();
 	}
 	
-	private Vector<String> getFileList(List<VPTFile> list) {
-		if (list == null)
-			return null;
-		Vector<String> files = new Vector<String>();
-		Iterator<VPTFile> it = list.iterator();
-		while (it.hasNext()) {
-			VPTFile f = it.next();
-			files.add(f.getNodePath());
-		}
-		return files;
+	public void watchProject(String project) {
+		VPTProject proj = ProjectManager.getInstance().getProject(project);
+		if (proj == null)
+			return;
+		proj.addProjectListener(this);
 	}
-	public void handleMessage(EBMessage message) {
-		if (ProjectsOptionPane.getAutoUpdateProjects()) {
-			if (message instanceof ProjectUpdate) {
-				ProjectUpdate msg = (ProjectUpdate) message;
-				String project = msg.getProject().getName();
-				if (msg.getType() == ProjectUpdate.Type.FILES_CHANGED) {
-					CtagsInterfacePlugin.updateProject(project,
-						getFileList(msg.getAddedFiles()),
-						getFileList(msg.getRemovedFiles()));
-				}
-			}
-		}
-		return;
+	public void unwatchProject(String project) {
+		
+	}
+	
+	// ProjectListener methods
+	
+	public void fileAdded(ProjectEvent pe) {
+		Vector<String> added = new Vector<String>();
+		added.add(pe.getAddedFile().getNodePath());
+		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
+			added, null);
+	}
+
+	public void fileRemoved(ProjectEvent pe) {
+		Vector<String> removed = new Vector<String>();
+		removed.add(pe.getRemovedFile().getNodePath());
+		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
+			null, removed);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void filesAdded(ProjectEvent pe) {
+		Vector<String> added = new Vector<String>();
+		ArrayList<VPTFile> nodes = pe.getAddedFiles();
+		for (int i = 0; i < nodes.size(); i++)
+			added.add(nodes.get(i).getNodePath());
+		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
+			added, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void filesRemoved(ProjectEvent pe) {
+		Vector<String> removed = new Vector<String>();
+		ArrayList<VPTFile> nodes = pe.getRemovedFiles();
+		for (int i = 0; i < nodes.size(); i++)
+			removed.add(nodes.get(i).getNodePath());
+		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
+			null, removed);
+	}
+
+	public void propertiesChanged(ProjectEvent pe) {
+		// TODO Auto-generated method stub
+		
 	}
 }
