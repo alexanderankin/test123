@@ -18,7 +18,7 @@ plugin.ctags.CtagsInterfacePlugin.usePluginHome=true
 ctags-interface-add-file.label=Add tag file...
 ctags-interface-print-tags.label=Print tags
 ctags-interface-print-tags-containing.label=Print tags with substring...
-ctags-interface-jump-to-tag.label=Jump to selection
+ctags-interface-jump-to-tag.label=Jump to tag
 
 # menu items
 plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
