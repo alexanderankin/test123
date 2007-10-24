@@ -204,21 +204,21 @@ public class TagDB {
 		query("DELETE FROM " + MAP_TABLE + " WHERE " + MAP_ORIGIN_ID + "=" +
 			quote(originId));
 		// Remove all orphaned (with no origin) files
-		query("DELETE FROM " + FILES_TABLE + " WHERE NOT EXIST " +
+		query("DELETE FROM " + FILES_TABLE + " WHERE NOT EXISTS " +
 			"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE + " WHERE " +
-			MAP_FILE_ID + "=" + FILES_ID);
+			MAP_FILE_ID + "=" + FILES_ID + ")");
 		// Remove all orphaned (with no file) tags
-		query("DELETE FROM " + TAGS_TABLE + " WHERE NOT EXIST " +
+		query("DELETE FROM " + TAGS_TABLE + " WHERE NOT EXISTS " +
 			"(SELECT " + FILES_ID + " FROM " + FILES_TABLE + " WHERE " +
-			FILES_ID + "=" + TAGS_FILE_ID);
+			FILES_ID + "=" + TAGS_FILE_ID + ")");
 	}
 	
 	// Deletes an origin and all its associated data from the DB
 	public void deleteOrigin(String type, String name) throws SQLException {
+		deleteOriginAssociatedData(type, name); 
 		query("DELETE FROM " + ORIGINS_TABLE + " WHERE " +
 			ORIGINS_TYPE + "=" + quote(type) + " AND " +
 			ORIGINS_NAME + "=" + quote(name));
-		deleteOriginAssociatedData(type, name); 
 	}
 	
 	private String field(String table, String column) {
