@@ -42,7 +42,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
 	private static ActionSet actions;
-	private static TagHandler tagHandler;
 	
 	public void start()
 	{
@@ -58,11 +57,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		actions = new ActionSet(ACTION_SET);
 		updateActions();
 		jEdit.addActionSet(actions);
-		tagHandler = new TagHandler() {
-			public void processTag(Hashtable<String, String> info) {
-				db.insertTag(info, -1);
-			}
-		};
 	}
 
 	public void stop()
@@ -397,9 +391,26 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return pvi;
 	}
 	
-	private static void removeProjectFiles(String project,
+	private static void removeProjectFiles(int projectId,
 		Vector<String> files)
 	{
+		StringBuffer filesStr = new StringBuffer();
+		for (int i = 0; i < files.size(); i++) {
+			if (i > 0)
+				filesStr.append(",");
+			filesStr.append(db.quote(files.get(i)));
+		}
+		String query = "DELETE FROM " + TagDB.FILES_TABLE + " WHERE " +
+			TagDB.FILES_NAME + " IN (" + filesStr.toString() + ")" +
+			" AND NOT EXISTS " +
+			"(SELECT " + TagDB.MAP_FILE_ID + " FROM " + TagDB.MAP_TABLE +
+			" WHERE " + TagDB.MAP_ORIGIN_ID + "<>" + projectId +
+			" AND " + TagDB.MAP_FILE_ID + "=" + TagDB.FILES_ID + ")";
+		try {
+			db.query(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Runs Ctags on a list of files and add the tags and associated data to the DB
@@ -425,11 +436,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void updateProject(String project, Vector<String> added,
 		Vector<String> removed)
 	{
+		int projectId = db.getOriginID(TagDB.PROJECT_ORIGIN, project);
+		if (projectId < 0)
+			return;
 		setStatusMessage("Updating project: " + project);
 		if (removed != null)
-			removeProjectFiles(project, removed);
-		if (added != null)
-			tagFiles(added, tagHandler);
+			removeProjectFiles(projectId, removed);
+		if (added != null) {
+			TagHandler handler = new TagFileHandler(projectId);
+			tagFiles(added, handler);
+		}
 		removeStatusMessage();
 	}
 }

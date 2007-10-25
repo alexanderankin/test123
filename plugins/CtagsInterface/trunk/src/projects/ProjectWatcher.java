@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
+import options.ProjectsOptionPane;
+
 import org.gjt.sp.jedit.View;
 
 import projectviewer.ProjectManager;
@@ -18,6 +20,11 @@ import ctags.CtagsInterfacePlugin;
 public class ProjectWatcher implements ProjectListener {
 
 	public ProjectWatcher() {
+		if (ProjectsOptionPane.getAutoUpdateProjects()) {
+			Vector<String> projects = ProjectsOptionPane.getProjects();
+			for (int i = 0; i < projects.size(); i++)
+				watchProject(projects.get(i));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
