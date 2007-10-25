@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
@@ -17,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import options.ProjectsOptionPane;
 
 import org.gjt.sp.jedit.View;
 
@@ -29,6 +32,7 @@ public class QuickSearchTagDialog extends JDialog {
 	JList tags;
 	DefaultListModel model;
 	View view;
+	Vector<Tag> tagNames;
 	
 	public QuickSearchTagDialog(View view) {
 		super(view, "Search tag", false);
@@ -66,6 +70,33 @@ public class QuickSearchTagDialog extends JDialog {
 				}
 			}
 		});
+		TagDB db = CtagsInterfacePlugin.getDB();
+		ResultSet rs;
+		String query = "SELECT " + TagDB.TAGS_TABLE + ".*," +
+			TagDB.FILES_NAME +
+			" FROM " + TagDB.TAGS_TABLE + "," + TagDB.FILES_TABLE +
+			" WHERE " + TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID;
+		if (ProjectsOptionPane.getSearchActiveProjectOnly()) {
+			String project = CtagsInterfacePlugin.getProjectWatcher().getActiveProject(view);
+			query = query + " AND EXISTS (SELECT " + TagDB.MAP_FILE_ID +
+				" FROM " + TagDB.MAP_TABLE + "," + TagDB.ORIGINS_TABLE +
+				" WHERE " + TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
+					"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID +
+				" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
+					"=" + db.quote(project) +
+				" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
+					"=" + db.quote(TagDB.PROJECT_ORIGIN) +
+				")";
+		}
+		try {
+			tagNames = new Vector<Tag>();
+			rs = db.query(query);
+			while (rs.next())
+				tagNames.add(new Tag(rs));
+			rs.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		pack();
 		setVisible(true);
 	}
@@ -77,32 +108,23 @@ public class QuickSearchTagDialog extends JDialog {
 
 	protected void setFilter() {
 		model.removeAllElements();
-		TagDB db = CtagsInterfacePlugin.getDB();
-		String query = "SELECT * FROM " + TagDB.TAGS_TABLE + "," +
-			TagDB.FILES_TABLE +
-			" WHERE " + TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID +
-			" AND " + TagDB.TAGS_NAME + " LIKE " +
-				db.quote("%" + name.getText() + "%");
-		try {
-			ResultSet rs = CtagsInterfacePlugin.getDB().query(query);
-			while (rs.next()) {
-				Tag t = new Tag(rs);
-				if (t.isValid())
-					model.addElement(t);
-			}
-			rs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		String substr = name.getText();
+		for (int i = 0; i < tagNames.size(); i++) {
+			Tag t = tagNames.get(i);
+			if (t.name.contains(substr))
+				model.addElement(t);
 		}
 	}
 	
 	static private class Tag {
 		String file;
 		int line;
+		String name;
 		String desc;
 		public Tag(ResultSet rs) {
 			StringBuffer text = new StringBuffer();
 			try {
+				name = rs.getString(TagDB.TAGS_NAME);
 				text.append(rs.getString(TagDB.TAGS_NAME));
 				String kind = rs.getString(TagDB.attr2col("kind"));
 				if (kind != null)
