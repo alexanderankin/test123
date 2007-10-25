@@ -10,7 +10,6 @@
   + Option to limit tag searches to active project.
   - Add project dependency properties. (To be integrated into PV later)
   - Option to include dependencies in active project tag searches.
-  - Option whether to include de 
 - Design plugin support. 
 + Auto-update DB when:
   + Watched buffer is saved

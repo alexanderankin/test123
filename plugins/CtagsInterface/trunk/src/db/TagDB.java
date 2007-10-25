@@ -202,10 +202,7 @@ public class TagDB {
 
 	// Delete all data associated with the specified origin
 	public void deleteOriginAssociatedData(String type, String name) throws SQLException {
-		int originId = queryInteger(ORIGINS_ID,
-			"SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE + " WHERE " +
-			ORIGINS_TYPE + "=" + quote(type) + " AND " +
-			ORIGINS_NAME + "=" + quote(name), -1);
+		int originId = getOriginID(type, name); 
 		if (originId < 0)
 			return;
 		// Remove all mappings to the origin
