@@ -1,6 +1,7 @@
 package ctags;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -9,8 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
+import javax.swing.JWindow;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -21,6 +24,7 @@ import javax.swing.event.DocumentListener;
 
 import options.ProjectsOptionPane;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
 import db.TagDB;
@@ -33,6 +37,8 @@ public class QuickSearchTagDialog extends JDialog {
 	DefaultListModel model;
 	View view;
 	Vector<Tag> tagNames;
+	/** This window will contains the scroll with the items. */
+	private final JWindow window = new JWindow(this);
 	
 	public QuickSearchTagDialog(View view) {
 		super(view, "Search tag", false);
@@ -44,8 +50,8 @@ public class QuickSearchTagDialog extends JDialog {
 		add(p, BorderLayout.NORTH);
 		model = new DefaultListModel();
 		tags = new JList(model);
-		tags.setVisibleRowCount(10);
-		add(new JScrollPane(tags), BorderLayout.CENTER);
+		tags.setBorder(BorderFactory.createEtchedBorder());
+		window.setContentPane(new JScrollPane(tags));
 		name.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				setFilter();
@@ -57,14 +63,34 @@ public class QuickSearchTagDialog extends JDialog {
 				setFilter();
 			}
 		});
+		name.addKeyListener(new KeyAdapter()
+			{
+				public void keyPressed(KeyEvent e) {
+					if (handledByList(e)) {
+						tags.dispatchEvent(e);
+					} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						setVisible(false);
+					} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						jumpToSelected();
+					}
+				}
+			}
+		);
 		tags.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				jumpToSelected();
 			}
 		});
 		tags.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				name.dispatchEvent(e);
+			}
+				    
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (!handledByList(e)) {
+					name.dispatchEvent(e);
+				}
+				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					e.consume();
 					jumpToSelected();
 				}
@@ -98,6 +124,7 @@ public class QuickSearchTagDialog extends JDialog {
 			e1.printStackTrace();
 		}
 		pack();
+		setLocationRelativeTo(view);
 		setVisible(true);
 	}
 
@@ -115,6 +142,31 @@ public class QuickSearchTagDialog extends JDialog {
 			if (t.name.contains(substr))
 				model.addElement(t);
 		}
+		if (model.isEmpty())
+		{
+			window.setVisible(false);
+		}
+		else
+		{
+			tags.setVisibleRowCount(Math.min(10, model.size()));
+			window.pack();
+			window.setVisible(true);
+		}
+	}
+	
+	private static boolean handledByList(KeyEvent e) {
+		return e.getKeyCode() == KeyEvent.VK_DOWN ||
+		e.getKeyCode() == KeyEvent.VK_UP ||
+		e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+		e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+	}
+	
+	public void setVisible(boolean b) {
+		Rectangle bounds = getBounds();
+		window.setLocation(bounds.x, bounds.y + bounds.height);
+		GUIUtilities.requestFocus(this, name);
+		window.setVisible(false);
+		super.setVisible(b);
 	}
 	
 	static private class Tag {
