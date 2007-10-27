@@ -76,3 +76,6 @@ plugin.ctags.sidekick.Plugin.menu=sidekick-tree
 
 # docs
 plugin.ctags.sidekick.Plugin.docs=index.html
+
+# Custom options to ctags for certain languages.
+mode.shellscript.options.CtagsSideKick.mode.ctags_options=--language-force\=Sh
