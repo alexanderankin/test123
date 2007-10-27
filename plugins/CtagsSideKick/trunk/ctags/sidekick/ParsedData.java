@@ -133,7 +133,6 @@ public class ParsedData extends SideKickParsedData
 		return null;
 	}
 
-	@Override
 	protected FoldHandler getFoldHandler() {
 		return foldHandler;
 	}
