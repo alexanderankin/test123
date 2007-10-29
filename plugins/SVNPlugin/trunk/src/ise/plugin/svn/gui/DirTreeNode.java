@@ -92,6 +92,10 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
         properties = (Properties)p.clone();
     }
 
+    public boolean hasProperties() {
+        return properties != null;
+    }
+
     /**
      * For sorting.  Directories sort before files, otherwise, sort by name.
      */
