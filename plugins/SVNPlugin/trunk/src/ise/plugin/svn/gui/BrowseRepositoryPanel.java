@@ -161,7 +161,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 // fetch the file contents, -1 shorthand for HEAD revision
                                 BrowseRepository br = new BrowseRepository();
                                 File outfile = br.getFile( url, filepath, -1, data.getUsername(), data.getPassword() );
-                                if (outfile != null) {
+                                if ( outfile != null ) {
                                     jEdit.openFile( getView(), outfile.getAbsolutePath() );
                                 }
                                 tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
@@ -178,13 +178,13 @@ public class BrowseRepositoryPanel extends JPanel {
         popupMenu = createPopupMenu();
 
         // create the control buttons
-        Icon new_icon = GUIUtilities.loadIcon("New.png");
+        Icon new_icon = GUIUtilities.loadIcon( "New.png" );
         JButton new_btn = new JButton( new_icon );
-        Dimension dim = new Dimension(new_icon.getIconWidth() + (new_btn.getInsets().top * 2), new_icon.getIconHeight() + (new_btn.getInsets().top * 2));
-        new_btn.setSize(dim);
-        new_btn.setPreferredSize(dim);
-        new_btn.setMaximumSize(dim);
-        new_btn.setToolTipText("Add new repository");
+        Dimension dim = new Dimension( new_icon.getIconWidth() + ( new_btn.getInsets().top * 2 ), new_icon.getIconHeight() + ( new_btn.getInsets().top * 2 ) );
+        new_btn.setSize( dim );
+        new_btn.setPreferredSize( dim );
+        new_btn.setMaximumSize( dim );
+        new_btn.setToolTipText( "Add new repository" );
         new_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
@@ -199,19 +199,19 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 }
                                  );
-        Icon refresh_icon = GUIUtilities.loadIcon("Reload.png");
+        Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
         JButton refresh_btn = new JButton( refresh_icon );
-        dim = new Dimension(refresh_icon.getIconWidth() + (refresh_btn.getInsets().top * 2), refresh_icon.getIconHeight() + (refresh_btn.getInsets().top * 2));
-        refresh_btn.setSize(dim);
-        refresh_btn.setPreferredSize(dim);
-        refresh_btn.setMaximumSize(dim);
-        refresh_btn.setToolTipText("Refresh");
+        dim = new Dimension( refresh_icon.getIconWidth() + ( refresh_btn.getInsets().top * 2 ), refresh_icon.getIconHeight() + ( refresh_btn.getInsets().top * 2 ) );
+        refresh_btn.setSize( dim );
+        refresh_btn.setPreferredSize( dim );
+        refresh_btn.setMaximumSize( dim );
+        refresh_btn.setToolTipText( "Refresh" );
         refresh_btn.addActionListener( al );
 
         // create a panel to hold the buttons
-        JPanel button_panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 1));
-        button_panel.add(new_btn);
-        button_panel.add(refresh_btn);
+        JPanel button_panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 1 ) );
+        button_panel.add( new_btn );
+        button_panel.add( refresh_btn );
 
         // create a panel to hold the buttons and the repository chooser
         JPanel top_panel = new JPanel( new BorderLayout() );
@@ -249,7 +249,6 @@ public class BrowseRepositoryPanel extends JPanel {
         password = jEdit.getProperty( PREFIX + "password." + index );
         data.setUsername( username );
         data.setPassword( password );
-        System.out.println("+++++ BrowseRepositoryPanel: " + data.toString());
         return data;
     }
 
@@ -302,7 +301,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
                         data = dialog.getValues();  // null indicates user cancelled
-                        if (data != null) {
+                        if ( data != null ) {
                             saveData( data );
                             DirTreeNode root = new DirTreeNode( data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
@@ -442,10 +441,10 @@ public class BrowseRepositoryPanel extends JPanel {
                             return ;
                         }
 
-                        TreePath path = tree_paths[0];
-                        DirTreeNode node = (DirTreeNode)path.getLastPathComponent();
+                        TreePath path = tree_paths[ 0 ];
+                        DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                         Properties props = node.getProperties();
-                        if (props == null) {
+                        if ( props == null ) {
                             JOptionPane.showMessageDialog( view, "This item has no SVN properties.", "No Properties", JOptionPane.INFORMATION_MESSAGE );
                             return ;
                         }
@@ -477,10 +476,15 @@ public class BrowseRepositoryPanel extends JPanel {
             if ( r instanceof JLabel ) {
                 JLabel label = ( JLabel ) r;
                 DirTreeNode node = ( DirTreeNode ) value;
+                String text = node.toString();
                 if ( node.isExternal() ) {
-                    label.setText( "<html><font color=blue>" + node.toString() );
+                    text = "<html><font color=blue>" + node.toString();
                     label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
                 }
+                if (node.hasProperties() ) {
+                    text += " *";
+                }
+                label.setText(text);
             }
             return r;
         }
