@@ -47,12 +47,12 @@ public class OutputPanel extends JPanel {
     private JTabbedPane tabs;
 
     // used to generate unique name for this panel
-    public static int COUNT = 0;
+    static int COUNT = 0;
     private int myIndex;
 
     // the logger for this panel, this logger should only log to this panel
     // via the handler
-    private Logger logger = null;
+    private transient Logger logger = null;
     private SubversionGUILogHandler handler = new SubversionGUILogHandler();
 
     public OutputPanel() {

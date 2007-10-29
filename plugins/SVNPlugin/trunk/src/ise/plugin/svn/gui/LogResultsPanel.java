@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.*;
 import java.io.File;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
@@ -55,7 +56,6 @@ import org.gjt.sp.jedit.View;
 
 public class LogResultsPanel extends JPanel {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() );
     private View view = null;
     private LogResults logResults = null;
     private String username = null;
@@ -80,11 +80,13 @@ public class LogResultsPanel extends JPanel {
         con.p = 0;
 
         TreeMap < String, List < SVNLogEntry >> results = logResults.getEntries();
-        for ( String path : results.keySet() ) {
+        Set<Map.Entry<String, List<SVNLogEntry>>> set = results.entrySet();
+        for ( Map.Entry me : set ) {
+            String path = (String)me.getKey();
             JLabel label = new JLabel( "Path: " + path );
 
             // sort the entries
-            List<SVNLogEntry> entries = results.get( path );
+            List<SVNLogEntry> entries = (List<SVNLogEntry>)me.getValue();
             Collections.sort( entries, new EntryComparator() );
 
             // put the results data into an array to pass to a JTable
@@ -93,7 +95,7 @@ public class LogResultsPanel extends JPanel {
             for ( int i = 0; it.hasNext(); i++ ) {
                 SVNLogEntry entry = ( SVNLogEntry ) it.next();
                 String revision = String.valueOf( entry.getRevision() );
-                String date = DATE_FORMAT.format( entry.getDate() );
+                String date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( entry.getDate() );
                 String author = entry.getAuthor();
                 String comment = entry.getMessage();
                 data[ i ][ 0 ] = revision;
@@ -229,10 +231,10 @@ public class LogResultsPanel extends JPanel {
     /**
      * for sorting log entries by revision number, latest revision first
      */
-    public class EntryComparator implements Comparator<SVNLogEntry> {
+    public class EntryComparator implements Comparator<SVNLogEntry>, Serializable {
         public int compare( SVNLogEntry o1, SVNLogEntry o2 ) {
-            Long l1 = new Long( o1.getRevision() );
-            Long l2 = new Long( o2.getRevision() );
+            Long l1 = Long.valueOf( o1.getRevision() );
+            Long l2 = Long.valueOf( o2.getRevision() );
             return l2.compareTo( l1 );
         }
     }
@@ -297,7 +299,7 @@ public class LogResultsPanel extends JPanel {
                                     SVNInfo info = logResults.getInfo();
                                     String rep_url_string = info.getRepositoryRootURL().toString();
                                     String file_url_string = info.getURL().toString();
-                                    String path = file_url_string.substring( rep_url_string.length() );
+                                    //String path = file_url_string.substring( rep_url_string.length() );
                                     String project_root = PVHelper.getProjectRoot(view);
                                     String revision = ( String ) table.getValueAt( rows[ 0 ], 0 );
                                     for ( String remote_filename : data.getPaths() ) {

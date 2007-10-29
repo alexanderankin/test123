@@ -64,8 +64,8 @@ public class LogDialog extends JDialog {
 
     private boolean recursive = false;
 
-    private SVNRevision startRevision = SVNRevision.create( 0L );
-    private SVNRevision endRevision = SVNRevision.HEAD;
+    private transient SVNRevision startRevision = SVNRevision.create( 0L );
+    private transient SVNRevision endRevision = SVNRevision.HEAD;
 
     private boolean cancelled = false;
 
@@ -149,8 +149,8 @@ public class LogDialog extends JDialog {
                                   );
 
         final JSpinner max_logs = new JSpinner();
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setMinimum(new Integer(1));
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setValue(new Integer(100));
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setMinimum(Integer.valueOf(1));
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setValue(Integer.valueOf(100));
 
         final JCheckBox stopOnCopy = new JCheckBox("Stop on copy");
         final JCheckBox showPaths = new JCheckBox("Show paths");

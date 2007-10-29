@@ -30,17 +30,18 @@ package ise.plugin.svn.data;
 
 
 import java.io.File;
+import java.io.Serializable;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 
-public class CopyData extends SVNData {
+public class CopyData extends SVNData implements Serializable {
 
     private File sourceFile = null;
-    private SVNURL sourceURL = null;
+    private transient SVNURL sourceURL = null;
     private File destinationFile = null;
-    private SVNURL destinationURL = null;
-    private SVNRevision revision = null;
+    private transient SVNURL destinationURL = null;
+    private transient SVNRevision revision = null;
     private boolean isMove = false;
     private String message = null;
 

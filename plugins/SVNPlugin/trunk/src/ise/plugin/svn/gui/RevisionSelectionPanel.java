@@ -54,7 +54,7 @@ public class RevisionSelectionPanel extends JPanel {
     private JSpinner revision_number = null;
     private JSpinner date_spinner = null;
 
-    private SVNRevision revision = SVNRevision.HEAD;
+    private transient SVNRevision revision = SVNRevision.HEAD;
 
     /**
      * @param title this panel is displayed in an etched border with a title.

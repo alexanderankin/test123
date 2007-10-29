@@ -46,7 +46,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class RevisionDialog extends JDialog {
 
     private View view = null;
-    private SVNRevision revision = null;
+    private transient SVNRevision revision = null;
 
     /**
      * @param view the parent frame

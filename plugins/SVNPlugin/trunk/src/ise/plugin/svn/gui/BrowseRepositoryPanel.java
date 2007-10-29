@@ -433,8 +433,25 @@ public class BrowseRepositoryPanel extends JPanel {
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        JOptionPane.showMessageDialog( view, "Sorry, this feature is not yet implemented.", "Darn", JOptionPane.ERROR_MESSAGE );
-                        return ;
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+
+                        TreePath path = tree_paths[0];
+                        DirTreeNode node = (DirTreeNode)path.getLastPathComponent();
+                        Properties props = node.getProperties();
+                        if (props == null) {
+                            JOptionPane.showMessageDialog( view, "This item has no SVN properties.", "No Properties", JOptionPane.INFORMATION_MESSAGE );
+                            return ;
+                        }
+                        PropertiesAction action = new PropertiesAction( view, node.toString(), props );
+                        action.actionPerformed( ae );
+
                     }
                 }
                             );

@@ -60,7 +60,6 @@ import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
 public class SVNInfoPanel extends JPanel {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );
 
     public SVNInfoPanel( List<SVNInfo> infos ) {
         super( new GridLayout( 0, 1, 0, 3 ) );
@@ -358,7 +357,7 @@ public class SVNInfoPanel extends JPanel {
     }
 
     private String formatDate( Date date ) {
-        return DATE_FORMAT.format( date );
+        return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() ).format( date );
     }
 
     private int getLineCount( String s ) {

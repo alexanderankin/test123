@@ -28,12 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Data transfer object to mimic org.tmatesoft.core.wc.SVNCommitInfo.
  */
-public class CommitInfo {
+public class CommitInfo implements Serializable {
     private String author = null;
     private Date date = null;
     private String exception = null;
@@ -58,7 +59,7 @@ public class CommitInfo {
      * Returns the value of date.
      */
     public Date getDate() {
-        return date;
+        return new Date(date.getTime());
     }
 
     /**
@@ -66,7 +67,7 @@ public class CommitInfo {
      * @param date The value to assign date.
      */
     public void setDate( Date date ) {
-        this.date = date;
+        this.date = new Date(date.getTime());
     }
 
     /**

@@ -128,6 +128,17 @@ public class AddResultsPanel extends JPanel {
             JLabel bad_label = new JLabel( bad_label_text );
 
             String[][] data = new String[ error_map.size() ][ 2 ];
+            Set<Map.Entry<String, String>> set = error_map.entrySet();
+            int i = 0;
+            for (Map.Entry entry : set) {
+                String path = (String) entry.getKey();
+                String msg = (String) entry.getValue();
+                data[ i ][ 0 ] = path;
+                data[ i ][ 1 ] = msg;
+                ++i;
+            }
+
+            /*
             Iterator it = error_map.keySet().iterator();
             for ( int i = 0; it.hasNext(); i++ ) {
                 String path = ( String ) it.next();
@@ -135,6 +146,7 @@ public class AddResultsPanel extends JPanel {
                 data[ i ][ 0 ] = path;
                 data[ i ][ 1 ] = msg;
             }
+            */
             JTable bad_table = new JTable( data, new String[] {"Path", "Error Message"} );
 
             if ( top ) {

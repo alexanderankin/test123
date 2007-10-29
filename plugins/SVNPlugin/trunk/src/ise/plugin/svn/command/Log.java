@@ -229,8 +229,8 @@ public class Log {
         paths.add("/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Log.java");
         data.setPaths(paths);
         data.setOut(new ise.plugin.svn.io.ConsolePrintStream(new ise.plugin.svn.io.LogOutputStream(null)));
-        long start_rev = 9795L;
-        long end_rev = 9810L;
+        //long start_rev = 9795L;
+        //long end_rev = 9810L;
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(2007, 5, 1);
         //SVNRevision start = SVNRevision.parse(String.valueOf(start_rev));

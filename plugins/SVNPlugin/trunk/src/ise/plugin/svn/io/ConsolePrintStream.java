@@ -39,7 +39,7 @@ import ise.plugin.svn.SVNPlugin;
 
 public class ConsolePrintStream extends PrintStream {
 
-    public static String LS = System.getProperty( "line.separator" );
+    public final static String LS = System.getProperty( "line.separator" );
 
     public ConsolePrintStream( OutputStream os ) {
         super( os, true );

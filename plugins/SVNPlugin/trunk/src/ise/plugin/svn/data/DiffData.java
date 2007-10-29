@@ -33,8 +33,8 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class DiffData extends SVNData {
 
-    private SVNRevision revision1 = SVNRevision.HEAD;
-    private SVNRevision revision2 = null;
+    private transient SVNRevision revision1 = SVNRevision.HEAD;
+    private transient SVNRevision revision2 = null;
 
 
     /**

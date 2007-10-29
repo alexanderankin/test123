@@ -57,7 +57,6 @@ import ise.plugin.svn.data.SVNData;
 
 public class Info {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() );
 
     public List<SVNInfo> info( SVNData data ) throws CommandInitializationException, SVNException {
         List<SVNInfo> results = getInfo( data );
@@ -226,7 +225,7 @@ public class Info {
     }
 
     private static String formatDate( Date date ) {
-        return DATE_FORMAT.format( date );
+        return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() ).format( date );
     }
 
     private int getLineCount( String s ) {

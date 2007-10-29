@@ -36,7 +36,7 @@ public class UpdateData extends SVNData {
     private List<String> addedFiles = null;
     private List<String> deletedFiles = null;
     private List<String> updatedFiles = null;
-    private SVNRevision revision = SVNRevision.HEAD;
+    private transient SVNRevision revision = SVNRevision.HEAD;
 
 
     /**
