@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn;
 
+import java.io.Serializable;
 import java.util.logging.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -54,7 +55,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
  * @author    Dale Anson, danson@germane-software.com
  * @created   July 22, 2002
  */
-public class SubversionGUILogHandler extends Handler {
+public class SubversionGUILogHandler extends Handler implements Serializable {
 
     /**
      * The output area.

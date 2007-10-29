@@ -46,7 +46,7 @@ import org.gjt.sp.jedit.View;
  */
 public class SVNAction extends projectviewer.action.Action {
 
-    public static String PREFIX = "ise.plugin.svn.pv.";
+    public final static String PREFIX = "ise.plugin.svn.pv.";
 
     private JMenu menu = null;
 

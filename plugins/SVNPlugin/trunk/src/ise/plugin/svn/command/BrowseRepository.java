@@ -40,12 +40,15 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.io.SVNFileRevision;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.gui.DirTreeNode;
+import ise.plugin.svn.io.SVNFile;
 import ise.plugin.svn.library.FileUtilities;
 
 
@@ -85,14 +88,6 @@ public class BrowseRepository {
         ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getPassword() );
         repository.setAuthenticationManager( authManager );
 
-
-        DirTreeNode root;
-        if ( node == null ) {
-            root = new DirTreeNode( url, false );
-        }
-        else {
-            root = node;
-        }
         List<DirTreeNode> children = null;
         try {
             /*
@@ -199,9 +194,24 @@ public class BrowseRepository {
                     + entry.getName() + " (author: '" + entry.getAuthor()
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
             DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
+            String repositoryLocation = repository.getLocation().toString() + "/" + entry.getName();
+            if (entry.hasProperties()) {
+                if (entry.getKind() == SVNNodeKind.FILE) {
+                Collection revs = repository.getFileRevisions(entry.getName(), null, entry.getRevision(), entry.getRevision());
+                if (revs.size() > 0) {
+                    SVNFileRevision rev = (SVNFileRevision)revs.toArray()[0];
+                    node.setProperties(convertMap(rev.getRevisionProperties()));
+                }
+                }
+                else if (entry.getKind() == SVNNodeKind.DIR) {
+                    Map map = new HashMap();
+                    Collection c = repository.getDir(entry.getName(), -1, map, (Collection)null);
+                    node.setProperties(convertMap(map));
+                }
+            }
             if ( isExternal ) {
                 node.setExternal( true );
-                node.setRepositoryLocation( repository.getLocation().toString() + "/" + entry.getName() );
+                node.setRepositoryLocation( repositoryLocation );
             }
             list.add( node );
         }
@@ -239,10 +249,10 @@ public class BrowseRepository {
         return newList;
     }
 
-    public File getFile( String url, String filepath, long revision, String username, String password ) {
+    public SVNFile getFile( String url, String filepath, long revision, String username, String password ) {
         setupLibrary();
         SVNRepository repository = null;
-        File outfile = null;
+        SVNFile outfile = null;
         try {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, password );
@@ -252,12 +262,15 @@ public class BrowseRepository {
             if ( nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR ) {
                 return null;
             }
-            Map fileproperties = new HashMap( );
+            Map<Object, Object> fileproperties = new HashMap<Object, Object>( );
             ByteArrayOutputStream baos = new ByteArrayOutputStream( );
             repository.getFile( filepath , revision , fileproperties , baos );
 
             String mimeType = ( String ) fileproperties.get( SVNProperty.MIME_TYPE );
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
+
+            // copy the properties to a Properties
+            Properties props = convertMap(fileproperties);
 
             // ignore non-text files for now
             if ( isTextType ) {
@@ -273,10 +286,10 @@ public class BrowseRepository {
                         index = slash_index + 1;
                     }
                 }
-                String filename = filepath.substring( 0, index ) + "-" + (revision < 0L ? "HEAD" : String.valueOf(revision)) + filepath.substring( index );
-                filename = System.getProperty("java.io.tmpdir") + "/" + filename;
-                outfile = new File(filename);
-                if (outfile.exists()) {
+                String filename = filepath.substring( 0, index ) + "-" + ( revision < 0L ? "HEAD" : String.valueOf( revision ) ) + filepath.substring( index );
+                filename = System.getProperty( "java.io.tmpdir" ) + "/" + filename;
+                outfile = new SVNFile( filename );
+                if ( outfile.exists() ) {
                     outfile.delete();
                 }
                 outfile.deleteOnExit();     // automatic cleanup
@@ -285,6 +298,7 @@ public class BrowseRepository {
                 BufferedWriter writer = new BufferedWriter( new FileWriter( outfile ) );
                 FileUtilities.copy( reader, writer );
                 writer.close();
+                outfile.setProperties( props );
                 return outfile;
             }
         }
@@ -293,6 +307,25 @@ public class BrowseRepository {
             outfile = null;
         }
         return outfile;
+    }
+
+    // converts a Map to a Properties by taking the string value of the names
+    // and values
+    private Properties convertMap( Map<Object, Object> map ) {
+        Properties props = new Properties();
+        if ( map.size() > 0 ) {
+            Set < Map.Entry < Object, Object >> set = map.entrySet();
+            for ( Map.Entry me : set ) {
+                Object name = me.getKey();
+                if ( name != null ) {
+                    Object value = me.getValue();
+                    if ( value != null ) {
+                        props.setProperty( name.toString(), value.toString() );
+                    }
+                }
+            }
+        }
+        return props;
     }
 
     /*

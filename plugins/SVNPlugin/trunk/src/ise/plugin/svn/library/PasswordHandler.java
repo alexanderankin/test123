@@ -151,10 +151,10 @@ public class PasswordHandler {
         try {
                 //testPassword.append(String.valueOf(i % 10));
                 String testPassword = "abcdef1234567890";
-                System.out.println("original: " + testPassword.toString());
+                System.out.println("original: " + testPassword);
                 System.out.println("original length: " + testPassword.length());
                 PasswordHandler ph = new PasswordHandler();
-                String encrypted = ph.encrypt(testPassword.toString());
+                String encrypted = ph.encrypt(testPassword);
                 System.out.println("encrypted: " + encrypted);
                 System.out.println("encrypted length: " + encrypted.length());
                 if (encrypted.length() >= 32)
@@ -162,7 +162,7 @@ public class PasswordHandler {
                 ph = new PasswordHandler();
                 String plain = ph.decrypt(encrypted);
                 System.out.println("decrypted: " + plain);
-                if (testPassword.toString().compareTo(plain) != 0) {
+                if (testPassword.compareTo(plain) != 0) {
                     throw new Exception("test failed!");
                 }
         }

@@ -129,7 +129,7 @@ public class ResolvedAction extends NodeActor {
                         panel.addTab("Resolved", results_panel);
                     }
                     catch ( Exception e ) {
-                        // ignored
+                        System.err.println(e.getMessage());
                     }
                 }
             }

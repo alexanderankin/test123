@@ -48,11 +48,18 @@ import ise.plugin.svn.data.CheckoutData;
 public class Checkout {
 
     public long doCheckout( CheckoutData cd ) throws CommandInitializationException, SVNException {
-        SVNKit.setupLibrary();
+        if ( cd == null ) {
+            throw new CommandInitializationException("CheckoutData is null.");
+        }
+
 
         // validate data values
         if ( cd.getPaths() == null || cd.getURL() == null ) {
-            return -1;     // nothing to do
+            return -1;      // nothing to do
+        }
+        File localPath = new File(cd.getPaths().get(0));
+        if ( localPath == null ) {
+            return -1;      // nothing to do
         }
         if ( cd.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
@@ -60,8 +67,10 @@ public class Checkout {
         if ( cd.getErr() == null ) {
             cd.setErr( cd.getOut() );
         }
+        PrintStream out = cd.getOut();
 
-        File localPath = new File(cd.getPaths().get(0));
+        // ensure the svn library is ready
+        SVNKit.setupLibrary();
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
@@ -73,9 +82,8 @@ public class Checkout {
         SVNUpdateClient client = clientManager.getUpdateClient();
 
         // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        client.setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
 
-        PrintStream out = cd.getOut();
 
         long revision = client.doCheckout(SVNURL.parseURIDecoded(cd.getURL()), localPath, SVNRevision.HEAD, SVNRevision.HEAD, true);
 

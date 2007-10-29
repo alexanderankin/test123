@@ -52,7 +52,7 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  */
 public class PVSVNOptionPane extends AbstractOptionPane {
     // instance fields
-    public static String PREFIX = "ise.plugin.svn.pv.";
+    public final static String PREFIX = "ise.plugin.svn.pv.";
 
     private JLabel url_label;
     private JTextField url;

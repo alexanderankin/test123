@@ -39,7 +39,7 @@ public class FileUtilities {
     * Buffer size for read and write operations. Increasing may improve
     * performance.
     */
-   public static int BUFFER_SIZE = 8192;
+   public final static int BUFFER_SIZE = 8192;
 
    /**
     * Copies one file to another. If destination file exists, it will be

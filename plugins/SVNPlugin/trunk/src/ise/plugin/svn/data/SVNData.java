@@ -35,9 +35,9 @@ import ise.plugin.svn.io.ConsolePrintStream;
 /**
  * Base class to contain data to pass to the various subversion commands.
  */
-public class SVNData {
-    private ConsolePrintStream out;
-    private ConsolePrintStream err;
+public class SVNData implements Serializable {
+    private transient ConsolePrintStream out;
+    private transient ConsolePrintStream err;
     private List<String> paths;
     private boolean pathsAreUrls = false;
     private String username = "";

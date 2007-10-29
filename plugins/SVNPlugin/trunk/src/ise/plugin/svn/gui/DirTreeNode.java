@@ -30,6 +30,7 @@ package ise.plugin.svn.gui;
 
 import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * Represents a node in a repository tree.  Overrides <code>isLeaf</code> so
@@ -41,12 +42,12 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
     private boolean isLeaf = true;
     private boolean external = false;
     private String repositoryLocation = null;
-    private Map properties = null;
+    private Properties properties = null;
 
     public DirTreeNode( Object userObject, boolean isLeaf ) {
         super( userObject );
-        if (userObject == null) {
-            throw new IllegalArgumentException("null user object not allowed");
+        if ( userObject == null ) {
+            throw new IllegalArgumentException( "null user object not allowed" );
         }
         this.isLeaf = isLeaf;
     }
@@ -83,12 +84,12 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
     /**
      * @return the svn properties, if any, associated with this node.
      */
-    public Map getProperties() {
-        return properties;
+    public Properties getProperties() {
+        return properties == null ? null : (Properties)properties.clone();
     }
 
-    public void setProperties(Map p) {
-        properties = p;
+    public void setProperties( Properties p ) {
+        properties = (Properties)p.clone();
     }
 
     /**
@@ -96,10 +97,10 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
      */
     public int compareTo( DirTreeNode node ) {
         // sort directories first
-        if (!this.isLeaf() && node.isLeaf()) {
+        if ( !this.isLeaf() && node.isLeaf() ) {
             return -1;
         }
-        if (this.isLeaf() && !node.isLeaf()) {
+        if ( this.isLeaf() && !node.isLeaf() ) {
             return 1;
         }
 
@@ -107,5 +108,21 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
         String a = this.getUserObject().toString().toLowerCase();
         String b = ( ( DirTreeNode ) node ).getUserObject().toString().toLowerCase();
         return a.compareTo( b );
+    }
+
+    public boolean equals( Object o ) {
+        if ( o == null ) {
+            return false;
+        }
+        if ( !( o instanceof DirTreeNode ) ) {
+            return false;
+        }
+        return o.hashCode() == hashCode();
+    }
+
+    public int hashCode() {
+        return this.getUserObject().toString().toLowerCase().hashCode();
+        //TreePath path = new TreePath(getPath());
+        //return path.hashCode();
     }
 }

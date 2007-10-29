@@ -173,9 +173,9 @@ public class PrivilegedAccessor {
 
     }
 
-    private static Method[] getSuperclassMethods( Object instance ) {
-        return getSuperclassMethods(instance.getClass());
-    }
+    //private static Method[] getSuperclassMethods( Object instance ) {
+    //    return getSuperclassMethods(instance.getClass());
+    //}
 
     private static Method[] getSuperclassMethods(Class c) {
         return ( ( Class ) c.getGenericSuperclass() ).getDeclaredMethods();

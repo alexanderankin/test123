@@ -42,7 +42,6 @@ import org.tmatesoft.svn.core.SVNCommitInfo;
 
 public class CommitResultsPanel extends JPanel {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() );
 
 
     public CommitResultsPanel( CommitData results ) {
@@ -53,7 +52,7 @@ public class CommitResultsPanel extends JPanel {
         CommitInfo info = results.getInfo();
         String revision = String.valueOf( info.getRevision() );
         String author = info.getAuthor();
-        String date = DATE_FORMAT.format( info.getDate() );
+        String date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( info.getDate() );
 
         List<String> paths = ListOps.toList(ListOps.toSet(results.getPaths()));
         Collections.sort( paths );

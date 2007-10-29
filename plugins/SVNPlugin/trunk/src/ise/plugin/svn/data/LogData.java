@@ -32,8 +32,8 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class LogData extends CheckoutData {
 
-    private SVNRevision startRevision = SVNRevision.create( 0L );
-    private SVNRevision endRevision = SVNRevision.HEAD;
+    private transient SVNRevision startRevision = SVNRevision.create( 0L );
+    private transient SVNRevision endRevision = SVNRevision.HEAD;
     private int maxLogs = 100;
     private boolean stopOnCopy = true;
     private boolean showPaths = false;

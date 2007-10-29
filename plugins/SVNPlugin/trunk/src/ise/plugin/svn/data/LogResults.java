@@ -28,14 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.TreeMap;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
-public class LogResults {
-    private SVNInfo info;
-    private TreeMap < String, List < SVNLogEntry >> entries;
+public class LogResults implements Serializable {
+    private transient SVNInfo info;
+    private transient TreeMap < String, List < SVNLogEntry >> entries;
     /**
      * Returns the value of info.
      */

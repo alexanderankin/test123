@@ -104,7 +104,7 @@ public class StatusAction extends NodeActor {
                         output_panel.addTab("Status", panel);
                     }
                     catch ( Exception e ) {
-                        // ignored
+                        System.err.println(e.getMessage());
                     }
                 }
             }

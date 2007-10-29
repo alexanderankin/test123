@@ -127,7 +127,7 @@ public class AddAction implements ActionListener {
                         panel.addTab("Add", results_panel);
                     }
                     catch ( Exception e ) {
-                        // ignored
+                        System.err.println(e.getMessage());
                     }
                 }
             }
