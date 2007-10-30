@@ -11,6 +11,9 @@ public class Tag {
 	private String pattern;
 	private String kind;
 	private Hashtable<String, String> extensions;
+	private Hashtable<String, String> attachments;
+	static private String LINE_KEY = String.valueOf("line");
+	static private String KIND_KEY = String.valueOf("kind");
 	
 	public Tag(String name, String file, String pattern) {
 		this.name = name;
@@ -19,9 +22,11 @@ public class Tag {
 	}
 	public void setExtensions(Hashtable<String, String> extensions) {
 		this.extensions = extensions;
-		kind = extensions.contains("kind") ? extensions.get("kind") : null; 
-		line = extensions.contains("line") ? Integer.valueOf(extensions.get("line")) : -1;
-		
+		kind = extensions.containsKey(KIND_KEY) ? extensions.get(KIND_KEY) : null; 
+		line = extensions.containsKey(LINE_KEY) ? Integer.valueOf(extensions.get(LINE_KEY)) : -1;
+	}
+	public void setAttachments(Hashtable<String, String> attachments) {
+		this.attachments = attachments;
 	}
 	public String getName() {
 		return name;
@@ -43,5 +48,11 @@ public class Tag {
 	}
 	public Set<String> getExtensions() {
 		return extensions.keySet();
+	}
+	public Set<String> getAttachments() {
+		return attachments.keySet();
+	}
+	public String getAttachment(String name) {
+		return attachments.get(name);
 	}
 }

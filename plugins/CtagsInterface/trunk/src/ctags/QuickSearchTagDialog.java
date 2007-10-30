@@ -36,7 +36,7 @@ public class QuickSearchTagDialog extends JDialog {
 	JList tags;
 	DefaultListModel model;
 	View view;
-	Vector<Tag> tagNames;
+	Vector<QuickSearchTag> tagNames;
 	/** This window will contains the scroll with the items. */
 	private final JWindow window = new JWindow(this);
 	
@@ -115,10 +115,10 @@ public class QuickSearchTagDialog extends JDialog {
 				")";
 		}
 		try {
-			tagNames = new Vector<Tag>();
+			tagNames = new Vector<QuickSearchTag>();
 			rs = db.query(query);
 			while (rs.next())
-				tagNames.add(new Tag(rs));
+				tagNames.add(new QuickSearchTag(rs));
 			rs.close();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -129,7 +129,7 @@ public class QuickSearchTagDialog extends JDialog {
 	}
 
 	protected void jumpToSelected() {
-		Tag t = (Tag) tags.getSelectedValue();
+		QuickSearchTag t = (QuickSearchTag) tags.getSelectedValue();
 		CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
 		dispose();
 	}
@@ -138,7 +138,7 @@ public class QuickSearchTagDialog extends JDialog {
 		model.removeAllElements();
 		String substr = name.getText();
 		for (int i = 0; i < tagNames.size(); i++) {
-			Tag t = tagNames.get(i);
+			QuickSearchTag t = tagNames.get(i);
 			if (t.name.contains(substr))
 				model.addElement(t);
 		}
@@ -169,21 +169,21 @@ public class QuickSearchTagDialog extends JDialog {
 		super.setVisible(b);
 	}
 	
-	static private class Tag {
+	static private class QuickSearchTag {
 		String file;
 		int line;
 		String name;
 		String desc;
-		public Tag(ResultSet rs) {
+		public QuickSearchTag(ResultSet rs) {
 			StringBuffer text = new StringBuffer();
 			try {
 				name = rs.getString(TagDB.TAGS_NAME);
 				text.append(rs.getString(TagDB.TAGS_NAME));
-				String kind = rs.getString(TagDB.attr2col("kind"));
+				String kind = rs.getString(TagDB.extension2column("kind"));
 				if (kind != null)
 					text.append(" (" + kind + ")");
 				file = rs.getString(TagDB.FILES_NAME);
-				String lineStr = rs.getString(TagDB.attr2col("line"));
+				String lineStr = rs.getString(TagDB.extension2column("line"));
 				if (lineStr != null)
 					line = Integer.valueOf(lineStr);
 				else

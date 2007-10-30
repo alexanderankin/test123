@@ -94,11 +94,11 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			s.append(": <b>");
 			s.append(tag.getName());
 			s.append("</b>  ");
-			String originType = tag.getExtension("O_TYPE");
+			String originType = tag.getAttachment("O_TYPE");
 			if (originType != null &&
 				originType.equals(TagDB.PROJECT_ORIGIN))
 			{
-				String project = tag.getExtension("O_NAME");
+				String project = tag.getAttachment("O_NAME");
 				if (project != null && project.length() > 0) {
 					s.append("(<i>");
 					s.append(project);
@@ -110,19 +110,18 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			s.append("<br>Pattern: ");
 			s.append(tag.getPattern());
 			s.append("<br>");
-			TreeSet<String> keys = new TreeSet<String>(tag.getExtensions());
-			keys.remove(TagDB.ORIGINS_TYPE);
-			keys.remove(TagDB.ORIGINS_NAME);
-			Iterator<String> it = keys.iterator();
+			TreeSet<String> extensions =
+				new TreeSet<String>(tag.getExtensions());
+			Iterator<String> it = extensions.iterator();
 			boolean first = true;
 			while (it.hasNext()) {
 				if (! first)
 					s.append(",  ");
 				first = false;
-				String key = (String) it.next();
-				s.append(TagDB.col2attr(key));
+				String extension = (String) it.next();
+				s.append(extension);
 				s.append(": ");
-				s.append(tag.getExtension(key));
+				s.append(tag.getExtension(extension));
 			}
 			return s.toString();
 		}

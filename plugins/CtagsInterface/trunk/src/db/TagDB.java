@@ -7,12 +7,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -30,7 +30,7 @@ public class TagDB {
 	public static final String TAGS_NAME = "NAME";
 	public static final String TAGS_FILE_ID = "FILE_ID";
 	public static final String TAGS_PATTERN = "PATTERN";
-	public static final String TAGS_ATTR_PREFIX = "A_";
+	public static final String TAGS_EXTENSION_PREFIX = "A_";
 	public static final String TAGS_LINE = "A_LINE";
 	// Files table
 	public static final String FILES_TABLE = "FILES";
@@ -124,7 +124,7 @@ public class TagDB {
 		Iterator<String> it = t.getExtensions().iterator();
 		while (it.hasNext()) {
 			String extension = it.next();
-			String col = attr2col(extension.toUpperCase());
+			String col = extension2column(extension.toUpperCase());
 			String val = t.getExtension(extension);
 			if (! columns.contains(col)) {
 				try {
@@ -262,6 +262,47 @@ public class TagDB {
 		return defaultValue;
 	}
 
+	/*
+	 * Converts query results to tags.
+	 */
+	public Vector<Tag> getResultSetTags(ResultSet rs) {
+		Vector<Tag> tags = new Vector<Tag>();
+		try {
+			ResultSetMetaData meta;
+			meta = rs.getMetaData();
+			String [] cols = new String[meta.getColumnCount()];
+			int [] types = new int[meta.getColumnCount()];
+			for (int i = 0; i < cols.length; i++) {
+				cols[i] = meta.getColumnName(i + 1);
+				types[i] = meta.getColumnType(i + 1);
+			}
+			while (rs.next()) {
+				Tag t = new Tag(rs.getString(TAGS_NAME),
+					rs.getString(FILES_NAME), rs.getString(TAGS_PATTERN));
+				Hashtable<String, String> extensions = new Hashtable<String, String>();
+				Hashtable<String, String> attachments = new Hashtable<String, String>();
+				for (int i = 0; i < cols.length; i++) {
+					if (types[i] != Types.VARCHAR)
+						continue;
+					String value = rs.getString(i + 1); 
+					if (value != null) {
+						if (isExtensionColumn(cols[i]))
+							extensions.put(column2extension(cols[i]), value);
+						else
+							attachments.put(cols[i], value);
+					}
+				}
+				t.setExtensions(extensions);
+				t.setAttachments(attachments);
+				tags.add(t);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return tags;
+	}
+	
 	public Vector<String> getOrigins(String type) {
 		return queryStringList(ORIGINS_NAME,
 			"SELECT * FROM " + ORIGINS_TABLE + " WHERE " +
@@ -289,17 +330,6 @@ public class TagDB {
         return rs;
     }
 	
-	public Vector<Integer> queryIntegerList(String column, String query) {
-		Vector<Integer> values = new Vector<Integer>();
-		try {
-			ResultSet rs = query(query);
-			while (rs.next())
-				values.add(Integer.valueOf(rs.getInt(column)));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return values;
-	}
 	public Vector<String> queryStringList(String column, String query) {
 		Vector<String> values = new Vector<String>();
 		try {
@@ -337,58 +367,14 @@ public class TagDB {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void deleteRowsWithValueList(String table, String column,
-			Vector list) {
-		StringBuffer set = new StringBuffer();
-		for (int i = 0; i < list.size(); i++) {
-			if (i > 0)
-				set.append(",");
-			set.append(quote(list.get(i)));
-		}
-		try {
-			query("DELETE FROM " + table + " WHERE " + column + " IN (" +
-				set.toString() + ")");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	static public String extension2column(String extensionName) {
+		return TAGS_EXTENSION_PREFIX + extensionName.toUpperCase();
 	}
-	
-	public void deleteRowsWithValues(Hashtable<String, String> values) {
-		StringBuffer where = new StringBuffer();
-		Iterator<Entry<String, String>> it = values.entrySet().iterator();
-		boolean first = true;
-		while (it.hasNext()) {
-			if (first)
-				first = false;
-			else
-				where.append(" AND ");
-			Entry<String, String> entry = it.next();
-			where.append(entry.getKey());
-			where.append("=");
-			where.append(quote(entry.getValue()));
-		}
-		try {
-			query("DELETE FROM TAGS WHERE " + where);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	static public String column2extension(String columnName) {
+		return columnName.substring(TAGS_EXTENSION_PREFIX.length()).toLowerCase();
 	}
-	
-	public void deleteRowsWithValuePrefix(String column, String prefix) {
-		try {
-			query("DELETE FROM TAGS WHERE " + column + " LIKE " +
-				quote(prefix + "%"));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	static public String attr2col(String attributeName) {
-		return TAGS_ATTR_PREFIX + attributeName.toUpperCase();
-	}
-	static public String col2attr(String columnName) {
-		return columnName.substring(TAGS_ATTR_PREFIX.length()).toLowerCase();
+	static public boolean isExtensionColumn(String columnName) {
+		return columnName.startsWith(TAGS_EXTENSION_PREFIX);
 	}
 	
 	private void getColumns() {

@@ -2,9 +2,7 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,9 +23,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import ctags.Parser.TagHandler;
-
 import projects.ProjectWatcher;
+import ctags.Parser.TagHandler;
 import db.TagDB;
 
 public class CtagsInterfacePlugin extends EditPlugin {
@@ -154,33 +151,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// present the list of tags in the Tag List dockable.
 	public static void jumpToQueryResults(final View view, ResultSet rs)
 	{
-		Vector<Tag> tags = new Vector<Tag>();
-		try {
-			ResultSetMetaData meta;
-			meta = rs.getMetaData();
-			String [] cols = new String[meta.getColumnCount()];
-			int [] types = new int[meta.getColumnCount()];
-			for (int i = 0; i < cols.length; i++) {
-				cols[i] = meta.getColumnName(i + 1);
-				types[i] = meta.getColumnType(i + 1);
-			}
-			while (rs.next()) {
-				Tag t = new Tag(rs.getString(TagDB.TAGS_NAME),
-					rs.getString(TagDB.FILES_NAME), rs.getString(TagDB.TAGS_PATTERN));
-				Hashtable<String, String> values = new Hashtable<String, String>();
-				for (int i = 0; i < cols.length; i++) {
-					if (types[i] != Types.VARCHAR)
-						continue;
-					String value = rs.getString(i + 1); 
-					if (value != null && value.length() > 0)
-						values.put(TagDB.col2attr(cols[i]), value);
-					t.setExtensions(values);
-				}
-				tags.add(t);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		Vector<Tag> tags = db.getResultSetTags(rs);
 		view.getDockableWindowManager().showDockableWindow(DOCKABLE);
 		JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
 		TagList tl = (TagList) c;
