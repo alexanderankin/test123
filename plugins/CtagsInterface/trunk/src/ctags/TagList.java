@@ -7,7 +7,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -58,17 +57,14 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	
 	@SuppressWarnings("unchecked")
 	protected void jumpTo(int selectedIndex) {
-		Hashtable<String, String> tag = (Hashtable<String, String>)
-			tagModel.getElementAt(selectedIndex);
-		String file = tag.get(TagDB.FILES_NAME);
-		String lineStr = tag.get(TagDB.TAGS_LINE);
-		if (lineStr != null) {
-			int line = Integer.valueOf(lineStr);
+		Tag tag = (Tag) tagModel.getElementAt(selectedIndex);
+		String file = tag.getFile();
+		int line = tag.getLine();
+		if (line >= 0)
 			CtagsInterfacePlugin.jumpTo(view, file, line);
-		}
 	}
 
-	public void setTags(Vector<Hashtable<String, String>> tags) {
+	public void setTags(Vector<Tag> tags) {
 		tagModel.removeAllElements();
 		if (tags == null)
 			return;
@@ -86,45 +82,37 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
 				isSelected, cellHasFocus);
-			Hashtable<String, String> tag = (Hashtable<String, String>)
-				tagModel.getElementAt(index);
+			Tag tag = (Tag) tagModel.getElementAt(index);
 			l.setText(getHtmlText(tag, index));
 			l.setFont(new Font("Monospaced", Font.PLAIN, 12));
 			return l;
 		}
 
-		private String getHtmlText(Hashtable<String, String> tag, int index) {
+		private String getHtmlText(Tag tag, int index) {
 			StringBuffer s = new StringBuffer("<html>");
 			s.append(index + 1);
 			s.append(": <b>");
-			s.append(tag.get(TagDB.TAGS_NAME));
+			s.append(tag.getName());
 			s.append("</b>  ");
-			String originType = tag.get("O_TYPE");
+			String originType = tag.getExtension("O_TYPE");
 			if (originType != null &&
 				originType.equals(TagDB.PROJECT_ORIGIN))
 			{
-				String project = tag.get("O_NAME");
+				String project = tag.getExtension("O_NAME");
 				if (project != null && project.length() > 0) {
 					s.append("(<i>");
 					s.append(project);
 					s.append("</i>)  ");
 				}
 			}
-			s.append(tag.get(TagDB.FILES_NAME));
-			s.append(tag.containsKey(TagDB.TAGS_LINE) ? ":" +
-				tag.get(TagDB.TAGS_LINE) : "");
+			s.append(tag.getFile());
+			s.append((tag.getLine() >= 0) ? ":" + tag.getLine() : "");
 			s.append("<br>Pattern: ");
-			s.append(tag.get(TagDB.TAGS_PATTERN));
+			s.append(tag.getPattern());
 			s.append("<br>");
-			TreeSet<String> keys = new TreeSet<String>(tag.keySet());
-			keys.remove(TagDB.TAGS_NAME);
-			keys.remove(TagDB.FILES_NAME);
+			TreeSet<String> keys = new TreeSet<String>(tag.getExtensions());
 			keys.remove(TagDB.ORIGINS_TYPE);
 			keys.remove(TagDB.ORIGINS_NAME);
-			keys.remove(TagDB.TAGS_LINE);
-			keys.remove(TagDB.TAGS_PATTERN);
-			keys.remove(TagDB.TAGS_FILE_ID);
-			keys.remove(TagDB.FILES_ID);
 			Iterator<String> it = keys.iterator();
 			boolean first = true;
 			while (it.hasNext()) {
@@ -134,7 +122,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				String key = (String) it.next();
 				s.append(TagDB.col2attr(key));
 				s.append(": ");
-				s.append(tag.get(key));
+				s.append(tag.getExtension(key));
 			}
 			return s.toString();
 		}

@@ -117,8 +117,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		public TagFileHandler(int originId) {
 			this.originId = originId;
 		}
-		public void processTag(Hashtable<String, String> info) {
-			String file = info.get(TagDB.TAGS_FILE_ID);
+		public void processTag(Tag t) {
+			String file = t.getFile();
 			int fileId = db.getSourceFileID(file);
 			if (! files.contains(fileId)) {
 				if (fileId < 0) {
@@ -132,7 +132,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				files.add(fileId);
 				db.insertSourceFileOrigin(fileId, originId);
 			}
-			db.insertTag(info, fileId);
+			db.insertTag(t, fileId);
 		}
     }
     
@@ -154,7 +154,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// present the list of tags in the Tag List dockable.
 	public static void jumpToQueryResults(final View view, ResultSet rs)
 	{
-		Vector<Hashtable<String, String>> tags = new Vector<Hashtable<String, String>>();
+		Vector<Tag> tags = new Vector<Tag>();
 		try {
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
@@ -165,15 +165,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				types[i] = meta.getColumnType(i + 1);
 			}
 			while (rs.next()) {
+				Tag t = new Tag(rs.getString(TagDB.TAGS_NAME),
+					rs.getString(TagDB.FILES_NAME), rs.getString(TagDB.TAGS_PATTERN));
 				Hashtable<String, String> values = new Hashtable<String, String>();
 				for (int i = 0; i < cols.length; i++) {
 					if (types[i] != Types.VARCHAR)
 						continue;
 					String value = rs.getString(i + 1); 
 					if (value != null && value.length() > 0)
-						values.put(cols[i], value);
+						values.put(TagDB.col2attr(cols[i]), value);
+					t.setExtensions(values);
 				}
-				tags.add(values);
+				tags.add(t);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -192,9 +195,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		}
 		tl.setTags(null);
-		Hashtable<String, String> info = tags.get(index);
-		String file = info.get(TagDB.FILES_NAME);
-		final int line = Integer.valueOf(info.get(TagDB.TAGS_LINE));
+		Tag t = tags.get(index);
+		String file = t.getFile();
+		final int line = t.getLine();
 		jumpTo(view, file, line);
 	}
 	
@@ -361,8 +364,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				db.deleteTagsFromSourceFile(fileId);
 				String tagFile = runner.runOnFile(file);
 				TagHandler handler = new TagHandler() {
-					public void processTag(Hashtable<String, String> info) {
-						db.insertTag(info, fileId);
+					public void processTag(Tag t) {
+						db.insertTag(t, fileId);
 					}
 				};
 				parser.parseTagFile(tagFile, handler);
