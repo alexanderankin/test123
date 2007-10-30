@@ -422,4 +422,31 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		removeStatusMessage();
 	}
+	
+	/*
+	 * Interface for other plugins
+	 */
+	
+	public static Vector<Tag> queryTag(String tag)
+	{
+		ResultSet rs;
+		try {
+			rs = db.queryTag(tag);
+			return db.getResultSetTags(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return new Vector<Tag>();
+	}
+	public static Vector<Tag> query(String query)
+	{
+		ResultSet rs;
+		try {
+			rs = db.query(query);
+			return db.getResultSetTags(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return new Vector<Tag>();
+	}
 }
