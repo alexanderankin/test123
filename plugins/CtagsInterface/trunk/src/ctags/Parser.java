@@ -7,14 +7,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import db.TagDB;
-
 public class Parser {
 	
 	String tagFileDir;
 	
 	interface TagHandler {
-		void processTag(Hashtable<String, String> info);
+		void processTag(Tag t);
 	}
 	
 	void parseTagFile(String tagFile, TagHandler handler) {
@@ -31,10 +29,10 @@ public class Parser {
 		try {
 			String line;
 			while ((line = in.readLine()) != null) {
-				Hashtable<String, String> info = parse(line);
-				if (info == null)
+				Tag t = parse(line);
+				if (t == null)
 					continue;
-				handler.processTag(info);
+				handler.processTag(t);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -48,7 +46,7 @@ public class Parser {
 		}
 	}
 
-	private Hashtable<String, String> parse(String line) {
+	private Tag parse(String line) {
 		Hashtable<String, String> info =
 			new Hashtable<String, String>();
 		if (line.endsWith("\n") || line.endsWith("\r"))
@@ -61,22 +59,21 @@ public class Parser {
 		String fields[] = line.substring(0, idx).split("\t", 3);
 		if (fields.length < 3)
 			return null;
-		info.put(TagDB.TAGS_NAME, fields[0]);
 		String file = fields[1];
-		if (new File(file).isAbsolute())
-			info.put(TagDB.TAGS_FILE_ID, fields[1]);
-		else
-			info.put(TagDB.TAGS_FILE_ID, tagFileDir + "/" + fields[1]);
-		info.put(TagDB.TAGS_PATTERN, fields[2]);
+		if (! new File(file).isAbsolute())
+			file = tagFileDir + "/" + fields[1];
+		Tag t = new Tag(fields[0], file, fields[2]);
 		// Extensions
 		fields = line.substring(idx + 3).split("\t");
 		for (int i = 0; i < fields.length; i++)
 		{
 			String pair[] = fields[i].split(":", 2);
-			if (pair.length != 2)
-				continue;
-			info.put(TagDB.attr2col(pair[0]), pair[1]);
+			if (pair.length == 1)	// e.g. file:
+				info.put(pair[0], "");
+			else if (pair.length == 2)
+				info.put(pair[0], pair[1]);
 		}
-		return info;
+		t.setExtensions(info);
+		return t;
 	}
 }

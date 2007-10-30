@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.Tag;
+
 public class TagDB {
 	private Connection conn;
 	private Set<String> columns;
@@ -111,21 +113,19 @@ public class TagDB {
 	 * If file ID is negative, the ID is looked up in the FILES table. If the file
 	 * is not in the table, it is inserted.
 	 */
-	public void insertTag(Hashtable<String, String> info, int fileId) {
+	public void insertTag(Tag t, int fileId) {
 		if (fileId < 0) {
 			System.err.println("insertTag called with fileId=-1");
 			return;
 		}
-		info.remove(TAGS_FILE_ID);
 		// Find missing columns and build the inserted value string
 		StringBuffer valueStr = new StringBuffer();
 		StringBuffer columnStr = new StringBuffer();
-		Set<Entry<String,String>> entries = info.entrySet();
-		Iterator<Entry<String, String>> it = entries.iterator();
+		Iterator<String> it = t.getExtensions().iterator();
 		while (it.hasNext()) {
-			Entry<String, String> entry = it.next();
-			String col = entry.getKey().toUpperCase();
-			String val = entry.getValue();
+			String extension = it.next();
+			String col = attr2col(extension.toUpperCase());
+			String val = t.getExtension(extension);
 			if (! columns.contains(col)) {
 				try {
 					update("ALTER TABLE " + TAGS_TABLE + " ADD " + col + " " +
@@ -144,9 +144,10 @@ public class TagDB {
 		}
 		// Insert the record
 		try {
-			update("INSERT INTO " + TAGS_TABLE + " (" + TAGS_FILE_ID + "," +
-				columnStr.toString() + ") VALUES (" + fileId + "," + valueStr.toString() +
-				")");
+			update("INSERT INTO " + TAGS_TABLE + " (" + TAGS_NAME + "," +
+				TAGS_PATTERN + "," + TAGS_FILE_ID + "," + 
+				columnStr.toString() + ") VALUES (" + t.getName() + "," +
+				t.getPattern() + "," + fileId + "," + valueStr.toString() + ")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
