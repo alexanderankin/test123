@@ -146,8 +146,10 @@ public class TagDB {
 		try {
 			update("INSERT INTO " + TAGS_TABLE + " (" + TAGS_NAME + "," +
 				TAGS_PATTERN + "," + TAGS_FILE_ID + "," + 
-				columnStr.toString() + ") VALUES (" + t.getName() + "," +
-				t.getPattern() + "," + fileId + "," + valueStr.toString() + ")");
+				columnStr.toString() + ") VALUES (" +
+				quote(t.getName()) + "," +
+				quote(t.getPattern()) + "," +
+				fileId + "," + valueStr.toString() + ")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -402,7 +404,7 @@ public class TagDB {
 			lock.delete();
 	}
 
-	private void createIndex(String index, String table, String column)
+	public void createIndex(String index, String table, String column)
 	throws SQLException {
 		update("CREATE INDEX " + index + " ON " + table + "(" + column + ")");
 	}
