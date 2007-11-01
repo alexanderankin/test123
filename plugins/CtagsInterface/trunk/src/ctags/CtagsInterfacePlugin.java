@@ -152,6 +152,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void jumpToQueryResults(final View view, ResultSet rs)
 	{
 		Vector<Tag> tags = db.getResultSetTags(rs);
+		jumpToTags(view, tags);
+	}
+
+	private static void jumpToTags(final View view, Vector<Tag> tags) {
 		view.getDockableWindowManager().showDockableWindow(DOCKABLE);
 		JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
 		TagList tl = (TagList) c;
@@ -188,21 +192,30 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		} 
 		boolean projectScope = (pvi != null &&
-				ProjectsOptionPane.getSearchActiveProjectOnly()); 
-		ResultSet rs;
+			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
+			 ProjectsOptionPane.getSearchActiveProjectFirst()));
+		Vector<Tag> tags;
 		try {
 			if (projectScope) {
 				String project = pvi.getActiveProject(view);
-				rs = db.queryTagInProject(tag, project);
+				ResultSet rs = db.queryTagInProject(tag, project);
+				tags = db.getResultSetTags(rs);
+				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
+					tags.isEmpty())
+				{
+					rs = db.queryTag(tag);
+					tags = db.getResultSetTags(rs);
+				}
+			} else {
+				ResultSet rs = db.queryTag(tag);
+				tags = db.getResultSetTags(rs);
 			}
-			else
-				rs = db.queryTag(tag);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
 		}
 		//System.err.println("Selected tag: " + tag);
-		jumpToQueryResults(view, rs);
+		jumpToTags(view, tags);
 	}
 
 	// Returns the tag to jump to: The selected tag or the one at the caret.
