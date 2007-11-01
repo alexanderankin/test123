@@ -7,6 +7,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -39,6 +40,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
 	private static ActionSet actions;
+	private static KindIconProvider iconProvider;
 	
 	public void start()
 	{
@@ -54,6 +56,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		actions = new ActionSet(ACTION_SET);
 		updateActions();
 		jEdit.addActionSet(actions);
+		iconProvider = new KindIconProvider();
 	}
 
 	public void stop()
@@ -64,6 +67,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	static public TagDB getDB() {
 		return db;
+	}
+
+	static public ImageIcon getIcon(Tag tag) {
+		return iconProvider.getIcon(tag);
 	}
 	
 	static public void updateActions() {

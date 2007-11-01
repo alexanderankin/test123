@@ -3,6 +3,8 @@ package ctags;
 import java.util.Hashtable;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 public class Tag {
 
 	private String name;
@@ -14,7 +16,7 @@ public class Tag {
 	private Hashtable<String, String> attachments;
 	static private String LINE_KEY = String.valueOf("line");
 	static private String KIND_KEY = String.valueOf("kind");
-	
+
 	public Tag(String name, String file, String pattern) {
 		this.name = name;
 		this.file = file;
@@ -54,5 +56,8 @@ public class Tag {
 	}
 	public String getAttachment(String name) {
 		return attachments.get(name);
+	}
+	public ImageIcon getIcon() {
+		return CtagsInterfacePlugin.getIcon(this);
 	}
 }

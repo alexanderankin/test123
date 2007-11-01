@@ -71,3 +71,24 @@ messages.CtagsInterface.searchScope=Tag search scope
 messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
+
+# icons
+options.CtagsInterface.icons.kind.class=class.png
+options.CtagsInterface.icons.kind.field=variable.png
+options.CtagsInterface.icons.kind.function=function.png
+options.CtagsInterface.icons.kind.macro=macro.png
+options.CtagsInterface.icons.kind.member=variable.png
+options.CtagsInterface.icons.kind.method=function.png
+options.CtagsInterface.icons.kind.package=package.png
+options.CtagsInterface.icons.kind.procedure=function.png
+options.CtagsInterface.icons.kind.prototype=prototype.png
+options.CtagsInterface.icons.kind.struct=struct.png
+options.CtagsInterface.icons.kind.typedef=typedef.png
+options.CtagsInterface.icons.kind.union=union.png
+options.CtagsInterface.icons.kind.variable=variable.png
+options.CtagsInterface.icons.kind.enum=enum.png
+options.CtagsInterface.icons.kind.enumerator=enumerator.png
+# Perl icons...
+options.CtagsInterface.icons.kind.subroutine=function.png
+options.CtagsInterface.icons.kind.constant=macro.png
+options.CtagsInterface.icons.kind.label=variable.png

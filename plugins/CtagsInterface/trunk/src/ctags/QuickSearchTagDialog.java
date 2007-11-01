@@ -1,6 +1,7 @@
 package ctags;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -11,14 +12,16 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JWindow;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JWindow;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -51,6 +54,7 @@ public class QuickSearchTagDialog extends JDialog {
 		model = new DefaultListModel();
 		tags = new JList(model);
 		tags.setBorder(BorderFactory.createEtchedBorder());
+		tags.setCellRenderer(new TagListCellRenderer());
 		window.setContentPane(new JScrollPane(tags));
 		name.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -174,12 +178,13 @@ public class QuickSearchTagDialog extends JDialog {
 		int line;
 		String name;
 		String desc;
+		String kind;
 		public QuickSearchTag(ResultSet rs) {
 			StringBuffer text = new StringBuffer();
 			try {
 				name = rs.getString(TagDB.TAGS_NAME);
 				text.append(rs.getString(TagDB.TAGS_NAME));
-				String kind = rs.getString(TagDB.extension2column("kind"));
+				kind = rs.getString(TagDB.extension2column("kind"));
 				if (kind != null)
 					text.append(" (" + kind + ")");
 				file = rs.getString(TagDB.FILES_NAME);
@@ -199,5 +204,26 @@ public class QuickSearchTagDialog extends JDialog {
 		public String toString() {
 			return desc;
 		}
+		public ImageIcon getIcon() {
+			return KindIconProvider.getIcon(kind);
+		}
 	}
+
+	public class TagListCellRenderer extends DefaultListCellRenderer {
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel l = (JLabel) super.getListCellRendererComponent(
+				list, value, index, isSelected, cellHasFocus);
+			if (value instanceof QuickSearchTag) {
+				ImageIcon icon = ((QuickSearchTag)value).getIcon();
+				if (icon != null)
+					l.setIcon(icon);
+			}
+			return l;
+		}
+
+	}
+
 }
