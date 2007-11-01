@@ -29,6 +29,9 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
+	static String [] extensionOrder = new String [] {
+		"kind", "class", "access" 
+	};
 	
 	TagList(View view) {
 		super(new BorderLayout());
@@ -110,18 +113,26 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			s.append("<br>");
 			s.append(depattern(tag.getPattern()));
 			s.append("<br>");
+			Vector<String> extOrder = new Vector<String>();
+			for (int i = 0; i < extensionOrder.length; i++)
+				if (tag.getExtension(extensionOrder[i]) != null)
+					extOrder.add(extensionOrder[i]);
 			TreeSet<String> extensions =
 				new TreeSet<String>(tag.getExtensions());
 			Iterator<String> it = extensions.iterator();
-			boolean first = true;
 			while (it.hasNext()) {
 				String extension = (String) it.next();
-				if (extension.equals("line"))
+				if (extension.equals("line") || extOrder.contains(extension))
 					continue;
+				extOrder.add(extension);
+			}
+			boolean first = true;
+			for (int i = 0; i < extOrder.size(); i++) {
 				if (! first)
 					s.append(",  ");
 				first = false;
-				s.append(extension);
+				String extension = extOrder.get(i);
+				s.append(extOrder.get(i));
 				s.append(": ");
 				s.append(tag.getExtension(extension));
 			}
