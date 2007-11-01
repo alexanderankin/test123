@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -30,7 +31,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	JList tags;
 	DefaultListModel tagModel;
 	static String [] extensionOrder = new String [] {
-		"kind", "class", "access" 
+		"class", "access" 
 	};
 	
 	TagList(View view) {
@@ -88,6 +89,9 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			Tag tag = (Tag) tagModel.getElementAt(index);
 			l.setText(getHtmlText(tag, index));
 			l.setFont(new Font("Monospaced", Font.PLAIN, 12));
+			ImageIcon icon = tag.getIcon();
+			if (icon != null)
+				l.setIcon(icon);
 			return l;
 		}
 
