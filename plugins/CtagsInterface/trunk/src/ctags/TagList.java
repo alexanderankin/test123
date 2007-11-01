@@ -107,23 +107,33 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			}
 			s.append(tag.getFile());
 			s.append((tag.getLine() >= 0) ? ":" + tag.getLine() : "");
-			s.append("<br>Pattern: ");
-			s.append(tag.getPattern());
+			s.append("<br>");
+			s.append(depattern(tag.getPattern()));
 			s.append("<br>");
 			TreeSet<String> extensions =
 				new TreeSet<String>(tag.getExtensions());
 			Iterator<String> it = extensions.iterator();
 			boolean first = true;
 			while (it.hasNext()) {
+				String extension = (String) it.next();
+				if (extension.equals("line"))
+					continue;
 				if (! first)
 					s.append(",  ");
 				first = false;
-				String extension = (String) it.next();
 				s.append(extension);
 				s.append(": ");
 				s.append(tag.getExtension(extension));
 			}
 			return s.toString();
+		}
+
+		private Object depattern(String pattern) {
+			if (pattern.startsWith("/^"))
+				pattern = pattern.substring(2);
+			if (pattern.endsWith("$/"))
+				pattern = pattern.substring(0, pattern.length() - 2);
+			return pattern;
 		}
 	}
 
