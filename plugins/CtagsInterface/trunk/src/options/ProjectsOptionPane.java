@@ -1,18 +1,22 @@
 package options;
 
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -32,12 +36,16 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
 	static public final String AUTO_UPDATE = OPTION + "autoUpdateProjects";
+	static public final String GLOBAL = OPTION + "searchGlobally";
 	static public final String ACTIVE_ONLY = OPTION + "searchActiveProjectOnly";
+	static public final String ACTIVE_FIRST = OPTION + "searchActiveProjectFirst";
 	JList projects;
 	DefaultListModel projectsModel;
 	ProjectWatcher pvi;
 	JCheckBox autoUpdate;
-	JCheckBox activeOnly;
+	JRadioButton global;
+	JRadioButton activeOnly;
+	JRadioButton activeFirst;
 	
 	public ProjectsOptionPane() {
 		super("CtagsInterface-Projects");
@@ -63,9 +71,23 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		autoUpdate = new JCheckBox(jEdit.getProperty(MESSAGE + "autoUpdateProjects"),
 			jEdit.getBooleanProperty(AUTO_UPDATE));
 		addComponent(autoUpdate);
-		activeOnly = new JCheckBox(jEdit.getProperty(MESSAGE + "searchActiveProjectOnly"),
+		JPanel p = new JPanel(new GridLayout(0, 1));
+		Border b = BorderFactory.createTitledBorder(jEdit.getProperty(MESSAGE + "searchScope"));
+		p.setBorder(b);
+		addComponent(p);
+		ButtonGroup g = new ButtonGroup();
+		global = new JRadioButton(jEdit.getProperty(MESSAGE + "searchGlobally"),
+			jEdit.getBooleanProperty(GLOBAL));
+		p.add(global);
+		g.add(global);
+		activeOnly = new JRadioButton(jEdit.getProperty(MESSAGE + "searchActiveProjectOnly"),
 			jEdit.getBooleanProperty(ACTIVE_ONLY));
-		addComponent(activeOnly);
+		p.add(activeOnly);
+		g.add(activeOnly);
+		activeFirst = new JRadioButton(jEdit.getProperty(MESSAGE + "searchActiveProjectFirst"),
+			jEdit.getBooleanProperty(ACTIVE_FIRST));
+		p.add(activeFirst);
+		g.add(activeFirst);
 
 		pvi = CtagsInterfacePlugin.getProjectWatcher();
 		if (pvi == null) {
@@ -111,7 +133,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 			names.add((String) projectsModel.getElementAt(i));
 		CtagsInterfacePlugin.updateOrigins(PROJECT_ORIGIN, names);
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
+		jEdit.setBooleanProperty(GLOBAL, global.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
+		jEdit.setBooleanProperty(ACTIVE_FIRST, activeFirst.isSelected());
 	}
 	
 	static public Vector<String> getProjects() {
@@ -120,7 +144,13 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public boolean getAutoUpdateProjects() {
 		return jEdit.getBooleanProperty(AUTO_UPDATE);
 	}
+	static public boolean getSearchGlobally() {
+		return jEdit.getBooleanProperty(GLOBAL);
+	}
 	static public boolean getSearchActiveProjectOnly() {
 		return jEdit.getBooleanProperty(ACTIVE_ONLY);
+	}
+	static public boolean getSearchActiveProjectFirst() {
+		return jEdit.getBooleanProperty(ACTIVE_FIRST);
 	}
 }
