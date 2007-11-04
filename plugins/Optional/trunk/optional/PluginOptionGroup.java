@@ -31,18 +31,16 @@ import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.options.PluginOptions;
 import org.gjt.sp.jedit.options.PluginOptions.NoPluginsPane;
-import org.gjt.sp.util.Log;
 
 /**
 *  Refactored from PluginOptions.java - this class
 *  contains only the OptionGroup
 *  and none of the GUI code.
-* NOTE: This version does not show options from plugins that
-* use the deprecated APIs.  
-* @since jedit4.3pre3
-*  @todo - add this to jEdit core aand refactor the PluginOptions.java
+*   NOTE: This version does not show optionpanes from plugins that
+*   use the deprecated (pre 4.2) plugin APIs.  
+*  @since jedit4.3pre3
+*  @todo - add this to jEdit core and refactor the PluginOptions.java to use this some day?
 *
 */
 
@@ -265,6 +263,3 @@ public class PluginOptionGroup extends OptionGroup
 	} //}}}
 
 } // }}}
-
-
-
