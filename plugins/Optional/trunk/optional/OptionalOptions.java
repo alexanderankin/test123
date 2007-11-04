@@ -27,6 +27,8 @@ import javax.swing.JCheckBox;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
+
+
 /**
    Option pane for Optional plugin.
    Not currently used.

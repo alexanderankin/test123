@@ -1,11 +1,15 @@
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:
+*/ 
 package optional;
 
-import java.awt.Dialog;
 import java.awt.Frame;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.options.BufferOptionPane;
 
+// {{{ class CombinedOptions
 /**
  * 
  * An OptionDialog which combines all of jEdit's options into 3 tabs on a single
@@ -14,8 +18,12 @@ import org.gjt.sp.jedit.options.BufferOptionPane;
  * @author ezust
  * 
  */
+
 public class CombinedOptions extends TabbedOptionDialog
 {
+    
+	// {{{ Members
+
 	GlobalOptionGroup globalOptions;
 
 	PluginOptionGroup pluginOptions;
@@ -24,6 +32,9 @@ public class CombinedOptions extends TabbedOptionDialog
 
 	int startingIndex = 0;
 
+	// }}}
+    
+	// {{{ CombinedOptions Constructors
 	public CombinedOptions(Frame parent, int tabIndex)
 	{
 		super(parent, "Combined Options");
@@ -35,8 +46,9 @@ public class CombinedOptions extends TabbedOptionDialog
 	public CombinedOptions(Frame parent)
 	{
 		this(parent, 0);
-	}
+	} // }}}
 
+	// {{{ _init() method
 	public void _init()
 	{
 		String title = jEdit.getProperty("options.title");
@@ -46,6 +58,7 @@ public class CombinedOptions extends TabbedOptionDialog
 		addOptionPane(new BufferOptionPane());
 		setSelectedIndex(startingIndex);
 		setVisible(true);
-	}
+	}// }}}
 
-}
+}// }}}
+

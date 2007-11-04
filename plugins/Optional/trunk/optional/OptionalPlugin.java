@@ -21,10 +21,7 @@
  */
 package optional;
 
-import org.gjt.sp.jedit.BeanShellAction;
-import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.jEdit;
 
 /**
   Plugin for replacing option dialogs.

@@ -11,9 +11,8 @@
 
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'>
-
-<bookinfo><title>Optional plugin user's guide</title>
-
+<bookinfo>
+<title>Optional plugin user's guide</title>
  <authorgroup>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
@@ -31,9 +30,8 @@
  
  </legalnotice>
 </bookinfo>
-
-<section id="usersguide"><title>User's Guide</title>
-
+<section id="usersguide">
+<title>User's Guide</title>
  <para>
   This plugin replaces the three Option dialogs in jedit  core: Global Options, Plugin Options and Buffer Options.
   Now you can access all of them from any of them, since they are available as different tabs under the same Dialog. 

@@ -1,7 +1,7 @@
 /*
  * GlobalOptionGroup.java -
  * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * :folding=explicit:
  *
  * Copyright (C) 1998, 2003 Slava Pestov
  * Portions copyright (C) 1999 mike dillon
@@ -26,6 +26,7 @@ package optional;
 
 import org.gjt.sp.jedit.OptionGroup;
 
+// {{{ class GlobalOptionGroup
 /**
  * A model for all of the Global Options.
  * 
@@ -33,7 +34,11 @@ import org.gjt.sp.jedit.OptionGroup;
 
 public class GlobalOptionGroup extends OptionGroup
 {
+	// {{{ Members
 	OptionGroup root;
+	
+	// }}}
+	// {{{ Constructors
 	public GlobalOptionGroup()
 	{
 		this(null);
@@ -69,8 +74,9 @@ public class GlobalOptionGroup extends OptionGroup
 		browserGroup.addOptionPane("browser.general");
 		browserGroup.addOptionPane("browser.colors");
 		addGroup(browserGroup);
-	}
+	} // }}}
 	
+	// {{{ addGroup() method
 	void addGroup(OptionGroup group) {
 		if (root != null)
 		{
@@ -80,5 +86,5 @@ public class GlobalOptionGroup extends OptionGroup
 		{
 			addOptionGroup(group);
 		}
-	}
-}
+	}// }}}
+} // }}}

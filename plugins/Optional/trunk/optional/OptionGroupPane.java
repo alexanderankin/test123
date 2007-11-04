@@ -1,7 +1,7 @@
 /*
  * OptionGroupPane.java - A Pane (view) for displaying/selecting OptionGroups.
  * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * :folding=explicit:
  *
  * Copyright (C) 2005 Slava Pestov
  * Copyright (C) 2005 Alan Ezust 
@@ -53,6 +53,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.OptionsDialog.PaneNameRenderer;
 import org.gjt.sp.util.Log;
 
+
 /**
  * An option pane for displaying groups of options. There is a lot of code here
  * which was taken from OptionDialog, but this class is a component which can
@@ -64,7 +65,6 @@ import org.gjt.sp.util.Log;
  * @author ezust
  * 
  */
-
 public class OptionGroupPane extends AbstractOptionPane implements TreeSelectionListener
 {
 	// {{{ Members
@@ -208,12 +208,12 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		currentPane = optionPane;
 	} // }}}
 
+        // {{{ selectPane() methods
 	private boolean selectPane(OptionGroup node, String name)
 	{
 		return selectPane(node, name, new ArrayList());
-	} // }}}
+	} 
 
-	// {{{ selectPane() method
 	private boolean selectPane(OptionGroup node, String name, ArrayList path)
 	{
 		path.add(node);
@@ -279,6 +279,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		return false;
 	} // }}}
 
+	// {{{ init() method
 	protected void _init()
 	{
 
@@ -342,8 +343,9 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		if (dividerLocation != -1)
 			splitter.setDividerLocation(dividerLocation);
 
-	}
+	} //}}}
 
+	//{{{ save() methods
 	protected void _save()
 	{
 		if (currentPane != null)
@@ -380,10 +382,10 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		{
 			save(deferredOptionPanes.get(obj));
 		}
-	}
-
+	} // }}}
+	
+	// {{{ class OptionTreeModel
 	public class OptionTreeModel implements TreeModel
-
 	{
 		private OptionGroup root = new OptionGroup(null);
 		private EventListenerList listenerList = new EventListenerList();
