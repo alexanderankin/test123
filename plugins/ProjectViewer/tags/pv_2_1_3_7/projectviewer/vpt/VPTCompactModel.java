@@ -27,8 +27,6 @@ import java.util.Map;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import bsh.Interpreter;
-
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -191,8 +189,6 @@ public class VPTCompactModel extends DefaultTreeModel {
 
 	//{{{ +class _CompactDirectoryNode_
 	public static class CompactDirectoryNode extends VPTDirectory {
-
-		private static Interpreter interpreter;
 
 		private VPTNode dir;
 		private String name;
