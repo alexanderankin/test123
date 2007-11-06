@@ -416,7 +416,7 @@ public class SystemShell extends Shell
 		String currentDirectory = (console == null ? System.getProperty("user.dir")
 			: getConsoleState(console).currentDirectory);
 
-		final String fileDelimiters = "=\'\" \\" + File.pathSeparator;
+		final String fileDelimiters = "/=\'\" \\" + File.pathSeparator;
 
 		String lastArgEscaped, lastArg;
 		if (File.separatorChar == '\\')
@@ -523,9 +523,15 @@ public class SystemShell extends Shell
 	 * @return A string after it's been processed, with variables replaced
 	 *         with their values.
 	 */
-	public String expandVariables(View view, String arg)
+	String expandVariables(View view, String arg)
 	{
-
+		if (File.separatorChar == '\\' 
+		   && (arg.startsWith("\\") || arg.startsWith("/"))) {
+			Console console = ConsolePlugin.getConsole(view);
+			ConsoleState state = getConsoleState(console);
+			char drive = state.currentDirectory.charAt(0);
+			arg = drive + ":\\" + arg.substring(1);
+		}
 		// StringBuffer buf = new StringBuffer();
 		String varName = null;
 		// Expand homedir
@@ -534,7 +540,7 @@ public class SystemShell extends Shell
 		{
 			arg = m.replaceFirst(userHome);
 		}
-
+		
 		m = varPattern.matcher(arg);
 		if (!m.find())
 		{
