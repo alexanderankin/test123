@@ -33,6 +33,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -206,7 +208,14 @@ public class SystemShell extends Shell
 
 		args = preprocess(console.getView(), console, args);
 
-		String commandName = (String) args.elementAt(0);
+		String commandName = args.elementAt(0);
+		// check for drive letter changedirs (windows only)
+		if (OperatingSystem.isWindows()
+			&& commandName.endsWith(":")) {
+			char driveLetter = commandName.charAt(0);
+			args = state.changeDrive(driveLetter);
+			commandName = args.elementAt(0);
+		}
 		if (commandName.charAt(0) == '%')
 		{
 			// a console built-in
@@ -1074,6 +1083,11 @@ public class SystemShell extends Shell
 
 		private ConsoleProcess lastProcess;
 
+		/* used only for windows, to keep track of current directories
+		 * for each drive letter
+		 */
+		private HashMap<Character, String> driveDirectories = null;
+		
 		String currentDirectory = System.getProperty("user.dir");
 
 		String lastDirectory = System.getProperty("user.dir");
@@ -1108,6 +1122,23 @@ public class SystemShell extends Shell
 			setCurrentDirectory(console, lastDirectory);
 		} // }}}
 
+		// {{{ changeDrive()
+		Vector<String> changeDrive(char driveLetter) {
+			driveLetter = Character.toUpperCase(driveLetter);
+			Vector<String> retval = new Vector<String>();
+			retval.add("%cd");
+			char curDrive = Character.toUpperCase(currentDirectory.charAt(0));
+			if (driveDirectories == null) driveDirectories = new HashMap<Character, String>();
+			driveDirectories.put(Character.valueOf(curDrive), currentDirectory);
+			String path = driveLetter + ":" + File.separator;
+			if (driveDirectories.containsKey(Character.valueOf(driveLetter))) {
+				path = driveDirectories.get(Character.valueOf(driveLetter));
+			}
+			retval.add(path);
+			return retval;
+			
+		} // }}}
+		
 		// {{{ setCurrentDirectory()
 		void setCurrentDirectory(Console console, String newDir)
 		{
