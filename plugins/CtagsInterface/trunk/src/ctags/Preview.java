@@ -20,6 +20,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -37,6 +39,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	TextArea text;
 	boolean first = true;
 	String file;
+	Timer timer;
 	
 	Preview(View view) {
 		super(new BorderLayout());
@@ -78,8 +81,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		text.getBuffer().setProperty("wrap", wrap);
 		EditPane.initPainter(text.getPainter());
 	}
-	
-	public void caretUpdate(CaretEvent e) {
+	public void previewTag() {
 		String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
 		if (name == null)
 			return;
@@ -89,6 +91,20 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			tagModel.addElement(tags.get(i));
 		if (! tags.isEmpty())
 			this.tags.setSelectedIndex(0);
+	}
+	public void caretUpdate(CaretEvent e) {
+		int delay = GeneralOptionPane.getPreviewDelay(); 
+		if (delay > 0) {
+			timer = new Timer(delay, new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					previewTag();
+				}
+			});
+			timer.setRepeats(false);
+			timer.start();
+		}
+		else
+			previewTag();
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
