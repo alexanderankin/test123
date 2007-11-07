@@ -44,6 +44,8 @@ options.CtagsInterface-Projects.code=new options.ProjectsOptionPane();
 # dockables
 ctags-interface-tag-list.title=Tag List
 ctags-interface-tag-list.label=Tag List
+ctags-interface-preview.title=Tag Preview
+ctags-interface-preview.label=Tag Preview
 
 # docs
 #plugin.ctags.CtagsInterfacePlugin.docs=index.html
