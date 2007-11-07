@@ -20,6 +20,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,16 +36,26 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	DefaultListModel tagModel;
 	TextArea text;
 	boolean first = true;
+	String file;
 	
 	Preview(View view) {
 		super(new BorderLayout());
 		this.view = view;
+		file = null;
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
 		tags.setCellRenderer(new TagListCellRenderer());
 		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
 		text = new TextArea(false);
+		text.getPainter().addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				if (me.getClickCount() == 2 && file != null) {
+					CtagsInterfacePlugin.jumpToOffset(Preview.this.view, file,
+						text.getCaretPosition());
+				}
+			}
+		});
 		text.setBuffer(new JEditBuffer());
 		propertiesChanged();
 		text.getBuffer().setMode(ModeProvider.instance.getMode("text"));
@@ -84,7 +96,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		if (index < 0)
 			return;
 		Tag t = (Tag) tagModel.getElementAt(index);
-		String file = t.getFile();
+		file = t.getFile();
 		int line = t.getLine();
 		if (line > -1)
 		{
