@@ -2,6 +2,7 @@ package ctags;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,7 +22,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.textarea.TextArea;
 
@@ -40,19 +40,23 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		this.view = view;
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
-		JScrollPane listPane = new JScrollPane(tags);
 		tags.setCellRenderer(new TagListCellRenderer());
+		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
 		text = new TextArea();
-		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, listPane, text);
+		text.setMinimumSize(new Dimension(150, 50));
+		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+			new JScrollPane(tags), text);
 		split.setOneTouchExpandable(true);
-		split.setDividerLocation(150);
+		split.setDividerLocation(100);
 		add(split, BorderLayout.CENTER);
 		view.getTextArea().addCaretListener(this);
 	}
 
 	public void caretUpdate(CaretEvent e) {
 		String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
+		if (name == null)
+			return;
 		Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
 		tagModel.clear();
 		for (int i = 0; i < tags.size(); i++)
@@ -69,8 +73,11 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		String file = t.getFile();
 		int line = t.getLine();
 		if (line > -1) {
+			text.getBuffer().setReadOnly(false);
 			text.setText(getContents(file));
 			text.scrollTo(line, 0, true);
+			text.setCaretPosition(text.getLineStartOffset(line - 1));
+			text.getBuffer().setReadOnly(true);
 		}
 	}
 
