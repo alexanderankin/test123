@@ -3,6 +3,7 @@ package ctags;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -112,22 +113,32 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	}
 	
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
+		//private Font tagListFont = new Font("Monospaced", Font.PLAIN, 12);
 		@SuppressWarnings("unchecked")
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
 				isSelected, cellHasFocus);
 			Tag tag = (Tag) tagModel.getElementAt(index);
-			String name = tag.getName();
-			String signature = tag.getExtension("signature");
-			if (signature != null && signature.length() > 0)
-				l.setText(name + signature);
-			else
-				l.setText(name);
+			//l.setFont(tagListFont );
+			l.setText(getText(tag));
 			ImageIcon icon = tag.getIcon();
 			if (icon != null)
 				l.setIcon(icon);
 			return l;
+		}
+		String getText(Tag tag) {
+			StringBuffer s = new StringBuffer();
+			s.append(tag.getName());
+			String signature = tag.getExtension("signature");
+			if (signature != null && signature.length() > 0)
+				s.append(signature);
+			s.append("   ");
+			s.append(tag.getFile());
+			int line = tag.getLine();
+			if (line > -1)
+				s.append(":" + line);
+			return s.toString();
 		}
 	}
 
