@@ -1,7 +1,14 @@
 package options;
+import java.awt.GridLayout;
+
+import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -20,6 +27,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	static public final String BACKGROUND = OPTION + "background";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
+	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
 	JTextField ctags;
 	JTextField cmd;
 	JTextField pattern;
@@ -27,6 +35,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox updateOnSave;
 	JCheckBox background;
 	JCheckBox previewWrap;
+	JTextField previewDelay;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -52,9 +61,30 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			jEdit.getBooleanProperty(BACKGROUND));
 		addComponent(background);
 
+		JPanel previewPanel = new JPanel();
+		previewPanel.setLayout(new GridLayout(0, 1));
+		previewPanel.setBorder(new TitledBorder(jEdit.getProperty(
+			MESSAGE + "previewTitle")));
 		previewWrap = new JCheckBox(jEdit.getProperty(MESSAGE + "previewWrap"),
 				jEdit.getBooleanProperty(PREVIEW_WRAP));
-		addComponent(previewWrap);
+		previewPanel.add(previewWrap);
+		JPanel previewDelayPanel = new JPanel();
+		previewDelayPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "previewDelay")));
+		previewDelay = new JTextField(String.valueOf(
+			jEdit.getIntegerProperty(PREVIEW_DELAY)), 5);
+		previewDelay.setInputVerifier(new InputVerifier() {
+			public boolean verify(JComponent c) {
+				try {
+					Integer.valueOf(previewDelay.getText());
+				} catch (Exception e) {
+					return false;
+				}
+				return true;
+			}
+		});
+		previewDelayPanel.add(previewDelay);
+		previewPanel.add(previewDelayPanel);
+		addComponent(previewPanel);
 	}
 
 	@Override
@@ -66,6 +96,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
+		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
 	}
 
 	public static String getCtags() {
@@ -97,5 +128,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getPreviewWrap() {
 		return jEdit.getBooleanProperty(PREVIEW_WRAP, true);
+	}
+	public static int getPreviewDelay() {
+		return jEdit.getIntegerProperty(PREVIEW_DELAY, 0);
 	}
 }
