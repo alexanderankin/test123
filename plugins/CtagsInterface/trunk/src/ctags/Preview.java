@@ -2,6 +2,9 @@ package ctags;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
@@ -15,11 +18,9 @@ import javax.swing.JSplitPane;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent {
@@ -27,7 +28,7 @@ public class Preview extends JPanel implements DefaultFocusComponent {
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
-	JEditTextArea text;
+	TextArea text;
 	boolean first = true;
 	
 	Preview(View view) {
@@ -37,7 +38,7 @@ public class Preview extends JPanel implements DefaultFocusComponent {
 		tags = new JList(tagModel);
 		JScrollPane listPane = new JScrollPane(tags);
 		tags.setCellRenderer(new TagListCellRenderer());
-		text = new JEditTextArea(view);
+		text = new TextArea();
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, listPane, text);
 		split.setOneTouchExpandable(true);
 		split.setDividerLocation(150);
@@ -55,15 +56,8 @@ public class Preview extends JPanel implements DefaultFocusComponent {
 				String file = t.getFile();
 				int line = t.getLine();
 				if (line > -1) {
-					Buffer b = jEdit.openTemporary(Preview.this.view, null, file, false);
-					if (b == null || b.isNewFile())
-					{
-						b = null;
-						return;
-					}
-					text.setBuffer(b);
-					text.repaint();
-					//text.scrollTo(line, 0, true);
+					text.setText(getContents(file));
+					text.scrollTo(line, 0, true);
 				}
 			}
 		});
@@ -71,6 +65,32 @@ public class Preview extends JPanel implements DefaultFocusComponent {
 	public void focusOnDefaultComponent() {
 		tags.requestFocus();
 	}
+	static public String getContents(String path) {
+		StringBuffer contents = new StringBuffer();
+		BufferedReader input = null;
+		try {
+			input = new BufferedReader(new FileReader(path));
+			String line = null;
+			while ((line = input.readLine()) != null) {
+				contents.append(line);
+				contents.append(System.getProperty("line.separator"));
+			}
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			try {
+				if (input!= null)
+					input.close();
+			}
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return contents.toString();
+	}
+	
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
 		@SuppressWarnings("unchecked")
 		public Component getListCellRendererComponent(JList list, Object value,
