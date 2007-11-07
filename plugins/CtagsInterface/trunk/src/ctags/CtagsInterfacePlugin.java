@@ -270,6 +270,19 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			}
 		});
 	}
+	// Jumps to the specified location
+	public static void jumpToOffset(final View view, String file, final int offset) {
+		Buffer buffer = jEdit.openFile(view, file);
+		if (buffer == null) {
+			System.err.println("Unable to open: " + file);
+			return;
+		}
+		VFSManager.runInAWTThread(new Runnable() {
+			public void run() {
+				view.getTextArea().setCaretPosition(offset);
+			}
+		});
+	}
 	
 	// Updates the given origins in the DB
 	static public void updateOrigins(String type, Vector<String> names) {
