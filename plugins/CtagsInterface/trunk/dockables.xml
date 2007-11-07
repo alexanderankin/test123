@@ -7,6 +7,9 @@
 	<DOCKABLE NAME="ctags-interface-tag-list" MOVABLE="TRUE">
 		new ctags.TagList(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="ctags-interface-preview" MOVABLE="TRUE">
+		new ctags.Preview(view);
+	</DOCKABLE>
 </DOCKABLES>
 
 <!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->
