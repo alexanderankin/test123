@@ -633,7 +633,7 @@ implements EBComponent, DefaultFocusComponent
 
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
-		if (view != msg.getSource()) return;
+		if (view != msg.getView()) return;
 		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 		String path = msg.getPath();
 		File f = new File(path);
