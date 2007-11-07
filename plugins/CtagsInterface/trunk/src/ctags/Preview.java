@@ -1,30 +1,23 @@
 package ctags;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Vector;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.syntax.ModeProvider;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.EditPane;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.textarea.TextArea;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
@@ -44,7 +37,11 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		tags.setCellRenderer(new TagListCellRenderer());
 		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
-		text = new TextArea();
+		text = new TextArea(false);
+		EditPane.initPainter(text.getPainter());
+		text.setBuffer(new JEditBuffer());
+		text.getBuffer().setProperty("wrap","soft");
+		text.getBuffer().setMode(ModeProvider.instance.getMode("text"));
 		text.setMinimumSize(new Dimension(150, 50));
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 			new JScrollPane(tags), text);
@@ -73,12 +70,18 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		Tag t = (Tag) tagModel.getElementAt(index);
 		String file = t.getFile();
 		int line = t.getLine();
-		if (line > -1) {
-			text.getBuffer().setReadOnly(false);
+		if (line > -1)
+		{
+			JEditBuffer buffer = text.getBuffer();
+			buffer.setReadOnly(false);
 			text.setText(getContents(file));
+			Mode mode = ModeProvider.instance.getModeForFile(file, buffer.getLineText(0));
+			if (mode == null)
+				mode = ModeProvider.instance.getMode("text");
+			buffer.setMode(mode);
 			text.scrollTo(line, 0, true);
 			text.setCaretPosition(text.getLineStartOffset(line - 1));
-			text.getBuffer().setReadOnly(true);
+			buffer.setReadOnly(true);
 		}
 	}
 
