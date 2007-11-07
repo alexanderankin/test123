@@ -1,8 +1,14 @@
 package ctags;
 
+import options.GeneralOptionPane;
+
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.textarea.TextArea;
@@ -21,7 +27,7 @@ import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
-	CaretListener, ListSelectionListener {
+	CaretListener, ListSelectionListener, EBComponent {
 
 	View view;
 	JList tags;
@@ -38,9 +44,8 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
 		text = new TextArea(false);
-		EditPane.initPainter(text.getPainter());
 		text.setBuffer(new JEditBuffer());
-		text.getBuffer().setProperty("wrap","soft");
+		propertiesChanged();
 		text.getBuffer().setMode(ModeProvider.instance.getMode("text"));
 		text.setMinimumSize(new Dimension(150, 50));
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
@@ -49,8 +54,19 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		split.setDividerLocation(100);
 		add(split, BorderLayout.CENTER);
 		view.getTextArea().addCaretListener(this);
+		EditBus.addToBus(this);
 	}
 
+	private void propertiesChanged()	{
+		String wrap;
+		if (GeneralOptionPane.getPreviewWrap())
+			wrap = "soft";
+		else
+			wrap = "none";
+		text.getBuffer().setProperty("wrap", wrap);
+		EditPane.initPainter(text.getPainter());
+	}
+	
 	public void caretUpdate(CaretEvent e) {
 		String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
 		if (name == null)
@@ -114,7 +130,13 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		}
 		return contents.toString();
 	}
-	
+
+	public void handleMessage(EBMessage message) {
+		if (message instanceof PropertiesChanged) {
+			propertiesChanged();
+		}
+	}
+
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
 		//private Font tagListFont = new Font("Monospaced", Font.PLAIN, 12);
 		@SuppressWarnings("unchecked")
