@@ -17,13 +17,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.textarea.TextArea;
 
 @SuppressWarnings("serial")
-public class Preview extends JPanel implements DefaultFocusComponent {
+public class Preview extends JPanel implements DefaultFocusComponent,
+	CaretListener, ListSelectionListener {
 
 	View view;
 	JList tags;
@@ -38,33 +42,42 @@ public class Preview extends JPanel implements DefaultFocusComponent {
 		tags = new JList(tagModel);
 		JScrollPane listPane = new JScrollPane(tags);
 		tags.setCellRenderer(new TagListCellRenderer());
+		tags.addListSelectionListener(this);
 		text = new TextArea();
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, listPane, text);
 		split.setOneTouchExpandable(true);
 		split.setDividerLocation(150);
 		add(split, BorderLayout.CENTER);
-		view.getTextArea().addCaretListener(new CaretListener() {
-			public void caretUpdate(CaretEvent arg0) {
-				String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
-				Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
-				tagModel.clear();
-				for (int i = 0; i < tags.size(); i++)
-					tagModel.addElement(tags.get(i));
-				if (tags.isEmpty())
-					return;
-				final Tag t = tags.get(0);
-				String file = t.getFile();
-				int line = t.getLine();
-				if (line > -1) {
-					text.setText(getContents(file));
-					text.scrollTo(line, 0, true);
-				}
-			}
-		});
+		view.getTextArea().addCaretListener(this);
 	}
+
+	public void caretUpdate(CaretEvent e) {
+		String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
+		Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
+		tagModel.clear();
+		for (int i = 0; i < tags.size(); i++)
+			tagModel.addElement(tags.get(i));
+		if (! tags.isEmpty())
+			this.tags.setSelectedIndex(0);
+	}
+	
+	public void valueChanged(ListSelectionEvent e) {
+		int index = tags.getSelectedIndex();
+		if (index < 0)
+			return;
+		Tag t = (Tag) tagModel.getElementAt(index);
+		String file = t.getFile();
+		int line = t.getLine();
+		if (line > -1) {
+			text.setText(getContents(file));
+			text.scrollTo(line, 0, true);
+		}
+	}
+
 	public void focusOnDefaultComponent() {
 		tags.requestFocus();
 	}
+	
 	static public String getContents(String path) {
 		StringBuffer contents = new StringBuffer();
 		BufferedReader input = null;
