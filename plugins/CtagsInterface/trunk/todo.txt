@@ -1,15 +1,16 @@
 To do:
 - Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
-- Context menu items to project viewer to add/remove the selected project.
 - An action to add all existing projects to the DB.
 - An option to automatically tag new projects and insert them to the DB.
 - An option to automatically remove deleted projects from the DB.
 - Finish project listener - handle project renames etc.
-- Create an auto-preview dockable for definitions of the identifier under caret.
-  Handle multiple definitions as a list in that dockable.
+- Design plugin support. 
 
 Done:
++ Context menu items to project viewer to add/remove the selected project.
++ Create an auto-preview dockable for definitions of the identifier under caret.
+  Handle multiple definitions as a list in that dockable.
 + Project support:
   + Option pane in the plugin to define "watched" projects.
   + Monitor watched projects for changes (add/remove files) and auto-update DB.
@@ -20,7 +21,6 @@ Done:
     reserved words in SQL and cannot be used as column names (e.g. union).
   + Redesign DB tables.
   + Option to limit tag searches to active project.
-- Design plugin support. 
 + Auto-update DB when:
   + Watched buffer is saved
   + Watched buffer is loaded
