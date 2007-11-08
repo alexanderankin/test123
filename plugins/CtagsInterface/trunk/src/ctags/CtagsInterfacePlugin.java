@@ -312,7 +312,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Deletes an origin with all associated data from the DB
-	private static void deleteOrigin(String type, String name) {
+	public static void deleteOrigin(String type, String name) {
 		try {
 			db.deleteOrigin(type, name);
 		} catch (SQLException e) {
@@ -321,7 +321,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
 	// to the DB.
-	private static void insertOrigin(String type, String name) {
+	public static void insertOrigin(String type, String name) {
 		try {
 			db.insertOrigin(type, name);
 		} catch (SQLException e) {
