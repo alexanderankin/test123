@@ -67,7 +67,8 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		tags.setCellRenderer(new TagListCellRenderer());
 		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
-		text = new TextArea(false);
+		text = new TextArea(true);
+		EditPane.initPainter(text.getPainter());
 		text.getPainter().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
 				if (me.getClickCount() == 2 && file != null) {
