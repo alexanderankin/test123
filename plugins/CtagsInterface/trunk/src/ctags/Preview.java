@@ -1,33 +1,48 @@
 package ctags;
 
-import options.GeneralOptionPane;
-
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.syntax.ModeProvider;
-import org.gjt.sp.jedit.Mode;
-import org.gjt.sp.jedit.textarea.TextArea;
-import org.gjt.sp.jedit.EditPane;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.Timer;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import options.GeneralOptionPane;
+
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.syntax.ModeProvider;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
@@ -40,10 +55,12 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	boolean first = true;
 	String file;
 	Timer timer;
+	boolean tracking;
 	
 	Preview(View view) {
 		super(new BorderLayout());
 		this.view = view;
+		tracking = false;
 		file = null;
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
@@ -68,8 +85,40 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		split.setOneTouchExpandable(true);
 		split.setDividerLocation(100);
 		add(split, BorderLayout.CENTER);
-		view.getTextArea().addCaretListener(this);
 		EditBus.addToBus(this);
+		this.addHierarchyListener(new HierarchyListener() {
+			public void hierarchyChanged(HierarchyEvent e) {
+				if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) > 0 &&
+					tracking) {
+					tracking = false;
+					Preview.this.view.getTextArea().removeCaretListener(Preview.this);	
+				}
+			}
+		});
+		this.addComponentListener(new ComponentListener() {
+			private void update() {
+				boolean isShown = (Preview.this.isVisible() &&
+					Preview.this.getWidth() > 0 && Preview.this.getHeight() > 0); 
+				if (isShown && (! tracking)) {
+					tracking = true;
+					Preview.this.view.getTextArea().addCaretListener(Preview.this);	
+				} else if ((! isShown) && tracking) {
+					tracking = false;
+					Preview.this.view.getTextArea().removeCaretListener(Preview.this);	
+				}
+			}
+			public void componentHidden(ComponentEvent arg0) {
+				update();
+			}
+			public void componentMoved(ComponentEvent arg0) {
+			}
+			public void componentResized(ComponentEvent arg0) {
+				update();
+			}
+			public void componentShown(ComponentEvent arg0) {
+				update();
+			}
+		});
 	}
 
 	private void propertiesChanged()	{
