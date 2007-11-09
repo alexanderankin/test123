@@ -217,6 +217,8 @@ public class CommitDialog extends JDialog {
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
         panel.add( "0, 10, 1, 1, E,  , 0", btn_panel );
 
+        panel.add( "0, 11, 1, 1", KappaLayout.createHorizontalStrut( 600, true ));
+
         setContentPane( panel );
         pack();
 

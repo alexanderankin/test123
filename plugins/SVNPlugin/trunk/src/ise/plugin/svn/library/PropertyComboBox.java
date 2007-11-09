@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.library;
 
-
+import java.awt.Component;
 import javax.swing.*;
 import java.util.*;
 import org.gjt.sp.jedit.jEdit;
@@ -61,21 +61,21 @@ public class PropertyComboBox extends JComboBox {
                 values.push( name );
             }
         }
-        model = new DefaultComboBoxModel( (Vector)values );
+        model = new DefaultComboBoxModel( ( Vector ) values );
 
         if ( model.getSize() > 0 && model.getIndexOf( SELECT ) < 0 ) {
             model.insertElementAt( SELECT, 0 );
         }
         setModel( model );
-        if (model.getSize() > 0) {
-            setSelectedIndex(0);
+        if ( model.getSize() > 0 ) {
+            setSelectedIndex( 0 );
         }
     }
 
     @Override
     public void setEditable( boolean editable ) {
         // never editable
-        super.setEditable(false);
+        super.setEditable( false );
     }
 
     /**
@@ -110,5 +110,4 @@ public class PropertyComboBox extends JComboBox {
             }
         }
     }
-
 }
