@@ -53,7 +53,8 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 // }}}
 
 /**
- * A SystemShell belongs to each Console. It creates a ProcessBuilder. When it
+ * A SystemShell is shared across all instances of Console. 
+ * It creates a ProcessBuilder. When it
  * is time to execute something, it creates a ConsoleProcess, passing the
  * ProcessBuilder down. The process itself is started indirectly by
  * ProcessRunner.exec().
