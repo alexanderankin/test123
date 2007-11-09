@@ -772,8 +772,8 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ ShellState class
 
 	/**
-	 *
-	 * A ShellState brings together a Shell and its Output.
+	 * Each Shell of a Console has its own ShellState
+	 * A ShellState is a writable Output. 
 	 * It holds the document which is the "scrollback buffer".
 	 */
 	public class ShellState implements Output
