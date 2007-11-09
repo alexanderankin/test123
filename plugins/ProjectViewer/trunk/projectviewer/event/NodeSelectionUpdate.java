@@ -45,7 +45,7 @@ public final class NodeSelectionUpdate extends VFSPathSelected
     public NodeSelectionUpdate(ProjectViewer v,
                                VPTNode n)
     {
-        super(v.getView(), n.getNodePath());
+        super(v.getView(), n.getNodePath(), n.isDirectory());
         this.viewer = v;
         this.node = n;
     }
