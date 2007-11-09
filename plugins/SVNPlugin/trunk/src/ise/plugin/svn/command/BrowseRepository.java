@@ -198,13 +198,16 @@ public class BrowseRepository {
             String repositoryLocation = repository.getLocation().toString() + "/" + entry.getName();
             if ( entry.hasProperties() ) {
                 if ( entry.getKind() == SVNNodeKind.FILE ) {
-                    /* this doesn't work, it throws an error and the rest the tree is not discovered
-                    Collection revs = repository.getFileRevisions( entry.getName(), null, entry.getRevision(), entry.getRevision() );
-                    if ( revs.size() > 0 ) {
-                        SVNFileRevision rev = ( SVNFileRevision ) revs.toArray() [ 0 ];
-                        node.setProperties( convertMap( rev.getRevisionProperties() ) );
+                    try {
+                        Collection revs = repository.getFileRevisions( entry.getName(), null, entry.getRevision(), entry.getRevision() );
+                        if ( revs.size() > 0 ) {
+                            SVNFileRevision rev = ( SVNFileRevision ) revs.toArray() [ 0 ];
+                            node.setProperties( convertMap( rev.getRevisionProperties() ) );
+                        }
                     }
-                    */
+                    catch ( Exception ignored ) {
+                        //e.printStackTrace();
+                    }
                 }
                 else if ( entry.getKind() == SVNNodeKind.DIR ) {
                     Map<Object, Object> map = new HashMap<Object, Object>();
