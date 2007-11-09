@@ -132,6 +132,7 @@ public class BrowseRepository {
         catch ( SVNException svne ) {
             cd.getOut().printError( "error while listing entries: "
                     + svne.getMessage() );
+            svne.printStackTrace();
             return null;
         }
         /*
@@ -195,18 +196,20 @@ public class BrowseRepository {
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
             DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
             String repositoryLocation = repository.getLocation().toString() + "/" + entry.getName();
-            if (entry.hasProperties()) {
-                if (entry.getKind() == SVNNodeKind.FILE) {
-                Collection revs = repository.getFileRevisions(entry.getName(), null, entry.getRevision(), entry.getRevision());
-                if (revs.size() > 0) {
-                    SVNFileRevision rev = (SVNFileRevision)revs.toArray()[0];
-                    node.setProperties(convertMap(rev.getRevisionProperties()));
+            if ( entry.hasProperties() ) {
+                if ( entry.getKind() == SVNNodeKind.FILE ) {
+                    /* this doesn't work, it throws an error and the rest the tree is not discovered
+                    Collection revs = repository.getFileRevisions( entry.getName(), null, entry.getRevision(), entry.getRevision() );
+                    if ( revs.size() > 0 ) {
+                        SVNFileRevision rev = ( SVNFileRevision ) revs.toArray() [ 0 ];
+                        node.setProperties( convertMap( rev.getRevisionProperties() ) );
+                    }
+                    */
                 }
-                }
-                else if (entry.getKind() == SVNNodeKind.DIR) {
-                    Map map = new HashMap();
-                    Collection c = repository.getDir(entry.getName(), -1, map, (Collection)null);
-                    node.setProperties(convertMap(map));
+                else if ( entry.getKind() == SVNNodeKind.DIR ) {
+                    Map<Object, Object> map = new HashMap<Object, Object>();
+                    Collection c = repository.getDir( entry.getName(), -1, map, ( Collection ) null );
+                    node.setProperties( convertMap( map ) );
                 }
             }
             if ( isExternal ) {
@@ -270,7 +273,7 @@ public class BrowseRepository {
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
             // copy the properties to a Properties
-            Properties props = convertMap(fileproperties);
+            Properties props = convertMap( fileproperties );
 
             // ignore non-text files for now
             if ( isTextType ) {
