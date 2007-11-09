@@ -5,10 +5,10 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="ctags-interface-tag-list" MOVABLE="TRUE">
-		new ctags.TagList(view);
+		new dockables.TagList(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="ctags-interface-preview" MOVABLE="TRUE">
-		new ctags.Preview(view);
+		new dockables.Preview(view);
 	</DOCKABLE>
 </DOCKABLES>
 

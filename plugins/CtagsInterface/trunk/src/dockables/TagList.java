@@ -1,4 +1,4 @@
-package ctags;
+package dockables;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -21,6 +21,9 @@ import javax.swing.JScrollPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+
+import ctags.CtagsInterfacePlugin;
+import ctags.Tag;
 
 import db.TagDB;
 

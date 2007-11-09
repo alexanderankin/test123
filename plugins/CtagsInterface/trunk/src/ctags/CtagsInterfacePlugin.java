@@ -27,6 +27,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
 import db.TagDB;
+import dockables.TagList;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	

@@ -1,4 +1,4 @@
-package ctags;
+package dockables;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,6 +14,9 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
@@ -40,9 +43,15 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.syntax.ModeProvider;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
+
+import ctags.CtagsInterfacePlugin;
+import ctags.Tag;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
@@ -55,12 +64,12 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	boolean first = true;
 	String file;
 	Timer timer;
-	boolean tracking;
+	Set<JEditTextArea> tracking;
 	
 	Preview(View view) {
 		super(new BorderLayout());
 		this.view = view;
-		tracking = false;
+		tracking = new HashSet<JEditTextArea>();
 		file = null;
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
@@ -89,39 +98,51 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		EditBus.addToBus(this);
 		this.addHierarchyListener(new HierarchyListener() {
 			public void hierarchyChanged(HierarchyEvent e) {
-				if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) > 0 &&
-					tracking) {
-					tracking = false;
-					Preview.this.view.getTextArea().removeCaretListener(Preview.this);	
-				}
+				if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) > 0)
+					setCaretTracking(Preview.this.view.getTextArea(), false);	
 			}
 		});
 		this.addComponentListener(new ComponentListener() {
-			private void update() {
-				boolean isShown = (Preview.this.isVisible() &&
-					Preview.this.getWidth() > 0 && Preview.this.getHeight() > 0); 
-				if (isShown && (! tracking)) {
-					tracking = true;
-					Preview.this.view.getTextArea().addCaretListener(Preview.this);	
-				} else if ((! isShown) && tracking) {
-					tracking = false;
-					Preview.this.view.getTextArea().removeCaretListener(Preview.this);	
-				}
-			}
 			public void componentHidden(ComponentEvent arg0) {
-				update();
+				updateCaretListenerState();
 			}
 			public void componentMoved(ComponentEvent arg0) {
 			}
 			public void componentResized(ComponentEvent arg0) {
-				update();
+				updateCaretListenerState();
 			}
 			public void componentShown(ComponentEvent arg0) {
-				update();
+				updateCaretListenerState();
 			}
 		});
 	}
 
+	private void updateCaretListenerState() {
+		boolean visible = isVisible() && getWidth() > 0 && getHeight() > 0; 
+		if (visible)
+			setCaretTracking(view.getTextArea(), true);
+		else {
+			Vector<JEditTextArea> textAreas = new Vector<JEditTextArea>();
+			textAreas.addAll(tracking);
+			Iterator<JEditTextArea> it = textAreas.iterator();
+			while (it.hasNext())
+				setCaretTracking(it.next(), false);
+		}
+	}
+
+	private void setCaretTracking(JEditTextArea textArea, boolean track) {
+		if (track)
+			caretUpdate(null);
+		if (tracking.contains(textArea) == track)
+			return;
+		if (track) {
+			tracking.add(textArea);
+			textArea.addCaretListener(this);
+		} else {
+			tracking.remove(textArea);
+			textArea.removeCaretListener(this);	
+		}
+	}
 	private void propertiesChanged()	{
 		String wrap;
 		if (GeneralOptionPane.getPreviewWrap())
@@ -132,7 +153,12 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		EditPane.initPainter(text.getPainter());
 	}
 	public void previewTag() {
-		String name = CtagsInterfacePlugin.getDestinationTag(Preview.this.view);
+		String name = null;
+		try {
+			name = CtagsInterfacePlugin.getDestinationTag(view);
+		} catch (Exception e) {
+			return;
+		}
 		if (name == null)
 			return;
 		Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
@@ -212,6 +238,15 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	public void handleMessage(EBMessage message) {
 		if (message instanceof PropertiesChanged) {
 			propertiesChanged();
+		} else if (message instanceof ViewUpdate) {
+			ViewUpdate msg = (ViewUpdate) message;
+			if (msg.getView() == view && msg.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+				updateCaretListenerState();
+		} else if (message instanceof EditPaneUpdate) {
+			EditPaneUpdate msg = (EditPaneUpdate) message;
+			JEditTextArea textArea = msg.getEditPane().getTextArea(); 
+			if (tracking.contains(textArea))
+				setCaretTracking(textArea, false);
 		}
 	}
 
