@@ -27,17 +27,32 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import javax.swing.Timer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.jcraft.Compression;
 //}}}
 
 public class ConnectionManager
 {
+	// {{{ members 
+	protected static Object lock;
+	protected static ArrayList<Connection> connections;
+	/**
+	 * cached logins by host
+	 */
+	protected static HashMap<String, ConnectionInfo> logins;
+	protected static HashMap<String, String> passwords;
+	protected static HashMap<String, String> passphrases;
+	static int connectionTimeout = 120000;
+	private static File passwordFile = null;
+	public static JSch client = null;
+
+	// }}}
+	
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
@@ -52,6 +67,7 @@ public class ConnectionManager
 		passwords.clear();
 		passphrases.clear();
 		logins.clear();
+		client = null;
 	} //}}}
 
 	//{{{ getPassword() method
@@ -63,17 +79,17 @@ public class ConnectionManager
 	//{{{ setPassword() method
 	protected static void setPassword(String hostInfo, String password)
 	{
-		passwords.put(hostInfo,password);
+		passwords.put(hostInfo, password);
 	} //}}}
 	
 	//{{{ getPassphrase() method
-	protected static String getPassphrase(String keyFile)
+	public static String getPassphrase(String keyFile)
 	{
-		return (String)passphrases.get(keyFile);
+		return passphrases.get(keyFile);
 	} //}}}
 	
 	//{{{ setPassphrase() method
-	protected static void setPassphrase(String keyFile, String passphrase)
+	public static void setPassphrase(String keyFile, String passphrase)
 	{
 		passphrases.put(keyFile,passphrase);
 	} //}}}
@@ -240,7 +256,7 @@ public class ConnectionManager
 				host = host + ":" + FtpVFS.getDefaultPort(secure);
 			user = address.user;
 
-			ConnectionInfo info = (ConnectionInfo)logins.get(host);
+			ConnectionInfo info = logins.get(host);
 
 			if(info != null && (info.user.equals(user) || user == null))
 			{
@@ -290,14 +306,15 @@ public class ConnectionManager
 		return info;
 	} //}}}
 
+	
+	
 	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info)
 		throws IOException
 	{
+		Connection connect = null;
 		synchronized(lock)
 		{
-			Connection connect = null;
-
 			for(int i = 0; i < connections.size(); i++)
 			{
 				Connection _connect = (Connection)connections.get(i);
@@ -330,18 +347,17 @@ public class ConnectionManager
 				Log.log(Log.DEBUG,ConnectionManager.class,
 					Thread.currentThread() +
 					": Connecting to " + info);
-				if(info.secure)
+				if(info.secure) 
 					connect = new SFtpConnection(info);
 				else
 					connect = new FtpConnection(info);
-
 				connections.add(connect);
 			}
 
 			connect.lock();
-
-			return connect;
 		}
+		return connect;
+		
 	} //}}}
 
 	//{{{ releaseConnection() method
@@ -350,144 +366,6 @@ public class ConnectionManager
 		synchronized(lock)
 		{
 			connect.unlock();
-		}
-	} //}}}
-
-	//{{{ ConnectionInfo class
-	static class ConnectionInfo
-	{
-		public boolean secure;
-		public String host;
-		public int port;
-		public String user;
-		public String password;
-		public String privateKey;
-		public ConnectionInfo(boolean secure, String host, int port,
-			String user, String password, String privateKey)
-		{
-			this.secure = secure;
-			this.host = host;
-			this.port = port;
-			this.user = user;
-			this.password = password;
-			this.privateKey = privateKey;
-		}
-
-		public boolean equals(Object o)
-		{
-			if(!(o instanceof ConnectionInfo))
-				return false;
-
-			ConnectionInfo c = (ConnectionInfo)o;
-			return c.secure == secure
-				&& c.host.equals(host)
-				&& c.port == port
-				&& c.user.equals(user)
-				&& ( (c.password==null && password==null) ||
-				     (c.password!=null && password!=null &&
-				      c.password.equals(password)))
-				&& ( (c.privateKey==null && privateKey==null) ||
-				     (c.privateKey!=null && privateKey!=null &&
-				      c.privateKey.equals(privateKey)));
-		}
-
-		public String toString()
-		{
-			return (secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL)
-				+ "://" + host + ":" + port;
-		}
-
-		public int hashCode()
-		{
-			return host.hashCode();
-		}
-	} //}}}
-
-	//{{{ Connection class
-	abstract static class Connection
-	{
-		static int COUNTER;
-
-		int id;
-		ConnectionInfo info;
-		String home;
-		boolean inUse;
-		Timer closeTimer;
-
-		Connection(ConnectionInfo info)
-		{
-			id = COUNTER++;
-			this.info = info;
-
-			closeTimer = new Timer(0,new ActionListener()
-			{
-				public void actionPerformed(ActionEvent evt)
-				{
-					ConnectionManager.closeConnection(Connection.this);
-				}
-			});
-		}
-
-		abstract FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException;
-		abstract FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException;
-		abstract boolean removeFile(String path) throws IOException;
-		abstract boolean removeDirectory(String path) throws IOException;
-		abstract boolean rename(String from, String to) throws IOException;
-		abstract boolean makeDirectory(String path) throws IOException;
-		abstract InputStream retrieve(String path) throws IOException;
-		abstract OutputStream store(String path) throws IOException;
-		abstract void chmod(String path, int permissions) throws IOException;
-		abstract boolean checkIfOpen() throws IOException;
-		abstract String resolveSymlink(String path, String[] name) throws IOException;
-		abstract void logout() throws IOException;
-
-		boolean inUse()
-		{
-			return inUse;
-		}
-
-		void lock()
-		{
-			if(inUse)
-			{
-				throw new InternalError("Trying to lock "
-					+ "connection twice!");
-			}
-			else
-			{
-				Log.log(Log.DEBUG,ConnectionManager.class,
-					Thread.currentThread() +
-					": Connection " + this + " locked");
-				inUse = true;
-				closeTimer.stop();
-			}
-		}
-
-		void unlock()
-		{
-			if(!inUse)
-			{
-				Log.log(Log.ERROR,ConnectionManager.class,
-					new Exception(Thread.currentThread() +
-					": Trying to release connection twice!"));
-			}
-			else
-			{
-				Log.log(Log.DEBUG,ConnectionManager.class,
-					Thread.currentThread() +
-					": Connection " + this + " released");
-			}
-
-			inUse = false;
-			closeTimer.stop();
-			closeTimer.setInitialDelay(connectionTimeout);
-			closeTimer.setRepeats(false);
-			closeTimer.start();
-		}
-
-		public String toString()
-		{
-			return id + ":" + info.host;
 		}
 	} //}}}
 
@@ -516,20 +394,13 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ Private members
-	private static Object lock;
-	private static ArrayList connections;
-	private static HashMap logins;
-	private static HashMap passwords;
-	private static HashMap passphrases;
-	private static int connectionTimeout = 120000;
-	private static File passwordFile = null;
 	static
 	{
 		lock = new Object();
-		connections = new ArrayList();
-		logins = new HashMap();
-		passwords = new HashMap();
-		passphrases = new HashMap();
+		connections = new ArrayList<Connection>();
+		logins = new HashMap<String, ConnectionInfo>();
+		passwords = new HashMap<String, String>();
+		passphrases = new HashMap<String, String>();
 
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory == null)
@@ -552,4 +423,5 @@ public class ConnectionManager
 			}
 		}
 	} //}}}
+
 }

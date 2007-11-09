@@ -145,10 +145,10 @@ public class FtpVFS extends VFS
 	//{{{ FtpSession class
 	static class FtpSession
 	{
-		ConnectionManager.ConnectionInfo info;
-		ConnectionManager.Connection connection;
+		ConnectionInfo info;
+		Connection connection;
 		
-		FtpSession(ConnectionManager.ConnectionInfo info)
+		FtpSession(ConnectionInfo info)
 		{
 			this.info = info;
 		}
@@ -159,7 +159,7 @@ public class FtpVFS extends VFS
 	{
 		try
 		{
-			ConnectionManager.ConnectionInfo info =
+			ConnectionInfo info =
 			ConnectionManager.getConnectionInfo(comp,
 				path == null ? null : new FtpAddress(path),
 				secure);
@@ -194,7 +194,7 @@ public class FtpVFS extends VFS
 		
 		if(address.path.startsWith("/~"))
 		{
-			ConnectionManager.Connection session
+			Connection session
 			= getConnection(_session);
 			
 			if(session.home != null)
@@ -222,7 +222,7 @@ public class FtpVFS extends VFS
 		if(directory != null)
 			return directory;
 		
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(url);
 		
@@ -284,7 +284,7 @@ public class FtpVFS extends VFS
 		Component comp)
 	throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(path);
 		
@@ -333,7 +333,7 @@ public class FtpVFS extends VFS
 	public boolean _delete(Object _session, String url, Component comp)
 	throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(url);
 		
@@ -359,7 +359,7 @@ public class FtpVFS extends VFS
 	public boolean _rename(Object _session, String from, String to,
 		Component comp) throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(from);
 		
@@ -389,7 +389,7 @@ public class FtpVFS extends VFS
 	public boolean _mkdir(Object _session, String directory, Component comp)
 	throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(directory);
 		
@@ -405,7 +405,7 @@ public class FtpVFS extends VFS
 	public InputStream _createInputStream(Object _session, String path,
 		boolean ignoreErrors, Component comp) throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(path);
 		
@@ -416,7 +416,7 @@ public class FtpVFS extends VFS
 	public OutputStream _createOutputStream(Object _session, String path,
 		Component comp) throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(path);
 		
@@ -430,7 +430,7 @@ public class FtpVFS extends VFS
 	public void _finishTwoStageSave(Object _session, Buffer buffer, String path,
 		Component comp) throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(path);
 		
@@ -451,7 +451,7 @@ public class FtpVFS extends VFS
 	private boolean secure;
 	
 	//{{{ getConnection() method
-	private static ConnectionManager.Connection getConnection(Object _session)
+	private static Connection getConnection(Object _session)
 	throws IOException
 	{
 		FtpSession session = (FtpSession)_session;
@@ -468,7 +468,7 @@ public class FtpVFS extends VFS
 	private void resolveSymlink(Object _session, String url, FtpDirectoryEntry entry)
 	throws IOException
 	{
-		ConnectionManager.Connection session = getConnection(_session);
+		Connection session = getConnection(_session);
 		
 		String path = constructPath(url,entry.getName());
 		String[] nameArray = new String[] { entry.getName() };

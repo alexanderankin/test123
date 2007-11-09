@@ -27,11 +27,8 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
