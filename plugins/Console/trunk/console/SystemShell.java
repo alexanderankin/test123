@@ -417,7 +417,7 @@ public class SystemShell extends Shell
 		String currentDirectory = (console == null ? System.getProperty("user.dir")
 			: getConsoleState(console).currentDirectory);
 
-		final String fileDelimiters = "/=\'\" \\" + File.pathSeparator;
+		final String fileDelimiters = "=\'\" \\" + File.pathSeparator;
 
 		String lastArgEscaped, lastArg;
 		if (File.separatorChar == '\\')
