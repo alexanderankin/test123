@@ -27,20 +27,20 @@ import com.jcraft.jsch.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
-class SFtpConnection extends ConnectionManager.Connection implements UserInfo
+public class SFtpConnection extends Connection implements UserInfo
 {
-	SFtpConnection(final ConnectionManager.ConnectionInfo info) throws IOException
+	SFtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
 		try {
-			client = new JSch();
-			client.setLogger(new SftpLogger());
+			if (ConnectionManager.client == null)  {
+				ConnectionManager.client = new JSch();
+			}
+			ConnectionManager.client.setLogger(new SftpLogger());
 			String settingsDirectory = jEdit.getSettingsDirectory();
 			if(settingsDirectory != null)
 			{
@@ -49,17 +49,17 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 				String known_hosts = MiscUtilities.constructPath(cacheDir,"known_hosts");
 				try {
 					(new File(known_hosts)).createNewFile();
-					client.setKnownHosts(known_hosts);
+					ConnectionManager.client.setKnownHosts(known_hosts);
 				} catch(IOException e) {
 					Log.log(Log.WARNING,ConnectionManager.class,
 						"Unable to create password file:"+known_hosts);
 				}
 			}
-			Session session=client.getSession(info.user, info.host,info.port);
+			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (info.privateKey != null) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
 				Log.log(Log.DEBUG,this,"Using key: "+info.privateKey);
-				client.addIdentity(info.privateKey);
+				ConnectionManager.client.addIdentity(info.privateKey);
 			}
 			keyAttempts = 0;
 			session.setUserInfo(this);
@@ -98,7 +98,7 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		} catch (SftpException e) {
 			return null;
 		}
-		FtpVFS.FtpDirectoryEntry[] result = (FtpVFS.FtpDirectoryEntry[])listing.toArray(
+		FtpVFS.FtpDirectoryEntry[] result = (FtpVFS.FtpDirectoryEntry[]) listing.toArray(
 			new FtpVFS.FtpDirectoryEntry[listing.size()]);
 		return result;
 	}
@@ -213,7 +213,6 @@ class SFtpConnection extends ConnectionManager.Connection implements UserInfo
 		sftp.disconnect();
 	}
 	
-	private JSch client;
 	private ChannelSftp sftp;
 	private int keyAttempts = 0;
 	

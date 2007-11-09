@@ -21,20 +21,26 @@
 */
 package ftp;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.border.EmptyBorder;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.VariableGridLayout;
 
 public class PasswordDialog extends EnhancedDialog implements ActionListener
 {
-	public PasswordDialog(JFrame comp,String title, String message)
+	public PasswordDialog(JFrame comp, String title, String message)
 	{
 		super(comp,title,true);
 		JPanel content = new JPanel(new VariableGridLayout(

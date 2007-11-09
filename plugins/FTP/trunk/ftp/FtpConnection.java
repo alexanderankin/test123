@@ -27,9 +27,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
-class FtpConnection extends ConnectionManager.Connection
+class FtpConnection extends Connection
 {
-	FtpConnection(ConnectionManager.ConnectionInfo info) throws IOException
+	FtpConnection(ConnectionInfo info) throws IOException
 	{
 		super(info);
 
