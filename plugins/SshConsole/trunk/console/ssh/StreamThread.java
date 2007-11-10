@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.swing.text.AttributeSet;
@@ -46,8 +48,10 @@ class StreamThread extends Thread
 	// }}}
 
 	// {{{ StreamThread constructor
+	
+	
 	/**
-	 * @param showStatus - prints the error status when the thread is finished.
+	 * @param in - a stream to read things from, that we want to display.
 	 */
 	public StreamThread(Console console, InputStream in, Output output, Color defaultColor)
 	{
@@ -83,6 +87,7 @@ class StreamThread extends Thread
 			while (!aborted)
 			{
 				int read = isr.read(input, 0, input.length);
+				Log.log(Log.MESSAGE, this, input);
 				if (aborted)
 				{
 					break;

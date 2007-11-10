@@ -3,6 +3,8 @@ package console.ssh;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Channel;
@@ -15,6 +17,7 @@ import console.ConsolePane;
 import console.ErrorOutput;
 import console.Output;
 import ftp.ConnectionInfo;
+import ftp.FtpVFS;
 
 /**
  * Secure shell interface for jEdit console. A singleton exists for the whole jedit process.
@@ -42,21 +45,24 @@ public class Shell extends console.Shell {
 	
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
-		try { 
-			ConsoleState ss = ConnectionManager.getConsoleState(console);
-			// Expected to be non-null if you connected via FSB already
-			ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
-			Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
-			Connection c = ConnectionManager.getShellConnection(console, info);
-			session.setUserInfo(c);
-			Channel channel = c.channel;
-			OutputStream os = channel.getOutputStream();
-			Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
-			os.write((command + "\n").getBytes() );
-			os.flush();
+		 try {
+			if (command != null && command.length() > 0) {
+				ConsoleState ss = ConnectionManager.getConsoleState(console);
+				// Expected to be non-null if you connected via FSB already
+				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
+				Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
+				Connection c = ConnectionManager.getShellConnection(console, info);
+				session.setUserInfo(c);
+				OutputStream os = c.ostr;
+				Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
+				os.write((command + "\n").getBytes() );
+				os.flush();
+			}
 		}
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "no ssh session:", e);
+		}
+		finally {
 			printPrompt(console, output);
 		}
 	}

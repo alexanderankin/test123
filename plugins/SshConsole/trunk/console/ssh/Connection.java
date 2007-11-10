@@ -2,6 +2,10 @@ package console.ssh;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -30,10 +34,11 @@ public class Connection implements UserInfo {
 	int id;
 	ConnectionInfo info;
 	String home;
-	boolean inUse = true;
+	boolean inUse = false;
 	Timer closeTimer;
 	private String passphrase = null;
 	Channel channel;
+	OutputStream ostr;
 	StreamThread stout;
 	Console console;
 	private int keyAttempts = 0;
@@ -62,10 +67,20 @@ public class Connection implements UserInfo {
 // XXX: hook up input and output streams
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
+//			OutputStream stdout = new OutputAdaptor(console.getOutput());
+//			Channel.setOutputStream(stdout);
+			PipedOutputStream pos = new PipedOutputStream();
+			PipedInputStream pis = new PipedInputStream(pos);
+			channel.setOutputStream(pos);
 			stout = new StreamThread(
-				console, channel.getInputStream(), console.getOutput(), console.getPlainColor());
-
-			channel.connect();
+				console, pis, console.getOutput(), console.getPlainColor());
+			stout.start();
+			pos = new PipedOutputStream();
+			pis = new PipedInputStream(pos);
+			channel.setInputStream(pis);
+			ostr = pos;
+			
+			channel.connect(10000);
 			
 		}
 		catch (Exception e) {
