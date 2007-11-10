@@ -430,15 +430,11 @@ public class SystemShell extends Shell
 		{
 			// Escaping possible
 
-			// I use findLastArgument and then unescape instead of
-			// (String)parse(command).lastElement() because there's
-			// no way
-			// to get parse(String) to also return the original
-			// length
-			// of the unescaped argument, which we need to calculate
-			// the
-			// completion offset.
-
+			/* I use findLastArgument and then unescape instead of
+			   (String)parse(command).lastElement() because there's
+			   no way to get parse(String) to also return the original
+			   length of the unescaped argument, which we need to calculate
+			   the completion offset. */
 			lastArgEscaped = findLastArgument(command, fileDelimiters);
 			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
@@ -526,12 +522,14 @@ public class SystemShell extends Shell
 	 */
 	String expandVariables(View view, String arg)
 	{
-		if (File.separatorChar == '\\' 
-		   && (arg.startsWith("\\") || arg.startsWith("/"))) {
-			Console console = ConsolePlugin.getConsole(view);
-			ConsoleState state = getConsoleState(console);
-			char drive = state.currentDirectory.charAt(0);
-			arg = drive + ":\\" + arg.substring(1);
+		if (File.separatorChar == '\\') {
+			arg = arg.replace('/', File.separatorChar);
+			if (arg.startsWith("\\")) {
+				Console console = ConsolePlugin.getConsole(view);
+				ConsoleState state = getConsoleState(console);
+				char drive = state.currentDirectory.charAt(0);
+				arg = drive + ":\\" + arg.substring(1);
+			}
 		}
 		// StringBuffer buf = new StringBuffer();
 		String varName = null;
