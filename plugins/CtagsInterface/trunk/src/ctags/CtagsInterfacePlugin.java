@@ -204,8 +204,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			 ProjectsOptionPane.getSearchActiveProjectFirst()));
 		Vector<Tag> tags;
 		try {
-			if (projectScope) {
-				String project = pvi.getActiveProject(view);
+			String project = pvi.getActiveProject(view);
+			if (projectScope && project != null) {
 				ResultSet rs = db.queryTagInProject(tag, project);
 				tags = db.getResultSetTags(rs);
 				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&

@@ -55,7 +55,10 @@ public class ProjectWatcher implements ProjectListener {
 	}
 
 	public String getActiveProject(View view) {
-		return ProjectViewer.getActiveProject(view).getName();
+		VPTProject project = ProjectViewer.getActiveProject(view);
+		if (project == null)
+			return null;
+		return project.getName();
 	}
 	
 	public void watchProject(String project) {
