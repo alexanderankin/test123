@@ -12,6 +12,7 @@ import org.gjt.sp.util.Log;
 import console.Console;
 import console.ConsolePlugin;
 import console.Output;
+import ftp.ConnectionInfo;
 
 public class SshConsolePlugin extends EBPlugin {
 
@@ -30,8 +31,7 @@ public class SshConsolePlugin extends EBPlugin {
 				path = path.substring(0, path.lastIndexOf('/'));
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
-			cs.path = path;
-			
+			cs.setPath(path);
 			// change directory
 			Matcher m = ConnectionManager.sftpPath.matcher(path);
 			if (m.matches()) {

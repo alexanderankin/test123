@@ -44,9 +44,9 @@ public class Shell extends console.Shell {
 		 try {
 			ConsoleState ss = ConnectionManager.getConsoleState(console);
 			if (ss.conn == null) {
-				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
+				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.getPath());
 				if (info == null) {
-					Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + ss.path);
+					Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + ss.getPath());
 					return;
 				}
 				ss.info = info;

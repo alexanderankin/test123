@@ -12,8 +12,9 @@ import ftp.ConnectionInfo;
  */
 public class ConsoleState
 {
-	void updatePath(String newPath) {
+	void setPath(String newPath) {
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
+		path = newPath;		
 		if (newInfo.equals(info)) return;
 		info = newInfo;
 		try {
@@ -23,9 +24,13 @@ public class ConsoleState
 		conn.inUse = false;
 		os = null;
 		conn = null;
+
+	}
+	public String getPath() {
+		return path;
 	}
 	// full sftp:// path
-	String path = "";
+	private String path = "";
 	// directory on that host
 	String dir = "";
 	OutputStream os = null;

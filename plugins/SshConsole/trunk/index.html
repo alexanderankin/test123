@@ -6,6 +6,22 @@
 <h1> SSH Console Plugin </h1>
 <h2> Alan Ezust </h2>
 <h3> $Date$ </h3>
-<p> This is the SSH Console plugin. When it is complete, it should allow one to remotely execute commands over ssh from the jEdit Console.
+<p> This is the SSH Console plugin. Its user interface is fairly minimal, because it attempts to reuse as much of Console and FTP plugins as possible. </p>
+
+<h2> Instructions for use: </h2>
+
+<ol>
+<li> Navigate your File System Browser to a remote host via sftp://. </li>
+<li> If this is your first time connecting, Enter your user/password/key/passphrase there. </li>
+<li> Open the Console, select the "ssh" shell. </li>
+<li> Start typing. </li>
+</ol>
+
+<h2> Click to change directories </h2>
+
+<p> A nice feature of this plugin is that you can change the working directory of the remote shell session by clicking on files in the File System Browser. Note, that this will only work if you have <tt>Plugin Options - Console - General - On VFS Node Select, cd to node dir</tt> option switched on.
 </p>
+
+<p> Enjoy! </p>
+
 </body>
