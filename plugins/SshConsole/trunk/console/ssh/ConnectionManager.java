@@ -117,6 +117,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 		else {
 			connect.setConsole(console);
 		}
+		connect.inUse=true;
 		return connect;
 	}
 	
