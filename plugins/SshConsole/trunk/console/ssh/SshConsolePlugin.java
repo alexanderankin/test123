@@ -1,10 +1,13 @@
 package console.ssh;
 
+import java.util.regex.Matcher;
+
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
+import org.gjt.sp.util.Log;
 
 import console.Console;
 import console.ConsolePlugin;
@@ -27,13 +30,21 @@ public class SshConsolePlugin extends EBPlugin {
 				path = path.substring(0, path.lastIndexOf('/'));
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
-			if (cs.path == path) return;
 			cs.path = path;
-			// print prompt
-			console.Shell s = c.getShell();
-			Output output = c.getShellState(s);
-			s.printPrompt(c, output);
 			
+			// change directory
+			Matcher m = ConnectionManager.sftpPath.matcher(path);
+			if (m.matches()) {
+				path = "/" + m.group(4);
+				if (cs.dir.equals(path)) return;
+				cs.dir = path;
+				String command = "cd " + path; 
+				console.Shell s = c.getShell();
+				Output output = c.getShellState(s);
+				output.print(c.getWarningColor(), command);
+				s.execute(c, null, output, output, command);
+			}
+			else Log.log (Log.ERROR, this, "ERROR:" + path + " does not parse");
 		}
 	}
 

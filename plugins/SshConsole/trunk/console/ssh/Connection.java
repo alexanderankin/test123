@@ -62,13 +62,8 @@ public class Connection implements UserInfo {
 			session.connect(60000);
 			channel=session.openChannel("shell");
 			((ChannelShell)channel).setAgentForwarding(true);
-
-			
-// XXX: hook up input and output streams
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
-//			OutputStream stdout = new OutputAdaptor(console.getOutput());
-//			Channel.setOutputStream(stdout);
 			PipedOutputStream pos = new PipedOutputStream();
 			PipedInputStream pis = new PipedInputStream(pos);
 			channel.setOutputStream(pos);
@@ -77,6 +72,7 @@ public class Connection implements UserInfo {
 			stout.start();
 			pos = new PipedOutputStream();
 			pis = new PipedInputStream(pos);
+
 			channel.setInputStream(pis);
 			ostr = pos;
 			
