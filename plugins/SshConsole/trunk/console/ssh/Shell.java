@@ -2,22 +2,16 @@ package console.ssh;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.regex.Matcher;
 
-import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.Log;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import console.Console;
 import console.ConsolePane;
-import console.ErrorOutput;
 import console.Output;
 import ftp.ConnectionInfo;
-import ftp.FtpVFS;
 
 /**
  * Secure shell interface for jEdit console. A singleton exists for the whole jedit process.
@@ -29,8 +23,7 @@ public class Shell extends console.Shell {
 	
 	public void closeConsole(Console console)
 	{
-		// TODO Auto-generated method stub
-		super.closeConsole(console);
+		
 	}
 
 	@Override
@@ -48,15 +41,17 @@ public class Shell extends console.Shell {
 		 try {
 			if (command != null && command.length() > 0) {
 				ConsoleState ss = ConnectionManager.getConsoleState(console);
-				// Expected to be non-null if you connected via FSB already
-				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
-				Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
-				Connection c = ConnectionManager.getShellConnection(console, info);
-				session.setUserInfo(c);
-				OutputStream os = c.ostr;
+				if (ss.conn == null) {
+					ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
+					Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
+					Connection c = ConnectionManager.getShellConnection(console, info);
+					session.setUserInfo(c);
+					ss.os = c.ostr;
+					ss.conn = c;
+				}
 				Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
-				os.write((command + "\n").getBytes() );
-				os.flush();
+				ss.os.write((command + "\n").getBytes() );
+				ss.os.flush();
 			}
 		}
 		catch (Exception e) {
@@ -72,10 +67,13 @@ public class Shell extends console.Shell {
 		ConsoleState s = ConnectionManager.getConsoleState(console);
 		String promptString = "[no sftp:// connections?] >";
 		if (s.path != null && s.path.length() > 0) {
-			promptString = "[" + s.path + "]> ";
+			ConnectionInfo info = ConnectionManager.getConnectionInfo(s.path);
+			promptString = "[ssh:" + info.user + "@" + info.host + "]> ";
 		}
-		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), 
+		if (s.conn == null || s.conn.inUse != true) { 
+		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), 
 			"\n" + promptString);
+		}
 	}    
 	
 };

@@ -14,12 +14,28 @@ import ftp.ConnectionInfo;
 public class ConnectionManager extends ftp.ConnectionManager 
 {
 	// {{{ members 
+	/**
+	 * group(1) - user (optional)
+	 * group(2) - host
+	 * group(3) - port (optional)
+	 * group(4) - path
+	 */
 	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?(.*)$");	
 	static HashMap<ConnectionInfo, Connection> connectionInfos = null;
 	static HashMap<Console, ConsoleState> consoleStates = null;
 	// Yes, I'm hiding the base class connections on purpose
 	static ArrayList<Connection> connections = new ArrayList<Connection>(); 
 	// }}}
+	
+	static ConnectionInfo parseAddress(String vfsPath) {
+		Matcher m = sftpPath.matcher(vfsPath);
+		if (!m.matches()) return null;
+		String user = m.group(1) != null? m.group(1): System.getProperty("user.name");
+		String host = m.group(2);
+		String portstr = m.group(3) != null? m.group(3) : "22";
+		int port = Integer.parseInt(portstr);
+		return new ConnectionInfo(true, host, port, user, null, null );	
+	}
 	
 	public static void closeUnusedConnections()
 	{
@@ -69,7 +85,10 @@ public class ConnectionManager extends ftp.ConnectionManager
 		consoleStates = new HashMap<Console, ConsoleState> ();
 	}
 	static void cleanup() {
-		// XXX Clean up connections
+
+		for (Connection c : connections) {
+			closeConnection(c);
+		}
 		connections.clear();
 		connectionInfos.clear();
 		consoleStates.clear();
