@@ -6,8 +6,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.swing.text.AttributeSet;
@@ -87,7 +85,7 @@ class StreamThread extends Thread
 			while (!aborted)
 			{
 				int read = isr.read(input, 0, input.length);
-				Log.log(Log.MESSAGE, this, input);
+//				Log.log(Log.MESSAGE, this, input);
 				if (aborted)
 				{
 					break;

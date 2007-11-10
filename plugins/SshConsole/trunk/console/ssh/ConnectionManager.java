@@ -20,7 +20,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 	 * group(3) - port (optional)
 	 * group(4) - path
 	 */
-	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?(.*)$");	
+	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?/(.*)$");	
 	static HashMap<ConnectionInfo, Connection> connectionInfos = null;
 	static HashMap<Console, ConsoleState> consoleStates = null;
 	// Yes, I'm hiding the base class connections on purpose
