@@ -39,20 +39,18 @@ public class Shell extends console.Shell {
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		 try {
-			if (command != null && command.length() > 0) {
-				ConsoleState ss = ConnectionManager.getConsoleState(console);
-				if (ss.conn == null) {
-					ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
-					Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
-					Connection c = ConnectionManager.getShellConnection(console, info);
-					session.setUserInfo(c);
-					ss.os = c.ostr;
-					ss.conn = c;
-				}
-				Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
-				ss.os.write((command + "\n").getBytes() );
-				ss.os.flush();
+			ConsoleState ss = ConnectionManager.getConsoleState(console);
+			if (ss.conn == null) {
+				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.path);
+				Session session=ConnectionManager.client.getSession(info.user, info.host, 22);
+				Connection c = ConnectionManager.getShellConnection(console, info);
+				session.setUserInfo(c);
+				ss.os = c.ostr;
+				ss.conn = c;
 			}
+			Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
+			ss.os.write((command + "\n").getBytes() );
+			ss.os.flush();
 		}
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "no ssh session:", e);
