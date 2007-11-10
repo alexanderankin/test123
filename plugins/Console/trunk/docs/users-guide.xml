@@ -1499,7 +1499,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
   <listitem id="ver4.3.5"><para>
     <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
-	<listitem><para> (windows) - driveletter: works in Console the way it does in cmd.exe, and \ without driveletter prefix defaults to the current drive in paths. (Alan Ezust - bug#1511941 ) </para> </listitem>
+	<listitem><para> (windows only) - driveletter: works in Console the way it does in cmd.exe, and \ without driveletter prefix defaults to the current drive in paths. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para> </listitem>
+	 
    </itemizedlist> </para> </listitem>
 
   <listitem id="ver4.3.4">
