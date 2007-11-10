@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -161,12 +162,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		}
 		if (name == null)
 			return;
-		Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
-		tagModel.clear();
-		for (int i = 0; i < tags.size(); i++)
-			tagModel.addElement(tags.get(i));
-		if (! tags.isEmpty())
-			this.tags.setSelectedIndex(0);
+		VFSManager.runInWorkThread(new QueryTag(name));
 	}
 	public void caretUpdate(CaretEvent e) {
 		int delay = GeneralOptionPane.getPreviewDelay(); 
@@ -188,21 +184,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		if (index < 0)
 			return;
 		Tag t = (Tag) tagModel.getElementAt(index);
-		file = t.getFile();
-		int line = t.getLine();
-		if (line > -1)
-		{
-			JEditBuffer buffer = text.getBuffer();
-			buffer.setReadOnly(false);
-			text.setText(getContents(file));
-			Mode mode = ModeProvider.instance.getModeForFile(file, buffer.getLineText(0));
-			if (mode == null)
-				mode = ModeProvider.instance.getMode("text");
-			buffer.setMode(mode);
-			text.scrollTo(line, 0, true);
-			text.setCaretPosition(text.getLineStartOffset(line - 1));
-			buffer.setReadOnly(true);
-		}
+		VFSManager.runInWorkThread(new PreviewBufferLoader(t));
 	}
 
 	public void focusOnDefaultComponent() {
@@ -280,4 +262,62 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		}
 	}
 
+	class PreviewTag implements Runnable {
+		Vector<Tag> tags;
+		public PreviewTag(Vector<Tag> tags) {
+			this.tags = tags;
+		}
+		public void run() {
+			tagModel.clear();
+			for (int i = 0; i < tags.size(); i++)
+				tagModel.addElement(tags.get(i));
+			if (! tags.isEmpty())
+				Preview.this.tags.setSelectedIndex(0);
+		}
+	}
+	class QueryTag implements Runnable {
+		String name;
+		public QueryTag(String name) {
+			this.name = name;
+		}
+		public void run() {
+			Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
+			VFSManager.runInAWTThread(new PreviewTag(tags));
+		}
+	}
+	class PreviewBufferLoader implements Runnable {
+		Tag tag;
+		public PreviewBufferLoader(Tag t) {
+			tag = t;
+		}
+		public void run() {
+			file = tag.getFile();
+			int line = tag.getLine();
+			if (line > -1)
+			{
+				String s = getContents(file);
+				VFSManager.runInAWTThread(new PreviewBufferUpdate(s, line));
+			}
+		}
+	}
+	class PreviewBufferUpdate implements Runnable {
+		String s;
+		int line;
+		public PreviewBufferUpdate(String s, int line) {
+			this.s = s;
+			this.line = line;
+		}
+		public void run() {
+			JEditBuffer buffer = text.getBuffer();
+			buffer.setReadOnly(false);
+			text.setText(getContents(file));
+			Mode mode = ModeProvider.instance.getModeForFile(file, buffer.getLineText(0));
+			if (mode == null)
+				mode = ModeProvider.instance.getMode("text");
+			buffer.setMode(mode);
+			text.scrollTo(line, 0, true);
+			text.setCaretPosition(text.getLineStartOffset(line - 1));
+			buffer.setReadOnly(true);
+		}
+	}
 }
