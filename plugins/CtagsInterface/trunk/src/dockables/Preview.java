@@ -70,6 +70,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	Preview(View view) {
 		super(new BorderLayout());
 		this.view = view;
+		timer = null;
 		tracking = new HashSet<JEditTextArea>();
 		file = null;
 		tagModel = new DefaultListModel();
@@ -167,13 +168,18 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	public void caretUpdate(CaretEvent e) {
 		int delay = GeneralOptionPane.getPreviewDelay(); 
 		if (delay > 0) {
-			timer = new Timer(delay, new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					previewTag();
-				}
-			});
-			timer.setRepeats(false);
-			timer.start();
+			if (timer == null)
+			{
+				timer = new Timer(delay, new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						previewTag();
+					}
+				});
+				timer.setRepeats(false);
+				timer.start();
+			}
+			else
+				timer.restart();
 		}
 		else
 			previewTag();

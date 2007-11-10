@@ -1,6 +1,4 @@
 To do:
-- Handle case when there is no active project when tag search is limited to active project.
-  (e.g. group of projects is selected instead of an active project)
 - When jumping to a tag, verify that the line exists. The tag DB may be outdated.
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
 - Add project dependency properties. (To be integrated into PV later)
@@ -12,6 +10,8 @@ To do:
 - Design plugin support. 
 
 Done:
++ Handle case when there is no active project when tag search is limited to active project.
+  (e.g. group of projects is selected instead of an active project)
 + Preview dockable:
   + Support for multiple text areas (split edit pane)
   + Move tag query + file loading to worker thread
