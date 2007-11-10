@@ -108,15 +108,17 @@ public class QuickSearchTagDialog extends JDialog {
 			" WHERE " + TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID;
 		if (ProjectsOptionPane.getSearchActiveProjectOnly()) {
 			String project = CtagsInterfacePlugin.getProjectWatcher().getActiveProject(view);
-			query = query + " AND EXISTS (SELECT " + TagDB.MAP_FILE_ID +
-				" FROM " + TagDB.MAP_TABLE + "," + TagDB.ORIGINS_TABLE +
-				" WHERE " + TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
-					"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID +
-				" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
-					"=" + db.quote(project) +
-				" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
-					"=" + db.quote(TagDB.PROJECT_ORIGIN) +
-				")";
+			if (project != null) {
+				query = query + " AND EXISTS (SELECT " + TagDB.MAP_FILE_ID +
+					" FROM " + TagDB.MAP_TABLE + "," + TagDB.ORIGINS_TABLE +
+					" WHERE " + TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
+						"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID +
+					" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
+						"=" + db.quote(project) +
+					" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
+						"=" + db.quote(TagDB.PROJECT_ORIGIN) +
+					")";
+			}
 		}
 		try {
 			tagNames = new Vector<QuickSearchTag>();
