@@ -1,7 +1,9 @@
 package projects;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import options.ProjectsOptionPane;
@@ -19,11 +21,29 @@ import ctags.CtagsInterfacePlugin;
 
 public class ProjectWatcher implements ProjectListener {
 
+	Set<String> watched;
+	
 	public ProjectWatcher() {
-		if (ProjectsOptionPane.getAutoUpdateProjects()) {
-			Vector<String> projects = ProjectsOptionPane.getProjects();
-			for (int i = 0; i < projects.size(); i++)
-				watchProject(projects.get(i));
+		watched = new HashSet<String>();
+		if (ProjectsOptionPane.getAutoUpdateProjects())
+			updateWatchers();
+	}
+
+	public void updateWatchers() {
+		Vector<String> projects = ProjectsOptionPane.getProjects();
+		Iterator<String> all = getProjects().iterator();
+		while (all.hasNext()) {
+			String project = all.next();
+			if (projects.contains(project)) {
+				if (! watched.contains(project)) {
+					watchProject(project);
+					watched.add(project);
+				}
+			}
+			else if (watched.contains(project)) {
+				unwatchProject(project);
+				watched.remove(project);
+			}
 		}
 	}
 
@@ -61,14 +81,19 @@ public class ProjectWatcher implements ProjectListener {
 		return project.getName();
 	}
 	
-	public void watchProject(String project) {
+	private void watchProject(String project) {
+		System.err.println("Watch " + project);
 		VPTProject proj = ProjectManager.getInstance().getProject(project);
 		if (proj == null)
 			return;
 		proj.addProjectListener(this);
 	}
-	public void unwatchProject(String project) {
-		
+	private void unwatchProject(String project) {
+		System.err.println("Unwatch " + project);
+		VPTProject proj = ProjectManager.getInstance().getProject(project);
+		if (proj == null)
+			return;
+		proj.removeProjectListener(this);
 	}
 	
 	// ProjectListener methods

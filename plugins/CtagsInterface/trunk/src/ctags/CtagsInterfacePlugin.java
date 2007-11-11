@@ -184,6 +184,21 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jumpTo(view, file, line);
 	}
 	
+	// Action: Add all projects to the database
+	public static void tagAllProjects(View view) {
+		if (pvi == null) {
+			JOptionPane.showMessageDialog(view, "Project support disabled.");
+			return;
+		}
+		Vector<String> allProjects = pvi.getProjects();
+		Vector<String> dbProjects = ProjectsOptionPane.getProjects();
+		for (int i = 0; i < allProjects.size(); i++) {
+			String project = allProjects.get(i);
+			if (! dbProjects.contains(project))
+				insertOrigin(TagDB.PROJECT_ORIGIN, project);
+		}
+	}
+	
 	// Action: Search for a tag containing a substring
 	public static void searchTag(final View view)
 	{
@@ -323,6 +338,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
+			pvi.updateWatchers();
 	}
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
 	// to the DB.
@@ -333,6 +350,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			e.printStackTrace();
 		}
 		tagOrigin(type, name);
+		if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
+			pvi.updateWatchers();
 	}
 	// Runs Ctags on the specified origin and adds the tags to the DB.
 	private static void tagOrigin(String type, String name) {
