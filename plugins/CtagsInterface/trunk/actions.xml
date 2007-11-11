@@ -28,6 +28,11 @@
 			ctags.CtagsInterfacePlugin.searchTag(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-tag-all-projects" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.tagAllProjects(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 
