@@ -30,7 +30,11 @@ package ise.plugin.svn.data;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
-
+/**
+ * Data object to represent 2 revisions used for a diff on a single file.
+ * Revision 1 is always for a remote file, revision 2 may be a local file
+ * or a remote file.
+ */
 public class DiffData extends SVNData {
 
     private transient SVNRevision revision1 = SVNRevision.HEAD;

@@ -90,11 +90,23 @@ public class DiffAction implements ActionListener {
         this.password = password;
     }
 
+    /**
+     * @param view the View in which to display results
+     * @param path the name of a local file to be diffed. No dialog will be shown
+     * here, the revisions must have already been selected.
+     * @param revision1 a revision of path
+     * @param revision2 another revision of path
+     * @param username the username for the svn repository
+     * @param password the password for the username
+     */
     public DiffAction( View view, String path, String revision1, String revision2, String username, String password ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
+        if (revision1 == null || revision2 == null) {
+            throw new IllegalArgumentException( "neither revision may be null, " + (revision1 == null ? "revision1" : "revision2") + " is null.");
+        }
         this.view = view;
         this.path = path;
         this.revision1 = revision1;
@@ -106,8 +118,12 @@ public class DiffAction implements ActionListener {
     public void actionPerformed( ActionEvent ae ) {
         if ( path != null && path.length() > 0 ) {
             final DiffData data;
+
+            // pick or set the revisions
             if ( revision1 == null ) {
-                // diffing a working copy against a repository version
+                // if here, then the first constructor was called, the user is
+                // wanting to diff a local file against a remote version of the
+                // file. Show a DiffDialog to get the revision of the remote file.
                 dialog = new DiffDialog( view, path );
                 GUIUtils.center( view, dialog );
                 dialog.setVisible( true );
@@ -118,12 +134,9 @@ public class DiffAction implements ActionListener {
             }
             else {
                 // diffing two repository versions
-                if (revision2 == null) {
-                    // need 2 revisions to diff
-                    return;
-                }
                 data = new DiffData();
                 data.addPath(path);
+
                 data.setRevision1(SVNRevision.parse(revision1));
                 data.setRevision2(SVNRevision.parse(revision2));
             }
@@ -132,11 +145,15 @@ public class DiffAction implements ActionListener {
                 data.setUsername( username );
                 data.setPassword( password );
             }
+
+            // set up the console output
             data.setOut( new ConsolePrintStream( view ) );
 
+            // show the svn console
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole( );
+
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Preparing to diff ..." );
             for ( Handler handler : logger.getHandlers() ) {
@@ -148,7 +165,7 @@ public class DiffAction implements ActionListener {
                 @Override
                 public SVNInfo doInBackground() {
                     try {
-                        // fetch info about the file to get repository and path
+                        // fetch repository and path info about the file
                         Info info = new Info( );
                         List<SVNInfo> infos = info.getInfo( data );
                         if ( infos.size() > 0 ) {
@@ -179,6 +196,7 @@ public class DiffAction implements ActionListener {
                         */
 
                         BrowseRepository br = new BrowseRepository();
+
                         // there should always be one remote revision to fetch for diffing against a working copy
                         // or for diffing against another revision
                         File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1().getNumber(), data.getUsername(), data.getPassword() );

@@ -77,7 +77,7 @@ public class DiffDialog extends JDialog {
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        // get revision to diff against
+                        // get revision of remote file to diff against
                         data.setRevision1( rsp.getRevision() );
 
                         DiffDialog.this.setVisible( false );
@@ -88,7 +88,9 @@ public class DiffDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
+                        // user cancelled, set data to null to signal as much.
                         data = null;
+
                         DiffDialog.this.setVisible( false );
                         DiffDialog.this.dispose();
                     }
