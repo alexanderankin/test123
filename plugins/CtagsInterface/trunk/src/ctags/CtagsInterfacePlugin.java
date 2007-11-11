@@ -266,8 +266,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		VFSManager.runInAWTThread(new Runnable() {
 			public void run() {
-				view.getTextArea().setCaretPosition(
-					view.getTextArea().getLineStartOffset(line - 1));
+				try {
+					view.getTextArea().setCaretPosition(
+						view.getTextArea().getLineStartOffset(line - 1));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

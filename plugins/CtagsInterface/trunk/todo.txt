@@ -1,5 +1,4 @@
 To do:
-- When jumping to a tag, verify that the line exists. The tag DB may be outdated.
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
 - Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
@@ -10,6 +9,7 @@ To do:
 - Design plugin support. 
 
 Done:
++ When jumping to a tag, verify that the line exists. The tag DB may be outdated.
 + Handle case when there is no active project when tag search is limited to active project.
   (e.g. group of projects is selected instead of an active project)
 + Preview dockable:
