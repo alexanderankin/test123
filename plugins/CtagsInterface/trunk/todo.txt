@@ -2,7 +2,7 @@ To do:
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
 - Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
-- An action to add all existing projects to the DB.
++ An action to add all existing projects to the DB.
 - An option to automatically tag new projects and insert them to the DB.
 - An option to automatically remove deleted projects from the DB.
 - Finish project listener - handle project renames etc.
