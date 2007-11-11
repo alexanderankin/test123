@@ -48,6 +48,7 @@ import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.RevisionDialog;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PropertyComboBox;
@@ -158,9 +159,18 @@ public class BrowseRepositoryPanel extends JPanel {
                                     url = data.getURL();
                                 }
 
-                                // fetch the file contents, -1 shorthand for HEAD revision
+                                // ask the user for the revision they want
+                                RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, "Select Revision to View" );
+                                GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
+                                rd.setVisible(true);
+                                SVNRevision revision = rd.getData();
+                                if ( revision == null ) {
+                                    return ;
+                                }
+
+                                // fetch the file contents
                                 BrowseRepository br = new BrowseRepository();
-                                File outfile = br.getFile( url, filepath, -1, data.getUsername(), data.getPassword() );
+                                File outfile = br.getFile( url, filepath, revision, data.getUsername(), data.getPassword() );
                                 if ( outfile != null ) {
                                     jEdit.openFile( getView(), outfile.getAbsolutePath() );
                                 }
@@ -481,10 +491,10 @@ public class BrowseRepositoryPanel extends JPanel {
                     text = "<html><font color=blue>" + node.toString();
                     label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
                 }
-                if (node.hasProperties() ) {
+                if ( node.hasProperties() ) {
                     text += " *";
                 }
-                label.setText(text);
+                label.setText( text );
             }
             return r;
         }
