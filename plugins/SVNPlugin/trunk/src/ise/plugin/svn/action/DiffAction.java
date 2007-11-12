@@ -188,23 +188,25 @@ public class DiffAction implements ActionListener {
                         SVNInfo info = get();
                         SVNURL url = info.getRepositoryRootURL();
                         String svn_path = info.getPath();
-                        /* needs work, convert -1 to HEAD before comparison?
-                        if ( info.getRevision().equals( data.getRevision1() ) ) {
-                            JOptionPane.showMessageDialog( view, "There is no difference between the local copy and the repository copy", "No Difference", JOptionPane.INFORMATION_MESSAGE );
+
+                        // check if same already
+                        BrowseRepository br = new BrowseRepository();
+                        long rev1 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword());
+                        long rev2 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword());
+                        if ( rev1 == rev2 ) {
+                            JOptionPane.showMessageDialog( view, "There is no difference between the local copy and the repository copy of \n" + svn_path, "No Difference", JOptionPane.INFORMATION_MESSAGE );
                             return ;
                         }
-                        */
 
-                        BrowseRepository br = new BrowseRepository();
 
                         // there should always be one remote revision to fetch for diffing against a working copy
                         // or for diffing against another revision
-                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1().getNumber(), data.getUsername(), data.getPassword() );
+                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
 
                         // there may be a second remote revision for diffing between 2 remote revisions
                         File remote2 = null;
                         if (data.getRevision2() != null) {
-                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2().getNumber(), data.getUsername(), data.getPassword() );
+                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
                         }
 
                         if (remote1 == null && remote2 == null) {
