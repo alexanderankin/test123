@@ -164,21 +164,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 
 	private static void jumpToTags(final View view, Vector<Tag> tags) {
-		view.getDockableWindowManager().showDockableWindow(DOCKABLE);
-		JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
-		TagList tl = (TagList) c;
 		if (tags.size() == 0) {
-			tl.setTags(null);
 			JOptionPane.showMessageDialog(view, "No tags found");
 			return;
 		}
-		int index = 0;
 		if (tags.size() > 1) {
+			view.getDockableWindowManager().showDockableWindow(DOCKABLE);
+			JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
+			TagList tl = (TagList) c;
 			tl.setTags(tags);
 			return;
 		}
-		tl.setTags(null);
-		Tag t = tags.get(index);
+		Tag t = tags.get(0);
 		String file = t.getFile();
 		final int line = t.getLine();
 		jumpTo(view, file, line);
