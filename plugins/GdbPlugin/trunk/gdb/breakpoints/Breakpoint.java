@@ -63,13 +63,12 @@ public class Breakpoint {
 		BreakpointList.getInstance().add(this);
 	}
 	public Breakpoint(View view, Buffer buffer, int line) {
-		this.file = buffer.getPath();
-		this.pos = buffer.createPosition(buffer.getLineStartOffset(line));
-		if (buffer == null || pos == null)
-			this.line = line;
-		initialize();
 		this.view = view;
 		this.buffer = buffer;
+		this.line = line;
+		this.file = buffer.getPath();
+		this.pos = buffer.createPosition(buffer.getLineStartOffset(line));
+		initialize();
 		addPainter();
 		enabled = true;
 		BreakpointList.getInstance().add(this);
