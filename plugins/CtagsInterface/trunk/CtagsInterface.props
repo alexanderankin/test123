@@ -75,6 +75,7 @@ messages.CtagsInterface.actionName=Action name:
 messages.CtagsInterface.sqlQuery=SQL query:
 messages.CtagsInterface.dirs=Source trees:
 messages.CtagsInterface.projects=Projects:
+messages.CtagsInterface.trackProjectList=Automatically add new projects and remove deleted projects
 messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projects are changed
 messages.CtagsInterface.searchScope=Tag search scope
 messages.CtagsInterface.searchGlobally=Global
