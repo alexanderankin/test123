@@ -35,6 +35,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
+	static public final String TRACK_PROJECTS = OPTION + "trackProjectList";
 	static public final String AUTO_UPDATE = OPTION + "autoUpdateProjects";
 	static public final String GLOBAL = OPTION + "searchGlobally";
 	static public final String ACTIVE_ONLY = OPTION + "searchActiveProjectOnly";
@@ -42,6 +43,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	JList projects;
 	DefaultListModel projectsModel;
 	ProjectWatcher pvi;
+	JCheckBox trackProjectList;
 	JCheckBox autoUpdate;
 	JRadioButton global;
 	JRadioButton activeOnly;
@@ -68,6 +70,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		JButton tag = new JButton("Tag");
 		buttons.add(tag);
 		addComponent(buttons);
+		trackProjectList = new JCheckBox(jEdit.getProperty(MESSAGE + "trackProjectList"),
+			jEdit.getBooleanProperty(TRACK_PROJECTS));
+		addComponent(trackProjectList);
 		autoUpdate = new JCheckBox(jEdit.getProperty(MESSAGE + "autoUpdateProjects"),
 			jEdit.getBooleanProperty(AUTO_UPDATE));
 		addComponent(autoUpdate);
@@ -132,14 +137,20 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		for (int i = 0; i < nProjects; i++)
 			names.add((String) projectsModel.getElementAt(i));
 		CtagsInterfacePlugin.updateOrigins(PROJECT_ORIGIN, names);
+		jEdit.setBooleanProperty(TRACK_PROJECTS, trackProjectList.isSelected());
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 		jEdit.setBooleanProperty(GLOBAL, global.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_FIRST, activeFirst.isSelected());
+		if (pvi != null)
+			pvi.setProjectListTracking(getTrackProjectList());
 	}
 	
 	static public Vector<String> getProjects() {
 		return CtagsInterfacePlugin.getDB().getOrigins(PROJECT_ORIGIN);
+	}
+	static public boolean getTrackProjectList() {
+		return jEdit.getBooleanProperty(TRACK_PROJECTS);
 	}
 	static public boolean getAutoUpdateProjects() {
 		return jEdit.getBooleanProperty(AUTO_UPDATE);

@@ -9,24 +9,56 @@ import java.util.Vector;
 import options.ProjectsOptionPane;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
+import projectviewer.event.ProjectViewerAdapter;
+import projectviewer.event.ProjectViewerEvent;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ctags.CtagsInterfacePlugin;
+import db.TagDB;
 
-public class ProjectWatcher implements ProjectListener {
+public class ProjectWatcher extends ProjectViewerAdapter implements ProjectListener {
 
 	Set<String> watched;
+	Set<View> views;
 	
 	public ProjectWatcher() {
 		watched = new HashSet<String>();
+		views = new HashSet<View>();
 		if (ProjectsOptionPane.getAutoUpdateProjects())
 			updateWatchers();
+		if (ProjectsOptionPane.getTrackProjectList())
+			setProjectListTracking(true);
+	}
+
+	public void setProjectListTracking(boolean on) {
+		Iterator<View> it = views.iterator();
+		while (it.hasNext()) {
+			View view = it.next();
+			ProjectViewer.removeProjectViewerListener(this, view);
+		}
+		views.clear();
+		if (on) {
+			View [] v = jEdit.getViews();
+			for (int i = 0; i < v.length; i++) {
+				ProjectViewer.addProjectViewerListener(this, v[i]);
+				views.add(v[i]);
+			}
+		}
+	}
+	
+	public void projectAdded(ProjectViewerEvent evt) {
+		CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
+	}
+
+	public void projectRemoved(ProjectViewerEvent evt) {
+		CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
 	}
 
 	public void updateWatchers() {
