@@ -3,8 +3,7 @@ To do:
 - Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
 + An action to add all existing projects to the DB.
-- An option to automatically tag new projects and insert them to the DB.
-- An option to automatically remove deleted projects from the DB.
+- An option to track project creation/removal and update the DB.
 - Finish project listener - handle project renames etc.
 - Design plugin support. 
 
