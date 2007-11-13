@@ -3,6 +3,8 @@ package ctags;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import options.GeneralOptionPane;
@@ -12,6 +14,11 @@ import org.gjt.sp.jedit.jEdit;
 public class Runner {
 
 	private static final String SPACES = "\\s+";
+	private static Set<String> tempFiles;
+	
+	{
+		tempFiles = new HashSet<String>();
+	}
 	
 	// Runs Ctags on a single file. Returns the tag file.
 	public String runOnFile(String file) {
@@ -28,7 +35,7 @@ public class Runner {
 	}
 	// Runs Ctags on a list of files. Returns the tag file.
 	public String runOnFiles(Vector<String> files) {
-		String fileList = getTempFileListPath();
+		String fileList = getTempFile("files");
 		try {
 			PrintWriter w = new PrintWriter(new FileWriter(fileList));
 			for (int i = 0; i < files.size(); i++)
@@ -42,12 +49,20 @@ public class Runner {
 		Vector<String> what = new Vector<String>();
 		what.add("-L");
 		what.add(fileList);
-		return run(what);
+		String tagFile = run(what);
+		releaseFile(fileList);
+		return tagFile;
+	}
+	// Tag file no longer needed
+	public void releaseFile(String file) {
+		synchronized (tempFiles) {
+			tempFiles.remove(file);
+		}
 	}
 	private String run(Vector<String> what) {
 		String ctags = GeneralOptionPane.getCtags();
 		String cmd = GeneralOptionPane.getCmd();
-		String tagFile = getTempTagFilePath();
+		String tagFile = getTempFile("tags");
 		Vector<String> cmdLine = new Vector<String>();
 		cmdLine.add(ctags);
 		cmdLine.add("-f");
@@ -73,11 +88,15 @@ public class Runner {
 	private String getTempDirectory() {
 		return jEdit.getSettingsDirectory() + "/CtagsInterface";
 	}
-	private String getTempFileListPath() {
-		return getTempDirectory() + "/files.txt";
-	}
-	private String getTempTagFilePath() {
-		return getTempDirectory() + "/tags";
+	private String getTempFile(String prefix) {
+		synchronized (tempFiles) {
+			for (int i = 0; i < 100; i++) {
+				String path = getTempDirectory() + "/" + prefix + i; 
+				if (tempFiles.add(path))
+					return path;
+			}
+		}
+		return null; 
 	}
 
 }
