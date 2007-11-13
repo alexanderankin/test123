@@ -23,14 +23,16 @@ import projectviewer.vpt.VPTProject;
 import ctags.CtagsInterfacePlugin;
 import db.TagDB;
 
-public class ProjectWatcher extends ProjectViewerAdapter implements ProjectListener {
+public class ProjectWatcher implements ProjectListener {
 
 	Set<String> watched;
 	Set<View> views;
+	ProjectEventListener pvListener;
 	
 	public ProjectWatcher() {
 		watched = new HashSet<String>();
 		views = new HashSet<View>();
+		pvListener = new ProjectEventListener();
 		if (ProjectsOptionPane.getAutoUpdateProjects())
 			updateWatchers();
 		if (ProjectsOptionPane.getTrackProjectList())
@@ -41,26 +43,18 @@ public class ProjectWatcher extends ProjectViewerAdapter implements ProjectListe
 		Iterator<View> it = views.iterator();
 		while (it.hasNext()) {
 			View view = it.next();
-			ProjectViewer.removeProjectViewerListener(this, view);
+			ProjectViewer.removeProjectViewerListener(pvListener, view);
 		}
 		views.clear();
 		if (on) {
 			View [] v = jEdit.getViews();
 			for (int i = 0; i < v.length; i++) {
-				ProjectViewer.addProjectViewerListener(this, v[i]);
+				ProjectViewer.addProjectViewerListener(pvListener, v[i]);
 				views.add(v[i]);
 			}
 		}
 	}
 	
-	public void projectAdded(ProjectViewerEvent evt) {
-		CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
-	}
-
-	public void projectRemoved(ProjectViewerEvent evt) {
-		CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
-	}
-
 	public void updateWatchers() {
 		Vector<String> projects = ProjectsOptionPane.getProjects();
 		Iterator<String> all = getProjects().iterator();
@@ -166,5 +160,15 @@ public class ProjectWatcher extends ProjectViewerAdapter implements ProjectListe
 
 	public void propertiesChanged(ProjectEvent pe) {
 		// TODO Auto-generated method stub
+	}
+	
+	private static class ProjectEventListener extends ProjectViewerAdapter {
+		public void projectAdded(ProjectViewerEvent evt) {
+			CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
+		}
+
+		public void projectRemoved(ProjectViewerEvent evt) {
+			CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
+		}
 	}
 }
