@@ -379,6 +379,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jEdit.getActiveView().getStatus().setMessage("");
 	}
 	
+	private static void parseTagFile(String tagFile, TagHandler handler) {
+		parser.parseTagFile(tagFile, handler);
+		runner.releaseFile(tagFile);
+	}
+	
 	/* Source file support */
 	
 	public static void tagSourceFile(final String file) {
@@ -393,7 +398,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 						db.insertTag(t, fileId);
 					}
 				};
-				parser.parseTagFile(tagFile, handler);
+				parseTagFile(tagFile, handler);
 			}
 		}, false);
 		removeStatusMessage();
@@ -407,7 +412,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		addWorkRequest(new Runnable() {
 			public void run() {
 				String tagFile = runner.runOnTree(tree);
-				parser.parseTagFile(tagFile, handler);
+				parseTagFile(tagFile, handler);
 			}
 		}, false);
 		removeStatusMessage();
@@ -445,7 +450,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static void tagFiles(Vector<String> files, TagHandler handler)
 	{
 		String tagFile = runner.runOnFiles(files);
-		parser.parseTagFile(tagFile, handler);
+		parseTagFile(tagFile, handler);
 	}
 	
 	// Runs Ctags on a project and inserts the tags and associated data to the DB

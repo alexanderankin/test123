@@ -1,4 +1,9 @@
 To do:
+- Fix bug with background tagging: All ctags invocations go to the same temp
+  tag file. Also, for projects, same files.txt file that specifies the files
+  to run on.
+  Solution: Create a TaggingTask object, with a getTagFile() and release()
+  methods.
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
 --> Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
