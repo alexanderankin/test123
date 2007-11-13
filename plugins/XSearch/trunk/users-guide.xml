@@ -600,7 +600,14 @@ xsearch.SearchSettings.pop();
 <appendix id="changelog">
 <title>Change log</title>
 
-
+<formalpara><title> Version 1.3.3 </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12</emphasis>, ProjectViewer 2.1.x</para>
+</formalpara>
+<itemizedlist>
+<listitem><para>
+Updated for jEdit 4.3pre12's relocated Beanshell package. </para>
+</listitem>
+</itemizedlist>
 <formalpara><title> Version 1.3.2 </title>
 <para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x </para>
 </formalpara>
@@ -611,8 +618,6 @@ Bugfix in Project Search - now it waits for you to type something before it star
 Fix bug # Bugs-1574049 - no more dialog popups during xfind-next and xfind-previous.
 </para></listitem>
 </itemizedlist>
-
-
 <formalpara><title> Version 1.3.1 </title>
 <para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x </para>
 </formalpara>
