@@ -86,6 +86,12 @@ messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only 
 plugin.projectviewer.ctags.CtagsInterfacePlugin.context-menu-actions=\
 	projects.ProjectAddAction,projects.ProjectRemoveAction
 
+# projectviewer option pane
+plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
+
+options.CtagsInterface-ProjectDependencies.label=Dependencies
+options.CtagsInterface-ProjectDependencies.code=new projects.ProjectDependencies()
+
 # icons
 options.CtagsInterface.icons.kind.class=class.png
 options.CtagsInterface.icons.kind.field=variable.png
