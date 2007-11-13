@@ -166,6 +166,5 @@ public class ProjectWatcher extends ProjectViewerAdapter implements ProjectListe
 
 	public void propertiesChanged(ProjectEvent pe) {
 		// TODO Auto-generated method stub
-		
 	}
 }
