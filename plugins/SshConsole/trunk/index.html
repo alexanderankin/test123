@@ -25,10 +25,10 @@
 
 <ol>
 <li> <tt>Plugins - SshConsole - Show SshConsole</tt> <b>[1]</b> </li>
-<li> Navigate your File System Browser to a remote host via sftp://. </li>
+<li> Dock a <tt>Utilities - File System Browser </tt>  and with it, navigate to a remote host via <tt>sftp://</tt>. </li>
 <li> If this is your first time connecting, Enter your user/password/key/passphrase there. </li>
-<li> If you plan to connect often to this host, you can add it as a bookmark from the File System Browser. </li>
-<li> Start typing. </li>
+<li> After you're connected, if you plan to connect often to this host, add it as a bookmark in the File System Browser. </li>
+<li> Start typing commands in the sshconsole. </li>
 </ol>
 
 <p> If later, you use the File System Browser connect to a different remote sftp host, then the next time you use the SshConsole, it should logout of the previous ssh session, create a new shell connection to the same host you just logged into via sftp, and send your shell commands there.
@@ -42,9 +42,8 @@
 
 <h2> Parse Errors for ErrorList </h2>
 
-<p> Console does parse the output of the ssh connection through the error parsers which are listed in the Console, Error Parsers, and creates and adds DefaultErrors to the ErrorSource. There seems to be a bug in ErrorList which prevents these errors from being displayed. I hope to fix that soon.
+<p> Console parses the output of the ssh connection through the error parsers which are listed in the <tt>Plugin Options - Console - Error Parsers</tt>, and creates and adds <tt>DefaultErrors</tt> to the <tt>ErrorSource</tt>. You can click on the error in the ErrorList, and jEdit will open the remote file for you if necessary.
 </p>
-
 
 <p> Enjoy! </p>
 
