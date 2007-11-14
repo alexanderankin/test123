@@ -23,7 +23,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?/(.*)$");	
 	static HashMap<ConnectionInfo, Connection> connectionInfos = null;
 	static HashMap<Console, ConsoleState> consoleStates = null;
-	// Yes, I'm hiding the base class connections on purpose
+	// Yes, I'm hiding the base class connections on purpose!
 	static ArrayList<Connection> connections = new ArrayList<Connection>(); 
 	// }}}
 	
@@ -43,7 +43,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 		{
 			for(int i = 0; i < connections.size(); i++)
 			{
-				Connection _connect = (Connection)connections.get(i);
+				Connection _connect = connections.get(i);
 				if(!_connect.inUse())
 				{
 					closeConnection(_connect);

@@ -11,3 +11,6 @@ plugin.console.ssh.SshConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.
 plugin.console.ssh.SshConsolePlugin.depend.3=plugin ftp.FtpPlugin 0.9.2
 plugin.console.ssh.SshConsolePlugin.depend.4=plugin console.ConsolePlugin 4.3.5
 
+plugin.console.ssh.SshConsolePlugin.menu=console.shell.ssh-show
+
+console.shell.ssh-show.label=Show SshConsole

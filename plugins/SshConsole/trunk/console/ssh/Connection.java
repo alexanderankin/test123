@@ -2,7 +2,6 @@ package console.ssh;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -15,7 +14,6 @@ import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
@@ -24,10 +22,8 @@ import console.Console;
 import ftp.ConnectionInfo;
 import ftp.ConnectionManager;
 import ftp.PasswordDialog;
-import ftp.SftpLogger;
 
-/* An ssh remote shell connection - may be shared 
- * by multiple Console instances (?)
+/* An ssh remote shell connection 
  */
 public class Connection implements UserInfo {
 	// {{{ members
@@ -44,7 +40,7 @@ public class Connection implements UserInfo {
 	private int keyAttempts = 0;
 	// }}}
 	
-	
+	// {{{ Connection ctor
 	public Connection(Console console, ConnectionInfo info) {
 		try {
 			this.console = console;
@@ -84,8 +80,9 @@ public class Connection implements UserInfo {
 		}
 		
 		
-	}
+	}// }}}
 	
+	// {{{ setConsole() method
 	void setConsole(Console c) throws IOException {
 		if (c != console) {
 			stout.abort();
@@ -93,7 +90,8 @@ public class Connection implements UserInfo {
 			stout = new StreamThread (
 				console, channel.getInputStream(), console.getOutput(), console.getPlainColor());
 		}
-	}
+	}// }}}
+	
 	public boolean inUse()
 	{
 		return inUse;
@@ -104,13 +102,11 @@ public class Connection implements UserInfo {
 		return channel.isConnected();
 	}
 	
-	
 	void logout() throws IOException
 	{
 		channel.disconnect();
 	}
 
-	
 	public String getPassphrase()
 	{
 		return passphrase;

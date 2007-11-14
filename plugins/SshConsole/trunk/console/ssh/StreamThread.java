@@ -14,7 +14,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 
-import console.CommandOutputParser;
 import console.Console;
 import console.ConsolePane;
 import console.ErrorOutput;
@@ -56,7 +55,8 @@ class StreamThread extends Thread
 		this.in = in;
 		this.output = output;
 		this.console = console;
-		String currentDirectory = ""; // XXX TODO
+		ConsoleState cs = ConnectionManager.getConsoleState(console);
+		String currentDirectory = cs.getPath();
 		DefaultErrorSource es = console.getErrorSource();
 		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
