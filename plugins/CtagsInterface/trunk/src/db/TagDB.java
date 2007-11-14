@@ -86,12 +86,15 @@ public class TagDB {
 		}
 	}
 	
+	private void check(String s, Query q) {
+		System.err.println(s.equals(q.toString()) ? "ok" : "Bad");
+	}
 	// Inserts a source file -> origin mapping to the DB
 	public void insertSourceFileOrigin(int fileId, int originId) {
 		try {
-			ResultSet rs = query("SELECT * FROM " + MAP_TABLE + " WHERE " +
-				MAP_FILE_ID + "=" + quote(fileId) + " AND " +
-				MAP_ORIGIN_ID + "=" + quote(originId));
+			Query q = new Query("*", MAP_TABLE, MAP_FILE_ID + "=" + quote(fileId));
+			q.addCondition(MAP_ORIGIN_ID + "=" + quote(originId));
+			ResultSet rs = query(q);
 			if (rs.next())
 				return;
 			update("INSERT INTO " + MAP_TABLE + " (" + MAP_FILE_ID + "," + MAP_ORIGIN_ID +
@@ -157,29 +160,38 @@ public class TagDB {
 	
 	// Runs a query for the specified tag name
 	public ResultSet queryTag(String tag) throws SQLException {
-		String query = "SELECT " + field(TAGS_TABLE, "*") + "," +
-				field(FILES_TABLE, FILES_NAME) +
-			" FROM " + TAGS_TABLE + "," + FILES_TABLE +
-			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
-			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" +
-				field(FILES_TABLE, FILES_ID);
-		return query(query);
+		Query q = new Query();
+		q.addColumn(field(TAGS_TABLE, "*"));
+		q.addColumn(field(FILES_TABLE, FILES_NAME));
+		q.addTable(TAGS_TABLE);
+		q.addTable(FILES_TABLE);
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		return query(q);
 	}
 	// Runs a query for the specified tag name in the specified project
 	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
-		String query = "SELECT * FROM " + TAGS_TABLE + "," + FILES_TABLE +
-			" WHERE " + field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag) +
-			" AND " + field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID) +
-			" AND EXISTS " +
-				"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE +
-				" WHERE " + field(MAP_TABLE, MAP_FILE_ID) + "=" +
-					field(FILES_TABLE, FILES_ID) +
-				" AND " + field(MAP_TABLE, MAP_ORIGIN_ID) + "=" +
-					"(SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE +
-					" WHERE " + ORIGINS_NAME + "=" + quote(project) +
-					" AND " + ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN) +
-					"))";
-		return query(query);
+		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, ORIGINS_NAME + "=" +
+			quote(project));
+		projectQuery.addCondition(ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN));
+		
+		Query projectFilesQuery = new Query();
+		projectFilesQuery.setColumn(MAP_FILE_ID);
+		projectFilesQuery.setTable(MAP_TABLE);
+		projectFilesQuery.addCondition(field(
+			MAP_TABLE, MAP_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		projectFilesQuery.addCondition(field(
+			MAP_TABLE, MAP_ORIGIN_ID) + "=(" + projectQuery.toString() + ")");
+		
+		Query q = new Query();
+		q.addColumn("*");
+		q.addTable(TAGS_TABLE);
+		q.addTable(FILES_TABLE);
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		q.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
+		
+		return query(q);
 	}
 
 	// Returns the ID of an origin
@@ -232,8 +244,8 @@ public class TagDB {
 	 */
 	private boolean tableColumnContainsValue(String table, String column, Object value) {
 		try {
-			ResultSet rs = query("SELECT TOP 1 " + column + " FROM " + table + " WHERE " +
-				column + "=" + quote(value));
+			Query q = new Query("TOP 1 " + column, table, column + "=" + quote(value));
+			ResultSet rs = query(q);
 			return rs.next();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -317,6 +329,9 @@ public class TagDB {
         st.close();
     }
 	
+	public synchronized ResultSet query(Query query) throws SQLException {
+		return query(query.toString());
+	}
 	public synchronized ResultSet query(String expression) throws SQLException {
 		//System.err.println("query: " + expression);
         Statement st = conn.createStatement();
@@ -375,8 +390,8 @@ public class TagDB {
 	private void getColumns() {
 		columns = new HashSet<String>();
 		try {
-			ResultSet rs = query("SELECT * FROM " + TAGS_TABLE +
-				" WHERE " + TAGS_NAME + "=''");
+			Query q = new Query("*", TAGS_TABLE, TAGS_NAME + "=''");
+			ResultSet rs = query(q);
 			ResultSetMetaData meta = rs.getMetaData();
 			int cols = meta.getColumnCount();
 			for (int i = 0; i < cols; i++)
