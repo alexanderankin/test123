@@ -45,24 +45,17 @@ import errorlist.ErrorSource;
 // {{{ class CommandOutputParser
 public class CommandOutputParser
 {
-	// {{{ Private data members
-	private DirectoryStack directoryStack = new DirectoryStack();
-
-	private Output output;
-
-	private DefaultError lastError = null;
-
-	private View view;
-
-	private DefaultErrorSource errorSource;
-
-	private ErrorListModel errorMatchers = ErrorListModel.load();
-
-	private ErrorMatcher lastMatcher;
-
-	private Console console;
-	private Color defaultColor;
-	private Color color;
+	// {{{ data members
+	DirectoryStack directoryStack = new DirectoryStack();
+	Output output;
+	protected DefaultError lastError = null;
+	View view;
+	DefaultErrorSource errorSource;
+	ErrorListModel errorMatchers = ErrorListModel.load();
+	ErrorMatcher lastMatcher;
+	protected Console console;
+	Color defaultColor;
+	Color color;
 	// }}}
 
 	// {{{ Constructors
@@ -93,7 +86,10 @@ public class CommandOutputParser
 
 
 	// {{{ processLine methods
-	public int processLine(String text) {
+	/** 
+	 * Processes a line without displaying it to the Output
+	 */
+	final public int processLine(String text) {
 		return processLine(text, false);
 	}
 
