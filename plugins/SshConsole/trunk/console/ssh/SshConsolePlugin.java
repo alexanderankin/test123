@@ -12,7 +12,6 @@ import org.gjt.sp.util.Log;
 import console.Console;
 import console.ConsolePlugin;
 import console.Output;
-import ftp.ConnectionInfo;
 
 public class SshConsolePlugin extends EBPlugin {
 
