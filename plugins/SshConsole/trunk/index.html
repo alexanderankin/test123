@@ -1,39 +1,40 @@
 <html>
 <head> 
-<title> SSH Console plugin </title>
+<title> jEdit SshConsole plugin </title>
 </head>
 <body>
 <h1> jEdit SSH Console Plugin </h1>
 <h2> Alan Ezust, alan dot ezust at gmail dot com </h2>
 <h3> $Date$ </h3>
 
+<h2> jEdit SshConsole Plugin </h2>
 
-
-<h2> About SshPlugin </h2>
-
-<p> This is the SshConsole plugin. The plugin, by itself, has no user interface, because it is an extension of three other plugins: Console, FTP, and ErrorList.
+<p> This plugin itself has no user interface, because it is an extension of three other plugins: Console, FTP, and ErrorList.
 </p>
 
-<p> Console provides jEdit with a dockable command line interface to the System Shell and the BeanShell, and an open interface for adding new shells. SshConsole adds a jEdit Shell Service to Console called "ssh". </p>
+<p> Console provides jEdit with a dockable command line interface to the System Shell and the BeanShell, and an open interface for adding new shells. SshConsole adds a jEdit Shell Service to Console called <tt>ssh</tt>. </p>
 
-<p> The FTP plugin allows the user to make secure sftp:// connections to remote hosts and browse their file systems, as well as edit their files in jEdit.  Since the FTP plugin already asks you for a username/password, and knows what host you are interested in, the SshConsole assumes you want to ssh into the same host.
+<p> The FTP plugin allows the user to make secure <tt>sftp://</tt> connections  to remote hosts, and browse their file systems using jEdit's File System Browser, also known as FSB or VFSBrowser. At any time, the user can select, and then edit or otherwise manipulate selected files from the FSB. Since the FTP plugin handles prompting and remembering username/passwords, the SshConsole plugin assumes you want to <tt>ssh</tt> into the same host using the same port and creds as the most recent <tt>sftp://</tt> connection in that View's FSB.  
 </p>
-
-<p> The ErrorList plugin provides jEdit with a dockable that lets the user click on error messages and have jEdit open the editor at the designated location. </p>
 
 <h2> Instructions for use: </h2>
 
 <ol>
 <li> <tt>Plugins - SshConsole - Show SshConsole</tt> <b>[1]</b> </li>
-<li> Dock a <tt>Utilities - File System Browser </tt>  and with it, navigate to a remote host via <tt>sftp://</tt>. </li>
-<li> Open a remote file that you want to compile. </li>
+<li> Dock an FSB: <tt>Utilities - File System Browser </tt>. </li>
+<li> With FSB: navigate to a remote host via <tt>sftp://</tt>. </li>
 <li> If this is your first time connecting, Enter your user/password/key/passphrase there. </li>
 <li> After you're connected, if you plan to connect often to this host, add it as a bookmark in the File System Browser. </li>
-<li> Enter commands. Compile something. Compile something with Errors. </li>
+<li> With FSB: double-click on the remote file that you want to compile. </li>
+<li> Enter commands in the ssh console. Compile something. Compile something with errors in it.</li>
+<li> Look at the ErrorList dockable. Click on an error in the dockable. </li> 
 </ol>
 
-<p> If later, you use the File System Browser connect to a different remote sftp host, then the next time you use the SshConsole, it should logout of the previous ssh session, create a new shell connection to the same host you just logged into via sftp, and send your shell commands there.
+<p> If later, you use the FSB to connect to a different remote sftp host, then the next time you use the SshConsole, it should logout of the previous ssh session, create a new shell connection to the same host you just logged into via sftp, and send your shell commands there.
 </p>
+
+<p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or open a Console and select ssh from the combobox. </p>
+
 
 <h2> Click the FSB to change directories </h2>
 
@@ -47,10 +48,23 @@
 <p> Console parses the output of the ssh connection through the error parsers which are listed in the <tt>Plugin Options - Console - Error Parsers</tt>, and creates and adds <tt>DefaultErrors</tt> to the <tt>ErrorSource</tt>. You can click on the error in the ErrorList, and jEdit will open the remote file for you if necessary.
 </p>
 
-<p> Enjoy! This is free software, released under the GPL V2. Feel free to contribute to it too, by joining the <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches or suggestions. </p>
+<h2> Future Plans </h2>
+
+<ul>
+<li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path.</li>
+<li> Implement built-ins:  <tt>%edit</tt> and <tt>%browse</tt>. 
+</li>
+</ul>
 
 <hr />
 
-<p> <b>[1]</b> : Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or open a Console and select ssh from the combobox. </p>
+<p> Enjoy! This is free software, released under the GPL V2. Feel free to contribute to it too, by joining the <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches or suggestions. </p>
+
+<h2> History </h2>
+
+<ul>
+<li> <b>Version 0.1</b> (initial release) - Requires JDK 1.5, jEdit 4.3pre12, ErrorList 1.5, FTP plugin 0.9.2, Console plugin 4.3.5.
+</li>
+</ul>
 
 </body>
