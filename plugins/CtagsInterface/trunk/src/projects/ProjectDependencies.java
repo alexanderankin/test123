@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -14,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTProject;
@@ -46,7 +50,7 @@ public class ProjectDependencies extends AbstractOptionPane {
 		treesModel = getListModel(TREE_DEPENDENCY);
 		trees = createList("Trees:", treesModel, new DependencyAsker () {
 			public String getDependency() {
-				return JOptionPane.showInputDialog("Source tree:");
+				return showSourceTreeSelectionDialog();
 			}
 		});
 	}
@@ -95,24 +99,28 @@ public class ProjectDependencies extends AbstractOptionPane {
 		final JList list = new JList(model);
 		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
 		JPanel buttons = new JPanel();
-		JButton add = new JButton("+");
+		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String s = da.getDependency();
-				if (s != null)
-					model.addElement(s);
+				if (s != null) {
+					int index = list.getSelectedIndex();
+					model.add(index + 1, s);
+					list.setSelectedIndex(index + 1);
+				}
 			}
 		});
-		JButton remove = new JButton("-"); 
+		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
 		remove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int index = list.getSelectedIndex();
-				if (index >= 0)
+				if (index >= 0) {
 					model.removeElementAt(index);
-				if (index < model.size())
-					list.setSelectedIndex(index);
-				else if (! model.isEmpty())
-					list.setSelectedIndex(model.size() - 1);
+					if (index < model.size())
+						list.setSelectedIndex(index);
+					else if (! model.isEmpty())
+						list.setSelectedIndex(model.size() - 1);
+				}
 			}
 		});
 		buttons.add(add);
@@ -128,6 +136,16 @@ public class ProjectDependencies extends AbstractOptionPane {
 		String selected = (String) JOptionPane.showInputDialog(this, "Select project:",
 			"Projects", JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
 		return selected;
+	}
+	private String showSourceTreeSelectionDialog() {
+		JFileChooser fc = new JFileChooser();
+		fc.setDialogTitle("Select root of source tree");
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int ret = fc.showOpenDialog(this);
+		if (ret != JFileChooser.APPROVE_OPTION)
+			return null;
+		String dir = fc.getSelectedFile().getAbsolutePath();
+		return MiscUtilities.resolveSymlinks(dir);
 	}
 	protected void _save() {
 		setListModel(PROJECT_DEPENDENCY, projectsModel);
