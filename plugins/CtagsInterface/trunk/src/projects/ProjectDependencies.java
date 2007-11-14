@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.config.ProjectOptions;
@@ -95,7 +96,7 @@ public class ProjectDependencies extends AbstractOptionPane {
 	}
 	
 	private JList createList(String title, final DefaultListModel model, final DependencyAsker da) {
-		addComponent(new JLabel("Projects:"));
+		addComponent(new JLabel(title));
 		final JList list = new JList(model);
 		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
 		JPanel buttons = new JPanel();
@@ -130,7 +131,10 @@ public class ProjectDependencies extends AbstractOptionPane {
 	}
 
 	private String showProjectSelectionDialog() {
-		Vector<String> nameVec = CtagsInterfacePlugin.getProjectWatcher().getProjects();
+		ProjectWatcher pw = CtagsInterfacePlugin.getProjectWatcher();
+		String project = pw.getActiveProject(jEdit.getActiveView());
+		Vector<String> nameVec = pw.getProjects();
+		nameVec.remove(project);
 		String [] names = new String[nameVec.size()];
 		nameVec.toArray(names);
 		String selected = (String) JOptionPane.showInputDialog(this, "Select project:",
