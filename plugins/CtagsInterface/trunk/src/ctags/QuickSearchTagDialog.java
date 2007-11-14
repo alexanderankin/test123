@@ -30,6 +30,7 @@ import options.ProjectsOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
+import db.Query;
 import db.TagDB;
 
 @SuppressWarnings("serial")
@@ -102,27 +103,29 @@ public class QuickSearchTagDialog extends JDialog {
 		});
 		TagDB db = CtagsInterfacePlugin.getDB();
 		ResultSet rs;
-		String query = "SELECT " + TagDB.TAGS_TABLE + ".*," +
-			TagDB.FILES_NAME +
-			" FROM " + TagDB.TAGS_TABLE + "," + TagDB.FILES_TABLE +
-			" WHERE " + TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID;
+		Query q = new Query();
+		q.setColumns(new Object [] {TagDB.TAGS_TABLE + ".*", TagDB.FILES_NAME});
+		q.setTables(new Object [] {TagDB.TAGS_TABLE, TagDB.FILES_TABLE});
+		q.addCondition(TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID);
+		
 		if (ProjectsOptionPane.getSearchActiveProjectOnly()) {
 			String project = CtagsInterfacePlugin.getProjectWatcher().getActiveProject(view);
 			if (project != null) {
-				query = query + " AND EXISTS (SELECT " + TagDB.MAP_FILE_ID +
-					" FROM " + TagDB.MAP_TABLE + "," + TagDB.ORIGINS_TABLE +
-					" WHERE " + TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
-						"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID +
-					" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
-						"=" + db.quote(project) +
-					" AND " + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
-						"=" + db.quote(TagDB.PROJECT_ORIGIN) +
-					")";
+				Query projectQuery = new Query();
+				projectQuery.setColumn(TagDB.MAP_FILE_ID);
+				projectQuery.setTables(new Object [] {TagDB.MAP_TABLE, TagDB.ORIGINS_TABLE});
+				projectQuery.addCondition(TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
+					"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID);
+				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
+					"=" + db.quote(project));
+				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
+						"=" + db.quote(TagDB.PROJECT_ORIGIN));
+				q.addCondition("EXISTS (" + projectQuery.toString() + ")");
 			}
 		}
 		try {
 			tagNames = new Vector<QuickSearchTag>();
-			rs = db.query(query);
+			rs = db.query(q);
 			while (rs.next())
 				tagNames.add(new QuickSearchTag(rs));
 			rs.close();

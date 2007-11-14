@@ -1,6 +1,5 @@
 To do:
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
---> Add project dependency properties. (To be integrated into PV later)
 - Option to include dependencies in active project tag searches.
 / Finish project listener - handle project renames etc.
   Cannot be done easily with the current PV interface.
@@ -8,6 +7,7 @@ To do:
 - User guide.
 
 Done:
++ Add project dependency properties. (To be integrated into PV later)
 + An action to add all existing projects to the DB.
 + An option to track project creation/removal and update the DB.
 + When jumping to a tag, verify that the line exists. The tag DB may be outdated.
