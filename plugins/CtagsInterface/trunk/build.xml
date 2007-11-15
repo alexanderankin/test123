@@ -1,13 +1,8 @@
 <?xml version="1.0"?>
-
 <!--
-
- This is the build.xml file for building the Tags plugin.
-
+ This is the build.xml file for building the CtagsInterface plugin.
  It is based on the standard build.xml file for jEdit plugins.
-
 -->
-
 <project name="CtagsInterface" default="build" basedir=".">
 
     <property name="compiler.source" value="1.5" />
@@ -22,7 +17,7 @@
 
 	<selector id="packageFiles">
 	  <or>
-		<filename name="index.html" />
+
 		<filename name="*.txt" />
 	  </or>
 	 </selector>

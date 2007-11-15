@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+  <title>CtagsInterface plugin user's guide</title>
+
+    <bookinfo>
+
+ <authorgroup>
+  <author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
+ </authorgroup>
+ 
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+
+ </legalnotice>
+ </bookinfo>
+ 
+ <chapter id="intro"> <title> Introduction </title>
+
+ <para> This is the introduction . </para>
+
+ </chapter> 
+ 
+</book> 
