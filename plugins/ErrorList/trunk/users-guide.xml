@@ -455,6 +455,12 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
  <listitem>
+ <formalpara><title>Version 1.7</title> <para>requires JDK 1.5, and jEdit 4.3pre7 final. </para> </formalpara> 
+ <itemizedlist>
+ <listitem><para> <classname>DefaultErrorSource.DefaultError</classname> has new method: <methodname>setFilePath()</methodname> (for SshConsole). </para></listitem>
+ </itemizedlist>
+ </listitem>
+ <listitem>
  <formalpara><title>Version 1.6</title> <para>requires JDK 1.5, and jEdit 4.3pre7 final. </para> </formalpara> 
  <itemizedlist>
  <listitem><para> New option to hide warnings (patch 1719791 by Shlomy Reinstein) </para></listitem>

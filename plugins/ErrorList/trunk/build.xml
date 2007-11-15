@@ -17,6 +17,8 @@
 <!-- file.                                                            -->
 
 <project name="ErrorList" default="build" basedir=".">
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
 	<property file="build.properties"/>
