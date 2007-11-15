@@ -19,13 +19,14 @@ public class Shell extends console.Shell {
 	
 	public void closeConsole(Console console)
 	{
-		
+		ConsoleState cs = ConnectionManager.getConsoleState(console);
+		cs.close();		
 	}
 
 	@Override
 	public void openConsole(Console console)
 	{
-	
+		// nothing needed here, I think
 	}
 
 	public Shell() {
@@ -43,6 +44,7 @@ public class Shell extends console.Shell {
 	{
 		 try {
 			ConsoleState ss = ConnectionManager.getConsoleState(console);
+			ss.preprocess(command);
 			if (ss.conn == null) {
 				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.getPath());
 				if (info == null) {

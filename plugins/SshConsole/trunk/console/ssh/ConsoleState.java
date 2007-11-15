@@ -1,6 +1,10 @@
 package console.ssh;
 
+import java.io.IOException;
 import java.io.OutputStream;
+
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.msg.VFSUpdate;
 
 import console.CommandOutputParser;
 
@@ -39,18 +43,20 @@ public class ConsoleState
 	 *  
 	 */
 	void setPath(String newPath) {
+		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
 		if (dirChangeListener != null)
 			dirChangeListener.setDirectory(path);
 
-		if (!newInfo.equals(info)) { 
+		if (info == null || !newInfo.equals(info)) { 
 			info = newInfo;
-			try {
+			if (conn != null) try 
+			{
 				conn.logout();
 				conn.inUse = false;
 			}
-			catch (Exception e) {}
+			catch (IOException e) {}
 			os = null;
 			conn = null;
 		}
@@ -61,6 +67,32 @@ public class ConsoleState
 		return path;
 	}
 	
+	public void preprocess(String command) {
+		if (command.startsWith("cd ")) {
+			String base = ConnectionManager.extractBase(path);
+			String direct = ConnectionManager.extractDirectory(path);
+			String argument = command.substring(3);
+			String newPath = null;
+			if (argument.startsWith("/")) {
+				newPath = base + argument;
+			}
+			else {
+				newPath = base + MiscUtilities.constructPath(dir, argument);
+			}
+			setPath(newPath);
+			
+		}
+		
+	}
+	
+	public void close() {
+		if (conn != null) try {
+			conn.logout();
+			conn.inUse = false;
+			conn = null;
+		}
+		catch (IOException ioe) {}
+	}
 	public void setDirectoryChangeListener(CommandOutputParser cop) {
 		dirChangeListener = cop;
 	}
