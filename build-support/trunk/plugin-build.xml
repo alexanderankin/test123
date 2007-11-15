@@ -210,12 +210,6 @@
                 <filename name="**/LICENSE" />
                 <filename name="**/README" />
             </or>
-            <not>
-                <or>
-                    <filename name="${build.dir}/**" />
-                    <filename name="${build.extras}/*"/>
-                </or>
-            </not>
         </and>
     </selector>
 
@@ -285,6 +279,7 @@
 
         <mkdir dir="${build.classes}" />
         <mkdir dir="${build.docs}" />
+        <delete dir="${build.extras}" failonerror="false" />
         <mkdir dir="${build.extras}" />
         <mkdir dir="${install.dir}" />
 
