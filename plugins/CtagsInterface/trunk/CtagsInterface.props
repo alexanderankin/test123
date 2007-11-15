@@ -12,6 +12,7 @@ plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.11.00
 plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.0.0
 
 plugin.ctags.CtagsInterfacePlugin.jars=hsqldb.jar
+plugin.ctags.CtagsInterfacePlugin.docs=index.html
 
 # Use the plugin home directory for the tag database
 plugin.ctags.CtagsInterfacePlugin.usePluginHome=true
