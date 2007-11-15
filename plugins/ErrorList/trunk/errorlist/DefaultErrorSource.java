@@ -41,7 +41,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public DefaultErrorSource(String name)
 	{
-		errors = new LinkedHashMap();
+		errors = new LinkedHashMap<String, ErrorListForPath>();
 		this.name = name;
 	} //}}}
 
@@ -72,11 +72,11 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(errors.size() == 0)
 			return null;
 
-		List errorList = new LinkedList();
+		List<Error> errorList = new LinkedList<Error>();
 
-		Iterator iter = errors.values().iterator();
+		Iterator<ErrorListForPath> iter = errors.values().iterator();
 		while(iter.hasNext())
-			errorList.addAll((ErrorListForPath)iter.next());
+			errorList.addAll(iter.next());
 
 		return (ErrorSource.Error[])errorList.toArray(
 			new ErrorSource.Error[errorList.size()]);
@@ -103,12 +103,11 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public ErrorSource.Error[] getFileErrors(String path)
 	{
-		ErrorListForPath list = (ErrorListForPath)errors.get(path);
+		ErrorListForPath list = errors.get(path);
 		if(list == null || list.size() == 0)
 			return null;
 
-		return (ErrorSource.Error[])list.toArray(
-			new ErrorSource.Error[list.size()]);
+		return list.toArray(new ErrorSource.Error[list.size()]);
 	} //}}}
 
 	//{{{ getLineErrors() method
@@ -125,16 +124,15 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(errors.size() == 0)
 			return null;
 
-		ErrorListForPath list = (ErrorListForPath)errors.get(path);
+		ErrorListForPath list = errors.get(path);
 		if(list == null)
 			return null;
-		Collection inRange = list.subSetInLineRange(startLineIndex, endLineIndex);
+		Collection<Error> inRange = list.subSetInLineRange(startLineIndex, endLineIndex);
 		if(inRange.size() == 0)
 			return null;
 		else
 		{
-			return (ErrorSource.Error[])inRange.toArray(
-				new ErrorSource.Error[inRange.size()]);
+			return inRange.toArray(new ErrorSource.Error[inRange.size()]);
 		}
 	} //}}}
 
@@ -158,8 +156,8 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 				public void run()
 				{
-					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-						ErrorSourceUpdate.ERRORS_CLEARED,null);
+					ErrorSourceUpdate message = new ErrorSourceUpdate(
+						DefaultErrorSource.this, ErrorSourceUpdate.ERRORS_CLEARED, null);
 					EditBus.send(message);
 				}
 			});
@@ -174,7 +172,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void removeFileErrors(String path)
 	{
-		final ErrorListForPath list = (ErrorListForPath)errors.remove(path);
+		final ErrorListForPath list = errors.remove(path);
 		if(list == null)
 			return;
 
@@ -187,12 +185,9 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 				public void run()
 				{
-					Iterator i = list.iterator();
-					while(i.hasNext())
-					{
-						DefaultError error = (DefaultError)i.next();
-						ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-							ErrorSourceUpdate.ERROR_REMOVED,error);
+					for (Error error: list) {
+						ErrorSourceUpdate message = new ErrorSourceUpdate(
+							DefaultErrorSource.this, ErrorSourceUpdate.ERROR_REMOVED, error);
 						EditBus.send(message);
 					}
 				}
@@ -207,11 +202,11 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void addError(final DefaultError error)
 	{
-		ErrorListForPath list = (ErrorListForPath)errors.get(error.getFilePath());
+		ErrorListForPath list = errors.get(error.getFilePath());
 		if(list == null)
 		{
 			list = new ErrorListForPath();
-			errors.put(error.getFilePath(),list);
+			errors.put(error.getFilePath(), list);
 		}
 		if(list.add(error))
 		{
@@ -246,8 +241,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	public void addError(int type, String path,
 		int lineIndex, int start, int end, String error)
 	{
-		DefaultError newError = new DefaultError(this,type,path,lineIndex,
-			start,end,error);
+		DefaultError newError = new DefaultError(this, type, path, lineIndex, start, end, error);
 
 		addError(newError);
 	} //}}}
@@ -268,14 +262,14 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	//{{{ Protected members
 	protected String name;
 	protected int errorCount;
-	protected Map errors;
+	protected Map<String, ErrorListForPath> errors;
 	//}}}
 
 	//{{{ Private members
 	private boolean addedToBus;
 
 	//{{{ removeOrAddToBus() method
-	private void removeOrAddToBus()
+	protected void removeOrAddToBus()
 	{
 		if(addedToBus && errorCount == 0)
 		{
@@ -299,11 +293,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				Iterator i = list.iterator();
+				Iterator<Error> i = list.iterator();
 				while(i.hasNext())
 				{
-					((DefaultError)i.next())
-						.openNotify(buffer);
+					((DefaultError)i.next()).openNotify(buffer);
 				}
 			}
 		}
@@ -312,11 +305,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				Iterator i = list.iterator();
+				Iterator<Error> i = list.iterator();
 				while(i.hasNext())
 				{
-					((DefaultError)i.next())
-						.closeNotify(buffer);
+					((DefaultError)i.next()).closeNotify(buffer);
 				}
 			}
 		}
@@ -407,6 +399,16 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		{
 			return path;
 		} //}}}
+		
+		/**
+		 * Changes the filePath of this error
+		 * @param newPath the new path
+		 */
+		public void setFilePath(String newPath)
+		{
+			path = newPath;
+			name = path.substring(path.lastIndexOf('/'));
+		}
 
 		//{{{ getFileName() method
 		/**
@@ -482,7 +484,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		public void addExtraMessage(String message)
 		{
 			if(extras == null)
-				extras = new ArrayList();
+				extras = new ArrayList<String>();
 			extras.add(message);
 		} //}}}
 
@@ -578,7 +580,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		private Position endPos;
 
 		private String error;
-		private List extras;
+		private List<String> extras;
 		//}}}
 	} //}}}
 
@@ -586,14 +588,14 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	/**
 	 * A list of errors sorted by line number.
 	 */
-	private static class ErrorListForPath extends TreeSet
+	protected static class ErrorListForPath extends TreeSet<Error>
 	{
 		public ErrorListForPath()
 		{
 			super(new ErrorComparator());
 		}
 
-		public Collection subSetInLineRange(int start, int end)
+		public Collection<Error> subSetInLineRange(int start, int end)
 		{
 			return subSet(new LineKey(start), new LineKey(end + 1));
 		}
@@ -602,13 +604,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		/**
 		 * Comparator based on line number.
 		 */
-		private static class ErrorComparator implements Comparator
+		private static class ErrorComparator implements Comparator<Error>
 		{
-			public int compare(Object o1, Object o2)
+			public int compare(Error e1, Error e2)
 			{
-				ErrorSource.Error e1 = (ErrorSource.Error)o1;
-				ErrorSource.Error e2 = (ErrorSource.Error)o2;
-
 				int line1 = e1.getLineNumber();
 				int line2 = e2.getLineNumber();
 				if (line1 < line2) return -1;

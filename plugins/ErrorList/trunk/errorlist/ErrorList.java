@@ -67,6 +67,17 @@ public class ErrorList extends JPanel implements EBComponent,
 	public static final ImageIcon WARNING_ICON = new ImageIcon(
 		ErrorList.class.getResource("warning.png"));
 
+	//{{{ data members
+	private View view;
+	private JLabel status;
+	private DefaultMutableTreeNode errorRoot;
+	private DefaultTreeModel errorModel;
+	private JTree errorTree;
+	private Vector<Error> errors;
+	private Vector<Integer> filteredTypes;
+	private Map<Integer, JToggleButton> toggleButtons;
+        // }}}
+	
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
 	{
@@ -74,14 +85,14 @@ public class ErrorList extends JPanel implements EBComponent,
 
 		setLayout(new BorderLayout());
 
-		errors = new Vector();
-		filteredTypes = new Vector();
+		errors = new Vector<Error>();
+		filteredTypes = new Vector<Integer>();
 		
 		Box toolBar = new Box(BoxLayout.X_AXIS);
 		status = new JLabel();
 		toolBar.add(status);
 		toolBar.add(Box.createHorizontalStrut(30));
-		toggleButtons = new HashMap();
+		toggleButtons = new HashMap<Integer, JToggleButton>();
 		
 		JToggleButton toggleBtn = new JToggleButton(ERROR_ICON, true);
 		toggleBtn.setToolTipText(jEdit.getProperty(
@@ -90,6 +101,7 @@ public class ErrorList extends JPanel implements EBComponent,
 			jEdit.getActionContext(),
 			"error-list-toggle-errors"));
 		toolBar.add(toggleBtn);
+		
 		toggleButtons.put(Integer.valueOf(ErrorSource.ERROR), toggleBtn);
 
 		toolBar.add(Box.createHorizontalStrut(3));
@@ -516,14 +528,6 @@ public class ErrorList extends JPanel implements EBComponent,
 	} //}}}
 
 	//{{{ Private members
-	private View view;
-	private JLabel status;
-	private DefaultMutableTreeNode errorRoot;
-	private DefaultTreeModel errorModel;
-	private JTree errorTree;
-	private Vector errors;
-	private Vector filteredTypes;
-	private Map toggleButtons;
 	
 	//{{{ updateList() method
 	private void updateList()
@@ -650,7 +654,7 @@ public class ErrorList extends JPanel implements EBComponent,
 	//{{{ removeErrorSource() method
 	private void removeErrorSource(ErrorSource source)
 	{
-		Iterator it = errors.iterator();
+		Iterator<Error> it = errors.iterator();
 		while (it.hasNext())
 		{
 			ErrorSource.Error error = (Error) it.next();
