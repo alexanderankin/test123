@@ -41,6 +41,23 @@ public class ConnectionManager extends ftp.ConnectionManager
 		}
 		return path;
 	}
+
+	/**
+	 * 
+	 * @param vfsPath
+	 * @return everything but the path part of the vfsPath
+	 */
+	static String extractBase(String vfsPath) {
+		String path = null;
+		// change directory
+		Matcher m = sftpPath.matcher(vfsPath);
+		if (m.matches()) {
+			int end = Math.max(m.end(3), m.end(2));
+			end = Math.max(end, m.end(1));
+			path = vfsPath.substring(0, end);
+		}
+		return path;
+	}
 	
 	static ConnectionInfo parseAddress(String vfsPath) {
 		Matcher m = sftpPath.matcher(vfsPath);

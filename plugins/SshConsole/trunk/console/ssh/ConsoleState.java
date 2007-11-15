@@ -1,7 +1,8 @@
 package console.ssh;
 
-import java.io.IOException;
 import java.io.OutputStream;
+
+import console.CommandOutputParser;
 
 import ftp.ConnectionInfo;
 
@@ -24,6 +25,8 @@ public class ConsoleState
 	Connection conn = null;
 	// login information extracted from the ftp plugin
 	ConnectionInfo info = null;
+	
+	CommandOutputParser dirChangeListener = null;
     // }}}
 
     // {{{ setPath()
@@ -38,20 +41,28 @@ public class ConsoleState
 	void setPath(String newPath) {
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
-		
-		if (newInfo.equals(info)) return;
-		info = newInfo;
-		try {
-			conn.logout();
-			conn.inUse = false;
+		if (dirChangeListener != null)
+			dirChangeListener.setDirectory(path);
+
+		if (!newInfo.equals(info)) { 
+			info = newInfo;
+			try {
+				conn.logout();
+				conn.inUse = false;
+			}
+			catch (Exception e) {}
+			os = null;
+			conn = null;
 		}
-		catch (Exception e) {}
-		os = null;
-		conn = null;
 
 	} // }}}
 
 	public String getPath() {
 		return path;
 	}
+	
+	public void setDirectoryChangeListener(CommandOutputParser cop) {
+		dirChangeListener = cop;
+	}
+	
 } // }}}
