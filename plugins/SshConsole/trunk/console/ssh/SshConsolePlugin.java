@@ -30,6 +30,7 @@ public class SshConsolePlugin extends EBPlugin {
 				path = path.substring(0, path.lastIndexOf('/'));
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
+			// redundant since it is being done via preprocess
 			cs.setPath(path);
 			path = ConnectionManager.extractDirectory(path);
 			if (path == null || cs.dir.equals(path)) return;

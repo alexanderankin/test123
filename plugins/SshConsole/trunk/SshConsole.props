@@ -8,7 +8,7 @@ plugin.console.ssh.SshConsolePlugin.docs=index.html
 plugin.console.ssh.SshConsolePlugin.description=Allows you to issue compile commands remotely via ssh in the same location as the sftp:// file you are editing, and parses the output for errors in ErrorList.
 plugin.console.ssh.SshConsolePlugin.depend.0=jdk 1.5
 plugin.console.ssh.SshConsolePlugin.depend.1=jedit 04.03.12.00
-plugin.console.ssh.SshConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.5
+plugin.console.ssh.SshConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
 plugin.console.ssh.SshConsolePlugin.depend.3=plugin ftp.FtpPlugin 0.9.2
 plugin.console.ssh.SshConsolePlugin.depend.4=plugin console.ConsolePlugin 4.3.5
 
