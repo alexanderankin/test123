@@ -27,6 +27,21 @@ public class ConnectionManager extends ftp.ConnectionManager
 	static ArrayList<Connection> connections = new ArrayList<Connection>(); 
 	// }}}
 	
+	
+	/**
+	 * @param vfsPath a path of the form sftp://(user@)?host(:port)?(/path)
+	 * @return path part from vfsPath (on a remote host).
+	 */
+	static String extractDirectory(String vfsPath) {
+		String path = null;
+		// change directory
+		Matcher m = sftpPath.matcher(vfsPath);
+		if (m.matches()) {
+			path = "/" + m.group(4);
+		}
+		return path;
+	}
+	
 	static ConnectionInfo parseAddress(String vfsPath) {
 		Matcher m = sftpPath.matcher(vfsPath);
 		if (!m.matches()) return null;

@@ -31,19 +31,14 @@ public class SshConsolePlugin extends EBPlugin {
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
 			cs.setPath(path);
-			// change directory
-			Matcher m = ConnectionManager.sftpPath.matcher(path);
-			if (m.matches()) {
-				path = "/" + m.group(4);
-				if (cs.dir.equals(path)) return;
-				cs.dir = path;
-				String command = "cd " + path; 
-				console.Shell s = c.getShell();
-				Output output = c.getShellState(s);
-				output.print(c.getWarningColor(), command);
-				s.execute(c, null, output, output, command);
-			}
-			else Log.log (Log.ERROR, this, "ERROR:" + path + " does not parse");
+			path = ConnectionManager.extractDirectory(path);
+			if (path == null || cs.dir.equals(path)) return;
+			cs.dir = path;
+			String command = "cd " + path; 
+			console.Shell s = c.getShell();
+			Output output = c.getShellState(s);
+			output.print(c.getWarningColor(), command);
+			s.execute(c, null, output, output, command);
 		}
 	}
 

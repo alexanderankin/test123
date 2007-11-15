@@ -9,12 +9,12 @@
 
 <h2> jEdit SshConsole Plugin </h2>
 
-<p> This plugin itself has no user interface, because it is an extension of three other plugins: Console, FTP, and ErrorList.
+<p> This plugin itself has no user interface, because it is an extension of three other plugins: Console, FTP, and ErrorList. It is designed to allow you to easily compile files you are editing remotely via sftp:// and parse the errors for ErrorList.
 </p>
 
 <p> Console provides jEdit with a dockable command line interface to the System Shell and the BeanShell, and an open interface for adding new shells. SshConsole adds a jEdit Shell Service to Console called <tt>ssh</tt>. </p>
 
-<p> The FTP plugin allows the user to make secure <tt>sftp://</tt> connections  to remote hosts, and browse their file systems using jEdit's File System Browser, also known as FSB or VFSBrowser. At any time, the user can select, and then edit or otherwise manipulate selected files from the FSB. Since the FTP plugin handles prompting and remembering username/passwords, the SshConsole plugin assumes you want to <tt>ssh</tt> into the same host using the same port and creds as the most recent <tt>sftp://</tt> connection in that View's FSB.  
+<p> The FTP plugin defines a new virtual file system (VFS) called "sftp://", which allows the user to make secure <tt>sftp://</tt> connections to remote hosts, and browse their file systems using jEdit's File System Browser, also known as FSB or VFSBrowser. At any time, the user can select, and then manipulate selected files from the FSB or jEdit. Since the FTP plugin handles prompting and remembering username/passwords, the SshConsole plugin assumes you want to <tt>ssh</tt> into the same host using the same port and creds as the most recent <tt>sftp://</tt> connection in that View's FSB.  
 </p>
 
 <h2> Instructions for use: </h2>
@@ -30,22 +30,29 @@
 <li> Look at the ErrorList dockable. Click on an error in the dockable. </li> 
 </ol>
 
-<p> If later, you use the FSB to connect to a different remote sftp host, then the next time you use the SshConsole, it should logout of the previous ssh session, create a new shell connection to the same host you just logged into via sftp, and send your shell commands there.
+<p> If later, you use the FSB to connect to a different remote sftp host, then the next
+time you use the SshConsole, it should logout of the old ssh session, create a new shell
+connection to the same host you just logged into via sftp, and send your shell
+commands there.
 </p>
 
-<p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or open a Console and select ssh from the combobox. </p>
+<p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or
+open a Console and select ssh from the combobox. </p>
 
 
 <h2> Click the FSB to change directories </h2>
 
-<p> A nice feature of this plugin is that you can change the working directory of the remote shell session by clicking on files in the File System Browser. This is also the means by which the ErrorList knows what your current directory is, for the purposes of locating remote files corresponding to errors messages from the ssh console.
+<p> A nice option of Console is that you can change the working directory of the
+shell session by clicking on nodes in the File System Browser. This works in the <tt>System</tt> shell, and also the <tt>ssh</tt> shell. It is also the means by which the ErrorList knows the base path for resolving relative paths in error messages.
 </p>
-<p> This feature is enabled by Console option: <b><tt>Plugin Options - Console - General - On VFS Node Select, cd to node dir</tt> </b>
+
+<p> To use this option, enable it in the Console plugin:  
+<b><tt>Plugin Options - Console - General - On VFS Node Select, cd to node dir</tt> </b>
 </p>
 
 <h2> Parse Errors for ErrorList </h2>
 
-<p> Console parses the output of the ssh connection through the error parsers which are listed in the <tt>Plugin Options - Console - Error Parsers</tt>, and creates and adds <tt>DefaultErrors</tt> to the <tt>ErrorSource</tt>. You can click on the error in the ErrorList, and jEdit will open the remote file for you if necessary.
+<p> Console parses the output of the ssh connection through the error parsers which are listed in the <tt>Plugin Options - Console - Error Parsers</tt>, and creates or adds <tt>DefaultErrors</tt> to the <tt>ErrorSource</tt>. You can click on the error in the ErrorList, and jEdit will open the remote file for you if necessary.
 </p>
 
 <h2> Future Plans </h2>
