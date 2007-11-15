@@ -40,7 +40,7 @@
 		<pathelement location="${install.dir}/hsqldb.jar"/>		
 	</path>
 
-	<target name="prepare" >
+	<target name="build.prepare" >
 	 	<mkdir dir="${build.dir}" />
 		<copy file="hsqldb.jar" todir="${install.dir}" />
 		
