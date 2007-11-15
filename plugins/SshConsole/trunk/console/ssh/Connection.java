@@ -83,6 +83,9 @@ public class Connection implements UserInfo {
 	}// }}}
 	
 	// {{{ setConsole() method
+    /**
+      Not tested yet, but this should make it possible to reuse connections in different Consoles, if the
+      need is there */
 	void setConsole(Console c) throws IOException {
 		if (c != console) {
 			stout.abort();

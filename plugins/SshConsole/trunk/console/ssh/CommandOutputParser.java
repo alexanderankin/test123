@@ -11,6 +11,7 @@ public class CommandOutputParser extends console.CommandOutputParser
 	
 	public CommandOutputParser(View v, DefaultErrorSource es, Color defaultColor) {
 		super (v, es, defaultColor);
+		ErrorSource.registerErrorSource(es);
 	}
 
 	/**
@@ -27,26 +28,14 @@ public class CommandOutputParser extends console.CommandOutputParser
 	public int processLine(String text, boolean disp)
 	{
 		int retval = super.processLine(text, disp);
-		if (retval == -1) {
+		if (retval == -1 || lastError == null) {
 			return retval;
 		}
 		else {
-			String fn = lastError.getFileName();
-			ConsoleState cs = ConnectionManager.getConsoleState(console);
-			
-			String path = lastError.getFilePath();
-			int type = lastError.getErrorType();
-			int line = lastError.getLineNumber();
-			int start = lastError.getStartOffset();
-			int end = lastError.getEndOffset();
-			String msg = lastError.getErrorMessage();
 			ErrorSource errorSource = lastError.getErrorSource();
-
-			DefaultError de = new DefaultError(errorSource, type, path, line, start, end, msg  ); 	
-			errorSource.addError(de);
 			ErrorSource.registerErrorSource(errorSource);
-			return retval;
-		}
+			return retval; 
+		} 
 	}
 	// }}}
 	
