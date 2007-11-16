@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -63,13 +62,15 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
-import tags.TagFileManager;
-import tags.TagsPlugin;
-import browser.TagDB.Record;
-import browser.TagDB.RecordSet;
+import ctags.CtagsInterfacePlugin;
+import ctags.Tag;
+import db.Query;
+import db.TagDB;
 
 @SuppressWarnings("serial")
 public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
+	private static final String KIND_EXTENSION = "kind";
+
 	private static final String MSG_NO_HIERARCHY = "class-browser.msg.no-hierarchy";
 
 	private static final String MSG_TITLE = "class-browser.msg.title";
@@ -77,6 +78,12 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private static final String MSG_NO_SELECTED_CLASS = "class-browser.msg.no-selected-class";
 
 	private static final String CLASS_BROWSER_CLASS_HIERARCHY = "class-browser-class-hierarchy";
+
+	private static final String INHERITS_EXTENSION = "inherits";
+
+	private static final String SIGNATURE_EXTENSION = "signature";
+
+	private static final String ACCESS_EXTENSION = "access";
 
 	private View view;
 
@@ -120,8 +127,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 
 	Object mainClassObject = null;
 
-	private TagDB db = null;
-
 	private static ClassHierarchy instance;
 
 	private Vector<String> derivedClasses = new Vector<String>();
@@ -141,7 +146,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private int rootLevel = 0;
 
 	private Vector<Object> emptyMembers = new Vector<Object>();
-	
+
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
 
@@ -177,73 +182,39 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 
 		setLayout(new BorderLayout());
 		add(topPanel, BorderLayout.CENTER);
-
-		db = new TagDB();
 	}
-
-	private void updateDB(View view) {
-		boolean updated = db.removeTemporaryTagFiles();
-		TagFileManager tagFileManager = TagsPlugin.getTagFileManager();
-		Vector tagIndexFiles = tagFileManager.getTagIndexFiles(view, ".");
-		for (int i = 0; i < tagIndexFiles.size(); i++) {
-			String tagFile = (String) tagIndexFiles.get(i);
-			boolean isTemporary = false;
-			if (tagFile.equals(".") || tagFile.equals(".."))
-			{
-				String bufferPath = view.getBuffer().getPath();
-				try {
-					Vector tagFiles = tagFileManager.findTagIndexFiles(view, bufferPath, 1);
-					if(tagFiles.isEmpty())
-					{
-						Log.log(Log.DEBUG, this, "Didn't find a tag file for: " + bufferPath);
-						continue;
-					}
-					Log.log(Log.DEBUG, this, "Tag file search for " + bufferPath + " yielded " + tagFiles.elementAt(0));
-					tagFile = (String)tagFiles.elementAt(0);
-					isTemporary = true;
-				} catch (IOException e) {
-				}
-			}
-			if (db.addTagFile(tagFile, isTemporary))
-				updated = true;
-		}
-		if (updated)
-			derivedClasses = db.findMatches(db.getInheritsRegExp("\\S+"));
+	private String getClassKindList() {
+		return "('class','struct','union','interface')";
 	}
-
-	private Record findClass(String clazz) {
-		RecordSet rs = db.getTag(clazz, derivedClasses);
-		if (rs.isEmpty())
-			rs = db.getTag(clazz);
-		while (rs.next()) {
-			Record r = rs.getRecord();
-			if (db.isScopeTag(r))
-				return r;
-		}
-		return null;
+	private Tag findClass(String clazz) {
+		Query q = CtagsInterfacePlugin.getTagNameQuery(clazz);
+		q.addCondition(columnName(KIND_EXTENSION) + " IN " + getClassKindList());
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
+		if (tags.isEmpty())
+			return null;
+		return tags.firstElement();
 	}
 
 	private void addSuperClasses(DefaultMutableTreeNode node,
 			HashSet<String> classes) {
 		Object obj = node.getUserObject();
 		String name;
-		if (obj instanceof Record) {
-			Record tag = (Record) obj;
-			String inheritsStr = tag.get(TagDB.INHERITS_COL);
+		if (obj instanceof Tag) {
+			Tag tag = (Tag) obj;
+			String inheritsStr = tag.getExtension(INHERITS_EXTENSION);
 			if (inheritsStr == null)
 				return;
 			String[] superClasses = inheritsStr.split(",");
 			for (int i = 0; i < superClasses.length; i++) {
 				String superClass = superClasses[i];
 				classes.add(superClass);
-				DefaultMutableTreeNode child = new DefaultMutableTreeNode(
-						superClass);
+				DefaultMutableTreeNode child = new DefaultMutableTreeNode(superClass);
 				node.add(child);
 				addSuperClasses(child, classes);
 			}
 		} else {
 			name = (String) obj;
-			Record clazzTag = findClass(name);
+			Tag clazzTag = findClass(name);
 			if (clazzTag == null)
 				return;
 			node.setUserObject(clazzTag);
@@ -251,17 +222,24 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		}
 	}
 
+	private String columnName(String extension) {
+		return TagDB.extension2column(extension);
+	}
 	private void addSubClasses(DefaultMutableTreeNode node,
 			HashSet<String> classes) {
 		Object obj = node.getUserObject();
 		String name;
-		if (obj instanceof Record)
-			name = ((Record) obj).getName();
+		if (obj instanceof Tag)
+			name = ((Tag) obj).getName();
 		else
 			name = (String) obj;
-		RecordSet rs = db.getInherits(name, derivedClasses);
-		while (rs.next()) {
-			Record subclass = rs.getRecord();
+		Query q = CtagsInterfacePlugin.getBasicTagQuery();
+		String exact = columnName(INHERITS_EXTENSION) + " LIKE " + "'" + name + "'";
+		String inNamespace = columnName(INHERITS_EXTENSION) + " LIKE " + "'%::" + name + "'";
+		q.addCondition("(" + exact + " OR " + inNamespace + ")");
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
+		for (int i = 0; i < tags.size(); i++) {
+			Tag subclass = tags.get(i);
 			classes.add(subclass.getName());
 			DefaultMutableTreeNode child = new DefaultMutableTreeNode(subclass);
 			node.add(child);
@@ -271,8 +249,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 
 	private void setClass(View view, String clazz) {
 		long start = System.currentTimeMillis();
-		updateDB(view);
-		Record clazzTag = findClass(clazz);
+		Tag clazzTag = findClass(clazz);
 		Object obj = (clazzTag != null) ? clazzTag : clazz;
 		mainClassObject = obj;
 		HashSet<String> classesInHierarchy = new HashSet<String>();
@@ -357,30 +334,30 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	}
 
 	private String tagName(Object obj) {
-		if (obj instanceof Record)
-			return ((Record) obj).getName();
+		if (obj instanceof Tag)
+			return ((Tag) obj).getName();
 		return obj.toString();
 	}
 
 	private String getMemberId(Object member) {
-		if (!(member instanceof Record))
+		if (!(member instanceof Tag))
 			return member.toString();
-		Record tag = (Record) member;
+		Tag tag = (Tag) member;
 		StringBuffer id = new StringBuffer(tag.getName());
-		String signature = tag.get(TagDB.SIGNATURE_COL);
+		String signature = tag.getExtension(SIGNATURE_EXTENSION);
 		if (signature != null)
 			id.append("," + signature);
-		String kind = tag.get(TagDB.KIND_COL);
+		String kind = tag.getKind();
 		if (kind != null)
 			id.append("," + kind);
 		return id.toString();
 	}
 
 	private boolean isInherited(Object member) {
-		if (!(member instanceof Record))
+		if (!(member instanceof Tag))
 			return true;
-		Record tag = (Record) member;
-		String access = tag.get(TagDB.ACCESS_COL);
+		Tag tag = (Tag) member;
+		String access = tag.getExtension(ACCESS_EXTENSION);
 		if (access == null)
 			return true;
 		return (!access.equals("private"));
@@ -399,15 +376,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			for (int i = 0; i < classMembers.size(); i++) {
 				Object member = classMembers.get(i);
 				String memberId = getMemberId(member);
-				if ((!seen.contains(memberId))
-						&& (curClass.equals(clazz) || isInherited(member))) {
-					derivedMembers
-							.add(new InheritedMember(db, member, curClass));
+				if ((!seen.contains(memberId)) &&
+					(curClass.equals(clazz) || isInherited(member)))
+				{
+					derivedMembers.add(new InheritedMember(member, curClass));
 					seen.add(memberId);
 				}
 			}
-			Record classTag = findClass(curClass);
-			String inheritsStr = classTag.get(TagDB.INHERITS_COL);
+			Tag classTag = findClass(curClass);
+			String inheritsStr = classTag.getExtension(INHERITS_EXTENSION);
 			if (inheritsStr != null) {
 				String[] children = inheritsStr.split(",");
 				for (int i = 0; i < children.length; i++)
@@ -434,22 +411,34 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		StringBuffer classStr = new StringBuffer("(");
 		Iterator<String> it = classes.iterator();
 		while (it.hasNext())
-			classStr.append(it.next() + "|");
+			classStr.append("'" + it.next() + "',");
 		classStr.replace(classStr.length() - 1, classStr.length(), ")");
-		RecordSet rs = db.getMembers(classStr.toString());
-		while (rs.next()) {
-			Record member = rs.getRecord();
-			String memberOf = member.get(TagDB.SCOPE_COL);
-			if (memberOf == null)
-				continue; // Shouldn't happen, but just in case ...
-			Vector<Object> classMembers;
-			if (membersHash.containsKey(memberOf))
-				classMembers = membersHash.get(memberOf);
-			else {
-				classMembers = new Vector<Object>();
-				membersHash.put(memberOf, classMembers);
+		Query q = CtagsInterfacePlugin.getBasicTagQuery();
+		String [] scopes = "class struct union enum interface namespace".split(" ");
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < scopes.length; i++) {
+			if (i > 0)
+				sb.append(" OR ");
+			sb.append(columnName(scopes[i]) + " IN " + classStr.toString());
+		}
+		q.addCondition(sb.toString());
+		System.err.println("getMembers: SQL = " + q.toString());
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
+		for (int i = 0; i < tags.size(); i++) {
+			Tag member = tags.get(i);
+			for (int j = 0; j < scopes.length; j++) {
+				String memberOf = member.getExtension(scopes[j]);
+				if (memberOf == null)
+					continue;
+				Vector<Object> classMembers;
+				if (membersHash.containsKey(memberOf))
+					classMembers = membersHash.get(memberOf);
+				else {
+					classMembers = new Vector<Object>();
+					membersHash.put(memberOf, classMembers);
+				}
+				classMembers.add(member);
 			}
-			classMembers.add(member);
 		}
 		// Sort the members (if not sorted)
 		it = classes.iterator();
@@ -511,9 +500,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	public static void setSelected(View view) {
 		view.getDockableWindowManager().showDockableWindow(
 				CLASS_BROWSER_CLASS_HIERARCHY);
-		String selected = view.getTextArea().getSelectedText();
-		if (selected == null)
-			selected = TagsPlugin.getTagNameAtCursor(view.getTextArea());
+		String selected = CtagsInterfacePlugin.getDestinationTag(view);
 		if (selected == null) {
 			Log.log(Log.ERROR, ClassHierarchy.class,
 			"No 'class' selected for hierarchy");
@@ -654,7 +641,13 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	 **************************************************************************/
 	static class NonFieldMemberFilter implements MemberFilter {
 		public boolean pass(Object o) {
-			return (!((o instanceof Record) && ((Record) o).isVariable()));
+			if (! (o instanceof Tag))
+				return true;
+			Tag t = (Tag) o;
+			String kind = t.getKind();
+			if (kind == null)
+				return false;
+			return (kind.equals("variable") || kind.equals("member"));
 		}
 	}
 
@@ -662,8 +655,13 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	 * NonStaticMemberFilter - used for filtering out static fields & methods
 	 **************************************************************************/
 	static class NonStaticMemberFilter implements MemberFilter {
+		private static final String FILE_EXTENSION = "file";
+
 		public boolean pass(Object o) {
-			return (!((o instanceof Record) && ((Record) o).isStatic()));
+			if (! (o instanceof Tag))
+				return true;
+			Tag t = (Tag) o;
+			return (t.getExtension(FILE_EXTENSION) != null);
 		}
 	}
 
@@ -671,8 +669,14 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	 * PublicMemberFilter - used for filtering out non-public fields & members
 	 **************************************************************************/
 	static class PublicMemberFilter implements MemberFilter {
+		private static final String ACCESS_EXTENSION = "access";
+
 		public boolean pass(Object o) {
-			return ((!(o instanceof Record)) || ((Record) o).isPublic());
+			if (! (o instanceof Tag))
+				return true;
+			Tag t = (Tag) o;
+			String access = t.getExtension(ACCESS_EXTENSION);
+			return (access == null || access.equals("public"));
 		}
 	}
 
@@ -691,20 +695,18 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * InheritedMember - display inherited member with defining class
 	 **************************************************************************/
-	public class InheritedMember extends TagDB.Record {
-		public InheritedMember(TagDB db, Object member, String clazz) {
-			db.super();
-			if (member instanceof Record)
-				info = ((Record) member).info;
-			else {
-				info = new Hashtable<String, String>();
-				info.put(TagDB.TAG_COL, tagName(member));
-				info.put(TagDB.SCOPE_COL, clazz);
-			}
+	public class InheritedMember extends Tag {
+		private static final String SCOPE_EXTENSION = "scope";
+
+		public InheritedMember(Object member, String clazz) {
+			super(tagName(member), null, null);
+			Hashtable<String, String> hash = new Hashtable<String, String>();
+			hash.put(SCOPE_EXTENSION, clazz);
+			setExtensions(hash);
 		}
 
 		public String getMiddle() {
-			return " - " + get(TagDB.SCOPE_COL) + " ";
+			return " - " + getExtension(SCOPE_EXTENSION) + " ";
 		}
 	}
 
@@ -733,8 +735,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel label = (JLabel) super.getListCellRendererComponent(list,
 					value, index, isSelected, cellHasFocus);
-			if (value instanceof Record) {
-				ImageIcon icon = db.getIcon((Record) value);
+			if (value instanceof Tag) {
+				ImageIcon icon = ((Tag) value).getIcon();
 				if (icon != null)
 					label.setIcon(icon);
 			}
@@ -754,8 +756,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 					value, isSelected, expanded, leaf, row, hasFocus);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			Object obj = node.getUserObject();
-			if (obj instanceof Record) {
-				ImageIcon icon = db.getIcon((Record) obj);
+			if (obj instanceof Tag) {
+				ImageIcon icon = ((Tag) obj).getIcon();
 				if (icon != null)
 					label.setIcon(icon);
 			}
@@ -779,8 +781,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				Object obj = list.getSelectedValue();
-				if (obj instanceof Record) {
-					((Record) obj).jump(view);
+				if (obj instanceof Tag) {
+					Tag t = (Tag) obj;
+					CtagsInterfacePlugin.jumpTo(view, t.getFile(), t.getLine());
 				}
 			}
 		}
@@ -801,8 +804,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				TreePath path = tree.getSelectionPath();
 				Object obj = ((DefaultMutableTreeNode) path
 						.getLastPathComponent()).getUserObject();
-				if (obj instanceof Record) {
-					((Record) obj).jump(view);
+				if (obj instanceof Tag) {
+					Tag t = (Tag) obj;
+					CtagsInterfacePlugin.jumpTo(view, t.getFile(), t.getLine());
 				}
 			}
 		}
