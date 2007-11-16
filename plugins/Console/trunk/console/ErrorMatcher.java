@@ -364,8 +364,8 @@ public class ErrorMatcher implements Cloneable
 		String _filename = MiscUtilities.constructPath(directory, file);
 		try
 		{
-			return new DefaultError(errorSource, type, _filename, Math.max(0, Integer
-				.parseInt(line) - 1), 0, 0, message);
+			return new DefaultError(errorSource, type, _filename, 
+				Math.max(0, Integer.parseInt(line) - 1), 0, 0, message);
 		}
 		catch (NumberFormatException nf)
 		{
