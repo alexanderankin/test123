@@ -73,7 +73,7 @@ public class ConnectionManager
 	//{{{ getPassword() method
 	protected static String getPassword(String hostInfo)
 	{
-		return (String)passwords.get(hostInfo);
+		return passwords.get(hostInfo);
 	} //}}}
 	
 	//{{{ setPassword() method

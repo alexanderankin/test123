@@ -1,11 +1,8 @@
-/**
- * 
- */
 package ftp;
 
 /**
  * Broken out of the ConnectionManager class so that it can be reused from SshPlugin.
-  */
+*/
 public class ConnectionInfo
 {
 	// {{{ members
@@ -26,7 +23,7 @@ public class ConnectionInfo
 		this.password = password;
 		this.privateKey = privateKey;
 	}
-
+	
 	public boolean equals(Object o)
 	{
 		if(!(o instanceof ConnectionInfo))
