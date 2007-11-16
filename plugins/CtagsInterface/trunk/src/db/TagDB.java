@@ -62,7 +62,7 @@ public class TagDB {
 			e.printStackTrace();
 		}
 		createTables();
-		getColumns();
+		columns = getColumns();
 	}
 
 	// Check if a source file is in the DB
@@ -86,9 +86,6 @@ public class TagDB {
 		}
 	}
 	
-	private void check(String s, Query q) {
-		System.err.println(s.equals(q.toString()) ? "ok" : "Bad");
-	}
 	// Inserts a source file -> origin mapping to the DB
 	public void insertSourceFileOrigin(int fileId, int originId) {
 		try {
@@ -158,6 +155,23 @@ public class TagDB {
 		}
 	}
 	
+	// Returns a basic tag query, to fill in conditions
+	public Query getBasicTagQuery() {
+		Query q = new Query();
+		q.addColumn(field(TAGS_TABLE, "*"));
+		q.addColumn(field(FILES_TABLE, FILES_NAME));
+		q.addTable(TAGS_TABLE);
+		q.addTable(FILES_TABLE);
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		return q;
+	}
+	
+	// Returns a query for a tag name
+	public Query getTagNameQuery(String tag) {
+		Query q = getBasicTagQuery();
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
+		return q;
+	}
 	// Runs a query for the specified tag name
 	public ResultSet queryTag(String tag) throws SQLException {
 		Query q = new Query();
@@ -387,19 +401,20 @@ public class TagDB {
 		return columnName.startsWith(TAGS_EXTENSION_PREFIX);
 	}
 	
-	private void getColumns() {
-		columns = new HashSet<String>();
+	public HashSet<String> getColumns() {
+		HashSet<String> columnNames = new HashSet<String>();
 		try {
 			Query q = new Query("*", TAGS_TABLE, TAGS_NAME + "=''");
 			ResultSet rs = query(q);
 			ResultSetMetaData meta = rs.getMetaData();
 			int cols = meta.getColumnCount();
 			for (int i = 0; i < cols; i++)
-				columns.add(meta.getColumnName(i + 1));
+				columnNames.add(meta.getColumnName(i + 1));
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return;
+			return null;
 		}
+		return columnNames;
 	}
 	
 	private String getDBFilePath() {
