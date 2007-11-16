@@ -34,7 +34,6 @@ public class SshConsolePlugin extends EBPlugin {
 	public void handleMessage(EBMessage msg)
 	{
 		if (msg instanceof VFSPathSelected) {
-			if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 			VFSPathSelected vps = (VFSPathSelected) msg;
 			String path = vps.getPath();
 			if (!path.startsWith("sftp://")) return;
