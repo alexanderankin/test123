@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.msg.VFSUpdate;
 
 import console.CommandOutputParser;
+
 
 import ftp.ConnectionInfo;
 
 // {{{ consolestate
 /** 
- * This is the state information for each instance of the Console shell.
+ * This is the state information for each instance of the Console ssh shell.
  * @author ezust
  *
  */
