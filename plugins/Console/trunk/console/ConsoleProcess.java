@@ -282,7 +282,11 @@ class ConsoleProcess
 	/** @see Process.waitFor() */
 	public int waitFor() throws InterruptedException
 	{
-		return process.waitFor();
+		int retval = process.waitFor();
+		while (!stopped) {
+			Thread.currentThread().sleep(500);
+		}
+		return retval;
 	} // }}}
 
 	// {{{ threadDone() method

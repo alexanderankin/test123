@@ -1,47 +1,9 @@
-/*
- * SystemShell.java - Executes OS commands
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
- *
- * Copyright (C) 1999, 2005 Slava Pestov
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 package console;
 
 // {{{ Imports
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedOutputStream;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -54,10 +16,18 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 
 /**
  * A SystemShell is shared across all instances of Console. 
- * It creates a ProcessBuilder. When it
- * is time to execute something, it creates a ConsoleProcess, passing the
- * ProcessBuilder down. The process itself is started indirectly by
+ * It creates a ProcessBuilder, and executes system statements in a shell which 
+ * resembles in terms of user interface, something that is a cross between the
+ * Windows "cmd.exe" and the Linux bash shell, so it should be easy to use for
+ * both.
+ * 
+ * It manages a mapping of Console to ConsoleState objects, where the ConsoleState
+ * manages the actual ConsoleProcess and the state of that shell.
+ *  
+ * When SystemShell executes something, the process itself is started indirectly by
  * ProcessRunner.exec().
+ * @author 1999, 2005 Slava Pestov
+ * @author 2006, 2007 Alan Ezust
  */
 // {{{ class SystemShell
 public class SystemShell extends Shell
@@ -67,8 +37,10 @@ public class SystemShell extends Shell
 
 	private String userHome;
 
+	/** common shell variables shared across all instances of the System Shell. */
 	Map<String, String> variables;
 
+	/** The state of each console System Shell instance. */
 	private Hashtable<Console, ConsoleState> consoleStateMap;
 
 	// Why is this not static?
@@ -121,9 +93,6 @@ public class SystemShell extends Shell
 	 */
 	public void closeConsole(Console console)
 	{
-
-		// TODO: Please rewrite this to use events or something.
-		// Terrible circular thing here.
 		ConsoleProcess process = getConsoleState(console).process;
 		if (process != null)
 			process.stop();
@@ -161,6 +130,25 @@ public class SystemShell extends Shell
 
 	// }}}
 
+		// {{{ executeBuiltIn() method
+
+	public void executeBuiltIn(Console console, Output output, Output error, String command,
+		Vector args)
+	{
+		SystemShellBuiltIn builtIn = (SystemShellBuiltIn) commands.get(command);
+		if (builtIn == null)
+		{
+			String[] pp = { command };
+			error.print(console.getErrorColor(), jEdit.getProperty(
+				"console.shell.unknown-builtin", pp));
+		}
+		else
+		{
+			builtIn.execute(console, output, error, args);
+		}
+	} // }}}
+
+	
 	// {{{ execute()
 	public void execute(final Console console, String input, final Output output, Output error,
 		String command)
@@ -876,23 +864,6 @@ public class SystemShell extends Shell
 		args.addElement(expandVariables(view, arg));
 	} // }}}
 
-	// {{{ executeBuiltIn() method
-
-	public void executeBuiltIn(Console console, Output output, Output error, String command,
-		Vector args)
-	{
-		SystemShellBuiltIn builtIn = (SystemShellBuiltIn) commands.get(command);
-		if (builtIn == null)
-		{
-			String[] pp = { command };
-			error.print(console.getErrorColor(), jEdit.getProperty(
-				"console.shell.unknown-builtin", pp));
-		}
-		else
-		{
-			builtIn.execute(console, output, error, args);
-		}
-	} // }}}
 
 	// {{{ getFileCompletions() method
 	private List getFileCompletions(View view, String currentDirName, String typedFilename,
