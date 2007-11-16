@@ -1,39 +1,37 @@
 package console.ssh;
+// :folding=explicit:
 
 // {{{ Imports
-
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-
 import javax.swing.text.AttributeSet;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-
 
 import console.CommandOutputParser;
 import console.Console;
 import console.ConsolePane;
 import console.ErrorOutput;
 import console.Output;
-
 import errorlist.DefaultErrorSource;
-
 // }}}
 
-/**
- * Thread for handing output of running remote ssh commands 
- *
- * @version $Id: StreamThread.java 10982 2007-11-06 05:02:42Z ezust $
- */
 
 // {{{ class StreamThread
+/**
+ * Thread for handing output of running remote ssh commands 
+ * Based on the StreamThread.java from Console plugin: StreamThread.java 10982 2007-11-06 05:02:42Z.
+ *
+ * @version $Id$
+ */
 class StreamThread extends Thread
 {
 
+    // {{{ data members
 	private boolean aborted;
 	private Console console;
 	private InputStream in;
@@ -46,8 +44,6 @@ class StreamThread extends Thread
 	// }}}
 
 	// {{{ StreamThread constructor
-	
-	
 	/**
 	 * @param in - a stream to read things from, that we want to display.
 	 */

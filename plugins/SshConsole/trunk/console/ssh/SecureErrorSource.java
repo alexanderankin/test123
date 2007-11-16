@@ -1,5 +1,5 @@
 package console.ssh;
-
+// :folding=explicit:
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.EditBus;
@@ -9,6 +9,12 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import errorlist.ErrorSourceUpdate;
 
+
+// {{{ class SecureErrorSource
+/**
+    A customized ErrorSource which prepends the proper sftp:// 
+    address that corresponds to the current connection
+*/
 public class SecureErrorSource extends DefaultErrorSource
 {
 	
@@ -21,6 +27,7 @@ public class SecureErrorSource extends DefaultErrorSource
 	}
 
 	
+    // {{{ addError() method
 	public synchronized void addError(final DefaultError error)
 	{
 		if (error.getErrorSource() != this) {
@@ -59,4 +66,4 @@ public class SecureErrorSource extends DefaultErrorSource
 		}
 	} //}}}
 
-}
+} // }}}

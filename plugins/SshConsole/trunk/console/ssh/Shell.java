@@ -1,5 +1,5 @@
 package console.ssh;
-
+// :folding=explicit:
 import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Session;
@@ -9,13 +9,14 @@ import console.ConsolePane;
 import console.Output;
 import ftp.ConnectionInfo;
 
+// {{{ class Shell
 /**
  * Secure shell interface for jEdit console. A singleton exists for the whole jedit process.
+ * State information for individual Console instances is handled by the ConsoleState class.
  * @author ezust
  *
  */
 public class Shell extends console.Shell {
-
 	
 	public void closeConsole(Console console)
 	{
@@ -23,7 +24,6 @@ public class Shell extends console.Shell {
 		cs.close();		
 	}
 
-	@Override
 	public void openConsole(Console console)
 	{
 		// nothing needed here, I think
@@ -32,7 +32,8 @@ public class Shell extends console.Shell {
 	public Shell() {
 		super("ssh");
 	}
-	
+
+    // {{{ execute() method	
 	/**
 	 * @param console the instance that is running this command
 	 * @param input is always null
@@ -68,8 +69,9 @@ public class Shell extends console.Shell {
 		finally {
 			printPrompt(console, output);
 		}
-	}
+	} // }}}
 
+    
 	public void printPrompt(Console console, Output output)
 	{
 		ConsoleState s = ConnectionManager.getConsoleState(console);
@@ -83,5 +85,5 @@ public class Shell extends console.Shell {
 		}
 	}    
 	
-};
+}; // }}}
 
