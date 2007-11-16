@@ -1,6 +1,6 @@
 package console.ssh;
 
-
+// {{{ imports
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
@@ -22,8 +22,10 @@ import console.Console;
 import ftp.ConnectionInfo;
 import ftp.ConnectionManager;
 import ftp.PasswordDialog;
+// }}}
 
-/* An ssh remote shell connection 
+// {{{ Connection class
+/** An ssh remote shell connection 
  */
 public class Connection implements UserInfo {
 	// {{{ members
@@ -151,4 +153,4 @@ public class Connection implements UserInfo {
 	{
 		JOptionPane.showMessageDialog(null, message);
 	}
-}
+} // }}}

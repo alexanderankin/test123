@@ -13,10 +13,24 @@ import console.Console;
 import console.ConsolePlugin;
 import console.Output;
 
+/**
+  SshConsole - a jEdit plugin that offers a ssh shell to the Console that responds
+  to VFSPathSelected events from the VFSBrowser. 
+  @author Alan Ezust
+  @version $Id$
+*/  
 public class SshConsolePlugin extends EBPlugin {
 
+    public void start()
+	{
+		ConnectionManager.setup();
+	}
 
-	@Override
+	public void stop()
+	{
+		ConnectionManager.cleanup();
+	}
+    
 	public void handleMessage(EBMessage msg)
 	{
 		if (msg instanceof VFSPathSelected) {
@@ -30,7 +44,6 @@ public class SshConsolePlugin extends EBPlugin {
 				path = path.substring(0, path.lastIndexOf('/'));
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
-			// redundant since it is being done via preprocess
 			cs.setPath(path);
 			path = ConnectionManager.extractDirectory(path);
 			if (path == null || cs.dir.equals(path)) return;
@@ -42,19 +55,4 @@ public class SshConsolePlugin extends EBPlugin {
 			s.execute(c, null, output, output, command);
 		}
 	}
-
-	public void start()
-	{
-		ConnectionManager.setup();
-	}
-
-	public void stop()
-	{
-		ConnectionManager.cleanup();
-	}
-
-	
 }
-
-
-
