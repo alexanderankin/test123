@@ -1502,10 +1502,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
   <listitem id="ver4.3.5"><para>
     <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
+    <listitem><para> waitForConsole(view) should work properly on *nix systems now. (ezust - #1698976) </para></listitem>
     <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
-    <listitem><para> Improved generic extra line regexp - catches javac and gcc multilines better.  </para></listitem>
-	<listitem><para> (windows only) - driveletter: works in Console the way it does in <literal>cmd.exe</literal>, and \ without driveletter prefix defaults to the current drive in paths. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para></listitem>
-    <listitem><para> Small changes to make the SshConsole plugin work. </para> </listitem>
+    <listitem><para> Improved generic extra line regexp - catches javac and gcc multilines better (ezust).  </para></listitem>
+	<listitem><para> (windows only) - driveletters work in Console the way they do in <literal>cmd.exe</literal>, as change-directory shortcuts. Console keeps track of default directories for each drive, as well as the default drive for the current shell session. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para></listitem>
+    <listitem><para> Small changes to make the SshConsole plugin work (ezust). </para> </listitem>
     </itemizedlist>
 	</para>
     </listitem>
@@ -1531,8 +1532,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      <listitem><para> 1727037, 1726365 applied, handling error lines in StreamThread better. (k_satoda) </para></listitem>
      <listitem><para> 1700484 fixed, was not registering dynamic shortcuts on startup. </para></listitem>
      <listitem><para> 1671430 cd to project root/node needs line break </para></listitem>
-     <listitem><para> Ctrl-P and Ctrl-N select through command history. </para></listitem>
-     <listitem><para> Paste in the panel moves caret to end of input before pasting. </para></listitem>
+     <listitem><para> Ctrl-P and Ctrl-N select through command history (ezust). </para></listitem>
+     <listitem><para> Paste in the panel moves caret to end of input before pasting (ezust). </para></listitem>
      </itemizedlist>
    </para>
    </listitem>
@@ -1601,7 +1602,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    ProjectViewer 2.1.1 (optional) (Alan Ezust)
   </para>
   <itemizedlist>
-
 
     <listitem><para>
         Added option to not show welcome message. </para></listitem>
