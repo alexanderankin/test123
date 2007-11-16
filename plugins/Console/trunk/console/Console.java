@@ -489,9 +489,9 @@ implements EBComponent, DefaultFocusComponent
 		}
 
 		if(printInput)
-			output.print(infoColor,cmd);
+			error.print(infoColor, cmd);
 		else
-			output.print(null,"");
+			error.print(null,"");
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
