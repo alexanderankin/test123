@@ -25,7 +25,7 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
-		<pathelement location="${user.home}/.jedit/jars/Tags.jar"/>
+		<pathelement location="${user.home}/.jedit/jars/CtagsInterface.jar"/>
 	</path>
 
 	<target name="prepare" >
