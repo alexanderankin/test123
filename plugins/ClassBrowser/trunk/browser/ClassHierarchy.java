@@ -416,9 +416,16 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		Query q = CtagsInterfacePlugin.getBasicTagQuery();
 		String [] scopes = "class struct union enum interface namespace".split(" ");
 		StringBuffer sb = new StringBuffer();
+		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
+		boolean first = true;
 		for (int i = 0; i < scopes.length; i++) {
-			if (i > 0)
+			String cname = columnName(scopes[i]);
+			if (! columns.contains(cname))
+				continue;
+			if (! first)
 				sb.append(" OR ");
+			else
+				first = false;
 			sb.append(columnName(scopes[i]) + " IN " + classStr.toString());
 		}
 		q.addCondition(sb.toString());
