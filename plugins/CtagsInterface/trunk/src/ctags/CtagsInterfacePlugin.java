@@ -26,6 +26,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
+import db.Query;
 import db.TagDB;
 import dockables.TagList;
 
@@ -507,5 +508,14 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			e.printStackTrace();
 		}
 		return new Vector<Tag>();
+	}
+	public static Query getBasicTagQuery() {
+		return db.getBasicTagQuery();
+	}
+	public static Query getTagNameQuery(String tag) {
+		return db.getTagNameQuery(tag);
+	}
+	public static HashSet<String> getTagColumns() {
+		return db.getColumns();
 	}
 }
