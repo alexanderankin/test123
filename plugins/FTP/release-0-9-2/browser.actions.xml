@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="vfs.browser.ftp">
+		<CODE>
+			String directory = 
+				VFSManager.getVFSForProtocol("ftp")
+				.showBrowseDialog(null,browser);
+			if(directory != null)
+				browser.setDirectory(directory);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="vfs.browser.sftp">
+		<CODE>
+			String directory = 
+				VFSManager.getVFSForProtocol("sftp")
+				.showBrowseDialog(null,browser);
+			if(directory != null)
+				browser.setDirectory(directory);
+		</CODE>
+	</ACTION>
+</ACTIONS>
