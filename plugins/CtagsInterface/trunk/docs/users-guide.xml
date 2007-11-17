@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-  <title>CtagsInterface plugin user's guide</title>
-
-    <bookinfo>
-
+  <title>jEdit CtagsInterface Plugin Guide</title>
+<bookinfo>
  <authorgroup>
   <author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
  </authorgroup>
@@ -23,10 +21,84 @@
  </legalnotice>
  </bookinfo>
  
- <chapter id="intro"> <title> Introduction </title>
+ <chapter id="intro"> 
+  <title> Introduction </title>
 
- <para> This is the introduction . </para>
+ <para> The CtagsInterfacePlugin provides two dockables, a <guilabel>Tag List</guilabel> and a <guilabel>Tag Preview</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable.
+ </para>
 
- </chapter> 
+ </chapter>
+
+ <chapter id="tagdbs">
+   <title> Tagging Projects and Source Trees </title>
+   
+   <para> CtagsInterface uses an embedded sql database, hsqldb, to keep track of tag data from multiple projects and directory trees.
+   The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem> provides dialogs for adding projects and directory trees that should be indexed.
+   </para>
+ </chapter>
+
+
+ <chapter id="lookup">
+   <title> Tag Lookup </title>
+   
+   <para> When a tag is being looked up, it is often desired to search the relevant related projects, rather than the whole database, or just the local project. In the case where there are many projects related to others, but not necessarily ALL of the others, the search space can be greatly reduced if we properly specificy which projects are dependents of others. 
+   </para>
+   
+   <para> By editing the properties of the current project, you can see a <guilabel>Dependencies</guilabel> pane, which allows you to set the related projects or source trees on an individual project basis. While running the Tag Preview, or performing a Jump to Tag while working in a project that has dependencies set, CtagsInterface should restrict its searches to tag data from only those projects and directory trees.
+   </para>
+   
+ </chapter>
+ 
+ <chapter id="actions">
+   <title> Actions </title>
+   
+   <formalpara><title> Add tag File </title>
+   <para> Adds an already generated ctags file to the database. </para>
+   </formalpara>
+   
+   <formalpara><title> Tag all projects </title>
+   <para> This does exactly what it says: it goes through <emphasis role="bold">every</emphasis> project that ProjectViewer knows about, and tags their files, adding the tag data to the embedded database.
+   </para>
+   </formalpara>
+   
+   <para> In addition to these built-in actions, CtagsInterface allows you to create dynamic Actions, which are custom SQL queries, which can be bound to keyboard shortcuts.
+   </para>
+   
+   <para> TODO: Shlomy, pls add an example here. </para>
+   
+ </chapter>
+ 
+ <chapter id="dockables">
+   <title> CtagsInterface Dockables </title>
+   
+   <para> There are two dockables that you can use from CtagsInterface. </para>
+   
+   <formalpara> <title> Tag List </title>
+   <para> When <action>jump to tag</action> is invoked, if there is more than one possible match, the Tag List dockable is displayed, where you can preview and select the choices of jump locations. </para>
+   
+   </formalpara>
+   
+   
+   <formalpara> <title> Tag Preview </title>
+   <para> This dockable is updated automatically (after a configurable delay) whenever the caret is moved over a location that is a known symbol in the tag database. 
+   </para>
+   
+   </formalpara>
+   
+ </chapter>
+   
+<appendix id="changelog">
+ <title> Changelog </title>
+ 
+<itemizedlist>
+ <listitem><para> <emphasis role="bold">Version 0.1</emphasis> - Requires jedit 4.3pre12, Java 1.5, and ProjectViewer 2.1.3 (optional). </para>
+  <para> Initial release </para>
+ </listitem>
+</itemizedlist>
+ 
+
+
+</appendix>
+
  
 </book> 
