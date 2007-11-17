@@ -234,9 +234,23 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		else
 			name = (String) obj;
 		Query q = CtagsInterfacePlugin.getBasicTagQuery();
-		String exact = columnName(INHERITS_EXTENSION) + " LIKE " + "'" + name + "'";
-		String inNamespace = columnName(INHERITS_EXTENSION) + " LIKE " + "'%::" + name + "'";
-		q.addCondition("(" + exact + " OR " + inNamespace + ")");
+		String inheritsCol = columnName(INHERITS_EXTENSION);
+		String [] expressions = new String [] {
+			inheritsCol + "='" + name + "'",
+			inheritsCol + " LIKE '%," + name + "'",
+			inheritsCol + " LIKE '" + name + ",%'",
+			inheritsCol + " LIKE '%," + name + ",%'",
+			inheritsCol + " LIKE '%,%::" + name + "'",
+			inheritsCol + " LIKE '%::" + name + ",%'",
+			inheritsCol + " LIKE '%,%::" + name + ",%'",
+		};
+		StringBuffer matchExpr = new StringBuffer();
+		for (int i = 0; i < expressions.length; i++) {
+			if (i > 0)
+				matchExpr.append(" OR ");
+			matchExpr.append(expressions[i]);
+		}
+		q.addCondition("(" + matchExpr.toString() + ")");
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag subclass = tags.get(i);
