@@ -428,7 +428,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				first = false;
 			sb.append(columnName(scopes[i]) + " IN " + classStr.toString());
 		}
-		q.addCondition(sb.toString());
+		q.addCondition("(" + sb.toString() + ")");
 		System.err.println("getMembers: SQL = " + q.toString());
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
