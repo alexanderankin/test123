@@ -429,7 +429,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			sb.append(columnName(scopes[i]) + " IN " + classStr.toString());
 		}
 		q.addCondition("(" + sb.toString() + ")");
-		System.err.println("getMembers: SQL = " + q.toString());
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag member = tags.get(i);
@@ -743,7 +742,14 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			JLabel label = (JLabel) super.getListCellRendererComponent(list,
 					value, index, isSelected, cellHasFocus);
 			if (value instanceof Tag) {
-				ImageIcon icon = ((Tag) value).getIcon();
+				Tag tag = (Tag) value;
+				StringBuffer s = new StringBuffer();
+				s.append(tag.getName());
+				String signature = tag.getExtension("signature");
+				if (signature != null && signature.length() > 0)
+					s.append(signature);
+				label.setText(s.toString());
+				ImageIcon icon = tag.getIcon();
 				if (icon != null)
 					label.setIcon(icon);
 			}
@@ -764,13 +770,13 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			Object obj = node.getUserObject();
 			if (obj instanceof Tag) {
-				ImageIcon icon = ((Tag) obj).getIcon();
+				Tag tag = (Tag) obj;
+				label.setText(tag.getName());
+				ImageIcon icon = tag.getIcon();
 				if (icon != null)
 					label.setIcon(icon);
 			}
-			label
-					.setFont((obj == mainClassObject) ? mainClassFont
-							: normalFont);
+			label.setFont((obj == mainClassObject) ? mainClassFont : normalFont);
 			return label;
 		}
 	}
