@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-  <title>jEdit CtagsInterface Plugin Guide</title>
+<!-- :wrap=soft:maxLineLen=0: -->
+<title>jEdit CtagsInterface Plugin Guide</title>
 <bookinfo>
  <authorgroup>
   <author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
@@ -24,7 +25,7 @@
  <chapter id="intro"> 
   <title> Introduction </title>
 
- <para> The CtagsInterfacePlugin provides two dockables, a <guilabel>Tag List</guilabel> and a <guilabel>Tag Preview</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable.
+ <para> The CtagsInterfacePlugin provides two dockables, a <guilabel>Tag List</guilabel> and a <guilabel>Tag Preview</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable. And finally, it provides a plugin interface through which other jedit plugins can easily access ctags data.
  </para>
  
  <note> <title> About Memory and Database Size </title>
@@ -32,9 +33,11 @@
  </para>
  
 <programlisting>
- export JAVA_HEAP_SIZE=750
- [...] 
- exec "$JAVA_HOME/bin/java" "-Dawt.useSystemAAFontSettings=on" "-Dswing.aatext=true" "-Djedit.home=$JEDIT_HOME" -mx${JAVA_HEAP_SIZE}m ${JEDIT} -jar "$JEDIT_HOME/jedit.jar" -log=5 -reuseview $@
+export JAVA_HEAP_SIZE=750
+[...] 
+exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME" 
+ "-Dawt.useSystemAAFontSettings=on" "-Dswing.aatext=true"
+ ${JEDIT} -jar "$JEDIT_HOME/jedit.jar" -reuseview $@
 </programlisting>
 </note>
  </chapter>
@@ -46,6 +49,13 @@
    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem> provides dialogs for adding projects and directory trees that should be indexed.
    </para>
    
+   <para> The first step is to add the projects and source trees that you want to be tagged in the database. Tag them in the background, and go back into jEdit. 
+   When they are done, you should see no pending I/O requests in the <guimenuitem>Utilities - Troubleshooting - I/O Progress Monitor</guimenuitem>. After your selected projects have been added, you can lookup some tags. </para>
+   
+   <para> You can add projects two ways. From the ProjectViewer, right click on the project and <guimenuitem>Add Project to Database</guimenuitem>. Or, from <guimenuitem>Plugin Options - CtagsInterface - Projects</guimenuitem>. </para>
+   
+   <para> Similarly, you can add sourcetrees from the plugin options, or from the file system browser
+   context menu: <guimenuitem> plugins - Add dir to TagsDb</guimenuitem>. </para> 
    
  </chapter>
 
@@ -53,7 +63,7 @@
  <chapter id="lookup">
    <title> Tag Lookup </title>
    
-   <para> When a tag is being looked up, it is often desired to search the relevant related projects, rather than the whole database, or just the local project. In the case where there are many projects related to others, but not necessarily ALL of the others, the search space can be greatly reduced if we properly specificy which projects are dependents of others. 
+   <para> By default, tag lookup will search the entire database for matching tags, including all projects and source trees.  When using jEdit with ProjectViewer, you will often be working with a set of files, and have to frequently check another set of files that you are reusing. This means that you will probably want to restrict your search to only the projects and source trees that are related to your project. This is especially useful in the case where there are many projects related to others, but not necessarily ALL of the others.  
    </para>
    
    <para> By editing the properties of the current project, you can see a <guilabel>Dependencies</guilabel> pane, which allows you to set the related projects or source trees on an individual project basis. While running the Tag Preview, or performing a Jump to Tag while working in a project that has dependencies set, CtagsInterface should restrict its searches to tag data from only those projects and directory trees.

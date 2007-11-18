@@ -23,6 +23,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
@@ -46,6 +47,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	public void start()
 	{
+		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
 		db = new TagDB();
 		parser = new Parser();
 		runner = new Runner();
@@ -494,7 +496,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			rs = db.queryTag(tag);
 			return db.getResultSetTags(rs);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "queryTag failed: ", e);
 		}
 		return new Vector<Tag>();
 	}
@@ -505,7 +507,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			rs = db.query(query);
 			return db.getResultSetTags(rs);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "query failed: ", e);
 		}
 		return new Vector<Tag>();
 	}

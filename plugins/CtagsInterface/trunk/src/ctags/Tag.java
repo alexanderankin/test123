@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 
 public class Tag {
-
+ 
 	private String name;
 	private String file;
 	private int line;
