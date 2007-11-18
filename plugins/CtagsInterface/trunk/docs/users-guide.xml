@@ -26,7 +26,17 @@
 
  <para> The CtagsInterfacePlugin provides two dockables, a <guilabel>Tag List</guilabel> and a <guilabel>Tag Preview</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable.
  </para>
-
+ 
+ <note> <title> About Memory and Database Size </title>
+ <para> Because the database can get rather large, depending on how much sourcecode is indexed, this can also mean that jEdit's JVM will require a larger heap size. Be sure to keep that in mind, if you find that jEdit periodically grinds to a halt, or crashes, when CtagsInterface is used - out of heap memory errors can happen in many different places and may exhibit very different behavior depending on where it happens first. You can increase the JVM heap size by editing the script that starts jEdit
+ </para>
+ 
+<programlisting>
+ export JAVA_HEAP_SIZE=750
+ [...] 
+ exec "$JAVA_HOME/bin/java" "-Dawt.useSystemAAFontSettings=on" "-Dswing.aatext=true" "-Djedit.home=$JEDIT_HOME" -mx${JAVA_HEAP_SIZE}m ${JEDIT} -jar "$JEDIT_HOME/jedit.jar" -log=5 -reuseview $@
+</programlisting>
+</note>
  </chapter>
 
  <chapter id="tagdbs">
@@ -35,6 +45,8 @@
    <para> CtagsInterface uses an embedded sql database, hsqldb, to keep track of tag data from multiple projects and directory trees.
    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem> provides dialogs for adding projects and directory trees that should be indexed.
    </para>
+   
+   
  </chapter>
 
 
@@ -57,14 +69,20 @@
    </formalpara>
    
    <formalpara><title> Tag all projects </title>
-   <para> This does exactly what it says: it goes through <emphasis role="bold">every</emphasis> project that ProjectViewer knows about, and tags their files, adding the tag data to the embedded database.
+   <para> This does exactly what it says: it goes through <emphasis role="bold">every</emphasis> project that ProjectViewer knows about, and tags their files, adding the tag data to the embedded database. 
    </para>
    </formalpara>
+   
+   <section id="dynamic-actions">
+   <title> Dynamic Actions </title>
+   
    
    <para> In addition to these built-in actions, CtagsInterface allows you to create dynamic Actions, which are custom SQL queries, which can be bound to keyboard shortcuts.
    </para>
    
-   <para> TODO: Shlomy, pls add an example here. </para>
+   <para> TODO: add stuff about dynamic actions here. </para>
+   
+   </section>
    
  </chapter>
  
@@ -87,6 +105,12 @@
    
  </chapter>
    
+ <chapter id="pluginservices">
+   <title> Services to other plugins </title>
+   <para> CtagsInterface also offers services to other plugins: Tags, ClassBrowser... TODO: document it. </para>
+
+  </chapter>
+ 
 <appendix id="changelog">
  <title> Changelog </title>
  
