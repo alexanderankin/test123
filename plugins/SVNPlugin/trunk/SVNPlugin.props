@@ -36,9 +36,10 @@ plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugin.svn.pv.opti
 options.ise.plugin.svn.pv.options.label=Subversion settings
 options.ise.plugin.svn.pv.options.code=new ise.plugin.svn.gui.PVSVNOptionPane()
 
-# ProjectViewer option pane labels
+# some dialog labels
 ise.plugin.svn.pv.url.label=URL:
 ise.plugin.svn.pv.path.label=Path:
+ise.plugin.svn.pv.name.label=Name:
 ise.plugin.svn.pv.username.label=Username:
 ise.plugin.svn.pv.password.label=Password:
 

@@ -231,7 +231,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.action.ProjectGroupLoader">
+        <java classname="ise.plugin.svn.gui.PropertiesPanel">
             <classpath refid="classpathref" />
         </java>
     </target>
