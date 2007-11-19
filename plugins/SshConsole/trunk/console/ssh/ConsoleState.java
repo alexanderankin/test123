@@ -45,6 +45,7 @@ public class ConsoleState
 	void setPath(String newPath) {
 		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
+		if (newInfo == null) return;
 		path = newPath;
 		if (dirChangeListener != null)
 			dirChangeListener.setDirectory(path);
