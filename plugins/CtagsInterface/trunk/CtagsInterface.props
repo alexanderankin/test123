@@ -94,7 +94,7 @@ plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-Proje
 
 # file system browser context menu item
 plugin.ctags.CtagsInterfacePlugin.browser-menu-item=ctags-interface-add-dir
-ctags-interface-add-dir.label=Add dir to tagsdb
+ctags-interface-add-dir.label=Add source tree to tag database
 
 options.CtagsInterface-ProjectDependencies.label=Dependencies
 options.CtagsInterface-ProjectDependencies.code=new projects.ProjectDependencies()
