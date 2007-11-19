@@ -500,6 +500,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		return new Vector<Tag>();
 	}
+	public static Vector<Tag> query(Query query)
+	{
+		return query(query.toString());
+	}
 	public static Vector<Tag> query(String query)
 	{
 		ResultSet rs;
