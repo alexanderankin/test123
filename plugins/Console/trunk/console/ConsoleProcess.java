@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2004 Slava Pestov
- * With mods Copyright (C) 2005 Alan Ezust
+ * With modifications Copyright (C) 2005,2007 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,11 @@ class ConsoleProcess
 			}
 			console.startAnimation();
 			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
+			/* Yes, there is one more thread we created but do not "count" - otherwise it would be (merge ? 4 : 3) 
+			   Console does not wait for the stdin stream/thread to be closed before considering the process
+			   "stopped". However, if the user does signal an EOF, that will still cause the stdin thread to
+			   terminate, and the count to decrease, which means that sometimes we may miss some trailing output
+			   from stdout or stderr (whichever stream is closed last). */
 			threadDoneCount = merge ? 2 : 3;
 			new Thread() {
 				public void run() {
@@ -174,9 +179,6 @@ class ConsoleProcess
 	} // }}}
 
 	// {{{ stop() method
-
-
-
 	synchronized void stop()
 	{
 
@@ -201,7 +203,7 @@ class ConsoleProcess
 			}
 			catch (Exception e) {}
 			process = null;
-
+			
 			if (console != null)
 			{
 
@@ -273,18 +275,20 @@ class ConsoleProcess
 	} // }}}
 
 	// {{{ getPipeOutput() method
-	public PipedOutputStream getPipeOutput()
+	public synchronized PipedOutputStream getPipeOutput()
 	{
-		return pipeOut;
+		return (process != null) ? pipeOut : null;
 	} // }}}
 
 	// {{{ waitFor() method
 	/** @see Process.waitFor() */
-	public int waitFor() throws InterruptedException
+	public synchronized int waitFor() throws InterruptedException
 	{
-		int retval = process.waitFor();
+		int retval = 0;
+		if (process != null) 
+			retval = process.waitFor();
 		while (!stopped) {
-			Thread.currentThread().sleep(500);
+			Thread.currentThread().sleep(100);
 		}
 		return retval;
 	} // }}}
