@@ -29,6 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import ise.plugin.svn.library.*;
+import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -62,7 +64,7 @@ public class PropertiesPanel extends JPanel {
     /**
      * Description of the Field
      */
-    private JButton _new_btn = null;
+    private JButton new_btn = null;
 
     public PropertiesPanel( String filename, Properties props ) {
         if ( filename == null ) {
@@ -73,10 +75,11 @@ public class PropertiesPanel extends JPanel {
             props.setProperty( "Error:", "No properties available." );
         }
 
+        // set up the table to show the properties
         // bugger.  java.util.Properties should declare <String, Object>
-        TreeMap<Object, Object> map = new TreeMap<Object, Object>( (Map<Object, Object>)props );   // TreeMap sorts
+        TreeMap<Object, Object> map = new TreeMap<Object, Object>( ( Map<Object, Object> ) props );   // TreeMap sorts
         JTable props_table = new JTable();
-        DefaultTableModel model = new DefaultTableModel(
+        final DefaultTableModel model = new DefaultTableModel(
                     new String[] {
                         "Name", "Value"
                     }, map.size() );
@@ -96,11 +99,52 @@ public class PropertiesPanel extends JPanel {
         }
         props_table.addMouseListener( new TableCellViewer( props_table ) );
 
-        setLayout( new BorderLayout() );
+        // set up a Save and New button
+        KappaLayout kl = new KappaLayout();
+        JPanel btn_panel = new JPanel( kl );
+        btn_panel.setBorder( new javax.swing.border.EmptyBorder( 11, 0, 0, 0 ) );
+        JButton save_btn = new JButton( "Save" );
+        save_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    for ( int row = 0; row < model.getRowCount(); row++ ) {
+                        String key = ( String ) model.getValueAt( row, 0 );
+                        String value = ( String ) model.getValueAt( row, 1 );
+                        if ( value == null || value.equals( "" ) ) {
+                            // do svn property delete   user_prefs.remove( key );
+                        }
+                        else {
+                            // do svn property add      user_prefs.put( key, value );
+                        }
+                    }
+                    return ;
+                }
+            }
+        );
+
+        new_btn = new JButton( "New" );
+        new_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    model.addRow( new String[] {"", ""} );
+                }
+            }
+        );
+
+        btn_panel.add( save_btn, "0, 0, 1, 1, 0, w, 3" );
+        btn_panel.add( new_btn, "1, 0, 1, 1, 0, w, 3" );
+        kl.makeColumnsSameWidth( new int[] {0, 1} );
+        JPanel bottom_panel = new JPanel();
+        bottom_panel.add( btn_panel );
+
+        setLayout( new LambdaLayout() );
         setBorder( new javax.swing.border.EmptyBorder( 6, 6, 6, 6 ) );
         JLabel label = new JLabel( "Properties for: " + filename, JLabel.LEFT );
-        add( label, BorderLayout.NORTH );
-        add( new JScrollPane( props_table ), BorderLayout.CENTER );
+        add( label, "0, 0, 1, 1, W, w, 3" );
+        JScrollPane js = new JScrollPane(props_table);
+        js.setPreferredSize(new Dimension(js.getPreferredSize().width, 100));
+        add( js, "0, 1, 1, 1, 0, w, 3" );
+        add( bottom_panel, "0, 2, 1, 1, 0, w, 6" );
 
     }
 
@@ -109,7 +153,6 @@ public class PropertiesPanel extends JPanel {
         p.setProperty( "svn:externals", "/some/dir/ectory" );
         p.setProperty( "svn:keywords", "word, word2" );
         JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frame.setContentPane( new PropertiesPanel( "filename", p ) );
         frame.pack();
         frame.setVisible( true );

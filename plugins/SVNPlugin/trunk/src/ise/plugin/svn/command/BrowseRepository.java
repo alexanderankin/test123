@@ -60,6 +60,7 @@ public class BrowseRepository {
     }
 
     public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd ) throws CommandInitializationException, SVNException {
+        System.out.println("+++++ " + cd);
         SVNKit.setupLibrary();
 
         // validate data values

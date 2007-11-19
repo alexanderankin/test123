@@ -45,13 +45,13 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
-import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.data.RepositoryData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.RepositoryComboBox;
 import ise.plugin.svn.gui.RevisionDialog;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.action.BrowseRepositoryAction;
 import projectviewer.vpt.VPTNode;
@@ -67,27 +67,28 @@ import org.tmatesoft.svn.core.wc.*;
 public class BrowseRepositoryPanel extends JPanel {
 
     private View view = null;
-    private PropertyComboBox chooser = null;
+    private RepositoryComboBox chooser = null;
     private JTree tree = null;
     private JPopupMenu popupMenu = null;
+    private String repository_name = null;
     private String username = null;
     private String password = null;
-
-    private String PREFIX = "ise.plugins.svn.repository.";
 
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
         this.view = view;
 
         // repository chooser
-        chooser = new PropertyComboBox( PREFIX );
+        chooser = new RepositoryComboBox();
         ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        CheckoutData data = createData();
-                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                        tree.setModel( new DefaultTreeModel( root ) );
-                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                        action.actionPerformed( ae );
+                        RepositoryData data = chooser.getSelectedRepository();
+                        if ( data != null ) {
+                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                            tree.setModel( new DefaultTreeModel( root ) );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                            action.actionPerformed( ae );
+                        }
                     }
                 };
         chooser.addActionListener( al );
@@ -105,7 +106,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         TreePath path = event.getPath();
                         DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                         if ( node.getChildCount() == 0 ) {
-                            CheckoutData data = createData();
+                            RepositoryData data = chooser.getSelectedRepository();
                             String url;
                             if ( node.isExternal() ) {
                                 url = node.getRepositoryLocation();
@@ -141,7 +142,7 @@ public class BrowseRepositoryPanel extends JPanel {
 
                                 // leaf nodes should be files, not directories.
                                 // get url and path for the selected file
-                                CheckoutData data = createData();
+                                RepositoryData data = chooser.getSelectedRepository();
                                 String url;
                                 String filepath;
                                 Object[] parts = path.getPath();
@@ -162,7 +163,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 // ask the user for the revision they want
                                 RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, "Select Revision to View" );
                                 GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
-                                rd.setVisible(true);
+                                rd.setVisible( true );
                                 SVNRevision revision = rd.getData();
                                 if ( revision == null ) {
                                     return ;
@@ -200,8 +201,12 @@ public class BrowseRepositoryPanel extends JPanel {
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
                         GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
-                        CheckoutData data = dialog.getValues();
-                        chooser.addValue( data.getURL() );
+                        RepositoryData data = dialog.getValues();
+                        if ( data == null ) {
+                            return ;     // user canceled
+                        }
+                        String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
+                        chooser.addRepository( data );
                         DirTreeNode root = new DirTreeNode( data.getURL(), false );
                         tree.setModel( new DefaultTreeModel( root ) );
                         BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
@@ -231,35 +236,6 @@ public class BrowseRepositoryPanel extends JPanel {
         // fill in the main panel
         add( top_panel, BorderLayout.NORTH );
         add( new JScrollPane( tree ), BorderLayout.CENTER );
-    }
-
-    private void saveData( CheckoutData data ) {
-        String url = data.getURL();
-        if ( url == null || url.length() == 0 ) {
-            return ;
-        }
-        int index = chooser.getSelectedIndex();
-        jEdit.setProperty( PREFIX + index, url );
-        if ( data.getUsername() != null && data.getPassword() != null ) {
-            jEdit.setProperty( PREFIX + "username." + index, data.getUsername() );
-            String pwd = data.getPassword();    // password should already be encrypted
-            if ( pwd != null ) {
-                jEdit.setProperty( PREFIX + "password." + index, pwd );
-            }
-        }
-    }
-
-    private CheckoutData createData() {
-        CheckoutData data = new CheckoutData();
-        String value = ( String ) chooser.getSelectedItem();
-        int index = chooser.getSelectedIndex();
-        data.setURL( value );
-
-        username = jEdit.getProperty( PREFIX + "username." + index );
-        password = jEdit.getProperty( PREFIX + "password." + index );
-        data.setUsername( username );
-        data.setPassword( password );
-        return data;
     }
 
     public void setRoot( DirTreeNode root ) {
@@ -306,13 +282,13 @@ public class BrowseRepositoryPanel extends JPanel {
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        CheckoutData data = createData();
+                        RepositoryData data = chooser.getSelectedRepository();
                         AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), data );
                         GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
                         data = dialog.getValues();  // null indicates user cancelled
                         if ( data != null ) {
-                            saveData( data );
+                            chooser.save();
                             DirTreeNode root = new DirTreeNode( data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
@@ -326,14 +302,12 @@ public class BrowseRepositoryPanel extends JPanel {
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        CheckoutData data = createData();
-                        int delete = JOptionPane.showConfirmDialog( view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                        if ( delete == JOptionPane.YES_OPTION ) {
-                            chooser.setSelectedItem( data.getURL() );
-                            int index = chooser.getSelectedIndex();
-                            chooser.removeItem( data.getURL() );
-                            jEdit.unsetProperty( PREFIX + "username." + index );
-                            jEdit.unsetProperty( PREFIX + "password." + index );
+                        RepositoryData data = chooser.getSelectedRepository();
+                        if ( data != null ) {
+                            int delete = JOptionPane.showConfirmDialog( view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                            if ( delete == JOptionPane.YES_OPTION ) {
+                                chooser.removeRepository( data );
+                            }
                         }
                     }
                 }
@@ -364,7 +338,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 break;
                             }
                         }
-                        CheckoutData data = new CheckoutData();
+                        RepositoryData data = new RepositoryData();
                         data.setURL( url );
                         data.setUsername( username );
                         data.setPassword( password );

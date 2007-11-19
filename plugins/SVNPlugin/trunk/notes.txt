@@ -1,7 +1,7 @@
 Eclipse has these in the Team menu, I'm using that as my model for user actions for the context menu in ProjectViewer:
 
 
-synchronize - in progress (status + actions, need more actions)
+status - done
 update - done
 commit - done
 (not in Eclipse, I added "diff" here)
@@ -12,7 +12,7 @@ revert - done
 add - done
 ignore
 edit conflicts
-resolved - done
+resolve - done
 (not in Eclipse, I added "delete" here)
 --
 lock

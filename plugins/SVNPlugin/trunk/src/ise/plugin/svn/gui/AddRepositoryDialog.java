@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-// imports
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -55,9 +54,10 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  * Dialog for obtaining/editing the url and credentials to browse a repository.
  */
 public class AddRepositoryDialog extends JDialog {
-    // instance fields
+
     private View view = null;
     private CheckoutData data = null;
+    private JTextField name = null;
     private JTextField url = null;
     private JTextField username = null;
     private JPasswordField password = null;
@@ -70,7 +70,7 @@ public class AddRepositoryDialog extends JDialog {
         _init();
     }
 
-    public AddRepositoryDialog( View view, CheckoutData data) {
+    public AddRepositoryDialog( View view, CheckoutData data ) {
         super( ( JFrame ) view, "Edit Repository Location", true );
         this.view = view;
         this.data = data;
@@ -81,6 +81,10 @@ public class AddRepositoryDialog extends JDialog {
     protected void _init() {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+
+        // name field
+        JLabel name_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "name.label" ) );
+        name = new JTextField( "", 30 );
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
@@ -141,33 +145,37 @@ public class AddRepositoryDialog extends JDialog {
 
 
         // add the components to the option panel
-        panel.add( "0, 0, 1, 1, E,  , 3", url_label );
-        panel.add( "1, 0, 2, 1, 0, w, 3", url );
+        panel.add( "0, 0, 1, 1, E,  , 3", name_label );
+        panel.add( "1, 0, 2, 1, 0, w, 3", name );
 
-        panel.add( "0, 1, 1, 1, E,  , 3", username_label );
-        panel.add( "1, 1, 2, 1, 0, w, 3", username );
+        panel.add( "0, 1, 1, 1, E,  , 3", url_label );
+        panel.add( "1, 1, 2, 1, 0, w, 3", url );
 
-        panel.add( "0, 2, 1, 1, E,  , 3", password_label );
-        panel.add( "1, 2, 2, 1, 0, w, 3", password );
+        panel.add( "0, 2, 1, 1, E,  , 3", username_label );
+        panel.add( "1, 2, 2, 1, 0, w, 3", username );
 
-        panel.add( "0, 3, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 4, 3, 1, E,  , 0", btn_panel );
+        panel.add( "0, 3, 1, 1, E,  , 3", password_label );
+        panel.add( "1, 3, 2, 1, 0, w, 3", password );
+
+        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 5, 3, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
 
     }
 
-    public CheckoutData getValues() {
+    public RepositoryData getValues() {
         if ( cancelled ) {
             return null;
         }
-        CheckoutData data = new CheckoutData();
-        data.setURL(url.getText());
-        data.setUsername(username.getText());
+        RepositoryData data = new RepositoryData();
+        data.setName( name.getText() );
+        data.setURL( url.getText() );
+        data.setUsername( username.getText() );
 
         // encrypt the password if there is one
-        String pwd = new String(password.getPassword());
+        String pwd = new String( password.getPassword() );
         if ( pwd != null && pwd.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();
@@ -177,7 +185,7 @@ public class AddRepositoryDialog extends JDialog {
                 // ignore?
             }
         }
-        data.setPassword(pwd);
+        data.setPassword( pwd );
         return data;
     }
 
