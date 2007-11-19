@@ -2,7 +2,8 @@
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <title>GdbPlugin</title>
 <articleinfo>
-<author><firstname>Shlomy</firstname><surname>Reinstein</surname></author>
+<author><firstname>Shlomy</firstname>
+<surname>Reinstein</surname></author>
 </articleinfo>
 <para> April-June 2007 </para>
 
@@ -140,6 +141,24 @@ You can now use the buttons in the execution control panel to control the execut
 </para>
 </section>
 
+<section id="dockables">
+  <title> Dockables </title>
+
+  <para> The GdbPlugin defines a number of dockables. This section attempts to describe them all. </para>
+  
+  <itemizedlist>
+  <listitem><para> Expressions - Allows you to add watch expressions </para></listitem>
+  <listitem><para> Local Variables - allows you to inspect variables in the local frame. </para></listitem>
+  <listitem><para> Variables - combines the Expressions and the LocalVariables dockables in a single dockable.  </para></listitem>
+  <listitem><para> BreakPoints - Allows you add/remove breakpoints through the plugin interface </para></listitem>
+  <listitem><para> Gdb Breakpoints - Allows you to view all breakpoints known by Gdb  (which may include those set through the .gdbinit file) </para></listitem>
+  <listitem><para> Stack Trace </para></listitem>
+  <listitem><para> Gdb Control Panel - allows you to select, start and stop programs executing in the debugger. </para></listitem>
+  
+  </itemizedlist>
+  
+  </section>
+  
 <section id="tips">
 <title> Tips </title>
 <itemizedlist>
