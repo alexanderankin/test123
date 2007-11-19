@@ -1,5 +1,14 @@
 package console.ssh;
 // :folding=explicit:
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
+
 import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Session;
@@ -7,6 +16,7 @@ import com.jcraft.jsch.Session;
 import console.Console;
 import console.ConsolePane;
 import console.Output;
+
 import ftp.ConnectionInfo;
 
 // {{{ class Shell
@@ -17,16 +27,36 @@ import ftp.ConnectionInfo;
  *
  */
 public class Shell extends console.Shell {
+	static final byte[] EOF = new byte[] {4};
+	static final byte[] SUSPEND = new byte[] {26};
+	static final byte[] STOP = new byte[] {3};
 	
+	/** Send a ctrl-c down the pipe, to end the process, rather than the session. */
+	public void stop(Console console)
+	{
+		new ShellAction(console, STOP).actionPerformed(null);
+	}
+
+	/** Sends ctrl-d (EOF) down the pipe, to signal end of file. */
 	public void closeConsole(Console console)
 	{
-		ConsoleState cs = ConnectionManager.getConsoleState(console);
-		cs.close();		
+		new ShellAction(console, EOF).actionPerformed(null);
 	}
 
 	public void openConsole(Console console)
 	{
-		// nothing needed here, I think
+		ConsolePane pane = console.getConsolePane();
+		InputMap inputMap = pane.getInputMap();
+		
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+			InputEvent.CTRL_MASK),
+			new ShellAction(console, STOP));
+
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+			InputEvent.CTRL_MASK),
+			new ShellAction(console, EOF));
+		
+		
 	}
 
 	public Shell() {
@@ -43,25 +73,25 @@ public class Shell extends console.Shell {
 	 */
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
-		 try {
-			ConsoleState ss = ConnectionManager.getConsoleState(console);
-			ss.preprocess(command);
-			if (ss.conn == null) {
-				ConnectionInfo info = ConnectionManager.getConnectionInfo(ss.getPath());
+		ConsoleState cs = ConnectionManager.getConsoleState(console);
+		cs.preprocess(command);		
+		try {			
+			if (cs.conn == null) {
+				ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
 				if (info == null) {
-					Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + ss.getPath());
+					Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + cs.getPath());
 					return;
 				}
-				ss.info = info;
+				cs.info = info;
 				Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
 				Connection c = ConnectionManager.getShellConnection(console, info);
 				session.setUserInfo(c);
-				ss.os = c.ostr;
-				ss.conn = c;
+				cs.os = c.ostr;
+				cs.conn = c;
 			}
-			Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
-			ss.os.write((command + "\n").getBytes() );
-			ss.os.flush();
+//			Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
+			cs.os.write((command + "\n").getBytes() );
+			cs.os.flush();
 		}
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "execute failed:", e);
@@ -83,7 +113,45 @@ public class Shell extends console.Shell {
 		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), 
 			"\n" + promptString);
 		}
-	}    
+	}
+
+	/** sends a ctrl-Z down the pipe, to suspend the current job */
+	public void detach(Console console)
+	{
+		ConsoleState cs = ConnectionManager.getConsoleState(console);
+//		console.getOutput().print(console.getWarningColor(), "Job Control disabled.\n");
+		if (cs.os != null) try {
+			cs.os.write(SUSPEND);
+			cs.os.flush();
+		}
+		catch (IOException IOE) {};
+
+	}
+
+
+	public static class ShellAction extends AbstractAction {
+
+		Console con;
+		byte[] cmd;
+		public ShellAction(Console console, byte[] str) {
+			con = console;
+			cmd = str;
+			
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			ConsoleState cs = ConnectionManager.getConsoleState(con);
+			if (cs != null && cs.os != null) try {
+				cs.os.write(cmd);
+				cs.os.flush();
+			}
+			catch (IOException ioe) {}
+		}
+		
+		
+	}
+	
 	
 }; // }}}
 
