@@ -214,6 +214,9 @@ public abstract class Shell
 	} // }}}
 
 	// {{{ waitUntilDone() stub
+	/** What is this for? It doesn't seem to be used anywhere.
+	 * @deprecated - see waitFor(Console)
+	 * */
 	public void waitUntilDone() {
 
 	}
@@ -309,8 +312,6 @@ public abstract class Shell
 	// {{{ ToggleAction class
 	/** A ToggleAction is a ShellAction which also toggles the
 	    visibility of the Console. 
-	    
-	    
 	*/
 	public static class ToggleAction extends ShellAction {
 

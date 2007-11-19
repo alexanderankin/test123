@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.util.Log;
 
 // }}}
 
@@ -158,6 +159,10 @@ public class SystemShell extends Shell
 			error = output;
 		ConsoleState state = getConsoleState(console);
 
+		// If a process is running under this shell and the pipe to its
+		// stdin is open, treat this command line as a input line for
+		// the process to make interactive processes usable as in
+		// general shells.
 		if (state.process != null)
 		{
 			PipedOutputStream out = state.process.getPipeOutput();
@@ -171,10 +176,10 @@ public class SystemShell extends Shell
 				}
 				catch (IOException e)
 				{
-					throw new RuntimeException(e);
+					Log.log (Log.ERROR, this, "execute()", e);
 				}
+				return;
 			}
-			return;
 		}
 
 		// comments, for possible future scripting support
@@ -278,15 +283,18 @@ public class SystemShell extends Shell
 			 */
 			if (input != null)
 			{
-				try
+				OutputStream out = proc.getPipeOutput();
+				if (out != null)
 				{
-					OutputStream out = proc.getPipeOutput();
-					out.write(toBytes(input));
-					out.close();
-				}
-				catch (IOException e)
-				{
-					throw new RuntimeException(e);
+					try
+					{
+						out.write(toBytes(input));
+						out.close();
+					}
+					catch (IOException e)
+					{
+						Log.log (Log.ERROR, this, "execute.pipeout", e);
+					}
 				}
 			}
 		}
@@ -354,12 +362,15 @@ public class SystemShell extends Shell
 			console.getOutput().writeAttrs(
 				ConsolePane.colorAttributes(console.getInfoColor()), "^D\n");
 			PipedOutputStream out = state.process.getPipeOutput();
-			try
+			if (out != null)
 			{
-				out.close();
-			}
-			catch (IOException e)
-			{
+				try
+				{
+					out.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
 		}
 	} // }}}
@@ -656,7 +667,8 @@ public class SystemShell extends Shell
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			throw new RuntimeException(e);
+			Log.log (Log.ERROR, SystemShell.class, "toBytes()", e);
+			return null;
 		}
 	} // }}}
 
@@ -1141,7 +1153,8 @@ public class SystemShell extends Shell
 				}
 				catch (IOException ioe)
 				{
-					throw new RuntimeException(ioe);
+					Log.log (Log.ERROR, this, "setCurrentDirectory()", ioe);
+					
 				}
 			}
 		} // }}}

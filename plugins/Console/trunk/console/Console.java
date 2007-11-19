@@ -251,7 +251,7 @@ implements EBComponent, DefaultFocusComponent
 		return retval;
 	}
 	/**
-	 * Returns the output instance for the currently selected Shell.z
+	 * Returns the output instance for the currently selected Shell.
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
