@@ -25,8 +25,10 @@
 <li> With FSB: navigate to a remote host via <tt>sftp://</tt>. </li>
 <li> If this is your first time connecting, Enter your user/password/key/passphrase there. </li>
 <li> After you're connected, if you plan to connect often to this host, add it as a bookmark in the File System Browser. </li>
-<li> With FSB: double-click on the remote file that you want to compile. </li>
-<li> Enter commands in the ssh console. Compile something. Compile something with errors in it.</li>
+<li> With FSB: click on (or open) the remote file that you want to compile. </li>
+<li> Enter commands in the ssh console. Initially, it will connect and show you the message of the day. </li>
+<li> Click in the correct directory in the FSB. Notice the remote directory changes. </li>
+<li> Compile something in that directory. Compile something with errors in it. </li>
 <li> Look at the ErrorList dockable. Click on an error in the dockable. </li> 
 </ol>
 
@@ -49,6 +51,10 @@ open a Console and select ssh from the combobox. </p>
 
 <p> Console parses the output of the ssh connection through the error parsers which are listed in the <tt>Plugin Options - Console - Error Parsers</tt>, and creates or adds <tt>DefaultErrors</tt> to the <tt>ErrorSource</tt>. You can click on the error in the ErrorList, and jEdit will open the remote file for you if necessary.
 </p>
+
+<h2> Job Control </h2>
+
+<p> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), all work the way you would expect them to, on a unix shell. To send a Ctrl-C, click on the "X" button in the Console pane (Ctrl-C is still a "copy to clipboard" shortcut). Other control keys typed during the execution of your program are not sent to the remote host. Let me know if you need one of them to be. </p>
 
 <h2> Future Plans </h2>
 
