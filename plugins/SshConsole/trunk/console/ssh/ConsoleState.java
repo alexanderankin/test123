@@ -38,19 +38,24 @@ public class ConsoleState
     // }}}
 
     // {{{ setPath()
+	public void setPath(String newPath ) {
+		setPath(newPath, true);
+	}
 	/**
 	 * Has the side-effect of closing the connection if it is currently open to a path that is not 
-	 * on the same remote server as newPath
+	 * on the same remote server as newPath, as well as changing directories on the remote
+	 * host, and in the command output parser.
 	 * TODO: perhaps return the connection to a pool instead of logout and kill connection?
 	 * @param newPath a sftp:// VFS path assumed used as the base of all relative paths
 	 * encountered during error parsing.
 	 *  
 	 */
-	void setPath(String newPath) 
+	public void setPath(String newPath, boolean chDirAfter) 
 	{
 		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
+		// update current directory in the CommandOutputParser
 		if (dirChangeListener != null)
 			dirChangeListener.setDirectory(path);
 
@@ -74,11 +79,13 @@ public class ConsoleState
 		newPath = ConnectionManager.extractDirectory(newPath);
 		if (newPath == null || dir.equals(newPath)) return;
 		dir = newPath;
-		String command = "cd " + dir; 
-		console.Shell s = console.getShell();
-		Output output = console.getShellState(s);
-		output.print(console.getWarningColor(), command);
-		s.execute(console, null, output, output, command);
+		// update current directory on remote host
+		if (chDirAfter) {
+			String command = "cd " + dir; 
+			console.Shell s = console.getShell();
+			Output output = console.getShellState(s);
+			s.execute(console, null, output, output, command);
+		}
 	} // }}}
 
 	// {{{ getPath() method
@@ -99,7 +106,7 @@ public class ConsoleState
 			else {
 				newPath = base + MiscUtilities.constructPath(direct, argument);
 			}
-			setPath(newPath);
+			setPath(newPath, false);
 		}
 	} // }}}
 	

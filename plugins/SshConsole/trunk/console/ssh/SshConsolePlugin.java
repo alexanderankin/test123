@@ -43,7 +43,7 @@ public class SshConsolePlugin extends EBPlugin {
 				path = path.substring(0, path.lastIndexOf('/'));
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
-			cs.setPath(path);
+			cs.setPath(path, true);
 		}
 	}
 }
