@@ -3,6 +3,9 @@ package console.ssh;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+
 import console.CommandOutputParser;
 import console.Console;
 import console.Output;
@@ -94,7 +97,12 @@ public class ConsoleState
 	} // }}}
 	
 	// {{{ preprocess method
-	protected void preprocess(String command) {
+	/**
+	 * Extracts information from user-enter commands such as where they are "chdiring".
+	 * Also processes built-in commands.
+	 * @return true if the command was consumed (i.e. a built-in)
+	 */
+	protected boolean preprocess(String command) {
 		if (command.startsWith("cd ")) {
 			String base = ConnectionManager.extractBase(path);
 			String direct = ConnectionManager.extractDirectory(path);
@@ -107,7 +115,35 @@ public class ConsoleState
 				newPath = base + MiscUtilities.constructPath(direct, argument);
 			}
 			setPath(newPath, false);
+			return false;
 		}
+		if (command.startsWith("%browse")) {
+			String base = ConnectionManager.extractBase(path);
+			String direct = ConnectionManager.extractDirectory(path);
+			String arg = command.substring(7);
+			String newPath = path;
+			if (arg.length() > 1) {
+				arg = arg.substring(1);
+				if (arg.length() > 0) {
+					if (arg.startsWith("/")) {
+						newPath = base + arg;
+					}
+					else {
+						newPath = base + MiscUtilities.constructPath(direct, arg);
+					}
+				}
+			}
+			VFSBrowser.browseDirectory(console.getView(), newPath);
+			return true;
+		}
+		if (command.startsWith("%edit ")) {
+			String arg = command.substring(6);
+			jEdit.openFile(console.getView(), path, arg, false, null);
+			return true;
+		}
+		
+		
+		return false;
 	} // }}}
 	
 	// {{{ close() method

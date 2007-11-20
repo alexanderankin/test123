@@ -56,11 +56,21 @@ open a Console and select ssh from the combobox. </p>
 
 <p> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), all work the way you would expect them to, on a unix shell. To send a Ctrl-C, click on the "X" button in the Console pane (Ctrl-C is still a "copy to clipboard" shortcut). Other control keys typed during the execution of your program are not sent to the remote host. Let me know if you need one of them to be. </p>
 
+<h2> Built-in Commands </h2>
+
+<p> The following built-in commands which work in the System shell also work in the ssh shell: </p>
+
+<ul>
+<li> <tt>%browse [<i>path</i>]</tt> tells your FSB to browse a given relative path, defaults to your current working directory. </li>
+<li> <tt>%edit <i>fileName</i></tt> tells jEdit to open given remote file in an editor buffer. Relative paths are possible here. </li>
+</ul>
+
 <h2> Future Plans </h2>
+
+<p> Here are some low-priority tasks which would be nice to have in this plugin at some future date. </p>
 
 <ul>
 <li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path.</li>
-<li> Implement built-ins:  <tt>%edit</tt> and <tt>%browse</tt>.</li>
 <li> Interpret or ignore vt10x escape codes for color changes. </li>
 </ul>
 
