@@ -31,7 +31,7 @@ public class Shell extends console.Shell {
 	static final byte[] EOF = new byte[] {4};
 	static final byte[] SUSPEND = new byte[] {26};
 	static final byte[] STOP = new byte[] {3};
-	
+	static final byte[] newline = new byte[] { '\n' };
 	/** Send a ctrl-c down the pipe, to end the process, rather than the session. */
 	public void stop(Console console)
 	{
@@ -70,13 +70,14 @@ public class Shell extends console.Shell {
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
-		if (cs.getPath().equals("")) 
+		if (cs.getPath().equals(""))  // no path from FSB - what about current buffer?
 		{
-			Buffer b = console.getView().getEditPane().getBuffer();
+			Buffer b = console.getView().getEditPane().getBuffer( );
 			String p = b.getPath();
-			if (p.startsWith("sftp:")) cs.setPath(p, true);
+			int lastslash = p.lastIndexOf("/");
+			if (p.startsWith("sftp:")) cs.setPath(p.substring(0, lastslash), true);
 		}
-		cs.preprocess(command);		
+		
 		if (cs.conn == null)  try {
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
 			if (info == null) {
@@ -94,16 +95,16 @@ public class Shell extends console.Shell {
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
 		}
-		if (cs.os != null) try {
+		boolean consumed = cs.preprocess(command);
+		if (!consumed && cs.os != null) try {
 			cs.os.write((command + "\n").getBytes() );
 			cs.os.flush();
 		}
 		catch (IOException ioe ) {
+			Log.log(Log.ERROR, this, "IOException writing to ssh pipe", ioe);
 			cs.close();
 		}
-		finally {
-			printPrompt(console, output);
-		}
+		printPrompt(console, output);
 	} // }}}
 
     
@@ -118,6 +119,11 @@ public class Shell extends console.Shell {
 		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), 
 			"\n" + promptString);
 		}
+		else try {
+			s.os.write(newline);
+			s.os.flush();
+		}
+		catch (IOException ioe) {}
 	}
 
 	/** sends a ctrl-Z down the pipe, to suspend the current job */
