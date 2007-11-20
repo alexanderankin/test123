@@ -50,6 +50,7 @@ import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.io.SVNFile;
 import ise.plugin.svn.library.FileUtilities;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PrivilegedAccessor;
 
 
@@ -60,7 +61,6 @@ public class BrowseRepository {
     }
 
     public List<DirTreeNode> getRepository( DirTreeNode node, CheckoutData cd ) throws CommandInitializationException, SVNException {
-        System.out.println("+++++ " + cd);
         SVNKit.setupLibrary();
 
         // validate data values
@@ -87,7 +87,18 @@ public class BrowseRepository {
             return null;
         }
 
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getPassword() );
+        // set up authentication
+        String pwd = cd.getPassword();
+        if ( pwd != null && pwd.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                pwd = ph.decrypt( pwd );
+            }
+            catch ( Exception e ) {
+                pwd = "";
+            }
+        }
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), pwd );
         repository.setAuthenticationManager( authManager );
 
         List<DirTreeNode> children = null;
@@ -265,27 +276,41 @@ public class BrowseRepository {
      * @param username username requesting the file
      * @param password password of the user
      */
-    public SVNFile getFile( String url, String filepath, SVNRevision revision, String username, String password) {
-        long rev = getRevisionNumber(url, filepath, revision, username, password);
-        return getFile( url, filepath, rev, username, password);
+    public SVNFile getFile( String url, String filepath, SVNRevision revision, String username, String password ) {
+        long rev = getRevisionNumber( url, filepath, revision, username, password );
+        return getFile( url, filepath, rev, username, password );
     }
 
-    public long getRevisionNumber(String url, String filepath, SVNRevision revision, String username, String password) {
+    /**
+     * @param password encrypted password
+     */
+    public long getRevisionNumber( String url, String filepath, SVNRevision revision, String username, String password ) {
         setupLibrary();
         SVNRepository repository = null;
         long rev = -1;
         try {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, password );
+            String pwd = null;
+            if ( password != null && password.length() > 0 ) {
+                pwd = new String( pwd );
+                try {
+                    PasswordHandler ph = new PasswordHandler();
+                    pwd = ph.decrypt( pwd );
+                }
+                catch ( Exception e ) {
+                    pwd = "";
+                }
+            }
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
-            if (revision.getDate() != null) {
-                rev = repository.getDatedRevision(revision.getDate());
+            if ( revision.getDate() != null ) {
+                rev = repository.getDatedRevision( revision.getDate() );
             }
             else {
                 rev = revision.getNumber();
             }
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
         return rev;
@@ -297,7 +322,7 @@ public class BrowseRepository {
      * @param filepath location of the file
      * @param revision the revision desired
      * @param username username requesting the file
-     * @param password password of the user
+     * @param password encrypted password of the user
      */
     public SVNFile getFile( String url, String filepath, long revision, String username, String password ) {
         setupLibrary();
@@ -305,7 +330,18 @@ public class BrowseRepository {
         SVNFile outfile = null;
         try {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, password );
+            String pwd = null;
+            if ( password != null && password.length() > 0 ) {
+                pwd = new String( pwd );
+                try {
+                    PasswordHandler ph = new PasswordHandler();
+                    pwd = ph.decrypt( pwd );
+                }
+                catch ( Exception e ) {
+                    pwd = "";
+                }
+            }
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
 
             SVNNodeKind nodeKind = repository.checkPath( filepath , revision );
