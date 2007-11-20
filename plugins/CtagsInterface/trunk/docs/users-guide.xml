@@ -54,19 +54,22 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
    
    <para> You can add projects two ways. From the ProjectViewer, right click on the project and <guimenuitem>Add Project to Database</guimenuitem>. Or, from <guimenuitem>Plugin Options - CtagsInterface - Projects</guimenuitem>. </para>
    
-   <para> Similarly, you can add sourcetrees from the plugin options, or from the file system browser
-   context menu: <guimenuitem> plugins - Add dir to TagsDb</guimenuitem>. </para> 
+   <para> Similarly, you can add sourcetrees from the <guimenuitem>plugin options - CtagsInterface - Source Trees</guimenuitem>, or from the file system browser context menu: <guimenuitem>plugins - Add source tree to Tags Database</guimenuitem>. </para> 
    
  </chapter>
-
 
  <chapter id="lookup">
    <title> Tag Lookup </title>
    
-   <para> By default, tag lookup will search the entire database for matching tags, including all projects and source trees.  When using jEdit with ProjectViewer, you will often be working with a set of files, and have to frequently check another set of files that you are reusing. This means that you will probably want to restrict your search to only the projects and source trees that are related to your project. This is especially useful in the case where there are many projects related to others, but not necessarily ALL of the others.  
-   </para>
+   <para> By default, tag lookup will search the entire tag database for matching tags, including all added projects and source trees. </para>
+   
+   <para> When using jEdit with ProjectViewer, you might be working with a set of files, and have to frequently check another set of files that you are reusing. This means that you will probably want to restrict your search to only the projects and source trees that are related to your project. </para> 
+   
    
    <para> By editing the properties of the current project, you can see a <guilabel>Dependencies</guilabel> pane, which allows you to set the related projects or source trees on an individual project basis. While running the Tag Preview, or performing a Jump to Tag while working in a project that has dependencies set, CtagsInterface should restrict its searches to tag data from only those projects and directory trees.
+   </para>
+
+   <para> This is especially useful in the case where there are many projects / source trees indexed in the tags database that are not related to each other. 
    </para>
    
  </chapter>
@@ -105,8 +108,6 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
    <para> When <action>jump to tag</action> is invoked, if there is more than one possible match, the Tag List dockable is displayed, where you can preview and select the choices of jump locations. </para>
    
    </formalpara>
-   
-   
    <formalpara> <title> Tag Preview </title>
    <para> This dockable is updated automatically (after a configurable delay) whenever the caret is moved over a location that is a known symbol in the tag database. 
    </para>
@@ -117,8 +118,15 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
    
  <chapter id="pluginservices">
    <title> Services to other plugins </title>
-   <para> CtagsInterface also offers services to other plugins: Tags, ClassBrowser... TODO: document it. </para>
+   <para> CtagsInterface also offers services to other plugins: ClassBrowser, and Tags: </para>
+   
+   <orderedlist>
+   <listitem><para> Queries of the tags database </para></listitem>
+   <listitem><para> Jumping to tags. </para></listitem>
+   </orderedlist>
 
+   <para> Since the CtagsInterface manages the tags information and runs ctags, this means that other plugins do not need to call/depend on ctags directly. This also means that in the future, the CtagsInterface may be extended to work with other code-indexing tools. </para>
+   
   </chapter>
  
 <appendix id="changelog">
@@ -129,8 +137,6 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
   <para> Initial release </para>
  </listitem>
 </itemizedlist>
- 
-
 
 </appendix>
 
