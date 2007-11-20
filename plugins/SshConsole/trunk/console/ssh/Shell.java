@@ -79,7 +79,7 @@ public class Shell extends console.Shell {
 		{
 			Buffer b = console.getView().getEditPane().getBuffer();
 			String p = b.getPath();
-			if (p.startsWith("sftp:")) cs.setPath(p);
+			if (p.startsWith("sftp:")) cs.setPath(p, true);
 		}
 		cs.preprocess(command);		
 		if (cs.conn == null)  try {
