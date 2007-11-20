@@ -49,14 +49,9 @@ public class Shell extends console.Shell {
 		ConsolePane pane = console.getConsolePane();
 		InputMap inputMap = pane.getInputMap();
 		
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-			InputEvent.CTRL_MASK),
-			new ShellAction(console, STOP));
-
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 			InputEvent.CTRL_MASK),
 			new ShellAction(console, EOF));
-		
 		
 	}
 
