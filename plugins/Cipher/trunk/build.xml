@@ -25,8 +25,8 @@
     <description>
         This is an ant build.xml file for building the Cipher plugin for jEdit.
     </description>
-    <property file="../build.properties" />
     <property file="build.properties" />
+    <property file="../build.properties" />
     
     <property name="build.support"
               value="../../jEdit/build-support" />
@@ -42,12 +42,15 @@
               value="docs/index.html" />
     <property name="dist.target"
               value="dist.complete" />
-    
+    <property name="findbugs.lib.dir"  
+              value="${install.dir}"  />   
     <import file="${build.support}/plugin-build.xml" />
     
     <path id="project.class.path">
         <pathelement location="${install.dir}/ProjectViewer.jar" />
         <pathelement location="${findbugs.lib.dir}/annotations.jar" />
+        <pathelement location="${findbugs.lib.dir}/findbugs.jar" />
+        <pathelement location="${findbugs.lib.dir}/jsr308.jar" />        
     </path>
     
     <selector id="compileFiles">

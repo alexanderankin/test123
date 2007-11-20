@@ -45,7 +45,7 @@ import javax.swing.JTextArea;
 
 import javax.swing.border.LineBorder;
 
-import bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.NameSpace;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
