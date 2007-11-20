@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Session;
@@ -74,27 +75,36 @@ public class Shell extends console.Shell {
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
+		if (cs.getPath().equals("")) 
+		{
+			Buffer b = console.getView().getEditPane().getBuffer();
+			String p = b.getPath();
+			if (p.startsWith("sftp:")) cs.setPath(p);
+		}
 		cs.preprocess(command);		
-		try {			
-			if (cs.conn == null) {
-				ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
-				if (info == null) {
-					Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + cs.getPath());
-					return;
-				}
-				cs.info = info;
-				Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
-				Connection c = ConnectionManager.getShellConnection(console, info);
-				session.setUserInfo(c);
-				cs.os = c.ostr;
-				cs.conn = c;
+		if (cs.conn == null)  try {
+			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
+			if (info == null) {
+				
+				Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + cs.getPath());
+				return;
 			}
-//			Log.log (Log.MESSAGE, this, "Command: " + command + "  input: " + input);
+			cs.info = info;
+			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
+			Connection c = ConnectionManager.getShellConnection(console, info);
+			session.setUserInfo(c);
+			cs.os = c.ostr;
+			cs.conn = c;
+		}
+		catch (Exception e) {
+			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
+		}
+		if (cs.os != null) try {
 			cs.os.write((command + "\n").getBytes() );
 			cs.os.flush();
 		}
-		catch (Exception e) {
-			Log.log (Log.WARNING, this, "execute failed:", e);
+		catch (IOException ioe ) {
+			cs.close();
 		}
 		finally {
 			printPrompt(console, output);
@@ -129,6 +139,7 @@ public class Shell extends console.Shell {
 	}
 
 
+	/* Actions performed via keyboard when the ConsolePane has focus */
 	public static class ShellAction extends AbstractAction {
 
 		Console con;
@@ -141,6 +152,7 @@ public class Shell extends console.Shell {
 		
 		public void actionPerformed(ActionEvent e)
 		{
+			if (!con.getShell().getName().equals("ssh")) return;
 			ConsoleState cs = ConnectionManager.getConsoleState(con);
 			if (cs != null && cs.os != null) try {
 				cs.os.write(cmd);

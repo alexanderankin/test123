@@ -118,8 +118,8 @@ public class ConnectionManager extends ftp.ConnectionManager
 	}
 	static void cleanup() {
 
-		for (Connection c : connections) {
-			closeConnection(c);
+		for (ConsoleState cs: consoleStates.values()) {
+			cs.close();
 		}
 		connections.clear();
 		connectionInfos.clear();
@@ -128,7 +128,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 
 	public static ConsoleState getConsoleState(Console c) {
 		if (consoleStates.containsKey(c)) return consoleStates.get(c);
-		ConsoleState ss = new ConsoleState();
+		ConsoleState ss = new ConsoleState(c);
 		consoleStates.put(c, ss);
 		return ss;
 	}

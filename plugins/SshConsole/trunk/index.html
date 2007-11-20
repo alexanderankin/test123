@@ -42,13 +42,8 @@ open a Console and select ssh from the combobox. </p>
 
 <h2> Click the FSB to change directories </h2>
 
-<p> A recently added option to jEdit is that you can change the working directory of the
-Console Shell session by clicking on nodes in the File System Browser. This works in the
-<tt>System</tt> shell, and also the <tt>ssh</tt> shell. It is also the means by which the
-ErrorList knows the base path for resolving relative paths in error messages.  
+<p> A recently added feature to jEdit 4.3 allows the plugins, such as the Console, to listen for node selected events in the FSB. In response, the Console changes the working directory of its Shell sessions. This is an option for the <tt>System</tt> shell, but is 'always on' for the <tt>ssh</tt> shell. It is also the means by which the ErrorList knows the base path for resolving relative paths in error messages.
 </p>
-
-<p> In the Console System shell, it's an option, but in the Ssh console, it's always on. </p>
 
 <h2> Parse Errors for ErrorList </h2>
 
@@ -60,12 +55,12 @@ ErrorList knows the base path for resolving relative paths in error messages.
 <ul>
 <li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path.</li>
 <li> Implement built-ins:  <tt>%edit</tt> and <tt>%browse</tt>.</li>
-<li> Parse some of the other commands such as "cd" to change the directory. </li>
+<li> Interpret or ignore vt10x escape codes for color changes. </li>
 </ul>
 
 <hr />
 
-<p> Enjoy! This is free software, released under the GPL V2. Feel free to contribute to it too, by joining the <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches or suggestions. </p>
+<p> Enjoy! This is free software, released under the GPL V2. Feel free to contribute to it (or other plugins) too, by joining the <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches or suggestions. </p>
 
 <h2> History </h2>
 
