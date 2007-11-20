@@ -44,14 +44,6 @@ public class SshConsolePlugin extends EBPlugin {
 			Console c = ConsolePlugin.getConsole(vps.getView());
 			ConsoleState cs = ConnectionManager.getConsoleState(c);
 			cs.setPath(path);
-			path = ConnectionManager.extractDirectory(path);
-			if (path == null || cs.dir.equals(path)) return;
-			cs.dir = path;
-			String command = "cd " + path; 
-			console.Shell s = c.getShell();
-			Output output = c.getShellState(s);
-			output.print(c.getWarningColor(), command);
-			s.execute(c, null, output, output, command);
 		}
 	}
 }
