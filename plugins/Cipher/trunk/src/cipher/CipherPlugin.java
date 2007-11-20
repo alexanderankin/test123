@@ -212,7 +212,6 @@ public class CipherPlugin extends EditPlugin {
      *
      * @return true
      */
-    @Override
     @CheckReturnValue(explanation = "It makes no sense to call this method if the return value is not checked")
     public boolean usePluginHome() {
         return true;
