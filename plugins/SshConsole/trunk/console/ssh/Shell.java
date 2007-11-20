@@ -96,7 +96,10 @@ public class Shell extends console.Shell {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
 		}
 		boolean consumed = cs.preprocess(command);
-		if (!consumed && cs.os != null) try {
+		if (consumed) {
+			printPrompt(console, output);
+		}
+		else if (cs.os != null) try {
 			cs.os.write((command + "\n").getBytes() );
 			cs.os.flush();
 		}
@@ -104,7 +107,7 @@ public class Shell extends console.Shell {
 			Log.log(Log.ERROR, this, "IOException writing to ssh pipe", ioe);
 			cs.close();
 		}
-		printPrompt(console, output);
+
 	} // }}}
 
     
