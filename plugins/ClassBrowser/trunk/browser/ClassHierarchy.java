@@ -810,7 +810,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				Object obj = list.getSelectedValue();
 				if (obj instanceof Tag) {
 					Tag t = (Tag) obj;
-					CtagsInterfacePlugin.jumpTo(view, t.getFile(), t.getLine());
+					CtagsInterfacePlugin.jumpToTag(view, t);
 				}
 			}
 		}
@@ -833,7 +833,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 						.getLastPathComponent()).getUserObject();
 				if (obj instanceof Tag) {
 					Tag t = (Tag) obj;
-					CtagsInterfacePlugin.jumpTo(view, t.getFile(), t.getLine());
+					CtagsInterfacePlugin.jumpToTag(view, t);
 				}
 			}
 		}
