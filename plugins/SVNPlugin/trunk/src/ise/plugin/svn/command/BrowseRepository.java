@@ -292,7 +292,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = new String( pwd );
+                pwd = new String( password );
                 try {
                     PasswordHandler ph = new PasswordHandler();
                     pwd = ph.decrypt( pwd );
@@ -332,7 +332,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = new String( pwd );
+                pwd = new String( password );
                 try {
                     PasswordHandler ph = new PasswordHandler();
                     pwd = ph.decrypt( pwd );

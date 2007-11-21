@@ -282,16 +282,17 @@ public class BrowseRepositoryPanel extends JPanel {
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData data = chooser.getSelectedRepository();
-                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), data );
+                        RepositoryData old_data = chooser.getSelectedRepository();
+                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData(old_data) );
                         GUIUtils.center( getView(), dialog );
                         dialog.setVisible( true );
-                        data = dialog.getValues();  // null indicates user cancelled
-                        if ( data != null ) {
-                            chooser.save();
-                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                        RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
+                        if ( new_data != null ) {
+                            chooser.removeRepository(old_data);
+                            chooser.save( new_data );
+                            DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
                             action.actionPerformed( ae );
                         }
                     }

@@ -47,6 +47,16 @@ public class RepositoryData extends CheckoutData {
         setPassword( password );
     }
 
+    public RepositoryData(RepositoryData data) {
+        super();
+        if (data != null) {
+            name = data.getName() == null ? "" : data.getName();
+            setURL(new String(data.getURL()));
+            setUsername(data.getUsername() == null ? null : new String(data.getUsername()));
+            setPassword(data.getPassword() == null ? null : new String(data.getPassword()));
+        }
+    }
+
     public String toString() {
         return "RepositoryData[name=" + getName() + ", url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]";
     }
