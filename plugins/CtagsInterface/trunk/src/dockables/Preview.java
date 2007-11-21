@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -66,6 +67,8 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	String file;
 	Timer timer;
 	Set<JEditTextArea> tracking;
+	private JCheckBox wrap;
+	private JCheckBox followCaret;
 	
 	Preview(View view) {
 		super(new BorderLayout());
@@ -86,7 +89,28 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				CtagsInterfacePlugin.jumpToTag(Preview.this.view, t);
 			}
 		});
+		JPanel textPanel = new JPanel();
+		textPanel.setLayout(new BorderLayout());
+		JPanel toolbar = new JPanel();
+		textPanel.add(toolbar, BorderLayout.NORTH);
+		followCaret = new JCheckBox("Follow caret", true);
+		followCaret.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setCaretTracking(Preview.this.view.getTextArea(), followCaret.isSelected());
+			}
+		});
+		toolbar.add(followCaret);
+		wrap = new JCheckBox("Soft wrap", GeneralOptionPane.getPreviewWrap());
+		wrap.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				GeneralOptionPane.setPreviewWrap(wrap.isSelected());
+				propertiesChanged();
+			}
+		});
+		toolbar.add(wrap);
 		text = new TextArea(true);
+		textPanel.add(text, BorderLayout.CENTER);
+		textPanel.add(text, BorderLayout.CENTER);
 		EditPane.initPainter(text.getPainter());
 		text.getPainter().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
@@ -101,7 +125,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		text.getBuffer().setMode(ModeProvider.instance.getMode("text"));
 		text.setMinimumSize(new Dimension(150, 50));
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-			new JScrollPane(tags), text);
+			new JScrollPane(tags), textPanel);
 		split.setOneTouchExpandable(true);
 		split.setDividerLocation(100);
 		add(split, BorderLayout.CENTER);

@@ -129,6 +129,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public static boolean getPreviewWrap() {
 		return jEdit.getBooleanProperty(PREVIEW_WRAP, true);
 	}
+	public static void setPreviewWrap(boolean wrap) {
+		jEdit.setBooleanProperty(PREVIEW_WRAP, wrap);
+	}
 	public static int getPreviewDelay() {
 		return jEdit.getIntegerProperty(PREVIEW_DELAY, 0);
 	}
