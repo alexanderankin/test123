@@ -179,9 +179,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		}
 		Tag t = tags.get(0);
-		String file = t.getFile();
-		final int line = t.getLine();
-		jumpTo(view, file, line);
+		jumpToTag(view, t);
 	}
 	
 	// Action: Add all projects to the database
@@ -289,6 +287,17 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				}
 			}
 		});
+	}
+	// Jumps to the specified tag
+	public static void jumpToTag(View view, Tag tag) {
+		String file = tag.getFile();
+		if (file == null)
+			return;
+		int line = tag.getLine();
+		if (line < 1)
+			return;
+		jumpTo(view, tag.getFile(), tag.getLine());
+		
 	}
 	// Jumps to the specified location
 	public static void jumpToOffset(final View view, String file, final int offset) {
