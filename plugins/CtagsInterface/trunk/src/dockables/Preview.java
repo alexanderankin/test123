@@ -255,7 +255,9 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				isSelected, cellHasFocus);
 			Tag tag = (Tag) tagModel.getElementAt(index);
 			//l.setFont(tagListFont );
-			l.setText(getText(tag));
+			String text = getText(tag);
+			l.setText(text);
+			l.setToolTipText(text);
 			ImageIcon icon = tag.getIcon();
 			if (icon != null)
 				l.setIcon(icon);
