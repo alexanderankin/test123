@@ -78,6 +78,14 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		tags.setCellRenderer(new TagListCellRenderer());
 		tags.setVisibleRowCount(4);
 		tags.addListSelectionListener(this);
+		tags.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				if (me.getClickCount() < 2 || tags.getSelectedIndex() < 0)
+					return;
+				Tag t = (Tag) tagModel.getElementAt(tags.getSelectedIndex());
+				CtagsInterfacePlugin.jumpToTag(Preview.this.view, t);
+			}
+		});
 		text = new TextArea(true);
 		EditPane.initPainter(text.getPainter());
 		text.getPainter().addMouseListener(new MouseAdapter() {

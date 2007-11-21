@@ -65,10 +65,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	@SuppressWarnings("unchecked")
 	protected void jumpTo(int selectedIndex) {
 		Tag tag = (Tag) tagModel.getElementAt(selectedIndex);
-		String file = tag.getFile();
-		int line = tag.getLine();
-		if (line >= 0)
-			CtagsInterfacePlugin.jumpTo(view, file, line);
+		CtagsInterfacePlugin.jumpToTag(view, tag);
 	}
 
 	public void setTags(Vector<Tag> tags) {
