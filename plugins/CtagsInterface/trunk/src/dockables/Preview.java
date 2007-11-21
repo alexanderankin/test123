@@ -321,7 +321,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			this.name = name;
 		}
 		public void run() {
-			Vector<Tag> tags = CtagsInterfacePlugin.queryTag(name);
+			Vector<Tag> tags = CtagsInterfacePlugin.queryScopedTag(Preview.this.view, name);
 			VFSManager.runInAWTThread(new PreviewTag(tags));
 		}
 	}

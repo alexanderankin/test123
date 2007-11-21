@@ -203,15 +203,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		new QuickSearchTagDialog(view);
 	}
 	
-	// Action: Jump to the selected tag (or tag at caret).
-	public static void jumpToTag(final View view)
-	{
-		String tag = getDestinationTag(view);
-		if (tag == null || tag.length() == 0) {
-			JOptionPane.showMessageDialog(
-				view, "No tag selected nor identified at caret");
-			return;
-		} 
+	public static Vector<Tag> queryScopedTag(View view, String tag) {
+		if (tag == null || tag.length() == 0)
+			return null;
 		boolean projectScope = (pvi != null &&
 			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
 			 ProjectsOptionPane.getSearchActiveProjectFirst()));
@@ -233,8 +227,21 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return;
+			return null;
 		}
+		return tags;
+	}
+	
+	// Action: Jump to the selected tag (or tag at caret).
+	public static void jumpToTag(final View view)
+	{
+		String tag = getDestinationTag(view);
+		if (tag == null || tag.length() == 0) {
+			JOptionPane.showMessageDialog(
+				view, "No tag selected nor identified at caret");
+			return;
+		} 
+		Vector<Tag> tags = queryScopedTag(view, tag);
 		//System.err.println("Selected tag: " + tag);
 		jumpToTags(view, tags);
 	}
