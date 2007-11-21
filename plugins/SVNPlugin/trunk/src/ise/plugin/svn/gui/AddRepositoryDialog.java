@@ -56,7 +56,7 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 public class AddRepositoryDialog extends JDialog {
 
     private View view = null;
-    private CheckoutData data = null;
+    private RepositoryData data = null;
     private JTextField name = null;
     private JTextField url = null;
     private JTextField username = null;
@@ -70,7 +70,7 @@ public class AddRepositoryDialog extends JDialog {
         _init();
     }
 
-    public AddRepositoryDialog( View view, CheckoutData data ) {
+    public AddRepositoryDialog( View view, RepositoryData data ) {
         super( ( JFrame ) view, "Edit Repository Location", true );
         this.view = view;
         this.data = data;
@@ -84,7 +84,8 @@ public class AddRepositoryDialog extends JDialog {
 
         // name field
         JLabel name_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "name.label" ) );
-        name = new JTextField( "", 30 );
+        String name_value = data != null && data.getName() != null ? data.getName() : "";
+        name = new JTextField( name_value, 30 );
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );

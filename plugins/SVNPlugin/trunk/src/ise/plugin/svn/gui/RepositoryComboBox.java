@@ -57,10 +57,10 @@ public class RepositoryComboBox extends JComboBox {
 
     // load a list of key/hashtable pairs
     public RepositoryComboBox( ) {
-        load( );
+        load( null );
     }
 
-    private void load( ) {
+    private void load( RepositoryData selected ) {
         // model for the previous values
         Stack<String> names = new Stack<String>();
 
@@ -104,7 +104,12 @@ public class RepositoryComboBox extends JComboBox {
         }
         setModel( dropdownModel );
         if ( dropdownModel.getSize() > 0 ) {
-            setSelectedIndex( 0 );
+            if ( selected != null ) {
+                setSelectedItem( selected.getName() );
+            }
+            else {
+                setSelectedIndex( 0 );
+            }
         }
     }
 
@@ -135,7 +140,7 @@ public class RepositoryComboBox extends JComboBox {
             data.setName( data.getURL() );
         }
         propertyMap.put( data.getName(), data );
-        save();
+        save( data );
     }
 
     public void removeRepository( RepositoryData value ) {
@@ -151,7 +156,7 @@ public class RepositoryComboBox extends JComboBox {
         }
         super.removeItem( data.getName() );
         propertyMap.remove( data.getName() );
-        save();
+        save( null );
     }
 
     // could return null if SELECT is the current selection
@@ -163,7 +168,12 @@ public class RepositoryComboBox extends JComboBox {
     /**
      * Saves the current list in the combo box to the jEdit property file.
      */
-    public void save() {
+    public void save( RepositoryData selected ) {
+        if (selected != null) {
+            String name = selected.getName() == null ? selected.getURL() : selected.getName();
+            propertyMap.put(name, selected);
+        }
+
         // clear the old property values
         String url = null;
         int i = 0;
@@ -184,10 +194,10 @@ public class RepositoryComboBox extends JComboBox {
                 name = url;
             }
 
-            jEdit.unsetProperty(propertyPrefix + "name." + i);
-            jEdit.unsetProperty(propertyPrefix + "url." + i);
-            jEdit.unsetProperty(propertyPrefix + "username." + i);
-            jEdit.unsetProperty(propertyPrefix + "password." + i);
+            jEdit.unsetProperty( propertyPrefix + "name." + i );
+            jEdit.unsetProperty( propertyPrefix + "url." + i );
+            jEdit.unsetProperty( propertyPrefix + "username." + i );
+            jEdit.unsetProperty( propertyPrefix + "password." + i );
             ++i;
         }
         while ( url != null );
@@ -218,6 +228,6 @@ public class RepositoryComboBox extends JComboBox {
             }
             ++i;
         }
-        load();
+        load( selected );
     }
 }
