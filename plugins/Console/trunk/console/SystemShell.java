@@ -724,8 +724,11 @@ public class SystemShell extends Shell
 		aliases.put("pwd", "%pwd");
 		aliases.put("aliases", "%aliases");
 		aliases.put("alias", "%alias");
+		
 		aliases.put("-", "%cd -");
 
+		/* run ant without adornments to make error parsing easier */
+		aliases.put("ant", "ant -emacs");
 		// load aliases from properties
 		String alias;
 		int i = 0;

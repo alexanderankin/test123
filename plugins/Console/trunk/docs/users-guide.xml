@@ -421,9 +421,9 @@
  Pressing <keycombo><keycap>Control</keycap>
      <keycap>Z</keycap>
     </keycombo>
- detaches the foreground process. The process continues running in the background,
- and no longer shows
- output in the console.
+ detaches the foreground process. In the System shell, the process continues 
+ running in the background, and no longer shows output in the console, which 
+ is not very *nix-like, but oh well.
 </para>
 
   </sect1>
@@ -1292,9 +1292,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     </listitem>
    </itemizedlist>
 
-   <para>
- This class defines the following abstract methods, which your shell must
- override:
+ <para>
+   A singleton <classname>Shell</classname> instance, shared by all <classname>View</classname>s and <classname>Console</classname>s is created by the <classname>Console</classname> once at the plugin load-time, for each <classname>Shell</classname> service found. 
+   Most of the Shell methods have a first parameter which provides the <classname>Console</classname> instance, to distinguish between
+   multiple consoles. This class defines the following abstract methods, which your shell must override:
 </para>
 
    <itemizedlist>
@@ -1318,21 +1319,26 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
        </funcdef>
        <paramdef>Console <parameter>console</parameter>
        </paramdef>
+       <paramdef>String <parameter>input</parameter>
+       </paramdef>
        <paramdef>Output <parameter>output</parameter>
+       </paramdef>
+       <paramdef>Output <parameter>error</parameter>
        </paramdef>
        <paramdef>String <parameter>command</parameter>
        </paramdef>
       </funcprototype>
      </funcsynopsis>
+
+   <para> 
+   The <function>execute()</function> method is called when the user enters a command. The complete command line is passed in as one string;
+   how it is parsed is entirely up to you.
+    </para>
      <para>
-   This method is called when the user enters a command. The complete command line is passed in as one string; how it is parsed is entirely up to you.
+   The <varname>output</varname> object provided is either an instance of <classname>ShellState</classname> or a special <classname>BufferOutput</classname> object if the user elected to have the command output go into a new buffer.
   </para>
-     <para>
-   The <varname>output</varname> object is either the console window itself, or a special <classname>BufferOutput</classname> object if the user elected to have the command output go into a new buffer.
-  </para>
-     <para>
-   Note that both the <varname>console</varname> and <varname>output</varname>
-   objects implement the <classname>Output</classname> interface. As a convention, fatal errors (for example, parse errors in shell commands) should be printed in the console; everything else should go to the output instance.
+  <para>
+   As a convention, fatal errors (for example, parse errors in shell commands) should be sent to the <parameter>error</parameter> stream.
   </para>
     </listitem>
     <listitem>
@@ -1502,10 +1508,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
   <listitem id="ver4.3.5"><para>
     <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
+    <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
     <listitem><para> runCommandToBuffer() doesn't send command to buffer (1643269 - ezust) </para></listitem> 
     <listitem><para> waitForConsole(view) should work properly on *nix systems now. (k_satoda, ezust - #1698976) </para></listitem>
-    <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
-    <listitem><para> Improved generic extra line regexp - catches javac and gcc multilines better (ezust).  </para></listitem>
+    <listitem><para> <literal>alias ant ant -emacs</literal> to get rid of adornments when running inside System shell (ezust).</para></listitem>
+    <listitem><para> Improved <literal>generic</literal> extra line regexp - catches javac and gcc multilines better. Made #1 on list. (ezust).  </para></listitem>
 	<listitem><para> (windows only) - driveletters work in Console the way they do in <literal>cmd.exe</literal>, as change-directory shortcuts. Console keeps track of default directories for each drive, as well as the default drive for the current shell session. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para></listitem>
     <listitem><para> Small changes to make the SshConsole plugin work (ezust). </para> </listitem>
     </itemizedlist>
