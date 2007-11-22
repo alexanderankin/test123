@@ -266,7 +266,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
                     tree.addSelectionPath( path );
                 }
-                GUIUtilities.showPopupMenu( popupMenu, BrowseRepositoryPanel.this, me.getX(), me.getY() );
+                GUIUtilities.showPopupMenu( popupMenu, BrowseRepositoryPanel.this, me.getX(), me.getY(), true );
             }
         }
     }
