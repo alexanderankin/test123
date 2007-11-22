@@ -7,14 +7,12 @@
 <h2> Alan Ezust, alan dot ezust at gmail dot com </h2>
 <h3> $Date$ </h3>
 
-<h2> jEdit SshConsole Plugin </h2>
-
-<p> This plugin itself has no user interface, because it is an extension of three other plugins: Console, FTP, and ErrorList. It is designed to allow you to easily compile files you are editing remotely via sftp:// and parse the errors for ErrorList.
+<p> This plugin is designed to allow you to easily compile files you are editing remotely via <tt>sftp://</tt> and parse the errors for ErrorList. It has no user interface of its own, because it is an extension of three other plugins: Console, FTP, and ErrorList. 
 </p>
 
 <p> Console provides jEdit with a dockable command line interface to the System Shell and the BeanShell, and an open interface for adding new shells. SshConsole adds a jEdit Shell Service to Console called <tt>ssh</tt>. </p>
 
-<p> The FTP plugin defines a new virtual file system (VFS) called "sftp://", which allows the user to make secure <tt>sftp://</tt> connections to remote hosts, and browse their file systems using jEdit's File System Browser, also known as FSB or VFSBrowser. At any time, the user can select, and then manipulate selected files from the FSB or jEdit. Since the FTP plugin handles prompting and remembering username/passwords, the SshConsole plugin assumes you want to <tt>ssh</tt> into the same host using the same port and creds as the most recent <tt>sftp://</tt> connection in that View's FSB.  
+<p> The FTP plugin defines a virtual file system (VFS) called "sftp://", which allows the user to make secure <tt>sftp://</tt> connections to remote hosts, and browse their file systems using jEdit's File System Browser, also known as FSB or VFSBrowser. At any time, the user can select, and then manipulate selected files from the FSB or jEdit. Since the FTP plugin handles prompting and remembering username/passwords, the SshConsole plugin assumes you want to <tt>ssh</tt> into the same host using the same port and creds as the most recent <tt>sftp://</tt> connection in that View's FSB (or its currently editing buffer, if it is open to a file on a remote host via sftp).   
 </p>
 
 <h2> Instructions for use: </h2>
@@ -27,8 +25,8 @@
 <li> After you're connected, if you plan to connect often to this host, add it as a bookmark in the File System Browser. </li>
 <li> With FSB: click on (or open) the remote file that you want to compile. </li>
 <li> Enter commands in the ssh console. Initially, it will connect and show you the message of the day. </li>
-<li> Click in the correct directory in the FSB. Notice the remote directory changes. </li>
-<li> Compile something in that directory. Compile something with errors in it. </li>
+<li> Click on folders or files in the FSB. Notice the remote directory changes. </li>
+<li> Compile something with errors in it. </li>
 <li> Look at the ErrorList dockable. Click on an error in the dockable. </li> 
 </ol>
 
@@ -40,7 +38,6 @@ commands there.
 
 <p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or
 open a Console and select ssh from the combobox. </p>
-
 
 <h2> Click the FSB to change directories </h2>
 
@@ -54,7 +51,7 @@ open a Console and select ssh from the combobox. </p>
 
 <h2> Job Control </h2>
 
-<p> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), all work the way you would expect them to, on a unix shell. To send a Ctrl-C, click on the "X" button in the Console pane (Ctrl-C is still a "copy to clipboard" shortcut). Other control keys typed during the execution of your program are not sent to the remote host. Let me know if you need one of them to be. </p>
+<p> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), work the way you would expect them to on a unix shell. To send a Ctrl-C, click on the "X" button in the Console pane (Ctrl-C is still a "copy to clipboard" shortcut). Other control keys typed during the execution of your program are <i>not</i> sent to the remote host. Let me know if you need one of them to be. </p>
 
 <h2> Built-in Commands </h2>
 
@@ -62,26 +59,29 @@ open a Console and select ssh from the combobox. </p>
 
 <ul>
 <li> <tt>%browse [<i>path</i>]</tt> tells your FSB to browse a given relative path, defaults to your current working directory. </li>
-<li> <tt>%edit <i>fileName</i></tt> tells jEdit to open given remote file in an editor buffer. Relative paths are possible here. </li>
+<li> <tt>%edit <i>fileName</i></tt> tells jEdit to open given remote file as a buffer in the View's EditPane. Relative paths are possible here. </li>
 </ul>
 
-<h2> Future Plans </h2>
+<h2> Future Ideas </h2>
 
-<p> Here are some low-priority tasks which would be nice to have in this plugin at some future date. </p>
+<p> These are things I'd like to have in this plugin at some point. Volunteers?
+</p>
 
 <ul>
-<li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path.</li>
-<li> Interpret or ignore vt10x escape codes for color changes. </li>
+<li> Interpret or ignore vt10x escape codes for color changes. Or properly set the termainal to "dumb"? </li>
+<li> Check the FSB to determine if a "cd" is given a valid directory, and don't call ConsoleState.setPath() to update the sshconsole's path unless it is valid.</li>
+<li> Use FSB and existing sftp:// VFS connection to calculate completions? </li>
+<li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path. Perhaps add a VFS to Shell Mapping feature of Console so that Commandos can work in other shell/VFS combos too?
+</li>
 </ul>
-
-<hr />
 
 <p> Enjoy! This is free software, released under the GPL V2. Feel free to contribute to it (or other plugins) too, by joining the <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches or suggestions. </p>
 
+<hr />
 <h2> History </h2>
 
 <ul>
-<li> <b>Version 0.1</b> (initial release) - Requires JDK 1.5, jEdit 4.3pre12, ErrorList 1.5, FTP plugin 0.9.2, Console plugin 4.3.5.
+<li> <b>Version 1.0</b> (initial release) - Requires JDK 1.5, jEdit 4.3pre12, ErrorList 1.7, FTP plugin 0.9.2, Console plugin 4.3.5.
 </li>
 </ul>
 

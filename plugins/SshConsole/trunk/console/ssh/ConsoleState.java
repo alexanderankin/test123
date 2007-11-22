@@ -1,5 +1,6 @@
 package console.ssh;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -55,6 +56,11 @@ public class ConsoleState
 	 */
 	public void setPath(String newPath, boolean chDirAfter) 
 	{
+		/* Workaround because sometimes windows spits out paths
+		 *  with the wrong separator char */
+		if (File.separatorChar == '\\') {
+			newPath = newPath.replace('\\', '/');
+		}
 		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
