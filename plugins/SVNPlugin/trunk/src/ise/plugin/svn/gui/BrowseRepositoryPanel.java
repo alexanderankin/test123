@@ -74,6 +74,11 @@ public class BrowseRepositoryPanel extends JPanel {
     private String username = null;
     private String password = null;
 
+    private JButton new_btn;
+    private JButton edit_btn;
+    private JButton remove_btn;
+    private JButton refresh_btn;
+
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
         this.view = view;
@@ -89,6 +94,12 @@ public class BrowseRepositoryPanel extends JPanel {
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                             action.actionPerformed( ae );
                         }
+                        else {
+                            tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
+                        }
+                        edit_btn.setEnabled( data != null );
+                        remove_btn.setEnabled( data != null );
+                        refresh_btn.setEnabled( data != null );
                     }
                 };
         chooser.addActionListener( al );
@@ -188,9 +199,9 @@ public class BrowseRepositoryPanel extends JPanel {
         // create the context menu
         popupMenu = createPopupMenu();
 
-        // create the control buttons
+        // create the control buttons -- add repository
         Icon new_icon = GUIUtilities.loadIcon( "New.png" );
-        JButton new_btn = new JButton( new_icon );
+        new_btn = new JButton( new_icon );
         Dimension dim = new Dimension( new_icon.getIconWidth() + ( new_btn.getInsets().top * 2 ), new_icon.getIconHeight() + ( new_btn.getInsets().top * 2 ) );
         new_btn.setSize( dim );
         new_btn.setPreferredSize( dim );
@@ -214,18 +225,73 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 }
                                  );
+
+        // edit repository properties
+        Icon edit_icon = GUIUtilities.loadIcon( "Preferences.png" );
+        edit_btn = new JButton( edit_icon );
+        dim = new Dimension( edit_icon.getIconWidth() + ( edit_btn.getInsets().top * 2 ), edit_icon.getIconHeight() + ( edit_btn.getInsets().top * 2 ) );
+        edit_btn.setSize( dim );
+        edit_btn.setPreferredSize( dim );
+        edit_btn.setMaximumSize( dim );
+        edit_btn.setToolTipText( "Edit repository properties" );
+        edit_btn.setEnabled( false );
+        edit_btn.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        RepositoryData old_data = chooser.getSelectedRepository();
+                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
+                        GUIUtils.center( getView(), dialog );
+                        dialog.setVisible( true );
+                        RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
+                        if ( new_data != null ) {
+                            chooser.removeRepository( old_data );
+                            chooser.save( new_data );
+                            DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
+                            tree.setModel( new DefaultTreeModel( root ) );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
+                            action.actionPerformed( ae );
+                        }
+                    }
+                }
+                                  );
+
+        // remove repository from chooser
+        Icon remove_icon = GUIUtilities.loadIcon( "Minus.png" );
+        remove_btn = new JButton( remove_icon );
+        dim = new Dimension( remove_icon.getIconWidth() + ( remove_btn.getInsets().top * 2 ), remove_icon.getIconHeight() + ( remove_btn.getInsets().top * 2 ) );
+        remove_btn.setSize( dim );
+        remove_btn.setPreferredSize( dim );
+        remove_btn.setMaximumSize( dim );
+        remove_btn.setToolTipText( "Remove repository from browser" );
+        remove_btn.setEnabled( false );
+        remove_btn.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        RepositoryData data = chooser.getSelectedRepository();
+                        if ( data != null ) {
+                            int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                            if ( delete == JOptionPane.YES_OPTION ) {
+                                chooser.removeRepository( data );
+                            }
+                        }
+                    }
+                }
+                                    );
+
+        // reload tree with current selection
         Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
-        JButton refresh_btn = new JButton( refresh_icon );
+        refresh_btn = new JButton( refresh_icon );
         dim = new Dimension( refresh_icon.getIconWidth() + ( refresh_btn.getInsets().top * 2 ), refresh_icon.getIconHeight() + ( refresh_btn.getInsets().top * 2 ) );
         refresh_btn.setSize( dim );
         refresh_btn.setPreferredSize( dim );
         refresh_btn.setMaximumSize( dim );
         refresh_btn.setToolTipText( "Refresh" );
+        refresh_btn.setEnabled( false );
         refresh_btn.addActionListener( al );
 
         // create a panel to hold the buttons
         JPanel button_panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 1 ) );
         button_panel.add( new_btn );
+        button_panel.add( edit_btn );
+        button_panel.add( remove_btn );
         button_panel.add( refresh_btn );
 
         // create a panel to hold the buttons and the repository chooser
@@ -278,43 +344,7 @@ public class BrowseRepositoryPanel extends JPanel {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
 
-        JMenuItem mi = new JMenuItem( "Edit" );
-        pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData old_data = chooser.getSelectedRepository();
-                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData(old_data) );
-                        GUIUtils.center( getView(), dialog );
-                        dialog.setVisible( true );
-                        RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
-                        if ( new_data != null ) {
-                            chooser.removeRepository(old_data);
-                            chooser.save( new_data );
-                            DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
-                            tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
-                            action.actionPerformed( ae );
-                        }
-                    }
-                }
-                            );
-
-        mi = new JMenuItem( "Remove" );
-        pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData data = chooser.getSelectedRepository();
-                        if ( data != null ) {
-                            int delete = JOptionPane.showConfirmDialog( view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                            if ( delete == JOptionPane.YES_OPTION ) {
-                                chooser.removeRepository( data );
-                            }
-                        }
-                    }
-                }
-                            );
-
-        mi = new JMenuItem( "Checkout" );
+        JMenuItem mi = new JMenuItem( "Checkout" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
