@@ -153,8 +153,10 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 
 	private void updateCaretListenerState() {
 		boolean visible = isVisible() && getWidth() > 0 && getHeight() > 0; 
-		if (visible)
-			setCaretTracking(view.getTextArea(), true);
+		if (visible) {
+			if  (followCaret.isSelected())
+				setCaretTracking(view.getTextArea(), true);
+		}
 		else {
 			Vector<JEditTextArea> textAreas = new Vector<JEditTextArea>();
 			textAreas.addAll(tracking);
