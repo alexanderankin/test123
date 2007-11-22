@@ -1,13 +1,9 @@
 package console.ssh;
 // :folding=explicit:
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
-import javax.swing.InputMap;
-import javax.swing.KeyStroke;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
@@ -31,6 +27,14 @@ public class Shell extends console.Shell {
 	static final byte[] EOF = new byte[] {4};
 	static final byte[] SUSPEND = new byte[] {26};
 	static final byte[] STOP = new byte[] {3};
+	
+	@Override
+	public void endOfFile(Console console)
+	{
+		new ShellAction(console, EOF).actionPerformed(null);;
+	}
+
+
 	static final byte[] newline = new byte[] { '\n' };
 	/** Send a ctrl-c down the pipe, to end the process, rather than the session. */
 	public void stop(Console console)
@@ -41,18 +45,11 @@ public class Shell extends console.Shell {
 	/** Sends ctrl-d (EOF) down the pipe, to signal end of file. */
 	public void closeConsole(Console console)
 	{
-		new ShellAction(console, EOF).actionPerformed(null);
+		endOfFile(console);
 	}
 
 	public void openConsole(Console console)
-	{
-		ConsolePane pane = console.getConsolePane();
-		InputMap inputMap = pane.getInputMap();
-		
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
-			InputEvent.CTRL_MASK),
-			new ShellAction(console, EOF));
-		
+	{		
 	}
 
 	public Shell() {
@@ -146,12 +143,11 @@ public class Shell extends console.Shell {
 	/* Actions performed via keyboard when the ConsolePane has focus */
 	public static class ShellAction extends AbstractAction {
 
-		Console con;
-		byte[] cmd;
-		public ShellAction(Console console, byte[] str) {
+		final Console con;
+		final byte[] cmd;
+		public ShellAction(Console console, final byte[] str) {
 			con = console;
 			cmd = str;
-			
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -162,12 +158,12 @@ public class Shell extends console.Shell {
 				cs.os.write(cmd);
 				cs.os.flush();
 			}
-			catch (IOException ioe) {}
+			catch (IOException ioe) {
+				Log.log(Log.WARNING, this, "ioexception when writing - connection closed");
+				cs.close();
+			}
 		}
-		
-		
 	}
-	
 	
 }; // }}}
 
