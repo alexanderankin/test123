@@ -265,7 +265,7 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 console.beanshell.prompt=BeanShell>
 ### Error parsing
-console.errors.default=perl ant python vhdl msvc msnet jade antemacs emacs generic
+console.errors.default=generic perl ant python vhdl msvc msnet jade antemacs emacs
 
 console.error.make.entering=Entering directory `(.+)'
 console.error.make.leaving=Leaving directory `(.+)'

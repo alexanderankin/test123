@@ -51,20 +51,16 @@ import org.gjt.sp.util.StringList;
         &lt;/SERVICE&gt;
 &lt;/SERVICES&gt;
 </pre>
-<p> To create a new Shell for your own plugin (as the Antelope plugin does),
- *  you should define your own class that implements Shell, and return it
- *  from the beanshell you define in your own services.xml file.
+<p> To define a new Shell for your own plugin 
+ *  extend from this class, and return an instance of it 
+ *  from the beanshell code in services.xml.
+ *  </p><p> 
+ *  Because it is a service, it is a singleton instance, shared by all
+ *  for all Views and Console instances, and created only once while the plugin
+ *  is loaded.
+ * 
 </p>
 <p>
- *  To obtain the Output for that Shell, you first select it via
- *  <pre>
- *   		  console.setShell(shell)
- *   </pre>
- *   And then you can obtain the output from the shell by calling
- *   <pre>
- *   	          console.getOutput()
- *   </pre>
- *
  * @author Slava Pestov
  * @version $Id$
  */
@@ -73,6 +69,7 @@ public abstract class Shell
 	public static final String SERVICE = "console.Shell";
 
 	//{{{ Private members
+	/** @deprecated list of shells defined in the old API */
 	private static Vector<Shell> shells = new Vector<Shell>();
 	private String name;
 	//}}}
@@ -102,7 +99,7 @@ public abstract class Shell
 		shells.removeElement(shell);
 	} //}}}
 
-	//{{{ getShells() method
+	//{{{ getShellNames() method
 	/**
 	 * Returns an array of all registered shells.
 	 */
@@ -180,8 +177,6 @@ public abstract class Shell
 	 * @param output The output
 	 * @since Console 3.6
 	 */
-
-
 	public void printPrompt(Console console, Output output)
 	{
 		String promptString =jEdit.getProperty("console.prompt", new String[] { getName() });
@@ -195,10 +190,11 @@ public abstract class Shell
 	 * Executes a command. Override this abstract method in custom
 	 * derived classes.
 	 *
-	 * @param console The console
-	 * @param input Standard input
-	 * @param output Standard output
-	 * @param error Standard error
+	 * @param console The Console instance, to distinguish it from others when there are
+	 *   multiple View or Console instances. 
+	 * @param input optional string to feed into the command's Standard input
+	 * @param output Standard output - the destination to send output 
+	 * @param error Standard error - the destionation to send error messages
 	 * @param command The command
 	 * @since Console 3.5
 	 */
@@ -214,7 +210,7 @@ public abstract class Shell
 	} // }}}
 
 	// {{{ waitUntilDone() stub
-	/** What is this for? It doesn't seem to be used anywhere.
+	/** What is this for? It doesn't seem to be used *anywhere*.
 	 * @deprecated - see waitFor(Console)
 	 * */
 	public void waitUntilDone() {
@@ -224,7 +220,9 @@ public abstract class Shell
 
 	//{{{ stop() method
 	/**
-	 * Stops the currently executing command, if any.
+	 * Stops the currently executing command, if any. When the user clicks the "stop" button
+	 * on the console, this method is called.
+	 * @param console the same Console instance that was passed to execute()
 	 */
 	public void stop(Console console)
 	{
@@ -235,6 +233,7 @@ public abstract class Shell
 	 * Waits until any currently executing commands finish.
 	 * @return True if the most recent command exited successfully,
 	 * false otherwise
+	 * @param console the same Console instance that was passed to execute()	 
 	 */
 	public boolean waitFor(Console console)
 	{
@@ -243,8 +242,8 @@ public abstract class Shell
 
 	//{{{ endOfFile() method
 	/**
-	 * Sends an end of file.
-	 * @param console The console
+	 * Sends an end of file. Called when Ctrl-D is typed from Console.
+	 * @param console the same Console instance that was passed to execute()
 	 */
 	public void endOfFile(Console console)
 	{
@@ -252,8 +251,8 @@ public abstract class Shell
 
 	//{{{ detach() method
 	/**
-	 * Detaches the currently running process.
-	 * @param console The console
+	 * Detaches the currently running process. Called when Ctrl-Z is typed from the console. 
+	 * @param console the same Console instance that was passed to execute()
 	 */
 	public void detach(Console console)
 	{
@@ -296,7 +295,7 @@ public abstract class Shell
 	/** All ShellActions select a named Shell.
 	    @since Console 4.3
 	*/
-	abstract static class ShellAction extends EditAction
+	public abstract static class ShellAction extends EditAction
 	{
 		protected String shellName;
 		ShellAction(String actionName, String shellName) {

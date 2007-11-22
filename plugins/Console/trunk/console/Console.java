@@ -595,8 +595,6 @@ implements EBComponent, DefaultFocusComponent
 			InputEvent.CTRL_MASK),
 			new EOFAction());
 
-
-
 		/* Press C+z to detach process */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 			InputEvent.CTRL_MASK),
