@@ -331,7 +331,7 @@
    <para>
   Error patterns can be customized in the
   <guilabel>Console</guilabel>&gt;<guilabel>Error Patterns</guilabel> pane
-  of the <guimenuitem>Global Options</guimenuitem> dialog box; you should
+  of the <guimenuitem>Plugin Options</guimenuitem> dialog box; you should
   familiarize yourself with regular expressions first, the syntax of which
   is documented in the jEdit user's guide.
  </para>
@@ -674,7 +674,7 @@
    <para>
  The commando tool bar, which can be enabled in the
  <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of the
- <guimenuitem>Global Options</guimenuitem>
+ <guimenuitem>Plugin Options</guimenuitem>
  dialog box, has one button for each commando file. Clicking a button opens
  the commando window for that file.
 </para>
@@ -1061,7 +1061,7 @@ of the new buffer. The default value is <quote>text</quote>.</para>
   <para>
  Commandos can be associated with edit modes in the
  <guilabel>Console</guilabel>&gt;<guilabel>Compile &amp; Run</guilabel> pane of
- the <guimenuitem>Global Options</guimenuitem> dialog box.
+ the <guimenuitem>Plugin Options</guimenuitem> dialog box.
 </para>
 
  </chapter>
