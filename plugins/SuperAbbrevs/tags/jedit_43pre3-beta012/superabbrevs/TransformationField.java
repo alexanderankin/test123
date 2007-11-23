@@ -1,12 +1,17 @@
 package superabbrevs;
 
-import bsh.*;
+
 import java.io.*;
+
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.Interpreter;
+import org.gjt.sp.jedit.bsh.ParseException;
+import org.gjt.sp.jedit.bsh.TargetError;
 
 /**
  * @author Sune Simonsen
  * class TransformationField
- * a template field that can transform the field value with abitrarily code
+ * a template field that can transform the field value with arbitrarily code
  */
 public class TransformationField implements Field {
 
