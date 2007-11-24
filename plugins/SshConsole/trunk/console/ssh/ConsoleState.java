@@ -65,8 +65,7 @@ public class ConsoleState
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
 		// update current directory in the CommandOutputParser
-		if (dirChangeListener != null)
-			dirChangeListener.setDirectory(path);
+
 
 		if (info == null || !newInfo.equals(info)) { 
 			info = newInfo;
@@ -85,6 +84,8 @@ public class ConsoleState
 			}
 		}
 		// update current directory
+		if (dirChangeListener != null)
+			dirChangeListener.setDirectory(path);
 		newPath = ConnectionManager.extractDirectory(newPath);
 		if (newPath == null || dir.equals(newPath)) return;
 		dir = newPath;

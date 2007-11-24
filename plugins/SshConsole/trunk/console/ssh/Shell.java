@@ -101,7 +101,7 @@ public class Shell extends console.Shell {
 			cs.os.flush();
 		}
 		catch (IOException ioe ) {
-			Log.log(Log.ERROR, this, "IOException writing to ssh pipe", ioe);
+			Log.log(Log.WARNING, this, "IOException writing to ssh pipe - closing connection");
 			cs.close();
 		}
 
@@ -129,13 +129,7 @@ public class Shell extends console.Shell {
 	/** sends a ctrl-Z down the pipe, to suspend the current job */
 	public void detach(Console console)
 	{
-		ConsoleState cs = ConnectionManager.getConsoleState(console);
-//		console.getOutput().print(console.getWarningColor(), "Job Control disabled.\n");
-		if (cs.os != null) try {
-			cs.os.write(SUSPEND);
-			cs.os.flush();
-		}
-		catch (IOException IOE) {};
+		new ShellAction(console, SUSPEND).actionPerformed(null);
 
 	}
 

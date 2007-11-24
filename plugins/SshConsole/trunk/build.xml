@@ -5,11 +5,12 @@
   	It is based on the standard build.xml file for jEdit plugins.
   </description>  
 
+	<property name="docs-proc.target"  value="none" />
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
-	<property name="docs-proc.target"  value="none"/>
+
 
     <property name="build.support" value="../../build-support" />
     <property name="compiler.source" value="1.5" />
@@ -20,6 +21,11 @@
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
 
+	<target name="build.prepare" description="untar the source for jcterm">
+	  <untar  compression="gzip"  dest="${basedir}"  src="lib/jcterm-0.0.9.tar.gz" />
+	</target>
+	
+	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${jedit.plugins.dir}/FTP.jar"/>
