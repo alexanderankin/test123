@@ -68,9 +68,9 @@ open a Console and select ssh from the combobox. </p>
 </p>
 
 <ul>
-<li> Interpret or ignore vt10x escape codes for color changes. Or properly set the termainal to "dumb"? </li>
-<li> Check the FSB to determine if a "cd" is given a valid directory, and don't call ConsoleState.setPath() to update the sshconsole's path unless it is valid.</li>
-<li> Use FSB and existing sftp:// VFS connection to calculate completions? </li>
+<li> Interpret or ignore vt10x escape codes for color changes - use <a href="http://www.jcraft.com/jcterm/">jcterm</a> or set the termainal to "dumb"? </li>
+<li> Check the FSB to determine if a "cd" is given a valid directory, and don't call <tt>ConsoleState.setPath()</tt> to update the sshconsole's path unless it is valid.</li>
+<li> Use FSB and existing sftp:// VFS connection to calculate possible completions. </li>
 <li> Make the Console Commandos smarter, so that they can execute in the ssh or System shell depending on the VFS used in the path. Perhaps add a VFS to Shell Mapping feature of Console so that Commandos can work in other shell/VFS combos too?
 </li>
 </ul>

@@ -1,17 +1,14 @@
 package console.ssh;
 
-import java.util.regex.Matcher;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
-import org.gjt.sp.util.Log;
 
 import console.Console;
 import console.ConsolePlugin;
-import console.Output;
 
 /**
   SshConsole - a jEdit plugin that offers a ssh shell to the Console that responds

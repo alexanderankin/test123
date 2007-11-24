@@ -55,10 +55,10 @@ public class Connection implements UserInfo {
 			}
 			keyAttempts = 0;
 			session.setUserInfo(this);
-			
 			// Timeout hardcoded to 60seconds
 			session.connect(60000);
 			channel=session.openChannel("shell");
+			
 			((ChannelShell)channel).setAgentForwarding(true);
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
