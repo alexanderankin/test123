@@ -89,7 +89,6 @@ public class Property {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        System.out.println("+++++ username = " + data.getUsername() + ", password = " + data.getPassword());
         SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
 
         // get a working copy client
@@ -100,31 +99,28 @@ public class Property {
 
         out = data.getOut();
 
-        System.out.println("+++++ paths are urls: " + data.pathsAreURLs());
         if ( data.pathsAreURLs() ) {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
                 PropertyHandler handler = new PropertyHandler( path );
                 wc_client.doGetProperty( svnurl, null, data.getPegRevision(), data.getRevision(), data.isRecursive(), handler );
-                mergeResults(handler.getResults());
+                mergeResults( handler.getResults() );
             }
         }
         else {
             for ( File file : localPaths ) {
-                System.out.println("+++++ file = " + file);
                 PropertyHandler handler = new PropertyHandler( file );
-                wc_client.doGetProperty( file, null, SVNRevision.create(0L), SVNRevision.HEAD, false, handler );
-                //wc_client.doGetProperty( file, null, data.getPegRevision(), data.getRevision(), data.isRecursive(), handler );
-                mergeResults(handler.getResults());
+                wc_client.doGetRevisionProperty( file, null, data.getRevision(), handler );
+                mergeResults( handler.getResults() );
             }
         }
         out.flush();
         out.close();
     }
 
-    private void mergeResults(TreeMap<String, Properties> handler_results) {
-        if (handler_results == null || handler_results.size() == 0) {
-            return;
+    private void mergeResults( TreeMap<String, Properties> handler_results ) {
+        if ( handler_results == null || handler_results.size() == 0 ) {
+            return ;
         }
 
         // the results are a path <-> properties map, there may be multiple path
@@ -149,7 +145,6 @@ public class Property {
 
     public class PropertyHandler implements ISVNPropertyHandler {
         private String path = "";
-        private Properties props = null;
         private TreeMap < String, Properties> results = new TreeMap < String, Properties> ();
 
         public PropertyHandler( File f ) {
@@ -166,24 +161,30 @@ public class Property {
                 prop = new Properties();
                 results.put( key, prop );
             }
-            props.setProperty( property.getName(), property.getValue() );
-            out.println(path.toString() + ": " + property.getName() + "=" + property.getValue());
+            prop.setProperty( property.getName(), property.getValue() );
         }
 
         public void handleProperty( long revision, SVNPropertyData property ) {
             // this is for revision properties,
             // research needed -- will this be called for each revision between
             // peg and end for the same file?
+            Properties prop = ( Properties ) results.get( path );
+            if ( prop == null ) {
+                prop = new Properties();
+                results.put( path, prop );
+            }
+            prop.setProperty( property.getName(), property.getValue() );
         }
 
         public void handleProperty( SVNURL url, SVNPropertyData property ) {
+            System.out.println( "+++++ in handleProperty url" );
             String key = url.toString();
             Properties prop = ( Properties ) results.get( key );
             if ( prop == null ) {
                 prop = new Properties();
                 results.put( key, prop );
             }
-            props.setProperty( property.getName(), property.getValue() );
+            prop.setProperty( property.getName(), property.getValue() );
         }
 
         public String getPath() {
@@ -195,7 +196,30 @@ public class Property {
         }
     }
 
+    public PropertyHandler getPropertyHandler(File file) {
+        return new PropertyHandler(file);
+    }
+
     public TreeMap<String, Properties> getProperties() {
         return results;
+    }
+
+    public static void main ( String[] args ) {
+        // for testing
+        try {
+            org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory.setup();
+            org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
+            org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
+            ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+            SVNClientManager clientManager = SVNClientManager.newInstance( options, "daleanson", "" );
+            SVNWCClient wc_client = clientManager.getWCClient();
+            Property prop = new Property();
+            File file = new File( "/home/danson/src/plugins/SVNPlugin/build.xml" );
+            PropertyHandler handler = prop.getPropertyHandler( file );
+            wc_client.doGetRevisionProperty( file, null, SVNRevision.HEAD, handler );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 }
