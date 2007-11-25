@@ -1,0 +1,12 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="infonode-start" NO_REPEAT="TRUE">
+		<CODE>
+			infonode.Plugin.doStart(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
