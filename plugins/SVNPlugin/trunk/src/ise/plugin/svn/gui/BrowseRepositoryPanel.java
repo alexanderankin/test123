@@ -463,7 +463,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "This item has no SVN properties.", "No Properties", JOptionPane.INFORMATION_MESSAGE );
                             return ;
                         }
-                        PropertiesAction action = new PropertiesAction( view, node.toString(), props );
+                        PropertyAction action = new PropertyAction( view, node.toString(), props );
                         action.actionPerformed( ae );
 
                     }

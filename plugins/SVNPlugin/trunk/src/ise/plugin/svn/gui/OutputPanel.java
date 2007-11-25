@@ -111,7 +111,7 @@ public class OutputPanel extends JPanel {
                                     }
                                 }
                                             );
-                        GUIUtilities.showPopupMenu( pm, c, x, y );
+                        GUIUtilities.showPopupMenu( pm, c, x, y, true );
                     }
                 }
                              );
