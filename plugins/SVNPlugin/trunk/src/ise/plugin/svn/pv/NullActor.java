@@ -26,52 +26,18 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.action;
+package ise.plugin.svn.pv;
 
-import ise.plugin.svn.gui.OutputPanel;
-
-import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
-import ise.plugin.svn.gui.PropertiesPanel;
-import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import javax.swing.JPanel;
-import org.gjt.sp.jedit.View;
+import javax.swing.JOptionPane;
 
 /**
- * ActionListener to show SVN properties.
- * This is not dependent on ProjectViewer.
+ * Does nothing, just a placeholder for actions until they are complete.
  */
-public class PropertiesAction implements ActionListener {
-
-    private View view = null;
-    private String filename = null;
-    private Properties properties = null;
-
-    /**
-     * @param view the View in which to display results
-     * @param props the properties to show
-     */
-    public PropertiesAction( View view, String name, Properties props ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        if ( props == null )
-            throw new IllegalArgumentException( "props may not be null" );
-        this.view = view;
-        this.filename = name == null ? "" : name;
-        this.properties = props;
-    }
+public class NullActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        view.getDockableWindowManager().showDockableWindow( "subversion" );
-        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-        panel.showConsole();
-        panel.addTab( "Properties", new PropertiesPanel( filename, properties ) );
+        JOptionPane.showMessageDialog(view, "Operation not yet available.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

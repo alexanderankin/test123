@@ -58,7 +58,8 @@ public class Log {
     private PrintStream out = null;
 
     /**
-     * @return a list of paths that were scheduled to be added.
+     * Fills a LogResults based on the given LogData.
+     * @param data LogData containing the information necessary to fetch an svn log.
      */
     public void doLog( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
