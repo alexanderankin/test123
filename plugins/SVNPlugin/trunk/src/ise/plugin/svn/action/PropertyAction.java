@@ -33,7 +33,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Property;
 import ise.plugin.svn.data.PropertyData;
-import ise.plugin.svn.gui.PropertiesPanel;
+import ise.plugin.svn.gui.PropertyPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
@@ -42,7 +42,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.View;
 
 /**
@@ -84,7 +84,7 @@ public class PropertyAction implements ActionListener {
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
-            panel.addTab( "Properties", new PropertiesPanel( filename, properties ) );
+            panel.addTab( "Properties", new PropertyPanel( filename, properties ) );
         }
         else if ( data != null ) {
 
@@ -121,17 +121,13 @@ public class PropertyAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        String filename = "";
-                        Properties properties = null;
                         TreeMap<String, Properties> results = get();
-                        if ( results != null ) {
-                            Set < Map.Entry < String, Properties >> set = results.entrySet();
-                            for ( Map.Entry<String, Properties> me : set ) {
-                                filename = me.getKey();
-                                properties = me.getValue();
-                                break;
-                            }
-                            panel.addTab( "Properties", new PropertiesPanel( filename, properties ) );
+                        if (results != null ) {
+                            panel.addTab( "Properties", new PropertyPanel( results ) );
+                        }
+                        else {
+                            // shouldn't get here
+                            JOptionPane.showMessageDialog(view, "No properties found.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                     catch ( Exception e ) {

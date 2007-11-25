@@ -54,7 +54,7 @@ public class Property {
     // tree map sorts by key
     private TreeMap < String, Properties> results = new TreeMap < String, Properties> ();
 
-    private PrintStream out = null;
+    public PrintStream out = null;
 
     /**
      * Fills a map of Properties based on the given data.
@@ -110,7 +110,7 @@ public class Property {
         else {
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
-                wc_client.doGetRevisionProperty( file, null, data.getRevision(), handler );
+                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
                 mergeResults( handler.getResults() );
             }
         }
@@ -162,6 +162,7 @@ public class Property {
                 results.put( key, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
+            out.println( path + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public void handleProperty( long revision, SVNPropertyData property ) {
@@ -174,10 +175,10 @@ public class Property {
                 results.put( path, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
+            out.println( path + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public void handleProperty( SVNURL url, SVNPropertyData property ) {
-            System.out.println( "+++++ in handleProperty url" );
             String key = url.toString();
             Properties prop = ( Properties ) results.get( key );
             if ( prop == null ) {
@@ -185,6 +186,7 @@ public class Property {
                 results.put( key, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
+            out.println( url.toString() + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public String getPath() {
@@ -192,12 +194,17 @@ public class Property {
         }
 
         public TreeMap<String, Properties> getResults() {
+            if ( results.size() == 0 ) {
+                Properties p = new Properties();
+                p.setProperty( "", "" );
+                results.put( path, p );
+            }
             return results;
         }
     }
 
-    public PropertyHandler getPropertyHandler(File file) {
-        return new PropertyHandler(file);
+    public PropertyHandler getPropertyHandler( File file ) {
+        return new PropertyHandler( file );
     }
 
     public TreeMap<String, Properties> getProperties() {
@@ -214,9 +221,10 @@ public class Property {
             SVNClientManager clientManager = SVNClientManager.newInstance( options, "daleanson", "" );
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
-            File file = new File( "/home/danson/src/plugins/SVNPlugin/build.xml" );
+            prop.out = System.out;
+            File file = new File( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Property.java" );
             PropertyHandler handler = prop.getPropertyHandler( file );
-            wc_client.doGetRevisionProperty( file, null, SVNRevision.HEAD, handler );
+            wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
         }
         catch ( Exception e ) {
             e.printStackTrace();
