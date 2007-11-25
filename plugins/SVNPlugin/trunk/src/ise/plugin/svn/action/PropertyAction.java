@@ -109,6 +109,7 @@ public class PropertyAction implements ActionListener {
                         return prop.getProperties();
                     }
                     catch ( Exception e ) {
+                        e.printStackTrace();
                         data.getOut().printError( e.getMessage() );
                     }
                     finally {
