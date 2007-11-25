@@ -22,11 +22,11 @@ import net.infonode.util.Direction;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
+import org.gjt.sp.jedit.gui.DockableLayout;
 import org.gjt.sp.jedit.gui.DockableWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
-import org.gjt.sp.jedit.gui.VariableGridLayout;
 
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
@@ -36,17 +36,19 @@ public class WindowManager extends DockableWindowManager {
 	ViewMap viewMap;
 	Vector<View> views;
 	private RootWindow rootWindow;
-	private static final String ALTERNATE_LAYOUT_PROPERTY = "view.docking.alternateLayout";
-	private static final String PERSPECTIVE_FILE = "jedit.xml";
-	private static final String MAIN_VIEW = "Main";
-	private static final String MAIN_PERSPECTIVE = "jEdit";
-	private static final String DOCK_POSITION = ".dock-position";
-	private static final float DEFAULT_SPLIT = 0.25f;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
-	private boolean alternateLayout;
-	private HashMap<String, Vector<String>> dockables = null;
-	private HashMap<String, Float> split = null;
+	private JComponent center;
 	
+	@Override
+	protected void addImpl(Component comp, Object constraints, int index) {
+		System.err.println("addImpl");
+		if (constraints.equals(DockableLayout.TOP_TOOLBARS))
+			center.add(comp, BorderLayout.NORTH);
+		else if (constraints.equals(DockableLayout.BOTTOM_TOOLBARS))
+			center.add(comp, BorderLayout.SOUTH);
+		else
+			super.addImpl(comp, constraints, index);
+	}
 	@Override
 	public void construct(org.gjt.sp.jedit.View view, DockableWindowFactory factory,
 			ViewConfig config) {
@@ -63,34 +65,12 @@ public class WindowManager extends DockableWindowManager {
 		JComponent editPane = view.getSplitPane();
 		if (editPane == null)
 			editPane = view.getEditPane();
-		JComponent center = null;
-		if (jEdit.getBooleanProperty("view.toolbar.alternateLayout"))
-			center = editPane;
-		else
-		{
-			center = new JPanel(new BorderLayout());
-			center.add(editPane, BorderLayout.CENTER);
-			boolean added = false;
-			for (int i = 0; i < dwm.getComponentCount(); i++) {
-				Component c = dwm.getComponent(i);
-				if (c instanceof JPanel) {
-					JPanel p = (JPanel) c;
-					if (p.getLayout() instanceof VariableGridLayout) {
-						center.add(p, (added ? BorderLayout.SOUTH : BorderLayout.NORTH));
-						added = true;
-					}
-				}
-			}
-			center.revalidate();
-		}
+		center = new JPanel(new BorderLayout());
+		center.add(editPane, BorderLayout.CENTER);
 		View main = new View("Main", null, center);
 		main.getViewProperties().setAlwaysShowTitle(false);
 		viewMap.addView(0, main);
 		views.add(main);
-		for (int i = 0; i < dwm.getComponentCount(); i++) {
-			Component cmp = dwm.getComponent(i);
-			System.err.println(i + ": " + cmp);
-		}
 		TabWindow left = addDockables(dwm, dwm.getLeftDockingArea().getDockables(),
 				Direction.LEFT, Direction.UP);
 		TabWindow right = addDockables(dwm, dwm.getRightDockingArea().getDockables(),
@@ -291,9 +271,6 @@ public class WindowManager extends DockableWindowManager {
 		Object reason = DockableWindowUpdate.ACTIVATED;
 		EditBus.send(new DockableWindowUpdate(this, reason, name));
 		*/
-	}
-	public void add(Component comp, Object o, int index) {
-		//mainView.add(comp, o, index);
 	}
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
