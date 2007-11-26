@@ -31,17 +31,16 @@ import org.gjt.sp.jedit.gui.PanelWindowContainer;
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
 
-	org.gjt.sp.jedit.View view;
-	DockableWindowFactory factory;
-	ViewMap viewMap;
-	Vector<View> views;
+	private org.gjt.sp.jedit.View view;
+	private DockableWindowFactory factory;
+	private ViewMap viewMap;
 	private RootWindow rootWindow;
 	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private JComponent center;
+	private TabWindow left, right, top, bottom;
 	
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
-		System.err.println("addImpl");
 		if (constraints.equals(DockableLayout.TOP_TOOLBARS))
 			center.add(comp, BorderLayout.NORTH);
 		else if (constraints.equals(DockableLayout.BOTTOM_TOOLBARS))
@@ -60,7 +59,6 @@ public class WindowManager extends DockableWindowManager {
 	}
 	private void convertView(org.gjt.sp.jedit.View view) {
 		viewMap = new ViewMap();
-		views = new Vector<View>();
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
 		if (editPane == null)
@@ -70,48 +68,36 @@ public class WindowManager extends DockableWindowManager {
 		View main = new View("Main", null, center);
 		main.getViewProperties().setAlwaysShowTitle(false);
 		viewMap.addView(0, main);
-		views.add(main);
-		TabWindow left = addDockables(dwm, dwm.getLeftDockingArea().getDockables(),
+		left = addDockables(dwm, dwm.getLeftDockingArea().getDockables(),
 				Direction.LEFT, Direction.UP);
-		TabWindow right = addDockables(dwm, dwm.getRightDockingArea().getDockables(),
+		right = addDockables(dwm, dwm.getRightDockingArea().getDockables(),
 				Direction.RIGHT, Direction.DOWN);
-		TabWindow bottom = addDockables(dwm, dwm.getBottomDockingArea().getDockables(),
+		bottom = addDockables(dwm, dwm.getBottomDockingArea().getDockables(),
 				Direction.UP, Direction.RIGHT);
-		TabWindow top = addDockables(dwm, dwm.getTopDockingArea().getDockables(),
+		top = addDockables(dwm, dwm.getTopDockingArea().getDockables(),
 				Direction.UP, Direction.RIGHT);
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
 		SplitWindow sw = null;
-		if (left != null)
+		if (left.getChildWindowCount() > 0)
 			sw = new SplitWindow(true, 0.25f, left, main);
-		if (right != null)
-			if (sw != null)
-				sw = new SplitWindow(true, 0.75f, sw, right);
-			else
-				sw = new SplitWindow(true, 0.75f, main, right);
-		if (bottom != null)
-			if (sw != null)
-				sw = new SplitWindow(false, 0.75f, sw, bottom);
-			else
-				sw = new SplitWindow(false, 0.75f, main, bottom);
-		if (top != null)
-			if (sw != null)
-				sw = new SplitWindow(false, 0.25f, top, sw);
-			else
-				sw = new SplitWindow(false, 0.25f, top, main);
-		rootWindow.setWindow(sw);
+		if (right.getChildWindowCount() > 0)
+			sw = new SplitWindow(true, 0.75f, (sw == null) ? main : sw, right);
+		if (bottom.getChildWindowCount() > 0)
+			sw = new SplitWindow(false, 0.75f, (sw == null) ? main : sw, bottom);
+		if (top.getChildWindowCount() > 0)
+			sw = new SplitWindow(false, 0.25f, top, (sw == null) ? main : sw);
+		if (sw != null )
+			rootWindow.setWindow(sw);
 	}
 	private TabWindow addDockables(DockableWindowManager dwm, String[] windows,
 			Direction tabPosition, Direction tabDirection) {
-		if (windows.length == 0)
-			return null;
 		View [] areaViews = new View[windows.length];
 		for (int i = 0; i < windows.length; i++) {
 			dwm.showDockableWindow(windows[i]);
 			JComponent window = dwm.getDockable(windows[i]);
 			View v = new View(dwm.getDockableTitle(windows[i]), null, window);
-			//viewMap.addView(views.size(), v);
-			//views.add(v);
+			//viewMap.addView(viewMap.getViewCount(), v);
 			areaViews[i] = v;
 		}
 		TabWindow tw = new TabWindow(areaViews);
