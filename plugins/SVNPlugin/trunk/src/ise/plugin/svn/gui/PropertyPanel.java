@@ -58,7 +58,7 @@ public class PropertyPanel extends JPanel {
 
     public PropertyPanel( String filename, Properties props ) {
         HashMap<String, Properties> results = new HashMap<String, Properties>();
-        results.put(filename, props);
+        results.put( filename, props );
         init( results );
     }
 
@@ -70,23 +70,35 @@ public class PropertyPanel extends JPanel {
         if ( results == null || results.size() == 0 ) {
             results = new HashMap<String, Properties>();
             Properties p = new Properties();
-            p.setProperty("Error", "No properties available.");
-            results.put("Error", p);
+            p.setProperty( "Error", "No properties available." );
+            results.put( "Error", p );
         }
 
-        JPanel properties_panel = new JPanel(new LambdaLayout());
+        JPanel properties_panel = new JPanel( new LambdaLayout() );
         Set < Map.Entry < String, Properties >> result_set = results.entrySet();
         int row = 0;
         for ( Map.Entry<String, Properties> result : result_set ) {
-            // fetch the properties
+            // fetch the properties and load them into a table
             String filename = result.getKey();
             Properties props = result.getValue();
+            final JTable props_table = new JTable( );
+            final JButton edit_btn = new JButton("Edit");
             final DefaultTableModel model = new DefaultTableModel(
                         new String[] {
                             "Name", "Value"
                         }, props.size() );
-            JTable props_table = new JTable( model );
             props_table.setModel( model );
+            props_table.setRowSelectionAllowed( true );
+            props_table.setColumnSelectionAllowed( false );
+            DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
+            selectionModel.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+            props_table.setSelectionModel( selectionModel );
+            selectionModel.addListSelectionListener( new ListSelectionListener() {
+                        public void valueChanged( ListSelectionEvent lse ) {
+                            edit_btn.setEnabled( props_table.getSelectedRow() > -1 );
+                        }
+                    }
+                                                   );
 
             // crud. Properties should genericize to <String, String>, or at
             // least <String, Object>.
@@ -107,59 +119,46 @@ public class PropertyPanel extends JPanel {
             props_table.addMouseListener( new TableCellViewer( props_table ) );
 
             // create and add a panel with this result
-            JPanel panel = new JPanel(new LambdaLayout());
-            panel.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder( 3, 3, 3, 3 )));
+            JPanel panel = new JPanel( new LambdaLayout() );
+            panel.setBorder( new CompoundBorder( new EtchedBorder(), new EmptyBorder( 3, 3, 3, 3 ) ) );
             JLabel filename_label = new JLabel( "Properties for: " + filename, JLabel.LEFT );
-            panel.add(filename_label, "0, 0, 1, 1, W, w, 3");
-            panel.add(GUIUtils.createTablePanel(props_table), "0, 1, 1, 1, 0, wh, 3");
+            panel.add( filename_label, "0, 0, 1, 1, W, w, 3" );
+            panel.add( GUIUtils.createTablePanel( props_table ), "0, 1, 1, 1, 0, wh, 3" );
 
-            // set up a Save and New button
+            // set up Edit button
             KappaLayout kl = new KappaLayout();
             JPanel btn_panel = new JPanel( kl );
-            JButton save_btn = new JButton( "Save" );
-            save_btn.addActionListener(
+            edit_btn.setEnabled( false );
+            edit_btn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        for ( int n = 0; n < model.getRowCount(); n++ ) {
-                            String key = ( String ) model.getValueAt( n, 0 );
-                            String value = ( String ) model.getValueAt( n, 1 );
-                            if ( value == null || value.equals( "" ) ) {
-                                // do svn property delete
-                            }
-                            else {
-                                // do svn property add
-                            }
+                        int row = props_table.getSelectedRow();
+                        if (row > -1) {
+                            String key = ( String ) model.getValueAt( row, 0 );
+                            String value = ( String ) model.getValueAt( row, 1 );
+                            // TODO: add property editor dialog
                         }
+                        // new did this
+                        //model.addRow( new String[] {"", ""} );
                         return ;
                     }
                 }
             );
 
-            new_btn = new JButton( "New" );
-            new_btn.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        model.addRow( new String[] {"", ""} );
-                    }
-                }
-            );
+            btn_panel.add( edit_btn, "0, 0, 1, 1, 0, w, 0" );
+            panel.add( btn_panel, "0, 2, 1, 1, E, 0, 3" );
 
-            btn_panel.add( save_btn, "0, 0, 1, 1, 0, w, 3" );
-            btn_panel.add( new_btn, "1, 0, 1, 1, 0, w, 3" );
-            kl.makeColumnsSameWidth( new int[] {0, 1} );
-            panel.add(btn_panel, "0, 2, 1, 1, E, 0, 3");
-
-            properties_panel.add(panel, "0, " + row + ", 1, 1, W, w, 0");
+            properties_panel.add( panel, "0, " + row + ", 1, 1, W, w, 0" );
             ++row;
         }
 
 
         // construct this panel
-        setLayout(new BorderLayout());
+        setLayout( new BorderLayout() );
         setBorder( new javax.swing.border.EmptyBorder( 6, 6, 6, 6 ) );
 
         JScrollPane js = new JScrollPane( properties_panel );
-        add( js, BorderLayout.CENTER);
+        add( js, BorderLayout.CENTER );
     }
 
     public static void main ( String[] args ) {
@@ -168,8 +167,8 @@ public class PropertyPanel extends JPanel {
         p.setProperty( "svn:keywords", "word, word2" );
 
         TreeMap<String, Properties> map = new TreeMap<String, Properties>();
-        map.put("filename1", p);
-        map.put("filename2", p);
+        map.put( "filename1", p );
+        map.put( "filename2", p );
 
         JFrame frame = new JFrame();
         frame.setContentPane( new PropertyPanel( map ) );

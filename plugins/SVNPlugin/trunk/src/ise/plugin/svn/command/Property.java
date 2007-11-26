@@ -103,16 +103,16 @@ public class Property {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
                 PropertyHandler handler = new PropertyHandler( path );
-                // TO DO: use user set revisions and allow recursive
-                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
+                // TODO: use user set revisions
+                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }
         else {
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
-                // TO DO: use user set revisions and allow recursive
-                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
+                // TODO: use user set revisions
+                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }
@@ -224,9 +224,9 @@ public class Property {
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;
-            File file = new File( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Property.java" );
+            File file = new File( "/home/danson/src/plugins/SVNPlugin" );
             PropertyHandler handler = prop.getPropertyHandler( file );
-            wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
+            wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, true, handler );
         }
         catch ( Exception e ) {
             e.printStackTrace();

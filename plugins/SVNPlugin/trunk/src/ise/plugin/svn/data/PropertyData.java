@@ -35,6 +35,7 @@ public class PropertyData extends CheckoutData {
     private transient SVNRevision pegRevision = SVNRevision.create( 0L );
     private transient SVNRevision revision = SVNRevision.HEAD;
     private transient boolean recursive = false;
+    private transient boolean hasDirectory = false;
 
     public String toString() {
         return "PropertyData[pegRevision=" + pegRevision + ", revision=" + revision + "]";
@@ -78,4 +79,11 @@ public class PropertyData extends CheckoutData {
         this.recursive = recursive;
     }
 
+    public void setHasDirectory(boolean b) {
+        hasDirectory = b;
+    }
+
+    public boolean hasDirectory() {
+        return hasDirectory;
+    }
 }
