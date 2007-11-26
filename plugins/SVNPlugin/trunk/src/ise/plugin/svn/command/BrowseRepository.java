@@ -209,25 +209,7 @@ public class BrowseRepository {
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
             DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
             String repositoryLocation = repository.getLocation().toString() + "/" + entry.getName();
-            if ( entry.hasProperties() ) {
-                if ( entry.getKind() == SVNNodeKind.FILE ) {
-                    try {
-                        Collection revs = repository.getFileRevisions( entry.getName(), null, entry.getRevision(), entry.getRevision() );
-                        if ( revs.size() > 0 ) {
-                            SVNFileRevision rev = ( SVNFileRevision ) revs.toArray() [ 0 ];
-                            node.setProperties( convertMap( rev.getRevisionProperties() ) );
-                        }
-                    }
-                    catch ( Exception ignored ) {
-                        //e.printStackTrace();
-                    }
-                }
-                else if ( entry.getKind() == SVNNodeKind.DIR ) {
-                    Map<Object, Object> map = new HashMap<Object, Object>();
-                    Collection c = repository.getDir( entry.getName(), -1, map, ( Collection ) null );
-                    node.setProperties( convertMap( map ) );
-                }
-            }
+            node.setHasProperties(entry.hasProperties());
             if ( isExternal ) {
                 node.setExternal( true );
                 node.setRepositoryLocation( repositoryLocation );
