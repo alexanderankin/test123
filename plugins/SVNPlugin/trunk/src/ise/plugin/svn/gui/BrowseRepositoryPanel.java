@@ -65,6 +65,9 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 
+/**
+ * Tree display for an SVN repository.
+ */
 public class BrowseRepositoryPanel extends JPanel {
 
     private View view = null;
@@ -119,6 +122,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                         if ( node.getChildCount() == 0 ) {
                             RepositoryData data = chooser.getSelectedRepository();
+                            data = new RepositoryData(data);
                             String url;
                             if ( node.isExternal() ) {
                                 url = node.getRepositoryLocation();
@@ -452,6 +456,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         if ( tree_paths.length == 0 ) {
                             return ;
                         }
+                        boolean hasDirectory = false;
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null ) {
@@ -463,6 +468,10 @@ public class BrowseRepositoryPanel extends JPanel {
                                 }
                                 String url = sb.toString();
                                 paths.add( url );
+                                DirTreeNode node = (DirTreeNode)path.getLastPathComponent();
+                                if (!hasDirectory && !node.isLeaf()) {
+                                    hasDirectory = true;
+                                }
                             }
                         }
                         PropertyData data = new PropertyData();
@@ -470,6 +479,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         data.setPathsAreURLs( true );
                         data.setUsername( username );
                         data.setPassword( password );
+                        data.setHasDirectory(hasDirectory);
                         PropertyAction action = new PropertyAction( view, data );
                         action.actionPerformed( ae );
                     }
