@@ -17,6 +17,22 @@
 
 <h2> Instructions for use: </h2>
 
+<p> Initially, the SshConsole does not know where to connect. You will see a prompt like this:
+</p>
+<pre>
+[no sftp:// connections?] >
+</pre>
+
+<p>
+At this point, any commands you type will be ignored. To tell the plugin to connect somewhere, you need to do one of these things: </p>
+
+<ol>
+<li> Navigate to a remote file via the FSB. </li>
+<li> Edit a remote file in the current View's EditPane. </li>
+</ol>
+
+<p> Here are instructions for first-time users: </p> 
+
 <ol>
 <li> <tt>Plugins - SshConsole - Show SshConsole</tt> <b>[1]</b> </li>
 <li> Dock an FSB: <tt>Utilities - File System Browser </tt>. </li>
@@ -37,7 +53,7 @@ commands there.
 </p>
 
 <p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells - Ssh</tt>, or
-open a Console and select ssh from the combobox. </p>
+open a Console and select <b>ssh</b> from the Shells combobox. </p>
 
 <h2> Click the FSB to change directories </h2>
 
@@ -61,6 +77,15 @@ open a Console and select ssh from the combobox. </p>
 <li> <tt>%browse [<i>path</i>]</tt> tells your FSB to browse a given relative path, defaults to your current working directory. </li>
 <li> <tt>%edit <i>fileName</i></tt> tells jEdit to open given remote file as a buffer in the View's EditPane. Relative paths are possible here. </li>
 </ul>
+
+<h2> Troubleshooting </h2>
+
+<p> Sometimes an ssh connection will timeout while you are using the SshConsole. If this happens, you will see an <tt>IOException</tt> in your activity log when you attempt to execute the next command. At this point, the console should automatically close its existing connection and open a new one when you enter the next command. </p>
+
+<p> It may be necessary to click again on a remote file in the FSB, to remind the SshConsole where to connect. </p>
+
+<p> If for some reason, after a timeout, your SshConsole is non-responsive, you can explicitly close all open connections from the <tt>Plugins - SshConsole - Close Connections</tt> menu action. This has the effect of restarting the plugin from scratch, so again, you will need to navigate to a remote file via the FSB so that SshConsole knows where to send your commands.
+</p>
 
 <h2> Future Ideas </h2>
 

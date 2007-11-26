@@ -21,7 +21,7 @@ import ftp.ConnectionInfo;
  * Secure shell interface for jEdit console. A singleton exists for the whole jedit process.
  * State information for individual Console instances is handled by the ConsoleState class.
  * @author ezust
- *
+ * @version $Id$
  */
 public class Shell extends console.Shell {
 	static final byte[] EOF = new byte[] {4};
@@ -78,8 +78,8 @@ public class Shell extends console.Shell {
 		if (cs.conn == null)  try {
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
 			if (info == null) {
-				
-				Log.log(Log.ERROR, this, "Unable to get connectioninfo for: " + cs.getPath());
+				Log.log(Log.WARNING, this, "Unable to get connectioninfo for: " + cs.getPath());
+				printPrompt(console, output);
 				return;
 			}
 			cs.info = info;
