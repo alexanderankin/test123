@@ -193,7 +193,7 @@ class ConsoleProcess
 				pipeOut.close();
 			} catch (IOException e)
 			{
-				throw new RuntimeException(e);
+				Log.log(Log.WARNING, this, e.getMessage());
 			}
 
 			try
@@ -201,12 +201,13 @@ class ConsoleProcess
 				process.destroy();
 				output.commandDone();
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				Log.log(Log.WARNING, this, e.getMessage());
+			}
 			process = null;
 			
 			if (console != null)
 			{
-
 /*				error.print(console.getErrorColor(), jEdit.getProperty(
 						"console.shell.killed", pp)); */
 			}
@@ -287,9 +288,9 @@ class ConsoleProcess
 		int retval = 0;
 		if (process != null) 
 			retval = process.waitFor();
-		while (!stopped) {
+		/*while (!stopped) {
 			Thread.currentThread().sleep(100);
-		}
+		} */ 
 		return retval;
 	} // }}}
 
