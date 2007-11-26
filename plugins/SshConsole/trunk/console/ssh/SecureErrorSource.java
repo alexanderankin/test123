@@ -14,6 +14,8 @@ import errorlist.ErrorSourceUpdate;
 /**
     A customized ErrorSource which prepends the proper sftp:// 
     address that corresponds to the current connection
+    @author ezust
+    @version $Id$
 */
 public class SecureErrorSource extends DefaultErrorSource
 {

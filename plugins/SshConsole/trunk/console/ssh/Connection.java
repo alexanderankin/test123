@@ -26,6 +26,8 @@ import ftp.PasswordDialog;
 
 // {{{ Connection class
 /** An ssh remote shell connection 
+ *  @author ezust
+ *  @version $Id$
  */
 public class Connection implements UserInfo {
 	// {{{ members
