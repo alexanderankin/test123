@@ -47,6 +47,7 @@ import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.RepositoryData;
 import ise.plugin.svn.data.LogData;
+import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.gui.RepositoryComboBox;
 import ise.plugin.svn.gui.RevisionDialog;
@@ -451,21 +452,26 @@ public class BrowseRepositoryPanel extends JPanel {
                         if ( tree_paths.length == 0 ) {
                             return ;
                         }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
                         }
-
-                        TreePath path = tree_paths[ 0 ];
-                        DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                        Properties props = node.getProperties();
-                        if ( props == null ) {
-                            JOptionPane.showMessageDialog( view, "This item has no SVN properties.", "No Properties", JOptionPane.INFORMATION_MESSAGE );
-                            return ;
-                        }
-                        PropertyAction action = new PropertyAction( view, node.toString(), props );
+                        PropertyData data = new PropertyData();
+                        data.setPaths( paths );
+                        data.setPathsAreURLs( true );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        PropertyAction action = new PropertyAction( view, data );
                         action.actionPerformed( ae );
-
                     }
                 }
                             );

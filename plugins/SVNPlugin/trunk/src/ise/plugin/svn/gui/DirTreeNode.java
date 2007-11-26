@@ -41,6 +41,7 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
 
     private boolean isLeaf = true;
     private boolean external = false;
+    private boolean hasProperties = false;
     private String repositoryLocation = null;
     private Properties properties = null;
 
@@ -69,6 +70,14 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
         external = b;
     }
 
+    public boolean hasProperties() {
+        return hasProperties;
+    }
+
+    public void setHasProperties(boolean b) {
+        hasProperties = b;
+    }
+
     /**
      * @return the url of the external location, only valid if <code>isExternal</code>
      * returns true.
@@ -79,21 +88,6 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
 
     public void setRepositoryLocation( String s ) {
         repositoryLocation = s;
-    }
-
-    /**
-     * @return the svn properties, if any, associated with this node.
-     */
-    public Properties getProperties() {
-        return properties == null ? null : (Properties)properties.clone();
-    }
-
-    public void setProperties( Properties p ) {
-        properties = (Properties)p.clone();
-    }
-
-    public boolean hasProperties() {
-        return properties != null;
     }
 
     /**

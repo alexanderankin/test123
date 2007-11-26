@@ -103,13 +103,15 @@ public class Property {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
                 PropertyHandler handler = new PropertyHandler( path );
-                wc_client.doGetProperty( svnurl, null, data.getPegRevision(), data.getRevision(), data.isRecursive(), handler );
+                // TO DO: use user set revisions and allow recursive
+                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
                 mergeResults( handler.getResults() );
             }
         }
         else {
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
+                // TO DO: use user set revisions and allow recursive
                 wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, false, handler );
                 mergeResults( handler.getResults() );
             }
