@@ -40,13 +40,4 @@ public class Plugin extends EditPlugin {
 		*/
 	}
 
-	private static void addDockables(DockableWindowManager dwm, String[] windows) {
-		for (int i = 0; i < windows.length; i++) {
-			JComponent window = dwm.getDockable(windows[i]);
-			View v = new View(dwm.getDockableTitle(windows[i]), null, window);
-			viewMap.addView(views.size(), v);
-			views.add(v);
-		}
-	}
-
 }

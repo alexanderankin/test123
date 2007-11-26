@@ -80,6 +80,7 @@ public class WindowManager extends DockableWindowManager {
 		TabWindow top = addDockables(dwm, dwm.getTopDockingArea().getDockables(),
 				Direction.UP, Direction.RIGHT);
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
+		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
 		SplitWindow sw = null;
 		if (left != null)
 			sw = new SplitWindow(true, 0.25f, left, main);
