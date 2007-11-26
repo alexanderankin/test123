@@ -58,18 +58,8 @@ public class PropertyAction implements ActionListener {
 
     /**
      * @param view the View in which to display results
-     * @param props the properties to show
+     * @param data what to show
      */
-    public PropertyAction( View view, String name, Properties props ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        if ( props == null )
-            throw new IllegalArgumentException( "props may not be null" );
-        this.view = view;
-        this.filename = name == null ? "" : name;
-        this.properties = props;
-    }
-
     public PropertyAction( View view, PropertyData data ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
@@ -80,14 +70,11 @@ public class PropertyAction implements ActionListener {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( properties != null ) {
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showConsole();
-            panel.addTab( "Properties", new PropertyPanel( filename, properties ) );
-        }
-        else if ( data != null ) {
-
+        if ( data != null ) {
+            if (data.hasDirectory()) {
+                int answer = JOptionPane.showConfirmDialog(view, "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                data.setRecursive(JOptionPane.YES_OPTION == answer);
+            }
             data.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );

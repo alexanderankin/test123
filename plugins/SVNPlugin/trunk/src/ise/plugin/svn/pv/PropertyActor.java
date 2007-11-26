@@ -55,10 +55,14 @@ public class PropertyActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
+            boolean hasDirectory = false;
             List<String> paths = new ArrayList<String>();
             for ( VPTNode node : nodes ) {
                 if ( node != null ) {
                     paths.add( node.getNodePath() );
+                    if (!hasDirectory && node.isDirectory()) {
+                        hasDirectory = true;
+                    }
                 }
             }
 
@@ -67,6 +71,7 @@ public class PropertyActor extends NodeActor {
             data.setUsername(username);
             data.setPassword(password);
             data.setPathsAreURLs(false);
+            data.setHasDirectory(hasDirectory);
             PropertyAction la = new PropertyAction(view, data);
             la.actionPerformed(ae);
         }
