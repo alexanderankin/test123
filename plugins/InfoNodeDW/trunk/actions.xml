@@ -7,6 +7,16 @@
 			infonode.Plugin.doStart(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="infonode-load" NO_REPEAT="TRUE">
+		<CODE>
+			infonode.Plugin.load(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="infonode-save" NO_REPEAT="TRUE">
+		<CODE>
+			infonode.Plugin.save(view);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 

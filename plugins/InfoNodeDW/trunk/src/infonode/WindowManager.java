@@ -2,6 +2,12 @@ package infonode;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -16,7 +22,6 @@ import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.properties.TabWindowProperties;
 import net.infonode.docking.util.DockingUtil;
-import net.infonode.docking.util.StringViewMap;
 import net.infonode.util.Direction;
 
 import org.gjt.sp.jedit.EBMessage;
@@ -38,7 +43,7 @@ public class WindowManager extends DockableWindowManager {
 	private static final String MAIN_VIEW_NAME = "Main";
 	private org.gjt.sp.jedit.View view;
 	private DockableWindowFactory factory;
-	private StringViewMap viewMap;
+	private JEditViewMap viewMap;
 	private RootWindow rootWindow;
 	private JComponent center;
 	private Vector<View> left, right, top, bottom;
@@ -71,7 +76,7 @@ public class WindowManager extends DockableWindowManager {
 		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
 	}
 	private void convertView(org.gjt.sp.jedit.View view) {
-		viewMap = new StringViewMap();
+		viewMap = new JEditViewMap(this);
 		positions = new HashMap<String, String>();
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
@@ -351,6 +356,12 @@ public class WindowManager extends DockableWindowManager {
 		positions.put(name, getDockablePosition(name));
 		return v;
 	}
+	public View constructDockableView(String name) {
+		String position = getDockablePosition(name);
+		Window w = factory.getDockableWindowFactory(name);
+		JComponent c = w.createDockableWindow(view, position);
+		return createDockableView(name, c);
+	}
 	@Override
 	public void showDockableWindow(String name) {
 		String position = getDockablePosition(name);
@@ -390,5 +401,32 @@ public class WindowManager extends DockableWindowManager {
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
 		return super.add(comp, index);
+	}
+	public void load(String file) {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+			rootWindow.read(ois);
+			ois.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void save(String file) {
+		ObjectOutputStream ous;
+		try {
+			ous = new ObjectOutputStream(new FileOutputStream(file));
+			rootWindow.write(ous);
+			ous.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 }

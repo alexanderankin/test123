@@ -22,10 +22,11 @@ plugin.infonode.Plugin.depend.1=jedit 04.03.12.00
 
 # action labels
 infonode-start.label=Start
-#flexdock-save.label=Save layout
+infonode-load.label=Load...
+infonode-save.label=Save...
 
 # menus
-plugin.infonode.Plugin.menu=infonode-start
+plugin.infonode.Plugin.menu=infonode-start infonode-load infonode-save
 
 # docs
 #plugin.ctags.sidekick.Plugin.docs=index.html
