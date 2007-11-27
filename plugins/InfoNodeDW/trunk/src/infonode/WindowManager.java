@@ -23,6 +23,7 @@ import net.infonode.docking.util.ViewMap;
 import net.infonode.util.Direction;
 
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableLayout;
@@ -30,6 +31,7 @@ import org.gjt.sp.jedit.gui.DockableWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
@@ -38,10 +40,12 @@ public class WindowManager extends DockableWindowManager {
 	private DockableWindowFactory factory;
 	private ViewMap viewMap;
 	private RootWindow rootWindow;
-	private HashMap<String, JComponent> windows = new HashMap<String, JComponent>();
 	private JComponent center;
 	private Vector<View> left, right, top, bottom;
 	private View mainView;
+	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
+	private HashMap<String, Integer> dockables;
+	private TabWindow leftTab, rightTab, bottomTab, topTab;
 	
 	public static void main(String [] args) {
 		View[] views = new View[5];
@@ -83,9 +87,14 @@ public class WindowManager extends DockableWindowManager {
 		convertView(view);
 		setLayout(new BorderLayout());
 		add(rootWindow, BorderLayout.CENTER);
+		topPanel = new PanelWindowContainer(this,TOP,config.topPos);
+		leftPanel = new PanelWindowContainer(this,LEFT,config.leftPos);
+		bottomPanel = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
+		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
 	}
 	private void convertView(org.gjt.sp.jedit.View view) {
 		viewMap = new ViewMap();
+		dockables = new HashMap<String, Integer>();
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
 		if (editPane == null)
@@ -101,11 +110,15 @@ public class WindowManager extends DockableWindowManager {
 		top = addDockables(dwm, dwm.getTopDockingArea().getDockables());
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
+		leftTab = createTabs(left, Direction.LEFT, Direction.UP);
+		rightTab = createTabs(right, Direction.RIGHT, Direction.DOWN);
+		bottomTab = createTabs(bottom, Direction.UP, Direction.RIGHT);
+		topTab = createTabs(top, Direction.UP, Direction.RIGHT);
 		DockingWindow sw = null;
-		sw = addArea(left, Direction.LEFT, Direction.UP, mainView, true, true, 0.25f);
-		sw = addArea(right, Direction.RIGHT, Direction.DOWN, sw, true, false, 0.75f);
-		sw = addArea(bottom, Direction.UP, Direction.RIGHT, sw, false, false, 0.75f);
-		sw = addArea(top, Direction.UP, Direction.RIGHT, sw, false, true, 0.25f);
+		sw = addArea(leftTab, mainView, true, true, 0.25f);
+		sw = addArea(rightTab, sw, true, false, 0.75f);
+		sw = addArea(bottomTab, sw, false, false, 0.75f);
+		sw = addArea(topTab, sw, false, true, 0.25f);
 		rootWindow.setWindow(sw);
 	}
 	private DockingWindow [] convertToArray(Vector<View> views) {
@@ -113,15 +126,17 @@ public class WindowManager extends DockableWindowManager {
 		views.toArray(windows);
 		return windows;
 	}
-	private DockingWindow addArea(Vector<View> views, Direction side, Direction dir,
-			DockingWindow dw, boolean isHorizontal, boolean areaFirst, float divider) {
-		if (views.isEmpty())
-			return dw;
+	private TabWindow createTabs(Vector<View> views, Direction side, Direction dir) {
 		DockingWindow [] w = convertToArray(views);
 		TabWindow tw = new TabWindow(w);
 		TabWindowProperties twp = tw.getTabWindowProperties();
 		twp.getTabbedPanelProperties().setTabAreaOrientation(side);
 		twp.getTabProperties().getTitledTabProperties().getNormalProperties().setDirection(dir);
+		return tw;
+	}
+	private DockingWindow addArea(TabWindow tw, DockingWindow dw, boolean isHorizontal, boolean areaFirst, float divider) {
+		if (tw.getChildWindowCount() == 0)
+			return dw;
 		DockingWindow w1 = (areaFirst ? tw : dw);
 		DockingWindow w2 = (areaFirst ? dw : tw);
 		return new SplitWindow(isHorizontal, divider, w1, w2);
@@ -129,10 +144,13 @@ public class WindowManager extends DockableWindowManager {
 	private Vector<View> addDockables(DockableWindowManager dwm, String[] windows) {
 		Vector<View> areaViews = new Vector<View>();
 		for (int i = 0; i < windows.length; i++) {
-			dwm.showDockableWindow(windows[i]);
-			JComponent window = dwm.getDockable(windows[i]);
-			View v = new View(dwm.getDockableTitle(windows[i]), null, window);
-			viewMap.addView(viewMap.getViewCount(), v);
+			String name = windows[i];
+			dwm.showDockableWindow(name);
+			JComponent window = dwm.getDockable(name);
+			View v = new View(dwm.getDockableTitle(name), null, window);
+			int n = viewMap.getViewCount();
+			dockables.put(name, n);
+			viewMap.addView(n, v);
 			areaViews.add(v);
 		}
 		return areaViews;
@@ -180,30 +198,26 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public PanelWindowContainer getBottomDockingArea() {
-		return super.getBottomDockingArea();
+		return bottomPanel;
 	}
 	@Override
 	public JComponent getDockable(String name) {
-		return windows.get(name);
-	}
-	@Override
-	public String getDockableTitle(String name) {
-		String t = jEdit.getProperty(name + ".longtitle");
-		if (t == null)
-			t = jEdit.getProperty(name + ".title");
-		return t;
+		Integer index = dockables.get(name);
+		if (index == null)
+			return null;
+		return (JComponent)viewMap.getView(index.intValue()).getComponent();
 	}
 	@Override
 	public PanelWindowContainer getLeftDockingArea() {
-		return super.getLeftDockingArea();
+		return leftPanel;
 	}
 	@Override
 	public PanelWindowContainer getRightDockingArea() {
-		return super.getRightDockingArea();
+		return rightPanel;
 	}
 	@Override
 	public PanelWindowContainer getTopDockingArea() {
-		return super.getTopDockingArea();
+		return topPanel;
 	}
 	@Override
 	public org.gjt.sp.jedit.View getView() {
@@ -241,18 +255,6 @@ public class WindowManager extends DockableWindowManager {
 	public boolean isDockableWindowVisible(String name) {
 		return isDockableWindowDocked(name);
 	}
-	@Override
-	public void paintChildren(Graphics g) {
-		// TODO Auto-generated method stub
-		super.paintChildren(g);
-	}
-	@Override
-	public void setDockableTitle(String dockableName, String newTitle) {
-		String propName = dockableName + ".longtitle";
-		String oldTitle = jEdit.getProperty(propName);
-		jEdit.setProperty(propName, newTitle);
-		firePropertyChange(propName, oldTitle, newTitle);
-	}
 	public void init() {
 		/*
 		EditBus.addToBus(this);
@@ -284,11 +286,14 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void showDockableWindow(String name) {
-		/*
-		DockingManager.display(name);
+		Integer i = dockables.get(name);
+		if (i == null) {
+			// Create dockable from factory and show it
+			return;
+		}
+		viewMap.getView(i.intValue()).makeVisible();
 		Object reason = DockableWindowUpdate.ACTIVATED;
 		EditBus.send(new DockableWindowUpdate(this, reason, name));
-		*/
 	}
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
