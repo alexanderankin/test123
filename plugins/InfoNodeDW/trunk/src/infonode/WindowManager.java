@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -32,6 +30,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory.Window;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
@@ -46,30 +45,8 @@ public class WindowManager extends DockableWindowManager {
 	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
 	private HashMap<String, Integer> dockables;
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
+	private HashMap<String, String> positions;
 	
-	public static void main(String [] args) {
-		View[] views = new View[5];
-		ViewMap viewMap = new ViewMap();
-		for (int i = 0; i < views.length; i++) {
-		  views[i] = new View("View " + i, null, new JLabel("This is view " + i + "!"));
-		  //viewMap.addView(i, views[i]);
-		}
-		RootWindow rootWindow = DockingUtil.createRootWindow(viewMap, true);
-		// Creating a window tree as layout
-		DockingWindow myLayout =
-		  new SplitWindow(true,
-		                  0.4f,
-		                  new SplitWindow(false,
-		                                  views[0],
-		                                  new SplitWindow(false, views[1], views[2])),
-		                  new TabWindow(new DockingWindow[]{views[3], views[4]}));
-		// Set the layout
-		rootWindow.setWindow(myLayout);
-		JFrame frame = new JFrame("InfoNode");
-		frame.add(rootWindow);
-		frame.pack();
-		frame.show();
-	}
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
 		if (constraints.equals(DockableLayout.TOP_TOOLBARS))
@@ -84,6 +61,7 @@ public class WindowManager extends DockableWindowManager {
 			ViewConfig config) {
 		this.view = view;
 		this.factory = factory;
+		EditBus.addToBus(this);
 		convertView(view);
 		setLayout(new BorderLayout());
 		add(rootWindow, BorderLayout.CENTER);
@@ -95,6 +73,7 @@ public class WindowManager extends DockableWindowManager {
 	private void convertView(org.gjt.sp.jedit.View view) {
 		viewMap = new ViewMap();
 		dockables = new HashMap<String, Integer>();
+		positions = new HashMap<String, String>();
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
 		if (editPane == null)
@@ -165,10 +144,7 @@ public class WindowManager extends DockableWindowManager {
 			String name = windows[i];
 			dwm.showDockableWindow(name);
 			JComponent window = dwm.getDockable(name);
-			View v = new View(getDockableTitle(name), null, window);
-			int n = viewMap.getViewCount();
-			dockables.put(name, n);
-			viewMap.addView(n, v);
+			View v = createDockableView(name, window);
 			areaViews.add(v);
 		}
 		return areaViews;
@@ -241,26 +217,89 @@ public class WindowManager extends DockableWindowManager {
 	public org.gjt.sp.jedit.View getView() {
 		return view;
 	}
+	private void updateProperties()
+	{
+		if (view.isPlainView())
+			return;
+
+/*		((DockableLayout)getLayout()).setAlternateLayout(
+			jEdit.getBooleanProperty("view.docking.alternateLayout"));
+*/
+		String[] windowList = factory.getRegisteredDockableWindows();
+		for (int i = 0; i < windowList.length; i++) {
+			String name = windowList[i];
+			String position = getDockablePosition(name);
+			String curPosition = getCurrentDockablePosition(name);
+			if ((position != null && position.equals(curPosition)) || position == curPosition)
+				continue;
+			showDockableWindow(name);
+		}
+
+		/*continuousLayout = jEdit.getBooleanProperty("appearance.continuousLayout");
+		revalidate();
+		repaint();
+		*/
+	}
+
+	private String getCurrentDockablePosition(String name) {
+		return positions.get(name);
+	}
 	@Override
 	public void handleMessage(EBMessage msg) {
-/*		if(msg instanceof PluginUpdate) {
+		if (msg instanceof PropertiesChanged)
+			updateProperties();
+/*
+		if (msg instanceof DockableWindowUpdate)
+		{
+			if(((DockableWindowUpdate)msg).getWhat()
+				== DockableWindowUpdate.PROPERTIES_CHANGED)
+				propertiesChanged();
+		}
+		else if(msg instanceof PluginUpdate)
+		{
 			PluginUpdate pmsg = (PluginUpdate)msg;
-			if (pmsg.isExiting())
+			if(pmsg.getWhat() == PluginUpdate.LOADED)
+			{
+				Iterator<DockableWindowFactory.Window> iter = factory.getDockableWindowIterator();
+
+				while(iter.hasNext())
+				{
+					DockableWindowFactory.Window w = iter.next();
+					if(w.plugin == pmsg.getPluginJAR())
+						addEntry(w);
+				}
+
+				propertiesChanged();
+			}
+			else if(pmsg.isExiting())
 			{
 				// we don't care
 			}
-			else if (pmsg.getWhat() == PluginUpdate.DEACTIVATED ||
-					pmsg.getWhat() == PluginUpdate.UNLOADED)
+			else if(pmsg.getWhat() == PluginUpdate.DEACTIVATED)
 			{
-				// Close all plugin dockables
-				PluginJAR jar = pmsg.getPluginJAR();
-				Iterator<Window> iter = factory.getDockableWindowIterator();
-				while (iter.hasNext()) {
-					Window w = iter.next();
-					if (w.getPlugin() == jar)
-						hideDockableWindow(w.getName());
+				Iterator<Entry> iter = getAllPluginEntries(
+					pmsg.getPluginJAR(),false);
+				while(iter.hasNext())
+				{
+					Entry entry = iter.next();
+					if(entry.container != null)
+						entry.container.remove(entry);
 				}
-				
+			}
+			else if(pmsg.getWhat() == PluginUpdate.UNLOADED)
+			{
+				Iterator<Entry> iter = getAllPluginEntries(
+					pmsg.getPluginJAR(),true);
+				while(iter.hasNext())
+				{
+					Entry entry = iter.next();
+					if(entry.container != null)
+					{
+						entry.container.unregister(entry);
+						entry.win = null;
+						entry.container = null;
+					}
+				}
 			}
 		}
 		*/
@@ -302,20 +341,28 @@ public class WindowManager extends DockableWindowManager {
 		windows.remove(name);
 		*/
 	}
+	private String getDockablePosition(String name) {
+		return jEdit.getProperty(name + ".dock-position");
+	}
+	private View createDockableView(String name, JComponent c) {
+		View v = new View(getDockableTitle(name), null, c);
+		int n = viewMap.getViewCount();
+		dockables.put(name, n);
+		viewMap.addView(n, v);
+		positions.put(name, getDockablePosition(name));
+		return v;
+	}
 	@Override
 	public void showDockableWindow(String name) {
 		Integer i = dockables.get(name);
 		if (i == null) {
 			// Create dockable from factory and show it
 			Window w = factory.getDockableWindowFactory(name);
-			String position = jEdit.getProperty(name + ".dock-position");
+			String position = getDockablePosition(name);
 			if (position != null) {
 				JComponent c = w.createDockableWindow(view, position);
-				View v = new View(getDockableTitle(name), null, c);
-				int n = viewMap.getViewCount();
-				dockables.put(name, n);
-				i = Integer.valueOf(n);
-				viewMap.addView(n, v);
+				i = Integer.valueOf(viewMap.getViewCount());
+				View v = createDockableView(name, c);
 				TabWindow tw = null;
 				if (position.equals(DockableWindowManager.LEFT))
 					tw = leftTab;
@@ -341,109 +388,4 @@ public class WindowManager extends DockableWindowManager {
 		//return mainView.add(comp, index);
 		return super.add(comp, index);
 	}
-
-	/*
-	private class DemoPerspectiveFactory implements PerspectiveFactory {
-		View view;
-		LayoutSequence sequence;
-		public DemoPerspectiveFactory(View view) {
-			this.view = view;
-		}
-		public Perspective getPerspective(String persistentId) {
-			if(! MAIN_PERSPECTIVE.equals(persistentId))
-				return null;
-			Perspective perspective = new Perspective(MAIN_PERSPECTIVE, MAIN_PERSPECTIVE);
-			sequence = perspective.getInitialSequence(true);
-			sequence.add(MAIN_VIEW);
-			String[] windowList = factory.getRegisteredDockableWindows();
-			for(int i = 0; i < windowList.length; i++)
-			{
-				String dockable = windowList[i];
-				String newPosition = jEdit.getProperty(dockable + ".dock-position",FLOATING);
-			}
-			if (dockables != null) {
-				if (! alternateLayout) {
-					addDockables(DockingConstants.WEST_REGION);
-					addDockables(DockingConstants.EAST_REGION);
-					addDockables(DockingConstants.NORTH_REGION);
-					addDockables(DockingConstants.SOUTH_REGION);
-				} else {
-					addDockables(DockingConstants.NORTH_REGION);
-					addDockables(DockingConstants.SOUTH_REGION);
-					addDockables(DockingConstants.WEST_REGION);
-					addDockables(DockingConstants.EAST_REGION);
-				}
-			}
-			return perspective;
-		}
-		private void addDockables(String region) {
-			Vector<String> regionDockables = dockables.get(region);
-			if (regionDockables.isEmpty())
-				return;
-			float splitVal = split.get(region).floatValue();
-			String first = regionDockables.get(0);
-			sequence.add(first, MAIN_VIEW, region, splitVal);
-			System.err.println(first + " " + region + " " + splitVal);
-			for (int i = 1; i < regionDockables.size(); i++) {
-				sequence.add(regionDockables.get(i), first);
-			}
-		}
-	}
-	@SuppressWarnings("unused")
-	private class ViewFactory extends DockableFactory.Stub {
-		
-		View view;
-		
-		public ViewFactory(View view) {
-			this.view = view;
-		}
-		public Component getDockableComponent(String dockableId) {
-			if(MAIN_VIEW.equals(dockableId))
-				return mainView;
-			return createView(dockableId);
-		}
-		private Component createView(String id) {
-			JComponent c = WindowManager.this.getDockable(id);
-			if (c == null)
-			{
-				DockableWindowFactory.Window window = factory.getDockableWindowFactory(id);
-				String position = jEdit.getProperty(id + DOCK_POSITION);
-				c = window.createDockableWindow(view, position);
-			}
-			String title = getDockableTitle(id);
-			Dockable d = DockableComponentWrapper.create(c, id, title);
-			DockingManager.registerDockable(d);
-			windows.put(id, c);
-			return c;
-		}
-	}
-	private class FlexDockMainView extends org.flexdock.view.View {
-
-		private JPanel panel;
-		
-		public FlexDockMainView(String persistentId) {
-			super(persistentId);
-			setTitlebar(null);
-			panel = new JPanel(new BorderLayout());
-			setContentPane(panel);
-		}
-
-		@Override
-		public Component add(Component comp, int index) {
-			panel.add(comp, BorderLayout.CENTER);
-			for (int i=0; i<panel.getComponentCount();i++)
-				System.err.println(i + ":" + panel.getComponent(i));
-			return comp;
-		}
-		public void add(Component comp, Object o, int index) {
-			String s = (String)o;
-			if (s.equals(DockableLayout.TOP_TOOLBARS))
-				panel.add(comp, BorderLayout.NORTH);
-			else
-				panel.add(comp, BorderLayout.SOUTH);
-			for (int i=0; i<panel.getComponentCount();i++)
-				System.err.println(i + ":" + panel.getComponent(i));
-		}
-	}
-	*/
 }
