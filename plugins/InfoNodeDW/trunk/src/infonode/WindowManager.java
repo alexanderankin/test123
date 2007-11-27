@@ -2,6 +2,8 @@ package infonode;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Point;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,6 +43,8 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 public class WindowManager extends DockableWindowManager {
 
 	private static final String MAIN_VIEW_NAME = "Main";
+	private static final String DEFAULT_FILE =
+		Plugin.getConfigDirectory() + File.separator + "perspective.sav";
 	private org.gjt.sp.jedit.View view;
 	private DockableWindowFactory factory;
 	private JEditViewMap viewMap;
@@ -74,6 +78,8 @@ public class WindowManager extends DockableWindowManager {
 		leftPanel = new PanelWindowContainer(this,LEFT,config.leftPos);
 		bottomPanel = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
 		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
+		if (new File(DEFAULT_FILE).exists())
+			load(DEFAULT_FILE);
 	}
 	private void convertView(org.gjt.sp.jedit.View view) {
 		viewMap = new JEditViewMap(this);
@@ -85,6 +91,7 @@ public class WindowManager extends DockableWindowManager {
 		center = new JPanel(new BorderLayout());
 		center.add(editPane, BorderLayout.CENTER);
 		mainView = new View(MAIN_VIEW_NAME, null, center);
+		mainView.setName(MAIN_VIEW_NAME);
 		mainView.getViewProperties().setAlwaysShowTitle(false);
 		viewMap.addView(MAIN_VIEW_NAME, mainView);
 		left = addDockables(dwm, dwm.getLeftDockingArea().getDockables());
@@ -155,17 +162,11 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void close() {
-/*
-		Set<String> ids = DockingManager.getDockableIds();
-		Iterator<String> i = ids.iterator();
-		while (i.hasNext())
-		{
-			Dockable d = DockingManager.getDockable(i.next());
-			DockingPort p = d.getDockingPort();
-			if (p != null)
-				p.undock(d.getComponent());
+		save(DEFAULT_FILE);
+		for (int i = 0; i < viewMap.getViewCount(); i++) {
+			View v = viewMap.getViewAtIndex(i);
+			viewMap.removeView(v.getName());
 		}
-		*/
 	}
 	@Override
 	public void closeCurrentArea() {
@@ -179,20 +180,10 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent floatDockableWindow(String name) {
-		/*
-		showDockableWindow(name);
-		Dockable d = DockingManager.getDockable(name);
-		DockingManager.close(d);
-		JComponent c = (JComponent) d.getComponent();
-		JFrame f = new JFrame(getDockableTitle(name));
-		DefaultDockingPort floatingPort = new DefaultDockingPort();
-		f.getContentPane().add(BorderLayout.CENTER, floatingPort);
-		floatingPort.dock(c, DockingConstants.CENTER_REGION);
-		f.pack();
-		f.setVisible(true);
-		return c;
-		*/
-		return super.floatDockableWindow(name);
+		View v = constructDockableView(name);
+		leftTab.addTab(v);
+		v.undock(new Point(0,0));
+		return (JComponent)v.getComponent();
 	}
 	@Override
 	public PanelWindowContainer getBottomDockingArea() {
@@ -352,6 +343,7 @@ public class WindowManager extends DockableWindowManager {
 	}
 	private View createDockableView(String name, JComponent c) {
 		View v = new View(getDockableTitle(name), null, c);
+		v.setName(name);
 		viewMap.addView(name, v);
 		positions.put(name, getDockablePosition(name));
 		return v;
