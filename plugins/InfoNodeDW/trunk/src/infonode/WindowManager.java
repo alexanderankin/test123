@@ -16,7 +16,7 @@ import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.properties.TabWindowProperties;
 import net.infonode.docking.util.DockingUtil;
-import net.infonode.docking.util.ViewMap;
+import net.infonode.docking.util.StringViewMap;
 import net.infonode.util.Direction;
 
 import org.gjt.sp.jedit.EBMessage;
@@ -35,15 +35,15 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
 
+	private static final String MAIN_VIEW_NAME = "Main";
 	private org.gjt.sp.jedit.View view;
 	private DockableWindowFactory factory;
-	private ViewMap viewMap;
+	private StringViewMap viewMap;
 	private RootWindow rootWindow;
 	private JComponent center;
 	private Vector<View> left, right, top, bottom;
 	private View mainView;
 	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
-	private HashMap<String, Integer> dockables;
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
 	private HashMap<String, String> positions;
 	
@@ -71,8 +71,7 @@ public class WindowManager extends DockableWindowManager {
 		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
 	}
 	private void convertView(org.gjt.sp.jedit.View view) {
-		viewMap = new ViewMap();
-		dockables = new HashMap<String, Integer>();
+		viewMap = new StringViewMap();
 		positions = new HashMap<String, String>();
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
@@ -80,9 +79,9 @@ public class WindowManager extends DockableWindowManager {
 			editPane = view.getEditPane();
 		center = new JPanel(new BorderLayout());
 		center.add(editPane, BorderLayout.CENTER);
-		mainView = new View("Main", null, center);
+		mainView = new View(MAIN_VIEW_NAME, null, center);
 		mainView.getViewProperties().setAlwaysShowTitle(false);
-		viewMap.addView(0, mainView);
+		viewMap.addView(MAIN_VIEW_NAME, mainView);
 		left = addDockables(dwm, dwm.getLeftDockingArea().getDockables());
 		right = addDockables(dwm, dwm.getRightDockingArea().getDockables());
 		bottom = addDockables(dwm, dwm.getBottomDockingArea().getDockables());
@@ -196,10 +195,10 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public JComponent getDockable(String name) {
-		Integer index = dockables.get(name);
-		if (index == null)
+		View v = viewMap.getView(name);
+		if (v == null)
 			return null;
-		return (JComponent)viewMap.getView(index.intValue()).getComponent();
+		return (JComponent)v.getComponent();
 	}
 	@Override
 	public PanelWindowContainer getLeftDockingArea() {
@@ -348,28 +347,23 @@ public class WindowManager extends DockableWindowManager {
 	}
 	private View createDockableView(String name, JComponent c) {
 		View v = new View(getDockableTitle(name), null, c);
-		int n = viewMap.getViewCount();
-		dockables.put(name, n);
-		viewMap.addView(n, v);
+		viewMap.addView(name, v);
 		positions.put(name, getDockablePosition(name));
 		return v;
 	}
 	@Override
 	public void showDockableWindow(String name) {
-		Integer i = dockables.get(name);
 		String position = getDockablePosition(name);
 		if (position.equals(DockableWindowManager.FLOATING))
 			return;
-		View v;
+		View v = viewMap.getView(name);
 		boolean repos = false;
-		if (i == null) {
+		if (v == null) {
 			Window w = factory.getDockableWindowFactory(name);
 			JComponent c = w.createDockableWindow(view, position);
-			i = Integer.valueOf(viewMap.getViewCount());
 			v = createDockableView(name, c);
 			repos = true;
 		} else {
-			v = viewMap.getView(i.intValue());
 			String curPosition = getCurrentDockablePosition(name);
 			if (! position.equals(curPosition))
 				repos = true;
