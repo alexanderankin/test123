@@ -229,8 +229,10 @@ public class WindowManager extends DockableWindowManager {
 		for (int i = 0; i < windowList.length; i++) {
 			String name = windowList[i];
 			String position = getDockablePosition(name);
+			if (position.equals(DockableWindowManager.FLOATING))
+				continue;
 			String curPosition = getCurrentDockablePosition(name);
-			if ((position != null && position.equals(curPosition)) || position == curPosition)
+			if (position == null || position.equals(curPosition))
 				continue;
 			showDockableWindow(name);
 		}
@@ -355,34 +357,41 @@ public class WindowManager extends DockableWindowManager {
 	@Override
 	public void showDockableWindow(String name) {
 		Integer i = dockables.get(name);
+		String position = getDockablePosition(name);
+		if (position.equals(DockableWindowManager.FLOATING))
+			return;
+		View v;
+		boolean repos = false;
 		if (i == null) {
-			// Create dockable from factory and show it
 			Window w = factory.getDockableWindowFactory(name);
-			String position = getDockablePosition(name);
-			if (position != null) {
-				JComponent c = w.createDockableWindow(view, position);
-				i = Integer.valueOf(viewMap.getViewCount());
-				View v = createDockableView(name, c);
-				TabWindow tw = null;
-				if (position.equals(DockableWindowManager.LEFT))
-					tw = leftTab;
-				else if (position.equals(DockableWindowManager.RIGHT))
-					tw = rightTab;
-				else if (position.equals(DockableWindowManager.BOTTOM))
-					tw = bottomTab;
-				if (position.equals(DockableWindowManager.TOP))
-					tw = topTab;
-				if (tw != null) {
-					tw.addTab(v);
-					setViewLayout();
-				}
+			JComponent c = w.createDockableWindow(view, position);
+			i = Integer.valueOf(viewMap.getViewCount());
+			v = createDockableView(name, c);
+			repos = true;
+		} else {
+			v = viewMap.getView(i.intValue());
+			String curPosition = getCurrentDockablePosition(name);
+			if (! position.equals(curPosition))
+				repos = true;
+		}
+		if (repos) {
+			TabWindow tw = null;
+			if (position.equals(DockableWindowManager.LEFT))
+				tw = leftTab;
+			else if (position.equals(DockableWindowManager.RIGHT))
+				tw = rightTab;
+			else if (position.equals(DockableWindowManager.BOTTOM))
+				tw = bottomTab;
+			if (position.equals(DockableWindowManager.TOP))
+				tw = topTab;
+			if (tw != null) {
+				tw.addTab(v);
+				setViewLayout();
 			}
 		}
-		if (i != null) {
-			viewMap.getView(i.intValue()).makeVisible();
-			Object reason = DockableWindowUpdate.ACTIVATED;
-			EditBus.send(new DockableWindowUpdate(this, reason, name));
-		}
+		v.makeVisible();
+		Object reason = DockableWindowUpdate.ACTIVATED;
+		EditBus.send(new DockableWindowUpdate(this, reason, name));
 	}
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
