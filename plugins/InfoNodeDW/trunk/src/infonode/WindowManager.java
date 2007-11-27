@@ -2,7 +2,6 @@ package infonode;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -31,6 +30,7 @@ import org.gjt.sp.jedit.gui.DockableWindowContainer;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowFactory.Window;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 
 @SuppressWarnings("serial")
@@ -114,6 +114,9 @@ public class WindowManager extends DockableWindowManager {
 		rightTab = createTabs(right, Direction.RIGHT, Direction.DOWN);
 		bottomTab = createTabs(bottom, Direction.UP, Direction.RIGHT);
 		topTab = createTabs(top, Direction.UP, Direction.RIGHT);
+		setViewLayout();
+	}
+	private void setViewLayout() {
 		DockingWindow sw = null;
 		sw = addArea(leftTab, mainView, true, true, 0.25f);
 		sw = addArea(rightTab, sw, true, false, 0.75f);
@@ -141,13 +144,28 @@ public class WindowManager extends DockableWindowManager {
 		DockingWindow w2 = (areaFirst ? dw : tw);
 		return new SplitWindow(isHorizontal, divider, w1, w2);
 	}
+	public String getDockableTitle(String name) {
+		String title = jEdit.getProperty(name + ".longtitle");
+		if (title == null)
+			return getDockableShortTitle(name);
+		else
+			return title;
+	}
+	private String getDockableShortTitle(String name) 
+	{
+		String title = jEdit.getProperty(name + ".title");
+		if(title == null)
+			return "NO TITLE PROPERTY: " + name;
+		else
+			return title;
+	}
 	private Vector<View> addDockables(DockableWindowManager dwm, String[] windows) {
 		Vector<View> areaViews = new Vector<View>();
 		for (int i = 0; i < windows.length; i++) {
 			String name = windows[i];
 			dwm.showDockableWindow(name);
 			JComponent window = dwm.getDockable(name);
-			View v = new View(dwm.getDockableTitle(name), null, window);
+			View v = new View(getDockableTitle(name), null, window);
 			int n = viewMap.getViewCount();
 			dockables.put(name, n);
 			viewMap.addView(n, v);
@@ -289,11 +307,35 @@ public class WindowManager extends DockableWindowManager {
 		Integer i = dockables.get(name);
 		if (i == null) {
 			// Create dockable from factory and show it
-			return;
+			Window w = factory.getDockableWindowFactory(name);
+			String position = jEdit.getProperty(name + ".dock-position");
+			if (position != null) {
+				JComponent c = w.createDockableWindow(view, position);
+				View v = new View(getDockableTitle(name), null, c);
+				int n = viewMap.getViewCount();
+				dockables.put(name, n);
+				i = Integer.valueOf(n);
+				viewMap.addView(n, v);
+				TabWindow tw = null;
+				if (position.equals(DockableWindowManager.LEFT))
+					tw = leftTab;
+				else if (position.equals(DockableWindowManager.RIGHT))
+					tw = rightTab;
+				else if (position.equals(DockableWindowManager.BOTTOM))
+					tw = bottomTab;
+				if (position.equals(DockableWindowManager.TOP))
+					tw = topTab;
+				if (tw != null) {
+					tw.addTab(v);
+					setViewLayout();
+				}
+			}
 		}
-		viewMap.getView(i.intValue()).makeVisible();
-		Object reason = DockableWindowUpdate.ACTIVATED;
-		EditBus.send(new DockableWindowUpdate(this, reason, name));
+		if (i != null) {
+			viewMap.getView(i.intValue()).makeVisible();
+			Object reason = DockableWindowUpdate.ACTIVATED;
+			EditBus.send(new DockableWindowUpdate(this, reason, name));
+		}
 	}
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
