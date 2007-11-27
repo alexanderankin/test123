@@ -44,7 +44,7 @@ public class Plugin extends EditPlugin {
 	    WindowManager wm = windowManagers.get(view);
 		wm.save(sel.getAbsolutePath());
 	}
-	private static String getConfigDirectory() {
+	public static String getConfigDirectory() {
 		String dir = jEdit.getSettingsDirectory() + File.separator + "InfoNodeDW";
 		File f = new File(dir);
 		if (! f.exists())
