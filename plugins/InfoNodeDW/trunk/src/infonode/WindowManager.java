@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -23,6 +24,15 @@ import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.properties.TabWindowProperties;
+import net.infonode.docking.theme.BlueHighlightDockingTheme;
+import net.infonode.docking.theme.ClassicDockingTheme;
+import net.infonode.docking.theme.DefaultDockingTheme;
+import net.infonode.docking.theme.DockingWindowsTheme;
+import net.infonode.docking.theme.GradientDockingTheme;
+import net.infonode.docking.theme.LookAndFeelDockingTheme;
+import net.infonode.docking.theme.ShapedGradientDockingTheme;
+import net.infonode.docking.theme.SlimFlatDockingTheme;
+import net.infonode.docking.theme.SoftBlueIceDockingTheme;
 import net.infonode.docking.util.DockingUtil;
 import net.infonode.util.Direction;
 
@@ -55,7 +65,25 @@ public class WindowManager extends DockableWindowManager {
 	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
 	private HashMap<String, String> positions;
+	private DockingWindowsTheme currentTheme = null;
+	private static DockingWindowsTheme [] themes = new DockingWindowsTheme[] {
+			new BlueHighlightDockingTheme(),
+			new ClassicDockingTheme(),
+			new DefaultDockingTheme(),
+			new GradientDockingTheme(),
+			new LookAndFeelDockingTheme(),
+			new ShapedGradientDockingTheme(),
+			new SlimFlatDockingTheme(),
+			new SoftBlueIceDockingTheme()
+		};
+	private static String [] themeNames;
 	
+	{
+		themeNames = new String[themes.length];
+		for (int i = 0; i < themes.length; i++)
+			themeNames[i] = themes[i].getName();
+	}
+
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
 		if (constraints.equals(DockableLayout.TOP_TOOLBARS))
@@ -415,10 +443,8 @@ public class WindowManager extends DockableWindowManager {
 			rootWindow.read(ois);
 			ois.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -429,11 +455,27 @@ public class WindowManager extends DockableWindowManager {
 			rootWindow.write(ous);
 			ous.close();
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+	private void setTheme(String theme) {
+		if (theme == null)
+			return;
+		for (int i = 0; i < themeNames.length; i++)
+			if (themeNames[i].equals(theme)) {
+				if (currentTheme != null)
+					rootWindow.getRootWindowProperties().removeSuperObject(currentTheme.getRootWindowProperties());
+				rootWindow.getRootWindowProperties().addSuperObject(themes[i].getRootWindowProperties());
+				currentTheme = themes[i];
+				return;
+			}
+	}
+	public void selectTheme() {
+		String defaultTheme = (currentTheme != null) ? currentTheme.getName() : themeNames[0];
+		String theme = (String) JOptionPane.showInputDialog(view,
+			"Select a theme:", "Themes", 0, null, themeNames, defaultTheme);
+		setTheme(theme);
 	}
 }

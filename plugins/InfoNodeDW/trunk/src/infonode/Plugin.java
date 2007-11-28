@@ -52,4 +52,8 @@ public class Plugin extends EditPlugin {
 			f.mkdir();
 		return dir;
 	}
+	public static void selectTheme(View view) {
+	    WindowManager wm = windowManagers.get(view);
+		wm.selectTheme();
+	}
 }

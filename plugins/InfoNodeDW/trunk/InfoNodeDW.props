@@ -24,9 +24,12 @@ plugin.infonode.Plugin.depend.1=jedit 04.03.12.00
 infonode-start.label=Start
 infonode-load.label=Load...
 infonode-save.label=Save...
+infonode-select-theme.label=Select theme...
 
 # menus
-plugin.infonode.Plugin.menu=infonode-start infonode-load infonode-save
+plugin.infonode.Plugin.menu=infonode-start infonode-load infonode-save \
+  - \
+  infonode-select-theme
 
 # docs
 #plugin.ctags.sidekick.Plugin.docs=index.html

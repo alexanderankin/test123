@@ -3,7 +3,6 @@ package infonode;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 
 import net.infonode.docking.View;
 import net.infonode.docking.util.StringViewMap;

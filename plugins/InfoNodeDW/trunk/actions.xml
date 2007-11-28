@@ -17,6 +17,11 @@
 			infonode.Plugin.save(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="infonode-select-theme" NO_REPEAT="TRUE">
+		<CODE>
+			infonode.Plugin.selectTheme(view);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 
