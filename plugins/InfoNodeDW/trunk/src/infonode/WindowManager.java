@@ -84,7 +84,6 @@ public class WindowManager extends DockableWindowManager {
 	private void convertView(org.gjt.sp.jedit.View view) {
 		viewMap = new JEditViewMap(this);
 		positions = new HashMap<String, String>();
-		DockableWindowManager dwm = view.getDockableWindowManager();
 		JComponent editPane = view.getSplitPane();
 		if (editPane == null)
 			editPane = view.getEditPane();
@@ -94,10 +93,27 @@ public class WindowManager extends DockableWindowManager {
 		mainView.setName(MAIN_VIEW_NAME);
 		mainView.getViewProperties().setAlwaysShowTitle(false);
 		viewMap.addView(MAIN_VIEW_NAME, mainView);
-		left = addDockables(dwm, dwm.getLeftDockingArea().getDockables());
-		right = addDockables(dwm, dwm.getRightDockingArea().getDockables());
-		bottom = addDockables(dwm, dwm.getBottomDockingArea().getDockables());
-		top = addDockables(dwm, dwm.getTopDockingArea().getDockables());
+		String [] dockables = factory.getRegisteredDockableWindows();
+		Vector<String> leftDockables = new Vector<String>();
+		Vector<String> rightDockables = new Vector<String>();
+		Vector<String> bottomDockables = new Vector<String>();
+		Vector<String> topDockables = new Vector<String>();
+		for (int i = 0; i < dockables.length; i++) {
+			String dockable = dockables[i];
+			String pos = getDockablePosition(dockable);
+			if (pos.equals(DockableWindowManager.LEFT))
+				leftDockables.add(dockable);
+			else if (pos.equals(DockableWindowManager.RIGHT))
+				rightDockables.add(dockable);
+			else if (pos.equals(DockableWindowManager.BOTTOM))
+				bottomDockables.add(dockable);
+			else if (pos.equals(DockableWindowManager.TOP))
+				topDockables.add(dockable);
+		}
+		left = addDockables(leftDockables);
+		right = addDockables(rightDockables);
+		bottom = addDockables(bottomDockables);
+		top = addDockables(topDockables);
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
 		leftTab = createTabs(left, Direction.LEFT, Direction.UP);
@@ -149,14 +165,12 @@ public class WindowManager extends DockableWindowManager {
 		else
 			return title;
 	}
-	private Vector<View> addDockables(DockableWindowManager dwm, String[] windows) {
+	private Vector<View> addDockables(Vector<String> dockables) {
 		Vector<View> areaViews = new Vector<View>();
-		for (int i = 0; i < windows.length; i++) {
-			String name = windows[i];
-			dwm.showDockableWindow(name);
-			JComponent window = dwm.getDockable(name);
-			View v = createDockableView(name, window);
-			areaViews.add(v);
+		for (int i = 0; i < dockables.size(); i++) {
+			String name = dockables.get(i);
+			showDockableWindow(name);
+			areaViews.add(viewMap.getView(name));
 		}
 		return areaViews;
 	}
