@@ -466,8 +466,10 @@ public class WindowManager extends DockableWindowManager {
 		for (int i = 0; i < themeNames.length; i++)
 			if (themeNames[i].equals(theme)) {
 				if (currentTheme != null)
-					rootWindow.getRootWindowProperties().removeSuperObject(currentTheme.getRootWindowProperties());
-				rootWindow.getRootWindowProperties().addSuperObject(themes[i].getRootWindowProperties());
+					rootWindow.getRootWindowProperties().replaceSuperObject(
+						currentTheme.getRootWindowProperties(), themes[i].getRootWindowProperties());
+				else
+					rootWindow.getRootWindowProperties().addSuperObject(themes[i].getRootWindowProperties());
 				currentTheme = themes[i];
 				return;
 			}
