@@ -1,6 +1,6 @@
 Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11145)
+--- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11155)
 +++ org/gjt/sp/jedit/gui/DockableWindowFactory.java	(working copy)
 @@ -167,11 +167,16 @@
  	} //}}}
@@ -40,7 +40,7 @@ Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
  
 Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11145)
+--- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11155)
 +++ org/gjt/sp/jedit/gui/DockableWindowManager.java	(working copy)
 @@ -210,7 +210,7 @@
  	 * @param config A docking configuration
@@ -53,9 +53,9 @@ Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
  		setLayout(new DockableLayout());
 Index: org/gjt/sp/jedit/View.java
 ===================================================================
---- org/gjt/sp/jedit/View.java	(revision 11145)
+--- org/gjt/sp/jedit/View.java	(revision 11155)
 +++ org/gjt/sp/jedit/View.java	(working copy)
-@@ -199,6 +199,16 @@
+@@ -199,6 +199,15 @@
  
  	//}}}
  
@@ -63,7 +63,6 @@ Index: org/gjt/sp/jedit/View.java
 +	{
 +		getContentPane().add(dwm,0);
 +		getContentPane().remove(dockableWindowManager);
-+		dockableWindowManager.close();
 +		dockableWindowManager = dwm;
 +		propertiesChanged();
 +		getContentPane().validate();
@@ -72,7 +71,7 @@ Index: org/gjt/sp/jedit/View.java
  	//{{{ getDockableWindowManager() method
  	/**
  	 * Returns the dockable window manager associated with this view.
-@@ -1170,7 +1180,8 @@
+@@ -1170,7 +1179,8 @@
  
  		setIconImage(GUIUtilities.getEditorIcon());
  

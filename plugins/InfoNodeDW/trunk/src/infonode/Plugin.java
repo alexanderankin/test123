@@ -23,6 +23,7 @@ public class Plugin extends EditPlugin {
 	public static void doStart(View view) {
 		WindowManager wm = new WindowManager();
 		windowManagers.put(view, wm);
+		view.getDockableWindowManager().close();
 		wm.construct(view, DockableWindowFactory.getInstance(), view.getViewConfig());
 		view.setDockableWindowManager(wm);
 	}
