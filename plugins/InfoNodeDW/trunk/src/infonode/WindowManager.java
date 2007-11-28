@@ -116,6 +116,7 @@ public class WindowManager extends DockableWindowManager {
 		top = addDockables(topDockables);
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
+		rootWindow.getWindowBar(Direction.DOWN).setEnabled(true);
 		leftTab = createTabs(left, Direction.LEFT, Direction.UP);
 		rightTab = createTabs(right, Direction.RIGHT, Direction.DOWN);
 		bottomTab = createTabs(bottom, Direction.UP, Direction.RIGHT);
