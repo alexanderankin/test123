@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking qmake from the current buffer's directory -->
+<!--  Alan Ezust -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+        <FILE_ENTRY LABEL="Build location"
+            VARNAME = "location"
+            EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' 
+            />
+    
+		<TOGGLE LABEL="Build Project file" VARNAME="makeProject" />
+		<ENTRY LABEL="Project file to use" VARNAME="projectFile"
+                        VALUE=" " />
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+		return "cd " + location;
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("qmake ");
+			if (makeProject) buf.append("-project ");
+			buf.append(projectFile);
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
