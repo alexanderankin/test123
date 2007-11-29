@@ -215,6 +215,9 @@ class ConsoleProcess
 
 		if (consoleState != null)
 			consoleState.setProcess(null);
+
+		// waitFor() might be waiting this.
+		notifyAll();
 	} // }}}
 
 	// {{{ isRunning() method
@@ -283,14 +286,15 @@ class ConsoleProcess
 
 	// {{{ waitFor() method
 	/** @see Process.waitFor() */
-	public synchronized int waitFor() throws InterruptedException
+	public int waitFor() throws InterruptedException
 	{
 		int retval = 0;
 		if (process != null) 
 			retval = process.waitFor();
-		/*while (!stopped) {
-			Thread.currentThread().sleep(100);
-		} */ 
+		while (!stopped) {
+			// wait for notifyAll() in stop().
+			wait(100);
+		}
 		return retval;
 	} // }}}
 

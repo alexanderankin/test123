@@ -1510,7 +1510,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
     <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
     <listitem><para> runCommandToBuffer() doesn't send command to buffer (1643269 - ezust) </para></listitem> 
-<!--    <listitem><para> waitForConsole(view) should work properly on *nix systems now. (k_satoda, ezust - #1698976) </para></listitem> -->
+    <listitem><para> waitForConsole(view) should work properly on *nix systems now. (k_satoda, ezust - #1698976) </para></listitem>
     <listitem><para> <literal>alias ant ant -emacs</literal> to get rid of adornments when running inside System shell (ezust).</para></listitem>
     <listitem><para> Improved <literal>generic</literal> extra line regexp - catches javac and gcc multilines better. Made #1 on list. (ezust).  </para></listitem>
 	<listitem><para> (windows only) - driveletters work in Console the way they do in <literal>cmd.exe</literal>, as change-directory shortcuts. Console keeps track of default directories for each drive, as well as the default drive for the current shell session. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para></listitem>
