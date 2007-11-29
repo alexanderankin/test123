@@ -129,6 +129,8 @@ public class WindowManager extends DockableWindowManager {
 		for (int i = 0; i < dockables.length; i++) {
 			String dockable = dockables[i];
 			String pos = getDockablePosition(dockable);
+			if (pos == null)
+				continue;
 			if (pos.equals(DockableWindowManager.LEFT))
 				leftDockables.add(dockable);
 			else if (pos.equals(DockableWindowManager.RIGHT))
