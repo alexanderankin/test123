@@ -1,0 +1,127 @@
+<?xml version="1.0" ?>
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<!-- This was based around the 'diff' from GNU diffutils 2.7.
+     It should also work with Cygwin diff, and diffs from other
+     Unices, but some options might not be supported. -->
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="File specification">
+
+		<FILE_ENTRY LABEL="Original file" VARNAME="from"
+			EVAL="buffer.getPath() + '~'" />
+		<FILE_ENTRY LABEL="Changed file" VARNAME="to"
+			EVAL="buffer.getPath()" />
+
+		<TOGGLE LABEL="Recursively compare directories"
+			VARNAME="recursive" />
+		<ENTRY LABEL="Ignore files regexp" VARNAME="ignore" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Options">
+
+		<TOGGLE LABEL="Treat files as text, even if binary"
+			VARNAME="binary" />
+		<TOGGLE LABEL="Ignore changes in white space"
+			VARNAME="whitespace" />
+		<TOGGLE LABEL="Ignore addition and removal of blank lines"
+			VARNAME="blankLines" />
+		<TOGGLE LABEL="Expand tabs in output" VARNAME="softTabs" />
+		<TOGGLE LABEL="Ignore case" VARNAME="ignoreCase" />
+		<TOGGLE LABEL="Handle missing files" VARNAME="newFile" />
+		<TOGGLE LABEL="Report which files are the same"
+			VARNAME="identical" />
+
+		<CHOICE LABEL="Algorithm" VARNAME="algorithm">
+			<OPTION LABEL="Default" VALUE="default" />
+			<OPTION LABEL="More accurate but slower" VALUE="slow" />
+			<OPTION LABEL="Large files with many small changes"
+				VALUE="large" />
+		</CHOICE>
+
+		<CHOICE LABEL="Output format" VARNAME="output" DEFAULT="unified">
+			<OPTION LABEL="Brief" VALUE="brief" />
+			<OPTION LABEL="Context" VALUE="context" />
+			<OPTION LABEL="ED script" VALUE="ed" />
+			<OPTION LABEL="RCS" VALUE="rcs" />
+			<OPTION LABEL="Side by side" VALUE="sideBySide" />
+			<OPTION LABEL="Unified" VALUE="unified" />
+		</CHOICE>
+
+		<ENTRY LABEL="Lines of context" VARNAME="context" DEFAULT="3" />
+
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" TO_BUFFER="TRUE"
+			BUFFER_MODE="patch" SHELL="System">
+			StringBuffer buf = new StringBuffer("diff ");
+
+			if(recursive)
+				buf.append(" -r");
+
+			if(!ignore.equals(""))
+			{
+				buf.append(" -X ");
+				buf.append(ignore);
+			}
+
+			if(binary)
+				buf.append(" -a");
+
+			if(whitespace)
+				buf.append(" -b");
+
+			if(blankLines)
+				buf.append(" -B");
+
+			if(softTabs)
+				buf.append(" -t");
+
+			if(ignoreCase)
+				buf.append(" -i");
+
+			if(newFile)
+				buf.append(" -N");
+
+			if(identical)
+				buf.append(" -s");
+
+			if(algorithm.equals("slow"))
+				buf.append(" -d");
+			else if(algorithm.equals("large"))
+				buf.append(" -H");
+
+			if(output.equals("brief"))
+				buf.append(" -q");
+			else if(output.equals("context"))
+			{
+				buf.append(" -C ");
+				buf.append(context);
+			}
+			else if(output.equals("ed"))
+				buf.append(" -e");
+			else if(output.equals("rcs"))
+				buf.append(" -n");
+			else if(output.equals("sideBySide"))
+				buf.append(" -y");
+			else if(output.equals("unified"))
+			{
+				buf.append(" -U ");
+				buf.append(context);
+			}
+
+			buf.append(" \"");
+			buf.append(from);
+			buf.append("\" \"");
+			buf.append(to);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
