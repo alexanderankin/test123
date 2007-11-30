@@ -40,7 +40,6 @@ class ConsoleProcess
 	// {{{ Data members
 	/** The running subprocess */
 	Process process;
-	private int resultCode = 0;
 	private SystemShell.ConsoleState consoleState;
 	private String currentDirectory;
 	private Console console;
@@ -290,12 +289,12 @@ class ConsoleProcess
 	public synchronized int waitFor() throws InterruptedException
 	{
 		if (process != null) 
-			resultCode = process.waitFor();
+			exitCode = process.waitFor();
 		while (!stopped) {
 			// wait for notifyAll() in stop().
 			wait(100);
 		}
-		return resultCode;
+		return exitCode;
 	} // }}}
 
 	// {{{ threadDone() method
