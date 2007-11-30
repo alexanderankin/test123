@@ -7,6 +7,7 @@ import ctags.sidekick.sorters.KindSorter;
 import ctags.sidekick.sorters.LineSorter;
 import ctags.sidekick.sorters.ListSorter;
 import ctags.sidekick.sorters.NameSorter;
+import ctags.sidekick.sorters.NameNoCaseSorter;
 
 public class SorterManager extends ObjectProcessorManager {
 	
@@ -38,6 +39,7 @@ public class SorterManager extends ObjectProcessorManager {
 		addProcessor(new AttributeValueSorter());
 		addProcessor(new FoldsFirstSorter());
 		addProcessor(new KindSorter());
+		addProcessor(new NameNoCaseSorter());
 		addProcessor(new LineSorter());
 		addProcessor(new NameSorter());
 	}
