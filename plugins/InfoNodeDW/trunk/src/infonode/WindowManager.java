@@ -57,6 +57,7 @@ public class WindowManager extends DockableWindowManager {
 		Plugin.getConfigDirectory() + File.separator + "perspective.sav";
 	private org.gjt.sp.jedit.View view;
 	private DockableWindowFactory factory;
+	private ViewConfig config;
 	private JEditViewMap viewMap;
 	private RootWindow rootWindow;
 	private JComponent center;
@@ -84,11 +85,14 @@ public class WindowManager extends DockableWindowManager {
 			themeNames[i] = themes[i].getName();
 	}
 
+	public void setEditorComponent(Component c) {
+		center.add(c, BorderLayout.CENTER);
+	}
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
-		if (constraints.equals(DockableLayout.TOP_TOOLBARS))
+		if (DockableLayout.TOP_TOOLBARS.equals(constraints))
 			center.add(comp, BorderLayout.NORTH);
-		else if (constraints.equals(DockableLayout.BOTTOM_TOOLBARS))
+		else if (DockableLayout.BOTTOM_TOOLBARS.equals(constraints))
 			center.add(comp, BorderLayout.SOUTH);
 		else
 			super.addImpl(comp, constraints, index);
@@ -98,63 +102,80 @@ public class WindowManager extends DockableWindowManager {
 			ViewConfig config) {
 		this.view = view;
 		this.factory = factory;
-		EditBus.addToBus(this);
-		convertView(view);
-		setLayout(new BorderLayout());
-		add(rootWindow, BorderLayout.CENTER);
-		topPanel = new PanelWindowContainer(this,TOP,config.topPos);
-		leftPanel = new PanelWindowContainer(this,LEFT,config.leftPos);
-		bottomPanel = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
-		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
-		if (new File(DEFAULT_FILE).exists())
-			load(DEFAULT_FILE);
-	}
-	private void convertView(org.gjt.sp.jedit.View view) {
+		this.config = config;
 		viewMap = new JEditViewMap(this);
 		positions = new HashMap<String, String>();
-		JComponent editPane = view.getSplitPane();
-		if (editPane == null)
-			editPane = view.getEditPane();
 		center = new JPanel(new BorderLayout());
-		center.add(editPane, BorderLayout.CENTER);
 		mainView = new View(MAIN_VIEW_NAME, null, center);
 		mainView.setName(MAIN_VIEW_NAME);
 		mainView.getViewProperties().setAlwaysShowTitle(false);
 		viewMap.addView(MAIN_VIEW_NAME, mainView);
-		String [] dockables = factory.getRegisteredDockableWindows();
-		Vector<String> leftDockables = new Vector<String>();
-		Vector<String> rightDockables = new Vector<String>();
-		Vector<String> bottomDockables = new Vector<String>();
-		Vector<String> topDockables = new Vector<String>();
-		for (int i = 0; i < dockables.length; i++) {
-			String dockable = dockables[i];
-			String pos = getDockablePosition(dockable);
-			if (pos == null)
-				continue;
-			if (pos.equals(DockableWindowManager.LEFT))
-				leftDockables.add(dockable);
-			else if (pos.equals(DockableWindowManager.RIGHT))
-				rightDockables.add(dockable);
-			else if (pos.equals(DockableWindowManager.BOTTOM))
-				bottomDockables.add(dockable);
-			else if (pos.equals(DockableWindowManager.TOP))
-				topDockables.add(dockable);
-		}
-		left = addDockables(leftDockables);
-		right = addDockables(rightDockables);
-		bottom = addDockables(bottomDockables);
-		top = addDockables(topDockables);
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 		rootWindow.getRootWindowProperties().getWindowAreaProperties().setBackgroundColor(center.getBackground());
 		rootWindow.getWindowBar(Direction.DOWN).setEnabled(true);
 		rootWindow.getWindowBar(Direction.UP).setEnabled(true);
 		rootWindow.getWindowBar(Direction.LEFT).setEnabled(true);
 		rootWindow.getWindowBar(Direction.RIGHT).setEnabled(true);
-		leftTab = createTabs(left, Direction.LEFT, Direction.UP);
-		rightTab = createTabs(right, Direction.RIGHT, Direction.DOWN);
-		bottomTab = createTabs(bottom, Direction.UP, Direction.RIGHT);
-		topTab = createTabs(top, Direction.UP, Direction.RIGHT);
+
+		leftTab = createTabs(new Vector<View>(), Direction.LEFT, Direction.UP);
+		rightTab = createTabs(new Vector<View>(), Direction.RIGHT, Direction.DOWN);
+		bottomTab = createTabs(new Vector<View>(), Direction.UP, Direction.RIGHT);
+		topTab = createTabs(new Vector<View>(), Direction.UP, Direction.RIGHT);
+
 		setViewLayout();
+		setLayout(new BorderLayout());
+		add(rootWindow, BorderLayout.CENTER);
+		invalidate();
+		topPanel = new PanelWindowContainer(this,TOP,config.topPos);
+		leftPanel = new PanelWindowContainer(this,LEFT,config.leftPos);
+		bottomPanel = new PanelWindowContainer(this,BOTTOM,config.bottomPos);
+		rightPanel = new PanelWindowContainer(this,RIGHT,config.rightPos);
+	}
+	@Override
+	public DockableWindowManager getNewInstance() {
+		return new WindowManager();
+	}
+	public void init() {
+		EditBus.addToBus(this);
+	}
+	@Override
+	public void applyViewConfig(ViewConfig config) {
+		if (new File(DEFAULT_FILE).exists())
+			load(DEFAULT_FILE);
+		else {
+			String [] dockables = factory.getRegisteredDockableWindows();
+			Vector<String> leftDockables = new Vector<String>();
+			Vector<String> rightDockables = new Vector<String>();
+			Vector<String> bottomDockables = new Vector<String>();
+			Vector<String> topDockables = new Vector<String>();
+			for (int i = 0; i < dockables.length; i++) {
+				String dockable = dockables[i];
+				String pos = getDockablePosition(dockable);
+				if (pos == null)
+					continue;
+				if (pos.equals(DockableWindowManager.LEFT))
+					leftDockables.add(dockable);
+				else if (pos.equals(DockableWindowManager.RIGHT))
+					rightDockables.add(dockable);
+				else if (pos.equals(DockableWindowManager.BOTTOM))
+					bottomDockables.add(dockable);
+				else if (pos.equals(DockableWindowManager.TOP))
+					topDockables.add(dockable);
+			}
+			left = addDockables(leftDockables);
+			right = addDockables(rightDockables);
+			bottom = addDockables(bottomDockables);
+			top = addDockables(topDockables);
+			for (int i = 0; i < left.size(); i++)
+				leftTab.addTab(left.get(i));
+			for (int i = 0; i < right.size(); i++)
+				rightTab.addTab(right.get(i));
+			for (int i = 0; i < top.size(); i++)
+				topTab.addTab(top.get(i));
+			for (int i = 0; i < bottom.size(); i++)
+				bottomTab.addTab(bottom.get(i));
+			super.applyViewConfig(config);
+		}
 	}
 	private void setViewLayout() {
 		DockingWindow sw = null;
@@ -203,8 +224,12 @@ public class WindowManager extends DockableWindowManager {
 		Vector<View> areaViews = new Vector<View>();
 		for (int i = 0; i < dockables.size(); i++) {
 			String name = dockables.get(i);
-			showDockableWindow(name);
-			areaViews.add(viewMap.getView(name));
+			/*
+			JComponent c = new JLabel("Dummy");
+			createDockableView(name, c);
+			*/
+			View v = constructDockableView(name);
+			areaViews.add(v);
 		}
 		return areaViews;
 	}
@@ -265,9 +290,6 @@ public class WindowManager extends DockableWindowManager {
 		if (view.isPlainView())
 			return;
 
-/*		((DockableLayout)getLayout()).setAlternateLayout(
-			jEdit.getBooleanProperty("view.docking.alternateLayout"));
-*/
 		String[] windowList = factory.getRegisteredDockableWindows();
 		for (int i = 0; i < windowList.length; i++) {
 			String name = windowList[i];
@@ -279,11 +301,6 @@ public class WindowManager extends DockableWindowManager {
 				continue;
 			showDockableWindow(name);
 		}
-
-		/*continuousLayout = jEdit.getBooleanProperty("appearance.continuousLayout");
-		revalidate();
-		repaint();
-		*/
 	}
 
 	private String getCurrentDockablePosition(String name) {
@@ -357,24 +374,6 @@ public class WindowManager extends DockableWindowManager {
 	public boolean isDockableWindowVisible(String name) {
 		return isDockableWindowDocked(name);
 	}
-	public void init() {
-		/*
-		EditBus.addToBus(this);
-		File xml = new File(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR, PERSPECTIVE_FILE);
-		if (! xml.exists()) {
-			PerspectiveManager.getInstance().setCurrentPerspective(MAIN_PERSPECTIVE);
-		} else {
-			try {
-				DockingManager.loadLayoutModel();
-			} catch(IOException ex) {
-				ex.printStackTrace();
-			} catch (PersistenceException ex) {
-	            ex.printStackTrace();
-	        }
-			DockingManager.restoreLayout();
-		}
-		*/
-	}
 	@Override
 	public void hideDockableWindow(String name) {
 		/*
@@ -408,31 +407,23 @@ public class WindowManager extends DockableWindowManager {
 		if (position.equals(DockableWindowManager.FLOATING))
 			return;
 		View v = viewMap.getView(name);
-		boolean repos = false;
 		if (v == null) {
 			Window w = factory.getDockableWindowFactory(name);
 			JComponent c = w.createDockableWindow(view, position);
 			v = createDockableView(name, c);
-			repos = true;
-		} else {
-			String curPosition = getCurrentDockablePosition(name);
-			if (! position.equals(curPosition))
-				repos = true;
 		}
-		if (repos) {
-			TabWindow tw = null;
-			if (position.equals(DockableWindowManager.LEFT))
-				tw = leftTab;
-			else if (position.equals(DockableWindowManager.RIGHT))
-				tw = rightTab;
-			else if (position.equals(DockableWindowManager.BOTTOM))
-				tw = bottomTab;
-			if (position.equals(DockableWindowManager.TOP))
-				tw = topTab;
-			if (tw != null) {
-				tw.addTab(v);
-				setViewLayout();
-			}
+		TabWindow tw = null;
+		if (position.equals(DockableWindowManager.LEFT))
+			tw = leftTab;
+		else if (position.equals(DockableWindowManager.RIGHT))
+			tw = rightTab;
+		else if (position.equals(DockableWindowManager.BOTTOM))
+			tw = bottomTab;
+		if (position.equals(DockableWindowManager.TOP))
+			tw = topTab;
+		if (tw != null) {
+			tw.addTab(v);
+			setViewLayout();
 		}
 		v.makeVisible();
 		Object reason = DockableWindowUpdate.ACTIVATED;

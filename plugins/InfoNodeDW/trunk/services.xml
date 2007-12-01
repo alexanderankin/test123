@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<!-- Docking window managers -->
+	<SERVICE CLASS="org.gjt.sp.jedit.gui.DockableWindowManager" NAME="InfoNode">
+		new infonode.WindowManager();
+	</SERVICE>
+</SERVICES>

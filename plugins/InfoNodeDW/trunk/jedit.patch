@@ -1,6 +1,47 @@
+Index: org/gjt/sp/jedit/jEdit.java
+===================================================================
+--- org/gjt/sp/jedit/jEdit.java	(revision 11178)
++++ org/gjt/sp/jedit/jEdit.java	(working copy)
+@@ -2217,21 +2217,7 @@
+ 			if(!config.plainView)
+ 			{
+ 				DockableWindowManager wm = newView.getDockableWindowManager();
+-				if(config.top != null
+-					&& config.top.length() != 0)
+-					wm.showDockableWindow(config.top);
+-
+-				if(config.left != null
+-					&& config.left.length() != 0)
+-					wm.showDockableWindow(config.left);
+-
+-				if(config.bottom != null
+-					&& config.bottom.length() != 0)
+-					wm.showDockableWindow(config.bottom);
+-
+-				if(config.right != null
+-					&& config.right.length() != 0)
+-					wm.showDockableWindow(config.right);
++				wm.applyViewConfig(config);
+ 			}
+ 
+ 			newView.pack();
+Index: org/gjt/sp/jedit/services.xml
+===================================================================
+--- org/gjt/sp/jedit/services.xml	(revision 11178)
++++ org/gjt/sp/jedit/services.xml	(working copy)
+@@ -50,4 +50,9 @@
+ 	<SERVICE CLASS="org.gjt.sp.jedit.io.EncodingDetector" NAME="buffer-local-property">
+ 		new BufferLocalEncodingDetector();
+ 	</SERVICE>
++	
++	<!-- Docking window managers -->
++	<SERVICE CLASS="org.gjt.sp.jedit.gui.DockableWindowManager" NAME="Basic">
++		new DockableWindowManager();
++	</SERVICE>
+ </SERVICES>
 Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11155)
+--- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11178)
 +++ org/gjt/sp/jedit/gui/DockableWindowFactory.java	(working copy)
 @@ -167,11 +167,16 @@
  	} //}}}
@@ -40,9 +81,29 @@ Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
  
 Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11155)
+--- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11178)
 +++ org/gjt/sp/jedit/gui/DockableWindowManager.java	(working copy)
-@@ -210,7 +210,7 @@
+@@ -175,6 +175,9 @@
+ 	public static final String RIGHT = "right";
+ 	//}}}
+ 	
++	public static final String DOCKING_WINDOW_MANAGER_SERVICE = "org.gjt.sp.jedit.gui.DockableWindowManager";
++	public static final String BASIC_DOCKING_WINDOW_MANAGER = "Basic";
++	public static final String DOCKING_WINDOW_MANAGER_PROP = "docking.window.manager";
+ 	//{{{ Data members
+ 	private View view;
+ 	private DockableWindowFactory factory;
+@@ -191,6 +194,9 @@
+ 	public Stack showStack = new Stack();
+ 	// }}}
+ 	
++	public static String getDockableWindowManagerProperty() {
++		return jEdit.getProperty(DOCKING_WINDOW_MANAGER_PROP, BASIC_DOCKING_WINDOW_MANAGER);
++	}
+ 	//{{{ getRegisteredDockableWindows() method
+ 	/**
+ 	 * @since jEdit 4.3pre2
+@@ -210,7 +216,7 @@
  	 * @param config A docking configuration
  	 * @since jEdit 2.6pre3
  	 */
@@ -51,11 +112,50 @@ Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
  		View.ViewConfig config)
  	{
  		setLayout(new DockableLayout());
+@@ -236,6 +242,9 @@
+ 		add(RIGHT,right.dockablePanel);
+ 	} //}}}
+ 
++	public DockableWindowManager getNewInstance() {
++		return new DockableWindowManager();
++	}
+ 	//{{{ init() method
+ 	/**
+ 	 * Initialises dockable window manager. Do not call this method directly.
+@@ -252,6 +261,19 @@
+ 		propertiesChanged();
+ 	} //}}}
+ 
++	public void setEditorComponent(Component c) {
++		add(c ,0);
++	}
++	public void applyViewConfig(View.ViewConfig config) {
++		if(config.top != null && config.top.length() != 0)
++			showDockableWindow(config.top);
++		if(config.left != null && config.left.length() != 0)
++			showDockableWindow(config.left);
++		if(config.bottom != null && config.bottom.length() != 0)
++			showDockableWindow(config.bottom);
++		if(config.right != null && config.right.length() != 0)
++			showDockableWindow(config.right);
++	}
+ 	// {{{ closeListener() method
+ 	/**
+ 	 * 
 Index: org/gjt/sp/jedit/View.java
 ===================================================================
---- org/gjt/sp/jedit/View.java	(revision 11155)
+--- org/gjt/sp/jedit/View.java	(revision 11178)
 +++ org/gjt/sp/jedit/View.java	(working copy)
-@@ -199,6 +199,15 @@
+@@ -36,8 +36,6 @@
+ 
+ import org.gjt.sp.jedit.msg.*;
+ import org.gjt.sp.jedit.gui.*;
+-import org.gjt.sp.jedit.gui.InputHandler;
+-import org.gjt.sp.jedit.gui.DefaultInputHandler;
+ import org.gjt.sp.jedit.search.*;
+ import org.gjt.sp.jedit.textarea.*;
+ import org.gjt.sp.jedit.textarea.TextArea;
+@@ -199,6 +197,14 @@
  
  	//}}}
  
@@ -64,20 +164,38 @@ Index: org/gjt/sp/jedit/View.java
 +		getContentPane().add(dwm,0);
 +		getContentPane().remove(dockableWindowManager);
 +		dockableWindowManager = dwm;
-+		propertiesChanged();
 +		getContentPane().validate();
 +	}
 +	
  	//{{{ getDockableWindowManager() method
  	/**
  	 * Returns the dockable window manager associated with this view.
-@@ -1170,7 +1179,8 @@
+@@ -563,6 +569,7 @@
+ 	public static final int VIEW = 0;
+ 	public static final int TEXT_AREA = 1;
+ 	public static final int ACTION_BAR = 2;
++
+ 	/**
+ 	 * Forwards key events directly to the input handler.
+ 	 * This is slightly faster than using a KeyListener
+@@ -1170,7 +1177,10 @@
  
  		setIconImage(GUIUtilities.getEditorIcon());
  
 -		dockableWindowManager = new DockableWindowManager(this,
-+		dockableWindowManager = new DockableWindowManager();
++		dockableWindowManager = ((DockableWindowManager) ServiceManager.getService(
++			DockableWindowManager.DOCKING_WINDOW_MANAGER_SERVICE,
++			DockableWindowManager.getDockableWindowManagerProperty())).getNewInstance();
 +		dockableWindowManager.construct(this,
  			DockableWindowFactory.getInstance(),config);
  
  		topToolBars = new JPanel(new VariableGridLayout(
+@@ -1369,7 +1379,7 @@
+ 		try
+ 		{
+ 			Component comp = restoreSplitConfig(buffer,splitConfig);
+-			dockableWindowManager.add(comp,0);
++			dockableWindowManager.setEditorComponent(comp);
+ 		}
+ 		catch(IOException e)
+ 		{
