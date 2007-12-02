@@ -1,6 +1,6 @@
 Index: org/gjt/sp/jedit/jEdit.java
 ===================================================================
---- org/gjt/sp/jedit/jEdit.java	(revision 11178)
+--- org/gjt/sp/jedit/jEdit.java	(revision 11181)
 +++ org/gjt/sp/jedit/jEdit.java	(working copy)
 @@ -2217,21 +2217,7 @@
  			if(!config.plainView)
@@ -27,7 +27,7 @@ Index: org/gjt/sp/jedit/jEdit.java
  			newView.pack();
 Index: org/gjt/sp/jedit/services.xml
 ===================================================================
---- org/gjt/sp/jedit/services.xml	(revision 11178)
+--- org/gjt/sp/jedit/services.xml	(revision 11181)
 +++ org/gjt/sp/jedit/services.xml	(working copy)
 @@ -50,4 +50,9 @@
  	<SERVICE CLASS="org.gjt.sp.jedit.io.EncodingDetector" NAME="buffer-local-property">
@@ -41,7 +41,7 @@ Index: org/gjt/sp/jedit/services.xml
  </SERVICES>
 Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11178)
+--- org/gjt/sp/jedit/gui/DockableWindowFactory.java	(revision 11181)
 +++ org/gjt/sp/jedit/gui/DockableWindowFactory.java	(working copy)
 @@ -167,11 +167,16 @@
  	} //}}}
@@ -81,7 +81,7 @@ Index: org/gjt/sp/jedit/gui/DockableWindowFactory.java
  
 Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
 ===================================================================
---- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11178)
+--- org/gjt/sp/jedit/gui/DockableWindowManager.java	(revision 11181)
 +++ org/gjt/sp/jedit/gui/DockableWindowManager.java	(working copy)
 @@ -175,6 +175,9 @@
  	public static final String RIGHT = "right";
@@ -144,7 +144,7 @@ Index: org/gjt/sp/jedit/gui/DockableWindowManager.java
  	 * 
 Index: org/gjt/sp/jedit/View.java
 ===================================================================
---- org/gjt/sp/jedit/View.java	(revision 11178)
+--- org/gjt/sp/jedit/View.java	(revision 11181)
 +++ org/gjt/sp/jedit/View.java	(working copy)
 @@ -36,8 +36,6 @@
  
@@ -199,3 +199,36 @@ Index: org/gjt/sp/jedit/View.java
  		}
  		catch(IOException e)
  		{
+Index: org/gjt/sp/jedit/options/DockingOptionPane.java
+===================================================================
+--- org/gjt/sp/jedit/options/DockingOptionPane.java	(revision 11181)
++++ org/gjt/sp/jedit/options/DockingOptionPane.java	(working copy)
+@@ -49,12 +49,20 @@
+ 	{
+ 		setLayout(new BorderLayout());
+ 		add(BorderLayout.CENTER,createWindowTableScroller());
++		JPanel p = new JPanel();
++		add(BorderLayout.NORTH, p);
++		p.add(new JLabel("Dockable window manager:"));
++		String [] dwms = ServiceManager.getServiceNames(
++			DockableWindowManager.DOCKING_WINDOW_MANAGER_SERVICE);
++		p.add(dockableWindowManager = new JComboBox(dwms));
+ 	} //}}}
+ 
+ 	//{{{ _save() method
+ 	public void _save()
+ 	{
+ 		windowModel.save();
++		jEdit.setProperty(DockableWindowManager.DOCKING_WINDOW_MANAGER_PROP,
++			(String) dockableWindowManager.getSelectedItem());
+ 	} //}}}
+ 
+ 	//{{{ Private members
+@@ -62,6 +70,7 @@
+ 	//{{{ Instance variables
+ 	private JTable windowTable;
+ 	private WindowTableModel windowModel;
++	private JComboBox dockableWindowManager;
+ 	//}}}
+ 
+ 	//{{{ createWindowTableScroller() method
