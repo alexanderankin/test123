@@ -143,6 +143,7 @@ public class WindowManager extends DockableWindowManager {
 		if (new File(DEFAULT_FILE).exists())
 			load(DEFAULT_FILE);
 		else {
+			/*
 			String [] dockables = factory.getRegisteredDockableWindows();
 			Vector<String> leftDockables = new Vector<String>();
 			Vector<String> rightDockables = new Vector<String>();
@@ -174,6 +175,7 @@ public class WindowManager extends DockableWindowManager {
 				topTab.addTab(top.get(i));
 			for (int i = 0; i < bottom.size(); i++)
 				bottomTab.addTab(bottom.get(i));
+				*/
 			super.applyViewConfig(config);
 		}
 	}
