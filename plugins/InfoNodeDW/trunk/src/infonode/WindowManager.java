@@ -416,13 +416,13 @@ public class WindowManager extends DockableWindowManager {
 	@Override
 	public void showDockableWindow(String name) {
 		String position = getDockablePosition(name);
-		if (position.equals(DockableWindowManager.FLOATING))
-			return;
 		View v = viewMap.getView(name);
 		if (v == null) {
 			v = constructDockableView(name);
 			TabWindow tw = null;
-			if (position.equals(DockableWindowManager.LEFT))
+			if (position.equals(DockableWindowManager.FLOATING))
+				tw = leftTab;
+			else if (position.equals(DockableWindowManager.LEFT))
 				tw = leftTab;
 			else if (position.equals(DockableWindowManager.RIGHT))
 				tw = rightTab;
@@ -434,6 +434,8 @@ public class WindowManager extends DockableWindowManager {
 				tw.addTab(v);
 				setViewLayout();
 			}
+			if (position.equals(DockableWindowManager.FLOATING))
+				v.undock(new Point(0, 0));
 		}
 		v.makeVisible();
 		Object reason = DockableWindowUpdate.ACTIVATED;
