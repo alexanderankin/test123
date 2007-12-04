@@ -215,7 +215,7 @@ Index: org/gjt/sp/jedit/options/DockingOptionPane.java
 +			p.add(new JLabel("Dockable window manager:"));
 +			p.add(dockableWindowManager = new JComboBox(dwms));
 +			dockableWindowManager.setSelectedItem(
-+				jEdit.getProperty(DockableWindowManager.DOCKING_WINDOW_MANAGER_PROP));
++				DockableWindowManager.getDockableWindowManagerProperty());
 +		}
  	} //}}}
  
