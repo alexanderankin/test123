@@ -20,7 +20,7 @@ public class JEditViewMap extends StringViewMap {
 		String name = in.readUTF();
 		View v = getView(name);
 		if (v == null)
-			v = wm.constructDockableView(name);
+			v = wm.createDummyView(name);
 		return v;
 	}
 

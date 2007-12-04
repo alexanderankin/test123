@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -68,6 +69,8 @@ public class WindowManager extends DockableWindowManager {
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
 	private HashMap<String, String> positions;
 	private DockingWindowsTheme currentTheme = null;
+	private HashSet<DockingWindow> dummyViews = null;
+	private TabListener tabListener = null;
 	private static DockingWindowsTheme [] themes = new DockingWindowsTheme[] {
 			new BlueHighlightDockingTheme(),
 			new ClassicDockingTheme(),
@@ -163,8 +166,17 @@ public class WindowManager extends DockableWindowManager {
 				if (tw != null)
 					tw.addTab(v);
 			}
+			setupTabWindow(leftTab);
+			setupTabWindow(rightTab);
+			setupTabWindow(topTab);
+			setupTabWindow(bottomTab);
 			super.applyViewConfig(config);
 		}
+	}
+	private void setupTabWindow(TabWindow tw) {
+		if (tabListener == null)
+			tabListener = new TabListener();
+		tw.addListener(tabListener);
 	}
 	private void setViewLayout() {
 		DockingWindow sw = null;
@@ -176,29 +188,16 @@ public class WindowManager extends DockableWindowManager {
 	}
 	private class TabListener extends DockingWindowAdapter {
 
-		HashSet<DockingWindow> create = new HashSet<DockingWindow>();
-		HashSet<DockingWindow> added = new HashSet<DockingWindow>();
+		HashSet<String> created = new HashSet<String>();
 		
 		@Override
-		public void windowAdded(DockingWindow addedToWindow,
-				DockingWindow addedWindow) {
-			added.add(addedWindow);
-			System.err.println("windowAdded: " + addedWindow.getName());
-		}
-
-		@Override
 		public void windowShown(DockingWindow window) {
-			System.err.println("windowShown: " + window.getName());
-			if (added.contains(window)) {
-				// Window just added
-				create.add(window);
-				added.remove(window);
-			} else if (create.contains(window)) {
-				String name = window.getName();
-				TabWindow parent = (TabWindow) window.getWindowParent();
-				View v = constructDockableView(name);
-				parent.replaceChildWindow(window, v);
-			}
+			String name = window.getName();
+			if (! created.add(name))
+				return;
+			TabWindow parent = (TabWindow) window.getWindowParent();
+			View v = constructDockableView(name);
+			parent.replaceChildWindow(window, v);
 		}
 	}
 	
@@ -210,7 +209,6 @@ public class WindowManager extends DockableWindowManager {
 	private TabWindow createTabs(Vector<View> views, Direction side, Direction dir) {
 		DockingWindow [] w = convertToArray(views);
 		TabWindow tw = new TabWindow(w);
-		tw.addListener(new TabListener());
 		TabWindowProperties twp = tw.getTabWindowProperties();
 		twp.getTabbedPanelProperties().setTabAreaOrientation(side);
 		twp.getTabProperties().getTitledTabProperties().getNormalProperties().setDirection(dir);
@@ -396,6 +394,9 @@ public class WindowManager extends DockableWindowManager {
 	View createDummyView(String name) {
 		View v = new View(getDockableTitle(name), null, new JPanel());
 		v.setName(name);
+		if (dummyViews == null)
+			dummyViews = new HashSet<DockingWindow>();
+		dummyViews.add(v);
 		return v;
 	}
 	private View createDockableView(String name, JComponent c) {
@@ -406,6 +407,7 @@ public class WindowManager extends DockableWindowManager {
 		return v;
 	}
 	public View constructDockableView(String name) {
+		System.err.println("Constructing: " + name);
 		String position = getDockablePosition(name);
 		Window w = factory.getDockableWindowFactory(name);
 		JComponent c = w.createDockableWindow(view, position);
@@ -450,6 +452,21 @@ public class WindowManager extends DockableWindowManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		// Now setup the tab windows
+		Vector<TabWindow> tabs = new Vector<TabWindow>();
+		Iterator<DockingWindow> vs = dummyViews.iterator();
+		while (vs.hasNext()) {
+			DockingWindow dw = vs.next().getWindowParent();
+			if (dw instanceof TabWindow)
+				tabs.add((TabWindow) dw);
+		}
+		for (int i = 0; i < tabs.size(); i++) {
+			TabWindow tw = tabs.get(i);
+			setupTabWindow(tabs.get(i));
+			DockingWindow selected = tw.getSelectedWindow();
+			if (selected != null)
+				tabListener.windowShown(selected);
 		}
 	}
 	public void save(String file) {
