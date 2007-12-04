@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -19,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import net.infonode.docking.DockingWindow;
+import net.infonode.docking.DockingWindowAdapter;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -61,7 +63,6 @@ public class WindowManager extends DockableWindowManager {
 	private JEditViewMap viewMap;
 	private RootWindow rootWindow;
 	private JComponent center;
-	private Vector<View> left, right, top, bottom;
 	private View mainView;
 	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
@@ -143,39 +144,25 @@ public class WindowManager extends DockableWindowManager {
 		if (new File(DEFAULT_FILE).exists())
 			load(DEFAULT_FILE);
 		else {
-			/*
 			String [] dockables = factory.getRegisteredDockableWindows();
-			Vector<String> leftDockables = new Vector<String>();
-			Vector<String> rightDockables = new Vector<String>();
-			Vector<String> bottomDockables = new Vector<String>();
-			Vector<String> topDockables = new Vector<String>();
 			for (int i = 0; i < dockables.length; i++) {
 				String dockable = dockables[i];
 				String pos = getDockablePosition(dockable);
 				if (pos == null)
 					continue;
+				View v = createDummyView(dockable);
+				TabWindow tw = null;
 				if (pos.equals(DockableWindowManager.LEFT))
-					leftDockables.add(dockable);
+					tw = leftTab;
 				else if (pos.equals(DockableWindowManager.RIGHT))
-					rightDockables.add(dockable);
+					tw = rightTab;
 				else if (pos.equals(DockableWindowManager.BOTTOM))
-					bottomDockables.add(dockable);
+					tw = bottomTab;
 				else if (pos.equals(DockableWindowManager.TOP))
-					topDockables.add(dockable);
+					tw = topTab;
+				if (tw != null)
+					tw.addTab(v);
 			}
-			left = addDockables(leftDockables);
-			right = addDockables(rightDockables);
-			bottom = addDockables(bottomDockables);
-			top = addDockables(topDockables);
-			for (int i = 0; i < left.size(); i++)
-				leftTab.addTab(left.get(i));
-			for (int i = 0; i < right.size(); i++)
-				rightTab.addTab(right.get(i));
-			for (int i = 0; i < top.size(); i++)
-				topTab.addTab(top.get(i));
-			for (int i = 0; i < bottom.size(); i++)
-				bottomTab.addTab(bottom.get(i));
-				*/
 			super.applyViewConfig(config);
 		}
 	}
@@ -187,6 +174,34 @@ public class WindowManager extends DockableWindowManager {
 		sw = addArea(topTab, sw, false, true, 0.25f);
 		rootWindow.setWindow(sw);
 	}
+	private class TabListener extends DockingWindowAdapter {
+
+		HashSet<DockingWindow> create = new HashSet<DockingWindow>();
+		HashSet<DockingWindow> added = new HashSet<DockingWindow>();
+		
+		@Override
+		public void windowAdded(DockingWindow addedToWindow,
+				DockingWindow addedWindow) {
+			added.add(addedWindow);
+			System.err.println("windowAdded: " + addedWindow.getName());
+		}
+
+		@Override
+		public void windowShown(DockingWindow window) {
+			System.err.println("windowShown: " + window.getName());
+			if (added.contains(window)) {
+				// Window just added
+				create.add(window);
+				added.remove(window);
+			} else if (create.contains(window)) {
+				String name = window.getName();
+				TabWindow parent = (TabWindow) window.getWindowParent();
+				View v = constructDockableView(name);
+				parent.replaceChildWindow(window, v);
+			}
+		}
+	}
+	
 	private DockingWindow [] convertToArray(Vector<View> views) {
 		DockingWindow [] windows = new DockingWindow[views.size()];
 		views.toArray(windows);
@@ -195,6 +210,7 @@ public class WindowManager extends DockableWindowManager {
 	private TabWindow createTabs(Vector<View> views, Direction side, Direction dir) {
 		DockingWindow [] w = convertToArray(views);
 		TabWindow tw = new TabWindow(w);
+		tw.addListener(new TabListener());
 		TabWindowProperties twp = tw.getTabWindowProperties();
 		twp.getTabbedPanelProperties().setTabAreaOrientation(side);
 		twp.getTabProperties().getTitledTabProperties().getNormalProperties().setDirection(dir);
@@ -221,19 +237,6 @@ public class WindowManager extends DockableWindowManager {
 			return "NO TITLE PROPERTY: " + name;
 		else
 			return title;
-	}
-	private Vector<View> addDockables(Vector<String> dockables) {
-		Vector<View> areaViews = new Vector<View>();
-		for (int i = 0; i < dockables.size(); i++) {
-			String name = dockables.get(i);
-			/*
-			JComponent c = new JLabel("Dummy");
-			createDockableView(name, c);
-			*/
-			View v = constructDockableView(name);
-			areaViews.add(v);
-		}
-		return areaViews;
 	}
 	@Override
 	public void close() {
@@ -390,6 +393,11 @@ public class WindowManager extends DockableWindowManager {
 	private String getDockablePosition(String name) {
 		return jEdit.getProperty(name + ".dock-position");
 	}
+	View createDummyView(String name) {
+		View v = new View(getDockableTitle(name), null, new JPanel());
+		v.setName(name);
+		return v;
+	}
 	private View createDockableView(String name, JComponent c) {
 		View v = new View(getDockableTitle(name), null, c);
 		v.setName(name);
@@ -410,22 +418,20 @@ public class WindowManager extends DockableWindowManager {
 			return;
 		View v = viewMap.getView(name);
 		if (v == null) {
-			Window w = factory.getDockableWindowFactory(name);
-			JComponent c = w.createDockableWindow(view, position);
-			v = createDockableView(name, c);
-		}
-		TabWindow tw = null;
-		if (position.equals(DockableWindowManager.LEFT))
-			tw = leftTab;
-		else if (position.equals(DockableWindowManager.RIGHT))
-			tw = rightTab;
-		else if (position.equals(DockableWindowManager.BOTTOM))
-			tw = bottomTab;
-		if (position.equals(DockableWindowManager.TOP))
-			tw = topTab;
-		if (tw != null) {
-			tw.addTab(v);
-			setViewLayout();
+			v = constructDockableView(name);
+			TabWindow tw = null;
+			if (position.equals(DockableWindowManager.LEFT))
+				tw = leftTab;
+			else if (position.equals(DockableWindowManager.RIGHT))
+				tw = rightTab;
+			else if (position.equals(DockableWindowManager.BOTTOM))
+				tw = bottomTab;
+			if (position.equals(DockableWindowManager.TOP))
+				tw = topTab;
+			if (tw != null) {
+				tw.addTab(v);
+				setViewLayout();
+			}
 		}
 		v.makeVisible();
 		Object reason = DockableWindowUpdate.ACTIVATED;
