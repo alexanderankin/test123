@@ -451,7 +451,9 @@ public class WindowManager extends DockableWindowManager {
 		Vector<TabWindow> tabs = new Vector<TabWindow>();
 		Iterator<DockingWindow> vs = dummyViews.iterator();
 		while (vs.hasNext()) {
-			DockingWindow dw = vs.next().getWindowParent();
+			DockingWindow w = vs.next();
+			w.addListener(viewCreateListener);
+			DockingWindow dw = w.getWindowParent();
 			if (dw instanceof TabWindow)
 				tabs.add((TabWindow) dw);
 		}
