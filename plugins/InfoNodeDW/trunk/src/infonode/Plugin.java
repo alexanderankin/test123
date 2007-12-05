@@ -1,7 +1,6 @@
 package infonode;
 
 import java.io.File;
-import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 
@@ -14,15 +13,8 @@ public class Plugin extends EditPlugin {
 	public static final String NAME = "InfoNodeDW";
 	public static final String OPTION_PREFIX = "options.infonode.";
 	
-	private static HashMap<View, WindowManager> windowManagers;
-	
-	{
-		windowManagers = new HashMap<View, WindowManager>();
-	}
-	
 	public static void doStart(View view) {
 		WindowManager wm = new WindowManager();
-		windowManagers.put(view, wm);
 		view.getDockableWindowManager().close();
 		wm.construct(view, DockableWindowFactory.getInstance(), view.getViewConfig());
 		view.setDockableWindowManager(wm);
@@ -33,7 +25,7 @@ public class Plugin extends EditPlugin {
 	    File sel = fc.getSelectedFile();
 	    if (sel == null)
 			return;
-	    WindowManager wm = windowManagers.get(view);
+	    WindowManager wm = (WindowManager) view.getDockableWindowManager();
 		wm.load(sel.getAbsolutePath());
 	}
 	public static void save(View view) {
@@ -42,7 +34,7 @@ public class Plugin extends EditPlugin {
 	    File sel = fc.getSelectedFile();
 	    if (sel == null)
 			return;
-	    WindowManager wm = windowManagers.get(view);
+	    WindowManager wm = (WindowManager) view.getDockableWindowManager();
 		wm.save(sel.getAbsolutePath());
 	}
 	public static String getConfigDirectory() {
@@ -53,7 +45,7 @@ public class Plugin extends EditPlugin {
 		return dir;
 	}
 	public static void selectTheme(View view) {
-	    WindowManager wm = windowManagers.get(view);
+	    WindowManager wm = (WindowManager) view.getDockableWindowManager();
 		wm.selectTheme();
 	}
 }
