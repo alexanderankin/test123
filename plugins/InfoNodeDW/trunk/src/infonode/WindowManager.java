@@ -60,7 +60,6 @@ public class WindowManager extends DockableWindowManager {
 		Plugin.getConfigDirectory() + File.separator + "perspective.sav";
 	private org.gjt.sp.jedit.View view;
 	private DockableWindowFactory factory;
-	private ViewConfig config;
 	private JEditViewMap viewMap;
 	private RootWindow rootWindow;
 	private JComponent center;
@@ -106,7 +105,6 @@ public class WindowManager extends DockableWindowManager {
 			ViewConfig config) {
 		this.view = view;
 		this.factory = factory;
-		this.config = config;
 		viewMap = new JEditViewMap(this);
 		positions = new HashMap<String, String>();
 		center = new JPanel(new BorderLayout());
@@ -121,10 +119,10 @@ public class WindowManager extends DockableWindowManager {
 		rootWindow.getWindowBar(Direction.LEFT).setEnabled(true);
 		rootWindow.getWindowBar(Direction.RIGHT).setEnabled(true);
 
-		leftTab = createTabs(new Vector<View>(), Direction.LEFT, Direction.UP);
-		rightTab = createTabs(new Vector<View>(), Direction.RIGHT, Direction.DOWN);
-		bottomTab = createTabs(new Vector<View>(), Direction.UP, Direction.RIGHT);
-		topTab = createTabs(new Vector<View>(), Direction.UP, Direction.RIGHT);
+		leftTab = createTabWindow(Direction.LEFT, Direction.UP);
+		rightTab = createTabWindow(Direction.RIGHT, Direction.DOWN);
+		bottomTab = createTabWindow(Direction.UP, Direction.RIGHT);
+		topTab = createTabWindow(Direction.UP, Direction.RIGHT);
 
 		setViewLayout();
 		setLayout(new BorderLayout());
@@ -147,30 +145,46 @@ public class WindowManager extends DockableWindowManager {
 		if (new File(DEFAULT_FILE).exists())
 			load(DEFAULT_FILE);
 		else {
-			String [] dockables = factory.getRegisteredDockableWindows();
-			for (int i = 0; i < dockables.length; i++) {
-				String dockable = dockables[i];
-				String pos = getDockablePosition(dockable);
-				if (pos == null)
-					continue;
-				View v = createDummyView(dockable);
-				TabWindow tw = null;
-				if (pos.equals(DockableWindowManager.LEFT))
-					tw = leftTab;
-				else if (pos.equals(DockableWindowManager.RIGHT))
-					tw = rightTab;
-				else if (pos.equals(DockableWindowManager.BOTTOM))
-					tw = bottomTab;
-				else if (pos.equals(DockableWindowManager.TOP))
-					tw = topTab;
-				if (tw != null)
-					tw.addTab(v);
+			convertViewConfig(config);
+		}
+	}
+	private void convertViewConfig(ViewConfig config) {
+		String [] dockables = factory.getRegisteredDockableWindows();
+		for (int i = 0; i < dockables.length; i++) {
+			String dockable = dockables[i];
+			String pos = getDockablePosition(dockable);
+			if (pos == null)
+				continue;
+			View v = createDummyView(dockable);
+			TabWindow tw = null;
+			if (pos.equals(DockableWindowManager.LEFT))
+				tw = leftTab;
+			else if (pos.equals(DockableWindowManager.RIGHT))
+				tw = rightTab;
+			else if (pos.equals(DockableWindowManager.BOTTOM))
+				tw = bottomTab;
+			else if (pos.equals(DockableWindowManager.TOP))
+				tw = topTab;
+			if (tw != null) {
+				tw.addTab(v);
 			}
-			setupTabWindow(leftTab);
-			setupTabWindow(rightTab);
-			setupTabWindow(topTab);
-			setupTabWindow(bottomTab);
-			super.applyViewConfig(config);
+		}
+		setupTabWindow(leftTab);
+		setupTabWindow(rightTab);
+		setupTabWindow(topTab);
+		setupTabWindow(bottomTab);
+		minimizeTabWindows(topTab, Direction.UP);
+		minimizeTabWindows(bottomTab, Direction.DOWN);
+		minimizeTabWindows(leftTab, Direction.LEFT);
+		minimizeTabWindows(rightTab, Direction.RIGHT);
+		super.applyViewConfig(config);
+	}
+	private void minimizeTabWindows(TabWindow tw, Direction dir) {
+		if (tw.getChildWindowCount() == 0)
+			tw.setVisible(false);
+		while (tw.getChildWindowCount() > 0) {
+			DockingWindow w = tw.getChildWindow(0);
+			w.minimize(dir);
 		}
 	}
 	private void setupTabWindow(TabWindow tw) {
@@ -201,22 +215,18 @@ public class WindowManager extends DockableWindowManager {
 		}
 	}
 	
-	private DockingWindow [] convertToArray(Vector<View> views) {
-		DockingWindow [] windows = new DockingWindow[views.size()];
-		views.toArray(windows);
-		return windows;
-	}
-	private TabWindow createTabs(Vector<View> views, Direction side, Direction dir) {
-		DockingWindow [] w = convertToArray(views);
-		TabWindow tw = new TabWindow(w);
+	private TabWindow createTabWindow(Direction side, Direction dir) {
+		TabWindow tw = new TabWindow();
 		TabWindowProperties twp = tw.getTabWindowProperties();
 		twp.getTabbedPanelProperties().setTabAreaOrientation(side);
 		twp.getTabProperties().getTitledTabProperties().getNormalProperties().setDirection(dir);
 		return tw;
 	}
 	private DockingWindow addArea(TabWindow tw, DockingWindow dw, boolean isHorizontal, boolean areaFirst, float divider) {
+		/*
 		if (tw.getChildWindowCount() == 0)
 			return dw;
+			*/
 		DockingWindow w1 = (areaFirst ? tw : dw);
 		DockingWindow w2 = (areaFirst ? dw : tw);
 		return new SplitWindow(isHorizontal, divider, w1, w2);
@@ -403,6 +413,7 @@ public class WindowManager extends DockableWindowManager {
 		View v = new View(getDockableTitle(name), null, c);
 		v.setName(name);
 		viewMap.addView(name, v);
+		System.err.println("Added to viewMap: " + name);
 		positions.put(name, getDockablePosition(name));
 		return v;
 	}
@@ -432,7 +443,9 @@ public class WindowManager extends DockableWindowManager {
 				tw = topTab;
 			if (tw != null) {
 				tw.addTab(v);
-				setViewLayout();
+				if (! tw.isVisible())
+					tw.setVisible(true);
+				//setViewLayout();
 			}
 			if (position.equals(DockableWindowManager.FLOATING))
 				v.undock(new Point(0, 0));
@@ -462,6 +475,9 @@ public class WindowManager extends DockableWindowManager {
 			DockingWindow dw = vs.next().getWindowParent();
 			if (dw instanceof TabWindow)
 				tabs.add((TabWindow) dw);
+		}
+		if (! tabs.isEmpty()) {
+			leftTab = rightTab = topTab = bottomTab = tabs.get(0);
 		}
 		for (int i = 0; i < tabs.size(); i++) {
 			TabWindow tw = tabs.get(i);
