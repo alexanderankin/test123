@@ -69,7 +69,8 @@ public class WindowManager extends DockableWindowManager {
 	private HashMap<String, String> positions;
 	private DockingWindowsTheme currentTheme = null;
 	private HashSet<DockingWindow> dummyViews = null;
-	private TabListener tabListener = null;
+	private ViewCloseListener viewCloseListener = new ViewCloseListener();
+	private ViewCreateListener viewCreateListener = new ViewCreateListener();
 	private static DockingWindowsTheme [] themes = new DockingWindowsTheme[] {
 			new BlueHighlightDockingTheme(),
 			new ClassicDockingTheme(),
@@ -119,12 +120,6 @@ public class WindowManager extends DockableWindowManager {
 		rootWindow.getWindowBar(Direction.LEFT).setEnabled(true);
 		rootWindow.getWindowBar(Direction.RIGHT).setEnabled(true);
 
-		leftTab = createTabWindow(Direction.LEFT, Direction.UP);
-		rightTab = createTabWindow(Direction.RIGHT, Direction.DOWN);
-		bottomTab = createTabWindow(Direction.UP, Direction.RIGHT);
-		topTab = createTabWindow(Direction.UP, Direction.RIGHT);
-
-		setViewLayout();
 		setLayout(new BorderLayout());
 		add(rootWindow, BorderLayout.CENTER);
 		invalidate();
@@ -149,6 +144,12 @@ public class WindowManager extends DockableWindowManager {
 		}
 	}
 	private void convertViewConfig(ViewConfig config) {
+		leftTab = createTabWindow(Direction.LEFT, Direction.UP);
+		rightTab = createTabWindow(Direction.RIGHT, Direction.DOWN);
+		bottomTab = createTabWindow(Direction.UP, Direction.RIGHT);
+		topTab = createTabWindow(Direction.UP, Direction.RIGHT);
+		setViewLayout();
+		
 		String [] dockables = factory.getRegisteredDockableWindows();
 		for (int i = 0; i < dockables.length; i++) {
 			String dockable = dockables[i];
@@ -169,10 +170,6 @@ public class WindowManager extends DockableWindowManager {
 				tw.addTab(v);
 			}
 		}
-		setupTabWindow(leftTab);
-		setupTabWindow(rightTab);
-		setupTabWindow(topTab);
-		setupTabWindow(bottomTab);
 		minimizeTabWindows(topTab, Direction.UP);
 		minimizeTabWindows(bottomTab, Direction.DOWN);
 		minimizeTabWindows(leftTab, Direction.LEFT);
@@ -185,12 +182,8 @@ public class WindowManager extends DockableWindowManager {
 		while (tw.getChildWindowCount() > 0) {
 			DockingWindow w = tw.getChildWindow(0);
 			w.minimize(dir);
+			w.addListener(viewCreateListener);
 		}
-	}
-	private void setupTabWindow(TabWindow tw) {
-		if (tabListener == null)
-			tabListener = new TabListener();
-		tw.addListener(tabListener);
 	}
 	private void setViewLayout() {
 		DockingWindow sw = null;
@@ -199,20 +192,6 @@ public class WindowManager extends DockableWindowManager {
 		sw = addArea(bottomTab, sw, false, false, 0.75f);
 		sw = addArea(topTab, sw, false, true, 0.25f);
 		rootWindow.setWindow(sw);
-	}
-	private class TabListener extends DockingWindowAdapter {
-
-		HashSet<String> created = new HashSet<String>();
-		
-		@Override
-		public void windowShown(DockingWindow window) {
-			String name = window.getName();
-			if (! created.add(name))
-				return;
-			TabWindow parent = (TabWindow) window.getWindowParent();
-			View v = constructDockableView(name);
-			parent.replaceChildWindow(window, v);
-		}
 	}
 	
 	private TabWindow createTabWindow(Direction side, Direction dir) {
@@ -413,12 +392,12 @@ public class WindowManager extends DockableWindowManager {
 		View v = new View(getDockableTitle(name), null, c);
 		v.setName(name);
 		viewMap.addView(name, v);
-		System.err.println("Added to viewMap: " + name);
 		positions.put(name, getDockablePosition(name));
+		v.addListener(viewCloseListener);
 		return v;
 	}
 	public View constructDockableView(String name) {
-		System.err.println("Constructing: " + name);
+		System.err.println("Constructing dockable " + name);
 		String position = getDockablePosition(name);
 		Window w = factory.getDockableWindowFactory(name);
 		JComponent c = w.createDockableWindow(view, position);
@@ -481,10 +460,8 @@ public class WindowManager extends DockableWindowManager {
 		}
 		for (int i = 0; i < tabs.size(); i++) {
 			TabWindow tw = tabs.get(i);
-			setupTabWindow(tabs.get(i));
 			DockingWindow selected = tw.getSelectedWindow();
-			if (selected != null)
-				tabListener.windowShown(selected);
+			viewCreateListener.checkFirstShow(selected);
 		}
 	}
 	public void save(String file) {
@@ -518,5 +495,35 @@ public class WindowManager extends DockableWindowManager {
 		String theme = (String) JOptionPane.showInputDialog(view,
 			"Select a theme:", "Themes", 0, null, themeNames, defaultTheme);
 		setTheme(theme);
+	}
+
+	private class ViewCloseListener extends DockingWindowAdapter {
+		@Override
+		public void windowClosed(DockingWindow window) {
+			viewMap.removeView(window.getName());
+		}
+	}
+	private class ViewCreateListener extends DockingWindowAdapter {
+		private void checkFirstShow(DockingWindow window) {
+			String name = window.getName();
+			if (viewMap.getView(name) != null)
+				return;
+			DockingWindow parent = window.getWindowParent();
+			View v = constructDockableView(name);
+			parent.replaceChildWindow(window, v);
+			v.makeVisible();
+		}
+		@Override
+		public void windowMaximized(DockingWindow window) {
+			checkFirstShow(window);
+		}
+		@Override
+		public void windowRestored(DockingWindow window) {
+			checkFirstShow(window);
+		}
+		@Override
+		public void windowShown(DockingWindow window) {
+			checkFirstShow(window);
+		}
 	}
 }
