@@ -77,7 +77,7 @@ public class Cleanup {
         // use the svnkit client manager
         SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
 
-        // get a commit client
+        // get a client
         SVNWCClient client = clientManager.getWCClient();
 
         // set an event handler so that messages go to the commit data streams for display

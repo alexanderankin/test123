@@ -110,7 +110,7 @@ public class PropertyAction implements ActionListener {
                     try {
                         TreeMap<String, Properties> results = get();
                         if (results != null ) {
-                            panel.addTab( "Properties", new PropertyPanel( results ) );
+                            panel.addTab( "Properties", new PropertyPanel( view, results ) );
                         }
                         else {
                             // shouldn't get here

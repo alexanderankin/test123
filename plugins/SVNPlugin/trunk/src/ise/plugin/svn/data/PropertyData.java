@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
+import java.util.Properties;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class PropertyData extends CheckoutData {
@@ -36,6 +37,9 @@ public class PropertyData extends CheckoutData {
     private transient SVNRevision revision = SVNRevision.HEAD;
     private transient boolean recursive = false;
     private transient boolean hasDirectory = false;
+    private Properties properties = null;
+    private String name = null;
+    private String value = null;
 
     public String toString() {
         return "PropertyData[pegRevision=" + pegRevision + ", revision=" + revision + "]";
@@ -79,11 +83,34 @@ public class PropertyData extends CheckoutData {
         this.recursive = recursive;
     }
 
-    public void setHasDirectory(boolean b) {
+    public void setHasDirectory( boolean b ) {
         hasDirectory = b;
     }
 
     public boolean hasDirectory() {
         return hasDirectory;
+    }
+
+    public void setProperties( Properties p ) {
+        properties = p;
+    }
+
+    public Properties getProperties() {
+        return properties == null ? null : new Properties( properties );
+    }
+
+    public void setName( String n ) {
+        name = n;
+    }
+    public String getName() {
+        return new String( name );
+    }
+
+    public void setValue( String v ) {
+        value = v;
+    }
+
+    public String getValue() {
+        return new String( value );
     }
 }
