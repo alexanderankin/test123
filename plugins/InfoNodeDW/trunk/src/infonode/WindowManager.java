@@ -505,7 +505,7 @@ public class WindowManager extends DockableWindowManager {
 	}
 	private class ViewCreateListener extends DockingWindowAdapter {
 		private void checkFirstShow(DockingWindow window) {
-			if (! dummyViews.contains(window))
+			if (! dummyViews.remove(window))
 				return;
 			DockingWindow parent = window.getWindowParent();
 			View v = constructDockableView(window.getName());
