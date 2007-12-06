@@ -26,6 +26,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	static public final String BACKGROUND = OPTION + "background";
+	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
 	JTextField ctags;
@@ -34,6 +35,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox updateOnLoad;
 	JCheckBox updateOnSave;
 	JCheckBox background;
+	JCheckBox previewToolbar;
 	JCheckBox previewWrap;
 	JTextField previewDelay;
 	
@@ -65,6 +67,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		previewPanel.setLayout(new GridLayout(0, 1));
 		previewPanel.setBorder(new TitledBorder(jEdit.getProperty(
 			MESSAGE + "previewTitle")));
+		previewToolbar = new JCheckBox(jEdit.getProperty(MESSAGE + "previewToolbar"),
+				getPreviewToolbar());
+		previewPanel.add(previewToolbar);
 		previewWrap = new JCheckBox(jEdit.getProperty(MESSAGE + "previewWrap"),
 				jEdit.getBooleanProperty(PREVIEW_WRAP));
 		previewPanel.add(previewWrap);
@@ -95,6 +100,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
+		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
 	}
@@ -125,6 +131,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getUpdateInBackground() {
 		return jEdit.getBooleanProperty(BACKGROUND, true);
+	}
+	public static boolean getPreviewToolbar() {
+		return jEdit.getBooleanProperty(PREVIEW_TOOLBAR, true);
 	}
 	public static boolean getPreviewWrap() {
 		return jEdit.getBooleanProperty(PREVIEW_WRAP, true);

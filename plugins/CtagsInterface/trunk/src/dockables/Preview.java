@@ -69,6 +69,9 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	Set<JEditTextArea> tracking;
 	private JCheckBox wrap;
 	private JCheckBox followCaret;
+	private JPanel toolbar;
+	private JPanel textPanel;
+	private boolean toolbarShown;
 	
 	Preview(View view) {
 		super(new BorderLayout());
@@ -89,10 +92,10 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				CtagsInterfacePlugin.jumpToTag(Preview.this.view, t);
 			}
 		});
-		JPanel textPanel = new JPanel();
+		textPanel = new JPanel();
 		textPanel.setLayout(new BorderLayout());
-		JPanel toolbar = new JPanel();
-		textPanel.add(toolbar, BorderLayout.NORTH);
+		toolbarShown = false;
+		toolbar = new JPanel();
 		followCaret = new JCheckBox("Follow caret", true);
 		followCaret.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -180,6 +183,13 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		}
 	}
 	private void propertiesChanged()	{
+		if (GeneralOptionPane.getPreviewToolbar() != toolbarShown) {
+			toolbarShown = GeneralOptionPane.getPreviewToolbar();
+			if (toolbarShown)
+				textPanel.add(toolbar, BorderLayout.NORTH);
+			else
+				textPanel.remove(toolbar);
+		}
 		String wrap;
 		if (GeneralOptionPane.getPreviewWrap())
 			wrap = "soft";

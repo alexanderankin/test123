@@ -347,11 +347,16 @@ public class TagDB {
 		return query(query.toString());
 	}
 	public synchronized ResultSet query(String expression) throws SQLException {
-		//System.err.println("query: " + expression);
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(expression);
-        st.close();
-        return rs;
+		try {
+	        Statement st = conn.createStatement();
+	        ResultSet rs = st.executeQuery(expression);
+	        st.close();
+	        return rs;
+		}
+		catch (SQLException e) {
+			System.err.println("Failed query: " + expression);
+			throw e;
+		}
     }
 	
 	public Vector<String> queryStringList(String column, String query) {
