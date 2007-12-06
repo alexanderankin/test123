@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import ise.plugin.svn.library.*;
+import ise.plugin.svn.data.PropertyData;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 
@@ -54,15 +55,18 @@ import org.gjt.sp.jedit.View;
  */
 public class PropertyPanel extends JPanel {
 
+    private View view = null;
     private JButton new_btn = null;
 
-    public PropertyPanel( String filename, Properties props ) {
+    public PropertyPanel( View view, String filename, Properties props ) {
+        this.view = view;
         HashMap<String, Properties> results = new HashMap<String, Properties>();
         results.put( filename, props );
         init( results );
     }
 
-    public PropertyPanel( Map<String, Properties> results ) {
+    public PropertyPanel( View view, Map<String, Properties> results ) {
+        this.view = view;
         init( results );
     }
 
@@ -82,7 +86,9 @@ public class PropertyPanel extends JPanel {
             String filename = result.getKey();
             Properties props = result.getValue();
             final JTable props_table = new JTable( );
-            final JButton edit_btn = new JButton("Edit");
+            final JButton add_btn = new JButton( "Add" );
+            final JButton edit_btn = new JButton( "Edit" );
+            final JButton delete_btn = new JButton( "Delete" );
             final DefaultTableModel model = new DefaultTableModel(
                         new String[] {
                             "Name", "Value"
@@ -96,6 +102,7 @@ public class PropertyPanel extends JPanel {
             selectionModel.addListSelectionListener( new ListSelectionListener() {
                         public void valueChanged( ListSelectionEvent lse ) {
                             edit_btn.setEnabled( props_table.getSelectedRow() > -1 );
+                            delete_btn.setEnabled( props_table.getSelectedRow() > -1 );
                         }
                     }
                                                    );
@@ -125,27 +132,63 @@ public class PropertyPanel extends JPanel {
             panel.add( filename_label, "0, 0, 1, 1, W, w, 3" );
             panel.add( GUIUtils.createTablePanel( props_table ), "0, 1, 1, 1, 0, wh, 3" );
 
-            // set up Edit button
+            // set up the buttons
             KappaLayout kl = new KappaLayout();
             JPanel btn_panel = new JPanel( kl );
+            add_btn.setEnabled( true );
             edit_btn.setEnabled( false );
+            delete_btn.setEnabled( false );
+
+            // button action listeners
+            add_btn.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        PropertyEditor dialog = new PropertyEditor( view, null, null, true );
+                        GUIUtils.center(view, dialog);
+                        dialog.setVisible( true );
+                        PropertyData data = dialog.getPropertyData();
+                        if ( data == null ) {
+                            return ;     // user cancelled
+                        }
+                        model.addRow( new String[] {data.getName(), data.getValue() } );
+
+                    }
+                }
+            );
             edit_btn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         int row = props_table.getSelectedRow();
-                        if (row > -1) {
+                        if ( row > -1 ) {
                             String key = ( String ) model.getValueAt( row, 0 );
                             String value = ( String ) model.getValueAt( row, 1 );
-                            // TODO: add property editor dialog
+                            PropertyEditor dialog = new PropertyEditor( view, key, value, true );
+                            GUIUtils.center(view, dialog);
+                            dialog.setVisible( true );
+                            PropertyData data = dialog.getPropertyData();
+                            if ( data == null ) {
+                                return ;     // user cancelled
+                            }
+                            model.setValueAt( data.getName(), row, 0 );
+                            model.setValueAt( data.getValue(), row, 1 );
                         }
-                        // new did this
-                        //model.addRow( new String[] {"", ""} );
                         return ;
                     }
                 }
             );
+            delete_btn.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        // TODO: add warning message and delete code
+                    }
+                }
+            );
 
-            btn_panel.add( edit_btn, "0, 0, 1, 1, 0, w, 0" );
+            btn_panel.add( add_btn, "0, 0, 1, 1, 0, w, 0" );
+            btn_panel.add( edit_btn, "1, 0, 1, 1, 0, w, 0" );
+            btn_panel.add( delete_btn, "2, 0, 1, 1, 0, w, 0" );
+            kl.makeColumnsSameWidth( new int[] {0, 1, 2} );
+
             panel.add( btn_panel, "0, 2, 1, 1, E, 0, 3" );
 
             properties_panel.add( panel, "0, " + row + ", 1, 1, W, w, 0" );
@@ -161,18 +204,4 @@ public class PropertyPanel extends JPanel {
         add( js, BorderLayout.CENTER );
     }
 
-    public static void main ( String[] args ) {
-        Properties p = new Properties();
-        p.setProperty( "svn:externals", "/some/dir/ectory" );
-        p.setProperty( "svn:keywords", "word, word2" );
-
-        TreeMap<String, Properties> map = new TreeMap<String, Properties>();
-        map.put( "filename1", p );
-        map.put( "filename2", p );
-
-        JFrame frame = new JFrame();
-        frame.setContentPane( new PropertyPanel( map ) );
-        frame.pack();
-        frame.setVisible( true );
-    }
 }
