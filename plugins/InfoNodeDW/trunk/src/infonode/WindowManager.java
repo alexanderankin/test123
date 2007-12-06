@@ -524,5 +524,13 @@ public class WindowManager extends DockableWindowManager {
 		public void windowShown(DockingWindow window) {
 			checkFirstShow(window);
 		}
+		@Override
+		public void windowDocked(DockingWindow window) {
+			checkFirstShow(window);
+		}
+		@Override
+		public void windowUndocked(DockingWindow window) {
+			checkFirstShow(window);
+		}
 	}
 }
