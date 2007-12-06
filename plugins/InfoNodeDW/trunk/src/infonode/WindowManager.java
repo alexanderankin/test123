@@ -68,7 +68,7 @@ public class WindowManager extends DockableWindowManager {
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
 	private HashMap<String, String> positions;
 	private DockingWindowsTheme currentTheme = null;
-	private HashSet<DockingWindow> dummyViews = null;
+	private HashSet<DockingWindow> dummyViews = new HashSet<DockingWindow>();
 	private ViewCloseListener viewCloseListener = new ViewCloseListener();
 	private ViewCreateListener viewCreateListener = new ViewCreateListener();
 	private static DockingWindowsTheme [] themes = new DockingWindowsTheme[] {
@@ -257,7 +257,7 @@ public class WindowManager extends DockableWindowManager {
 	@Override
 	public JComponent getDockable(String name) {
 		View v = viewMap.getView(name);
-		if (v == null)
+		if (v == null || dummyViews.contains(v))
 			return null;
 		return (JComponent)v.getComponent();
 	}
@@ -381,10 +381,7 @@ public class WindowManager extends DockableWindowManager {
 		return jEdit.getProperty(name + ".dock-position");
 	}
 	View createDummyView(String name) {
-		View v = new View(getDockableTitle(name), null, new JPanel());
-		v.setName(name);
-		if (dummyViews == null)
-			dummyViews = new HashSet<DockingWindow>();
+		View v = createDockableView(name, new JPanel());
 		dummyViews.add(v);
 		return v;
 	}
@@ -502,16 +499,16 @@ public class WindowManager extends DockableWindowManager {
 	private class ViewCloseListener extends DockingWindowAdapter {
 		@Override
 		public void windowClosed(DockingWindow window) {
+			dummyViews.remove(window);
 			viewMap.removeView(window.getName());
 		}
 	}
 	private class ViewCreateListener extends DockingWindowAdapter {
 		private void checkFirstShow(DockingWindow window) {
-			String name = window.getName();
-			if (viewMap.getView(name) != null)
+			if (! dummyViews.contains(window))
 				return;
 			DockingWindow parent = window.getWindowParent();
-			View v = constructDockableView(name);
+			View v = constructDockableView(window.getName());
 			parent.replaceChildWindow(window, v);
 			v.makeVisible();
 		}
