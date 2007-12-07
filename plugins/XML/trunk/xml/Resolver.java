@@ -313,7 +313,10 @@ public class Resolver extends DefaultHandler2
 				public void run()
 				{
 					View view = jEdit.getActiveView();
-					if (getNetworkModeVal() == ASK && showDownloadResourceDialog(view,_newSystemId))
+					if (getNetworkModeVal() == ALWAYS
+                        || (getNetworkModeVal() == ASK 
+                            && showDownloadResourceDialog(view,_newSystemId))
+                        )
 					{
 						session[0] = vfs.createVFSSession(
 							_newSystemId,view);

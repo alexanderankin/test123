@@ -169,8 +169,9 @@ public class CatalogManager
 				{
 					View view = jEdit.getActiveView();
 					if (Resolver.getNetworkModeVal() == Resolver.LOCAL) return;
-					if (Resolver.getNetworkModeVal()==Resolver.ASK &&
-						showDownloadResourceDialog(view,_newSystemId))
+					if (Resolver.getNetworkModeVal()==Resolver.ALWAYS ||
+						(Resolver.getNetworkModeVal()==Resolver.ASK &&
+						showDownloadResourceDialog(view,_newSystemId)))
 					{
 						session[0] = vfs.createVFSSession(
 							_newSystemId,view);
