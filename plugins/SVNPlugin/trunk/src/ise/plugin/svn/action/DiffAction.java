@@ -190,6 +190,7 @@ public class DiffAction implements ActionListener {
                         String svn_path = info.getPath();
 
                         // check if same already
+                        // TODO: also check if properties are different
                         BrowseRepository br = new BrowseRepository();
                         long rev1 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword());
                         long rev2 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword());

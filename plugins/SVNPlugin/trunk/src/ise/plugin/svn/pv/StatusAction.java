@@ -34,6 +34,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 import projectviewer.vpt.VPTNode;
 
@@ -51,6 +52,9 @@ import ise.plugin.svn.io.ConsolePrintStream;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 
 
+/**
+ * Collects status of working copy files from PV tree.
+ */
 public class StatusAction extends NodeActor {
 
 
@@ -58,16 +62,27 @@ public class StatusAction extends NodeActor {
         if ( nodes != null && nodes.size() > 0 ) {
             final SVNData cd = new SVNData();
             List<String> paths = new ArrayList<String>();
+            boolean has_directory = false;
             for ( VPTNode node : nodes ) {
                 if ( node != null && node.getNodePath() != null ) {
                     paths.add( node.getNodePath() );
+                    if (node.isDirectory()) {
+                        has_directory = true;
+                    }
                 }
             }
             cd.setPaths( paths );
+            if (has_directory) {
+                int answer = JOptionPane.showConfirmDialog(view, "One or more of the items selected is a directory.\nWould you like to see status for subdirectories and files?", "Show Child Status?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                cd.setRecursive(JOptionPane.YES_OPTION == answer);
+            }
             if ( username != null && password != null ) {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }
+
+            // check if working copy is different than local copy
+            cd.setRemote(true);
 
             cd.setOut( new ConsolePrintStream( view ) );
 

@@ -94,7 +94,9 @@ public class Status {
         long revision = -1;
         for ( String path : paths ) {
             File localPath = new File( path );
-            revision = client.doStatus( localPath, true, true, false, false, handler );
+            // doStatus(path, recursive, remote, reportAll, includeIgnored, handler)
+            // TODO: pass in recursive and remote for sure, maybe the others?
+            revision = client.doStatus( localPath, cd.getRecursive(), cd.getRemote(), false, false, handler );
         }
         StatusData status_data = handler.getResults();
         status_data.setRevision(revision);

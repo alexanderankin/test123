@@ -32,6 +32,8 @@ import ise.plugin.svn.library.*;
 import ise.plugin.svn.data.PropertyData;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
+import ise.plugin.svn.command.Property;
+import ise.plugin.svn.io.ConsolePrintStream;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -56,6 +58,7 @@ import org.gjt.sp.jedit.View;
 public class PropertyPanel extends JPanel {
 
     private View view = null;
+    private PropertyData originalData = null;
     private JButton new_btn = null;
 
     public PropertyPanel( View view, String filename, Properties props ) {
@@ -65,8 +68,9 @@ public class PropertyPanel extends JPanel {
         init( results );
     }
 
-    public PropertyPanel( View view, Map<String, Properties> results ) {
+    public PropertyPanel( View view, Map<String, Properties> results, PropertyData data ) {
         this.view = view;
+        this.originalData = data;
         init( results );
     }
 
@@ -83,7 +87,7 @@ public class PropertyPanel extends JPanel {
         int row = 0;
         for ( Map.Entry<String, Properties> result : result_set ) {
             // fetch the properties and load them into a table
-            String filename = result.getKey();
+            final String filename = result.getKey();
             Properties props = result.getValue();
             final JTable props_table = new JTable( );
             final JButton add_btn = new JButton( "Add" );
@@ -144,14 +148,26 @@ public class PropertyPanel extends JPanel {
                 new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         PropertyEditor dialog = new PropertyEditor( view, null, null, true );
-                        GUIUtils.center(view, dialog);
+                        GUIUtils.center( view, dialog );
                         dialog.setVisible( true );
                         PropertyData data = dialog.getPropertyData();
                         if ( data == null ) {
                             return ;     // user cancelled
                         }
                         model.addRow( new String[] {data.getName(), data.getValue() } );
-
+                        data.addPath( filename );
+                        data.setOut( new ConsolePrintStream( view ) );
+                        if (originalData != null) {
+                            data.setUsername(originalData.getUsername());
+                            data.setPassword(originalData.getPassword());
+                        }
+                        Property property = new Property();
+                        try {
+                            property.doSetProperties( data );
+                        }
+                        catch ( Exception e ) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             );
@@ -163,7 +179,7 @@ public class PropertyPanel extends JPanel {
                             String key = ( String ) model.getValueAt( row, 0 );
                             String value = ( String ) model.getValueAt( row, 1 );
                             PropertyEditor dialog = new PropertyEditor( view, key, value, true );
-                            GUIUtils.center(view, dialog);
+                            GUIUtils.center( view, dialog );
                             dialog.setVisible( true );
                             PropertyData data = dialog.getPropertyData();
                             if ( data == null ) {
@@ -171,6 +187,20 @@ public class PropertyPanel extends JPanel {
                             }
                             model.setValueAt( data.getName(), row, 0 );
                             model.setValueAt( data.getValue(), row, 1 );
+                            data.setOut( new ConsolePrintStream( view ) );
+                            data.addPath( filename );
+                            if (originalData != null) {
+                                data.setUsername(originalData.getUsername());
+                                data.setPassword(originalData.getPassword());
+                            }
+                            Property property = new Property();
+                            try {
+                                property.doSetProperties( data );
+
+                            }
+                            catch ( Exception e ) {
+                                e.printStackTrace();
+                            }
                         }
                         return ;
                     }
@@ -179,7 +209,33 @@ public class PropertyPanel extends JPanel {
             delete_btn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        // TODO: add warning message and delete code
+                        int row = props_table.getSelectedRow();
+                        String key = ( String ) model.getValueAt( row, 0 );
+                        int confirm = JOptionPane.showConfirmDialog( view,
+                                "Delete property named " + key + "?",
+                                "Confirm Delete?",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE );
+                        if ( confirm != JOptionPane.YES_OPTION ) {
+                            return ;
+                        }
+                        PropertyData data = new PropertyData();
+                        data.setOut( new ConsolePrintStream( view ) );
+                        data.addPath( filename );
+                        data.setName( key );
+                        data.setValue( null );
+                        if (originalData != null) {
+                            data.setUsername(originalData.getUsername());
+                            data.setPassword(originalData.getPassword());
+                        }
+                        Property property = new Property();
+                        try {
+                            property.doSetProperties( data );
+                        }
+                        catch ( Exception e ) {
+                            e.printStackTrace();
+                        }
+                        model.removeRow(row);
                     }
                 }
             );
