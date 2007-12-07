@@ -47,6 +47,7 @@ import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.action.PropertyAction;
 import ise.plugin.svn.data.PropertyData;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Action for ProjectViewer's context menu to fetch properties.
@@ -72,6 +73,8 @@ public class PropertyActor extends NodeActor {
             data.setPassword(password);
             data.setPathsAreURLs(false);
             data.setHasDirectory(hasDirectory);
+            data.setRemote(false);
+            data.setRevision(SVNRevision.WORKING);
             PropertyAction la = new PropertyAction(view, data);
             la.actionPerformed(ae);
         }

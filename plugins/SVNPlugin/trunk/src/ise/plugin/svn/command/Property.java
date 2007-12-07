@@ -56,6 +56,69 @@ public class Property {
 
     public PrintStream out = null;
 
+    public void doSetProperties( PropertyData data ) throws CommandInitializationException, SVNException {
+        SVNKit.setupLibrary();
+        if ( data.getPaths() == null ) {
+            return ;     // nothing to do
+        }
+        if ( data.getOut() == null ) {
+            throw new CommandInitializationException( "Invalid output stream." );
+        }
+        if ( data.getErr() == null ) {
+            data.setErr( data.getOut() );
+        }
+
+        // convert paths to Files -- for property set, the paths should be files
+        // since properties are only set on working copies.
+        List<String> paths = data.getPaths();
+        File[] localPaths = null;
+        if ( !data.pathsAreURLs() ) {
+            localPaths = new File[ paths.size() ];
+            for ( int i = 0; i < paths.size(); i++ ) {
+                localPaths[ i ] = new File( paths.get( i ) );
+                // check for file existence?
+            }
+
+            // use default svn config options
+            ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+
+            // use the svnkit client manager
+            SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
+
+            // get a working copy client
+            SVNWCClient wc_client = clientManager.getWCClient();
+
+            // set an event handler so that messages go to the data streams for display
+            wc_client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
+
+            out = data.getOut();
+
+            for ( File file : localPaths ) {
+                // TODO: use user set revisions
+                String name = data.getName();
+                String value = data.getValue();
+                if ( name != null ) {
+                    wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), ISVNPropertyHandler.NULL );
+                }
+                else {
+                    // check for multiple properties
+                    Properties props = data.getProperties();
+                    Set < Map.Entry < Object, Object >> set = props.entrySet();
+                    for ( Map.Entry < Object, Object > me : set ) {
+                        Object key = me.getKey();
+                        if ( key != null ) {
+                            name = key.toString();
+                            value = String.valueOf(me.getValue());
+                            wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), ISVNPropertyHandler.NULL );
+                        }
+                    }
+                }
+            }
+        }
+        out.flush();
+        out.close();
+    }
+
     /**
      * Fills a map of Properties based on the given data.
      * @param data data object containing the information necessary to fetch properties.
@@ -103,16 +166,14 @@ public class Property {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
                 PropertyHandler handler = new PropertyHandler( path );
-                // TODO: use user set revisions
-                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, data.isRecursive(), handler );
+                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }
         else {
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
-                // TODO: use user set revisions
-                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, data.isRecursive(), handler );
+                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }
@@ -164,7 +225,7 @@ public class Property {
                 results.put( key, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
-            out.println( path + ": " + property.getName() + " = " + property.getValue() );
+            out.println( "F " + path + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public void handleProperty( long revision, SVNPropertyData property ) {
@@ -177,18 +238,18 @@ public class Property {
                 results.put( path, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
-            out.println( path + ": " + property.getName() + " = " + property.getValue() );
+            out.println( "R " + path + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public void handleProperty( SVNURL url, SVNPropertyData property ) {
-            String key = url.toString();
+            String key = path;
             Properties prop = ( Properties ) results.get( key );
             if ( prop == null ) {
                 prop = new Properties();
                 results.put( key, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
-            out.println( url.toString() + ": " + property.getName() + " = " + property.getValue() );
+            out.println( "U " + path + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public String getPath() {
@@ -224,9 +285,11 @@ public class Property {
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;
-            File file = new File( "/home/danson/src/plugins/SVNPlugin" );
+            File file = new File( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/library/Base64.java" );
             PropertyHandler handler = prop.getPropertyHandler( file );
-            wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.HEAD, true, handler );
+            //wc_client.doSetProperty( file, "test:key", "test value", false, false, handler );
+            wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.WORKING, false, handler );
+
         }
         catch ( Exception e ) {
             e.printStackTrace();

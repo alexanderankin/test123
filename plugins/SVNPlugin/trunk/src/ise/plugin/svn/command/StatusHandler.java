@@ -257,12 +257,20 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * Properties were modified.
              */
             propertiesChangeType = "M";
+            if (modifiedFiles == null) {
+                modifiedFiles = new ArrayList<SVNStatus>();
+            }
+            modifiedFiles.add(status);
         }
         else if ( propertiesStatus == SVNStatusType.STATUS_CONFLICTED ) {
             /*
              * Properties are in conflict with the repository.
              */
             propertiesChangeType = "C";
+            if (conflictedFiles == null) {
+                conflictedFiles = new ArrayList<SVNStatus>();
+            }
+            conflictedFiles.add(status);
         }
 
         /*

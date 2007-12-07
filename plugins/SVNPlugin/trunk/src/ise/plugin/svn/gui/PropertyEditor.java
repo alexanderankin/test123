@@ -33,7 +33,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.*;
-import java.io.File;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -49,6 +49,7 @@ import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.PVHelper;
+import ise.plugin.svn.library.FileUtilities;
 
 
 /**
@@ -64,6 +65,38 @@ public class PropertyEditor extends JDialog {
     private boolean cancelled = false;
 
     private PropertyData propertyData = null;
+
+    private String[] default_file_prop_names = new String[] {
+                "",
+                "svn:executable",
+                "svn:mime-type",
+                "svn:ignore",
+                "svn:keywords",
+                "svn:eol-style",              // native, CRLF, CR, LF
+                "svn:externals",
+                "svn:special",
+                "bugtraq:url",
+                "bugtraq:warnifnoissue",      // boolean
+                "bugtraq:label",
+                "bugtraq:message",
+                "bugtraq:number",             // boolean
+                "bugtraq:append"};           // boolean
+
+    private String[] default_dir_prop_names = new String[] {
+                "",
+                "svn:mime-type",
+                "svn:ignore",
+                "svn:keywords",
+                "svn:eol-style",              // native, CRLF, CR, LF
+                "svn:externals",
+                "svn:special",
+                "bugtraq:url",
+                "bugtraq:warnifnoissue",      // boolean
+                "bugtraq:label",
+                "bugtraq:message",
+                "bugtraq:number",             // boolean
+                "bugtraq:append"};           // boolean
+
 
     public PropertyEditor( View view, String name, String value, boolean isDirectory ) {
         super( ( JFrame ) view, "Property Editor", true );
@@ -82,22 +115,15 @@ public class PropertyEditor extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         JLabel prop_name_label = new JLabel( "Property name:" );
-        final JComboBox prop_chooser = new JComboBox( new String[] {
-                    "",
-                    "svn:executable",
-                    "svn:mime-type",
-                    "svn:ignore",
-                    "svn:keywords",
-                    "svn:eol-style",
-                    "svn:externals",
-                    "svn:special"} );
-        prop_chooser.setEditable(true);
+        final JComboBox prop_chooser = new JComboBox( isDirectory ? default_dir_prop_names : default_file_prop_names );
+        prop_chooser.setEditable( true );
+        prop_chooser.setSelectedItem( name == null ? "" : name );
 
         JPanel content_panel = new JPanel( new LambdaLayout() );
         content_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "Property value" ) );
-        JRadioButton text_btn = new JRadioButton( "Enter a text property:" );
+        final JRadioButton text_btn = new JRadioButton( "Enter a text value:" );
         text_btn.setSelected( true );
-        final JRadioButton file_btn = new JRadioButton( "Or load property value from file:" );
+        final JRadioButton file_btn = new JRadioButton( "Or load value from file:" );
         ButtonGroup bg = new ButtonGroup();
         bg.add( text_btn );
         bg.add( file_btn );
@@ -120,13 +146,14 @@ public class PropertyEditor extends JDialog {
             }
         );
         ActionListener al = new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    file_value.setEnabled( file_btn.isSelected() );
-                    browse_btn.setEnabled( file_btn.isSelected() );
-                }
-            };
-        text_btn.addActionListener(al);
-        file_btn.addActionListener(al);
+                    public void actionPerformed( ActionEvent ae ) {
+                        file_value.setEnabled( file_btn.isSelected() );
+                        browse_btn.setEnabled( file_btn.isSelected() );
+                        text_value.setEnabled( text_btn.isSelected() );
+                    }
+                };
+        text_btn.addActionListener( al );
+        file_btn.addActionListener( al );
         content_panel.add( "0, 0, 7, 1, W, w, 3", text_btn );
         content_panel.add( "0, 1, 1, 1", KappaLayout.createHorizontalStrut( 11, true ) );
         content_panel.add( "1, 1, 6, 1, 0, wh, 3", new JScrollPane( text_value ) );
@@ -159,8 +186,27 @@ public class PropertyEditor extends JDialog {
                         Object item = prop_chooser.getSelectedItem();
                         if ( item != null && !item.toString().isEmpty() ) {
                             propertyData.setName( item.toString() );
-                            // TODO: check radio buttons and load property value from file
-                            propertyData.setValue( text_value.getText() == null ? "" : text_value.getText() );
+                            if ( text_btn.isSelected() ) {
+                                propertyData.setValue( text_value.getText() == null ? "" : text_value.getText() );
+                            }
+                            else {
+                                String filename = file_value.getText();
+                                if (filename == null || filename.isEmpty()) {
+                                    JOptionPane.showMessageDialog( view, "No filename entered for property value.", "Error", JOptionPane.ERROR_MESSAGE );
+                                    file_value.requestFocusInWindow();
+                                    return ;
+                                }
+                                try {
+                                    Reader reader = new BufferedReader( new FileReader( filename ) );
+                                    StringWriter writer = new StringWriter();
+                                    FileUtilities.copy( reader, writer );
+                                    propertyData.setValue( writer.toString() );
+                                }
+                                catch ( Exception e ) {
+                                    JOptionPane.showMessageDialog( view, "Unable to read property value from file:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
+                                    return ;
+                                }
+                            }
                         }
 
                         PropertyEditor.this.setVisible( false );
@@ -203,7 +249,7 @@ public class PropertyEditor extends JDialog {
     }
 
     public static void main ( String[] args ) {
-        PropertyEditor pe = new PropertyEditor( null, null, null, true );
+        PropertyEditor pe = new PropertyEditor( null, "svn:externals", "*", true );
         pe.setVisible( true );
     }
 }

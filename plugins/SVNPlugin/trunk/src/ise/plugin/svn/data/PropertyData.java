@@ -111,6 +111,6 @@ public class PropertyData extends CheckoutData {
     }
 
     public String getValue() {
-        return new String( value );
+        return value == null ? null : new String( value );
     }
 }

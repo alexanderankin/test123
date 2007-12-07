@@ -45,6 +45,7 @@ public class SVNData implements Serializable {
     private boolean recursive = false;
     private boolean force = false;
     private boolean dryRun = false;
+    private boolean remote = true;
 
     public SVNData(){}
 
@@ -96,7 +97,7 @@ public class SVNData implements Serializable {
      * Returns the value of paths.
      */
     public List<String> getPaths() {
-        return paths;
+        return new ArrayList<String>(paths);
     }
 
     /**
@@ -195,6 +196,21 @@ public class SVNData implements Serializable {
      */
     public void setDryRun( boolean dryRun ) {
         this.dryRun = dryRun;
+    }
+
+    /**
+     * Returns the value of remote.
+     */
+    public boolean getRemote() {
+        return remote;
+    }
+
+    /**
+     * Set whether this data represents about a working copy or a remote/repository
+     * copy of a file or directory.
+     */
+    public void setRemote( boolean b ) {
+        remote = b;
     }
 
 }
