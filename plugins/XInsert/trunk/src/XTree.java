@@ -326,7 +326,7 @@ public class XTree extends JPanel {
       XScripter.insertText(view, data, node);
     else if(type == XTreeItem.MACRO_TYPE) {
       Log.log(Log.DEBUG, this, "Running Macro...");
-      XScripter.runMacro(view, (String)node.getUserObject(), data);
+      XScripter.runMacro(view, (String) node.getUserObject(), data);
       return;
       }
     else if(type == XTreeItem.XINSERT_SCRIPT_TYPE) {
@@ -334,8 +334,13 @@ public class XTree extends JPanel {
       XScripter.runXInsertScript(view, data, node);
       }
     else if(type == XTreeItem.NAMED_MACRO_TYPE) {
-      Log.log(Log.DEBUG, this, "Running Named Macro...");
-      XScripter.runNamedMacro(view, (String)node.getUserObject(), data);
+      Log.log(Log.DEBUG, this, "Running Named Macro ...");
+      XScripter.runNamedMacro(view, (String) node.getUserObject(), data);
+      return;
+      }
+    else if(type == XTreeItem.ACTION_TYPE) {
+      Log.log(Log.DEBUG, this, "Invoking Action " + data + " ...");
+      XScripter.invokeAction(view, (String) node.getUserObject(), data);
       return;
       }
     else if(type == XTreeItem.REFERENCE_TYPE) {
@@ -388,6 +393,7 @@ public class XTree extends JPanel {
   private static final ImageIcon macroLeaf = Utilities.getIcon("images/tree_leaf_macro.gif");
   private static final ImageIcon namedmacroLeaf = Utilities.getIcon("images/tree_leaf_namedmacro.gif");
   private static final ImageIcon referenceLeaf = Utilities.getIcon("images/tree_leaf_reference.gif");
+  private static final ImageIcon actionLeaf = Utilities.getIcon("images/tree_leaf_action.gif");
   private static final ImageIcon errorLeaf = Utilities.getIcon("images/tree_leaf_error.gif");
 
   class XTreeCellRenderer extends DefaultTreeCellRenderer {
@@ -423,6 +429,9 @@ public class XTree extends JPanel {
               break;
             case XTreeItem.NAMED_MACRO_TYPE:
               leafIcon = namedmacroLeaf;
+              break;
+            case XTreeItem.ACTION_TYPE:
+              leafIcon = actionLeaf;
               break;
             case XTreeItem.REFERENCE_TYPE:
               leafIcon = referenceLeaf;
@@ -461,6 +470,8 @@ public class XTree extends JPanel {
             return "Macro";
           else if(type == XTreeItem.XINSERT_SCRIPT_TYPE)
             return "Script";
+          else if(type == XTreeItem.ACTION_TYPE)
+            return "Action: " + content;
           else if(type == XTreeItem.NAMED_MACRO_TYPE)
             return "Named Macro";
           else if(type == XTreeItem.REFERENCE_TYPE)

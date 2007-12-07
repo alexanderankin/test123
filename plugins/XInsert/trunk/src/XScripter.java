@@ -23,6 +23,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.io.File;
@@ -43,11 +44,11 @@ public class XScripter
 /**
  * @deprecated use getSubstituteFor(View, String, XtreeNode) instead as it does exactly the same
  */
-  public static String _getSubstituteFor(View parent, String in, XTreeNode node) {
-    return getSubstituteFor(parent, in, node);
+  public static String _getSubstituteFor(View view, String in, XTreeNode node) {
+    return getSubstituteFor(view, in, node);
     }
 
-  private static Command getCommand(View parent, XTreeNode node, String command) {
+  private static Command getCommand(View view, XTreeNode node, String command) {
     char c = command.charAt(0);
     if(c == '$') {
       // Substitute variable
@@ -75,13 +76,55 @@ public class XScripter
       }
     }
 
-  public static void runMacro(View parent, String name, String macro) {
-    Log.log(Log.DEBUG, XScripter.class, "Running runMacro for name=" + name);
-    BeanShell.eval( parent, macro, false);
-    }
+//{{{ invokeAction method
+  /**
+  *  invokes an Action.
+  *
+  * @param  view    The view to run the script in.
+  * @param  name    The name of the node item
+  * @param  content The node content to be invoked as an action.
+  */
+  public static void invokeAction(View view, String name, String content) {
+    // borrowed from jedit/gui/ActionBar.java
+    Log.log(Log.DEBUG, XScripter.class, "Invoking action for item named = " + name);
+    final int repeatCount = 1; //  is it worthwhile to make this configurable?
+    final View v = view;
+    final EditAction action = (content == null ? null : jEdit.getAction(content));
+    if (action == null) {
+       if(content != null) 
+	   view.getStatus().setMessageAndClear(jEdit.getProperty("view.action.no-completions"));
+       }
+    SwingUtilities.invokeLater(new Runnable() {
+       public void run(){
+	   v.getInputHandler().setRepeatCount(repeatCount);
+           v.getInputHandler().invokeAction(action);
+           }
+       });
+    } //}}}
 
-  public static void runNamedMacro(View parent, String name, String path) {
-	Log.log(Log.DEBUG, XScripter.class, "Running runNamedMacro for item named " + name + ", path=" + path);
+//{{{ runMacro method
+  /**
+  *  runs the node content as a BeanShell macro.
+  *
+  * @param  view    The view to run the script in.
+  * @param  name    The name of the node item
+  * @param  macro   The node content to be evaluated as a macro
+  */
+  public static void runMacro(View view, String name, String macro) {
+    Log.log(Log.DEBUG, XScripter.class, "Running runMacro for item named = " + name);
+    BeanShell.eval(view, macro, false);
+    } //}}}
+
+//{{{ runNamedMacro method
+  /**
+  *  runs a named (existing) macro
+  *
+  * @param  view    The view to run the script in.
+  * @param  name    The name of the node item
+  * @param  path    The node content giving the internal name or full path of the macro.
+  */
+  public static void runNamedMacro(View view, String name, String path) {
+	Log.log(Log.DEBUG, XScripter.class, "Running runNamedMacro for item named = " + name + ", path=" + path);
 	// NOTE: old-style macro names
 	if(path.startsWith("play-macro@")) {
 		path = path.substring(11);
@@ -89,33 +132,34 @@ public class XScripter
 	Macros.Macro macro = Macros.getMacro(path);
 	if(macro != null) {
 		// NOTE: this is the internal representation of a macro
-		macro.invoke(parent);
+		macro.invoke(view);
 		}
 	else {
 		// NOTE: this is the alternative representation: the macro's full path
 		File macroFile = new File(path);
 		if(macroFile.exists()) {
-			BeanShell.runScript(parent, path, true, false);
+			BeanShell.runScript(view, path, true, false);
 			}
 		else {
 			Log.log(Log.ERROR, XScripter.class,
 				"Could not find macro named " + path);
 			}
 		}
-  	}
+  	} //}}}
 
 
   /**
   *  searches for a variable recursivley through nodes for variable, returns
   *  the first it finds.
   *
-  * @param  parent  the view to be used for view specific variables
+  * @param  view    the view to be used for view specific variables
   * @param  key     the variable name
   * @param  node    the tree node from where to start the search
   * @return         the variable value or null if the variable is not found
   */
 
-  public static String getSubstituteFor(View parent, String key, XTreeNode node) {
+//{{{ getSubstituteFor method
+  public static String getSubstituteFor(View view, String key, XTreeNode node) {
 	XTreeNode parentNode = node;
 	String val = null;
 	do {
@@ -126,15 +170,20 @@ public class XScripter
 	if(val == null && XInsertPlugin.containsVariable(key)) {
 		val = XInsertPlugin.getVariable(key);
 		}
-	if(val == null && parent != null) {
-		val = XInsertPlugin.getViewSpecificVariable(parent, key);
+	if(val == null && view != null) {
+		val = XInsertPlugin.getViewSpecificVariable(view, key);
 		}
 	return val == null ? null : MiscUtilities.escapesToChars(val);
-	}
+	} //}}}
 
   /**
   *  insert text.
   *
+  /**
+  *  invokes an Action.
+  *
+  * @param  view    The view to run the script in.
+  * @param  node    The node item
   * @param  text  The node content to be inserted.
   */
   public static void insertText(View view, String text, XTreeNode node) {
@@ -146,6 +195,7 @@ public class XScripter
     buffer.endCompoundEdit();
     }
 
+//{{{ runXInsertScript method
   /**
   *  runs an XInsertScript.
   *
@@ -203,8 +253,9 @@ public class XScripter
     finally {
       buffer.endCompoundEdit();
       }
-    }
+    } //}}}
 
+//{{{ findWordEnd method
   /**
   *  Finds the end of the word at position <code>pos</code> in <code>line</code>.
   *  <p>this is a slightly modified version of {@link org.gjt.sp.jedit.textarea.TextUtilities#findWordEnd(String, int, String)}</P>
@@ -225,8 +276,9 @@ public class XScripter
         }
       }
     return wordEnd;
-    }
+    } //}}}
 
+//{{{ doError methods
 /**
   *  There was an error in executing the script
   *
@@ -235,7 +287,7 @@ public class XScripter
   */
   public static void doError(String command, String message) {
     doError(command, message, null);
-    }
+    } 
 
 /**
   *  Logs an error which threw an exception
@@ -256,20 +308,21 @@ public class XScripter
 
   public static void doError(String command, Exception ex) {
     doError(command, null, ex);
+    } //}}}
+
+//{{{ inputDialog methods
+  public static String showInputDialog(View view, String key, String defValue) {
+    return showInputDialog(view, "Please enter a value for \"" + key + "\"", key, defValue);
     }
 
-  public static String showInputDialog(View parent, String key, String defValue) {
-    return showInputDialog(parent, "Please enter a value for \"" + key + "\"", key, defValue);
-    }
-
-  public static String showInputDialog(View parent, String message, String key, String defValue) {
-    InputDialog id = new InputDialog(parent, key, message, defValue);
+  public static String showInputDialog(View view, String message, String key, String defValue) {
+    InputDialog id = new InputDialog(view, key, message, defValue);
     return id.showDialog();
     }
 
-  public static String showComboDialog(View parent, String message, String key, String[] opts, String defValue, boolean allowUser) {
-    InputDialog id = new InputDialog(parent, key, message, defValue, opts, allowUser);
+  public static String showComboDialog(View view, String message, String key, String[] opts, String defValue, boolean allowUser) {
+    InputDialog id = new InputDialog(view, key, message, defValue, opts, allowUser);
     return id.showDialog();
-    }
+    } //}}}
   }
 
