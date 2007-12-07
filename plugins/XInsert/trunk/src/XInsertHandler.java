@@ -51,7 +51,9 @@ public class XInsertHandler extends HandlerBase {
       // new data type added here				
       else if(value.equalsIgnoreCase("NAMED_MACRO"))
         type = XTreeItem.NAMED_MACRO_TYPE;	
-      // new data type added: hertzhaft 				
+      // new data types added: hertzhaft 				
+      else if(value.equalsIgnoreCase("ACTION"))
+        type = XTreeItem.ACTION_TYPE;	
       else if(value.equalsIgnoreCase("REFERENCE"))
         type = XTreeItem.REFERENCE_TYPE;	
       else {

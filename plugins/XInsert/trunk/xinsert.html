@@ -120,9 +120,7 @@ maintainer of the plugin.</p>
 <p>XInsert clips can be added in two ways: Either double click on
 the desired item in the expanded branch, or select the desired
 item in the tree and hit Enter or Space while the XInsert pane is
-focused.</p>
-
-<p>For convenience two actions were added that can be bound to keystroke
+focused. For convenience two actions were added that can be bound to keystroke
 combinations using the Utilities/Global Options/Shortcuts menu (A+F12).</p>
 
 <ul>
@@ -263,7 +261,7 @@ tag per file, can have <code>&lt;item&gt;</code> tags in the
 substituted into the insert the closest variable tag in the tree
 hierachy is used.</p>
 
-<p>Item tags can be four types (specified with the type
+<p>Item tags can have one of five types (specified with the type
 attribute):</p>
 
 <dl compact>
@@ -282,6 +280,10 @@ attribute):</p>
 <dt>xinsert_script</dt>
 
 <dd>The content is treated as an <a href="#script">xinsert script</a>.</dd>
+
+<dt>action</dt>
+
+<dd>The content is treated as the name of a jEdit action.</dd>
 
 <dt>reference</dt>
 

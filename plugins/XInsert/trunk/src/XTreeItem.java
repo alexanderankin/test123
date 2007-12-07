@@ -28,6 +28,7 @@ public class XTreeItem {
   public static final int XINSERT_SCRIPT_TYPE = 2;
   public static final int NAMED_MACRO_TYPE = 3;
   public static final int REFERENCE_TYPE = 4;
+  public static final int ACTION_TYPE = 5;
 
   private int type;
   private String content;

@@ -7,9 +7,10 @@
 <!ELEMENT item (#PCDATA) >
   <!ATTLIST item
        name   CDATA #REQUIRED
-       type (text | macro | named_macro | xinsert_script | reference ) "text"
-       abbrev CDATA #IMPLIED
+       type (text | macro | named_macro | xinsert_script | action | reference ) "text"
        mode   CDATA #IMPLIED
+       abbrev CDATA #IMPLIED
+       shortcut CDATA #IMPLIED
     >
 
 <!ELEMENT variable EMPTY >
