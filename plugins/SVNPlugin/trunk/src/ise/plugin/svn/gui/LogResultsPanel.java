@@ -81,12 +81,12 @@ public class LogResultsPanel extends JPanel {
 
         TreeMap < String, List < SVNLogEntry >> results = logResults.getEntries();
         Set<Map.Entry<String, List<SVNLogEntry>>> set = results.entrySet();
-        for ( Map.Entry me : set ) {
+        for ( Map.Entry<String, List<SVNLogEntry>> me : set ) {
             String path = (String)me.getKey();
             JLabel label = new JLabel( "Path: " + path );
 
             // sort the entries
-            List<SVNLogEntry> entries = (List<SVNLogEntry>)me.getValue();
+            List<SVNLogEntry> entries = me.getValue();
             Collections.sort( entries, new EntryComparator() );
 
             // put the results data into an array to pass to a JTable

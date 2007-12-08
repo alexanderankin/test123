@@ -33,7 +33,6 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Commit;
 import ise.plugin.svn.data.CommitData;
-import ise.plugin.svn.gui.CommitDialog;
 import ise.plugin.svn.gui.CommitResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
@@ -58,10 +57,10 @@ public class CommitActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
-            List<String> paths = new ArrayList<String>();
+            TreeMap<String, String> paths = new TreeMap<String, String>();
             for ( VPTNode node : nodes ) {
                 if ( node != null ) {
-                    paths.add( node.getNodePath() );
+                    paths.put( node.getNodePath(), "" );
                 }
             }
 

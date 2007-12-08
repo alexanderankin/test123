@@ -200,14 +200,55 @@ public class StatusResultsPanel extends JPanel {
                         if ( tree_paths.length == 0 ) {
                             return ;
                         }
-                        List<String> paths = new ArrayList<String>();
+                        TreeMap<String, String> paths = new TreeMap<String, String>();
+                        StringBuilder message = new StringBuilder();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                DefaultMutableTreeNode type = ( DefaultMutableTreeNode ) path.getPathComponent( 1 );
+                                String pathname = ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
+                                if ( type != null ) {
+                                    String comp = type.getUserObject().toString();
+                                    if ( comp.startsWith( "Files with conflicts" ) ) {
+                                        message.append( pathname ).append( " has conflicts.\n" );
+                                    }
+                                    else if ( comp.startsWith( "Out of date" ) ) {
+                                        message.append( pathname ).append( " is out of date.\n" );
+                                    }
+                                    else if ( comp.startsWith( "Modified" ) ) {
+                                        paths.put( pathname, "Modified" );
+                                    }
+                                    else if ( comp.startsWith( "Added" ) ) {
+                                        paths.put( pathname, "Added" );
+                                    }
+                                    else if ( comp.startsWith( "Unversioned" ) ) {
+                                        message.append( pathname ).append( " is not under version control.\n" );
+                                    }
+                                    else if ( comp.startsWith( "Deleted" ) ) {
+                                        paths.put( pathname, "Deleted" );
+                                    }
+                                    else if ( comp.startsWith( "Missing" ) ) {
+                                        message.append( pathname ).append( " is missing.\n" );
+                                    }
+                                }
                             }
                         }
-                        CommitAction action = new CommitAction( view, paths, username, password );
-                        action.actionPerformed( ae );
+                        String error = message.toString();
+                        if ( !error.isEmpty() && paths.size() == 0 ) {
+                            JOptionPane.showMessageDialog( view, "Cannot commit selected files:\n\n" + error, "Cannot commit selected files", JOptionPane.ERROR_MESSAGE );
+
+                        }
+                        else if ( !error.isEmpty() && paths.size() > 0 ) {
+                            int answer = JOptionPane.showConfirmDialog( view, "Cannot commit all selected files:\n\n" + error + "\nCommit remaining file anyway?", "Cannot commit all selected files", JOptionPane.WARNING_MESSAGE );
+                            if ( answer == JOptionPane.YES_OPTION ) {
+                                CommitAction action = new CommitAction( view, paths, username, password );
+                                action.actionPerformed( ae );
+                            }
+                        }
+                        else {
+                            CommitAction action = new CommitAction( view, paths, username, password );
+                            action.actionPerformed( ae );
+
+                        }
                     }
                 }
                             );
@@ -241,9 +282,9 @@ public class StatusResultsPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String path = ( String ) ( ( DefaultMutableTreeNode ) tree_paths[0].getLastPathComponent() ).getUserObject();
-                        DiffAction action = new DiffAction(view, path, username, password);
-                        action.actionPerformed(ae);
+                        String path = ( String ) ( ( DefaultMutableTreeNode ) tree_paths[ 0 ].getLastPathComponent() ).getUserObject();
+                        DiffAction action = new DiffAction( view, path, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );

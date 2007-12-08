@@ -61,22 +61,26 @@ public class PropertyAction implements ActionListener {
      * @param data what to show
      */
     public PropertyAction( View view, PropertyData data ) {
-        if ( view == null )
+        if ( view == null ) {
             throw new IllegalArgumentException( "view may not be null" );
-        if ( data == null )
+        }
+        if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
+        }
         this.view = view;
         this.data = data;
     }
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data != null ) {
-            if (data.hasDirectory()) {
-                int answer = JOptionPane.showConfirmDialog(view, "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                data.setRecursive(JOptionPane.YES_OPTION == answer);
+            // ask if properties should be found for children
+            if ( data.hasDirectory() ) {
+                int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
-            data.setOut( new ConsolePrintStream( view ) );
 
+            // set up the svn console
+            data.setOut( new ConsolePrintStream( view ) );
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
@@ -86,6 +90,7 @@ public class PropertyAction implements ActionListener {
                 handler.flush();
             }
 
+            // property fetcher
             class Runner extends SwingWorker < TreeMap<String, Properties> , Object > {
 
                 @Override
@@ -109,20 +114,21 @@ public class PropertyAction implements ActionListener {
                 protected void done() {
                     try {
                         TreeMap<String, Properties> results = get();
-                        if (results != null ) {
+                        if ( results != null ) {
                             panel.addTab( "Properties", new PropertyPanel( view, results, data ) );
                         }
                         else {
-                            // shouldn't get here
-                            JOptionPane.showMessageDialog(view, "No properties found.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog( view, "No properties found.", "Error", JOptionPane.ERROR_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {
                         // ignored
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }
             }
+
+            // fetch the properties
             ( new Runner() ).execute();
 
         }
