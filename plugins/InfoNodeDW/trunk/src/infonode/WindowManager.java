@@ -22,6 +22,7 @@ import javax.swing.JPopupMenu;
 
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.DockingWindowAdapter;
+import net.infonode.docking.FloatingWindow;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -154,7 +155,7 @@ public class WindowManager extends DockableWindowManager {
 		for (int i = 0; i < dockables.length; i++) {
 			String dockable = dockables[i];
 			String pos = getDockablePosition(dockable);
-			if (pos == null)
+			if (pos == null || pos.equals(DockableWindowManager.FLOATING))
 				continue;
 			View v = createDummyView(dockable);
 			TabWindow tw = null;
@@ -383,6 +384,7 @@ public class WindowManager extends DockableWindowManager {
 	View createDummyView(String name) {
 		View v = createDockableView(name, new JPanel());
 		dummyViews.add(v);
+		System.err.println("Constructing dummy view: " + name);
 		return v;
 	}
 	private View createDockableView(String name, JComponent c) {
@@ -407,9 +409,7 @@ public class WindowManager extends DockableWindowManager {
 		if (v == null) {
 			v = constructDockableView(name);
 			TabWindow tw = null;
-			if (position.equals(DockableWindowManager.FLOATING))
-				tw = leftTab;
-			else if (position.equals(DockableWindowManager.LEFT))
+			if (position.equals(DockableWindowManager.LEFT))
 				tw = leftTab;
 			else if (position.equals(DockableWindowManager.RIGHT))
 				tw = rightTab;
@@ -422,10 +422,14 @@ public class WindowManager extends DockableWindowManager {
 				if (! tw.isVisible())
 					tw.setVisible(true);
 				//setViewLayout();
+			} else {
+				// floating
+				FloatingWindow fw = rootWindow.createFloatingWindow(
+					new Point(0, 0), v.getPreferredSize(), v);
+				fw.getTopLevelAncestor().setVisible(true);
 			}
-			if (position.equals(DockableWindowManager.FLOATING))
-				v.undock(new Point(0, 0));
-		}
+		} else
+			viewCreateListener.checkFirstShow(v);
 		v.makeVisible();
 		Object reason = DockableWindowUpdate.ACTIVATED;
 		EditBus.send(new DockableWindowUpdate(this, reason, name));
