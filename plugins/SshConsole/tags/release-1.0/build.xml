@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="SshConsole" default="build" basedir="."> 
+  <description>
+  	This is the build.xml file for building the SshConsole
+  	It is based on the standard build.xml file for jEdit plugins.
+  </description>  
+
+	<property name="docs-proc.target"  value="none" />
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+
+    <property name="build.support" value="../../build-support" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    
+	<import file="${build.support}/plugin-build.xml" />
+	 
+	<property name="install.dir"  value=".."/>
+	<property name="build.dir" value="build"/>
+
+	<target name="build.prepare" description="untar the source for jcterm">
+	  <untar  compression="gzip"  dest="${basedir}"  src="lib/jcterm-0.0.9.tar.gz" />
+	</target>
+	
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit.plugins.dir}/FTP.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugins.dir}/Console.jar"/>
+		<pathelement location="${jedit.plugins.dir}/jsch.jar"/>		
+		<pathelement location="${src.dir}"/>
+	</path>
+	
+	<selector id="packageFiles">
+			<or>
+				<filename name="index.html" />
+			</or>
+	</selector>
+	
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-f" />
+			<arg path="tags_" />
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
