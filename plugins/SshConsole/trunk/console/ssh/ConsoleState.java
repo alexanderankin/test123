@@ -89,9 +89,9 @@ public class ConsoleState
 		newPath = ConnectionManager.extractDirectory(newPath);
 		if (newPath == null || dir.equals(newPath)) return;
 		dir = newPath;
-		// update current directory on remote host, if user is showing ssh shell
+		// update current directory on remote host
 		console.Shell s = console.getShell();
-		if (s.getName().equals("ssh")) return;
+		if (!s.getName().equals("ssh")) return;
 		if (chDirAfter) {
 			String command = "cd " + dir; 
 			Output output = console.getShellState(s);
