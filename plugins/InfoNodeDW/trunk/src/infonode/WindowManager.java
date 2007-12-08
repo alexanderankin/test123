@@ -178,13 +178,18 @@ public class WindowManager extends DockableWindowManager {
 		super.applyViewConfig(config);
 	}
 	private void minimizeTabWindows(TabWindow tw, Direction dir) {
-		if (tw.getChildWindowCount() == 0)
-			tw.setVisible(false);
-		while (tw.getChildWindowCount() > 0) {
+		for (int i = 0; i < tw.getChildWindowCount(); i++) {
+			DockingWindow w = tw.getChildWindow(i);
+			w.addListener(viewCreateListener);
+		}
+		tw.minimize(dir);
+		//if (tw.getChildWindowCount() == 0)
+			//tw.setVisible(false);
+/*		while (tw.getChildWindowCount() > 0) {
 			DockingWindow w = tw.getChildWindow(0);
 			w.minimize(dir);
 			w.addListener(viewCreateListener);
-		}
+		}*/
 	}
 	private void setViewLayout() {
 		DockingWindow sw = null;
@@ -284,6 +289,7 @@ public class WindowManager extends DockableWindowManager {
 			return;
 
 		String[] windowList = factory.getRegisteredDockableWindows();
+		Vector<String> notify = new Vector<String>();
 		for (int i = 0; i < windowList.length; i++) {
 			String name = windowList[i];
 			String position = getDockablePosition(name);
@@ -292,7 +298,11 @@ public class WindowManager extends DockableWindowManager {
 			String curPosition = getCurrentDockablePosition(name);
 			if (position == null || position.equals(curPosition))
 				continue;
-			showDockableWindow(name);
+			showDockableWindowNoNotify(name);
+			notify.add(name);
+		}
+		for (int i = 0; i < notify.size(); i++) {
+			notifyActivation(notify.get(i));
 		}
 	}
 
@@ -404,6 +414,14 @@ public class WindowManager extends DockableWindowManager {
 	}
 	@Override
 	public void showDockableWindow(String name) {
+		showDockableWindowNoNotify(name);
+		notifyActivation(name);
+	}
+	private void notifyActivation(String name) {
+		Object reason = DockableWindowUpdate.ACTIVATED;
+		EditBus.send(new DockableWindowUpdate(this, reason, name));
+	}
+	private void showDockableWindowNoNotify(String name) {
 		String position = getDockablePosition(name);
 		View v = viewMap.getView(name);
 		if (v == null) {
@@ -419,8 +437,8 @@ public class WindowManager extends DockableWindowManager {
 				tw = topTab;
 			if (tw != null) {
 				tw.addTab(v);
-				if (! tw.isVisible())
-					tw.setVisible(true);
+				if (tw.isMinimized())
+					tw.restore();
 				//setViewLayout();
 			} else {
 				// floating
@@ -431,8 +449,6 @@ public class WindowManager extends DockableWindowManager {
 		} else
 			viewCreateListener.checkFirstShow(v);
 		v.makeVisible();
-		Object reason = DockableWindowUpdate.ACTIVATED;
-		EditBus.send(new DockableWindowUpdate(this, reason, name));
 	}
 	public Component add(Component comp, int index) {
 		//return mainView.add(comp, index);
