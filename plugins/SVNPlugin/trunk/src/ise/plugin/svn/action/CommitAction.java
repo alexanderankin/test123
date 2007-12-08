@@ -59,7 +59,7 @@ public class CommitAction implements ActionListener {
 
     private CommitDialog dialog = null;
     private View view = null;
-    private List<String> paths = null;
+    private Map<String, String> paths = null;
     private String username = null;
     private String password = null;
 
@@ -69,7 +69,7 @@ public class CommitAction implements ActionListener {
      * @param username the username for the svn repository
      * @param password the password for the username
      */
-    public CommitAction( View view, List<String> paths, String username, String password ) {
+    public CommitAction( View view, TreeMap<String, String> paths, String username, String password ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( paths == null )

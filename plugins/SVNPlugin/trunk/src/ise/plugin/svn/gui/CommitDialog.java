@@ -31,12 +31,14 @@ package ise.plugin.svn.gui;
 // imports
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -49,7 +51,9 @@ import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.CommitData;
+import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.library.PropertyComboBox;
@@ -61,7 +65,7 @@ import ise.plugin.svn.library.PropertyComboBox;
 public class CommitDialog extends JDialog {
     // instance fields
     private View view = null;
-    private List<String> nodes = null;
+    private Map<String, String> nodes = null;
 
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
@@ -71,51 +75,68 @@ public class CommitDialog extends JDialog {
     private CommitData commitData = null;
 
 
-    public CommitDialog( View view, List<String> nodes ) {
+    public CommitDialog( View view, Map<String, String> nodes ) {
         super( ( JFrame ) view, "Commit", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
         this.view = view;
         this.nodes = nodes;
-        _init();
+        init();
     }
 
-    /** Initialises the option pane. */
-    protected void _init() {
+    protected void init() {
 
         commitData = new CommitData();
 
-        JPanel panel = new JPanel( new KappaLayout() );
+        JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        // set recursive value, if any of the nodes are a directory, set
-        // recursive to true.  While we're at it, make a list of strings of
-        // the node paths.
+        JLabel file_label = new JLabel( "Committing these files:" );
+        JTable file_table = new JTable();
+        file_table.setFillsViewportHeight(true);
+        final DefaultTableModel file_table_model = new DefaultTableModel(
+                    new String[] {
+                        "", "File", "Status"
+                    }, nodes.size() ) {
+                    public Class getColumnClass( int index ) {
+                        if ( index == 0 ) {
+                            return Boolean.class;
+                        }
+                        else {
+                            return super.getColumnClass( index );
+                        }
+
+                    }
+                };
+        file_table.setModel( file_table_model );
+
+        // load the table model, determine if recursive, accumulate file paths
         boolean recursive = false;
         List<String> paths = new ArrayList<String>();
-        for ( String node : nodes ) {
-            if ( node != null ) {
-                File file = new File(node);
-                if ( file.isDirectory() ) {
+        int i = 0;
+        Set < Map.Entry<String, String >> set = nodes.entrySet();
+        for ( Map.Entry<String, String> me : set ) {
+            String path = me.getKey();
+            String status = me.getValue() == null ? "" : me.getValue();
+            if (path != null) {
+                File file = new File(path);
+                if (file.isDirectory()) {
                     recursive = true;
                 }
-                paths.add( node );
+                paths.add(path);
+                file_table_model.setValueAt( new Boolean( true ), i, 0 );
+                file_table_model.setValueAt( path, i, 1 );
+                file_table_model.setValueAt( status, i, 2 );
+                ++i;
             }
         }
         commitData.setPaths( paths );
         commitData.setRecursive( recursive );
 
-        JLabel file_label = new JLabel( "Committing these files:" );
-        final JPanel file_panel = new JPanel( new GridLayout( 0, 1, 2, 3 ) );
-        file_panel.setBackground( Color.WHITE );
-        file_panel.setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
-        for ( String path : paths ) {
-            JCheckBox cb = new JCheckBox( path );
-            cb.setSelected( true );
-            cb.setBackground( Color.WHITE );
-            file_panel.add( cb );
-        }
+        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
+        file_table.getColumnModel().getColumn(1).setPreferredWidth(450);
+        file_table.getColumnModel().getColumn(2).setPreferredWidth(50);
 
         final JCheckBox recursive_cb = new JCheckBox( "Recursively commit?" );
         recursive_cb.setSelected( recursive );
@@ -127,12 +148,12 @@ public class CommitDialog extends JDialog {
                                       );
 
         JLabel label = new JLabel( "Enter comment for this commit:" );
-        comment = new JTextArea( 10, 50 );
+        comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final PropertyComboBox commentList = new PropertyComboBox("ise.plugin.svn.comment.");
+        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
         commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
@@ -157,13 +178,13 @@ public class CommitDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // get the paths
                         List<String> paths = new ArrayList<String>();
-                        Component[] files = file_panel.getComponents();
-                        for ( Component file : files ) {
-                            JCheckBox cb = ( JCheckBox ) file;
-                            if ( cb.isSelected() ) {
-                                paths.add( cb.getText() );
+                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
+                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
+                            if (selected) {
+                                paths.add((String)file_table_model.getValueAt(row, 1));
                             }
                         }
+
                         if ( paths.size() == 0 ) {
                             // nothing to commit, bail out
                             commitData = null;
@@ -175,8 +196,8 @@ public class CommitDialog extends JDialog {
                                 msg = "no comment";
                             }
                             else {
-                                if (commentList != null) {
-                                    commentList.addValue(msg);
+                                if ( commentList != null ) {
+                                    commentList.addValue( msg );
                                 }
                             }
                             commitData.setCommitMessage( msg );
@@ -197,27 +218,37 @@ public class CommitDialog extends JDialog {
                 }
                                     );
 
+        // field for bug number
+        JLabel bug_label = new JLabel( "Issue #:" );
+        JTextField bug_field = new JTextField( 10 );
+
         // add the components to the option panel
-        panel.add( "0, 0, 1, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_panel ) );
-        panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true ) );
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+        /* TODO: make this work for bugtraq
+        panel.add( "0, 0, 1, 1, W,  , 3", bug_label );
+        panel.add( "1, 0, 1, 1, W, w, 3", bug_field );
+        panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        */
 
-        panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
-        panel.add( "0, 4, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 6, true ) );
-
-        panel.add( "0, 5, 1, 1, W,  , 3", label );
-        panel.add( "0, 6, 1, 1, W, wh, 3", new JScrollPane( comment ) );
+        panel.add( "0, 2, 6, 1, W,  , 3", label );
+        panel.add( "0, 3, 6, 1, W, wh, 3", new JScrollPane( comment ) );
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
-            panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
-            panel.add( "0, 8, 1, 1, W, w, 3", commentList );
+            commentList.setPreferredSize(new Dimension(600, commentList.getPreferredSize().height));
+            panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 5, 6, 1, W, w, 3", commentList );
         }
+        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 10, 1, 1, E,  , 0", btn_panel );
+        panel.add( "0, 7, 6, 1, W,  , 3", file_label );
+        JScrollPane file_scroller = new JScrollPane( file_table );
+        file_scroller.getViewport().setPreferredSize(new Dimension(600, 200));
+        panel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
+        panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 11, 1, 1", KappaLayout.createHorizontalStrut( 600, true ));
+        panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
+        panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 12, 6, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -232,5 +263,15 @@ public class CommitDialog extends JDialog {
 
     public CommitData getCommitData() {
         return commitData;
+    }
+
+    public static void main ( String[] args ) {
+        TreeMap<String, String> files = new TreeMap<String, String>();
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/CommitDialog.java", "modified");
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/AddDialog.java", "modified");
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/DeleteDialog.java", "modified");
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/LogDialog.java", "modified");
+        CommitDialog d = new CommitDialog( null, files );
+        d.setVisible( true );
     }
 }

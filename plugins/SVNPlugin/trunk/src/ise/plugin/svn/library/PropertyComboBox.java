@@ -53,12 +53,19 @@ public class PropertyComboBox extends JComboBox {
         // load the previous values
         Stack<String> values = new Stack<String>();
         for ( int i = 1; i < 10; i++ ) {
-            String name = jEdit.getProperty( propertyPrefix + i );
-            if ( name == null ) {
-                break;
+            try {
+                String name = jEdit.getProperty( propertyPrefix + i );
+                if ( name == null ) {
+                    break;
+                }
+                if ( values.search( name ) == -1 ) {
+                    values.push( name );
+                }
             }
-            if ( values.search( name ) == -1 ) {
-                values.push( name );
+            catch ( Exception e ) {
+                // the try/catch is really only for testing when jEdit isn't
+                // available.  This exception should never happen during
+                // regular runtime.
             }
         }
         model = new DefaultComboBoxModel( ( Vector ) values );

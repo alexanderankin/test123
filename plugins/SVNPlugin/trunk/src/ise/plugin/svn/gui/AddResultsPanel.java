@@ -197,9 +197,9 @@ public class AddResultsPanel extends JPanel {
         }
 
         JPopupMenu popup = new JPopupMenu();
-        List<String> paths = new ArrayList<String>();
+        TreeMap<String, String> paths = new TreeMap<String, String>();
         for (int row : rows) {
-            paths.add((String) table.getValueAt(rows[row], 0));
+            paths.put((String) table.getValueAt(rows[row], 0), "");
         }
 
         JMenuItem mi = new JMenuItem("Commit");
@@ -208,7 +208,8 @@ public class AddResultsPanel extends JPanel {
 
         mi = new JMenuItem("Revert");
         popup.add(mi);
-        mi.addActionListener( new RevertAction( view, paths, username, password ) );
+        ArrayList<String> files = new ArrayList<String>(paths.keySet());
+        mi.addActionListener( new RevertAction( view, files, username, password ) );
 
         return popup;
     }
