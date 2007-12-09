@@ -1,7 +1,7 @@
 package ctags.sidekick.options;
 
 @SuppressWarnings("serial")
-public class SideKickModeOptionsPane extends sidekick.ModeOptionsPane {
+public class SideKickModeOptionsPane extends sidekick.AbstractModeOptionPane {
 
 	ModeOptionsPane pane;
 	

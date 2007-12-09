@@ -7,9 +7,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import sidekick.IModeOptionPane;
+import sidekick.ModeOptionPane;
 import sidekick.ModeOptionPaneController;
-import sidekick.ModeOptionPaneController.ModeOptionPane;
+import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 import ctags.sidekick.FilterManager;
 import ctags.sidekick.IconProviderManager;
@@ -19,14 +19,14 @@ import ctags.sidekick.TextProviderManager;
 
 @SuppressWarnings("serial")
 public class ModeOptionsPane extends JPanel
-	implements IModeOptionPane, ModeOptionPane {
+	implements ModeOptionPane, ModeOptionPaneDelegate {
 
 	ModeOptionPaneController controller;
-	Vector<ModeOptionPane> subPanes;
+	Vector<ModeOptionPaneDelegate> subPanes;
 	
 	public ModeOptionsPane() {
 		controller = new ModeOptionPaneController(this);
-		subPanes = new Vector<ModeOptionPane>();
+		subPanes = new Vector<ModeOptionPaneDelegate>();
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		CtagsCmdOptionsPane invocationPane = new CtagsCmdOptionsPane();
