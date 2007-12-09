@@ -1,7 +1,7 @@
 /*
  * $Id: SwingWorker.java,v 1.5 2007/03/01 19:55:54 idk Exp $
  *
- * Copyright © 2005 Sun Microsystems, Inc. All rights
+ * Copyright 2005 Sun Microsystems, Inc. All rights
  * reserved. Use is subject to license terms.
  */
 

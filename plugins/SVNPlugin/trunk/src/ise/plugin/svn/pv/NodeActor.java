@@ -33,9 +33,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import projectviewer.vpt.VPTNode;
-import console.ConsolePlugin;
-import console.Console;
-import console.Output;
 import org.gjt.sp.jedit.View;
 
 /**
@@ -78,47 +75,4 @@ public abstract class NodeActor implements ActionListener {
     public View getView() {
         return view;
     }
-
-    // print a message to the system shell in the Console plugin.  This is an
-    // easy way to display output without a lot of work.
-    /**
-     * @deprecated
-     */
-    public void print(String msg) {
-        print(msg, null);
-    }
-
-    /**
-     * @deprecated
-     */
-    public void print(String msg, Color color) {
-        if (msg == null || msg.length() == 0) {
-            return;
-        }
-        if (color == null) {
-            color = Color.BLUE;
-        }
-        Console console = ConsolePlugin.getConsole(view);
-        console.setShell(ConsolePlugin.getSystemShell());
-        Output output = console.getOutput();
-        output.print(color, msg);
-    }
-
-    /**
-     * @deprecated
-     */
-    public void close() {
-        Console console = ConsolePlugin.getConsole(view);
-        console.setShell(ConsolePlugin.getSystemShell());
-        Output output = console.getOutput();
-        output.print(Color.BLACK, "\n-------------------------------------------\n");
-    }
-
-    /**
-     * @deprecated
-     */
-    public void printError(String msg) {
-        print(msg, Color.RED);
-    }
-
 }

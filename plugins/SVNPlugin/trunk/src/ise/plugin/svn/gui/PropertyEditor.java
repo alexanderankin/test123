@@ -184,14 +184,14 @@ public class PropertyEditor extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         Object item = prop_chooser.getSelectedItem();
-                        if ( item != null && !item.toString().isEmpty() ) {
+                        if ( item != null && item.toString().length() > 0 ) {
                             propertyData.setName( item.toString() );
                             if ( text_btn.isSelected() ) {
                                 propertyData.setValue( text_value.getText() == null ? "" : text_value.getText() );
                             }
                             else {
                                 String filename = file_value.getText();
-                                if (filename == null || filename.isEmpty()) {
+                                if (filename == null || filename.length() == 0) {
                                     JOptionPane.showMessageDialog( view, "No filename entered for property value.", "Error", JOptionPane.ERROR_MESSAGE );
                                     file_value.requestFocusInWindow();
                                     return ;
