@@ -383,10 +383,10 @@ public class SideKickTree extends JPanel
         	followCaret.setSelected(SideKick.isFollowCaret());
                 Mode m = view.getBuffer().getMode();
                 String mode = m != null? m.getName(): null;
-		autoExpandTree = ModeOptionsPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
+		autoExpandTree = AbstractModeOptionPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
         	// autoExpandTree = ModeOptions.getAutoExpandTreeDepth();
 		
-		if (ModeOptionsPane.getBooleanProperty(mode, SideKick.SHOW_STATUS)) {
+		if (AbstractModeOptionPane.getBooleanProperty(mode, SideKick.SHOW_STATUS)) {
 			if (!statusShowing) {
 				remove(topPanel);
 				splitter.setTopComponent(topPanel);

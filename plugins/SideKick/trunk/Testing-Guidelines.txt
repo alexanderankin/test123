@@ -6,12 +6,13 @@ Next test that SideKick parses in response to these events:
     switch parsers in the parser combo
     save the buffer (if parse on save is checked)
     change to another buffer (if parse on switch is checked)
-
+    change the edit mode 
+ 
+    
 It should only parse the Active view, and not the other View's sidekick.
 
 When the SideKick combo is switched, the proper SideKick should be used. 
 When "reparse" is selected, the same parser should be used again. 
 
-When the Edit Mode is changed in the buffer, SideKick should reparse the document for the correct mode.
 
 

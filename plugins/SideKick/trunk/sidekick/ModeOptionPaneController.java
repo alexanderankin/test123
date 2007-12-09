@@ -9,9 +9,9 @@ import java.util.Set;
 import javax.swing.JComponent;
 
 
-public class ModeOptionPaneController implements IModeOptionPane {
+public class ModeOptionPaneController implements ModeOptionPane {
 
-	public interface ModeOptionPane {
+	public interface ModeOptionPaneDelegate {
 		// Returns the UI component of the option pane
 		JComponent getUIComponent();
 		// Update the given properties from the UI
@@ -32,9 +32,9 @@ public class ModeOptionPaneController implements IModeOptionPane {
 	private Set<String> useDefaults;	// Modes that use default settings
 	private Object props;	// Properties of current mode
 	private String mode;	// Currently selected mode
-	ModeOptionPane pane;		// The UI pane controlled by this controller
+	ModeOptionPaneDelegate pane;		// The UI pane controlled by this controller
 	
-	public ModeOptionPaneController(ModeOptionPane mop) {
+	public ModeOptionPaneController(ModeOptionPaneDelegate mop) {
 		modeProps = new HashMap<String, Object>();
 		useDefaults = new HashSet<String>();
 		pane = mop;

@@ -1,5 +1,4 @@
 /*
- * ModeOptionsPane.java - Option Pane with Mode combobox
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -26,8 +25,9 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
 
-//{{{ ModeOptionsPane class
+//{{{ AbstractModeOptionPane class
 /**
+ * AbstractModeOptionPane.java - Option Pane with Mode combobox
  * A specialized OptionPane which has mode-overridable properties. 
  * Includes convenience methods for getting and setting mode properties,
  * as well as global defaults. 
@@ -44,8 +44,8 @@ import org.gjt.sp.jedit.jEdit;
  *
  */
 
-abstract public class ModeOptionsPane 
-	extends AbstractOptionPane implements IModeOptionPane {
+abstract public class AbstractModeOptionPane 
+	extends AbstractOptionPane implements ModeOptionPane {
 
 	String mode = ModeOptionsDialog.ALL;
 
@@ -107,7 +107,7 @@ abstract public class ModeOptionsPane
 	 *
 	 */
 	
-	protected ModeOptionsPane(String name) {
+	protected AbstractModeOptionPane(String name) {
 		super(name);
 	}
 
