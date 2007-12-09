@@ -41,6 +41,7 @@ import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
 import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 
@@ -81,43 +82,43 @@ public class StatusResultsPanel extends JPanel {
 
         List<SVNStatus> list = results.getConflicted();
         if ( list != null ) {
-            root.add( createNode( "Files with conflicts (must merged):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts (need fixed?):"), list ) );
             added = true;
         }
 
         list = results.getOutOfDate();
         if ( list != null ) {
-            root.add( createNode( "Out of date files (need updated?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date files (need updated?):"), list ) );
             added = true;
         }
 
         list = results.getModified();
         if ( list != null ) {
-            root.add( createNode( "Modified files (need committed?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified files (need committed?):"), list ) );
             added = true;
         }
 
         list = results.getAdded();
         if ( list != null ) {
-            root.add( createNode( "Added files (need committed?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.added", "Added files (need committed?):"), list ) );
             added = true;
         }
 
         list = results.getUnversioned();
         if ( list != null ) {
-            root.add( createNode( "Unversioned files (need added?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned files (need added?):"), list ) );
             added = true;
         }
 
         list = results.getDeleted();
         if ( list != null ) {
-            root.add( createNode( "Deleted files (need committed?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted files (need committed?):"), list ) );
             added = true;
         }
 
         list = results.getMissing();
         if ( list != null ) {
-            root.add( createNode( "Missing files (need deleted?):", list ) );
+            root.add( createNode( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing files (need deleted?):"), list ) );
             added = true;
         }
 
@@ -209,25 +210,25 @@ public class StatusResultsPanel extends JPanel {
                                 if ( type != null ) {
                                     String comp = type.getUserObject().toString();
                                     // really should get these strings replaced
-                                    if ( comp.startsWith( "Files with conflicts" ) ) {
+                                    if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts") ) ) {
                                         message.append( pathname ).append( " has conflicts.\n" );
                                     }
-                                    else if ( comp.startsWith( "Out of date" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date") ) ) {
                                         message.append( pathname ).append( " is out of date.\n" );
                                     }
-                                    else if ( comp.startsWith( "Modified" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified") ) ) {
                                         paths.put( pathname, "Modified" );
                                     }
-                                    else if ( comp.startsWith( "Added" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.added", "Added") ) ) {
                                         paths.put( pathname, "Added" );
                                     }
-                                    else if ( comp.startsWith( "Unversioned" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned") ) ) {
                                         message.append( pathname ).append( " is not under version control.\n" );
                                     }
-                                    else if ( comp.startsWith( "Deleted" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted") ) ) {
                                         paths.put( pathname, "Deleted" );
                                     }
-                                    else if ( comp.startsWith( "Missing" ) ) {
+                                    else if ( comp.startsWith( jEdit.getProperty("ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing") ) ) {
                                         message.append( pathname ).append( " is missing.\n" );
                                     }
                                 }
