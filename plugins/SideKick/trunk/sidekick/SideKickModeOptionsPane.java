@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2006 Alan Ezust
+ * Copyright (c) 2007 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,20 +32,20 @@ import javax.swing.JComponent;
 
 import org.gjt.sp.jedit.jEdit;
 
-import sidekick.ModeOptionPaneController.ModeOptionPane;
+import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 // {{{ SideKickModeOptionsPane
 /**
  * 
- * Mode-Specific options for SideKick - a custom ModeOptionsPane which 
+ * Mode-Specific options for SideKick - a custom ModeOptionPane which 
  * includes 3 questions for the user, and provides an example of
- * how to extend ModeOptionsPane and set/reset the mode options.
+ * how to extend ModeOptionPane and set/reset the mode options.
  * 
  * @author Alan Ezust
  *
  */
 @SuppressWarnings("serial")
-public class SideKickModeOptionsPane extends ModeOptionsPane implements ModeOptionPane
+public class SideKickModeOptionsPane extends AbstractModeOptionPane implements ModeOptionPaneDelegate
 {
 	ModeOptionPaneController controller;
 	

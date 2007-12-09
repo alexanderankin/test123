@@ -53,7 +53,7 @@ import org.gjt.sp.util.StringList;
  * It creates an OptionPane for each plugin that defines the proper
  * service, and is currently loaded.
  * 
- * @see ModeOptionsPane 
+ * @see AbstractModeOptionPane 
  * @author Alan Ezust
  *
  */
@@ -65,7 +65,7 @@ public class ModeOptionsDialog extends OptionsDialog
 	public static final String DEFAULT=jEdit.getProperty("options.editing.global"); 
 	public static final String ALL="ALL";
 
-	Vector<IModeOptionPane> panes;
+	Vector<ModeOptionPane> panes;
 	OptionTreeModel paneTreeModel;
 	StringList modes;
 	JComboBox modeCombo;	
@@ -108,11 +108,11 @@ public class ModeOptionsDialog extends OptionsDialog
 		paneTreeModel = new OptionTreeModel();
 		OptionGroup root = (OptionGroup) (paneTreeModel.getRoot());
 		
-		panes = new Vector<IModeOptionPane>();
+		panes = new Vector<ModeOptionPane>();
 		// iterate through all parsers and get their name, attempt to get an option pane.
 		for (String service: ServiceManager.getServiceNames(SERVICECLASS)) 
 		{
-			ModeOptionsPane mop = (ModeOptionsPane) ServiceManager.getService(SERVICECLASS, service);
+			AbstractModeOptionPane mop = (AbstractModeOptionPane) ServiceManager.getService(SERVICECLASS, service);
 			root.addOptionPane(mop);
 			panes.add(mop);
 		}
@@ -135,8 +135,8 @@ public class ModeOptionsDialog extends OptionsDialog
 	} // }}}
 
 	private void useDefaultsChanged() {
-		if (currentPane instanceof ModeOptionsPane)
-			((ModeOptionsPane)currentPane).setUseDefaults(
+		if (currentPane instanceof AbstractModeOptionPane)
+			((AbstractModeOptionPane)currentPane).setUseDefaults(
 				useDefaultsCheck.isSelected());
 	}
 
@@ -151,9 +151,9 @@ public class ModeOptionsDialog extends OptionsDialog
 			mode = (String) modeCombo.getItemAt(index); 
 			useDefaultsCheck.setEnabled(true);
 		}
-		if (currentPane instanceof ModeOptionsPane)
+		if (currentPane instanceof AbstractModeOptionPane)
 		{
-			ModeOptionsPane current = (ModeOptionsPane)currentPane; 
+			AbstractModeOptionPane current = (AbstractModeOptionPane)currentPane; 
 			current.modeSelected(mode);
 			useDefaultsCheck.setSelected(current.getUseDefaults(mode));
 		}

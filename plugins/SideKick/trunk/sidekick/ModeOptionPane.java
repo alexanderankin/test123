@@ -1,6 +1,6 @@
 package sidekick;
 
-public interface IModeOptionPane {
+public interface ModeOptionPane {
 	// Mode has changed
 	void modeSelected(String mode);
 	// Save all changes (in all modes)
