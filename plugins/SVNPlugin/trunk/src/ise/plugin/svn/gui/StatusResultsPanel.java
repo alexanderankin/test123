@@ -208,6 +208,7 @@ public class StatusResultsPanel extends JPanel {
                                 String pathname = ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
                                 if ( type != null ) {
                                     String comp = type.getUserObject().toString();
+                                    // really should get these strings replaced
                                     if ( comp.startsWith( "Files with conflicts" ) ) {
                                         message.append( pathname ).append( " has conflicts.\n" );
                                     }
@@ -233,11 +234,10 @@ public class StatusResultsPanel extends JPanel {
                             }
                         }
                         String error = message.toString();
-                        if ( !error.isEmpty() && paths.size() == 0 ) {
+                        if ( error.length() > 0 && paths.size() == 0 ) {
                             JOptionPane.showMessageDialog( view, "Cannot commit selected files:\n\n" + error, "Cannot commit selected files", JOptionPane.ERROR_MESSAGE );
-
                         }
-                        else if ( !error.isEmpty() && paths.size() > 0 ) {
+                        else if ( error.length() > 0 && paths.size() > 0 ) {
                             int answer = JOptionPane.showConfirmDialog( view, "Cannot commit all selected files:\n\n" + error + "\nCommit remaining file anyway?", "Cannot commit all selected files", JOptionPane.WARNING_MESSAGE );
                             if ( answer == JOptionPane.YES_OPTION ) {
                                 CommitAction action = new CommitAction( view, paths, username, password );
