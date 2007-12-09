@@ -13,14 +13,15 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
-import sidekick.IModeOptionPane;
+import sidekick.ModeOptionPane;
+import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 @SuppressWarnings("serial")
 public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 
 	JComboBox modeCB;
 	JCheckBox useDefaultsCheck;
-	IModeOptionPane pane;
+	ModeOptionPane pane;
 	
 	public AbstractModeOptionPane(String internalName) {
 		super(internalName);
@@ -54,7 +55,7 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 	}
 
 	// Creates and adds the panel to the abstract option pane
-	abstract protected IModeOptionPane addOptionPane();
+	abstract protected ModeOptionPane addOptionPane();
 
 	private void modeSelected() {
 		int index = modeCB.getSelectedIndex();

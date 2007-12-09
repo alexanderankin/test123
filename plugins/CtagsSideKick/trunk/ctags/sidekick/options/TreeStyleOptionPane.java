@@ -10,7 +10,8 @@ of the License, or (at your option) any later version.
 
 package ctags.sidekick.options;
 
-import sidekick.IModeOptionPane;
+import sidekick.ModeOptionPane;
+import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 
 @SuppressWarnings("serial")
@@ -21,7 +22,7 @@ public class TreeStyleOptionPane extends AbstractModeOptionPane {
 	}
 
 	@Override
-	protected IModeOptionPane addOptionPane() {
+	protected ModeOptionPane addOptionPane() {
 		ModeOptionsPane pane = new ModeOptionsPane();
 		addComponent(pane);
 		return pane;

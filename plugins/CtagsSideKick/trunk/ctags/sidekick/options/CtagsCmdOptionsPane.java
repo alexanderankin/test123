@@ -13,7 +13,7 @@ import ctags.sidekick.Plugin;
 
 @SuppressWarnings("serial")
 public class CtagsCmdOptionsPane extends JPanel
-	implements ModeOptionPaneController.ModeOptionPane {
+	implements ModeOptionPaneController.ModeOptionPaneDelegate {
 
 	public static class Props {
 		Props(String s) {

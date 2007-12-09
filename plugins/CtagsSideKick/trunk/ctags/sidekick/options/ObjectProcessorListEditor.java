@@ -27,7 +27,7 @@ import ctags.sidekick.ObjectProcessorManager;
 
 @SuppressWarnings("serial")
 public class ObjectProcessorListEditor extends JPanel
-	implements ModeOptionPaneController.ModeOptionPane {
+	implements ModeOptionPaneController.ModeOptionPaneDelegate {
 
 	JList list;
 	ObjectProcessorManager manager;
