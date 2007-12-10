@@ -92,5 +92,10 @@
             xml.XmlActions.selectBetweenTags(textArea);
         </CODE>
     </ACTION>
+    <ACTION NAME="xml-generate-dtd">
+        <CODE>
+            xml.XmlActions.generateDTD(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>
 
