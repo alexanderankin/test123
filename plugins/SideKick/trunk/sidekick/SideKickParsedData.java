@@ -120,6 +120,7 @@ public class SideKickParsedData
 
 		IAsset asset = getAsset(root);
 		if (asset != null && !assetContains(asset, dot))
+			// root does not contain the dot (???)
 			return null;
 
 		TreeNode node = getNodeAt(root, dot);
@@ -142,24 +143,19 @@ public class SideKickParsedData
 		for (int i = 0;i<parent.getChildCount();i++)
 		{
 			TreeNode node = parent.getChildAt(i);
-			IAsset asset = getAsset(node);
-			if (asset == null)
-			{
-				TreeNode ret = getNodeAt(node, offset);
-				if (ret != null)
-					return ret;
-			}
-			else if (assetContains(asset, offset))
-			{
-				TreeNode ret = getNodeAt(node, offset);
-				if (ret != null)
-					return ret;
+			// does one of this node's children contain the dot?
+			TreeNode child = getNodeAt(node, offset);
+			if (child != null)
+				// yes: return it
+				return child;
+			// no: does this node itself contain the dot?
+			if (assetContains(getAsset(node), offset))
+				// yes: return it
 				return node;
-			}
 		}
-		IAsset asset = getAsset(parent);
-		if (asset != null && assetContains(asset, offset))
-			return parent;
+		// the following seems redundant
+		// if (assetContains(getAsset(parent), offset))
+		//	return parent;
 		return null;
 	}
 
@@ -170,6 +166,8 @@ public class SideKickParsedData
 	
 	private static boolean assetContains(IAsset asset, int offset)
 	{
+		if (asset == null)
+			return false;
 		return offset >= asset.getStart().getOffset()
 		    && offset < asset.getEnd().getOffset();
 	}
