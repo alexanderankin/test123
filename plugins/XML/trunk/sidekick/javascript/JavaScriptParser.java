@@ -51,17 +51,21 @@ public class JavaScriptParser extends SourceParser {
     my.test.namespace.MyClass.prototype.foobar = function ...
     my.test.namespace.MyClass.myStaticMethod = function ...
 */
-    Pattern pClassFunction		= Pattern.compile("^((\\w+\\.)*[A-Z][\\w]*)\\s*=\\s*function");
-    Pattern pMethodFunction		= Pattern.compile("^([\\w+\\.]+\\w+)\\.([\\w]+)\\s*=\\s*function");
+    Pattern pClassFunction	= Pattern.compile("^((\\w+\\.)*[A-Z][\\w]*)\\s*=\\s*function");
+    Pattern pMethodFunction	= Pattern.compile("^([\\w+\\.]+\\w+)\\.([\\w]+)\\s*=\\s*function");
     Pattern pPrototypeFunction	= Pattern.compile("^([\\w+\\.]+\\w+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
 
-//	Pattern pClassFunction		= Pattern.compile("^([A-Z][\\w]+)\\s*=\\s*function");
-//	Pattern pMethodFunction		= Pattern.compile("^([\\w]+)\\.([\\w]+)\\s*=\\s*function");
-//	Pattern pPrototypeFunction	= Pattern.compile("^([\\w]+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
-
     Pattern pAssignedFunction	= Pattern.compile("^(\\w+)\\s*=\\s*function");
-	Pattern pVarFunction		= Pattern.compile("^var\\s+(\\w+)\\s*=\\s*function");
-	Pattern pSimpleFunction		= Pattern.compile("^function\\s+(\\w+)");
+    Pattern pVarFunction	= Pattern.compile("^var\\s+(\\w+)\\s*=\\s*function");
+    Pattern pSimpleFunction	= Pattern.compile("^function\\s+(\\w+)");
+
+//  var my.test.namespace.MyClass.Object = {...
+//  my.test.namespace.MyClass.Object = {...
+//  method_name : function ...
+
+    Pattern pObject		= Pattern.compile("^((\\w+\\.)*[A-Z][\\w]*)\\s*=[^\\{]*\\{");
+    Pattern pVarObject		= Pattern.compile("^var\\s+((\\w+\\.)*[A-Z][\\w]*)\\s*=[^\\{]*\\{");
+    Pattern pObjectMethod	= Pattern.compile("^(\\w+)\\s*:\\s*function");
 
 /**	 * Constructs a new Parser object
 	 *
@@ -71,7 +75,7 @@ public class JavaScriptParser extends SourceParser {
 		super("javascript");
 		LINE_COMMENT	= "//";
 		COMMENT		= "Comments";
-		MAIN		= "(self)";
+		MAIN		= "(Window)";
 		USE		= "import";
 	}
 
@@ -84,6 +88,7 @@ public class JavaScriptParser extends SourceParser {
 	 protected void parseBuffer(Buffer buffer, DefaultErrorSource errorSource) {
 		String line;
 		String name;
+		String pkgname;
 		String[] names;
 		Stack funcstack = new Stack();
 		Stack pkgstack = new Stack();
@@ -110,66 +115,59 @@ public class JavaScriptParser extends SourceParser {
 			if (name != null) {
 				if (! pkgstack.empty()) pkgstack.pop();
 				pkgstack.push(name);
+				addPackageAsset(name, lineNo, _start);
 				addAsset(SUB_KEY, name, "(constructor)", lineNo, _start);
 				continue;
 				}
-			// instance.prototype.method = function()
+			name = find(line, pObject, 1);
+			if (name == null)
+				name = find(line, pVarObject, 1);
+			// var Object = {
+			if (name != null) {
+				if (! pkgstack.empty()) pkgstack.pop();
+				pkgstack.push(name);
+				addPackageAsset(name, lineNo, _start);
+				addLineAsset(SUB_KEY, name, "(assignment)", lineNo, _start, _end);
+				continue;
+				}
+			// check class methods
 			names = find2(line, pPrototypeFunction);
+			if (names == null)
+				names = find2(line, pMethodFunction);
 			if (names != null) {
-				if (! pkgstack.empty()) pkgstack.pop();
+				pkgname = names[0];
+				if (pkgstack.empty()) {
+					pkgstack.push(pkgname);
+					addPackageAsset(pkgname, lineNo, _start);
+					}
+				else if (! pkgname.equals((String) pkgstack.peek())) {
+					pkgstack.pop();
+					pkgstack.push(pkgname);
+					addPackageAsset(pkgname, lineNo, _start);
+					}
 				if (! funcstack.empty()) {
 					funcstack.pop();
 					completeAsset(_start);
 					}
-				pkgstack.push(names[0]);
 				funcstack.push(names[1]);
 				addAsset(SUB_KEY, names[0], names[1], lineNo, _start);
 				continue;
 				}
-			// instance.method = function()
-			names = find2(line, pMethodFunction);
-			if (names != null) {
-				if (! pkgstack.empty()) pkgstack.pop();
-				if (! funcstack.empty()) {
-					funcstack.pop();
-					completeAsset(_start);
-					}
-				pkgstack.push(names[0]);
-				funcstack.push(names[1]);
-				addAsset(SUB_KEY, names[0], names[1], lineNo, _start);
-				continue;
-				}
-			// vname = function()
+			// check functions
 			name = find(line, pAssignedFunction, 1);
+			if (name == null)
+				name = find(line, pVarFunction, 1);
+			if (name == null)
+				name = find(line, pObjectMethod, 1);
+			if (name == null)
+				name = find(line, pSimpleFunction, 1);
 			if (name != null) {
 				if (! funcstack.empty()) {
 					funcstack.pop();
 					completeAsset(_start);
 					}
 				funcstack.push(name);
-				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
-				continue;
-				}
-			// var vname = function()
-			name = find(line, pVarFunction, 1);
-			if (name != null) {
-				if (! funcstack.empty()) {
-					funcstack.pop();
-					completeAsset(_start);
-					}
-				funcstack.push(name);
-				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
-				continue;
-				}
-			// function fname()
-			name = find(line, pSimpleFunction, 1);
-			if (name != null) {
-				if (! funcstack.empty()) {
-					funcstack.pop();
-					completeAsset(_start);
-					}
-				funcstack.push(name);
-				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
+				addAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start);
 				continue;
 				}
 			// block comment: start
