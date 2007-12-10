@@ -36,8 +36,8 @@ import java.util.LinkedList;
  */
 public class AncestorToolBar extends JToolBar
 {
-	private View view;
-	private Component glue = Box.createGlue();
+	private final View view;
+	private final Component glue = Box.createGlue();
 	private final LinkedList<String> list = new LinkedList<String>();
 
 	//{{{ AncestorToolBar constructor

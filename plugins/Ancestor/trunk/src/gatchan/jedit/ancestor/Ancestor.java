@@ -20,7 +20,6 @@
  */
 package gatchan.jedit.ancestor;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
@@ -32,10 +31,10 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
  */
 public class Ancestor
 {
-	private View view;
+	private final View view;
 
-	private String path;
-	private String name;
+	private final String path;
+	private final String name;
 	
 	//{{{ Ancestor constructor
 	public Ancestor(View view, String path, String name)
