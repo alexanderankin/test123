@@ -1060,6 +1060,22 @@ loop:			for(;;)
 		return (standaloneExtraSpace ? " />" : "/>");
 	} //}}}
 
+	public static void generateDTD(View view)
+	{
+		JEditTextArea textArea = view.getTextArea();
+		Buffer buffer = view.getBuffer();
+		String text = buffer.getText(0,buffer.getLength());
+		String dtd = DTDGenerator.write(view, text);
+		if (!dtd.trim().equals("")) {
+			Buffer newbuffer = jEdit.newFile(view);
+			newbuffer.insert(0, dtd);
+			newbuffer.setMode("sgml");
+			}
+		else
+			Macros.error(view, "XML produced empty DTD");
+	}
+	//}}}
+
 	// {{{ non-public methods
 
 	//{{{ propertiesChanged() method

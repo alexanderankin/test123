@@ -32,6 +32,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
     xml-entities-to-chars \
     xmlindenter.indent \
     xmlindenter.toggleSplitAttributes \
+    xml-generate-dtd \
     - \
     csssidekick-insert-relative-path \
     - \
@@ -57,6 +58,7 @@ xml-clear-cache.label=Clear Resource Cache
 xml-reload-catalogs.label=Reload Catalogs
 xml-select-element.label=Select Element or Code Block
 xml-select-between-tags.label=Selection Between Tags
+xml-generate-dtd.label=Generate DTD
 
 # Option panes
 plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.ecmascript sidekick.css xml.catalogs
