@@ -431,7 +431,7 @@ public class WindowManager extends DockableWindowManager {
 			tw = rightTab;
 		else if (position.equals(DockableWindowManager.BOTTOM))
 			tw = bottomTab;
-		if (position.equals(DockableWindowManager.TOP))
+		else if (position.equals(DockableWindowManager.TOP))
 			tw = topTab;
 		if (tw != null) {
 			if (v.getWindowParent() != tw)
