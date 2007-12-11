@@ -180,16 +180,10 @@ public class WindowManager extends DockableWindowManager {
 	private void minimizeTabWindows(TabWindow tw, Direction dir) {
 		for (int i = 0; i < tw.getChildWindowCount(); i++) {
 			DockingWindow w = tw.getChildWindow(i);
+			//w.minimize(dir);
 			w.addListener(viewCreateListener);
 		}
-		tw.minimize(dir);
-		//if (tw.getChildWindowCount() == 0)
-			//tw.setVisible(false);
-/*		while (tw.getChildWindowCount() > 0) {
-			DockingWindow w = tw.getChildWindow(0);
-			w.minimize(dir);
-			w.addListener(viewCreateListener);
-		}*/
+		tw.setVisible(false);
 	}
 	private void setViewLayout() {
 		DockingWindow sw = null;
@@ -424,30 +418,30 @@ public class WindowManager extends DockableWindowManager {
 	private void showDockableWindowNoNotify(String name) {
 		String position = getDockablePosition(name);
 		View v = viewMap.getView(name);
-		if (v == null) {
+		if (v == null)
 			v = constructDockableView(name);
-			TabWindow tw = null;
-			if (position.equals(DockableWindowManager.LEFT))
-				tw = leftTab;
-			else if (position.equals(DockableWindowManager.RIGHT))
-				tw = rightTab;
-			else if (position.equals(DockableWindowManager.BOTTOM))
-				tw = bottomTab;
-			if (position.equals(DockableWindowManager.TOP))
-				tw = topTab;
-			if (tw != null) {
-				tw.addTab(v);
-				if (tw.isMinimized())
-					tw.restore();
-				//setViewLayout();
-			} else {
-				// floating
-				FloatingWindow fw = rootWindow.createFloatingWindow(
-					new Point(0, 0), v.getPreferredSize(), v);
-				fw.getTopLevelAncestor().setVisible(true);
-			}
-		} else
+		else {
 			viewCreateListener.checkFirstShow(v);
+			v = viewMap.getView(name);
+		}
+		TabWindow tw = null;
+		if (position.equals(DockableWindowManager.LEFT))
+			tw = leftTab;
+		else if (position.equals(DockableWindowManager.RIGHT))
+			tw = rightTab;
+		else if (position.equals(DockableWindowManager.BOTTOM))
+			tw = bottomTab;
+		if (position.equals(DockableWindowManager.TOP))
+			tw = topTab;
+		if (tw != null) {
+			if (v.getWindowParent() != tw)
+				tw.addTab(v);
+			tw.setVisible(true);
+		} else { // floating
+			FloatingWindow fw = rootWindow.createFloatingWindow(
+				new Point(0, 0), v.getPreferredSize(), v);
+			fw.getTopLevelAncestor().setVisible(true);
+		}
 		v.makeVisible();
 	}
 	public Component add(Component comp, int index) {
