@@ -67,7 +67,6 @@ public class WindowManager extends DockableWindowManager {
 	private View mainView;
 	private PanelWindowContainer topPanel, bottomPanel, leftPanel, rightPanel;
 	private TabWindow leftTab, rightTab, bottomTab, topTab;
-	private HashMap<String, String> positions;
 	private DockingWindowsTheme currentTheme = null;
 	private HashSet<DockingWindow> dummyViews = new HashSet<DockingWindow>();
 	private ViewCloseListener viewCloseListener = new ViewCloseListener();
@@ -108,7 +107,6 @@ public class WindowManager extends DockableWindowManager {
 		this.view = view;
 		this.factory = factory;
 		viewMap = new JEditViewMap(this);
-		positions = new HashMap<String, String>();
 		center = new JPanel(new BorderLayout());
 		mainView = new View(MAIN_VIEW_NAME, null, center);
 		mainView.setName(MAIN_VIEW_NAME);
@@ -289,8 +287,7 @@ public class WindowManager extends DockableWindowManager {
 			String position = getDockablePosition(name);
 			if (position.equals(DockableWindowManager.FLOATING))
 				continue;
-			String curPosition = getCurrentDockablePosition(name);
-			if (position == null || position.equals(curPosition))
+			if (viewMap.getView(name) != null)
 				continue;
 			showDockableWindowNoNotify(name);
 			notify.add(name);
@@ -300,9 +297,6 @@ public class WindowManager extends DockableWindowManager {
 		}
 	}
 
-	private String getCurrentDockablePosition(String name) {
-		return positions.get(name);
-	}
 	@Override
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof PropertiesChanged)
@@ -395,7 +389,6 @@ public class WindowManager extends DockableWindowManager {
 		View v = new View(getDockableTitle(name), null, c);
 		v.setName(name);
 		viewMap.addView(name, v);
-		positions.put(name, getDockablePosition(name));
 		v.addListener(viewCloseListener);
 		return v;
 	}
@@ -418,14 +411,8 @@ public class WindowManager extends DockableWindowManager {
 	private void showDockableWindowNoNotify(String name) {
 		String position = getDockablePosition(name);
 		View v = viewMap.getView(name);
-		if (v == null)
+		if (v == null) {
 			v = constructDockableView(name);
-		else {
-			viewCreateListener.checkFirstShow(v);
-			v = viewMap.getView(name);
-		}
-		String currentPos = getCurrentDockablePosition(name);
-		if (currentPos == null || (! currentPos.equals(position))) {
 			TabWindow tw = null;
 			if (position.equals(DockableWindowManager.LEFT))
 				tw = leftTab;
@@ -445,6 +432,11 @@ public class WindowManager extends DockableWindowManager {
 				fw.getTopLevelAncestor().setVisible(true);
 			}
 		}
+		else {
+			viewCreateListener.checkFirstShow(v);
+			v = viewMap.getView(name);
+		}
+		v.getWindowParent().setVisible(true);
 		v.makeVisible();
 	}
 	public Component add(Component comp, int index) {
