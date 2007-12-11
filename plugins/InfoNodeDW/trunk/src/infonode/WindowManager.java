@@ -424,23 +424,26 @@ public class WindowManager extends DockableWindowManager {
 			viewCreateListener.checkFirstShow(v);
 			v = viewMap.getView(name);
 		}
-		TabWindow tw = null;
-		if (position.equals(DockableWindowManager.LEFT))
-			tw = leftTab;
-		else if (position.equals(DockableWindowManager.RIGHT))
-			tw = rightTab;
-		else if (position.equals(DockableWindowManager.BOTTOM))
-			tw = bottomTab;
-		else if (position.equals(DockableWindowManager.TOP))
-			tw = topTab;
-		if (tw != null) {
-			if (v.getWindowParent() != tw)
-				tw.addTab(v);
-			tw.setVisible(true);
-		} else { // floating
-			FloatingWindow fw = rootWindow.createFloatingWindow(
-				new Point(0, 0), v.getPreferredSize(), v);
-			fw.getTopLevelAncestor().setVisible(true);
+		String currentPos = getCurrentDockablePosition(name);
+		if (currentPos == null || (! currentPos.equals(position))) {
+			TabWindow tw = null;
+			if (position.equals(DockableWindowManager.LEFT))
+				tw = leftTab;
+			else if (position.equals(DockableWindowManager.RIGHT))
+				tw = rightTab;
+			else if (position.equals(DockableWindowManager.BOTTOM))
+				tw = bottomTab;
+			else if (position.equals(DockableWindowManager.TOP))
+				tw = topTab;
+			if (tw != null) {
+				if (v.getWindowParent() != tw)
+					tw.addTab(v);
+				tw.setVisible(true);
+			} else { // floating
+				FloatingWindow fw = rootWindow.createFloatingWindow(
+					new Point(0, 0), v.getPreferredSize(), v);
+				fw.getTopLevelAncestor().setVisible(true);
+			}
 		}
 		v.makeVisible();
 	}
