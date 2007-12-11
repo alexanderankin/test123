@@ -77,7 +77,7 @@ public class DTDGenerator extends DefaultHandler {
                            // as the value
 
     Stack elementStack;    // stack of elements currently open; each entry is a StackEntry
-                           // object    
+                           // object
 
     public DTDGenerator () 
     {
@@ -92,7 +92,7 @@ public class DTDGenerator extends DefaultHandler {
     public static String write (View view, String xml)
     {
         DTDGenerator generator = new DTDGenerator();
-	generator.parse(view, xml);
+        generator.parse(view, xml);
         return generator.printDTD();
     }
 
@@ -103,8 +103,8 @@ public class DTDGenerator extends DefaultHandler {
     public static String writeXSD (View view, String xml)
     {
         DTDGenerator generator = new DTDGenerator();
-	generator.parse(view, xml);
-	// return generator.printXSD();
+        generator.parse(view, xml);
+        // return generator.printXSD();
         return generator.printDTD();
     }
 
@@ -115,8 +115,8 @@ public class DTDGenerator extends DefaultHandler {
     public static String writeRNG (View view, String xml)
     {
         DTDGenerator generator = new DTDGenerator();
-	generator.parse(view, xml);
-	// return generator.printRNG();
+        generator.parse(view, xml);
+        // return generator.printRNG();
         return generator.printDTD();
     }
 
@@ -128,12 +128,12 @@ public class DTDGenerator extends DefaultHandler {
             parser.setEntityResolver(this);
             parser.parse(is);
         } catch (Exception err) {
-	    StringBuffer s = new StringBuffer("Failed while parsing text:\n");
+        StringBuffer s = new StringBuffer("Failed while parsing text:\n");
             s.append(err.getMessage() + "\n");
-	    // StackTraceElement[] st = err.getStackTrace();
+            // StackTraceElement[] st = err.getStackTrace();
             // for (int i = 0; i < Array.getLength(st); i++) {
             //     s.append(st[i].toString() + "\n");
-	    //     }
+            //     }
             Macros.error(view, s.toString());
         }
     }
@@ -182,7 +182,7 @@ public class DTDGenerator extends DefaultHandler {
         // process the element types encountered, in turn
 
         StringBuffer s = new StringBuffer();
-	Iterator e=elementList.keySet().iterator();
+        Iterator e=elementList.keySet().iterator();
         while ( e.hasNext() )
         {
             String elementname = (String) e.next();
@@ -289,7 +289,7 @@ public class DTDGenerator extends DefaultHandler {
                     doneID = true;
                 }
                 else if (isfixed) {
-                    String val = (String) ad.values.first();                        
+                    String val = (String) ad.values.first();
                     s.append(tokentype + " #FIXED \"" + escape(val) + "\" >\n");
                 }
                 else if (isenum) {
@@ -314,7 +314,7 @@ public class DTDGenerator extends DefaultHandler {
             };
             s.append("\n");
         };
-	return s.toString();
+    return s.toString();
    
     }
     
@@ -334,17 +334,13 @@ public class DTDGenerator extends DefaultHandler {
     * The escaped characters are written to the dest array starting at position 0; the
     * number of positions used is returned as the result
     
-    * NB. Not sure how to deal with this in jEdit:
-    * Perhaps we should not escape anything except the usual XML/HTML cases,
-    * leave any Unicode strings untouched,
-    * and set the DTD buffer to the same encoding as the XML document.
-    * Is it possible to state the encoding in a DTD?
-    * Does an XML parser normally assume that the encoding of a DTD is the same 
-    * as in the XML document?
+    * For jEdit we leave all special characters alone and escape just the five classics.
+    * The corresponding method generateDTD() in XMLActions.java copies
+    * the encoding of the current buffer over to the DTD
     */
     
     private static int escape(char ch[], int start, int length, char[] out)
-    {        
+    {
         int o = 0;
         for (int i = start; i < start+length; i++) {
             if (ch[i]=='<') {("&lt;").getChars(0,4,out,o); o+=4;}
@@ -352,12 +348,13 @@ public class DTDGenerator extends DefaultHandler {
             else if (ch[i]=='&') {("&amp;").getChars(0,5,out,o); o+=5;}
             else if (ch[i]=='\"') {("&#34;").getChars(0,5,out,o); o+=5;}
             else if (ch[i]=='\'') {("&#39;").getChars(0,5,out,o); o+=5;}
-            else if (ch[i]<=0x7f) {out[o++]=ch[i];}
-            else {
-                String dec = "&#" + Integer.toString((int)ch[i]) + ';';
-                dec.getChars(0, dec.length(), out, o);
-                o+=dec.length();
-            }            
+            else {out[o++]=ch[i]; }
+            // else if (ch[i]<=0x7f) {out[o++]=ch[i];}
+            // else {
+            //    String dec = "&#" + Integer.toString((int)ch[i]) + ';';
+            //    dec.getChars(0, dec.length(), out, o);
+            //    o+=dec.length();
+            // }
         }
         return o;
     }
@@ -402,7 +399,7 @@ public class DTDGenerator extends DefaultHandler {
     */
     
     public void startElement (String uri, String localName, String name, Attributes attributes)
-	throws SAXException
+    throws SAXException
     {
         StackEntry se = new StackEntry();
 
@@ -531,7 +528,7 @@ public class DTDGenerator extends DefaultHandler {
     */
 
     public void endElement (String uri, String localName, String name)
-	throws SAXException
+    throws SAXException
     {
 
         // If the number of child element groups in this parent element is less than the
@@ -553,7 +550,7 @@ public class DTDGenerator extends DefaultHandler {
     */
 
     public void characters (char ch[], int start, int length)
-	throws SAXException
+    throws SAXException
     {
         ElementDetails ed = ((StackEntry)elementStack.peek()).elementDetails;
         if (!ed.hasCharacterContent) {

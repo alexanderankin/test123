@@ -38,6 +38,7 @@ import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -1060,19 +1061,27 @@ loop:			for(;;)
 		return (standaloneExtraSpace ? " />" : "/>");
 	} //}}}
 
+	//{{{ generateDTD() method
 	public static void generateDTD(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		String text = buffer.getText(0,buffer.getLength());
+		String encoding = buffer.getStringProperty(Buffer.ENCODING);
+		// String declaration = "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n";
 		String dtd = DTDGenerator.write(view, text);
-		if (!dtd.trim().equals("")) {
-			Buffer newbuffer = jEdit.newFile(view);
-			newbuffer.insert(0, dtd);
-			newbuffer.setMode("sgml");
-			}
+		StatusBar status = view.getStatus();
+		if (dtd.trim().equals(""))
+			status.setMessageAndClear("Document produced an empty DTD");
 		else
-			Macros.error(view, "XML produced empty DTD");
+		{
+			Buffer newbuffer = jEdit.newFile(view);
+			newbuffer.setMode("sgml");
+			newbuffer.setStringProperty(Buffer.ENCODING, encoding);
+			// newbuffer.insert(0, declaration + dtd);
+			newbuffer.insert(0, dtd);
+			status.updateBufferStatus();
+		}
 	}
 	//}}}
 
