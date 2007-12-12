@@ -285,7 +285,7 @@ public class Property {
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;
-            File file = new File( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/library/Base64.java" );
+            File file = new File( args[0] );
             PropertyHandler handler = prop.getPropertyHandler( file );
             //wc_client.doSetProperty( file, "test:key", "test value", false, false, handler );
             wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.WORKING, false, handler );
