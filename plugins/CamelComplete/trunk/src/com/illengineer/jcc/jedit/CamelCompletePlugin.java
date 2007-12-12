@@ -10,12 +10,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 
-import bsh.Interpreter;
-/*
-This will be the new Beanshell package in 4.3pre12 and above
-
 import org.gjt.sp.jedit.bsh.Interpreter;
-*/
 
 public class CamelCompletePlugin extends EditPlugin {
 
@@ -268,7 +263,7 @@ public class CamelCompletePlugin extends EditPlugin {
 			    bsh.eval("IdentifierProvider __ip;");
 			    bsh.eval("__ip = (IdentifierProvider)" + og.extra);
 			    provider = (IdentifierProvider)bsh.get("__ip");
-			} catch (bsh.EvalError ex) {
+			} catch (org.gjt.sp.jedit.bsh.EvalError ex) {
 			    failed = true;
 			    View v = jEdit.getActiveView();
 			    if (v != null)
