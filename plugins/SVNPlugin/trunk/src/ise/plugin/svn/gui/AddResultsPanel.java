@@ -37,6 +37,7 @@ import ise.plugin.svn.action.RevertAction;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.java.awt.LambdaLayout;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 
@@ -89,12 +90,15 @@ public class AddResultsPanel extends JPanel {
             }
             JLabel good_label = new JLabel( good_label_text );
 
+            // data to display in a table, single column
             String[][] data = new String[ paths.size() ][ 1 ];
             Iterator it = paths.iterator();
             for ( int i = 0; it.hasNext(); i++ ) {
                 String path = ( String ) it.next();
                 data[ i ][ 0 ] = path;
             }
+
+            // create the table, one column to contain the filename
             JTable good_table = new JTable( data, new String[] {"Path"} );
             if ( action == ADD || action == DELETE ) {
                 good_table.addMouseListener( new TableMouseListener( good_table ) );
@@ -183,6 +187,11 @@ public class AddResultsPanel extends JPanel {
                 if ( popup != null ) {
                     GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
                 }
+            }
+            else if ( me.getClickCount() == 2 ) {
+                // on double-click, open file in jEdit
+                String filename = (String)table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
+                jEdit.openFile(view, filename );
             }
         }
     }
