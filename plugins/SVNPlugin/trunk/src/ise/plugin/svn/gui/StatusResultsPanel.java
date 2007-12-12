@@ -337,6 +337,26 @@ public class StatusResultsPanel extends JPanel {
                     }
                 }
                             );
+
+        mi = new JMenuItem( "Delete" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
+                        }
+                        DeleteAction action = new DeleteAction( view, paths, username, password );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
         return pm;
     }
 }
