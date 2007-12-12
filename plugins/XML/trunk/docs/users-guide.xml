@@ -450,6 +450,11 @@
   current selection.
  </para>
 
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Generate
+  DTD</guimenuitem> generates a DTD from the XML instance document in the
+  current buffer. Generation of XSD and RelaxNG schemata is planned for the future.
+ </para>
 </chapter>
 
 <chapter id="other-plugins"><title>Using the XML parser in other plugins</title>
@@ -700,6 +705,13 @@
 
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
+ <listitem><para><emphasis role="bold">Version 2.0.8</emphasis>
+ Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+ </para>
+ <itemizedlist>
+ <listitem><para> Added the DTDGenerator module by Michael Kay and a corresponding action to generate a DTD from an instance document. (Martin Raspe) </para></listitem>
+ </itemizedlist>
+ </listitem>
 
  <listitem><para><emphasis role="bold">Version 2.0.7</emphasis>
  Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
