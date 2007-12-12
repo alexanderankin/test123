@@ -221,7 +221,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         if ( data == null ) {
                             return ;     // user canceled
                         }
-                        String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
+                        //String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
                         chooser.addRepository( data );
                         DirTreeNode root = new DirTreeNode( data.getURL(), false );
                         tree.setModel( new DefaultTreeModel( root ) );
