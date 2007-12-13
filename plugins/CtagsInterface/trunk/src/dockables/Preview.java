@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionListener;
 
 import options.GeneralOptionPane;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -111,7 +112,8 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			}
 		});
 		toolbar.add(wrap);
-		text = new TextArea(true);
+		text = jEdit.createTextArea();
+        text.getBuffer().setProperty("folding","explicit");
 		textPanel.add(text, BorderLayout.CENTER);
 		textPanel.add(text, BorderLayout.CENTER);
 		EditPane.initPainter(text.getPainter());
@@ -123,9 +125,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				}
 			}
 		});
-		text.setBuffer(new JEditBuffer());
 		propertiesChanged();
-		text.getBuffer().setMode(ModeProvider.instance.getMode("text"));
 		text.setMinimumSize(new Dimension(150, 50));
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 			new JScrollPane(tags), textPanel);
