@@ -30,6 +30,7 @@ package ise.plugin.svn.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.io.Serializable;
@@ -80,16 +81,17 @@ public class LogResultsPanel extends JPanel {
         con.p = 0;
 
         TreeMap < String, List < SVNLogEntry >> results = logResults.getEntries();
-        Set<Map.Entry<String, List<SVNLogEntry>>> set = results.entrySet();
-        for ( Map.Entry<String, List<SVNLogEntry>> me : set ) {
-            String path = (String)me.getKey();
+        Set < Map.Entry < String, List < SVNLogEntry >>> set = results.entrySet();
+        for ( Map.Entry < String, List < SVNLogEntry >> me : set ) {
+            String path = ( String ) me.getKey();
             JLabel label = new JLabel( "Path: " + path );
 
             // sort the entries
             List<SVNLogEntry> entries = me.getValue();
             Collections.sort( entries, new EntryComparator() );
 
-            // put the results data into an array to pass to a JTable
+            // put the results data into an array to pass to a JTable. Columns
+            // are revision, data, author, comment, and associated files.
             String[][] data = new String[ entries.size() ][ showPaths ? 5 : 4 ];
             Iterator it = entries.iterator();
             for ( int i = 0; it.hasNext(); i++ ) {
@@ -153,6 +155,8 @@ public class LogResultsPanel extends JPanel {
                 column4.setCellRenderer( new PathCellRenderer() );
             }
 
+            table.packRows(1);
+
             add( label, con );
             ++con.y;
             add( GUIUtils.createTablePanel( table ), con );
@@ -174,57 +178,92 @@ public class LogResultsPanel extends JPanel {
         public String getPath() {
             return LogTable.this.path;
         }
+
+        /**
+         * @return the preferred height of a row.  JTable doesn't provide this.
+         * The returned value is equal to the tallest preferred height of the cells
+         * cells in the row.
+         */
+        public int getPreferredRowHeight( int row, int margin ) {
+            // start with the default row height
+            int height = getRowHeight();
+
+            // determine tallest cell in the row
+            for ( int column = 0; column < getColumnCount(); column++ ) {
+                TableCellRenderer renderer = getCellRenderer( row, column );
+                Component comp = prepareRenderer( renderer, row, column );
+                int h = comp.getPreferredSize().height + (2 * margin);
+                height = Math.max( height, h );
+            }
+            return height;
+        }
+
+        /**
+         * Display the table using the preferred height of each row and margin
+         * size of 1.
+         */
+        public void packRows() {
+            packRows(1);
+        }
+
+        /**
+         * Display the table using the preferred height of each row adding the
+         * specified margin within each cell.
+         */
+        public void packRows( int margin ) {
+            packRows( 0, getRowCount(), margin );
+        }
+
+        /**
+         * Adjust the heights of a range of rows.
+         */
+        public void packRows( int start, int end, int margin ) {
+            for ( int r = 0; r < getRowCount(); r++ ) {
+                // Get the preferred height
+                int h = getPreferredRowHeight( r, margin );
+
+                // Now set the row height using the preferred height
+                if ( getRowHeight( r ) != h ) {
+                    setRowHeight( r, h );
+                }
+            }
+        }
     }
 
     /**
      * Non-wrapping text area cell renderer.
      */
-    public class TextCellRenderer implements TableCellRenderer {
-        private MeasurableTextArea textArea = new MeasurableTextArea();
-
+    public class TextCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            textArea.setText( value == null ? "" : value.toString() );
-            table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
-            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
-            return textArea;
+            setText( value == null ? "" : value.toString() );
+            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            return this;
         }
     }
 
     /**
      * Non-wrapping text area cell renderer for the paths column.
      */
-    public class PathCellRenderer implements TableCellRenderer {
-        private MeasurableTextArea textArea = new MeasurableTextArea();
-
+    public class PathCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            textArea.setText( value == null ? "" : value.toString() );
-            textArea.setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + textArea.getText() );
-            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
-            table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
-            return textArea;
+            setText( value == null ? "" : value.toString() );
+            setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
+            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            return this;
         }
     }
 
     /**
      * Wrapping text area cell renderer.
      */
-    public class CommentCellRenderer implements TableCellRenderer {
-        private MeasurableTextArea textArea = new MeasurableTextArea();
+    public class CommentCellRenderer extends JTextArea implements TableCellRenderer {
 
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            textArea.setText( value == null ? "" : value.toString() );
-            textArea.setLineWrap( true );
-            textArea.setWrapStyleWord( true );
-            textArea.setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
-            table.setRowHeight( row, Math.max( textArea.getBestHeight(), table.getRowHeight() ) );
-            return textArea;
-        }
-    }
-
-    public class MeasurableTextArea extends JTextArea {
-        public int getBestHeight() {
-            int best_height = getMinimumSize().height;
-            return best_height;
+            setText( value == null ? "" : value.toString() );
+            setLineWrap( true );
+            setWrapStyleWord( true );
+            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            return this;
         }
     }
 
@@ -300,17 +339,17 @@ public class LogResultsPanel extends JPanel {
                                     String rep_url_string = info.getRepositoryRootURL().toString();
                                     String file_url_string = info.getURL().toString();
                                     //String path = file_url_string.substring( rep_url_string.length() );
-                                    String project_root = PVHelper.getProjectRoot(view);
+                                    String project_root = PVHelper.getProjectRoot( view );
                                     String revision = ( String ) table.getValueAt( rows[ 0 ], 0 );
                                     for ( String remote_filename : data.getPaths() ) {
                                         SVNURL rep_url = SVNURL.parseURIDecoded( rep_url_string + remote_filename );
-                                        String local_filename = rep_url.toString().substring(file_url_string.length());
+                                        String local_filename = rep_url.toString().substring( file_url_string.length() );
                                         CopyData copy_data = new CopyData();
-                                        copy_data.setSourceURL(rep_url);
-                                        copy_data.setRevision(SVNRevision.create(Long.parseLong(revision) - 1));
-                                        copy_data.setDestinationFile(new File(project_root + local_filename));
-                                        CopyAction action = new CopyAction(view, copy_data);
-                                        action.actionPerformed(ae);
+                                        copy_data.setSourceURL( rep_url );
+                                        copy_data.setRevision( SVNRevision.create( Long.parseLong( revision ) - 1 ) );
+                                        copy_data.setDestinationFile( new File( project_root + local_filename ) );
+                                        CopyAction action = new CopyAction( view, copy_data );
+                                        action.actionPerformed( ae );
                                     }
                                 }
                                 catch ( Exception e ) {
