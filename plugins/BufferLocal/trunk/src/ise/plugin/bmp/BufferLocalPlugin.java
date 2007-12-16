@@ -149,8 +149,8 @@ public class BufferLocalPlugin extends EBPlugin {
         loadProperties();
 
         String dir = jEdit.getSettingsDirectory();
-        if (dir == null)
-            dir = System.getProperty("user.home");
+        if ( dir == null )
+            dir = System.getProperty( "user.home" );
         File f = new File( dir, ".bufferlocalplugin.cfg" );
         if ( f.exists() ) {
             try {
@@ -211,17 +211,38 @@ public class BufferLocalPlugin extends EBPlugin {
                 if ( props != null ) {
                     // parse the stored properties
                     StringTokenizer st = new StringTokenizer( props, "|" );
-                    String ls = st.nextToken();
-                    String enc = st.nextToken();
-                    String gz = st.nextToken();
-                    String em = st.nextToken();
+                    String ls = null;
+                    String enc = null;
+                    String gz = null;
+                    String em = null;
+                    String fm = null;
+                    String wm = null;
+                    String ll = null;
+                    String tw = null;
+                    String iw = null;
+                    String tabs = null;
+
+                    if ( st.hasMoreTokens() )
+                        ls = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        enc = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        gz = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        em = st.nextToken();
                     //Log.log(Log.DEBUG, this, "+++++ edit mode: " + em);
-                    String fm = st.nextToken();
-                    String wm = st.nextToken();
-                    String ll = st.nextToken();
-                    String tw = st.nextToken();
-                    String iw = st.nextToken();
-                    String tabs = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        fm = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        wm = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        ll = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        tw = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        iw = st.nextToken();
+                    if ( st.hasMoreTokens() )
+                        tabs = st.nextToken();
 
                     // apply the stored properties to the buffer
                     /// see comments above, don't need this right now
@@ -240,21 +261,21 @@ public class BufferLocalPlugin extends EBPlugin {
                     buffer.setStringProperty( Buffer.ENCODING, enc );
                     ///
 
-                    if (gz != null && gz.length() > 0)
+                    if ( gz != null && gz.length() > 0 )
                         buffer.setBooleanProperty( Buffer.GZIPPED, gz.equals( "t" ) ? true : false );
-                    if (fm != null && fm.length() > 0 && FoldHandler.getFoldHandler(fm) != null)
+                    if ( fm != null && fm.length() > 0 && FoldHandler.getFoldHandler( fm ) != null )
                         buffer.setFoldHandler( FoldHandler.getFoldHandler( fm ) );
-                    if (wm != null && wm.length() > 0)
+                    if ( wm != null && wm.length() > 0 )
                         buffer.setStringProperty( "wrap", wm );
-                    if (ll != null && ll.length() > 0)
+                    if ( ll != null && ll.length() > 0 )
                         buffer.setIntegerProperty( "maxLineLength", Integer.parseInt( ll ) );
-                    if (tw != null && tw.length() > 0)
+                    if ( tw != null && tw.length() > 0 )
                         buffer.setIntegerProperty( "tabSize", Integer.parseInt( tw ) );
-                    if (iw != null && iw.length() > 0)
+                    if ( iw != null && iw.length() > 0 )
                         buffer.setIntegerProperty( "indentSize", Integer.parseInt( iw ) );
-                    if (tabs != null && tabs.length() > 0)
+                    if ( tabs != null && tabs.length() > 0 )
                         buffer.setBooleanProperty( "noTabs", tabs.equals( "t" ) ? true : false );
-                    if (em != null && em.length() > 0)
+                    if ( em != null && em.length() > 0 )
                         buffer.setMode( em );
                 }
                 else {
@@ -380,7 +401,7 @@ public class BufferLocalPlugin extends EBPlugin {
         String enc = buffer.getStringProperty( Buffer.ENCODING );
         boolean gz = buffer.getBooleanProperty( Buffer.GZIPPED );
         String em;
-        if (buffer.getMode() != null)
+        if ( buffer.getMode() != null )
             em = buffer.getMode().getName();
         else
             em = "";
@@ -505,4 +526,3 @@ public class BufferLocalPlugin extends EBPlugin {
         }
     }
 }
-
