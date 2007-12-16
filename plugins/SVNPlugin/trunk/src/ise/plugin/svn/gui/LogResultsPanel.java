@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import ise.java.awt.LambdaLayout;
@@ -129,7 +130,7 @@ public class LogResultsPanel extends JPanel {
             String[] col_names = showPaths ?
                     new String[] {"Revision", "Date", "Author", "Comment", "Paths"} :
                     new String[] {"Revision", "Date", "Author", "Comment"};
-            LogTable table = new LogTable( data, col_names );
+            final LogTable table = new LogTable( data, col_names );
             table.setPath( path );
             table.addMouseListener( new TableMouseListener( table ) );
             ToolTipManager.sharedInstance().registerComponent( table );
@@ -155,7 +156,20 @@ public class LogResultsPanel extends JPanel {
                 column4.setCellRenderer( new PathCellRenderer() );
             }
 
-            table.packRows(1);
+            table.packRows();
+            table.getColumnModel().addColumnModelListener(
+                new TableColumnModelListener() {
+                    public void columnAdded( TableColumnModelEvent e ) {}
+                    public void columnMarginChanged( ChangeEvent e ) {
+                        table.packRows();
+                    }
+                    public void columnMoved( TableColumnModelEvent e ) {
+                        table.packRows();
+                    }
+                    public void columnRemoved( TableColumnModelEvent e ) {}
+                    public void columnSelectionChanged( ListSelectionEvent e ) {}
+                }
+            );
 
             add( label, con );
             ++con.y;
@@ -179,21 +193,25 @@ public class LogResultsPanel extends JPanel {
             return LogTable.this.path;
         }
 
+        public void doLayout() {
+            super.doLayout();
+            packRows();
+        }
+
         /**
          * @return the preferred height of a row.  JTable doesn't provide this.
          * The returned value is equal to the tallest preferred height of the cells
          * cells in the row.
          */
         public int getPreferredRowHeight( int row, int margin ) {
-            // start with the default row height
-            int height = getRowHeight();
+            int height = 1;
 
             // determine tallest cell in the row
             for ( int column = 0; column < getColumnCount(); column++ ) {
                 TableCellRenderer renderer = getCellRenderer( row, column );
                 Component comp = prepareRenderer( renderer, row, column );
-                int h = comp.getPreferredSize().height + (2 * margin);
-                height = Math.max( height, h );
+                int preferred = comp.getPreferredSize().height + ( 2 * margin );
+                height = Math.max( height, preferred );
             }
             return height;
         }
@@ -203,7 +221,7 @@ public class LogResultsPanel extends JPanel {
          * size of 1.
          */
         public void packRows() {
-            packRows(1);
+            packRows( 1 );
         }
 
         /**
@@ -218,14 +236,9 @@ public class LogResultsPanel extends JPanel {
          * Adjust the heights of a range of rows.
          */
         public void packRows( int start, int end, int margin ) {
-            for ( int r = 0; r < getRowCount(); r++ ) {
-                // Get the preferred height
-                int h = getPreferredRowHeight( r, margin );
-
-                // Now set the row height using the preferred height
-                if ( getRowHeight( r ) != h ) {
-                    setRowHeight( r, h );
-                }
+            for ( int row = 0; row < getRowCount(); row++ ) {
+                int height = getPreferredRowHeight( row, margin );
+                setRowHeight( row, height );
             }
         }
     }
@@ -256,12 +269,9 @@ public class LogResultsPanel extends JPanel {
     /**
      * Wrapping text area cell renderer.
      */
-    public class CommentCellRenderer extends JTextArea implements TableCellRenderer {
-
+    public class CommentCellRenderer extends JTextPane implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
-            setLineWrap( true );
-            setWrapStyleWord( true );
             setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
             return this;
         }
