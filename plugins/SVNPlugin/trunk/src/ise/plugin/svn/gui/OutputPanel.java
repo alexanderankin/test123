@@ -130,7 +130,10 @@ public class OutputPanel extends JPanel {
     }
 
     public void addTab( String name, JPanel panel ) {
-        final Component c = tabs.add( name, new JScrollPane( panel ) );
+        JScrollPane scroller = new JScrollPane( panel );
+        JScrollBar bar = scroller.getVerticalScrollBar();
+        bar.setUnitIncrement( 15 );
+        final Component c = tabs.add( name, scroller );
         tabs.setSelectedComponent( c );
     }
 }
