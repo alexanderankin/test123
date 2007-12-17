@@ -46,7 +46,8 @@ import ise.plugin.svn.library.swingworker.*;
 public class CheckoutActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        CheckoutAction la = new CheckoutAction( view, username, password );
+        CheckoutData data = new CheckoutData(null, username, password);
+        CheckoutAction la = new CheckoutAction( view, data );
         la.actionPerformed( ae );
     }
 }

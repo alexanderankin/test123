@@ -37,6 +37,8 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  */
 public class DiffData extends SVNData {
 
+    private static final long serialVersionUID = 42L;
+
     private transient SVNRevision revision1 = SVNRevision.HEAD;
     private transient SVNRevision revision2 = null;
 
