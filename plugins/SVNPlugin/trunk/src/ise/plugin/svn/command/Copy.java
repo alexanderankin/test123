@@ -47,7 +47,11 @@ import ise.plugin.svn.data.CopyData;
 /**
  * Used to copy or move either a working file to another working file or to the
  * repository, or to move a repository file or directory to a working file or to
- * another repository location.
+ * another repository location.  To recap, this class can copy:
+ * working copy -> working copy
+ * working copy -> repository
+ * repository -> working copy
+ * repository -> repository
  */
 public class Copy {
 
