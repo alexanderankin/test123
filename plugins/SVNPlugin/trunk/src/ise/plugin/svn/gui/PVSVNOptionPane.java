@@ -184,7 +184,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 info_data.getOut().close();
                 return results;
             }
-            catch ( Exception e ) {}
+            catch ( Exception e ) {
+                // ignored
+            }
             return null;
         }
 

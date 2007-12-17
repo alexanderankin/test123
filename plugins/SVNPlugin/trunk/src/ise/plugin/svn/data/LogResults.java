@@ -35,6 +35,9 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 public class LogResults implements Serializable {
+
+    private static final long serialVersionUID = 42L;
+
     private transient SVNInfo info;
     private transient TreeMap < String, List < SVNLogEntry >> entries;
     /**

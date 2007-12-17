@@ -52,8 +52,6 @@ import org.gjt.sp.jedit.View;
 public class PropertyAction implements ActionListener {
 
     private View view = null;
-    private String filename = null;
-    private Properties properties = null;
     private PropertyData data = null;
 
     /**

@@ -58,34 +58,18 @@ import org.gjt.sp.jedit.View;
 public class CheckoutAction implements ActionListener, PropertyChangeListener {
 
     private View view = null;
-    private String url = null;
-    private String username = null;
-    private String password = null;
     private CheckoutData cd = null;
 
     /**
      * @param view the View in which to display results
-     * @param paths a list of paths to be added
-     * @param username the username for the svn repository
-     * @param password the password for the username
+     * @param data information necessary to do a checkout
      */
-    public CheckoutAction( View view, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        this.view = view;
-        this.username = username;
-        this.password = password;
-    }
-
     public CheckoutAction( View view, CheckoutData data ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.view = view;
-        this.url = data.getURL();
-        this.username = data.getUsername();
-        this.password = data.getPassword();
     }
 
     public void propertyChange( PropertyChangeEvent pce ) {
@@ -96,7 +80,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        CheckoutDialog dialog = new CheckoutDialog( view, url );
+        CheckoutDialog dialog = new CheckoutDialog( view, cd.getURL() );
         GUIUtils.center( view, dialog );
         dialog.setVisible( true );
         cd = dialog.getValues();

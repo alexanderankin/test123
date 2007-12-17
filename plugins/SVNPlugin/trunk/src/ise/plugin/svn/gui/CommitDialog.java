@@ -125,7 +125,7 @@ public class CommitDialog extends JDialog {
                     recursive = true;
                 }
                 paths.add(path);
-                file_table_model.setValueAt( new Boolean( true ), i, 0 );
+                file_table_model.setValueAt( true, i, 0 );
                 file_table_model.setValueAt( path, i, 1 );
                 file_table_model.setValueAt( status, i, 2 );
                 ++i;

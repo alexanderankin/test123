@@ -32,6 +32,9 @@ import java.util.List;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class UpdateData extends SVNData {
+
+    private static final long serialVersionUID = 42L;
+
     private List<String> conflictedFiles = null;
     private List<String> addedFiles = null;
     private List<String> deletedFiles = null;
