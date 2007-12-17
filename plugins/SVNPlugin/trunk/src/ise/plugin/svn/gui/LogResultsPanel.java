@@ -56,6 +56,11 @@ import org.tmatesoft.svn.core.SVNURL;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
+/**
+ * Shows the results of an svn log command.  The display shows 4 or optionally 5
+ * columns, with the 5th column being the paths of other files committed in the
+ * same revision.
+ */
 public class LogResultsPanel extends JPanel {
 
     private View view = null;
@@ -67,6 +72,9 @@ public class LogResultsPanel extends JPanel {
      * @param map with path/file name as key, a list of associated log entries as the value
      * @param showPaths whether or not path information for other files associated with each
      * revision are included in the log entries
+     * @param view the parent frame
+     * @param username not used here, but passed on to commands available in the context menu
+     * @param password password for username
      */
     public LogResultsPanel( LogResults logResults, boolean showPaths, View view, String username, String password ) {
         super( new LambdaLayout() );
@@ -75,7 +83,6 @@ public class LogResultsPanel extends JPanel {
         this.username = username;
         this.password = password;
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
-        boolean top = false;
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
         con.s = "w";
@@ -180,7 +187,7 @@ public class LogResultsPanel extends JPanel {
         }
     }
 
-    public class LogTable extends JTable {
+    public static class LogTable extends JTable {
         private String path = null;
         public LogTable( Object[][] data, Object[] columnNames ) {
             super( data, columnNames );
@@ -246,7 +253,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Non-wrapping text area cell renderer.
      */
-    public class TextCellRenderer extends JTextArea implements TableCellRenderer {
+    public static class TextCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
             setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
@@ -257,7 +264,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Non-wrapping text area cell renderer for the paths column.
      */
-    public class PathCellRenderer extends JTextArea implements TableCellRenderer {
+    public static class PathCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
             setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
@@ -269,7 +276,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Wrapping text area cell renderer.
      */
-    public class CommentCellRenderer extends JTextPane implements TableCellRenderer {
+    public static class CommentCellRenderer extends JTextPane implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
             setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
@@ -280,7 +287,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * for sorting log entries by revision number, latest revision first
      */
-    public class EntryComparator implements Comparator<SVNLogEntry>, Serializable {
+    public static class EntryComparator implements Comparator<SVNLogEntry>, Serializable {
         public int compare( SVNLogEntry o1, SVNLogEntry o2 ) {
             Long l1 = Long.valueOf( o1.getRevision() );
             Long l2 = Long.valueOf( o2.getRevision() );
@@ -341,23 +348,41 @@ public class LogResultsPanel extends JPanel {
                 mi.addActionListener( new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
                                 try {
+                                    // have the user select which files to undelete
                                     UndeleteDialog dialog = new UndeleteDialog( view, deleted_files );
                                     GUIUtils.center( view, dialog );
                                     dialog.setVisible( true );
                                     SVNData data = dialog.getData();
+                                    if (data == null) {
+                                        return;     // null means user canceled
+                                    }
+
+                                    // get the repository url and filename of the file to recover
                                     SVNInfo info = logResults.getInfo();
                                     String rep_url_string = info.getRepositoryRootURL().toString();
                                     String file_url_string = info.getURL().toString();
-                                    //String path = file_url_string.substring( rep_url_string.length() );
-                                    String project_root = PVHelper.getProjectRoot( view );
+
+                                    // get the revision to undelete
                                     String revision = ( String ) table.getValueAt( rows[ 0 ], 0 );
+
+                                    // get project root to use as base directory for local destination
+                                    String project_root = PVHelper.getProjectRoot( view );
+
+                                    // do the undelete
                                     for ( String remote_filename : data.getPaths() ) {
+                                        // remote file
                                         SVNURL rep_url = SVNURL.parseURIDecoded( rep_url_string + remote_filename );
+
+                                        // local filename, extract from remote name
                                         String local_filename = rep_url.toString().substring( file_url_string.length() );
+
+                                        // prep for copy
                                         CopyData copy_data = new CopyData();
-                                        copy_data.setSourceURL( rep_url );
-                                        copy_data.setRevision( SVNRevision.create( Long.parseLong( revision ) - 1 ) );
-                                        copy_data.setDestinationFile( new File( project_root + local_filename ) );
+                                        copy_data.setSourceURL( rep_url );      // what to copy
+                                        copy_data.setRevision( SVNRevision.create( Long.parseLong( revision ) - 1 ) );  // at what revision
+                                        copy_data.setDestinationFile( new File( project_root + local_filename ) );  // where to put it
+
+                                        // do the copy
                                         CopyAction action = new CopyAction( view, copy_data );
                                         action.actionPerformed( ae );
                                     }
