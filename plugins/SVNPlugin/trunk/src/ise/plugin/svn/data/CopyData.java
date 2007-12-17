@@ -31,13 +31,17 @@ package ise.plugin.svn.data;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 
 public class CopyData extends SVNData implements Serializable {
 
+    private static final long serialVersionUID = 42L;
+
     private File sourceFile = null;
+    private List<File> sourceFiles = null;
     private transient SVNURL sourceURL = null;
     private File destinationFile = null;
     private transient SVNURL destinationURL = null;
@@ -74,6 +78,9 @@ public class CopyData extends SVNData implements Serializable {
      * Returns the value of sourceFile.
      */
     public File getSourceFile() {
+        if (sourceFile == null && sourceFiles != null) {
+            return sourceFiles.get(0);
+        }
         return sourceFile;
     }
 
@@ -83,6 +90,14 @@ public class CopyData extends SVNData implements Serializable {
      */
     public void setSourceFile( File sourceFile ) {
         this.sourceFile = sourceFile;
+    }
+
+    public void setSourceFiles(List<File> files) {
+        sourceFiles = files;
+    }
+
+    public List<File> getSourceFiles() {
+        return sourceFiles;
     }
 
     /**
@@ -101,7 +116,8 @@ public class CopyData extends SVNData implements Serializable {
     }
 
     /**
-     * Returns the value of destinationFile.
+     * Returns the value of destinationFile, should be a directory if there is
+     * more than one source file.
      */
     public File getDestinationFile() {
         return destinationFile;
