@@ -85,13 +85,38 @@ public class CopyAction implements ActionListener {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker<SVNCommitInfo, Object> {
+            class Runner extends SwingWorker<List<SVNCommitInfo>, Object> {
 
                 @Override
-                public SVNCommitInfo doInBackground() {
+                public List<SVNCommitInfo> doInBackground() {
                     try {
-                        Copy copy = new Copy();
-                        return copy.copy(data);
+                        List<SVNCommitInfo> results = new ArrayList<SVNCommitInfo>();
+                        if ( data.getSourceFiles() != null ) {
+                            Set<Map.Entry<File, Boolean>> set = data.getSourceFiles().entrySet();
+                            for ( Map.Entry<File, Boolean> me : set ) {
+                                CopyData cd = new CopyData();
+                                cd.setSourceFile( me.getKey() );
+                                if ( data.getDestinationFile() != null ) {
+                                    cd.setDestinationFile( data.getDestinationFile() );
+                                }
+                                else if ( data.getDestinationURL() != null ) {
+                                    cd.setDestinationURL( data.getDestinationURL() );
+                                }
+                                cd.setOut(data.getOut());
+                                Copy copy = new Copy();
+                                SVNCommitInfo result = copy.copy( cd );
+                                if ( result != null ) {
+                                    results.add( result );
+                                }
+                            }
+                        }
+                        else if ( data.getSourceURL() != null ) {
+                            Copy copy = new Copy();
+                            SVNCommitInfo result = copy.copy( data );
+                            if ( result != null ) {
+                                results.add( result );
+                            }
+                        }
                     }
                     catch ( Exception e ) {
                         data.getOut().printError( e.getMessage() );
@@ -105,7 +130,7 @@ public class CopyAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        SVNCommitInfo results = get();
+                        List<SVNCommitInfo> results = get();
                         if ( results != null ) {
                             //JPanel results_panel = new CommitResultsPanel( results );
                             //panel.addTab( "Copy", results_panel );
