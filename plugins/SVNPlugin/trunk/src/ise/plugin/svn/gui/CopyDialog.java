@@ -85,33 +85,16 @@ public class CopyDialog extends JDialog {
         JTable file_table = new JTable();
 
         // create table model
-        fileTableModel = new DefaultTableModel(
-                    new String[] {
-                        "File", "Recursive"
-                    }, toCopy.size() ) {
-                    public Class getColumnClass( int index ) {
-                        if ( index == 1 ) {
-                            return Boolean.class;
-                        }
-                        else {
-                            return super.getColumnClass( index );
-                        }
-
-                    }
-                };
+        fileTableModel = new DefaultTableModel( new String[]{"File"}, toCopy.size() ) ;
 
         // fill table model.  If directory, add a checkbox defaulting to checked
         // indicating the copy should recursively copy the directory.
         for ( int row = 0; row < toCopy.size(); row++ ) {
             File file = toCopy.get( row );
             fileTableModel.setValueAt( file.getAbsolutePath(), row, 0 );
-            if ( file.isDirectory() ) {
-                fileTableModel.setValueAt( true, row, 1 );
-            }
         }
         file_table.setModel( fileTableModel );
-        file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 525 );
-        file_table.getColumnModel().getColumn( 1 ).setMaxWidth( 75 );
+        file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
 
 
         // local destination directory.  TODO: need to be able to set remote url
@@ -143,8 +126,8 @@ public class CopyDialog extends JDialog {
                     final JDialog dialog = new JDialog( view, "Select Repository Destination" );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
-                    panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel(view);
+                    panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view );
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
@@ -156,7 +139,7 @@ public class CopyDialog extends JDialog {
                                 dialog.setVisible( false );
                                 dialog.dispose();
                                 if ( selection != null && selection.length() > 0 ) {
-                                    path.setText(selection);
+                                    path.setText( selection );
                                     usingFile = false;
                                 }
                             }
@@ -244,26 +227,22 @@ public class CopyDialog extends JDialog {
             return null;
         }
         CopyData cd = new CopyData();
-        Map<File, Boolean> map = new HashMap<File, Boolean>();
+        List<File> files = new ArrayList<File>();
         for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
             String filename = ( String ) fileTableModel.getValueAt( row, 0 );
-            Boolean recursive = ( Boolean ) fileTableModel.getValueAt( row, 1 );
-            if ( recursive == null ) {
-                recursive = false;
-            }
-            map.put( new File( filename ), recursive );
+            files.add( new File( filename ) );
         }
 
-        cd.setSourceFiles( map );
+        cd.setSourceFiles( files );
 
-        if (usingFile) {
-        cd.setDestinationFile( new File( path.getText() ) );
+        if ( usingFile ) {
+            cd.setDestinationFile( new File( path.getText() ) );
         }
         else {
             try {
-                cd.setDestinationURL( SVNURL.parseURIDecoded(path.getText()));
+                cd.setDestinationURL( SVNURL.parseURIDecoded( path.getText() ) );
             }
-            catch(Exception e) {
+            catch ( Exception e ) {
                 e.printStackTrace();
             }
         }
