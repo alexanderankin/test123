@@ -109,7 +109,7 @@ public class Copy {
             // branch or tag
             SVNRevision revision = data.getRevision();
             if (revision == null) {
-                revision = SVNRevision.WORKING;
+                revision = SVNRevision.HEAD;
             }
             results = client.doCopy(sourceURL, revision, destinationURL, data.getIsMove(), !data.getForce(), data.getMessage());
         }

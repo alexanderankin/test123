@@ -229,7 +229,9 @@ public class TagBranchDialog extends JDialog {
             return null;
         }
         CopyData cd = new CopyData();
-        cd.setSourceURL( source );
+        List<SVNURL> urls = new ArrayList<SVNURL>();
+        urls.add(source);
+        cd.setSourceURLs( urls );
         cd.setDestinationURL( destination );
         return cd;
     }
