@@ -31,7 +31,7 @@ package ise.plugin.svn.data;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -40,116 +40,96 @@ public class CopyData extends SVNData implements Serializable {
 
     private static final long serialVersionUID = 42L;
 
+    // single source file
     private File sourceFile = null;
-    private List<File> sourceFiles = null;
+
+    // multiple files
+    private Map<File, Boolean> sourceFiles = null;
+
+    // single source URL
     private transient SVNURL sourceURL = null;
+
+    // copy destination if on local filesystem
     private File destinationFile = null;
+
+    // copy destination if on remote repository
     private transient SVNURL destinationURL = null;
+
+    // revision to copy from
     private transient SVNRevision revision = null;
+
+    // true if this class represents a move rather than a copy
     private boolean isMove = false;
+
+    // commit message
     private String message = null;
 
+
+    // set/get commit message
     public void setMessage(String m) {
         message = m;
     }
-
     public String getMessage() {
         return message == null || message.length() == 0 ? "copying" : message;
     }
 
-
-    /**
-     * Returns the value of revision.
-     */
+    // set/get revision to copy from
     public SVNRevision getRevision() {
         return revision;
     }
-
-    /**
-     * Sets the value of revision.
-     * @param revision The value to assign revision.
-     */
     public void setRevision( SVNRevision revision ) {
         this.revision = revision;
     }
 
-
-    /**
-     * Returns the value of sourceFile.
-     */
+    // set/get single source file to copy
     public File getSourceFile() {
-        if (sourceFile == null && sourceFiles != null) {
-            return sourceFiles.get(0);
-        }
         return sourceFile;
     }
-
-    /**
-     * Sets the value of sourceFile.
-     * @param sourceFile The value to assign sourceFile.
-     */
     public void setSourceFile( File sourceFile ) {
         this.sourceFile = sourceFile;
     }
 
-    public void setSourceFiles(List<File> files) {
+    // Set/get filenames for copying multiple files to the destination.
+    // @param files Map of filename to recursive, recursive is a boolean, always
+    // false for files, could be true for directories.
+    public void setSourceFiles(Map<File, Boolean> files) {
         sourceFiles = files;
     }
-
-    public List<File> getSourceFiles() {
+    public Map<File, Boolean> getSourceFiles() {
         return sourceFiles;
     }
 
-    /**
-     * Returns the value of sourceURL.
-     */
+    // set/get source url for copying remote url
     public SVNURL getSourceURL() {
         return sourceURL;
     }
-
-    /**
-     * Sets the value of sourceURL.
-     * @param sourceURL The value to assign sourceURL.
-     */
     public void setSourceURL( SVNURL sourceURL ) {
         this.sourceURL = sourceURL;
     }
 
-    /**
-     * Returns the value of destinationFile, should be a directory if there is
-     * more than one source file.
-     */
+    // set/get the local filesystem destination for the copy
+    // @return the value of destinationFile, should be a directory if there is
+    // more than one source file.
     public File getDestinationFile() {
         return destinationFile;
     }
-
-    /**
-     * Sets the value of destinationFile.
-     * @param destinationFile The value to assign destinationFile.
-     */
     public void setDestinationFile( File destinationFile ) {
         this.destinationFile = destinationFile;
     }
 
-    /**
-     * Returns the value of destinationURL.
-     */
+    // set/get the remote repository destination url for the copy
+    // @return the value of destinationURL.
     public SVNURL getDestinationURL() {
         return destinationURL;
     }
-
-    /**
-     * Sets the value of destinationURL.
-     * @param destinationURL The value to assign destinationURL.
-     */
     public void setDestinationURL( SVNURL destinationURL ) {
         this.destinationURL = destinationURL;
     }
 
+    // set/get is this a move rather than a copy
     public void setIsMove(boolean b) {
         isMove = b;
     }
-
     public boolean getIsMove() {
         return isMove;
     }

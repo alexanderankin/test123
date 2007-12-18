@@ -29,10 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
+import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -40,73 +43,149 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-
-import ise.java.awt.KappaLayout;
-import ise.plugin.svn.PVHelper;
+import ise.java.awt.*;
 import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
+import ise.plugin.svn.library.*;
+
+import org.tmatesoft.svn.core.SVNURL;
 
 public class CopyDialog extends JDialog {
     // instance fields
     private View view = null;
     private List<File> toCopy = null;
     private JTextField path = null;
+    private TableModel fileTableModel = null;
+    private String defaultDestination = null;
 
+    private boolean usingFile = true;
     private boolean cancelled = false;
 
-    public CopyDialog( View view, List<File> files ) {
+    public CopyDialog( View view, List<File> files, String defaultDestination ) {
         super( ( JFrame ) view, "Copy", true );
-        if (files == null || files.size() == 0) {
-            throw new IllegalArgumentException("no source file(s) to copy");
+        if ( files == null || files.size() == 0 ) {
+            throw new IllegalArgumentException( "no source file(s) to copy" );
         }
         this.view = view;
         this.toCopy = files;
+        this.defaultDestination = defaultDestination == null ? "" : defaultDestination;
         init();
     }
 
     protected void init() {
-        JPanel panel = new JPanel( new KappaLayout() );
+        KappaLayout layout = new KappaLayout();
+        JPanel panel = new JPanel( layout );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        // local source file name
-        JLabel to_copy_label = new JLabel();
-        if (toCopy.size() == 1) {
-            to_copy_label.setText("Copy file: " + toCopy.get(0).getAbsolutePath());
-        }
-        else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>Copy these files:</b><br>");
-            for (File file : toCopy) {
-                sb.append(file.getAbsolutePath()).append("<br>");
-            }
-            to_copy_label.setText(sb.toString());
-        }
+        JLabel to_copy_label = new JLabel( "Copy " + ( toCopy.size() == 1 ? "this file:" : "these files:" ) );
 
-        // local destination directory
-        JLabel path_label = new JLabel( "Copy to:" );
-        path = new JTextField( PVHelper.getProjectRoot(view), 30 );
-        JButton browse_btn = new JButton( "Browse" );
-        browse_btn.addActionListener( new ActionListener() {
+        // 2 column table, column 0 is list of filenames/directory names,
+        // column 1 is boolean to set recursive on directories
+        JTable file_table = new JTable();
+
+        // create table model
+        fileTableModel = new DefaultTableModel(
+                    new String[] {
+                        "File", "Recursive"
+                    }, toCopy.size() ) {
+                    public Class getColumnClass( int index ) {
+                        if ( index == 1 ) {
+                            return Boolean.class;
+                        }
+                        else {
+                            return super.getColumnClass( index );
+                        }
+
+                    }
+                };
+
+        // fill table model.  If directory, add a checkbox defaulting to checked
+        // indicating the copy should recursively copy the directory.
+        for ( int row = 0; row < toCopy.size(); row++ ) {
+            File file = toCopy.get( row );
+            fileTableModel.setValueAt( file.getAbsolutePath(), row, 0 );
+            if ( file.isDirectory() ) {
+                fileTableModel.setValueAt( true, row, 1 );
+            }
+        }
+        file_table.setModel( fileTableModel );
+        file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 525 );
+        file_table.getColumnModel().getColumn( 1 ).setMaxWidth( 75 );
+
+
+        // local destination directory.  TODO: need to be able to set remote url
+        JLabel path_label = new JLabel( "To this location:" );
+        path = new JTextField( defaultDestination , 30 );
+        JButton browse_local_btn = new JButton( "Browse Local..." );
+        browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
-                        if (dirs != null && dirs.length > 0) {
-                            String filename = dirs[0];
-                            File f = new File(filename);
-                            if (toCopy.size() == 1 && f.exists()) {
-                                int overwrite = JOptionPane.showConfirmDialog(view, "File exists, okay to overwrite?", "File exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                                if ( overwrite == JOptionPane.NO_OPTION) {
-                                    return;
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultDestination, toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        if ( dirs != null && dirs.length > 0 ) {
+                            String filename = dirs[ 0 ];
+                            File f = new File( filename );
+                            if ( toCopy.size() == 1 && f.exists() ) {
+                                int overwrite = JOptionPane.showConfirmDialog( view, "File exists, okay to overwrite?", "File exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                                if ( overwrite == JOptionPane.NO_OPTION ) {
+                                    return ;
                                 }
                             }
-                            path.setText(f.getAbsolutePath());
+                            path.setText( f.getAbsolutePath() );
+                            usingFile = true;
                         }
                     }
                 }
-                                    );
+                                          );
+        JButton browse_remote_btn = new JButton( "Browse Remote..." );
+        browse_remote_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    final JDialog dialog = new JDialog( view, "Select Repository Destination" );
+                    dialog.setModal( true );
+                    JPanel panel = new JPanel( new LambdaLayout() );
+                    panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel(view);
+                    panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
+                    KappaLayout btn_layout = new KappaLayout();
+                    JPanel button_panel = new JPanel( btn_layout );
+                    JButton ok_btn = new JButton( "OK" );
+                    ok_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                String selection = burp.getSelectionPath();
+                                dialog.setVisible( false );
+                                dialog.dispose();
+                                if ( selection != null && selection.length() > 0 ) {
+                                    path.setText(selection);
+                                    usingFile = false;
+                                }
+                            }
+                        }
+                    );
+                    JButton cancel_btn = new JButton( "Cancel" );
+                    cancel_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                dialog.setVisible( false );
+                                dialog.dispose();
+                            }
+                        }
+                    );
+                    button_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
+                    button_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
+                    btn_layout.makeColumnsSameWidth( 0, 1 );
 
-        // buttons
+                    panel.add( "0, 1, 1, 1", KappaLayout.createStrut( 350, 11, false ) );
+                    panel.add( "0, 2, 1, 1, E, , 3", button_panel );
+                    dialog.setContentPane( panel );
+                    dialog.pack();
+                    GUIUtils.center( view, dialog );
+                    dialog.setVisible( true );
+                }
+            }
+        );
+
+        // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( "Ok" );
@@ -139,13 +218,21 @@ public class CopyDialog extends JDialog {
 
 
         // add the components to the option panel
-        panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label);
-        panel.add( "0, 1, 1, 1, W,  , 3", path_label );
-        panel.add( "1, 1, 6, 1, 0, w, 3", path );
-        panel.add( "7, 1, 1, 1, 0, w, 3", browse_btn );
+        panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label );
+        JScrollPane file_scroller = new JScrollPane( file_table );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 200 ) );
+        panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
 
-        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 5, 8, 1, E,  , 0", btn_panel );
+        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+
+        panel.add( "0, 3, 1, 1, W,  , 3", path_label );
+        panel.add( "0, 4, 8, 1, 0, w, 3", path );
+        panel.add( "0, 5, 1, 1, 0, w, 3", browse_local_btn );
+        panel.add( "1, 5, 1, 1, 0, w, 3", browse_remote_btn );
+        layout.makeColumnsSameWidth( 0, 1 );
+
+        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 7, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -157,8 +244,29 @@ public class CopyDialog extends JDialog {
             return null;
         }
         CopyData cd = new CopyData();
-        cd.setSourceFiles(toCopy);
-        cd.setDestinationFile(new File(path.getText()));
+        Map<File, Boolean> map = new HashMap<File, Boolean>();
+        for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
+            String filename = ( String ) fileTableModel.getValueAt( row, 0 );
+            Boolean recursive = ( Boolean ) fileTableModel.getValueAt( row, 1 );
+            if ( recursive == null ) {
+                recursive = false;
+            }
+            map.put( new File( filename ), recursive );
+        }
+
+        cd.setSourceFiles( map );
+
+        if (usingFile) {
+        cd.setDestinationFile( new File( path.getText() ) );
+        }
+        else {
+            try {
+                cd.setDestinationURL( SVNURL.parseURIDecoded(path.getText()));
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
         return cd;
     }
 }

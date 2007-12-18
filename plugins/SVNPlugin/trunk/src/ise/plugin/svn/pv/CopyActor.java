@@ -44,6 +44,8 @@ import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.gui.CopyDialog;
+import ise.plugin.svn.PVHelper;
+
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
@@ -53,28 +55,16 @@ public class CopyActor extends NodeActor {
         if ( nodes != null && nodes.size() > 0 ) {
 
             // get the paths
-            boolean recursive = false;
             List<File> files = new ArrayList<File>();
             for ( VPTNode node : nodes ) {
                 if ( node != null && node.getNodePath() != null ) {
                     files.add( new File( node.getNodePath() ) );
-                    if ( node.isDirectory() ) {
-                        recursive = true;
-                    }
                 }
             }
 
-            // user confirmations
-            if ( recursive ) {
-                // have the user verify they want to copy all subdirectories and files
-                int response = JOptionPane.showConfirmDialog( getView(), "Recursively copy all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.CANCEL_OPTION ) {
-                    return ;
-                }
-                recursive = response == JOptionPane.YES_OPTION;
-            }
-
-            CopyDialog dialog = new CopyDialog( view, files );
+            // show the copy dialog
+            String default_destination = files.size() == 1 ? files.get(0).getAbsolutePath() : PVHelper.getProjectRoot(view);
+            CopyDialog dialog = new CopyDialog( view, files, default_destination );
             GUIUtils.center(view, dialog);
             dialog.setVisible( true );
             final CopyData data = dialog.getData();

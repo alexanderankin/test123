@@ -86,6 +86,13 @@ public class BrowseRepositoryPanel extends JPanel {
     public BrowseRepositoryPanel( View view ) {
         super( new BorderLayout() );
         this.view = view;
+        init( true, null );
+    }
+
+    private void init( boolean full, String repositoryName ) {
+
+        // for button panel, defined below.
+        JPanel button_panel = null;
 
         // repository chooser
         chooser = new RepositoryComboBox();
@@ -107,10 +114,14 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 };
         chooser.addActionListener( al );
+        if ( repositoryName != null ) {
+            chooser.setSelectedItem( repositoryName );
+        }
 
         // the repository tree.  This is lazy loaded.
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
         tree.setCellRenderer( new CellRenderer() );
+        tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
         ToolTipManager.sharedInstance().registerComponent( tree );
 
         // on expansion, call the repository and fetch the children
@@ -122,7 +133,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                         if ( node.getChildCount() == 0 ) {
                             RepositoryData data = chooser.getSelectedRepository();
-                            data = new RepositoryData(data);
+                            data = new RepositoryData( data );
                             String url;
                             if ( node.isExternal() ) {
                                 url = node.getRepositoryLocation();
@@ -145,167 +156,175 @@ public class BrowseRepositoryPanel extends JPanel {
                                      );
 
         // on double click on a text file, fetch the file contents and show the file in jEdit
-        tree.addMouseListener( new MouseAdapter() {
-                    public void mouseClicked( MouseEvent me ) {
-                        if ( me.getClickCount() == 2 ) {
-                            // for double-click on a text file, open the file in jEdit
-                            TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                            DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                            if ( node.isLeaf() ) {
-                                // show the wait cursor
-                                tree.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-                                tree.setEditable( false );
+        if ( full ) {
+            tree.addMouseListener( new MouseAdapter() {
+                        public void mouseClicked( MouseEvent me ) {
+                            if ( me.getClickCount() == 2 ) {
+                                // for double-click on a text file, open the file in jEdit
+                                TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( node.isLeaf() ) {
+                                    // show the wait cursor
+                                    tree.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                                    tree.setEditable( false );
 
-                                // leaf nodes should be files, not directories.
-                                // get url and path for the selected file
-                                RepositoryData data = chooser.getSelectedRepository();
-                                String url;
-                                String filepath;
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                filepath = sb.toString().substring( 1 );
-                                if ( node.isExternal() ) {
-                                    String rep = node.getRepositoryLocation();
-                                    url = rep.substring( 0, rep.lastIndexOf( "/" ) );
-                                    filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
-                                }
-                                else {
-                                    url = data.getURL();
-                                }
+                                    // leaf nodes should be files, not directories.
+                                    // get url and path for the selected file
+                                    RepositoryData data = chooser.getSelectedRepository();
+                                    String url;
+                                    String filepath;
+                                    Object[] parts = path.getPath();
+                                    StringBuilder sb = new StringBuilder();
+                                    for ( int i = 1; i < parts.length; i++ ) {
+                                        sb.append( "/" ).append( parts[ i ].toString() );
+                                    }
+                                    filepath = sb.toString().substring( 1 );
+                                    if ( node.isExternal() ) {
+                                        String rep = node.getRepositoryLocation();
+                                        url = rep.substring( 0, rep.lastIndexOf( "/" ) );
+                                        filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
+                                    }
+                                    else {
+                                        url = data.getURL();
+                                    }
 
-                                // ask the user for the revision they want
-                                RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, "Select Revision to View" );
-                                GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
-                                rd.setVisible( true );
-                                SVNRevision revision = rd.getData();
-                                if ( revision == null ) {
-                                    return ;
-                                }
+                                    // ask the user for the revision they want
+                                    RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, "Select Revision to View" );
+                                    GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
+                                    rd.setVisible( true );
+                                    SVNRevision revision = rd.getData();
+                                    if ( revision == null ) {
+                                        return ;
+                                    }
 
-                                // fetch the file contents
-                                BrowseRepository br = new BrowseRepository();
-                                File outfile = br.getFile( url, filepath, revision, data.getUsername(), data.getPassword() );
-                                if ( outfile != null ) {
-                                    jEdit.openFile( getView(), outfile.getAbsolutePath() );
+                                    // fetch the file contents
+                                    BrowseRepository br = new BrowseRepository();
+                                    File outfile = br.getFile( url, filepath, revision, data.getUsername(), data.getPassword() );
+                                    if ( outfile != null ) {
+                                        jEdit.openFile( getView(), outfile.getAbsolutePath() );
+                                    }
+                                    tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+                                    tree.setEditable( true );
                                 }
-                                tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-                                tree.setEditable( true );
                             }
+
                         }
-
                     }
-                }
-                             );
-        tree.addMouseListener( new TreeMouseListener() );
-
-        // create the context menu
-        popupMenu = createPopupMenu();
-
-        // create the control buttons -- add repository
-        Icon new_icon = GUIUtilities.loadIcon( "New.png" );
-        new_btn = new JButton( new_icon );
-        Dimension dim = new Dimension( new_icon.getIconWidth() + ( new_btn.getInsets().top * 2 ), new_icon.getIconHeight() + ( new_btn.getInsets().top * 2 ) );
-        new_btn.setSize( dim );
-        new_btn.setPreferredSize( dim );
-        new_btn.setMaximumSize( dim );
-        new_btn.setToolTipText( "Add new repository" );
-        new_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
-                        GUIUtils.center( getView(), dialog );
-                        dialog.setVisible( true );
-                        RepositoryData data = dialog.getValues();
-                        if ( data == null ) {
-                            return ;     // user canceled
-                        }
-                        //String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
-                        chooser.addRepository( data );
-                        DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                        tree.setModel( new DefaultTreeModel( root ) );
-                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                        action.actionPerformed( ae );
-                    }
-                }
                                  );
 
-        // edit repository properties
-        Icon edit_icon = GUIUtilities.loadIcon( "Preferences.png" );
-        edit_btn = new JButton( edit_icon );
-        dim = new Dimension( edit_icon.getIconWidth() + ( edit_btn.getInsets().top * 2 ), edit_icon.getIconHeight() + ( edit_btn.getInsets().top * 2 ) );
-        edit_btn.setSize( dim );
-        edit_btn.setPreferredSize( dim );
-        edit_btn.setMaximumSize( dim );
-        edit_btn.setToolTipText( "Edit repository properties" );
-        edit_btn.setEnabled( false );
-        edit_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData old_data = chooser.getSelectedRepository();
-                        AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
-                        GUIUtils.center( getView(), dialog );
-                        dialog.setVisible( true );
-                        RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
-                        if ( new_data != null ) {
-                            chooser.removeRepository( old_data );
-                            chooser.save( new_data );
-                            DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
+            // add listener to trigger context menu popup
+            tree.addMouseListener( new TreeMouseListener() );
+
+            // create the context menu
+            popupMenu = createPopupMenu();
+
+            // create the control buttons -- add repository
+            Icon new_icon = GUIUtilities.loadIcon( "New.png" );
+            new_btn = new JButton( new_icon );
+            Dimension dim = new Dimension( new_icon.getIconWidth() + ( new_btn.getInsets().top * 2 ), new_icon.getIconHeight() + ( new_btn.getInsets().top * 2 ) );
+            new_btn.setSize( dim );
+            new_btn.setPreferredSize( dim );
+            new_btn.setMaximumSize( dim );
+            new_btn.setToolTipText( "Add new repository" );
+            new_btn.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
+                            GUIUtils.center( getView(), dialog );
+                            dialog.setVisible( true );
+                            RepositoryData data = dialog.getValues();
+                            if ( data == null ) {
+                                return ;     // user canceled
+                            }
+                            //String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
+                            chooser.addRepository( data );
+                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
                             action.actionPerformed( ae );
                         }
                     }
-                }
-                                  );
+                                     );
 
-        // remove repository from chooser
-        Icon remove_icon = GUIUtilities.loadIcon( "Minus.png" );
-        remove_btn = new JButton( remove_icon );
-        dim = new Dimension( remove_icon.getIconWidth() + ( remove_btn.getInsets().top * 2 ), remove_icon.getIconHeight() + ( remove_btn.getInsets().top * 2 ) );
-        remove_btn.setSize( dim );
-        remove_btn.setPreferredSize( dim );
-        remove_btn.setMaximumSize( dim );
-        remove_btn.setToolTipText( "Remove repository from browser" );
-        remove_btn.setEnabled( false );
-        remove_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData data = chooser.getSelectedRepository();
-                        if ( data != null ) {
-                            int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                            if ( delete == JOptionPane.YES_OPTION ) {
-                                chooser.removeRepository( data );
+            // edit repository properties
+            Icon edit_icon = GUIUtilities.loadIcon( "Preferences.png" );
+            edit_btn = new JButton( edit_icon );
+            dim = new Dimension( edit_icon.getIconWidth() + ( edit_btn.getInsets().top * 2 ), edit_icon.getIconHeight() + ( edit_btn.getInsets().top * 2 ) );
+            edit_btn.setSize( dim );
+            edit_btn.setPreferredSize( dim );
+            edit_btn.setMaximumSize( dim );
+            edit_btn.setToolTipText( "Edit repository properties" );
+            edit_btn.setEnabled( false );
+            edit_btn.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            RepositoryData old_data = chooser.getSelectedRepository();
+                            AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
+                            GUIUtils.center( getView(), dialog );
+                            dialog.setVisible( true );
+                            RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
+                            if ( new_data != null ) {
+                                chooser.removeRepository( old_data );
+                                chooser.save( new_data );
+                                DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
+                                tree.setModel( new DefaultTreeModel( root ) );
+                                BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
+                                action.actionPerformed( ae );
                             }
                         }
                     }
-                }
-                                    );
+                                      );
 
-        // reload tree with current selection
-        Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
-        refresh_btn = new JButton( refresh_icon );
-        dim = new Dimension( refresh_icon.getIconWidth() + ( refresh_btn.getInsets().top * 2 ), refresh_icon.getIconHeight() + ( refresh_btn.getInsets().top * 2 ) );
-        refresh_btn.setSize( dim );
-        refresh_btn.setPreferredSize( dim );
-        refresh_btn.setMaximumSize( dim );
-        refresh_btn.setToolTipText( "Refresh" );
-        refresh_btn.setEnabled( false );
-        refresh_btn.addActionListener( al );
+            // remove repository from chooser
+            Icon remove_icon = GUIUtilities.loadIcon( "Minus.png" );
+            remove_btn = new JButton( remove_icon );
+            dim = new Dimension( remove_icon.getIconWidth() + ( remove_btn.getInsets().top * 2 ), remove_icon.getIconHeight() + ( remove_btn.getInsets().top * 2 ) );
+            remove_btn.setSize( dim );
+            remove_btn.setPreferredSize( dim );
+            remove_btn.setMaximumSize( dim );
+            remove_btn.setToolTipText( "Remove repository from browser" );
+            remove_btn.setEnabled( false );
+            remove_btn.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            RepositoryData data = chooser.getSelectedRepository();
+                            if ( data != null ) {
+                                int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                                if ( delete == JOptionPane.YES_OPTION ) {
+                                    chooser.removeRepository( data );
+                                }
+                            }
+                        }
+                    }
+                                        );
 
-        // create a panel to hold the buttons
-        JPanel button_panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 1 ) );
-        button_panel.add( new_btn );
-        button_panel.add( edit_btn );
-        button_panel.add( remove_btn );
-        button_panel.add( refresh_btn );
+            // reload tree with current selection
+            Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
+            refresh_btn = new JButton( refresh_icon );
+            dim = new Dimension( refresh_icon.getIconWidth() + ( refresh_btn.getInsets().top * 2 ), refresh_icon.getIconHeight() + ( refresh_btn.getInsets().top * 2 ) );
+            refresh_btn.setSize( dim );
+            refresh_btn.setPreferredSize( dim );
+            refresh_btn.setMaximumSize( dim );
+            refresh_btn.setToolTipText( "Refresh" );
+            refresh_btn.setEnabled( false );
+            refresh_btn.addActionListener( al );
+
+            // create a panel to hold the buttons
+            button_panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 1 ) );
+            button_panel.add( new_btn );
+            button_panel.add( edit_btn );
+            button_panel.add( remove_btn );
+            button_panel.add( refresh_btn );
+        }
 
         // create a panel to hold the buttons and the repository chooser
         JPanel top_panel = new JPanel( new BorderLayout() );
-        top_panel.add( button_panel, BorderLayout.NORTH );
+        if ( full ) {
+            top_panel.add( button_panel, BorderLayout.NORTH );
+        }
         top_panel.add( chooser, BorderLayout.CENTER );
 
         // fill in the main panel
         add( top_panel, BorderLayout.NORTH );
+
+
         add( new JScrollPane( tree ), BorderLayout.CENTER );
     }
 
@@ -317,6 +336,15 @@ public class BrowseRepositoryPanel extends JPanel {
 
     public View getView() {
         return view;
+    }
+
+    public String getSelectionPath() {
+        TreePath tp = tree.getSelectionPath();
+        StringBuilder sb = new StringBuilder();
+        for ( Object part : tp.getPath() ) {
+            sb.append( part.toString() ).append( "/" );
+        }
+        return sb.toString();
     }
 
     /**
@@ -468,8 +496,8 @@ public class BrowseRepositoryPanel extends JPanel {
                                 }
                                 String url = sb.toString();
                                 paths.add( url );
-                                DirTreeNode node = (DirTreeNode)path.getLastPathComponent();
-                                if (!hasDirectory && !node.isLeaf()) {
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( !hasDirectory && !node.isLeaf() ) {
                                     hasDirectory = true;
                                 }
                             }
@@ -479,7 +507,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         data.setPathsAreURLs( true );
                         data.setUsername( username );
                         data.setPassword( password );
-                        data.setHasDirectory(hasDirectory);
+                        data.setHasDirectory( hasDirectory );
                         PropertyAction action = new PropertyAction( view, data );
                         action.actionPerformed( ae );
                     }
