@@ -45,15 +45,7 @@ public class BufferWatcher implements EBComponent {
 	}
 
 	private boolean monitored(String file) {
-		if (isInMonitoredTree(file)) {
-			System.err.println(file + " in monitored tree");
-			return true;
-		}
-		if (db.hasSourceFile(file)) {
-			System.err.println(file + " in db");
-			return true;
-		}
-		return false;
+		return (isInMonitoredTree(file) || db.hasSourceFile(file));
 	}
 
 	private boolean isInMonitoredTree(String file) {
