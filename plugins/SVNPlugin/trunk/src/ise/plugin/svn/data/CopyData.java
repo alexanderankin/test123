@@ -47,7 +47,8 @@ public class CopyData extends SVNData implements Serializable {
     private List<File> sourceFiles = null;
 
     // single source URL
-    private transient SVNURL sourceURL = null;
+    private SVNURL sourceURL = null;
+    private List<SVNURL> sourceURLs = null;
 
     // copy destination if on local filesystem
     private File destinationFile = null;
@@ -108,6 +109,13 @@ public class CopyData extends SVNData implements Serializable {
     }
     public void setSourceURL( SVNURL sourceURL ) {
         this.sourceURL = sourceURL;
+    }
+
+    public List<SVNURL> getSourceURLs() {
+        return sourceURLs;
+    }
+    public void setSourceURLs( List<SVNURL> sourceURLs ) {
+        this.sourceURLs = sourceURLs;
     }
 
     // set/get the local filesystem destination for the copy

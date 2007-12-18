@@ -47,6 +47,7 @@ import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.tmatesoft.svn.core.SVNURL;
 
 
 /**
@@ -109,11 +110,22 @@ public class CopyAction implements ActionListener {
                                 }
                             }
                         }
-                        else if ( data.getSourceURL() != null ) {
-                            Copy copy = new Copy();
-                            SVNCommitInfo result = copy.copy( data );
-                            if ( result != null ) {
-                                results.add( result );
+                        else if ( data.getSourceURLs() != null ) {
+                            for ( SVNURL url : data.getSourceURLs() ) {
+                                CopyData cd = new CopyData();
+                                cd.setSourceURL( url );
+                                if ( data.getDestinationFile() != null ) {
+                                    cd.setDestinationFile( data.getDestinationFile() );
+                                }
+                                else if ( data.getDestinationURL() != null ) {
+                                    cd.setDestinationURL( data.getDestinationURL() );
+                                }
+                                cd.setOut(data.getOut());
+                                Copy copy = new Copy();
+                                SVNCommitInfo result = copy.copy( cd );
+                                if ( result != null ) {
+                                    results.add( result );
+                                }
                             }
                         }
                     }
