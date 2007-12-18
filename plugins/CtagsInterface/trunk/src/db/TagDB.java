@@ -331,7 +331,6 @@ public class TagDB {
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
-		//System.err.println("update: " + expression);
 		Statement st = conn.createStatement();
 		try {
 			if (st.executeUpdate(expression) == -1)

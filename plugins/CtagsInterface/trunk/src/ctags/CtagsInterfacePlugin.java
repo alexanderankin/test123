@@ -242,7 +242,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		} 
 		Vector<Tag> tags = queryScopedTag(view, tag);
-		//System.err.println("Selected tag: " + tag);
 		jumpToTags(view, tags);
 	}
 

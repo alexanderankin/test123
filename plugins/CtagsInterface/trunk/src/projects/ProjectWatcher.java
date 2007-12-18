@@ -108,14 +108,12 @@ public class ProjectWatcher implements ProjectListener {
 	}
 	
 	private void watchProject(String project) {
-		System.err.println("Watch " + project);
 		VPTProject proj = ProjectManager.getInstance().getProject(project);
 		if (proj == null)
 			return;
 		proj.addProjectListener(this);
 	}
 	private void unwatchProject(String project) {
-		System.err.println("Unwatch " + project);
 		VPTProject proj = ProjectManager.getInstance().getProject(project);
 		if (proj == null)
 			return;
