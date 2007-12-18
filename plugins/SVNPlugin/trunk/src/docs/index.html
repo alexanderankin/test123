@@ -99,6 +99,40 @@ end of the URL, unless you want all the branch and tag info locally.</li>
 
 <hr/>
 <p>
+<h3>Copy, Tag, Branch</h3>
+In subversion, the copy, tag, and branch commands are actually the same thing.
+The differences are imposed by people who have used CVS for years and want the
+same functionality.  The common meaning of these terms are:
+<ul>
+<li>Copy: copy a file or directory to either a local file or directory.</li>
+<li>Tag: create a snapshot of the state of the current trunk or main branch
+of a repository.  This snapshot, by convention, is not to be modified after
+it is created.</li>
+<li>Branch: exactly the same as a tag, except the contents of the snapshot
+are intended to be modified and, depending on the branching strategy, is to
+be merged back to the trunk or branch from which it came at some time in the
+future.</li>
+</ul>
+This plugin more or less follows those conventions:
+<ul>
+<li>Copy from the ProjectViewer context menu will copy from a local, working
+copy to another local, working copy or to a remote repository.  There are
+some good reasons to copy a set of working files to a remote repository, see
+the official Subversion documentation for a few hints.</li>
+<li>Tag works only from the SVN Browser, and is intended to copy the trunk
+of a project to the 'tags' folder of the same project.</li>
+<li>Branch works like tag, except it is intended to copy the trunk of a
+project to the 'branches' folder of the same project.</li>
+</ul>
+Notice that both the tag and branch dialogs are more flexible than the above.
+You can create a branch from a branch from a branch, if that is what you need
+to do.  You can copy files to another project entirely.  Subversion is very
+flexible in this regard, and this plugin attempts to allow all the flexibility
+of Subversion.
+</p>
+
+<hr/>
+<p>
 Here's my "to do" list, which is basically to emulate the "Team" menu in
 Eclipse:
 <pre>

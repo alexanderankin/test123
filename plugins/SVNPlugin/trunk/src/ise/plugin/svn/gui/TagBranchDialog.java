@@ -51,38 +51,48 @@ import ise.plugin.svn.library.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 
-public class CopyDialog extends JDialog {
+/**
+ * Pretty much a clone of CopyDialog but with a few minor GUI changes.  This
+ * interface assumes the user wants to copy a remote url to a remote url, so
+ * only allows a single source and destination.
+ */
+public class TagBranchDialog extends JDialog {
     // instance fields
     private View view = null;
-    private List<File> toCopy = null;
-    private List<String> urlsToCopy = null;
+    private String toCopy = null;
     private JTextField path = null;
     private TableModel fileTableModel = null;
     private String defaultDestination = null;
 
-    private boolean destinationIsLocal = true;
+    private SVNURL source = null;
+    private SVNURL destination = null;
+
+    public static final int TAG_DIALOG = 1;
+    public static final int BRANCH_DIALOG = 2;
+    private int type = TAG_DIALOG;
+    public static String TAG = "Tag";
+    public static String BRANCH = "Branch";
+
     private boolean cancelled = false;
 
-    public CopyDialog( View view, List<File> files, String defaultDestination ) {
-        super( ( JFrame ) view, "Copy", true );
-        if ( files == null || files.size() == 0 ) {
+    /**
+     * @param view the parent frame
+     * @param type one of TAG_DIALOG or BRANCH_DIALOG
+     * @param url remote repository url to copy from
+     * @param defaultDestination a destination to use by default, can be null or empty
+     */
+    public TagBranchDialog( View view, int type, String url, String defaultDestination ) {
+        super( ( JFrame ) view, type == TAG_DIALOG ? TAG : BRANCH, true );
+        if ( url == null || url.length() == 0 ) {
             throw new IllegalArgumentException( "no source file(s) to copy" );
         }
-        this.view = view;
-        this.toCopy = files;
-        this.defaultDestination = defaultDestination == null ? "" : defaultDestination;
-        init();
-    }
-
-    public CopyDialog( View view, String defaultDestination, List<String> urls ) {
-        super( ( JFrame ) view, "Copy", true );
-        if ( urls == null || urls.size() == 0 ) {
-            throw new IllegalArgumentException( "no source url(s) to copy" );
+        if ( type != TAG_DIALOG && type != BRANCH_DIALOG ) {
+            throw new IllegalArgumentException( "invalid type value: " + type );
         }
         this.view = view;
-        this.urlsToCopy = urls;
+        this.type = type;
+        this.toCopy = url;
         this.defaultDestination = defaultDestination == null ? "" : defaultDestination;
-        destinationIsLocal = false;
         init();
     }
 
@@ -91,64 +101,19 @@ public class CopyDialog extends JDialog {
         JPanel panel = new JPanel( layout );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        JLabel to_copy_label = null;
-        if ( toCopy != null ) {
-            to_copy_label = new JLabel( "Copy " + ( toCopy.size() == 1 ? "this file:" : "these files:" ) );
-        }
-        else {
-            to_copy_label = new JLabel( "Copy " + ( urlsToCopy.size() == 1 ? "this URL:" : "these URLs:" ) );
-        }
-
-        // 2 column table, column 0 is list of filenames/directory names,
-        // column 1 is boolean to set recursive on directories
+        JLabel to_copy_label = new JLabel( type == TAG_DIALOG ? TAG : BRANCH + " this file:" );
         JTable file_table = new JTable();
 
         // create table model
-        fileTableModel = new DefaultTableModel( new String[] {
-                    ( toCopy != null ? "File" : "URL" )
-                }
-                , toCopy != null ? toCopy.size() : urlsToCopy.size() ) ;
-
-        // fill table model.  If directory, add a checkbox defaulting to checked
-        // indicating the copy should recursively copy the directory.
-        if ( toCopy != null ) {
-            for ( int row = 0; row < toCopy.size(); row++ ) {
-                File file = toCopy.get( row );
-                fileTableModel.setValueAt( file.getAbsolutePath(), row, 0 );
-            }
-        }
-        else {
-            for ( int row = 0; row < urlsToCopy.size(); row++ ) {
-                String url = urlsToCopy.get( row );
-                fileTableModel.setValueAt( url, row, 0 );
-            }
-        }
+        fileTableModel = new DefaultTableModel( new String[] {"Source"}, 1 ) ;
+        fileTableModel.setValueAt( toCopy, 0, 0 );
         file_table.setModel( fileTableModel );
         file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
 
 
-        // local destination directory.  TODO: need to be able to set remote url
+        // destination
         JLabel path_label = new JLabel( "To this location:" );
         path = new JTextField( defaultDestination , 30 );
-        JButton browse_local_btn = new JButton( "Browse Local..." );
-        browse_local_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultDestination, toCopy == null ? VFSBrowser.OPEN_DIALOG : toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
-                        if ( dirs != null && dirs.length > 0 ) {
-                            String filename = dirs[ 0 ];
-                            File f = new File( filename );
-                            if ( f.exists() && f.isFile() ) {
-                                int overwrite = JOptionPane.showConfirmDialog( view, "File exists, okay to overwrite?", "File exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                                if ( overwrite == JOptionPane.NO_OPTION ) {
-                                    return ;
-                                }
-                            }
-                            path.setText( f.getAbsolutePath() );
-                            destinationIsLocal = true;
-                        }
-                    }
-                }
-                                          );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
             new ActionListener() {
@@ -170,7 +135,6 @@ public class CopyDialog extends JDialog {
                                 dialog.dispose();
                                 if ( selection != null && selection.length() > 0 ) {
                                     path.setText( selection );
-                                    destinationIsLocal = false;
                                 }
                             }
                         }
@@ -209,13 +173,23 @@ public class CopyDialog extends JDialog {
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( CopyDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
-                            return ;
+                        try {
+                            source = SVNURL.parseURIDecoded( toCopy );
+                        }
+                        catch ( Exception e ) {
+                            JOptionPane.showMessageDialog(TagBranchDialog.this, "Source URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        try {
+                            destination = SVNURL.parseURIDecoded( path.getText() );
+                        }
+                        catch ( Exception e ) {
+                            JOptionPane.showMessageDialog(TagBranchDialog.this, "Destination URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
                         cancelled = false;
-                        CopyDialog.this.setVisible( false );
-                        CopyDialog.this.dispose();
+                        TagBranchDialog.this.setVisible( false );
+                        TagBranchDialog.this.dispose();
                     }
                 }
                                 );
@@ -223,8 +197,8 @@ public class CopyDialog extends JDialog {
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         cancelled = true;
-                        CopyDialog.this.setVisible( false );
-                        CopyDialog.this.dispose();
+                        TagBranchDialog.this.setVisible( false );
+                        TagBranchDialog.this.dispose();
                     }
                 }
                                     );
@@ -233,16 +207,14 @@ public class CopyDialog extends JDialog {
         // add the components to the option panel
         panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 200 ) );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 50 ) );
         panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
 
         panel.add( "0, 3, 1, 1, W,  , 3", path_label );
         panel.add( "0, 4, 8, 1, 0, w, 3", path );
-        panel.add( "0, 5, 1, 1, 0, w, 3", browse_local_btn );
-        panel.add( "1, 5, 1, 1, 0, w, 3", browse_remote_btn );
-        layout.makeColumnsSameWidth( 0, 1 );
+        panel.add( "0, 5, 1, 1, 0, w, 3", browse_remote_btn );
 
         panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
         panel.add( "0, 7, 8, 1, E,  , 0", btn_panel );
@@ -257,42 +229,8 @@ public class CopyDialog extends JDialog {
             return null;
         }
         CopyData cd = new CopyData();
-        if ( toCopy != null ) {
-            List<File> files = new ArrayList<File>();
-            for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
-                String filename = ( String ) fileTableModel.getValueAt( row, 0 );
-                files.add( new File( filename ) );
-            }
-
-            cd.setSourceFiles( files );
-        }
-        else {
-            List<SVNURL> urls = new ArrayList<SVNURL>();
-            for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
-                String url = ( String ) fileTableModel.getValueAt( row, 0 );
-                try {
-                    SVNURL source = SVNURL.parseURIDecoded( url );
-                    urls.add( source );
-                }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-            }
-
-            cd.setSourceURLs( urls );
-        }
-
-        if ( destinationIsLocal ) {
-            cd.setDestinationFile( new File( path.getText() ) );
-        }
-        else {
-            try {
-                cd.setDestinationURL( SVNURL.parseURIDecoded( path.getText() ) );
-            }
-            catch ( Exception e ) {
-                e.printStackTrace();
-            }
-        }
+        cd.setSourceURL( source );
+        cd.setDestinationURL( destination );
         return cd;
     }
 }

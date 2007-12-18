@@ -67,7 +67,7 @@ public class CopyActor extends NodeActor {
             CopyDialog dialog = new CopyDialog( view, files, default_destination );
             GUIUtils.center(view, dialog);
             dialog.setVisible( true );
-            final CopyData data = dialog.getData();
+            CopyData data = dialog.getData();
             if ( data == null ) {
                 return ;     // user canceled
             }

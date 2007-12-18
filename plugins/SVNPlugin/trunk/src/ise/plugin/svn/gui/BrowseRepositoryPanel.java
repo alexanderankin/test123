@@ -45,12 +45,15 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
-import ise.plugin.svn.data.RepositoryData;
+import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.PropertyData;
+import ise.plugin.svn.data.RepositoryData;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.CopyDialog;
 import ise.plugin.svn.gui.RepositoryComboBox;
 import ise.plugin.svn.gui.RevisionDialog;
+import ise.plugin.svn.gui.TagBranchDialog;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
@@ -510,6 +513,153 @@ public class BrowseRepositoryPanel extends JPanel {
                         data.setHasDirectory( hasDirectory );
                         PropertyAction action = new PropertyAction( view, data );
                         action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        pm.addSeparator();
+
+        mi = new JMenuItem( "Copy" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        boolean hasDirectory = false;
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( !hasDirectory && !node.isLeaf() ) {
+                                    hasDirectory = true;
+                                }
+                            }
+                        }
+                        CopyDialog dialog = new CopyDialog( view, null, paths );
+                        GUIUtils.center( view, dialog );
+                        dialog.setVisible( true );
+                        CopyData data = dialog.getData();
+                        if ( data == null ) {
+                            return ;     // user canceled
+                        }
+
+                        if ( username != null && password != null ) {
+                            data.setUsername( username );
+                            data.setPassword( password );
+                        }
+
+                        CopyAction action = new CopyAction( view, data );
+                        action.actionPerformed( null );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Tag" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        String url = null;
+                        String defaultDestination = null;
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                StringBuilder sb2 = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                sb2.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                for ( int i = 1; i < parts.length - 1; i++ ) {
+                                    sb2.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                                defaultDestination = sb2.toString() + "/tags";
+                                break;
+                            }
+                        }
+
+                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.TAG_DIALOG, url, defaultDestination );
+                        GUIUtils.center( view, dialog );
+                        dialog.setVisible( true );
+                        CopyData cd = dialog.getData();
+                        if ( cd != null ) {
+                            if ( username != null && password != null ) {
+                                cd.setUsername( username );
+                                cd.setPassword( password );
+                            }
+
+                            CopyAction action = new CopyAction( view, cd );
+                            action.actionPerformed( null );
+                        }
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Branch" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        String url = null;
+                        String defaultDestination = null;
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                StringBuilder sb2 = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                sb2.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                for ( int i = 1; i < parts.length - 1; i++ ) {
+                                    sb2.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                                defaultDestination = sb2.toString() + "/branches";
+                                break;
+                            }
+                        }
+
+                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.BRANCH_DIALOG, url, defaultDestination );
+                        GUIUtils.center( view, dialog );
+                        dialog.setVisible( true );
+                        CopyData cd = dialog.getData();
+                        if ( cd != null ) {
+                            if ( username != null && password != null ) {
+                                cd.setUsername( username );
+                                cd.setPassword( password );
+                            }
+
+                            CopyAction action = new CopyAction( view, cd );
+                            action.actionPerformed( null );
+                        }
                     }
                 }
                             );
