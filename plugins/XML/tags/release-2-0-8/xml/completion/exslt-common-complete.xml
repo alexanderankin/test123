@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+<dtd>
+      <element-list>
+            <element name="document" content="">
+                  <attribute name="href" type="CDATA" required="true" />
+                  <attribute name="method" type="(xml|html|text)" />
+                  <attribute name="version" type="NMTOKEN" />
+                  <attribute name="encoding" type="CDATA" />
+                  <attribute name="omit-xml-declaration" type="(yes|no)" />
+                  <attribute name="standalone" type="(yes|no)" />
+                  <attribute name="doctype-public" type="CDATA" />
+                  <attribute name="doctype-system" type="CDATA" />
+                  <attribute name="cdata-section-elements" type="CDATA" />
+                  <attribute name="indent" type="(yes|no)" />
+                  <attribute name="media-type" type="CDATA" />
+            </element>
+      </element-list>
+</dtd>
