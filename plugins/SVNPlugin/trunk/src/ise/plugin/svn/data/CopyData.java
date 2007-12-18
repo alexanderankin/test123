@@ -44,7 +44,7 @@ public class CopyData extends SVNData implements Serializable {
     private File sourceFile = null;
 
     // multiple files
-    private Map<File, Boolean> sourceFiles = null;
+    private List<File> sourceFiles = null;
 
     // single source URL
     private transient SVNURL sourceURL = null;
@@ -83,6 +83,9 @@ public class CopyData extends SVNData implements Serializable {
 
     // set/get single source file to copy
     public File getSourceFile() {
+        if (sourceFiles != null) {
+            return sourceFiles.get(0);
+        }
         return sourceFile;
     }
     public void setSourceFile( File sourceFile ) {
@@ -92,10 +95,10 @@ public class CopyData extends SVNData implements Serializable {
     // Set/get filenames for copying multiple files to the destination.
     // @param files Map of filename to recursive, recursive is a boolean, always
     // false for files, could be true for directories.
-    public void setSourceFiles(Map<File, Boolean> files) {
+    public void setSourceFiles(List<File> files) {
         sourceFiles = files;
     }
-    public Map<File, Boolean> getSourceFiles() {
+    public List<File> getSourceFiles() {
         return sourceFiles;
     }
 

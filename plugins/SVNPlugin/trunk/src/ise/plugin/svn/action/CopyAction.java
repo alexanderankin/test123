@@ -92,10 +92,9 @@ public class CopyAction implements ActionListener {
                     try {
                         List<SVNCommitInfo> results = new ArrayList<SVNCommitInfo>();
                         if ( data.getSourceFiles() != null ) {
-                            Set<Map.Entry<File, Boolean>> set = data.getSourceFiles().entrySet();
-                            for ( Map.Entry<File, Boolean> me : set ) {
+                            for ( File file : data.getSourceFiles() ) {
                                 CopyData cd = new CopyData();
-                                cd.setSourceFile( me.getKey() );
+                                cd.setSourceFile( file );
                                 if ( data.getDestinationFile() != null ) {
                                     cd.setDestinationFile( data.getDestinationFile() );
                                 }
