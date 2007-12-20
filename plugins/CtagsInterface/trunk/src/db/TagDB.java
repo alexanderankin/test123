@@ -172,19 +172,8 @@ public class TagDB {
 		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
 		return q;
 	}
-	// Runs a query for the specified tag name
-	public ResultSet queryTag(String tag) throws SQLException {
-		Query q = new Query();
-		q.addColumn(field(TAGS_TABLE, "*"));
-		q.addColumn(field(FILES_TABLE, FILES_NAME));
-		q.addTable(TAGS_TABLE);
-		q.addTable(FILES_TABLE);
-		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
-		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
-		return query(q);
-	}
-	// Runs a query for the specified tag name in the specified project
-	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
+	// Returns a query for a tag name in a specified project
+	private Query getTagInProjectQuery(String tag, String project) {
 		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, ORIGINS_NAME + "=" +
 			quote(project));
 		projectQuery.addCondition(ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN));
@@ -204,10 +193,17 @@ public class TagDB {
 		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
 		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
 		q.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
-		
+		return q;
+	}
+	// Runs a query for the specified tag name
+	public ResultSet queryTag(String tag) throws SQLException {
+		return query(getTagNameQuery(tag));
+	}
+	// Runs a query for the specified tag name in the specified project
+	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
+		Query q = getTagInProjectQuery(tag, project);
 		return query(q);
 	}
-
 	// Returns the ID of an origin
 	public int getOriginID(String type, String name) {
 		return queryInteger(ORIGINS_ID, "SELECT " + ORIGINS_ID + " FROM " + ORIGINS_TABLE +
