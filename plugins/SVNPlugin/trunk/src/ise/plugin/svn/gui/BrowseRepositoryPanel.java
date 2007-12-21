@@ -589,6 +589,9 @@ public class BrowseRepositoryPanel extends JPanel {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 for ( int i = 1; i < parts.length - 1; i++ ) {
+                                    if ( parts[ i ].toString().equals( "branches" ) ) {
+                                        continue;
+                                    }
                                     sb2.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 url = sb.toString();

@@ -127,7 +127,7 @@ public class CopyDialog extends JDialog {
         file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
 
 
-        // local destination directory.  TODO: need to be able to set remote url
+        // local destination directory.
         JLabel path_label = new JLabel( "To this location:" );
         path = new JTextField( defaultDestination , 30 );
         JButton browse_local_btn = new JButton( "Browse Local..." );
@@ -233,7 +233,7 @@ public class CopyDialog extends JDialog {
         // add the components to the option panel
         panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 200 ) );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 100 ) );
         panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );

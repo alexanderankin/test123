@@ -84,7 +84,11 @@ public class Copy {
         File destinationFile = data.getDestinationFile();
         SVNURL sourceURL = data.getSourceURL();
         SVNURL destinationURL = data.getDestinationURL();
-        SVNCommitInfo results = null;
+        SVNCommitInfo results = SVNCommitInfo.NULL;
+        System.out.println("+++++ sourceFile = " + sourceFile);
+        System.out.println("+++++ destinationFile = " + destinationFile);
+        System.out.println("+++++ sourceURL = " + sourceURL);
+        System.out.println("+++++ destinationURL = " + destinationURL);
 
         if (sourceFile != null && destinationFile != null) {
             // copy working copy to working copy, this is a local copy or move
@@ -92,6 +96,7 @@ public class Copy {
             if (revision == null) {
                 revision = SVNRevision.WORKING;
             }
+            // no message on local copy
             client.doCopy(sourceFile, revision, destinationFile, data.getForce(), data.getIsMove());
         }
         else if (sourceFile != null && destinationURL != null) {
@@ -120,6 +125,8 @@ public class Copy {
             if (revision == null) {
                 revision = SVNRevision.WORKING;
             }
+            // no message on copy to local
+            System.out.println("+++++ copying " + sourceURL + " to " + destinationFile);
             client.doCopy(sourceURL, revision, destinationFile);
         }
         else {
