@@ -80,9 +80,14 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
+        <!--
+        <exec executable="/usr/bin/javac">
+            <arg value="-version"/>
+        </exec>
+        -->
         <javac deprecation="on"
                 debug="on"
-                nowarn="on"
+                nowarn="off"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
                 target="1.5"
@@ -231,7 +236,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.gui.PropertiesPanel">
+        <java classname="ise.plugin.svn.gui.CopyDialog">
             <classpath refid="classpathref" />
         </java>
     </target>
