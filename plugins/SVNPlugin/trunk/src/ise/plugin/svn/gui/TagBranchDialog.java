@@ -63,6 +63,8 @@ public class TagBranchDialog extends JDialog {
     private JTextField path = null;
     private TableModel fileTableModel = null;
     private String defaultDestination = null;
+    private JTextArea comment = null;
+    private PropertyComboBox commentList = null;
 
     private SVNURL source = null;
     private SVNURL destination = null;
@@ -162,6 +164,24 @@ public class TagBranchDialog extends JDialog {
             }
         );
 
+        JLabel comment_label = new JLabel( "Enter comment for this commit:" );
+        comment = new JTextArea( 5, 50 );
+        comment.setLineWrap( true );
+        comment.setWrapStyleWord( true );
+
+        // list for previous comments
+        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList.setEditable( false );
+        commentList.addItemListener( new ItemListener() {
+                    public void itemStateChanged( ItemEvent e ) {
+                        if ( PropertyComboBox.SELECT.equals( commentList.getSelectedItem().toString() ) ) {
+                            return ;
+                        }
+                        comment.setText( commentList.getSelectedItem().toString() );
+                    }
+                }
+                                   );
+
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -177,15 +197,15 @@ public class TagBranchDialog extends JDialog {
                             source = SVNURL.parseURIDecoded( toCopy );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog(TagBranchDialog.this, "Source URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, "Source URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
                         }
                         try {
                             destination = SVNURL.parseURIDecoded( path.getText() );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog(TagBranchDialog.this, "Destination URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, "Destination URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
                         }
                         cancelled = false;
                         TagBranchDialog.this.setVisible( false );
@@ -210,14 +230,25 @@ public class TagBranchDialog extends JDialog {
         file_scroller.getViewport().setPreferredSize( new Dimension( 600, 50 ) );
         panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
 
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
         panel.add( "0, 3, 1, 1, W,  , 3", path_label );
         panel.add( "0, 4, 8, 1, 0, w, 3", path );
         panel.add( "0, 5, 1, 1, 0, w, 3", browse_remote_btn );
 
-        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 7, 8, 1, E,  , 0", btn_panel );
+        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 7, 8, 1, W,  , 3", comment_label );
+        panel.add( "0, 8, 8, 1, W, wh, 3", new JScrollPane( comment ) );
+
+        if ( commentList != null && commentList.getModel().getSize() > 0 ) {
+            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
+            panel.add( "0, 9, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 10, 8, 1, W, w, 3", commentList );
+        }
+        panel.add( "0, 11, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 13, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -230,9 +261,19 @@ public class TagBranchDialog extends JDialog {
         }
         CopyData cd = new CopyData();
         List<SVNURL> urls = new ArrayList<SVNURL>();
-        urls.add(source);
+        urls.add( source );
         cd.setSourceURLs( urls );
         cd.setDestinationURL( destination );
+        String msg = comment.getText();
+        if ( msg == null || msg.length() == 0 ) {
+            msg = "no comment";
+        }
+        else {
+            if ( commentList != null ) {
+                commentList.addValue( msg );
+            }
+        }
+        cd.setMessage( msg );
         return cd;
     }
 }

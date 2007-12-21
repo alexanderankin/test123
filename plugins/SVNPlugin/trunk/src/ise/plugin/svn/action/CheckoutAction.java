@@ -70,6 +70,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.view = view;
+        this.cd = data;
     }
 
     public void propertyChange( PropertyChangeEvent pce ) {

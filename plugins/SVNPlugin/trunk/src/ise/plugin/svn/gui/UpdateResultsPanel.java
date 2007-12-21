@@ -76,29 +76,33 @@ public class UpdateResultsPanel extends JPanel {
 
         List<String> list = results.getConflictedFiles();
         if ( list != null ) {
+            int size = list.size();
             ++con.y;
-            add( createPanel( "Files with conflicts:", list ), con );
+            add( createPanel( size +  " file" + (size != 1 ? "s" : "") + " with conflicts:", list ), con );
             added = true;
         }
 
         list = results.getUpdatedFiles();
         if ( list != null ) {
+            int size = list.size();
             ++con.y;
-            add( createPanel( "Updated files:", list ), con );
+            add( createPanel( "Updated " + size + " file" + (size != 1 ? "s" : "") + ":", list ), con );
             added = true;
         }
 
         list = results.getAddedFiles();
         if ( list != null ) {
+            int size = list.size();
             ++con.y;
-            add( createPanel( "Added files:", list ), con );
+            add( createPanel( "Added " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
             added = true;
         }
 
         list = results.getDeletedFiles();
         if ( list != null ) {
+            int size = list.size();
             ++con.y;
-            add( createPanel( "Deleted files:", list ), con );
+            add( createPanel( "Deleted " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
             added = true;
         }
 
