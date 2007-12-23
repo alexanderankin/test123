@@ -85,10 +85,6 @@ public class Copy {
         SVNURL sourceURL = data.getSourceURL();
         SVNURL destinationURL = data.getDestinationURL();
         SVNCommitInfo results = SVNCommitInfo.NULL;
-        System.out.println("+++++ sourceFile = " + sourceFile);
-        System.out.println("+++++ destinationFile = " + destinationFile);
-        System.out.println("+++++ sourceURL = " + sourceURL);
-        System.out.println("+++++ destinationURL = " + destinationURL);
 
         if (sourceFile != null && destinationFile != null) {
             // copy working copy to working copy, this is a local copy or move
