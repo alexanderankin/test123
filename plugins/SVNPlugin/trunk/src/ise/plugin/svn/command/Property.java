@@ -242,14 +242,14 @@ public class Property {
         }
 
         public void handleProperty( SVNURL url, SVNPropertyData property ) {
-            String key = path;
+            String key = url.toString();
             Properties prop = ( Properties ) results.get( key );
             if ( prop == null ) {
                 prop = new Properties();
                 results.put( key, prop );
             }
             prop.setProperty( property.getName(), property.getValue() );
-            out.println( "U " + path + ": " + property.getName() + " = " + property.getValue() );
+            out.println( "U " + key + ": " + property.getName() + " = " + property.getValue() );
         }
 
         public String getPath() {
