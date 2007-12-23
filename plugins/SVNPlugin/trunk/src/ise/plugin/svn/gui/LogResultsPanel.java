@@ -187,66 +187,23 @@ public class LogResultsPanel extends JPanel {
         }
     }
 
-    public static class LogTable extends JTable {
+    /**
+     * Extends JTable to add a path name associated with the table.
+     */
+    public static class LogTable extends BestRowTable {
+
         private String path = null;
-        public LogTable( Object[][] data, Object[] columnNames ) {
-            super( data, columnNames );
+
+        public LogTable( String[][] rowData, String[] columnNames ) {
+            super( rowData, columnNames );
         }
+
         public void setPath( String path ) {
             LogTable.this.path = path;
         }
 
         public String getPath() {
             return LogTable.this.path;
-        }
-
-        public void doLayout() {
-            super.doLayout();
-            packRows();
-        }
-
-        /**
-         * @return the preferred height of a row.  JTable doesn't provide this.
-         * The returned value is equal to the tallest preferred height of the cells
-         * cells in the row.
-         */
-        public int getPreferredRowHeight( int row, int margin ) {
-            int height = 1;
-
-            // determine tallest cell in the row
-            for ( int column = 0; column < getColumnCount(); column++ ) {
-                TableCellRenderer renderer = getCellRenderer( row, column );
-                Component comp = prepareRenderer( renderer, row, column );
-                int preferred = comp.getPreferredSize().height + ( 2 * margin );
-                height = Math.max( height, preferred );
-            }
-            return height;
-        }
-
-        /**
-         * Display the table using the preferred height of each row and margin
-         * size of 1.
-         */
-        public void packRows() {
-            packRows( 1 );
-        }
-
-        /**
-         * Display the table using the preferred height of each row adding the
-         * specified margin within each cell.
-         */
-        public void packRows( int margin ) {
-            packRows( 0, getRowCount(), margin );
-        }
-
-        /**
-         * Adjust the heights of a range of rows.
-         */
-        public void packRows( int start, int end, int margin ) {
-            for ( int row = 0; row < getRowCount(); row++ ) {
-                int height = getPreferredRowHeight( row, margin );
-                setRowHeight( row, height );
-            }
         }
     }
 
@@ -353,8 +310,8 @@ public class LogResultsPanel extends JPanel {
                                     GUIUtils.center( view, dialog );
                                     dialog.setVisible( true );
                                     SVNData data = dialog.getData();
-                                    if (data == null) {
-                                        return;     // null means user canceled
+                                    if ( data == null ) {
+                                        return ;     // null means user canceled
                                     }
 
                                     // get the repository url and filename of the file to recover
