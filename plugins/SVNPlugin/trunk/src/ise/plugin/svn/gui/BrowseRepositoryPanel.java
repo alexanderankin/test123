@@ -124,7 +124,7 @@ public class BrowseRepositoryPanel extends JPanel {
         // the repository tree.  This is lazy loaded.
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
         tree.setCellRenderer( new CellRenderer() );
-        tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+        tree.getSelectionModel().setSelectionMode( TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
         ToolTipManager.sharedInstance().registerComponent( tree );
 
         // on expansion, call the repository and fetch the children
@@ -663,6 +663,33 @@ public class BrowseRepositoryPanel extends JPanel {
                             CopyAction action = new CopyAction( view, cd );
                             action.actionPerformed( null );
                         }
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Delete" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        DeleteAction action = new DeleteAction( view, paths, username, password );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
