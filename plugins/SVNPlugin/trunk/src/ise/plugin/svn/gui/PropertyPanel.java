@@ -99,6 +99,16 @@ public class PropertyPanel extends JPanel {
 
         // main panel
         JPanel properties_panel = new JPanel( new LambdaLayout() );
+        //properties_panel.setLayout( new BoxLayout( properties_panel, BoxLayout.Y_AXIS ) );
+        LambdaLayout.Constraints con = LambdaLayout.createConstraint();
+        con.x = 0;
+        con.y = 0;
+        con.w = 1;
+        con.h = 1;
+        con.a = LambdaLayout.W;
+        con.s = "w";
+        con.p = 3;
+
 
         // create sub-panels, one per file found in results
         Set < Map.Entry < String, Properties >> result_set = results.entrySet();
@@ -107,7 +117,7 @@ public class PropertyPanel extends JPanel {
             // fetch the properties and load them into a table
             final String filename = result.getKey();
             Properties props = result.getValue();
-            final JTable props_table = new JTable( );
+            final BestRowTable props_table = new BestRowTable( );
 
             // declare buttons here so table action listeners can react
             final JButton add_btn = new JButton( "Add" );
@@ -133,9 +143,7 @@ public class PropertyPanel extends JPanel {
                     }
                                                    );
 
-            // file the table
-            // crud. Properties should genericize to <String, String>, or at
-            // least <String, Object>.
+            // fill the table
             Set < Map.Entry < Object, Object >> entrySet = props.entrySet();
             int i = 0;
             for ( Map.Entry<Object, Object> me : entrySet ) {
@@ -149,6 +157,9 @@ public class PropertyPanel extends JPanel {
                 ++i;
             }
 
+            TableColumn column1 = props_table.getColumnModel().getColumn( 1 );  // property value
+            column1.setCellRenderer( new BestRowTable.ValueCellRenderer() );
+
             // add a mouse listener for the popup
             props_table.addMouseListener( new TableCellViewer( props_table ) );
 
@@ -157,7 +168,8 @@ public class PropertyPanel extends JPanel {
             panel.setBorder( new CompoundBorder( new EtchedBorder(), new EmptyBorder( 3, 3, 3, 3 ) ) );
             JLabel filename_label = new JLabel( "Properties for: " + filename, JLabel.LEFT );
             panel.add( filename_label, "0, 0, 1, 1, W, w, 3" );
-            panel.add( GUIUtils.createTablePanel( props_table ), "0, 1, 1, 1, 0, wh, 3" );
+            props_table.packRows();
+            panel.add(GUIUtils.createTablePanel(props_table), "0, 1, 1, 1, 0, wh, 3");
 
             // set up the add, edit, and delete buttons if for working copy
             if ( !originalData.getRemote() ) {
@@ -272,7 +284,8 @@ public class PropertyPanel extends JPanel {
                 panel.add( btn_panel, "0, 2, 1, 1, E, 0, 3" );
             }
 
-            properties_panel.add( panel, "0, " + row + ", 1, 1, W, w, 0" );
+            properties_panel.add( panel, con );
+            ++con.y;
             ++row;
         }
 
