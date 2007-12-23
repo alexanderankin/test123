@@ -66,7 +66,7 @@ public class DeleteAction implements ActionListener {
 
     /**
      * @param view the View in which to display results
-     * @param paths a list of paths to be added
+     * @param paths a list of paths to be deleted
      * @param username the username for the svn repository
      * @param password the password for the username
      */

@@ -36,6 +36,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -46,6 +47,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
@@ -99,15 +101,35 @@ public class AddDialog extends JDialog {
         addData.setRecursive(recursive);
 
         JLabel file_label = new JLabel("Adding these files:");
-        final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
-        file_panel.setBackground(Color.WHITE);
-        file_panel.setBorder(new EmptyBorder(3, 3, 3, 3));
-        for(String path : paths) {
-            JCheckBox cb = new JCheckBox(path);
-            cb.setSelected(true);
-            cb.setBackground(Color.WHITE);
-            file_panel.add(cb);
+        JTable file_table = new JTable();
+        //file_table.setFillsViewportHeight(true);  // java 1.6
+        final DefaultTableModel file_table_model = new DefaultTableModel(
+                    new String[] {
+                        "", "File"
+                    }, paths.size() ) {
+                    public Class getColumnClass( int index ) {
+                        if ( index == 0 ) {
+                            return Boolean.class;
+                        }
+                        else {
+                            return super.getColumnClass( index );
+                        }
+
+                    }
+                };
+        file_table.setModel( file_table_model );
+
+        // load the table model
+        int i = 0;
+        for ( String path : paths ) {
+            if (path != null) {
+                file_table_model.setValueAt( true, i, 0 );
+                file_table_model.setValueAt( path, i, 1 );
+                ++i;
+            }
         }
+        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
+        file_table.getColumnModel().getColumn(1).setPreferredWidth(575);
 
         final JCheckBox recursive_cb = new JCheckBox("Recursively add?");
         recursive_cb.setSelected(recursive);
@@ -130,20 +152,21 @@ public class AddDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // get the paths
                         List<String> paths = new ArrayList<String>();
-                        Component[] files = file_panel.getComponents();
-                        for (Component file : files) {
-                            JCheckBox cb = (JCheckBox)file;
-                            if (cb.isSelected()) {
-                                paths.add(cb.getText());
+                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
+                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
+                            if (selected) {
+                                paths.add((String)file_table_model.getValueAt(row, 1));
                             }
                         }
+
                         if (paths.size() == 0) {
-                            // nothing to commit, bail out
+                            // nothing to add, bail out
                             addData = null;
                         }
                         else {
                             addData.setPaths(paths);
                         }
+
                         AddDialog.this.setVisible( false );
                         AddDialog.this.dispose();
                     }
@@ -161,7 +184,7 @@ public class AddDialog extends JDialog {
 
         // add the components to the option panel
         panel.add( "0, 0, 1, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_panel ) );
+        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_table ) );
         panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true));
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
