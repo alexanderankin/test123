@@ -189,16 +189,20 @@ public class DiffAction implements ActionListener {
                         SVNURL url = info.getRepositoryRootURL();
                         String svn_path = info.getPath();
 
-                        // check if same already
-                        // TODO: also check if properties are different
                         BrowseRepository br = new BrowseRepository();
+
+                        /*
+                        // check if same already
+                        // TODO: the check below is lame, so I took it out.  Just checking revision numbers isn't always
+                        // the right thing to do. Use the svnkit diff client here.
+                        // TODO: also check if properties are different
                         long rev1 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword());
                         long rev2 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword());
                         if ( rev1 == rev2 ) {
                             JOptionPane.showMessageDialog( view, "There is no difference between the local copy and the repository copy of \n" + svn_path, "No Difference", JOptionPane.INFORMATION_MESSAGE );
-                            return ;
+                            return;
                         }
-
+                        */
 
                         // there should always be one remote revision to fetch for diffing against a working copy
                         // or for diffing against another revision
