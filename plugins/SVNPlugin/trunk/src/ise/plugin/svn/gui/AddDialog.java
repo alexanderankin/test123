@@ -31,6 +31,7 @@ package ise.plugin.svn.gui;
 // imports
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
@@ -89,18 +90,18 @@ public class AddDialog extends JDialog {
         List<String> paths = new ArrayList<String>();
         for ( String node : nodes ) {
             if ( node != null ) {
-                File file = new File(node);
+                File file = new File( node );
                 if ( file.isDirectory() ) {
                     recursive = true;
                 }
-                paths.add(node);
+                paths.add( node );
             }
         }
-        addData.setPaths(paths);
-        addData.setRecursive(recursive);
+        addData.setPaths( paths );
+        addData.setRecursive( recursive );
 
-        JLabel file_label = new JLabel("Adding these files:");
-        JTable file_table = new JTable();
+        JLabel file_label = new JLabel( "Adding these files:" );
+        BestRowTable file_table = new BestRowTable();
         //file_table.setFillsViewportHeight(true);  // java 1.6
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
@@ -121,22 +122,24 @@ public class AddDialog extends JDialog {
         // load the table model
         int i = 0;
         for ( String path : paths ) {
-            if (path != null) {
+            if ( path != null ) {
                 file_table_model.setValueAt( true, i, 0 );
                 file_table_model.setValueAt( path, i, 1 );
                 ++i;
             }
         }
-        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
-        file_table.getColumnModel().getColumn(1).setPreferredWidth(575);
+        file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
+        file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 625 );
+        file_table.packRows();
 
-        final JCheckBox recursive_cb = new JCheckBox("Recursively add?");
-        recursive_cb.setSelected(recursive);
-        recursive_cb.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ae) {
-                    addData.setRecursive(recursive_cb.isSelected());
+        final JCheckBox recursive_cb = new JCheckBox( "Recursively add?" );
+        recursive_cb.setSelected( recursive );
+        recursive_cb.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        addData.setRecursive( recursive_cb.isSelected() );
+                    }
                 }
-        });
+                                      );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -151,19 +154,19 @@ public class AddDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // get the paths
                         List<String> paths = new ArrayList<String>();
-                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
-                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
-                            if (selected) {
-                                paths.add((String)file_table_model.getValueAt(row, 1));
+                        for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
+                            Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
+                            if ( selected ) {
+                                paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
                             }
                         }
 
-                        if (paths.size() == 0) {
+                        if ( paths.size() == 0 ) {
                             // nothing to add, bail out
                             addData = null;
                         }
                         else {
-                            addData.setPaths(paths);
+                            addData.setPaths( paths );
                         }
 
                         AddDialog.this.setVisible( false );
@@ -182,14 +185,17 @@ public class AddDialog extends JDialog {
                                     );
 
         // add the components to the option panel
+        JScrollPane file_scroller = new JScrollPane( file_table );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 250 ) ) );
+
         panel.add( "0, 0, 1, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_table ) );
-        panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true));
+        panel.add( "0, 1, 1, 1, W, wh, 3", file_scroller );
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
-        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-
+        if ( recursive ) {
+            panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
+            panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        }
         panel.add( "0, 5, 1, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
