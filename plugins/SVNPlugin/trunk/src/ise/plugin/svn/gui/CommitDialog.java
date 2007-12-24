@@ -114,16 +114,16 @@ public class CommitDialog extends JDialog {
         boolean recursive = false;
         List<String> paths = new ArrayList<String>();
         int i = 0;
-        Set < Map.Entry<String, String >> set = nodes.entrySet();
+        Set < Map.Entry < String, String >> set = nodes.entrySet();
         for ( Map.Entry<String, String> me : set ) {
             String path = me.getKey();
             String status = me.getValue() == null ? "" : me.getValue();
-            if (path != null) {
-                File file = new File(path);
-                if (file.isDirectory()) {
+            if ( path != null ) {
+                File file = new File( path );
+                if ( file.isDirectory() ) {
                     recursive = true;
                 }
-                paths.add(path);
+                paths.add( path );
                 file_table_model.setValueAt( true, i, 0 );
                 file_table_model.setValueAt( path, i, 1 );
                 file_table_model.setValueAt( status, i, 2 );
@@ -133,9 +133,9 @@ public class CommitDialog extends JDialog {
         commitData.setPaths( paths );
         commitData.setRecursive( recursive );
 
-        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
-        file_table.getColumnModel().getColumn(1).setPreferredWidth(450);
-        file_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
+        file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 450 );
+        file_table.getColumnModel().getColumn( 2 ).setPreferredWidth( 50 );
         file_table.packRows();
 
         final JCheckBox recursive_cb = new JCheckBox( "Recursively commit?" );
@@ -178,10 +178,10 @@ public class CommitDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // get the paths
                         List<String> paths = new ArrayList<String>();
-                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
-                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
-                            if (selected) {
-                                paths.add((String)file_table_model.getValueAt(row, 1));
+                        for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
+                            Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
+                            if ( selected ) {
+                                paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
                             }
                         }
 
@@ -233,7 +233,7 @@ public class CommitDialog extends JDialog {
         panel.add( "0, 3, 6, 1, W, wh, 3", new JScrollPane( comment ) );
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
-            commentList.setPreferredSize(new Dimension(600, commentList.getPreferredSize().height));
+            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
             panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
             panel.add( "0, 5, 6, 1, W, w, 3", commentList );
         }
@@ -241,11 +241,13 @@ public class CommitDialog extends JDialog {
 
         panel.add( "0, 7, 6, 1, W,  , 3", file_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize(new Dimension(600, Math.min(file_table.getBestHeight(), 200)));
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 200 ) ) );
         panel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
-        panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
+        if ( recursive ) {
+            panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
+        }
         panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
 
         panel.add( "0, 12, 6, 1, E,  , 0", btn_panel );
@@ -267,10 +269,10 @@ public class CommitDialog extends JDialog {
 
     public static void main ( String[] args ) {
         TreeMap<String, String> files = new TreeMap<String, String>();
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/CommitDialog.java", "modified");
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/AddDialog.java", "modified");
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/DeleteDialog.java", "modified");
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/LogDialog.java", "modified");
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/CommitDialog.java", "modified" );
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/AddDialog.java", "modified" );
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/DeleteDialog.java", "modified" );
+        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/LogDialog.java", "modified" );
         CommitDialog d = new CommitDialog( null, files );
         d.setVisible( true );
     }
