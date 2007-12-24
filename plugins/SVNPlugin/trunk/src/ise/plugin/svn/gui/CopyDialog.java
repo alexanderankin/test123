@@ -58,30 +58,47 @@ public class CopyDialog extends JDialog {
     private List<String> urlsToCopy = null;
     private JTextField path = null;
     private TableModel fileTableModel = null;
-    private String defaultDestination = null;
 
-    private boolean destinationIsLocal = true;
+    private String defaultLocalDestination = null;
+    private String defaultRemoteDestination = null;
+
+    private boolean destinationIsLocal = true;  // if true, copying to local file system
+
     private boolean cancelled = false;
 
-    public CopyDialog( View view, List<File> files, String defaultDestination ) {
+    /**
+     * @param view parent frame
+     * @param files the local files to copy
+     * @param defaultLocalDestination local file system destination
+     * @param defaultLocalDestination remote repository destination
+     */
+    public CopyDialog( View view, List<File> files, String defaultLocalDestination, String defaultRemoteDestination ) {
         super( ( JFrame ) view, "Copy", true );
         if ( files == null || files.size() == 0 ) {
             throw new IllegalArgumentException( "no source file(s) to copy" );
         }
         this.view = view;
         this.toCopy = files;
-        this.defaultDestination = defaultDestination == null ? "" : defaultDestination;
+        this.defaultLocalDestination = defaultLocalDestination == null ? "" : defaultLocalDestination;
+        this.defaultRemoteDestination = defaultRemoteDestination == null ? "" : defaultRemoteDestination;
         init();
     }
 
-    public CopyDialog( View view, String defaultDestination, List<String> urls ) {
+    /**
+     * @param view parent frame
+     * @param defaultLocalDestination local file system destination
+     * @param defaultLocalDestination remote repository destination
+     * @param files the remote urls to copy
+     */
+    public CopyDialog( View view, String defaultLocalDestination, String defaultRemoteDestination, List<String> urls ) {
         super( ( JFrame ) view, "Copy", true );
         if ( urls == null || urls.size() == 0 ) {
             throw new IllegalArgumentException( "no source url(s) to copy" );
         }
         this.view = view;
         this.urlsToCopy = urls;
-        this.defaultDestination = defaultDestination == null ? "" : defaultDestination;
+        this.defaultLocalDestination = defaultLocalDestination == null ? "" : defaultLocalDestination;
+        this.defaultRemoteDestination = defaultRemoteDestination == null ? "" : defaultRemoteDestination;
         destinationIsLocal = false;
         init();
     }
@@ -127,13 +144,13 @@ public class CopyDialog extends JDialog {
         file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
 
 
-        // local destination directory.
+        // destination
         JLabel path_label = new JLabel( "To this location:" );
-        path = new JTextField( defaultDestination , 30 );
+        path = new JTextField( defaultLocalDestination , 30 );
         JButton browse_local_btn = new JButton( "Browse Local..." );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultDestination, toCopy == null ? VFSBrowser.OPEN_DIALOG : toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultLocalDestination, toCopy == null ? VFSBrowser.OPEN_DIALOG : toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
                         if ( dirs != null && dirs.length > 0 ) {
                             String filename = dirs[ 0 ];
                             File f = new File( filename );
@@ -157,7 +174,7 @@ public class CopyDialog extends JDialog {
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
-                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view );
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, defaultRemoteDestination );
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );

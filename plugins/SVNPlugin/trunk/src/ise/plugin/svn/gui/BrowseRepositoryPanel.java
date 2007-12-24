@@ -92,6 +92,12 @@ public class BrowseRepositoryPanel extends JPanel {
         init( true, null );
     }
 
+    public BrowseRepositoryPanel( View view, String defaultDestination ) {
+        super( new BorderLayout() );
+        this.view = view;
+        init( true, defaultDestination );
+    }
+
     private void init( boolean full, String repositoryName ) {
 
         // for button panel, defined below.
@@ -99,27 +105,6 @@ public class BrowseRepositoryPanel extends JPanel {
 
         // repository chooser
         chooser = new RepositoryComboBox();
-        ActionListener al = new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData data = chooser.getSelectedRepository();
-                        if ( data != null ) {
-                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                            tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                            action.actionPerformed( ae );
-                        }
-                        else {
-                            tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
-                        }
-                        edit_btn.setEnabled( data != null );
-                        remove_btn.setEnabled( data != null );
-                        refresh_btn.setEnabled( data != null );
-                    }
-                };
-        chooser.addActionListener( al );
-        if ( repositoryName != null ) {
-            chooser.setSelectedItem( repositoryName );
-        }
 
         // the repository tree.  This is lazy loaded.
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
@@ -307,7 +292,6 @@ public class BrowseRepositoryPanel extends JPanel {
             refresh_btn.setMaximumSize( dim );
             refresh_btn.setToolTipText( "Refresh" );
             refresh_btn.setEnabled( false );
-            refresh_btn.addActionListener( al );
 
             // create a panel to hold the buttons
             button_panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 1 ) );
@@ -315,6 +299,32 @@ public class BrowseRepositoryPanel extends JPanel {
             button_panel.add( edit_btn );
             button_panel.add( remove_btn );
             button_panel.add( refresh_btn );
+        }
+
+        // action listener for repository chooser
+        ActionListener al = new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        RepositoryData data = chooser.getSelectedRepository();
+                        if ( data != null ) {
+                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                            tree.setModel( new DefaultTreeModel( root ) );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                            action.actionPerformed( ae );
+                        }
+                        else {
+                            tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
+                        }
+                        edit_btn.setEnabled( data != null );
+                        remove_btn.setEnabled( data != null );
+                        refresh_btn.setEnabled( data != null );
+                    }
+                };
+        chooser.addActionListener( al );
+        if (full) {
+            refresh_btn.addActionListener( al );
+        }
+        if ( repositoryName != null ) {
+            chooser.setSelectedItem( repositoryName );
         }
 
         // create a panel to hold the buttons and the repository chooser
@@ -545,7 +555,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 }
                             }
                         }
-                        CopyDialog dialog = new CopyDialog( view, null, paths );
+                        CopyDialog dialog = new CopyDialog( view, null, chooser.getSelectedItem().toString(), paths );
                         GUIUtils.center( view, dialog );
                         dialog.setVisible( true );
                         CopyData data = dialog.getData();
