@@ -32,7 +32,6 @@ package ise.plugin.svn.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
@@ -93,7 +92,7 @@ public class CommitDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         JLabel file_label = new JLabel( "Committing these files:" );
-        JTable file_table = new JTable();
+        BestRowTable file_table = new BestRowTable();
         //file_table.setFillsViewportHeight(true);  // java 1.6
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
@@ -137,6 +136,7 @@ public class CommitDialog extends JDialog {
         file_table.getColumnModel().getColumn(0).setMaxWidth(25);
         file_table.getColumnModel().getColumn(1).setPreferredWidth(450);
         file_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        file_table.packRows();
 
         final JCheckBox recursive_cb = new JCheckBox( "Recursively commit?" );
         recursive_cb.setSelected( recursive );
@@ -241,7 +241,7 @@ public class CommitDialog extends JDialog {
 
         panel.add( "0, 7, 6, 1, W,  , 3", file_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize(new Dimension(600, 200));
+        file_scroller.getViewport().setPreferredSize(new Dimension(600, Math.min(file_table.getBestHeight(), 200)));
         panel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
