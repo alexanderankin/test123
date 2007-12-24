@@ -72,6 +72,8 @@ public class BestRowTable extends JTable {
     }
 
     /**
+     * @param row the row number in the table to calculate the best height for
+     * @param margin cell margin
      * @return the preferred height of a row.  JTable doesn't provide this.
      * The returned value is equal to the tallest preferred height of all the
      * cells in the row.
@@ -89,21 +91,24 @@ public class BestRowTable extends JTable {
         return height;
     }
 
+    /**
+     * @return the best height for this table.
+     */
     public int getBestHeight() {
         return bestHeight;
     }
 
     /**
-     * Display the table using the preferred height of each row and margin
-     * size of 1.
+     * Calculate and set the best height of the table using the preferred height
+     * of each row and margin size of 1.
      */
     public void packRows() {
         packRows( 1 );
     }
 
     /**
-     * Display the table using the preferred height of each row adding the
-     * specified margin within each cell.
+     * Calculate and set the best height of the table using the preferred height
+     * of each row and the specified margin within each cell.
      * @param margin the size of the margin to be applied to each cell.
      */
     public void packRows( int margin ) {
@@ -143,5 +148,4 @@ public class BestRowTable extends JTable {
             return this;
         }
     }
-
 }
