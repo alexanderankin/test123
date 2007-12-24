@@ -64,7 +64,7 @@ public class CopyActor extends NodeActor {
 
             // show the copy dialog
             String default_destination = files.size() == 1 ? files.get(0).getAbsolutePath() : PVHelper.getProjectRoot(view);
-            CopyDialog dialog = new CopyDialog( view, files, default_destination );
+            CopyDialog dialog = new CopyDialog( view, files, default_destination, null );   // TODO: fill in remote destination
             GUIUtils.center(view, dialog);
             dialog.setVisible( true );
             CopyData data = dialog.getData();
