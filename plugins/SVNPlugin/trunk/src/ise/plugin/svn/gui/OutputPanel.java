@@ -44,7 +44,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  */
 public class OutputPanel extends JPanel {
 
-    private JTabbedPane tabs;
+    private CloseableTabbedPane tabs;
 
     // used to generate unique name for this panel
     static int COUNT = 0;
@@ -64,7 +64,9 @@ public class OutputPanel extends JPanel {
         logger.removeHandler( handler );
         logger.addHandler( handler );
 
-        tabs = new JTabbedPane();
+        tabs = new CloseableTabbedPane();
+        //Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
+        //tabs.setCloseIcons(close_icon, null, null);
         tabs.addTab( "SVN Console", getConsolePanel() );
         add( tabs );
 
