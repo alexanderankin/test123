@@ -18,6 +18,13 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.forwardList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.forwardList(view);
+      </CODE>
+   </ACTION>
+
    <ACTION NAME="navigator.forward">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
@@ -32,24 +39,24 @@
       </CODE>
    </ACTION>
 
-	<ACTION NAME="navigator.showdockable">
-		<CODE>
-			view.getDockableWindowManager().showDockableWindow("Navigator");
-		</CODE>
-	</ACTION>
+    <ACTION NAME="navigator.showdockable">
+        <CODE>
+            view.getDockableWindowManager().showDockableWindow("Navigator");
+        </CODE>
+    </ACTION>
 
    <ACTION NAME="navigator.showbuttons" >
-	<CODE>
+    <CODE>
    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
    plugin.showButtons();
-	</CODE>
+    </CODE>
    </ACTION>
 
    <ACTION NAME="navigator.hidebuttons" >
-	<CODE>
-	ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-	plugin.hideButtons();
+    <CODE>
+    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+    plugin.hideButtons();
     </CODE>
-	</ACTION>
+    </ACTION>
 </ACTIONS>
 

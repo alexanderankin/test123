@@ -1,15 +1,15 @@
 # $Id$
 #-----------------------------------
-# Properties for Navigator Plugin 
+# Properties for Navigator Plugin
 #-----------------------------------
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson and Alan Ezust
-plugin.ise.plugin.nav.NavigatorPlugin.version=1.5
+plugin.ise.plugin.nav.NavigatorPlugin.version=1.5.1
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
-	provides a set of "Back" and "Forward" actions similar to a web browser. \
-	This is surprisingly handy. 
+    provides a set of "Back" and "Forward" actions similar to a web browser. \
+    This is surprisingly handy.
 
 # dependencies
 plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.4
@@ -39,7 +39,7 @@ navigator.menu.label=Navigator
 
 # this setting describes the submenu. Each menu item is listed in the
 # order it is shown. The dash is a special character and will cause a
-# menu separator to be inserted. This line also must start with the string 
+# menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
 plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.showdockable
