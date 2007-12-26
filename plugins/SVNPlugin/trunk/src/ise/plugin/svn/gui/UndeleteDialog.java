@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.*;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -81,16 +82,37 @@ public class UndeleteDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
+        // list the selected files
         JLabel file_label = new JLabel("Undelete these files:");
-        final JPanel file_panel = new JPanel(new GridLayout(0, 1, 2, 3));
-        file_panel.setBackground(Color.WHITE);
-        file_panel.setBorder(new EmptyBorder(3, 3, 3, 3));
-        for(String path : paths) {
-            JCheckBox cb = new JCheckBox(path);
-            cb.setSelected(true);
-            cb.setBackground(Color.WHITE);
-            file_panel.add(cb);
+        BestRowTable file_table = new BestRowTable();
+        //file_table.setFillsViewportHeight(true);  // java 1.6
+        final DefaultTableModel file_table_model = new DefaultTableModel(
+                    new String[] {
+                        "", "File"
+                    }, undeleteData.getPaths().size() ) {
+                    public Class getColumnClass( int index ) {
+                        if ( index == 0 ) {
+                            return Boolean.class;
+                        }
+                        else {
+                            return super.getColumnClass( index );
+                        }
+
+                    }
+                };
+        file_table.setModel( file_table_model );
+
+        // load the table model
+        int i = 0;
+        for ( String path : undeleteData.getPaths() ) {
+            if (path != null) {
+                file_table_model.setValueAt( true, i, 0 );
+                file_table_model.setValueAt( path, i, 1 );
+                ++i;
+            }
         }
+        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
+        file_table.getColumnModel().getColumn(1).setPreferredWidth(575);
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -105,13 +127,13 @@ public class UndeleteDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // get the paths
                         List<String> paths = new ArrayList<String>();
-                        Component[] files = file_panel.getComponents();
-                        for (Component file : files) {
-                            JCheckBox cb = (JCheckBox)file;
-                            if (cb.isSelected()) {
-                                paths.add(cb.getText());
+                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
+                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
+                            if (selected) {
+                                paths.add((String)file_table_model.getValueAt(row, 1));
                             }
                         }
+
                         if (paths.size() == 0) {
                             // nothing to undelete, bail out
                             undeleteData = null;
@@ -136,7 +158,7 @@ public class UndeleteDialog extends JDialog {
 
         // add the components to the option panel
         panel.add( "0, 0, 1, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_panel ) );
+        panel.add( "0, 1, 1, 1, W, wh, 3", new JScrollPane( file_table ) );
         panel.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true));
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
         panel.add( "0, 3, 1, 1, E,  , 0", btn_panel );
