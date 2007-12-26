@@ -46,11 +46,9 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
-import console.ConsolePlugin;
 import console.ErrorListModel;
 import console.ErrorMatcher;
 import console.gui.PanelStack;

@@ -49,8 +49,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 {
 
 	// {{{ data members
-	
-	private JCheckBox commandoToolBar;
 	private JComboBox prefix;
 	private FontSelector font;
 	private JComboBox encoding;

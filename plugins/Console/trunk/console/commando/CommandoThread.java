@@ -26,7 +26,6 @@ package console.commando;
 import console.*;
 import javax.swing.*;
 import java.util.Vector;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
 //}}}
 // {{{ commandothread class

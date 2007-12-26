@@ -31,11 +31,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 import javax.swing.JButton;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
