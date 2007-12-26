@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.jEdit;
 import projectviewer.event.ProjectViewerAdapter;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
+//import projectviewer.vpt.VPTProject;
 import org.gjt.sp.jedit.bsh.NameSpace;
 // }}}
 
@@ -49,6 +49,22 @@ import org.gjt.sp.jedit.bsh.NameSpace;
 
 public class ProjectTreeListener extends ProjectViewerAdapter
 {
+	// {{{ Data Members
+	// {{{ Static members
+
+	static ProjectTreeListener instance;
+
+	static boolean onProjectChange;
+
+	static boolean onNodeSelection;
+
+	// }}}
+	// {{{ private members
+	private VPTNode lastNode;
+
+//	private VPTProject lastProject;
+	// }}}
+	// }}}
 
 	// {{{ reset method
 	public static void reset() {
@@ -77,7 +93,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 			return;
 		update();
 		// if (evt.getProject() == lastProject) return;
-		lastProject = evt.getProject();
+//		lastProject = evt.getProject();
 		new Thread()
 		{
 			public void run()
@@ -132,20 +148,4 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 
 	} // }}}
 
-	// {{{ Data Members
-	// {{{ Static members
-
-	static ProjectTreeListener instance;
-
-	static boolean onProjectChange;
-
-	static boolean onNodeSelection;
-
-	// }}}
-	// {{{ private members
-	private VPTNode lastNode;
-
-	private VPTProject lastProject;
-	// }}}
-	// }}}
 } // }}}

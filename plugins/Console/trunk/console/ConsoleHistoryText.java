@@ -22,7 +22,6 @@
 
 package console;
 
-import javax.swing.text.JTextComponent;
 
 public class ConsoleHistoryText extends HistoryText
 {

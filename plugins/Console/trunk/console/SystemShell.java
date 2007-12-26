@@ -12,6 +12,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 // }}}
 
@@ -423,7 +424,8 @@ public class SystemShell extends Shell
 		{
 			// Escaping impossible
 			lastArgEscaped = (String) parse(command).lastElement();
-			lastArg = lastArgEscaped;
+			// We want to allow completion on the forward slash too
+			lastArg = lastArgEscaped.replace('/', File.separatorChar);
 		}
 		else
 		{
@@ -522,7 +524,8 @@ public class SystemShell extends Shell
 	String expandVariables(View view, String arg)
 	{
 		if (File.separatorChar == '\\') {
-			arg = arg.replace('/', File.separatorChar);
+//			arg = arg.replace('/', File.separatorChar);
+			// prepend default drive letter to path
 			if (arg.startsWith("\\")) {
 				Console console = ConsolePlugin.getConsole(view);
 				ConsoleState state = getConsoleState(console);
@@ -915,8 +918,8 @@ public class SystemShell extends Shell
 			return null;
 
 		boolean isOSCaseSensitive = ProcessRunner.getProcessRunner().isCaseSensitive();
-		ArrayList matchingFilenames = new ArrayList(filenames.length);
-		int matchingFilenamesCount = 0;
+		StringList matchingFilenames = new StringList();
+//		int matchingFilenamesCount = 0;
 		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();
 		for (int i = 0; i < filenames.length; i++)
 		{
@@ -941,7 +944,6 @@ public class SystemShell extends Shell
 				matchingFilenames.add(match);
 			}
 		}
-
 		return matchingFilenames;
 	} // }}}
 

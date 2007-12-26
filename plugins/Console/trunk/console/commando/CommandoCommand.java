@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 
 // }}}
 

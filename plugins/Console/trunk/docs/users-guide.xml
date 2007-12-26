@@ -1506,6 +1506,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <title>Change log</title>
 
   <itemizedlist>
+  <listitem id="ver4.3.6"><para>
+    <emphasis role="bold">Version 4.3.6</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
+    <listitem><para> Forward slashes no longer substituted except when expanding completions. (#185614 - ezust) </para></listitem> </itemizedlist>
+    </para> </listitem>
+	
   <listitem id="ver4.3.5"><para>
     <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
     <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
