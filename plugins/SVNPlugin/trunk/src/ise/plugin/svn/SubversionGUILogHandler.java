@@ -92,6 +92,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      */
     public SubversionGUILogHandler( boolean use_frame ) {
         _content_pane = new JPanel( new BorderLayout() );
+        _content_pane.putClientProperty("isCloseable", Boolean.FALSE);
 
         _text = new JTextPane();
         _text.setCaretPosition( 0 );
