@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.io.*;
 import java.util.*;
@@ -38,6 +39,7 @@ import ise.java.awt.KappaLayout;
 import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import javax.swing.table.*;
 
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 import org.tmatesoft.svn.cli.SVNArgument;
@@ -69,32 +71,19 @@ public class SVNInfoPanel extends JPanel {
     }
 
     private void addInfo( SVNInfo info ) {
-        JPanel panel = new JPanel( new KappaLayout() );
-        add(panel);
-        panel.setBorder(new EtchedBorder());
-        KappaLayout.Constraints con = KappaLayout.createConstraint();
-        con.p = 3;
-        con.a = KappaLayout.W;
-        con.y = -1;
+        if ( info == null ) {
+            return ;
+        }
+        final DefaultTableModel info_table_model = new DefaultTableModel( 1, 2 );
+
+        // load the table model
         if ( !info.isRemote() ) {
-            ++con.y;
-            JLabel label = new JLabel( "Path:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( SVNFormatUtil.formatPath( info.getFile() ) );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Path", SVNFormatUtil.formatPath( info.getFile() ) } );
         }
         else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
-            ++con.y;
-            JLabel label = new JLabel( "Path:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( path );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Path", path} );
         }
         if ( info.getKind() != SVNNodeKind.DIR ) {
             String v = "";
@@ -104,242 +93,82 @@ public class SVNInfoPanel extends JPanel {
             else {
                 v = info.getFile().getName();
             }
-            ++con.y;
-            JLabel label = new JLabel( "Name:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( v );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Name", v} );
         }
-        if (info.getURL() != null) {
-            ++con.y;
-            JLabel label = new JLabel( "URL:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( info.getURL().toString() );
-            con.x = 1;
-            panel.add( value, con );
+        if ( info.getURL() != null ) {
+            info_table_model.addRow( new String[] {"URL", info.getURL().toString() } );
         }
         if ( info.getRepositoryRootURL() != null ) {
-            ++con.y;
-            JLabel label = new JLabel( "Repository Root:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( info.getRepositoryRootURL().toString() );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Repository Root", String.valueOf( info.getRepositoryRootURL() ) } );
         }
         if ( info.isRemote() && info.getRepositoryUUID() != null ) {
-            ++con.y;
-            JLabel label = new JLabel( "Repository UUID:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( info.getRepositoryUUID() );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Repository UUID", info.getRepositoryUUID() } );
         }
         if ( info.getRevision() != null && info.getRevision().isValid() ) {
-            ++con.y;
-            JLabel label = new JLabel( "Revision:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( String.valueOf(info.getRevision()) );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Revision", String.valueOf( info.getRevision() ) } );
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
-            ++con.y;
-            JLabel label = new JLabel( "Node Kind:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( "directory" );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Node Kind", "directory"} );
         }
         else if ( info.getKind() == SVNNodeKind.FILE ) {
-            ++con.y;
-            JLabel label = new JLabel( "Node Kind:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( "file" );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Node Kind", "file"} );
         }
         else if ( info.getKind() == SVNNodeKind.NONE ) {
-            ++con.y;
-            JLabel label = new JLabel( "Node Kind:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( "none" );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Node Kind", "none"} );
         }
         else {
-            ++con.y;
-            JLabel label = new JLabel( "Node Kind:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( "unknown" );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Node Kind", "unknown"} );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
-            ++con.y;
-            JLabel label = new JLabel( "Schedule:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( "normal" );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Schedule", "normal"} );
         }
         else if ( !info.isRemote() ) {
-            ++con.y;
-            JLabel label = new JLabel( "Schedule:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( info.getSchedule() );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Schedule", info.getSchedule() } );
         }
         if ( info.getAuthor() != null ) {
-            ++con.y;
-            JLabel label = new JLabel( "Last Changed Author:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( info.getAuthor() );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Last Changed Author", info.getAuthor() } );
         }
         if ( info.getCommittedRevision() != null && info.getCommittedRevision().getNumber() >= 0 ) {
-            ++con.y;
-            JLabel label = new JLabel( "Last Changed Rev:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( String.valueOf(info.getCommittedRevision()) );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Last Changed Revision", String.valueOf( info.getCommittedRevision() ) } );
         }
         if ( info.getCommittedDate() != null ) {
-            ++con.y;
-            JLabel label = new JLabel( "Last Changed Date:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel( formatDate( info.getCommittedDate() ) );
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Last Changed Date", formatDate( info.getCommittedDate() ) } );
         }
         if ( !info.isRemote() ) {
             if ( info.getTextTime() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Text Last Updated:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(formatDate( info.getTextTime() ));
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Text Last Updated", formatDate( info.getTextTime() ) } );
             }
             if ( info.getPropTime() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Properties Last Updated:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(formatDate( info.getPropTime() ));
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Properties Last Updated", formatDate( info.getPropTime() ) } );
             }
             if ( info.getChecksum() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Checksum:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getChecksum());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Checksum", info.getChecksum() } );
             }
             if ( info.getCopyFromURL() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Copied From URL:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getCopyFromURL().toString());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Copied From URL", String.valueOf( info.getCopyFromURL() ) } );
             }
             if ( info.getCopyFromRevision() != null && info.getCopyFromRevision().getNumber() >= 0 ) {
-                ++con.y;
-                JLabel label = new JLabel( "Copied From Rev:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(String.valueOf(info.getCopyFromRevision()));
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Copied From Revision", String.valueOf( info.getCopyFromRevision() ) } );
             }
             if ( info.getConflictOldFile() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Conflict Previous Base File:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getConflictOldFile().getName());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Conflict Previous Base File", info.getConflictOldFile().getName() } );
             }
             if ( info.getConflictWrkFile() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Conflict Previous Working File:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getConflictWrkFile().getName());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Conflict Previous Working File", info.getConflictWrkFile().getName() } );
             }
             if ( info.getConflictNewFile() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Conflict Current Base File:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getConflictNewFile().getName());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Conflict Current Base File", info.getConflictNewFile().getName() } );
             }
             if ( info.getPropConflictFile() != null ) {
-                ++con.y;
-                JLabel label = new JLabel( "Conflict Properties File:" );
-                con.x = 0;
-                panel.add( label, con );
-                JLabel value = new JLabel(info.getPropConflictFile().getName());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Conflict Properties File", info.getPropConflictFile().getName() } );
             }
         }
         if ( info.getLock() != null ) {
             SVNLock lock = info.getLock();
-            ++con.y;
-            JLabel label = new JLabel( "Lock Token:" );
-            con.x = 0;
-            panel.add( label, con );
-            JLabel value = new JLabel(lock.getID());
-            con.x = 1;
-            panel.add( value, con );
-            ++con.y;
-            label = new JLabel( "Lock Owner:" );
-            con.x = 0;
-            panel.add( label, con );
-            value = new JLabel(lock.getOwner());
-            con.x = 1;
-            panel.add( value, con );
-            ++con.y;
-            label = new JLabel( "Lock Created:" );
-            con.x = 0;
-            panel.add( label, con );
-            value = new JLabel(formatDate( lock.getCreationDate() ));
-            con.x = 1;
-            panel.add( value, con );
+            info_table_model.addRow( new String[] {"Lock Token", lock.getID() } );
+            info_table_model.addRow( new String[] {"Lock Owner", lock.getOwner() } );
+            info_table_model.addRow( new String[] {"Lock Created", formatDate( lock.getCreationDate() ) } );
             if ( lock.getComment() != null ) {
-                ++con.y;
-                label = new JLabel( "Lock Comment" );
-                con.x = 0;
-                panel.add( label, con );
                 int lineCount = getLineCount( lock.getComment() );
                 StringBuffer sb = new StringBuffer();
                 if ( lineCount == 1 ) {
@@ -349,11 +178,23 @@ public class SVNInfoPanel extends JPanel {
                     sb.append( "(" + lineCount + " lines)" );
                 }
                 sb.append( ":\n" + lock.getComment() + "\n" );
-                value = new JLabel(sb.toString());
-                con.x = 1;
-                panel.add( value, con );
+                info_table_model.addRow( new String[] {"Lock Comment", sb.toString() } );
             }
         }
+
+        info_table_model.removeRow(0);
+        JPanel panel = new JPanel( new BorderLayout() );
+        add( panel );
+        panel.setBorder( new EtchedBorder() );
+        BestRowTable info_table = new BestRowTable();
+        panel.add( info_table, BorderLayout.CENTER );
+        info_table.setModel( info_table_model );
+        TableColumn column1 = info_table.getColumnModel().getColumn( 1 );
+        column1.setCellRenderer( new BestRowTable.ValueCellRenderer() );
+        info_table.getColumnModel().getColumn( 0 ).setMaxWidth( 150 );
+        info_table.getColumnModel().getColumn( 0 ).setMinWidth( 150 );
+        info_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 600 );
+        info_table.packRows();
     }
 
     private String formatDate( Date date ) {
