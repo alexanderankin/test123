@@ -937,7 +937,7 @@ public class SystemShell extends Shell
 				
 				// Add a separator at the end if it's a
 				// directory
-				if (matchFile.isDirectory() && match.charAt(match.length()) != File.separatorChar)
+				if (matchFile.isDirectory() && match.charAt(match.length()-1) != File.separatorChar)
 					match.append(File.separator);
 
 				matchingFilenames.add(match.toString());

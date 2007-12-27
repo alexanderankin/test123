@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 //}}}
 
 
