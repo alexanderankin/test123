@@ -174,9 +174,11 @@ public class ErrorMatcher implements Cloneable
 		while (i + 1< sl.length )
 		{
 			String current = sl[++i];
+			StringBuffer mlb = new StringBuffer();
 			String ml = matchLine(current);
 			if (ml != null) /* We found a match for the first line */
 			{
+				mlb.append(ml);
 				if (  extraRE != null )
 				{
 					while ( i+1 < sl.length)
@@ -186,15 +188,15 @@ public class ErrorMatcher implements Cloneable
 						if (!m.matches()) break;
 						try {
 							String extra = m.replaceFirst("$1");
-							ml += "\n  " + extra;
+							mlb.append("\n  " + extra);
 						}
 						catch (Exception e) {
-							ml += "\n  " + e.getMessage();
+							mlb.append("\n  " + e.getMessage());
 						}
 						++i;
 					}
 				}
-				retval.add(ml);
+				retval.add(mlb.toString());
 			}
 		}
 		return retval;
@@ -229,7 +231,7 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ clone()
-	public Object clone()
+	public Object clone() 
 	{
 		ErrorMatcher retval = new ErrorMatcher();
 		retval.set(this);

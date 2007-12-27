@@ -25,10 +25,12 @@ package console;
 //{{{ Imports
 
 import java.util.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 import console.SystemShell.ConsoleState;
 //}}}
@@ -90,14 +92,15 @@ public abstract class SystemShellBuiltIn
 	/** 
 	 * Used by executeBuiltIn
 	 */
-	public void execute(Console console, Output output, Output error, Vector args)
+	public void execute(Console console, Output output, Output error, 
+		Vector<String> args)
 	{
-		Hashtable values = new Hashtable();
+		Hashtable<String, Object> values = new Hashtable<String, Object>();
 		Option[] options = getOptions();
 
 		for(int i = 0; i < args.size(); i++)
 		{
-			String arg = (String)args.elementAt(i);
+			String arg = args.elementAt(i);
 
 			//{{{ end of options
 			if(arg.equals("--"))
@@ -232,7 +235,7 @@ public abstract class SystemShellBuiltIn
 
 	//{{{ execute() method
 	protected abstract void execute(Console console, Output output,
-		Output error, Vector args, Hashtable values); //}}}
+		Output error, Vector<String> args, Hashtable<String, Object> values); //}}}
 
 	//}}}
 
@@ -257,9 +260,9 @@ public abstract class SystemShellBuiltIn
 		}
 
 		public void execute(Console console, Output output,
-			Output error, Vector args, Hashtable values)
+			Output error, Vector<String> args, Hashtable<String, Object> values)
 		{
-			Hashtable aliases = ConsolePlugin.getSystemShell()
+			Hashtable<String,String> aliases = ConsolePlugin.getSystemShell()
 				.getAliases();
 			aliases.put(args.elementAt(0),args.elementAt(1));
 		}
@@ -279,22 +282,19 @@ public abstract class SystemShellBuiltIn
 		}
 
 		public void execute(Console console, Output output,
-			Output error, Vector args, Hashtable values)
+			Output error, Vector<String> args, Hashtable<String, Object> values)
 		{
-			Hashtable aliases = ConsolePlugin.getSystemShell().getAliases();
-			Vector returnValue = new Vector();
-			Enumeration keys = aliases.keys();
-			while(keys.hasMoreElements())
+			Hashtable<String, String> aliases = ConsolePlugin.getSystemShell().getAliases();
+			StringList returnValue = new StringList();
+			for (Map.Entry<String,String> ent: aliases.entrySet()) 
 			{
-				Object key = keys.nextElement();
-				returnValue.addElement(key + "=" + aliases.get(key));
+				returnValue.add(ent.getKey() + "=" + ent.getValue());
 			}
 
-			MiscUtilities.quicksort(returnValue,
-				new MiscUtilities.StringICaseCompare());
+			Collections.sort(returnValue, new MiscUtilities.StringICaseCompare());
 			for(int i = 0; i < returnValue.size(); i++)
 			{
-				output.print(null,(String)returnValue.elementAt(i));
+				output.print(null,returnValue.get(i));
 			}
 		}
 	} //}}}
@@ -341,7 +341,7 @@ public abstract class SystemShellBuiltIn
 		}
 
 		public void execute(Console console, Output output,
-			Output error, Vector args, Hashtable values)
+			Output error, Vector<String> args, Hashtable<String, Object> values)
 		{
 			SystemShell.ConsoleState state = getConsoleState(console);
 
@@ -398,7 +398,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Stack directoryStack = getConsoleState(console)
+			Stack<String> directoryStack = getConsoleState(console)
 				.directoryStack;
 
 			for(int i = 0; i < directoryStack.size(); i++)
@@ -467,22 +467,20 @@ public abstract class SystemShellBuiltIn
 		}
 
 		public void execute(Console console, Output output,
-			Output error, Vector args, Hashtable values)
+			Output error, Vector<String> args, Hashtable<String, Object> values)
 		{
-			Map variables = ConsolePlugin.getSystemShell().getVariables();
-			Vector returnValue = new Vector();
-			Iterator keys = variables.keySet().iterator();
-			while(keys.hasNext())
+			Map<String, String> variables = ConsolePlugin.getSystemShell().getVariables();
+			StringList returnValue = new StringList();
+			for (Map.Entry<String,String> ent: variables.entrySet()) 
 			{
-				Object key = keys.next();
-				returnValue.addElement(key + "=" + variables.get(key));
+				returnValue.add(ent.getKey() + "=" + ent.getValue());
 			}
+			
+			Collections.sort(returnValue, new MiscUtilities.StringICaseCompare());
 
-			MiscUtilities.quicksort(returnValue,
-				new MiscUtilities.StringICaseCompare());
 			for(int i = 0; i < returnValue.size(); i++)
 			{
-				output.print(null,(String)returnValue.elementAt(i));
+				output.print(null,returnValue.get(i));
 			}
 		}
 	} //}}}

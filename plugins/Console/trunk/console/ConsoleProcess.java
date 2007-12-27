@@ -147,7 +147,7 @@ class ConsoleProcess
 	synchronized void showExit () {
 		boolean showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
 		if (showExitStatus) {
-			Object[] pp = { args[0], new Integer(exitCode) };
+			Object[] pp = { args[0], Integer.valueOf(exitCode) };
 			String msg = jEdit.getProperty("console.shell.exited", pp);
 			if (exitCode == 0)
 				error.print(console.getInfoColor(), msg);
@@ -164,11 +164,11 @@ class ConsoleProcess
 		if (console != null)
 		{
 			Object[] pp = { args[0] };
-			error.print(console.getErrorColor(),
-				jEdit.getProperty("console.shell.detached", pp));
 			output.commandDone();
 			if (error != null)
 			{
+				error.print(console.getErrorColor(),
+					jEdit.getProperty("console.shell.detached", pp));
 				error.commandDone();
 			}
 		}

@@ -259,8 +259,6 @@ implements EBComponent, DefaultFocusComponent
 		return shellState;
 	} //}}}
 
-	
-
 	//{{{ runLastCommand() method
 	/**
 	 * Meant to be used as a user action.
@@ -763,11 +761,10 @@ implements EBComponent, DefaultFocusComponent
 	{
 		return "console." + shell.getName();
 	} //}}}
-
 	// }}}
 
 	// {{{ Inner classes
-	//{{{ ShellState class
+	// {{{ ShellState class
 
 	/**
 	 * Each Shell of a Console has its own ShellState
@@ -808,7 +805,7 @@ implements EBComponent, DefaultFocusComponent
 		public void setInputStart(int cmdStart)
 		{
 			scrollback.putProperty(ConsolePane.InputStart,
-				new Integer(cmdStart));
+				Integer.valueOf(cmdStart));
 		} //}}}
 
 		//{{{ print() method
@@ -898,13 +895,10 @@ implements EBComponent, DefaultFocusComponent
 
 			setInputStart(scrollback.getLength());
 		} //}}}
+       } //}}}
 
-
-
-	} //}}}
-
-       //{{{ LengthFilter class
-       private class LengthFilter extends DocumentFilter
+        // {{{ LengthFilter class
+       static private class LengthFilter extends DocumentFilter
        {
 	       public LengthFilter()
 	       {
@@ -932,9 +926,7 @@ implements EBComponent, DefaultFocusComponent
 	       } //}}}
        } //}}}
 
-
-
-	//{{{ EvalAction class
+	// {{{ EvalAction class
 	public static class EvalAction extends AbstractAction
 	{
 		private String command;
@@ -953,7 +945,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ ActionHandler class
+	// {{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -974,7 +966,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ RunActionHandler class
+	// {{{ RunActionHandler class
 	class RunActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -1009,7 +1001,7 @@ implements EBComponent, DefaultFocusComponent
 	}
 	// }}}
 
-	//{{{ CompletionAction class
+	// {{{ CompletionAction class
 	class CompletionAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -1018,7 +1010,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ EOFAction class
+	// {{{ EOFAction class
 	class EOFAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -1027,7 +1019,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ DetachAction class
+	// {{{ DetachAction class
 	class DetachAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)

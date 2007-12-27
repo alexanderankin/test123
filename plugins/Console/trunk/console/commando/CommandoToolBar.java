@@ -166,6 +166,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	 * This map keeps track of what
 	 * views had toolbars added to them.
 	 */
-	static HashMap smToolBarMap = new HashMap();
+	static HashMap<View, CommandoToolBar> smToolBarMap = 
+		new HashMap<View, CommandoToolBar>();
 	// }}}
 } // }}}
