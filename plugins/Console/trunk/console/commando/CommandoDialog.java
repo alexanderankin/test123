@@ -75,6 +75,24 @@ import console.ConsolePlugin;
 public class CommandoDialog extends EnhancedDialog
 {
 
+	//{{{ Instance variables
+	private View view;
+
+	private JComboBox commandCombo;
+	private JTabbedPane tabs;
+	private SettingsPane settings;
+	private TextAreaPane commandLine;
+	private JButton ok;
+	private JButton cancel;
+
+	private CommandoCommand command;
+	private NameSpace nameSpace;
+	private List<CommandoHandler.Script> scripts;
+	private List<This> components;
+
+	private boolean init;
+	//}}}
+	
 	//{{{ CommandoDialog constructor
 	public CommandoDialog(View view, String command)
 	{
@@ -193,39 +211,19 @@ public class CommandoDialog extends EnhancedDialog
 		dispose();
 	} //}}}
 
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private View view;
-
-	private JComboBox commandCombo;
-	private JTabbedPane tabs;
-	private SettingsPane settings;
-	private TextAreaPane commandLine;
-	private JButton ok;
-	private JButton cancel;
-
-	private CommandoCommand command;
-	private NameSpace nameSpace;
-	private List scripts;
-	private List components;
-
-	private boolean init;
-	//}}}
-
-	// 
+	//{{{ load() method 
 	void load(CommandoCommand command)
 	{
 		init = true;
 
 		this.command = command;
 		settings.removeAll();
-		components = new ArrayList();
+		components = new ArrayList<This>();
 		commandLine.setText(null);
 
 		nameSpace = new NameSpace(BeanShell.getNameSpace(),
 			"commando");
-		scripts = new ArrayList();
+		scripts = new ArrayList<CommandoHandler.Script>();
 
 		XmlParser parser = new XmlParser();
 		CommandoHandler handler = new CommandoHandler(view,command,
@@ -244,9 +242,9 @@ public class CommandoDialog extends EnhancedDialog
 			int line = xe.getLine();
 			String message = xe.getMessage();
 
-			Object[] pp = { command.getLabel() + ".xml", new Integer(line),
+			Object[] pp = { command.getLabel() + ".xml", Integer.valueOf(line),
 				message };
-			GUIUtilities.error(null,"commando.xml-error",pp);
+			GUIUtilities.error(null,"commando.xml-error", pp);
 		}
 		catch(IOException io)
 		{
@@ -351,10 +349,7 @@ public class CommandoDialog extends EnhancedDialog
 		commandLine.setText(buf.toString());
 	} //}}}
 
-	//}}}
-
 	//{{{ Inner classes
-
 	//{{{ Renderer class
 	class Renderer extends DefaultListCellRenderer
 	{

@@ -79,6 +79,7 @@ options.console.general.shellprefix.tooltip=(Experimental) - you can execute com
 options.console.general.font=Font:
 options.console.general.encoding=Character encoding:
 options.console.general.charlimit=Maximum scrollback buffer size (characters):
+options.console.general.usejEditBgColor=Use jEdit bgColor
 options.console.general.bgColor=Console background:
 options.console.general.plainColor=Plain text:
 options.console.general.caretColor=Caret:

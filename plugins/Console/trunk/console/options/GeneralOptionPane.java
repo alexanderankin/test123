@@ -45,7 +45,7 @@ import console.gui.Label;
 import console.ProcessRunner;
 //}}}
 
-public class GeneralOptionPane extends AbstractOptionPane
+public class GeneralOptionPane extends AbstractOptionPane implements ActionListener
 {
 
 	// {{{ data members
@@ -53,6 +53,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private FontSelector font;
 	private JComboBox encoding;
 	private JButton bgColor;
+	private JButton usejEditBgColor;
 	private JButton plainColor;
 	private JButton caretColor;
 	private JButton infoColor;
@@ -131,6 +132,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 		limit = new JTextField(jEdit.getProperty("console.outputLimit"));
 		addComponent(limitLabel, limit);
 		
+		usejEditBgColor = new JButton("reset");
+		usejEditBgColor.addActionListener(this);
+		addComponent(jEdit.getProperty("options.console.general.usejEditBgColor"), usejEditBgColor);
+
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
@@ -226,5 +231,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 		b.setRequestFocusEnabled(false);
 		return b;
 	} //}}}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if (e.getSource() != usejEditBgColor) return;
+		Color c = jEdit.getColorProperty("view.bgColor");
+		jEdit.setColorProperty("console.bgColor", c);
+		bgColor.setBackground(c);
+	}
 	
 }

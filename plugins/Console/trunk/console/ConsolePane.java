@@ -32,12 +32,24 @@ import org.gjt.sp.jedit.gui.HistoryModel;
 
 public class ConsolePane extends JTextPane
 {
+	// {{{ Members
 	public static final String InputStart = "InputStart";
 
 	public static final Object Input = new Object();
 
 	public static final Object Actions = new Object();
 
+	private static final Cursor MoveCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+
+	private static final Cursor DefaultCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+
+	private EventListenerList listenerList;
+
+	private ConsoleHistoryText history;
+
+	transient private DocumentHandler documentHandler;
+	// }}}
+	
 	// {{{ ConsolePane constructor
 	public ConsolePane()
 	{
@@ -220,7 +232,7 @@ public class ConsolePane extends JTextPane
 	// {{{ setInputStart() method
 	public void setInputStart(int cmdStart)
 	{
-		getDocument().putProperty(InputStart, new Integer(cmdStart));
+		getDocument().putProperty(InputStart, Integer.valueOf(cmdStart));
 	} // }}}
 
 	// {{{ getPartialInput() method
@@ -271,16 +283,21 @@ public class ConsolePane extends JTextPane
 		return style;
 	} // }}}
 
+	// {{{ processKeyEvent method
+	@Override
+	protected void processKeyEvent(KeyEvent e)
+	{
+		int endpos = getDocument().getLength();
+		int startpos = getInputStart();
+		
+		if (e.getID() == KeyEvent.KEY_TYPED && getCaretPosition() < startpos) 
+			setCaretPosition(endpos);			
+		
+		super.processKeyEvent(e);
+	} // }}}
+	
 	// {{{ Private members
-	private static final Cursor MoveCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
-	private static final Cursor DefaultCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
-
-	private EventListenerList listenerList;
-
-	private ConsoleHistoryText history;
-
-	private DocumentHandler documentHandler;
 
 	// {{{ getAttributes() method
 	private AttributeSet getAttributes(int pos)
@@ -335,6 +352,7 @@ public class ConsolePane extends JTextPane
 
 	// }}}
 
+	// {{{ Inner classes
 	// {{{ MouseHandler class
 	class MouseHandler extends MouseInputAdapter
 	{
@@ -558,16 +576,6 @@ public class ConsolePane extends JTextPane
 		{
 		}
 	} // }}}
+	// }}}
 
-	@Override
-	protected void processKeyEvent(KeyEvent e)
-	{
-		int endpos = getDocument().getLength();
-		int startpos = getInputStart();
-		
-		if (e.getID() == KeyEvent.KEY_TYPED && getCaretPosition() < startpos) 
-			setCaretPosition(endpos);			
-		
-		super.processKeyEvent(e);
-	}
 }

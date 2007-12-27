@@ -156,14 +156,14 @@ public class CompileRunOptionPane extends AbstractOptionPane
 class ModeTableModel extends AbstractTableModel
 {
 	private static final long serialVersionUID = 5314012645070764005L;
-	private ArrayList modes;
+	private ArrayList<Entry> modes;
 
 	//{{{ ModeTableModel constructor
 	ModeTableModel()
 	{
 		Mode[] _modes = jEdit.getModes();
 
-		modes = new ArrayList(_modes.length);
+		modes = new ArrayList<Entry>(_modes.length);
 
 		for(int i = 0; i < _modes.length; i++)
 		{

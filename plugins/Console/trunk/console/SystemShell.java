@@ -45,8 +45,7 @@ public class SystemShell extends Shell
 	/** The state of each console System Shell instance. */
 	private Hashtable<Console, ConsoleState> consoleStateMap;
 
-	// Why is this not static?
-	private final char dosSlash = 127;
+	static private final char dosSlash = 127;
 
 	/** Map of aliases */
 	private Hashtable<String, String> aliases;
@@ -628,7 +627,7 @@ public class SystemShell extends Shell
 	} // }}}
 
 	// {{{ getAliases() method
-	public Hashtable getAliases()
+	public Hashtable<String, String> getAliases()
 	{
 		init();
 		return aliases;
@@ -647,7 +646,7 @@ public class SystemShell extends Shell
 	} // }}}
 
 	// {{{ getVariables() method
-	Map getVariables()
+	Map<String, String> getVariables()
 	{
 		return processBuilder.environment();
 	} // }}}
@@ -716,7 +715,7 @@ public class SystemShell extends Shell
 	// {{{ initAliases() method
 	private void initAliases()
 	{
-		aliases = new Hashtable();
+		aliases = new Hashtable<String,String>();
 		ProcessRunner pr = ProcessRunner.getProcessRunner();
 		pr.setUpDefaultAliases(aliases);
 
@@ -884,7 +883,7 @@ public class SystemShell extends Shell
 
 
 	// {{{ getFileCompletions() method
-	private List getFileCompletions(View view, String currentDirName, String typedFilename,
+	private List<String> getFileCompletions(View view, String currentDirName, String typedFilename,
 		boolean directoriesOnly)
 	{
 		String expandedTypedFilename = expandVariables(view, typedFilename);
@@ -928,20 +927,20 @@ public class SystemShell extends Shell
 
 			if (matchedAgainst.startsWith(matchedString))
 			{
-				String match;
+				StringBuffer match = new StringBuffer();
 
 				File matchFile = new File(dir, filenames[i]);
 				if (directoriesOnly && !matchFile.isDirectory())
 					continue;
 
-				match = typedDirName + filenames[i];
-
+				match.append(typedDirName + filenames[i]);
+				
 				// Add a separator at the end if it's a
 				// directory
-				if (matchFile.isDirectory() && !match.endsWith(File.separator))
-					match = match + File.separator;
+				if (matchFile.isDirectory() && match.charAt(match.length()) != File.separatorChar)
+					match.append(File.separator);
 
-				matchingFilenames.add(match);
+				matchingFilenames.add(match.toString());
 			}
 		}
 		return matchingFilenames;
@@ -950,9 +949,9 @@ public class SystemShell extends Shell
 	// {{{ getCommandCompletions() method
 	private List getCommandCompletions(View view, String currentDirName, String command)
 	{
-		ArrayList list = new ArrayList();
+		StringList list = new StringList();
 
-		Iterator iter = commands.keySet().iterator();
+		Iterator<String> iter = commands.keySet().iterator();
 		while (iter.hasNext())
 		{
 			String cmd = (String) iter.next();
