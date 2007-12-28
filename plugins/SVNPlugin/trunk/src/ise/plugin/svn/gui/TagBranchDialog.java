@@ -173,8 +173,8 @@ public class TagBranchDialog extends JDialog {
 
 
 
-        JLabel comment_label = new JLabel( "Enter comment for this commit:" );
-        comment = new JTextArea( 5, 50 );
+        JLabel comment_label = new JLabel( "Enter comment for this " + (type == TAG_DIALOG ? "tag:" : "branch:") );
+        comment = new JTextArea( 3, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 

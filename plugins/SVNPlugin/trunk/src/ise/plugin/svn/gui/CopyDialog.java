@@ -59,6 +59,8 @@ public class CopyDialog extends JDialog {
     private List<String> urlsToCopy = null;
     private JTextField path = null;
     private TableModel fileTableModel = null;
+    private JTextArea comment = null;
+    private PropertyComboBox commentList = null;
 
     private String defaultLocalDestination = null;
     private String defaultRemoteDestination = null;
@@ -118,9 +120,7 @@ public class CopyDialog extends JDialog {
             to_copy_label = new JLabel( "Copy " + ( urlsToCopy.size() == 1 ? "this URL:" : "these URLs:" ) );
         }
 
-        // 2 column table, column 0 is list of filenames/directory names,
-        // column 1 is boolean to set recursive on directories
-        JTable file_table = new JTable();
+        BestRowTable file_table = new BestRowTable();
 
         // create table model
         fileTableModel = new DefaultTableModel( new String[] {
@@ -144,6 +144,7 @@ public class CopyDialog extends JDialog {
         }
         file_table.setModel( fileTableModel );
         file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
+        file_table.packRows();
 
         // revision selection panel
         final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Copy from this revision:", SwingConstants.HORIZONTAL, true );
@@ -219,6 +220,24 @@ public class CopyDialog extends JDialog {
             }
         );
 
+        JLabel comment_label = new JLabel( "Enter comment for this copy:" );
+        comment = new JTextArea( 3, 50 );
+        comment.setLineWrap( true );
+        comment.setWrapStyleWord( true );
+
+        // list for previous comments
+        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList.setEditable( false );
+        commentList.addItemListener( new ItemListener() {
+                    public void itemStateChanged( ItemEvent e ) {
+                        if ( PropertyComboBox.SELECT.equals( commentList.getSelectedItem().toString() ) ) {
+                            return ;
+                        }
+                        comment.setText( commentList.getSelectedItem().toString() );
+                    }
+                }
+                                   );
+
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -255,8 +274,9 @@ public class CopyDialog extends JDialog {
         // add the components to the option panel
         panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 100 ) );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 50 ) ) );
         panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
+
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
 
@@ -270,8 +290,19 @@ public class CopyDialog extends JDialog {
         panel.add( "1, 7, 1, 1, 0, w, 3", browse_remote_btn );
         layout.makeColumnsSameWidth( 0, 1 );
 
-        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 9, 8, 1, E,  , 0", btn_panel );
+        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 9, 8, 1, W,  , 3", comment_label );
+        panel.add( "0, 10, 8, 1, W, wh, 3", new JScrollPane( comment ) );
+
+        if ( commentList != null && commentList.getModel().getSize() > 0 ) {
+            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
+            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 12, 8, 1, W, w, 3", commentList );
+        }
+
+        panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 14, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -308,6 +339,8 @@ public class CopyDialog extends JDialog {
             cd.setSourceURLs( urls );
         }
 
+        cd.setRevision( revision );
+
         if ( destinationIsLocal ) {
             cd.setDestinationFile( new File( path.getText() ) );
         }
@@ -319,7 +352,18 @@ public class CopyDialog extends JDialog {
                 e.printStackTrace();
             }
         }
-        cd.setRevision( revision );
+
+        String msg = comment.getText();
+        if ( msg == null || msg.length() == 0 ) {
+            msg = "no comment";
+        }
+        else {
+            if ( commentList != null ) {
+                commentList.addValue( msg );
+            }
+        }
+        cd.setMessage( msg );
+
         return cd;
     }
 }
