@@ -88,7 +88,6 @@ public class LogDialog extends JDialog {
         // list the selected files
         JLabel file_label = new JLabel( "Show log for these files:" );
         JTable file_table = new JTable();
-        //file_table.setFillsViewportHeight(true);  // java 1.6
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
                         "", "File"
