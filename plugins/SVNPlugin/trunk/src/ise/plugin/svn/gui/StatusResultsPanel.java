@@ -58,7 +58,7 @@ public class StatusResultsPanel extends JPanel {
     private JPopupMenu popupMenu = null;
 
     public StatusResultsPanel( StatusData results, View view, String username, String password ) {
-        super( new LambdaLayout() );
+        super( new BorderLayout() );
 
         this.view = view;
         this.username = username;
@@ -66,15 +66,9 @@ public class StatusResultsPanel extends JPanel {
 
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        LambdaLayout.Constraints con = LambdaLayout.createConstraint();
-        con.a = LambdaLayout.W;
-        con.y = 0;
-        con.s = "w";
-        con.p = 3;
-
         JLabel label = new JLabel( "Status checked against revision: " + results.getRevision() );
-        add( label, con );
-        con.s = "wh";
+        label.setBorder( new EmptyBorder( 6, 3, 6, 3 ) );
+        add( label, BorderLayout.NORTH );
 
         boolean added = false;
 
@@ -123,14 +117,13 @@ public class StatusResultsPanel extends JPanel {
         }
 
         if ( added ) {
-            ++con.y;
             tree = new JTree( root );
             tree.setRootVisible( false );
             for ( int i = 0; i < tree.getRowCount(); i++ ) {
                 tree.expandRow( i );
             }
             tree.addMouseListener( new TreeMouseListener() );
-            add( tree, con );
+            add( tree, BorderLayout.CENTER );
             popupMenu = createPopupMenu();
         }
         else {
