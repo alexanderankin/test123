@@ -93,7 +93,6 @@ public class CommitDialog extends JDialog {
 
         JLabel file_label = new JLabel( "Committing these files:" );
         BestRowTable file_table = new BestRowTable();
-        //file_table.setFillsViewportHeight(true);  // java 1.6
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
                         "", "File", "Status"
