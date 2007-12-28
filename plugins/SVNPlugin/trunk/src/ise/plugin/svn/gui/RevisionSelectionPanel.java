@@ -51,30 +51,60 @@ public class RevisionSelectionPanel extends JPanel {
     private JRadioButton date_rb = null;
     private JRadioButton head_rb = null;
     private JRadioButton base_rb = null;
+    private JRadioButton working_rb = null;
     private JSpinner revision_number = null;
     private JSpinner date_spinner = null;
 
     private transient SVNRevision revision = SVNRevision.HEAD;
 
+    private int layout = SwingConstants.VERTICAL;
+
     /**
+     * Revision selection panel with a vertical layout and doesn't show the
+     * "working" revision choice.
      * @param title this panel is displayed in an etched border with a title.
      */
     public RevisionSelectionPanel( String title ) {
-        super( new KappaLayout() );
+        this( title, SwingConstants.VERTICAL, false );
+    }
+
+    /**
+     * @param title this panel is displayed in an etched border with a title.
+     * @param layout either SwingConstants.VERTICAL (default) or SwingConstants.HORIZONTAL
+     * @param showWorking if true, show a radio button for working revision
+     */
+    public RevisionSelectionPanel( String title, int layout, boolean showWorking ) {
+        KappaLayout kl = new KappaLayout();
+        setLayout( kl );
+        switch ( layout ) {
+            case SwingConstants.HORIZONTAL:
+            case SwingConstants.VERTICAL:
+                this.layout = layout;
+                break;
+            default:
+                layout = SwingConstants.VERTICAL;
+        }
+
         setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), title ) );
 
         revision_number_rb = new JRadioButton( "Revision number:" );
         date_rb = new JRadioButton( "Date:" );
         head_rb = new JRadioButton( "HEAD" );
         base_rb = new JRadioButton( "BASE" );
+        if ( showWorking ) {
+            working_rb = new JRadioButton( "WORKING" );
+        }
 
         bg = new ButtonGroup();
         bg.add( revision_number_rb );
         bg.add( date_rb );
         bg.add( head_rb );
         bg.add( base_rb );
+        if ( showWorking ) {
+            bg.add( working_rb );
+        }
 
-        head_rb.setSelected(true);
+        head_rb.setSelected( true );
 
         // set up the revision number chooser
         revision_number = new JSpinner();
@@ -96,7 +126,7 @@ public class RevisionSelectionPanel extends JPanel {
         Date earliestDate = calendar.getTime();
         SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
         date_spinner = new JSpinner( model );
-        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, "dd/MM/yyyy hh:mm" );
+        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, "dd MMM yyyy HH:mm" );
         date_spinner.setEditor( date_editor );
         date_spinner.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
@@ -120,6 +150,9 @@ public class RevisionSelectionPanel extends JPanel {
         date_rb.addActionListener( al );
         head_rb.addActionListener( al );
         base_rb.addActionListener( al );
+        if ( showWorking ) {
+            working_rb.addActionListener( al );
+        }
 
         revision_number_rb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -153,18 +186,43 @@ public class RevisionSelectionPanel extends JPanel {
                     }
                 }
                                  );
+        if ( showWorking ) {
+            working_rb.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            RevisionSelectionPanel.this.setRevision( SVNRevision.WORKING );
+                        }
+                    }
+                                        );
+        }
 
         date_spinner.setEnabled( false );
 
 
-        add( "0, 0, 2, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-        add( "0, 1, 1, 1, W,  , 3", revision_number_rb );
-        add( "1, 1, 1, 1, W, w, 3", revision_number );
-        add( "0, 2, 1, 1, W,  , 3", date_rb );
-        add( "1, 2, 1, 1, W, w, 3", date_spinner );
-        add( "0, 3, 2, 1, W,  , 3", head_rb );
-        add( "0, 4, 2, 1, W,  , 3", base_rb );
-
+        if ( layout == SwingConstants.HORIZONTAL ) {
+            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            add( "0, 1, 1, 1, W, wh, 3", head_rb );
+            add( "0, 2, 1, 1, W, wh, 3", base_rb );
+            if ( showWorking ) {
+                add( "0, 3, 1, 1, W, wh, 3", working_rb );
+            }
+            add( "1, 1, 1, 1, W, wh, 3", revision_number_rb );
+            add( "2, 1, 1, 1, W, wh, 3", revision_number );
+            add( "1, 2, 1, 1, W, wh, 3", date_rb );
+            add( "2, 2, 1, 1, W, wh, 3", date_spinner );
+            kl.makeColumnsSameWidth( 0, 1 );
+        }
+        else {
+            add( "0, 0, 2, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            add( "0, 1, 2, 1, W,  , 3", head_rb );
+            add( "0, 2, 2, 1, W,  , 3", base_rb );
+            if ( showWorking ) {
+                add( "0, 3, 2, 1, W, , 3", working_rb );
+            }
+            add( "0, 4, 1, 1, W,  , 3", revision_number_rb );
+            add( "1, 4, 1, 1, W, w, 3", revision_number );
+            add( "0, 5, 1, 1, W,  , 3", date_rb );
+            add( "1, 5, 1, 1, W, w, 3", date_spinner );
+        }
     }
 
     public void setRevision( SVNRevision revision ) {
@@ -184,5 +242,14 @@ public class RevisionSelectionPanel extends JPanel {
         head_rb.setEnabled( b );
         revision_number.setEnabled( b );
         revision_number_rb.setEnabled( b );
+    }
+
+    // for testing
+    public static void main ( String[] args ) {
+        RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title", SwingConstants.VERTICAL, true );
+        JFrame frame = new JFrame();
+        frame.setContentPane( panel );
+        frame.pack();
+        frame.setVisible( true );
     }
 }

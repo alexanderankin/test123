@@ -127,6 +127,7 @@ public class CopyAction implements ActionListener {
                                 }
                                 CopyData cd = new CopyData();
                                 cd.setSourceFile( file );
+                                cd.setRevision( data.getRevision() );
                                 String destination = "";
                                 if ( data.getDestinationFile() != null ) {
                                     // working copy -> working copy
@@ -177,6 +178,7 @@ public class CopyAction implements ActionListener {
                                 CopyData cd = new CopyData();
                                 String destination = "";
                                 cd.setSourceURL( url );
+                                cd.setRevision( data.getRevision() );
                                 if ( data.getDestinationFile() != null ) {
                                     // repository -> working file
                                     where2where = U2W;
