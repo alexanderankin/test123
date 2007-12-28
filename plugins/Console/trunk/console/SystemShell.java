@@ -418,29 +418,35 @@ public class SystemShell extends Shell
 
 		final String fileDelimiters = "=\'\" \\" + File.pathSeparator;
 
-		String lastArgEscaped, lastArg;
+		String lastArg;
+		CompletionInfo completionInfo = new CompletionInfo();
+		completionInfo.offset = 0;
 		if (File.separatorChar == '\\')
 		{
 			// Escaping impossible
-			lastArgEscaped = (String) parse(command).lastElement();
+			String lastArgEscaped = (String) parse(command).lastElement();
 			// We want to allow completion on the forward slash too
 			lastArg = lastArgEscaped.replace('/', File.separatorChar);
+			if (lastArg.startsWith("\\")) {
+				ConsoleState state = getConsoleState(console);
+				char drive = state.currentDirectory.charAt(0);
+				lastArg = drive + ":\\" + lastArg.substring(1);
+				completionInfo.offset = 2;
+			}
 		}
 		else
 		{
 			// Escaping possible
-
 			/* I use findLastArgument and then unescape instead of
 			   (String)parse(command).lastElement() because there's
 			   no way to get parse(String) to also return the original
 			   length of the unescaped argument, which we need to calculate
 			   the completion offset. */
-			lastArgEscaped = findLastArgument(command, fileDelimiters);
+			String lastArgEscaped = findLastArgument(command, fileDelimiters);
 			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
 
-		CompletionInfo completionInfo = new CompletionInfo();
-		completionInfo.offset = command.length() - lastArg.length();
+		completionInfo.offset += command.length() - lastArg.length();
 
 		Matcher m = homeDir.matcher(lastArg);
 		lastArg = m.replaceFirst(System.getProperty("user.home"));
@@ -522,16 +528,6 @@ public class SystemShell extends Shell
 	 */
 	String expandVariables(View view, String arg)
 	{
-		if (File.separatorChar == '\\') {
-//			arg = arg.replace('/', File.separatorChar);
-			// prepend default drive letter to path
-			if (arg.startsWith("\\")) {
-				Console console = ConsolePlugin.getConsole(view);
-				ConsoleState state = getConsoleState(console);
-				char drive = state.currentDirectory.charAt(0);
-				arg = drive + ":\\" + arg.substring(1);
-			}
-		}
 		// StringBuffer buf = new StringBuffer();
 		String varName = null;
 		// Expand homedir
