@@ -4,7 +4,7 @@
 #-----------------------------------
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
-plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson and Alan Ezust
+plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
 plugin.ise.plugin.nav.NavigatorPlugin.version=1.5.1
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
