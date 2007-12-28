@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-// imports
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -50,6 +50,7 @@ import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
 
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Pretty much a clone of CopyDialog but with a few minor GUI changes.  This
@@ -68,6 +69,7 @@ public class TagBranchDialog extends JDialog {
 
     private SVNURL source = null;
     private SVNURL destination = null;
+    private SVNRevision revision = SVNRevision.HEAD;
 
     public static final int TAG_DIALOG = 1;
     public static final int BRANCH_DIALOG = 2;
@@ -101,20 +103,25 @@ public class TagBranchDialog extends JDialog {
     protected void init() {
         KappaLayout layout = new KappaLayout();
         JPanel panel = new JPanel( layout );
-        panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
-        JLabel to_copy_label = new JLabel( type == TAG_DIALOG ? TAG : BRANCH + " this file:" );
-        JTable file_table = new JTable();
+        // source for tag/branch
+        JLabel to_copy_label = new JLabel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from:" );
+        JTextField source_file = new JTextField(toCopy);
+        source_file.setEditable(false);
+        source_file.setBackground(Color.WHITE);
 
-        // create table model
-        fileTableModel = new DefaultTableModel( new String[] {"Source"}, 1 ) ;
-        fileTableModel.setValueAt( toCopy, 0, 0 );
-        file_table.setModel( fileTableModel );
-        file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
+        // revision selection panel
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from this revision:", SwingConstants.HORIZONTAL, false );
 
+        JPanel source_panel = new JPanel(new LambdaLayout());
+        //source_panel.setBorder(BorderFactory.createEtchedBorder());
+        source_panel.add("0, 0, 1, 1, W, w, 3", to_copy_label);
+        source_panel.add("0, 1, 1, 1, W, w, 3", source_file);
+        source_panel.add("0, 2, 1, 1, 0, w, 3", tag_revision_panel);
 
         // destination
-        JLabel path_label = new JLabel( "To this location:" );
+        JLabel path_label = new JLabel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " at this location:" );
         path = new JTextField( defaultDestination , 30 );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
@@ -164,6 +171,8 @@ public class TagBranchDialog extends JDialog {
             }
         );
 
+
+
         JLabel comment_label = new JLabel( "Enter comment for this commit:" );
         comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
@@ -207,6 +216,7 @@ public class TagBranchDialog extends JDialog {
                             JOptionPane.showMessageDialog( TagBranchDialog.this, "Destination URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
+                        revision = tag_revision_panel.getRevision();
                         cancelled = false;
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
@@ -225,30 +235,27 @@ public class TagBranchDialog extends JDialog {
 
 
         // add the components to the option panel
-        panel.add( "0, 0, 8, 1, W,  , 3", to_copy_label );
-        JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize( new Dimension( 600, 50 ) );
-        panel.add( "0, 1, 8, 1, W, w, 3", file_scroller );
+        panel.add( "0, 0, 8, 1, W, w, 3", source_panel );
 
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 3, 1, 1, W,  , 3", path_label );
-        panel.add( "0, 4, 8, 1, 0, w, 3", path );
-        panel.add( "0, 5, 1, 1, 0, w, 3", browse_remote_btn );
+        panel.add( "0, 5, 1, 1, W,  , 3", path_label );
+        panel.add( "0, 6, 8, 1, 0, w, 3", path );
+        panel.add( "0, 7, 1, 1, 0, w, 3", browse_remote_btn );
 
-        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 7, 8, 1, W,  , 3", comment_label );
-        panel.add( "0, 8, 8, 1, W, wh, 3", new JScrollPane( comment ) );
+        panel.add( "0, 9, 8, 1, W,  , 3", comment_label );
+        panel.add( "0, 10, 8, 1, W, wh, 3", new JScrollPane( comment ) );
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 9, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
-            panel.add( "0, 10, 8, 1, W, w, 3", commentList );
+            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 12, 8, 1, W, w, 3", commentList );
         }
-        panel.add( "0, 11, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 13, 8, 1, E,  , 0", btn_panel );
+        panel.add( "0, 14, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -263,6 +270,7 @@ public class TagBranchDialog extends JDialog {
         List<SVNURL> urls = new ArrayList<SVNURL>();
         urls.add( source );
         cd.setSourceURLs( urls );
+        cd.setRevision( revision );
         cd.setDestinationURL( destination );
         String msg = comment.getText();
         if ( msg == null || msg.length() == 0 ) {

@@ -50,6 +50,7 @@ import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
 
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class CopyDialog extends JDialog {
     // instance fields
@@ -61,10 +62,11 @@ public class CopyDialog extends JDialog {
 
     private String defaultLocalDestination = null;
     private String defaultRemoteDestination = null;
+    private SVNRevision revision = SVNRevision.HEAD;
 
     private boolean destinationIsLocal = true;  // if true, copying to local file system
 
-    private boolean cancelled = false;
+    private boolean cancelled = true;
 
     /**
      * @param view parent frame
@@ -143,6 +145,8 @@ public class CopyDialog extends JDialog {
         file_table.setModel( fileTableModel );
         file_table.getColumnModel().getColumn( 0 ).setPreferredWidth( 600 );
 
+        // revision selection panel
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Copy from this revision:", SwingConstants.HORIZONTAL, true );
 
         // destination
         JLabel path_label = new JLabel( "To this location:" );
@@ -230,6 +234,7 @@ public class CopyDialog extends JDialog {
                             JOptionPane.showMessageDialog( CopyDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
+                        revision = revision_panel.getRevision();
                         cancelled = false;
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
@@ -255,14 +260,18 @@ public class CopyDialog extends JDialog {
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
 
-        panel.add( "0, 3, 1, 1, W,  , 3", path_label );
-        panel.add( "0, 4, 8, 1, 0, w, 3", path );
-        panel.add( "0, 5, 1, 1, 0, w, 3", browse_local_btn );
-        panel.add( "1, 5, 1, 1, 0, w, 3", browse_remote_btn );
+        panel.add( "0, 3, 8, 1, 0, w, 3", revision_panel );
+
+        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+
+        panel.add( "0, 5, 1, 1, W,  , 3", path_label );
+        panel.add( "0, 6, 8, 1, 0, w, 3", path );
+        panel.add( "0, 7, 1, 1, 0, w, 3", browse_local_btn );
+        panel.add( "1, 7, 1, 1, 0, w, 3", browse_remote_btn );
         layout.makeColumnsSameWidth( 0, 1 );
 
-        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 7, 8, 1, E,  , 0", btn_panel );
+        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 9, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -310,6 +319,7 @@ public class CopyDialog extends JDialog {
                 e.printStackTrace();
             }
         }
+        cd.setRevision( revision );
         return cd;
     }
 }
