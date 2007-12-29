@@ -18,10 +18,10 @@ import org.gjt.sp.util.StringList;
 
 /**
  * A SystemShell is shared across all instances of Console. 
- * It creates a ProcessBuilder, and executes system statements in a shell which 
- * resembles in terms of user interface, something that is a cross between the
- * Windows "cmd.exe" and the Linux bash shell, so it should be easy to use for
- * both.
+ * It has own environment (variables), and executes system statements in
+ * a shell which resembles in terms of user interface, something that is
+ * a cross between the Windows "cmd.exe" and the Linux bash shell, so it
+ * should be easy to use for both.
  * 
  * It manages a mapping of Console to ConsoleState objects, where the ConsoleState
  * manages the actual ConsoleProcess and the state of that shell.
@@ -35,8 +35,6 @@ import org.gjt.sp.util.StringList;
 public class SystemShell extends Shell
 {
 	// {{{ private members
-	private ProcessBuilder processBuilder;
-
 	private String userHome;
 
 	/** common shell variables shared across all instances of the System Shell. */
@@ -64,7 +62,6 @@ public class SystemShell extends Shell
 	{
 		super("System");
 		lineSep = toBytes(System.getProperty("line.separator"));
-		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
 		userHome = System.getProperty("user.home");
 		if (File.separator.equals("\\"))
@@ -268,7 +265,7 @@ public class SystemShell extends Shell
 			args.copyInto(_args);
 			state.currentDirectory = cwd;
 			final ConsoleProcess proc = new ConsoleProcess(console, output, _args,
-				processBuilder, state, foreground);
+				variables, state, foreground);
 
 			/* If startup failed its no longer running */
 			if (foreground && proc.isRunning())
@@ -644,7 +641,7 @@ public class SystemShell extends Shell
 	// {{{ getVariables() method
 	Map<String, String> getVariables()
 	{
-		return processBuilder.environment();
+		return variables;
 	} // }}}
 
 	// {{{ propertiesChanged() method
@@ -741,17 +738,17 @@ public class SystemShell extends Shell
 	// {{{ initVariables() method
 	private void initVariables()
 	{
-		variables = processBuilder.environment();
+		variables = new HashMap<String, String>();
+		variables.putAll(System.getenv());
 
-		if (File.separator == "\\")
+		if (File.separator.equals("\\"))
 		{
-			Collection<String> keys = variables.keySet();
-			for (String key : keys)
+			Map<String, String> upcased = new HashMap<String, String>();
+			for (String key : variables.keySet())
 			{
-				String value = variables.get(key);
-				variables.remove(key);
-				variables.put(key.toUpperCase(), value);
+				upcased.put(key.toUpperCase(), variables.get(key));
 			}
+			variables = upcased;
 		}
 
 		if (jEdit.getJEditHome() != null)

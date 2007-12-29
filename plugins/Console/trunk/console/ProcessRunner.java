@@ -41,10 +41,10 @@ import org.gjt.sp.util.StringList;
 public abstract class ProcessRunner
 {
 	// {{{ Data Members
-
-	// Each ProcessRunner holds onto a processBuilder.
-	ProcessBuilder processBuilder;
-
+	// A OS dependant instance is set to this variable at first call
+	// of getProcessRunner(), and the instance is shared for all
+	// process creation in Console plugin. Thus, this class should
+	// not have any instance variables.
 	private static ProcessRunner instance;
 	// }}}
 
@@ -80,13 +80,6 @@ public abstract class ProcessRunner
 	}
 	// }}}
 
-	// {{{ getEnvironmentVariables()
-	final Map<String, String> getEnvironmentVariables()
-	{
-		return processBuilder.environment();
-	}
-	// }}}
-
 	// {{{ setUpDefaultAliases (stub)
 	void setUpDefaultAliases(Hashtable <String, String> aliases)
 	{
@@ -94,26 +87,26 @@ public abstract class ProcessRunner
 
 	// {{{ prependUserPath() method
 	/**
-	 * Takes a string and prepends it to PATH
-	 *
+	 * Prepends "Subshell extra PATH" to PATH in a environment.
 	 */
-	public void prependUserPath()  {
-		if (processBuilder == null) return;
+	private void prependUserPath(Map<String, String> environment)  {
 		String extra = jEdit.getProperty("console.shell.pathdirs");
-		String oldPath = processBuilder.environment().get("PATH");
-		String newPath = extra + File.pathSeparator + oldPath;
-		processBuilder.environment().put("PATH", newPath);
+		if (extra == null || extra.length() == 0) return;
+		String oldPath = environment.get("PATH");
+		String newPath = extra;
+		if (oldPath != null) {
+			newPath = extra + File.pathSeparator + oldPath;
+		}
+		environment.put("PATH", newPath);
 	} // }}}
 
 	// {{{ exec() method
 	/**
-	 *
 	 * @since Java 1.5 - this has many similar features to the
 	 *        ProcessRunner, and eventually we should refactor this code.
 	 */
-	Process exec(String[] args, ProcessBuilder pBuilder, String dir) throws IOException
+	Process exec(String[] args, Map<String, String> env, String dir) throws IOException
 	{
-
 		String prefix = jEdit.getProperty("console.shell.prefix", "osdefault");
 		StringList arglist = new StringList();
 		if (prefix == null || prefix.length() < 1) {
@@ -156,7 +149,11 @@ public abstract class ProcessRunner
 		else {
 			arglist.addAll(args);
 		}
-		processBuilder = pBuilder;
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		Map<String, String> processEnv = processBuilder.environment();
+		processEnv.clear();
+		processEnv.putAll(env);
+		prependUserPath(processEnv);
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
 		boolean merge = jEdit.getBooleanProperty( "console.processrunner.mergeError", true);
@@ -171,9 +168,6 @@ public abstract class ProcessRunner
 			Log.log(Log.ERROR, e, "Process Runner");
 		}
 		return null;
-		/*
-		 * return Runtime.getRuntime().exec(args,env,new File(dir));
-		 */
 	}
 	// }}}
 
@@ -298,10 +292,14 @@ public abstract class ProcessRunner
 
 				try
 				{
-					// processBuilder = new
-					// ProcessBuilder(args);
+					ProcessBuilder processBuilder = new ProcessBuilder(args);
+					processBuilder.environment().clear();
+					for (String assignment: env)
+					{
+						String[] split = assignment.split("=");
+						processBuilder.environment().put(split[0], split[1]);
+					}
 					processBuilder.directory(new File(dir));
-					processBuilder.command(args);
 					processBuilder.redirectErrorStream(true);
 					return processBuilder.start();
 				}
@@ -350,5 +348,6 @@ public abstract class ProcessRunner
 	// }}}
 
 } // }}}
+
 
 
