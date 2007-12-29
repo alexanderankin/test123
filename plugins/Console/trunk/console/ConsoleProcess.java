@@ -24,6 +24,7 @@
 package console;
 
 // {{{ Imports
+import java.util.Map;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -66,7 +67,7 @@ class ConsoleProcess
 
 	// {{{ ConsoleProcess constructor
 	ConsoleProcess(final Console console, final Output output, final String[] args,
-			ProcessBuilder pBuilder,  SystemShell.ConsoleState consoleState,
+			Map<String, String> env,  SystemShell.ConsoleState consoleState,
 			boolean foreground)
 	{
 		this.args = args;
@@ -85,7 +86,7 @@ class ConsoleProcess
 			// Streams for getting user input
 			pipeIn = new PipedInputStream();
 			pipeOut = new PipedOutputStream(pipeIn);
-			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
+			process = ProcessRunner.getProcessRunner().exec(args, env,
 					currentDirectory);
 			if (process == null)
 			{

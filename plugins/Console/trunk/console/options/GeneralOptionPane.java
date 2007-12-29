@@ -42,7 +42,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
 
 import console.gui.Label;
-import console.ProcessRunner;
 //}}}
 
 public class GeneralOptionPane extends AbstractOptionPane implements ActionListener
@@ -179,8 +178,6 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		jEdit.setBooleanProperty("console.shell.info.toggle", showWelcomeMessage.isSelected());
 		
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
-		ProcessRunner runner = ProcessRunner.getProcessRunner();
-		runner.prependUserPath();
 		jEdit.setFontProperty("console.font",font.getFont());
 
 		String limitstr = limit.getText();
