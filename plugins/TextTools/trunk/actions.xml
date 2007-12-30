@@ -60,11 +60,6 @@
 			TextToolsPlugin.textToolsBlockHandling(view, textArea);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="spacetotabs">
-		<CODE>
-			BeanShellUtility.JEditTextArea_spacesToTabs(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="rect-moveup">
 		<CODE>
 			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_UP);
