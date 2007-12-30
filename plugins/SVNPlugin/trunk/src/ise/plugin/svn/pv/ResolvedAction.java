@@ -56,85 +56,15 @@ public class ResolvedAction extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
-            final SVNData data = new SVNData();
-
-            // get the paths
-            boolean recursive = false;
             List<String> paths = new ArrayList<String>();
             for ( VPTNode node : nodes ) {
-                if ( node != null && node.getNodePath() != null ) {
+                if ( node != null ) {
                     paths.add( node.getNodePath() );
-                    if ( node.isDirectory() ) {
-                        recursive = true;
-                    }
                 }
             }
 
-            // user confirmations
-            if ( recursive ) {
-                // have the user verify they want a recursive resolve
-                int response = JOptionPane.showConfirmDialog( getView(), "Recursively resolve all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.CANCEL_OPTION ) {
-                    return ;
-                }
-                recursive = response == JOptionPane.YES_OPTION;
-            }
-            else {
-                // have the user confirm they really want to resolve
-                int response = JOptionPane.showConfirmDialog( getView(), "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.NO_OPTION ) {
-                    return ;
-                }
-            }
-
-            data.setPaths( paths );
-
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
-
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
-            panel.showConsole();
-            Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Resolving ..." );
-            for ( Handler handler : logger.getHandlers() ) {
-                handler.flush();
-            }
-
-            class Runner extends SwingWorker<AddResults, Object> {
-
-                @Override
-                public AddResults doInBackground() {
-                    try {
-                        Resolved resolve = new Resolved();
-                        return resolve.resolve( data );
-                    }
-                    catch ( Exception e ) {
-                        data.getOut().printError( e.getMessage() );
-                    }
-                    finally {
-                        data.getOut().close();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, view, username, password );
-                        panel.addTab("Resolved", results_panel);
-                    }
-                    catch ( Exception e ) {
-                        System.err.println(e.getMessage());
-                    }
-                }
-            }
-            ( new Runner() ).execute();
-
+            AddAction action = new AddAction(view, paths, username, password);
+            action.actionPerformed(ae);
         }
     }
 
