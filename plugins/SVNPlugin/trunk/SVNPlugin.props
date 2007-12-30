@@ -2,7 +2,7 @@
 # Properties for SVNPlugin
 #-----------------------------------
 
-# general plugin properites
+# general plugin properties
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
@@ -49,7 +49,7 @@ plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser subversion.ch
 subversion.checkout.label=Checkout
 subversion.label=SVN Console
 
-# subversion commands
+# subversion commands for ProjectViewer
 ise.plugin.svn.action.label.1=Status
 ise.plugin.svn.action.code.1=ise.plugin.svn.pv.StatusAction
 ise.plugin.svn.action.label.2=Update...
@@ -64,7 +64,7 @@ ise.plugin.svn.action.code.6=ise.plugin.svn.pv.RevertActor
 ise.plugin.svn.action.label.7=Add
 ise.plugin.svn.action.code.7=ise.plugin.svn.pv.AddActor
 ise.plugin.svn.action.label.8=Resolve
-ise.plugin.svn.action.code.8=ise.plugin.svn.pv.ResolvedAction
+ise.plugin.svn.action.code.8=ise.plugin.svn.pv.ResolvedActor
 ise.plugin.svn.action.label.9=Delete...
 ise.plugin.svn.action.code.9=ise.plugin.svn.pv.DeleteActor
 ise.plugin.svn.action.label.10=-
@@ -85,6 +85,7 @@ ise.plugin.svn.action.code.17=ise.plugin.svn.pv.CopyActor
 
 # register subversion commands with ProjectViewer
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.context-menu-actions=ise.plugin.svn.pv.SVNAction
+
 
 # application messages
 ise.plugin.svn.gui.StatusResultsPanel.modified=Modified files (need committed?):
