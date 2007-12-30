@@ -31,6 +31,7 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.ErrorPanel;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -110,6 +111,7 @@ public class InfoAction implements ActionListener {
             }
 
             class Runner extends SwingWorker<List<SVNInfo>, Object> {
+                private String errorMessage = null;
 
                 @Override
                 public List<SVNInfo> doInBackground() {
@@ -118,6 +120,7 @@ public class InfoAction implements ActionListener {
                         return info.info( data );
                     }
                     catch ( Exception e ) {
+                        errorMessage = e.getMessage();
                         data.getOut().printError( e.getMessage() );
                     }
                     finally {
@@ -129,6 +132,11 @@ public class InfoAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
+                        if ( errorMessage != null ) {
+                            JPanel error_panel = new ErrorPanel( errorMessage );
+                            panel.addTab( "Info Error", error_panel );
+                            return ;
+                        }
                         JPanel info_panel = new SVNInfoPanel( get() );
                         //panel.setResultsPanel( info_panel );
                         //panel.showTab( OutputPanel.RESULTS );
