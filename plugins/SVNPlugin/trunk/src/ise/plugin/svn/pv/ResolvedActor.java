@@ -39,7 +39,7 @@ import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Resolved;
+import ise.plugin.svn.action.ResolvedAction;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
@@ -52,7 +52,7 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 /**
  * /// TODO: convert this to an Actor and an ActionListener.
  */
-public class ResolvedAction extends NodeActor {
+public class ResolvedActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
@@ -63,9 +63,8 @@ public class ResolvedAction extends NodeActor {
                 }
             }
 
-            AddAction action = new AddAction(view, paths, username, password);
+            ResolvedAction action = new ResolvedAction(view, paths, username, password);
             action.actionPerformed(ae);
         }
     }
-
 }
