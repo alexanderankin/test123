@@ -222,7 +222,7 @@ public class TextToolsBlockHandling
 				bsu.selectLine(selLines[i]);
 				// Note: as long as there are bugs in 
 				//textArea.spacesToTabs, a local patch is used
-				bsu.JEditTextArea_spacesToTabs();
+				textArea.spacesToTabs();
 			}
 			/*********************************************************
 			 * memorize selection

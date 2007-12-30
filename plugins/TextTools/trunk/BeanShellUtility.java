@@ -151,7 +151,7 @@ public class BeanShellUtility
 		textArea.setSelection(
 			new Selection.Range(
 				textArea.getLineStartOffset(lineNbr),
-				textArea.getLineEndOffset(lineNbr)
+				textArea.getLineEndOffset(lineNbr)-1
 			)
 		);
 	 } //}}}
@@ -284,104 +284,6 @@ public class BeanShellUtility
 		return buf.toString();
 	} //}}}
 
-	//{{{ spacesToTabs() method (TextUtilities)
-	/**
-	 * Converts consecutive spaces to tabs in the specified string.
-	 * Correction of TextUtilities.spacesToTabs
-	 * @param in The string
-	 * @param tabSize The tab size
-	 * @param startOfLineOffset Offset relativ to start of line
-	 */
-	public static String TextUtilities_spacesToTabs(String in, int tabSize, int startOfLineOffset)
-	{
-		StringBuffer buf = new StringBuffer();
-		int width = startOfLineOffset;	// visible start of target string (selection)
-		int whitespace = 0;
-		for(int i = 0; i < in.length(); i++)
-		{
-			switch(in.charAt(i))
-			{
-			case ' ':
-				whitespace++;
-				width++;
-				break;
-			case '\t':
-				// change all leading whitespace into tabs
-				// ignore ws < tabsize
-				width -= whitespace; //
-				for (int j = 0;j<(whitespace/tabSize+1);j++) {
-				  buf.append('\t');
-				  width += tabSize;
-				}
-				width -= (width % tabSize);
-				whitespace = 0;
-				break;
-			default:
-				if(whitespace != 0)
-				{
-					buf.append(MiscUtilities_createWhiteSpace(
-						whitespace, tabSize, width-whitespace));
-					whitespace = 0;
-				}
-				buf.append(in.charAt(i));
-				if (in.charAt(i) == '\n')
-					width = startOfLineOffset;
-				else	width++;
-				break;
-			}
-		}
-
-		if(whitespace != 0)
-		{
-			buf.append(MiscUtilities_createWhiteSpace(whitespace, tabSize, width-whitespace));
-		}
-		return buf.toString();
-	} //}}}
-
-	//{{{ spacesToTabs() method (JEditTextArea)
-	/**
-	 * Converts spaces to tabs in the selection.
-	 * @since jEdit 2.7pre2
-	 */
-	public	void JEditTextArea_spacesToTabs() {
-		Selection[] selection = textArea.getSelection();
-		if(!buffer.isEditable())
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		buffer.beginCompoundEdit();
-
-		if(selection.length == 0)
-		{
-			textArea.setText(TextUtilities_spacesToTabs(
-				textArea.getText(), buffer.getTabSize(), 0));
-		}
-		else
-		{
-			for(int i = 0; i < selection.length; i++)
-			{
-			  Selection s = selection[i];
-
-			  StringBuffer changedBuffer = new StringBuffer();
-			  for (int selLine = s.getStartLine(); selLine <= s.getEndLine(); selLine++) {
-			    int visibleStartOfSelection = getSelectionVisibleStartColumn(selLine, s);
-			    changedBuffer.append(TextUtilities_spacesToTabs(
-				  getSelectionLine(selLine, s), buffer.getTabSize(),
-				  visibleStartOfSelection));
-			    if (selLine != s.getEndLine()) changedBuffer.append("\n");
-			  }
-			  textArea.setSelectedText(s,changedBuffer.toString());
-			}
-		}
-
-		buffer.endCompoundEdit();
-	}
-	public static void JEditTextArea_spacesToTabs(View view) {
-	  BeanShellUtility bsu = new BeanShellUtility(view);
-	  bsu.JEditTextArea_spacesToTabs();
-	} //}}}
 }
 
 
