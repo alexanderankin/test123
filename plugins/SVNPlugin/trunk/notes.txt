@@ -19,8 +19,8 @@ resolve - done
 lock
 unlock
 --
-tag
-branch
+tag - done
+branch - done
 merge
 switch
 --
@@ -31,7 +31,7 @@ set keywords
 history - done, I called it "log"
 annotations
 --
-copy
+copy - done
 export
 cleanup - done
 
@@ -64,14 +64,14 @@ svn cat
 svn checkout - done
 svn cleanup - done
 svn commit - done
-svn copy
+svn copy - done
 svn delete - done
 svn diff - done
 svn export
 svn help
 svn import
 svn info - done
-svn list
+svn list - done
 svn lock
 svn log - done
 svn merge

@@ -197,8 +197,8 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
                                     }
                                     pm.addProject( project, group );
 
-                                    // offer to import the files just checked out into ProjectViewer
-                                    // note that Importers are runnable, so add the importer to the
+                                    // offer to import the files just checked out into ProjectViewer.
+                                    // Note that Importers are runnable, so add the importer to the
                                     // event queue for handling.  If Importer.doImport is called here,
                                     // there will be a deadlock.
                                     RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
