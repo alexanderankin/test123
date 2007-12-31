@@ -132,6 +132,7 @@ public class CommandOutputParser
 			}
 			else
 			{
+				errorSource.addError(lastError);
 				lastMatcher = null;
 				lastError = null;
 			}
@@ -151,7 +152,6 @@ public class CommandOutputParser
 				// in dir:" + directory);
 				lastError = error;
 				lastMatcher = m;
-				errorSource.addError(lastError);
 				int type = lastError.getErrorType();
 				if (type == ErrorSource.ERROR)
 				{
