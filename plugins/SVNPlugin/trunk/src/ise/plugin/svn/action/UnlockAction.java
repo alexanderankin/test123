@@ -63,6 +63,7 @@ public class UnlockAction implements ActionListener {
     private List<String> paths = null;
     private String username = null;
     private String password = null;
+    private boolean remote = false;
 
     /**
      * @param view the View in which to display results
@@ -70,7 +71,7 @@ public class UnlockAction implements ActionListener {
      * @param username the username for the svn repository
      * @param password the password for the username
      */
-    public UnlockAction( View view, List<String> paths, String username, String password ) {
+    public UnlockAction( View view, List<String> paths, String username, String password, boolean remote ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( paths == null )
@@ -79,12 +80,13 @@ public class UnlockAction implements ActionListener {
         this.paths = paths;
         this.username = username;
         this.password = password;
+        this.remote = remote;
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new LockDialog( view, paths, false );
+            dialog = new LockDialog( view, paths, false, remote );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             final CommitData cd = dialog.getData();

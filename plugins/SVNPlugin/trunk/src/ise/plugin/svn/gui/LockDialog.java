@@ -62,6 +62,7 @@ public class LockDialog extends JDialog {
     private View view = null;
     private List<String> nodes = null;
     private boolean lock = true;
+    private boolean remote = false;
 
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
@@ -69,7 +70,7 @@ public class LockDialog extends JDialog {
 
     private CommitData lockData = null;
 
-    public LockDialog( View view, List<String> nodes, boolean lock ) {
+    public LockDialog( View view, List<String> nodes, boolean lock, boolean remote ) {
         super( ( JFrame ) view, ( lock ? "Lock" : "Unlock" ), true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
@@ -77,6 +78,7 @@ public class LockDialog extends JDialog {
         this.view = view;
         this.nodes = nodes;
         this.lock = lock;
+        this.remote = remote;
         _init();
     }
 
@@ -95,6 +97,7 @@ public class LockDialog extends JDialog {
             }
         }
         lockData.setPaths( paths );
+        lockData.setPathsAreURLs( remote );
 
         JLabel file_label = new JLabel( lock ? "Locking these files:" : "Unlocking these files:" );
         BestRowTable file_table = new BestRowTable();

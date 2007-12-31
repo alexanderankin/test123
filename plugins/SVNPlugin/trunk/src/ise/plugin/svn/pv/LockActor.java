@@ -64,7 +64,7 @@ public class LockActor extends NodeActor {
                 }
             }
 
-            LockAction action = new LockAction(view, paths, username, password);
+            LockAction action = new LockAction(view, paths, username, password, false);
             action.actionPerformed(ae);
         }
     }

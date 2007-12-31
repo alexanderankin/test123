@@ -371,7 +371,7 @@ public class StatusResultsPanel extends JPanel {
                                 paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
                             }
                         }
-                        UnlockAction action = new UnlockAction( view, paths, username, password );
+                        UnlockAction action = new UnlockAction( view, paths, username, password, false );
                         action.actionPerformed( ae );
                     }
                 }
