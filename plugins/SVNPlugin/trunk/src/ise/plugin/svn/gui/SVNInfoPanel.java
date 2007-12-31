@@ -169,16 +169,7 @@ public class SVNInfoPanel extends JPanel {
             info_table_model.addRow( new String[] {"Lock Owner", lock.getOwner() } );
             info_table_model.addRow( new String[] {"Lock Created", formatDate( lock.getCreationDate() ) } );
             if ( lock.getComment() != null ) {
-                int lineCount = getLineCount( lock.getComment() );
-                StringBuffer sb = new StringBuffer();
-                if ( lineCount == 1 ) {
-                    sb.append( "(1 line)" );
-                }
-                else {
-                    sb.append( "(" + lineCount + " lines)" );
-                }
-                sb.append( ":\n" + lock.getComment() + "\n" );
-                info_table_model.addRow( new String[] {"Lock Comment", sb.toString() } );
+                info_table_model.addRow( new String[] {"Lock Comment", lock.getComment() } );
             }
         }
 
@@ -199,15 +190,5 @@ public class SVNInfoPanel extends JPanel {
 
     private String formatDate( Date date ) {
         return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z (EE, d MMM yyyy)", Locale.getDefault() ).format( date );
-    }
-
-    private int getLineCount( String s ) {
-        int count = 0;
-        BreakIterator boundary = BreakIterator.getLineInstance();
-        int start = boundary.first();
-        for ( int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next() ) {
-            ++count;
-        }
-        return count;
     }
 }

@@ -41,12 +41,12 @@ public class StatusData {
     private List<SVNStatus> unversioned;
     private List<SVNStatus> missing;
     private List<SVNStatus> outOfDate;
+    private List<SVNStatus> locked;
 
     /**
      * Returns the value of revision.
      */
-    public long getRevision()
-    {
+    public long getRevision() {
         return revision;
     }
 
@@ -54,16 +54,14 @@ public class StatusData {
      * Sets the value of revision.
      * @param revision The value to assign revision.
      */
-    public void setRevision(long revision)
-    {
+    public void setRevision( long revision ) {
         this.revision = revision;
     }
 
     /**
      * Returns the value of modified.
      */
-    public List<SVNStatus> getModified()
-    {
+    public List<SVNStatus> getModified() {
         return modified;
     }
 
@@ -71,16 +69,14 @@ public class StatusData {
      * Sets the value of modified.
      * @param modified The value to assign modified.
      */
-    public void setModified(List<SVNStatus> modified)
-    {
+    public void setModified( List<SVNStatus> modified ) {
         this.modified = modified;
     }
 
     /**
      * Returns the value of conflicted.
      */
-    public List<SVNStatus> getConflicted()
-    {
+    public List<SVNStatus> getConflicted() {
         return conflicted;
     }
 
@@ -88,16 +84,14 @@ public class StatusData {
      * Sets the value of conflicted.
      * @param conflicted The value to assign conflicted.
      */
-    public void setConflicted(List<SVNStatus> conflicted)
-    {
+    public void setConflicted( List<SVNStatus> conflicted ) {
         this.conflicted = conflicted;
     }
 
     /**
      * Returns the value of deleted.
      */
-    public List<SVNStatus> getDeleted()
-    {
+    public List<SVNStatus> getDeleted() {
         return deleted;
     }
 
@@ -105,16 +99,14 @@ public class StatusData {
      * Sets the value of deleted.
      * @param deleted The value to assign deleted.
      */
-    public void setDeleted(List<SVNStatus> deleted)
-    {
+    public void setDeleted( List<SVNStatus> deleted ) {
         this.deleted = deleted;
     }
 
     /**
      * Returns the value of added.
      */
-    public List<SVNStatus> getAdded()
-    {
+    public List<SVNStatus> getAdded() {
         return added;
     }
 
@@ -122,16 +114,14 @@ public class StatusData {
      * Sets the value of added.
      * @param added The value to assign added.
      */
-    public void setAdded(List<SVNStatus> added)
-    {
+    public void setAdded( List<SVNStatus> added ) {
         this.added = added;
     }
 
     /**
      * Returns the value of unversioned.
      */
-    public List<SVNStatus> getUnversioned()
-    {
+    public List<SVNStatus> getUnversioned() {
         return unversioned;
     }
 
@@ -139,16 +129,14 @@ public class StatusData {
      * Sets the value of unversioned.
      * @param unversioned The value to assign unversioned.
      */
-    public void setUnversioned(List<SVNStatus> unversioned)
-    {
+    public void setUnversioned( List<SVNStatus> unversioned ) {
         this.unversioned = unversioned;
     }
 
     /**
      * Returns the value of missing.
      */
-    public List<SVNStatus> getMissing()
-    {
+    public List<SVNStatus> getMissing() {
         return missing;
     }
 
@@ -156,16 +144,14 @@ public class StatusData {
      * Sets the value of missing.
      * @param missing The value to assign missing.
      */
-    public void setMissing(List<SVNStatus> missing)
-    {
+    public void setMissing( List<SVNStatus> missing ) {
         this.missing = missing;
     }
 
     /**
      * Returns the value of outOfDate.
      */
-    public List<SVNStatus> getOutOfDate()
-    {
+    public List<SVNStatus> getOutOfDate() {
         return outOfDate;
     }
 
@@ -173,10 +159,16 @@ public class StatusData {
      * Sets the value of outOfDate.
      * @param outOfDate The value to assign outOfDate.
      */
-    public void setOutOfDate(List<SVNStatus> outOfDate)
-    {
+    public void setOutOfDate( List<SVNStatus> outOfDate ) {
         this.outOfDate = outOfDate;
     }
 
+    public List<SVNStatus> getLocked() {
+        return locked;
+    }
+
+    public void setLocked( List<SVNStatus> Locked ) {
+        this.locked = Locked;
+    }
 
 }

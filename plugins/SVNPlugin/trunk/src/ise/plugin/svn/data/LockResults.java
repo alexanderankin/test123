@@ -28,46 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
+public class LockResults extends AddResults {
 
-import java.util.*;
-
-/**
- * Data returned from an "add" command.
- */
-public class AddResults {
-
-    // paths to be added
-    private List<String> paths = new ArrayList<String>();
-
-    // paths that can't be added and the reason why
-    private TreeMap<String, String> error_paths = new TreeMap<String, String>();
-
-    /**
-     * @param path a path to add to these results
-     */
-    public void addPath( String path ) {
-        paths.add( path );
-    }
-
-    public void addPaths( List<String> paths ) {
-        if ( paths != null ) {
-            this.paths.addAll( paths );
-        }
-    }
-
-    public List<String> getPaths() {
-        return paths;
-    }
-
-    /**
-     * @param path a path that cannot be added
-     * @param msg the reason why the path can't be added
-     */
-    public void addErrorPath( String path, String msg ) {
-        error_paths.put( path, msg );
-    }
-
-    public Map<String, String> getErrorPaths() {
-        return error_paths;
-    }
 }

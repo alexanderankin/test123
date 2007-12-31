@@ -67,19 +67,24 @@ ise.plugin.svn.action.code.8=ise.plugin.svn.pv.ResolvedActor
 ise.plugin.svn.action.label.9=Delete...
 ise.plugin.svn.action.code.9=ise.plugin.svn.pv.DeleteActor
 ise.plugin.svn.action.label.10=-
-ise.plugin.svn.action.label.11=Properties
-ise.plugin.svn.action.code.11=ise.plugin.svn.pv.PropertyActor
-ise.plugin.svn.action.label.12=Info
-ise.plugin.svn.action.code.12=ise.plugin.svn.pv.InfoActor
-ise.plugin.svn.action.label.13=Log...
-ise.plugin.svn.action.code.13=ise.plugin.svn.pv.LogActor
-ise.plugin.svn.action.label.14=-
-ise.plugin.svn.action.label.15=Checkout...
-ise.plugin.svn.action.code.15=ise.plugin.svn.pv.CheckoutActor
-ise.plugin.svn.action.label.16=Cleanup
-ise.plugin.svn.action.code.16=ise.plugin.svn.pv.CleanupActor
-ise.plugin.svn.action.label.17=Copy
-ise.plugin.svn.action.code.17=ise.plugin.svn.pv.CopyActor
+ise.plugin.svn.action.label.11=Lock
+ise.plugin.svn.action.code.11=ise.plugin.svn.pv.LockActor
+ise.plugin.svn.action.label.12=Unlock
+ise.plugin.svn.action.code.12=ise.plugin.svn.pv.UnlockActor
+ise.plugin.svn.action.label.13=-
+ise.plugin.svn.action.label.14=Properties
+ise.plugin.svn.action.code.14=ise.plugin.svn.pv.PropertyActor
+ise.plugin.svn.action.label.15=Info
+ise.plugin.svn.action.code.15=ise.plugin.svn.pv.InfoActor
+ise.plugin.svn.action.label.16=Log...
+ise.plugin.svn.action.code.16=ise.plugin.svn.pv.LogActor
+ise.plugin.svn.action.label.17=-
+ise.plugin.svn.action.label.18=Checkout...
+ise.plugin.svn.action.code.18=ise.plugin.svn.pv.CheckoutActor
+ise.plugin.svn.action.label.19=Cleanup
+ise.plugin.svn.action.code.19=ise.plugin.svn.pv.CleanupActor
+ise.plugin.svn.action.label.20=Copy
+ise.plugin.svn.action.code.20=ise.plugin.svn.pv.CopyActor
 
 
 # register subversion commands with ProjectViewer
