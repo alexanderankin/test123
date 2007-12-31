@@ -39,6 +39,7 @@ import javax.swing.text.*;
 import ise.plugin.svn.library.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 /**
@@ -95,6 +96,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         _content_pane.putClientProperty("isCloseable", Boolean.FALSE);
 
         _text = new JTextPane();
+        _text.setBackground(jEdit.getColorProperty("view.bgColor"));
+        _text.setForeground(jEdit.getColorProperty("view.fgColor"));
         _text.setCaretPosition( 0 );
         _content_pane.add( new JScrollPane( _text ), BorderLayout.CENTER );
         _content_pane.add( getControlPanel(), BorderLayout.SOUTH );
