@@ -66,15 +66,15 @@ public class StatusAction extends NodeActor {
             for ( VPTNode node : nodes ) {
                 if ( node != null && node.getNodePath() != null ) {
                     paths.add( node.getNodePath() );
-                    if (node.isDirectory()) {
+                    if ( node.isDirectory() || node.isProject() ) {
                         has_directory = true;
                     }
                 }
             }
             cd.setPaths( paths );
-            if (has_directory) {
-                int answer = JOptionPane.showConfirmDialog(view, "One or more of the items selected is a directory.\nWould you like to see status for subdirectories and files?", "Show Child Status?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                cd.setRecursive(JOptionPane.YES_OPTION == answer);
+            if ( has_directory ) {
+                int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see status for subdirectories and files?", "Show Child Status?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                cd.setRecursive( JOptionPane.YES_OPTION == answer );
             }
             if ( username != null && password != null ) {
                 cd.setUsername( username );
@@ -82,7 +82,7 @@ public class StatusAction extends NodeActor {
             }
 
             // check if working copy is different than local copy
-            cd.setRemote(true);
+            cd.setRemote( true );
 
             cd.setOut( new ConsolePrintStream( view ) );
 
@@ -116,10 +116,10 @@ public class StatusAction extends NodeActor {
                 protected void done() {
                     try {
                         JPanel panel = new StatusResultsPanel( get(), view, username, password );
-                        output_panel.addTab("Status", panel);
+                        output_panel.addTab( "Status", panel );
                     }
                     catch ( Exception e ) {
-                        System.err.println(e.getMessage());
+                        System.err.println( e.getMessage() );
                     }
                 }
             }
