@@ -159,6 +159,7 @@ class StreamThread extends Thread
 		}
 		finally
 		{
+			copt.finishErrorParsing();
 			try
 			{
 				in.close();
