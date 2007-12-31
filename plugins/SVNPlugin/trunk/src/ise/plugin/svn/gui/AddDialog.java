@@ -38,14 +38,9 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
+import org.gjt.sp.jedit.View;
+
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.SVNData;
