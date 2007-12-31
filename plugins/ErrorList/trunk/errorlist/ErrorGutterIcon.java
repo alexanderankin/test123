@@ -46,10 +46,18 @@ public class ErrorGutterIcon extends TextAreaExtension {
 			if(lineErrors == null)
 				continue;
 
+			errMsg.append("<html>");
 			for(int j = 0; j < lineErrors.length; j++)
 			{
 				ErrorSource.Error error = lineErrors[j];
-				errMsg.append("<html>" + error.getErrorMessage() + "<br>");
+				errMsg.append(error.getErrorMessage());
+                errMsg.append("<br>");
+                for(String extra : error.getExtraMessages())
+                {
+                    errMsg.append("__");
+                    errMsg.append(extra);
+                    errMsg.append("<br>");                    
+                }
 			}
 			errMsg.append("</html>");
 		}
