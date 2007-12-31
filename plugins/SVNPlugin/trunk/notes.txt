@@ -16,8 +16,8 @@ edit conflicts
 resolve - done
 (not in Eclipse, I added "delete" here)
 --
-lock
-unlock
+lock - done
+unlock - done
 --
 tag - done
 branch - done
@@ -72,7 +72,7 @@ svn help
 svn import
 svn info - done
 svn list - done
-svn lock
+svn lock - done
 svn log - done
 svn merge
 svn mkdir
@@ -86,7 +86,7 @@ svn resolved - done
 svn revert - done
 svn status - done
 svn switch
-svn unlock
+svn unlock - done
 svn update - done
 
 
