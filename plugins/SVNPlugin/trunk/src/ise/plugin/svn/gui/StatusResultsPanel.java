@@ -116,6 +116,12 @@ public class StatusResultsPanel extends JPanel {
             added = true;
         }
 
+        list = results.getLocked();
+        if (list != null) {
+            root.add( createNode("Locked files:", list));
+            added = true;
+        }
+
         if ( added ) {
             tree = new JTree( root );
             tree.setRootVisible( false );
@@ -346,6 +352,26 @@ public class StatusResultsPanel extends JPanel {
                             }
                         }
                         DeleteAction action = new DeleteAction( view, paths, username, password );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Unlock" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null && path.getPathCount() > 2 ) {
+                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                            }
+                        }
+                        UnlockAction action = new UnlockAction( view, paths, username, password );
                         action.actionPerformed( ae );
                     }
                 }

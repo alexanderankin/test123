@@ -229,7 +229,7 @@ public class Info {
     }
 
     private int getLineCount( String s ) {
-        int count = 0;
+        int count = 1;
         BreakIterator boundary = BreakIterator.getLineInstance();
         int start = boundary.first();
         for ( int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next() ) {

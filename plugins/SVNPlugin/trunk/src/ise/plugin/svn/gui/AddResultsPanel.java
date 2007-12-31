@@ -49,6 +49,8 @@ public class AddResultsPanel extends JPanel {
     public static final int REVERT = 1;
     public static final int DELETE = 2;
     public static final int RESOLVED = 3;
+    public static final int LOCK = 4;
+    public static final int UNLOCK = 5;
 
     private View view = null;
     private String username = null;
@@ -56,7 +58,7 @@ public class AddResultsPanel extends JPanel {
 
     public AddResultsPanel( AddResults results, int action, View view, String username, String password  ) {
         super( new LambdaLayout() );
-        if ( action < 0 || action > 3 ) {
+        if ( action < 0 || action > 5 ) {
             throw new IllegalArgumentException( "invalid action: " + action );
         }
         this.view = view;
@@ -86,6 +88,12 @@ public class AddResultsPanel extends JPanel {
                     break;
                 case RESOLVED:
                     good_label_text = "Resolved:";
+                    break;
+                case LOCK:
+                    good_label_text = "Locked:";
+                    break;
+                case UNLOCK:
+                    good_label_text = "Unlocked:";
                     break;
             }
             JLabel good_label = new JLabel( good_label_text );
@@ -127,6 +135,12 @@ public class AddResultsPanel extends JPanel {
                     break;
                 case RESOLVED:
                     bad_label_text = "Unable to resolve:";
+                    break;
+                case LOCK:
+                    bad_label_text = "Unable to lock:";
+                    break;
+                case UNLOCK:
+                    bad_label_text = "Unable to unlock:";
                     break;
             }
             JLabel bad_label = new JLabel( bad_label_text );

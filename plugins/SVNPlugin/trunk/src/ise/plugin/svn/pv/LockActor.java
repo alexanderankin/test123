@@ -26,48 +26,46 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.data;
+package ise.plugin.svn.pv;
 
-
+import ise.plugin.svn.action.AddAction;
+import ise.plugin.svn.gui.OutputPanel;
+import ise.plugin.svn.SVNPlugin;
+import ise.plugin.svn.command.Add;
+import ise.plugin.svn.command.Info;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.data.AddResults;
+import ise.plugin.svn.gui.AddDialog;
+import ise.plugin.svn.gui.AddResultsPanel;
+import ise.plugin.svn.gui.SVNInfoPanel;
+import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.*;
+import java.util.logging.*;
+import javax.swing.JPanel;
+import projectviewer.vpt.VPTNode;
+import ise.plugin.svn.action.LockAction;
 
 /**
- * Data returned from an "add" command.
+ * Action for ProjectViewer's context menu to execute an svn add.
  */
-public class AddResults {
+public class LockActor extends NodeActor {
 
-    // paths to be added
-    private List<String> paths = new ArrayList<String>();
+    public void actionPerformed( ActionEvent ae ) {
+        if ( nodes != null && nodes.size() > 0 ) {
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
 
-    // paths that can't be added and the reason why
-    private TreeMap<String, String> error_paths = new TreeMap<String, String>();
-
-    /**
-     * @param path a path to add to these results
-     */
-    public void addPath( String path ) {
-        paths.add( path );
-    }
-
-    public void addPaths( List<String> paths ) {
-        if ( paths != null ) {
-            this.paths.addAll( paths );
+            LockAction action = new LockAction(view, paths, username, password);
+            action.actionPerformed(ae);
         }
-    }
-
-    public List<String> getPaths() {
-        return paths;
-    }
-
-    /**
-     * @param path a path that cannot be added
-     * @param msg the reason why the path can't be added
-     */
-    public void addErrorPath( String path, String msg ) {
-        error_paths.put( path, msg );
-    }
-
-    public Map<String, String> getErrorPaths() {
-        return error_paths;
     }
 }

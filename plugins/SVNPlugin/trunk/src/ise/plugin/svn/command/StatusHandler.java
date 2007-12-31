@@ -63,6 +63,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
     private List<SVNStatus> unversionedFiles = null;
     private List<SVNStatus> missingFiles = null;
     private List<SVNStatus> outOfDateFiles = null;
+    private List<SVNStatus> lockedFiles = null;
 
     public StatusHandler( PrintStream out, boolean isRemote ) {
         this.out = out;
@@ -71,26 +72,29 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
 
     public StatusData getResults() {
         StatusData sd = new StatusData();
-        if (modifiedFiles != null) {
-            sd.setModified(modifiedFiles);
+        if ( modifiedFiles != null ) {
+            sd.setModified( modifiedFiles );
         }
-        if (conflictedFiles != null) {
-            sd.setConflicted(conflictedFiles);
+        if ( conflictedFiles != null ) {
+            sd.setConflicted( conflictedFiles );
         }
-        if (deletedFiles != null) {
-            sd.setDeleted(deletedFiles);
+        if ( deletedFiles != null ) {
+            sd.setDeleted( deletedFiles );
         }
-        if (addedFiles != null) {
-            sd.setAdded(addedFiles);
+        if ( addedFiles != null ) {
+            sd.setAdded( addedFiles );
         }
-        if (unversionedFiles != null) {
-            sd.setUnversioned(unversionedFiles);
+        if ( unversionedFiles != null ) {
+            sd.setUnversioned( unversionedFiles );
         }
-        if (missingFiles != null) {
-            sd.setMissing(missingFiles);
+        if ( missingFiles != null ) {
+            sd.setMissing( missingFiles );
         }
-        if (outOfDateFiles != null) {
-            sd.setOutOfDate(outOfDateFiles);
+        if ( outOfDateFiles != null ) {
+            sd.setOutOfDate( outOfDateFiles );
+        }
+        if ( lockedFiles != null ) {
+            sd.setLocked( lockedFiles );
         }
         return sd;
     }
@@ -115,10 +119,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * The contents of the file have been Modified.
              */
             pathChangeType = "M";
-            if (modifiedFiles == null) {
+            if ( modifiedFiles == null ) {
                 modifiedFiles = new ArrayList<SVNStatus>();
             }
-            modifiedFiles.add(status);
+            modifiedFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_CONFLICTED ) {
             /*
@@ -127,10 +131,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * changes the user has in his working copy.
              */
             pathChangeType = "C";
-            if (conflictedFiles == null) {
+            if ( conflictedFiles == null ) {
                 conflictedFiles = new ArrayList<SVNStatus>();
             }
-            conflictedFiles.add(status);
+            conflictedFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_DELETED ) {
             /*
@@ -138,10 +142,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * Deletion from the repository.
              */
             pathChangeType = "D";
-            if (deletedFiles == null) {
+            if ( deletedFiles == null ) {
                 deletedFiles = new ArrayList<SVNStatus>();
             }
-            deletedFiles.add(status);
+            deletedFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_ADDED ) {
             /*
@@ -149,10 +153,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * Addition to the repository.
              */
             pathChangeType = "A";
-            if (addedFiles == null) {
+            if ( addedFiles == null ) {
                 addedFiles = new ArrayList<SVNStatus>();
             }
-            addedFiles.add(status);
+            addedFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_UNVERSIONED ) {
             /*
@@ -160,10 +164,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * control.
              */
             pathChangeType = "?";
-            if (unversionedFiles == null) {
+            if ( unversionedFiles == null ) {
                 unversionedFiles = new ArrayList<SVNStatus>();
             }
-            unversionedFiles.add(status);
+            unversionedFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_EXTERNAL ) {
             /*
@@ -191,10 +195,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * or update.
              */
             pathChangeType = "!";
-            if (missingFiles == null) {
+            if ( missingFiles == null ) {
                 missingFiles = new ArrayList<SVNStatus>();
             }
-            missingFiles.add(status);
+            missingFiles.add( status );
         }
         else if ( contentsStatus == SVNStatusType.STATUS_OBSTRUCTED ) {
             /*
@@ -238,10 +242,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * the local item is out of date
              */
             remoteChangeType = "*";
-            if (outOfDateFiles == null) {
+            if ( outOfDateFiles == null ) {
                 outOfDateFiles = new ArrayList<SVNStatus>();
             }
-            outOfDateFiles.add(status);
+            outOfDateFiles.add( status );
         }
         /*
          * Now getting the status of properties of an item. SVNStatusType  also
@@ -257,20 +261,20 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * Properties were modified.
              */
             propertiesChangeType = "M";
-            if (modifiedFiles == null) {
+            if ( modifiedFiles == null ) {
                 modifiedFiles = new ArrayList<SVNStatus>();
             }
-            modifiedFiles.add(status);
+            modifiedFiles.add( status );
         }
         else if ( propertiesStatus == SVNStatusType.STATUS_CONFLICTED ) {
             /*
              * Properties are in conflict with the repository.
              */
             propertiesChangeType = "C";
-            if (conflictedFiles == null) {
+            if ( conflictedFiles == null ) {
                 conflictedFiles = new ArrayList<SVNStatus>();
             }
-            conflictedFiles.add(status);
+            conflictedFiles.add( status );
         }
 
         /*
@@ -318,6 +322,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
                     lockLabel = "B";
                 }
             }
+            if ( lockedFiles == null ) {
+                lockedFiles = new ArrayList<SVNStatus>();
+            }
+            lockedFiles.add( status );
         }
         else if ( remoteLock != null ) {
             /*
@@ -325,6 +333,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * the lock token is in some Other working copy.
              */
             lockLabel = "O";
+            if ( lockedFiles == null ) {
+                lockedFiles = new ArrayList<SVNStatus>();
+            }
+            lockedFiles.add( status );
         }
 
         /*
@@ -394,7 +406,6 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
      * Should be implemented to check if the current operation is cancelled. If
      * it is, this method should throw an SVNCancelException.
      */
-    public void checkCancelled() throws SVNCancelException {
-    }
+    public void checkCancelled() throws SVNCancelException {}
 
 }
