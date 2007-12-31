@@ -45,8 +45,7 @@ ise.plugin.svn.pv.password.label=Password:
 
 # plugin menu items
 plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
-plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser subversion.checkout
-subversion.checkout.label=Checkout
+plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
 subversion.label=SVN Console
 
 # subversion commands for ProjectViewer
@@ -56,7 +55,7 @@ ise.plugin.svn.action.label.2=Update...
 ise.plugin.svn.action.code.2=ise.plugin.svn.pv.UpdateActor
 ise.plugin.svn.action.label.3=Commit...
 ise.plugin.svn.action.code.3=ise.plugin.svn.pv.CommitActor
-ise.plugin.svn.action.label.4=Diff..
+ise.plugin.svn.action.label.4=Diff...
 ise.plugin.svn.action.code.4=ise.plugin.svn.pv.DiffActor
 ise.plugin.svn.action.label.5=-
 ise.plugin.svn.action.label.6=Revert...

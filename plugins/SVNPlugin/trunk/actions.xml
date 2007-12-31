@@ -3,11 +3,5 @@
 
 <ACTIONS>
 
-    <ACTION NAME="subversion.checkout">
-        <CODE>
-            ise.plugin.svn.action.CheckoutAction action = new ise.plugin.svn.action.CheckoutAction(view, null, null);
-            action.actionPerformed(null);
-        </CODE>
-    </ACTION>
 
 </ACTIONS>
