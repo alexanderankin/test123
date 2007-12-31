@@ -64,7 +64,7 @@ public class UnlockActor extends NodeActor {
                 }
             }
 
-            UnlockAction action = new UnlockAction(view, paths, username, password);
+            UnlockAction action = new UnlockAction(view, paths, username, password, false);
             action.actionPerformed(ae);
         }
     }

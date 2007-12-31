@@ -677,6 +677,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
+        pm.addSeparator();
         mi = new JMenuItem( "Delete" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
@@ -699,6 +700,60 @@ public class BrowseRepositoryPanel extends JPanel {
                             }
                         }
                         DeleteAction action = new DeleteAction( view, paths, username, password );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Lock" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        LockAction action = new LockAction( view, paths, username, password, true );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Unlock" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        UnlockAction action = new UnlockAction( view, paths, username, password, true );
                         action.actionPerformed( ae );
                     }
                 }
