@@ -52,7 +52,7 @@ import ise.plugin.svn.library.*;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
-public class CopyDialog extends JDialog {
+public class MoveDialog extends JDialog {
     // instance fields
     private View view = null;
     private List<File> toCopy = null;
@@ -66,44 +66,43 @@ public class CopyDialog extends JDialog {
     private String defaultRemoteDestination = null;
     private SVNRevision revision = SVNRevision.HEAD;
 
-    private boolean destinationIsLocal = true;  // if true, copying to local file system
+    private boolean local = true;  // if true, copying to local file system
 
     private boolean cancelled = true;
 
     /**
+     * working copy to working copy move
      * @param view parent frame
      * @param files the local files to copy
      * @param defaultLocalDestination local file system destination
-     * @param defaultLocalDestination remote repository destination
      */
-    public CopyDialog( View view, List<File> files, String defaultLocalDestination, String defaultRemoteDestination ) {
-        super( ( JFrame ) view, "Copy", true );
+    public MoveDialog( View view, List<File> files, String defaultLocalDestination ) {
+        super( ( JFrame ) view, "Move", true );
         if ( files == null || files.size() == 0 ) {
-            throw new IllegalArgumentException( "no source file(s) to copy" );
+            throw new IllegalArgumentException( "no source file(s) to move" );
         }
         this.view = view;
         this.toCopy = files;
         this.defaultLocalDestination = defaultLocalDestination == null ? "" : defaultLocalDestination;
-        this.defaultRemoteDestination = defaultRemoteDestination == null ? "" : defaultRemoteDestination;
+        local = true;
         init();
     }
 
     /**
+     * remote to remote move
      * @param view parent frame
-     * @param defaultLocalDestination local file system destination
-     * @param defaultLocalDestination remote repository destination
+     * @param defaultRemoteDestination remote repository destination
      * @param files the remote urls to copy
      */
-    public CopyDialog( View view, String defaultLocalDestination, String defaultRemoteDestination, List<String> urls ) {
-        super( ( JFrame ) view, "Copy", true );
+    public MoveDialog( View view, String defaultRemoteDestination, List<String> urls ) {
+        super( ( JFrame ) view, "Move", true );
         if ( urls == null || urls.size() == 0 ) {
-            throw new IllegalArgumentException( "no source url(s) to copy" );
+            throw new IllegalArgumentException( "no source url(s) to move" );
         }
         this.view = view;
         this.urlsToCopy = urls;
-        this.defaultLocalDestination = defaultLocalDestination == null ? "" : defaultLocalDestination;
         this.defaultRemoteDestination = defaultRemoteDestination == null ? "" : defaultRemoteDestination;
-        destinationIsLocal = false;
+        local = false;
         init();
     }
 
@@ -113,24 +112,24 @@ public class CopyDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         JLabel to_copy_label = null;
-        if ( toCopy != null ) {
-            to_copy_label = new JLabel( "Copy " + ( toCopy.size() == 1 ? "this file:" : "these files:" ) );
+        if ( local ) {
+            to_copy_label = new JLabel( "Move " + ( toCopy.size() == 1 ? "this file:" : "these files:" ) );
         }
         else {
-            to_copy_label = new JLabel( "Copy " + ( urlsToCopy.size() == 1 ? "this URL:" : "these URLs:" ) );
+            to_copy_label = new JLabel( "Move " + ( urlsToCopy.size() == 1 ? "this URL:" : "these URLs:" ) );
         }
 
         BestRowTable file_table = new BestRowTable();
 
         // create table model
         fileTableModel = new DefaultTableModel( new String[] {
-                    ( toCopy != null ? "File" : "URL" )
+                    ( local ? "File" : "URL" )
                 }
-                , toCopy != null ? toCopy.size() : urlsToCopy.size() ) ;
+                , local ? toCopy.size() : urlsToCopy.size() ) ;
 
         // fill table model.  If directory, add a checkbox defaulting to checked
         // indicating the copy should recursively copy the directory.
-        if ( toCopy != null ) {
+        if ( local ) {
             for ( int row = 0; row < toCopy.size(); row++ ) {
                 File file = toCopy.get( row );
                 fileTableModel.setValueAt( file.getAbsolutePath(), row, 0 );
@@ -147,7 +146,7 @@ public class CopyDialog extends JDialog {
         file_table.packRows();
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Copy from this revision:", SwingConstants.HORIZONTAL, true );
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Move from this revision:", SwingConstants.HORIZONTAL, true );
 
         // destination
         JLabel path_label = new JLabel( "To this location:" );
@@ -155,12 +154,18 @@ public class CopyDialog extends JDialog {
         JButton browse_local_btn = new JButton( "Browse Local..." );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultLocalDestination, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultLocalDestination, toCopy == null ? VFSBrowser.OPEN_DIALOG : toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
                         if ( dirs != null && dirs.length > 0 ) {
                             String filename = dirs[ 0 ];
                             File f = new File( filename );
+                            if ( f.exists() && f.isFile() ) {
+                                int overwrite = JOptionPane.showConfirmDialog( view, "File exists, okay to overwrite?", "File exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                                if ( overwrite == JOptionPane.NO_OPTION ) {
+                                    return ;
+                                }
+                            }
                             path.setText( f.getAbsolutePath() );
-                            destinationIsLocal = true;
+                            local = true;
                         }
                     }
                 }
@@ -186,7 +191,7 @@ public class CopyDialog extends JDialog {
                                 dialog.dispose();
                                 if ( selection != null && selection.length() > 0 ) {
                                     path.setText( selection );
-                                    destinationIsLocal = false;
+                                    local = false;
                                 }
                             }
                         }
@@ -214,7 +219,7 @@ public class CopyDialog extends JDialog {
             }
         );
 
-        JLabel comment_label = new JLabel( "Enter comment for this copy:" );
+        JLabel comment_label = new JLabel( "Enter comment for this move:" );
         comment = new JTextArea( 3, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -244,13 +249,13 @@ public class CopyDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( CopyDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( MoveDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = revision_panel.getRevision();
                         cancelled = false;
-                        CopyDialog.this.setVisible( false );
-                        CopyDialog.this.dispose();
+                        MoveDialog.this.setVisible( false );
+                        MoveDialog.this.dispose();
                     }
                 }
                                 );
@@ -258,8 +263,8 @@ public class CopyDialog extends JDialog {
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         cancelled = true;
-                        CopyDialog.this.setVisible( false );
-                        CopyDialog.this.dispose();
+                        MoveDialog.this.setVisible( false );
+                        MoveDialog.this.dispose();
                     }
                 }
                                     );
@@ -280,22 +285,25 @@ public class CopyDialog extends JDialog {
 
         panel.add( "0, 5, 1, 1, W,  , 3", path_label );
         panel.add( "0, 6, 8, 1, 0, w, 3", path );
-        panel.add( "0, 7, 1, 1, 0, w, 3", browse_local_btn );
-        panel.add( "1, 7, 1, 1, 0, w, 3", browse_remote_btn );
-        layout.makeColumnsSameWidth( 0, 1 );
+        if ( local ) {
+            panel.add( "0, 7, 1, 1, 0, w, 3", browse_local_btn );
+        }
+        else {
+            panel.add( "0, 7, 1, 1, 0, w, 3", browse_remote_btn );
 
-        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+            panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 9, 8, 1, W,  , 3", comment_label );
-        panel.add( "0, 10, 8, 1, W, wh, 3", new JScrollPane( comment ) );
+            panel.add( "0, 9, 8, 1, W,  , 3", comment_label );
+            panel.add( "0, 10, 8, 1, W, wh, 3", new JScrollPane( comment ) );
 
-        if ( commentList != null && commentList.getModel().getSize() > 0 ) {
-            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
-            panel.add( "0, 12, 8, 1, W, w, 3", commentList );
+            if ( commentList != null && commentList.getModel().getSize() > 0 ) {
+                commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
+                panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+                panel.add( "0, 12, 8, 1, W, w, 3", commentList );
+            }
         }
 
-        panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
         panel.add( "0, 14, 8, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
@@ -335,7 +343,7 @@ public class CopyDialog extends JDialog {
 
         cd.setRevision( revision );
 
-        if ( destinationIsLocal ) {
+        if ( local ) {
             cd.setDestinationFile( new File( path.getText() ) );
         }
         else {

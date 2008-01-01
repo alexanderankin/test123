@@ -43,11 +43,11 @@ import org.tmatesoft.svn.core.SVNCommitInfo;
  */
 public class CopyResultsPanel extends JPanel {
 
-    public CopyResultsPanel( Map<String, SVNCommitInfo> results, String destination ) {
+    public CopyResultsPanel( Map<String, SVNCommitInfo> results, String destination, boolean move ) {
         super( new BorderLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( "Copied and committed:" );
+        JLabel label = new JLabel( (move? "Moved" : "Copied") + " and committed:" );
 
         String[][] data = new String[ results.size() ][ 4 ];
         Set < Map.Entry < String, SVNCommitInfo >> set = results.entrySet();
@@ -77,7 +77,7 @@ public class CopyResultsPanel extends JPanel {
 
         add( label, BorderLayout.NORTH );
         add( GUIUtils.createTablePanel( table ), BorderLayout.CENTER );
-        add( new JLabel("Copied to: " + destination), BorderLayout.SOUTH);
+        add( new JLabel((move ? "Moved" : "Copied") + " to: " + destination), BorderLayout.SOUTH);
     }
 
 }

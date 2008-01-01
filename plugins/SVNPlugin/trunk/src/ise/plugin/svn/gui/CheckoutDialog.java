@@ -44,10 +44,12 @@ import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
+import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 import org.tmatesoft.svn.core.wc.SVNInfo;
@@ -107,6 +109,55 @@ public class CheckoutDialog extends JDialog {
         if ( url_text != null ) {
             url.setText( url_text );
         }
+
+        // browse for url
+        JButton browse_remote_btn = new JButton( "Browse..." );
+        browse_remote_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    final JDialog dialog = new JDialog( view, "Select Repository" );
+                    dialog.setModal( true );
+                    JPanel panel = new JPanel( new LambdaLayout() );
+                    panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, null );
+                    panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
+                    KappaLayout btn_layout = new KappaLayout();
+                    JPanel button_panel = new JPanel( btn_layout );
+                    JButton ok_btn = new JButton( "OK" );
+                    ok_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                String selection = burp.getSelectionPath();
+                                dialog.setVisible( false );
+                                dialog.dispose();
+                                if ( selection != null && selection.length() > 0 ) {
+                                    url.setText( selection );
+                                }
+                            }
+                        }
+                    );
+                    JButton cancel_btn = new JButton( "Cancel" );
+                    cancel_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                dialog.setVisible( false );
+                                dialog.dispose();
+                            }
+                        }
+                    );
+                    button_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
+                    button_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
+                    btn_layout.makeColumnsSameWidth( 0, 1 );
+
+                    panel.add( "0, 1, 1, 1", KappaLayout.createStrut( 350, 11, false ) );
+                    panel.add( "0, 2, 1, 1, E, , 3", button_panel );
+                    dialog.setContentPane( panel );
+                    dialog.pack();
+                    GUIUtils.center( view, dialog );
+                    dialog.setVisible( true );
+                }
+            }
+        );
 
         // local destination directory
         JLabel path_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "path.label" ) );
@@ -179,6 +230,7 @@ public class CheckoutDialog extends JDialog {
         // add the components to the option panel
         panel.add( "0, 0, 1, 1, E,  , 3", url_label );
         panel.add( "1, 0, 2, 1, 0, w, 3", url );
+        panel.add( "3, 0, 1, 1, 0, w, 3", browse_remote_btn );
 
         panel.add( "0, 1, 1, 1, E,  , 3", path_label );
         panel.add( "1, 1, 2, 1, 0, w, 3", path );

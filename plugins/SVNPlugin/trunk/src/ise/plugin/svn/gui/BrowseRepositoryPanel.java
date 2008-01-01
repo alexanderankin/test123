@@ -677,6 +677,48 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
+        mi = new JMenuItem( "Move" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        String url = null;
+                        String defaultDestination = null;
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                                paths.add(url);
+                                defaultDestination = url;
+                            }
+                        }
+
+                        MoveDialog dialog = new MoveDialog( view, defaultDestination, paths );
+                        GUIUtils.center( view, dialog );
+                        dialog.setVisible( true );
+                        CopyData cd = dialog.getData();
+                        if ( cd != null ) {
+                            if ( username != null && password != null ) {
+                                cd.setUsername( username );
+                                cd.setPassword( password );
+                            }
+
+                            MoveAction action = new MoveAction( view, cd );
+                            action.actionPerformed( null );
+                        }
+                    }
+                }
+                            );
+
         pm.addSeparator();
         mi = new JMenuItem( "Delete" );
         pm.add( mi );

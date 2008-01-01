@@ -57,6 +57,9 @@ public class CheckoutData extends SVNData {
      * Returns the value of url.
      */
     public String getURL() {
+        if (url == null) {
+            return null;
+        }
         return MiscUtilities.expandVariables(url);
     }
 
