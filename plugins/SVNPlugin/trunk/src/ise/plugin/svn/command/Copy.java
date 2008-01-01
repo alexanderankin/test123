@@ -66,6 +66,8 @@ public class Copy {
             data.setErr( data.getOut() );
         }
 
+        System.out.println("+++++ data.isMove = " + data.getIsMove());
+
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
@@ -122,11 +124,16 @@ public class Copy {
                 revision = SVNRevision.WORKING;
             }
             // no message on copy to local
-            System.out.println("+++++ copying " + sourceURL + " to " + destinationFile);
             client.doCopy(sourceURL, revision, destinationFile);
         }
         else {
-            throw new CommandInitializationException("invalid file and/or URL parameters");
+            StringBuilder sb = new StringBuilder();
+            sb.append("Invalid file and/or URL parameters:\n");
+            sb.append("sourceFile = ").append(sourceFile).append("\n");
+            sb.append("sourceURL = ").append(sourceURL).append("\n");
+            sb.append("destinationFile = ").append(destinationFile).append("\n");
+            sb.append("destinationURL = ").append(destinationURL).append("\n");
+            throw new CommandInitializationException(sb.toString());
         }
 
         out.flush();

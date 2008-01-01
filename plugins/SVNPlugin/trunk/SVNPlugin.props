@@ -83,8 +83,11 @@ ise.plugin.svn.action.label.18=Checkout...
 ise.plugin.svn.action.code.18=ise.plugin.svn.pv.CheckoutActor
 ise.plugin.svn.action.label.19=Cleanup
 ise.plugin.svn.action.code.19=ise.plugin.svn.pv.CleanupActor
-ise.plugin.svn.action.label.20=Copy
-ise.plugin.svn.action.code.20=ise.plugin.svn.pv.CopyActor
+ise.plugin.svn.action.label.20=-
+ise.plugin.svn.action.label.21=Copy
+ise.plugin.svn.action.code.21=ise.plugin.svn.pv.CopyActor
+ise.plugin.svn.action.label.22=Move
+ise.plugin.svn.action.code.22=ise.plugin.svn.pv.MoveActor
 
 
 # register subversion commands with ProjectViewer

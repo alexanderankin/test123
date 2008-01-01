@@ -62,24 +62,24 @@ import org.tmatesoft.svn.core.SVNURL;
 
 
 /**
- * ActionListener to perform an svn copy.
+ * ActionListener to perform an svn move, based on CopyAction
  * This is not dependent on ProjectViewer.
  */
-public class CopyAction implements ActionListener {
+public class MoveAction implements ActionListener {
 
     private View view = null;
     private CopyData data = null;
 
     private static final int W2W = 1;
-    private static final int W2U = 2;
-    private static final int U2W = 3;
+    //private static final int W2U = 2;     // can't do a move like this
+    //private static final int U2W = 3;     // can't do a move like this
     private static final int U2U = 4;
 
     /**
      * @param view the View in which to display results
      * @param data CopyData object containing the info for a copy of some sort
      */
-    public CopyAction( View view, CopyData data ) {
+    public MoveAction( View view, CopyData data ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
         if ( data == null )
@@ -97,18 +97,13 @@ public class CopyAction implements ActionListener {
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Copying ..." );
+            logger.log( Level.INFO, "Moving ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
 
             /**
-             * Used to copy or move either a working file to another working file or to the
-             * repository, or to move a repository file or directory to a working file or to
-             * another repository location.  To recap, this class can copy:
              * working copy -> working copy
-             * working copy -> repository
-             * repository -> working copy
              * repository -> repository
              */
             class Runner extends SwingWorker<TreeMap<String, SVNCommitInfo>, Object> {
@@ -128,6 +123,7 @@ public class CopyAction implements ActionListener {
                                 CopyData cd = new CopyData();
                                 cd.setSourceFile( file );
                                 cd.setRevision( data.getRevision() );
+                                cd.setIsMove(true);
                                 String destination = "";
                                 if ( data.getDestinationFile() != null ) {
                                     // working copy -> working copy
@@ -147,20 +143,6 @@ public class CopyAction implements ActionListener {
                                     }
                                     cd.setDestinationFile( data.getDestinationFile() );
                                 }
-                                else if ( data.getDestinationURL() != null ) {
-                                    // working copy -> repository
-                                    where2where = W2U;
-                                    if ( data.getSourceFiles().size() > 1 ) {
-                                        // must be copying to a directory -- TODO: how to check
-                                        // destination is actually a remote directory?
-                                        // For now, assume directory and append filename.
-                                        destination = data.getDestinationURL().toString() + "/" + file.getName();
-                                    }
-                                    else {
-                                        destination = data.getDestinationURL().toString();
-                                    }
-                                    cd.setDestinationURL( SVNURL.parseURIDecoded(destination) );
-                                }
                                 cd.setOut( data.getOut() );
                                 cd.setMessage( data.getMessage() );
                                 Copy copy = new Copy();
@@ -179,32 +161,13 @@ public class CopyAction implements ActionListener {
                                 String destination = "";
                                 cd.setSourceURL( url );
                                 cd.setRevision( data.getRevision() );
-                                if ( data.getDestinationFile() != null ) {
-                                    // repository -> working file
-                                    where2where = U2W;
-                                    if ( data.getSourceURLs().size() > 1 ) {
-                                        checkDestination( data.getDestinationFile() );
-                                    }
-
-                                    // if destination is a directory, figure out
-                                    // the new file names of the copies
-                                    if ( data.getDestinationFile().isDirectory() ) {
-                                        String path = url.getPath();
-                                        String name = path.substring( path.lastIndexOf( "/" ) );
-                                        File f = new File( data.getDestinationFile(), name );
-                                        destination = f.getAbsolutePath();
-                                    }
-                                    else {
-                                        destination = data.getDestinationFile().getAbsolutePath();
-                                    }
-                                    destination = data.getDestinationFile().getAbsolutePath();
-                                    cd.setDestinationFile( data.getDestinationFile() );
-                                }
-                                else if ( data.getDestinationURL() != null ) {
+                                cd.setIsMove(true);
+                                if ( data.getDestinationURL() != null ) {
                                     // repository -> repository
                                     where2where = U2U;
-                                    destination = data.getDestinationURL().toString();
-                                    cd.setDestinationURL( data.getDestinationURL() );
+                                    String segment = url.toString().substring(url.toString().lastIndexOf("/"));
+                                    destination = data.getDestinationURL().toString() + segment;
+                                    cd.setDestinationURL( data.getDestinationURL().appendPath(segment, true) );
                                 }
                                 cd.setOut( data.getOut() );
                                 Copy copy = new Copy();
@@ -231,15 +194,14 @@ public class CopyAction implements ActionListener {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( "Copy Error", error_panel );
+                            panel.addTab( "Move Error", error_panel );
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();
                         //System.out.println( "+++++ results = " + results );
                         //System.out.println( "+++++ where2where = " + where2where );
                         switch ( where2where ) {
-                            case W2W:
-                            case U2W: {
+                            case W2W: {
                                     // SVNCommitInfo in results will be null in these
                                     // cases since there is no actual commit.  These
                                     // files will be scheduled for svn add.
@@ -248,7 +210,7 @@ public class CopyAction implements ActionListener {
                                         ar.addPath( path );
                                     }
                                     JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, view, data.getUsername(), data.getPassword() );
-                                    panel.addTab( "Copy", results_panel );
+                                    panel.addTab( "Move", results_panel );
 
                                     // open the file(s) and signal ProjectViewer to possibly add the file
                                     for ( String path : results.keySet() ) {
@@ -261,12 +223,11 @@ public class CopyAction implements ActionListener {
                                     }
                                 }
                                 break;
-                            case W2U:
                             case U2U: {
                                     // these cases result in an immediate commit, so
                                     // the SVNCommitInfo objects in the map are valid
-                                    JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), false );
-                                    panel.addTab( "Copy", results_panel );
+                                    JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), true );
+                                    panel.addTab( "Move", results_panel );
                                 }
                                 break;
                             default:
@@ -284,7 +245,7 @@ public class CopyAction implements ActionListener {
                 private void checkDestination( File destination ) throws Exception {
                     // destination must be a directory and must exist
                     if ( !destination.exists() || !destination.isDirectory() ) {
-                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\nCopy destination must be an existing directory under version control." );
+                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\nMove destination must be an existing directory under version control." );
                     }
                 }
             }
