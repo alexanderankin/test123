@@ -38,6 +38,7 @@ import org.gjt.sp.util.Log;
  * </ul>
  * <p>
  * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t
+ *         n|ISO-8859-1|f|    |      |none|0|4|4|t
  * <p>
  * TODO: need to check how this works with files loaded with the ftp plugin
  * <br>
@@ -204,45 +205,23 @@ public class BufferLocalPlugin extends EBPlugin {
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
             String file = buffer.getPath();
-            //Log.log(Log.DEBUG, this, "+++++ file: " + file);
+            Log.log(Log.DEBUG, this, "+++++ file: " + file);
             if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
                 String props = map.getProperty( file );
-                //Log.log(Log.DEBUG, this, "+++++ props: " + props);
+                Log.log(Log.DEBUG, this, "+++++ props: " + props);
                 if ( props != null ) {
                     // parse the stored properties
-                    StringTokenizer st = new StringTokenizer( props, "|" );
-                    String ls = null;
-                    String enc = null;
-                    String gz = null;
-                    String em = null;
-                    String fm = null;
-                    String wm = null;
-                    String ll = null;
-                    String tw = null;
-                    String iw = null;
-                    String tabs = null;
-
-                    if ( st.hasMoreTokens() )
-                        ls = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        enc = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        gz = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        em = st.nextToken();
-                    //Log.log(Log.DEBUG, this, "+++++ edit mode: " + em);
-                    if ( st.hasMoreTokens() )
-                        fm = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        wm = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        ll = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        tw = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        iw = st.nextToken();
-                    if ( st.hasMoreTokens() )
-                        tabs = st.nextToken();
+                    String[] tokens = props.split( "[\\|]" );
+                    String ls = tokens[0];
+                    String enc = tokens[1];
+                    String gz = tokens[2];
+                    String em = tokens[3];
+                    String fm = tokens[4];
+                    String wm = tokens[5];
+                    String ll = tokens[6];
+                    String tw = tokens[7];
+                    String iw = tokens[8];
+                    String tabs = tokens[9];
 
                     // apply the stored properties to the buffer
                     /// see comments above, don't need this right now
