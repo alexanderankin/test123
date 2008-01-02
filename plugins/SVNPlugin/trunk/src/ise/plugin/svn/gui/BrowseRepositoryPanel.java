@@ -320,7 +320,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 };
         chooser.addActionListener( al );
-        if (full) {
+        if ( full ) {
             refresh_btn.addActionListener( al );
         }
         if ( repositoryName != null ) {
@@ -593,8 +593,12 @@ public class BrowseRepositoryPanel extends JPanel {
                                 Object[] parts = path.getPath();
                                 StringBuilder sb = new StringBuilder();
                                 StringBuilder sb2 = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                sb2.append( parts[ 0 ] );
+                                String preface = parts[ 0 ].toString();
+                                if ( preface.endsWith( "/" ) ) {
+                                    preface = preface.substring( 0, preface.length() - 1 );
+                                }
+                                sb.append( preface );
+                                sb2.append( preface );
                                 for ( int i = 1; i < parts.length; i++ ) {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
@@ -646,8 +650,12 @@ public class BrowseRepositoryPanel extends JPanel {
                                 Object[] parts = path.getPath();
                                 StringBuilder sb = new StringBuilder();
                                 StringBuilder sb2 = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                sb2.append( parts[ 0 ] );
+                                String preface = parts[ 0 ].toString();
+                                if ( preface.endsWith( "/" ) ) {
+                                    preface = preface.substring( 0, preface.length() - 1 );
+                                }
+                                sb.append( preface );
+                                sb2.append( preface );
                                 for ( int i = 1; i < parts.length; i++ ) {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
@@ -697,7 +705,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     sb.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 url = sb.toString();
-                                paths.add(url);
+                                paths.add( url );
                                 defaultDestination = url;
                             }
                         }
