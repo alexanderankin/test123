@@ -52,8 +52,8 @@ interface.  Click the "New" button to enter a new repository location.  There is
 no limit to the number of repositories that can be added.
 </p>
 <p>
-<strong>Recent changes in the management of repositories are not backward compatible
-with previous versions.  Repositories can now be named and are sorted in the list,
+<strong>Recent changes in the management of repositories are NOT backward compatible
+with versions prior to 0.6.0.  Repositories can now be named and are sorted in the list,
 and 'Remove' now works correctly.  These changes lost the ability to read previous
 repository settings.</strong>
 </p>
@@ -140,21 +140,6 @@ The official Subversion reference manual is here:<br>
 
    <a href="http://svnbook.red-bean.com/index.en.html" title="English"
       hreflang="en" lang="en" rel="alternate">English</a> <br>
-   <a href="http://svnbook.red-bean.com/index.es.html" title="Spanish"
-      hreflang="es" lang="es" rel="alternate">español</a> <br>
-   <a href="http://svnbook.red-bean.com/index.it.html" title="Italian"
-      hreflang="it" lang="it" rel="alternate">Italiano</a> <br>
-   <a href="http://svnbook.red-bean.com/index.ja.html" title="Japanese"
-      hreflang="ja" lang="ja" rel="alternate">&#26085;&#26412;&#35486;</a> <br>
-   <a href="http://svnbook.red-bean.com/index.nb.html" title="Norwegian"
-      hreflang="nb" lang="nb" rel="alternate">norsk</a> <br>
-   <a href="http://svnbook.red-bean.com/index.pt_BR.html" title="Portuguese"
-      hreflang="pt-BR" lang="pt-BR" rel="alternate">Português</a> <br>
-   <a href="http://svnbook.red-bean.com/index.ru.html" title="Russian"
-      hreflang="ru" lang="ru" rel="alternate"
-      >&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</a> <br>
-   <a href="http://svnbook.red-bean.com/index.zh.html" title="Chinese"
-      hreflang="zh" lang="zh" rel="alternate">&#20013;&#25991;</a> <br>
 </p>
 <hr/>
 <p>
@@ -219,11 +204,11 @@ svn help
 svn import
 svn info - done
 svn list - done
-svn lock
+svn lock - done
 svn log - done
 svn merge
 svn mkdir
-svn move
+svn move - done
 svn propdel - done
 svn propedit - done
 svn propget - done
@@ -233,7 +218,7 @@ svn resolved - done
 svn revert - done
 svn status - done
 svn switch
-svn unlock
+svn unlock - done
 svn update - done
 
 
@@ -253,6 +238,10 @@ How to undelete a deleted file:
 <li>At this point, the file is scheduled for add, so you'll still need to commit.</li>
 <li>That's it!</li>
 </ol>
+Don't forget that in subversion, a "move" is really a "copy" followed by a "delete".  To undo a "move", your best bet
+is to just "move" the files back.  Doing a "revert" does NOT undo a "move".  If you do "revert", your moved files will
+be removed from their new destination, and then you'll also need to follow the undelete instructions above to get them
+back into their original location.
 </p>
 
 <hr/>
