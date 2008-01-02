@@ -218,6 +218,7 @@ public class TagBranchDialog extends JDialog {
                         }
                         revision = tag_revision_panel.getRevision();
                         cancelled = false;
+                        TagBranchDialog.this._save();
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
                     }
@@ -260,6 +261,12 @@ public class TagBranchDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+    }
+
+    protected void _save() {
+        if ( commentList != null ) {
+            commentList.save();
+        }
     }
 
     public CopyData getData() {

@@ -249,6 +249,7 @@ public class CopyDialog extends JDialog {
                         }
                         revision = revision_panel.getRevision();
                         cancelled = false;
+                        CopyDialog.this._save();
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
                     }
@@ -301,6 +302,12 @@ public class CopyDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+    }
+
+    protected void _save() {
+        if ( commentList != null ) {
+            commentList.save();
+        }
     }
 
     public CopyData getData() {
