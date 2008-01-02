@@ -37,6 +37,7 @@ import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.data.DeleteResults;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.DeleteDialog;
+import ise.plugin.svn.gui.RemoteDeleteDialog;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
@@ -79,31 +80,52 @@ public class DeleteAction implements ActionListener {
         this.paths = paths;
         this.username = username;
         this.password = password;
+
+        data = new DeleteData();
+        data.setPaths( paths );
+        if ( username != null && password != null ) {
+            data.setUsername( username );
+            data.setPassword( password );
+        }
+    }
+
+    public DeleteAction( View view, DeleteData data ) {
+        if ( view == null )
+            throw new IllegalArgumentException( "view may not be null" );
+        if ( data == null )
+            throw new IllegalArgumentException( "data may not be null" );
+        this.view = view;
+        this.data = data;
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( paths != null && paths.size() > 0 ) {
-            data = new DeleteData();
-
-            data.setPaths( paths );
-
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
+        if ( data.getPaths() != null && data.getPaths().size() > 0 ) {
 
             data.setOut( new ConsolePrintStream( view ) );
 
             // show dialog
-            DeleteDialog dialog = new DeleteDialog( view, data );
-            GUIUtils.center( view, dialog );
-            dialog.setVisible( true );
-            data = dialog.getData();
-            if ( data == null ) {
-                return ;     // null data signals user cancelled
+            if ( !data.pathsAreURLs() ) {
+                // working copy delete
+                DeleteDialog dialog = new DeleteDialog( view, data );
+                GUIUtils.center( view, dialog );
+                dialog.setVisible( true );
+                data = dialog.getData();
+                if ( data == null ) {
+                    return ;     // null data signals user cancelled
+                }
             }
-
+            else {
+                // remote copy delete -- show path(s) to delete and commit
+                // message textbox and dropdown.
+                RemoteDeleteDialog dialog = new RemoteDeleteDialog(view, data);
+                GUIUtils.center( view, dialog );
+                dialog.setVisible( true );
+                data = dialog.getData();
+                if ( data == null ) {
+                    return ;     // null data signals user cancelled
+                }
+            }
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
@@ -134,9 +156,9 @@ public class DeleteAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        AddResults results = (AddResults)get();
-                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.DELETE, view, username, password );
-                        panel.addTab("Delete", results_panel);
+                        AddResults results = ( AddResults ) get();
+                        JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, view, username, password );
+                        panel.addTab( "Delete", results_panel );
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();

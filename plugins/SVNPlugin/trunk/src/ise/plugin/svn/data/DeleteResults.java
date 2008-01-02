@@ -29,5 +29,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.data;
 
 public class DeleteResults extends AddResults {
+    private long revision;
+
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision( long revision ) {
+        this.revision = revision;
+    }
+
 
 }

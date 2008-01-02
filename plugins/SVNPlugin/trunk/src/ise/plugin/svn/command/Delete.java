@@ -31,11 +31,17 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+
+
+import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
+import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.tmatesoft.svn.core.SVNErrorCode;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
-
-import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.SVNCommitClient;
+import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
@@ -59,43 +65,95 @@ public class Delete {
             data.setErr( data.getOut() );
         }
 
-        // convert paths to Files
-        List<String> paths = data.getPaths();
-        File[] localPaths = new File[ paths.size() ];
-        for ( int i = 0; i < paths.size(); i++ ) {
-            localPaths[ i ] = new File( paths.get( i ) );
-            // check for file existence?
-        }
-
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
         SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
 
-        // get a commit client
-        SVNWCClient client = clientManager.getWCClient();
-
-        // set an event handler so that messages go to the commit data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
-
-        // actually do the deletes(s)
-        PrintStream out = data.getOut();
-        DeleteResults results = new DeleteResults();
-        for ( String path : paths ) {
-            try {
-                File file = new File(path);
-                client.doDelete( file, data.getForce(), data.getDeleteFiles(), data.getDryRun() );
-                results.addPath(path);
+        if ( !data.pathsAreURLs() ) {
+            // working copies, convert paths to Files
+            List<String> paths = data.getPaths();
+            File[] localPaths = new File[ paths.size() ];
+            for ( int i = 0; i < paths.size(); i++ ) {
+                localPaths[ i ] = new File( paths.get( i ) );
+                // check for file existence?
             }
-            catch ( Exception e ) {
-                out.println( e.getMessage() );
-                results.addErrorPath(path, e.getMessage());
+
+            // get a commit client
+            SVNWCClient client = clientManager.getWCClient();
+
+            // set an event handler so that messages go to the commit data streams for display
+            client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
+
+            // actually do the deletes(s)
+            PrintStream out = data.getOut();
+            DeleteResults results = new DeleteResults();
+            for ( String path : paths ) {
+                try {
+                    File file = new File( path );
+                    client.doDelete( file, data.getForce(), data.getDeleteFiles(), data.getDryRun() );
+                    results.addPath( path );
+                }
+                catch ( Exception e ) {
+                    out.println( e.getMessage() );
+                    results.addErrorPath( path, e.getMessage() );
+                }
             }
+            out.flush();
+            out.close();
+            return results;
         }
+        else {
+            // remote urls, need to use a commit client
+            SVNCommitClient client = clientManager.getCommitClient();
 
-        out.flush();
-        out.close();
-        return results;
+            DeleteResults results = new DeleteResults();
+            List<String> paths = data.getPaths();
+            SVNURL[] remotePaths = new SVNURL[ paths.size() ];
+            for ( int i = 0; i < paths.size(); i++ ) {
+                remotePaths[ i ] = SVNURL.parseURIDecoded( paths.get( i ) );
+            }
+
+            // set an event handler so that messages go to the commit data streams for display
+            client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
+
+            // actually do the delete
+            String commitMessage = data.getCommitMessage();
+            if ( commitMessage == null || commitMessage.length() == 0 ) {
+                commitMessage = "no message";
+            }
+            SVNCommitInfo info = client.doDelete( remotePaths, commitMessage );
+
+            // handle the results
+            PrintStream out = data.getOut();
+            if ( info != SVNCommitInfo.NULL ) {
+                out.println();
+                out.println( "Deleted, revision " + info.getNewRevision() + "." );
+                results.setRevision( info.getNewRevision() );
+                out.flush();
+            }
+            else {
+                out.println();
+                String msg = "Delete failed";
+                if ( info.getErrorMessage() != null ) {
+                    out.println( "Delete failed:" );
+                    out.println( info.getErrorMessage() );
+                    msg = ": " + info.getErrorMessage();
+                }
+                else {
+                    out.println( "Delete failed." );
+                    msg += ".";
+                }
+                for ( String path : data.getPaths() ) {
+                    results.addErrorPath( path, msg );
+                }
+                out.flush();
+            }
+            out.close();
+
+            results.addPaths( data.getPaths() );
+            return results;
+        }
     }
 }

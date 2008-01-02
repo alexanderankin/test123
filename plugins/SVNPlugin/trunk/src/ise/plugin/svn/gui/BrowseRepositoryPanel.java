@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CopyData;
+import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.data.RepositoryData;
@@ -749,7 +750,13 @@ public class BrowseRepositoryPanel extends JPanel {
                                 paths.add( url );
                             }
                         }
-                        DeleteAction action = new DeleteAction( view, paths, username, password );
+                        DeleteData data = new DeleteData();
+                        data.setPaths(paths);
+                        data.setUsername(username);
+                        data.setPassword(password);
+                        data.setPathsAreURLs(true);
+                        System.out.println("+++++ data = " + data);
+                        DeleteAction action = new DeleteAction( view, data );
                         action.actionPerformed( ae );
                     }
                 }
