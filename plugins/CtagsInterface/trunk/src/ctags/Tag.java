@@ -16,6 +16,9 @@ public class Tag {
 	private Hashtable<String, String> attachments;
 	static private String LINE_KEY = String.valueOf("line");
 	static private String KIND_KEY = String.valueOf("kind");
+	static private String [] namespaceExtensions = new String [] {
+		"class", "struct", "union", "interface"
+	};
 
 	public Tag(String name, String file, String pattern) {
 		this.name = name;
@@ -59,5 +62,19 @@ public class Tag {
 	}
 	public ImageIcon getIcon() {
 		return CtagsInterfacePlugin.getIcon(this);
+	}
+	public String getNamespace() {
+		for (int i = 0; i < namespaceExtensions.length; i++) {
+			String ext = getExtension(namespaceExtensions[i]);
+			if (ext != null)
+				return ext;
+		}
+		return null;
+	}
+	public String getQualifiedName() {
+		String ns = getNamespace();
+		if (ns == null)
+			return getName();
+		return "(" + ns + ") " + getName();
 	}
 }
