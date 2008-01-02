@@ -35,6 +35,7 @@ import javax.swing.*;
 import ise.plugin.svn.action.CommitAction;
 import ise.plugin.svn.action.RevertAction;
 import ise.plugin.svn.data.AddResults;
+import ise.plugin.svn.data.DeleteResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.java.awt.LambdaLayout;
 import org.gjt.sp.jedit.jEdit;
@@ -51,17 +52,20 @@ public class AddResultsPanel extends JPanel {
     public static final int RESOLVED = 3;
     public static final int LOCK = 4;
     public static final int UNLOCK = 5;
+    public static final int REMOTE_DELETE = 6;
 
     private View view = null;
+    private int action;
     private String username = null;
     private String password = null;
 
-    public AddResultsPanel( AddResults results, int action, View view, String username, String password  ) {
+    public AddResultsPanel( AddResults results, int action, View view, String username, String password ) {
         super( new LambdaLayout() );
-        if ( action < 0 || action > 5 ) {
+        if ( action < 0 || action > 6 ) {
             throw new IllegalArgumentException( "invalid action: " + action );
         }
         this.view = view;
+        this.action = action;
         this.username = username;
         this.password = password;
 
@@ -94,6 +98,10 @@ public class AddResultsPanel extends JPanel {
                     break;
                 case UNLOCK:
                     good_label_text = "Unlocked:";
+                    break;
+                case REMOTE_DELETE:
+                    DeleteResults dr = (DeleteResults)results;
+                    good_label_text = "Deleted from repository, new revision " + dr.getRevision() + ":";
                     break;
             }
             JLabel good_label = new JLabel( good_label_text );
@@ -142,15 +150,18 @@ public class AddResultsPanel extends JPanel {
                 case UNLOCK:
                     bad_label_text = "Unable to unlock:";
                     break;
+                case REMOTE_DELETE:
+                    bad_label_text = "Unable to delete from repository:";
+                    break;
             }
             JLabel bad_label = new JLabel( bad_label_text );
 
             String[][] data = new String[ error_map.size() ][ 2 ];
-            Set<Map.Entry<String, String>> set = error_map.entrySet();
+            Set < Map.Entry < String, String >> set = error_map.entrySet();
             int i = 0;
-            for (Map.Entry entry : set) {
-                String path = (String) entry.getKey();
-                String msg = (String) entry.getValue();
+            for ( Map.Entry entry : set ) {
+                String path = ( String ) entry.getKey();
+                String msg = ( String ) entry.getValue();
                 data[ i ][ 0 ] = path;
                 data[ i ][ 1 ] = msg;
                 ++i;
@@ -163,7 +174,7 @@ public class AddResultsPanel extends JPanel {
                 String msg = ( String ) error_map.get( path );
                 data[ i ][ 0 ] = path;
                 data[ i ][ 1 ] = msg;
-            }
+        }
             */
             JTable bad_table = new JTable( data, new String[] {"Path", "Error Message"} );
 
@@ -196,16 +207,18 @@ public class AddResultsPanel extends JPanel {
         }
 
         private void handleClick( MouseEvent me ) {
-            if ( me.isPopupTrigger() ) {
-                JPopupMenu popup = getPopupMenu( table );
-                if ( popup != null ) {
-                    GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+            if ( AddResultsPanel.this.action != REMOTE_DELETE ) {
+                if ( me.isPopupTrigger() ) {
+                    JPopupMenu popup = getPopupMenu( table );
+                    if ( popup != null ) {
+                        GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+                    }
                 }
-            }
-            else if ( me.getClickCount() == 2 ) {
-                // on double-click, open file in jEdit
-                String filename = (String)table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
-                jEdit.openFile(view, filename );
+                else if ( me.getClickCount() == 2 ) {
+                    // on double-click, open file in jEdit
+                    String filename = ( String ) table.getValueAt( table.getSelectedRow(), table.getSelectedColumn() );
+                    jEdit.openFile( view, filename );
+                }
             }
         }
     }
@@ -215,23 +228,23 @@ public class AddResultsPanel extends JPanel {
      */
     private JPopupMenu getPopupMenu( final JTable table ) {
         int[] rows = table.getSelectedRows();
-        if (rows.length == 0) {
+        if ( rows.length == 0 ) {
             return null;
         }
 
         JPopupMenu popup = new JPopupMenu();
         TreeMap<String, String> paths = new TreeMap<String, String>();
-        for (int row : rows) {
-            paths.put((String) table.getValueAt(rows[row], 0), "");
+        for ( int row : rows ) {
+            paths.put( ( String ) table.getValueAt( rows[ row ], 0 ), "" );
         }
 
-        JMenuItem mi = new JMenuItem("Commit");
-        popup.add(mi);
-        mi.addActionListener(new CommitAction( view, paths, username, password ) );
+        JMenuItem mi = new JMenuItem( "Commit" );
+        popup.add( mi );
+        mi.addActionListener( new CommitAction( view, paths, username, password ) );
 
-        mi = new JMenuItem("Revert");
-        popup.add(mi);
-        ArrayList<String> files = new ArrayList<String>(paths.keySet());
+        mi = new JMenuItem( "Revert" );
+        popup.add( mi );
+        ArrayList<String> files = new ArrayList<String>( paths.keySet() );
         mi.addActionListener( new RevertAction( view, files, username, password ) );
 
         return popup;

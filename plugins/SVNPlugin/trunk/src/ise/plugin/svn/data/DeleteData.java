@@ -31,14 +31,10 @@ package ise.plugin.svn.data;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 
-public class DeleteData extends SVNData {
+public class DeleteData extends CommitData {
 
     private boolean deleteFiles = true;
 
-    /**
-     * Sets the value of revision.
-     * @param revision The value to assign revision.
-     */
     public void setDeleteFiles( boolean b ) {
         deleteFiles = b;
     }
@@ -46,4 +42,5 @@ public class DeleteData extends SVNData {
     public boolean getDeleteFiles() {
         return deleteFiles;
     }
+
 }
