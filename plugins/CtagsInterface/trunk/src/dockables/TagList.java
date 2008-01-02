@@ -99,7 +99,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			StringBuffer s = new StringBuffer("<html>");
 			s.append(index + 1);
 			s.append(": <b>");
-			s.append(tag.getName());
+			s.append(tag.getQualifiedName());
 			s.append("</b>  ");
 			String originType = tag.getAttachment("O_TYPE");
 			if (originType != null &&
