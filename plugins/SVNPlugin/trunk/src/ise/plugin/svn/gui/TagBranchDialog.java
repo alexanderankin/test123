@@ -236,7 +236,7 @@ public class TagBranchDialog extends JDialog {
 
 
         // add the components to the option panel
-        panel.add( "0, 0, 8, 1, W, w, 3", source_panel );
+        panel.add( "0, 0, 8, 1, W, w, 0", source_panel );
 
         panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
