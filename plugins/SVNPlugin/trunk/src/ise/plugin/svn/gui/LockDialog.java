@@ -195,6 +195,7 @@ public class LockDialog extends JDialog {
                             lockData.setCommitMessage( msg );
                         }
 
+                        LockDialog.this._save();
                         LockDialog.this.setVisible( false );
                         LockDialog.this.dispose();
                     }
@@ -239,6 +240,12 @@ public class LockDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+    }
+
+    protected void _save() {
+        if ( commentList != null ) {
+            commentList.save();
+        }
     }
 
     public CommitData getData() {
