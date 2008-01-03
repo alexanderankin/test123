@@ -32,9 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -48,25 +46,18 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 {
 
 	// {{{ data members
-	private JComboBox prefix;
+
 	private FontSelector font;
 	private JComboBox encoding;
 	private JButton bgColor;
 	private JButton usejEditBgColor;
-	private JCheckBox rememberCWD;
 	private JButton plainColor;
 	private JButton caretColor;
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;
-	private JCheckBox nodeselect;
-	private JCheckBox mergeError;
-	private JCheckBox showExitStatus;
 	private JCheckBox showWelcomeMessage;
-	private JTextField pathDirs ;
 	private JTextField limit ;
-	private JCheckBox pvselect;
-	private JCheckBox pvchange;
 	
 	
 	// }}}
@@ -80,47 +71,12 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	//{{{ _init() method
 	protected void _init()
 	{
-
-		prefix = new JComboBox();
-		prefix.setEditable(true);
-
 		
-		prefix.addItem(jEdit.getProperty("console.shell.prefix", "osdefault"));
-		prefix.addItem("osdefault");
-		prefix.addItem("none");
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
-		
-		Label prefixLabel = new Label("options.console.general.shellprefix");
-		addComponent(prefixLabel, prefix);
-		
-		Label pathLabel = new Label("options.console.general.pathdirs");
-		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
-		addComponent(pathLabel, pathDirs);
-
-		rememberCWD = new JCheckBox(jEdit.getProperty("options.console.general.rememberCWD"));
-		rememberCWD.setSelected(jEdit.getBooleanProperty("console.rememberCWD"));
-		addComponent(rememberCWD);	
-		
-		mergeError = new JCheckBox();
-		mergeError.setText(jEdit.getProperty("options.console.general.mergeError"));
-		mergeError.setToolTipText(jEdit.getProperty("options.console.general.mergeError.tooltip"));
-		mergeError.setSelected(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
-		addComponent(mergeError);
 
 		showWelcomeMessage = new JCheckBox();
 		showWelcomeMessage.setText(jEdit.getProperty("options.console.general.welcome"));
 		showWelcomeMessage.setSelected(jEdit.getBooleanProperty("console.shell.info.toggle"));
-		addComponent(showWelcomeMessage);		
-		
-		showExitStatus = new JCheckBox();
-		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
-		showExitStatus.setSelected(jEdit.getBooleanProperty("console.processrunner.showExitStatus", true));
-		addComponent(showExitStatus);
-		
-		
+		addComponent(showWelcomeMessage);			
 		
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
@@ -154,37 +110,13 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 			warningColor = createColorButton("console.warningColor"));
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
-
-		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
-		addSeparator("options.console.general.changedir");
-		nodeselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.nodeselect"));
-		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
-		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
-		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
-		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
-		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
-
-		addComponent(nodeselect);
-		addComponent(pvchange);
-		addComponent(pvselect);
-		
-		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
-		
-
 	} //}}}
 
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
-		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
-		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
-		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
-		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
-		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
 		jEdit.setBooleanProperty("console.shell.info.toggle", showWelcomeMessage.isSelected());
 		
-		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
 		jEdit.setFontProperty("console.font",font.getFont());
 
 		String limitstr = limit.getText();
@@ -196,7 +128,6 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
  		jEdit.setProperty("console.encoding", 
  			(String)encoding.getSelectedItem());
 
-		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
 		jEdit.setColorProperty("console.bgColor",
 			bgColor.getBackground());
 		jEdit.setColorProperty("console.plainColor",
