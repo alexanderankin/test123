@@ -331,6 +331,24 @@ implements EBComponent, DefaultFocusComponent
 		return plainColor;
 	} // }}}
 
+	// {{ getId() method
+	/** @return a unique identifier starting at 0, representing which instance of Console this is,
+	    or -1 if that value can not be determined. 
+	*/
+	public int getId() {
+		int retval = 0;
+		View v = jEdit.getFirstView();
+		while (v != null) {
+			/* In fact, this is not unique: there can be more than one Console per View.
+			 * A better way of enumerating instances of Console for new floating
+			 * instances is desired. */
+			if (v == view) return retval;
+			++retval;
+			v = v.getNext();
+		}
+		return -1;
+	} // }}}
+	
 	//{{{ print() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>

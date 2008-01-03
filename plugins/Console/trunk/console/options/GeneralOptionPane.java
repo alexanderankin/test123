@@ -53,6 +53,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	private JComboBox encoding;
 	private JButton bgColor;
 	private JButton usejEditBgColor;
+	private JCheckBox rememberCWD;
 	private JButton plainColor;
 	private JButton caretColor;
 	private JButton infoColor;
@@ -82,6 +83,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 
 		prefix = new JComboBox();
 		prefix.setEditable(true);
+
 		
 		prefix.addItem(jEdit.getProperty("console.shell.prefix", "osdefault"));
 		prefix.addItem("osdefault");
@@ -97,6 +99,10 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		Label pathLabel = new Label("options.console.general.pathdirs");
 		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
 		addComponent(pathLabel, pathDirs);
+
+		rememberCWD = new JCheckBox(jEdit.getProperty("options.console.general.rememberCWD"));
+		rememberCWD.setSelected(jEdit.getBooleanProperty("console.rememberCWD"));
+		addComponent(rememberCWD);	
 		
 		mergeError = new JCheckBox();
 		mergeError.setText(jEdit.getProperty("options.console.general.mergeError"));
@@ -130,6 +136,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		Label limitLabel = new Label("options.console.general.charlimit");
 		limit = new JTextField(jEdit.getProperty("console.outputLimit"));
 		addComponent(limitLabel, limit);
+		
 		
 		usejEditBgColor = new JButton("reset");
 		usejEditBgColor.addActionListener(this);
@@ -172,7 +179,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
 		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
-		
+		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
 		jEdit.setBooleanProperty("console.shell.info.toggle", showWelcomeMessage.isSelected());

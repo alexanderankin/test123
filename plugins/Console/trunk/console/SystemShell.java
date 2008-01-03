@@ -80,7 +80,13 @@ public class SystemShell extends Shell
 	 */
 	public void openConsole(Console console)
 	{
-		consoleStateMap.put(console, new ConsoleState());
+		ConsoleState cs = new ConsoleState();
+		consoleStateMap.put(console, cs);
+		if (jEdit.getBooleanProperty("console.rememberCWD" )) {
+			String propName = "console.cwd." + console.getId();
+			String val = jEdit.getProperty(propName, "null");
+			if (!val.equals("null")) cs.currentDirectory = val;
+		}
 	} // }}}
 
 	// {{{ closeConsole() method
@@ -1079,6 +1085,7 @@ public class SystemShell extends Shell
 
 		Stack<String> directoryStack = new Stack<String>();
 		// }}}
+				
 		// {{{ setProcess method
 		void setProcess(ConsoleProcess cp)
 		{
@@ -1147,6 +1154,11 @@ public class SystemShell extends Shell
 				try
 				{
 					currentDirectory = file.getCanonicalPath();
+					if (jEdit.getBooleanProperty("console.rememberCWD")) 
+					{
+						String propName = "console.cwd." + console.getId();
+						jEdit.setProperty(propName, currentDirectory);
+					}
 				}
 				catch (IOException ioe)
 				{
