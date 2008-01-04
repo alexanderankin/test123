@@ -64,7 +64,8 @@ public class SVNPlugin extends EBPlugin {
             if ( ViewUpdate.CLOSED == vu.getWhat() ) {
                 panelMap.remove( vu.getView() );
             }
-            else if ( ViewUpdate.CREATED == vu.getWhat() ) {
+            else if ( ViewUpdate.CREATED == vu.getWhat() || ViewUpdate.ACTIVATED == vu.getWhat()) {
+                System.out.println("+++++ view created or activated");
                 addContextMenu( vu.getView() );
             }
         }
@@ -80,6 +81,7 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void start() {
+        System.out.println("+++++ SVNPlugin.start");
         for ( View view : jEdit.getViews() ) {
             addContextMenu( view );
         }
@@ -98,6 +100,7 @@ public class SVNPlugin extends EBPlugin {
     }
 
     private static void addContextMenu( View view ) {
+        System.out.println("+++++ SVNPlugin adding context menu");
         TextAreaContextMenu context_menu = createContextMenu(view);
         removeContextMenu( view );
         JPopupMenu menu = view.getTextArea().getRightClickPopup();

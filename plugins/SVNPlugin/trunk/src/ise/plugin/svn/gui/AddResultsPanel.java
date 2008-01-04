@@ -43,7 +43,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 
 /**
- * Used for both Add and Revert, and now Delete and Resolved.
+ * Used for both Add and Revert, and now Delete and Resolved, and lock, unlock
+ * and remote delete.
  */
 public class AddResultsPanel extends JPanel {
     public static final int ADD = 0;
@@ -69,7 +70,7 @@ public class AddResultsPanel extends JPanel {
         this.username = username;
         this.password = password;
 
-        boolean top = false;
+        boolean top = false;    // indicate good messages are displayed
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
         con.s = "wh";
@@ -167,15 +168,6 @@ public class AddResultsPanel extends JPanel {
                 ++i;
             }
 
-            /*
-            Iterator it = error_map.keySet().iterator();
-            for ( int i = 0; it.hasNext(); i++ ) {
-                String path = ( String ) it.next();
-                String msg = ( String ) error_map.get( path );
-                data[ i ][ 0 ] = path;
-                data[ i ][ 1 ] = msg;
-        }
-            */
             JTable bad_table = new JTable( data, new String[] {"Path", "Error Message"} );
 
             if ( top ) {
