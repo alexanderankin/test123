@@ -119,6 +119,25 @@ public class RepositoryComboBox extends JComboBox {
         super.setEditable( false );
     }
 
+    // item might be a repository url, so lookup the corresponding repository name
+    @Override
+    public void setSelectedItem(Object item) {
+        if (item == null) {
+            return;
+        }
+        String url = item.toString();
+        Set<Map.Entry<String, RepositoryData>> set = propertyMap.entrySet();
+        for (Map.Entry<String, RepositoryData> entry : set) {
+            RepositoryData rd = entry.getValue();
+            String comp_url = rd.getURL();
+            if (url.equals(comp_url) || url.startsWith(comp_url) || comp_url.startsWith(url)) {
+                super.setSelectedItem(entry.getKey());
+                return;
+            }
+        }
+        super.setSelectedItem(item);
+    }
+
     public void addRepository( RepositoryData data ) {
         addItem( data );
     }

@@ -95,7 +95,7 @@ public class AddDialog extends JDialog {
         addData.setPaths( paths );
         addData.setRecursive( recursive );
 
-        JLabel file_label = new JLabel( "Adding these files:" );
+        JLabel file_label = new JLabel( "Adding " + (paths.size() == 1 ? "this" : "these") + " files:" );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {

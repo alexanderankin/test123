@@ -88,15 +88,23 @@ public class BrowseRepositoryPanel extends JPanel {
     private JButton refresh_btn;
 
     public BrowseRepositoryPanel( View view ) {
+        this(view, true);
+    }
+
+    public BrowseRepositoryPanel( View view, boolean full ) {
         super( new BorderLayout() );
         this.view = view;
-        init( true, null );
+        init( full, null );
     }
 
     public BrowseRepositoryPanel( View view, String defaultDestination ) {
+        this(view, defaultDestination, true);
+    }
+
+    public BrowseRepositoryPanel( View view, String defaultDestination, boolean full ) {
         super( new BorderLayout() );
         this.view = view;
-        init( true, defaultDestination );
+        init( full, defaultDestination );
     }
 
     private void init( boolean full, String repositoryName ) {
@@ -437,14 +445,20 @@ public class BrowseRepositoryPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( node.isExternal() ) {
+                                    paths.add( node.getRepositoryLocation() );
                                 }
-                                String url = sb.toString();
-                                paths.add( url );
+                                else {
+                                    Object[] parts = path.getPath();
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append( parts[ 0 ] );
+                                    for ( int i = 1; i < parts.length; i++ ) {
+                                        sb.append( "/" ).append( parts[ i ].toString() );
+                                    }
+                                    String url = sb.toString();
+                                    paths.add( url );
+                                }
                             }
                         }
                         SVNData data = new SVNData();
@@ -469,14 +483,20 @@ public class BrowseRepositoryPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( node.isExternal() ) {
+                                    paths.add( node.getRepositoryLocation() );
                                 }
-                                String url = sb.toString();
-                                paths.add( url );
+                                else {
+                                    Object[] parts = path.getPath();
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append( parts[ 0 ] );
+                                    for ( int i = 1; i < parts.length; i++ ) {
+                                        sb.append( "/" ).append( parts[ i ].toString() );
+                                    }
+                                    String url = sb.toString();
+                                    paths.add( url );
+                                }
                             }
                         }
                         LogData data = new LogData();
@@ -587,35 +607,35 @@ public class BrowseRepositoryPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String url = null;
+                        String from_url = null;
                         String defaultDestination = null;
-                        for ( TreePath path : tree_paths ) {
+                        for ( TreePath path : tree_paths ) {    // should be a single loop
                             if ( path != null ) {
                                 Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                StringBuilder sb2 = new StringBuilder();
+                                StringBuilder from = new StringBuilder();
+                                StringBuilder to = new StringBuilder();
                                 String preface = parts[ 0 ].toString();
                                 if ( preface.endsWith( "/" ) ) {
                                     preface = preface.substring( 0, preface.length() - 1 );
                                 }
-                                sb.append( preface );
-                                sb2.append( preface );
+                                from.append( preface );
+                                to.append( preface );
                                 for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                    from.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 for ( int i = 1; i < parts.length - 1; i++ ) {
                                     if ( parts[ i ].toString().equals( "branches" ) ) {
                                         continue;
                                     }
-                                    sb2.append( "/" ).append( parts[ i ].toString() );
+                                    to.append( "/" ).append( parts[ i ].toString() );
                                 }
-                                url = sb.toString();
-                                defaultDestination = sb2.toString() + "/tags";
+                                from_url = from.toString();
+                                defaultDestination = to.append("/tags").toString();
                                 break;
                             }
                         }
 
-                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.TAG_DIALOG, url, defaultDestination );
+                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.TAG_DIALOG, from_url, defaultDestination );
                         GUIUtils.center( view, dialog );
                         dialog.setVisible( true );
                         CopyData cd = dialog.getData();
@@ -644,32 +664,32 @@ public class BrowseRepositoryPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String url = null;
+                        String from_url = null;
                         String defaultDestination = null;
-                        for ( TreePath path : tree_paths ) {
+                        for ( TreePath path : tree_paths ) {    // should be a single loop
                             if ( path != null ) {
                                 Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                StringBuilder sb2 = new StringBuilder();
+                                StringBuilder from = new StringBuilder();
+                                StringBuilder to = new StringBuilder();
                                 String preface = parts[ 0 ].toString();
                                 if ( preface.endsWith( "/" ) ) {
                                     preface = preface.substring( 0, preface.length() - 1 );
                                 }
-                                sb.append( preface );
-                                sb2.append( preface );
+                                from.append( preface );
+                                to.append( preface );
                                 for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                    from.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 for ( int i = 1; i < parts.length - 1; i++ ) {
-                                    sb2.append( "/" ).append( parts[ i ].toString() );
+                                    to.append( "/" ).append( parts[ i ].toString() );
                                 }
-                                url = sb.toString();
-                                defaultDestination = sb2.toString() + "/branches";
+                                from_url = from.toString();
+                                defaultDestination = to.append("/branches").toString();
                                 break;
                             }
                         }
 
-                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.BRANCH_DIALOG, url, defaultDestination );
+                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.BRANCH_DIALOG, from_url, defaultDestination );
                         GUIUtils.center( view, dialog );
                         dialog.setVisible( true );
                         CopyData cd = dialog.getData();
@@ -751,11 +771,10 @@ public class BrowseRepositoryPanel extends JPanel {
                             }
                         }
                         DeleteData data = new DeleteData();
-                        data.setPaths(paths);
-                        data.setUsername(username);
-                        data.setPassword(password);
-                        data.setPathsAreURLs(true);
-                        System.out.println("+++++ data = " + data);
+                        data.setPaths( paths );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        data.setPathsAreURLs( true );
                         DeleteAction action = new DeleteAction( view, data );
                         action.actionPerformed( ae );
                     }
