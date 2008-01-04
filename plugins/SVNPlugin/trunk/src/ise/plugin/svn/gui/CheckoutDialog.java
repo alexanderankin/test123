@@ -119,7 +119,7 @@ public class CheckoutDialog extends JDialog {
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
-                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, null );
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, false );
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
