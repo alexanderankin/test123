@@ -30,6 +30,7 @@ package ise.plugin.svn.data;
 
 import java.util.List;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.SVNURL;
 
 public class UpdateData extends SVNData {
 
@@ -40,10 +41,11 @@ public class UpdateData extends SVNData {
     private List<String> deletedFiles = null;
     private List<String> updatedFiles = null;
     private transient SVNRevision revision = SVNRevision.HEAD;
+    private SVNURL url = null;
 
 
     /**
-     * Returns the value of revision.
+     * @return the numeric value of the revision
      */
     public long getRevision() {
         return revision.getNumber();
@@ -70,6 +72,14 @@ public class UpdateData extends SVNData {
      */
     public void setSVNRevision( SVNRevision revision ) {
         this.revision = revision;
+    }
+
+    public void setURL(SVNURL url) {
+        this.url = url;
+    }
+
+    public SVNURL getURL() {
+        return url;
     }
 
     /**
