@@ -90,6 +90,8 @@ ise.plugin.svn.action.label.22=Copy
 ise.plugin.svn.action.code.22=ise.plugin.svn.pv.CopyActor
 ise.plugin.svn.action.label.23=Move
 ise.plugin.svn.action.code.23=ise.plugin.svn.pv.MoveActor
+ise.plugin.svn.action.label.24=Import
+ise.plugin.svn.action.code.24=ise.plugin.svn.pv.ImportActor
 
 
 # register subversion commands with ProjectViewer
