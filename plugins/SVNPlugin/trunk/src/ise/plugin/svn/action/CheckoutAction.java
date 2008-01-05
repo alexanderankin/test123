@@ -204,7 +204,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
                                     RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
                                     SwingUtilities.invokeLater(importer);
 
-                                    // I wonder about this -- if the import happens later
+                                    /// TODO: I wonder about this -- if the import happens later
                                     // (because of the invokeLater), will the save happen correctly?
                                     pm.save();
 

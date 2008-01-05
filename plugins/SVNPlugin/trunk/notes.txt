@@ -40,22 +40,6 @@ Property notes:
 - set properties is not part of the context menu in PV.  Instead, it is accessed through the "show properties" results panel with buttons for add a property, edit an existing property, or delete an existing property.
 - the 'ignore' and 'keywords' commands need property manipulation working first.
 
-UI notes:
-- on the various results panels, add ability to open a file in a jEdit buffer.
-- clean up popups, the tool tips are often too large to be useful and don't stay visible long enough. The TableCellViewer that I borrowed from Antelope conflicts with the popup menu mouse gesture.  Right now, there is a mix, should figure out how to avoid the popup menu conflict and use the TableCellViewer popup as it is more useful.
-- in the property display, multi-line values are shown in a single line in the table.  They look good in the popup, but should look good in the table too.
-- who owns JDiff? It needs some work, like the ability to move lines/blocks left or right between files.
-
-Command notes:
-- Need to check, doesn't Eclipse have a "Move"?
-- There should be a "compare" to open a diff.  This needs a dialog to be
-able to pick a specific revision to compare the local file to, or to
-diff two non-local revisions.  Need to pop this as an option in the log
-viewer. -> done, I called it "diff" rather than "compare" and am using JDiff
-plugin rather than svn diff.
-
-
-
 The basic subversion commands:
 
 svn add - done
@@ -76,7 +60,7 @@ svn lock - done
 svn log - done
 svn merge
 svn mkdir
-svn move
+svn move - done
 svn propdel - done
 svn propedit - done
 svn propget - done
@@ -85,7 +69,7 @@ svn propset - done
 svn resolved - done
 svn revert - done
 svn status - done
-svn switch
+svn switch - done
 svn unlock - done
 svn update - done
 
@@ -100,4 +84,27 @@ Tag: exact same as branch, except should default to base repository + /tags.  A 
 
 Undelete: copy from URL to working copy at a specific revision prior to the delete revision.  Should be able to pick the deleted file from the log results interface.  This is done and documented in help file.
 
+TODO:
+Done - Fix Info and Log commands to work correctly with svn:external links.
+
+- History diff, see email from Alan.
+
+- bugtraq
+
+- on the various results panels, add ability to open a file in a jEdit buffer. --> done in some places
+
+- clean up popups, the tool tips are often too large to be useful and don't stay visible long enough. The TableCellViewer that I borrowed from Antelope conflicts with the popup menu mouse gesture.  Right now, there is a mix, should figure out how to avoid the popup menu conflict and use the TableCellViewer popup as it is more useful. Maybe a "zoom" menu item?
+
+Done - in the property display, multi-line values are shown in a single line in the table.  They look good in the popup, but should look good in the table too. --> done, using BestRowTable
+
+- who owns JDiff? It needs some work, like the ability to move lines/blocks left or right between files.
+
+Done - Need to check, doesn't Eclipse have a "Move"? --> Don't care, move is done.
+
+Done - There should be a "compare" to open a diff.  This needs a dialog to be able to pick a specific revision to compare the local file to, or to
+diff two non-local revisions.  Need to pop this as an option in the log
+viewer. -> done, I called it "diff" rather than "compare" and am using JDiff
+plugin rather than svn diff.
+
+Done - Update docs on undelete to point out that Move is really a copy and delete, so to undo a move, either move back or revert and undelete.
 
