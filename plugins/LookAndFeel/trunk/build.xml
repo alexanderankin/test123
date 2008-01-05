@@ -84,13 +84,7 @@
 	</patternset>
 
 	<patternset id="libraries">
-		<include name="metouia.jar"/>
-		<include name="kunststoff.jar"/>
-		<include name="skinlf.jar"/>
-		<include name="oalnf.jar"/>
-		<include name="toniclf.jar"/>
-		<include name="jgoodies_looks.jar"/>
-		<include name="nimrodlf.jar"/>
+		<include name="*.jar"/>
 	</patternset>
 	<!-- }}} -->
 
