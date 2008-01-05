@@ -30,6 +30,7 @@ package ise.plugin.svn.action;
 
 import ise.plugin.svn.gui.OutputPanel;
 
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Switch;
 import ise.plugin.svn.data.SVNData;
@@ -53,7 +54,9 @@ import org.gjt.sp.jedit.View;
 
 /**
  * ActionListener to perform an svn switch.
- * This is not dependent on ProjectViewer.
+ * This is not strictly dependent on ProjectViewer, however, if there are files
+ * added or deleted as a result of the switch, this class will ask the user if
+ * the project files should be reimported.
  */
 public class SwitchAction implements ActionListener {
 
@@ -128,8 +131,14 @@ public class SwitchAction implements ActionListener {
                         for ( String path : data.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
-                                buffer.reload(view);
+                                buffer.reload( view );
                             }
+                        }
+
+                        // offer to reload project files if there are added or deleted files
+                        if ( ( data.getAddedFiles() != null && data.getAddedFiles().size() > 0 ) ||
+                                ( data.getDeletedFiles() != null && data.getDeletedFiles().size() > 0 ) ) {
+                            PVHelper.reimportProjectFiles( view );
                         }
                     }
                     catch ( Exception e ) {

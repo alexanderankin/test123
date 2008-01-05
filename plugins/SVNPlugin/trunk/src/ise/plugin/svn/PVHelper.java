@@ -31,6 +31,8 @@ package ise.plugin.svn;
 import org.gjt.sp.jedit.*;
 import projectviewer.vpt.VPTProject;
 import projectviewer.ProjectViewer;
+import projectviewer.importer.RootImporter;
+import javax.swing.SwingUtilities;
 
 public class PVHelper {
 
@@ -45,6 +47,12 @@ public class PVHelper {
     public static String getProjectName( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getName();
+    }
+
+    public static void reimportProjectFiles( View view ) {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
+        SwingUtilities.invokeLater( importer );
     }
 
     public static String getProjectRoot( View view ) {
