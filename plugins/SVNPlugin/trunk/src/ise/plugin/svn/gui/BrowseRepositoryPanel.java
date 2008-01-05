@@ -45,6 +45,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
+import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.data.LogData;
@@ -590,6 +591,53 @@ public class BrowseRepositoryPanel extends JPanel {
                         }
 
                         CopyAction action = new CopyAction( view, data );
+                        action.actionPerformed( null );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Make Directory" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        String defaultDestination = null;
+                        boolean hasDirectory = false;
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {    // one path, one loop
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder from = new StringBuilder();
+                                String preface = parts[ 0 ].toString();
+                                if ( preface.endsWith( "/" ) ) {
+                                    preface = preface.substring( 0, preface.length() - 1 );
+                                }
+                                from.append( preface );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    from.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                defaultDestination = from.toString();
+                                paths.add(defaultDestination);
+
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( !hasDirectory && !node.isLeaf() ) {
+                                    hasDirectory = true;
+                                }
+                            }
+                        }
+
+                        if (!hasDirectory) {
+                            JOptionPane.showMessageDialog( view, "Please select a directory in which to create the new directory.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        MkDirAction action = new MkDirAction( view, paths, username, password, defaultDestination);
                         action.actionPerformed( null );
                     }
                 }
