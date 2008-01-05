@@ -41,14 +41,11 @@ import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
-
-import org.tmatesoft.svn.core.SVNCommitInfo;
 
 
 /**

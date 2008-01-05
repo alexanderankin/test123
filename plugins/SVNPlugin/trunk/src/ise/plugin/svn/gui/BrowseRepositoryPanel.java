@@ -42,10 +42,8 @@ import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
-import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.data.LogData;
@@ -56,18 +54,9 @@ import ise.plugin.svn.gui.CopyDialog;
 import ise.plugin.svn.gui.RepositoryComboBox;
 import ise.plugin.svn.gui.RevisionDialog;
 import ise.plugin.svn.gui.TagBranchDialog;
-import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.action.BrowseRepositoryAction;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectViewer;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import org.tmatesoft.svn.core.io.*;
-import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
-import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 
 /**

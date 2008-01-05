@@ -36,13 +36,8 @@ import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.PVHelper;
@@ -51,7 +46,6 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
