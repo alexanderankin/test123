@@ -1,7 +1,7 @@
 /*
  * LnfInstaller.java - Look And Feel plugin
  * Copyright (C) 2002 Calvin Yu
- * 
+ *
  * Changed: 11/11/2005 by Nilo J. Gonzalez to add support for NimROD Look And Feel.
  *
  * :mode=java:tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
@@ -47,7 +47,8 @@ public abstract class LnfInstaller
 			"Oyoaha",
 			"Skin",
 			"Tonic",
-			"NimROD"
+			"NimROD",
+			"Napkin"
 		};
 	}
 
