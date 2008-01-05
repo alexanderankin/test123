@@ -66,8 +66,6 @@ public class Copy {
             data.setErr( data.getOut() );
         }
 
-        System.out.println("+++++ data.isMove = " + data.getIsMove());
-
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
