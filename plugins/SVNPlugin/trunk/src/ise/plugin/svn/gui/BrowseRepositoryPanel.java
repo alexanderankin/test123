@@ -365,7 +365,11 @@ public class BrowseRepositoryPanel extends JPanel {
         TreePath tp = tree.getSelectionPath();
         StringBuilder sb = new StringBuilder();
         for ( Object part : tp.getPath() ) {
-            sb.append( part.toString() ).append( "/" );
+            String p = part.toString();
+            if (p.endsWith("/")) {
+                p = p.substring(0, p.length() - 1);
+            }
+            sb.append( p ).append( "/" );
         }
         return sb.toString();
     }
@@ -792,6 +796,24 @@ public class BrowseRepositoryPanel extends JPanel {
                             MoveAction action = new MoveAction( view, cd );
                             action.actionPerformed( null );
                         }
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Import" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        ImportAction action = new ImportAction( view );
+                        action.actionPerformed( ae );
                     }
                 }
                             );
