@@ -62,7 +62,7 @@ public class CheckoutDialog extends JDialog {
     private JTextField username = null;
     private JPasswordField password = null;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     public CheckoutDialog( View view, String url ) {
         super( ( JFrame ) view, "Checkout", true );
@@ -204,7 +204,7 @@ public class CheckoutDialog extends JDialog {
                             JOptionPane.showMessageDialog( CheckoutDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        cancelled = false;
+                        canceled = false;
                         CheckoutDialog.this.setVisible( false );
                         CheckoutDialog.this.dispose();
                     }
@@ -213,7 +213,7 @@ public class CheckoutDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        canceled = true;
                         CheckoutDialog.this.setVisible( false );
                         CheckoutDialog.this.dispose();
                     }
@@ -245,7 +245,7 @@ public class CheckoutDialog extends JDialog {
     }
 
     public CheckoutData getValues() {
-        if ( cancelled ) {
+        if ( canceled ) {
             return null;
         }
         CheckoutData cd = new CheckoutData();

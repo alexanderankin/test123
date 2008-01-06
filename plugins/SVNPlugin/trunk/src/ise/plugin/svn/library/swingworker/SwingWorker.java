@@ -310,7 +310,7 @@ public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
 
     /**
      * Sets this {@code Future} to the result of computation unless
-     * it has been cancelled.
+     * it has been canceled.
      */
     public final void run() {
         future.run();
@@ -424,7 +424,7 @@ public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
      * implementation does nothing. Subclasses may override this method to
      * perform completion actions on the <i>Event Dispatch Thread</i>. Note
      * that you can query status inside the implementation of this method to
-     * determine the result of this task or whether this task has been cancelled.
+     * determine the result of this task or whether this task has been canceled.
      *
      * @see #doInBackground
      * @see #isCancelled()

@@ -68,7 +68,7 @@ public class MoveDialog extends JDialog {
 
     private boolean local = true;  // if true, copying to local file system
 
-    private boolean cancelled = true;
+    private boolean canceled = true;
 
     /**
      * working copy to working copy move
@@ -253,7 +253,7 @@ public class MoveDialog extends JDialog {
                             return ;
                         }
                         revision = revision_panel.getRevision();
-                        cancelled = false;
+                        canceled = false;
                         MoveDialog.this.setVisible( false );
                         MoveDialog.this.dispose();
                     }
@@ -262,7 +262,7 @@ public class MoveDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        canceled = true;
                         MoveDialog.this.setVisible( false );
                         MoveDialog.this.dispose();
                     }
@@ -312,7 +312,7 @@ public class MoveDialog extends JDialog {
     }
 
     public CopyData getData() {
-        if ( cancelled ) {
+        if ( canceled ) {
             return null;
         }
         CopyData cd = new CopyData();

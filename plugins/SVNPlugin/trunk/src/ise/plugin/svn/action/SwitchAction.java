@@ -90,7 +90,7 @@ public class SwitchAction implements ActionListener {
             dialog.setVisible( true );
             data = dialog.getData();
             if ( data == null ) {
-                return ;     // null data signals user cancelled
+                return ;     // null data signals user canceled
             }
 
 

@@ -62,7 +62,7 @@ public class AddRepositoryDialog extends JDialog {
     private JTextField username = null;
     private JPasswordField password = null;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     public AddRepositoryDialog( View view ) {
         super( ( JFrame ) view, "Add Repository Location", true );
@@ -128,7 +128,7 @@ public class AddRepositoryDialog extends JDialog {
                             JOptionPane.showMessageDialog( AddRepositoryDialog.this, "URL is required.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        cancelled = false;
+                        canceled = false;
                         AddRepositoryDialog.this.setVisible( false );
                         AddRepositoryDialog.this.dispose();
                     }
@@ -137,7 +137,7 @@ public class AddRepositoryDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        canceled = true;
                         AddRepositoryDialog.this.setVisible( false );
                         AddRepositoryDialog.this.dispose();
                     }
@@ -167,7 +167,7 @@ public class AddRepositoryDialog extends JDialog {
     }
 
     public RepositoryData getValues() {
-        if ( cancelled ) {
+        if ( canceled ) {
             return null;
         }
         RepositoryData data = new RepositoryData();

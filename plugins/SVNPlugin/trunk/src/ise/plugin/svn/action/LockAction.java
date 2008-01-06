@@ -91,7 +91,7 @@ public class LockAction implements ActionListener {
             dialog.setVisible( true );
             final CommitData cd = dialog.getData();
             if ( cd == null ) {
-                return ;     // null means user cancelled
+                return ;     // null means user canceled
             }
 
             if ( username != null && password != null ) {

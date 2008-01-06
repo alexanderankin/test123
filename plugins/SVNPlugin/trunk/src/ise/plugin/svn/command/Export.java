@@ -85,6 +85,7 @@ public class Export {
         UpdateEventHandler handler = new UpdateEventHandler( update_data );
         client.setEventHandler( handler );
 
+        /*
         System.out.println( "+++++++++++++++" );
         //System.out.println( "source = " + source );
         System.out.println( "destination = " + destination );
@@ -94,6 +95,7 @@ public class Export {
         System.out.println( "force = " + data.getForce() );
         System.out.println( "recursive = " + data.getRecursive() );
         System.out.println( "+++++++++++++++" );
+        */
 
         // do the export
         long revision = 0L;

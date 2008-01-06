@@ -129,7 +129,7 @@ public class DiffAction implements ActionListener {
                 dialog.setVisible( true );
                 data = dialog.getData();
                 if ( data == null ) {
-                    return ;     // null means user cancelled
+                    return ;     // null means user canceled
                 }
             }
             else {

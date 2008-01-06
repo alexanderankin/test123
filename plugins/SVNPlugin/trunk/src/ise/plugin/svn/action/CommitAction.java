@@ -85,7 +85,7 @@ public class CommitAction implements ActionListener {
             dialog.setVisible( true );
             final CommitData cd = dialog.getCommitData();
             if ( cd == null ) {
-                return ;     // null means user cancelled
+                return ;     // null means user canceled
             }
 
             if ( username != null && password != null ) {

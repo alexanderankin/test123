@@ -77,7 +77,7 @@ public class TagBranchDialog extends JDialog {
     public static String TAG = "Tag";
     public static String BRANCH = "Branch";
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     /**
      * @param view the parent frame
@@ -217,7 +217,7 @@ public class TagBranchDialog extends JDialog {
                             return ;
                         }
                         revision = tag_revision_panel.getRevision();
-                        cancelled = false;
+                        canceled = false;
                         TagBranchDialog.this._save();
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
@@ -227,7 +227,7 @@ public class TagBranchDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        canceled = true;
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
                     }
@@ -270,7 +270,7 @@ public class TagBranchDialog extends JDialog {
     }
 
     public CopyData getData() {
-        if ( cancelled ) {
+        if ( canceled ) {
             return null;
         }
         CopyData cd = new CopyData();

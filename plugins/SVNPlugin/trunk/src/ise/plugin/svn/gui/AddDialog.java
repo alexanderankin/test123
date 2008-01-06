@@ -56,7 +56,7 @@ public class AddDialog extends JDialog {
     private View view = null;
     private List<String> nodes = null;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     private SVNData addData = null;
 

@@ -62,7 +62,7 @@ public class RemoteDeleteDialog extends JDialog {
     private View view = null;
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     private DeleteData data = null;
 

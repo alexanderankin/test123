@@ -67,7 +67,7 @@ public class LogDialog extends JDialog {
     private transient SVNRevision startRevision = SVNRevision.create( 0L );
     private transient SVNRevision endRevision = SVNRevision.HEAD;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     public LogDialog( View view, LogData data ) {
         super( ( JFrame ) view, "Log Settings", true );
