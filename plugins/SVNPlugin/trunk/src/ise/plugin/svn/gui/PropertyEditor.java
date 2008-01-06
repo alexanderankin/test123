@@ -61,7 +61,7 @@ public class PropertyEditor extends JDialog {
     private String value = null;
     private boolean isDirectory = false;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     private PropertyData propertyData = null;
 
@@ -241,7 +241,7 @@ public class PropertyEditor extends JDialog {
     }
 
     /**
-     * @return null indicates user cancelled
+     * @return null indicates user canceled
      */
     public PropertyData getPropertyData() {
         return propertyData;

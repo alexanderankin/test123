@@ -69,7 +69,7 @@ public class CommitDialog extends JDialog {
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     private CommitData commitData = null;
 

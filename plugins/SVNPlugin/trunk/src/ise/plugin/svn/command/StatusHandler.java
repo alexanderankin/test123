@@ -403,7 +403,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
     }
 
     /*
-     * Should be implemented to check if the current operation is cancelled. If
+     * Should be implemented to check if the current operation is canceled. If
      * it is, this method should throw an SVNCancelException.
      */
     public void checkCancelled() throws SVNCancelException {}

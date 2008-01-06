@@ -88,7 +88,7 @@ public class DiffDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        // user cancelled, set data to null to signal as much.
+                        // user canceled, set data to null to signal as much.
                         data = null;
 
                         DiffDialog.this.setVisible( false );

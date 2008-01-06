@@ -68,7 +68,7 @@ public class CopyDialog extends JDialog {
 
     private boolean destinationIsLocal = true;  // if true, copying to local file system
 
-    private boolean cancelled = true;
+    private boolean canceled = true;
 
     /**
      * @param view parent frame
@@ -248,7 +248,7 @@ public class CopyDialog extends JDialog {
                             return ;
                         }
                         revision = revision_panel.getRevision();
-                        cancelled = false;
+                        canceled = false;
                         CopyDialog.this._save();
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
@@ -258,7 +258,7 @@ public class CopyDialog extends JDialog {
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        cancelled = true;
+                        canceled = true;
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
                     }
@@ -311,7 +311,7 @@ public class CopyDialog extends JDialog {
     }
 
     public CopyData getData() {
-        if ( cancelled ) {
+        if ( canceled ) {
             return null;
         }
         CopyData cd = new CopyData();

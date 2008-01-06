@@ -86,7 +86,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
         dialog.setVisible( true );
         cd = dialog.getValues();
         if ( cd == null ) {
-            return ;        // user cancelled
+            return ;        // user canceled
         }
 
         cd.setOut( new ConsolePrintStream( view ) );

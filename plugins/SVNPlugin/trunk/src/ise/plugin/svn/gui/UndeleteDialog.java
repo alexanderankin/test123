@@ -60,7 +60,7 @@ public class UndeleteDialog extends JDialog {
     private View view = null;
     private List<String> paths = null;
 
-    private boolean cancelled = false;
+    private boolean canceled = false;
 
     private SVNData undeleteData = null;
 

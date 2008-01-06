@@ -188,7 +188,7 @@ public class PropertyPanel extends JPanel {
                             dialog.setVisible( true );
                             PropertyData data = dialog.getPropertyData();
                             if ( data == null ) {
-                                return ;     // user cancelled
+                                return ;     // user canceled
                             }
                             model.addRow( new String[] {data.getName(), data.getValue() } );
                             data.addPath( filename );
@@ -219,7 +219,7 @@ public class PropertyPanel extends JPanel {
                                 dialog.setVisible( true );
                                 PropertyData data = dialog.getPropertyData();
                                 if ( data == null ) {
-                                    return ;     // user cancelled
+                                    return ;     // user canceled
                                 }
                                 model.setValueAt( data.getName(), row, 0 );
                                 model.setValueAt( data.getValue(), row, 1 );

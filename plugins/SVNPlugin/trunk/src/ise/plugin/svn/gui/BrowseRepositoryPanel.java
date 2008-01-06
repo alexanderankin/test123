@@ -247,7 +247,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
                             GUIUtils.center( getView(), dialog );
                             dialog.setVisible( true );
-                            RepositoryData new_data = dialog.getValues();  // null indicates user cancelled
+                            RepositoryData new_data = dialog.getValues();  // null indicates user canceled
                             if ( new_data != null ) {
                                 chooser.removeRepository( old_data );
                                 chooser.save( new_data );
