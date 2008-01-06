@@ -55,9 +55,16 @@ public class RevisionSelectionPanel extends JPanel {
     private JSpinner revision_number = null;
     private JSpinner date_spinner = null;
 
+    private String title;
+    private int layout = SwingConstants.VERTICAL;
+    private boolean showHead = true;
+    private boolean showWorking = false;
+    private boolean showBase = true;
+    private boolean showDate = true;
+    private boolean showNumber = true;
+    private SVNRevision defaultRevision;
     private SVNRevision revision = SVNRevision.HEAD;
 
-    private int layout = SwingConstants.VERTICAL;
 
     /**
      * Revision selection panel with a vertical layout and doesn't show the
@@ -65,25 +72,15 @@ public class RevisionSelectionPanel extends JPanel {
      * @param title this panel is displayed in an etched border with a title.
      */
     public RevisionSelectionPanel( String title ) {
-        this( title, SwingConstants.VERTICAL, false, SVNRevision.HEAD );
+        this.title = title;
     }
 
-    /**
-     * @param title this panel is displayed in an etched border with a title.
-     * @param layout either SwingConstants.VERTICAL (default) or SwingConstants.HORIZONTAL
-     * @param showWorking if true, show a radio button for working revision
-     */
-    public RevisionSelectionPanel( String title, int layout, boolean showWorking ) {
-        this( title, layout, showWorking, SVNRevision.HEAD );
-    }
-
-    public RevisionSelectionPanel( String title, int layout, boolean showWorking, SVNRevision defaultRevision ) {
+    public void addNotify() {
         KappaLayout kl = new KappaLayout();
         setLayout( kl );
         switch ( layout ) {
             case SwingConstants.HORIZONTAL:
             case SwingConstants.VERTICAL:
-                this.layout = layout;
                 break;
             default:
                 layout = SwingConstants.VERTICAL;
@@ -95,23 +92,19 @@ public class RevisionSelectionPanel extends JPanel {
         date_rb = new JRadioButton( "Date:" );
         head_rb = new JRadioButton( "HEAD" );
         base_rb = new JRadioButton( "BASE" );
-        if ( showWorking ) {
-            working_rb = new JRadioButton( "WORKING" );
-        }
+        working_rb = new JRadioButton( "WORKING" );
 
         bg = new ButtonGroup();
         bg.add( revision_number_rb );
         bg.add( date_rb );
         bg.add( head_rb );
         bg.add( base_rb );
-        if ( showWorking ) {
-            bg.add( working_rb );
-        }
+        bg.add( working_rb );
 
-        if (SVNRevision.BASE.equals(defaultRevision)) {
+        if ( SVNRevision.BASE.equals( defaultRevision ) ) {
             base_rb.setSelected( true );
         }
-        else if (showWorking && SVNRevision.WORKING.equals(defaultRevision)) {
+        else if ( showWorking && SVNRevision.WORKING.equals( defaultRevision ) ) {
             working_rb.setSelected( true );
         }
         else {
@@ -212,28 +205,59 @@ public class RevisionSelectionPanel extends JPanel {
 
         if ( layout == SwingConstants.HORIZONTAL ) {
             add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            add( "0, 1, 1, 1, W, wh, 3", head_rb );
-            add( "0, 2, 1, 1, W, wh, 3", base_rb );
+            if ( showHead ) {
+                add( "0, 1, 1, 1, W, wh, 3", head_rb );
+            }
+            if ( showBase ) {
+                add( "0, 2, 1, 1, W, wh, 3", base_rb );
+            }
             if ( showWorking ) {
                 add( "0, 3, 1, 1, W, wh, 3", working_rb );
             }
-            add( "1, 1, 1, 1, W, wh, 3", revision_number_rb );
-            add( "2, 1, 1, 1, W, wh, 3", revision_number );
-            add( "1, 2, 1, 1, W, wh, 3", date_rb );
-            add( "2, 2, 1, 1, W, wh, 3", date_spinner );
+            if ( showNumber ) {
+                add( "1, 1, 1, 1, W, wh, 3", revision_number_rb );
+                add( "2, 1, 1, 1, W, wh, 3", revision_number );
+            }
+            if ( showDate ) {
+                add( "1, 2, 1, 1, W, wh, 3", date_rb );
+                add( "2, 2, 1, 1, W, wh, 3", date_spinner );
+            }
             kl.makeColumnsSameWidth( 0, 1 );
         }
         else {
             add( "0, 0, 2, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            add( "0, 1, 2, 1, W,  , 3", head_rb );
-            add( "0, 2, 2, 1, W,  , 3", base_rb );
+            if ( showHead ) {
+                add( "0, 1, 2, 1, W,  , 3", head_rb );
+            }
+            if ( showBase ) {
+                add( "0, 2, 2, 1, W,  , 3", base_rb );
+            }
             if ( showWorking ) {
                 add( "0, 3, 2, 1, W, , 3", working_rb );
             }
-            add( "0, 4, 1, 1, W,  , 3", revision_number_rb );
-            add( "1, 4, 1, 1, W, w, 3", revision_number );
-            add( "0, 5, 1, 1, W,  , 3", date_rb );
-            add( "1, 5, 1, 1, W, w, 3", date_spinner );
+            if ( showNumber ) {
+                add( "0, 4, 1, 1, W,  , 3", revision_number_rb );
+                add( "1, 4, 1, 1, W, w, 3", revision_number );
+            }
+            if ( showDate ) {
+                add( "0, 5, 1, 1, W,  , 3", date_rb );
+                add( "1, 5, 1, 1, W, w, 3", date_spinner );
+            }
+        }
+    }
+
+    public void setTitle( String title ) {
+        this.title = title;
+    }
+
+    public void setLayout( int layout ) {
+        switch ( layout ) {
+            case SwingConstants.HORIZONTAL:
+            case SwingConstants.VERTICAL:
+                this.layout = layout;
+                break;
+            default:
+                this.layout = SwingConstants.VERTICAL;
         }
     }
 
@@ -243,6 +267,26 @@ public class RevisionSelectionPanel extends JPanel {
 
     public SVNRevision getRevision() {
         return revision;
+    }
+
+    public void setShowHead( boolean b ) {
+        showHead = b;
+    }
+
+    public void setShowWorking( boolean b ) {
+        showWorking = b;
+    }
+
+    public void setShowBase( boolean b ) {
+        showBase = b;
+    }
+
+    public void setShowDate( boolean b ) {
+        showDate = b;
+    }
+
+    public void setShowNumber( boolean b ) {
+        showNumber = b;
     }
 
     @Override
@@ -258,7 +302,8 @@ public class RevisionSelectionPanel extends JPanel {
 
     // for testing
     public static void main ( String[] args ) {
-        RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title", SwingConstants.VERTICAL, true );
+        RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title" );
+        panel.setShowWorking(true);
         JFrame frame = new JFrame();
         frame.setContentPane( panel );
         frame.pack();

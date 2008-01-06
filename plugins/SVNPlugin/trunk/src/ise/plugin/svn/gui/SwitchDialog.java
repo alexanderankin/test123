@@ -127,7 +127,8 @@ public class SwitchDialog extends JDialog {
                                       );
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "At this revision:", SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "At this revision:" );
+        revision_panel.setLayout(SwingConstants.HORIZONTAL);
 
         // destination
         JLabel path_label = new JLabel( "With file(s) from this location:" );

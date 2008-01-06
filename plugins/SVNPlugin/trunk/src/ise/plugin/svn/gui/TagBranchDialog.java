@@ -112,7 +112,8 @@ public class TagBranchDialog extends JDialog {
         source_file.setBackground(Color.WHITE);
 
         // revision selection panel
-        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from this revision:", SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from this revision:" );
+        tag_revision_panel.setLayout(SwingConstants.HORIZONTAL);
 
         JPanel source_panel = new JPanel(new LambdaLayout());
         //source_panel.setBorder(BorderFactory.createEtchedBorder());

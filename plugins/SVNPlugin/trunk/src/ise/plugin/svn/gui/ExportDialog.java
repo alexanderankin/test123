@@ -129,8 +129,10 @@ public class ExportDialog extends JDialog {
         recursive_cb.setSelected( true );
 
         // revision selection panels
-        revision_panel = new RevisionSelectionPanel( "Export from this revision:", SwingConstants.VERTICAL, data.getSourceURL() != null );
-        peg_revision_panel = new RevisionSelectionPanel( "Using this peg revision:", SwingConstants.VERTICAL, data.getSourceURL() != null );
+        revision_panel = new RevisionSelectionPanel( "Export from this revision:" );
+        revision_panel.setShowWorking(data.getSourceURLs() == null);
+        peg_revision_panel = new RevisionSelectionPanel( "Using this peg revision:" );
+        peg_revision_panel.setShowWorking(data.getSourceURLs() == null);
 
         // destination
         JLabel path_label = new JLabel( "Export to this directory:" );
