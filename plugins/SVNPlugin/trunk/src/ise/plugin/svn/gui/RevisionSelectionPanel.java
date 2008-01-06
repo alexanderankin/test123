@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -142,6 +143,7 @@ public class RevisionSelectionPanel extends JPanel {
                     }
                 }
                                       );
+        revision_number.setPreferredSize(new Dimension(date_spinner.getPreferredSize().width, revision_number.getPreferredSize().height));
 
         // add action listeners
         ActionListener al = new ActionListener() {
@@ -206,42 +208,43 @@ public class RevisionSelectionPanel extends JPanel {
         if ( layout == SwingConstants.HORIZONTAL ) {
             add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
             if ( showHead ) {
-                add( "0, 1, 1, 1, W, wh, 3", head_rb );
+                add( "0, 1, 1, 1, W, , 3", head_rb );
             }
             if ( showBase ) {
-                add( "0, 2, 1, 1, W, wh, 3", base_rb );
+                add( "0, 2, 1, 1, W, , 3", base_rb );
             }
             if ( showWorking ) {
-                add( "0, 3, 1, 1, W, wh, 3", working_rb );
+                add( "0, 3, 1, 1, W, , 3", working_rb );
             }
             if ( showNumber ) {
-                add( "1, 1, 1, 1, W, wh, 3", revision_number_rb );
-                add( "2, 1, 1, 1, W, wh, 3", revision_number );
+                add( "1, 1, 1, 1, W, , 3", revision_number_rb );
+                add( "2, 1, 1, 1, W, , 3", revision_number );
             }
             if ( showDate ) {
-                add( "1, 2, 1, 1, W, wh, 3", date_rb );
-                add( "2, 2, 1, 1, W, wh, 3", date_spinner );
+                add( "1, 2, 1, 1, W, , 3", date_rb );
+                add( "2, 2, 1, 1, W, , 3", date_spinner );
             }
-            kl.makeColumnsSameWidth( 0, 1 );
+            kl.makeColumnsSameWidth( 0, 2 );
+            kl.makeColumnsSameWidth( 1, 3 );
         }
         else {
-            add( "0, 0, 2, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
             if ( showHead ) {
-                add( "0, 1, 2, 1, W,  , 3", head_rb );
+                add( "0, 1, 2, 1, W, , 3", head_rb );
             }
             if ( showBase ) {
-                add( "0, 2, 2, 1, W,  , 3", base_rb );
+                add( "0, 2, 2, 1, W, , 3", base_rb );
             }
             if ( showWorking ) {
                 add( "0, 3, 2, 1, W, , 3", working_rb );
             }
             if ( showNumber ) {
-                add( "0, 4, 1, 1, W,  , 3", revision_number_rb );
-                add( "1, 4, 1, 1, W, w, 3", revision_number );
+                add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
+                add( "1, 4, 1, 1, W, , 3", revision_number );
             }
             if ( showDate ) {
-                add( "0, 5, 1, 1, W,  , 3", date_rb );
-                add( "1, 5, 1, 1, W, w, 3", date_spinner );
+                add( "0, 5, 1, 1, W, , 3", date_rb );
+                add( "1, 5, 1, 1, W, , 3", date_spinner );
             }
         }
     }
