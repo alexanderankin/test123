@@ -55,7 +55,7 @@ public class RevisionSelectionPanel extends JPanel {
     private JSpinner revision_number = null;
     private JSpinner date_spinner = null;
 
-    private transient SVNRevision revision = SVNRevision.HEAD;
+    private SVNRevision revision = SVNRevision.HEAD;
 
     private int layout = SwingConstants.VERTICAL;
 
@@ -65,7 +65,7 @@ public class RevisionSelectionPanel extends JPanel {
      * @param title this panel is displayed in an etched border with a title.
      */
     public RevisionSelectionPanel( String title ) {
-        this( title, SwingConstants.VERTICAL, false );
+        this( title, SwingConstants.VERTICAL, false, SVNRevision.HEAD );
     }
 
     /**
@@ -74,6 +74,10 @@ public class RevisionSelectionPanel extends JPanel {
      * @param showWorking if true, show a radio button for working revision
      */
     public RevisionSelectionPanel( String title, int layout, boolean showWorking ) {
+        this( title, layout, showWorking, SVNRevision.HEAD );
+    }
+
+    public RevisionSelectionPanel( String title, int layout, boolean showWorking, SVNRevision defaultRevision ) {
         KappaLayout kl = new KappaLayout();
         setLayout( kl );
         switch ( layout ) {
@@ -104,7 +108,15 @@ public class RevisionSelectionPanel extends JPanel {
             bg.add( working_rb );
         }
 
-        head_rb.setSelected( true );
+        if (SVNRevision.BASE.equals(defaultRevision)) {
+            base_rb.setSelected( true );
+        }
+        else if (showWorking && SVNRevision.WORKING.equals(defaultRevision)) {
+            working_rb.setSelected( true );
+        }
+        else {
+            head_rb.setSelected( true );
+        }
 
         // set up the revision number chooser
         revision_number = new JSpinner();

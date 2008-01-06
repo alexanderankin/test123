@@ -55,13 +55,23 @@ public class UpdateResultsPanel extends JPanel {
     private JPopupMenu popupMenu = null;
 
     public UpdateResultsPanel( View view, UpdateData results ) {
+        this(view, results, false);
+    }
+
+    public UpdateResultsPanel( View view, UpdateData results, boolean isExport) {
         super( new LambdaLayout() );
         this.view = view;
         this.data = results;
 
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( "Updated to revision: " + results.getRevision() );
+        JLabel label;
+        if (isExport) {
+            label = new JLabel( "Exported at revision: " + results.getRevision() );
+        }
+        else {
+            label = new JLabel( "Updated to revision: " + results.getRevision() );
+        }
 
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
@@ -94,7 +104,12 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( "Added " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            if (isExport) {
+                add( createPanel( "Exported " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            }
+            else {
+                add( createPanel( "Added " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            }
             added = true;
         }
 

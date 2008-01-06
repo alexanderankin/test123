@@ -807,6 +807,37 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
+        mi = new JMenuItem( "Export" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        if ( tree_paths.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                            }
+                        }
+                        ExportAction action = new ExportAction( view, username, password, paths );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
         pm.addSeparator();
         mi = new JMenuItem( "Delete" );
         pm.add( mi );
