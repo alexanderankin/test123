@@ -132,7 +132,10 @@ public class ExportDialog extends JDialog {
         revision_panel = new RevisionSelectionPanel( "Export from this revision:" );
         revision_panel.setShowWorking(data.getSourceURLs() == null);
         peg_revision_panel = new RevisionSelectionPanel( "Using this peg revision:" );
-        peg_revision_panel.setShowWorking(data.getSourceURLs() == null);
+        peg_revision_panel.setShowWorking(false);
+        peg_revision_panel.setShowHead(false);
+        peg_revision_panel.setShowBase(false);
+        peg_revision_panel.setShowDate(false);
 
         // destination
         JLabel path_label = new JLabel( "Export to this directory:" );
@@ -246,9 +249,11 @@ public class ExportDialog extends JDialog {
         panel.add( "0, 2, 8, 1, W, w, 3", recursive_cb );
         panel.add( "0, 3, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        JPanel revision_panel_holder = new JPanel(new LambdaLayout());
-        revision_panel_holder.add( "0, 4, 4, 1, 0, w, 3", revision_panel );
-        revision_panel_holder.add( "4, 4, 4, 1, 0, w, 3", peg_revision_panel );
+        LambdaLayout lam = new LambdaLayout();
+        JPanel revision_panel_holder = new JPanel(lam);
+        revision_panel_holder.add( "0, 0, 1, 1, 0, w, 3", revision_panel );
+        revision_panel_holder.add( "1, 0, 1, 1, 0, wh, 3", peg_revision_panel );
+        lam.makeColumnsSameWidth(0, 1);
         panel.add( "0, 4, 8, 1, 0, w, 0", revision_panel_holder );
         panel.add( "0, 5, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
@@ -274,5 +279,14 @@ public class ExportDialog extends JDialog {
             return null;
         }
         return data;
+    }
+
+    public static void main (String[] args) {
+        ExportData data = new ExportData();
+        List<File> files = new ArrayList<File>();
+        files.add(new File(System.getProperty("user.home")));
+        data.setSourceFiles(files);
+        ExportDialog ed = new ExportDialog(null, data);
+        ed.setVisible(true);
     }
 }
