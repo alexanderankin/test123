@@ -54,10 +54,10 @@ public class CopyData extends SVNData implements Serializable {
     private File destinationFile = null;
 
     // copy destination if on remote repository
-    private transient SVNURL destinationURL = null;
+    private SVNURL destinationURL = null;
 
     // revision to copy from
-    private transient SVNRevision revision = null;
+    private SVNRevision revision = null;
 
     // true if this class represents a move rather than a copy
     private boolean isMove = false;
@@ -81,6 +81,7 @@ public class CopyData extends SVNData implements Serializable {
     public void setRevision( SVNRevision revision ) {
         this.revision = revision;
     }
+
 
     // set/get single source file to copy
     public File getSourceFile() {
