@@ -8,8 +8,8 @@ plugin.ctags.CtagsInterfacePlugin.description=\
 	CtagsInterface provides common Ctags services to interested plugins.
 
 plugin.ctags.CtagsInterfacePlugin.depend.0=jdk 1.5
-plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.11.00
-plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.0.0
+plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.12.00
+plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.1.3.7
 
 plugin.ctags.CtagsInterfacePlugin.jars=hsqldb.jar
 plugin.ctags.CtagsInterfacePlugin.docs=index.html
