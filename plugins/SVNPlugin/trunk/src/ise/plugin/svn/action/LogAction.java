@@ -98,7 +98,6 @@ public class LogAction implements ActionListener {
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs(pathsAreUrls);
-            System.out.println("+++++ in LogAction.actionPerformed, next show dialog");
 
             LogDialog dialog = new LogDialog(view, data);
             GUIUtils.center( view, dialog );
@@ -112,7 +111,6 @@ public class LogAction implements ActionListener {
                 data.setUsername( username );
                 data.setPassword( password );
             }
-            System.out.println("+++++ in LogAction.actionPerformed, 2");
 
             data.setOut( new ConsolePrintStream( view ) );
 
@@ -120,7 +118,6 @@ public class LogAction implements ActionListener {
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            System.out.println("+++++ in LogAction.actionPerformed, 3");
             logger.log( Level.INFO, "Fetching log ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
