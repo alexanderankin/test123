@@ -81,7 +81,7 @@ public class LogDialog extends JDialog {
 
     /** Initialises the option pane. */
     protected void _init() {
-
+        System.out.println( "+++++ in LogDialog.init" );
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
@@ -107,14 +107,14 @@ public class LogDialog extends JDialog {
         // load the table model
         int i = 0;
         for ( String path : data.getPaths() ) {
-            if (path != null) {
+            if ( path != null ) {
                 file_table_model.setValueAt( true, i, 0 );
                 file_table_model.setValueAt( path, i, 1 );
                 ++i;
             }
         }
-        file_table.getColumnModel().getColumn(0).setMaxWidth(25);
-        file_table.getColumnModel().getColumn(1).setPreferredWidth(575);
+        file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
+        file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 575 );
 
         // ask if directories should be recursed
         final JCheckBox recursive_cb = new JCheckBox( "Recurse subdirectories?" );
@@ -168,12 +168,12 @@ public class LogDialog extends JDialog {
                                   );
 
         final JSpinner max_logs = new JSpinner();
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setMinimum(Integer.valueOf(1));
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getModel().setValue(Integer.valueOf(100));
+        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
+        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 100 ) );
 
-        final JCheckBox stopOnCopy = new JCheckBox("Stop on copy");
-        final JCheckBox showPaths = new JCheckBox("Show paths");
-        showPaths.setSelected(true);
+        final JCheckBox stopOnCopy = new JCheckBox( "Stop on copy" );
+        final JCheckBox showPaths = new JCheckBox( "Show paths" );
+        showPaths.setSelected( true );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -188,10 +188,10 @@ public class LogDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // fill in the log data object -- get the paths
                         List<String> paths = new ArrayList<String>();
-                        for (int row = 0; row < file_table_model.getRowCount(); row++) {
-                            Boolean selected = (Boolean)file_table_model.getValueAt(row, 0);
-                            if (selected) {
-                                paths.add((String)file_table_model.getValueAt(row, 1));
+                        for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
+                            Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
+                            if ( selected ) {
+                                paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
                             }
                         }
 
@@ -214,15 +214,15 @@ public class LogDialog extends JDialog {
                         }
 
                         // set number of logs to show
-                        data.setMaxLogs(((Integer)max_logs.getValue()).intValue());
+                        data.setMaxLogs( ( ( Integer ) max_logs.getValue() ).intValue() );
 
                         // set whether or not to recurse past copy points in the
                         // revision history
-                        data.setStopOnCopy(stopOnCopy.isSelected());
+                        data.setStopOnCopy( stopOnCopy.isSelected() );
 
                         // set whether or not to show the other files that were part
                         // of the revision history
-                        data.setShowPaths(showPaths.isSelected());
+                        data.setShowPaths( showPaths.isSelected() );
 
                         LogDialog.this.setVisible( false );
                         LogDialog.this.dispose();
@@ -257,12 +257,12 @@ public class LogDialog extends JDialog {
         panel.add( "1, 8, 1, 1, E   , 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy);
-        panel.add( "0, 11, 1, 1, W, , 3", showPaths);
+        panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy );
+        panel.add( "0, 11, 1, 1, W, , 3", showPaths );
 
-        JPanel max_logs_panel = new JPanel(new FlowLayout());
-        max_logs_panel.add(new JLabel("Maximum log entries to show:"));
-        max_logs_panel.add(max_logs);
+        JPanel max_logs_panel = new JPanel( new FlowLayout() );
+        max_logs_panel.add( new JLabel( "Maximum log entries to show:" ) );
+        max_logs_panel.add( max_logs );
         panel.add( "0, 12, 2, 1, W,  , 3", max_logs_panel );
 
         panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
@@ -276,5 +276,15 @@ public class LogDialog extends JDialog {
 
     public LogData getData() {
         return data;
+    }
+
+    public static void main ( String[] args ) {
+        LogData data = new LogData();
+        List<String> paths = new ArrayList<String>();
+        paths.add( "/home/danson/path/filename.txt" );
+        data.setPaths( paths );
+        LogDialog dialog = new LogDialog( null, data );
+        dialog.setVisible( true );
+
     }
 }

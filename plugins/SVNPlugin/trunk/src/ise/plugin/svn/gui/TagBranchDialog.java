@@ -106,23 +106,23 @@ public class TagBranchDialog extends JDialog {
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // source for tag/branch
-        JLabel to_copy_label = new JLabel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from:" );
-        JTextField source_file = new JTextField(toCopy);
-        source_file.setEditable(false);
-        source_file.setBackground(Color.WHITE);
+        JLabel to_copy_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from:" );
+        JTextField source_file = new JTextField( toCopy );
+        source_file.setEditable( false );
+        source_file.setBackground( Color.WHITE );
 
         // revision selection panel
-        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " from this revision:" );
-        tag_revision_panel.setLayout(SwingConstants.HORIZONTAL);
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from this revision:" );
+        tag_revision_panel.setLayout( SwingConstants.HORIZONTAL );
 
-        JPanel source_panel = new JPanel(new LambdaLayout());
+        JPanel source_panel = new JPanel( new LambdaLayout() );
         //source_panel.setBorder(BorderFactory.createEtchedBorder());
-        source_panel.add("0, 0, 1, 1, W, w, 3", to_copy_label);
-        source_panel.add("0, 1, 1, 1, W, w, 3", source_file);
-        source_panel.add("0, 2, 1, 1, 0, w, 3", tag_revision_panel);
+        source_panel.add( "0, 0, 1, 1, W, w, 3", to_copy_label );
+        source_panel.add( "0, 1, 1, 1, W, w, 3", source_file );
+        source_panel.add( "0, 2, 1, 1, 0, w, 3", tag_revision_panel );
 
         // destination
-        JLabel path_label = new JLabel( "Create " + (type == TAG_DIALOG ? "tag" : "branch") + " at this location:" );
+        JLabel path_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " at this location:" );
         path = new JTextField( defaultDestination , 30 );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
@@ -174,7 +174,7 @@ public class TagBranchDialog extends JDialog {
 
 
 
-        JLabel comment_label = new JLabel( "Enter comment for this " + (type == TAG_DIALOG ? "tag:" : "branch:") );
+        JLabel comment_label = new JLabel( "Enter comment for this " + ( type == TAG_DIALOG ? "tag:" : "branch:" ) );
         comment = new JTextArea( 3, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -219,7 +219,14 @@ public class TagBranchDialog extends JDialog {
                         }
                         revision = tag_revision_panel.getRevision();
                         canceled = false;
-                        TagBranchDialog.this._save();
+
+                        // save the comment
+                        String msg = comment.getText();
+                        if ( msg != null && msg.length() > 0 && commentList != null ) {
+                            commentList.addValue( msg );
+                            commentList.save();
+                        }
+
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
                     }
@@ -264,12 +271,6 @@ public class TagBranchDialog extends JDialog {
 
     }
 
-    protected void _save() {
-        if ( commentList != null ) {
-            commentList.save();
-        }
-    }
-
     public CopyData getData() {
         if ( canceled ) {
             return null;
@@ -283,11 +284,6 @@ public class TagBranchDialog extends JDialog {
         String msg = comment.getText();
         if ( msg == null || msg.length() == 0 ) {
             msg = "no comment";
-        }
-        else {
-            if ( commentList != null ) {
-                commentList.addValue( msg );
-            }
         }
         cd.setMessage( msg );
         return cd;

@@ -472,6 +472,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
                         if ( tree_paths.length == 0 ) {
+                            System.out.println("+++++ returning early");
                             return ;
                         }
                         List<String> paths = new ArrayList<String>();
@@ -493,13 +494,16 @@ public class BrowseRepositoryPanel extends JPanel {
                                 }
                             }
                         }
+                        System.out.println("+++++ paths: " + paths);
                         LogData data = new LogData();
                         data.setPaths( paths );
                         data.setPathsAreURLs( true );
                         data.setUsername( username );
                         data.setPassword( password );
+                        System.out.println("+++++ next LogAction");
                         LogAction action = new LogAction( view, data );
                         action.actionPerformed( ae );
+                        System.out.println("+++++ actionPerformed is done");
                     }
                 }
                             );
@@ -685,7 +689,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 cd.setUsername( username );
                                 cd.setPassword( password );
                             }
-
+                            cd.setTitle("Tag");
                             CopyAction action = new CopyAction( view, cd );
                             action.actionPerformed( null );
                         }
@@ -739,7 +743,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 cd.setUsername( username );
                                 cd.setPassword( password );
                             }
-
+                            cd.setTitle("Branch");
                             CopyAction action = new CopyAction( view, cd );
                             action.actionPerformed( null );
                         }
