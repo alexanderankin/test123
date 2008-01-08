@@ -78,7 +78,7 @@ public class BrowseRepositoryPanel extends JPanel {
     private JButton refresh_btn;
 
     public BrowseRepositoryPanel( View view ) {
-        this(view, true);
+        this( view, true );
     }
 
     public BrowseRepositoryPanel( View view, boolean full ) {
@@ -88,7 +88,7 @@ public class BrowseRepositoryPanel extends JPanel {
     }
 
     public BrowseRepositoryPanel( View view, String defaultDestination ) {
-        this(view, defaultDestination, true);
+        this( view, defaultDestination, true );
     }
 
     public BrowseRepositoryPanel( View view, String defaultDestination, boolean full ) {
@@ -313,9 +313,18 @@ public class BrowseRepositoryPanel extends JPanel {
                         else {
                             tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
                         }
-                        edit_btn.setEnabled( data != null );
-                        remove_btn.setEnabled( data != null );
-                        refresh_btn.setEnabled( data != null );
+                        if ( edit_btn != null ) {
+
+                            edit_btn.setEnabled( data != null );
+                        }
+                        if ( remove_btn != null ) {
+
+                            remove_btn.setEnabled( data != null );
+                        }
+                        if ( refresh_btn != null ) {
+
+                            refresh_btn.setEnabled( data != null );
+                        }
                     }
                 };
         chooser.addActionListener( al );
@@ -355,8 +364,8 @@ public class BrowseRepositoryPanel extends JPanel {
         StringBuilder sb = new StringBuilder();
         for ( Object part : tp.getPath() ) {
             String p = part.toString();
-            if (p.endsWith("/")) {
-                p = p.substring(0, p.length() - 1);
+            if ( p.endsWith( "/" ) ) {
+                p = p.substring( 0, p.length() - 1 );
             }
             sb.append( p ).append( "/" );
         }
@@ -617,7 +626,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     from.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 defaultDestination = from.toString();
-                                paths.add(defaultDestination);
+                                paths.add( defaultDestination );
 
                                 DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
                                 if ( !hasDirectory && !node.isLeaf() ) {
@@ -626,11 +635,11 @@ public class BrowseRepositoryPanel extends JPanel {
                             }
                         }
 
-                        if (!hasDirectory) {
+                        if ( !hasDirectory ) {
                             JOptionPane.showMessageDialog( view, "Please select a directory in which to create the new directory.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        MkDirAction action = new MkDirAction( view, paths, username, password, defaultDestination);
+                        MkDirAction action = new MkDirAction( view, paths, username, password, defaultDestination );
                         action.actionPerformed( null );
                     }
                 }
@@ -671,7 +680,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     to.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 from_url = from.toString();
-                                defaultDestination = to.append("/tags").toString();
+                                defaultDestination = to.append( "/tags" ).toString();
                                 break;
                             }
                         }
@@ -685,7 +694,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 cd.setUsername( username );
                                 cd.setPassword( password );
                             }
-                            cd.setTitle("Tag");
+                            cd.setTitle( "Tag" );
                             CopyAction action = new CopyAction( view, cd );
                             action.actionPerformed( null );
                         }
@@ -725,7 +734,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     to.append( "/" ).append( parts[ i ].toString() );
                                 }
                                 from_url = from.toString();
-                                defaultDestination = to.append("/branches").toString();
+                                defaultDestination = to.append( "/branches" ).toString();
                                 break;
                             }
                         }
@@ -739,7 +748,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 cd.setUsername( username );
                                 cd.setPassword( password );
                             }
-                            cd.setTitle("Branch");
+                            cd.setTitle( "Branch" );
                             CopyAction action = new CopyAction( view, cd );
                             action.actionPerformed( null );
                         }
