@@ -86,13 +86,13 @@ ise.plugin.svn.action.code.19=ise.plugin.svn.pv.SwitchActor
 ise.plugin.svn.action.label.20=Cleanup
 ise.plugin.svn.action.code.20=ise.plugin.svn.pv.CleanupActor
 ise.plugin.svn.action.label.21=-
-ise.plugin.svn.action.label.22=Copy
+ise.plugin.svn.action.label.22=Copy...
 ise.plugin.svn.action.code.22=ise.plugin.svn.pv.CopyActor
-ise.plugin.svn.action.label.23=Move
+ise.plugin.svn.action.label.23=Move...
 ise.plugin.svn.action.code.23=ise.plugin.svn.pv.MoveActor
-ise.plugin.svn.action.label.24=Import
+ise.plugin.svn.action.label.24=Import...
 ise.plugin.svn.action.code.24=ise.plugin.svn.pv.ImportActor
-ise.plugin.svn.action.label.25=Export
+ise.plugin.svn.action.label.25=Export...
 ise.plugin.svn.action.code.25=ise.plugin.svn.pv.ExportActor
 
 

@@ -393,7 +393,7 @@ public class BrowseRepositoryPanel extends JPanel {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
 
-        JMenuItem mi = new JMenuItem( "Checkout" );
+        JMenuItem mi = new JMenuItem( "Checkout..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -466,13 +466,12 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Log" );
+        mi = new JMenuItem( "Log..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
                         if ( tree_paths.length == 0 ) {
-                            System.out.println("+++++ returning early");
                             return ;
                         }
                         List<String> paths = new ArrayList<String>();
@@ -494,16 +493,13 @@ public class BrowseRepositoryPanel extends JPanel {
                                 }
                             }
                         }
-                        System.out.println("+++++ paths: " + paths);
                         LogData data = new LogData();
                         data.setPaths( paths );
                         data.setPathsAreURLs( true );
                         data.setUsername( username );
                         data.setPassword( password );
-                        System.out.println("+++++ next LogAction");
                         LogAction action = new LogAction( view, data );
                         action.actionPerformed( ae );
-                        System.out.println("+++++ actionPerformed is done");
                     }
                 }
                             );
@@ -548,7 +544,7 @@ public class BrowseRepositoryPanel extends JPanel {
 
         pm.addSeparator();
 
-        mi = new JMenuItem( "Copy" );
+        mi = new JMenuItem( "Copy..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -593,7 +589,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Make Directory" );
+        mi = new JMenuItem( "Make Directory..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -640,7 +636,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Tag" );
+        mi = new JMenuItem( "Tag..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -697,7 +693,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Branch" );
+        mi = new JMenuItem( "Branch..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -751,7 +747,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Move" );
+        mi = new JMenuItem( "Move..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -793,7 +789,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Import" );
+        mi = new JMenuItem( "Import..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -811,7 +807,7 @@ public class BrowseRepositoryPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Export" );
+        mi = new JMenuItem( "Export..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {

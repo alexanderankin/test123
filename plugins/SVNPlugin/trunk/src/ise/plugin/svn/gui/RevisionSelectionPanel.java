@@ -48,13 +48,14 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class RevisionSelectionPanel extends JPanel {
 
     private ButtonGroup bg = null;
-    private JRadioButton revision_number_rb = null;
-    private JRadioButton date_rb = null;
-    private JRadioButton head_rb = null;
-    private JRadioButton base_rb = null;
-    private JRadioButton working_rb = null;
+    private JRadioButton head_rb = new JRadioButton( "HEAD" );
+    private JRadioButton base_rb = new JRadioButton( "BASE" );
+    private JRadioButton working_rb = new JRadioButton( "WORKING" );
+    private JRadioButton revision_number_rb = new JRadioButton( "Revision:" );
     private JSpinner revision_number = null;
+    private JRadioButton date_rb = new JRadioButton( "Date:" );
     private JSpinner date_spinner = null;
+
 
     private String title;
     private int layout = SwingConstants.VERTICAL;
@@ -63,6 +64,7 @@ public class RevisionSelectionPanel extends JPanel {
     private boolean showBase = true;
     private boolean showDate = true;
     private boolean showNumber = true;
+
     private SVNRevision defaultRevision;
     private SVNRevision revision = SVNRevision.HEAD;
 
@@ -90,12 +92,6 @@ public class RevisionSelectionPanel extends JPanel {
 
         setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), title ) );
 
-        revision_number_rb = new JRadioButton( "Revision number:" );
-        date_rb = new JRadioButton( "Date:" );
-        head_rb = new JRadioButton( "HEAD" );
-        base_rb = new JRadioButton( "BASE" );
-        working_rb = new JRadioButton( "WORKING" );
-
         bg = new ButtonGroup();
         bg.add( revision_number_rb );
         bg.add( date_rb );
@@ -114,7 +110,7 @@ public class RevisionSelectionPanel extends JPanel {
         }
 
         // set up the revision number chooser
-        revision_number = new JSpinner();
+        revision_number = getRevisionChooser();
         revision_number.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
                         if ( RevisionSelectionPanel.this.revision_number.isEnabled() ) {
@@ -126,25 +122,7 @@ public class RevisionSelectionPanel extends JPanel {
                                          );
 
         // set up date chooser
-        Calendar calendar = Calendar.getInstance();
-        Date initDate = calendar.getTime();
-        Date latestDate = calendar.getTime();
-        calendar.add( Calendar.YEAR, -10 );
-        Date earliestDate = calendar.getTime();
-        SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
-        date_spinner = new JSpinner( model );
-        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, "dd MMM yyyy HH:mm" );
-        date_spinner.setEditor( date_editor );
-        date_spinner.addChangeListener( new ChangeListener() {
-                    public void stateChanged( ChangeEvent ce ) {
-                        if ( RevisionSelectionPanel.this.date_spinner.isEnabled() ) {
-                            Date date = ( Date ) date_spinner.getValue();
-                            RevisionSelectionPanel.this.setRevision( SVNRevision.create( date ) );
-                        }
-                    }
-                }
-                                      );
-        revision_number.setPreferredSize( new Dimension( date_spinner.getPreferredSize().width, revision_number.getPreferredSize().height ) );
+        date_spinner = getDateChooser();
 
         // add action listeners
         ActionListener al = new ActionListener() {
@@ -205,50 +183,40 @@ public class RevisionSelectionPanel extends JPanel {
 
         revision_number.setEnabled( false );
         date_spinner.setEnabled( false );
+    }
+
+    private JSpinner getRevisionChooser() {
+        SpinnerNumberModel model = new SpinnerNumberModel();
+        model.setMinimum(0);
+        revision_number = new JSpinner(model);
+        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
+        revision_number.setEnabled(false);
+        return revision_number;
+    }
 
 
-        if ( layout == SwingConstants.HORIZONTAL ) {
-            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            if ( showHead ) {
-                add( "0, 1, 1, 1, W, , 3", head_rb );
-            }
-            if ( showBase ) {
-                add( "0, 2, 1, 1, W, , 3", base_rb );
-            }
-            if ( showWorking ) {
-                add( "0, 3, 1, 1, W, , 3", working_rb );
-            }
-            if ( showNumber ) {
-                add( "1, 1, 1, 1, W, , 3", revision_number_rb );
-                add( "2, 1, 1, 1, W, , 3", revision_number );
-            }
-            if ( showDate ) {
-                add( "1, 2, 1, 1, W, , 3", date_rb );
-                add( "2, 2, 1, 1, W, , 3", date_spinner );
-            }
-            kl.makeColumnsSameWidth( 0, 2 );
-            kl.makeColumnsSameWidth( 1, 3 );
-        }
-        else {
-            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            if ( showHead ) {
-                add( "0, 1, 2, 1, W, , 3", head_rb );
-            }
-            if ( showBase ) {
-                add( "0, 2, 2, 1, W, , 3", base_rb );
-            }
-            if ( showWorking ) {
-                add( "0, 3, 2, 1, W, , 3", working_rb );
-            }
-            if ( showNumber ) {
-                add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
-                add( "1, 4, 1, 1, W, , 3", revision_number );
-            }
-            if ( showDate ) {
-                add( "0, 5, 1, 1, W, , 3", date_rb );
-                add( "1, 5, 1, 1, W, , 3", date_spinner );
-            }
-        }
+    private JSpinner getDateChooser() {
+        Calendar calendar = Calendar.getInstance();
+        Date initDate = calendar.getTime();
+        Date latestDate = calendar.getTime();
+        calendar.add( Calendar.YEAR, -10 );
+        Date earliestDate = calendar.getTime();
+        SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
+        date_spinner = new JSpinner( model );
+        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, "dd MMM yyyy HH:mm" );
+        date_spinner.setEditor( date_editor );
+        date_spinner.addChangeListener( new ChangeListener() {
+                    public void stateChanged( ChangeEvent ce ) {
+                        if ( RevisionSelectionPanel.this.date_spinner.isEnabled() ) {
+                            Date date = ( Date ) date_spinner.getValue();
+                            RevisionSelectionPanel.this.setRevision( SVNRevision.create( date ) );
+                        }
+                    }
+                }
+                                      );
+        date_spinner.setPreferredSize( new Dimension( 150, date_spinner.getPreferredSize().height ) );
+        date_spinner.setEnabled(false);
+        return date_spinner;
     }
 
     public void setTitle( String title ) {
@@ -264,6 +232,7 @@ public class RevisionSelectionPanel extends JPanel {
             default:
                 this.layout = SwingConstants.VERTICAL;
         }
+        repaint();
     }
 
     public void setRevision( SVNRevision revision ) {
@@ -276,48 +245,107 @@ public class RevisionSelectionPanel extends JPanel {
 
     public void setShowHead( boolean b ) {
         showHead = b;
-        if (!b) {
-            remove(head_rb);
+        if ( !b ) {
+            remove( head_rb );
             repaint();
         }
     }
 
     public void setShowWorking( boolean b ) {
         showWorking = b;
-        if (!b) {
-            remove(working_rb);
+        if ( !b ) {
+            remove( working_rb );
             repaint();
         }
     }
 
     public void setShowBase( boolean b ) {
         showBase = b;
+        if ( !b ) {
+            remove( base_rb );
+            repaint();
+        }
     }
 
     public void setShowDate( boolean b ) {
         showDate = b;
+        if ( !b ) {
+            remove( date_rb );
+            remove( date_spinner );
+            repaint();
+        }
     }
 
     public void setShowNumber( boolean b ) {
         showNumber = b;
+        if ( !b ) {
+            remove( revision_number_rb );
+            remove( revision_number );
+            repaint();
+        }
     }
 
     @Override
     public void setEnabled( boolean b ) {
         super.setEnabled( b );
-        base_rb.setEnabled( b );
-        date_rb.setEnabled( b );
-        date_spinner.setEnabled( false );
-        head_rb.setEnabled( b );
-        revision_number.setEnabled( b );
-        revision_number_rb.setEnabled( b );
+    }
+
+    @Override
+    public void repaint() {
+        removeAll();
+
+        KappaLayout kl = new KappaLayout();
+        if ( layout == SwingConstants.HORIZONTAL ) {
+            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            if ( showHead ) {
+                add( "0, 1, 1, 1, W, , 3", head_rb );
+            }
+            if ( showBase ) {
+                add( "0, 2, 1, 1, W, , 3", base_rb );
+            }
+            if ( showWorking ) {
+                add( "0, 3, 1, 1, W, , 3", working_rb );
+            }
+            add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createHorizontalStrut( 21, true ) );
+            if ( showNumber ) {
+                add( "2, 1, 1, 1, W, , 3", revision_number_rb );
+                add( "3, 1, 1, 1, W, , 3", getRevisionChooser() );
+            }
+            if ( showDate ) {
+                add( "2, 2, 1, 1, W, , 3", date_rb );
+                add( "3, 2, 1, 1, W, , 3", getDateChooser() );
+            }
+        }
+        else {
+            add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            if ( showHead ) {
+                add( "0, 1, 2, 1, W, , 3", head_rb );
+            }
+            if ( showBase ) {
+                add( "0, 2, 2, 1, W, , 3", base_rb );
+            }
+            if ( showWorking ) {
+                add( "0, 3, 2, 1, W, , 3", working_rb );
+            }
+            if ( showNumber ) {
+                add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
+                add( "1, 4, 1, 1, W, , 3", getRevisionChooser() );
+            }
+            if ( showDate ) {
+                add( "0, 5, 1, 1, W, , 3", date_rb );
+                add( "1, 5, 1, 1, W, , 3", getDateChooser() );
+            }
+        }
+        super.repaint();
     }
 
     // for testing
     public static void main ( String[] args ) {
         RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title" );
-        panel.setShowWorking( true );
-        panel.setShowHead(false);
+        //panel.setShowWorking( true );
+        //panel.setShowHead( true );
+        //panel.setShowBase( false );
+        panel.setLayout( SwingConstants.HORIZONTAL );
         JFrame frame = new JFrame();
         frame.setContentPane( panel );
         frame.pack();
