@@ -66,6 +66,7 @@ public class PropertyComboBox extends JComboBox {
                 // the try/catch is really only for testing when jEdit isn't
                 // available.  This exception should never happen during
                 // regular runtime.
+                values.push( SELECT );
             }
         }
         model = new DefaultComboBoxModel( ( Vector ) values );

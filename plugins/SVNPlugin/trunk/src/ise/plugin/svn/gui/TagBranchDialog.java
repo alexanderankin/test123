@@ -175,7 +175,7 @@ public class TagBranchDialog extends JDialog {
 
 
         JLabel comment_label = new JLabel( "Enter comment for this " + ( type == TAG_DIALOG ? "tag:" : "branch:" ) );
-        comment = new JTextArea( 3, 50 );
+        comment = new JTextArea( 3, 40 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 
@@ -258,7 +258,7 @@ public class TagBranchDialog extends JDialog {
         panel.add( "0, 10, 8, 1, W, wh, 3", new JScrollPane( comment ) );
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
-            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
+            commentList.setPreferredSize( new Dimension( 500, commentList.getPreferredSize().height ) );
             panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
             panel.add( "0, 12, 8, 1, W, w, 3", commentList );
         }
@@ -287,5 +287,10 @@ public class TagBranchDialog extends JDialog {
         }
         cd.setMessage( msg );
         return cd;
+    }
+
+    public static void main (String[] args) {
+        TagBranchDialog d = new TagBranchDialog(null, TagBranchDialog.TAG_DIALOG, "http://somewhere.over/the/rainbow", null);
+        d.setVisible(true);
     }
 }

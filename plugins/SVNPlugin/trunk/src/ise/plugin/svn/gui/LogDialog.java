@@ -31,6 +31,7 @@ package ise.plugin.svn.gui;
 // imports
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.File;
@@ -81,13 +82,12 @@ public class LogDialog extends JDialog {
 
     /** Initialises the option pane. */
     protected void _init() {
-        System.out.println( "+++++ in LogDialog.init" );
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // list the selected files
         JLabel file_label = new JLabel( "Show log for these files:" );
-        JTable file_table = new JTable();
+        BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
                         "", "File"
@@ -115,6 +115,7 @@ public class LogDialog extends JDialog {
         }
         file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 575 );
+        file_table.packRows();
 
         // ask if directories should be recursed
         final JCheckBox recursive_cb = new JCheckBox( "Recurse subdirectories?" );
@@ -240,9 +241,10 @@ public class LogDialog extends JDialog {
                                     );
 
         // add the components to the option panel
+        JScrollPane file_scroller = new JScrollPane( file_table );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 250 ) ) );
         panel.add( "0, 0, 2, 1, W,  , 3", file_label );
-        panel.add( "0, 1, 2, 1, W, wh, 3", new JScrollPane( file_table ) );
-        panel.add( "4, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 120, true ) );
+        panel.add( "0, 1, 2, 1, W, wh, 3", file_scroller );
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
@@ -253,8 +255,8 @@ public class LogDialog extends JDialog {
         panel.add( "0, 5, 2, 1, W,  , 3", new JLabel( "Revision Range:" ) );
         panel.add( "0, 6, 2, 1, W,  , 3", show_all );
         panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
-        panel.add( "0, 8, 1, 1, W,  , 3", start_revision_panel );
-        panel.add( "1, 8, 1, 1, E   , 3", end_revision_panel );
+        panel.add( "0, 8, 1, 1, W, w, 3", start_revision_panel );
+        panel.add( "1, 8, 1, 1, E,  w, 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy );
