@@ -65,6 +65,10 @@ public class CopyData extends SVNData implements Serializable {
     // commit message
     private String message = null;
 
+    // this data object is also used for tag and branch, this field is to pass
+    // along the appropriate title for dialogs and gui display.
+    private String title = "Copy";
+
 
     // set/get commit message
     public void setMessage(String m) {
@@ -72,6 +76,14 @@ public class CopyData extends SVNData implements Serializable {
     }
     public String getMessage() {
         return message == null || message.length() == 0 ? "copying" : message;
+    }
+
+    public void setTitle(String s) {
+        title = s;
+    }
+
+    public String getTitle() {
+        return title == null || title.length() == 0 ? "Copy" : title;
     }
 
     // set/get revision to copy from

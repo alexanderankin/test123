@@ -69,6 +69,7 @@ public class CopyAction implements ActionListener {
 
     private View view = null;
     private CopyData data = null;
+    private String title = "Copy";
 
     private static final int W2W = 1;
     private static final int W2U = 2;
@@ -86,6 +87,7 @@ public class CopyAction implements ActionListener {
             throw new IllegalArgumentException( "data may not be null" );
         this.view = view;
         this.data = data;
+        this.title = data.getTitle();
     }
 
 
@@ -97,7 +99,8 @@ public class CopyAction implements ActionListener {
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Copying ..." );
+            String log_msg = title.equals("Tag") ? "Tagging" : title + "ing";
+            logger.log( Level.INFO, log_msg );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -248,7 +251,7 @@ public class CopyAction implements ActionListener {
                                         ar.addPath( path );
                                     }
                                     JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, view, data.getUsername(), data.getPassword() );
-                                    panel.addTab( "Copy", results_panel );
+                                    panel.addTab( title, results_panel );
 
                                     // open the file(s) and signal ProjectViewer to possibly add the file
                                     for ( String path : results.keySet() ) {
@@ -266,7 +269,7 @@ public class CopyAction implements ActionListener {
                                     // these cases result in an immediate commit, so
                                     // the SVNCommitInfo objects in the map are valid
                                     JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), false );
-                                    panel.addTab( "Copy", results_panel );
+                                    panel.addTab( title, results_panel );
                                 }
                                 break;
                             default:
@@ -284,7 +287,7 @@ public class CopyAction implements ActionListener {
                 private void checkDestination( File destination ) throws Exception {
                     // destination must be a directory and must exist
                     if ( !destination.exists() || !destination.isDirectory() ) {
-                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\nCopy destination must be an existing directory under version control." );
+                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\n" + title + " destination must be an existing directory under version control." );
                     }
                 }
             }

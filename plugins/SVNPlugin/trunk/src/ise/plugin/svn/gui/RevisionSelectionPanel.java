@@ -74,9 +74,10 @@ public class RevisionSelectionPanel extends JPanel {
      */
     public RevisionSelectionPanel( String title ) {
         this.title = title;
+        init();
     }
 
-    public void addNotify() {
+    public void init() {
         KappaLayout kl = new KappaLayout();
         setLayout( kl );
         switch ( layout ) {
@@ -143,7 +144,7 @@ public class RevisionSelectionPanel extends JPanel {
                     }
                 }
                                       );
-        revision_number.setPreferredSize(new Dimension(date_spinner.getPreferredSize().width, revision_number.getPreferredSize().height));
+        revision_number.setPreferredSize( new Dimension( date_spinner.getPreferredSize().width, revision_number.getPreferredSize().height ) );
 
         // add action listeners
         ActionListener al = new ActionListener() {
@@ -202,6 +203,7 @@ public class RevisionSelectionPanel extends JPanel {
                                         );
         }
 
+        revision_number.setEnabled( false );
         date_spinner.setEnabled( false );
 
 
@@ -274,10 +276,18 @@ public class RevisionSelectionPanel extends JPanel {
 
     public void setShowHead( boolean b ) {
         showHead = b;
+        if (!b) {
+            remove(head_rb);
+            repaint();
+        }
     }
 
     public void setShowWorking( boolean b ) {
         showWorking = b;
+        if (!b) {
+            remove(working_rb);
+            repaint();
+        }
     }
 
     public void setShowBase( boolean b ) {
@@ -306,7 +316,8 @@ public class RevisionSelectionPanel extends JPanel {
     // for testing
     public static void main ( String[] args ) {
         RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title" );
-        panel.setShowWorking(true);
+        panel.setShowWorking( true );
+        panel.setShowHead(false);
         JFrame frame = new JFrame();
         frame.setContentPane( panel );
         frame.pack();
