@@ -18,8 +18,8 @@
  */
 package velocity.directives;
 
-import bsh.UtilEvalError;
-import bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.UtilEvalError;
+import org.gjt.sp.jedit.bsh.NameSpace;
 
 import java.io.IOException;
 import java.io.Writer;
