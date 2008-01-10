@@ -210,6 +210,7 @@ public class CopyAction implements ActionListener {
                                     cd.setDestinationURL( data.getDestinationURL() );
                                 }
                                 cd.setOut( data.getOut() );
+                                cd.setMessage( data.getMessage() );
                                 Copy copy = new Copy();
                                 SVNCommitInfo result = copy.copy( cd );
                                 if ( result != null ) {
