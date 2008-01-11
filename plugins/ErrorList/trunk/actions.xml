@@ -43,6 +43,8 @@
 				if(sources[i] instanceof errorlist.DefaultErrorSource)
 					sources[i].clear();
 			}
+			if (jEdit.getBooleanProperty("error-list.showOnError"))
+				view.getDockableWindowManager().hideDockableWindow("error-list");
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-toggle-errors">
