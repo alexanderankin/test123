@@ -2,9 +2,9 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens
-plugin.jdiff.JDiffPlugin.version=1.5.2
+plugin.jdiff.JDiffPlugin.version=1.6.0
 plugin.jdiff.JDiffPlugin.docs=index.html
-plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff utility for jEdit.
+plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
 # Dependencies
 plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
@@ -28,8 +28,8 @@ plugin.jdiff.JDiffPlugin.menu=\
     jdiff.diff-normal-output
 
 plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
-	jdiff.overview \
-	jdiff.highlight
+    jdiff.overview \
+    jdiff.highlight
 
 jdiff-menu.label=JDiff
 
