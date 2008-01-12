@@ -42,9 +42,14 @@ import org.gjt.sp.util.Log;
  */
 public class DiffLocalOverview extends DiffOverview implements MouseListener {
 
-    private Rectangle border0;
-    private Rectangle border1;
-    private int pxlPerLine = 1;
+    private Rectangle leftBorder;
+    private Rectangle rightBorder;
+    private int pixelsPerLine = 1;
+    private int leftVisibleLineCount;
+    private int rightVisibleLineCount;
+    private Rectangle leftRectangle;
+    private Rectangle rightRectangle;
+    private Rectangle centerRectangle;
 
     public DiffLocalOverview(
         Diff.change edits,
@@ -65,12 +70,12 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
         // text area that are different from those in the left text area, and
         // the center area connects the corresponding left and right changed
         // areas.
-        int count0 = this.textArea0.getVisibleLines();
-        int count1 = this.textArea1.getVisibleLines();
+        leftVisibleLineCount = this.textArea0.getVisibleLines();
+        rightVisibleLineCount = this.textArea1.getVisibleLines();
+        pixelsPerLine = this.textArea0.getPainter().getFontMetrics().getHeight();
 
         // default width is 40 pixels, set in DiffOverview
         Rectangle size = getBounds();
-
         gfx.setColor( getBackground() );
         gfx.fillRect( 0, 0, size.width, size.height );
 
@@ -78,51 +83,53 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
         // right sides to separate the diff area from the text area and its
         // scroll bar.  This could be a little narrower, maybe even 1 since the
         // diff rectangles have a black border around them.
-        Rectangle inner = new Rectangle( 4, 0, size.width - 8, size.height );   // width = 32
-
-        int lines = Math.max( count0, count1 );
-        pxlPerLine = this.textArea0.getPainter().getFontMetrics().getHeight();
+        centerRectangle = new Rectangle( 4, 0, size.width - 8, size.height );   // width = 32
 
         // for drawing the diffs for the left text area
-        Rectangle rect0 = new Rectangle(
-                    inner.x,                        // 4
-                    inner.y,                        // 0
-                    inner.width / 3,                // (40 - 4 - 4) / 3 = 8
-                    Math.max( 1, pxlPerLine * count0 )
+        leftRectangle = new Rectangle(
+                    centerRectangle.x,                          // 4
+                    centerRectangle.y,                          // 0
+                    centerRectangle.width / 3,                  // (40 - 4 - 4) / 3 = 8
+                    Math.max( 1, pixelsPerLine * leftVisibleLineCount )
                 );
-
-        // border for the left rectangle
-        border0 = new Rectangle( rect0 );
 
         // for drawing the diffs for the right text area
-        Rectangle rect1 = new Rectangle(
-                    inner.x + ( inner.width - ( inner.width / 3 ) ),                // 4 + (32 - 8) = 28
-                    inner.y,                        // 0
-                    inner.width / 3,                // 8
-                    Math.max( 1, pxlPerLine * count1 )
+        rightRectangle = new Rectangle(
+                    centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),   // 4 + (32 - 8) = 28
+                    centerRectangle.y,                          // 0
+                    centerRectangle.width / 3,                  // 8
+                    Math.max( 1, pixelsPerLine * rightVisibleLineCount )
                 );
 
-        // border for the right rectangle
-        border1 = new Rectangle( rect1 );
+        // borders for the left and right rectangles
+        leftBorder = new Rectangle( leftRectangle );
+        rightBorder = new Rectangle( rightRectangle );
 
         // make the left and right rectangles white
         gfx.setColor( Color.white );
-        gfx.fillRect( rect0.x, rect0.y, rect0.width, rect0.height );
-        gfx.fillRect( rect1.x, rect1.y, rect1.width, rect1.height );
+        gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
+        gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
 
-        Color color;
+        // draw the diff areas in the left and right rectangles, and draw the
+        // connecting line between corresponding diffs in the center rectangle
+        fillLeft( gfx );
+        fillRight( gfx );
+        fillCenter( gfx );
 
-        // arrows
-        Polygon arrow0;
-        Polygon arrow1;
+        // draw the borders around the left and right rectangles
+        gfx.setColor( Color.black );
+        gfx.drawRect( leftBorder.x - 1, leftBorder.y, leftBorder.width + 1, leftBorder.height - 1 );
+        gfx.drawRect( rightBorder.x - 1, rightBorder.y, rightBorder.width + 1, rightBorder.height - 1 );
+    }
 
+    private void fillLeft( Graphics gfx ) {
         // fill in the left rectangle to show where left text area has different
         // lines than the right text area
         Diff.change hunk = this.edits;
         int start_line0 = 0;
-        Color previous_color = null;
+        Color color;
 
-        for ( int i0 = 0; ( i0 < count0 ); i0++ ) {
+        for ( int i0 = 0; ( i0 < leftVisibleLineCount ); i0++ ) {
             // for each line in the left text area, get the current line to consider
             int physicalLine0 = this.textArea0.getPhysicalLineOfScreenLine( i0 );
 
@@ -146,7 +153,7 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
                     // a 1 pixel tall line in the left rectangle to match up with
                     // the inserted block in the right rectangle
                     color = JDiffPlugin.overviewInvalidColor;
-                    rect0.height = 1;
+                    leftRectangle.height = 1;
                 }
                 else {
                     if ( hunk.inserted == 0 ) {
@@ -162,22 +169,25 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
                     }
 
                     // next line is unnecessary, if, here, the height should
-                    // always be pxlPerLine:
-                    //rect0.height = Math.max( 1, pxlPerLine );
-                    rect0.height = pxlPerLine;
+                    // always be pixelsPerLine:
+                    //leftRectangle.height = Math.max( 1, pixelsPerLine );
+                    leftRectangle.height = pixelsPerLine;
                 }
 
-                rect0.y = inner.y + ( i0 * pxlPerLine );
+                leftRectangle.y = centerRectangle.y + ( i0 * pixelsPerLine );
                 gfx.setColor( color );
-                gfx.fillRect( rect0.x, rect0.y, rect0.width, rect0.height );
+                gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
                 break;
             }
         }
+    }
 
+    private void fillRight( Graphics gfx ) {
         // fill in the right rectangle to show where right text area has different
         // lines than the left text area
-        hunk = this.edits;
-        for ( int i1 = 0; ( i1 < count1 ); i1++ ) {
+        Color color;
+        Diff.change hunk = this.edits;
+        for ( int i1 = 0; ( i1 < rightVisibleLineCount ); i1++ ) {
             int physicalLine1 = this.textArea1.getPhysicalLineOfScreenLine( i1 );
 
             if ( physicalLine1 == -1 ) {
@@ -195,7 +205,7 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
 
                 if ( hunk.inserted == 0 ) {
                     color = JDiffPlugin.overviewInvalidColor;
-                    rect1.height = 1;
+                    rightRectangle.height = 1;
                 }
                 else {
                     if ( hunk.deleted == 0 ) {
@@ -205,20 +215,24 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
                         color = JDiffPlugin.overviewChangedColor;
                     }
 
-                    rect1.height = Math.max( 1, pxlPerLine );
+                    rightRectangle.height = Math.max( 1, pixelsPerLine );
                 }
 
-                rect1.y = inner.y + ( i1 * pxlPerLine );
+                rightRectangle.y = centerRectangle.y + ( i1 * pixelsPerLine );
                 gfx.setColor( color );
-                gfx.fillRect( rect1.x, rect1.y, rect1.width, rect1.height );
+                gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
                 break;
             }
         }
+    }
 
+    private void fillCenter( Graphics gfx ) {
         // draw a line to connect corresponding differences in the left and
         // right rectangles.  Draw a right and left arrow.
-        hunk = this.edits;
-        for ( int i0 = 0, i1 = 0; ( hunk != null ) && ( i0 < count0 ) && ( i1 < count1 ); ) {
+        Polygon arrow0;
+        Polygon arrow1;
+        Diff.change hunk = this.edits;
+        for ( int i0 = 0, i1 = 0; ( hunk != null ) && ( i0 < leftVisibleLineCount ) && ( i1 < rightVisibleLineCount ); ) {
             int physicalLine0 = this.textArea0.getPhysicalLineOfScreenLine( i0 );
             int physicalLine1 = this.textArea1.getPhysicalLineOfScreenLine( i1 );
 
@@ -256,120 +270,128 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
                     break;
                 }
 
-                int y0 = inner.y + ( i0 * pxlPerLine );
-                int y1 = inner.y + ( i1 * pxlPerLine );
+                int y0 = centerRectangle.y + ( i0 * pixelsPerLine );
+                int y1 = centerRectangle.y + ( i1 * pixelsPerLine );
 
                 // draw the lines
                 gfx.setColor( Color.BLACK );
-                gfx.drawLine( rect0.x + rect0.width + 1, y0, rect1.x - 1, y1 );
+                gfx.drawLine( leftRectangle.x + leftRectangle.width + 1, y0, rightRectangle.x - 1, y1 );
 
                 // draw the "move it right" arrow
                 if ( hunk.inserted == 0 || hunk.deleted > 0 ) {
                     arrow0 = new Polygon();
-                    arrow0.addPoint( rect0.x + 1, y0 + 1 );
-                    arrow0.addPoint( rect0.x + 1, y0 + pxlPerLine - 2 );
-                    arrow0.addPoint( rect0.x + 7, y0 + ( pxlPerLine / 2 ) );
+                    arrow0.addPoint( leftRectangle.x + 1, y0 + 1 );
+                    arrow0.addPoint( leftRectangle.x + 1, y0 + pixelsPerLine - 2 );
+                    arrow0.addPoint( leftRectangle.x + 7, y0 + ( pixelsPerLine / 2 ) );
                     gfx.fillPolygon( arrow0 );
                 }
 
                 // draw the "move it left" arrow
                 if ( hunk.deleted == 0 || hunk.inserted > 0 ) {
                     arrow1 = new Polygon();
-                    arrow1.addPoint( rect1.x + 1, y1 + ( pxlPerLine / 2 ) );
-                    arrow1.addPoint( rect1.x + 7, y1 + 1 );
-                    arrow1.addPoint( rect1.x + 7, y1 + pxlPerLine - 2 );
+                    arrow1.addPoint( rightRectangle.x + 1, y1 + ( pixelsPerLine / 2 ) );
+                    arrow1.addPoint( rightRectangle.x + 7, y1 + 1 );
+                    arrow1.addPoint( rightRectangle.x + 7, y1 + pixelsPerLine - 2 );
                     gfx.setColor( Color.BLACK );
                     gfx.fillPolygon( arrow1 );
                 }
             }
         }
-
-        // draw the borders around the left and right rectangles
-        gfx.setColor( Color.black );
-        gfx.drawRect( border0.x - 1, border0.y, border0.width + 1, border0.height - 1 );
-        gfx.drawRect( border1.x - 1, border1.y, border1.width + 1, border1.height - 1 );
     }
 
     public void mouseClicked( MouseEvent e ) {
-        if ( border0.contains( e.getX(), e.getY() ) ) {
+        if ( leftBorder.contains( e.getX(), e.getY() ) ) {
             // handle click on left side
-            int line_number = ( e.getY() / pxlPerLine ) + textArea0.getFirstPhysicalLine();
-            Diff.change hunk = this.edits;
-            for ( ; hunk != null; hunk = hunk.link ) {
-                // find the hunk pertaining to this line number
-                if ( ( hunk.line0 + Math.max( 0, hunk.deleted - 1 ) ) < line_number ) {
-                    continue;   // before this line
-                }
-
-                if ( hunk.line0 > line_number ) {
-                    break;  // after this line, signals end of loop
-                }
-
-                // on a line with a right arrow --
-                // get the text from the left text area to move to the right
-                String line_separator = textArea1.getBuffer().getStringProperty( "lineSeparator" );
-                StringBuffer sb = new StringBuffer();
-                for ( int i = 0; i < hunk.deleted; i++ ) {
-                    sb.append( textArea0.getLineText( hunk.line0 + i ) ).append( line_separator );
-                }
-
-                // replace text on right with text from left
-                textArea1.selectNone();
-                int start_sel = textArea1.getLineStartOffset( hunk.line1 );
-                int end_sel = textArea1.getLineStartOffset( hunk.line1 + hunk.inserted );
-                textArea1.setCaretPosition( start_sel );
-                Selection.Range selection;
-                if ( hunk.inserted == 0 ) {
-                    selection = new Selection.Range( start_sel, start_sel );
-                }
-                else {
-                    selection = new Selection.Range( start_sel, end_sel );
-                }
-                textArea1.setSelectedText( selection, sb.toString() );
-                textArea1.selectNone();
-                DualDiff.refreshFor( textArea1.getView() );
-            }
+            int line_number = ( e.getY() / pixelsPerLine ) + textArea0.getFirstPhysicalLine();
+            moveRight( line_number );
         }
-        else if ( border1.contains( e.getX(), e.getY() ) ) {
+        else if ( rightBorder.contains( e.getX(), e.getY() ) ) {
             // handle click on right side
-            int line_number = ( e.getY() / pxlPerLine ) + textArea1.getFirstPhysicalLine();
-            Diff.change hunk = this.edits;
-            for ( ; hunk != null; hunk = hunk.link ) {
-                // find the hunk pertaining to this line number
-                if ( ( hunk.line1 + Math.max( 0, hunk.inserted - 1 ) ) < line_number ) {
-                    continue;   // before this line
-                }
-
-                if ( hunk.line1 > line_number ) {
-                    break;  // after this line, signals end of loop
-                }
-
-                // on a line with a left arrow --
-                // get the text from the right text area to move to the left
-                String line_separator = textArea0.getBuffer().getStringProperty( "lineSeparator" );
-                StringBuffer sb = new StringBuffer();
-                for ( int i = 0; i < hunk.inserted; i++ ) {
-                    sb.append( textArea1.getLineText( hunk.line1 + i ) ).append( line_separator );
-                }
-
-                // replace text on left with text from right
-                textArea0.selectNone();
-                int start_sel = textArea0.getLineStartOffset( hunk.line0 );
-                int end_sel = textArea0.getLineStartOffset( hunk.line0 + hunk.deleted );
-                textArea0.setCaretPosition( start_sel );
-                Selection.Range selection;
-                if ( hunk.deleted == 0 ) {
-                    selection = new Selection.Range( start_sel, start_sel );
-                }
-                else {
-                    selection = new Selection.Range( start_sel, end_sel );
-                }
-                textArea0.setSelectedText( selection, sb.toString() );
-                textArea0.selectNone();
-                DualDiff.refreshFor( textArea0.getView() );
-            }
+            int line_number = ( e.getY() / pixelsPerLine ) + textArea1.getFirstPhysicalLine();
+            moveLeft( line_number );
         }
     }
+
+    // copies a diff starting at the given line number in the left text area and
+    // replaces the corresponding diff in the right text area
+    private void moveRight( int line_number ) {
+        Diff.change hunk = this.edits;
+        for ( ; hunk != null; hunk = hunk.link ) {
+            // find the hunk pertaining to this line number
+            if ( ( hunk.line0 + Math.max( 0, hunk.deleted - 1 ) ) < line_number ) {
+                continue;   // before this line
+            }
+
+            if ( hunk.line0 > line_number ) {
+                break;  // after this line, signals end of loop
+            }
+
+            // on a line with a right arrow --
+            // get the text from the left text area to move to the right
+            String line_separator = textArea1.getBuffer().getStringProperty( "lineSeparator" );
+            StringBuffer sb = new StringBuffer();
+            for ( int i = 0; i < hunk.deleted; i++ ) {
+                sb.append( textArea0.getLineText( hunk.line0 + i ) ).append( line_separator );
+            }
+
+            // replace text on right with text from left
+            textArea1.selectNone();
+            int start_sel = textArea1.getLineStartOffset( hunk.line1 );
+            int end_sel = textArea1.getLineStartOffset( hunk.line1 + hunk.inserted );
+            textArea1.setCaretPosition( start_sel );
+            Selection.Range selection;
+            if ( hunk.inserted == 0 ) {
+                selection = new Selection.Range( start_sel, start_sel );
+            }
+            else {
+                selection = new Selection.Range( start_sel, end_sel );
+            }
+            textArea1.setSelectedText( selection, sb.toString() );
+            textArea1.selectNone();
+            DualDiff.refreshFor( textArea1.getView() );
+        }
+    }
+
+    // copies a diff starting at the given line number in the right text area and
+    // replaces the corresponding diff in the left text area
+    private void moveLeft( int line_number ) {
+        Diff.change hunk = this.edits;
+        for ( ; hunk != null; hunk = hunk.link ) {
+            // find the hunk pertaining to this line number
+            if ( ( hunk.line1 + Math.max( 0, hunk.inserted - 1 ) ) < line_number ) {
+                continue;   // before this line
+            }
+
+            if ( hunk.line1 > line_number ) {
+                break;  // after this line, signals end of loop
+            }
+
+            // on a line with a left arrow --
+            // get the text from the right text area to move to the left
+            String line_separator = textArea0.getBuffer().getStringProperty( "lineSeparator" );
+            StringBuffer sb = new StringBuffer();
+            for ( int i = 0; i < hunk.inserted; i++ ) {
+                sb.append( textArea1.getLineText( hunk.line1 + i ) ).append( line_separator );
+            }
+
+            // replace text on left with text from right
+            textArea0.selectNone();
+            int start_sel = textArea0.getLineStartOffset( hunk.line0 );
+            int end_sel = textArea0.getLineStartOffset( hunk.line0 + hunk.deleted );
+            textArea0.setCaretPosition( start_sel );
+            Selection.Range selection;
+            if ( hunk.deleted == 0 ) {
+                selection = new Selection.Range( start_sel, start_sel );
+            }
+            else {
+                selection = new Selection.Range( start_sel, end_sel );
+            }
+            textArea0.setSelectedText( selection, sb.toString() );
+            textArea0.selectNone();
+            DualDiff.refreshFor( textArea0.getView() );
+        }
+    }
+
     public void mouseEntered( MouseEvent e ) {}
     public void mouseExited( MouseEvent e ) {}
     public void mousePressed( MouseEvent e ) {}
