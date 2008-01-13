@@ -155,4 +155,12 @@ public abstract class DiffOverview extends JComponent
             this.textArea0.setFirstLine(leftFirstLine);
         }
     }
+
+    public void moveRight(int line_number) {
+
+    }
+
+    public void moveLeft(int line_number) {
+
+    }
 }

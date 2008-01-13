@@ -87,17 +87,17 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
 
         // for drawing the diffs for the left text area
         leftRectangle = new Rectangle(
-                    centerRectangle.x,                          // 4
-                    centerRectangle.y,                          // 0
-                    centerRectangle.width / 3,                  // (40 - 4 - 4) / 3 = 8
+                    centerRectangle.x,                            // 4
+                    centerRectangle.y,                            // 0
+                    centerRectangle.width / 3,                    // (40 - 4 - 4) / 3 = 8
                     Math.max( 1, pixelsPerLine * leftVisibleLineCount )
                 );
 
         // for drawing the diffs for the right text area
         rightRectangle = new Rectangle(
-                    centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),   // 4 + (32 - 8) = 28
-                    centerRectangle.y,                          // 0
-                    centerRectangle.width / 3,                  // 8
+                    centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),     // 4 + (32 - 8) = 28
+                    centerRectangle.y,                            // 0
+                    centerRectangle.width / 3,                    // 8
                     Math.max( 1, pixelsPerLine * rightVisibleLineCount )
                 );
 
@@ -314,16 +314,18 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
 
     // copies a diff starting at the given line number in the left text area and
     // replaces the corresponding diff in the right text area
-    private void moveRight( int line_number ) {
+    public void moveRight( int line_number ) {
         Diff.change hunk = this.edits;
         for ( ; hunk != null; hunk = hunk.link ) {
             // find the hunk pertaining to this line number
             if ( ( hunk.line0 + Math.max( 0, hunk.deleted - 1 ) ) < line_number ) {
-                continue;   // before this line
+                continue;   // before this line, keep looking
             }
 
             if ( hunk.line0 > line_number ) {
-                break;  // after this line, signals end of loop
+                // after this line, didn't find a line with a corresponding hunk
+                this.textArea0.getToolkit().beep();
+                break;
             }
 
             // on a line with a right arrow --
@@ -349,21 +351,24 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
             textArea1.setSelectedText( selection, sb.toString() );
             textArea1.selectNone();
             DualDiff.refreshFor( textArea1.getView() );
+            break;
         }
     }
 
     // copies a diff starting at the given line number in the right text area and
     // replaces the corresponding diff in the left text area
-    private void moveLeft( int line_number ) {
+    public void moveLeft( int line_number ) {
         Diff.change hunk = this.edits;
         for ( ; hunk != null; hunk = hunk.link ) {
             // find the hunk pertaining to this line number
             if ( ( hunk.line1 + Math.max( 0, hunk.inserted - 1 ) ) < line_number ) {
-                continue;   // before this line
+                continue;   // before this line, keep looking
             }
 
             if ( hunk.line1 > line_number ) {
-                break;  // after this line, signals end of loop
+                // after this line, didn't find a line with a corresponding hunk
+                this.textArea1.getToolkit().beep();
+                break;
             }
 
             // on a line with a left arrow --
@@ -389,6 +394,7 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
             textArea0.setSelectedText( selection, sb.toString() );
             textArea0.selectNone();
             DualDiff.refreshFor( textArea0.getView() );
+            break;
         }
     }
 
