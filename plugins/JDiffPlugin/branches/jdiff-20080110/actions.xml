@@ -55,7 +55,7 @@
             return jdiff.DualDiff.getIgnoreAmountOfWhitespaceFor(view);
         </IS_SELECTED>
     </ACTION>
-    
+
     <ACTION NAME="jdiff.toggle-ignore-all-whitespace">
         <CODE>
             jdiff.DualDiff.toggleIgnoreAllWhitespaceFor(view);
@@ -83,6 +83,17 @@
     <ACTION NAME="jdiff.diff-normal-output">
         <CODE>
             jdiff.DualDiff.diffNormalOutput(view);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="jdiff.move-right">
+        <CODE>
+            jdiff.DualDiff.moveRight(editPane);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="jdiff.move-left">
+        <CODE>
+            jdiff.DualDiff.moveLeft(editPane);
         </CODE>
     </ACTION>
 </ACTIONS>

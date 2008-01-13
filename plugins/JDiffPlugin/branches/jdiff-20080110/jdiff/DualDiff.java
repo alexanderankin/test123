@@ -94,6 +94,9 @@ public class DualDiff implements EBComponent {
 
     private DiffOverview diffOverview1;
 
+    private MergeControl mergeControl0;
+    private MergeControl mergeControl1;
+
     private Box box0;
 
     private Box box1;
@@ -207,6 +210,7 @@ public class DualDiff implements EBComponent {
         this.ignoreAllWhitespace = !this.ignoreAllWhitespace;
     }
 
+    // initialize the overviews and merge controls
     private void initOverviews() {
         Buffer buf0 = this.editPane0.getBuffer();
         Buffer buf1 = this.editPane1.getBuffer();
@@ -243,41 +247,24 @@ public class DualDiff implements EBComponent {
                     : ( DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
                             lineCount0, lineCount1, this.textArea0, this.textArea1 ) );
         }
+
+        mergeControl0 = new MergeControl( editPane0, SwingConstants.RIGHT );
+        mergeControl1 = new MergeControl( editPane1, SwingConstants.LEFT );
     }
 
     private void addOverviews() {
-        // this.textArea0.remove(this.vertical0);
         this.textArea0.addLeftOfScrollBar( this.diffOverview0 );
-        // this.box0.add(this.vertical0);
-        // JEditTextArea.RIGHT is private...
-        // "right" == JEditTextArea.RIGHT
-        // this.textArea0.add("right", this.box0);
-
-        // this.textArea1.remove(this.vertical1);
+        this.textArea0.addTopComponent( this.mergeControl0 );
         this.textArea1.addLeftOfScrollBar( this.diffOverview1 );
-        // this.box1.add(this.diffOverview1);
-        // this.box1.add(this.vertical1);
-        // JEditTextArea.RIGHT is private...
-        // "right" == JEditTextArea.RIGHT
-        // this.textArea1.add("right", this.box1);
+        this.textArea1.addTopComponent( this.mergeControl1 );
     }
 
+    // remove overviews and merge controls
     private void removeOverviews() {
         this.textArea0.removeLeftOfScrollBar( this.diffOverview0 );
-        // this.box0.remove(this.vertical0);
-        // this.box0.remove(this.diffOverview0);
-        // this.textArea0.remove(this.box0);
-        // JEditTextArea.RIGHT is private...
-        // "right" == JEditTextArea.RIGHT
-        // this.textArea0.add("right", this.vertical0);
-
+        this.textArea0.removeTopComponent( this.mergeControl0 );
         this.textArea1.removeLeftOfScrollBar( this.diffOverview1 );
-        // this.box1.remove(this.vertical1);
-        // this.box1.remove(this.diffOverview1);
-        // this.textArea1.remove(this.box1);
-        // JEditTextArea.RIGHT is private...
-        // "right" == JEditTextArea.RIGHT
-        // this.textArea1.add("right", this.vertical1);
+        this.textArea1.removeTopComponent( this.mergeControl1 );
     }
 
     private void refresh() {
@@ -664,6 +651,26 @@ public class DualDiff implements EBComponent {
         }
     }
 
+    public static void moveRight( EditPane editPane ) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            editPane.getToolkit().beep();
+            return ;
+        }
+        editPane = editPane.getView().getEditPanes() [ 0 ];
+        dualDiff.diffOverview0.moveRight( editPane.getTextArea().getCaretLine() );
+    }
+
+    public static void moveLeft( EditPane editPane ) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            editPane.getToolkit().beep();
+            return ;
+        }
+        editPane = editPane.getView().getEditPanes() [ 1 ];
+        dualDiff.diffOverview0.moveLeft( editPane.getTextArea().getCaretLine() );
+    }
+
     public static void diffNormalOutput( View view ) {
         if ( !DualDiff.isEnabledFor( view ) ) {
             view.getToolkit().beep();
@@ -723,11 +730,8 @@ public class DualDiff implements EBComponent {
     }
 
     private void nextDiff0() {
-        // this.horizontalAdjust.source = this.horizontal0;
-        // this.verticalAdjust.source = this.vertical0;
-
         Diff.change hunk = this.edits;
-        int firstLine = this.textArea0.getFirstLine();
+        int firstLine = this.textArea0.getCaretLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line0 > firstLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
@@ -738,6 +742,10 @@ public class DualDiff implements EBComponent {
                     line = hunk.line0;
                 }
                 this.textArea0.setFirstLine( line );
+                int caret_position = textArea0.getLineStartOffset( line );
+                this.textArea0.setCaretPosition( caret_position );
+                caret_position = textArea1.getLineStartOffset( hunk.line1 );
+                this.textArea1.setCaretPosition( caret_position );
                 if ( this.textArea0.getFirstLine() != line ) {
                     this.textArea0.getToolkit().beep();
                 }
@@ -749,11 +757,8 @@ public class DualDiff implements EBComponent {
     }
 
     private void nextDiff1() {
-        // this.horizontalAdjust.source = this.horizontal1;
-        // this.verticalAdjust.source = this.vertical1;
-
         Diff.change hunk = this.edits;
-        int firstLine = this.textArea1.getFirstLine();
+        int firstLine = this.textArea1.getCaretLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line1 > firstLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
@@ -764,6 +769,10 @@ public class DualDiff implements EBComponent {
                     line = hunk.line1;
                 }
                 this.textArea1.setFirstLine( line );
+                int caret_position = textArea1.getLineStartOffset( line );
+                this.textArea1.setCaretPosition( caret_position );
+                caret_position = textArea0.getLineStartOffset( hunk.line0 );
+                this.textArea0.setCaretPosition( caret_position );
                 if ( this.textArea1.getFirstLine() != line ) {
                     this.textArea1.getToolkit().beep();
                 }
@@ -775,9 +784,6 @@ public class DualDiff implements EBComponent {
     }
 
     private void prevDiff0() {
-        // this.horizontalAdjust.source = this.horizontal0;
-        // this.verticalAdjust.source = this.vertical0;
-
         Diff.change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
@@ -791,6 +797,10 @@ public class DualDiff implements EBComponent {
                         line = hunk.line0;
                     }
                     this.textArea0.setFirstLine( line );
+                    int caret_position = textArea0.getLineStartOffset( line );
+                    this.textArea0.setCaretPosition( caret_position );
+                    caret_position = textArea1.getLineStartOffset( hunk.line1 );
+                    this.textArea1.setCaretPosition( caret_position );
                     if ( this.textArea0.getFirstLine() != line ) {
                         this.textArea0.getToolkit().beep();
                     }
@@ -803,9 +813,6 @@ public class DualDiff implements EBComponent {
     }
 
     private void prevDiff1() {
-        // this.horizontalAdjust.source = this.horizontal1;
-        // this.verticalAdjust.source = this.vertical1;
-
         Diff.change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
@@ -819,6 +826,10 @@ public class DualDiff implements EBComponent {
                         line = hunk.line1;
                     }
                     this.textArea1.setFirstLine( line );
+                    int caret_position = textArea1.getLineStartOffset( line );
+                    this.textArea1.setCaretPosition( caret_position );
+                    caret_position = textArea0.getLineStartOffset( hunk.line0 );
+                    this.textArea0.setCaretPosition( caret_position );
                     if ( this.textArea1.getFirstLine() != line ) {
                         this.textArea1.getToolkit().beep();
                     }
