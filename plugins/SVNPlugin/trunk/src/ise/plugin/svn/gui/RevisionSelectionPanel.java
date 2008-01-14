@@ -111,15 +111,6 @@ public class RevisionSelectionPanel extends JPanel {
 
         // set up the revision number chooser
         revision_number = getRevisionChooser();
-        revision_number.addChangeListener( new ChangeListener() {
-                    public void stateChanged( ChangeEvent ce ) {
-                        if ( RevisionSelectionPanel.this.revision_number.isEnabled() ) {
-                            Number number = ( Number ) revision_number.getValue();
-                            RevisionSelectionPanel.this.revision = SVNRevision.create( number.longValue() );
-                        }
-                    }
-                }
-                                         );
 
         // set up date chooser
         date_spinner = getDateChooser();
@@ -183,6 +174,8 @@ public class RevisionSelectionPanel extends JPanel {
 
         revision_number.setEnabled( false );
         date_spinner.setEnabled( false );
+
+        repaint();
     }
 
     private JSpinner getRevisionChooser() {
@@ -191,6 +184,15 @@ public class RevisionSelectionPanel extends JPanel {
         revision_number = new JSpinner(model);
         revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
         revision_number.setEnabled(false);
+        revision_number.addChangeListener( new ChangeListener() {
+                    public void stateChanged( ChangeEvent ce ) {
+                        if ( RevisionSelectionPanel.this.revision_number.isEnabled() ) {
+                            Number number = ( Number ) revision_number.getValue();
+                            RevisionSelectionPanel.this.revision = SVNRevision.create( number.longValue() );
+                        }
+                    }
+                }
+                                         );
         return revision_number;
     }
 
@@ -345,10 +347,12 @@ public class RevisionSelectionPanel extends JPanel {
         //panel.setShowWorking( true );
         //panel.setShowHead( true );
         //panel.setShowBase( false );
-        panel.setLayout( SwingConstants.HORIZONTAL );
+        //panel.setLayout( SwingConstants.HORIZONTAL );
         JFrame frame = new JFrame();
         frame.setContentPane( panel );
         frame.pack();
         frame.setVisible( true );
+        SVNRevision revision = panel.getRevision();
+        System.out.println("+++++ RSP, revision = " + revision);
     }
 }
