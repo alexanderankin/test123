@@ -616,6 +616,11 @@ public class DualDiff implements EBComponent {
     }
 
     public static void nextDiff( EditPane editPane ) {
+        // danson, the nextDiff0 and nextDiff1 weren't working correctly, they
+        // were using the first visible line rather than the caret line to
+        // calculate the next diff position.  Using the first physical line
+        // meant the "next" diff was always the first visible diff, even if
+        // there were 2 visible diffs.
         DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             editPane.getToolkit().beep();
@@ -742,10 +747,13 @@ public class DualDiff implements EBComponent {
                     line = hunk.line0;
                 }
                 this.textArea0.setFirstLine( line );
+
+                // move the caret to the start of the first line of the diff
                 int caret_position = textArea0.getLineStartOffset( line );
                 this.textArea0.setCaretPosition( caret_position );
                 caret_position = textArea1.getLineStartOffset( hunk.line1 );
                 this.textArea1.setCaretPosition( caret_position );
+
                 if ( this.textArea0.getFirstLine() != line ) {
                     this.textArea0.getToolkit().beep();
                 }
@@ -769,10 +777,13 @@ public class DualDiff implements EBComponent {
                     line = hunk.line1;
                 }
                 this.textArea1.setFirstLine( line );
+
+                // move the caret to the start of the first line of the diff
                 int caret_position = textArea1.getLineStartOffset( line );
                 this.textArea1.setCaretPosition( caret_position );
                 caret_position = textArea0.getLineStartOffset( hunk.line0 );
                 this.textArea0.setCaretPosition( caret_position );
+
                 if ( this.textArea1.getFirstLine() != line ) {
                     this.textArea1.getToolkit().beep();
                 }
@@ -797,10 +808,13 @@ public class DualDiff implements EBComponent {
                         line = hunk.line0;
                     }
                     this.textArea0.setFirstLine( line );
+
+                    // move the caret to the start of the first line of the diff
                     int caret_position = textArea0.getLineStartOffset( line );
                     this.textArea0.setCaretPosition( caret_position );
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
                     this.textArea1.setCaretPosition( caret_position );
+
                     if ( this.textArea0.getFirstLine() != line ) {
                         this.textArea0.getToolkit().beep();
                     }
@@ -826,10 +840,13 @@ public class DualDiff implements EBComponent {
                         line = hunk.line1;
                     }
                     this.textArea1.setFirstLine( line );
+
+                    // move the caret to the start of the first line of the diff
                     int caret_position = textArea1.getLineStartOffset( line );
                     this.textArea1.setCaretPosition( caret_position );
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
                     this.textArea0.setCaretPosition( caret_position );
+
                     if ( this.textArea1.getFirstLine() != line ) {
                         this.textArea1.getToolkit().beep();
                     }

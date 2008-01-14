@@ -270,8 +270,8 @@ public class DiffLocalOverview extends DiffOverview implements MouseListener {
                     break;
                 }
 
-                int y0 = centerRectangle.y + ( i0 * pixelsPerLine );
-                int y1 = centerRectangle.y + ( i1 * pixelsPerLine );
+                int y0 = centerRectangle.y + ( i0 * pixelsPerLine ) + 1;
+                int y1 = centerRectangle.y + ( i1 * pixelsPerLine ) + 1;
 
                 // draw the lines
                 gfx.setColor( Color.BLACK );
