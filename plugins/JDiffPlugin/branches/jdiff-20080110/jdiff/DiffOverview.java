@@ -56,7 +56,7 @@ public abstract class DiffOverview extends JComponent
         this.textArea1  = textArea1;
 
         Dimension dim = getPreferredSize();
-        dim.width = 40;
+        dim.width = 36;
         setPreferredSize(dim);
     }
 

@@ -26,10 +26,20 @@ import javax.swing.event.*;
 import javax.swing.plaf.basic.BasicArrowButton;
 import org.gjt.sp.jedit.EditPane;
 
+/**
+ * This is the button controls that are added at the top of the text areas
+ * to assist in doing merges.
+ */
 public class MergeControl extends JPanel {
 
     private EditPane editPane;
 
+    /**
+     * @param editPane the EditPane to add this control to.
+     * @param direction use SwingConstants.RIGHT for a control to move diffs from
+     * the left to the right, use SwingConstans.LEFT for a control to move diffs
+     * from the right to the left.
+     */
     public MergeControl( EditPane editPane, int direction ) {
         if (editPane == null) {
             throw new IllegalArgumentException("EditPane may not be null.");
@@ -38,17 +48,26 @@ public class MergeControl extends JPanel {
             throw new IllegalArgumentException( "invalid direction, must be SwingConstands.RIGHT or LEFT" );
         }
         this.editPane = editPane;
+
+        // movement arrow
         int arrow_dir = direction == SwingConstants.RIGHT ? SwingConstants.EAST : SwingConstants.WEST;
 
         Dimension dim = getPreferredSize();
         dim.height = 18;
         setPreferredSize( dim );
+
+        // I'm using the scroll bar buttons from the basic plaf, but they don't
+        // look so good.  They draw the arrows, though, so they are easy to use.
         JButton next = new BasicArrowButton( SwingConstants.SOUTH );
         JButton prev = new BasicArrowButton( SwingConstants.NORTH );
         JButton move = new BasicArrowButton( arrow_dir );
+
+        // tooltips, the move tooltip is set below in the switch
         next.setToolTipText( "Go to next diff" );
         prev.setToolTipText( "Go to previous diff" );
 
+        // add the buttons to this panel, set the tooltip and action listener
+        // for the move button
         switch ( direction ) {
             case SwingConstants.RIGHT:
                 setLayout( new FlowLayout( FlowLayout.RIGHT, 2, 0 ) );
@@ -87,6 +106,7 @@ public class MergeControl extends JPanel {
                 }
             }
         );
+
         prev.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
