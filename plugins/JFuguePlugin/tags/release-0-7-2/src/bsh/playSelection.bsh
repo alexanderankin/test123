@@ -1,0 +1,5 @@
+/* Plays the selected text of a buffer */
+import com.townsfolkdesigns.jfugue.JFuguePlugin
+playSelection(View view) {
+	JFuguePlugin.playSelection(view);
+}
