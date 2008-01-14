@@ -97,4 +97,11 @@ public class RevisionDialog extends JDialog {
     public SVNRevision getData() {
         return revision;
     }
+
+    public static void main (String[] args) {
+        RevisionDialog d = new RevisionDialog(null, "Open");
+        d.setVisible(true);
+        SVNRevision revision = d.getData();
+        System.out.println("+++++ RD, revision = " + revision);
+    }
 }
