@@ -22,7 +22,7 @@ unlock - done
 tag - done
 branch - done
 merge
-switch
+switch - done
 --
 show properties - done
 set properties - done, see notes below
@@ -44,22 +44,22 @@ The basic subversion commands:
 
 svn add - done
 svn blame
-svn cat
+svn cat - done, double click on a file in svnbrowser to see the contents
 svn checkout - done
 svn cleanup - done
 svn commit - done
 svn copy - done
 svn delete - done
 svn diff - done
-svn export
-svn help
-svn import
+svn export - done
+svn help - won't do this one, see the help file
+svn import - done
 svn info - done
 svn list - done
 svn lock - done
 svn log - done
 svn merge
-svn mkdir
+svn mkdir - done
 svn move - done
 svn propdel - done
 svn propedit - done
