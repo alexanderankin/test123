@@ -46,7 +46,7 @@ public interface DocumentParser<T> {
      *
      * @return
      */
-    public String getType();
+    public String[] getTypes();
 
     /**
      * Parses the given source into the given document.
