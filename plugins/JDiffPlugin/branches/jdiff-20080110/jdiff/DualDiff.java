@@ -20,6 +20,8 @@
 
 package jdiff;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -30,6 +32,8 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -94,14 +98,13 @@ public class DualDiff implements EBComponent {
 
     private DiffOverview diffOverview1;
 
-    private MergeControl mergeControl0;
-    private MergeControl mergeControl1;
-
     private Box box0;
 
     private Box box1;
 
     private final ScrollHandler scrollHandler = new ScrollHandler();
+
+    private LineProcessor lineProcessor;
 
     private DualDiff( View view ) {
         this( view, ignoreCaseDefault, trimWhitespaceDefault,
@@ -127,6 +130,10 @@ public class DualDiff implements EBComponent {
 
         this.initOverviews();
         this.addOverviews();
+    }
+
+    public View getView() {
+        return view;
     }
 
     public void handleMessage( EBMessage message ) {
@@ -210,6 +217,14 @@ public class DualDiff implements EBComponent {
         this.ignoreAllWhitespace = !this.ignoreAllWhitespace;
     }
 
+    public void setLineProcessor( LineProcessor lineProcessor ) {
+        this.lineProcessor = lineProcessor;
+    }
+
+    public LineProcessor getLineProcessor() {
+        return lineProcessor;
+    }
+
     // initialize the overviews and merge controls
     private void initOverviews() {
         Buffer buf0 = this.editPane0.getBuffer();
@@ -247,24 +262,17 @@ public class DualDiff implements EBComponent {
                     : ( DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
                             lineCount0, lineCount1, this.textArea0, this.textArea1 ) );
         }
-
-        mergeControl0 = new MergeControl( editPane0, SwingConstants.RIGHT );
-        mergeControl1 = new MergeControl( editPane1, SwingConstants.LEFT );
     }
 
     private void addOverviews() {
         this.textArea0.addLeftOfScrollBar( this.diffOverview0 );
-        this.textArea0.addTopComponent( this.mergeControl0 );
         this.textArea1.addLeftOfScrollBar( this.diffOverview1 );
-        this.textArea1.addTopComponent( this.mergeControl1 );
     }
 
     // remove overviews and merge controls
     private void removeOverviews() {
         this.textArea0.removeLeftOfScrollBar( this.diffOverview0 );
-        this.textArea0.removeTopComponent( this.mergeControl0 );
         this.textArea1.removeLeftOfScrollBar( this.diffOverview1 );
-        this.textArea1.removeTopComponent( this.mergeControl1 );
     }
 
     private void refresh() {
@@ -501,9 +509,15 @@ public class DualDiff implements EBComponent {
 
         if ( DualDiff.isEnabledFor( view ) ) {
             DualDiff.removeFrom( view );
+            view.getDockableWindowManager().toggleDockableWindow( "jdiff-lines" );
         }
         else {
             DualDiff.addTo( view );
+            view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+            JScrollPane lines = ( JScrollPane ) view.getDockableWindowManager().getDockable( "jdiff-lines" );
+            if ( lines != null ) {
+                lines.getViewport().setView( ( DiffLineOverview ) DualDiff.getDualDiffFor( view ).getLineProcessor() );
+            }
         }
 
         view.invalidate();
@@ -613,6 +627,14 @@ public class DualDiff implements EBComponent {
         else {
             view.getToolkit().beep();
         }
+    }
+
+    public Font getFont() {
+        return textArea0.getPainter().getFont();
+    }
+
+    public Color getBackground() {
+        return textArea0.getPainter().getBackground();
     }
 
     public static void nextDiff( EditPane editPane ) {
@@ -865,6 +887,8 @@ public class DualDiff implements EBComponent {
 
         dualDiff.enableHighlighters();
         dualDiff.addHandlers();
+        DiffLineOverview lineProcessor = new DiffLineOverview( dualDiff );
+        dualDiff.setLineProcessor( lineProcessor );
 
         dualDiff.diffOverview0.synchroScrollRight();
         dualDiff.diffOverview1.repaint();
@@ -909,25 +933,76 @@ public class DualDiff implements EBComponent {
 
         private Runnable syncWithRightHoriz = new Runnable() {
                     public void run() {
-                        // DualDiff.this.diffOverview0.repaint();
                         DualDiff.this.textArea1.setHorizontalOffset( DualDiff.this.textArea0
                                 .getHorizontalOffset() );
-
-                        // DualDiff.this.diffOverview1.repaint();
                     }
                 };
 
         private Runnable syncWithLeftHoriz = new Runnable() {
                     public void run() {
-                        // DualDiff.this.diffOverview1.repaint();
                         DualDiff.this.textArea0.setHorizontalOffset( DualDiff.this.textArea1
                                 .getHorizontalOffset() );
-
-                        // DualDiff.this.diffOverview0.repaint();
                     }
                 };
 
-        public void caretUpdate( CaretEvent e ) {}
+        public void caretUpdate( final CaretEvent e ) {
+            Runnable r = new Runnable() {
+                        public void run() {
+                            JEditTextArea source = ( JEditTextArea ) e.getSource();
+                            Diff.change hunk = DualDiff.this.edits;
+                            String leftLine = "";
+                            String rightLine = "";
+                            if ( source == DualDiff.this.textArea0 ) {
+                                int caretLine = DualDiff.this.textArea0.getCaretLine();
+                                for ( ; hunk != null; hunk = hunk.link ) {
+                                    if ( caretLine >= hunk.line0 && caretLine <= hunk.line0 + hunk.deleted ) {
+                                        // in a hunk
+                                        if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
+                                            leftLine = "";
+                                        }
+                                        else {
+                                            leftLine = DualDiff.this.textArea0.getLineText( caretLine );
+                                        }
+                                        int offset = caretLine - hunk.line0;
+                                        if ( offset < hunk.inserted ) {
+                                            rightLine = DualDiff.this.textArea1.getLineText( hunk.line1 + offset );
+                                        }
+                                        else {
+                                            rightLine = "";
+                                        }
+                                        break ;
+                                    }
+                                }
+                            }
+                            else {
+                                int caretLine = DualDiff.this.textArea1.getCaretLine();
+                                for ( ; hunk != null; hunk = hunk.link ) {
+                                    if ( caretLine >= hunk.line1 && caretLine <= hunk.line1 + hunk.inserted ) {
+                                        // in a hunk
+                                        if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
+                                            rightLine = "";
+                                        }
+                                        else {
+                                            rightLine = DualDiff.this.textArea1.getLineText( caretLine );
+                                        }
+                                        int offset = caretLine - hunk.line1;
+                                        if ( offset < hunk.deleted ) {
+                                            leftLine = DualDiff.this.textArea0.getLineText( hunk.line0 + offset );
+                                        }
+                                        else {
+                                            leftLine = "";
+                                        }
+                                        break ;
+                                    }
+                                }
+                            }
+                            DualDiff.this.lineProcessor.processLines( leftLine, rightLine );
+                        }
+                    };
+            if ( lineProcessor != null ) {
+                SwingUtilities.invokeLater( r );
+            }
+        }
 
         public void scrolledHorizontally( TextArea textArea ) {
             // Log.log(Log.DEBUG, this, "**** Adjustment " + e);

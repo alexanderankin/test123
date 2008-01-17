@@ -429,7 +429,7 @@ public class Diff
        because they don't match anything.  Detect them now,
        and avoid even thinking about them in the main comparison algorithm.  */
 
-    discard_confusing_lines ();
+    discard_confusing_lines();
 
     /* Now do the main comparison algorithm, considering just the
        undiscarded lines.  */
@@ -504,6 +504,15 @@ public class Diff
       this.deleted = deleted;
       this.link = old;
       //System.err.println(line0+","+line1+","+inserted+","+deleted);
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("change[");
+        sb.append("line0=").append(line0).append(",deleted=").append(deleted);
+        sb.append(",line1=").append(line1).append(",inserted=").append(inserted);
+        sb.append("]");
+        return sb.toString();
     }
   }
 
