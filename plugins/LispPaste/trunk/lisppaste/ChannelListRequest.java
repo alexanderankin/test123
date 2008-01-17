@@ -29,7 +29,11 @@
 
 package lisppaste;
 
-import org.apache.xmlrpc.*;
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.util.ClientFactory;
+
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -37,6 +41,7 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 import java.util.Vector;
 import java.util.List;
+import java.net.URL;
 
 public class ChannelListRequest extends WorkRequest
 {
@@ -55,7 +60,10 @@ public class ChannelListRequest extends WorkRequest
 
 		try
 		{
-			XmlRpcClient client = new XmlRpcClient(url);
+            XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+			config.setServerURL(new URL(url));
+			XmlRpcClient client = new XmlRpcClient();
+			client.setConfig(config);
 			list = (List)client.execute("listchannels",new Vector());
 		}
 		catch(Exception e)
