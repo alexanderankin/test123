@@ -1,12 +1,12 @@
 plugin.lisppaste.LispPastePlugin.name=LispPaste
-plugin.lisppaste.LispPastePlugin.version=1.0.1
+plugin.lisppaste.LispPastePlugin.version=1.0.2
 plugin.lisppaste.LispPastePlugin.author=Slava Pestov
 plugin.lisppaste.LispPastePlugin.activate=defer
 plugin.lisppaste.LispPastePlugin.docs=index.html
 
 plugin.lisppaste.LispPastePlugin.depend.0=jedit 04.02.99.00
 plugin.lisppaste.LispPastePlugin.depend.1=jdk 1.4
-plugin.lisppaste.LispPastePlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.4.4
+plugin.lisppaste.LispPastePlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.5
 
 plugin.lisppaste.LispPastePlugin.menu-item=make-lisp-paste
 
