@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens
-plugin.jdiff.JDiffPlugin.version=1.6.0
+plugin.jdiff.JDiffPlugin.version=1.7.0
 plugin.jdiff.JDiffPlugin.docs=index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
@@ -96,7 +96,9 @@ options.jdiff.highlight=Highlight colors:
 options.jdiff.highlight-changed-color=Changed lines color:\ 
 options.jdiff.highlight-deleted-color=Deleted lines color:\ 
 options.jdiff.highlight-inserted-color=Inserted lines color:\ 
-options.jdiff.highlight-invalid-color=Invalid lines color:\ 
+options.jdiff.highlight-invalid-color=Invalid lines color:
+
+jdiff-lines.title=Line Diff
 
 # Messages
 jdiff.identical-files.title=Identical files

@@ -24,13 +24,16 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.basic.BasicArrowButton;
+
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * This is the button controls that are added at the top of the text areas
  * to assist in doing merges.
  */
-public class MergeControl extends JPanel {
+public class MergeControl extends JToolBar {
 
     private EditPane editPane;
 
@@ -41,38 +44,42 @@ public class MergeControl extends JPanel {
      * from the right to the left.
      */
     public MergeControl( EditPane editPane, int direction ) {
-        if (editPane == null) {
-            throw new IllegalArgumentException("EditPane may not be null.");
+        super();
+        setOrientation(SwingConstants.HORIZONTAL);
+        setFloatable(false);
+
+        if ( editPane == null ) {
+            throw new IllegalArgumentException( "EditPane may not be null." );
         }
         if ( direction != SwingConstants.RIGHT && direction != SwingConstants.LEFT ) {
             throw new IllegalArgumentException( "invalid direction, must be SwingConstands.RIGHT or LEFT" );
         }
         this.editPane = editPane;
 
+
+
         // movement arrow
         int arrow_dir = direction == SwingConstants.RIGHT ? SwingConstants.EAST : SwingConstants.WEST;
 
-        Dimension dim = getPreferredSize();
-        dim.height = 18;
-        setPreferredSize( dim );
+        JButton next = new JButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
+        JButton prev = new JButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
+        JButton move = new JButton( GUIUtilities.loadIcon( direction == SwingConstants.RIGHT ? "ArrowR.png" : "ArrowL.png" ) );
 
-        // I'm using the scroll bar buttons from the basic plaf, but they don't
-        // look so good.  They draw the arrows, though, so they are easy to use.
-        JButton next = new BasicArrowButton( SwingConstants.SOUTH );
-        JButton prev = new BasicArrowButton( SwingConstants.NORTH );
-        JButton move = new BasicArrowButton( arrow_dir );
+        JButton unsplit = new JButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
+        JButton swap = new JButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
 
         // tooltips, the move tooltip is set below in the switch
         next.setToolTipText( "Go to next diff" );
         prev.setToolTipText( "Go to previous diff" );
+        unsplit.setToolTipText( "Unsplit" );
+        swap.setToolTipText( "Swap text areas" );
 
         // add the buttons to this panel, set the tooltip and action listener
         // for the move button
         switch ( direction ) {
             case SwingConstants.RIGHT:
-                setLayout( new FlowLayout( FlowLayout.RIGHT, 2, 0 ) );
+                add( unsplit );
                 add( next );
-                add( prev );
                 add( move );
                 move.setToolTipText( "Move diff to right" );
                 move.addActionListener(
@@ -84,10 +91,9 @@ public class MergeControl extends JPanel {
                 );
                 break;
             case SwingConstants.LEFT:
-                setLayout( new FlowLayout( FlowLayout.LEFT, 2, 0 ) );
                 add( move );
                 add( prev );
-                add( next );
+                add( swap );
                 move.setToolTipText( "Move diff to left" );
                 move.addActionListener(
                     new ActionListener() {
@@ -111,6 +117,26 @@ public class MergeControl extends JPanel {
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     DualDiff.prevDiff( MergeControl.this.editPane );
+                }
+            }
+        );
+
+        unsplit.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    MergeControl.this.editPane.getView().unsplit();
+                }
+            }
+        );
+        swap.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    EditPane left_ep = MergeControl.this.editPane.getView().getEditPanes()[0];
+                    EditPane right_ep = MergeControl.this.editPane.getView().getEditPanes()[1];
+                    Buffer left = left_ep.getBuffer();
+                    Buffer right = right_ep.getBuffer();
+                    left_ep.setBuffer(right);
+                    right_ep.setBuffer(left);
                 }
             }
         );
