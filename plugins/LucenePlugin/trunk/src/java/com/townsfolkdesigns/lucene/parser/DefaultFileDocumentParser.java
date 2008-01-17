@@ -21,111 +21,116 @@
  */
 package com.townsfolkdesigns.lucene.parser;
 
-import com.townsfolkdesigns.lucene.util.FileUtils;
-
-import org.apache.commons.lang.StringUtils;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-
 import java.io.File;
 import java.io.FileReader;
-
 import java.nio.CharBuffer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+
+import com.townsfolkdesigns.lucene.util.FileUtils;
 
 /**
- *
+ * 
  * @author eberry
  */
 public class DefaultFileDocumentParser implements FileDocumentParser {
 
-   private Collection<SearchField> fields;
-   private Logger logger = Logger.getLogger(getClass().getName());
-   private String[] locations;
+	public static final String[] DEFAULT_TYPES = new String[] {
+		""
+	};
+	private Collection<SearchField> fields;
+	private String[] locations;
+	private Log log = LogFactory.getLog(getClass());
 
-   public DefaultFileDocumentParser() {
+	public DefaultFileDocumentParser() {
+		ArrayList<SearchField> fields = new ArrayList<SearchField>();
+		fields.add(createSearchField("content", "Content", true));
+		fields.add(createSearchField("path", "Path", true));
+		fields.add(createSearchField("last-modified", "Last Modified", true));
+		fields.add(createSearchField("type", "File Type", true));
+		fields.add(createSearchField("file-name", "File Name", true));
+		setFields(fields);
+	}
 
-      ArrayList<SearchField> fields = new ArrayList<SearchField>();
-      fields.add(createSearchField("content", "Content", true));
-      fields.add(createSearchField("path", "Path", true));
-      fields.add(createSearchField("last-modified", "Last Modified", true));
-      fields.add(createSearchField("type", "File Type", true));
-      setFields(fields);
-   }
+	public Collection<SearchField> getFields() {
+		return fields;
+	}
 
-   protected SearchField createSearchField(String name, String displayName, boolean text) {
+	public String[] getLocations() {
+		return locations;
+	}
 
-      SearchField searchField = new SearchField();
-      searchField.setDisplayName(displayName);
-      searchField.setName(name);
-      searchField.setText(text);
-      return searchField;
-   }
+	public String[] getTypes() {
+		return DEFAULT_TYPES;
+	}
 
-   public Collection<SearchField> getFields() {
+	public void parse(File source, Document document) {
+		try {
+			// reading the file contents into a string.
+			FileReader reader = new FileReader(source);
+			CharBuffer buffer = CharBuffer.allocate(1024);
+			reader.read(buffer);
+			buffer.flip();
 
-      return fields;
-   }
+			String fileContent = buffer.toString();
+			String filePath = source.getPath();
+			String fileType = FileUtils.getFileType(source);
 
-   public String[] getLocations() {
+			// add omni-present fields.
+			document.add(new Field("file-name", source.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 
-      return locations;
-   }
+			document.add(new Field("last-modified", String.valueOf(source.lastModified()), Field.Store.YES,
+			      Field.Index.UN_TOKENIZED));
 
-   public String getType() {
+			// add fields that may not be available.
+			boolean rootRemoved = false;
+			String location = null;
+			for (int i = 0; i < locations.length && !rootRemoved; i++) {
+				location = locations[i];
+				if (filePath.startsWith(location)) {
+					rootRemoved = true;
+					filePath = StringUtils.removeStart(filePath, location);
+				}
+			}
 
-      return "default";
-   }
+			if (StringUtils.isNotBlank(fileContent)) {
+				document.add(new Field("content", fileContent, Field.Store.YES, Field.Index.TOKENIZED));
+			}
 
-   public void parse(File source, Document document) {
+			if (StringUtils.isNotBlank(filePath)) {
+				document.add(new Field("path", filePath, Field.Store.YES, Field.Index.TOKENIZED));
+			}
 
-      try {
-         FileReader reader = new FileReader(source);
-         CharBuffer buffer = CharBuffer.allocate(1024);
-         reader.read(buffer);
-         buffer.flip();
+			// file type is the same as the extension.
+			if (StringUtils.isNotBlank(fileType)) {
+				document.add(new Field("type", fileType, Field.Store.YES, Field.Index.TOKENIZED));
+			}
 
-         String fileContent = buffer.toString();
-         String filePath = source.getPath();
-         String fileType = FileUtils.getFileType(source);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
 
-         for (String location : locations) {
+	public void setFields(Collection<SearchField> fields) {
+		this.fields = fields;
+	}
 
-            if (filePath.startsWith(location)) {
-               filePath = StringUtils.removeStart(filePath, location);
-            }
-         }
+	public void setLocations(String[] locations) {
+		this.locations = locations;
+	}
 
-         if (StringUtils.isNotBlank(fileContent)) {
-            document.add(new Field("content", fileContent, Field.Store.YES, Field.Index.TOKENIZED));
-         }
-
-         if (StringUtils.isNotBlank(filePath)) {
-            document.add(new Field("path", filePath, Field.Store.YES, Field.Index.TOKENIZED));
-         }
-
-         if (StringUtils.isNotBlank(fileType)) {
-            document.add(new Field("type", fileType, Field.Store.YES, Field.Index.TOKENIZED));
-         }
-
-         document.add(new Field("last-modified", String.valueOf(source.lastModified()), Field.Store.YES,
-               Field.Index.UN_TOKENIZED));
-      } catch (Exception e) {
-         logger.log(Level.WARNING, null, e);
-      }
-   }
-
-   public void setFields(Collection<SearchField> fields) {
-      this.fields = fields;
-   }
-
-   public void setLocations(String[] locations) {
-      this.locations = locations;
-   }
+	protected SearchField createSearchField(String name, String displayName, boolean text) {
+		SearchField searchField = new SearchField();
+		searchField.setDisplayName(displayName);
+		searchField.setName(name);
+		searchField.setText(text);
+		return searchField;
+	}
 }
