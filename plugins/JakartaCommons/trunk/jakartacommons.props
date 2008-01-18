@@ -9,7 +9,7 @@ plugin.jakartacommons.JakartaCommonsPlugin.activate=defer
 
 plugin.jakartacommons.JakartaCommonsPlugin.name=Jakarta Commons
 plugin.jakartacommons.JakartaCommonsPlugin.author=Konstantin Pribluda, Dale Anson
-plugin.jakartacommons.JakartaCommonsPlugin.version=0.5
+plugin.jakartacommons.JakartaCommonsPlugin.version=0.6
 plugin.jakartacommons.JakartaCommonsPlugin.depend.0=jedit 04.00.99.00
 plugin.jakartacommons.JakartaCommonsPlugin.depend.1=jdk 1.4.0
 plugin.jakartacommons.JakartaCommonsPlugin.description=Jakarta Commons, a bundle of several commonly used jars from the Jakarta Commons project.
@@ -24,7 +24,8 @@ plugin.jakartacommons.JakartaCommonsPlugin.jars=\
     commons-logging-1.1.jar \
     commons-net-1.4.1.jar \
     log4j-1.2.14.jar \
-    xmlrpc-client-3.0.jar
-
+    xmlrpc-client-3.1.jar \
+    xmlrpc-common-3.1.jar \
+    ws-commons-util-1.0.2.jar
 
 
