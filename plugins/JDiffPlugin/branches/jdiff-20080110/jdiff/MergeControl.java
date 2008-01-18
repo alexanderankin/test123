@@ -30,10 +30,9 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 
 /**
- * This is the button controls that are added at the top of the text areas
- * to assist in doing merges.
+ * This is the button controls to assist in doing merges.
  */
-public class MergeControl extends JToolBar {
+public class MergeControl extends JPanel {
 
     private EditPane editPane;
 
@@ -43,67 +42,58 @@ public class MergeControl extends JToolBar {
      * the left to the right, use SwingConstans.LEFT for a control to move diffs
      * from the right to the left.
      */
-    public MergeControl( EditPane editPane, int direction ) {
+    public MergeControl( EditPane editPane ) {
         super();
-        setOrientation(SwingConstants.HORIZONTAL);
-        setFloatable(false);
 
         if ( editPane == null ) {
             throw new IllegalArgumentException( "EditPane may not be null." );
         }
-        if ( direction != SwingConstants.RIGHT && direction != SwingConstants.LEFT ) {
-            throw new IllegalArgumentException( "invalid direction, must be SwingConstands.RIGHT or LEFT" );
-        }
         this.editPane = editPane;
 
-
-
-        // movement arrow
-        int arrow_dir = direction == SwingConstants.RIGHT ? SwingConstants.EAST : SwingConstants.WEST;
-
+        // create buttons
         JButton next = new JButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
         JButton prev = new JButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
-        JButton move = new JButton( GUIUtilities.loadIcon( direction == SwingConstants.RIGHT ? "ArrowR.png" : "ArrowL.png" ) );
-
+        JButton move_right = new JButton( GUIUtilities.loadIcon( "ArrowR.png" ));
+        JButton move_left = new JButton(GUIUtilities.loadIcon( "ArrowL.png" ) );
         JButton unsplit = new JButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
         JButton swap = new JButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
 
-        // tooltips, the move tooltip is set below in the switch
+        // tooltips
         next.setToolTipText( "Go to next diff" );
         prev.setToolTipText( "Go to previous diff" );
         unsplit.setToolTipText( "Unsplit" );
         swap.setToolTipText( "Swap text areas" );
+        move_right.setToolTipText( "Move diff to right" );
+        move_left.setToolTipText( "Move diff to left" );
 
-        // add the buttons to this panel, set the tooltip and action listener
-        // for the move button
-        switch ( direction ) {
-            case SwingConstants.RIGHT:
-                add( unsplit );
-                add( next );
-                add( move );
-                move.setToolTipText( "Move diff to right" );
-                move.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            DualDiff.moveRight( MergeControl.this.editPane );
-                        }
-                    }
-                );
-                break;
-            case SwingConstants.LEFT:
-                add( move );
-                add( prev );
-                add( swap );
-                move.setToolTipText( "Move diff to left" );
-                move.addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            DualDiff.moveLeft( MergeControl.this.editPane );
-                        }
-                    }
-                );
-                break;
-        }
+
+        // create toolbars
+        JToolBar left_bar = new JToolBar();
+        left_bar.add( unsplit );
+        left_bar.add( next );
+        left_bar.add( move_right );
+
+        JToolBar right_bar = new JToolBar();
+        right_bar.add( move_left );
+        right_bar.add( prev );
+        right_bar.add( swap );
+
+        // create action listeners
+        move_left.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    DualDiff.moveLeft( MergeControl.this.editPane );
+                }
+            }
+        );
+
+        move_right.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    DualDiff.moveRight( MergeControl.this.editPane );
+                }
+            }
+        );
 
         next.addActionListener(
             new ActionListener() {
@@ -131,14 +121,19 @@ public class MergeControl extends JToolBar {
         swap.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    EditPane left_ep = MergeControl.this.editPane.getView().getEditPanes()[0];
-                    EditPane right_ep = MergeControl.this.editPane.getView().getEditPanes()[1];
+                    EditPane left_ep = MergeControl.this.editPane.getView().getEditPanes() [ 0 ];
+                    EditPane right_ep = MergeControl.this.editPane.getView().getEditPanes() [ 1 ];
                     Buffer left = left_ep.getBuffer();
                     Buffer right = right_ep.getBuffer();
-                    left_ep.setBuffer(right);
-                    right_ep.setBuffer(left);
+                    left_ep.setBuffer( right );
+                    right_ep.setBuffer( left );
                 }
             }
         );
+
+        // layout
+        setLayout(new FlowLayout());
+        add(left_bar);
+        add(right_bar);
     }
 }
