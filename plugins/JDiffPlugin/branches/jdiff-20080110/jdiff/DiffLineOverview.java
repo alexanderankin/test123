@@ -40,10 +40,11 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
     private Diff.change edits;
     private String leftLine;
     private String rightLine;
-    private MergeControl mergeControl0;
-    private MergeControl mergeControl1;
-    private JPanel btnPanel;
+    private MergeControl mergeControl;
     private JPanel linePanel;
+
+    private int leftMargin = 6;
+
 
     public DiffLineOverview( DualDiff dualDiff ) {
         if ( dualDiff == null ) {
@@ -52,12 +53,8 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
         this.dualDiff = dualDiff;
         setBackground( Color.WHITE );
         setLayout( new BorderLayout() );
-        mergeControl0 = new MergeControl( dualDiff.getView().getEditPanes() [ 0 ], SwingConstants.RIGHT );
-        mergeControl1 = new MergeControl( dualDiff.getView().getEditPanes() [ 1 ], SwingConstants.LEFT );
-        btnPanel = new JPanel( new FlowLayout() );
-        btnPanel.add( mergeControl0 );
-        btnPanel.add( mergeControl1 );
-        add( btnPanel, BorderLayout.NORTH );
+        mergeControl = new MergeControl( dualDiff.getView().getEditPanes() [ 0 ] );
+        add( mergeControl, BorderLayout.NORTH );
 
         linePanel = new JPanel();
         linePanel.setBackground( dualDiff.getBackground() );
@@ -71,6 +68,20 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
      * @param rightLine a line of text from the right edit pane
      */
     public void processLines( String leftLine, String rightLine ) {
+        // prep for drawing the two lines, use the same font and background
+        // color as the main text areas
+        Graphics gfx = getGraphics();
+        gfx.translate( 0, mergeControl.getSize().height );
+        Font font = dualDiff.getFont();
+        Font bold = font.deriveFont( Font.BOLD );
+        gfx.setFont( font );
+        FontMetrics fm = gfx.getFontMetrics();
+
+        // clear the display area
+        Rectangle all = linePanel.getBounds();
+        gfx.setColor( dualDiff.getBackground() );
+        gfx.fillRect( 0, 0, all.width, all.height );
+
         // diff the lines by character
         this.leftLine = leftLine;
         this.rightLine = rightLine;
@@ -147,23 +158,19 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
             }
         }
 
-        // prep for drawing the two lines, use the same font and background
-        // color as the main text areas
-        Graphics gfx = getGraphics();
-        gfx.translate( 0, btnPanel.getSize().height );
-        Font font = dualDiff.getFont();
-        Font bold = font.deriveFont( Font.BOLD );
-        gfx.setFont( font );
-        FontMetrics fm = gfx.getFontMetrics();
-
-        // clear the display area
-        Rectangle all = linePanel.getBounds();
-        gfx.setColor( dualDiff.getBackground() );
-        gfx.fillRect( 0, 0, all.width, all.height );
-
         // draw the characters, left line above the right line
-        int x = 15;
-        int y0 = 35;
+        int x = leftMargin;
+        gfx.setColor(Color.BLACK);
+        gfx.drawString("Left", x, fm.getHeight());
+        int left_width = fm.stringWidth(leftLine);
+        int tick_height = fm.getHeight() / 2;
+        int y = fm.getHeight() + tick_height;
+        gfx.drawLine(x, y, x + left_width, y);
+        gfx.drawLine(x, y, x, y + tick_height);
+        gfx.drawLine(x + left_width, y, x + left_width, y + tick_height);
+
+        x = leftMargin;
+        int y0 = 3 * fm.getHeight();
         int y1 = y0 + fm.getHeight() + 3;
         for ( int i = 0; i < leftChars.size(); i++ ) {
             char c = leftChars.get( i );
@@ -173,7 +180,7 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
             gfx.drawString( String.valueOf( c ), x, y0 );
             x += fm.charWidth( c );
         }
-        x = 15;
+        x = leftMargin;
         for ( int i = 0; i < rightChars.size(); i++ ) {
             char c = rightChars.get( i );
             color = rightColors.get( i );
@@ -182,5 +189,15 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
             gfx.drawString( String.valueOf( c ), x, y1 );
             x += fm.charWidth( c );
         }
+
+        x = leftMargin;
+        gfx.setColor(Color.BLACK);
+        gfx.setFont(font);
+        gfx.drawString("Right", x, 6 * fm.getHeight());
+        int right_width = fm.stringWidth(rightLine);
+        y = y1 + (fm.getHeight() / 2);
+        gfx.drawLine(x, y, x + right_width, y);
+        gfx.drawLine(x, y, x, y - tick_height);
+        gfx.drawLine(x + right_width, y, x + right_width, y - tick_height);
     }
 }
