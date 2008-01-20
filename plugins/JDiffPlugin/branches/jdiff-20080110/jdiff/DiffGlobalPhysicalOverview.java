@@ -23,6 +23,8 @@ package jdiff;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import jdiff.util.Diff;
 
@@ -31,7 +33,12 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 
-public class DiffGlobalPhysicalOverview extends DiffOverview {
+public class DiffGlobalPhysicalOverview extends DiffOverview implements MouseListener {
+
+    private Rectangle leftRectangle;
+    private Rectangle rightRectangle;
+    private double pixelsPerLine;
+
     public DiffGlobalPhysicalOverview(
         Diff.change edits,
         int lineCount0,
@@ -40,6 +47,7 @@ public class DiffGlobalPhysicalOverview extends DiffOverview {
         JEditTextArea textArea1
     ) {
         super( edits, lineCount0, lineCount1, textArea0, textArea1 );
+        addMouseListener( this );
     }
 
 
@@ -52,20 +60,23 @@ public class DiffGlobalPhysicalOverview extends DiffOverview {
         Rectangle inner = new Rectangle( 4, 4, size.width - 8, size.height - 8 );
 
         int lines = Math.max( this.lineCount0, this.lineCount1 );
-        double pxlPerLine = ( ( double ) inner.height ) / lines;
+        pixelsPerLine = ( ( double ) inner.height ) / lines;
 
         Rectangle left = new Rectangle(
-                    inner.x,
-                    inner.y,
-                    inner.width / 3,
-                    Math.max( 1, ( int ) Math.round( pxlPerLine * this.lineCount0 ) )
-                );
+                   inner.x,
+                   inner.y,
+                   inner.width / 3,
+                   Math.max( 1, ( int ) Math.round( pixelsPerLine * this.lineCount0 ) )
+               );
         Rectangle right = new Rectangle(
                     inner.x + ( inner.width - left.width ),
                     inner.y,
                     left.width,
-                    Math.max( 1, ( int ) Math.round( pxlPerLine * this.lineCount1 ) )
+                    Math.max( 1, ( int ) Math.round( pixelsPerLine * this.lineCount1 ) )
                 );
+
+        leftRectangle = new Rectangle(left);
+        rightRectangle = new Rectangle(right);
 
         Rectangle cursor = new Rectangle( inner.x + inner.width / 2 - 1, inner.y,
                 2, 0 );
@@ -102,10 +113,10 @@ public class DiffGlobalPhysicalOverview extends DiffOverview {
                 rightColor = JDiffPlugin.overviewChangedColor;
             }
 
-            left.y = inner.y + ( int ) Math.round( leftOffset * pxlPerLine );
-            right.y = inner.y + ( int ) Math.round( rightOffset * pxlPerLine );
-            left.height = Math.max( 1, ( int ) Math.round( hunk.deleted * pxlPerLine ) );
-            right.height = Math.max( 1, ( int ) Math.round( hunk.inserted * pxlPerLine ) );
+            left.y = inner.y + ( int ) Math.round( leftOffset * pixelsPerLine );
+            right.y = inner.y + ( int ) Math.round( rightOffset * pixelsPerLine );
+            left.height = Math.max( 1, ( int ) Math.round( hunk.deleted * pixelsPerLine ) );
+            right.height = Math.max( 1, ( int ) Math.round( hunk.inserted * pixelsPerLine ) );
             gfx.setColor( leftColor );
             gfx.fillRect( left.x, left.y, left.width, left.height );
             gfx.setColor( rightColor );
@@ -126,23 +137,23 @@ public class DiffGlobalPhysicalOverview extends DiffOverview {
         Rectangle inner = new Rectangle( 4, 4, size.width - 8, size.height - 8 );
 
         int lines = Math.max( this.lineCount0, this.lineCount1 );
-        double pxlPerLine = ( ( double ) inner.height ) / lines;
+        double pixelsPerLine = ( ( double ) inner.height ) / lines;
 
         int physicalFirstLine0 = this.textArea0.getFirstPhysicalLine();
         int physicalLastLine0 = this.textArea0.getLastPhysicalLine();
         Rectangle leftCursor = new Rectangle(
-                    inner.x, inner.y + ( ( int ) Math.round( pxlPerLine * physicalFirstLine0 ) ),
+                    inner.x, inner.y + ( ( int ) Math.round( pixelsPerLine * physicalFirstLine0 ) ),
                     inner.width / 3,
-                    Math.max( 1, ( int ) Math.round( pxlPerLine * Math.min( this.lineCount0, physicalLastLine0 - physicalFirstLine0 + 1 ) ) )
+                    Math.max( 1, ( int ) Math.round( pixelsPerLine * Math.min( this.lineCount0, physicalLastLine0 - physicalFirstLine0 + 1 ) ) )
                 );
 
         int physicalFirstLine1 = this.textArea1.getFirstPhysicalLine();
         int physicalLastLine1 = this.textArea1.getLastPhysicalLine();
         Rectangle rightCursor = new Rectangle(
                     inner.x + ( inner.width - leftCursor.width ),
-                    inner.y + ( ( int ) Math.round( pxlPerLine * physicalFirstLine1 ) ),
+                    inner.y + ( ( int ) Math.round( pixelsPerLine * physicalFirstLine1 ) ),
                     leftCursor.width,
-                    Math.max( 1, ( int ) Math.round( pxlPerLine * Math.min( this.lineCount1, physicalLastLine1 - physicalFirstLine1 + 1 ) ) )
+                    Math.max( 1, ( int ) Math.round( pixelsPerLine * Math.min( this.lineCount1, physicalLastLine1 - physicalFirstLine1 + 1 ) ) )
                 );
 
         gfx.setColor( JDiffPlugin.leftCursorColor );
@@ -150,4 +161,24 @@ public class DiffGlobalPhysicalOverview extends DiffOverview {
         gfx.setColor( JDiffPlugin.rightCursorColor );
         gfx.drawRect( rightCursor.x, rightCursor.y, rightCursor.width - 1, rightCursor.height - 1 );
     }
+
+    public void mouseClicked( MouseEvent e ) {
+        int line_number = 0;
+        System.out.println("+++++ point = " + e.getPoint());
+        System.out.println( "+++++ pixelsPerLine = " + pixelsPerLine );
+        System.out.println( "+++++ line_number = " + line_number );
+        System.out.println( "+++++ left = " + leftRectangle );
+        System.out.println( "+++++ right = " + rightRectangle );
+        if ( leftRectangle.contains( e.getX(), e.getY() ) || rightRectangle.contains( e.getX(), e.getY() ) ) {
+            line_number = ( int ) ( ( double ) e.getY() / pixelsPerLine );
+            textArea0.setFirstPhysicalLine( Math.min( line_number, textArea0.getLineCount() ) );
+            textArea1.setFirstPhysicalLine( Math.min( line_number, textArea1.getLineCount() ) );
+        }
+    }
+
+    public void mouseEntered( MouseEvent e ) {}
+    public void mouseExited( MouseEvent e ) {}
+    public void mousePressed( MouseEvent e ) {}
+    public void mouseReleased( MouseEvent e ) {}
+
 }

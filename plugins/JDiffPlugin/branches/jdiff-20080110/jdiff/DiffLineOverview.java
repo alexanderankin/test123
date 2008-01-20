@@ -38,8 +38,6 @@ import org.gjt.sp.jedit.View;
 public class DiffLineOverview extends JPanel implements LineProcessor {
     private DualDiff dualDiff;
     private Diff.change edits;
-    private String leftLine;
-    private String rightLine;
     private MergeControl mergeControl;
     private JPanel linePanel;
 
@@ -68,6 +66,10 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
      * @param rightLine a line of text from the right edit pane
      */
     public void processLines( String leftLine, String rightLine ) {
+        if (leftLine == null || rightLine == null) {
+            return;
+        }
+
         // prep for drawing the two lines, use the same font and background
         // color as the main text areas
         Graphics gfx = getGraphics();
@@ -83,8 +85,6 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
         gfx.fillRect( 0, 0, all.width, all.height );
 
         // diff the lines by character
-        this.leftLine = leftLine;
-        this.rightLine = rightLine;
         FileLine[] leftLines = new FileLine[ leftLine.length() ];
         FileLine[] rightLines = new FileLine[ rightLine.length() ];
         for ( int i = 0; i < leftLine.length(); i++ ) {

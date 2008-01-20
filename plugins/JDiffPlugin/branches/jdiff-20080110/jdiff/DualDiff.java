@@ -520,6 +520,12 @@ public class DualDiff implements EBComponent {
             }
         }
 
+        // danson, make sure the divider is in the middle.  For some reason,
+        // the left side would be much smaller than the right side, this
+        // takes care of that.
+        JSplitPane sp = view.getSplitPane();
+        sp.setDividerLocation( 0.5 );
+
         view.invalidate();
         view.validate();
     }
@@ -528,6 +534,9 @@ public class DualDiff implements EBComponent {
         DualDiff dualDiff = DualDiff.getDualDiffFor( view );
         if ( dualDiff != null ) {
             dualDiff.refresh();
+
+            JSplitPane sp = view.getSplitPane();
+            sp.setDividerLocation( 0.5 );
 
             view.invalidate();
             view.validate();
@@ -543,6 +552,9 @@ public class DualDiff implements EBComponent {
             return false;
         }
 
+        JSplitPane sp = view.getSplitPane();
+        sp.setDividerLocation( 0.5 );
+
         return dualDiff.getIgnoreCase();
     }
 
@@ -551,6 +563,9 @@ public class DualDiff implements EBComponent {
         if ( dualDiff != null ) {
             dualDiff.toggleIgnoreCase();
             dualDiff.refresh();
+
+            JSplitPane sp = view.getSplitPane();
+            sp.setDividerLocation( 0.5 );
 
             view.invalidate();
             view.validate();
@@ -575,6 +590,9 @@ public class DualDiff implements EBComponent {
             dualDiff.toggleTrimWhitespace();
             dualDiff.refresh();
 
+            JSplitPane sp = view.getSplitPane();
+            sp.setDividerLocation( 0.5 );
+
             view.invalidate();
             view.validate();
         }
@@ -598,6 +616,9 @@ public class DualDiff implements EBComponent {
             dualDiff.toggleIgnoreAmountOfWhitespace();
             dualDiff.refresh();
 
+            JSplitPane sp = view.getSplitPane();
+            sp.setDividerLocation( 0.5 );
+
             view.invalidate();
             view.validate();
         }
@@ -620,6 +641,9 @@ public class DualDiff implements EBComponent {
         if ( dualDiff != null ) {
             dualDiff.toggleIgnoreAllWhitespace();
             dualDiff.refresh();
+
+            JSplitPane sp = view.getSplitPane();
+            sp.setDividerLocation( 0.5 );
 
             view.invalidate();
             view.validate();
@@ -948,6 +972,7 @@ public class DualDiff implements EBComponent {
         public void caretUpdate( final CaretEvent e ) {
             Runnable r = new Runnable() {
                         public void run() {
+                            view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
                             JEditTextArea source = ( JEditTextArea ) e.getSource();
                             Diff.change hunk = DualDiff.this.edits;
                             String leftLine = "";
