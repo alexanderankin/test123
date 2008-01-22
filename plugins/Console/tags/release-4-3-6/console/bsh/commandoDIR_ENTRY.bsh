@@ -1,0 +1,40 @@
+commandoDIR_ENTRY(view,pane,ns,label,var,options)
+{
+	entry = new JTextField(20);
+	value = ns.getVariable(var);
+	if(value != null)
+		entry.setText(value.toString());
+
+	valueChanged()
+	{
+		ns.setVariable(var,entry.getText());
+	}
+
+	dim = entry.getPreferredSize();
+	dim.width = Integer.MAX_VALUE;
+	entry.setMaximumSize(dim);
+
+	box = new Box(BoxLayout.X_AXIS);
+	box.add(entry);
+	box.add(Box.createHorizontalStrut(12));
+
+	btn = new RolloverButton(GUIUtilities.loadIcon("Open.png"));
+	btn.setToolTipText("Choose a directory");
+	listener = new ActionListener()
+	{
+		actionPerformed(evt)
+		{
+			files = GUIUtilities.showVFSFileDialog(view,
+				entry.getText(),VFSBrowser.CHOOSE_DIRECTORY_DIALOG,
+				false);
+			if(files != null)
+				entry.setText(files[0]);
+		}
+	};
+	btn.addActionListener(listener);
+	box.add(btn);
+
+	pane.addComponent(label,box);
+
+	return this;
+}
