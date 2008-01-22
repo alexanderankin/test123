@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Matthieu Casanova
  * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class AncestorPlugin extends EBPlugin
+public class AncestorPlugin extends EditPlugin implements EBComponent
 {
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
@@ -43,6 +43,7 @@ public class AncestorPlugin extends EBPlugin
 		{
 			addAncestorToolBar(views[i]);
 		}
+		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ addAncestorToolBar() method
@@ -102,6 +103,7 @@ public class AncestorPlugin extends EBPlugin
 	//{{{ stop() method
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
