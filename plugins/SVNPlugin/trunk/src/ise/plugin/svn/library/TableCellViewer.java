@@ -9,9 +9,11 @@ import javax.swing.*;
  * in a popup.
  */
 public class TableCellViewer extends MouseAdapter {
+
     private JTable table = null;
     private JTextArea ta;
     private JPopupMenu pm;
+
     public TableCellViewer( JTable table ) {
         this.table = table;
         ta = new JTextArea( 10, 40 );
@@ -20,22 +22,29 @@ public class TableCellViewer extends MouseAdapter {
         pm = new JPopupMenu();
         pm.add( new JScrollPane( ta ) );
     }
+
     public void mousePressed( MouseEvent me ) {
         doPopup( me );
     }
+
     public void mouseReleased( MouseEvent me ) {
         doPopup( me );
     }
+
     private void doPopup( MouseEvent me ) {
         if ( me.isPopupTrigger() ) {
             Point p = me.getPoint();
             int col = table.columnAtPoint( p );
             int row = table.rowAtPoint( p );
-            Object value = table.getModel().getValueAt( row, col );
-            if ( value != null ) {
-                ta.setText( value.toString() );
-                GUIUtils.showPopupMenu( pm, table, me.getX(), me.getY() );
-            }
+            doPopup( col, row, me.getX(), me.getY() );
+        }
+    }
+
+    public void doPopup( int col, int row, int x, int y ) {
+        Object value = table.getModel().getValueAt( row, col );
+        if ( value != null ) {
+            ta.setText( value.toString() );
+            GUIUtils.showPopupMenu( pm, table, x, y );
         }
     }
 }

@@ -376,6 +376,7 @@ public class StatusResultsPanel extends JPanel {
                     }
                 }
                             );
+
         return pm;
     }
 }

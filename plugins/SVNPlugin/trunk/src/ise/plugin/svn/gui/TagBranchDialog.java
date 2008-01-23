@@ -77,6 +77,7 @@ public class TagBranchDialog extends JDialog {
     public static String TAG = "Tag";
     public static String BRANCH = "Branch";
 
+    private CopyData data = null;
     private boolean canceled = false;
 
     /**
@@ -112,11 +113,9 @@ public class TagBranchDialog extends JDialog {
         source_file.setBackground( Color.WHITE );
 
         // revision selection panel
-        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from this revision:" );
-        tag_revision_panel.setLayout( SwingConstants.HORIZONTAL );
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from this revision:", SwingConstants.HORIZONTAL, false );
 
         JPanel source_panel = new JPanel( new LambdaLayout() );
-        //source_panel.setBorder(BorderFactory.createEtchedBorder());
         source_panel.add( "0, 0, 1, 1, W, w, 3", to_copy_label );
         source_panel.add( "0, 1, 1, 1, W, w, 3", source_file );
         source_panel.add( "0, 2, 1, 1, 0, w, 3", tag_revision_panel );
@@ -220,11 +219,21 @@ public class TagBranchDialog extends JDialog {
                         revision = tag_revision_panel.getRevision();
                         canceled = false;
 
-                        // save the comment
+                        data = new CopyData();
+                        List<SVNURL> urls = new ArrayList<SVNURL>();
+                        urls.add( source );
+                        data.setSourceURLs( urls );
+                        data.setRevision( revision );
+                        data.setDestinationURL( destination );
                         String msg = comment.getText();
+                        if ( msg == null || msg.length() == 0 ) {
+                            msg = "no comment";
+                        }
+                        data.setMessage( msg );
+
+                        // save the comment
                         if ( msg != null && msg.length() > 0 && commentList != null ) {
                             commentList.addValue( msg );
-                            commentList.save();
                         }
 
                         TagBranchDialog.this.setVisible( false );
@@ -236,6 +245,7 @@ public class TagBranchDialog extends JDialog {
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         canceled = true;
+                        data = null;
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
                     }
@@ -275,22 +285,11 @@ public class TagBranchDialog extends JDialog {
         if ( canceled ) {
             return null;
         }
-        CopyData cd = new CopyData();
-        List<SVNURL> urls = new ArrayList<SVNURL>();
-        urls.add( source );
-        cd.setSourceURLs( urls );
-        cd.setRevision( revision );
-        cd.setDestinationURL( destination );
-        String msg = comment.getText();
-        if ( msg == null || msg.length() == 0 ) {
-            msg = "no comment";
-        }
-        cd.setMessage( msg );
-        return cd;
+        return data;
     }
 
-    public static void main (String[] args) {
-        TagBranchDialog d = new TagBranchDialog(null, TagBranchDialog.TAG_DIALOG, "http://somewhere.over/the/rainbow", null);
-        d.setVisible(true);
+    public static void main ( String[] args ) {
+        TagBranchDialog d = new TagBranchDialog( null, TagBranchDialog.TAG_DIALOG, "http://somewhere.over/the/rainbow", null );
+        d.setVisible( true );
     }
 }

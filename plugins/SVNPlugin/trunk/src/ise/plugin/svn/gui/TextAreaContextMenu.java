@@ -54,8 +54,14 @@ public class TextAreaContextMenu extends JMenu {
         JMenuItem item = new JMenuItem( "Add" );
         item.addActionListener( getAddActionListener() );
         add( item );
+        item = new JMenuItem( "Update" );
+        item.addActionListener( getUpdateActionListener() );
+        add( item );
         item = new JMenuItem( "Revert" );
         item.addActionListener( getRevertActionListener() );
+        add( item );
+        item = new JMenuItem( "Commit" );
+        item.addActionListener( getCommitActionListener() );
         add( item );
         item = new JMenuItem( "Resolve" );
         item.addActionListener( getResolvedActionListener() );
@@ -149,6 +155,28 @@ public class TextAreaContextMenu extends JMenu {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
                        ResolvedAction action = new ResolvedAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getUpdateActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       UpdateAction action = new UpdateAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getCommitActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       TreeMap<String, String> paths = new TreeMap<String, String>();
+                       for ( String path : getPaths() ) {
+                           paths.put( path, "" );
+                       }
+                       CommitAction action = new CommitAction( view, paths, null, null );
                        action.actionPerformed( ae );
                    }
                };

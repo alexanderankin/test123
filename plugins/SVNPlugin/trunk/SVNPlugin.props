@@ -28,7 +28,7 @@ subversion.browser.title=SVN Browser
 subversion.browser.label=SVN Browser
 
 # new setting for jEdit 4.2
-plugin.ise.plugin.svn.SVNPlugin.activate=defer
+plugin.ise.plugin.svn.SVNPlugin.activate=startup
 
 
 # ProjectViewer option pane

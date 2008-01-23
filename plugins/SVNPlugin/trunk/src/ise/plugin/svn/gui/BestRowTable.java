@@ -133,7 +133,7 @@ public class BestRowTable extends JTable {
     @Override
     public Dimension getPreferredSize() {
         Dimension d = super.getPreferredSize();
-        d = new Dimension( d.width, getBestHeight() );
+        d.height = getBestHeight();
         return d;
     }
 

@@ -147,9 +147,7 @@ public class CopyDialog extends JDialog {
         file_table.packRows();
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Copy from this revision:" );
-        revision_panel.setLayout(SwingConstants.HORIZONTAL);
-        revision_panel.setShowWorking(true);
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( "Copy from this revision:", SwingConstants.HORIZONTAL, true );
 
         // destination
         JLabel path_label = new JLabel( "To this location:" );

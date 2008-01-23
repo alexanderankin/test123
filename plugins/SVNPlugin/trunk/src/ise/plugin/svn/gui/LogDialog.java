@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
@@ -82,7 +83,7 @@ public class LogDialog extends JDialog {
 
     /** Initialises the option pane. */
     protected void _init() {
-        JPanel panel = new JPanel( new KappaLayout() );
+        JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // list the selected files
@@ -242,7 +243,7 @@ public class LogDialog extends JDialog {
 
         // add the components to the option panel
         JScrollPane file_scroller = new JScrollPane( file_table );
-        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 250 ) ) );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight() + 50, 250 ) ) );
         panel.add( "0, 0, 2, 1, W,  , 3", file_label );
         panel.add( "0, 1, 2, 1, W, wh, 3", file_scroller );
 
@@ -287,6 +288,5 @@ public class LogDialog extends JDialog {
         data.setPaths( paths );
         LogDialog dialog = new LogDialog( null, data );
         dialog.setVisible( true );
-
     }
 }
