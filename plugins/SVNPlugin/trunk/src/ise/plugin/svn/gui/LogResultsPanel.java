@@ -31,6 +31,7 @@ package ise.plugin.svn.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
 import java.io.Serializable;
@@ -48,6 +49,7 @@ import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.LogResults;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.TableCellViewer;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.wc.SVNInfo;
@@ -140,7 +142,7 @@ public class LogResultsPanel extends JPanel {
             final LogTable table = new LogTable( data, col_names );
             table.setPath( path );
             table.addMouseListener( new TableMouseListener( table ) );
-            ToolTipManager.sharedInstance().registerComponent( table );
+            //ToolTipManager.sharedInstance().registerComponent( table );
 
             // set column widths and cell renderers
             TableColumnModel column_model = table.getColumnModel();
@@ -224,7 +226,7 @@ public class LogResultsPanel extends JPanel {
     public static class PathCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
-            setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
+            //setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
             setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
             return this;
         }
@@ -271,7 +273,10 @@ public class LogResultsPanel extends JPanel {
 
         private void handleClick( MouseEvent me ) {
             if ( me.isPopupTrigger() ) {
-                JPopupMenu popup = getPopupMenu( table );
+                Point p = me.getPoint();
+                int col = table.columnAtPoint( p );
+                int row = table.rowAtPoint( p );
+                JPopupMenu popup = getPopupMenu( table, col, row, me.getX(), me.getY() );
                 if ( popup != null ) {
                     GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
                 }
@@ -282,7 +287,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Create the context menu.
      */
-    private JPopupMenu getPopupMenu( final LogTable table ) {
+    private JPopupMenu getPopupMenu( final LogTable table, final int col, final int row, final int x, final int y) {
         final int[] rows = table.getSelectedRows();
         JPopupMenu popup = new JPopupMenu();
 
@@ -353,9 +358,6 @@ public class LogResultsPanel extends JPanel {
 
             }
         }
-        if ( popup.getComponentCount() == 0 && rows.length != 2 ) {
-            return null;
-        }
         if ( rows.length == 2 ) {
             final String path = table.getPath();
             JMenuItem mi = new JMenuItem( "Diff" );
@@ -371,6 +373,16 @@ public class LogResultsPanel extends JPanel {
                     }
                                 );
         }
+        //popup.addSeparator();
+        JMenuItem mi = new JMenuItem("Zoom");
+        mi.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ae) {
+                    TableCellViewer viewer = new TableCellViewer(table);
+                    viewer.doPopup(col, row, x, y);
+                }
+        });
+        popup.add(mi);
+
         return popup;
     }
 }

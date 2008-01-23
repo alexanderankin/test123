@@ -59,13 +59,11 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void handleMessage( EBMessage message ) {
+        addContextMenu( jEdit.getActiveView() );
         if ( message instanceof ViewUpdate ) {
             ViewUpdate vu = ( ViewUpdate ) message;
             if ( ViewUpdate.CLOSED == vu.getWhat() ) {
                 panelMap.remove( vu.getView() );
-            }
-            else if ( ViewUpdate.CREATED == vu.getWhat() || ViewUpdate.ACTIVATED == vu.getWhat()) {
-                addContextMenu( vu.getView() );
             }
         }
     }

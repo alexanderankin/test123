@@ -60,6 +60,8 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
 import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
+import ise.plugin.svn.library.TableCellViewer;
+
 public class SVNInfoPanel extends JPanel {
 
 
@@ -186,6 +188,7 @@ public class SVNInfoPanel extends JPanel {
         info_table.getColumnModel().getColumn( 0 ).setMinWidth( 150 );
         info_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 600 );
         info_table.packRows();
+        info_table.addMouseListener( new TableCellViewer( info_table ) );
     }
 
     private String formatDate( Date date ) {

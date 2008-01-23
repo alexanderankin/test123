@@ -61,8 +61,7 @@ public class UpdateDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Update To:");
-        rsp.setLayout(SwingConstants.HORIZONTAL);
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Update To:", SwingConstants.HORIZONTAL, false);
 
         final JCheckBox recursive_cb = new JCheckBox("Recursive");
         recursive_cb.setSelected(data.getRecursive());

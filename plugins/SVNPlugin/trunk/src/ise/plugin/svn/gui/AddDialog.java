@@ -200,4 +200,13 @@ public class AddDialog extends JDialog {
     public SVNData getSVNData() {
         return addData;
     }
+
+    public static void main (String[] args) {
+        List<String> paths = new ArrayList<String>();
+        paths.add( "/home/danson/path/filename.txt" );
+        paths.add( "/home/danson/path/filename2.txt" );
+        AddDialog dialog = new AddDialog( null, paths );
+        dialog.setVisible( true );
+
+    }
 }
