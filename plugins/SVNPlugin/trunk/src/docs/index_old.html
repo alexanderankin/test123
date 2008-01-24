@@ -1,329 +1,234 @@
 <html>
-<head>
-<title>SVN Plugin</title>
-</head>
-
 <body>
 <h1>Subversion Plugin</h1>
 <p>
 Author: Dale Anson
-</p>
-
-<p>
-<a href="#intro">Intro</a><br/>
-<a href="#0">Dockables</a><br/>
-<a href="#1">Checking out a project</a><br/>
-<a href="#2">Creating a project from existing files</a><br/>
-<a href="#3">Handling individual files</a><br/>
-<a href="#4">How to undelete a deleted file</a><br/>
-<a href="#5">Licenses</a><br/>
-</p>
-<hr>
-<p>
-<a name="intro"><h2>Intro</h2></a>
-</p>
 <p>
 A plugin for using Subversion from within jEdit.  This is an all Java implementation,
-no external libraries or subversion clients are required.  This guide assumes you have
-some experience with Subversion.
-The official Subversion reference manual is here:
+no external libraries or subversion clients are required.  This plugin is tightly
+integrated with ProjectViewer, and most commands are available by right clicking on
+files or folders in the ProjectViewer trees.
+</p>
+
+<p>
+<strong>
+This plugin complies with Subversion 1.4.  If you use an older Subversion
+client that is pre-1.4, you may have some problems.  Subversion changed the
+format of the files stored in the .svn directories with 1.4.  All 1.4
+compliant clients will automatically and silently convert the format of
+those files, which will render them unreadable by older clients.  If you
+must continue to use your older client and are unable to upgrade it to be
+Subversion 1.4 compatible, you should not use this plugin.
+</strong>
+</p>
+
+<hr/>
+<p>
+<b>Usage:</b> Most actions are accessed directly from the "Folders" tree in
+ProjectViewer by right-clicking on an item.  Most items should be obvious to
+Subversion users as to what those actions do.  In general, Subversion commands
+available in Project Viewer act on local working copies, and commands available
+in the SVN Browser act directly on the repository.
+</p>
+<p>
+The SVN Plugin provides 2 dockables, "SVN" and "SVN Browser".  These are available via the
+jEdit standard Utilities - Global Options - Docking dialog.
+</p>
+<p>The "SVN" dockable
+shows an SVN console, which displays the detailed raw output of each plugin action,
+and a tab for the results of each subversion action.  The tabs may be removed by
+right-clicking on the tab, then clicking "Close" or "Close All".  The SVN Console
+tab cannot be closed.  A number of actions are available from within the dockable:
+<ul>
+<li>Right click on the results of "Status" for options to update, commit,
+revert, diff, add, and log actions</li>
+<li>Select 2 revisions in the results of "Log" for diff.</li>
+<li>Undelete a deleted file from the results of "Log". (See below for details.)</li>
+</ul>
+</p>
+<p>The "SVN Browser" dockable allows the user to enter the URL to a Subversion
+repository and drill down into the various folders of that repository via a tree
+interface.  Click the "New" button to enter a new repository location.  There is
+no limit to the number of repositories that can be added.
+</p>
+<p>
+<strong>Recent changes in the management of repositories are NOT backward compatible
+with versions prior to 0.6.0.  Repositories can now be named and are sorted in the list,
+and 'Remove' now works correctly.  These changes lost the ability to read previous
+repository settings.</strong>
+</p>
+<p>There are a number
+of actions available by right-clicking on items in the tree:
+<ul>
+<li>Edit the repository location</li>
+<li>Remove a repository location.  This just removes the repository from the
+list, it does not remove any files from your working directory nor from the
+repository.</li>
+<li>Checkout files.</li>
+<li>See log, info, and properties for a file or directory.  Files with properties
+are indicated with * after the name.</li>
+<li>Double-clicking
+on a file will show a dialog to allow choosing the revision of a file to open
+as a temporary file in jEdit.  The file name will
+be slightly different than the file name in the repository, the browser adds the
+revision number to the file name.  This is done so that two different revisions
+can exist in the same directory without overwriting each other.  For example,
+if you double click on a file named /path/to/my/filename.java, you'll get a file
+in your temp directory with the same directory structure like
+/tmp/path/to/my/filename-HEAD.java.  The "HEAD" in the filename indicates you have
+the head revision of the file.  If you get revision 123 of the file, then it
+would be /tmp/path/to/my/filename-123.java.</li>
+
+</p>
+<hr/>
+<p>
+To check out a project that already exists in a Subversion repository:
+<ol>
+<li>Click on Plugins - Subversion - Checkout, or alternately, use the SVN Browser
+to open a repository, right click on the appropriate folder and choose "Checkout"
+from the popup menu.</li>
+<li>Enter a name for the repository, the repository URL, username, and password.
+Leave username and password
+blank if the repository allows anonymous access.  Don't forget to add "/trunk" to the
+end of the URL, unless you want all the branch and tag info locally.</li>
+<li>Click the "OK" button.</li>
+<li>Wait for the files to be checked out.</li>
+<li>Follow the remaining dialogs to create a project in ProjectViewer from these files.</li>
+</ol>
+</p>
+
+<hr/>
+<p>
+<h3>Copy, Tag, Branch</h3>
+In subversion, the copy, tag, and branch commands are actually the same thing.
+The differences are imposed by people who have used CVS for years and want the
+same functionality.  The common meaning of these terms are:
+<ul>
+<li>Copy: copy a file or directory to either a local file or directory.</li>
+<li>Tag: create a snapshot of the state of the current trunk or main branch
+of a repository.  This snapshot, by convention, is not to be modified after
+it is created.</li>
+<li>Branch: exactly the same as a tag, except the contents of the snapshot
+are intended to be modified and, depending on the branching strategy, is to
+be merged back to the trunk or branch from which it came at some time in the
+future.</li>
+</ul>
+This plugin more or less follows those conventions:
+<ul>
+<li>Copy from the ProjectViewer context menu will copy from a local, working
+copy to another local, working copy or to a remote repository.  There are
+some good reasons to copy a set of working files to a remote repository, see
+the official Subversion documentation for a few hints.</li>
+<li>Tag works only from the SVN Browser, and is intended to copy the trunk
+of a project to the 'tags' folder of the same project.</li>
+<li>Branch works like tag, except it is intended to copy the trunk of a
+project to the 'branches' folder of the same project.</li>
+</ul>
+Notice that both the tag and branch dialogs are more flexible than the above.
+You can create a branch from a branch from a branch, if that is what you need
+to do.  You can copy files to another project entirely.  Subversion is very
+flexible in this regard, and this plugin attempts to allow all the flexibility
+of Subversion.
+</p>
+
+<hr/>
+
+<p>
+<h3>Subversion Command Reference</h3>
+
+The official Subversion reference manual is here:<br>
 
    <a href="http://svnbook.red-bean.com/index.en.html" title="English"
-      hreflang="en" lang="en" rel="alternate">Subversion Book</a> <br>
-
+      hreflang="en" lang="en" rel="alternate">English</a> <br>
 </p>
+<hr/>
 <p>
-This plugin is tightly
-integrated with ProjectViewer, and most commands are available by right clicking on
-files or folders in the ProjectViewer trees.  Some commands for the current file
-are also available
-in the jEdit text area context menu.  The SVN Browser has commands to work directly
-with repository files without needing to have a local copy of the files.
-</p>
-
-
-<hr>
-<p>
-<a name="0"><h2>Dockables</h2></a>
-</p>
-<p>
-The Subversion plugin provides 2 dockables to jEdit:<br/>
-<ol>
-<li><a href="#svn_browser">SVN Browser</a></li>
-<li><a href="#svn_console">SVN Console</a></li>
-</ol>
-</p>
-<p>
-Access the dockables via the Plugins menu, Plugins -> SVN Plugin -> SVN Browser or SVN Console.
-</p>
-<p>
-You can dock them for easier access using Utilities -> Global Options... -> Docking.
-</p>
-<p>
-<a name="svn_browser"><h3>SVN Browser</h3></a>
-</p>
-<p>
-The SVN Browser is best docked at either the left or right:<br/>
-<br/>
-<img src="svn_browser.jpg"/>
-</p>
-<p>
-<h4>SVN Browser Buttons</h4>
-</p>
-<p>
-<table border="0">
-<tr>
-<td>
-<img src="add_repos.jpg"/>
-</td>
-<td>This button allows you to add a new repository to the SVN Browser.<td>
-</tr>
-</table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="add_repos_dialog.jpg"/><br/>
-<br/>
-<ul>
-<li>Name:  This is for a user-friendly name for the repository, like "jEdit Plugins".
-This can be whatever name you want for this repository.</li>
-<li>URL:  This is the URL for the repository.</li>
-<li>Username:  This is a username to access the repository.  If the repository allows
-anonymous access, you can leave this blank.</li>
-<li>Password:  The password that goes with Username.</li>
-</ul>
-
-</p>
-
-<p>
-<table border="0">
-<tr>
-<td>
-<img src="edit_repos.jpg"/>
-</td>
-<td>This button allows you to edit the settings for a repository.<td>
-</tr>
-</table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="edit_repos_dialog.jpg"/><br/>
-<br/>
-These fields are identical to those in the Add Repository dialog shown above.
-</p>
-
-<p>
-<table border="0">
-<tr>
-<td>
-<img src="remove_repos.jpg"/>
-</td>
-<td>This button allows you to remove a repository from the SVN Browser.  This
-does <strong>NOT</strong> delete anything from the repository or your local
-file system.  It only removes the repository from the SVN Browser drop down
-list.<td>
-</tr>
-</table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="remove_repos_dialog.jpg"/><br/>
-<br/>
-You must confirm to actually remove the repository from the SVN Browser.
-</p>
-<p>
-<table border="0">
-<tr>
-<td>
-<img src="refresh_repos.jpg"/>
-</td>
-<td>This button refreshes the SVN Browser from the currently selected repository.
-The SVN Browser tree is lazy-loaded since it can take some time to retrieve the
-repository data necessary to construct the tree.  Folder contents are fetched only
-when the folder is expanded to show its contents.  The refresh button will bring in
-any new data that may have been added since the last time the tree was loaded.<td>
-</tr>
-</table>
-<br/>
-<br/>
-<p>
-Right clicking on an item in the tree will show this popup menu:<br/>
-<br/>
-<img src="browser_context_menu.jpg"/>
-<br/>
-The commands available on this menu are standard Subversion commands and shouldn't
-need additional explanation, although the "Checkout..." command is covered in some
-detail below.
-</p>
-<br/>
-</p>
-
-<a name="svn_console">
-<h3>SVN Console</h3>
-</a>
-
-<p>
-The SVN Console has two main functions, first, it shows the raw output of the
-subversion command, and second, it shows the output of a command in a nice,
-GUI way.
-</p>
-<p>
-This dockable is best docked at the bottom of jEdit.
-</p>
-
-<p>
-Here is a shot of the SVN Console after running an "Info" command:<br/>
-<br/>
-<img src="svn_console_1.jpg"/><br/>
-<br/>
-The "SVN Console" tab cannot be closed.
-</p>
-<p>
-And here is a shot of the Info command results:<br/>
-<br/>
-<img src="svn_console.jpg"/><br/>
-<br/>
-The "Info" tab can be closed by clicking on the "X".  It can also be closed
-by right clicking on it and choosing "Close".  If there are multiple tabs open,
-they can all be closed by right clicking on any tab and choosing "Close All".
-Again, the "SVN Console" tab cannot be closed.
-</p>
-<p>
-Most commands show their output in a table or tree format.  The table outputs
-are generally "editable", that is, they can be clicked on and the text can
-be selected for copying and pasting elsewhere.  Many output displays also
-provide additional commands that can be accessed by right clicking on the
-output.  For example, the "Status" command provides the ability to commit,
-add, revert, and so on.  Most table outputs at least provide a "Zoom" option,
-this command will show the contents of a table cell in a popup window so that
-the full text can be viewed at once, and this text is selectable from the
-popup.
-</p>
+Here's my "to do" list, which is basically to emulate the "Team" menu in
+Eclipse:
+<pre>
+status - done
+update - done
+commit - done
+(not in Eclipse, I added "diff" here)
+create patch
+apply patch
+--
+revert - done
+add - done
+ignore
+edit conflicts
+resolve - done
+(not in Eclipse, I added "delete" here)
+--
+lock
+unlock
+--
+tag - done
+branch - done
+merge
+switch
+--
+show properties - done
+set properties - done, see notes below
+set keywords
+--
+history - done, I called it "log"
+annotations
+--
+copy - done
+export
+cleanup - done
 
 
-<hr>
-<p>
-<a name="1"><h2>Checking out a project</h2></a>
-</p>
-<p>
-If you are wanting to check out some files from a Subversion repository for the
-first time, do this:
-<br/>
-<ol>
-<li>
-Right click on a directory or file in the SVN Browser, and choose "Checkout...".
-</li>
-<li>
-Fill in this dialog:<br/>
-<br/>
-<img src="checkout_dialog.jpg"/><br/>
-<br/>
-<ul>
-   <li>URL: should be filled in for you.</li>
-   <li>Path: enter the location on your computer to put the files.</li>
-   <li>Username and Password: username and password to access the repository.  You can leave this blank if
-   the repository allows anonymous access.</li>
-</ul>
-</li>
-<li>
-Wait for the files to be checked out.
-</li>
-<li>
-Choose "Yes" to create a project in Project Viewer:<br/>
-<br/>
-<img src="create_project_dialog.jpg"/><br/>
-<br/>
-</li>
-<li>
-Fill in the information necessary to create the project:<br/>
-</br>
-<img src="create_project_dialog_2.jpg"/><br/>
-<br/>
-</li>
-<li>
-Last, actually import your files into your project. Be sure to choose the "Use CVS or SVN entries file" or
-all the .svn files will end up in your Project, which you probably don't want:<br/>
-<br/>
-<img src="initial_import.jpg"/><br/>
-<br/>
-Project Viewer will automatically switch to your new project so you can begin working immediately.
-</li>
-</ol>
-
-</p>
-
-<hr>
-<a name="2">
-<h2>Creating a Project From Existing Files</h2>
-</a>
-
-<p>
-Suppose you have a directory of files already checked out from a Subversion
-repository.  You can create a project from these files like this:
-</p>
-<p>
-<ol>
-<li>Activate the Project Viewer plugin.</li>
-<li>From the drop down at the top of Project Viewer, browse to the place you
-want to create the project and select "New project here".</li>
-<li>Fill in the dialog:<br/>
-<br/>
-<img src="create_new_project_dialog.jpg"/><br/>
-<br/>
-</li>
-<li>
-Next, you'll be asked to import your files into your project. Be sure to choose the "Use CVS or SVN entries file" or
-all the .svn files will end up in your Project, which you probably don't want:<br/>
-<br/>
-<img src="initial_import.jpg"/><br/>
-<br/>
-Project Viewer will automatically switch to your new project so you can begin working immediately.<br/>
-<br/>
-</li>
-<li>
-Right click on the top node of your project and select "Properties".  Select
-"Subversion settings" from the left panel.  The URL should be filled in for you.
-If the repository requires a username and password, fill them in here, or leave the
-fields blank if the repository allows anonymous access:<br/>
-<br/>
-<img src="subversion_settings.jpg"/><br/>
-<br/>
-</li>
-<li>
-Click "OK" to save your settings.
-</li>
-
-</ol>
-</p>
+There should be a "compare" to open a diff.  This needs a dialog to be
+able to pick a specific revision to compare the local file to, or to
+diff two non-local revisions.  Need to pop this as an option in the log
+viewer. - done, I called it "diff" rather than "compare" and am using JDiff
+plugin rather than svn diff.
 
 
-<hr>
-<p>
-<a name="3"><h2>Handling individual files</h2></a>
-</p>
-<p>
-There may be times when you are working on a file that is not in a Project Viewer
-project, but the file is under version control.  All you want to do is update or
-commit that file.  Several Subversion commands are available on the text area
-context menu.  Right click anywhere in the text area and select the "Subversion"
-submenu:<br/>
-<br/>
-<img src="text_area_context_menu.jpg"/><br/>
-<br/>
 
-</p>
-<p>
-The only downside of working with individual files like this is if the
-repository requires a username and password.  This context menu works
-completely independently of Project Viewer, so there is (currently) no way
-to set a username or password to use with these commands.
+The basic subversion commands:
+
+svn add - done
+svn blame
+svn cat
+svn checkout - done
+svn cleanup - done
+svn commit - done
+svn copy - done
+svn delete - done
+svn diff - done
+svn export
+svn help
+svn import
+svn info - done
+svn list - done
+svn lock - done
+svn log - done
+svn merge
+svn mkdir
+svn move - done
+svn propdel - done
+svn propedit - done
+svn propget - done
+svn proplist - done
+svn propset - done
+svn resolved - done
+svn revert - done
+svn status - done
+svn switch
+svn unlock - done
+svn update - done
+
+
+</pre>
 </p>
 
-<hr>
+<hr/>
+
 <p>
-<a name="4"><h2>How to undelete a deleted file</h2></a>
-</p>
-<p>
+How to undelete a deleted file:
 <ol>
 <li>First, run the log command on the directory containing the deleted file or directory.  Be sure "Show paths" is checked.</li>
 <li>Find the deleted file in the log output.</li>
@@ -336,18 +241,12 @@ to set a username or password to use with these commands.
 Don't forget that in subversion, a "move" is really a "copy" followed by a "delete".  To undo a "move", your best bet
 is to just "move" the files back.  Doing a "revert" does NOT undo a "move".  If you do "revert", your moved files will
 be removed from their new destination, and then you'll also need to follow the undelete instructions above to get them
-back into their original location.<br/>
-<br/>
+back into their original location.
 </p>
 
-<hr>
-<p>
-<a name="5"><h2>Licenses</h2></a>
-</p>
+<hr/>
 
-<p>
-<b>SVN Plugin</b><br/>
-<br/>
+<b>License:</b>
 The SVNPlugin is licensed as follows:
 
 <pre>
@@ -377,11 +276,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </pre>
-</p>
 
-<p>
-<b>SVNKit Library</b><br/>
-<br/>
 This plugin uses the SVNKit library (www.svnkit.com) from TMate Software, which has this license:
 
 <pre>
@@ -433,11 +328,8 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </pre>
-</p>
 
 <p>
-<b>SwingWorker</b><br/>
-<br/>
 This plugin also uses the original SwingWorker library, which is licensed as follows.
 Once Java 1.6 becomes more widespread, I'll replace this library with the SwingWorker
 classes distributed with Java itself.
@@ -914,6 +806,8 @@ DAMAGES.
              END OF TERMS AND CONDITIONS
 </pre>
 </p>
-
+<p>
+This program contains Allen Holub's Date Selector utility.
+(c) 2003 Allen I. Holub. All Rights Reserved.</p>
 </body>
 </html>
