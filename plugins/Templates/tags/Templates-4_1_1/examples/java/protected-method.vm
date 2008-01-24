@@ -1,0 +1,3 @@
+## template=Protected Method
+#set ( $accessModifier = "protected" )
+#parse ( "java/method.vm" )
