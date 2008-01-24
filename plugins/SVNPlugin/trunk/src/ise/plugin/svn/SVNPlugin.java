@@ -83,24 +83,26 @@ public class SVNPlugin extends EBPlugin {
         }
     }
 
-    private static TextAreaContextMenu createContextMenu(View view) {
-        if(menuMap == null) {
+    private static TextAreaContextMenu createContextMenu( View view ) {
+        if ( menuMap == null ) {
             menuMap = new HashMap<View, TextAreaContextMenu>();
         }
-        TextAreaContextMenu menu = menuMap.get(view);
+        TextAreaContextMenu menu = menuMap.get( view );
         if ( menu == null ) {
-            menu = new TextAreaContextMenu(view);
-            menuMap.put(view, menu);
+            menu = new TextAreaContextMenu( view );
+            menuMap.put( view, menu );
         }
         return menu;
     }
 
     private static void addContextMenu( View view ) {
-        TextAreaContextMenu context_menu = createContextMenu(view);
-        removeContextMenu( view );
+        TextAreaContextMenu context_menu = createContextMenu( view );
         JPopupMenu menu = view.getTextArea().getRightClickPopup();
-        menu.insert( new JPopupMenu.Separator(), 0 );
-        menu.insert( context_menu, 0 );
+        if ( !context_menu.equals( menu.getComponent( 0 ) ) ) {
+            removeContextMenu( view );
+            menu.insert( new JPopupMenu.Separator(), 0 );
+            menu.insert( context_menu, 0 );
+        }
     }
 
     private static void removeContextMenu( View view ) {
