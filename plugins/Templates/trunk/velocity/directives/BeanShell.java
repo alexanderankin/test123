@@ -1,6 +1,7 @@
 /*
  * BeanShell.java
  * Copyright (c) 2002 Calvin Yu
+ * Copyright (c) 2008 Steve Jakob
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
