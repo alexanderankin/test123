@@ -28,55 +28,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
+// imports
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
-import java.util.List;
+import java.io.File;
+import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
-import ise.plugin.svn.data.DeleteData;
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
+import ise.plugin.svn.PVHelper;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.library.PasswordHandler;
+import ise.plugin.svn.library.PasswordHandlerException;
 
 
-public class DeleteDialog extends JDialog {
+public class LoginDialog extends JDialog {
 
     private View view = null;
-    private List<String> paths = null;
-    private DeleteData data = null;
+    private LoginPanel login = null;
 
-    /**
-     * @param view the parent frame
-     * @param path the local working file to diff against.
-     */
-    public DeleteDialog( View view, DeleteData data ) {
-        this( view, data, false );
+    private boolean canceled = true;
+
+    public LoginDialog( View view, String title, String message, String filename ) {
+        super( ( JFrame ) view, title, true );
+        this.view = view;
+        init( message, filename );
     }
 
-    public DeleteDialog( View view, DeleteData data, boolean showLogin ) {
-        super( ( JFrame ) view, "Delete", true );
-        if ( data == null ) {
-            throw new IllegalArgumentException( "data may not be null" );
-        }
-        this.view = view;
-        this.data = data;
+    /** Initialises the option pane. */
+    protected void init( String msg, String filename ) {
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final JCheckBox force_cb = new JCheckBox( "Force" );
-        force_cb.setSelected( data.getForce() );
-        final JCheckBox dry_run_cb = new JCheckBox( "Dry run" );
-        dry_run_cb.setSelected( data.getDryRun() );
-        final JCheckBox delete_files_cb = new JCheckBox( "Delete files from file system" );
-        delete_files_cb.setSelected( data.getDeleteFiles() );
+        JLabel message = new JLabel(msg);
 
-        // possible login
-        final LoginPanel login = new LoginPanel( data.getPaths().get( 0 ) );
-        login.setVisible( showLogin );
+        login = new LoginPanel( filename );
 
-
+        // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( "Ok" );
@@ -87,38 +84,44 @@ public class DeleteDialog extends JDialog {
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        getData().setForce( force_cb.isSelected() );
-                        getData().setDryRun( dry_run_cb.isSelected() );
-                        getData().setDeleteFiles( delete_files_cb.isSelected() );
-                        DeleteDialog.this.setVisible( false );
-                        DeleteDialog.this.dispose();
+                        canceled = false;
+                        LoginDialog.this.setVisible( false );
+                        LoginDialog.this.dispose();
                     }
                 }
                                 );
 
         cancel_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        DeleteDialog.this.data = null;
-                        DeleteDialog.this.setVisible( false );
-                        DeleteDialog.this.dispose();
+                        canceled = true;
+                        LoginDialog.this.setVisible( false );
+                        LoginDialog.this.dispose();
                     }
                 }
                                     );
 
-        panel.add( force_cb, "0, 0, 1, 1, W, w, 3" );
-        panel.add( dry_run_cb, "0, 1, 1, 1, W, w, 3" );
-        panel.add( delete_files_cb, "0, 2, 1, 1, W, w, 3" );
-        if ( showLogin ) {
-            panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 3, 1, 1" );
-            panel.add( login, "0, 4, 1, 1, 0, w, 0" );
-        }
-        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 5, 1, 1" );
-        panel.add( btn_panel, "0, 6, 1, 1, E" );
+        // add the components to the option panel
+        panel.add( "0, 0, 1, 1, E, w, 3", message);
+        panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 2, 1, 1, 0, w, 3", login );
+        panel.add( "0, 3, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 4, 1, 1, E,  , 0", btn_panel );
+
         setContentPane( panel );
         pack();
+
     }
 
-    public DeleteData getData() {
-        return data;
+    public boolean getCanceled() {
+        return canceled;
     }
+
+    public String getUsername() {
+        return login.getUsername();
+    }
+
+    public String getPassword() {
+        return login.getPassword();
+    }
+
 }

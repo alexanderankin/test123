@@ -45,6 +45,7 @@ import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
+import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.Buffer;
@@ -88,9 +89,9 @@ public class RevertAction implements ActionListener {
             // get the paths
             boolean recursive = false;
             for ( String path : paths ) {
-                if (path != null) {
-                    File file = new File(path);
-                    if (file.isDirectory()) {
+                if ( path != null ) {
+                    File file = new File( path );
+                    if ( file.isDirectory() ) {
                         recursive = true;
                     }
                 }
@@ -107,9 +108,21 @@ public class RevertAction implements ActionListener {
             }
             else {
                 // have the user confirm they really want to revert
-                int response = JOptionPane.showConfirmDialog( view, "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.NO_OPTION ) {
-                    return ;
+                if ( username == null || username.length() == 0 ) {
+                    LoginDialog ld = new LoginDialog( view, "Confirm Revert", "Are you sure you want to revert?", paths.get( 0 ) );
+                    GUIUtils.center( view, ld );
+                    ld.setVisible( true );
+                    if ( ld.getCanceled() == true ) {
+                        return ;
+                    }
+                    username = ld.getUsername();
+                    password = ld.getPassword();
+                }
+                else {
+                    int response = JOptionPane.showConfirmDialog( view, "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                    if ( response == JOptionPane.NO_OPTION ) {
+                        return ;
+                    }
                 }
             }
 
@@ -153,11 +166,11 @@ public class RevertAction implements ActionListener {
                     try {
                         AddResults results = get();
                         JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, view, username, password );
-                        panel.addTab("Revert", results_panel);
-                        for (String path : results.getPaths()) {
-                            Buffer buffer = jEdit.getBuffer(path);
-                            if (buffer != null) {
-                                buffer.reload(RevertAction.this.view);
+                        panel.addTab( "Revert", results_panel );
+                        for ( String path : results.getPaths() ) {
+                            Buffer buffer = jEdit.getBuffer( path );
+                            if ( buffer != null ) {
+                                buffer.reload( RevertAction.this.view );
                             }
                         }
                     }

@@ -313,10 +313,15 @@ submenu:<br/>
 
 </p>
 <p>
-The only downside of working with individual files like this is if the
-repository requires a username and password.  This context menu works
-completely independently of Project Viewer, so there is (currently) no way
-to set a username or password to use with these commands.
+Since the file may not be part of a Project Viewer project, each of the commands
+available on the context menu provide a place to enter the username and password
+for the Subversion repository.  If the file does happen to be part of a Project
+Viewer project, the username and password will be found in the project settings
+and the username and password boxes will be pre-filled for you.
+</p>
+<p>
+Note that if the file is not in fact under version control, you will receive
+and error from each of these commands.
 </p>
 
 <hr>

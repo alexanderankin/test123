@@ -45,6 +45,7 @@ import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
+import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
@@ -105,9 +106,21 @@ public class ResolvedAction implements ActionListener {
             }
             else {
                 // have the user confirm they really want to resolve
-                int response = JOptionPane.showConfirmDialog( view, "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                if ( response == JOptionPane.NO_OPTION ) {
-                    return ;
+                if ( username == null || username.length() == 0 ) {
+                    LoginDialog ld = new LoginDialog( view, "Confirm Resolve", "Are you sure you want to mark as resolved?", paths.get( 0 ) );
+                    GUIUtils.center( view, ld );
+                    ld.setVisible( true );
+                    if ( ld.getCanceled() == true ) {
+                        return ;
+                    }
+                    username = ld.getUsername();
+                    password = ld.getPassword();
+                }
+                else {
+                    int response = JOptionPane.showConfirmDialog( view, "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                    if ( response == JOptionPane.NO_OPTION ) {
+                        return ;
+                    }
                 }
             }
 

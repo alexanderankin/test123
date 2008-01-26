@@ -80,7 +80,7 @@ public class CommitAction implements ActionListener {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new CommitDialog( view, paths );
+            dialog = new CommitDialog( view, paths, username == null );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             final CommitData cd = dialog.getCommitData();
@@ -88,10 +88,6 @@ public class CommitAction implements ActionListener {
                 return ;     // null means user canceled
             }
 
-            if ( username != null && password != null ) {
-                cd.setUsername( username );
-                cd.setPassword( password );
-            }
             cd.setOut( new ConsolePrintStream( view ) );
 
             view.getDockableWindowManager().showDockableWindow( "subversion" );

@@ -33,6 +33,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
@@ -73,9 +74,15 @@ public class CleanupAction implements ActionListener {
 
             data.setPaths( paths );
 
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
+            if ( data.getUsername() == null || data.getUsername().length() == 0 ) {
+                LoginDialog ld = new LoginDialog( view, "Cleanup", "Confirm SVN login for Cleanup command:", data.getPaths().get( 0 ) );
+                GUIUtils.center( view, ld );
+                ld.setVisible( true );
+                if ( ld.getCanceled() == true ) {
+                    return ;
+                }
+                data.setUsername( ld.getUsername() );
+                data.setPassword( ld.getPassword() );
             }
 
             data.setOut( new ConsolePrintStream( view ) );
