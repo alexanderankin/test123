@@ -31,7 +31,7 @@
   </para>
 
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, EcmaScript parser by Dale Anson, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin and EcmaScript parser by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
  </para>
 
  </legalnotice>
@@ -58,8 +58,9 @@
 
  </itemizedlist>
 
+ <bridgehead>XML and SideKick</bridgehead>
  <para>
-  Note that to provide most of its functionality, the XML plugin relies on
+ To provide most of its functionality, the XML plugin relies on
  the SideKick plugin. What this means is that Sidekick must be enabled, and
  docked (preferably to your right or left) and parsing your current buffer
  in order for certain operations to succeed.  Select Plugins - SideKick -
@@ -728,8 +729,7 @@
  <listitem><para> 2 new actions: select Element or Code Block, and Select Between Tags
  (Jakub Roztocil)
  </para> </listitem>
- <listitem><para> Un-broke characters to entities (1579232 ) </para></listitem>
- <listitem><para> Un-broke error highlighting (1597017 ) </para></listitem>
+ <listitem><para> Un-broke characters to entities (1579232) and error highlighting (1597017) (Alan Ezust) </para></listitem>
  </itemizedlist>
  </listitem> 
 
@@ -739,7 +739,7 @@
  <listitem><para> XML plugin now includes EcmascriptSideKick (initial release)
  and a new CSS2SideKick, both based on javacc parsers. The HtmlSideKick now uses
  both the CSS2SideKick and the EcmascriptSideKick to parse in-line &lt;style&gt;
- and &lt;script&gt; blocks in html code.</para></listitem>
+ and &lt;script&gt; blocks in html code. (Dale Anson) </para></listitem>
  <listitem><para>Bugfix to get highlighting to work with refactored classes in jEdit 4.3pre7. (1594103) </para></listitem>
  <listitem><para>Fixes to HTML completion (sf.net bug#1579232)
  </para> </listitem>
@@ -752,7 +752,7 @@
  <emphasis role="bold">Version 2.0.3</emphasis>
  Requires jEdit 4.3pre5, Java 1.5, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
  <itemizedlist>
- <listitem><para> Fixed bug with error messages from files in samba shares. </para></listitem>
+ <listitem><para> Fixed bug with error messages from files in samba shares. (Alan Ezust) </para></listitem>
  <listitem><para> Merged XmlIndenter plugin with XML plugin. </para></listitem>
  </itemizedlist>
  </para></listitem>
@@ -804,8 +804,8 @@
 
   <itemizedlist>
     <listitem> <para> Generates ant completion xml as part of build process (Ben Burgess) </para> </listitem>
-    <listitem> <para> Removed Xerces from this plugin and added a dependency on XercesPlugin 2.8.0. </para></listitem>
-    <listitem> <para> Removed htmlparser from this plugin, since the HtmlSideKick does a better job of parsing HTML.</para> </listitem>
+    <listitem> <para> Removed Xerces from this plugin and added a dependency on XercesPlugin 2.8.0. (ezust) </para></listitem>
+    <listitem> <para> Removed htmlparser from this plugin, since the HtmlSideKick does a better job of parsing HTML. (ezust) </para> </listitem>
   </itemizedlist>
 
  </para></listitem>
