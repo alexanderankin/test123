@@ -48,13 +48,11 @@ public class TextAreaContextMenu extends JMenu {
         super( "Subversion" );
         this.view = view;
 
-        // these items act on working copies.  TODO: I'd like to add update and commit
-        // to this menu, but then I'd need to figure out how to find the repository
-        // info for the file in the current buffer.  Maybe call info first?
-        JMenuItem item = new JMenuItem( "Add" );
+        // these items act on working copies.
+        JMenuItem item = new JMenuItem( "Add..." );
         item.addActionListener( getAddActionListener() );
         add( item );
-        item = new JMenuItem( "Update" );
+        item = new JMenuItem( "Update..." );
         item.addActionListener( getUpdateActionListener() );
         add( item );
         item = new JMenuItem( "Revert" );
@@ -80,6 +78,10 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( "Delete" );
         item.addActionListener( getDeleteActionListener() );
         add( item );
+    }
+
+    public String toString() {
+        return "Subversion";
     }
 
     // get a list containing a single path representing the file in the current

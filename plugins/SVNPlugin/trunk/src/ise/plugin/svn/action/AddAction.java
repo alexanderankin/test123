@@ -80,7 +80,7 @@ public class AddAction implements ActionListener {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new AddDialog( view, paths );
+            dialog = new AddDialog( view, paths, username == null );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             final SVNData cd = dialog.getSVNData();
@@ -88,7 +88,7 @@ public class AddAction implements ActionListener {
                 return ;     // null means user canceled
             }
 
-            if ( username != null && password != null ) {
+            if ( username != null && cd.getUsername() == null) {
                 cd.setUsername( username );
                 cd.setPassword( password );
             }

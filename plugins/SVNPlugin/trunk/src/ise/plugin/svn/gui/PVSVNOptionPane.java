@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.library.swingworker.SwingWorker;
@@ -51,8 +52,6 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  * ProjectViewer.
  */
 public class PVSVNOptionPane extends AbstractOptionPane {
-    // instance fields
-    public final static String PREFIX = "ise.plugin.svn.pv.";
 
     private JLabel url_label;
     private JTextField url;
@@ -71,16 +70,16 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         String project_name = getProjectName();
 
         // url field
-        url_label = new JLabel( jEdit.getProperty( PREFIX + "url.label" ) );
-        url = new JTextField( jEdit.getProperty( PREFIX + project_name + ".url" ), 30 );
+        url_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "url.label" ) );
+        url = new JTextField( jEdit.getProperty( PVHelper.PREFIX + project_name + ".url" ), 30 );
 
         // username field
-        username_label = new JLabel( jEdit.getProperty( PREFIX + "username.label" ) );
-        username = new JTextField( jEdit.getProperty( PREFIX + project_name + ".username" ), 30 );
+        username_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "username.label" ) );
+        username = new JTextField( jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" ), 30 );
 
         // password field
-        password_label = new JLabel( jEdit.getProperty( PREFIX + "password.label" ) );
-        String pwd = jEdit.getProperty( PREFIX + project_name + ".password" );
+        password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
+        String pwd = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
         if ( pwd != null && pwd.length() > 0 ) {
             try {
                 PasswordHandler ph = new PasswordHandler();
@@ -120,11 +119,11 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     protected void _save() {
         String name = getProjectName();
         jEdit.setProperty(
-            PREFIX + name + ".url",
+            PVHelper.PREFIX + name + ".url",
             ( url == null ? "" : url.getText() )
         );
         jEdit.setProperty(
-            PREFIX + name + ".username",
+            PVHelper.PREFIX + name + ".username",
             ( username == null ? "" : username.getText() )
         );
 
@@ -143,7 +142,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             e.printStackTrace();
         }
         jEdit.setProperty(
-            PREFIX + name + ".password",
+            PVHelper.PREFIX + name + ".password",
             pwd
         );
     }
@@ -194,7 +193,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         protected void done() {
             try {
                 // populate url field from existing svn info, if available
-                url_label.setText( jEdit.getProperty( PREFIX + "url.label" ) );
+                url_label.setText( jEdit.getProperty( PVHelper.PREFIX + "url.label" ) );
                 List<SVNInfo> info_results = get();
                 String url_text = null;
                 if ( info_results != null && info_results.size() > 0 ) {

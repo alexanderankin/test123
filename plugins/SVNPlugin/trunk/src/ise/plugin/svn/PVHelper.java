@@ -28,13 +28,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn;
 
+import java.util.*;
+
 import org.gjt.sp.jedit.*;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTNode;
 import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager;
 import projectviewer.importer.RootImporter;
 import javax.swing.SwingUtilities;
+import ise.plugin.svn.library.PasswordHandler;
 
 public class PVHelper {
+    // prefix for properties stored for PV settings
+    public final static String PREFIX = "ise.plugin.svn.pv.";
+
+    // filename to project name lookup
+    private static HashMap<String, VPTProject> projectForFile = new HashMap<String, VPTProject>();
+
 
     /**
      * @return true if the ProjectViewer plugin is loaded
@@ -60,4 +71,52 @@ public class PVHelper {
         return project == null ? "" : project.getRootPath();
     }
 
+    /**
+     * @return the name of the project containing the given filename
+     */
+    public static VPTProject getProjectNameForFile( String filename ) {
+        if ( filename == null ) {
+            return null;
+        }
+        VPTProject project = projectForFile.get( filename );
+        if ( project != null ) {
+            return project;
+        }
+        if ( !isProjectViewerAvailable() ) {
+            return null;
+        }
+        ProjectManager pm = ProjectManager.getInstance();
+        for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
+            project = ( VPTProject ) it.next();
+            Collection nodes = project.getOpenableNodes();
+            for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
+                VPTNode node = ( VPTNode ) iter.next();
+                if ( node != null && filename.equals( node.getNodePath() ) ) {
+                    projectForFile.put( filename, project );
+                    return project;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String[] getSVNLogin(String filename) {
+        VPTProject project = getProjectNameForFile(filename);
+        if (project == null) {
+            return new String[]{null, null};
+        }
+        String project_name = project.getName();
+        String username = jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" );
+        String password = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
+        if ( password != null && password.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                password = ph.decrypt( password );
+            }
+            catch ( Exception e ) {
+                password = "";
+            }
+        }
+        return new String[]{username, password};
+    }
 }
