@@ -142,6 +142,21 @@ public class GUIUtils {
    }
 
    /**
+    * @param c  a Component
+    * @return   the Dialog containing the component or null if the component
+    * doesn't have a containing Window.
+    */
+   public static Dialog getParentDialog( Component c ) {
+      Object parent = c.getParent();
+      while ( parent != null ) {
+         if ( parent instanceof Dialog )
+            return ( Dialog ) parent;
+         parent = ( ( Component ) parent ).getParent();
+      }
+      return null;
+   }
+
+   /**
     * Calculates the best location to show the component based on the given (x, y)
     * coordinates. The returned point will be as close as possible to the original
     * point while allowing the entire component to be displayed on screen. This is
