@@ -84,6 +84,7 @@ public class UpdateAction implements ActionListener {
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
             data = new UpdateData();
+            data.setPaths( paths );
 
             boolean recursive = false;
             for ( String path : paths ) {
@@ -94,18 +95,15 @@ public class UpdateAction implements ActionListener {
                     }
                 }
             }
-            data.setPaths( paths );
-            data.setRecursive( recursive );
+            data.setRecursive( recursive ); // if recursive is false here, it means paths contains only files, no directories
 
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
+            data.setUsername( username );
+            data.setPassword( password );
 
             data.setOut( new ConsolePrintStream( view ) );
 
             // show dialog
-            UpdateDialog dialog = new UpdateDialog( view, data );
+            UpdateDialog dialog = new UpdateDialog( view, data, data.getUsername() == null );
             GUIUtils.center( view, dialog );
             dialog.setVisible( true );
             data = dialog.getData();

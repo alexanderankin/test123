@@ -38,33 +38,58 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.UpdateData;
 import ise.java.awt.KappaLayout;
-
+import ise.plugin.svn.PVHelper;
 
 public class UpdateDialog extends JDialog {
 
     private View view = null;
     private List<String> paths = null;
     private UpdateData data = null;
+    private JLabel username_label;
+    private JTextField username;
+    private JLabel password_label;
+    private JPasswordField password;
 
     /**
      * @param view the parent frame
      * @param path the local working file to diff against.
      */
-    public UpdateDialog(View view, UpdateData data) {
+    public UpdateDialog( View view, UpdateData data ) {
+        this( view, data, false );
+    }
+
+    public UpdateDialog( View view, UpdateData data, boolean showLogin ) {
+
         super( ( JFrame ) view, "Update", true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
         this.view = view;
         this.data = data;
+        init( showLogin );
+    }
 
+    private void init( boolean showLogin ) {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Update To:", SwingConstants.HORIZONTAL, false);
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( "Update To:", SwingConstants.HORIZONTAL, false );
 
-        final JCheckBox recursive_cb = new JCheckBox("Recursive");
-        recursive_cb.setSelected(data.getRecursive());
+        final JCheckBox recursive_cb = new JCheckBox( "Recursive" );
+        recursive_cb.setSelected( data.getRecursive() );
+        recursive_cb.setVisible( data.getRecursive() );
+
+        // possible username and password values
+        final LoginPanel login;
+        if ( data.getUsername() == null ) {
+            login = new LoginPanel(data.getPaths().get(0));
+        }
+        else {
+            login = new LoginPanel(data.getUsername(), data.getPassword());
+        }
+
+        // username and password may not need to be visible
+        login.setVisible(showLogin);
 
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -79,7 +104,10 @@ public class UpdateDialog extends JDialog {
                         // get revision to update to
                         getData().setSVNRevision( rsp.getRevision() );
 
-                        getData().setRecursive(recursive_cb.isSelected());
+                        getData().setRecursive( recursive_cb.isSelected() );
+
+                        getData().setUsername(login.getUsername());
+                        getData().setPassword(login.getPassword());
 
                         UpdateDialog.this.setVisible( false );
                         UpdateDialog.this.dispose();
@@ -96,12 +124,20 @@ public class UpdateDialog extends JDialog {
                 }
                                     );
 
-        panel.add(rsp, "0, 0, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(6), "0, 1, 1, 1");
-        panel.add(recursive_cb, "0, 2, 1, 1, W, w, 3");
-        panel.add(KappaLayout.createVerticalStrut(11), "0, 3, 1, 1");
-        panel.add(btn_panel, "0, 4, 1, 1, E");
-        setContentPane(panel);
+        panel.add( rsp, "0, 0, 1, 1, W, w" );
+        if ( data.getRecursive() ) {
+            panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 1, 1, 1" );
+            panel.add( recursive_cb, "0, 2, 1, 1, W, w, 3" );
+        }
+
+        if ( showLogin ) {
+            panel.add( "0, 3, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+            panel.add( "0, 4, 1, 1, 0, w", login);
+        }
+
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 6, 1, 1" );
+        panel.add( btn_panel, "0, 7, 1, 1, E" );
+        setContentPane( panel );
         pack();
     }
 

@@ -40,9 +40,11 @@ import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
@@ -52,7 +54,9 @@ import ise.plugin.svn.library.PasswordHandlerException;
  * Dialog for adding files and directories.
  */
 public class AddDialog extends JDialog {
-    // instance fields
+
+    public final static String PREFIX = "ise.plugin.svn.pv.";
+
     private View view = null;
     private List<String> nodes = null;
 
@@ -61,17 +65,21 @@ public class AddDialog extends JDialog {
     private SVNData addData = null;
 
     public AddDialog( View view, List<String> nodes ) {
+        this( view, nodes, false );
+    }
+
+    public AddDialog( View view, List<String> nodes, boolean showLogin ) {
         super( ( JFrame ) view, "Add", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
         this.view = view;
         this.nodes = nodes;
-        _init();
+        _init( showLogin );
     }
 
     /** Initialises the option pane. */
-    protected void _init() {
+    protected void _init( boolean showLogin ) {
 
         addData = new SVNData();
 
@@ -95,7 +103,7 @@ public class AddDialog extends JDialog {
         addData.setPaths( paths );
         addData.setRecursive( recursive );
 
-        JLabel file_label = new JLabel( "Adding " + (paths.size() == 1 ? "this file:" : "these files:") );
+        JLabel file_label = new JLabel( "Adding " + ( paths.size() == 1 ? "this file:" : "these files:" ) );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
@@ -135,6 +143,10 @@ public class AddDialog extends JDialog {
                 }
                                       );
 
+        // possible login
+        final LoginPanel login = new LoginPanel(nodes.get(0));
+        login.setVisible(showLogin);
+
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -163,6 +175,9 @@ public class AddDialog extends JDialog {
                             addData.setPaths( paths );
                         }
 
+                        addData.setUsername( login.getUsername() );
+                        addData.setPassword( login.getPassword() );
+
                         AddDialog.this.setVisible( false );
                         AddDialog.this.dispose();
                     }
@@ -184,13 +199,19 @@ public class AddDialog extends JDialog {
 
         panel.add( "0, 0, 1, 1, W,  , 3", file_label );
         panel.add( "0, 1, 1, 1, W, wh, 3", file_scroller );
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         if ( recursive ) {
+            panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
             panel.add( "0, 3, 1, 1, W,  , 3", recursive_cb );
-            panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
         }
-        panel.add( "0, 5, 1, 1, E,  , 0", btn_panel );
+
+        if ( showLogin ) {
+            panel.add( "0, 5, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+            panel.add( "0, 6, 1, 1, 0, w, 3", login);
+        }
+
+        panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 9, 1, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -201,11 +222,11 @@ public class AddDialog extends JDialog {
         return addData;
     }
 
-    public static void main (String[] args) {
+    public static void main ( String[] args ) {
         List<String> paths = new ArrayList<String>();
         paths.add( "/home/danson/path/filename.txt" );
         paths.add( "/home/danson/path/filename2.txt" );
-        AddDialog dialog = new AddDialog( null, paths );
+        AddDialog dialog = new AddDialog( null, paths, true );
         dialog.setVisible( true );
 
     }
