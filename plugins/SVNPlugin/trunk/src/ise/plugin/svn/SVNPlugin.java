@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.TextAreaContextMenu;
 import ise.plugin.svn.pv.NodeActor;
+import java.awt.Component;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -78,9 +79,11 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void start() {
+        /*
         for ( View view : jEdit.getViews() ) {
             addContextMenu( view );
         }
+        */
     }
 
     private static TextAreaContextMenu createContextMenu( View view ) {
@@ -96,10 +99,10 @@ public class SVNPlugin extends EBPlugin {
     }
 
     private static void addContextMenu( View view ) {
+        removeContextMenu( view );
         TextAreaContextMenu context_menu = createContextMenu( view );
         JPopupMenu menu = view.getTextArea().getRightClickPopup();
         if ( !context_menu.equals( menu.getComponent( 0 ) ) ) {
-            removeContextMenu( view );
             menu.insert( new JPopupMenu.Separator(), 0 );
             menu.insert( context_menu, 0 );
         }
@@ -107,14 +110,10 @@ public class SVNPlugin extends EBPlugin {
 
     private static void removeContextMenu( View view ) {
         JPopupMenu menu = view.getTextArea().getRightClickPopup();
-        MenuElement[] mes = menu.getSubElements();
-        for ( int i = 0; i < mes.length; i++ ) {
-            MenuElement me = mes[ i ];
-            if ( me.getComponent() instanceof TextAreaContextMenu && ( ( TextAreaContextMenu ) me ).getText().equals( "Subversion" ) ) {
-                menu.remove( i );
-                menu.remove( i );   // remove the separator
-                break;
-            }
+        Component[] mes = menu.getComponents();
+        if (mes[0].toString().equals("Subversion")) {
+            menu.remove(0);
+            menu.remove(0);
         }
     }
 
