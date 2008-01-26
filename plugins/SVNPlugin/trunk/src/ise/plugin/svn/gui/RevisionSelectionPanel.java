@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -37,6 +37,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.gui.dateselector.*;
+import ise.plugin.svn.library.GUIUtils;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -55,6 +57,7 @@ public class RevisionSelectionPanel extends JPanel {
     private JSpinner revision_number = null;
     private JRadioButton date_rb = new JRadioButton( "Date:" );
     private JSpinner date_spinner = null;
+    private JButton date_popup = null;
 
 
     private String title;
@@ -85,7 +88,7 @@ public class RevisionSelectionPanel extends JPanel {
         init();
     }
 
-    public RevisionSelectionPanel(String title, int direction, boolean showHead, boolean showBase, boolean showNumber, boolean showDate, boolean showWorking ) {
+    public RevisionSelectionPanel( String title, int direction, boolean showHead, boolean showBase, boolean showNumber, boolean showDate, boolean showWorking ) {
         this.title = title;
         this.direction = direction;
         this.showHead = showHead;
@@ -137,6 +140,7 @@ public class RevisionSelectionPanel extends JPanel {
                     public void actionPerformed( ActionEvent ae ) {
                         revision_number.setEnabled ( RevisionSelectionPanel.this.revision_number_rb.isSelected() );
                         date_spinner.setEnabled ( RevisionSelectionPanel.this.date_rb.isSelected() );
+                        date_popup.setEnabled( RevisionSelectionPanel.this.date_rb.isSelected() );
                     }
                 };
 
@@ -161,6 +165,7 @@ public class RevisionSelectionPanel extends JPanel {
         date_rb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         RevisionSelectionPanel.this.date_spinner.setEnabled( RevisionSelectionPanel.this.date_rb.isSelected() );
+                        RevisionSelectionPanel.this.date_popup.setEnabled( RevisionSelectionPanel.this.date_rb.isSelected() );
                         if ( RevisionSelectionPanel.this.date_spinner.isEnabled() ) {
                             Date date = ( Date ) date_spinner.getValue();
                             RevisionSelectionPanel.this.setRevision( SVNRevision.create( date ) );
@@ -189,8 +194,32 @@ public class RevisionSelectionPanel extends JPanel {
                                         );
         }
 
+        date_popup = new JButton( new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif" ) ) );
+        date_popup.setMargin( new Insets( 1, 1, 1, 1 ) );
+        date_popup.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    Dialog parent = GUIUtils.getParentDialog( RevisionSelectionPanel.this );
+                    final DateSelectorDialog dsd = new DateSelectorDialog( parent );
+                    dsd.setLocation( new Point(parent.getLocation().x + date_popup.getLocation().x, parent.getLocation().y + date_popup.getLocation().y ));
+                    dsd.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                Date date = dsd.getSelectedDate();
+                                if ( date != null ) {
+                                    date_spinner.getModel().setValue( date );
+                                }
+                            }
+                        }
+                    );
+                    dsd.setVisible( true );
+                }
+            }
+        );
+
         revision_number.setEnabled( false );
         date_spinner.setEnabled( false );
+        date_popup.setEnabled( false );
 
         if ( direction == SwingConstants.HORIZONTAL ) {
             add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
@@ -211,6 +240,7 @@ public class RevisionSelectionPanel extends JPanel {
             if ( showDate ) {
                 add( "2, 2, 1, 1, W, , 3", date_rb );
                 add( "3, 2, 1, 1, W, , 3", getDateChooser() );
+                add( "4, 2, 1, 1,  , , 3", date_popup );
             }
         }
         else {
@@ -231,6 +261,7 @@ public class RevisionSelectionPanel extends JPanel {
             if ( showDate ) {
                 add( "0, 5, 1, 1, W, , 3", date_rb );
                 add( "1, 5, 1, 1, W, , 3", getDateChooser() );
+                add( "2, 5, 1, 1,  , , 3", date_popup );
             }
         }
     }
@@ -281,10 +312,10 @@ public class RevisionSelectionPanel extends JPanel {
     public void setRevision( SVNRevision revision ) {
         this.revision = revision;
         if ( revision.getNumber() != -1 ) {
-            revision_number.getModel().setValue(revision.getNumber());
+            revision_number.getModel().setValue( revision.getNumber() );
         }
         else if ( revision.getDate() != null ) {
-            date_spinner.getModel().setValue(revision.getDate());
+            date_spinner.getModel().setValue( revision.getDate() );
         }
     }
 
@@ -302,13 +333,14 @@ public class RevisionSelectionPanel extends JPanel {
         working_rb.setEnabled( b );
         revision_number.setEnabled( revision_number_rb.isSelected() );
         date_spinner.setEnabled( date_rb.isSelected() );
+        date_popup.setEnabled( date_rb.isSelected() );
     }
 
     // for testing
     public static void main ( String[] args ) {
         RevisionSelectionPanel panel = new RevisionSelectionPanel( "some title" );
-        panel.setEnabled(false);
-        JFrame frame = new JFrame();
+        panel.setEnabled( true );
+        JDialog frame = new JDialog();
         frame.setContentPane( panel );
         frame.pack();
         frame.setVisible( true );
