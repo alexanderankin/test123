@@ -75,16 +75,20 @@ public class CommitDialog extends JDialog {
 
 
     public CommitDialog( View view, Map<String, String> nodes ) {
+        this(view, nodes, false);
+    }
+
+    public CommitDialog( View view, Map<String, String> nodes, boolean showLogin) {
         super( ( JFrame ) view, "Commit", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
         this.view = view;
         this.nodes = nodes;
-        init();
+        init(showLogin);
     }
 
-    protected void init() {
+    protected void init(boolean showLogin) {
 
         commitData = new CommitData();
 
@@ -164,6 +168,11 @@ public class CommitDialog extends JDialog {
                 }
                                    );
 
+        // possible login
+        final LoginPanel login = new LoginPanel(paths.get(0));
+        login.setVisible(showLogin);
+
+
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -200,6 +209,9 @@ public class CommitDialog extends JDialog {
                                 }
                             }
                             commitData.setCommitMessage( msg );
+
+                            commitData.setUsername(login.getUsername());
+                            commitData.setPassword(login.getPassword());
                         }
                         CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
@@ -247,9 +259,14 @@ public class CommitDialog extends JDialog {
             panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
             panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
         }
-        panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 12, 6, 1, E,  , 0", btn_panel );
+        if (showLogin) {
+            panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
+            panel.add( "0, 12, 6, 1, 0, w", login );
+        }
+
+        panel.add( "0, 13, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 14, 6, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();

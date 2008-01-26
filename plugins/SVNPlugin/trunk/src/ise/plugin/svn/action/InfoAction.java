@@ -32,9 +32,11 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.gui.ErrorPanel;
+import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
@@ -94,6 +96,16 @@ public class InfoAction implements ActionListener {
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
+            if ( username == null ) {
+                LoginDialog ld = new LoginDialog( view, "Info", "Confirm SVN login for Info command:", paths.get( 0 ) );
+                GUIUtils.center( view, ld );
+                ld.setVisible( true );
+                if ( ld.getCanceled() == true ) {
+                    return ;
+                }
+                username = ld.getUsername();
+                password = ld.getPassword();
+            }
             if ( username != null && password != null ) {
                 data.setUsername( username );
                 data.setPassword( password );

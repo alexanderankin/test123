@@ -83,10 +83,8 @@ public class DeleteAction implements ActionListener {
 
         data = new DeleteData();
         data.setPaths( paths );
-        if ( username != null && password != null ) {
-            data.setUsername( username );
-            data.setPassword( password );
-        }
+        data.setUsername( username );
+        data.setPassword( password );
     }
 
     public DeleteAction( View view, DeleteData data ) {
@@ -107,7 +105,7 @@ public class DeleteAction implements ActionListener {
             // show dialog
             if ( !data.pathsAreURLs() ) {
                 // working copy delete
-                DeleteDialog dialog = new DeleteDialog( view, data );
+                DeleteDialog dialog = new DeleteDialog( view, data, data.getUsername() == null );
                 GUIUtils.center( view, dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();
@@ -118,7 +116,7 @@ public class DeleteAction implements ActionListener {
             else {
                 // remote copy delete -- show path(s) to delete and commit
                 // message textbox and dropdown.
-                RemoteDeleteDialog dialog = new RemoteDeleteDialog(view, data);
+                RemoteDeleteDialog dialog = new RemoteDeleteDialog( view, data );
                 GUIUtils.center( view, dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();

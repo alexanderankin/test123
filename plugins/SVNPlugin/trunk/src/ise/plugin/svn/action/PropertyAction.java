@@ -33,6 +33,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Property;
 import ise.plugin.svn.data.PropertyData;
+import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.gui.PropertyPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
@@ -75,6 +76,17 @@ public class PropertyAction implements ActionListener {
             if ( data.hasDirectory() ) {
                 int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
+            }
+
+            if ( data.getUsername() == null || data.getUsername().length() == 0 ) {
+                LoginDialog ld = new LoginDialog( view, "Properties", "Confirm SVN login for Property command:", data.getPaths().get( 0 ) );
+                GUIUtils.center( view, ld );
+                ld.setVisible( true );
+                if ( ld.getCanceled() == true ) {
+                    return ;
+                }
+                data.setUsername( ld.getUsername() );
+                data.setPassword( ld.getPassword() );
             }
 
             // set up the svn console
