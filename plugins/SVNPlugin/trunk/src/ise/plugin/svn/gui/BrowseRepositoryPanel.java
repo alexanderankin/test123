@@ -305,6 +305,8 @@ public class BrowseRepositoryPanel extends JPanel {
                     public void actionPerformed( ActionEvent ae ) {
                         RepositoryData data = chooser.getSelectedRepository();
                         if ( data != null ) {
+                            username = data.getUsername();
+                            password = data.getPassword();
                             DirTreeNode root = new DirTreeNode( data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
@@ -848,7 +850,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             );
 
         pm.addSeparator();
-        mi = new JMenuItem( "Delete" );
+        mi = new JMenuItem( "Delete..." );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
