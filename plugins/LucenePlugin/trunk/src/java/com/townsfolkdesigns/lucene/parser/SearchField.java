@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2008 Eric Berry <elberry@gmail.com>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,111 +32,111 @@ import java.util.Collection;
  */
 public class SearchField {
 
-    /** If there this is not a "text" field, then there will be choices available to use in searches. */
-    private Collection<Choice> choices;
+   /** If there this is not a "text" field, then there will be choices available to use in searches. */
+   private Collection<Choice> choices;
 
-    /** The display name for this Field. This can be used for presenting this Field. */
-    private String displayName;
+   /** The display name for this Field. This can be used for presenting this Field. */
+   private String displayName;
 
-    /**
-     * The name of this field. Should be the same as the field added to the Document in the
-     * DocumentParser.parse method.
-     *
-     * @see com.eharmony.ehweb.search.parser.DocumentParser#parse(Object, org.apache.lucene.document.Document)
-     */
-    private String name;
+   /**
+    * The name of this field. Should be the same as the field added to the Document in the
+    * DocumentParser.parse method.
+    *
+    * @see com.eharmony.ehweb.search.parser.DocumentParser#parse(Object, org.apache.lucene.document.Document)
+    */
+   private String name;
 
-    /**
-     * Is this search field a "text" field, or does it have choices. If this returns false, then getChoices
-     * should be called to get a collection of the possible choices for this particular field.
-     */
-    private boolean text;
+   /**
+    * Is this search field a "text" field, or does it have choices. If this returns false, then getChoices
+    * should be called to get a collection of the possible choices for this particular field.
+    */
+   private boolean text;
 
-    public SearchField() {
+   public SearchField() {
 
-    }
+   }
 
-    public Collection<Choice> getChoices() {
+   public Collection<Choice> getChoices() {
 
-        return choices;
+      return choices;
 
-    }
+   }
 
-    public String getDisplayName() {
+   public String getDisplayName() {
 
-        return displayName;
+      return displayName;
 
-    }
+   }
 
-    public String getName() {
+   public String getName() {
 
-        return name;
+      return name;
 
-    }
+   }
 
-    public boolean isText() {
+   public boolean isText() {
 
-        return text;
+      return text;
 
-    }
+   }
 
-    public void setChoices(Collection<Choice> choices) {
+   public void setChoices(Collection<Choice> choices) {
 
-        this.choices = choices;
+      this.choices = choices;
 
-    }
+   }
 
-    public void setDisplayName(String displayName) {
+   public void setDisplayName(String displayName) {
 
-        this.displayName = displayName;
+      this.displayName = displayName;
 
-    }
+   }
 
-    public void setName(String name) {
+   public void setName(String name) {
 
-        this.name = name;
+      this.name = name;
 
-    }
+   }
 
-    public void setText(boolean text) {
+   public void setText(boolean text) {
 
-        this.text = text;
+      this.text = text;
 
-    }
+   }
 
-    public static class Choice {
+   public static class Choice {
+      private String name;
 
-        private Object value;
-        private String name;
+      private Object value;
 
-        public Choice() {
+      public Choice() {
 
-        }
+      }
 
-        public String getName() {
+      public String getName() {
 
-            return name;
+         return name;
 
-        }
+      }
 
-        public Object getValue() {
+      public Object getValue() {
 
-            return value;
+         return value;
 
-        }
+      }
 
-        public void setName(String name) {
+      public void setName(String name) {
 
-            this.name = name;
+         this.name = name;
 
-        }
+      }
 
-        public void setValue(Object value) {
+      public void setValue(Object value) {
 
-            this.value = value;
+         this.value = value;
 
-        }
+      }
 
-    }
+   }
 
 }

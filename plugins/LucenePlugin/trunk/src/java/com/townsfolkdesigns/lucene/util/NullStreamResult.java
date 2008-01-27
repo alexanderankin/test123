@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2008 Eric Berry <elberry@gmail.com>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 
 
 /**
- * 
+ *
  * @author eberry
  */
 /**
@@ -38,92 +38,83 @@ import javax.xml.transform.stream.StreamResult;
  *
  * @author eberry
  */
-public class NullStreamResult
-          extends StreamResult {
+public class NullStreamResult extends StreamResult {
 
-    public NullStreamResult() {
+   public NullStreamResult() {
 
-        // set the output stream and writer to "null" so the output won't go anywhere.
-        super.setOutputStream(new NullOutputStream());
-        super.setWriter(new NullWriter());
+      // set the output stream and writer to "null" so the output won't go anywhere.
+      super.setOutputStream(new NullOutputStream());
+      super.setWriter(new NullWriter());
 
-    }
+   }
 
-    @Override
-    public OutputStream getOutputStream() {
+   @Override
+   public OutputStream getOutputStream() {
 
-        return super.getOutputStream();
+      return super.getOutputStream();
 
-    }
+   }
 
-    @Override
-    public Writer getWriter() {
+   @Override
+   public Writer getWriter() {
 
-        // TODO Auto-generated method stub
-        return super.getWriter();
+      // TODO Auto-generated method stub
+      return super.getWriter();
 
-    }
+   }
 
-    @Override
-    public void setOutputStream(OutputStream outputStream) {
+   @Override
+   public void setOutputStream(OutputStream outputStream) {
 
-        throw new UnsupportedOperationException("The output stream cannot be set.");
+      throw new UnsupportedOperationException("The output stream cannot be set.");
 
-    }
+   }
 
-    @Override
-    public void setWriter(Writer writer) {
+   @Override
+   public void setWriter(Writer writer) {
 
-        throw new UnsupportedOperationException("The writer cannot be set.");
+      throw new UnsupportedOperationException("The writer cannot be set.");
 
-    }
+   }
 
-    private class NullOutputStream
-              extends OutputStream {
+   private class NullOutputStream extends OutputStream {
 
-        public NullOutputStream() {
+      public NullOutputStream() {
 
-        }
+      }
 
-        @Override
-        public void write(int b)
-            throws IOException {
+      @Override
+      public void write(int b) throws IOException {
 
-            // write to no where.
-        }
+         // write to no where.
+      }
 
-    }
+   }
 
-    private class NullWriter
-              extends Writer {
+   private class NullWriter extends Writer {
 
-        public NullWriter() {
+      public NullWriter() {
 
-        }
+      }
 
-        @Override
-        public void close()
-            throws IOException {
+      @Override
+      public void close() throws IOException {
 
-            // nothing to close.
-        }
+         // nothing to close.
+      }
 
-        @Override
-        public void flush()
-            throws IOException {
+      @Override
+      public void flush() throws IOException {
 
-            // nothing to flush.
-        }
+         // nothing to flush.
+      }
 
-        @Override
-        public void write(char[] cbuf,
-                          int off,
-                          int len)
-            throws IOException {
+      @Override
+      public void write(char[] cbuf, int off, int len) throws IOException {
 
-            // write to no where.
-        }
+         // write to no where.
+      }
 
-    }
+   }
 
 }

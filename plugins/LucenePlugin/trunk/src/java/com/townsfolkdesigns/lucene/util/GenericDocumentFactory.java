@@ -22,6 +22,8 @@
 package com.townsfolkdesigns.lucene.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -29,8 +31,6 @@ import org.apache.lucene.document.Field;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -38,9 +38,8 @@ import org.apache.commons.logging.LogFactory;
  * @author eberry
  */
 public abstract class GenericDocumentFactory {
-   
-   private static final Log log = LogFactory.getLog(GenericDocumentFactory.class);
 
+   private static final Log log = LogFactory.getLog(GenericDocumentFactory.class);
    private static final String FIELD_NAME_SEPARATOR = "-";
    private static final Pattern GROUP_PATTERN = Pattern.compile("[a-z]+|[A-Z]+");
 
@@ -57,11 +56,12 @@ public abstract class GenericDocumentFactory {
 
          if (!StringUtils.equalsIgnoreCase(fieldName, "class")) {
             fieldName = normalizeFieldName(fieldName);
+
             try {
                fieldValue = field.get(source);
                document.add(new Field(fieldName, convertFieldValueToString(fieldValue), Field.Store.YES,
                      Field.Index.TOKENIZED));
-            } catch(Exception e) {
+            } catch (Exception e) {
                log.error("Error getting field value for field: " + field.getName() + " on object: " + source, e);
             }
          }
