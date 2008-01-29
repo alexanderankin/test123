@@ -72,7 +72,10 @@ public class DiffAction implements ActionListener {
     private String username = null;
     private String password = null;
 
+    private Logger logger = null;
+
     /**
+     * Diff a file against a previous version of the same file.
      * @param view the View in which to display results
      * @param path the name of a local file to be diffed.  A dialog will be shown
      * to let the user pick the revision to diff against.
@@ -91,6 +94,7 @@ public class DiffAction implements ActionListener {
     }
 
     /**
+     * Do a diff of a single file given 2 different revisions of the file.
      * @param view the View in which to display results
      * @param path the name of a local file to be diffed. No dialog will be shown
      * here, the revisions must have already been selected.
@@ -104,8 +108,8 @@ public class DiffAction implements ActionListener {
             throw new IllegalArgumentException( "view may not be null" );
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
-        if (revision1 == null || revision2 == null) {
-            throw new IllegalArgumentException( "neither revision may be null, " + (revision1 == null ? "revision1" : "revision2") + " is null.");
+        if ( revision1 == null || revision2 == null ) {
+            throw new IllegalArgumentException( "neither revision may be null, " + ( revision1 == null ? "revision1" : "revision2" ) + " is null." );
         }
         this.view = view;
         this.path = path;
@@ -113,6 +117,28 @@ public class DiffAction implements ActionListener {
         this.revision2 = revision2;
         this.username = username;
         this.password = password;
+    }
+
+    /**
+     * Do a diff of a two files at a particular revision for each file.  This is
+     * useful for diffing the trunk version of a file and a branched or tagged
+     * version of the same file.
+     * @param view the View in which to display results
+     * @param url1 the name of a local file to be diffed. No dialog will be shown
+     * here, the revisions must have already been selected.
+     * @param revision1 a revision of path
+     * @param revision2 another revision of path
+     * @param username the username for the svn repository
+     * @param password the password for the username
+     */
+    public DiffAction( View view, String url1, String url2, String username, String password ) {
+    }
+
+    private void log( String msg ) {
+        logger.log( Level.INFO, msg );
+        for ( Handler handler : logger.getHandlers() ) {
+            handler.flush();
+        }
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -135,10 +161,10 @@ public class DiffAction implements ActionListener {
             else {
                 // diffing two repository versions
                 data = new DiffData();
-                data.addPath(path);
+                data.addPath( path );
 
-                data.setRevision1(SVNRevision.parse(revision1));
-                data.setRevision2(SVNRevision.parse(revision2));
+                data.setRevision1( SVNRevision.parse( revision1 ) );
+                data.setRevision2( SVNRevision.parse( revision2 ) );
             }
 
             if ( username != null && password != null ) {
@@ -154,24 +180,42 @@ public class DiffAction implements ActionListener {
             final OutputPanel panel = SVNPlugin.getOutputPanel( view );
             panel.showConsole( );
 
-            Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Preparing to diff ..." );
-            for ( Handler handler : logger.getHandlers() ) {
-                handler.flush();
-            }
+            logger = panel.getLogger();
+            log( "Preparing to diff..." );
 
-            class Runner extends SwingWorker<SVNInfo, Object> {
+            class Runner extends SwingWorker < File[], Object > {
 
                 @Override
-                public SVNInfo doInBackground() {
+                public File[] doInBackground() {
                     try {
                         // fetch repository and path info about the file
                         Info info = new Info( );
                         List<SVNInfo> infos = info.getInfo( data );
-                        if ( infos.size() > 0 ) {
-                            return infos.get( 0 );
+                        if ( infos.size() == 0 ) {
+                            return null;
                         }
-                        return null;
+                        SVNInfo svn_info = infos.get( 0 );
+                        SVNURL url = svn_info.getRepositoryRootURL();
+                        String svn_path = svn_info.getPath();
+
+                        BrowseRepository br = new BrowseRepository();
+
+                        // there should always be one remote revision to fetch for diffing against a working copy
+                        // or for diffing against another revision
+                        log("Diff, fetching file data...");
+                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+
+                        // there may be a second remote revision for diffing between 2 remote revisions
+                        File remote2 = null;
+                        if ( data.getRevision2() != null ) {
+                            log("Diff, fetching revision data...");
+                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
+                        }
+
+                        File[] files = new File[ 2 ];
+                        files[ 0 ] = remote1;
+                        files[ 1 ] = remote2;
+                        return files;
                     }
                     catch ( Exception e ) {
                         data.getOut().printError( e.getMessage() );
@@ -185,42 +229,21 @@ public class DiffAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        SVNInfo info = get();
-                        SVNURL url = info.getRepositoryRootURL();
-                        String svn_path = info.getPath();
-
-                        BrowseRepository br = new BrowseRepository();
-
-                        /*
-                        // check if same already
-                        // TODO: the check below is lame, so I took it out.  Just checking revision numbers isn't always
-                        // the right thing to do. Use the svnkit diff client here.
-                        // TODO: also check if properties are different
-                        long rev1 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword());
-                        long rev2 = br.getRevisionNumber(url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword());
-                        if ( rev1 == rev2 ) {
-                            JOptionPane.showMessageDialog( view, "There is no difference between the local copy and the repository copy of \n" + svn_path, "No Difference", JOptionPane.INFORMATION_MESSAGE );
-                            return;
+                        File[] files = get();
+                        if ( files == null ) {
+                            JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
                         }
-                        */
+                        File remote1 = files[ 0 ];
+                        File remote2 = files[ 1 ];
 
-                        // there should always be one remote revision to fetch for diffing against a working copy
-                        // or for diffing against another revision
-                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
-
-                        // there may be a second remote revision for diffing between 2 remote revisions
-                        File remote2 = null;
-                        if (data.getRevision2() != null) {
-                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
+                        if ( remote1 == null && remote2 == null ) {
+                            JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
                         }
-
-                        if (remote1 == null && remote2 == null) {
-                            JOptionPane.showMessageDialog(view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        if ((remote1 != null && remote1.isDirectory()) || (remote2 != null && remote2.isDirectory())) {
-                            JOptionPane.showMessageDialog(view, "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
+                        if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {
+                            JOptionPane.showMessageDialog( view, "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
                         }
 
                         // show JDiff
@@ -229,16 +252,21 @@ public class DiffAction implements ActionListener {
 
                         // set the edit panes in the view
                         EditPane[] editPanes = view.getEditPanes();
-                        if (remote2 != null) {
-                            // show the 2nd remote revision in the first edit pane
-                            editPanes[0].setBuffer( jEdit.openFile( view, remote2.getAbsolutePath()));
+
+                        // always show the 1st remote revision in the left edit pane
+                        editPanes[ 0 ].setBuffer( jEdit.openFile( view, remote1.getAbsolutePath() ) );
+
+                        if ( remote2 != null ) {
+                            // show the 2nd remote revision in the right edit pane
+                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, remote2.getAbsolutePath() ) );
                         }
                         else {
-                            // or show the local working copy in the first edit pane
-                            editPanes[ 0 ].setBuffer( jEdit.openFile( view, path ) );
+                            // or show the local working copy in the right edit pane
+                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, path ) );
                         }
-                        // always show the 1st remote revision in the 2nd edit pane
-                        editPanes[ 1 ].setBuffer( jEdit.openFile( view, remote1.getAbsolutePath() ) );
+
+                        // do an explicit repaint of the view to clean up the display
+                        view.repaint();
                     }
                     catch ( Exception e ) {
                         // ignored
