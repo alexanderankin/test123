@@ -24,7 +24,6 @@ package ftp;
 
 //{{{ Imports
 import java.awt.Component;
-import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.GUIUtilities;

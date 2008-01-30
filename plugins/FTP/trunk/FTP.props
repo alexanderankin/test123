@@ -43,6 +43,7 @@ login.privateKey=Private key:
 login.selectprivatekey=Select private key file...
 login.privatekeypassword=Enter passphrase for private key file
 login.storePassword=Save Password - these are stored in a file that is difficult, but not impossible, to read.
+login.useProxy=Connect using proxy
 
 # Settings
 vfs.ftp.passive=true
