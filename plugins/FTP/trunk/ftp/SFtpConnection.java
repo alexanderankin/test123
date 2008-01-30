@@ -33,6 +33,7 @@ import org.gjt.sp.util.Log;
 
 public class SFtpConnection extends Connection implements UserInfo
 {
+	
 	SFtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
@@ -55,7 +56,28 @@ public class SFtpConnection extends Connection implements UserInfo
 						"Unable to create password file:"+known_hosts);
 				}
 			}
+			
+			// {{{ Detect proxy settings if need
+			Proxy proxy = null;
+			if (jEdit.getBooleanProperty("vfs.ftp.useProxy")) {
+				
+				if (jEdit.getBooleanProperty("firewall.socks.enabled", false) ) {
+					//Detect SOCKS Proxy 
+					proxy = new ProxySOCKS5(jEdit.getProperty("firewall.socks.host"), jEdit.getIntegerProperty("firewall.socks.port", 3128));
+				} else if (jEdit.getBooleanProperty("firewall.enabled", false)) {
+					// HTTP-Proxy detect
+					ProxyHTTP httpProxy =  new ProxyHTTP(jEdit.getProperty("firewall.host"), jEdit.getIntegerProperty("firewall.port", 3128) );
+					if (!jEdit.getProperty("firewall.user", "").equals(""))
+						httpProxy.setUserPasswd(jEdit.getProperty("firewall.user"), jEdit.getProperty("firewall.password"));
+					proxy = httpProxy;
+				}
+			}
+			// }}}
+			
 			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
+			if (proxy != null)
+				session.setProxy(proxy);
+			
 			if (info.privateKey != null) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
 				Log.log(Log.DEBUG,this,"Using key: "+info.privateKey);

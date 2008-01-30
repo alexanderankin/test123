@@ -58,6 +58,12 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		content.add(storePassword);
 		
+		if (secure) {
+			useProxy = new JCheckBox(jEdit.getProperty("login.useProxy"), 
+				jEdit.getBooleanProperty("vfs.ftp.useProxy", false));
+			content.add(useProxy);
+		}
+		
 		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());
 		ok = new JButton(jEdit.getProperty("common.ok"));
@@ -100,6 +106,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			jEdit.setBooleanProperty("vfs.ftp.passive",passive.isSelected());
 		if(storePassword != null)
 			jEdit.setBooleanProperty("vfs.ftp.storePassword",storePassword.isSelected());
+		if (useProxy != null)
+			jEdit.setBooleanProperty("vfs.ftp.useProxy",useProxy.isSelected());
 		
 		if(hostField.hasFocus() && userField.getText().length() == 0)
 			userField.requestFocus();
@@ -222,6 +230,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private JButton privateKeySelect;
 	private JCheckBox passive;
 	private JCheckBox storePassword;
+	private JCheckBox useProxy;
 	private String host;
 	private String user;
 	private String password;
