@@ -65,6 +65,12 @@ public class FtpAddress
 			index = url.length();
 
 		host = url.substring(0,index);
+		if (host.contains(" "))
+		{
+			// remove spaces in the host
+			host = host.replace(" ", "");
+		}
+		
 		path = url.substring(index);
 		if(path.length() == 0)
 			path = "/";
@@ -74,6 +80,11 @@ public class FtpAddress
 	public FtpAddress(boolean secure, String host, String user, String path)
 	{
 		this.secure = secure;
+		if (host.contains(" "))
+		{
+			// remove spaces in the host
+			host = host.replace(" ", "");
+		}
 		this.host = host;
 		this.user = user;
 		this.path = path;
@@ -82,7 +93,7 @@ public class FtpAddress
 	//{{{ toString() method
 	public String toString()
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL);
 		buf.append("://");
 		if(user != null)
