@@ -37,6 +37,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
@@ -96,6 +97,16 @@ public class InfoAction implements ActionListener {
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
+            if ( password != null && password.length() > 0 ) {
+                try {
+                    PasswordHandler ph = new PasswordHandler();
+                    password = ph.decrypt( password );
+                }
+                catch ( Exception e ) {
+                    password = "";
+                }
+            }
+
             if ( username == null ) {
                 LoginDialog ld = new LoginDialog( view, "Info", "Confirm SVN login for Info command:", paths.get( 0 ) );
                 GUIUtils.center( view, ld );
@@ -106,6 +117,7 @@ public class InfoAction implements ActionListener {
                 username = ld.getUsername();
                 password = ld.getPassword();
             }
+
             if ( username != null && password != null ) {
                 data.setUsername( username );
                 data.setPassword( password );

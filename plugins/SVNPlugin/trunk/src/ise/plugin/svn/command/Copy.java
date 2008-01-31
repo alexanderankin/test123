@@ -93,6 +93,9 @@ public class Copy {
                 revision = SVNRevision.WORKING;
             }
             // no message on local copy
+            out.println("source file: " + sourceFile);
+            out.println("revision: " + revision);
+
             client.doCopy(sourceFile, revision, destinationFile, data.getForce(), data.getIsMove());
         }
         else if (sourceFile != null && destinationURL != null) {

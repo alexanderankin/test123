@@ -66,12 +66,14 @@ public class DiffAction implements ActionListener {
     private DiffDialog dialog = null;
 
     private View view = null;
-    private String path = null;
+    private String path1 = null;
+    private String path2 = null;
     private String revision1 = null;
     private String revision2 = null;
     private String username = null;
     private String password = null;
 
+    private DiffData data;
     private Logger logger = null;
 
     /**
@@ -88,7 +90,7 @@ public class DiffAction implements ActionListener {
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
         this.view = view;
-        this.path = path;
+        this.path1 = path;
         this.username = username;
         this.password = password;
     }
@@ -112,26 +114,11 @@ public class DiffAction implements ActionListener {
             throw new IllegalArgumentException( "neither revision may be null, " + ( revision1 == null ? "revision1" : "revision2" ) + " is null." );
         }
         this.view = view;
-        this.path = path;
+        this.path1 = path;
         this.revision1 = revision1;
         this.revision2 = revision2;
         this.username = username;
         this.password = password;
-    }
-
-    /**
-     * Do a diff of a two files at a particular revision for each file.  This is
-     * useful for diffing the trunk version of a file and a branched or tagged
-     * version of the same file.
-     * @param view the View in which to display results
-     * @param url1 the name of a local file to be diffed. No dialog will be shown
-     * here, the revisions must have already been selected.
-     * @param revision1 a revision of path
-     * @param revision2 another revision of path
-     * @param username the username for the svn repository
-     * @param password the password for the username
-     */
-    public DiffAction( View view, String url1, String url2, String username, String password ) {
     }
 
     private void log( String msg ) {
@@ -142,15 +129,14 @@ public class DiffAction implements ActionListener {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( path != null && path.length() > 0 ) {
-            final DiffData data;
+        if ( ( path1 != null && path1.length() > 0 ) || data != null ) {
 
             // pick or set the revisions
-            if ( revision1 == null ) {
+            if ( revision1 == null && path2 == null ) {
                 // if here, then the first constructor was called, the user is
                 // wanting to diff a local file against a remote version of the
                 // file. Show a DiffDialog to get the revision of the remote file.
-                dialog = new DiffDialog( view, path );
+                dialog = new DiffDialog( view, path1 );
                 GUIUtils.center( view, dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();
@@ -159,14 +145,13 @@ public class DiffAction implements ActionListener {
                 }
             }
             else {
-                // diffing two repository versions
+                // diffing two repository versions of the same file
                 data = new DiffData();
-                data.addPath( path );
+                data.addPath( path1 );
 
                 data.setRevision1( SVNRevision.parse( revision1 ) );
                 data.setRevision2( SVNRevision.parse( revision2 ) );
             }
-
             if ( username != null && password != null ) {
                 data.setUsername( username );
                 data.setPassword( password );
@@ -188,6 +173,11 @@ public class DiffAction implements ActionListener {
                 @Override
                 public File[] doInBackground() {
                     try {
+                        SVNURL url = null;
+                        String svn_path = null;
+                        File remote1 = null;
+                        File remote2 = null;
+
                         // fetch repository and path info about the file
                         Info info = new Info( );
                         List<SVNInfo> infos = info.getInfo( data );
@@ -195,23 +185,28 @@ public class DiffAction implements ActionListener {
                             return null;
                         }
                         SVNInfo svn_info = infos.get( 0 );
-                        SVNURL url = svn_info.getRepositoryRootURL();
-                        String svn_path = svn_info.getPath();
-
+                        url = svn_info.getRepositoryRootURL();
+                        svn_path = svn_info.getPath();
                         BrowseRepository br = new BrowseRepository();
 
                         // there should always be one remote revision to fetch for diffing against a working copy
                         // or for diffing against another revision
-                        log("Diff, fetching file data...");
-                        File remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+                        log( "Diff, fetching file data..." );
+                        remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
 
                         // there may be a second remote revision for diffing between 2 remote revisions
-                        File remote2 = null;
+                        remote2 = null;
                         if ( data.getRevision2() != null ) {
-                            log("Diff, fetching revision data...");
+                            log( "Diff, fetching revision data..." );
                             remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
-                        }
 
+                            // sort, oldest revision first
+                            boolean lessThan = lessThan( data.getRevision2(), data.getRevision1() );
+                            File temp = remote1;
+                            remote1 = remote2;
+                            remote2 = temp;
+                            temp = null;
+                        }
                         File[] files = new File[ 2 ];
                         files[ 0 ] = remote1;
                         files[ 1 ] = remote2;
@@ -262,7 +257,7 @@ public class DiffAction implements ActionListener {
                         }
                         else {
                             // or show the local working copy in the right edit pane
-                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, path ) );
+                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, path1 ) );
                         }
 
                         // do an explicit repaint of the view to clean up the display
@@ -276,5 +271,12 @@ public class DiffAction implements ActionListener {
             }
             ( new Runner() ).execute();
         }
+    }
+
+    private boolean lessThan( SVNRevision rev1, SVNRevision rev2 ) {
+        if ( rev1.getDate() != null && rev2.getDate() != null ) {
+            return rev1.getDate().getTime() < rev2.getDate().getTime();
+        }
+        return rev1.getNumber() < rev2.getNumber();
     }
 }
