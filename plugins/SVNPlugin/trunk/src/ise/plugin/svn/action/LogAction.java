@@ -39,6 +39,7 @@ import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -98,6 +99,16 @@ public class LogAction implements ActionListener {
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs(pathsAreUrls);
+
+            if ( password != null && password.length() > 0 ) {
+                try {
+                    PasswordHandler ph = new PasswordHandler();
+                    password = ph.decrypt( password );
+                }
+                catch ( Exception e ) {
+                    password = "";
+                }
+            }
 
             LogDialog dialog = new LogDialog(view, data);
             GUIUtils.center( view, dialog );

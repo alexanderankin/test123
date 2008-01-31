@@ -46,6 +46,7 @@ import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.DeleteData;
+import ise.plugin.svn.data.DiffData;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.data.RepositoryData;
@@ -68,7 +69,6 @@ public class BrowseRepositoryPanel extends JPanel {
     private RepositoryComboBox chooser = null;
     private JTree tree = null;
     private JPopupMenu popupMenu = null;
-    private String repository_name = null;
     private String username = null;
     private String password = null;
 
@@ -548,6 +548,50 @@ public class BrowseRepositoryPanel extends JPanel {
                         data.setPassword( password );
                         data.setHasDirectory( hasDirectory );
                         PropertyAction action = new PropertyAction( view, data );
+                        action.actionPerformed( ae );
+                    }
+                }
+                            );
+
+        mi = new JMenuItem( "Diff" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TreePath[] tree_paths = tree.getSelectionPaths();
+                        if ( tree_paths.length == 0 ) {
+                            return ;
+                        }
+                        boolean hasDirectory = false;
+                        List<String> paths = new ArrayList<String>();
+                        for ( TreePath path : tree_paths ) {
+                            if ( path != null ) {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                String url = sb.toString();
+                                paths.add( url );
+                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                                if ( !hasDirectory && !node.isLeaf() ) {
+                                    hasDirectory = true;
+                                }
+                            }
+                        }
+                        String path1 = paths.size() > 0 ? paths.get(0) : null;
+                        String path2 = paths.size() > 1 ? paths.get(1) : null;
+                        DiffData data = new DiffData();
+                        data.addPath(path1);
+                        data.addPath(path2);
+                        data.setPathsAreURLs(true);
+                        data.setUsername(username);
+                        data.setPassword(password);
+                        if (chooser != null) {
+                            RepositoryData rd = chooser.getSelectedRepository();
+                            data.setURL(rd.getURL());
+                        }
+                        RemoteDiffAction action = new RemoteDiffAction(view, data);
                         action.actionPerformed( ae );
                     }
                 }
