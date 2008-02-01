@@ -43,11 +43,6 @@ import java.util.*;
 
 public class Branch extends BRAction {
 
-/**
- *     public Branch( View view, String repositoryUrl, JTree tree, String username, String password ) {
- *         super( view, repositoryUrl, tree, username, password );
- *     }
- */
 
     public void actionPerformed( ActionEvent ae ) {
         TreePath[] tree_paths = tree.getSelectionPaths();

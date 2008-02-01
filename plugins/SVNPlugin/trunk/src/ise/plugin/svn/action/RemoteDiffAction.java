@@ -78,6 +78,7 @@ public class RemoteDiffAction implements ActionListener {
         if ( data.pathsAreURLs() == false ) {
             throw new IllegalArgumentException( "RemoteDiffAction is for remote diffs, the given paths must be repository URLs." );
         }
+        System.out.println("+++++ paths = " + data.getPaths());
     }
 
     private void log( String msg ) {
@@ -130,12 +131,15 @@ public class RemoteDiffAction implements ActionListener {
                     remote1 = br.getFile( data.getURL(), path1, data.getRevision1(), data.getUsername(), data.getPassword() );
                     remote2 = br.getFile( data.getURL(), path2, data.getRevision2(), data.getUsername(), data.getPassword() );
 
+                    System.out.println("+++++ remote1 = " + remote1);
+                    System.out.println("+++++ remote2 = " + remote2);
                     File[] files = new File[ 2 ];
                     files[ 0 ] = remote1;
                     files[ 1 ] = remote2;
                     return files;
                 }
                 catch ( Exception e ) {
+                    e.printStackTrace();
                     data.getOut().printError( e.getMessage() );
                 }
                 finally {
