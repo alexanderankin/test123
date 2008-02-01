@@ -42,12 +42,6 @@ import java.util.*;
 
 public class Info extends BRAction {
 
-/**
- *     public Info( View view, String repositoryUrl, JTree tree, String username, String password ) {
- *         super( view, repositoryUrl, tree, username, password );
- *     }
- */
-
     public void actionPerformed( ActionEvent ae ) {
         TreePath[] tree_paths = tree.getSelectionPaths();
         if ( tree_paths.length == 0 ) {

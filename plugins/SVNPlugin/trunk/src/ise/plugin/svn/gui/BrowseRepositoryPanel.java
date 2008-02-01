@@ -69,6 +69,7 @@ public class BrowseRepositoryPanel extends JPanel {
 
     private View view = null;
     private RepositoryComboBox chooser = null;
+    private String repositoryUrl = null;
     private JTree tree = null;
     private JPopupMenu popupMenu = null;
     private String username = null;
@@ -309,6 +310,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         if ( data != null ) {
                             username = data.getUsername();
                             password = data.getPassword();
+                            repositoryUrl = data.getURL();
                             DirTreeNode root = new DirTreeNode( data.getURL(), false );
                             tree.setModel( new DefaultTreeModel( root ) );
                             BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
@@ -318,15 +320,12 @@ public class BrowseRepositoryPanel extends JPanel {
                             tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
                         }
                         if ( edit_btn != null ) {
-
                             edit_btn.setEnabled( data != null );
                         }
                         if ( remove_btn != null ) {
-
                             remove_btn.setEnabled( data != null );
                         }
                         if ( refresh_btn != null ) {
-
                             refresh_btn.setEnabled( data != null );
                         }
                     }
@@ -400,19 +399,6 @@ public class BrowseRepositoryPanel extends JPanel {
     }
 
     private ActionListener createPopupMenuActionListener(final BRAction internal) {
-        final String repositoryUrl;
-        if ( chooser != null ) {
-            RepositoryData rd = chooser.getSelectedRepository();
-            if ( rd != null ) {
-                repositoryUrl = rd.getURL();
-            }
-            else {
-                repositoryUrl = null;
-            }
-        }
-        else {
-            repositoryUrl = null;
-        }
         return new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 internal.init(view, repositoryUrl, tree, username, password);
@@ -438,7 +424,6 @@ public class BrowseRepositoryPanel extends JPanel {
         String pbase = "ise.plugin.svn.gui.br.";
         for ( int i = 1; i < 100; i++ ) {
             String label = jEdit.getProperty( pbase + "label." + i );
-            System.out.println( "+++++ label = " + label );
             if ( label == null ) {
                 break;
             }
@@ -447,7 +432,6 @@ public class BrowseRepositoryPanel extends JPanel {
                 continue;
             }
             String classname = jEdit.getProperty( pbase + "code." + i );
-            System.out.println( "+++++ classname = " + classname );
             if ( classname == null ) {
                 continue;
             }
@@ -466,70 +450,6 @@ public class BrowseRepositoryPanel extends JPanel {
             }
         }
 
-        /*
-        JMenuItem mi = new JMenuItem( "Checkout..." );
-        pm.add( mi );
-        mi.addActionListener( new Checkout( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Info" );
-        pm.add( mi );
-        mi.addActionListener( new Info( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Log..." );
-        pm.add( mi );
-        mi.addActionListener( new Log( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Properties" );
-        pm.add( mi );
-        mi.addActionListener( new Property( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Diff" );
-        pm.add( mi );
-        mi.addActionListener( new Diff( view, repositoryUrl, tree, username, password ) );
-
-        pm.addSeparator();
-
-        mi = new JMenuItem( "Copy..." );
-        pm.add( mi );
-        mi.addActionListener( new Copy( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Make Directory..." );
-        pm.add( mi );
-        mi.addActionListener( new MkDir( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Tag..." );
-        pm.add( mi );
-        mi.addActionListener( new Tag( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Branch..." );
-        pm.add( mi );
-        mi.addActionListener( new Branch( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Move..." );
-        pm.add( mi );
-        mi.addActionListener( new Move( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Import..." );
-        pm.add( mi );
-        mi.addActionListener( new Import( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Export..." );
-        pm.add( mi );
-        mi.addActionListener( new Export( view, repositoryUrl, tree, username, password ) );
-
-        pm.addSeparator();
-        mi = new JMenuItem( "Delete..." );
-        pm.add( mi );
-        mi.addActionListener( new Delete( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Lock" );
-        pm.add( mi );
-        mi.addActionListener( new Lock( view, repositoryUrl, tree, username, password ) );
-
-        mi = new JMenuItem( "Unlock" );
-        pm.add( mi );
-        mi.addActionListener( new Unlock( view, repositoryUrl, tree, username, password ) );
-        */
         return pm;
     }
 

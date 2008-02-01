@@ -40,12 +40,6 @@ import ise.plugin.svn.data.RepositoryData;
 
 public class Checkout extends BRAction {
 
-/**
- *     public Checkout( View view, String repositoryUrl, JTree tree, String username, String password ) {
- *         super( view, repositoryUrl, tree, username, password );
- *     }
- */
-
     public void actionPerformed( ActionEvent ae ) {
         TreePath[] paths = tree.getSelectionPaths();
 
