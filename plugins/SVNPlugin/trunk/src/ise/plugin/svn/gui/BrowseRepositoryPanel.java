@@ -55,7 +55,9 @@ import ise.plugin.svn.gui.CopyDialog;
 import ise.plugin.svn.gui.RepositoryComboBox;
 import ise.plugin.svn.gui.RevisionDialog;
 import ise.plugin.svn.gui.TagBranchDialog;
+import ise.plugin.svn.gui.br.*;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.PrivilegedAccessor;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import org.tmatesoft.svn.core.wc.*;
@@ -397,589 +399,137 @@ public class BrowseRepositoryPanel extends JPanel {
         }
     }
 
+    private ActionListener createPopupMenuActionListener(final BRAction internal) {
+        final String repositoryUrl;
+        if ( chooser != null ) {
+            RepositoryData rd = chooser.getSelectedRepository();
+            if ( rd != null ) {
+                repositoryUrl = rd.getURL();
+            }
+            else {
+                repositoryUrl = null;
+            }
+        }
+        else {
+            repositoryUrl = null;
+        }
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                internal.init(view, repositoryUrl, tree, username, password);
+                internal.actionPerformed(ae);
+            }
+        };
+    }
+
     /**
      * Create the context menu.
      */
     private JPopupMenu createPopupMenu() {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
+        String repositoryUrl = null;
+        if ( chooser != null ) {
+            RepositoryData rd = chooser.getSelectedRepository();
+            if ( rd != null ) {
+                repositoryUrl = rd.getURL();
+            }
+        }
 
+        String pbase = "ise.plugin.svn.gui.br.";
+        for ( int i = 1; i < 100; i++ ) {
+            String label = jEdit.getProperty( pbase + "label." + i );
+            System.out.println( "+++++ label = " + label );
+            if ( label == null ) {
+                break;
+            }
+            if ( label.equals( "-" ) ) {
+                pm.addSeparator();
+                continue;
+            }
+            String classname = jEdit.getProperty( pbase + "code." + i );
+            System.out.println( "+++++ classname = " + classname );
+            if ( classname == null ) {
+                continue;
+            }
+            JMenuItem item = null;
+            try {
+                BRAction action = ( BRAction ) PrivilegedAccessor.getNewInstance( classname, null );
+                item = new JMenuItem( label );
+                item.addActionListener(createPopupMenuActionListener(action));
+                pm.add( item );
+            }
+            catch ( Exception e ) {
+                // class not found or instantiation exception, don't worry
+                // about it, assume it's a typo
+                e.printStackTrace();
+                continue;
+            }
+        }
+
+        /*
         JMenuItem mi = new JMenuItem( "Checkout..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        String url = null;
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                url = sb.toString();
-                                break;
-                            }
-                        }
-                        RepositoryData data = new RepositoryData();
-                        data.setURL( url );
-                        data.setUsername( username );
-                        data.setPassword( password );
-                        CheckoutAction action = new CheckoutAction( view, data );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Checkout( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Info" );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( node.isExternal() ) {
-                                    paths.add( node.getRepositoryLocation() );
-                                }
-                                else {
-                                    Object[] parts = path.getPath();
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append( parts[ 0 ] );
-                                    for ( int i = 1; i < parts.length; i++ ) {
-                                        sb.append( "/" ).append( parts[ i ].toString() );
-                                    }
-                                    String url = sb.toString();
-                                    paths.add( url );
-                                }
-                            }
-                        }
-                        SVNData data = new SVNData();
-                        data.setPaths( paths );
-                        data.setPathsAreURLs( true );
-                        data.setUsername( username );
-                        data.setPassword( password );
-                        InfoAction action = new InfoAction( view, data );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Info( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Log..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( node.isExternal() ) {
-                                    paths.add( node.getRepositoryLocation() );
-                                }
-                                else {
-                                    Object[] parts = path.getPath();
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append( parts[ 0 ] );
-                                    for ( int i = 1; i < parts.length; i++ ) {
-                                        sb.append( "/" ).append( parts[ i ].toString() );
-                                    }
-                                    String url = sb.toString();
-                                    paths.add( url );
-                                }
-                            }
-                        }
-                        LogData data = new LogData();
-                        data.setPaths( paths );
-                        data.setPathsAreURLs( true );
-                        data.setUsername( username );
-                        data.setPassword( password );
-                        LogAction action = new LogAction( view, data );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Log( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Properties" );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        boolean hasDirectory = false;
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( !hasDirectory && !node.isLeaf() ) {
-                                    hasDirectory = true;
-                                }
-                            }
-                        }
-                        PropertyData data = new PropertyData();
-                        data.setPaths( paths );
-                        data.setPathsAreURLs( true );
-                        data.setUsername( username );
-                        data.setPassword( password );
-                        data.setHasDirectory( hasDirectory );
-                        PropertyAction action = new PropertyAction( view, data );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Property( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Diff" );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        boolean hasDirectory = false;
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( !hasDirectory && !node.isLeaf() ) {
-                                    hasDirectory = true;
-                                }
-                            }
-                        }
-                        String path1 = paths.size() > 0 ? paths.get(0) : null;
-                        String path2 = paths.size() > 1 ? paths.get(1) : null;
-                        DiffData data = new DiffData();
-                        data.addPath(path1);
-                        data.addPath(path2);
-                        data.setPathsAreURLs(true);
-                        data.setUsername(username);
-                        data.setPassword(password);
-                        if (chooser != null) {
-                            RepositoryData rd = chooser.getSelectedRepository();
-                            data.setURL(rd.getURL());
-                        }
-                        RemoteDiffAction action = new RemoteDiffAction(view, data);
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Diff( view, repositoryUrl, tree, username, password ) );
 
         pm.addSeparator();
 
         mi = new JMenuItem( "Copy..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        boolean hasDirectory = false;
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( !hasDirectory && !node.isLeaf() ) {
-                                    hasDirectory = true;
-                                }
-                            }
-                        }
-                        CopyDialog dialog = new CopyDialog( view, null, chooser.getSelectedItem().toString(), paths );
-                        GUIUtils.center( view, dialog );
-                        dialog.setVisible( true );
-                        CopyData data = dialog.getData();
-                        if ( data == null ) {
-                            return ;     // user canceled
-                        }
-
-                        if ( username != null && password != null ) {
-                            data.setUsername( username );
-                            data.setPassword( password );
-                        }
-
-                        CopyAction action = new CopyAction( view, data );
-                        action.actionPerformed( null );
-                    }
-                }
-                            );
+        mi.addActionListener( new Copy( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Make Directory..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        String defaultDestination = null;
-                        boolean hasDirectory = false;
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {    // one path, one loop
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder from = new StringBuilder();
-                                String preface = parts[ 0 ].toString();
-                                if ( preface.endsWith( "/" ) ) {
-                                    preface = preface.substring( 0, preface.length() - 1 );
-                                }
-                                from.append( preface );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    from.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                defaultDestination = from.toString();
-                                paths.add( defaultDestination );
-
-                                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                                if ( !hasDirectory && !node.isLeaf() ) {
-                                    hasDirectory = true;
-                                }
-                            }
-                        }
-
-                        if ( !hasDirectory ) {
-                            JOptionPane.showMessageDialog( view, "Please select a directory in which to create the new directory.", "Error", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        MkDirAction action = new MkDirAction( view, paths, username, password, defaultDestination );
-                        action.actionPerformed( null );
-                    }
-                }
-                            );
+        mi.addActionListener( new MkDir( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Tag..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        String from_url = null;
-                        String defaultDestination = null;
-                        for ( TreePath path : tree_paths ) {    // should be a single loop
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder from = new StringBuilder();
-                                StringBuilder to = new StringBuilder();
-                                String preface = parts[ 0 ].toString();
-                                if ( preface.endsWith( "/" ) ) {
-                                    preface = preface.substring( 0, preface.length() - 1 );
-                                }
-                                from.append( preface );
-                                to.append( preface );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    from.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                for ( int i = 1; i < parts.length - 1; i++ ) {
-                                    if ( parts[ i ].toString().equals( "branches" ) ) {
-                                        continue;
-                                    }
-                                    to.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                from_url = from.toString();
-                                defaultDestination = to.append( "/tags" ).toString();
-                                break;
-                            }
-                        }
-
-                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.TAG_DIALOG, from_url, defaultDestination );
-                        GUIUtils.center( view, dialog );
-                        dialog.setVisible( true );
-                        CopyData cd = dialog.getData();
-                        if ( cd != null ) {
-                            if ( username != null && password != null ) {
-                                cd.setUsername( username );
-                                cd.setPassword( password );
-                            }
-                            cd.setTitle( "Tag" );
-                            CopyAction action = new CopyAction( view, cd );
-                            action.actionPerformed( null );
-                        }
-                    }
-                }
-                            );
+        mi.addActionListener( new Tag( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Branch..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        String from_url = null;
-                        String defaultDestination = null;
-                        for ( TreePath path : tree_paths ) {    // should be a single loop
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder from = new StringBuilder();
-                                StringBuilder to = new StringBuilder();
-                                String preface = parts[ 0 ].toString();
-                                if ( preface.endsWith( "/" ) ) {
-                                    preface = preface.substring( 0, preface.length() - 1 );
-                                }
-                                from.append( preface );
-                                to.append( preface );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    from.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                for ( int i = 1; i < parts.length - 1; i++ ) {
-                                    to.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                from_url = from.toString();
-                                defaultDestination = to.append( "/branches" ).toString();
-                                break;
-                            }
-                        }
-
-                        TagBranchDialog dialog = new TagBranchDialog( view, TagBranchDialog.BRANCH_DIALOG, from_url, defaultDestination );
-                        GUIUtils.center( view, dialog );
-                        dialog.setVisible( true );
-                        CopyData cd = dialog.getData();
-                        if ( cd != null ) {
-                            if ( username != null && password != null ) {
-                                cd.setUsername( username );
-                                cd.setPassword( password );
-                            }
-                            cd.setTitle( "Branch" );
-                            CopyAction action = new CopyAction( view, cd );
-                            action.actionPerformed( null );
-                        }
-                    }
-                }
-                            );
+        mi.addActionListener( new Branch( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Move..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        String url = null;
-                        String defaultDestination = null;
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                url = sb.toString();
-                                paths.add( url );
-                                defaultDestination = url;
-                            }
-                        }
-
-                        MoveDialog dialog = new MoveDialog( view, defaultDestination, paths );
-                        GUIUtils.center( view, dialog );
-                        dialog.setVisible( true );
-                        CopyData cd = dialog.getData();
-                        if ( cd != null ) {
-                            if ( username != null && password != null ) {
-                                cd.setUsername( username );
-                                cd.setPassword( password );
-                            }
-
-                            MoveAction action = new MoveAction( view, cd );
-                            action.actionPerformed( null );
-                        }
-                    }
-                }
-                            );
+        mi.addActionListener( new Move( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Import..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        ImportAction action = new ImportAction( view );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Import( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Export..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        if ( tree_paths.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                            }
-                        }
-                        ExportAction action = new ExportAction( view, username, password, paths );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Export( view, repositoryUrl, tree, username, password ) );
 
         pm.addSeparator();
         mi = new JMenuItem( "Delete..." );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                            }
-                        }
-                        DeleteData data = new DeleteData();
-                        data.setPaths( paths );
-                        data.setUsername( username );
-                        data.setPassword( password );
-                        data.setPathsAreURLs( true );
-                        DeleteAction action = new DeleteAction( view, data );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Delete( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Lock" );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                            }
-                        }
-                        LockAction action = new LockAction( view, paths, username, password, true );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
+        mi.addActionListener( new Lock( view, repositoryUrl, tree, username, password ) );
 
         mi = new JMenuItem( "Unlock" );
         pm.add( mi );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TreePath[] tree_paths = tree.getSelectionPaths();
-                        if ( tree_paths.length == 0 ) {
-                            return ;
-                        }
-                        List<String> paths = new ArrayList<String>();
-                        for ( TreePath path : tree_paths ) {
-                            if ( path != null ) {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( parts[ 0 ] );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                String url = sb.toString();
-                                paths.add( url );
-                            }
-                        }
-                        UnlockAction action = new UnlockAction( view, paths, username, password, true );
-                        action.actionPerformed( ae );
-                    }
-                }
-                            );
-
+        mi.addActionListener( new Unlock( view, repositoryUrl, tree, username, password ) );
+        */
         return pm;
     }
 
