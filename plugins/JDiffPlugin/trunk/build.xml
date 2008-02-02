@@ -8,14 +8,12 @@
      whether to generate the documentation using one of these two targets:
 -->
 
-<project name="JDiffPlugin" default="dist" basedir=".">
-
+<project name="JDiffPlugin" default="build" basedir=".">
+    <property name="docs-proc.target"  value="none"/>
     <property file="build.properties"/>
     <property file="../build.properties"/>
-    <property name="user-doc.xml" location = "users-guide.xml"/>
     <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
-    <property name="docs-proc.target"  value="xsltproc"/>
 
     <import file="${build.support}/plugin-build.xml" />    
     
@@ -31,8 +29,7 @@
     
     <selector id="packageFiles">
 	  <or>
-		<filename name="*.png" />
-		<filename name="*.jpg" />
+        <filename name="docs/*" />
 	  </or>
     </selector>
 
