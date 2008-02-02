@@ -336,7 +336,23 @@
 <chapter id="history">
     <title>History</title>
 
+    
+    
     <itemizedlist>
+    
+        <listitem><para> Version 1.7.0 (Dale Anson)
+        <itemizedlist>
+        <listitem><para> Added merge functionality to JDiff.  This enhancement makes it easy to move differences from one file to another. </para> </listitem>
+        <listitem><para> added dockable to show line diffs </para></listitem>
+        <listitem><para> moved merge controls to dockable </para></listitem>
+        <listitem><para> added unsplit and swap panes to merge controls </para></listitem>
+        <listitem><para> updated docs </para></listitem>
+        <listitem><para> added mouse listener to global overview </para></listitem>
+        </itemizedlist>
+        </para></listitem>
+        
+
+    
         <listitem><para> Version 1.5.2. Fixes to ignore whitespace options (1522563 - aconnor78) </para></listitem>
         <listitem><para>
             Version 1.5, updated to work with jEdit 4.3pre3+
