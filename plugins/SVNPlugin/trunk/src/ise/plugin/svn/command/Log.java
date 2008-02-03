@@ -119,9 +119,6 @@ public class Log {
                 LogHandler handler = new LogHandler( file );
                 SVNInfo info = wc_client.doInfo(file, SVNRevision.WORKING);
                 results.setInfo(info);
-                //System.out.println("+++++ repository url = " + info.getRepositoryRootURL());
-                //System.out.println("+++++ url = " + info.getURL());
-                //System.out.println("+++++ url.getPath = " + info.getURL().getPath());
                 String rep_url_string = info.getRepositoryRootURL().toString();
                 String file_url_string = info.getURL().toString();
                 String path = file_url_string.substring(rep_url_string.length());

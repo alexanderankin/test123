@@ -40,6 +40,7 @@ import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,7 +79,6 @@ public class RemoteDiffAction implements ActionListener {
         if ( data.pathsAreURLs() == false ) {
             throw new IllegalArgumentException( "RemoteDiffAction is for remote diffs, the given paths must be repository URLs." );
         }
-        System.out.println("+++++ paths = " + data.getPaths());
     }
 
     private void log( String msg ) {
@@ -115,24 +115,26 @@ public class RemoteDiffAction implements ActionListener {
             @Override
             public File[] doInBackground() {
                 try {
-                    File remote1 = null;
-                    File remote2 = null;
-
                     String path1 = data.getPaths().get(0);
                     if (path1.startsWith(data.getURL())) {
                         path1 = path1.substring(data.getURL().length());
+                    }
+                    if (path1.startsWith("/")) {
+                        path1 = path1.substring(1);
                     }
                     String path2 = data.getPaths().get(1);
                     if (path2.startsWith(data.getURL())) {
                         path2 = path2.substring(data.getURL().length());
                     }
+                    if (path2.startsWith("/")) {
+                        path2 = path2.substring(1);
+                    }
+
 
                     BrowseRepository br = new BrowseRepository();
-                    remote1 = br.getFile( data.getURL(), path1, data.getRevision1(), data.getUsername(), data.getPassword() );
-                    remote2 = br.getFile( data.getURL(), path2, data.getRevision2(), data.getUsername(), data.getPassword() );
+                    File remote1 = br.getFile( data.getURL(), path1, data.getRevision1(), data.getUsername(), data.getPassword() );
+                    File remote2 = br.getFile( data.getURL(), path2, data.getRevision2(), data.getUsername(), data.getPassword() );
 
-                    System.out.println("+++++ remote1 = " + remote1);
-                    System.out.println("+++++ remote2 = " + remote2);
                     File[] files = new File[ 2 ];
                     files[ 0 ] = remote1;
                     files[ 1 ] = remote2;

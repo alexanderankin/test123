@@ -198,8 +198,6 @@ public class MoveAction implements ActionListener {
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();
-                        //System.out.println( "+++++ results = " + results );
-                        //System.out.println( "+++++ where2where = " + where2where );
                         switch ( where2where ) {
                             case W2W: {
                                     // SVNCommitInfo in results will be null in these
@@ -233,7 +231,6 @@ public class MoveAction implements ActionListener {
                             default:
                                 // this shouldn't happen, so I'll just quietly
                                 // ignore this case
-                                //System.out.println( "+++++ the thing that can't happen did" );
                         }
                     }
                     catch ( Exception e ) {

@@ -85,18 +85,6 @@ public class Export {
         UpdateEventHandler handler = new UpdateEventHandler( update_data );
         client.setEventHandler( handler );
 
-        /*
-        System.out.println( "+++++++++++++++" );
-        //System.out.println( "source = " + source );
-        System.out.println( "destination = " + destination );
-        System.out.println( "peg revision = " + data.getPegRevision() );
-        System.out.println( "revision = " + data.getRevision() );
-        System.out.println( "eol style = " + data.getEOLStyle() );
-        System.out.println( "force = " + data.getForce() );
-        System.out.println( "recursive = " + data.getRecursive() );
-        System.out.println( "+++++++++++++++" );
-        */
-
         // do the export
         long revision = 0L;
         SVNRevision peg_revision = data.getPegRevision();
