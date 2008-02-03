@@ -41,6 +41,7 @@ import ise.plugin.svn.gui.RemoteDeleteDialog;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
@@ -133,6 +134,19 @@ public class DeleteAction implements ActionListener {
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
+
+            username = data.getUsername();
+            password = data.getPassword();
+            if ( password != null && password.length() > 0 ) {
+                try {
+                    PasswordHandler ph = new PasswordHandler();
+                    password = ph.decrypt( password );
+                }
+                catch ( Exception e ) {
+                    password = "";
+                }
+            }
+            data.setPassword(password);
 
             class Runner extends SwingWorker<DeleteResults, Object> {
 
