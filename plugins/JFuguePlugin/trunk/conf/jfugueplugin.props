@@ -1,4 +1,4 @@
-plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.activate=startup
+plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.activate=defer
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.name=JFugue Plugin
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.version=0.7.2
 plugin.com.townsfolkdesigns.jfugue.JFuguePlugin.author=Eric Berry <elberry@gmail.com>
