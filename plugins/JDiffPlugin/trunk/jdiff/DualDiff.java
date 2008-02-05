@@ -969,10 +969,10 @@ public class DualDiff implements EBComponent {
                     }
                 };
 
+        int previousCaretLine = 0;
         public void caretUpdate( final CaretEvent e ) {
             Runnable r = new Runnable() {
                         public void run() {
-                            view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
                             JEditTextArea source = ( JEditTextArea ) e.getSource();
                             Diff.change hunk = DualDiff.this.edits;
                             String leftLine = "";
@@ -1025,7 +1025,12 @@ public class DualDiff implements EBComponent {
                         }
                     };
             if ( lineProcessor != null ) {
-                SwingUtilities.invokeLater( r );
+                JEditTextArea source = ( JEditTextArea ) e.getSource();
+                int caretLine = source.getCaretLine();
+                if ( caretLine != previousCaretLine ) {
+                    previousCaretLine = caretLine;
+                    SwingUtilities.invokeLater( r );
+                }
             }
         }
 
@@ -1053,6 +1058,9 @@ public class DualDiff implements EBComponent {
 
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
+            //if ( !view.getDockableWindowManager().isDockableWindowVisible("jdiff-lines") ) {
+                view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+            //}
         }
 
         public void focusLost( FocusEvent e ) {
