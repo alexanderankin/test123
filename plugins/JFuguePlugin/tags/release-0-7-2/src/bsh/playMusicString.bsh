@@ -1,5 +1,0 @@
-/* Plays the given music string */
-import com.townsfolkdesigns.jfugue.JFuguePlugin;
-playMusicString(String musicString) {
-	JFuguePlugin.playMusicString(musicString);
-}

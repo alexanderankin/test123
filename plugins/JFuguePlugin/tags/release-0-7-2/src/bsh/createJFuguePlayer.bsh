@@ -1,5 +1,0 @@
-import com.townsfolkdesigns.jfugue.JFuguePlayerFactory;
-/* Creates a new JFugue Player. */
-createJFuguePlayer() {
-	return JFuguePlayerFactory.createJFuguePlayer();
-}
