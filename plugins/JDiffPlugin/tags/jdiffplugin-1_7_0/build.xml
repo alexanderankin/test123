@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<!--
+     This is the standard build.xml file for building the JDiffPlugin plugin.
+
+     The 'dist' target compiles the plugin, generates documentation, and creates
+     the JAR file.  Before running the 'dist' target, you will need to choose
+     whether to generate the documentation using one of these two targets:
+-->
+
+<project name="JDiffPlugin" default="build" basedir=".">
+    <property name="docs-proc.target"  value="none"/>
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property name="jedit.install.dir"  value="../.."/>
+    <property name="jar.name"  value="${ant.project.name}.jar"/>
+
+    <import file="${build.support}/plugin-build.xml" />    
+    
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value=".."/>
+
+
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${src.dir}"/>
+    </path>
+    
+    <selector id="packageFiles">
+	  <or>
+        <filename name="docs/*" />
+	  </or>
+    </selector>
+
+</project>
