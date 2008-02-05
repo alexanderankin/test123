@@ -33,7 +33,9 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.options.GlobalOptions;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.TextAreaContextMenu;
 import ise.plugin.svn.pv.NodeActor;
@@ -70,8 +72,10 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void stop() {
-        panelMap.clear();
-        panelMap = null;
+        if ( panelMap != null ) {
+            panelMap.clear();
+            panelMap = null;
+        }
 
         for ( View view : jEdit.getViews() ) {
             removeContextMenu( view );
@@ -82,7 +86,7 @@ public class SVNPlugin extends EBPlugin {
         /*
         for ( View view : jEdit.getViews() ) {
             addContextMenu( view );
-        }
+    }
         */
     }
 
@@ -108,13 +112,18 @@ public class SVNPlugin extends EBPlugin {
         }
     }
 
-    private static void removeContextMenu( View view ) {
-        JPopupMenu menu = view.getTextArea().getRightClickPopup();
-        Component[] mes = menu.getComponents();
-        if (mes[0].toString().equals("Subversion")) {
-            menu.remove(0);
-            menu.remove(0);
-        }
+    private static void removeContextMenu( final View view ) {
+        JPopupMenu popup = GUIUtilities.loadPopupMenu( "view.context" );
+        JMenuItem customize = new JMenuItem( jEdit.getProperty( "view.context.customize" ) );
+        customize.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent evt ) {
+                        new GlobalOptions( view, "context" );
+                    }
+                }
+                                   );
+        popup.addSeparator();
+        popup.add( customize );
+        view.getTextArea().setRightClickPopup( popup );
     }
 
 }
