@@ -8,6 +8,8 @@
 // Also modified by Slava Pestov to work on MacOS 
 // (we now always print \r\n instead of using println(), 
 // which sends a platform-specific line separator)
+// 
+// Also modified by Vadim Voituk to add proxy support 
 package com.fooware.net;
 
 import java.io.*;
