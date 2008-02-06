@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!--
+This build.xml file for building the LispPaste plugin is based
+upon the model file used for building the QuickNotepad plugin.
+
+A build.properties file is required to define the developer's build
+environment.
+-->
+
+<project name="LispPaste" default="build" basedir=".">
+    <description>
+      This is an ant build.xml file for building the LispPaste plugin for jEdit.
+    </description>
+    <property file="../build.properties" />
+    <property file="build.properties" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+    <import file="${build.support}/plugin-build.xml" />
+    
+    <path  id="project.class.path">
+      <pathelement location="${install.dir}/xmlrpc-client-3.0.jar"/>
+      <pathelement location="${install.dir}/xmlrpc-common-3.1.jar"/>
+      <pathelement location="${install.dir}/ws-commons-util-1.0.2.jar"/>
+      <pathelement location="${jedit.user.home}/jars/xmlrpc-client-3.0.jar"/>
+      <pathelement location="${jedit.user.home}/jars/xmlrpc-common-3.1.jar"/>
+      <pathelement location="${jedit.user.home}/jars/ws-commons-util-1.0.2.jar"/>
+      <pathelement location="${jedit.install.dir}/jedit.jar"/>
+      <pathelement location="."/>
+    </path>
+    
+    <!-- Help is not build but exists as an html file -->
+    <selector id="packageFiles">
+      <filename name="index.html" />
+    </selector>
+</project>
