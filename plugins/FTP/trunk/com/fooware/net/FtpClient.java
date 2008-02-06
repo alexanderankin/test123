@@ -998,7 +998,7 @@ public class FtpClient {
 		return dataXfrSocket;
 	}
 
-	private boolean useReaderWriter;
+	//private boolean useReaderWriter; // temporary commented as useless (voituk)
 
 	private BufferedReader in;
 	private BufferedWriter out;
@@ -1009,7 +1009,7 @@ public class FtpClient {
 	private Socket passiveSocket;
 
 	private FtpResponse response;
-	private Vector responseArchive = new Vector();
+	private Vector<FtpResponse> responseArchive = new Vector<FtpResponse>();
 
 	private Proxy proxy;
 }
