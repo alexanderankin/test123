@@ -11,3 +11,10 @@
 - DirectoryCache.clearAllCachedDirectories should remove all cache-* files
   not just the ones its Hashtable knows about, so it cleans up from crashes
   better. (Must not delete .passwd file)
+- Plain FTP connection over SOCKS proxy
+
+ChangeLog:
+
+0.9.3a
+[x] Plain FTP connection over HTTP proxy (commited in rev.11698 by Voituk Vadim)
+[ ] Some code refactoring and cleanup 
