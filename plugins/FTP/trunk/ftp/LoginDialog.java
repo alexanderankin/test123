@@ -25,21 +25,20 @@ package ftp;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor
-	public LoginDialog(Component comp, boolean _secure, String host,
-	String user, String password)
+	public LoginDialog(Component comp, boolean _secure, String host, String user, String password)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
-			jEdit.getProperty(_secure ?
-				"login.title-sftp" : "login.title-ftp"),
-			true);
+			jEdit.getProperty(_secure ? "login.title-sftp" : "login.title-ftp"), true);
 		this.secure = _secure;
 		JPanel content = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
@@ -53,16 +52,28 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			passive = new JCheckBox(jEdit.getProperty("login.passive"),
 				jEdit.getBooleanProperty("vfs.ftp.passive"));
 			content.add(passive);
+			
+			passive.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					System.out.println(".itemStateChanged()");
+					useProxy.setEnabled(passive.isSelected());
+				}
+			});
 		}
+		//if (secure) { //
+			useProxy = new JCheckBox(
+				jEdit.getProperty(secure ? "login.useProxy" : "login.useProxyHttp"), 
+				jEdit.getBooleanProperty("vfs.ftp.useProxy", false)
+			);
+			useProxy.setEnabled(passive.isSelected());
+			content.add(useProxy);
+			
+		//}
+
 		storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"),
 			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		content.add(storePassword);
 		
-		if (secure) {
-			useProxy = new JCheckBox(jEdit.getProperty("login.useProxy"), 
-				jEdit.getBooleanProperty("vfs.ftp.useProxy", false));
-			content.add(useProxy);
-		}
 		
 		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());

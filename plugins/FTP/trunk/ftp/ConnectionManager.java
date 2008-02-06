@@ -404,14 +404,12 @@ public class ConnectionManager
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory == null)
 		{
-			Log.log(Log.WARNING,ConnectionManager.class,"-nosettings "
-				+ "command line switch specified;");
+			Log.log(Log.WARNING,ConnectionManager.class,"-nosettings command line switch specified;");
 			Log.log(Log.WARNING,ConnectionManager.class,"passwords will not be saved.");
 		}
 		else
 		{
-			String passwordDirectory = MiscUtilities.constructPath(settingsDirectory,
-				"cache");
+			String passwordDirectory = MiscUtilities.constructPath(settingsDirectory, "cache");
 			passwordFile = new File(MiscUtilities.constructPath(passwordDirectory,"password-cache"));
 			passwordFile.getParentFile().mkdirs();
 			try {

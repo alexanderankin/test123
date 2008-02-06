@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.9.3
+plugin.ftp.FtpPlugin.version=0.9.3a
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.03.04.00
 plugin.ftp.FtpPlugin.depend.1=jdk 1.5
@@ -44,6 +44,7 @@ login.selectprivatekey=Select private key file...
 login.privatekeypassword=Enter passphrase for private key file
 login.storePassword=Save Password - these are stored in a file that is difficult, but not impossible, to read.
 login.useProxy=Connect using proxy
+login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
 # Settings
 vfs.ftp.passive=true

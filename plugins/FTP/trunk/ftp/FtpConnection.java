@@ -20,6 +20,9 @@
 package ftp;
 
 import com.fooware.net.*;
+import com.fooware.net.proxy.Proxy;
+import com.fooware.net.proxy.ProxyHTTP;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -32,8 +35,23 @@ class FtpConnection extends Connection
 	FtpConnection(ConnectionInfo info) throws IOException
 	{
 		super(info);
-
-		client = new FtpClient();
+		
+		// TODO: Move this data into ConnectionInfo clas
+		if (jEdit.getBooleanProperty("vfs.ftp.useProxy") 
+				&& jEdit.getBooleanProperty("vfs.ftp.passive")
+				&& jEdit.getBooleanProperty("firewall.enabled") ) {
+			Proxy proxy;
+			if (jEdit.getProperty("firewall.user", "").equals(""))
+				proxy = new ProxyHTTP(jEdit.getProperty("firewall.host"), jEdit.getIntegerProperty("firewall.port", 3128));
+			else 
+				proxy = new ProxyHTTP(
+					jEdit.getProperty("firewall.host"), jEdit.getIntegerProperty("firewall.port", 3128),
+					jEdit.getProperty("firewall.user"), jEdit.getProperty("firewall.password")
+				);
+			client = new FtpClient(proxy);
+		} else {
+			client = new FtpClient();
+		}
 
 		client.connect(info.host,info.port);
 

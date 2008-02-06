@@ -108,7 +108,8 @@ public class FtpPlugin extends EditPlugin
 	//{{{ Private members
 
 	//{{{ copy() method
-	private static void copy(InputStream in, OutputStream out) throws IOException
+	// Useless method? by Vadim Voituk 
+	/*private static void copy(InputStream in, OutputStream out) throws IOException
 	{
 		try
 		{
@@ -124,7 +125,7 @@ public class FtpPlugin extends EditPlugin
 			in.close();
 			out.close();
 		}
-	} //}}}
+	}*/ //}}}
 
 	//}}}
 }
