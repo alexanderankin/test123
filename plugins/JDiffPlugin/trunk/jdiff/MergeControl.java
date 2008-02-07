@@ -23,10 +23,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.plaf.basic.BasicArrowButton;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
@@ -35,21 +35,15 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class MergeControl extends JPanel {
 
-    private EditPane editPane;
+    private View view;
 
-    /**
-     * @param editPane the EditPane to add this control to.
-     * @param direction use SwingConstants.RIGHT for a control to move diffs from
-     * the left to the right, use SwingConstans.LEFT for a control to move diffs
-     * from the right to the left.
-     */
-    public MergeControl( EditPane editPane ) {
+    public MergeControl( View view ) {
         super();
 
-        if ( editPane == null ) {
-            throw new IllegalArgumentException( "EditPane may not be null." );
+        if ( view == null ) {
+            throw new IllegalArgumentException( "View may not be null." );
         }
-        this.editPane = editPane;
+        this.view = view;
 
         // create buttons
         JButton next = new JButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
@@ -87,7 +81,7 @@ public class MergeControl extends JPanel {
         move_left.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    DualDiff.moveLeft( MergeControl.this.editPane );
+                    DualDiff.moveLeft( MergeControl.this.view.getEditPane() );
                 }
             }
         );
@@ -95,7 +89,7 @@ public class MergeControl extends JPanel {
         move_right.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    DualDiff.moveRight( MergeControl.this.editPane );
+                    DualDiff.moveRight( MergeControl.this.view.getEditPane() );
                 }
             }
         );
@@ -103,7 +97,7 @@ public class MergeControl extends JPanel {
         next.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    DualDiff.nextDiff( MergeControl.this.editPane );
+                    DualDiff.nextDiff( MergeControl.this.view.getEditPane() );
                 }
             }
         );
@@ -111,7 +105,7 @@ public class MergeControl extends JPanel {
         prev.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    DualDiff.prevDiff( MergeControl.this.editPane );
+                    DualDiff.prevDiff( MergeControl.this.view.getEditPane() );
                 }
             }
         );
@@ -119,15 +113,15 @@ public class MergeControl extends JPanel {
         unsplit.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    MergeControl.this.editPane.getView().unsplit();
+                    MergeControl.this.view.unsplit();
                 }
             }
         );
         swap.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    EditPane left_ep = MergeControl.this.editPane.getView().getEditPanes() [ 0 ];
-                    EditPane right_ep = MergeControl.this.editPane.getView().getEditPanes() [ 1 ];
+                    EditPane left_ep = MergeControl.this.view.getEditPanes() [ 0 ];
+                    EditPane right_ep = MergeControl.this.view.getEditPanes() [ 1 ];
                     Buffer left = left_ep.getBuffer();
                     Buffer right = right_ep.getBuffer();
                     left_ep.setBuffer( right );
@@ -141,4 +135,5 @@ public class MergeControl extends JPanel {
         add(left_bar);
         add(right_bar);
     }
+
 }

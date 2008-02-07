@@ -51,7 +51,7 @@ public class DiffLineOverview extends JPanel implements LineProcessor {
         this.dualDiff = dualDiff;
         setBackground( Color.WHITE );
         setLayout( new BorderLayout() );
-        mergeControl = new MergeControl( dualDiff.getView().getEditPanes() [ 0 ] );
+        mergeControl = new MergeControl( dualDiff.getView() );
         add( mergeControl, BorderLayout.NORTH );
 
         linePanel = new JPanel();
