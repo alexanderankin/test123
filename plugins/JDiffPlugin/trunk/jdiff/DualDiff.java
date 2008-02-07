@@ -1058,9 +1058,9 @@ public class DualDiff implements EBComponent {
 
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
-            //if ( !view.getDockableWindowManager().isDockableWindowVisible("jdiff-lines") ) {
+            if ( !view.getDockableWindowManager().isDockableWindowVisible("jdiff-lines") ) {
                 view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
-            //}
+            }
         }
 
         public void focusLost( FocusEvent e ) {
