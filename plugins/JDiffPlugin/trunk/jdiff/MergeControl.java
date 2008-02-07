@@ -28,6 +28,7 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * This is the button controls to assist in doing merges.
@@ -59,21 +60,25 @@ public class MergeControl extends JPanel {
         JButton swap = new JButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
 
         // tooltips
-        next.setToolTipText( "Go to next diff" );
-        prev.setToolTipText( "Go to previous diff" );
-        unsplit.setToolTipText( "Unsplit" );
-        swap.setToolTipText( "Swap text areas" );
-        move_right.setToolTipText( "Move diff to right" );
-        move_left.setToolTipText( "Move diff to left" );
+        next.setToolTipText( jEdit.getProperty("jdiff.next-diff.label", "Go to next diff") );
+        prev.setToolTipText( jEdit.getProperty("jdiff.move-right.label", "Go to previous diff") );
+        unsplit.setToolTipText( jEdit.getProperty("jdiff.unsplit.label", "Unsplit") );
+        swap.setToolTipText( jEdit.getProperty("jdiff.swap-textareas", "Swap text areas") );
+        move_right.setToolTipText( jEdit.getProperty("jdiff.move-right.label", "Move diff to right") );
+        move_left.setToolTipText( jEdit.getProperty("jdiff.move-left.label", "Move diff to left") );
 
 
         // create toolbars
         JToolBar left_bar = new JToolBar();
+        left_bar.setFloatable(false);
+        left_bar.setRollover(true);
         left_bar.add( unsplit );
         left_bar.add( next );
         left_bar.add( move_right );
 
         JToolBar right_bar = new JToolBar();
+        right_bar.setFloatable(false);
+        right_bar.setRollover(true);
         right_bar.add( move_left );
         right_bar.add( prev );
         right_bar.add( swap );
