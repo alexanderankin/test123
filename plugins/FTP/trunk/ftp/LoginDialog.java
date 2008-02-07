@@ -60,15 +60,15 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 				}
 			});
 		}
-		//if (secure) { //
-			useProxy = new JCheckBox(
+		useProxy = new JCheckBox(
 				jEdit.getProperty(secure ? "login.useProxy" : "login.useProxyHttp"), 
 				jEdit.getBooleanProperty("vfs.ftp.useProxy", false)
-			);
+		);
+		if (!secure) {
 			useProxy.setEnabled(passive.isSelected());
-			content.add(useProxy);
+		}
+		content.add(useProxy);
 			
-		//}
 
 		storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"),
 			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
