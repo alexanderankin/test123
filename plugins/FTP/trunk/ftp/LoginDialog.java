@@ -46,27 +46,27 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		setContentPane(content);
 		
 		content.add(createFieldPanel(secure,host,user,password));
-		
-		if(!secure)
-		{
-			passive = new JCheckBox(jEdit.getProperty("login.passive"),
-				jEdit.getBooleanProperty("vfs.ftp.passive"));
-			content.add(passive);
-			
-			passive.addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-					System.out.println(".itemStateChanged()");
-					useProxy.setEnabled(passive.isSelected());
-				}
-			});
-		}
+
 		useProxy = new JCheckBox(
 				jEdit.getProperty(secure ? "login.useProxy" : "login.useProxyHttp"), 
 				jEdit.getBooleanProperty("vfs.ftp.useProxy", false)
 		);
-		if (!secure) {
+		
+		if(!secure) {
+			passive = new JCheckBox(jEdit.getProperty("login.passive"),
+				jEdit.getBooleanProperty("vfs.ftp.passive"));
+			
+			passive.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					useProxy.setEnabled(passive.isSelected());
+				}
+			});
+
 			useProxy.setEnabled(passive.isSelected());
+			content.add(passive);
 		}
+		
+		
 		content.add(useProxy);
 			
 

@@ -186,7 +186,7 @@ public class DirectoryCache
 	//{{{ Private members
 	private static Object lock = new Object();
 	private static int tmpFileCount;
-	private static Hashtable urlToCacheFileHash;
+	private static Hashtable<String, String> urlToCacheFileHash;
 	private static String cacheDirectory;
 
 	private DirectoryCache() {}
@@ -207,7 +207,7 @@ public class DirectoryCache
 	//{{{ Class initializer
 	static
 	{
-		urlToCacheFileHash = new Hashtable();
+		urlToCacheFileHash = new Hashtable<String, String>();
 
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory == null)
