@@ -26,7 +26,6 @@ import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 
 import jdiff.DualDiff;
-import jdiff.LineProcessor;
 import jdiff.component.DiffLineModel;
 import jdiff.component.ui.*;
 

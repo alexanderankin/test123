@@ -27,7 +27,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 
-import jdiff.MergeControl;
 import jdiff.component.*;
 
 public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {

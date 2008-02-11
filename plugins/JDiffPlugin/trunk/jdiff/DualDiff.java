@@ -40,6 +40,9 @@ import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import jdiff.component.DiffLocalOverview;
+import jdiff.component.DiffOverview;
+import jdiff.component.LineProcessor;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
@@ -98,9 +101,9 @@ public class DualDiff implements EBComponent {
 
     private Diff.Change edits;
 
-    private DiffOverview diffOverview0;
+    private jdiff.component.DiffOverview diffOverview0;
 
-    private DiffOverview diffOverview1;
+    private jdiff.DiffOverview diffOverview1;
 
     private Box box0;
 
@@ -240,12 +243,11 @@ public class DualDiff implements EBComponent {
             int lineCount0 = ( ( buf0.isLoaded() ) ? buf0.getLineCount() : 1 );
             int lineCount1 = ( ( buf1.isLoaded() ) ? buf1.getLineCount() : 1 );
 
-            this.diffOverview0 = new DiffLocalOverview( this.edits, lineCount0,
-                    lineCount1, this.textArea0, this.textArea1 );
+            this.diffOverview0 = new DiffLocalOverview( DualDiff.this );
             this.diffOverview1 = ( ( jEdit.getBooleanProperty(
-                        "jdiff.global-virtual-overview", true ) ) ? ( DiffOverview ) new DiffGlobalVirtualOverview(
+                        "jdiff.global-virtual-overview", true ) ) ? ( jdiff.DiffOverview ) new DiffGlobalVirtualOverview(
                         this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1 )
-                    : ( DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
+                    : ( jdiff.DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
                             lineCount0, lineCount1, this.textArea0, this.textArea1 ) );
         }
         else {
@@ -258,12 +260,11 @@ public class DualDiff implements EBComponent {
             int lineCount0 = fileLines0.length;
             int lineCount1 = fileLines1.length;
 
-            this.diffOverview0 = new DiffLocalOverview( this.edits, lineCount0,
-                    lineCount1, this.textArea0, this.textArea1 );
+            this.diffOverview0 = new DiffLocalOverview( DualDiff.this );
             this.diffOverview1 = ( ( jEdit.getBooleanProperty(
-                        "jdiff.global-virtual-overview", true ) ) ? ( DiffOverview ) new DiffGlobalVirtualOverview(
+                        "jdiff.global-virtual-overview", true ) ) ? ( jdiff.DiffOverview ) new DiffGlobalVirtualOverview(
                         this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1 )
-                    : ( DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
+                    : ( jdiff.DiffOverview ) new DiffGlobalPhysicalOverview( this.edits,
                             lineCount0, lineCount1, this.textArea0, this.textArea1 ) );
         }
     }
