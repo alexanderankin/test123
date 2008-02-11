@@ -21,8 +21,7 @@ package projectviewer.importer;
 //{{{ Imports
 import java.awt.Dialog;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +30,17 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
+import org.gjt.sp.jedit.io.VFSManager;
+
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -56,7 +63,7 @@ public class FileImporter extends Importer {
 
 	//{{{ Protected Members
 	protected int fileCount;
-	protected FilenameFilter fnf;
+	protected VFSFileFilter fnf;
 	//}}}
 
 	//{{{ +FileImporter(VPTNode, ProjectViewer) : <init>
@@ -87,45 +94,52 @@ public class FileImporter extends Importer {
 		id.setVisible(true);
 
 		ArrayList lst = new ArrayList();
-		File[] chosen = id.getSelectedFiles();
+		VFSFile[] chosen = id.getSelectedFiles();
 		if (chosen == null || chosen.length == 0) return null;
 
 		VPTNode where = null;
 		VPTNode root = selected;
 		if (id.getNewNodeName() != null) {
-			File newDir = new File(selected.getNodePath(), id.getNewNodeName());
+			VFS vfs = VFSManager.getVFSForPath(selected.getNodePath());
+			String newDir = vfs.constructPath(selected.getNodePath(),
+											  id.getNewNodeName());
 			where = findDirectory(newDir, selected, true);
-			if (where.isFile())
+			if (where.isFile()) {
 				where = new VPTDirectory(newDir);
+			}
 			lst.add(where);
 			root = where;
 		}
 
 
-		FilenameFilter fnf = id.getImportFilter();
-		for (int i = 0; i < chosen.length; i++) {
-			VPTNode node = null;
-			if (!chosen[i].exists()) {
-				node = findDirectory(chosen[i], root, true);
-			} else if (chosen[i].isDirectory()) {
-				node = findDirectory(chosen[i], root, true);
-				if (id.getTraverseDirectories()) {
-					addTree(chosen[i], node, fnf, id.getFlattenFilePaths());
+		try {
+			VFSFileFilter fnf = id.getImportFilter();
+			for (VFSFile file : chosen) {
+				VPTNode node = null;
+				if (!VFSHelper.pathExists(file.getPath())) {
+					node = findDirectory(file.getPath(), root, true);
+				} else if (file.getType() == VFSFile.DIRECTORY) {
+					node = findDirectory(file.getPath(), root, true);
+					if (id.getTraverseDirectories()) {
+						addTree(node, fnf, id.getFlattenFilePaths());
+					}
+				} else if (findDirectory(file.getPath(), root, false) == null) {
+					node = new VPTFile(file.getPath());
+					registerFile((VPTFile) node);
+					fileCount++;
 				}
-			} else if (findDirectory(chosen[i], root, false) == null) {
-				node = new VPTFile(chosen[i].getAbsolutePath());
-				registerFile((VPTFile) node);
-				fileCount++;
-			}
 
-			if (node != null && node.getParent() == null) {
-				if (where == null) {
-					lst.add(node);
-				} else {
-					where.add(node);
-					where.sortChildren();
+				if (node != null && node.getParent() == null) {
+					if (where == null) {
+						lst.add(node);
+					} else {
+						where.add(node);
+						where.sortChildren();
+					}
 				}
 			}
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, "VFS error while importing", ioe);
 		}
 
 		showFileCount();
@@ -133,56 +147,48 @@ public class FileImporter extends Importer {
 		return lst;
 	} //}}}
 
-	//{{{ #addTree(File, VPTNode, FilenameFilter) : void
-	/**
-	 *	Adds a directory tree to the given node.
-	 *
-	 *	@param	root	The root directory from where to look for files.
-	 *	@param	where	The node to where the new files will be added.
-	 *	@param	filter	The filter to use to select files.
-	 *	@param	flatten	Whether to "flat import" (add all files to top directory).
-	 */
-	protected void addTree(File root, VPTNode where,
-						   FilenameFilter filter, boolean flatten)
-	{
-		File[] children;
 
-		if (filter != null){
-			children = root.listFiles(filter);
-		} else {
-			children = root.listFiles();
+	/**
+	 * Adds a directory tree to the given node.
+	 *
+	 * @param	where	The node to where the new files will be added.
+	 * @param	filter	The filter to use to select files.
+	 * @param	flatten	Whether to "flat import" (add all files to top directory).
+	 */
+	protected void addTree(VPTNode where,
+						   VFSFileFilter filter,
+						   boolean flatten)
+		throws IOException
+	{
+		Object session;
+		String[] children;
+		VFSFile root;
+		View view;
+
+		view = jEdit.getActiveView();
+		root = VFSHelper.getFile(where.getNodePath());
+		session = VFSHelper.createVFSSession(root.getVFS(), root.getPath(), view);
+
+		try {
+			children = root.getVFS()._listDirectory(session, root.getPath(),
+													filter, true, view, false,
+													true);
+		} finally {
+			VFSHelper.endVFSSession(root.getVFS(), session, view);
 		}
 
-		if (children == null || children.length == 0) return;
+		if (children == null || children.length == 0) {
+			return;
+		}
 
-		for (int i = 0; i < children.length; i++) {
-			if (!children[i].exists()) {
+		for (String url: children) {
+			VFSFile file = VFSHelper.getFile(url);
+			if (file == null) {
 				continue;
 			}
-
-			VPTNode child;
-			if (children[i].isDirectory()) {
-				child = (flatten) ? where : findDirectory(children[i], where, true);
-				addTree(children[i], child, filter, flatten);
-			} else {
-				child = new VPTFile(children[i].getAbsolutePath());
-				if (where.getIndex(child) != -1) {
-					continue;
-				}
-				registerFile((VPTFile) child);
-				fileCount++;
-			}
-
-			if ((!child.isDirectory() || child.getChildCount() != 0)
-				&& child.getParent() == null
-				&& child != where
-			) {
-				where.add(child);
-			}
+			constructPath(where, url, null);
 		}
-
-		where.sortChildren();
-	} //}}}
+	}
 
 	//{{{ #showFileCount() : void
 	/** Shows a message in the status bar indicating how many files were imported. */

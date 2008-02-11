@@ -19,15 +19,21 @@
 package projectviewer.importer;
 
 //{{{ Imports
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
+
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -113,22 +119,26 @@ public class ReImporter extends RootImporter {
 
 	//{{{ -reimportDirectory(VPTDirectory, boolean) : void
 	private void reimportDirectory(VPTDirectory dir, boolean flatten) {
-		if (dir.getFile().exists()) {
-			unregisterDir(dir, flatten);
-			addTree(dir.getFile(), dir, fnf, flatten);
-		} else {
-			ArrayList toRemove = null;
-			for (int i = 0; i < dir.getChildCount(); i++) {
-				VPTNode node = (VPTNode) dir.getChildAt(i);
-				if (node.isFile()) {
-					if (!((VPTFile)node).getFile().isReadable()) {
-						unregisterFile((VPTFile)node);
-						dir.remove(i--);
+		try {
+			if (VFSHelper.pathExists(dir.getURL())) {
+				unregisterDir(dir, flatten);
+				addTree(dir, fnf, flatten);
+			} else {
+				ArrayList toRemove = null;
+				for (int i = 0; i < dir.getChildCount(); i++) {
+					VPTNode node = (VPTNode) dir.getChildAt(i);
+					if (node.isFile()) {
+						if (!((VPTFile)node).getFile().isReadable()) {
+							unregisterFile((VPTFile)node);
+							dir.remove(i--);
+						}
+					} else if (node.isDirectory()) {
+						reimportDirectory((VPTDirectory)node, flatten);
 					}
-				} else if (node.isDirectory()) {
-					reimportDirectory((VPTDirectory)node, flatten);
 				}
 			}
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, "VFS error while importing", ioe);
 		}
 	} //}}}
 
@@ -142,8 +152,10 @@ public class ReImporter extends RootImporter {
 			VPTNode n = (VPTNode) dir.getChildAt(i);
 			if (n.isDirectory()) {
 				VPTDirectory cdir = (VPTDirectory) n;
-				if (cdir.getFile().exists() &&
-						cdir.getFile().getParent().equals(dir.getNodePath())) {
+				String parent = VFSManager.getVFSForPath(cdir.getURL())
+				                          .getParentOfPath(cdir.getURL());
+				if (VFSHelper.pathExists(cdir.getURL()) &&
+					parent.equals(dir.getNodePath())) {
 					unregisterFiles((VPTDirectory)n);
 					if (cdir.getChildCount() == 0)
 						dir.remove(i--);

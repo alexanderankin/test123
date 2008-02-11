@@ -279,7 +279,7 @@ public final class ProjectManager {
 	 */
 	public void saveProject(VPTProject p, boolean wait) {
 		Entry e = (Entry) projects.get(p.getName());
-		WorkRequest req;
+		Runnable task;
 		synchronized (e) {
 			if (!e.isLoaded) {
 				return;
@@ -290,14 +290,12 @@ public final class ProjectManager {
 				// paranoid and save all configuration along with it
 				saveProjectList();
 			}
-			req = ProjectPersistenceManager.save(p, e.fileName);
+			task = ProjectPersistenceManager.createSaveTask(p, e.fileName);
 		}
 		if (wait) {
-			try {
-				req.waitFor();
-			} catch (InterruptedException iex) {
-				// I hate this exception.
-			}
+			task.run();
+		} else {
+			WorkerThreadPool.getSharedInstance().addRequest(task);
 		}
 	} //}}}
 

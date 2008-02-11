@@ -19,7 +19,7 @@
 package projectviewer.importer;
 
 //{{{ Imports
-import java.io.File;
+import java.io.IOException;
 
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -30,7 +30,10 @@ import java.awt.Component;
 
 import org.gjt.sp.jedit.jEdit;
 
+import org.gjt.sp.util.Log;
+
 import projectviewer.ProjectViewer;
+import projectviewer.VFSHelper;
 import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -118,7 +121,7 @@ public class RootImporter extends FileImporter {
 				// value of getNodePath() when the path doesn't exist anymore.
 				if (n.getNodePath().startsWith(oldRoot)
 					|| (n.isDirectory()
-						&& ((VPTDirectory)n).getFile().getAbsolutePath().startsWith(oldRoot)))
+						&& ((VPTDirectory)n).getURL().startsWith(oldRoot)))
 				{
 					toRemove.add(n);
 				}
@@ -137,10 +140,12 @@ public class RootImporter extends FileImporter {
 			}
 		}
 
-		addTree(new File(project.getRootPath()),
-				project,
-				id.getImportFilter(),
-				id.getFlattenFilePaths());
+		try {
+			addTree(project, id.getImportFilter(), id.getFlattenFilePaths());
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, "VFS exception while importing", ioe);
+		}
+
 		if (state != null) {
 			postAction = new NodeStructureChange(project, state);
 		}

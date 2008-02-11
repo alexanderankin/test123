@@ -21,11 +21,9 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -38,11 +36,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 //}}}
 
 /**
@@ -75,31 +79,20 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 		return jEdit.getProperty("projectviewer.import.filter.cvs.desc");
 	} //}}}
 
-	//{{{ +accept(File) : boolean
-	/**
-	 *	accept() method for the Swing JFileChooser. Accepts files only if they
-	 *	are in the CVS/Entries file for the directory. All directories not named
-	 *	"CVS" are accepted, so the user can navigate freely.
-	 */
-	public boolean accept(File file) {
-		return (file.isDirectory() && !file.getName().equals("CVS"))
-				|| accept(file.getParentFile(), file.getName());
-	} //}}}
-
-	//{{{ +accept(File, String) : boolean
+	//{{{ +accept(VFSFile) : boolean
 	/**
 	 *	accept() method for the FilenameFilter implementation. Accepts only
 	 *	files and directories that are listed in the CVS/Entries file.
 	 */
-	public boolean accept(File file, String fileName) {
-		File f = new File(file.getAbsolutePath(), fileName);
-		if ((fileName.equals("CVS") || fileName.equals(".svn"))
-			&& f.isDirectory())
-		{
-			return false;
+	public boolean accept(VFSFile file) {
+		String fname = file.getName();
+		if (file.getType() == VFSFile.DIRECTORY) {
+			return (!fname.equals("CVS") && !fname.equals(".svn"));
+		} else {
+			VFS vfs = file.getVFS();
+			String parent = file.getVFS().getParentOfPath(file.getPath());
+			return getEntries(vfs, parent).contains(fname);
 		}
-		return (f.isDirectory()
-				|| getEntries(file.getAbsolutePath()).contains(fileName));
 	} //}}}
 
 	//{{{ -getEntries(String) : HashSet
@@ -107,71 +100,79 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 *	Returns the set of files from the CVS/Entries file for the given path.
 	 *	In case the file has not yet been read, parse it.
 	 */
-	private HashSet getEntries(String dirPath) {
+	private HashSet getEntries(VFS vfs, String dirPath) {
 		HashSet h = (HashSet) entries.get(dirPath);
 		if (h == null) {
-			// parse file
 			BufferedReader br = null;
+			Object session;
+			String fPath;
+			View view;
+
+			h = new HashSet();
+			view = jEdit.getActiveView();
+
+			fPath = vfs.constructPath(dirPath, "CVS");
+			fPath = vfs.constructPath(fPath, "Entries");
+			session = VFSHelper.createVFSSession(vfs, fPath, view);
+
 			try
 			{
-				h = new HashSet();
-				String fPath = MiscUtilities.constructPath(dirPath, "CVS", "Entries");
-				/*
-				String fPath = dirPath + File.separator + "CVS" +
-					File.separator + "Entries";    */
-				br = new BufferedReader(new FileReader(fPath));
-				String line;
+				InputStream in;
 
-				while ( (line = br.readLine()) != null )
-				{
-					int idx1, idx2;
-					idx1 = line.indexOf('/');
-					if (idx1 != -1)
-					{
-						idx2 = line.indexOf('/', idx1 + 1);
-						h.add(line.substring(idx1 + 1, idx2));
+				if (vfs._getFile(session, fPath, view) != null) {
+					in = vfs._createInputStream(session, fPath, false, view);
+					br = new BufferedReader(new InputStreamReader(in));
+
+					String line;
+					while ((line = br.readLine()) != null) {
+						int idx1, idx2;
+						idx1 = line.indexOf('/');
+						if (idx1 != -1) {
+							idx2 = line.indexOf('/', idx1 + 1);
+							h.add(line.substring(idx1 + 1, idx2));
+						}
 					}
+				} else {
+					// no CVS/Entries. Try .svn/entries
+					getSubversionEntries(vfs, h, dirPath);
 				}
-
-			}
-			catch (FileNotFoundException fnfe)
-			{
-				// no CVS/Entries. Try .svn/entries
-				getSubversionEntries(h, dirPath);
-			}
-			catch (IOException ioe)
-			{
-				//shouldn't happen
+			} catch (IOException ioe) {
 				Log.log(Log.ERROR,this,ioe);
-			} finally
-			{
-				if (br != null) try { br.close(); } catch (Exception e) { }
+			} finally {
+				IOUtilities.closeQuietly(br);
 				entries.put(dirPath, h);
+				VFSHelper.endVFSSession(vfs, session, view);
 			}
 		}
 		return h;
 	} //}}}
 
 	//{{{ -getSubversionEntries(HashSet, String) : void
-
 	/**
 	 * Searches in subversion directories for 1.3 or 1.4 format ".svn/entries"
 	 * files, parses them and returns the list of filenames in a target set.
 	 *
+	 * @param vfs The VFS where the entries file is.
 	 * @param target a target Set<String> of filenames to fill
 	 * @param dirPath the location to search for subversion entries.
 	 */
-	private void getSubversionEntries(HashSet target, String dirPath)
+	private void getSubversionEntries(VFS vfs,
+									  HashSet target,
+									  String dirPath)
 	{
-		String fPath = MiscUtilities.constructPath(dirPath, ".svn", "entries");
-		File entriesFile = new File(fPath);
-		if (!entriesFile.canRead())
-			return;
-
 		boolean isXml = true;
+		Object session;
+		String fPath;
+		View view;
+
+		view = jEdit.getActiveView();
+		fPath = vfs.constructPath(dirPath, ".svn");
+		fPath = vfs.constructPath(fPath, "entries");
+		session = VFSHelper.createVFSSession(vfs, fPath, view);
+
 		InputStream in = null;
 		try {
-			in = new FileInputStream(entriesFile);
+			in = vfs._createInputStream(session, fPath, false, view);
 			if (in.markSupported()) {
 				in.mark(1);
 				isXml = (in.read() == (int) '<');
@@ -179,11 +180,12 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 			} else {
 				isXml = (in.read() == (int) '<');
 				in.close();
-				in = new FileInputStream(entriesFile);
+				in = vfs._createInputStream(session, fPath, false, view);
 			}
 			in = new BufferedInputStream(in);
 		} catch (IOException ioe) {
-			Log.log(Log.ERROR, this, ioe);
+			IOUtilities.closeQuietly(in);
+			VFSHelper.endVFSSession(vfs, session, view);
 			return;
 		}
 
@@ -192,13 +194,12 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 				XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
 				parser.parse(new InputSource(in));
 			} catch (SAXException saxe) {
-				// shouldn't happen
 				Log.log(Log.ERROR, this, saxe);
 			} catch (IOException ioe) {
-				// Shouldn't happen
 				Log.log(Log.ERROR, this, ioe);
 			} finally {
-				try { in.close(); } catch (Exception e) { }
+				IOUtilities.closeQuietly(in);
+				VFSHelper.endVFSSession(vfs, session, view);
 			}
 		} else {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -227,10 +228,10 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 					}
 				}
 			} catch (IOException ioe) {
-				// Shouldn't happen
 				Log.log(Log.ERROR, this, ioe);
 			} finally {
-				try { in.close(); } catch (Exception e) { }
+				IOUtilities.closeQuietly(in);
+				VFSHelper.endVFSSession(vfs, session, view);
 			}
 		}
 

@@ -127,12 +127,20 @@ public final class ProjectPersistenceManager {
 		return p;
 	} //}}}
 
-	//{{{ +_save(VPTProject, String)_ : void
-	/** Saves the given project data to the disk. */
-	public static WorkRequest save(VPTProject p, String filename) {
-		IORequest req = new IORequest(p, filename);
-		return WorkerThreadPool.getSharedInstance().addRequest(req);
-	} //}}}
+	/**
+	 * Creates a runnable task that will save the project's data to the
+	 * given config file.
+	 *
+	 * @param p The project to save.
+	 * @param filename The project config file name.
+	 *
+	 * @return A runnable that can be used to execute the task.
+	 *
+	 * @since PV 3.0.0
+	 */
+	public static Runnable createSaveTask(VPTProject p, String filename) {
+		return new IORequest(p, filename);
+	}
 
 	//{{{ -_saveNode(VPTNode, Writer)_ : void
 	/** recursive method for saving nodes and their children. */

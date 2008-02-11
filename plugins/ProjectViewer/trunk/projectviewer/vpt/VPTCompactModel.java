@@ -201,7 +201,7 @@ public class VPTCompactModel extends ProjectTreeModel {
 
 		//{{{ +CompactDirectoryNode(VPTNode, String) : <init>
 		public CompactDirectoryNode(VPTNode dir, String name) {
-			super(((VPTDirectory)dir).getFile());
+			super(((VPTDirectory)dir).getURL());
 			this.dir = dir;
 			this.name = name;
 			for (int i = 0; i < dir.getChildCount(); i++)

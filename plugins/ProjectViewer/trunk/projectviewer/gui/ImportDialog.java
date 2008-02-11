@@ -30,9 +30,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,13 +47,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.basic.BasicFileChooserUI;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
 
 import common.gui.ModalJFileChooser;
 import common.gui.OkCancelButtons;
@@ -67,6 +66,7 @@ import projectviewer.importer.ImporterFileFilter;
 import projectviewer.importer.NonProjectFileFilter;
 
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 import projectviewer.config.ExtensionManager;
 
 import projectviewer.vpt.VPTDirectory;
@@ -99,13 +99,13 @@ public class ImportDialog extends EnhancedDialog
 	private JCheckBox newNode;
 	private JCheckBox traverse;
 	private JComboBox filters;
-	private ModalJFileChooser chooser;
+	private VFSBrowser chooser;
 
 	private HistoryTextField dGlob;
 	private HistoryTextField fGlob;
 	private JTextField newNodeName;
 
-	private List ffilters;
+	private List<VFSFileFilter> ffilters;
 	private VPTProject project;
 	private VPTNode selected;
 	//}}}
@@ -255,17 +255,9 @@ public class ImportDialog extends EnhancedDialog
 		dispose();
 	} //}}}
 
-	//{{{ +getSelectedFiles() : File[]
-	public File[] getSelectedFiles() {
-		if (isApproved && chooser != null) {
-			// see: http://forum.java.sun.com/thread.jspa?forumID=57&threadID=356088
-			if (chooser.getUI() instanceof BasicFileChooserUI) {
-				BasicFileChooserUI ui = (BasicFileChooserUI)chooser.getUI();
-				ui.getApproveSelectionAction().actionPerformed(null);
-			}
-			return chooser.getSelectedFiles();
-		}
-		return null;
+	//{{{ +getSelectedFiles() : VFSFile[]
+	public VFSFile[] getSelectedFiles() {
+		return chooser.getSelectedFiles();
 	} //}}}
 
 	//{{{ +getTraverseDirectories() : boolean
@@ -285,10 +277,10 @@ public class ImportDialog extends EnhancedDialog
 			 : null;
 	} //}}}
 
-	//{{{ +getImportFilter() : FilenameFilter
-	public FilenameFilter getImportFilter() {
+	//{{{ +getImportFilter() : VFSFileFilter
+	public VFSFileFilter getImportFilter() {
 		if (filters.getSelectedItem() instanceof ImporterFileFilter) {
-			return (FilenameFilter) filters.getSelectedItem();
+			return (VFSFileFilter) filters.getSelectedItem();
 		} else {
 			return new GlobFilter(fGlob.getText(), dGlob.getText());
 		}
@@ -375,25 +367,22 @@ public class ImportDialog extends EnhancedDialog
 		if (showChooser && chooser == null) {
 			String initPath;
 			if (selected != null && selected.isDirectory() &&
-				((VPTDirectory)selected).getFile().exists())
+				VFSHelper.pathExists(((VPTDirectory)selected).getURL()))
 			{
 				initPath = selected.getNodePath();
 			} else {
 				initPath = project.getRootPath();
 			}
 
-			chooser = new ModalJFileChooser(initPath);
-			chooser.setControlButtonsAreShown(false);
-			chooser.addActionListener(this);
+			chooser = new VFSBrowser(jEdit.getActiveView(), null);
 
-			FileFilter npff = new NonProjectFileFilter(project);
-			chooser.setMultiSelectionEnabled(true);
-			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			chooser.addChoosableFileFilter(npff);
+			VFSFileFilter npff = new NonProjectFileFilter(project);
+			chooser.addVFSFileFilter(npff);
 
-			for (Iterator i = getFileFilters().iterator(); i.hasNext(); )
-				chooser.addChoosableFileFilter((FileFilter) i.next());
-			chooser.setFileFilter(npff);
+			for (VFSFileFilter f : ffilters) {
+				chooser.addVFSFileFilter(f);
+			}
+			// chooser.setFilenameFilter(npff);
 
 			getContentPane().add(BorderLayout.CENTER, chooser);
 		}
@@ -411,12 +400,10 @@ public class ImportDialog extends EnhancedDialog
 	/**
 	 *	Instantiate the default file filters from Project Viewer and checks
 	 *	all the other plugins looking for any custom filters they provide.
-	 *
-	 *	@param	addAllFilter	Whether to add the "AllFilesFilter" to the list.
 	 **/
 	private List getFileFilters() {
 		if (ffilters == null) {
-			ffilters = new ArrayList();
+			ffilters = new ArrayList<VFSFileFilter>();
 			ffilters.add(GlobFilter.getImportSettingsFilter());
 			ffilters.add(new CVSEntriesFilter());
 
@@ -429,7 +416,9 @@ public class ImportDialog extends EnhancedDialog
 													.loadExtensions(ImporterFileFilter.class);
 
 				if (exts != null && exts.size() > 0) {
-					ffilters.addAll(exts);
+					for (Object o : exts) {
+						ffilters.add((VFSFileFilter) o);
+					}
 				}
 			}
 		}
@@ -441,25 +430,21 @@ public class ImportDialog extends EnhancedDialog
 	/** Dumb file filter that accepts everything. */
 	private static class AllFilesFilter extends ImporterFileFilter {
 
-		//{{{ +getDescription() : String
 		public String getDescription() {
 			return null;
-		} //}}}
+		}
 
-		//{{{ +accept(File) : boolean
-		public boolean accept(File file) {
+		public boolean accept(VFSFile file) {
 			return true;
-		} //}}}
+		}
 
-		//{{{ +accept(File, String) : boolean
-		public boolean accept(File file, String fileName) {
+		public boolean accept(String url) {
 			return true;
-		} //}}}
+		}
 
-		//{{{ +getRecurseDescription() : String
 		public String getRecurseDescription() {
 			return	jEdit.getProperty("projectviewer.import.filter.all");
-		} //}}}
+		}
 
 	} //}}}
 
