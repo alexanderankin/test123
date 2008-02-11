@@ -17,7 +17,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-package jdiff;
+package jdiff.component;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -29,6 +29,8 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+
+import jdiff.*;
 
 /**
  * This is the button controls to assist in doing merges.
