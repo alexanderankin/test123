@@ -57,11 +57,11 @@ public class DiffHighlight extends TextAreaExtension
 
     private JEditTextArea textArea;
     private boolean enabled = false;
-    private Diff.change edits;
+    private Diff.Change edits;
     private Position position;
 
 
-    private DiffHighlight(JEditTextArea textArea, Diff.change edits, Position position) {
+    private DiffHighlight(JEditTextArea textArea, Diff.Change edits, Position position) {
         this.textArea = textArea;
         this.edits    = edits;
         this.position = position;
@@ -84,7 +84,7 @@ public class DiffHighlight extends TextAreaExtension
                 return;
             }
 
-            Diff.change hunk = this.edits;
+            Diff.Change hunk = this.edits;
             Color color;
 
             if (this.position == DiffHighlight.LEFT) {
@@ -171,12 +171,12 @@ public class DiffHighlight extends TextAreaExtension
     }
 
 
-    public Diff.change getEdits() {
+    public Diff.Change getEdits() {
         return this.edits;
     }
 
 
-    public void setEdits(Diff.change edits) {
+    public void setEdits(Diff.Change edits) {
         this.edits = edits;
     }
 
@@ -246,7 +246,7 @@ public class DiffHighlight extends TextAreaExtension
     }
 
 
-    public static TextAreaExtension  addHighlightTo(EditPane editPane, Diff.change edits, Position position) {
+    public static TextAreaExtension  addHighlightTo(EditPane editPane, Diff.Change edits, Position position) {
         TextAreaExtension textAreaHighlight = new DiffHighlight(
             editPane.getTextArea(), edits, position
         );

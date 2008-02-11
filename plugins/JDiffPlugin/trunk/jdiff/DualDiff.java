@@ -31,12 +31,15 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.StringWriter;
 
+import java.nio.*;
+
 import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
@@ -50,6 +53,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -92,7 +96,7 @@ public class DualDiff implements EBComponent {
 
     private JEditTextArea textArea1;
 
-    private Diff.change edits;
+    private Diff.Change edits;
 
     private DiffOverview diffOverview0;
 
@@ -496,38 +500,47 @@ public class DualDiff implements EBComponent {
         DualDiff.refreshFor( view );
     }
 
-    public static void toggleFor( View view ) {
-        EditPane[] editPanes = view.getEditPanes();
-        if ( editPanes.length != 2 ) {
-            Log.log( Log.DEBUG, DualDiff.class,
-                    "Splitting: the view has to be split in two" );
-            if ( editPanes.length > 2 ) {
-                view.unsplit();
-            }
-            view.splitVertically();
-        }
+    public static void toggleFor( final View view ) {
+        Runnable r = new Runnable() {
+                    public void run() {
+                        if ( DualDiff.isEnabledFor( view ) ) {
+                            DualDiff.removeFrom( view );
+                            view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
+                        }
+                        else {
+                            EditPane[] editPanes = view.getEditPanes();
+                            if ( editPanes.length != 2 ) {
+                                Log.log( Log.DEBUG, DualDiff.class,
+                                        "Splitting: the view has to be split in two" );
+                                if ( editPanes.length > 2 ) {
+                                    view.unsplit();
+                                }
+                                view.splitVertically();
 
-        if ( DualDiff.isEnabledFor( view ) ) {
-            DualDiff.removeFrom( view );
-            view.getDockableWindowManager().toggleDockableWindow( "jdiff-lines" );
-        }
-        else {
-            DualDiff.addTo( view );
-            view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
-            JScrollPane lines = ( JScrollPane ) view.getDockableWindowManager().getDockable( "jdiff-lines" );
-            if ( lines != null ) {
-                lines.getViewport().setView( ( DiffLineOverview ) DualDiff.getDualDiffFor( view ).getLineProcessor() );
-            }
-        }
+                                // danson, make sure the divider is in the middle.  For some reason,
+                                // the left side would be much smaller than the right side, this
+                                // takes care of that.
+                                JSplitPane sp = view.getSplitPane();
+                                sp.setDividerLocation( 0.5 );
+                            }
+                            DualDiff.addTo( view );
+                            DockableWindowManager dwm = view.getDockableWindowManager();
+                            if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) ) {
+                                System.out.println("+++++ not visible");
+                                if (dwm.getDockableWindow("jdiff-lines") == null) {
+                                    dwm.addDockableWindow("jdiff-lines");
+                                    System.out.println("+++++ added dockable");
+                                }
+                                dwm.showDockableWindow( "jdiff-lines" );
+                                System.out.println("+++++ dockable showing?");
+                            }
+                        }
 
-        // danson, make sure the divider is in the middle.  For some reason,
-        // the left side would be much smaller than the right side, this
-        // takes care of that.
-        JSplitPane sp = view.getSplitPane();
-        sp.setDividerLocation( 0.5 );
-
-        view.invalidate();
-        view.validate();
+                        view.invalidate();
+                        view.validate();
+                    }
+                };
+        SwingUtilities.invokeLater( r );
     }
 
     public static void refreshFor( View view ) {
@@ -738,7 +751,7 @@ public class DualDiff implements EBComponent {
         FileLine[] fileLines1 = dualDiff.getFileLines( buf1 );
 
         Diff d = new Diff( fileLines0, fileLines1 );
-        Diff.change script = d.diff_2( false );
+        Diff.Change script = d.diff_2( false );
 
         // Files are identical: return
         if ( script == null ) {
@@ -781,7 +794,7 @@ public class DualDiff implements EBComponent {
     }
 
     private void nextDiff0() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
         int firstLine = this.textArea0.getCaretLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line0 > firstLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
@@ -811,7 +824,7 @@ public class DualDiff implements EBComponent {
     }
 
     private void nextDiff1() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
         int firstLine = this.textArea1.getCaretLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line1 > firstLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
@@ -841,7 +854,7 @@ public class DualDiff implements EBComponent {
     }
 
     private void prevDiff0() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line0 < firstLine ) {
@@ -873,7 +886,7 @@ public class DualDiff implements EBComponent {
     }
 
     private void prevDiff1() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line1 < firstLine ) {
@@ -911,7 +924,7 @@ public class DualDiff implements EBComponent {
 
         dualDiff.enableHighlighters();
         dualDiff.addHandlers();
-        DiffLineOverview lineProcessor = new DiffLineOverview( dualDiff );
+        jdiff.component.DiffLineOverview lineProcessor = new jdiff.component.DiffLineOverview( dualDiff );
         dualDiff.setLineProcessor( lineProcessor );
 
         dualDiff.diffOverview0.synchroScrollRight();
@@ -970,67 +983,76 @@ public class DualDiff implements EBComponent {
                 };
 
         int previousCaretLine = 0;
+        LineProcessorRunner runner = new LineProcessorRunner();
         public void caretUpdate( final CaretEvent e ) {
-            Runnable r = new Runnable() {
-                        public void run() {
-                            JEditTextArea source = ( JEditTextArea ) e.getSource();
-                            Diff.change hunk = DualDiff.this.edits;
-                            String leftLine = "";
-                            String rightLine = "";
-                            if ( source == DualDiff.this.textArea0 ) {
-                                int caretLine = DualDiff.this.textArea0.getCaretLine();
-                                for ( ; hunk != null; hunk = hunk.link ) {
-                                    if ( caretLine >= hunk.line0 && caretLine <= hunk.line0 + hunk.deleted ) {
-                                        // in a hunk
-                                        if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                                            leftLine = "";
-                                        }
-                                        else {
-                                            leftLine = DualDiff.this.textArea0.getLineText( caretLine );
-                                        }
-                                        int offset = caretLine - hunk.line0;
-                                        if ( offset < hunk.inserted ) {
-                                            rightLine = DualDiff.this.textArea1.getLineText( hunk.line1 + offset );
-                                        }
-                                        else {
-                                            rightLine = "";
-                                        }
-                                        break ;
-                                    }
-                                }
-                            }
-                            else {
-                                int caretLine = DualDiff.this.textArea1.getCaretLine();
-                                for ( ; hunk != null; hunk = hunk.link ) {
-                                    if ( caretLine >= hunk.line1 && caretLine <= hunk.line1 + hunk.inserted ) {
-                                        // in a hunk
-                                        if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                                            rightLine = "";
-                                        }
-                                        else {
-                                            rightLine = DualDiff.this.textArea1.getLineText( caretLine );
-                                        }
-                                        int offset = caretLine - hunk.line1;
-                                        if ( offset < hunk.deleted ) {
-                                            leftLine = DualDiff.this.textArea0.getLineText( hunk.line0 + offset );
-                                        }
-                                        else {
-                                            leftLine = "";
-                                        }
-                                        break ;
-                                    }
-                                }
-                            }
-                            DualDiff.this.lineProcessor.processLines( leftLine, rightLine );
-                        }
-                    };
             if ( lineProcessor != null ) {
                 JEditTextArea source = ( JEditTextArea ) e.getSource();
                 int caretLine = source.getCaretLine();
                 if ( caretLine != previousCaretLine ) {
                     previousCaretLine = caretLine;
-                    SwingUtilities.invokeLater( r );
+                    runner.setSource( source );
+                    SwingUtilities.invokeLater( runner );
                 }
+            }
+        }
+
+        class LineProcessorRunner implements Runnable {
+            JEditTextArea source = null;
+            public void setSource( JEditTextArea source ) {
+                this.source = source;
+            }
+            public void run() {
+                if ( source == null ) {
+                    return ;
+                }
+                Diff.Change hunk = DualDiff.this.edits;
+                String leftLine = "";
+                String rightLine = "";
+                if ( source == DualDiff.this.textArea0 ) {
+                    int caretLine = DualDiff.this.textArea0.getCaretLine();
+                    for ( ; hunk != null; hunk = hunk.link ) {
+                        if ( caretLine >= hunk.line0 && caretLine <= hunk.line0 + hunk.deleted ) {
+                            // in a hunk
+                            if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
+                                leftLine = "";
+                            }
+                            else {
+                                leftLine = DualDiff.this.textArea0.getLineText( caretLine );
+                            }
+                            int offset = caretLine - hunk.line0;
+                            if ( offset < hunk.inserted ) {
+                                rightLine = DualDiff.this.textArea1.getLineText( hunk.line1 + offset );
+                            }
+                            else {
+                                rightLine = "";
+                            }
+                            break ;
+                        }
+                    }
+                }
+                else {
+                    int caretLine = DualDiff.this.textArea1.getCaretLine();
+                    for ( ; hunk != null; hunk = hunk.link ) {
+                        if ( caretLine >= hunk.line1 && caretLine <= hunk.line1 + hunk.inserted ) {
+                            // in a hunk
+                            if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
+                                rightLine = "";
+                            }
+                            else {
+                                rightLine = DualDiff.this.textArea1.getLineText( caretLine );
+                            }
+                            int offset = caretLine - hunk.line1;
+                            if ( offset < hunk.deleted ) {
+                                leftLine = DualDiff.this.textArea0.getLineText( hunk.line0 + offset );
+                            }
+                            else {
+                                leftLine = "";
+                            }
+                            break ;
+                        }
+                    }
+                }
+                DualDiff.this.lineProcessor.processLines( leftLine, rightLine );
             }
         }
 
@@ -1058,7 +1080,7 @@ public class DualDiff implements EBComponent {
 
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
-            if ( !view.getDockableWindowManager().isDockableWindowVisible("jdiff-lines") ) {
+            if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {
                 view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
             }
         }

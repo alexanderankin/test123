@@ -30,8 +30,8 @@ public class DiffNormalOutput extends DiffOutput {
     }
 
 
-    public void writeScript(Diff.change script) throws IOException {
-        Diff.change hunk = script;
+    public void writeScript(Diff.Change script) throws IOException {
+        Diff.Change hunk = script;
 
         for (; hunk != null; hunk = hunk.link) {
             this.writeHunk(hunk);
@@ -42,7 +42,7 @@ public class DiffNormalOutput extends DiffOutput {
 
 
     /** Writes a hunk of a normal diff. */
-    protected void writeHunk(Diff.change hunk) throws IOException {
+    protected void writeHunk(Diff.Change hunk) throws IOException {
         int deletes = hunk.deleted;
         int inserts = hunk.inserted;
 

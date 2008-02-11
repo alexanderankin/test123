@@ -35,7 +35,7 @@ import org.gjt.sp.util.Log;
 
 public abstract class DiffOverview extends JComponent
 {
-    protected Diff.change edits;
+    protected Diff.Change edits;
     protected int lineCount0;
     protected int lineCount1;
     protected JEditTextArea textArea0;
@@ -43,7 +43,7 @@ public abstract class DiffOverview extends JComponent
 
 
     public DiffOverview(
-        Diff.change edits,
+        Diff.Change edits,
         int lineCount0,
         int lineCount1,
         JEditTextArea textArea0,
@@ -62,7 +62,7 @@ public abstract class DiffOverview extends JComponent
 
 
     public void synchroScrollRight() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
 
         int leftFirstLine  = this.textArea0.getFirstLine();
         int rightFirstLine = -1;
@@ -110,7 +110,7 @@ public abstract class DiffOverview extends JComponent
 
 
     public void synchroScrollLeft() {
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
 
         int leftFirstLine  = -1;
         int rightFirstLine = this.textArea1.getFirstLine();
