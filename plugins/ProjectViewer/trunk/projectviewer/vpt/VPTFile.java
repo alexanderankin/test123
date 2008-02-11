@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 import projectviewer.config.AppLauncher;
 import projectviewer.config.ProjectViewerConfig;
 //}}}
@@ -67,8 +68,6 @@ public class VPTFile extends VPTNode
 
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
-
-	private WeakReference<Object> vfsSession;
 	//}}}
 
 	public VPTFile(String url)
@@ -89,26 +88,32 @@ public class VPTFile extends VPTNode
 
 
 	/**
-	 *	Deletes the file from the VFS. Before deleting, try to close
-	 *	the file.
+	 * Deletes the file from the VFS. Before deleting, try to close
+	 * the file.
+	 *
+	 * @return Whether the file was successfully deleted.
 	 */
 	public boolean delete()
 	{
 		close();
-		/* XXX: TODO */
-		return true;
+		try {
+			VFSHelper.deleteFile(url);
+			return true;
+		} catch (IOException ioe) {
+			return false;
+		}
 	}
 
 
-	/** Return the VFS file associated with this node. */
+	/**
+	 * Return the VFS file associated with this node. May return null
+	 * if an I/O error occurs.
+	 */
 	public VFSFile getFile()
 	{
 		try {
-			VFS vfs = VFSManager.getVFSForPath(url);
-			Object session = getVFSSession(vfs);
-			return vfs._getFile(session, url, null);
+			return VFSHelper.getFile(url);
 		} catch (IOException ioe) {
-			Log.log(Log.ERROR, this, ioe);
 			return null;
 		}
 	}
@@ -173,7 +178,6 @@ public class VPTFile extends VPTNode
 		}
 		return IconComposer.composeIcon(getFile(), url, baseIcon);
 	}
-
 
 
 	/**
@@ -246,19 +250,6 @@ public class VPTFile extends VPTNode
 		} else {
 			return 1;
 		}
-	}
-
-
-	private Object getVFSSession(VFS vfs)
-	{
-		if (vfsSession == null || vfsSession.get() == null) {
-			if (vfs == null) {
-				vfs = VFSManager.getVFSForPath(url);
-			}
-			vfsSession = new WeakReference<Object>(
-							vfs.createVFSSession(url, null));
-		}
-		return vfsSession.get();
 	}
 
 }

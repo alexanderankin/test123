@@ -18,12 +18,9 @@
  */
 package projectviewer.importer;
 
-//{{{ Imports
-import java.io.File;
-
-import javax.swing.filechooser.FileFilter;
-
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
 
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -35,26 +32,36 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  *	@since		PV 2.1.1 (was a protected inner class in FileImporter before this)
  */
-public class NonProjectFileFilter extends FileFilter {
+public class NonProjectFileFilter extends ImporterFileFilter {
 
 	private VPTProject project;
 
-	//{{{ +NonProjectFileFilter(VPTProject) : <init>
-	public NonProjectFileFilter(VPTProject project) {
+	public NonProjectFileFilter(VPTProject project)
+	{
 		this.project = project;
-	} //}}}
+	}
 
-	//{{{ +getDescription() : String
-	public String getDescription() {
+	public String getDescription()
+	{
 		return jEdit.getProperty("projectviewer.import.filter.non-project-filter");
-	} //}}}
+	}
 
-	//{{{ +accept(File) : boolean
-	public boolean accept(File f) {
-		return (project.getChildNode(f.getAbsolutePath()) == null ||
-				f.getAbsolutePath().endsWith("~") ||
-				f.getAbsolutePath().endsWith(".bak"));
-	} //}}}
+	public String getRecurseDescription()
+	{
+		return getDescription();
+	}
+
+	public boolean accept(VFSFile f)
+	{
+		return accept(f.getPath());
+	}
+
+	public boolean accept(String url)
+	{
+		return (project.getChildNode(url) == null ||
+				url.endsWith("~") ||
+				url.endsWith(".bak"));
+	}
 
 }
 

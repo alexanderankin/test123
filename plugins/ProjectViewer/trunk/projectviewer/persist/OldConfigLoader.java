@@ -201,7 +201,7 @@ public final class OldConfigLoader {
 		}
 
 		Stack toAdd = new Stack();
-		VPTNode dir = new VPTDirectory(new File(path));
+		VPTNode dir = new VPTDirectory(path);
 		dirs.put(path, dir);
 		toAdd.push(dir);
 
@@ -215,7 +215,7 @@ public final class OldConfigLoader {
 				if (parent.equals(p.getRootPath())) {
 					where = p;
 				} else {
-					dir = new VPTDirectory(new File(parent));
+					dir = new VPTDirectory(parent);
 					dirs.put(parent, dir);
 					toAdd.push(dir);
 					parent = new File(parent).getParent();

@@ -260,7 +260,7 @@ public class VPTFilteredModel extends ProjectTreeModel {
 		//{{{ +FilteredDirectoryNode(VPTFilterData, List) : <init>
 		public FilteredDirectoryNode(VPTFilterData filterData, List openableNodeList)
 		{
-			super(new java.io.File(filterData.getName()));
+			super(filterData.getName());
 			this.filterData = filterData;
 			Iterator it = openableNodeList.iterator();
 			while (it.hasNext())

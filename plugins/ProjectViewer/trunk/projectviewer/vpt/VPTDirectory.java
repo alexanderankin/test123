@@ -19,10 +19,14 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.io.File;
+import java.io.IOException;
+
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.io.VFSManager;
+
+import projectviewer.VFSHelper;
 //}}}
 
 /**
@@ -34,53 +38,46 @@ import org.gjt.sp.jedit.GUIUtilities;
 public class VPTDirectory extends VPTNode {
 
 	//{{{ Constants
-
 	private final static Icon dirClosedIcon 	= GUIUtilities.loadIcon("Folder.png");
 	private final static Icon dirOpenedIcon 	= GUIUtilities.loadIcon("OpenFolder.png");
-
 	//}}}
 
-	//{{{ Attributes
+	protected String url;
 
-	protected File		file;
-
-	//}}}
-
-	//{{{ Constructors
-
-	public VPTDirectory(String path) {
-		this(new File(path));
+	public VPTDirectory(String url) {
+		super(VFSManager.getVFSForPath(url).getFileName(url), true);
+		this.url = url;
 	}
 
-	public VPTDirectory(File file) {
-		super(file.getName(), true);
-		this.file = file;
+
+	/** Returns the URL of this directory. */
+	public String getURL() {
+		return url;
 	}
 
-	//}}}
+	/** Returns the real name of this directory. */
+	public String getFileName() {
+		return VFSManager.getVFSForPath(url).getFileName(url);
+	}
 
-	//{{{ canWrite() method
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
-		return file.canWrite();
-	} //}}}
+		try {
+			return VFSHelper.getFile(url).isWriteable();
+		} catch (IOException ioe) {
+			return false;
+		}
+	}
 
-	//{{{ delete() method
 	/**
-	 *	Deletes the file from disk and removes it from the current container.
+	 * Deleting directories is not supported.
+	 *
+	 * @return false
 	 */
 	public boolean delete() {
-		// deletes directory recursively?
 		return false;
-	} //}}}
+	}
 
-	//{{{ getFile() method
-	/** Return the file associated with this node. */
-	public File getFile() {
-		return file;
-	} //}}}
-
-	//{{{ getIcon(boolean) method
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
@@ -88,32 +85,18 @@ public class VPTDirectory extends VPTNode {
 	 */
 	public Icon getIcon(boolean expanded) {
 		return (expanded ? dirOpenedIcon : dirClosedIcon);
-	} //}}}
+	}
 
-	//{{{ toString() method
 	/** Returns a string representation of the current node. */
 	public String toString() {
-		if (getFile().exists()) {
-			return "Directory [" + getFile().getAbsolutePath() + "]";
-		} else {
-			return "VirtualDirectory [" + getName() + "]";
-		}
-	} //}}}
+		return "Directory [" + url + "]";
+	}
 
-	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
-		return (getFile().exists()) ? getFile().getAbsolutePath() : getName();
-	} //}}}
+		return url;
+	}
 
-	//{{{ setFile(File) method
-	/** Sets the file associated with this node. */
-	public void setFile(File f) {
-		this.file = f;
-		setName(f.getName());
-	} //}}}
-
-	//{{{ +compareToNode(VPTNode) : int
 	/** Directories have precedende over openable nodes... */
 	public int compareToNode(VPTNode node) {
 		if (node.canOpen()) {
@@ -123,7 +106,7 @@ public class VPTDirectory extends VPTNode {
 		} else {
 			return -1 * node.compareToNode(this);
 		}
-	} //}}}
+	}
 
 }
 

@@ -19,10 +19,12 @@
 package projectviewer.importer;
 
 //{{{ Imports
-import java.io.File;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
@@ -39,49 +41,38 @@ import projectviewer.vpt.VPTFile;
  */
 public class NewFileImporter extends Importer {
 
-	//{{{ Protected members
 	protected String path;
-	//}}}
 
-	//{{{ Constructor
-
-	public NewFileImporter(VPTNode node, ProjectViewer viewer, String path) {
+	public NewFileImporter(VPTNode node, ProjectViewer viewer, String path)
+	{
 		super(node, viewer, true);
 		this.path = path;
 	}
 
-	//}}}
-
-	//{{{ internalDoImport() method
 	/**
 	 *	Imports the file given in the constructor into the project. If the file
 	 *	is not below the project root, do nothing.
 	 *
 	 *	@return	A collection of VPTNode instances.
 	 */
-	protected Collection internalDoImport() {
+	protected Collection internalDoImport()
+	{
+		ArrayList added;
+		VPTNode node;
+
 		if (!path.startsWith(project.getRootPath())) {
 			return null;
 		}
 
-		File f = new File(path);
-		ArrayList added = new ArrayList();
-		VPTNode where = makePathTo(f.getParent(), added);
-
-		VPTFile vf = new VPTFile(f.getAbsolutePath());
-		if (where == project) {
-			added.add(vf);
-		} else if (added.size() != 0) {
-			where.insert(vf, where.findIndexForChild(vf));
-			postAction = new ShowNode(vf);
-		} else {
-			selected = where;
-			added.add(vf);
-			postAction = new ShowNode(vf);
+		added = new ArrayList();
+		try {
+			node = constructPath(project, path, added);
+			postAction = new ShowNode(node);
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, ioe);
 		}
-		registerFile(vf);
 		return added;
-	} //}}}
+	}
 
 }
 

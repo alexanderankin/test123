@@ -18,23 +18,27 @@
  */
 package projectviewer.importer;
 
-//{{{ Imports
-import java.io.FilenameFilter;
-import javax.swing.filechooser.FileFilter;
-//}}}
+import java.io.IOException;
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+
+import org.gjt.sp.util.Log;
+
+import projectviewer.VFSHelper;
+import org.gjt.sp.jedit.io.VFSFileFilter;
+import org.gjt.sp.jedit.io.VFSManager;
 
 /**
- *	File filter implementation used when importing files into a project. It
- *	implements both of Java's file filter classes
- *	(javax.swing.filechooser.FileFilter and interface java.io.FilenameFilter)
- *	and provides a method that returns a description string to use when
- *	asking the user about recursion into imported directories.
+ *	File filter implementation used when importing files into a project.
+ *	It provides some PV-specific extensions to the jEdit filter interface.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class ImporterFileFilter extends FileFilter
-											implements FilenameFilter {
+public abstract class ImporterFileFilter implements VFSFileFilter {
 
 	/**
 	 *	This method will be called by the toString() method when showing this
@@ -48,8 +52,28 @@ public abstract class ImporterFileFilter extends FileFilter
 	public abstract String getRecurseDescription();
 
 	/** Calls getRecurseDescription(). */
-	public String toString() {
+	public String toString()
+	{
 		return getRecurseDescription();
+	}
+
+	/** Calls {@link VFSFileFilter#accept(VFSFile)}. */
+	public boolean accept(String url)
+	{
+		VFS vfs = VFSManager.getVFSForPath(url);
+		if (vfs != null) {
+			View v = jEdit.getActiveView();
+			Object session = VFSHelper.createVFSSession(vfs, url, v);
+			try {
+				VFSFile f = vfs._getFile(session, url, v);
+				return accept(f);
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, this, "Error getting VFS file", ioe);
+			} finally {
+				VFSHelper.endVFSSession(vfs, session, v);
+			}
+		}
+		return false;
 	}
 
 }

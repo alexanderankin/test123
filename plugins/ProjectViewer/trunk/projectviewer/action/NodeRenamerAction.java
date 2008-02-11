@@ -42,6 +42,7 @@ import common.gui.OkCancelButtons;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.VFSHelper;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
@@ -139,6 +140,7 @@ public class NodeRenamerAction extends Action {
 			reinsert(f, project);
 			*/
 		} else if (node.isDirectory() ) {
+			/* XXX: need to fix now that we're working with VFS.
 			VPTDirectory dir = (VPTDirectory) node;
 			if (dir.getFile().exists()) {
 				String oldDir = dir.getFile().getAbsolutePath();
@@ -168,6 +170,7 @@ public class NodeRenamerAction extends Action {
 				dir.setName(newName);
 			}
 			reinsert(dir, project);
+			*/
 		} else if (node.isProject()) {
 			String oldName = node.getName();
 			node.setName(newName);
@@ -264,8 +267,7 @@ public class NodeRenamerAction extends Action {
 			fName.setSelectionStart(0);
 			fName.setSelectionEnd(node.getName().length());
 
-			if (node.isProject() ||
-				(node.isDirectory() && !((VPTDirectory)node).getFile().exists())) {
+			if (node.isProject() || !VFSHelper.pathExists(node.getNodePath())) {
 				getContentPane().add(BorderLayout.CENTER, fName);
 			} else {
 				JPanel p = new JPanel(new GridLayout(2, 1));

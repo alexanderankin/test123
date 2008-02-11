@@ -19,8 +19,6 @@
 package projectviewer.importer;
 
 //{{{ Imports
-import java.io.File;
-
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -29,6 +27,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
 
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.util.Log;
@@ -103,13 +102,8 @@ public class GlobFilter extends ImporterFileFilter {
 		return description;
 	} //}}}
 
-	//{{{ +accept(File) : boolean
-	public boolean accept(File file) {
-		return accept(file.getParentFile(), file.getName());
-	} //}}}
-
-	//{{{ +accept(File, String) : boolean
-	public boolean accept(File dir, String fileName) {
+	//{{{ +accept(VFSFile) : boolean
+	public boolean accept(VFSFile file) {
 		if (file_positive == null) {
 			StringTokenizer globs = new StringTokenizer(fileGlobs);
 			StringBuffer fPos = new StringBuffer();
@@ -155,19 +149,18 @@ public class GlobFilter extends ImporterFileFilter {
 			}
 		}
 
-		File child = new File(dir, fileName);
-		if (child.isFile()) {
-			return file_positive.matcher(fileName).matches()
-				   && !file_negative.matcher(fileName).matches();
-		} else if (child.isDirectory()) {
-			return !dir_negative.matcher(fileName).matches();
+		if (file.getType() == VFSFile.FILE) {
+			return file_positive.matcher(file.getPath()).matches()
+				   && !file_negative.matcher(file.getPath()).matches();
+		} else if (file.getType() == VFSFile.DIRECTORY) {
+			return !dir_negative.matcher(file.getPath()).matches();
 		}
 		return false;
 	} //}}}
 
 	//{{{ +getRecurseDescription() : String
 	public String getRecurseDescription() {
-		return	recurseDesc;
+		return recurseDesc;
 	} //}}}
 
 }

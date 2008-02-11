@@ -20,6 +20,7 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
+import java.io.IOException;
 
 import java.util.Stack;
 import java.util.Iterator;
@@ -34,6 +35,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
 import common.threads.WorkerThreadPool;
@@ -47,6 +51,7 @@ import projectviewer.vpt.VPTDirectory;
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.PVActions;
+import projectviewer.VFSHelper;
 //}}}
 
 /**
@@ -179,61 +184,95 @@ public abstract class Importer implements Runnable {
 	 */
 	protected abstract Collection internalDoImport(); //}}}
 
-	//{{{ #findDirectory(File, VPTNode, boolean) : VPTNode
+	//{{{ #findDirectory(String, VPTNode, boolean) : VPTNode
 	/**
 	 *	Looks, in the children list for the given parent, for a directory with
 	 *	the given path. If it exists, return it. If not, creates a new directory
 	 *	node if <i>create</i> is true, or else return null.
 	 *
-	 *	@param	dir		The directory to look for.
+	 *	@param	url		The URL of the directory to look for.
 	 *	@param	parent	The node where to look for the directory.
 	 *	@param	create	Whether to create a new node if a corresponding path is
 	 *					not found in the parent node.
 	 */
-	protected VPTNode findDirectory(File dir, VPTNode parent, boolean create) {
+	protected VPTNode findDirectory(String url, VPTNode parent, boolean create) {
 		Enumeration e = parent.children();
 		while (e.hasMoreElements()) {
 			VPTNode n = (VPTNode) e.nextElement();
-			if (n.getNodePath().equals(dir.getAbsolutePath())) {
+			if (n.isDirectory() && ((VPTDirectory)n).getURL().equals(url)) {
 				return n;
-			} else if (n.isFile()) {
+			} else if (n.isFile() && ((VPTFile)n).getURL().equals(url)) {
 				return n;
 			}
 		}
-		return (create) ? new VPTDirectory(dir) : null;
+		return (create) ? new VPTDirectory(url) : null;
 	} //}}}
 
-	//{{{ #makePathTo(String, ArrayList) : VPTNode
 	/**
-	 *	Inserts all nodes from the root up to and including the given path, if
-	 *	the nodes are not yet inserted. Returns the node representing the given
-	 *	path.
+	 * Creates a subtree starting a the given root, going down to the
+	 * given path, updating the given list of added nodes as necessary.
+	 *
+	 * @param root Root node where to start constructing the path.
+	 * @param path Path to insert (should be under the given root).
+	 * @param flist List of added nodes to be updated (null OK).
+	 *
+	 * @return The newly created node.
+	 * @throw IOException If an I/O error occur.
+	 *
+	 * @since PV 3.0.0
 	 */
-	protected VPTNode makePathTo(String path, ArrayList added) {
-		Stack dirs = new Stack();
-		while (!path.equals(project.getRootPath())) {
-			File pf = new File(path);
-			dirs.push(pf);
-			path = pf.getParent();
+	protected VPTNode constructPath(VPTNode root,
+									String path,
+									ArrayList flist)
+		throws IOException
+	{
+		boolean isFile;
+		Stack<String> dirs;
+		String rootPath;
+		VFS vfs;
+
+		assert path.startsWith(root.getNodePath()) : "Path not under root!";
+
+		dirs = new Stack<String>();
+		vfs = VFSManager.getVFSForPath(path);
+		rootPath = root.getNodePath();
+		isFile = (VFSHelper.getFile(path).getType() == VFSFile.FILE);
+
+		/*
+		 * VFS.getParentOfPath() returns paths with a trailing slash...
+		 * BTW, it's interesting that it uses "File.separatorChar"
+		 * when all this is supposed to be URL-based.
+		 */
+		if (!rootPath.endsWith(File.separator)) {
+			rootPath += File.separator;
 		}
 
-		VPTNode where = project;
+		while (!path.equals(rootPath)) {
+			dirs.push(path);
+			path = vfs.getParentOfPath(path);
+		}
+
 		while (!dirs.isEmpty()) {
-			File curr = (File) dirs.pop();
-			VPTNode n = findDirectory(curr, where, false);
+			String curr = dirs.pop();
+			VPTNode n = findDirectory(curr, root, false);
+
 			if (n == null) {
-				n = new VPTDirectory(curr);
-				if (added.size() == 0) {
-					selected = where;
-					added.add(n);
+				if (dirs.size() == 0 && isFile) {
+					n = new VPTFile(curr);
 				} else {
-					where.insert(n, where.findIndexForChild(n));
+					n = new VPTDirectory(curr);
+				}
+				if (flist != null && flist.size() == 0) {
+					selected = root;
+					flist.add(n);
+				} else {
+					root.insert(n, root.findIndexForChild(n));
 				}
 			}
-			where = n;
+			root = n;
 		}
-		return where;
-	} //}}}
+		return root;
+	}
 
 	//{{{ #registerFile(VPTFile) : void
 	/**
