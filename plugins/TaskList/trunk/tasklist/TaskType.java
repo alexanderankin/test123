@@ -27,7 +27,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;

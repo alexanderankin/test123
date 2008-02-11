@@ -32,15 +32,14 @@ package tasklist;
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
+import java.util.List;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -48,8 +47,6 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -57,10 +54,6 @@ import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
-
-import tasklist.options.TaskListGeneralOptionPane;
-import tasklist.options.TaskListModesOptionPane;
-import tasklist.options.TaskListTaskTypesOptionPane;
 //}}}
 
 /**
@@ -267,7 +260,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public static void addTaskType(TaskType taskType)
 	{
-		taskTypes.addElement(taskType);
+		taskTypes.add(taskType);
 	}//}}}
 
 	//{{{ loadTaskTypes() method
@@ -291,7 +284,7 @@ public class TaskListPlugin extends EBPlugin
 			boolean ignoreCase = jEdit.getBooleanProperty(
 				"tasklist.tasktype." + i + ".ignorecase");
 
-			taskTypes.addElement(
+			taskTypes.add(
 				new TaskType(name, pattern, sample, ignoreCase, iconPath));
 
 			i++;
@@ -433,7 +426,7 @@ public class TaskListPlugin extends EBPlugin
 		Mode[] modes = jEdit.getModes();
 		for(int i = 0; i < modes.length; i++)
 		{
-			Boolean parse = new Boolean(
+			Boolean parse = Boolean.valueOf(
 				jEdit.getBooleanProperty(
 					"options.tasklist.parse." + modes[i].getName(), true));
 
@@ -447,7 +440,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public static void clearTaskTypes()
 	{
-		taskTypes.removeAllElements();
+		taskTypes.clear();
 	}//}}}
 
 	//{{{ private static members
@@ -461,21 +454,21 @@ public class TaskListPlugin extends EBPlugin
 	 * A collection of TaskType objects representing the form of comments that
 	 * will be parsed from a buffer and store as Task objects
 	 */
-	private static Vector taskTypes = new Vector();
+	private static List<TaskType> taskTypes = new Vector<TaskType>();
 
 	/**
 	 * A collection of collections: each member represents a collection of
 	 * Task objects associated with a particular buffer. The plugin uses this
 	 * object to keep track of Task objects.
 	 */
-	private static Hashtable bufferMap = new Hashtable();
+	private static Map<Buffer, Hashtable> bufferMap = new Hashtable<Buffer, Hashtable>();
 
 	/**
 	 * A collection of TaskListener objects that will be notified when
 	 * Task objects are added or removed from the collection maintained
 	 * by the plugin.
 	 */
-	private static Vector listeners = new Vector();
+	private static List<TaskListener> listeners = new Vector<TaskListener>();
 
 	/**
 	 * A collection to track which buffer modes to parse
@@ -496,7 +489,7 @@ public class TaskListPlugin extends EBPlugin
 		if(buffer.isLoaded() == false)
 			return null;
 
-		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
+		Hashtable taskMap = bufferMap.get(buffer);
 
 		// taskMap should only be null if buffer has never been parsed
 		if(taskMap == null)
@@ -610,7 +603,7 @@ public class TaskListPlugin extends EBPlugin
 					// NOTE might want to have task types in an array
 					for(int i = 0; i < taskTypes.size(); i++)
 					{
-						TaskType taskType = (TaskType)taskTypes.elementAt(i);
+						TaskType taskType = taskTypes.get(i);
 						Task task = taskType.extractTask(buffer, text, lineNum, chunkStart - lineStart);
 						if(task != null)
 						{
@@ -654,14 +647,14 @@ public class TaskListPlugin extends EBPlugin
 				"TaskListPlugin.addTask(" + task.toString() + ")");//##
 
 		Buffer buffer = task.getBuffer();
-		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
+		Hashtable taskMap = bufferMap.get(buffer);
 
 		if(taskMap == null)
 		{
 			bufferMap.put(buffer, taskMap);
 		}
 
-		Integer _line = new Integer(task.getLineIndex());
+		Integer _line = Integer.valueOf(task.getLineIndex());
 		if(taskMap.get(_line) != null)
 		{
 			Log.log(Log.ERROR, TaskListPlugin.class,
@@ -686,7 +679,7 @@ public class TaskListPlugin extends EBPlugin
 			Log.log(Log.DEBUG, TaskListPlugin.class,
 			"TaskListPlugin.clearTasks(" + buffer.toString() + ")");//##
 
-		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
+		Hashtable taskMap = bufferMap.get(buffer);
 
 		if(taskMap == null)
 		{
@@ -738,7 +731,7 @@ public class TaskListPlugin extends EBPlugin
 			if(TaskListPlugin.DEBUG)
 				Log.log(Log.DEBUG, TaskListPlugin.class,
 					"adding TaskListener: " + listener.toString());//##
-			listeners.addElement(listener);
+			listeners.add(listener);
 		}
 	}//}}}
 
@@ -753,7 +746,7 @@ public class TaskListPlugin extends EBPlugin
 			Log.log(Log.DEBUG, TaskListPlugin.class,
 				"TaskListPlugin.removeTaskListener()");//##
 
-		return listeners.removeElement(listener);
+		return listeners.remove(listener);
 	}//}}}
 
 	//{{{ fireTaskAdded() method
@@ -770,7 +763,7 @@ public class TaskListPlugin extends EBPlugin
 				"TaskListPlugin.fireTaskAdded(" + task.toString() + ")");//##
 
 		for(int i = 0; i < listeners.size(); i++)
-			((TaskListener)listeners.elementAt(i)).taskAdded(task);
+			listeners.get(i).taskAdded(task);
 	}//}}}
 
 	//{{{ fireTaskRemoved() method
@@ -787,14 +780,14 @@ public class TaskListPlugin extends EBPlugin
 				"TaskListPlugin.fireTaskRemoved(" + task.toString() + ")");//##
 
 		for(int i = 0; i < listeners.size(); i++)
-			((TaskListener)listeners.elementAt(i)).taskRemoved(task);
+			listeners.get(i).taskRemoved(task);
 	}//}}}
 
 	//{{{ fireTasksUpdated() method
 	private static void fireTasksUpdated()
 	{
 		for(int i = 0; i < listeners.size(); i++)
-			((TaskListener)listeners.elementAt(i)).tasksUpdated();
+			listeners.get(i).tasksUpdated();
 	}//}}}
 
 }

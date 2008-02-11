@@ -30,22 +30,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.table.*;
-import javax.swing.text.Element;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Segment;
+import javax.swing.JPopupMenu;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
-import org.gjt.sp.jedit.syntax.Token;
-import org.gjt.sp.jedit.search.SearchAndReplace;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-
-import org.gjt.sp.util.Log;
 //}}}
 
 /**
@@ -56,11 +46,9 @@ import org.gjt.sp.util.Log;
 public class TaskListPopup extends JPopupMenu
 {
 	private View view;
-	private TaskList list;
-	private int taskNum;
-	private ActionListener listener;
-	private BoundedMenu changeMenu;
-	private BoundedMenu deleteMenu;
+	private final TaskList list;
+	private final int taskNum;
+	private final ActionListener listener;
 
 	//{{{ Constructor
 	/**
@@ -81,20 +69,19 @@ public class TaskListPopup extends JPopupMenu
 		this.taskNum = taskNum;
 		this.listener = new ActionHandler();
 
-		changeMenu =
+		BoundedMenu changeMenu =
 			new BoundedMenu(list, jEdit.getProperty("tasklist.popup.change-menu"));
 
 		int item = 0;
-		String name = jEdit.getProperty("tasklist.tasktype." + String.valueOf(item) + ".name");
+		String name = jEdit.getProperty("tasklist.tasktype." + item + ".name");
 		while(name != null)
 		{
 			changeMenu.add(createMenuItem(name));
 			item++;
-			name = jEdit.getProperty("tasklist.tasktype." + String.valueOf(item)
-				+ ".name");
+			name = jEdit.getProperty("tasklist.tasktype." + item + ".name");
 		}
 		add(changeMenu);
-		deleteMenu = new BoundedMenu(list, "Delete task");
+		BoundedMenu deleteMenu = new BoundedMenu(list, "Delete task");
 		deleteMenu.add(createMenuItem("Delete task tag", "%Dtag"));
 		deleteMenu.add(createMenuItem("Delete entire task", "%Dtask"));
 		add(deleteMenu);
