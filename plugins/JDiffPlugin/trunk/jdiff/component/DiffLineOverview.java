@@ -31,6 +31,9 @@ import jdiff.component.ui.*;
 
 import org.gjt.sp.jedit.View;
 
+/**
+ * Component to show the merge controls and line differences.
+ */
 public class DiffLineOverview extends JComponent implements LineProcessor {
 
     private static final String uiClassID = "DiffLineOverviewUI";
@@ -38,6 +41,9 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
     private DualDiff dualDiff = null;
     private DiffLineModel diffLineModel = null;
 
+    /**
+     * @param dualDiff the DualDiff this component is to control.
+     */
     public DiffLineOverview( DualDiff dualDiff ) {
         if ( dualDiff == null ) {
             throw new IllegalArgumentException();
@@ -46,12 +52,14 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
         this.updateUI();
     }
 
+    /**
+     * Perform a diff on 2 lines.
+     */
     public void processLines( String leftLine, String rightLine ) {
         if ( leftLine == null || rightLine == null ) {
             return ;
         }
         setModel( new DiffLineModel( leftLine, rightLine ) );
-        repaint();
     }
 
     public void setUI( DiffLineOverviewUI ui ) {
@@ -75,12 +83,16 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
         return uiClassID;
     }
 
+    /**
+     * @return parent frame
+     */
     public View getView() {
         return dualDiff.getView();
     }
 
     public void setModel( DiffLineModel model ) {
         diffLineModel = model;
+        repaint();
     }
 
     public DiffLineModel getModel() {

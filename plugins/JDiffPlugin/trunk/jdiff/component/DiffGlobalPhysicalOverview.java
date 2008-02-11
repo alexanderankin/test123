@@ -25,29 +25,29 @@ import jdiff.component.ui.*;
 
 import jdiff.DualDiff;
 
-public class DiffLocalOverview extends DiffOverview {
-    private static final String uiClassID = "DiffLocalOverviewUI";
+public class DiffGlobalPhysicalOverview extends DiffOverview {
+    private static final String uiClassID = "DiffGlobalPhysicalOverviewUI";
 
-    public DiffLocalOverview(DualDiff dualDiff) {
+    public DiffGlobalPhysicalOverview(DualDiff dualDiff) {
         super(dualDiff);
         updateUI();
     }
 
-    public void setUI( DiffLocalOverviewUI ui ) {
+    public void setUI( DiffGlobalPhysicalOverviewUI ui ) {
         super.setUI( ui );
     }
 
     public void updateUI() {
         if ( UIManager.get( getUIClassID() ) != null ) {
-            setUI( ( DiffLocalOverviewUI ) UIManager.getUI( this ) );
+            setUI( ( DiffGlobalPhysicalOverviewUI ) UIManager.getUI( this ) );
         }
         else {
-            setUI( new BasicDiffLocalOverviewUI() );
+            setUI( new BasicDiffGlobalPhysicalOverviewUI() );
         }
     }
 
-    public DiffLocalOverviewUI getUI() {
-        return ( DiffLocalOverviewUI ) ui;
+    public DiffGlobalPhysicalOverviewUI getUI() {
+        return ( DiffGlobalPhysicalOverviewUI ) ui;
     }
 
     public String getUIClassID() {
