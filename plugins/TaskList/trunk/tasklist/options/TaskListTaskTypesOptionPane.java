@@ -28,7 +28,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.net.*;
-import java.util.Vector;
 import java.util.StringTokenizer;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.*;
@@ -384,7 +383,7 @@ class TaskTypeDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(JOptionPane.getFrameForComponent(comp));
-		show();
+		setVisible(true);
 	}//}}}
 
 	//{{{ ok() method

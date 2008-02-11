@@ -24,7 +24,6 @@ package tasklist;
 //{{{ imports
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -378,7 +377,7 @@ public class TaskList extends JPanel implements EBComponent
 	/**
 	 * The view in which the TaskList component appears
 	 */
-	private View view;
+	private final View view;
 	/**
 	 * The table display task items; given package access
 	 * to allow for calls by a TaskListPopup object.

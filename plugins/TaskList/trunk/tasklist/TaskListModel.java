@@ -27,8 +27,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.Comparator;
+import java.util.Collections;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
@@ -82,8 +82,8 @@ public class TaskListModel extends AbstractTableModel
 	{
 		this.view = view;
 
-		tasks = new Vector();
-		buffers = new Vector();
+		tasks = new Vector<Task>();
+		buffers = new Vector<Buffer>();
 
 		this.bufferDisplay = getBufferDisplay();
 
@@ -111,7 +111,7 @@ public class TaskListModel extends AbstractTableModel
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 
 	}//}}}
@@ -123,7 +123,7 @@ public class TaskListModel extends AbstractTableModel
 	*/
 	public Task elementAt(int row)
 	{
-		return (Task)tasks.elementAt(row);
+		return tasks.get(row);
 	}//}}}
 
 	//{{{ _addBuffer(Buffer buffer) method
@@ -139,7 +139,7 @@ public class TaskListModel extends AbstractTableModel
 		// add the buffer to the buffers vector
 		if(buffers.indexOf(buffer) == -1)
 		{
-			buffers.addElement(buffer);
+			buffers.add(buffer);
 			// requests an asynchronous parsing of tasks
 			TaskListPlugin.extractTasks(buffer);
 		}
@@ -158,7 +158,7 @@ public class TaskListModel extends AbstractTableModel
 		//Log.log(Log.DEBUG, TaskListModel.class,
 		//	"TaskListModel.addTask(" + task.toString() + ")");//##
 
-		tasks.addElement(task);
+		tasks.add(task);
 
 		// check whether task is appended or inserted
 		int index = tasks.indexOf(task);
@@ -180,14 +180,14 @@ public class TaskListModel extends AbstractTableModel
 		{
 			//Log.log(Log.DEBUG, TaskListModel.class,
 			//	"buffer to be removed {" + buffer.getPath() + "} found");//##
-
+			
 			for(int i = tasks.size() - 1; i >= 0; i--)
 			{
-				if(((Task)tasks.elementAt(i)).getBuffer() == buffer)
+				if((tasks.get(i)).getBuffer() == buffer)
 					removeTask(i);
 			}
 
-			buffers.removeElementAt(index);
+			buffers.remove(index);
 		}
 	}//}}}
 
@@ -212,16 +212,15 @@ public class TaskListModel extends AbstractTableModel
 	*/
 	private void removeTask(int index)
 	{
-		tasks.removeElementAt(index);
+		tasks.remove(index);
 		fireTableRowsDeleted(index, index);
 	}//}}}
 
 	//{{{ private members
 	private int bufferDisplay;
-	private int viewBuffers;
-	private View view;
-	private Vector tasks;
-	private Vector buffers;
+	private final View view;
+	private final java.util.List<Task> tasks;
+	private final java.util.List<Buffer> buffers;
 	private	int sortCol;
 	private boolean sortAscending;
 	//}}}
@@ -273,7 +272,7 @@ public class TaskListModel extends AbstractTableModel
 
 				for(int i = 0; i < buffers.size(); i++)
 				{
-					if(((Buffer)buffers.elementAt(i)) != buffer)
+					if((buffers.get(i)) != buffer)
 						_removeBuffer(buffer);
 				}
 			}
@@ -292,7 +291,7 @@ public class TaskListModel extends AbstractTableModel
 				// in one of the currect set of EditPanes, remove it
 				for(int i = 0; i < buffers.size(); i++)
 				{
-					buffer = (Buffer)buffers.elementAt(i);
+					buffer = buffers.get(i);
 					boolean foundBuffer = false;
 
 					// look through the current set of editPanes for
@@ -353,13 +352,13 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ getValueAt(int r, int c) method
 	public Object getValueAt(int row, int col)
 	{
-		Task task = (Task)tasks.elementAt(row);
+		Task task = tasks.get(row);
 		switch(col)
 		{
 			case 0:
 				return task.getIcon();
 			case 1:
-				return new Integer(task.getLineNumber() + 1);
+				return Integer.valueOf(task.getLineNumber() + 1);
 			case 2:
 				return task.getText();
 			case 3:
@@ -400,7 +399,6 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ setValueAt(Object value, int r, int col) method
 	public void setValueAt(Object value, int row, int col)
 	{
-		return;
 	}//}}}
 
 	//{{{ getBufferDisplay() method
@@ -460,7 +458,7 @@ public class TaskListModel extends AbstractTableModel
 		//Log.log(Log.DEBUG, TaskListModel.class, "sorting TaskList items: "
 		//	+ "sortCol = " + String.valueOf(sortCol)
 		//	+ ", SortAscending = " + String.valueOf(sortAscending));
-		MiscUtilities.quicksort(tasks, new ColumnSorter(sortCol, sortAscending));
+		Collections.sort(tasks,new ColumnSorter(sortCol, sortAscending));
 		fireTableDataChanged();
 	}//}}}
 
@@ -472,14 +470,14 @@ public class TaskListModel extends AbstractTableModel
 	 *
 	 * @author John Gellene (jgellene@nyc.rr.com)
 	 */
-	class ColumnSorter implements org.gjt.sp.jedit.MiscUtilities.Compare
+	class ColumnSorter implements Comparator<Task>
 	{
 		private final int LINENUMBER = 0;
 		private final int TASKTAG = 1;
 		private final int BUFFER = 2;
 
 		private int sortType;
-		private boolean ascending;
+		private final boolean ascending;
 
 		//{{{ constructor
 		public ColumnSorter(int col, boolean ascending)
@@ -494,10 +492,8 @@ public class TaskListModel extends AbstractTableModel
 		}//}}}
 
 		//{{{ compare() method
-		public int compare(Object obj1, Object obj2)
+		public int compare(Task task1, Task task2)
 		{
-			Task task1 = (Task)obj1;
-			Task task2 = (Task)obj2;
 			int result = 0;
 
 			if(sortType == TASKTAG)

@@ -23,7 +23,6 @@ package tasklist.options;
 
 //{{{ imports
 import java.awt.event.*;
-import java.util.Vector;
 import java.awt.Color;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -160,7 +159,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	private class ColorButtonHandler implements ActionListener
 	{
 		private JButton button;
-
+		
 		public ColorButtonHandler(JButton button) {
 			this.button = button;
 		}

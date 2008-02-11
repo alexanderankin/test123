@@ -92,7 +92,7 @@ public class TaskHighlight extends TextAreaExtension
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 								int physicalLine, int start, int end, int y)
 	{
-		Buffer buffer = textArea.getBuffer();
+		Buffer buffer = (Buffer) textArea.getBuffer();
 		if(!highlightEnabled || !buffer.isLoaded() ||
 			physicalLine >= buffer.getLineCount())
 		{
@@ -104,7 +104,7 @@ public class TaskHighlight extends TextAreaExtension
 		if(taskMap != null)
 		{
 			Task task = null;
-			Integer _line = new Integer(physicalLine);
+			Integer _line = Integer.valueOf(physicalLine);
 			if(!buffer.isDirty())
 			{
 				task =  (Task)taskMap.get(_line);
@@ -146,7 +146,7 @@ public class TaskHighlight extends TextAreaExtension
 	/**
 	 * The textArea on which the highlight will be drawn.
 	 */
-	private JEditTextArea textArea;
+	private final JEditTextArea textArea;
 
 	/**
 	 * A flag indicating whether highlighting of task items
@@ -155,15 +155,14 @@ public class TaskHighlight extends TextAreaExtension
 	private boolean highlightEnabled;
 
 	/**
-	 *
 	 * A portion of text to be highlighted.
 	 */
-	private Segment seg;
+	private final Segment seg;
 
 	/**
 	 * A point for anchor the highlighting of taks text
 	 */
-	private Point point;
+	private final Point point;
 	//}}}
 
 	//{{{ underlineTask() method
@@ -197,7 +196,8 @@ public class TaskHighlight extends TextAreaExtension
 			end = seg.count;
 		}
 
-		try{
+		try
+		{
 
 			if(start + textArea.getLineStartOffset(line) >= _start)
 				start = textArea.offsetToXY(line,start,point).x;
@@ -208,7 +208,9 @@ public class TaskHighlight extends TextAreaExtension
 			else
 				end = textArea.offsetToXY(line,end,point).x;
 
-		}catch(NullPointerException npe){
+		}
+		catch(NullPointerException npe)
+		{
 			Log.log(Log.ERROR, this, 
 				"NullPointerException in TaskHighlight.underlineTask():"
 				+ task.getBuffer().getPath() + ":" + task.getLineIndex());
