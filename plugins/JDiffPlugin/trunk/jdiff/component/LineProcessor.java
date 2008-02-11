@@ -17,7 +17,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-package jdiff;
+package jdiff.component;
 
 public interface LineProcessor {
     public void processLines(String leftLine, String rightLine);
