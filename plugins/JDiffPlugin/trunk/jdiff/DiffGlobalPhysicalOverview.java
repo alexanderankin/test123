@@ -40,7 +40,7 @@ public class DiffGlobalPhysicalOverview extends DiffOverview implements MouseLis
     private double pixelsPerLine;
 
     public DiffGlobalPhysicalOverview(
-        Diff.change edits,
+        Diff.Change edits,
         int lineCount0,
         int lineCount1,
         JEditTextArea textArea0,
@@ -92,7 +92,7 @@ public class DiffGlobalPhysicalOverview extends DiffOverview implements MouseLis
         gfx.fillRect( left.x, left.y, left.width, left.height );
         gfx.fillRect( right.x, right.y, right.width, right.height );
 
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
 
         int leftOffset = 0;
         int rightOffset = 0;

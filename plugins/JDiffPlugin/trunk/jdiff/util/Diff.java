@@ -355,8 +355,8 @@ public class Diff
   /** Scan the tables of which lines are inserted and deleted,
      producing an edit script in reverse order.  */
 
-  private change build_reverse_script() {
-    change script = null;
+  private Change build_reverse_script() {
+    Change script = null;
     final boolean[] changed0 = filevec[0].changed_flag;
     final boolean[] changed1 = filevec[1].changed_flag;
     final int len0 = filevec[0].buffered_lines;
@@ -377,7 +377,7 @@ public class Diff
             while (changed1[1+i1]) ++i1;
 
             /* Record this change.  */
-            script = new change(line0, line1, i0 - line0, i1 - line1, script);
+            script = new Change(line0, line1, i0 - line0, i1 - line1, script);
           }
 
         /* We have reached lines in the two files that match each other.  */
@@ -390,8 +390,8 @@ public class Diff
   /** Scan the tables of which lines are inserted and deleted,
      producing an edit script in forward order.  */
 
-  private change build_script() {
-    change script = null;
+  private Change build_script() {
+    Change script = null;
     final boolean[] changed0 = filevec[0].changed_flag;
     final boolean[] changed1 = filevec[1].changed_flag;
     final int len0 = filevec[0].buffered_lines;
@@ -411,7 +411,7 @@ public class Diff
             while (changed1[i1]) --i1;
 
             /* Record this change.  */
-            script = new change(i0, i1, line0 - i0, line1 - i1, script);
+            script = new Change(i0, i1, line0 - i0, line1 - i1, script);
           }
 
         /* We have reached lines in the two files that match each other.  */
@@ -423,7 +423,7 @@ public class Diff
 
   /* Report the differences of two files.  DEPTH is the current directory
      depth. */
-  public change diff_2(final boolean reverse) {
+  public Change diff_2(final boolean reverse) {
 
     /* Some lines are obviously insertions or deletions
        because they don't match anything.  Detect them now,
@@ -474,9 +474,9 @@ public class Diff
      If DELETED is 0 then LINE0 is the number of the line before
      which the insertion was done; vice versa for INSERTED and LINE1.  */
 
-  public static class change {
+  public static class Change {
     /** Previous or next edit command. */
-    public change link;
+    public Change link;
 
     /** # lines of file 1 changed here.  */
     public final int inserted;
@@ -497,7 +497,7 @@ public class Diff
 
        If DELETED is 0 then LINE0 is the number of the line before
        which the insertion was done; vice versa for INSERTED and LINE1.  */
-    change(int line0, int line1, int deleted, int inserted, change old) {
+    Change(int line0, int line1, int deleted, int inserted, Change old) {
       this.line0 = line0;
       this.line1 = line1;
       this.inserted = inserted;
@@ -508,7 +508,7 @@ public class Diff
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("change[");
+        sb.append("Change[");
         sb.append("line0=").append(line0).append(",deleted=").append(deleted);
         sb.append(",line1=").append(line1).append(",inserted=").append(inserted);
         sb.append("]");

@@ -53,7 +53,7 @@ public abstract class DiffOutput {
     }
 
 
-    abstract public void writeScript(Diff.change script) throws IOException;
+    abstract public void writeScript(Diff.Change script) throws IOException;
 
 
     protected void writeLine(String prefix, Object line) throws IOException {

@@ -3,7 +3,7 @@
 
 <DOCKABLES>
     <DOCKABLE NAME="jdiff-lines">
-        new javax.swing.JScrollPane();
+        (javax.swing.JComponent)(( jdiff.component.DiffLineOverview ) jdiff.DualDiff.getDualDiffFor( view ).getLineProcessor());
     </DOCKABLE>
 </DOCKABLES>
 

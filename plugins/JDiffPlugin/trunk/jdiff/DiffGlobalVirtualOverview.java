@@ -35,7 +35,7 @@ import org.gjt.sp.util.Log;
 public class DiffGlobalVirtualOverview extends DiffOverview
 {
     public DiffGlobalVirtualOverview(
-        Diff.change edits,
+        Diff.Change edits,
         int lineCount0,
         int lineCount1,
         JEditTextArea textArea0,
@@ -93,7 +93,7 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         gfx.fillRect(left.x, left.y, left.width, left.height);
         gfx.fillRect(right.x, right.y, right.width, right.height);
 
-        Diff.change hunk = this.edits;
+        Diff.Change hunk = this.edits;
 
         int virtualLeftHeight  = 0;
         int virtualRightHeight = 0;
