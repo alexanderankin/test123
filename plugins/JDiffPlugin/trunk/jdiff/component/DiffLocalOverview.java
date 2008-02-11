@@ -23,8 +23,16 @@ import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import jdiff.component.ui.*;
 
-public class DiffLocalOverview extends JComponent {
+import jdiff.DualDiff;
+
+public class DiffLocalOverview extends DiffOverview {
     private static final String uiClassID = "DiffLocalOverviewUI";
+
+    public DiffLocalOverview(DualDiff dualDiff) {
+        super(dualDiff);
+        updateUI();
+        System.out.println("+++++ DiffLocalOverview constructor");
+    }
 
     public void setUI( DiffLocalOverviewUI ui ) {
         super.setUI( ui );
