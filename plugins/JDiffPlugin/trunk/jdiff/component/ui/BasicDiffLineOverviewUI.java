@@ -107,6 +107,7 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
             if (model == null || model.getLeftCharacters() == null || model.getRightCharacters() == null) {
                 return;
             }
+
             String leftLine = model.getLeftLine();
             String rightLine = model.getRightLine();
 

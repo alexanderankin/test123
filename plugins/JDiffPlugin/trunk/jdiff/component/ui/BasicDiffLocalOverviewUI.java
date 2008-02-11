@@ -93,8 +93,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         return new BorderLayout();
     }
 
-    public class LocalRendererPane extends JPanel {
 
+    public class LocalRendererPane extends JPanel {
 
         public LocalRendererPane( ) {
             Dimension dim = getPreferredSize();
