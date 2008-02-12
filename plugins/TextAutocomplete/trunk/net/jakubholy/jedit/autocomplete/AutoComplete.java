@@ -356,7 +356,7 @@ implements java.util.Observer
     private AutoComplete( Buffer buffer )
     {
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CREATED ");
-        this.thePopup 	= new CompletionPopup( jEdit.getActiveView(),  buffer);
+        this.thePopup 	= new CompletionPopup( jEdit.getActiveView() );
         //this.view 		= view;
         //this.buffer 	= buffer;
         //this.textArea 	= view.getTextArea();
@@ -398,7 +398,6 @@ implements java.util.Observer
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Attaching to the buffer: " + buffer);
     	this.buffer = buffer;
     	buffer.addBufferListener( m_wordTypedListener );
-    	this.thePopup.setBuffer( buffer );
         // Collect words in the buffer
         parseBuffer();
     } // attach }}}
@@ -441,6 +440,7 @@ implements java.util.Observer
 			case WordTypedEvent.RESET:
 			    // Hide the popup
 			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
+				break;
 			case WordTypedEvent.TRUNCATED:
 			    // Offer a completition
 			    if ( thePrefix.length() >= prefManager.minPrefixLength() )
