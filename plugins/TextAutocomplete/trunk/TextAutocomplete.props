@@ -4,12 +4,13 @@
 
 # Basic plugin properties
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.name=TextAutocomplete
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.author=Jakub Holý
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.4
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.author=Jakub Holy
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.5
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.docs=TextAutocomplete.html
 
+# jEdit 4.3pre12
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.0=jedit 04.03.12.00
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.1=jdk 1.4
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.1=jdk 1.5
 # NOTE: The tests require JDK 5.0
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.activate=defer
 
