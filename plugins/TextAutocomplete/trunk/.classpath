@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="testProperties"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="JUNIT_HOME/junit.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.0.0/src/org.junit_3.8.1/junitsrc.zip"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jEdit"/>
+	<classpathentry kind="var" path="JEDIT_HOME/jedit.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="eclipse_bin"/>
 </classpath>
