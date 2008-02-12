@@ -44,10 +44,10 @@ public class CompletionPopupTest extends AbstractJEditBufferTest
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		thePopup = new CompletionPopup(view);
 		location = new Point();
 		SwingUtilities.convertPointToScreen(location,
 				view.getTextArea().getPainter());
+		thePopup = new CompletionPopup(view, location);
 
 		completions = new Completion[]{
 				new Completion("wordFirst"),
@@ -154,7 +154,7 @@ public class CompletionPopupTest extends AbstractJEditBufferTest
 	{
 		thePopup.setWord( "word" );
 		if (! thePopup.isVisible())
-		{ thePopup.display( location , completions ); }
+		{ thePopup.display( /*location ,*/ completions ); }
 		else
 		{ thePopup.setCompletions(completions); }
 	}
