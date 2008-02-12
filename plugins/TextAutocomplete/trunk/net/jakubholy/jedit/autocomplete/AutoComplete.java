@@ -356,7 +356,7 @@ implements java.util.Observer
     private AutoComplete( Buffer buffer )
     {
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CREATED ");
-        this.thePopup 	= new CompletionPopup( jEdit.getActiveView() );
+//        this.thePopup 	= new CompletionPopup( jEdit.getActiveView() );
         //this.view 		= view;
         //this.buffer 	= buffer;
         //this.textArea 	= view.getTextArea();
@@ -376,9 +376,7 @@ implements java.util.Observer
     	if (buffer != null) {
 			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Detaching from the buffer: " + buffer);
 			buffer.removeBufferListener(m_wordTypedListener);
-			if (thePopup.isVisible()) {
-				thePopup.dispose();
-			}
+			disposePopupIfVisible();
 			wordList.clear();
 			buffer = null;
 		}
@@ -435,18 +433,18 @@ implements java.util.Observer
                     // wordList.add( new Completion(thePrefix) );
 			    	rememberWordSilent(thePrefix);
 			    }
-			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
+			    disposePopupIfVisible();
 				break;
 			case WordTypedEvent.RESET:
 			    // Hide the popup
-			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
+				disposePopupIfVisible();
 				break;
 			case WordTypedEvent.TRUNCATED:
-			    // Offer a completition
+			    // Offer a completion
 			    if ( thePrefix.length() >= prefManager.minPrefixLength() )
 			    { displayCompletionPopup(); }
-			    else if ( thePopup.isVisible() )
-			    { thePopup.dispose(); }
+			    else
+			    { disposePopupIfVisible(); }
 				break;
 			default:
 				Log.log( Log.ERROR, TextAutocompletePlugin.class, "AutoComplete.update: " +
@@ -454,6 +452,16 @@ implements java.util.Observer
 			// unknown type == an error           break;
 		}//switch
 	}//update }}}
+	
+	/**
+	 * Hide/destroy the popup if it is visible.
+	 */
+	private void disposePopupIfVisible() {
+		if ( thePopup != null ) { 
+	    	thePopup.dispose();
+	    	thePopup = null;
+	    }
+	}
 
 	//////////////////////////////////////////////////////////////////////
     //	{{{ completeWord() method
@@ -464,6 +472,8 @@ implements java.util.Observer
 	{
 		// TODO: (?) assert jEdit.getActiveView().getBuffer() == myBuffer
         JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+        
+        Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: entry");
 
         //int caretLine = textArea.getCaretLine();
 		int caret = textArea.getCaretPosition();
@@ -486,28 +496,32 @@ implements java.util.Observer
 		if ( completions.length >= 1 )
 		{
 
-			thePopup.setWord( thePrefix );
-
-			if ( ! thePopup.isVisible() ) {
-				//  Display the popup
+			if ( thePopup == null ) {
+				// Create
 				textArea.scrollToCaret(false);
 				Point location = textArea.offsetToXY(
 					caret - thePrefix.length());
 				location.y += textArea.getPainter().getFontMetrics()
 					.getHeight();
+				this.thePopup 	= new CompletionPopup( jEdit.getActiveView(), location );
+				thePopup.setWord( thePrefix );
+				//  Display the popup
 
 				SwingUtilities.convertPointToScreen(location,
 					textArea.getPainter());
-			    thePopup.display( location , getCompletions( thePrefix ) );
+			    thePopup.display( /*location ,*/ getCompletions( thePrefix ) );
+			    Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: popup displayed");
 			} else {
-			    // The pop-up is alredy visible => update it only
+			    // The pop-up is already visible => update it only
+				thePopup.setWord( thePrefix );
 			    thePopup.setCompletions( getCompletions( thePrefix ) );
+			    Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: an already displayed popup updated");
 			} // if-else pop-up visible
 
 		}
 		else
 		{
-			if ( thePopup.isVisible() ) { thePopup.dispose(); }
+			disposePopupIfVisible();
 		}
 	} // displayCompletionPopup }}}
 
@@ -533,6 +547,7 @@ implements java.util.Observer
     ////////////////////////////////////////////////////////////////////////////////////
 	/** The prefix to complete/typed so far. */
 	private String thePrefix = "";
+	/** A completion pop-up window; it's only set when displayed (otherwise null). */
 	private CompletionPopup thePopup;
 	//private View view;
 	/** The buffer this AutoComplete is attached to. */

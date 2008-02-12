@@ -37,6 +37,7 @@ import javax.swing.JList;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 /**
  * A pop-up window to display a list of available completions.
@@ -57,7 +58,7 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 {
 
 	/** A default location of the pop-up. */
-	private static final Point defaultLocation = new Point();
+	private static final Point defaultLocation = new Point(100, 100);
 	
 /////////////////////////////////////////////////////////////////// GUI
     /**
@@ -66,18 +67,18 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
      * must be set before the first display of this.
      */
     //{{{ Constructor
-	public CompletionPopup( View view )
+	public CompletionPopup( View view, Point location )
 	{
-		super( view, defaultLocation );
+		super( view, location );
 		this.view = view;
 	} //}}}
 
 	//////////////////////////////////////////////////////////////////	display
 	//	{{{ Display() method
 	/** Display a popup with the given completions. */
-	public void display( Point location, Completion[] completions )
+	public void display( /*Point location,*/ Completion[] completions )
 	{
-		setLocation( location );
+//		setLocation( location );
 	    setCompletions( completions );
 	} // }}}
 
@@ -107,6 +108,7 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 	{
 		// TODO: (low) After a user-invoked dispose do not show again for the same word.
 		super.dispose();
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.dispose called; displayable: " + isDisplayable());
 	} //}}}
 
 	////////////////////////////////////////////////////////////////////
@@ -151,8 +153,11 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 	 * ? This method is only invoked for special keys, not for those that
 	 * can be typed such as a letter ?
 	 */
+	@Override
 	public void keyPressed(KeyEvent evt)
 	{
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.keyPressed: evt=" + evt + ",modif.:" + evt.getModifiers());
+		
 		if ( prefManager.isAcceptKey(evt) )
 		{
 			doSelectedCompletion();
@@ -234,11 +239,13 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 	 * @see AutoComplete#update(java.util.Observable, Object)
 	 * @see WordTypedListener
 	 * */
+	@Override
 	public void keyTyped(KeyEvent evt)
 	{
-		char ch = evt.getKeyChar();
-//			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.keyTyped: evt=" + evt + ",modif.:" + evt.getModifiers());
+		
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.keyTyped: evt=" + evt + ",modif.:" + evt.getModifiers());
 
+		final char ch = evt.getKeyChar();
 		//
 		// DIGITS: insert the completion number $digit
 		//
@@ -250,6 +257,9 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 		{
 			if (selectCompletionByNumber(ch))
 			{ evt.consume(); }
+		} else {
+			// Insert it
+			view.getTextArea().userInput(ch);
 		} // if a digit pressed
 	} // keyTyped }}}
 
