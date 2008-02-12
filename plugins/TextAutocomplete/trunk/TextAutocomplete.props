@@ -5,7 +5,7 @@
 # Basic plugin properties
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.name=TextAutocomplete
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.author=Jakub Holy
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.5
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.6
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.docs=TextAutocomplete.html
 
 # jEdit 4.3pre12

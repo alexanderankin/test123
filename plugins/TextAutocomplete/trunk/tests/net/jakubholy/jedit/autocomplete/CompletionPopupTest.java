@@ -44,7 +44,7 @@ public class CompletionPopupTest extends AbstractJEditBufferTest
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		thePopup = new CompletionPopup(view, buffer);
+		thePopup = new CompletionPopup(view);
 		location = new Point();
 		SwingUtilities.convertPointToScreen(location,
 				view.getTextArea().getPainter());
