@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Plugin: TextAutocomplete - Docs</title>
+  <meta name="generator" content="amaya 9.51, see http://www.w3.org/Amaya/">
+</head>
+
+<body lang="en">
+<h1>TextAutocomplete Plugin</h1>
+
+<p><strong>by Jakub Holý</strong></p>
+<hr>
+
+<h2>Table of Contents</h2>
+
+<div class="toc">
+<ul>
+  <li><a href="#About">About</a></li>
+  <li><a href="#Words">Words, completions</a> and how does it work</li>
+  <li><a href="#Control">Control keys</a> of the completions pop-up
+  window</li>
+  <li><a href="#Menu">Menu</a></li>
+  <li><a href="#Options">Options</a></li>
+  <li><a href="#Accessing">Accessing the plugin from BeanShell</a></li>
+  <li><a href="#Development">Development</a>
+    <ul>
+      <li><a href="#Feedback">Feedback</a></li>
+      <li><a href="#Wish">Wish list</a></li>
+      <li><a href="#Change">Change Log</a></li>
+      <li><a href="#Overview">Overview of the Classes</a></li>
+      <li><a href="#Working">How does it work?</a></li>
+    </ul>
+  </li>
+  <li><a href="#License">License</a></li>
+</ul>
+</div>
+
+<h2><a name="About">About</a></h2>
+
+<p>TextAutocomplete collects "words" in the current buffer and those that you
+type and offers you automatically a list of possible completions. It's pretty
+similar to the jEdit's function "Complete Word" but it's automatic, you don't
+need to press any key to invoke the list of completions. Contrary to
+"Complete Word" it doesn't search the buffer every time for possible
+completions. Instead of that it keeps a list of remembered words (i.e.
+possible completions) that is created by parsing the buffer at startup and is
+updated with new words that you type. You can export (save), import and
+modify the list of remembered words. The plugin was inspired by a similar
+functionality in OpenOffice.org.</p>
+
+<p>The plugin is configurable, you can define what is a "word", what words
+(not) to remember etc. - see below. It's also possible to modify manually the
+list of remembered words.</p>
+
+<p>You must enable the autocompletion manually for every buffer where you
+want it (Plugins - TextAutocomplete - Start for buffer). Alternatively, you
+can enable the autocompletion for all buffers (Plugins - TextAutocomplete -
+Start for all buffers) or set the plugin to start automatically for every new
+buffer that you open (Plugins - Plugin Options... - TextAutocomplete - check
+"Start autom. for new buffers").</p>
+
+<h2><a name="Words" id="Words">Words, completions and how does it
+work</a></h2>
+
+<p>As described above, the plugin parses the buffer and what you type to find
+and remember the words to offer as completions later on. But what is a word
+and when/how is the list of completions offered?</p>
+
+<p>To consider a string as a word it must pass some tests - see the options
+"Belongs to word?" and "Is word to remember?". The first one determines
+whether the character typed may start/extend a word or whether it ends one,
+i.e. whether it is a word separator or a word constituent. By default only
+letters are regarded as constituting a word. The second option may be used to
+limit what words are remembered as possible completions - by default we
+ignore words shorter than determined by the option "Remember words long at
+least".</p>
+
+<p>The pop-up window with completions appears when you type the beginning of
+a word long enough (assuming there are some completions for that prefix). The
+length is given by the option "Minimal prefix length". So, with the default
+setting, you must type at least two letters before the completions may be
+offered.</p>
+
+<p><a name="L590" id="L590"></a>The important thing to note is that even
+though you can add arbitrary string to the list of remembered words (by
+importing them from a file or by adding the string by means of the
+"Remembered words" dialog), it will <em>never be offered as a completion</em>
+unless it satisfies the condition for the pop-up completions window to turn
+up, in other words it must start with a word that is at least as long as the
+"Minimal prefix length" - under the default setting it must start with two
+letters.</p>
+
+<p>Please be aware that the words are <em>case sensitive</em>, so
+"Something", "something" and "someTHING" are three different words.</p>
+
+<h2><a name="Control">Control keys of the completions pop-up window</a></h2>
+
+<p>By default, the following keys may be used to control the completion
+pop-up window:</p>
+<ul>
+  <li><kbd>Escape</kbd> - Cancel (dispose) the window.</li>
+  <li><kbd>Enter</kbd>, <kbd>Tab</kbd> - Accept and insert the selected
+    completion.</li>
+  <li><kbd>Up arrow</kbd> - Select the completion above the currently
+    selected one. It cycles through the list, so pressing Up on the first
+    entry gets you to the last one.</li>
+  <li><kbd>Down arrow</kbd> - Select the completion below the currently
+    selected one. It cycles through the list.</li>
+  <li>Numbers <kbd>0-9</kbd> - Accept and insert the completion with the
+    given number. You may disable it if you want numbers to be treated as
+    regular characters or you may set it so that &lt;a modifier key&gt; +
+    number inserts a completion while number without the modifier is just
+    appended to the current word.</li>
+</ul>
+
+<h2><a name="Menu">Menu</a></h2>
+<dl>
+  <dt><strong>Start for buffer</strong></dt>
+    <dd>Enable autocompletion for the current buffer. The buffer is parsed to
+      collect the words that already exist in it.</dd>
+  <dt><strong>Stop for buffer</strong></dt>
+    <dd>Disable autocompletion for the current buffer and forget all
+      remembered words.</dd>
+  <dt><strong>Parse buffer</strong></dt>
+    <dd>Scan the current buffer for words to remember and add them to the
+      list of remembered words.</dd>
+  <dt><strong>Show remembered words</strong></dt>
+    <dd>Display the list of remember words that you can edit: <br>
+
+      <ol>
+        <li><em>Add a word</em> typed in the text field; the string is
+          remembered as is, even if normally it wouldn't be considered to be
+          a word - but it should start as a word, see the <a
+          href="#L590">explanation</a> above.</li>
+        <li><em>Delete selected</em> - forgets the words you've selected in
+          the list. To select multiple entries use Control+click.</li>
+        <li><em>Delete all</em> - forget all remembered words. You can Parse
+          buffer to get them back.<br>
+        </li>
+      </ol>
+    </dd>
+    <dd>Additionally, you can:
+      <ol>
+        <li><em>Import words</em> - read a file with previously saved words
+          and add them to the list. One line is considered as one word and is
+          added to the list "as is" even if it wouldn't normally be
+          considered as a word - but it should start as a word, see the <a
+          href="#L590">explanation</a> above.</li>
+        <li><em>Export words</em> - save the remembered words into a file,
+          one per line.</li>
+      </ol>
+    </dd>
+  <dt><strong>Start for all buffers</strong></dt>
+    <dd>Enable autocompletion for all currently opened buffers. (To detach
+      from all buffers, open the Plugin Manager and under Manage uncheck and
+      re-check the TextAutocomplete plugin.)</dd>
+  <dt><strong>Stop for all buffers</strong></dt>
+    <dd>Disable autocompletion for all buffers that have it enabled and
+      forget all remembered words.</dd>
+</dl>
+
+<h2 id="Options"><a name="Options">Options</a></h2>
+
+<p>It's possible to set some options that will apply to autocompletion in all
+buffers.</p>
+
+<p>When you put the mouse pointer above some of the text field on the option
+page and wait for a while, a tool tip with more detailed description will
+show up.</p>
+<dl>
+  <dt>Start autom. for new buffers</dt>
+    <dd>Enable autocompletion for every new buffer that you will open from
+      that moment on.<br>
+      Default: Off</dd>
+  <dt>Filename filters</dt>
+    <dd>Specify filename glob patterns to be included or excluded from
+      autocompletion.<br>
+      Default: Include all files</dd>
+</dl>
+
+<p>The following options influence words and completions.</p>
+<dl>
+  <dt>Remember at max. words</dt>
+    <dd>The maximal number of words that should be remembered as potential
+      completions. Notice, that completions are only offered based on the
+      list of remembered words.<br>
+      Default: 1000</dd>
+  <dt>Minimal prefix length</dt>
+    <dd>Don't offer possible completions until at least the given number of
+      characters have been typed.</dd>
+    <dd>Default: 2.</dd>
+  <dt>Remember words long at least</dt>
+    <dd>Don't remember words shorter than the given value.</dd>
+    <dd>Default: 5.</dd>
+</dl>
+
+<p>Value of the following properties is a beanshell expression that evaluates
+to either true or false. It can make use of special variables - see below. If
+the code isn't correct, BeanShell will throw an exception when it is first
+executed so you should make sure that it is all right; than it reverts to the
+default setting to prevent repetitions of the same error. The description of
+such an exception will mention either PreferencesManager.precompileCode or
+PreferencesManager.executeCachedCode and either the method accept (for
+"Belongs to word?") or isWordToRemember. The expression must be valid Java
+expression, so it should end with a semicolon.</p>
+<dl>
+  <dt>Is word to remember? [code]</dt>
+    <dd>Return true if the word that has just been typed should be
+      remembered. In addition to that, the word must also be at least as long
+      as required by "Remember words long at least". The variable
+      <code>word</code> (String) holds the word in question.</dd>
+    <dd>Example: <code>! word.startsWith("X");</code></dd>
+    <dd>Default: always true</dd>
+  <dt>Belongs to word? [code]</dt>
+    <dd>Return true when the insertion (the typed character) doesn't end the
+      word being typed, in other words, it must return false for word
+      separators. The available variables are <var>prefix</var> (String; the
+      word that has been typed so far) and <var>insertion</var> (char; the
+      newly typed character). This determines what is considered as a word
+      while the previous option determines whether something, that is already
+      considered to be a word, should be remembered or not.</dd>
+    <dd>Example: <code>Character.isLetterOrDigit(insertion) || insertion ==
+      '_' || (prefix.startsWith("&lt;") &amp;&amp; prefix.indexOf("&gt;") ==
+      -1);</code> // alphanumeric string or anything between &lt; and
+    &gt;</dd>
+    <dd>Default: <code>Character.isLetter(insertion);</code></dd>
+</dl>
+
+<p>Use the following properties to change the <a href="#Control">default
+control keys</a> (see above). All of them take a list of keys separated by a
+single space or by a comma. A key is represented by the name of one of the
+constants of the class <a
+href="http://java.sun.com/j2se/1.4.2/docs/api/index.html">java.awt.event.KeyEvent</a>
+that start with the prefix "VK_". You can only use special keys, that means
+keys that don't produce a character. It includes VK_ENTER, VK_ESCAPE,
+VK_BACK_SPACE, VK_DELETE, VK_F1 etc., VK_TAB, VK_UP, VK_DOWN and others.</p>
+<dl>
+  <dt>Accept with key</dt>
+    <dd>Accept and insert the currently selected completion.</dd>
+    <dd>Default: VK_ENTER,VK_TAB</dd>
+  <dt>Dispose with key</dt>
+    <dd>Hide the window with completions.</dd>
+    <dd>Default: VK_ESCAPE</dd>
+  <dt>Up in completions key</dt>
+    <dd>Select the completion above.</dd>
+    <dd>Default: VK_UP</dd>
+  <dt>Down in completions key</dt>
+    <dd>Select the completion below.</dd>
+    <dd>Default: VK_DOWN</dd>
+  <dt>Select compl. by number</dt>
+    <dd>If checked, pressing a number inserts the completion with that index.
+      If unchecked, the number is just inserted as an ordinary character.<br>
+      Default: Checked (i.e. enabled)</dd>
+  <dt>Select by number modifier</dt>
+    <dd>If you press the selected modifier key + a number, the completion
+      with that index is inserted. If you press only the number, it's
+      inserted into the buffer. Note: Some of the modifiers may not work for
+      you. There are reports of problems with AltGr.<br>
+      Default: None (no modifier key, pressing the number inserts the
+      completion)</dd>
+</dl>
+
+<p>The button <var>Reset options</var> resets them to the default values.</p>
+
+<h2><a name="Accessing" id="Accessing">Accessing the plugin from
+BeanShell</a></h2>
+
+<p>If you know Java programming, you can access and control the plugin via
+BeanShell - either by means of the Console plugin or from a macro.</p>
+
+<p>You can see the current options by calling the methods of
+PreferencesManager, for example<br>
+<code>net.jakubholy.jedit.autocomplete.PreferencesManager.getPreferencesManager().getMaxCountOfWords()</code><br>
+To modify the options you'd need to set some properties (jEdit.setProperty) -
+see the file TextAutocomplete.props within the plugin's .jar archive.</p>
+
+<p>You could also invoke the actions that are usually run from the menu - for
+example
+<code>net.jakubholy.jedit.autocomplete.AutoComplete.attachAction(buffer)</code>.</p>
+
+<p>To get the AutoComplete associated with the buffer, call
+<code>net.jakubholy.jedit.autocomplete.getAutoCompleteOfBuffer(buffer)</code>.
+If it returns null, you must attach one first.</p>
+
+<p>See the JavaDoc for <a
+href="docs/javadocs/net/jakubholy/jedit/autocomplete/AutoComplete.html">AutoComplete</a>,
+<a
+href="docs/javadocs/net/jakubholy/jedit/autocomplete/PreferencesManager.html">PreferencesManager</a>,
+<a
+href="docs/javadocs/net/jakubholy/jedit/autocomplete/WordList.html">WordList</a>,
+<a
+href="docs/javadocs/net/jakubholy/jedit/autocomplete/Completion.html">Completion</a>
+and <a
+href="docs/javadocs/net/jakubholy/jedit/autocomplete/TextAutocompletePlugin.html">TextAutocompletePlugin</a>
+included with this plugin or download the plugins's source with the full API
+JavaDoc. You can also browse the plugin's source files via Source Forge's web
+interface to the <a
+href="http://cvs.sourceforge.net/viewcvs.py/jedit/plugins/TextAutocomplete/net/jakubholy/jedit/autocomplete/">CVS</a>
+repository.</p>
+
+<h2><a name="Development">Development</a></h2>
+
+<h3><a name="Feedback">Feedback</a></h3>
+
+<p>The preferred way to send bug reports is to use the Sourceforge Bug
+Tracker at <a
+href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>
+and also notify me by e-mail.</p>
+
+<p>You can also write to:</p>
+
+<p>Jakub Holý alias MalyVelky &lt;malyvelky@users.sourceforge.net&gt;;</p>
+
+<p>If you find a bug, help to discover it by switching on verbose logging for
+the plugin - execute the following BeanShell code (paste it into a new
+buffer, select it and execute it via Utilities &gt; BeanShell &gt; Evaluate
+Selection):</p>
+<code>jEdit.setIntegerProperty("plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.logLevel",2)</code>
+
+<p>You will need to either reload the plugin or restart jEdit to activate the
+change. (WordTypedListener reads the log level only upon its creation.) Look
+for the logs starting with "TextAutocompletePlugin:" in Utilities &gt;
+Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
+<code>jEdit.setIntegerProperty("plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.logLevel",0)</code>
+
+<p>And reload/restart.</p>
+
+<h3><a name="Wish">Wish list</a></h3>
+<ul>
+  <li>Make it possible to start with a default word list (read from a file, same for all buffers)</li>
+  <li>Options - check that the beanshell expressions are ok before the
+    preferences are saved</li>
+  <li>Allow for the insertion of longer texts after a prefix (so far only 1
+    character can be inserted/typed)</li>
+  <li>Support the insertion of the "longest common suffix" of two or more
+    completions (typed: "co", possible completions: community, communist
+    =&gt; insert (co)mmuni)</li>
+  <li>Option to show the completion popup only after a period of inactivity
+    (e.g. when the user stops typing for 2 seconds).</li>
+</ul>
+
+<h3><a name="Change">Change Log</a></h3>
+
+<h4>Version 0.9.4, October 2006</h4>
+
+<p>Added the possibility to disable selection of a completion by number or to
+require a modifier key together with the number.</p>
+
+<h4>Version 0.9.3, May 2006</h4>
+
+<p>Added handling of backspace.</p>
+
+<p>Development: added unit tests, corrections of the code (thanks to
+JUnit!).</p>
+
+<h4>Version 0.9.2, April 2006</h4>
+
+<p>This is a bug fixes and enhancement release. Additionally, the plugin has
+been updated for jEdit 4.3pre3.</p>
+
+<p>Bug fixes:</p>
+<ul>
+  <li>Prevent the cursor from switching buffer/view: When you edited one or
+    two file(s) in a split view, it sometimes happened that you started
+    writing in one and suddenly the cursor jumped into the another. This
+    should be now fixed (We prefer jEdit.getActiveView over the remembered
+    view). I'd like to thank Jeremias, who discovered the bug.</li>
+</ul>
+
+<p>New features:</p>
+<ul>
+  <li>Start for all opened buffers and Stop for all opened buffers</li>
+  <li>Start automatically for new buffers</li>
+  <li>The number of remembered words is now limited to 1000, the limit may be
+    changed.</li>
+  <li>It's now possible to export/import (append) the list of remembered
+    words.</li>
+</ul>
+
+<h4 id="Version">Version 0.9, May 2006</h4>
+
+<p>Initial release.</p>
+
+<h3><a name="Overview">Overview of the Classes</a></h3>
+
+<p>Core classes:</p>
+<ul>
+  <li>AutoComplete - ties together all the core classes: registers a
+    WordTypedListener for the buffer, stores the words into a WordList and
+    displays a CompletionPopup window with the possible completions. It keeps
+    the map (buffer to its autocompletion instance).</li>
+  <li>PreferencesManager - handles options; other classes use its methods and
+    do not access the preferences directly. Only one instance exists.</li>
+  <li>CompletionPopup - Pop-up window with completions of the word being
+    typed. It intercepts keys and handles the control keys.</li>
+  <li>WordList [interface] - structure for storage of the words (more exactly
+    completions) to remember.</li>
+  <li>WordListTreeSet - a concrete implementation of the WordList.</li>
+  <li>WordTypedListener - it listens to what keys are typed in the buffer and
+    notifies others (the AutoComplete) about such events as a character being
+    appended to a word and the end of a word.</li>
+</ul>
+
+<p>GUI classes:</p>
+<ul>
+  <li>TextAutocompletePlugin - implements jEdit plugin.</li>
+  <li>TextAutocompletePane - the Option pane.</li>
+  <li>WordListEditorUI - the editor of remembered words.</li>
+</ul>
+
+<p>Helper classes</p>
+<ul>
+  <li>Completion - the structure used to keep a word to remember. Using it
+    instead of a string enables us to add later on additional information to
+    each word and, for instance, offer completions order with respect to the
+    frequency of their occurrence.</li>
+  <li>WordTypedEvent - produced by WordTypedListener to carry information
+    about what's going on in the buffer.</li>
+  <li>ActionException - thrown when some of the actions invoked via menu
+    fails.</li>
+</ul>
+
+<p>For more info see <a
+href="http://jakubholy.net/comp/jedit.html">http://jakubholy.net/comp/jedit.html</a>.</p>
+
+<h3><a name="Working">How does it work?</a></h3>
+
+<p>A BufferListener (implemented by my WordTypedListener) is attached to the
+buffer. When it detects an important event (a letter appended to a word, a
+word ended...), it notifies the main class AutoComplete via the
+Observer/Observable mechanism. It may then display (or dispose) a list of
+completions. When the list of completions is displayed, it intercepts special
+keys being pressed (such as Enter, Escape...) and reacts according to its
+setting (hide itself, insert the selected completion...).</p>
+
+<h2><a name="License">License</a></h2>
+
+<p>This plugin is released under the GNU General Public License version 2
+(GPL). Please see <a
+href="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a>.</p>
+
+<p>Moreover, permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation; with no
+"Invariant Sections", "Front-Cover Texts" or "Back-Cover Texts", each as
+defined in the license. A copy of the license can be found in the file
+COPYING.DOC.txt included with jEdit.</p>
+<hr>
+
+<p style="text-align:center">Jakub Holý 2006</p>
+</body>
+</html>
