@@ -1,0 +1,207 @@
+<!-- ================================================== -->
+<!-- Build file for the TextAutocompletelugin           -->
+<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="TextAutocomplete" default="install" basedir=".">
+  <description>
+  	TextAutocomplete Tools jEdit Plugin.
+  </description>
+	
+  <!--
+  USAGE:
+  	* Plugin packager will run 'install' which will create the 
+  	plugin's jar in the parent directory.
+  	* Developer may use deploy-only to compile the plugin and 
+  	copy it into ${jedit.jars.dir} so that it can be immediately
+  	reloaded via the PluginManager (disable & re-enable).
+  -->
+
+  <!-- ================================================ -->
+  <!-- Property definitions                             -->
+  <!-- ================================================ -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property file="${user.home}/.build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <!-- set global properties for this build -->
+  <property name="src"          value="."/>
+  <property name="build"        value="build"/>
+  <property name="dist"         value="dist"/>
+  <property name="docs"         value="docs"/>
+  <property name="docs.javadoc" value="${docs}/javadocs"/>
+	
+	
+	<!-- set DEFAULT VALUES for some properties -->
+	<!-- (Once defined property cannot be changed => these only applies
+		if the given properties are not yet set) -->
+	<property name="crosscompiler.lib" 			value="${java.home}/lib"/>
+	<property name="crosscompiler.version" 	value="1.5"/>
+	<property name="jedit.user.home" 				value="${jedit.install.dir}"/>
+	<property name="jedit.jars.dir"  				value="${jedit.install.dir}/jars"/>
+	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
+	<property name="sidekick.jar"  				 	value="${jedit.jars.dir}/SideKick.jar"/>
+	<property name="console.jar"  					value="${jedit.jars.dir}/Console.jar"/>
+	
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <pathelement location="${jedit.install.dir}/jedit.jar" />
+    <!-- <pathelement location="${local.jedit.jars}"/> -->
+	</path>
+
+  <path id="bootclass.path">
+    <path refid="default.classpath"/>
+    <fileset dir="${crosscompiler.lib}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="class.path">
+    <path refid="default.classpath"/>
+    <pathelement path="${classpath}"/>
+  </path>
+
+
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+	
+  <target name="init">
+		<fail unless="jedit.install.dir" message="ERROR: The property jedit.install.dir (where jEdit is installed) must be defined either in a properties.build or on the command line!" />
+  	
+		<condition property="can.reload.plugins">
+			<and>
+				<available classname="org.gjt.sp.jedit.jEdit" />
+				<available classname="ReloadPluginTask" />
+			</and>
+		</condition>
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${docs}"/>
+    <mkdir dir="${docs.javadoc}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+		<!-- <property name="cp" refid="class.path"/>
+		<echo message="classpath: ${cp}." /> -->
+    <javac 
+    	   srcdir="${src}" destdir="${build}"
+	       debug="${compiler.debug}"
+	       optimize="${compiler.optimize}"
+	       deprecation="${compiler.deprecation}"
+	       verbose="${compiler.verbose}"
+		   listfiles="true"
+		   excludes="tests/**/*.*">
+       <classpath refid="class.path"></classpath>
+    </javac>
+  </target>
+
+  <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
+    <!-- Compile the java code from ${src} into ${build} -->
+  	<javac target="${crosscompiler.version}" source="${crosscompiler.version}"
+  		   srcdir="${src}" destdir="${build}" 
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+  		   listfiles="true"
+    	   excludes="tests/**/*.*">
+        <bootclasspath refid="bootclass.path"></bootclasspath>
+    </javac>
+  </target>
+
+  <target name="build" depends="cross-compile" description="Build the plugin + create binary JAR">
+    <!-- Copy build.xml, action.xml etc. -->
+    <copy todir="${build}">
+    	<fileset dir="${src}" includes="*.xml" casesensitive="no" excludes="*.*~"/>
+    	<fileset dir="${src}" includes="*.html" casesensitive="no" excludes="*.*~"/>
+    </copy>
+    <copy todir="${build}/${docs.javadoc}">
+    	<fileset dir="${src}/${docs.javadoc}" 
+    		includes="**/AutoComplete.html **/PreferencesManager.html **/WordList.html **/Completion.html **/TextAutocompletePlugin.html *.css **/resources/*.*" 
+    		casesensitive="no" excludes="*.*~"/>
+    </copy>
+    <copy file="${src}/TextAutocomplete.props" todir="${build}"/>
+    
+    <jar jarfile="${install.dir}/TextAutocomplete.jar" basedir="${build}"/>
+  </target>
+
+  <target name="dist" depends="build"
+                     description="Build a distribution (source ZIP, binary JAR[by build target])">
+		<zip zipfile="${dist}/TextAutocompleteSrc.zip">
+        <fileset dir="${src}">
+          <include name="build.xml"/>
+          <include name="build.properties.template"/>
+          <exclude name="build.properties"/>
+          <exclude name="${build}/**"/>
+          <exclude name="${dist}/**"/>
+          <exclude name="${docs}/**"/>
+          <exclude name="config/bugs.html"/>
+          <exclude name="config/featurereq.html"/>
+          <exclude name="*.jpage" />
+          <exclude name="*.settings" />
+          <include name="**"/>
+        </fileset>
+    </zip>
+  </target>
+
+  <target name="install" depends="javadoc, dist" description="Build the plugin JAR in the parent directory (required by plugin builders).">
+    <copy file="${dist}/TextAutocomplete.jar" tofile="../TextAutocomplete.jar"/>
+		<!--<antcall target="reload"/>-->
+  </target>
+
+  <target name="deploy" depends="dist" description="Copy to jEdit's jars/ directory and force reloading of the plugin">
+    <copy file="${dist}/TextAutocomplete.jar" todir="${jedit.jars.dir}"/>
+  	<condition property="can.reload.plugins">
+  		<and>
+  		    <available classname="org.gjt.sp.jedit.jEdit"/>
+  			<available classname="ReloadPluginTask"/>
+  		</and>
+  	</condition>
+	<antcall target="reload"/>
+  </target>
+
+  <target name="clean-install" depends="clean, install" description="Clean and install"></target>
+
+  <target name="clean" description="clean up" >
+		<delete dir="${build}"/>
+  		<delete dir="${docs}"/>
+		<delete dir="${dist}"/>  	
+  	    <delete dir="eclipse_bin"/>
+  </target>
+
+  <target name="javadoc" description="Generates javadoc sourcecode documentation">
+    <javadoc 
+		destdir="${docs.javadoc}"
+        packagenames="net.jakubholy.jedit.autocomplete.*"
+        windowtitle="${ant.project.name} API" 
+    	classpathref="default.classpath">
+    	
+    	<fileset dir="${src}" defaultexcludes="yes">
+    		<include name="net/jakubholy/jedit/autocomplete/**/*.java"/>	
+    	    <exclude name="**/WordList*Test*.java"/>
+   		</fileset>
+    </javadoc>
+  </target>
+
+	<target name="reload" if="can.reload.plugins">
+		<!-- The Reload Plugin Task can be donwloaded from community.jedit.org -->
+		<taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+		<reloadPlugin jarfile="${jedit.jars.dir}/TextAutocomplete.jar"/>
+	</target>
+
+	
+  <!--target name="document" description="Copy documentation.">
+    <copy todir="${docs}">
+      <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
+    </copy>
+  </target-->
+
+</project>
+
