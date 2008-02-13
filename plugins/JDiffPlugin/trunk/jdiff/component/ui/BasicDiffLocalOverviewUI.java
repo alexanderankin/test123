@@ -83,11 +83,17 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         diffLocalOverview.addMouseListener( this );
     }
 
-    public void uninstallDefaults() {}
+    public void uninstallDefaults() {
+    }
 
-    public void uninstallComponents() {}
+    public void uninstallComponents() {
+        diffLocalOverview.remove(localRendererPane);
+        diffLocalOverview = null;
+    }
 
-    public void uninstallListeners() {}
+    public void uninstallListeners() {
+        diffLocalOverview.removeMouseListener(this);
+    }
 
     protected LayoutManager createLayoutManager() {
         return new BorderLayout();
@@ -317,31 +323,31 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     break;
                 }
 
-                int y0 = centerRectangle.y + ( i0 * pixelsPerLine ) + 1;
-                int y1 = centerRectangle.y + ( i1 * pixelsPerLine ) + 1;
-
-                // draw the lines
-                gfx.setColor( Color.BLACK );
-                gfx.drawLine( leftRectangle.x + leftRectangle.width + 1, y0, rightRectangle.x - 1, y1 );
+                int y0 = centerRectangle.y + ( i0 * pixelsPerLine );
+                int y1 = centerRectangle.y + ( i1 * pixelsPerLine );
 
                 // draw the "move it right" arrow
+                gfx.setColor( Color.BLACK );
+                int arrow_height = ( pixelsPerLine - 2 ) % 2 == 0 ? pixelsPerLine - 3 : pixelsPerLine - 2;
+                int center = arrow_height / 2 + 1;
                 if ( hunk.inserted == 0 || hunk.deleted > 0 ) {
-                    arrow0 = new Polygon();
-                    arrow0.addPoint( leftRectangle.x + 1, y0 + 1 );
-                    arrow0.addPoint( leftRectangle.x + 1, y0 + pixelsPerLine - 2 );
-                    arrow0.addPoint( leftRectangle.x + 7, y0 + ( pixelsPerLine / 2 ) );
-                    gfx.fillPolygon( arrow0 );
+                    for ( int i = 0; i < 6; i++ ) {
+                        gfx.drawLine(leftRectangle.x + 2 + i, y0 + 1 + i, leftRectangle.x + 2 + i, y0 + i + arrow_height - (2 * i));
+                    }
+                    y0 += center;
                 }
 
                 // draw the "move it left" arrow
                 if ( hunk.deleted == 0 || hunk.inserted > 0 ) {
-                    arrow1 = new Polygon();
-                    arrow1.addPoint( rightRectangle.x + 1, y1 + ( pixelsPerLine / 2 ) );
-                    arrow1.addPoint( rightRectangle.x + 7, y1 + 1 );
-                    arrow1.addPoint( rightRectangle.x + 7, y1 + pixelsPerLine - 2 );
-                    gfx.setColor( Color.BLACK );
-                    gfx.fillPolygon( arrow1 );
+                    for ( int i = 0; i < 6; i++) {
+                        gfx.drawLine(rightRectangle.x + 1 + i, y1 + center - i, rightRectangle.x + 1 + i, y1 + center + i);
+                    }
+                    y1 += center;
                 }
+
+                // draw the lines
+                gfx.drawLine( leftRectangle.x + leftRectangle.width + 1, y0, rightRectangle.x - 1, y1 );
+
             }
         }
     }
