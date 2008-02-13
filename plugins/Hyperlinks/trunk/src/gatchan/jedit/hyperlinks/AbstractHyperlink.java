@@ -36,6 +36,7 @@ public abstract class AbstractHyperlink implements Hyperlink
 
 	private String tooltip;
 
+	//{{{ AbstractHyperlink constructors
 	protected AbstractHyperlink(int start, int end, int startLine, String tooltip)
 	{
 		this(start, end, startLine, startLine, tooltip);
@@ -48,7 +49,8 @@ public abstract class AbstractHyperlink implements Hyperlink
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.tooltip = tooltip;
-	}
+	} //}}}
+
 
 	//{{{ getStartOffset() method
 	/**
