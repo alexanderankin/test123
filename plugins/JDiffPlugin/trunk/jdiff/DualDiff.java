@@ -43,7 +43,7 @@ import javax.swing.event.CaretListener;
 import jdiff.component.DiffLocalOverview;
 import jdiff.component.DiffGlobalPhysicalOverview;
 import jdiff.component.DiffOverview;
-import jdiff.component.LineProcessor;
+import jdiff.component.DiffLineOverview;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
@@ -60,6 +60,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -112,7 +113,7 @@ public class DualDiff implements EBComponent {
 
     private final ScrollHandler scrollHandler = new ScrollHandler();
 
-    private LineProcessor lineProcessor;
+    private DiffLineOverview diffLineOverview;
 
     private DualDiff( View view ) {
         this( view, ignoreCaseDefault, trimWhitespaceDefault,
@@ -173,7 +174,6 @@ public class DualDiff implements EBComponent {
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
                 DualDiff.editPaneBufferChanged( view, editPane );
             }
-            else {}
         }
     }
 
@@ -225,12 +225,12 @@ public class DualDiff implements EBComponent {
         this.ignoreAllWhitespace = !this.ignoreAllWhitespace;
     }
 
-    public void setLineProcessor( LineProcessor lineProcessor ) {
-        this.lineProcessor = lineProcessor;
+    public void setDiffLineOverview( DiffLineOverview diffLineOverview ) {
+        this.diffLineOverview = diffLineOverview;
     }
 
-    public LineProcessor getLineProcessor() {
-        return lineProcessor;
+    public DiffLineOverview getDiffLineOverview() {
+        return diffLineOverview;
     }
 
     // initialize the overviews and merge controls
@@ -284,6 +284,18 @@ public class DualDiff implements EBComponent {
         this.enableHighlighters();
         this.addHandlers();
 
+        diffLineOverview.clear();
+        EditPane editPane = view.getEditPane();
+        final int caret = editPane.getTextArea().getCaretPosition();
+        this.scrollHandler.caretUpdate( new CaretEvent( view.getEditPane() ) {
+                    public int getDot() {
+                        return caret;
+                    }
+                    public int getMark() {
+                        return caret;
+                    }
+                }
+                                      );
         this.diffOverview0.synchroScrollRight();
         this.diffOverview1.repaint();
     }
@@ -520,8 +532,8 @@ public class DualDiff implements EBComponent {
                             DualDiff.addTo( view );
                             DockableWindowManager dwm = view.getDockableWindowManager();
                             if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) ) {
-                                if (dwm.getDockableWindow("jdiff-lines") == null) {
-                                    dwm.addDockableWindow("jdiff-lines");
+                                if ( dwm.getDockableWindow( "jdiff-lines" ) == null ) {
+                                    dwm.addDockableWindow( "jdiff-lines" );
                                 }
                                 dwm.showDockableWindow( "jdiff-lines" );
                             }
@@ -915,13 +927,14 @@ public class DualDiff implements EBComponent {
 
         dualDiff.enableHighlighters();
         dualDiff.addHandlers();
-        jdiff.component.DiffLineOverview lineProcessor = new jdiff.component.DiffLineOverview( dualDiff );
-        dualDiff.setLineProcessor( lineProcessor );
+        jdiff.component.DiffLineOverview diffLineOverview = new jdiff.component.DiffLineOverview( dualDiff, view );
+        dualDiff.setDiffLineOverview( diffLineOverview );
 
         dualDiff.diffOverview0.synchroScrollRight();
         dualDiff.diffOverview1.repaint();
 
         dualDiffs.put( view, dualDiff );
+        diffLineOverview.reset();
     }
 
     private static void removeFrom( View view ) {
@@ -936,6 +949,8 @@ public class DualDiff implements EBComponent {
             dualDiff.removeOverviews();
 
             dualDiffs.remove( view );
+
+            dualDiff.getDiffLineOverview().setModel(null);
         }
     }
 
@@ -973,17 +988,13 @@ public class DualDiff implements EBComponent {
                     }
                 };
 
-        int previousCaretLine = 0;
         LineProcessorRunner runner = new LineProcessorRunner();
         public void caretUpdate( final CaretEvent e ) {
-            if ( lineProcessor != null ) {
+            if ( diffLineOverview != null ) {
                 JEditTextArea source = ( JEditTextArea ) e.getSource();
                 int caretLine = source.getCaretLine();
-                if ( caretLine != previousCaretLine ) {
-                    previousCaretLine = caretLine;
-                    runner.setSource( source );
-                    SwingUtilities.invokeLater( runner );
-                }
+                runner.setSource( source );
+                SwingUtilities.invokeLater( runner );
             }
         }
 
@@ -1043,7 +1054,7 @@ public class DualDiff implements EBComponent {
                         }
                     }
                 }
-                DualDiff.this.lineProcessor.processLines( leftLine, rightLine );
+                DualDiff.this.diffLineOverview.processLines( leftLine, rightLine );
             }
         }
 

@@ -21,6 +21,7 @@ package jdiff.component.ui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -33,13 +34,11 @@ import org.gjt.sp.jedit.jEdit;
 import jdiff.DualDiff;
 import jdiff.component.*;
 
-public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
+public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements ChangeListener {
 
     private DiffLineOverview diffLineOverview = null;
-    private MergeControl mergeControl = null;
+    private MergeToolBar mergeToolBar = null;
     private LineRendererPane lineRendererPane = null;
-    private JButton diffButton;
-    private JButton refreshButton;
 
     /**
      * Required by super class.
@@ -90,22 +89,8 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
      * Create and install any sub-components.
      */
     public void installComponents() {
-        JPanel button_panel = new JPanel();
-        diffButton = new JButton(new ImageIcon(BasicDiffLineOverviewUI.class.getClassLoader().getResource("jdiff/component/resources/delta.png")));
-        JToolBar diffButton_bar = new JToolBar();
-        diffButton_bar.setFloatable( false );
-        diffButton_bar.setRollover( true );
-        diffButton_bar.add( diffButton );
-        button_panel.add(diffButton_bar);
-        mergeControl = new MergeControl( diffLineOverview.getView() );
-        button_panel.add(mergeControl);
-        refreshButton = new JButton(GUIUtilities.loadIcon( "Reload.png" ));
-        JToolBar refreshButton_bar = new JToolBar();
-        refreshButton_bar.setFloatable( false );
-        refreshButton_bar.setRollover( true );
-        refreshButton_bar.add( refreshButton );
-        button_panel.add(refreshButton_bar);
-        diffLineOverview.add( button_panel, BorderLayout.NORTH );
+        mergeToolBar = new MergeToolBar(diffLineOverview.getView());
+        diffLineOverview.add( mergeToolBar, BorderLayout.NORTH );
         lineRendererPane = new LineRendererPane( );
         diffLineOverview.add( lineRendererPane, BorderLayout.CENTER );
     }
@@ -114,24 +99,7 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
      * Install any action listeners, mouse listeners, etc.
      */
     public void installListeners() {
-        diffButton.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    View view = diffLineOverview.getView();
-                    DualDiff.getDualDiffFor(view).toggleFor(view);
-                    diffLineOverview.repaint();
-                }
-            }
-        );
-        refreshButton.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    View view = diffLineOverview.getView();
-                    DualDiff.getDualDiffFor(view).refreshFor(view);
-                    diffLineOverview.repaint();
-                }
-            }
-        );
+        diffLineOverview.addChangeListener( this );
     }
 
     /**
@@ -149,14 +117,13 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
     /**
      * Tear down and clean up.
      */
-    public void uninstallDefaults() {
-    }
+    public void uninstallDefaults() {}
 
     /**
      * Tear down and clean up.
      */
     public void uninstallComponents() {
-        diffLineOverview.remove( mergeControl );
+        diffLineOverview.remove( mergeToolBar );
         diffLineOverview.remove( lineRendererPane );
         diffLineOverview = null;
     }
@@ -164,7 +131,13 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
     /**
      * Tear down and clean up.
      */
-    public void uninstallListeners() {}
+    public void uninstallListeners() {
+        diffLineOverview.removeChangeListener( this );
+    }
+
+    public void stateChanged( ChangeEvent event ) {
+        // adjust buttons
+    }
 
     /**
      * @return a BorderLayout
@@ -199,7 +172,7 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
             // suggest anti-aliasing for the font display.  This is for Java 1.5,
             // jEdit also allows subpixel anti-alias, but that's a 1.6 thing and
             // would require reflection
-            if (!"none".equals(jEdit.getProperty("view.antiAlias"))) {
+            if ( !"none".equals( jEdit.getProperty( "view.antiAlias" ) ) ) {
                 ( ( java.awt.Graphics2D ) gfx ).setRenderingHint(
                     java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
                     java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
@@ -214,13 +187,8 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI {
 
             DiffLineModel model = diffLineOverview.getModel();
             if ( model == null || model.getLeftCharacters() == null || model.getRightCharacters() == null ) {
-                mergeControl.setEnabled(false);
-                View view = diffLineOverview.getView();
-                diffButton.setEnabled(view.getEditPanes().length == 1);
-                refreshButton.setEnabled(DualDiff.getDualDiffFor(view) != null);
                 return ;
             }
-            mergeControl.setEnabled(true);
 
             String leftLine = model.getLeftLine();
             String rightLine = model.getRightLine();

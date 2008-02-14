@@ -37,12 +37,14 @@ jdiff-menu.label=JDiff
 
 toggle-dual-diff.label=Dual diff
 jdiff.show-dual-diff-dialog.label=Show dual diff dialog
+jdiff.diff-btn.label=Diff
 jdiff.refresh-diff.label=Refresh diff
 jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
 jdiff.move-right.label=Move Current Diff Right
 jdiff.move-left.label=Move Current Diff Left
 jdiff.unsplit.label=Unsplit
+jdiff.refresh.label=Refresh
 jdiff.swap-textareas.label=Swap text areas
 jdiff.toggle-ignore-case.label=Ignore case
 jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
