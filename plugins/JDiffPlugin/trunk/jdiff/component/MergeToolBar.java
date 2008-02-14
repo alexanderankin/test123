@@ -37,58 +37,40 @@ import jdiff.component.ui.*;
 import org.gjt.sp.jedit.View;
 
 /**
- * Component to show the merge controls and line differences.
+ * Component to show the merge controls.
  */
-public class DiffLineOverview extends JComponent implements LineProcessor {
+public class MergeToolBar extends JComponent {
 
-    private static final String uiClassID = "DiffLineOverviewUI";
+    private static final String uiClassID = "MergeToolBarUI";
 
-    private DualDiff dualDiff = null;
     private View view = null;
-    private DiffLineModel diffLineModel = null;
 
     private Set<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
     /**
-     * @param dualDiff the DualDiff this component is to control.
+     * @param view the parent frame
      */
-    public DiffLineOverview( DualDiff dualDiff, View view ) {
-        this.dualDiff = dualDiff;
+    public MergeToolBar( View view ) {
         this.view = view;
         this.updateUI();
     }
 
-    public DiffLineOverview(View view) {
-        this.view = view;
-        this.updateUI();
-    }
-
-    /**
-     * Perform a diff on 2 lines.
-     */
-    public void processLines( String leftLine, String rightLine ) {
-        if ( leftLine == null || rightLine == null ) {
-            return ;
-        }
-        setModel( new DiffLineModel( leftLine, rightLine ) );
-    }
-
-    public void setUI( DiffLineOverviewUI ui ) {
+    public void setUI( MergeToolBarUI ui ) {
         super.setUI( ui );
     }
 
     public void updateUI() {
         if ( UIManager.get( getUIClassID() ) != null ) {
-            setUI( ( DiffLineOverviewUI ) UIManager.getUI( this ) );
+            setUI( ( MergeToolBarUI ) UIManager.getUI( this ) );
         }
         else {
-            setUI( new BasicDiffLineOverviewUI() );
+            setUI( new BasicMergeToolBarUI() );
         }
         fireStateChanged();
     }
 
-    public DiffLineOverviewUI getUI() {
-        return ( DiffLineOverviewUI ) ui;
+    public MergeToolBarUI getUI() {
+        return ( MergeToolBarUI ) ui;
     }
 
     public String getUIClassID() {
@@ -116,52 +98,11 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
         }
     }
 
-    public DualDiff getDualDiff() {
-        return dualDiff;
-    }
-
     /**
      * @return parent frame
      */
     public View getView() {
         return view;
-    }
-
-    public void setModel( DiffLineModel model ) {
-        diffLineModel = model;
-        fireStateChanged();
-    }
-
-    public DiffLineModel getModel() {
-        return diffLineModel;
-    }
-
-    @Override
-    public Color getBackground() {
-        if (dualDiff != null) {
-            return dualDiff.getBackground();
-        }
-        else {
-            return view.getEditPane().getTextArea().getPainter().getBackground();
-        }
-    }
-
-    @Override
-    public Font getFont() {
-        if (dualDiff != null) {
-            return dualDiff.getFont();
-        }
-        else {
-            return view.getEditPane().getTextArea().getPainter().getFont();
-        }
-    }
-
-    public void clear() {
-        setModel(null);
-    }
-
-    public void reset() {
-        fireStateChanged();
     }
 
 }

@@ -21,4 +21,5 @@ package jdiff.component;
 
 public interface LineProcessor {
     public void processLines(String leftLine, String rightLine);
+    public void clear();
 }

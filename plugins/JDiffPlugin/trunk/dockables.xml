@@ -3,7 +3,13 @@
 
 <DOCKABLES>
     <DOCKABLE NAME="jdiff-lines">
-        (javax.swing.JComponent)(( jdiff.component.DiffLineOverview ) jdiff.DualDiff.getDualDiffFor( view ).getLineProcessor());
+        jdiff.DualDiff dualDiff = jdiff.DualDiff.getDualDiffFor(view);
+        if (dualDiff != null) {
+            return dualDiff.getDiffLineOverview();
+        }
+        else {
+            return new jdiff.component.DiffLineOverview(view);
+        }
     </DOCKABLE>
 </DOCKABLES>
 
