@@ -34,8 +34,6 @@ import java.io.StringWriter;
 import java.nio.*;
 
 import java.util.Hashtable;
-import java.util.HashSet;
-import java.util.Set;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -60,7 +58,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -109,8 +106,6 @@ public class DualDiff implements EBComponent {
 
     private Box box0;
 
-    private Box box1;
-
     private final ScrollHandler scrollHandler = new ScrollHandler();
 
     private DiffLineOverview diffLineOverview;
@@ -145,6 +140,10 @@ public class DualDiff implements EBComponent {
         return view;
     }
 
+    public Diff.Change getEdits() {
+        return edits;
+    }
+
     public void handleMessage( EBMessage message ) {
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
@@ -166,13 +165,13 @@ public class DualDiff implements EBComponent {
                 return ;
             }
             if ( epu.getWhat() == EditPaneUpdate.CREATED ) {
-                DualDiff.editPaneCreated( view, editPane );
+                DualDiff.editPaneCreated( view );
             }
             else if ( epu.getWhat() == EditPaneUpdate.DESTROYED ) {
                 DualDiff.editPaneDestroyed( view, editPane );
             }
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
-                DualDiff.editPaneBufferChanged( view, editPane );
+                DualDiff.editPaneBufferChanged( view );
             }
         }
     }
@@ -240,10 +239,6 @@ public class DualDiff implements EBComponent {
 
         if ( !buf0.isLoaded() || !buf1.isLoaded() ) {
             this.edits = null;
-
-            int lineCount0 = ( ( buf0.isLoaded() ) ? buf0.getLineCount() : 1 );
-            int lineCount1 = ( ( buf1.isLoaded() ) ? buf1.getLineCount() : 1 );
-
             this.diffOverview0 = new DiffLocalOverview( DualDiff.this );
             this.diffOverview1 = new DiffGlobalPhysicalOverview( DualDiff.this );
         }
@@ -253,10 +248,6 @@ public class DualDiff implements EBComponent {
 
             Diff d = new Diff( fileLines0, fileLines1 );
             this.edits = d.diff_2( false );
-
-            int lineCount0 = fileLines0.length;
-            int lineCount1 = fileLines1.length;
-
             this.diffOverview0 = new DiffLocalOverview( DualDiff.this );
             this.diffOverview1 = new DiffGlobalPhysicalOverview( DualDiff.this );
         }
@@ -287,15 +278,6 @@ public class DualDiff implements EBComponent {
         diffLineOverview.clear();
         EditPane editPane = view.getEditPane();
         final int caret = editPane.getTextArea().getCaretPosition();
-        this.scrollHandler.caretUpdate( new CaretEvent( view.getEditPane() ) {
-                    public int getDot() {
-                        return caret;
-                    }
-                    public int getMark() {
-                        return caret;
-                    }
-                }
-                                      );
         this.diffOverview0.synchroScrollRight();
         this.diffOverview1.repaint();
     }
@@ -356,21 +338,17 @@ public class DualDiff implements EBComponent {
     private void addHandlers() {
         this.textArea0.addScrollListener( this.scrollHandler );
         this.textArea0.addFocusListener( this.scrollHandler );
-        this.textArea0.addCaretListener( this.scrollHandler );
 
         this.textArea1.addScrollListener( this.scrollHandler );
         this.textArea1.addFocusListener( this.scrollHandler );
-        this.textArea1.addCaretListener( this.scrollHandler );
     }
 
     private void removeHandlers() {
         this.textArea0.removeScrollListener( this.scrollHandler );
         this.textArea0.removeFocusListener( this.scrollHandler );
-        this.textArea0.removeCaretListener( this.scrollHandler );
 
         this.textArea1.removeScrollListener( this.scrollHandler );
         this.textArea1.removeFocusListener( this.scrollHandler );
-        this.textArea1.removeCaretListener( this.scrollHandler );
     }
 
     private FileLine[] getFileLines( Buffer buffer ) {
@@ -493,7 +471,7 @@ public class DualDiff implements EBComponent {
         return ( dualDiffs.get( view ) != null );
     }
 
-    private static void editPaneCreated( View view, EditPane editPane ) {
+    private static void editPaneCreated( View view ) {
         DualDiff.removeFrom( view );
     }
 
@@ -502,7 +480,7 @@ public class DualDiff implements EBComponent {
         DiffHighlight.removeHighlightFrom( editPane );
     }
 
-    private static void editPaneBufferChanged( View view, EditPane editPane ) {
+    private static void editPaneBufferChanged( View view ) {
         DualDiff.refreshFor( view );
     }
 
@@ -535,7 +513,9 @@ public class DualDiff implements EBComponent {
                                 if ( dwm.getDockableWindow( "jdiff-lines" ) == null ) {
                                     dwm.addDockableWindow( "jdiff-lines" );
                                 }
+                                /*  TODO: make this a property setting?
                                 dwm.showDockableWindow( "jdiff-lines" );
+                                */
                             }
                         }
 
@@ -954,8 +934,7 @@ public class DualDiff implements EBComponent {
         }
     }
 
-    private class ScrollHandler implements ScrollListener, CaretListener, FocusListener,
-        MouseListener {
+    private class ScrollHandler implements ScrollListener, FocusListener, MouseListener {
         private Runnable syncWithRightVert = new Runnable() {
                     public void run() {
                         DualDiff.this.diffOverview0.repaint();
@@ -988,75 +967,6 @@ public class DualDiff implements EBComponent {
                     }
                 };
 
-        LineProcessorRunner runner = new LineProcessorRunner();
-        public void caretUpdate( final CaretEvent e ) {
-            if ( diffLineOverview != null ) {
-                JEditTextArea source = ( JEditTextArea ) e.getSource();
-                int caretLine = source.getCaretLine();
-                runner.setSource( source );
-                SwingUtilities.invokeLater( runner );
-            }
-        }
-
-        class LineProcessorRunner implements Runnable {
-            JEditTextArea source = null;
-            public void setSource( JEditTextArea source ) {
-                this.source = source;
-            }
-            public void run() {
-                if ( source == null ) {
-                    return ;
-                }
-                Diff.Change hunk = DualDiff.this.edits;
-                String leftLine = "";
-                String rightLine = "";
-                if ( source == DualDiff.this.textArea0 ) {
-                    int caretLine = DualDiff.this.textArea0.getCaretLine();
-                    for ( ; hunk != null; hunk = hunk.link ) {
-                        if ( caretLine >= hunk.line0 && caretLine <= hunk.line0 + hunk.deleted ) {
-                            // in a hunk
-                            if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                                leftLine = "";
-                            }
-                            else {
-                                leftLine = DualDiff.this.textArea0.getLineText( caretLine );
-                            }
-                            int offset = caretLine - hunk.line0;
-                            if ( offset < hunk.inserted ) {
-                                rightLine = DualDiff.this.textArea1.getLineText( hunk.line1 + offset );
-                            }
-                            else {
-                                rightLine = "";
-                            }
-                            break ;
-                        }
-                    }
-                }
-                else {
-                    int caretLine = DualDiff.this.textArea1.getCaretLine();
-                    for ( ; hunk != null; hunk = hunk.link ) {
-                        if ( caretLine >= hunk.line1 && caretLine <= hunk.line1 + hunk.inserted ) {
-                            // in a hunk
-                            if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                                rightLine = "";
-                            }
-                            else {
-                                rightLine = DualDiff.this.textArea1.getLineText( caretLine );
-                            }
-                            int offset = caretLine - hunk.line1;
-                            if ( offset < hunk.deleted ) {
-                                leftLine = DualDiff.this.textArea0.getLineText( hunk.line0 + offset );
-                            }
-                            else {
-                                leftLine = "";
-                            }
-                            break ;
-                        }
-                    }
-                }
-                DualDiff.this.diffLineOverview.processLines( leftLine, rightLine );
-            }
-        }
 
         public void scrolledHorizontally( TextArea textArea ) {
             // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
@@ -1082,9 +992,11 @@ public class DualDiff implements EBComponent {
 
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
+            /* TODO: make this a property setting?
             if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {
                 view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
             }
+            */
         }
 
         public void focusLost( FocusEvent e ) {

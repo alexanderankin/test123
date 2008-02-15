@@ -23,9 +23,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 import javax.swing.plaf.ComponentUI;
 
 import org.gjt.sp.jedit.Buffer;
@@ -33,10 +31,12 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.*;
+
 import jdiff.DualDiff;
 import jdiff.component.*;
 
-public class BasicMergeToolBarUI extends MergeToolBarUI {
+public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListener  {
 
     private MergeToolBar toolbar;
     private View view;
@@ -98,17 +98,24 @@ public class BasicMergeToolBarUI extends MergeToolBarUI {
      * Create and install any sub-components.
      */
     public void installComponents() {
-        JPanel button_panel = new JPanel();
-
         // create buttons
-        diff = new JButton( new ImageIcon( BasicMergeToolBarUI.class.getClassLoader().getResource( "jdiff/component/resources/delta.png" ) ) );
-        next = new JButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
-        prev = new JButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
-        move_right = new JButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
-        move_left = new JButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
-        unsplit = new JButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
-        swap = new JButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
-        refresh = new JButton( GUIUtilities.loadIcon( "Reload.png" ) );
+        diff = new SquareButton( new ImageIcon( BasicMergeToolBarUI.class.getClassLoader().getResource( "jdiff/component/resources/delta.png" ) ) );
+        next = new SquareButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
+        prev = new SquareButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
+        move_right = new SquareButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
+        move_left = new SquareButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
+        unsplit = new SquareButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
+        swap = new SquareButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
+        refresh = new SquareButton( GUIUtilities.loadIcon( "Reload.png" ) );
+
+        diff.setEnabled( true );
+        next.setEnabled( false );
+        prev.setEnabled( false );
+        move_right.setEnabled( false );
+        move_left.setEnabled( false );
+        unsplit.setEnabled( false );
+        swap.setEnabled( false );
+        refresh.setEnabled( false );
 
         // tooltips
         diff.setToolTipText( jEdit.getProperty( "jdiff.diff-btn.label", "Diff" ) );
@@ -120,6 +127,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI {
         move_left.setToolTipText( jEdit.getProperty( "jdiff.move-left.label", "Move diff to left" ) );
         refresh.setToolTipText( jEdit.getProperty( "jdiff.refresh.label", "Refresh diff" ) );
 
+        // install
         toolbar.add( diff );
         toolbar.add( unsplit );
         toolbar.add( next );
@@ -127,13 +135,15 @@ public class BasicMergeToolBarUI extends MergeToolBarUI {
         toolbar.add( move_left );
         toolbar.add( prev );
         toolbar.add( swap );
-        toolbar.add( refresh);
+        toolbar.add( refresh );
     }
 
     /**
      * Install any action listeners, mouse listeners, etc.
      */
     public void installListeners() {
+        //EditBus.addToBus( this );
+        toolbar.addChangeListener(this);
 
         move_left.addActionListener(
             new ActionListener() {
@@ -239,20 +249,43 @@ public class BasicMergeToolBarUI extends MergeToolBarUI {
     /**
      * Tear down and clean up.
      */
-    public void uninstallComponents() {
-    }
+    public void uninstallComponents() {}
 
     /**
      * Tear down and clean up.
      */
     public void uninstallListeners() {
+        toolbar.removeChangeListener(this);
     }
 
     /**
      * @return a BorderLayout
      */
     protected LayoutManager createLayoutManager() {
-        return new GridLayout(1, 8, 2, 2);
+        return new FlowLayout( FlowLayout.CENTER );
+    }
+
+    public void stateChanged(ChangeEvent event) {
+        adjustButtons();
+    }
+
+    private void adjustButtons( ) {
+        // adjust buttons
+        SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
+                        diff.setEnabled( !enabled );
+                        next.setEnabled( enabled );
+                        prev.setEnabled( enabled );
+                        move_right.setEnabled( enabled );
+                        move_left.setEnabled( enabled );
+                        unsplit.setEnabled( enabled );
+                        swap.setEnabled( enabled );
+                        refresh.setEnabled( enabled );
+                        BasicMergeToolBarUI.this.toolbar.repaint();
+                    }
+                }
+                                  );
     }
 
 }
