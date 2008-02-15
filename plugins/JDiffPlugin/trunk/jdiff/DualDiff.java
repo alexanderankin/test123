@@ -513,9 +513,9 @@ public class DualDiff implements EBComponent {
                                 if ( dwm.getDockableWindow( "jdiff-lines" ) == null ) {
                                     dwm.addDockableWindow( "jdiff-lines" );
                                 }
-                                /*  TODO: make this a property setting?
-                                dwm.showDockableWindow( "jdiff-lines" );
-                                */
+                                if ( jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                                    dwm.showDockableWindow( "jdiff-lines" );
+                                }
                             }
                         }
 
@@ -930,7 +930,7 @@ public class DualDiff implements EBComponent {
 
             dualDiffs.remove( view );
 
-            dualDiff.getDiffLineOverview().setModel(null);
+            dualDiff.getDiffLineOverview().setModel( null );
         }
     }
 
@@ -992,11 +992,11 @@ public class DualDiff implements EBComponent {
 
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
-            /* TODO: make this a property setting?
-            if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {
-                view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+            if ( jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {
+                    view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+                }
             }
-            */
         }
 
         public void focusLost( FocusEvent e ) {

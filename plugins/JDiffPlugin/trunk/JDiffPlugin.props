@@ -50,6 +50,7 @@ jdiff.toggle-ignore-case.label=Ignore case
 jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
 jdiff.toggle-ignore-amount-whitespace.label=Ignore amount of whitespace
 jdiff.toggle-ignore-all-whitespace.label=Ignore all whitespace
+jdiff.auto-show-dockable.label=Automatically show dockable on diff
 jdiff.diff-normal-output.label=Normal Diff Output
 
 jdiff.ignore-case=false
@@ -83,10 +84,13 @@ options.jdiff.ignore-case=Ignore case
 options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
 options.jdiff.ignore-all-whitespace=Ignore all whitespace
+options.jdiff.auto-show-dockable=Automatically show dockable on diff
 
+## no longer used:
 options.jdiff.overview-display=Global overview display:
 options.jdiff.physical-overview=Physical overview
 options.jdiff.virtual-overview=Virtual overview
+##
 
 options.jdiff.overview=Overview colors:
 options.jdiff.overview-changed-color=Changed lines color:\ 

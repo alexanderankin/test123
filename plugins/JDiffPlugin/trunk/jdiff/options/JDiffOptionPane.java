@@ -35,10 +35,7 @@ public class JDiffOptionPane extends AbstractOptionPane
     private JCheckBox trimWhitespace;
     private JCheckBox ignoreAmountOfWhitespace;
     private JCheckBox ignoreAllWhitespace;
-
-    private JRadioButton virtualOverview;
-    private JRadioButton physicalOverview;
-
+    private JCheckBox autoShowDockable;
 
     public JDiffOptionPane() {
         super("jdiff-general");
@@ -50,33 +47,13 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.trimWhitespace    = this.createCheckBox("jdiff.trim-whitespace", false);
         this.ignoreAmountOfWhitespace  = this.createCheckBox("jdiff.ignore-amount-whitespace", false);
         this.ignoreAllWhitespace  = this.createCheckBox("jdiff.ignore-all-whitespace", false);
-
-        this.virtualOverview  = new JRadioButton(jEdit.getProperty(
-            "options.jdiff.virtual-overview"
-        ));
-        this.physicalOverview = new JRadioButton(jEdit.getProperty(
-            "options.jdiff.physical-overview"
-        ));
-
-        ButtonGroup overviewGroup = new ButtonGroup();
-        overviewGroup.add(this.virtualOverview);
-        overviewGroup.add(this.physicalOverview);
-        boolean isVirtual = (
-            jEdit.getBooleanProperty("jdiff.global-virtual-overview", true)
-        );
-        this.virtualOverview.setSelected(isVirtual);
-        this.physicalOverview.setSelected(!isVirtual);
+        this.autoShowDockable = this.createCheckBox("jdiff.auto-show-dockable", false);
 
         addComponent(this.ignoreCase);
         addComponent(this.trimWhitespace);
         addComponent(this.ignoreAmountOfWhitespace);
         addComponent(this.ignoreAllWhitespace);
-
-        addComponent(new JLabel(jEdit.getProperty(
-            "options.jdiff.overview-display"
-        )));
-        addComponent(this.virtualOverview);
-        addComponent(this.physicalOverview);
+        addComponent(this.autoShowDockable);
     }
 
 
@@ -93,9 +70,14 @@ public class JDiffOptionPane extends AbstractOptionPane
         jEdit.setBooleanProperty("jdiff.ignore-all-whitespace",
             this.ignoreAllWhitespace.isSelected()
         );
+        jEdit.setBooleanProperty("jdiff.auto-show-dockable",
+            this.autoShowDockable.isSelected()
+        );
 
+        // virtual overview has been removed, it hasn't worked since jEdit 4.2,
+        // so make sure the property is false
         jEdit.setBooleanProperty("jdiff.global-virtual-overview",
-            this.virtualOverview.isSelected()
+            false
         );
     }
 
