@@ -28,6 +28,8 @@ import javax.swing.JRadioButton;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
+import jdiff.component.MergeToolBar;
+
 
 public class JDiffOptionPane extends AbstractOptionPane
 {
@@ -36,6 +38,10 @@ public class JDiffOptionPane extends AbstractOptionPane
     private JCheckBox ignoreAmountOfWhitespace;
     private JCheckBox ignoreAllWhitespace;
     private JCheckBox autoShowDockable;
+    private JRadioButton horizontal;
+    private JRadioButton vertical;
+    private JRadioButton compact;
+    private JCheckBox showLineDiff;
 
     public JDiffOptionPane() {
         super("jdiff-general");
@@ -43,42 +49,89 @@ public class JDiffOptionPane extends AbstractOptionPane
 
 
     public void _init() {
-        this.ignoreCase        = this.createCheckBox("jdiff.ignore-case", false);
-        this.trimWhitespace    = this.createCheckBox("jdiff.trim-whitespace", false);
-        this.ignoreAmountOfWhitespace  = this.createCheckBox("jdiff.ignore-amount-whitespace", false);
-        this.ignoreAllWhitespace  = this.createCheckBox("jdiff.ignore-all-whitespace", false);
-        this.autoShowDockable = this.createCheckBox("jdiff.auto-show-dockable", false);
+        ignoreCase        = createCheckBox("jdiff.ignore-case", false);
+        trimWhitespace    = createCheckBox("jdiff.trim-whitespace", false);
+        ignoreAmountOfWhitespace  = createCheckBox("jdiff.ignore-amount-whitespace", false);
+        ignoreAllWhitespace  = createCheckBox("jdiff.ignore-all-whitespace", false);
+        autoShowDockable = createCheckBox("jdiff.auto-show-dockable", false);
+        showLineDiff = createCheckBox("jdiff.show-line-diff", true );
 
-        addComponent(this.ignoreCase);
-        addComponent(this.trimWhitespace);
-        addComponent(this.ignoreAmountOfWhitespace);
-        addComponent(this.ignoreAllWhitespace);
-        addComponent(this.autoShowDockable);
+        int orientation = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+        horizontal = new JRadioButton(jEdit.getProperty("options.jdiff.toolbar-horizontal"));
+        vertical = new JRadioButton(jEdit.getProperty("options.jdiff.toolbar-vertical"));
+        compact = new JRadioButton(jEdit.getProperty("options.jdiff.toolbar-compact"));
+
+        ButtonGroup button_group = new ButtonGroup();
+        button_group.add(horizontal);
+        button_group.add(vertical);
+        button_group.add(compact);
+        switch(orientation) {
+        case MergeToolBar.VERTICAL:
+            horizontal.setSelected(false);
+            vertical.setSelected(true);
+            compact.setSelected(false);
+            break;
+        case MergeToolBar.COMPACT:
+            horizontal.setSelected(false);
+            vertical.setSelected(false);
+            compact.setSelected(true);
+            break;
+        default:
+            horizontal.setSelected(true);
+            vertical.setSelected(false);
+            compact.setSelected(false);
+            break;
+        }
+        JLabel orientation_label = new JLabel(jEdit.getProperty("options.toolbar-orientation.label", "Merge Toolbar Orientation:"));
+
+        addComponent(ignoreCase);
+        addComponent(trimWhitespace);
+        addComponent(ignoreAmountOfWhitespace);
+        addComponent(ignoreAllWhitespace);
+        addComponent(autoShowDockable);
+        addComponent(showLineDiff);
+        addComponent(orientation_label);
+        addComponent(horizontal);
+        addComponent(vertical);
+        addComponent(compact);
     }
 
 
     public void _save() {
         jEdit.setBooleanProperty("jdiff.ignore-case",
-            this.ignoreCase.isSelected()
+            ignoreCase.isSelected()
         );
         jEdit.setBooleanProperty("jdiff.trim-whitespace",
-            this.trimWhitespace.isSelected()
+            trimWhitespace.isSelected()
         );
         jEdit.setBooleanProperty("jdiff.ignore-amount-whitespace",
-            this.ignoreAmountOfWhitespace.isSelected()
+            ignoreAmountOfWhitespace.isSelected()
         );
         jEdit.setBooleanProperty("jdiff.ignore-all-whitespace",
-            this.ignoreAllWhitespace.isSelected()
+            ignoreAllWhitespace.isSelected()
         );
         jEdit.setBooleanProperty("jdiff.auto-show-dockable",
-            this.autoShowDockable.isSelected()
+            autoShowDockable.isSelected()
         );
+        jEdit.setBooleanProperty("jdiff.show-line-diff",
+            showLineDiff.isSelected()
+        );
+
+        if ( vertical.isSelected() ) {
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.VERTICAL);
+        }
+        else if ( compact.isSelected() ) {
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.COMPACT);
+        }
+        else{
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+
+        }
+
 
         // virtual overview has been removed, it hasn't worked since jEdit 4.2,
         // so make sure the property is false
-        jEdit.setBooleanProperty("jdiff.global-virtual-overview",
-            false
-        );
+        jEdit.setBooleanProperty("jdiff.global-virtual-overview", false);
     }
 
 

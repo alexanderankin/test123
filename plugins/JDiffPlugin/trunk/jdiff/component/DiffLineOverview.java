@@ -34,12 +34,17 @@ import jdiff.DualDiff;
 import jdiff.component.DiffLineModel;
 import jdiff.component.ui.*;
 
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.*;
 
 /**
  * Component to show the merge controls and line differences.
  */
-public class DiffLineOverview extends JComponent implements LineProcessor {
+public class DiffLineOverview extends JComponent implements LineProcessor, EBComponent {
 
     private static final String uiClassID = "DiffLineOverviewUI";
 
@@ -56,6 +61,7 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
         this.dualDiff = dualDiff;
         this.view = view;
         this.updateUI();
+        EditBus.addToBus(this);
     }
 
     public DiffLineOverview(View view) {
@@ -164,4 +170,9 @@ public class DiffLineOverview extends JComponent implements LineProcessor {
         fireStateChanged();
     }
 
+    public void handleMessage( EBMessage message ) {
+        if (message instanceof PropertiesChanged ) {
+            fireStateChanged();
+        }
+    }
 }

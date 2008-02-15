@@ -29,6 +29,7 @@ import javax.swing.event.ChangeListener;
 
 import jdiff.component.ui.*;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -45,6 +46,11 @@ public class MergeToolBar extends JComponent implements EBComponent {
     private static final String uiClassID = "MergeToolBarUI";
 
     private View view = null;
+
+    public static final int HORIZONTAL = 1;
+    public static final int VERTICAL = 2;
+    public static final int COMPACT = 3;
+    private int orientation = HORIZONTAL;
 
     private Set<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
@@ -120,6 +126,13 @@ public class MergeToolBar extends JComponent implements EBComponent {
         }
         else if ( message instanceof ViewUpdate ) {
             fireStateChanged();
+        }
+        else if (message instanceof PropertiesChanged ) {
+            int orient = jEdit.getIntegerProperty("jdiff.toolbar-orientation", orientation);
+            if ( orient != orientation ) {
+                orientation = orient;
+                fireStateChanged();
+            }
         }
     }
 }
