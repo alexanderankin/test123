@@ -9,7 +9,8 @@ plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge util
 # Dependencies
 plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
 plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.07.00
-plugin.jdiff.JDiffPlugin.activate=true
+plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.jdiff.JDiffPlugin.activate=defer
 
 # Menu
 plugin.jdiff.JDiffPlugin.menu=\
@@ -85,6 +86,11 @@ options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
 options.jdiff.ignore-all-whitespace=Ignore all whitespace
 options.jdiff.auto-show-dockable=Automatically show dockable on diff
+options.jdiff.show-line-diff=Show line diff in dockable
+options.jdiff.orientation.label=Merge Toolbar Orientation:
+options.jdiff.toolbar-horizontal=Horizontal
+options.jdiff.toolbar-vertical=Vertical
+options.jdiff.toolbar-compact=Compact
 
 ## no longer used:
 options.jdiff.overview-display=Global overview display:

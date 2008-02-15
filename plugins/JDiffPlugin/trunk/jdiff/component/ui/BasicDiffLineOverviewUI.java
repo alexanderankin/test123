@@ -89,16 +89,39 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
      * Create and install any sub-components.
      */
     public void installComponents() {
-        mergeToolBar = new MergeToolBar(diffLineOverview.getView());
-        diffLineOverview.add( mergeToolBar, BorderLayout.NORTH );
+        mergeToolBar = new MergeToolBar( diffLineOverview.getView() );
         lineRendererPane = new LineRendererPane( diffLineOverview.getView() );
-        diffLineOverview.add( lineRendererPane, BorderLayout.CENTER );
+        int orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
+        boolean show_line_diff = jEdit.getBooleanProperty( "jdiff.show-line-diff", true );
+        switch ( orientation ) {
+            case MergeToolBar.VERTICAL:
+                diffLineOverview.add( mergeToolBar, BorderLayout.NORTH );
+                if ( show_line_diff ) {
+                    diffLineOverview.add( lineRendererPane, BorderLayout.CENTER );
+                }
+                break;
+            case MergeToolBar.COMPACT:
+                diffLineOverview.add( mergeToolBar, BorderLayout.WEST );
+                if ( show_line_diff ) {
+                    diffLineOverview.add( lineRendererPane, BorderLayout.CENTER );
+                }
+                break;
+            default:
+                JPanel panel = new JPanel();
+                panel.add(mergeToolBar);
+                diffLineOverview.add( panel, BorderLayout.NORTH );
+                if ( show_line_diff ) {
+                    diffLineOverview.add( lineRendererPane, BorderLayout.CENTER );
+                }
+                break;
+        }
     }
 
     /**
      * Install any action listeners, mouse listeners, etc.
      */
     public void installListeners() {
+        diffLineOverview.addChangeListener(this);
     }
 
     /**
@@ -109,8 +132,6 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
         uninstallListeners();
         uninstallComponents();
         uninstallDefaults();
-
-        diffLineOverview = null;
     }
 
     /**
@@ -124,7 +145,6 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
     public void uninstallComponents() {
         diffLineOverview.remove( mergeToolBar );
         diffLineOverview.remove( lineRendererPane );
-        diffLineOverview = null;
     }
 
     /**
@@ -135,7 +155,8 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
     }
 
     public void stateChanged( ChangeEvent event ) {
-        // adjust buttons
+        uninstallComponents();
+        installComponents();
     }
 
     /**

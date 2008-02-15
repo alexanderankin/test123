@@ -36,7 +36,9 @@ import org.gjt.sp.jedit.msg.*;
 import jdiff.DualDiff;
 import jdiff.component.*;
 
-public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListener  {
+import ise.java.awt.KappaLayout;
+
+public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListener {
 
     private MergeToolBar toolbar;
     private View view;
@@ -48,6 +50,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     private JButton swap;
     private JButton diff;
     private JButton refresh;
+    private int orientation;
 
     /**
      * Required by super class.
@@ -81,6 +84,8 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     public void installUI( JComponent c ) {
         toolbar = ( MergeToolBar ) c;
         view = toolbar.getView();
+        orientation = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+
         installDefaults();
         installComponents();
         installListeners();
@@ -127,15 +132,49 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         move_left.setToolTipText( jEdit.getProperty( "jdiff.move-left.label", "Move diff to left" ) );
         refresh.setToolTipText( jEdit.getProperty( "jdiff.refresh.label", "Refresh diff" ) );
 
-        // install
-        toolbar.add( diff );
-        toolbar.add( unsplit );
-        toolbar.add( next );
-        toolbar.add( move_right );
-        toolbar.add( move_left );
-        toolbar.add( prev );
-        toolbar.add( swap );
-        toolbar.add( refresh );
+        installButtons();
+    }
+
+    private void installButtons() {
+        int orient = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+        //if ( orient != orientation ) {
+            orientation = orient;
+            toolbar.removeAll();
+            toolbar.setLayout( createLayoutManager() );
+            switch ( orient ) {
+                case MergeToolBar.VERTICAL:
+                    toolbar.add( "0, 0", diff );
+                    toolbar.add( "0, 1", unsplit );
+                    toolbar.add( "0, 2", next );
+                    toolbar.add( "0, 3", move_right );
+                    toolbar.add( "0, 4", move_left );
+                    toolbar.add( "0, 5", prev );
+                    toolbar.add( "0, 6", swap );
+                    toolbar.add( "0, 7", refresh );
+                    break;
+                case MergeToolBar.COMPACT:
+                    toolbar.add( "0, 0", diff );
+                    toolbar.add( "1, 0", refresh );
+                    toolbar.add( "0, 1", unsplit );
+                    toolbar.add( "1, 1", swap );
+                    toolbar.add( "0, 2", move_right );
+                    toolbar.add( "1, 2", move_left );
+                    toolbar.add( "0, 3", next );
+                    toolbar.add( "1, 3", prev );
+                    break;
+                default:
+                    toolbar.add( "0, 0", diff );
+                    toolbar.add( "1, 0", unsplit );
+                    toolbar.add( "2, 0", next );
+                    toolbar.add( "3, 0", move_right );
+                    toolbar.add( "4, 0", move_left );
+                    toolbar.add( "5, 0", prev );
+                    toolbar.add( "6, 0", swap );
+                    toolbar.add( "7, 0", refresh );
+                    break;
+            }
+            toolbar.repaint();
+        //}
     }
 
     /**
@@ -143,7 +182,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
      */
     public void installListeners() {
         //EditBus.addToBus( this );
-        toolbar.addChangeListener(this);
+        toolbar.addChangeListener( this );
 
         move_left.addActionListener(
             new ActionListener() {
@@ -255,17 +294,18 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
      * Tear down and clean up.
      */
     public void uninstallListeners() {
-        toolbar.removeChangeListener(this);
+        toolbar.removeChangeListener( this );
     }
 
     /**
      * @return a BorderLayout
      */
     protected LayoutManager createLayoutManager() {
-        return new FlowLayout( FlowLayout.CENTER );
+        return new KappaLayout();
     }
 
-    public void stateChanged(ChangeEvent event) {
+    public void stateChanged( ChangeEvent event ) {
+        installButtons();
         adjustButtons();
     }
 
