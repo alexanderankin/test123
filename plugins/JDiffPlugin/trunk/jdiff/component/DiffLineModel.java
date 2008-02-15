@@ -43,6 +43,10 @@ public class DiffLineModel {
         prepData();
     }
 
+    public String toString() {
+        return new StringBuffer().append("DiffLineModel[left[").append(leftLine).append("], right[").append(rightLine).append("]]").toString();
+    }
+
     public List<Character> getLeftCharacters() {
         return leftCharacters;
     }
