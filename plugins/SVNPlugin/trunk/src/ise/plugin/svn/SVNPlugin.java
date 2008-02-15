@@ -103,6 +103,9 @@ public class SVNPlugin extends EBPlugin {
     }
 
     private static void addContextMenu( View view ) {
+        if ( view == null ) {
+            return ;
+        }
         removeContextMenu( view );
         TextAreaContextMenu context_menu = createContextMenu( view );
         JPopupMenu menu = view.getTextArea().getRightClickPopup();
@@ -113,6 +116,9 @@ public class SVNPlugin extends EBPlugin {
     }
 
     private static void removeContextMenu( final View view ) {
+        if ( view == null ) {
+            return ;
+        }
         JPopupMenu popup = GUIUtilities.loadPopupMenu( "view.context" );
         JMenuItem customize = new JMenuItem( jEdit.getProperty( "view.context.customize" ) );
         customize.addActionListener( new ActionListener() {
@@ -123,7 +129,9 @@ public class SVNPlugin extends EBPlugin {
                                    );
         popup.addSeparator();
         popup.add( customize );
-        view.getTextArea().setRightClickPopup( popup );
+        if ( view.getTextArea() != null ) {
+            view.getTextArea().setRightClickPopup( popup );
+        }
     }
 
 }
