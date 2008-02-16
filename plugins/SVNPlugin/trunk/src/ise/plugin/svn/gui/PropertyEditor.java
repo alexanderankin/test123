@@ -29,26 +29,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.FileUtilities;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 
 /**
@@ -130,7 +126,8 @@ public class PropertyEditor extends JDialog {
         if ( value != null ) {
             text_value.setText( value );
         }
-        final JTextField file_value = new JTextField( 30 );
+        final HistoryTextField file_value = new HistoryTextField( PATH );
+        file_value.setColumns(30);
         file_value.setEnabled( false );
         final JButton browse_btn = new JButton( "Browse..." );
         browse_btn.setEnabled( false );

@@ -32,47 +32,39 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PasswordHandlerException;
-import org.tmatesoft.svn.core.wc.SVNInfo;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 /**
  * Dialog for obtaining/editing the url and credentials to browse a repository.
  */
 public class AddRepositoryDialog extends JDialog {
 
-    private View view = null;
     private RepositoryData data = null;
-    private JTextField name = null;
-    private JTextField url = null;
-    private JTextField username = null;
+    private HistoryTextField name = null;
+    private HistoryTextField url = null;
+    private HistoryTextField username = null;
     private JPasswordField password = null;
 
     private boolean canceled = false;
 
     public AddRepositoryDialog( View view ) {
         super( ( JFrame ) view, "Add Repository Location", true );
-        this.view = view;
         _init();
     }
 
     public AddRepositoryDialog( View view, RepositoryData data ) {
         super( ( JFrame ) view, "Edit Repository Location", true );
-        this.view = view;
         this.data = data;
         _init();
     }
@@ -85,17 +77,27 @@ public class AddRepositoryDialog extends JDialog {
         // name field
         JLabel name_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "name.label" ) );
         String name_value = data != null && data.getName() != null ? data.getName() : "";
-        name = new JTextField( name_value, 30 );
+        name = new HistoryTextField( REPOSITORY_NAME );
+        name.setText(name_value);
+        name.setColumns(30);
+
+        //name = new JTextField( name_value, 30 );
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
         String url_value = data != null ? data.getURL() : "";
-        url = new JTextField( url_value, 30 );
+        url = new HistoryTextField(URL);
+        url.setText(url_value);
+        url.setColumns(30);
+        //url = new JTextField( url_value, 30 );
 
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
         String username_value = data != null && data.getUsername() != null ? data.getUsername() : "";
-        username = new JTextField( username_value, 30 );
+        username = new HistoryTextField(USERNAME);
+        username.setText(username_value);
+        username.setColumns(30);
+        //username = new JTextField( username_value, 30 );
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
@@ -106,7 +108,7 @@ public class AddRepositoryDialog extends JDialog {
                 PasswordHandler ph = new PasswordHandler();
                 password_value = ph.decrypt( password_value );
             }
-            catch ( Exception e ) {
+            catch ( PasswordHandlerException e ) {
                 password_value = "";
             }
         }

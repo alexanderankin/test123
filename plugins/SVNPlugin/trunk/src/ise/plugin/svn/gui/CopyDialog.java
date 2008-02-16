@@ -41,6 +41,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import ise.java.awt.*;
@@ -48,6 +49,7 @@ import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -151,7 +153,9 @@ public class CopyDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( "To this location:" );
-        path = new JTextField( defaultLocalDestination , 30 );
+        path = new HistoryTextField(PATH);
+        path.setText( defaultLocalDestination );
+        path.setColumns( 30 );
         JButton browse_local_btn = new JButton( "Browse Local..." );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {

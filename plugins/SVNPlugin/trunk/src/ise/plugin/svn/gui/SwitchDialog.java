@@ -29,26 +29,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.io.File;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.*;
-import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
-import ise.plugin.svn.gui.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -57,10 +51,7 @@ public class SwitchDialog extends JDialog {
     // instance fields
     private View view = null;
     private String path = null;
-    private TableModel fileTableModel = null;
-    private JCheckBox recursive_cb = null;
-    private RevisionSelectionPanel revision_panel = null;
-    private JTextField from = null;
+    private HistoryTextField from = null;
 
     private SVNURL from_url  = null;
     private SVNRevision revision = SVNRevision.HEAD;
@@ -113,7 +104,8 @@ public class SwitchDialog extends JDialog {
 
         // source for switch
         JLabel to_replace_label = new JLabel( "Replace " + (recursive ? "the files in this directory:" : "this file:") );
-        JTextField to_replace_file = new JTextField(path);
+        HistoryTextField to_replace_file = new HistoryTextField(PATH);
+        to_replace_file.setText(path);
         to_replace_file.setEditable(false);
         to_replace_file.setBackground(Color.WHITE);
 
@@ -131,7 +123,9 @@ public class SwitchDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( "With file(s) from this location:" );
-        from = new JTextField( "" , 30 );
+        from = new HistoryTextField( PATH );
+        from.setText("");
+        from.setColumns( 30 );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
             new ActionListener() {

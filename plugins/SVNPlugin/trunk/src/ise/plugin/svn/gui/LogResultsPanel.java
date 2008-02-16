@@ -98,6 +98,9 @@ public class LogResultsPanel extends JPanel {
 
             // sort the entries
             List<SVNLogEntry> entries = me.getValue();
+            if (entries == null) {
+                continue;
+            }
             Collections.sort( entries, new EntryComparator() );
 
             // put the results data into an array to pass to a JTable. Columns

@@ -30,7 +30,6 @@ package ise.plugin.svn.gui;
 
 // imports
 import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.io.File;
 import java.util.*;
 import java.awt.event.*;
@@ -38,16 +37,16 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.*;
-import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -57,7 +56,7 @@ public class MoveDialog extends JDialog {
     private View view = null;
     private List<File> toCopy = null;
     private List<String> urlsToCopy = null;
-    private JTextField path = null;
+    private HistoryTextField path = null;
     private TableModel fileTableModel = null;
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
@@ -150,7 +149,9 @@ public class MoveDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( "To this location:" );
-        path = new JTextField( defaultLocalDestination , 30 );
+        path = new HistoryTextField(PATH);
+        path.setText( defaultLocalDestination );
+        path.setColumns( 30 );
         JButton browse_local_btn = new JButton( "Browse Local..." );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {

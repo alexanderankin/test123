@@ -29,11 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.io.PrintStream;
 import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
@@ -44,6 +44,7 @@ import ise.plugin.svn.library.swingworker.SwingWorker;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.io.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
@@ -54,9 +55,9 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 public class PVSVNOptionPane extends AbstractOptionPane {
 
     private JLabel url_label;
-    private JTextField url;
+    private HistoryTextField url;
     private JLabel username_label;
-    private JTextField username;
+    private HistoryTextField username;
     private JLabel password_label;
     private JPasswordField password;
 
@@ -71,11 +72,15 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         // url field
         url_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "url.label" ) );
-        url = new JTextField( jEdit.getProperty( PVHelper.PREFIX + project_name + ".url" ), 30 );
+        url = new HistoryTextField(URL);
+        url.setText( jEdit.getProperty( PVHelper.PREFIX + project_name + ".url" ) );
+        url.setColumns( 30 );
 
         // username field
         username_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "username.label" ) );
-        username = new JTextField( jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" ), 30 );
+        username = new HistoryTextField(USERNAME);
+        username.setText( jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" ) );
+        username.setColumns( 30 );
 
         // password field
         password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
@@ -138,7 +143,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 pwd = ph.encrypt( pwd );
             }
         }
-        catch ( Exception e ) {
+        catch ( PasswordHandlerException e ) {
             e.printStackTrace();
         }
         jEdit.setProperty(
