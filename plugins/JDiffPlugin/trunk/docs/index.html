@@ -4,7 +4,7 @@
 </head>
 
 <body>
-    <h2>JDiff plugin</h2>
+    <h2>JDiff Plugin @@build.num@@</h2>
 
     <p>
     Authors: André Kaplan, Mark Wickens, Dale Anson
@@ -53,12 +53,11 @@
     <h3>Usage</h3>
 
     <p>The simplest method is to open the Dual Diff Dialog
-    (<guimenu>Plugins</guimenu>&gt;
-     <guisubmenu>JDiff</guisubmenu>&gt;
-     <b>Show dual diff dialog</b>)
-    and choose the files to compare. But you can also:
+    (Plugins -&gt; JDiff -&gt; <b>Show dual diff dialog</b>)
+    and choose the files to compare.
     </p>
-
+    <p>
+    But you can also:<br>
     <ol>
         <li><p>Split your view in two (vertically)</p></li>
 
@@ -75,6 +74,15 @@
             <b>Dual Diff</b> </p>
         </li>
     </ol>
+    </p>
+
+    <p>
+    Or if you have JDiff docked:<br>
+    <ol>
+      <li>Open the dockable.</li>
+      <li>Click the 'Diff' button: <br><img src="delta.png"></img></li>
+    </ol>
+    </p>
 
     <p>Figure 1 shows the result</p>
 
@@ -147,10 +155,11 @@
 
         <h3>Merge controls</h3>
         <p>
-        The merge control has 6 buttons.  From left to right:
+        The merge control has 8 buttons.  From left to right in horizontal mode:
         </p>
         <p>
         <ol>
+        <li>Start a diff.</li>
         <li>Unsplit the view, which ends the diff session.</li>
         <li>Move to next diff.</li>
         <li>Move current diff to right.  This replaces the diff on the right
@@ -160,7 +169,11 @@
         <li>Move to previous diff.</li>
         <li>Swap text areas, that is, put the file that was on the left on
         the right, and put the file that was on the right on the left.</li>
+        <li>Refresh the diff.</li>
         </ol>
+        </p>
+        <p>
+        The merge controls can also be displayed vertically or in a compact form, and with or without the line overview.  The vertical display is convenient for the left or right docking areas.  The horizontal layout works well in the top or bottom docking areas.  The compact layout uses less vertical space in the top or bottom docking areas when the line overview is also displayed.
         </p>
 
 <hr>
@@ -242,16 +255,21 @@
             </p></li>
         </ul>
 
-        <h3>Global overview display</h3>
-
+        <h3>Control layout</h3>
+        <p>
+        Automatically display dockable on diff: When starting a new diff from the plugin menu, if on, this setting will cause the diff dockable to be displayed immediately so the merge controls are quickly accessible.
+        </p>
+        <p>
+        Show line diffs in dockable:  Toggles display of the line diff in the dockable.  Turning this off will reduce the amount of screen space the dockable occupies.
+        </p>
+        <p>
+        Merge control layout<br>
         <ul>
-            <li><p>Virtual overview: uses the virtual representation of buffers for its display </p>
-            </li>
-
-            <li><p>Physical overview: uses the physical representation of buffers for its display </p>
-            </li>
+        <li>Horizontal: default, merge control buttons in a single horizontal line.  Best used docked at top or bottom.</li>
+        <li>Vertical: merge controls in a single vertical line. Best used docked at the left or right. Not a good choice when the line overview is also on.</li>
+        <li>Compact: merge controls in 2 columns of 4 buttons.  Occupies smallest amount of screen space when used with the line overview.</li>
         </ul>
-
+        </p>
         <h3>Overview colors</h3>
 
         <p>You can configure the colors of:</p>
@@ -321,7 +339,8 @@
     <h3>History</h3>
 
     <ul>
-        <li><p> Version 1.7. New Line Diff Dockable Added merge functionality, added mouse listener to global overview. (Dale Anson) </p>
+        <li><p> Version 1.8. Bug fixes, added "Diff" and "Refresh" buttons to merge controls, major code refactoring to clean up the various painting issues.
+        <li><p> Version 1.7. Added a dockable to display line diff and merge controls. Added merge functionality, added mouse listener to global overview. (Dale Anson) </p>
         </li>
 
         <li><p> Version 1.5.2. Fixes to ignore whitespace options (1522563 - aconnor78) </p></li>

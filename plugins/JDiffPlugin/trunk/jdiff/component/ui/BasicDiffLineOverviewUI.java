@@ -115,6 +115,7 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
                 }
                 break;
         }
+        diffLineOverview.repaint();
     }
 
     /**
@@ -137,14 +138,14 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
     /**
      * Tear down and clean up.
      */
-    public void uninstallDefaults() {}
+    public void uninstallDefaults() {
+    }
 
     /**
      * Tear down and clean up.
      */
     public void uninstallComponents() {
-        diffLineOverview.remove( mergeToolBar );
-        diffLineOverview.remove( lineRendererPane );
+        diffLineOverview.removeAll( );
     }
 
     /**
@@ -155,8 +156,8 @@ public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements Chang
     }
 
     public void stateChanged( ChangeEvent event ) {
-        uninstallComponents();
-        installComponents();
+        uninstallUI(diffLineOverview);
+        installUI(diffLineOverview);
     }
 
     /**

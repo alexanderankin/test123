@@ -33,7 +33,7 @@ import java.io.StringWriter;
 
 import java.nio.*;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -78,7 +78,7 @@ public class DualDiff implements EBComponent {
     private static boolean ignoreAllWhitespaceDefault = jEdit.getBooleanProperty(
                 "jdiff.ignore-all-whitespace", false );
 
-    private static Hashtable dualDiffs = new Hashtable();
+    private static HashMap<View, DualDiff> dualDiffs = new HashMap<View, DualDiff>();
 
     private boolean ignoreCase;
 
