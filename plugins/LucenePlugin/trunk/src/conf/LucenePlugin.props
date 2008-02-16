@@ -5,4 +5,15 @@ plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.author=Eric Berry
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.docs=/docs/lucenePlugin.html
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.depend.0=jedit 04.03.12.00
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.jars=lucene.jar
-
+plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.menu=luceneplugin.menu \
+ - \
+ luceneplugin.actions.findfiles \
+ luceneplugin.actions.search \
+ - \
+ luceneplugin.actions.refresh
+ 
+luceneplugin.menu.label=Show Options
+luceneplugin.actions.findfiles.label=Find Files
+luceneplugin.actions.search.label=Search Files
+luceneplugin.actions.refresh.label=Refresh Index
+luceneplugin.dockables.findfiles.title=Find Files
