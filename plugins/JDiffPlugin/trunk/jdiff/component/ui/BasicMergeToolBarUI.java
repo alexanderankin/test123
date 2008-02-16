@@ -84,7 +84,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     public void installUI( JComponent c ) {
         toolbar = ( MergeToolBar ) c;
         view = toolbar.getView();
-        orientation = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+        orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
 
         installDefaults();
         installComponents();
@@ -136,52 +136,49 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     }
 
     private void installButtons() {
-        int orient = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
-        //if ( orient != orientation ) {
-            orientation = orient;
-            toolbar.removeAll();
-            toolbar.setLayout( createLayoutManager() );
-            switch ( orient ) {
-                case MergeToolBar.VERTICAL:
-                    toolbar.add( "0, 0", diff );
-                    toolbar.add( "0, 1", unsplit );
-                    toolbar.add( "0, 2", next );
-                    toolbar.add( "0, 3", move_right );
-                    toolbar.add( "0, 4", move_left );
-                    toolbar.add( "0, 5", prev );
-                    toolbar.add( "0, 6", swap );
-                    toolbar.add( "0, 7", refresh );
-                    break;
-                case MergeToolBar.COMPACT:
-                    toolbar.add( "0, 0", diff );
-                    toolbar.add( "1, 0", refresh );
-                    toolbar.add( "0, 1", unsplit );
-                    toolbar.add( "1, 1", swap );
-                    toolbar.add( "0, 2", move_right );
-                    toolbar.add( "1, 2", move_left );
-                    toolbar.add( "0, 3", next );
-                    toolbar.add( "1, 3", prev );
-                    break;
-                default:
-                    toolbar.add( "0, 0", diff );
-                    toolbar.add( "1, 0", unsplit );
-                    toolbar.add( "2, 0", next );
-                    toolbar.add( "3, 0", move_right );
-                    toolbar.add( "4, 0", move_left );
-                    toolbar.add( "5, 0", prev );
-                    toolbar.add( "6, 0", swap );
-                    toolbar.add( "7, 0", refresh );
-                    break;
-            }
-            toolbar.repaint();
-        //}
+        int orient = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
+        orientation = orient;
+        toolbar.removeAll();
+        toolbar.setLayout( createLayoutManager() );
+        switch ( orient ) {
+            case MergeToolBar.VERTICAL:
+                toolbar.add( "0, 0", diff );
+                toolbar.add( "0, 1", unsplit );
+                toolbar.add( "0, 2", next );
+                toolbar.add( "0, 3", prev );
+                toolbar.add( "0, 4", move_right );
+                toolbar.add( "0, 5", move_left );
+                toolbar.add( "0, 6", swap );
+                toolbar.add( "0, 7", refresh );
+                break;
+            case MergeToolBar.COMPACT:
+                toolbar.add( "0, 0", diff );
+                toolbar.add( "1, 0", unsplit );
+                toolbar.add( "0, 1", next );
+                toolbar.add( "1, 1", prev );
+                toolbar.add( "0, 2", move_right );
+                toolbar.add( "1, 2", move_left );
+                toolbar.add( "0, 3", swap );
+                toolbar.add( "1, 3", refresh );
+                break;
+            default:
+                toolbar.add( "0, 0", diff );
+                toolbar.add( "1, 0", unsplit );
+                toolbar.add( "2, 0", next );
+                toolbar.add( "3, 0", move_right );
+                toolbar.add( "4, 0", move_left );
+                toolbar.add( "5, 0", prev );
+                toolbar.add( "6, 0", swap );
+                toolbar.add( "7, 0", refresh );
+                break;
+        }
+        toolbar.repaint();
     }
 
     /**
      * Install any action listeners, mouse listeners, etc.
      */
     public void installListeners() {
-        //EditBus.addToBus( this );
         toolbar.addChangeListener( this );
 
         move_left.addActionListener(

@@ -98,6 +98,17 @@ public class JDiffOptionPane extends AbstractOptionPane
 
 
     public void _save() {
+        if ( vertical.isSelected() ) {
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.VERTICAL);
+        }
+        else if ( compact.isSelected() ) {
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.COMPACT);
+        }
+        else{
+            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
+
+        }
+
         jEdit.setBooleanProperty("jdiff.ignore-case",
             ignoreCase.isSelected()
         );
@@ -117,16 +128,6 @@ public class JDiffOptionPane extends AbstractOptionPane
             showLineDiff.isSelected()
         );
 
-        if ( vertical.isSelected() ) {
-            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.VERTICAL);
-        }
-        else if ( compact.isSelected() ) {
-            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.COMPACT);
-        }
-        else{
-            jEdit.setIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
-
-        }
 
 
         // virtual overview has been removed, it hasn't worked since jEdit 4.2,

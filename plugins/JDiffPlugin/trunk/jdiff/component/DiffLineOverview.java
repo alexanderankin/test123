@@ -67,6 +67,7 @@ public class DiffLineOverview extends JComponent implements LineProcessor, EBCom
     public DiffLineOverview(View view) {
         this.view = view;
         this.updateUI();
+        EditBus.addToBus(this);
     }
 
     /**
@@ -172,6 +173,7 @@ public class DiffLineOverview extends JComponent implements LineProcessor, EBCom
 
     public void handleMessage( EBMessage message ) {
         if (message instanceof PropertiesChanged ) {
+            System.out.println("+++++ handleMessage" );
             fireStateChanged();
         }
     }

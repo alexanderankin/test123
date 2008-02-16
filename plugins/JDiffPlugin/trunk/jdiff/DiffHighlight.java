@@ -27,7 +27,7 @@ import java.awt.Point;
 
 import java.awt.event.MouseEvent;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import jdiff.util.Diff;
 
@@ -52,7 +52,7 @@ public class DiffHighlight extends TextAreaExtension {
     }
 
     // (EditPane, DiffHighlight) association
-    private static Hashtable highlights = new Hashtable();
+    private static HashMap<EditPane, TextAreaExtension> highlights = new HashMap<EditPane, TextAreaExtension>();
 
     private JEditTextArea textArea;
     private boolean enabled = false;
