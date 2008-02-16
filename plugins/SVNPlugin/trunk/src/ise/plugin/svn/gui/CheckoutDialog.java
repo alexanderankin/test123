@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
@@ -46,6 +47,8 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
+
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
@@ -57,9 +60,9 @@ public class CheckoutDialog extends JDialog {
     private View view = null;
     private String _url = null;
 
-    private JTextField url = null;
-    private JTextField path = null;
-    private JTextField username = null;
+    private HistoryTextField url = null;
+    private HistoryTextField path = null;
+    private HistoryTextField username = null;
     private JPasswordField password = null;
 
     private boolean canceled = false;
@@ -79,7 +82,9 @@ public class CheckoutDialog extends JDialog {
 
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
-        url = new JTextField( _url != null ? _url : jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" ), 30 );
+        url = new HistoryTextField(URL);
+        url.setText( _url != null ? _url : jEdit.getProperty( SVNAction.PREFIX + project_name + ".url" ));
+        url.setColumns( 30 );
 
         // populate url field from existing svn info, if available
         List<String> info_path = new ArrayList<String>();
@@ -155,7 +160,9 @@ public class CheckoutDialog extends JDialog {
 
         // local destination directory
         JLabel path_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "path.label" ) );
-        path = new JTextField( PVHelper.getProjectRoot(view), 30 );
+        path = new HistoryTextField(PATH);
+        path.setText( PVHelper.getProjectRoot(view));
+        path.setColumns( 30 );
         JButton browse_btn = new JButton( "Browse" );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -169,7 +176,9 @@ public class CheckoutDialog extends JDialog {
 
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
-        username = new JTextField( jEdit.getProperty( SVNAction.PREFIX + project_name + ".username" ), 30 );
+        username = new HistoryTextField(USERNAME);
+        username.setText( jEdit.getProperty( SVNAction.PREFIX + project_name + ".username" ));
+        username.setColumns( 30 );
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );

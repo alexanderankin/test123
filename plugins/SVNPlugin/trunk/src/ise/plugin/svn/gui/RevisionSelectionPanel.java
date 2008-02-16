@@ -194,7 +194,8 @@ public class RevisionSelectionPanel extends JPanel {
                                         );
         }
 
-        date_popup = new JButton( new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif" ) ) );
+        ImageIcon icon = new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif"));
+        date_popup = icon == null ? new JButton("D") : new JButton(icon);
         date_popup.setMargin( new Insets( 1, 1, 1, 1 ) );
         date_popup.addActionListener(
             new ActionListener() {

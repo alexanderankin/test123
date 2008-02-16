@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.event.*;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
@@ -38,17 +37,10 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.UpdateData;
 import ise.java.awt.KappaLayout;
-import ise.plugin.svn.PVHelper;
 
 public class UpdateDialog extends JDialog {
 
-    private View view = null;
-    private List<String> paths = null;
     private UpdateData data = null;
-    private JLabel username_label;
-    private JTextField username;
-    private JLabel password_label;
-    private JPasswordField password;
 
     /**
      * @param view the parent frame
@@ -64,7 +56,6 @@ public class UpdateDialog extends JDialog {
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = data;
         init( showLogin );
     }

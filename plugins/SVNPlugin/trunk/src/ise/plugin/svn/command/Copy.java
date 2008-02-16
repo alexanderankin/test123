@@ -92,7 +92,7 @@ public class Copy {
             if (revision == null) {
                 revision = SVNRevision.WORKING;
             }
-            // no message on local copy
+            // message on local copy
             out.println("source file: " + sourceFile);
             out.println("revision: " + revision);
 

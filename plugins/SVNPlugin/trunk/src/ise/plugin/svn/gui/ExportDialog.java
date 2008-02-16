@@ -28,29 +28,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.io.File;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.*;
-import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class ExportDialog extends JDialog {
     // instance fields
@@ -61,8 +57,6 @@ public class ExportDialog extends JDialog {
     private JCheckBox recursive_cb = null;
     private RevisionSelectionPanel revision_panel = null;
     private RevisionSelectionPanel peg_revision_panel = null;
-    private SVNRevision revision = SVNRevision.HEAD;
-    private SVNRevision pegRevision = SVNRevision.create( 0L );
     private JComboBox eol = null;
     private JCheckBox force = null;
     private boolean canceled = false;
@@ -134,7 +128,9 @@ public class ExportDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( "Export to this directory:" );
-        path = new JTextField( "" , 30 );
+        path = new HistoryTextField(PATH);
+        path.setText("");
+        path.setColumns(30);
         JButton browse_local_btn = new JButton( "Browse Local..." );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {

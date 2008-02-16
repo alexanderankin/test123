@@ -30,24 +30,19 @@ package ise.plugin.svn.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.io.File;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.*;
-import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -61,11 +56,9 @@ public class TagBranchDialog extends JDialog {
     // instance fields
     private View view = null;
     private String toCopy = null;
-    private JTextField path = null;
-    private TableModel fileTableModel = null;
+    private HistoryTextField path = null;
     private String defaultDestination = null;
     private JTextArea comment = null;
-    private PropertyComboBox commentList = null;
 
     private SVNURL source = null;
     private SVNURL destination = null;
@@ -108,7 +101,8 @@ public class TagBranchDialog extends JDialog {
 
         // source for tag/branch
         JLabel to_copy_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from:" );
-        JTextField source_file = new JTextField( toCopy );
+        HistoryTextField source_file = new HistoryTextField( URL );
+        source_file.setText( toCopy );
         source_file.setEditable( false );
         source_file.setBackground( Color.WHITE );
 
@@ -122,7 +116,9 @@ public class TagBranchDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " at this location:" );
-        path = new JTextField( defaultDestination , 30 );
+        path = new HistoryTextField( PATH );
+        path.setText( defaultDestination );
+        path.setColumns( 30 );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
             new ActionListener() {

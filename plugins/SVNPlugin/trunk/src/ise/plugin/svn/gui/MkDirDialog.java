@@ -29,33 +29,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.library.PropertyComboBox;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 
 /**
@@ -89,7 +78,9 @@ public class MkDirDialog extends JDialog {
 
         // let user pick the directory to create
         JLabel path_label = new JLabel( "Create new directory at this location:" );
-        path = new JTextField( defaultDestination == null ? "" : defaultDestination, 30 );
+        path = new HistoryTextField(PATH);
+        path.setText( defaultDestination == null ? "" : defaultDestination );
+        path.setColumns( 30 );
         JButton browse_remote_btn = new JButton( "Browse Remote..." );
         browse_remote_btn.addActionListener(
             new ActionListener() {

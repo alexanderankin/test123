@@ -32,11 +32,13 @@ import javax.swing.*;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.PVHelper;
 
+import org.gjt.sp.jedit.gui.HistoryTextField;
+import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 public class LoginPanel extends JPanel {
 
     private JLabel username_label;
-    private JTextField username;
+    private HistoryTextField username;
     private JLabel password_label;
     private JPasswordField password;
 
@@ -61,7 +63,9 @@ public class LoginPanel extends JPanel {
 
         // username field
         username_label = new JLabel( "Username:" );
-        username = new JTextField( u, 30 );
+        username = new HistoryTextField(USERNAME);
+        username.setText(u);
+        username.setColumns(30);
 
         // password field
         password_label = new JLabel( "Password:" );
