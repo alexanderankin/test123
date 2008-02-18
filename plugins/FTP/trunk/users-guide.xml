@@ -148,6 +148,15 @@ You can close unused connections at any other time using the
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+    <listitem><para> <emphasis role="bold">Version 0.9.4</emphasis>
+   Requires java 1.5 and jEdit 4.3pre12. </para>
+   <itemizedlist>
+   	<listitem><para> New option: to use proxy for regular ftp logins. (# 1735335 - Voituk Vadim) </para></listitem>
+      <listitem><para> Fixed: No way to reinput incorrect password (# 1885830 - Voituk Vadim) </para></listitem>
+      <listitem><para> Little code refactoring & cleanup </para></listitem>
+    </itemizedlist> </listitem>
+
+
     <listitem><para> <emphasis role="bold">Version 0.9.3</emphasis>
    Requires java 1.5 and jEdit 4.3pre5. </para>
    <itemizedlist>
