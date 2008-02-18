@@ -28,11 +28,17 @@ import java.io.IOException;
 import org.gjt.sp.jedit.jEdit;
 //}}}
 
-public class FtpException extends IOException
-{
-	public FtpException(FtpResponse response)
-	{
-		super(jEdit.getProperty("ftperror",new String[] {
-			response.toString() }));
+@SuppressWarnings("serial")
+public class FtpException extends IOException {
+	
+	private FtpResponse response;
+	
+	public FtpException(FtpResponse response) {
+		super(jEdit.getProperty("ftperror",new String[] { response.toString() }));
+		this.response = response;
+	}
+	
+	public FtpResponse getResponse() {
+		return response;
 	}
 }

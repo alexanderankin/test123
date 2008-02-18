@@ -32,6 +32,7 @@ import java.awt.event.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
+@SuppressWarnings("serial")
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor

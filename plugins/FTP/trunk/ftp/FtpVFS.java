@@ -92,9 +92,9 @@ public class FtpVFS extends VFS
 		// need trailing / for 'open from ftp server' and 'save to ftp
 		// server' commands to detect that the path is in fact a
 		// directory
-		return getProtocol(secure) + "://" + newSession.info.user
-		+ "@" + newSession.info.host
-		+ ":" + newSession.info.port + "/~/";
+		return getProtocol(secure) + "://" + newSession.info.getUser()
+			+ "@" + newSession.info.getHost()
+			+ ":" + newSession.info.getPort() + "/~/";
 	} //}}}
 	
 	//{{{ getFileName() method
@@ -159,17 +159,16 @@ public class FtpVFS extends VFS
 	{
 		try
 		{
-			ConnectionInfo info =
-			ConnectionManager.getConnectionInfo(comp,
-				path == null ? null : new FtpAddress(path),
-				secure);
+			Log.log(Log.DEBUG, this, "FtpVFS.createVFSSession()" );
+			ConnectionInfo info = ConnectionManager.getConnectionInfo(comp,
+				path == null ? null : new FtpAddress(path), secure);
+			
 			if(info == null)
 				return null;
 			else
 				return new FtpSession(info);
 		}
-		catch(IllegalArgumentException ia)
-		{
+		catch(IllegalArgumentException ia) {
 			// FtpAddress.<init> can throw this
 			return null;
 		}
@@ -179,11 +178,7 @@ public class FtpVFS extends VFS
 	public void _endVFSSession(Object _session, Component comp)
 	{
 		FtpSession session = (FtpSession)_session;
-		if(session.connection != null)
-		{
-			ConnectionManager.releaseConnection(
-				session.connection);
-		}
+		ConnectionManager.releaseConnection(session.connection);
 	} //}}}
 	
 	//{{{ _canonPath() method
@@ -451,14 +446,11 @@ public class FtpVFS extends VFS
 	private boolean secure;
 	
 	//{{{ getConnection() method
-	private static Connection getConnection(Object _session)
-	throws IOException
+	private static Connection getConnection(Object _session) throws IOException
 	{
 		FtpSession session = (FtpSession)_session;
-		if(session.connection == null)
-		{
-			session.connection = ConnectionManager.getConnection(
-				session.info);
+		if(session.connection == null) {
+			session.connection = ConnectionManager.getConnection(session.info);
 		}
 		
 		return session.connection;
