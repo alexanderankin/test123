@@ -23,8 +23,8 @@
 package ftp;
 
 import com.fooware.net.FtpResponse;
-import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class FtpLoginException extends FtpException
 {
 	public FtpLoginException(FtpResponse response)

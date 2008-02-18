@@ -23,9 +23,6 @@
 package ftp;
 
 //{{{ Imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -34,7 +31,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
-//}}}
 
 public class FtpPlugin extends EditPlugin
 {
@@ -60,8 +56,7 @@ public class FtpPlugin extends EditPlugin
 			return;
 		}
 
-		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
-			secure ? "sftp" : "ftp"))
+		String path = ((FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)))
 			.showBrowseDialog(new Object[1],view);
 		if(path != null)
 		{
@@ -85,14 +80,13 @@ public class FtpPlugin extends EditPlugin
 	//{{{ showSaveFTPDialog() method
 	public static void showSaveFTPDialog(View view, boolean secure)
 	{
-		if(secure && !OperatingSystem.hasJava14())
+		if(secure && !OperatingSystem.hasJava14()) 
 		{
 			GUIUtilities.error(view,"vfs.sftp.no-java14",null);
 			return;
 		}
 
-		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
-			secure ? "sftp" : "ftp"))
+		String path = ( (FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)) )
 			.showBrowseDialog(new Object[1],view);
 		if(path != null)
 		{

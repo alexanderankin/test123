@@ -147,23 +147,15 @@ public class ConnectionManager
 			}
 			if(ois != null)
 			{
-				try
-				{
-					ois.close();
-				}
-				catch(Exception e)
-				{
-				}
+				try { ois.close(); } catch(Exception e) {}
 			}
 		}
 		
 	} //}}}
 
 	//{{{ savePasswords() method
-	protected static void savePasswords()
-	{
-		if (passwordFile == null)
-		{
+	protected static void savePasswords() {
+		if (passwordFile == null) {
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
 		}
@@ -233,8 +225,7 @@ public class ConnectionManager
 			for(int i = 0; i < connections.size(); i++)
 			{
 				Connection _connect = (Connection)connections.get(i);
-				if(!_connect.inUse())
-				{
+				if(!_connect.inUse()) 				{
 					closeConnection(_connect);
 					i--;
 				}
@@ -257,13 +248,13 @@ public class ConnectionManager
 
 			ConnectionInfo info = logins.get(host);
 
-			if(info != null && (info.user.equals(user) || user == null))
-			{
+			if(info != null && info.getPassword()!=null && (info.user.equals(user) || user == null)) {
 				return info;
 			}
 		}
-		else
+		else {
 			host = user = null;
+		}
 
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
@@ -291,14 +282,12 @@ public class ConnectionManager
 			dialog.getUser(),dialog.getPassword(),dialog.getPrivateKey());
 
 		if (secure && dialog.getPrivateKey()!=null)
-		{
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
-		}
+		
+		// Save password here
 		if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
-		{
-			// Save password here
 			setPassword(host+":"+port+"."+dialog.getUser(),dialog.getPassword());
-		}
+		
 		// hash by host name
 		logins.put(host + ":" + port,info);
 
@@ -308,49 +297,46 @@ public class ConnectionManager
 	
 	
 	//{{{ getConnection() method
-	public static Connection getConnection(ConnectionInfo info)
-		throws IOException
-	{
+	public static Connection getConnection(ConnectionInfo info) throws IOException {
+		Log.log(Log.DEBUG, ConnectionManager.class, "getConnection("+info+"), pass=" + info.getPassword()+", hashCode="+info.hashCode());
 		Connection connect = null;
-		synchronized(lock)
-		{
-			for(int i = 0; i < connections.size(); i++)
-			{
+		synchronized(lock) {
+			for(int i = 0; i < connections.size(); i++) {
 				Connection _connect = (Connection)connections.get(i);
-				if(_connect.info.equals(info) && !_connect.inUse())
-				{
-					connect = _connect;
-					if(!connect.checkIfOpen())
-					{
-						Log.log(Log.DEBUG,ConnectionManager.class,
-							"Connection "
-							+ connect + " expired");
-						try
-						{
-							connect.logout();
-						}
-						catch(IOException io)
-						{
-						}
-
-						connections.remove(connect);
-						connect = null;
+				if(!_connect.info.equals(info) || _connect.inUse()) continue;
+				
+				connect = _connect;
+				if(!connect.checkIfOpen()) {
+					Log.log(Log.DEBUG,ConnectionManager.class, "Connection " + connect + " expired");
+					try {
+						connect.logout();
+					} catch(IOException io) {
 					}
-					else
-						break;
+
+					connections.remove(connect);
+					connect = null;
 				}
+				else
+					break;
 			}
 
-			if(connect == null)
-			{
-				Log.log(Log.DEBUG,ConnectionManager.class,
-					Thread.currentThread() +
-					": Connecting to " + info);
-				if(info.secure) 
+			if(connect == null) {
+				Log.log(Log.DEBUG,ConnectionManager.class, Thread.currentThread() + ": Connecting to " + info);
+				if(info.secure)  {
 					connect = new SFtpConnection(info);
-				else
-					connect = new FtpConnection(info);
+				} else {
+					try {
+						connect = new FtpConnection(info);
+					} catch (FtpLoginException e) {
+						Log.log(Log.DEBUG, ConnectionManager.class, "catch FtpLoginException");
+						//if (e.getResponse().getReturnCode() == "530")
+						info.password = null; // Show login dialog again   
+						throw e;
+					}
+				}
 				connections.add(connect);
+			} else {
+				Log.log(Log.DEBUG, ConnectionManager.class, "Connection found in cache ["+connect+"]");
 			}
 
 			connect.lock();
@@ -362,8 +348,8 @@ public class ConnectionManager
 	//{{{ releaseConnection() method
 	public static void releaseConnection(Connection connect)
 	{
-		synchronized(lock)
-		{
+		if (connect==null) return;
+		synchronized(lock) {
 			connect.unlock();
 		}
 	} //}}}
@@ -376,9 +362,7 @@ public class ConnectionManager
 			if(connect.inUse)
 				return;
 
-			Log.log(Log.DEBUG,ConnectionManager.class,
-				"Closing connection to "
-				+ connect.info);
+			Log.log(Log.DEBUG,ConnectionManager.class, "Closing connection to "+ connect.info);
 			try
 			{
 				connect.logout();
@@ -416,7 +400,7 @@ public class ConnectionManager
 				passwordFile.createNewFile();
 			} catch(IOException e) {
 				Log.log(Log.WARNING,ConnectionManager.class,
-					"Unable to create password file:"+passwordFile);
+					"Unable to create password file: "+passwordFile);
 			}
 		}
 	} //}}}

@@ -36,7 +36,7 @@ class FtpConnection extends Connection
 	{
 		super(info);
 		
-		// TODO: Move this data into ConnectionInfo clas
+		// TODO: Move this data into ConnectionInfo class
 		if (jEdit.getBooleanProperty("vfs.ftp.useProxy") 
 				&& jEdit.getBooleanProperty("vfs.ftp.passive")
 				&& jEdit.getBooleanProperty("firewall.enabled") ) {
@@ -65,7 +65,7 @@ class FtpConnection extends Connection
 
 		if(client.getResponse().isPositiveIntermediary())
 		{
-			client.password(info.password);
+			client.password(info.getPassword());
 
 			FtpResponse response = client.getResponse();
 			if(!response.isPositiveCompletion())
