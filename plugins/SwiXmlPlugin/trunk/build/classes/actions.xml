@@ -1,0 +1,15 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="swixml.plugin.action.render.buffer">
+		<CODE>
+			// render the buffer.
+			com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.renderBuffer(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="swixml.plugin.action.render.file">
+		<CODE>
+			// render a file.
+			com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.renderFile(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>

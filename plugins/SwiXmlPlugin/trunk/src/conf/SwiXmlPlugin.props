@@ -1,0 +1,12 @@
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.activate=defer
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.name=SwiXml Plugin
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.version=0.0.0
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.author=Eric Berry
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.docs=/docs/SwiXmlPlugin.html
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.depend.0=jedit 04.03.12.00
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.jars=swixml.jar jdom.jar
+plugin.com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin.menu=swixml.plugin.action.render.buffer swixml.plugin.action.render.file
+	
+swixml.plugin.menu.label=SwiXml Plugin
+swixml.plugin.action.render.buffer.label=Render Buffer
+swixml.plugin.action.render.file.label=Render File
