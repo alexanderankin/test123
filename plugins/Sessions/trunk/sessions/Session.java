@@ -466,7 +466,7 @@ public class Session implements Cloneable
 			out.write("      <FILE filename=\"");
 			out.write(ParseUtilities.encodeXML(filename));
 			out.write('"');
-			if(filename.equals(getCurrentFile()))
+			if(filename.equals(getCurrentFile().replace('\\','/')))
 				out.write(" isCurrent=\"true\"");
 			// Write character encoding info, carat position
 			Buffer buff = jEdit.getBuffer(filename);

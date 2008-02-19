@@ -1,3 +1,7 @@
+
+VERSION 1.4.2 (Steve Jakob)
+- incorporated code submitted by strank (patch #1697914) to fix bug where current file was not being saved on Windows
+
 VERSION 1.4.1 (Davide Del Vento, Steve Jakob)
 - fixed bug (#1724376) the code submitted by strank conflicted with the behaviour of save confirmation dialog
 - minor improvements in the save confirmation dialog (ask only if there are changes and show two separate lists)
