@@ -50,7 +50,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     private JButton swap;
     private JButton diff;
     private JButton refresh;
-    private int orientation;
 
     /**
      * Required by super class.
@@ -84,7 +83,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     public void installUI( JComponent c ) {
         toolbar = ( MergeToolBar ) c;
         view = toolbar.getView();
-        orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
 
         installDefaults();
         installComponents();
@@ -137,7 +135,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
 
     private void installButtons() {
         int orient = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
-        orientation = orient;
         toolbar.removeAll();
         toolbar.setLayout( createLayoutManager() );
         switch ( orient ) {

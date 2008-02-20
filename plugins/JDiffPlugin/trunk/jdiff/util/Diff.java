@@ -498,6 +498,14 @@ public class Diff {
             sb.append( "]" );
             return sb.toString();
         }
+
+        public boolean equals(Object o) {
+            if (!(o instanceof Change)) {
+                return false;
+            }
+            Change c = (Change)o;
+            return line0 == c.line0 && line1 == c.line1 && deleted == c.deleted && inserted == c.inserted;
+        }
     }
 
     /** Data on one input file being compared.

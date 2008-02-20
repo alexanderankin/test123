@@ -34,6 +34,10 @@ plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
     jdiff.overview \
     jdiff.highlight
 
+# titles for DockableWindowManager
+jdiff-lines.title=Diff
+jdiff-lines.label=Diff
+
 jdiff-menu.label=JDiff
 
 toggle-dual-diff.label=Dual diff
