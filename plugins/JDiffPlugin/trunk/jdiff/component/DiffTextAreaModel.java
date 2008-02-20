@@ -34,6 +34,8 @@ public class DiffTextAreaModel {
 
     private DualDiff dualDiff;
     private Diff.Change edits = null;
+    private HashMap<Integer, Diff.Change> leftHunkMap = null;
+    private HashMap<Integer, Diff.Change> rightHunkMap = null;
 
     private int leftLineCount;
     private int rightLineCount;
@@ -65,6 +67,14 @@ public class DiffTextAreaModel {
         return rightTextArea;
     }
 
+    public HashMap<Integer, Diff.Change> getLeftHunkMap() {
+        return leftHunkMap;
+    }
+
+    public HashMap<Integer, Diff.Change> getRightHunkMap() {
+        return rightHunkMap;
+    }
+
     private void prepData() {
         EditPane[] editPanes = dualDiff.getView().getEditPanes();
         Buffer buf0 = editPanes[0].getBuffer();
@@ -83,6 +93,30 @@ public class DiffTextAreaModel {
 
             Diff d = new Diff( fileLines0, fileLines1 );
             edits = d.diff_2( false );
+            leftHunkMap = new HashMap<Integer, Diff.Change>();
+            rightHunkMap = new HashMap<Integer, Diff.Change>();
+            Diff.Change hunk = edits;
+            for ( ; hunk != null; hunk = hunk.link ) {
+                for (int i = 0; i < hunk.deleted; i++) {
+                    leftHunkMap.put(hunk.line0 + i, hunk);
+                }
+                for (int i = 0; i < hunk.inserted; i++) {
+                    rightHunkMap.put(hunk.line1 + i, hunk);
+                }
+            }
+            /*
+            System.out.println("++++++++++++++++++++++++++++++++++");
+            Set<Map.Entry<Integer, Diff.Change>> entries = leftHunkMap.entrySet();
+            for (Map.Entry<Integer, Diff.Change> entry : entries) {
+                System.out.println(entry.getKey() + " = " + entry.getValue());
+            }
+            System.out.println("++++++++++++++++++++++++++++++++++");
+            entries = rightHunkMap.entrySet();
+            for (Map.Entry<Integer, Diff.Change> entry : entries) {
+                System.out.println(entry.getKey() + " = " + entry.getValue());
+            }
+            System.out.println("++++++++++++++++++++++++++++++++++");
+            */
 
             leftLineCount = fileLines0.length;
             rightLineCount = fileLines1.length;

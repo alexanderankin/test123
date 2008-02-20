@@ -35,8 +35,6 @@ import java.nio.*;
 
 import java.util.HashMap;
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 
 import jdiff.component.DiffLocalOverview;
 import jdiff.component.DiffGlobalPhysicalOverview;
@@ -276,8 +274,6 @@ public class DualDiff implements EBComponent {
         this.addHandlers();
 
         diffLineOverview.clear();
-        EditPane editPane = view.getEditPane();
-        final int caret = editPane.getTextArea().getCaretPosition();
         this.diffOverview0.synchroScrollRight();
         this.diffOverview1.repaint();
     }
@@ -792,9 +788,11 @@ public class DualDiff implements EBComponent {
 
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea0.getLineStartOffset( line );
-                this.textArea0.setCaretPosition( caret_position );
+                this.textArea0.setCaretPosition( caret_position, false );
+                this.textArea0.scrollToCaret(false);
                 caret_position = textArea1.getLineStartOffset( hunk.line1 );
-                this.textArea1.setCaretPosition( caret_position );
+                this.textArea1.setCaretPosition( caret_position, false );
+                this.textArea1.scrollToCaret(false);
 
                 if ( this.textArea0.getFirstLine() != line ) {
                     this.textArea0.getToolkit().beep();
@@ -822,9 +820,11 @@ public class DualDiff implements EBComponent {
 
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea1.getLineStartOffset( line );
-                this.textArea1.setCaretPosition( caret_position );
+                this.textArea1.setCaretPosition( caret_position, false );
+                this.textArea1.scrollToCaret(false);
                 caret_position = textArea0.getLineStartOffset( hunk.line0 );
-                this.textArea0.setCaretPosition( caret_position );
+                this.textArea0.setCaretPosition( caret_position, false );
+                this.textArea0.scrollToCaret(false);
 
                 if ( this.textArea1.getFirstLine() != line ) {
                     this.textArea1.getToolkit().beep();
@@ -853,9 +853,11 @@ public class DualDiff implements EBComponent {
 
                     // move the caret to the start of the first line of the diff
                     int caret_position = textArea0.getLineStartOffset( line );
-                    this.textArea0.setCaretPosition( caret_position );
+                    this.textArea0.setCaretPosition( caret_position, false );
+                    this.textArea0.scrollToCaret(false);
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
-                    this.textArea1.setCaretPosition( caret_position );
+                    this.textArea1.setCaretPosition( caret_position, false );
+                    this.textArea1.scrollToCaret(false);
 
                     if ( this.textArea0.getFirstLine() != line ) {
                         this.textArea0.getToolkit().beep();
@@ -885,9 +887,11 @@ public class DualDiff implements EBComponent {
 
                     // move the caret to the start of the first line of the diff
                     int caret_position = textArea1.getLineStartOffset( line );
-                    this.textArea1.setCaretPosition( caret_position );
+                    this.textArea1.setCaretPosition( caret_position, false );
+                    this.textArea1.scrollToCaret(false);
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
-                    this.textArea0.setCaretPosition( caret_position );
+                    this.textArea0.setCaretPosition( caret_position, false );
+                    this.textArea0.scrollToCaret(false);
 
                     if ( this.textArea1.getFirstLine() != line ) {
                         this.textArea1.getToolkit().beep();

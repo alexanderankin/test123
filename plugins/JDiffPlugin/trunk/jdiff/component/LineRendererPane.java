@@ -214,7 +214,6 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 int caretLine = textArea0.getCaretLine();
                 for ( ; hunk != null; hunk = hunk.link ) {
                     if ( caretLine >= hunk.line0 && caretLine < hunk.line0 + hunk.deleted ) {
-                        System.out.println("+++++ 1 caretLine: " + caretLine + ", hunk.line0: " + hunk.line0 + ", hunk.deleted: " + hunk.deleted);
                         // in a hunk
                         if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
                             leftLine = "";
@@ -237,7 +236,6 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 int caretLine = textArea1.getCaretLine();
                 for ( ; hunk != null; hunk = hunk.link ) {
                     if ( caretLine >= hunk.line1 && caretLine < hunk.line1 + hunk.inserted ) {
-                        System.out.println("+++++ 2 caretLine: " + caretLine + ", hunk.line1: " + hunk.line1 + ", hunk.inserted: " + hunk.inserted);
                         // in a hunk
                         if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
                             rightLine = "";

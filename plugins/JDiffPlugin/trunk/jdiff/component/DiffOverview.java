@@ -22,12 +22,15 @@
 
 package jdiff.component;
 
-import java.awt.Dimension;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+
 import jdiff.DualDiff;
 import jdiff.util.Diff;
+
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
 
 public abstract class DiffOverview extends JComponent {
     protected DualDiff dualDiff;
@@ -155,9 +158,17 @@ public abstract class DiffOverview extends JComponent {
         }
     }
 
-    public void moveRight( int line_number ) {
-    }
+    /**
+     * Default implementation does nothing, this is for subclasses to override.
+     */
+    public void moveRight( int line_number ) {}
 
-    public void moveLeft( int line_number ) {
-    }
+    /**
+     * Default implementation does nothing, this is for subclasses to override.
+     */
+    public void moveLeft( int line_number ) {}
+
+    /**
+     */
+
 }

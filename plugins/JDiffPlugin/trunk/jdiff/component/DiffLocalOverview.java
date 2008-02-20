@@ -19,14 +19,21 @@
 
 package jdiff.component;
 
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
-import jdiff.component.ui.*;
+import java.util.*;
 
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import jdiff.component.ui.*;
 import jdiff.DualDiff;
+
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class DiffLocalOverview extends DiffOverview {
     private static final String uiClassID = "DiffLocalOverviewUI";
+    private Set<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
     public DiffLocalOverview(DualDiff dualDiff) {
         super(dualDiff);
@@ -52,5 +59,40 @@ public class DiffLocalOverview extends DiffOverview {
 
     public String getUIClassID() {
         return uiClassID;
+    }
+
+    public void caretUpdate( final CaretEvent e ) {
+        if ( e.getSource() instanceof JEditTextArea ) {
+            fireStateChanged();
+        }
+    }
+
+    public void addChangeListener( ChangeListener cl ) {
+        if ( cl != null ) {
+            changeListeners.add( cl );
+        }
+    }
+
+    public void removeChangeListener( ChangeListener cl ) {
+        if ( cl != null ) {
+            changeListeners.remove( cl );
+        }
+    }
+
+    public void fireStateChanged() {
+        if ( changeListeners.size() > 0 ) {
+            ChangeEvent event = new ChangeEvent( this );
+            for ( ChangeListener cl : changeListeners ) {
+                cl.stateChanged( event );
+            }
+        }
+    }
+
+    public void moveRight( int line_number ) {
+        getUI().moveRight( line_number );
+    }
+
+    public void moveLeft( int line_number ) {
+        getUI().moveLeft( line_number );
     }
 }
