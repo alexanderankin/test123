@@ -58,10 +58,7 @@ class FtpConnection extends Connection
 		client.connect(info.host,info.port);
 
 		if(!client.getResponse().isPositiveCompletion())
-		{
-			throw new FtpException(
-				client.getResponse());
-		}
+			throw new FtpException(client.getResponse());
 
 		client.userName(info.user);
 
@@ -126,7 +123,7 @@ class FtpConnection extends Connection
 
 		// some servers might not support -a, so if we get an error
 		// try without -a
-		ArrayList directoryVector = _listDirectory(true);
+		ArrayList<FtpVFS.FtpDirectoryEntry> directoryVector = _listDirectory(true);
 		if(directoryVector == null || directoryVector.size() == 0)
 			directoryVector = _listDirectory(false);
 
@@ -185,7 +182,7 @@ class FtpConnection extends Connection
 
 		// to determine if this is a file or a directory, we list it.
 		// if the list contains 1 entry, guess that this is a file
-		LinkedList listing = new LinkedList();
+		LinkedList<FtpDirectoryEntry> listing = new LinkedList<FtpDirectoryEntry>();
 
 		try
 		{
@@ -193,12 +190,10 @@ class FtpConnection extends Connection
 			while((line = reader.readLine()) != null)
 			{
 				FtpVFS.FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
-				if(dirEntry != null)
+				if(dirEntry != null) {
 					listing.add(dirEntry);
-				else
-				{
-					Log.log(Log.DEBUG,this,"Discarding "
-						+ line);
+				} else {
+					Log.log(Log.DEBUG,this,"Discarding " + line);
 				}
 			}
 		}
@@ -302,8 +297,7 @@ class FtpConnection extends Connection
 
 	void chmod(String path, int permissions) throws IOException
 	{
-		String cmd = "CHMOD " + Integer.toString(permissions,8)
-			+ " " + path;
+		String cmd = "CHMOD " + Integer.toString(permissions,8) + " " + path;
 		client.siteParameters(cmd);
 	}
 
@@ -366,47 +360,30 @@ class FtpConnection extends Connection
 
 	static
 	{
-		unixRegexps = new Pattern[jEdit.getIntegerProperty(
-			"vfs.ftp.list.count",-1)];
-		for(int i = 0; i < unixRegexps.length; i++)
-		{
-			unixRegexps[i] = Pattern.compile(jEdit.getProperty(
-				"vfs.ftp.list." + i),
-				Pattern.UNIX_LINES);
+		unixRegexps = new Pattern[jEdit.getIntegerProperty("vfs.ftp.list.count",-1)];
+		for(int i = 0; i < unixRegexps.length; i++) {
+			unixRegexps[i] = Pattern.compile(jEdit.getProperty("vfs.ftp.list." + i), Pattern.UNIX_LINES);
 		}
 
-		dosRegexp.compile(jEdit.getProperty(
-			"vfs.ftp.list.dos"),
-         Pattern.UNIX_LINES);
+		dosRegexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.dos"), Pattern.UNIX_LINES);
 
-		vmsRegexp = Pattern.compile(jEdit.getProperty(
-			"vfs.ftp.list.vms"),
-         Pattern.UNIX_LINES);
+		vmsRegexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.vms"), Pattern.UNIX_LINES);
 
-		vmsPartialRegexp = Pattern.compile(jEdit.getProperty(
-			"vfs.ftp.list.vms.partial"),
-         Pattern.UNIX_LINES);
+		vmsPartialRegexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.vms.partial"), Pattern.UNIX_LINES);
 
-		vmsRejectedRegexp = Pattern.compile(jEdit.getProperty(
-			"vfs.ftp.list.vms.rejected"),
-         Pattern.UNIX_LINES);
+		vmsRejectedRegexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.vms.rejected"), Pattern.UNIX_LINES);
 
-		as400Regexp = Pattern.compile(jEdit.getProperty(
-			"vfs.ftp.list.as400"),
-         Pattern.UNIX_LINES);
+		as400Regexp = Pattern.compile(jEdit.getProperty("vfs.ftp.list.as400"), Pattern.UNIX_LINES);
 	}
 
 	private void setupSocket()
 		throws IOException
 	{
 		// See if we should use Binary mode to transfer files.
-		if (jEdit.getBooleanProperty("vfs.ftp.binary"))
-		{
+		if (jEdit.getBooleanProperty("vfs.ftp.binary")) {
 			//Go with Binary
 			client.representationType(FtpClient.IMAGE_TYPE);
-		}
-		else
-		{
+		} else {
 			//Stick to ASCII - let the line endings get converted
 			client.representationType(FtpClient.ASCII_TYPE);
 		}
@@ -487,52 +464,53 @@ class FtpConnection extends Connection
 			long length = 0L;
 			int permissions = 0;
 			String permissionString = null;
+			String ownerName = null;
+			String ownerGroup = null;
 
 			boolean ok = false;
 
-			if(prevLine != null)
-			{
+			if(prevLine != null) {
 				// handle VMS listings split over several lines
 				line = prevLine + line;
 				prevLine = null;
 			}
 
-			for(int i = 0; i < unixRegexps.length; i++)
-			{
+			for(int i = 0; i < unixRegexps.length; i++) {
 				Pattern regexp = unixRegexps[i];
 				Matcher match;
-				if((match = regexp.matcher(line)) != null && match.matches())
-				{
-					switch(line.charAt(0))
-					{
-					case 'd':
-						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-						break;
-					case 'l':
-						type = FtpVFS.FtpDirectoryEntry.LINK;
-						break;
-					case '-':
-						type = FtpVFS.FtpDirectoryEntry.FILE;
-						break;
-					}
-
-					permissionString = match.group(1);
-					permissions = MiscUtilities.parsePermissions(
-						permissionString);
-
-					try
-					{
-						length = Long.parseLong(match.group(2));
-					}
-					catch(NumberFormatException nf)
-					{
-						length = 0L;
-					}
-
-					name = match.group(3);
-					ok = true;
+				if((match = regexp.matcher(line)) == null || !match.matches()) continue;
+					
+				switch(line.charAt(0)) {
+				case 'd':
+					type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+					break;
+				case 'l':
+					type = FtpVFS.FtpDirectoryEntry.LINK;
+					break;
+				case '-':
+					type = FtpVFS.FtpDirectoryEntry.FILE;
 					break;
 				}
+
+				permissionString = match.group(1);
+				permissions = MiscUtilities.parsePermissions(permissionString);
+
+				ownerName = match.group(2);
+				ownerGroup = match.group(3);
+				
+				try {
+					length = Long.parseLong(match.group(4));
+				} catch(NumberFormatException nf) {
+					length = 0L;
+				}
+
+				name = match.group(5);
+				ok = true;
+				/*Log.log(Log.DEBUG, FtpConnection.class, "Line:  " + line);
+				Log.log(Log.DEBUG, FtpConnection.class, "Matches regexp#"+i+": " + regexp);
+				for (int j=1; j<=match.groupCount(); j++)
+					Log.log(Log.DEBUG, FtpConnection.class, j+"=>"+match.group(j));*/
+				break;
 			}
 
 			if(!ok)
@@ -553,10 +531,8 @@ class FtpConnection extends Connection
 						match.group(2)) * 512;
 					if(name.endsWith(".DIR"))
 					{
-						name = name.substring(0,
-							name.length() - 4);
-						type = FtpVFS.FtpDirectoryEntry
-							.DIRECTORY;
+						name = name.substring(0,name.length() - 4);
+						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
 					}
 					permissionString = match.group(3);
 					ok = true;
@@ -617,14 +593,15 @@ class FtpConnection extends Connection
 				return null;
 
 			// path is null; it will be created later, by listDirectory()
-			return new FtpVFS.FtpDirectoryEntry(name,null,null,type,
+			FtpVFS.FtpDirectoryEntry result = new FtpVFS.FtpDirectoryEntry(name,null,null,type,
 				length,name.charAt(0) == '.' /* isHidden */,
 				permissions,permissionString);
+			result.setOwner(ownerName, ownerGroup);			
+			return result;
 		}
 		catch(Exception e)
 		{
-			Log.log(Log.NOTICE,this,"lineToDirectoryEntry("
-				+ line + ") failed:");
+			Log.log(Log.NOTICE,this,"lineToDirectoryEntry("	+ line + ") failed:");
 			Log.log(Log.NOTICE,this,e);
 			return null;
 		}

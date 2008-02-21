@@ -75,13 +75,16 @@ vfs.ftp.list.count=3
 #vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
 
 # drwx------  11 slava  slava       1024 Sep 12 15:36 plugins
-vfs.ftp.list.0=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+##vfs.ftp.list.0=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.0=[ld-](.{9})\\+?\\s+\\d+\\s+(\\S+)\\s+(\\S+)\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
 
 # -rw-rw-r--   1 apache       226 Oct 14  2002 chars.cfm
-vfs.ftp.list.1=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+##vfs.ftp.list.1=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.1=[ld-](.{9})\\+?\\s+\\d+\\s+(\\S+)()\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
 
 # drwx------  11 plugins
-vfs.ftp.list.2=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
+##vfs.ftp.list.2=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
+vfs.ftp.list.2=[ld-](.{9}).*\\s+()()(\\d+)\\s+(.+)\\s*
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
 vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\\((.+)\\)
