@@ -97,10 +97,10 @@ public class DiffTextAreaModel {
             rightHunkMap = new HashMap<Integer, Diff.Change>();
             Diff.Change hunk = edits;
             for ( ; hunk != null; hunk = hunk.link ) {
-                for (int i = 0; i < hunk.deleted; i++) {
+                for (int i = 0; i <= hunk.deleted; i++) {
                     leftHunkMap.put(hunk.line0 + i, hunk);
                 }
-                for (int i = 0; i < hunk.inserted; i++) {
+                for (int i = 0; i <= hunk.inserted; i++) {
                     rightHunkMap.put(hunk.line1 + i, hunk);
                 }
             }
