@@ -22,7 +22,7 @@
 			<include name="*.jar" />
 		</fileset>
 	</path>
-
+	
 	<selector id="extraFiles">
 		<and>
 			<or>
@@ -31,12 +31,18 @@
 			</or>
 		</and>
 	</selector>
-
+	
 	<target name="build.prepare">
 		<!-- Before the build, copy all the configuration files to the classes directory. -->
 		<copy todir="${build.classes}" includeEmptyDirs="false">
 			<fileset dir="${conf.dir}">
 				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!-- and copy all the docs to the build.docs directory as well. -->
+		<copy todir="${build.docs}" includeEmptyDirs="false">
+			<fileset dir="${basedir}">
+				<include name="docs/**/*" />
 			</fileset>
 		</copy>
 	</target>
