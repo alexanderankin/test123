@@ -211,6 +211,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     if ( hunk.deleted == 0 ) {
                         color = JDiffPlugin.overviewInvalidColor;
                         leftRectangle.height = 1;
+                        System.out.println("+++++ set height = 1" );
                     }
                     else {
                         color = hunk.inserted == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
@@ -530,6 +531,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         }
 
         // clear the current hunk cursors, if any
+        if ( leftRectangle == null || rightRectangle == null ) {
+            return;
+        }
         DiffTextAreaModel model = diffLocalOverview.getModel();
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
         int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
