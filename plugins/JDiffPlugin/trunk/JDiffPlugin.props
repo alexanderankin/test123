@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens, Dale Anson
-plugin.jdiff.JDiffPlugin.version=1.8.0
+plugin.jdiff.JDiffPlugin.version=1.9.0
 plugin.jdiff.JDiffPlugin.docs=docs/index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
@@ -46,8 +46,8 @@ jdiff.diff-btn.label=Diff
 jdiff.refresh-diff.label=Refresh diff
 jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
-jdiff.move-right.label=Move Current Diff Right
-jdiff.move-left.label=Move Current Diff Left
+jdiff.move-right.label=Move current diff block to right
+jdiff.move-left.label=Move current diff block to left
 jdiff.unsplit.label=Unsplit
 jdiff.refresh.label=Refresh
 jdiff.swap-textareas.label=Swap text areas
