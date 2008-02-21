@@ -362,6 +362,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         if ( model == null ) {
             return ;
         }
+        JEditTextArea leftTextArea = model.getLeftTextArea();
+        JEditTextArea rightTextArea = model.getRightTextArea();
+
         Diff.Change hunk = model.getEdits();
         for ( ; hunk != null; hunk = hunk.link ) {
             // find the hunk pertaining to this line number
@@ -371,23 +374,29 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             if ( hunk.line0 > line_number ) {
                 // after this line, didn't find a line with a corresponding hunk
-                model.getLeftTextArea().getToolkit().beep();
+                leftTextArea.getToolkit().beep();
                 break;
             }
 
             // on a line with a right arrow --
             // get the text from the left text area to move to the right
-            JEditTextArea rightTextArea = model.getRightTextArea();
-            String line_separator = rightTextArea.getBuffer().getStringProperty( "lineSeparator" );
-            StringBuffer sb = new StringBuffer();
-            for ( int i = 0; i < hunk.deleted; i++ ) {
-                sb.append( model.getLeftTextArea().getLineText( hunk.line0 + i ) ).append( line_separator );
+            leftTextArea.selectNone();
+            int start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
+            int end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
+            leftTextArea.setCaretPosition( start_sel );
+            Selection.Range leftSelection;
+            if ( hunk.deleted == 0 ) {
+                leftSelection = new Selection.Range( start_sel, start_sel );
             }
+            else {
+                leftSelection = new Selection.Range( start_sel, end_sel );
+            }
+            String leftText = leftTextArea.getSelectedText(leftSelection);
 
             // replace text on right with text from left
             rightTextArea.selectNone();
-            int start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
-            int end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
+            start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
+            end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
             rightTextArea.setCaretPosition( start_sel );
             Selection.Range selection;
             if ( hunk.inserted == 0 ) {
@@ -396,7 +405,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             else {
                 selection = new Selection.Range( start_sel, end_sel );
             }
-            rightTextArea.setSelectedText( selection, sb.toString() );
+            rightTextArea.setSelectedText( selection, leftText );
             rightTextArea.selectNone();
             DualDiff.refreshFor( rightTextArea.getView() );
             break;
@@ -428,25 +437,32 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             // on a line with a left arrow --
             // get the text from the right text area to move to the left
-            String line_separator = leftTextArea.getBuffer().getStringProperty( "lineSeparator" );
-            StringBuffer sb = new StringBuffer();
-            for ( int i = 0; i < hunk.inserted; i++ ) {
-                sb.append( rightTextArea.getLineText( hunk.line1 + i ) ).append( line_separator );
+            rightTextArea.selectNone();
+            int start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
+            int end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
+            rightTextArea.setCaretPosition( start_sel );
+            Selection.Range rightSelection;
+            if ( hunk.inserted == 0 ) {
+                rightSelection = new Selection.Range( start_sel, start_sel );
             }
+            else {
+                rightSelection = new Selection.Range( start_sel, end_sel );
+            }
+            String rightText = rightTextArea.getSelectedText(rightSelection);
 
             // replace text on left with text from right
             leftTextArea.selectNone();
-            int start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
-            int end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
+            start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
+            end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
             leftTextArea.setCaretPosition( start_sel );
-            Selection.Range selection;
+            Selection.Range leftSelection;
             if ( hunk.deleted == 0 ) {
-                selection = new Selection.Range( start_sel, start_sel );
+                leftSelection = new Selection.Range( start_sel, start_sel );
             }
             else {
-                selection = new Selection.Range( start_sel, end_sel );
+                leftSelection = new Selection.Range( start_sel, end_sel );
             }
-            leftTextArea.setSelectedText( selection, sb.toString() );
+            leftTextArea.setSelectedText( leftSelection, rightText );
             leftTextArea.selectNone();
             DualDiff.refreshFor( leftTextArea.getView() );
             break;
