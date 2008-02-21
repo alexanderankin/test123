@@ -23,6 +23,8 @@ import com.fooware.net.*;
 import com.fooware.net.proxy.Proxy;
 import com.fooware.net.proxy.ProxyHTTP;
 
+import ftp.FtpVFS.FtpDirectoryEntry;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -415,14 +417,13 @@ class FtpConnection extends Connection
 			client.dataPort();
 	}
 
-	private ArrayList _listDirectory(boolean tryHiddenFiles)
+	private ArrayList<FtpDirectoryEntry> _listDirectory(boolean tryHiddenFiles)
 		throws IOException
 	{
 		BufferedReader in = null;
 
-		try
-		{
-			ArrayList directoryVector = new ArrayList();
+		try {
+			ArrayList<FtpDirectoryEntry> directoryVector = new ArrayList<FtpDirectoryEntry>();
 
 			setupSocket();
 			Reader _in = (tryHiddenFiles ? client.list("-a") : client.list());
