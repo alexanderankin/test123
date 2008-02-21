@@ -151,7 +151,7 @@ public class DualDiff implements EBComponent {
                 // Not concerned by this message
                 return ;
             }
-            if ( bu.getWhat() == BufferUpdate.LOADED ) {
+            if ( bu.getWhat() == BufferUpdate.LOADED || bu.getWhat() == BufferUpdate.SAVED || bu.getWhat() == BufferUpdate.DIRTY_CHANGED ) {
                 this.refresh();
             }
         }
