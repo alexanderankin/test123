@@ -188,15 +188,26 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         }
     }
 
+    // draw the diff areas in the left rectangle
     private void fillLeft( Graphics gfx, DiffTextAreaModel model ) {
+        // get the visible lines, only need to draw hunks between these lines
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
         int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
+
+        // map of line number to hunk
         HashMap<Integer, Diff.Change> leftHunkMap = model.getLeftHunkMap();
+
+        // output color for diff area
         Color color;
+
         if (leftHunkMap != null) {
+            // go through each of the visible lines, see if there is a corresponding
+            // diff for that line
             for ( int i = leftFirstLine; i <= leftLastLine; i++ ) {
                 Diff.Change hunk = leftHunkMap.get( i );
                 if ( hunk != null ) {
+                    // found a diff for a line, set the color and size.  Set the
+                    // size all at once for the height of the hunk to minimize looping.
                     if ( hunk.deleted == 0 ) {
                         color = JDiffPlugin.overviewInvalidColor;
                         leftRectangle.height = 1;
@@ -207,13 +218,26 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     }
                     leftRectangle.y = centerRectangle.y + ( ( i - leftFirstLine ) * pixelsPerLine );
                     gfx.setColor( color );
+
+                    // draw the hunk
                     gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
+
+                    // skip any other lines covered by this hunk
                     i += Math.max(hunk.deleted, 1);
                 }
             }
+
+            // if the left text area is the active area and the caret line for the
+            // left text area is in a hunk, draw the hunk cursor to indicate the
+            // current hunk.  Don't trigger a paintCurrentHunkCursor just because
+            // the caret line is in a hunk, the caret doesn't move in the inactive
+            // text area, the caret in the inactive text area shouldn't trigger a
+            // hunk cursor repaint, only the caret in the active text area should
+            // do that.
             int caret_line = model.getLeftTextArea().getCaretLine();
             Diff.Change hunk = leftHunkMap.get(caret_line);
-            if (hunk != null) {
+            // here's a NPE waiting to happen...
+            if (hunk != null && model.getLeftTextArea().getView().getEditPane().getTextArea().equals(model.getLeftTextArea())) {
                 paintCurrentHunkCursor(gfx, hunk);
             }
         }
@@ -244,7 +268,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             }
             int caret_line = model.getRightTextArea().getCaretLine();
             Diff.Change hunk = rightHunkMap.get(caret_line);
-            if (hunk != null) {
+            if (hunk != null && model.getRightTextArea().getView().getEditPane().getTextArea().equals(model.getRightTextArea())) {
                 paintCurrentHunkCursor(gfx, hunk);
             }
         }
@@ -253,6 +277,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     private void fillCenter( Graphics gfx, DiffTextAreaModel model ) {
         // draw a line to connect corresponding differences in the left and
         // right rectangles.  Draw a right and left arrow.
+        // TODO:  optimize to use the hunk maps from the model rather than looping
         Diff.Change hunk = model.getEdits();
         JEditTextArea textArea0 = model.getLeftTextArea();
         JEditTextArea textArea1 = model.getRightTextArea();
@@ -311,6 +336,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             }
         }
     }
+
     public void mouseClicked( MouseEvent e ) {
         DiffTextAreaModel model = diffLocalOverview.getModel();
         if ( model == null ) {
@@ -331,6 +357,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     // copies a diff starting at the given line number in the left text area and
     // replaces the corresponding diff in the right text area
     public void moveRight( int line_number ) {
+        // TODO:  optimize to use the hunk maps from the model rather than looping
         DiffTextAreaModel model = diffLocalOverview.getModel();
         if ( model == null ) {
             return ;
@@ -379,6 +406,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     // copies a diff starting at the given line number in the right text area and
     // replaces the corresponding diff in the left text area
     public void moveLeft( int line_number ) {
+        // TODO:  optimize to use the hunk maps from the model rather than looping
         DiffTextAreaModel model = diffLocalOverview.getModel();
         if ( model == null ) {
             return ;
@@ -430,6 +458,10 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     public void mousePressed( MouseEvent e ) {}
     public void mouseReleased( MouseEvent e ) {}
 
+    /**
+     * Handle caret movement in the text areas, paint the hunk cursors as
+     * appropriate.
+     */
     public void caretUpdate( final CaretEvent e ) {
         if ( e.getSource().equals( diffLocalOverview.getModel().getLeftTextArea() ) ) {
             paintCurrentHunkCursor( null, inLeftHunk() );
@@ -439,6 +471,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         }
     }
 
+    // check if the caret line in the left text area is in a hunk.  If so, return
+    // the hunk, otherwise, return null.
     private Diff.Change inLeftHunk() {
         DiffTextAreaModel model = diffLocalOverview.getModel();
         HashMap<Integer, Diff.Change> leftHunkMap = model.getLeftHunkMap();
@@ -451,6 +485,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         return null;
     }
 
+    // check if the caret line in the right text area is in a hunk.  If so, return
+    // the hunk, otherwise, return null.
     private Diff.Change inRightHunk() {
         DiffTextAreaModel model = diffLocalOverview.getModel();
         HashMap<Integer, Diff.Change> rightHunkMap = model.getRightHunkMap();
@@ -464,6 +500,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     }
 
     /**
+     * Paint the cursors for the current hunk.  The "current" hunk is the hunk
+     * in the active text area that contains the caret for that text area.
      * @param gfx graphics context, if null, will use graphics context from diffLocalOverview component
      * @param currentHunk the diff to draw cursors for.  If null, will clear all cursors.
      */
@@ -472,7 +510,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             gfx = diffLocalOverview.getGraphics();
         }
         if ( gfx == null ) {
-            return ;
+            return ;        // no graphics context to draw on
         }
 
         // clear the current hunk cursors, if any
