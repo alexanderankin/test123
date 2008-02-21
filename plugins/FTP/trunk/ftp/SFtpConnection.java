@@ -24,6 +24,8 @@ package ftp;
 
 import com.jcraft.jsch.*;
 
+import ftp.FtpVFS.FtpDirectoryEntry;
+
 import java.io.*;
 import java.util.*;
 import javax.swing.JOptionPane;
@@ -101,12 +103,12 @@ public class SFtpConnection extends Connection implements UserInfo
 	
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
-		ArrayList listing = new ArrayList();
+		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();
 		int count=0;
 		
 		try
 		{
-			java.util.Vector vv=sftp.ls(path);
+			Vector vv = sftp.ls(path);
 			if(vv!=null) {
 				for(int ii=0; ii<vv.size(); ii++){
 					Object obj=vv.elementAt(ii);

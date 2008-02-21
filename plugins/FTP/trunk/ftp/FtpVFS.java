@@ -47,6 +47,9 @@ public class FtpVFS extends VFS
 	public static final String FTP_PROTOCOL = "ftp";
 	public static final String SFTP_PROTOCOL = "sftp";
 	
+	public static final String EA_OWNER_USER = "user";
+	public static final String EA_OWNER_GROUP = "group";
+	
 	// same as File VFS permissions key!
 	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
 	
@@ -245,11 +248,15 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	//{{{ FtpDirectoryEntry class
+	@SuppressWarnings("serial")
 	static class FtpDirectoryEntry extends VFSFile
 	{
 		public static final int LINK = 10;
 		int permissions;
 		String permissionString;
+		
+		private String ownerUser;
+		private String ownerGroup;
 		
 		public FtpDirectoryEntry(String name, String path,
 			String deletePath, int type, long length,
@@ -263,21 +270,28 @@ public class FtpVFS extends VFS
 		
 		public String getExtendedAttribute(String name)
 		{
+			if (name.equals(FtpVFS.EA_OWNER_USER))
+				return ownerUser;
+			if (name.equals(FtpVFS.EA_OWNER_GROUP))
+				return ownerGroup;
 			if(name.equals(EA_TYPE) || name.equals(EA_SIZE))
 				return super.getExtendedAttribute(name);
-			else if(name.equals(EA_STATUS))
+			if(name.equals(EA_STATUS))
 				return permissionString;
-			else
-				return null;
+			return null;
 		}
+		
+		public void setOwner(String name, String group) {
+			this.ownerUser = name==null || name.equals("") ? null : name;
+			this.ownerGroup = group==null || group.equals("") ? null : group;
+		}
+		
 	} //}}}
 	
 	//{{{ _getFile() method
 	// this method is severely broken, and in many cases, most fields
 	// of the returned directory entry will not be filled in.
-	public VFSFile _getFile(Object _session, String path,
-		Component comp)
-	throws IOException
+	public VFSFile _getFile(Object _session, String path, Component comp) throws IOException
 	{
 		Connection session = getConnection(_session);
 		
@@ -286,8 +300,7 @@ public class FtpVFS extends VFS
 		FtpDirectoryEntry dirEntry = session.getDirectoryEntry(address.path);
 		if(dirEntry != null)
 		{
-			if(dirEntry.getType() == FtpDirectoryEntry.LINK)
-			{
+			if(dirEntry.getType() == FtpDirectoryEntry.LINK) {
 				String parentPath = MiscUtilities.getParentOfPath(path);
 				resolveSymlink(_session,parentPath,dirEntry);
 			}
@@ -304,18 +317,10 @@ public class FtpVFS extends VFS
 				if(buffer != null)
 				{
 					Log.log(Log.DEBUG,this,
-						path
-						+ " has permissions 0"
-						+ Integer.toString(
-							dirEntry.permissions,8));
-					
-					buffer.setIntegerProperty(PERMISSIONS_PROPERTY,
-						dirEntry.permissions);
-				}
-				else
-				{
-					//Log.log(Log.ERROR,this,
-						//	path + " not open?");
+						path + " has permissions 0" + Integer.toString(dirEntry.permissions,8));
+					buffer.setIntegerProperty(PERMISSIONS_PROPERTY, dirEntry.permissions);
+				} else {
+					//Log.log(Log.ERROR,this, path + " not open?");
 				}
 			}
 		}
@@ -492,8 +497,7 @@ public class FtpVFS extends VFS
 				entry.setType(FtpDirectoryEntry.FILE);
 			else if(linkDirEntry.getType() == FtpDirectoryEntry.LINK)
 			{
-				Log.log(Log.WARNING,this,entry.getName()
-					+ ": Not following more than one symbolic link");
+				Log.log(Log.WARNING,this,entry.getName() + ": Not following more than one symbolic link");
 				entry.setType(FtpDirectoryEntry.FILE);
 				entry.permissions = 600;
 			}
