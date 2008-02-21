@@ -4,6 +4,7 @@ plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.version= 0.0.0
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.author=Eric Berry
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.docs=/docs/lucenePlugin.html
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.depend.0=jedit 04.03.12.00
+plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.depend.1=plugin com.townsfolkdesigns.swixml.jedit.SwiXmlPlugin 1.149
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.jars=lucene.jar
 plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.menu=luceneplugin.menu \
  - \
