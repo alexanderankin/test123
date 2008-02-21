@@ -298,7 +298,6 @@ public class ConnectionManager
 	
 	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info) throws IOException {
-		Log.log(Log.DEBUG, ConnectionManager.class, "getConnection("+info+"), pass=" + info.getPassword()+", hashCode="+info.hashCode());
 		Connection connect = null;
 		synchronized(lock) {
 			for(int i = 0; i < connections.size(); i++) {
