@@ -257,7 +257,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         rightRectangle.height = 1;
                     }
                     else {
-                        color = hunk.deleted == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
+                        color = hunk.deleted == 0 ? JDiffPlugin.overviewInsertedColor : JDiffPlugin.overviewChangedColor;
                         rightRectangle.height = Math.max( 1, pixelsPerLine * hunk.inserted );
                     }
                     rightRectangle.y = centerRectangle.y + ( ( i - rightFirstLine ) * pixelsPerLine );
