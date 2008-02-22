@@ -123,7 +123,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         // tooltips
         diff.setToolTipText( jEdit.getProperty( "jdiff.diff-btn.label", "Diff" ) );
         next.setToolTipText( jEdit.getProperty( "jdiff.next-diff.label", "Go to next diff" ) );
-        prev.setToolTipText( jEdit.getProperty( "jdiff.move-right.label", "Go to previous diff" ) );
+        prev.setToolTipText( jEdit.getProperty( "jdiff.prev-diff.label", "Go to previous diff" ) );
         unsplit.setToolTipText( jEdit.getProperty( "jdiff.unsplit.label", "Unsplit" ) );
         swap.setToolTipText( jEdit.getProperty( "jdiff.swap-textareas", "Swap text areas" ) );
         move_right.setToolTipText( jEdit.getProperty( "jdiff.move-right.label", "Move diff to right" ) );
