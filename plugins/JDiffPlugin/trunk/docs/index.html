@@ -131,9 +131,9 @@
         blocks from the original and the revision relate to each other. Merging
         between files can be performed by clicking
         a right arrow in the local overview, which will select the corresponding text
-        from the original and replace the related text in the revision.  Clicking
-        a left arrow in the local overview will select the corresponding text
-        from the revision and replace the related text in the original.
+        from the original and replace the related text in the revision.  The blocks to be merged are indicated by vertical black bars so it is obvious which code is moving. Clicking
+        a left arrow in the local overview will select the corresponding text block
+        from the revision and replace the related text in the original. Note that the code moves are by block, not by line, so the entire diff will be moved.
         </p>
 
         <h3>Global overview</h3>
@@ -150,7 +150,7 @@
         <h3>Line overview</h3>
         <p>
         The line overview shows character-by-character differences between the
-        current cursor lines.
+        current cursor lines within a diff block.  This makes it easy to see the difference of even a single character change between the left and right lines.  This overview only shows one line at a time of the diff block, move the cursor within the block to see the individual line differences for each line.
         </p>
 
         <h3>Merge controls</h3>
@@ -159,21 +159,21 @@
         </p>
         <p>
         <ol>
-        <li>Start a diff.</li>
-        <li>Unsplit the view, which ends the diff session.</li>
-        <li>Move to next diff.</li>
-        <li>Move current diff to right.  This replaces the diff on the right
-        with the text from the left diff.</li>
-        <li>Move current diff to left.  This replaces the diff on the left
-        with the text from the right diff.</li>
-        <li>Move to previous diff.</li>
-        <li>Swap text areas, that is, put the file that was on the left on
+        <li><img src="diff.jpg"></img>&nbsp; Start a diff.</li>
+        <li><img src="unsplit.jpg"></img>&nbsp; Unsplit the view, which ends the diff session.</li>
+        <li><img src="next_diff.jpg"></img>&nbsp; Move to next diff.</li>
+        <li><img src="move_right.jpg"></img>&nbsp; Move current diff to right.  This replaces the diff block on the right
+        with the text from the left diff block.</li>
+        <li><img src="move_left.jpg"></img>&nbsp; Move current diff to left.  This replaces the diff block on the left
+        with the text from the right diff block.</li>
+        <li><img src="prev_diff.jpg"></img>&nbsp; Move to previous diff.</li>
+        <li><img src="swap.jpg"></img>&nbsp; Swap text areas, that is, put the file that was on the left on
         the right, and put the file that was on the right on the left.</li>
-        <li>Refresh the diff.</li>
+        <li><img src="refresh.jpg"></img>&nbsp; Refresh the diff.</li>
         </ol>
         </p>
         <p>
-        The merge controls can also be displayed vertically or in a compact form, and with or without the line overview.  The vertical display is convenient for the left or right docking areas.  The horizontal layout works well in the top or bottom docking areas.  The compact layout uses less vertical space in the top or bottom docking areas when the line overview is also displayed.
+        The merge controls can also be displayed vertically or in a compact form (as shown in the image above), and with or without the line overview.  The vertical display is convenient for the left or right docking areas.  The horizontal layout works well in the top or bottom docking areas.  The compact layout uses less vertical space in the top or bottom docking areas when the line overview is also displayed.
         </p>
 
 <hr>
@@ -181,7 +181,9 @@
 
 <a name="other_commands">
     <h3>Other commands</h3>
-
+<p>
+These commands are available on the plugin menu:
+</p>
     <ul>
         <li><p>
             <b>Refresh</b>:
@@ -224,7 +226,9 @@
 <a name="options">
     <h3>Options</h3>
 
-
+<p>
+These settings can be made in the JDiff options panel, Plugins -&gt; Plugin Options... -&gt; JDiff Plugin
+</p>
         <h3>Line comparison options</h3>
 
         <p>You can configure how JDiff compares lines by default. JDiff can:</p>
