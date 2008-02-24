@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel name="view" constraints="BorderLayout.CENTER" layout="GridBagLayout" size="480, 75">
-	<label text="Enter File Name:" horizontaltextposition="SwingConstants.LEFT">
+<panel name="view" constraints="BorderLayout.CENTER" layout="GridBagLayout" size="480, 75" minimumsize="480, 75" maximumsize="480, 75">
+	<label horizontalAlignment="LEFT">
 		<gridbagconstraints id="gbc" insets="0,6,0,2" gridx="0" gridy="0" weightx="1" weighty="0" fill="GridBagConstraints.BOTH" />
 		<![CDATA[<html><b>Enter File Name:</b></html>]]>
 	</label>

@@ -21,10 +21,12 @@
  */
 package com.townsfolkdesigns.lucene.jedit;
 
+import org.gjt.sp.jedit.EditPlugin;
+
 /**
  *
  * @author eberry
  */
-public class LucenePlugin {
+public class LucenePlugin extends EditPlugin {
 
 }
