@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel name="view" constraints="BorderLayout.CENTER" layout="GridBagLayout">
+	<panel border="TitledBorder(Preferences)" layout="GridBagLayout">
+		<gridbagconstraints id="gbc" gridx="0" gridy="0" weightx="1" weighty="0" fill="GridBagConstraints.BOTH" />
+		<!-- Row 1 - Index storage location. -->
+		<label text="Index Store:" horizontalAlignment="RIGHT">
+			<gridbagconstraints id="gbc1" insets="2,2,2,2" gridx="0" gridy="0" weightx="0" weighty="0" fill="GridBagConstraints.HORIZONTAL" />
+		</label>
+		<textfield name="indexStore">
+			<gridbagconstraints use="gbc1" gridx="1" weightx="1" />
+		</textfield>
+		<button text="Browse">
+			<gridbagconstraints use="gbc1" gridx="2" weightx="0" />
+		</button>
+		<!-- Row 2 - Index interval. -->
+		<label text="Index Interval:" horizontalAlignment="RIGHT">
+			<gridbagconstraints use="gbc1" gridx="0" gridy="1" />
+		</label>
+		<textfield name="indexInterval" columns="10" horizontalAlignment="LEFT">
+			<gridbagconstraints use="gbc1" gridx="1" gridy="1" weightx="1" fill="GridBagConstraints.NONE" anchor="GridBagConstraints.WEST"/>
+		</textfield>
+		<label text="(milliseconds)" horizontalAlignment="RIGHT">
+			<gridbagconstraints use="gbc1" gridx="2" gridy="1" weightx="0" fill="GridBagConstraints.HORIZONTAL" />
+		</label>
+		<!-- Row 3 - Automatically index projects files. -->
+		<checkbox name="indexProjects" text="Automatically index project files.">
+			<gridbagconstraints use="gbc1" gridx="1" gridy="2" weightx="0" weighty="0" />
+		</checkbox>
+	</panel>
+	<panel border="TitledBorder(Directories)">
+		<gridbagconstraints use="gbc" gridy="1" weighty="1" />
+	</panel>
+</panel>
