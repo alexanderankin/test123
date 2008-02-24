@@ -20,13 +20,7 @@
 
 package jdiff.options;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JColorChooser;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.gui.ColorWellButton;

@@ -981,7 +981,6 @@ public class DualDiff implements EBComponent {
             else if ( textArea == DualDiff.this.textArea1 ) {
                 SwingUtilities.invokeLater( this.syncWithLeftHoriz );
             }
-            else {}
         }
 
         public void scrolledVertically( TextArea textArea ) {
@@ -991,7 +990,6 @@ public class DualDiff implements EBComponent {
             else if ( textArea == DualDiff.this.textArea1 ) {
                 SwingUtilities.invokeLater( this.syncWithLeftVert );
             }
-            else {}
         }
 
         public void focusGained( FocusEvent e ) {

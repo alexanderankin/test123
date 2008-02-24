@@ -22,7 +22,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -33,8 +32,6 @@ import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 
@@ -211,7 +208,6 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     if ( hunk.deleted == 0 ) {
                         color = JDiffPlugin.overviewInvalidColor;
                         leftRectangle.height = 1;
-                        System.out.println("+++++ set height = 1" );
                     }
                     else {
                         color = hunk.inserted == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;

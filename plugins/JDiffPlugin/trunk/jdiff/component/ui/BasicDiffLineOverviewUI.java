@@ -23,15 +23,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import jdiff.DualDiff;
 import jdiff.component.*;
 
 public class BasicDiffLineOverviewUI extends DiffLineOverviewUI implements ChangeListener {

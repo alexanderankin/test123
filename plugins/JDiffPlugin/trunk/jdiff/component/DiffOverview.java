@@ -23,13 +23,10 @@
 package jdiff.component;
 
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 
 import jdiff.DualDiff;
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public abstract class DiffOverview extends JComponent {

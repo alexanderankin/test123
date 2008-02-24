@@ -20,7 +20,6 @@
 package jdiff.component;
 
 import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
 import jdiff.component.ui.*;
 
 import jdiff.DualDiff;
