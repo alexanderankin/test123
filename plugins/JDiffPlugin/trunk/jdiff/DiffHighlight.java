@@ -23,24 +23,16 @@ package jdiff;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-
-import java.awt.event.MouseEvent;
 
 import java.util.HashMap;
 
 import jdiff.util.Diff;
 
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-
-import org.gjt.sp.util.Log;
 
 
 public class DiffHighlight extends TextAreaExtension {

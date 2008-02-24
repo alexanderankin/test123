@@ -28,13 +28,10 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.ComponentUI;
 
 import jdiff.DualDiff;
-import jdiff.component.DiffLineModel;
 import jdiff.component.ui.*;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;

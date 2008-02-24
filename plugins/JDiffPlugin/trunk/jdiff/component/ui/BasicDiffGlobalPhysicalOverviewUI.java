@@ -22,33 +22,22 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 
-import jdiff.DualDiff;
 import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
 
 public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOverviewUI implements MouseListener {
 
     private DiffGlobalPhysicalOverview diffGlobalPhysicalOverview;
     private LocalRendererPane localRendererPane;
 
-    private Rectangle leftBorder;
-    private Rectangle rightBorder;
     private double pixelsPerLine = 1;
-    private int leftVisibleLineCount;
-    private int rightVisibleLineCount;
     private Rectangle leftRectangle;
     private Rectangle rightRectangle;
-    private Rectangle centerRectangle;
 
     public static ComponentUI createUI( JComponent c ) {
         return new BasicDiffGlobalPhysicalOverviewUI();
@@ -138,8 +127,6 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
 
             leftRectangle = new Rectangle( left );
             rightRectangle = new Rectangle( right );
-
-            Rectangle cursor = new Rectangle( inner.x + inner.width / 2 - 1, inner.y, 2, 0 );
 
             Color leftColor = JDiffPlugin.overviewInvalidColor;
             Color rightColor = JDiffPlugin.overviewInvalidColor;

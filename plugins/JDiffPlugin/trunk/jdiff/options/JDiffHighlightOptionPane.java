@@ -20,13 +20,7 @@
 
 package jdiff.options;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JColorChooser;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.gui.ColorWellButton;
@@ -51,8 +45,8 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
         this.highlightChangedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-changed-color"));
         this.highlightDeletedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-deleted-color"));
         this.highlightInsertedLineColor = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-inserted-color"));
-        
-	this.highlightInvalidLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-invalid-color"));
+
+    this.highlightInvalidLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-invalid-color"));
 
         // Highlight colors
         addComponent(this.createLabel("options.jdiff.highlight"));
@@ -92,7 +86,7 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
         );
     }
 
-    
+
     private JLabel createLabel(String property) {
         return new JLabel(jEdit.getProperty(property));
     }

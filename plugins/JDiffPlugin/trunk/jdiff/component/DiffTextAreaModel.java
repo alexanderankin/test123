@@ -19,7 +19,6 @@
 
 package jdiff.component;
 
-import java.awt.Color;
 import java.util.*;
 
 import jdiff.*;

@@ -291,7 +291,7 @@ public class Diff {
 
             int d = diag ( xoff, xlim, yoff, ylim );
             int c = cost;
-            int f = fdiag[ fdiagoff + d ];
+            //int f = fdiag[ fdiagoff + d ];
             int b = bdiag[ bdiagoff + d ];
 
             if ( c == 1 ) {
