@@ -6,7 +6,7 @@ plugin.lisppaste.LispPastePlugin.docs=index.html
 
 plugin.lisppaste.LispPastePlugin.depend.0=jedit 04.02.99.00
 plugin.lisppaste.LispPastePlugin.depend.1=jdk 1.4
-plugin.lisppaste.LispPastePlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.5
+plugin.lisppaste.LispPastePlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.6
 
 plugin.lisppaste.LispPastePlugin.menu-item=make-lisp-paste
 
