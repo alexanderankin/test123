@@ -51,7 +51,7 @@ public class SwiXmlPlugin extends EBPlugin {
       TextArea textArea = view.getTextArea();
       String bufferText = textArea.getText();
       StringReader reader = new StringReader(bufferText);
-      SwingEngine swingEngine = new SwingEngine();
+      SwingEngine swingEngine = new JEditSwingEngine();
       Container container = null;
       try {
          container = swingEngine.render(reader);
@@ -67,7 +67,7 @@ public class SwiXmlPlugin extends EBPlugin {
       String[] selectedFiles = fileChooserDialog.getSelectedFiles();
       if (selectedFiles != null && selectedFiles.length == 1) {
          File selectedFile = new File(selectedFiles[0]);
-         SwingEngine swingEngine = new SwingEngine();
+         SwingEngine swingEngine = new JEditSwingEngine();
          Container container = null;
          try {
             container = swingEngine.render(selectedFile);
