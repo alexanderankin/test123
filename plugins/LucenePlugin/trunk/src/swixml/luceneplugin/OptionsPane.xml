@@ -4,30 +4,54 @@
 		<gridbagconstraints id="gbc" gridx="0" gridy="0" weightx="1" weighty="0" fill="GridBagConstraints.BOTH" />
 		<!-- Row 1 - Index storage location. -->
 		<label text="Index Store:" horizontalAlignment="RIGHT">
-			<gridbagconstraints id="gbc1" insets="2,2,2,2" gridx="0" gridy="0" weightx="0" weighty="0" fill="GridBagConstraints.HORIZONTAL" />
+			<gridbagconstraints id="gbc1" insets="2,2,0,2" gridx="0" gridy="0" weightx="0" weighty="0" fill="GridBagConstraints.HORIZONTAL" />
 		</label>
 		<textfield name="indexStore">
-			<gridbagconstraints use="gbc1" gridx="1" weightx="1" />
+			<gridbagconstraints use="gbc1" insets="2,7,2,2" gridx="1" weightx="1" />
 		</textfield>
 		<button text="Browse">
-			<gridbagconstraints use="gbc1" gridx="2" weightx="0" />
+			<gridbagconstraints use="gbc1" insets="2,2,2,2" gridx="2" weightx="0" />
 		</button>
 		<!-- Row 2 - Index interval. -->
 		<label text="Index Interval:" horizontalAlignment="RIGHT">
 			<gridbagconstraints use="gbc1" gridx="0" gridy="1" />
 		</label>
-		<textfield name="indexInterval" columns="10" horizontalAlignment="LEFT">
+		<panel>
 			<gridbagconstraints use="gbc1" gridx="1" gridy="1" weightx="1" fill="GridBagConstraints.NONE" anchor="GridBagConstraints.WEST"/>
-		</textfield>
-		<label text="(milliseconds)" horizontalAlignment="RIGHT">
-			<gridbagconstraints use="gbc1" gridx="2" gridy="1" weightx="0" fill="GridBagConstraints.HORIZONTAL" />
+			<textfield name="indexInterval" columns="10" horizontalAlignment="LEFT" />
+			<label text="(milliseconds)" horizontalAlignment="RIGHT" />
+		</panel>
+		<!-- Row 3 - File name regex. -->
+		<label text="File Name Regex:" horizontalAlignment="RIGHT">
+			<gridbagconstraints use="gbc1" gridx="0" gridy="2" />
 		</label>
-		<!-- Row 3 - Automatically index projects files. -->
+		<textfield name="fileNameRegex" text="\.(java|jsp|properties)">
+			<gridbagconstraints use="gbc1" insets="2,7,2,2" gridx="1" gridy="2" weightx="1" />
+		</textfield>
+		<!-- Row 4 - Automatically index projects files. -->
 		<checkbox name="indexProjects" text="Automatically index project files.">
-			<gridbagconstraints use="gbc1" gridx="1" gridy="2" weightx="0" weighty="0" />
+			<gridbagconstraints use="gbc1" gridx="1" gridy="3" weightx="0" weighty="0" />
 		</checkbox>
 	</panel>
-	<panel border="TitledBorder(Directories)">
+	<panel border="TitledBorder(Directories)" layout="GridBagLayout">
 		<gridbagconstraints use="gbc" gridy="1" weighty="1" />
+		<!-- Directory List -->
+		<scrollpane>
+			<gridbagconstraints id="gbc2" gridx="0" gridy="0" weightx="1" weighty="1" fill="GridBagConstraints.BOTH"/>
+			<list name="directoryList"></list>
+		</scrollpane>
+		<!-- Action Panel -->
+		<panel layout="GridBagLayout">
+			<gridbagconstraints use="gbc2" gridx="0" gridy="1" weightx="1" weighty="0" fill="GridBagConstraints.BOTH"/>
+			<rolloverbutton icon="org/gjt/sp/jedit/icons/Plus.png">
+				<gridbagconstraints id="gbc3" insets="0,0,0,0" ipadx="0" ipady="0" gridx="0" gridy="0" weightx="0" weighty="0" fill="GridBagConstraints.NONE" />
+			</rolloverbutton>
+			<rolloverbutton icon="org/gjt/sp/jedit/icons/Minus.png">
+				<gridbagconstraints use="gbc3" insets="0,0,0,0" ipadx="0" ipady="0" gridx="1" weightx="0" weighty="0"  fill="GridBagConstraints.NONE" />
+			</rolloverbutton>
+			<label text="">
+				<gridbagconstraints use="gbc3" gridx="2" weightx="1" />
+			</label>
+		</panel>
 	</panel>
 </panel>

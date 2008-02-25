@@ -18,3 +18,8 @@ luceneplugin.actions.findfiles.label=Find Files
 luceneplugin.actions.search.label=Search Files
 luceneplugin.actions.refresh.label=Refresh Index
 luceneplugin.dockables.findfiles.title=Find Files
+
+plugin.com.townsfolkdesigns.lucene.jedit.LucenePlugin.option-pane=luceneplugin.optionpane
+
+options.luceneplugin.optionpane.label=Lucene Plugin
+options.luceneplugin.optionpane.code=new com.townsfolkdesigns.lucene.jedit.LucenePluginOptionPane();
