@@ -25,6 +25,8 @@ package xsearch;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.search.BufferListSet;
+import org.gjt.sp.util.StringList;
+
 import projectviewer.vpt.*;
 import projectviewer.*;
 //}}}
@@ -74,9 +76,9 @@ public class ProjectViewerListSet extends BufferListSet
 			// VPTProject vptProject = vptNode.findProjectFor(vptNode);
 			org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, BeanShell.class,"+++ ProjectViewerListSet.68: VPTproject = "+vptNode);
 			Collection vptNodeColl = ((VPTProject)vptNode).getOpenableNodes();
-			ArrayList al = new ArrayList();
+			StringList al = new StringList();
 			// org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, BeanShell.class,"+++ .9: fileColl = "+vptNodeColl);
-			for (Iterator it = vptNodeColl.iterator(); it.hasNext(); ) 
+			for (Iterator<VPTNode> it = vptNodeColl.iterator(); it.hasNext(); ) 
 			{
 				vptNode = (VPTNode)it.next();
 				if (vptNode.isFile())
@@ -85,7 +87,7 @@ public class ProjectViewerListSet extends BufferListSet
 					al.add(vptNode.getNodePath());
 				}
 			}
-			return (String[])al.toArray(new String[0]);
+			return al.toArray();
 		}
 		return null;
 	}

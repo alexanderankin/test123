@@ -60,7 +60,12 @@ A copy of the license can be found in the file
 If you select from the popup menu, the according RE is inserted in the search field or in the replace field at the caret position. Any selected text is replaced.
 </para>
 
-<para> The particular flavor of regular expressions supported in XSearch is <literal>gnu.regexp</literal>. This is not the same language or processor as <literal>java.util.regex</literal>. It's old, and has its own quirks, but some say it is more reliable for complex expressions which cause Sun's engine to choke with infinite loops. 
+<para> The particular flavor of regular expressions supported in XSearch is
+<literal>gnu.regexp</literal>. This is not the same language or processor as Sun's
+<literal>java.util.regex</literal>. It's old, and has its own quirks, but
+some say it is more reliable for complex expressions which can cause Sun's
+engine to choke due to infinite recursion analyzing specific patterns against
+specific text.
 </para>
 
 <para>
@@ -569,7 +574,7 @@ xsearch.SearchSettings.pop();
 		<para>Toggles the font used for the search and replace textareas. The textArea font is usually
       fixed width, therefore better readable.</para>
 		
-		<para>This is especially useful when developping regular expressions. </para>
+		<para>This is especially useful when developing regular expressions. </para>
 </chapter>
 <chapter id="feedback">
 		<title>Feedback</title>
@@ -600,15 +605,29 @@ xsearch.SearchSettings.pop();
 <appendix id="changelog">
 <title>Change log</title>
 
-<formalpara><title> Version 1.3.3 </title>
+
+<formalpara><title> Version 5 (ae) </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12</emphasis>, ProjectViewer 2.1.x</para>
+</formalpara>
+<itemizedlist>
+<listitem><para>
+Now includes <tt>gnu.regexp</tt>, recently removed from jEdit core. 
+</para>
+</listitem>
+</itemizedlist>
+
+
+<formalpara><title> Version 1.3.3 (ae) </title>
 <para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12</emphasis>, ProjectViewer 2.1.x</para>
 </formalpara>
 <itemizedlist>
 <listitem><para>
 Updated for jEdit 4.3pre12's relocated Beanshell package. </para>
 </listitem>
+
+
 </itemizedlist>
-<formalpara><title> Version 1.3.2 </title>
+<formalpara><title> Version 1.3.2 (ae) </title>
 <para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x </para>
 </formalpara>
 <itemizedlist>
