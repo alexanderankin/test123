@@ -27,7 +27,7 @@
 #define OPT_NAME_LEN 50
 #define OPT_VALUE_LEN MAX_PATH
 
-const char FAILED_TO_GET_SETTINGS[] = 
+const char FAILED_TO_GET_SETTINGS[] =
 "ERROR: Didn't find jEdit configuration settings.\n"
 "       See README.html provided with this program\n"
 "       for information on required settings.\n"
@@ -39,8 +39,8 @@ const char FAILED_TO_GET_SETTINGS[] =
  * Command-line option name/value pair.
  */
 typedef struct{
-	char name[OPT_NAME_LEN];
-	char value[OPT_VALUE_LEN];
+    char name[OPT_NAME_LEN];
+    char value[OPT_VALUE_LEN];
 } Opt;
 
 
@@ -48,8 +48,8 @@ typedef struct{
  * List of zero or more command-line options.
  */
 typedef struct{
-	Opt* opts;		/** array of Opts */
-	int len;		/** number of Opts */
+    Opt* opts;      /** array of Opts */
+    int len;        /** number of Opts */
 } OptList;
 
 
@@ -58,8 +58,8 @@ typedef struct{
  */
 typedef struct
 {
-	unsigned int port;
-	unsigned int key;
+    unsigned int port;
+    unsigned int key;
 } EditServerInfo;
 
 /**
@@ -67,11 +67,11 @@ typedef struct
  * to launch a new instance of jEdit.
  */
 typedef struct{
-	char java[MAX_PATH];
-	char java_opts[MAX_PATH];
-	char jedit_jar[MAX_PATH];
-	char jedit_opts[MAX_PATH];
-	char working_dir[MAX_PATH];
+    char java[MAX_PATH];
+    char java_opts[MAX_PATH];
+    char jedit_jar[MAX_PATH];
+    char jedit_opts[MAX_PATH];
+    char working_dir[MAX_PATH];
 } LaunchConfig;
 
 
@@ -80,7 +80,7 @@ typedef struct{
  *
  * Options are formatted:
  *
- *	-name[=value]
+ *  -name[=value]
  *
  * where name is required and value is optional.
  *
@@ -89,12 +89,12 @@ typedef struct{
  * first element in "argv".
  *
  * @return An allocated OptList*.  It is caller's resposibility to free
- *		   this and all Opt's in the list.  Unless unable to allocate memory,
- *		   OptList will always be non-null.
+ *         this and all Opt's in the list.  Unless unable to allocate memory,
+ *         OptList will always be non-null.
  */
 OptList*
 parse_args(int argc,
-		   const char** argv);
+           const char** argv);
 
 
 
@@ -131,7 +131,7 @@ int send_script(unsigned int port, unsigned int key, const char* script, int wai
  *
  * @param original the string to escape
  * @param escaped the escaped string.  escaped must be long
- *				  enough to accomodate the original string.
+ *                enough to accomodate the original string.
  *
  * @return The length of the escaped string.
  */
@@ -140,15 +140,15 @@ int escape_filename(const char* original, char* escaped);
 // XXX document
 int
 create_launch_command(const char * java,
-						const char * java_opts,
-						const char * jedit_jar,
-						const char * jedit_opts,
-						const char * working_dir,
-						const OptList * options,
-						const char ** filenames,
-						unsigned int nfiles,
-						char* cmd,
-						unsigned int ncmd);
+                        const char * java_opts,
+                        const char * jedit_jar,
+                        const char * jedit_opts,
+                        const char * working_dir,
+                        const OptList * options,
+                        const char ** filenames,
+                        unsigned int nfiles,
+                        char* cmd,
+                        unsigned int ncmd);
 
 /**
  * Launches an instance of jEdit.
@@ -166,13 +166,13 @@ create_launch_command(const char * java,
  */
 int
 launch_jedit(const char * java,
-			 const char * java_opts,
-			 const char * jedit_jar,
-			 const char * jedit_opts,
-			 const char * working_dir,
-			 const OptList * options,
-			 const char ** filenames,
-			 unsigned int nfiles);
+             const char * java_opts,
+             const char * jedit_jar,
+             const char * jedit_opts,
+             const char * working_dir,
+             const OptList * options,
+             const char ** filenames,
+             unsigned int nfiles);
 
 /**
  * Get path to user's home directory.
@@ -184,7 +184,7 @@ launch_jedit(const char * java,
  */
 int
 get_home(char* dest,
-		 const int ndest);
+         const int ndest);
 
 /**
  * Copies path to server file into "server_file",
@@ -198,8 +198,8 @@ get_home(char* dest,
  */
 int
 get_server_file(char* server_file,
-				const char* settings_dir,
-				const char* filename);
+                const char* settings_dir,
+                const char* filename);
 
 /**
  * Reads EditServerInfo from server_file.
@@ -210,8 +210,8 @@ get_server_file(char* server_file,
  * @return 0 on success, non-zero on error.
  */
 int
-get_edit_server_info(const char* server_file, 
-					 EditServerInfo * edit_server);
+get_edit_server_info(const char* server_file,
+                     EditServerInfo * edit_server);
 
 /**
  * Files "files" list with files found from "globs".
@@ -224,14 +224,14 @@ get_edit_server_info(const char* server_file,
  * @param nfiles size of "files" list.
  *
  * @return number of files found.  If negative, the number
- *		   of files found couldn't fit into the given
- *		   list.  Increase the size of "files" an re-call.
+ *         of files found couldn't fit into the given
+ *         list.  Increase the size of "files" an re-call.
  */
 int
-expand_globs(const char** globs, 
-			 const int nglobs,
-			 char** files, 
-			 int nfiles);
+expand_globs(const char** globs,
+             const int nglobs,
+             char** files,
+             int nfiles);
 
 
 /**
@@ -249,17 +249,17 @@ expand_globs(const char** globs,
  */
 int
 diff_files_in_jedit(const char* java,
-					const char* java_opts,
-					const char* jedit_jar,
-					const char* jedit_opts,
-					const char* working_dir,
-					const char* file1,
-					const char* file2);
+                    const char* java_opts,
+                    const char* jedit_jar,
+                    const char* jedit_opts,
+                    const char* working_dir,
+                    const char* file1,
+                    const char* file2);
 
 
 /**
  * Opens zero or more files in jEdit.
- * 
+ *
  * If jEdit is not running, it is started,
  * otherwise any files are opened in the running
  * instance.
@@ -271,20 +271,20 @@ diff_files_in_jedit(const char* java,
  * @param working_dir working directory for new process
  * @param opts options given on command line
  * @param files list of files to open, or null.  Note that files are treated
- *				as relative the the given working directory, if not absolute.
+ *              as relative the the given working directory, if not absolute.
  * @param nfiles length of files (number of files to open).
  *
  * @return 0 on success, non-zero on error.
  */
 int
 open_files_in_jedit(const char* java,
-					const char* java_opts,
-					const char* jedit_jar,
-					const char* jedit_opts,
-					const char* working_dir,
-					const OptList* opts,
-					const char** files,
-					const int nfiles);
+                    const char* java_opts,
+                    const char* jedit_jar,
+                    const char* jedit_opts,
+                    const char* working_dir,
+                    const OptList* opts,
+                    const char** files,
+                    const int nfiles);
 
 /**
  * Reads a registry value from jEditLaucher settings key.
@@ -296,8 +296,8 @@ open_files_in_jedit(const char* java,
  * @return 0 on success, non-zero on error
  */
 int read_registry_string(const char* name,
-						 char* value,
-						 const int nvalue);
+                         char* value,
+                         const int nvalue);
 
 /**
  * Writes a registry value to the jEditLauncher settings key.
@@ -306,7 +306,7 @@ int read_registry_string(const char* name,
  * @param value what to save
  */
 int write_registry_string(const char* name,
-							const char* value);
+                            const char* value);
 
 /**
  * Returns "Java Executable" value from jEditLaucher's
@@ -315,7 +315,7 @@ int write_registry_string(const char* name,
  * If unable to read setting from the registry,
  * try to use %JAVA_HOME% env. variable.
  */
-int 
+int
 get_java_path(char* java);
 
 int
@@ -336,7 +336,7 @@ set_java_opts(const char*);
 
 /**
  * If %JEDIT_JAR% env. variable set, use that
- * otherwise try to read "jEdit Target" from 
+ * otherwise try to read "jEdit Target" from
  * jEditLaucher's registry settings.
  */
 int
@@ -347,7 +347,7 @@ set_jedit_jar(const char*);
 
 /**
  * If %JEDIT_OPTS% env. variable set, use that
- * otherwise try to read "jEdit Options" from 
+ * otherwise try to read "jEdit Options" from
  * jEditLaucher's registry settings.
  */
 int
@@ -370,7 +370,7 @@ set_working_dir(const char* working_dir);
  * printf-like log function that appends output to a log file.
  *
  * The implentation is pretty hacky -- it opens and closes the
- * file every time.  Need to figure out how to tote around a 
+ * file every time.  Need to figure out how to tote around a
  * single global reference.
  *
  * @param filename log filename
@@ -381,9 +381,9 @@ set_working_dir(const char* working_dir);
  */
 int
 log_to_file(const char* filename,
-			const char* source,
-			const char* format,
-			...);
+            const char* source,
+            const char* format,
+            ...);
 /**
  * If given strip is wrapped with double quotes,
  * remove them.
@@ -392,5 +392,3 @@ char*
 strip_quotes(char*);
 
 #endif
-
-// :deepIndent=true:folding=indent:tabSize=4:
