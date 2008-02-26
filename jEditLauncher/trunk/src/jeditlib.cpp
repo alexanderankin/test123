@@ -123,33 +123,50 @@ add_file_to_list(const char* filename,
 #define ADDFILE_OVERFLOW    -1
 
 
-int
-get_home(char* dest, int ndest)
+size_t
+get_home(char* dest, size_t ndest)
 {
-    const char* path;
-    if((path = getenv("USERPROFILE")) != 0)
+    char* path;
+    size_t path_len;
+
+    if(_dupenv_s(&path,&path_len,"USERPROFILE") == 0)
     {
-        if(strlen(path) > ndest)
-            return strlen(path);
-        strncpy(dest,path,ndest);
-        return 0;
+        if(path_len <= ndest)
+        {
+            strncpy_s(dest,ndest,path,_TRUNCATE);
+            path_len = 0;
+        }
+        free(path);
+        return path_len;
     }
 
-    if(0 != getenv("HOMEDRIVE") && 0 != getenv("HOMEPATH"))
+    char* drive;
+    size_t drive_len;
+
+    if(_dupenv_s(&drive,&drive_len,"HOMEDRIVE") == 0
+    && _dupenv_s(&path,&path_len,"HOMEPATH") == 0)
     {
-        if(strlen(getenv("HOMEDRIVE")) + strlen(getenv("HOMEPATH")) > ndest)
-            return strlen(getenv("HOMEDRIVE")) + strlen(getenv("HOMEPATH"));
-        strncpy(dest,getenv("HOMEDRIVE"),3);
-        strncat(dest,getenv("HOMEPATH"),ndest-3);
-        return 0;
+        size_t len = drive_len + path_len;
+        if(len <= ndest)
+        {
+            strncpy_s(dest,3,drive,_TRUNCATE);
+            strncat_s(dest,ndest-3,path,_TRUNCATE);
+            len = 0;
+        }
+        free(path);
+        free(drive);
+        return len;
     }
 
-    if((path = getenv("HOME")) != 0)
+    if(_dupenv_s(&path,&path_len,"HOME") == 0)
     {
-        if(strlen(path) > ndest)
-            return strlen(path);
-        strncpy(dest,path,ndest);
-        return 0;
+        if(path_len <= ndest)
+        {
+            strncpy_s(dest,ndest,path,_TRUNCATE);
+            path_len = 0;
+        }
+        free(path);
+        return path_len;
     }
 
     return -1;
