@@ -239,8 +239,9 @@ DllUnregisterServer(void)
         "CLSID\\{F1763C8F-4F26-4a15-943F-2CA281BD3385}",
     };
     LONG results[] = {0,0,0,0};
+    int i;
 
-    for(int i=0; i < 4; i++)
+    for(i=0; i < 4; i++)
     {
         results[i] = RegDeleteKey(roots[i], keys[i]);
         if(results[i] != ERROR_SUCCESS && results[i] != ERROR_FILE_NOT_FOUND)
@@ -753,12 +754,13 @@ CShellExt::OpenInJEdit(HWND hParent,
     int r = 0;
     LaunchConfig config;
     char** files = 0;
+    int i;
 
     files = (char**)malloc(sizeof(char*) * cbFiles);
     if(!files)
         return E_OUTOFMEMORY;
 
-    for(int i=0; i < cbFiles; i++)
+    for(i=0; i < cbFiles; i++)
     {
         files[i] = (char*)malloc(sizeof(char) * MAX_PATH);
         if(!files[i])
