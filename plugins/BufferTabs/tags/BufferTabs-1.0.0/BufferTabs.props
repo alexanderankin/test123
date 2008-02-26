@@ -1,5 +1,6 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.activate=startup
+plugin.buffertabs.BufferTabsPlugin.description=Show tabs to switch buffers
 plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert
 plugin.buffertabs.BufferTabsPlugin.version=1.0.0
 plugin.buffertabs.BufferTabsPlugin.docs=users-guide.html
