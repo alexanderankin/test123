@@ -426,7 +426,7 @@ expand_globs(const char** globs,
     char cwd[MAX_PATH] = {'\0'};
     char path[MAX_PATH] = {'\0'};
 
-    getcwd(cwd,MAX_PATH);
+    _getcwd(cwd,MAX_PATH);
     if(cwd[strlen(cwd)-1] != '\\')
         strcat(cwd,"\\");
 
@@ -437,7 +437,7 @@ expand_globs(const char** globs,
 
         // XXX use _splitpath
         // extract directory portion of path, forward- or backslash found
-        for(int j=strlen(globs[i])-1; j >= 0; j--)
+        for(int j=(int)strlen(globs[i])-1; j >= 0; j--)
         {
             if(globs[i][j] == '\\' || globs[i][j] == '/')
             {
@@ -615,7 +615,7 @@ create_server_script(const int wait,
 
     sprintf(buffer, "args = new String[%d];\n", nfiles);
     strcat(script, buffer);
-    for(int i=0; i < nfiles; i++)
+    for(unsigned int i=0; i < nfiles; i++)
     {
         sprintf(buffer, "args[%d] = \"", i);
         strcat(script, buffer);
@@ -735,10 +735,8 @@ create_launch_command(const char * java,
         strcat(cmd, " ");
     }
 
-    int i;
-
     // add command-line options, if given
-    for(i = 0; options != NULL && i < options->len; i++)
+    for(int i = 0; options != NULL && i < options->len; i++)
     {
         Opt* opt = &(options->opts[i]);
         strcat(cmd, "-");
@@ -758,7 +756,7 @@ create_launch_command(const char * java,
     }
 
     // add files to open
-    for(i=0; i < nfiles; i++)
+    for(unsigned int i=0; i < nfiles; i++)
     {
         if(i > 0)
             strcat(cmd, " ");
@@ -845,13 +843,13 @@ launch_jedit(const char * java,
 }
 
 
-int
+size_t
 escape_filename(const char* original,
                 char* escaped)
 {
     char* p = escaped;
     // XXX probably want to ensure we don't overrun
-    for(int i=0; i < strlen(original) && i < MAX_PATH; i++)
+    for(size_t i=0; i < strlen(original) && i < MAX_PATH; i++)
     {
         if(original[i] == '\\')
         {
@@ -894,11 +892,11 @@ send_script(unsigned int port,
     sockaddr_in sock_info;
 
     sock_info.sin_family = AF_INET;
-    sock_info.sin_addr.s_addr = inet_addr("127.0.0.1"); // localhost
+    sock_info.sin_addr.s_addr = inet_addr("127.0.0.1");  // localhost
     sock_info.sin_port = htons(port);
 
-    unsigned long ulKey = htonl(key);               // key, prepped for send
-    unsigned short usLen = htons(strlen(script));   // size of script
+    unsigned long ulKey = htonl(key);  // key, prepped for send
+    unsigned short usLen = htons((u_short)strlen(script));  // size of script
 
     err = connect(sock, (SOCKADDR*)&sock_info, sizeof(sock_info));
     if(err != 0)
@@ -919,7 +917,7 @@ send_script(unsigned int port,
     // send script len
     sent = send(sock, (const char*)&usLen, sizeof(unsigned short), 0);
     // send script
-    sent = send(sock, script, strlen(script), 0);
+    sent = send(sock, script, (int)strlen(script), 0);
 
     // XXX clean up
     if(wait)
@@ -1077,7 +1075,7 @@ int write_registry_string(const char* name,
                         &hKey, NULL);
     if(r == ERROR_SUCCESS)
     {
-        r = RegSetValueEx(hKey,name,0,REG_SZ,(const BYTE*)value,strlen(value));
+        r = RegSetValueEx(hKey,name,0,REG_SZ,(const BYTE*)value,(DWORD)strlen(value));
         if(r == ERROR_SUCCESS)
             r = 0;
         else
@@ -1191,7 +1189,7 @@ parse_args(int argc,
             char value[OPT_VALUE_LEN] = {'\0'};
             log_to_file(J_LOG_FILE, J_LOG_SOURCE,
                         "arg[%d], strlen(%s)=%d\n", i, arg, strlen(arg));   // XXX
-            for(int j=1; j < strlen(arg); j++)
+            for(size_t j=1; j < strlen(arg); j++)
             {
                 if(arg[j] == '=')
                 {
@@ -1263,7 +1261,7 @@ strip_quotes(char* s)
 {
     if(s && s[0] == '"' && s[strlen(s)-1] == '"')
     {
-        for(int i=1; i < strlen(s); i++)
+        for(size_t i=1; i < strlen(s); i++)
             s[i-1]=s[i];
         s[strlen(s)-2] = 0;
     }

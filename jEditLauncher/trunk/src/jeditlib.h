@@ -135,7 +135,7 @@ int send_script(unsigned int port, unsigned int key, const char* script, int wai
  *
  * @return The length of the escaped string.
  */
-int escape_filename(const char* original, char* escaped);
+size_t escape_filename(const char* original, char* escaped);
 
 // XXX document
 int
@@ -182,7 +182,7 @@ launch_jedit(const char * java,
  *
  * @return 0 on success, size of buffer if buffer too small, -1 on other errors.
  */
-int
+size_t
 get_home(char* dest,
          const int ndest);
 
