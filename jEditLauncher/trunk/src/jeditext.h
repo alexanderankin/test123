@@ -8,7 +8,8 @@
  *
  * $Id: jeditext.h 72 2005-01-10 20:36:02Z orutherfurd $
  */
-#if !defined __JEDITEXT_H__
+
+ #if !defined __JEDITEXT_H__
 #define __JEDITEXT_H__
 
 #if _MSC_VER > 1000
@@ -19,7 +20,7 @@
 #define STRICT
 #endif
 
-#define INC_OLE2		// WIN32, get ole2 from windows.h
+#define INC_OLE2        // WIN32, get ole2 from windows.h
 
 #include <windows.h>
 #include <windowsx.h>
@@ -41,86 +42,83 @@ DEFINE_GUID(CLSID_ShellExtension, 0xf1763c8f, 0x4f26, 0x4a15, 0x94, 0x3f, 0x2c, 
 class CShellExtClassFactory : public IClassFactory
 {
 protected:
-	ULONG m_cRef;
+    ULONG m_cRef;
 
 public:
-	CShellExtClassFactory();
-	~CShellExtClassFactory();
+    CShellExtClassFactory();
+    ~CShellExtClassFactory();
 
-	// IUnknown
-	STDMETHODIMP			QueryInterface(REFIID, LPVOID FAR*);
-	STDMETHODIMP_(ULONG)	AddRef();
-	STDMETHODIMP_(ULONG)	Release();
+    // IUnknown
+    STDMETHODIMP            QueryInterface(REFIID, LPVOID FAR*);
+    STDMETHODIMP_(ULONG)    AddRef();
+    STDMETHODIMP_(ULONG)    Release();
 
-	// IClassFactory
-	STDMETHODIMP	CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
-	STDMETHODIMP	LockServer(BOOL);
+    // IClassFactory
+    STDMETHODIMP    CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
+    STDMETHODIMP    LockServer(BOOL);
 };
 
 typedef CShellExtClassFactory *LPCSHELLEXTCLASSFACTORY;
 
-class CShellExt : public IContextMenu, 
-						 IShellExtInit
+class CShellExt : public IContextMenu,
+                         IShellExtInit
 {
 protected:
-	ULONG m_cRef;
-	LPDATAOBJECT m_pDataObj;
-	//HANDLE hImage;	// bitmap for menu
-	STDMETHODIMP	OpenFiles(void);
-	STDMETHODIMP	DiffFiles(void);
+    ULONG m_cRef;
+    LPDATAOBJECT m_pDataObj;
+    //HANDLE hImage;    // bitmap for menu
+    STDMETHODIMP    OpenFiles(void);
+    STDMETHODIMP    DiffFiles(void);
 
 public:
-	CShellExt();
-	~CShellExt();
+    CShellExt();
+    ~CShellExt();
 
-	//IUnknown members
-	STDMETHODIMP QueryInterface(REFIID, LPVOID FAR *);
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
+    //IUnknown members
+    STDMETHODIMP QueryInterface(REFIID, LPVOID FAR *);
+    STDMETHODIMP_(ULONG) AddRef();
+    STDMETHODIMP_(ULONG) Release();
 
-	//IShell members
-	STDMETHODIMP QueryContextMenu(HMENU hMenu,
-	    UINT indexMenu,
-	    UINT idCmdFirst,
-	    UINT idCmdLast,
-	    UINT uFlags);
+    //IShell members
+    STDMETHODIMP QueryContextMenu(HMENU hMenu,
+        UINT indexMenu,
+        UINT idCmdFirst,
+        UINT idCmdLast,
+        UINT uFlags);
 
-	STDMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
+    STDMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
 
-	STDMETHODIMP GetCommandString(UINT idCmd,
-	    UINT uFlags,
-	    UINT FAR *reserved,
-	    LPSTR pszName,
-	    UINT cchMax);
+    STDMETHODIMP GetCommandString(UINT idCmd,
+        UINT uFlags,
+        UINT FAR *reserved,
+        LPSTR pszName,
+        UINT cchMax);
 
-	//IShellExtInit methods
-	STDMETHODIMP Initialize(LPCITEMIDLIST pIDFolder,
-	    LPDATAOBJECT pDataObj,
-	    HKEY hKeyID);
+    //IShellExtInit methods
+    STDMETHODIMP Initialize(LPCITEMIDLIST pIDFolder,
+        LPDATAOBJECT pDataObj,
+        HKEY hKeyID);
 
-	STDMETHODIMP DiffWithJEdit(HWND hParent,
-							   LPCSTR pszWorkingDir,
-							   LPCSTR pszCmd,
-							   LPCSTR pszParam,
-							   int iShowCmd);
+    STDMETHODIMP DiffWithJEdit(HWND hParent,
+                               LPCSTR pszWorkingDir,
+                               LPCSTR pszCmd,
+                               LPCSTR pszParam,
+                               int iShowCmd);
 
-	STDMETHODIMP OpenByExtInJEdit(HWND hParent,
-								  LPCSTR pszWorkingDir,
-								  LPCSTR pszCmd,
-								  LPCSTR pszParam,
-								  int iShowCmd);
+    STDMETHODIMP OpenByExtInJEdit(HWND hParent,
+                                  LPCSTR pszWorkingDir,
+                                  LPCSTR pszCmd,
+                                  LPCSTR pszParam,
+                                  int iShowCmd);
 
-	STDMETHODIMP OpenInJEdit(HWND hParent,
-							 LPCSTR pszWorkingDir,
-							 LPCSTR pszCmd,
-							 LPCSTR pszParam,
-							 int iShowCmd);
+    STDMETHODIMP OpenInJEdit(HWND hParent,
+                             LPCSTR pszWorkingDir,
+                             LPCSTR pszCmd,
+                             LPCSTR pszParam,
+                             int iShowCmd);
 };
 
 typedef CShellExt *LPCSHELLEXT;
 #pragma data_seg()
 
-#endif	// __JEDITEXT_H__
-
-// :deepIndent=true:tabSize=4:
-
+#endif  // __JEDITEXT_H__
