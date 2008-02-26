@@ -1,0 +1,33 @@
+Revision 75 (2005-05-02)
+=========================
+
+jDiff.exe
+---------
+
+* is now a windows application
+
+Misc
+----
+
+* when CreateProcess fails, GetLastError result is written to log
+
+Revision 68 (2005-01-08)
+========================
+
+Misc
+----
+
+* Reorganized file locations (source files into "src", docs into "doc",
+  and files build into "build".
+
+Bug Fixes
+---------
+
+* Convert script path to absolute path when "-run=<script>" 
+  given on command-line.
+
+* Run script when "-run=<script>" given on command-line, even
+  if no files to open.
+
+.. :wrap=hard:maxLineLen=72:indentSize=2:
+.. :folding=explicit:collapseFolds=2:mode=rest:

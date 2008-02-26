@@ -1,0 +1,35 @@
+Windows Registry Editor Version 5.00
+
+; This is a template for setting up required registry settings.
+;
+; Replace the "XXX"s with settings appropriate for your configuration,
+; using the example settings below as a guide.
+;
+; Once you've editted the settings below, double-click this file in
+; Windows Explorer to merge the settings into your registry.
+; 
+; *******************************************************************
+; NOTE: You may want to backup your registry before merging these
+; changes.  Screwing up your registry is one of the fastest ways
+; to trash your system.
+; *******************************************************************
+;
+; ------- Example Settings ---------------
+;
+; [HKEY_CURRENT_USER\Software\www.jedit.org\jEditLauncher\4.0]
+; "Java Executable"="c:\\jdk1.5.0\\bin\\javaw.exe"
+; "Java Options"="-mx128m -jar"
+; "jEdit Target"="C:\\jEdit\\head\\jedit.jar"
+; "jEdit Options"="-reuseview"
+; "jEdit Working Directory"="C:\\jEdit\\head"
+;
+; ----------------------------------------
+
+[HKEY_CURRENT_USER\Software\www.jedit.org\jEditLauncher\4.0]
+"Java Executable"="XXX"
+"Java Options"="-mx128m -jar"
+"jEdit Target"="XXX"
+"jEdit Options"="-reuseview"
+"jEdit Working Directory"="XXX"
+
+

@@ -1,0 +1,11 @@
+;jeditext.def : Declares the module parameters for the DLL.
+
+LIBRARY      jeditext
+DESCRIPTION  'jEdit Shell Extension'
+
+EXPORTS
+    DllCanUnloadNow private
+    DllGetClassObject private
+    DllRegisterServer private
+    DllUnregisterServer private
+
