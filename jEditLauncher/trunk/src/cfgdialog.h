@@ -8,6 +8,13 @@
 
 #pragma once
 
+// ATL
+#include <atlbase.h>
+
+// WTL
+#include <atlapp.h>
+#include <atldlgs.h>
+
 class CMainDlg : public CDialogImpl<CMainDlg>
 {
 public:
