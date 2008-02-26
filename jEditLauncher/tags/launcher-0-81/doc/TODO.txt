@@ -1,0 +1,32 @@
+=========
+TODO List
+=========
+
+- jedit.exe
+  - add build/version number, and -version arg
+  - support more jedit.jar options
+    - error-out when unexpected option given
+  - resource file
+- jdiff.exe 
+  - add build/version number, and -version arg
+  - is broken
+  - needs to support waiting for the server.
+  - splitter isn't properly aligned when diff is displayed 
+    (don't know what can be done about this)
+  - resource file
+- jecfg.exe
+  - update command line as text changes in boxes
+- picking up JAVA_HOME doesn't work
+- investigate using -run=<diff script>, instead of polling 
+  for server file
+- icons for jeditext (started -- works for "edit", but need better icons)?
+- make sure no buffer overruns are possible
+- jeditlib
+  - move helper function declarations from .h to .c
+  - maybe compile as a DLL once things are deemed stable
+- remove old jEditLauncher registry settings, when installing
+- add [lots] more tests
+- use: #define DllExport   __declspec( dllexport ) instead of .def file
+- separate option parsing into its own file
+- fix doxygen markup (maybe use SVN code for example)
+

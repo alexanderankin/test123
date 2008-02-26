@@ -1,0 +1,18 @@
+;jeditlib.def : define exports for jedit launcher library.
+;
+; At present, this library is only compiled so the functions
+; can be tested.  All three binaries statically link to the code.
+;
+; $Id$
+
+LIBRARY      jeditlib
+DESCRIPTION  'jEdit Launcher Library Functions'
+
+EXPORTS
+    escape_filename private
+    expand_globs private
+    get_home private
+    get_server_file private
+    parse_args private
+
+; :noTabs=true:
