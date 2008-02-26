@@ -98,11 +98,11 @@ main(int argc,
     }
 
     return open_files_in_jedit(config.java,
-                                config.java_opts,
-                                config.jedit_jar,
-                                config.jedit_opts,
-                                config.working_dir,
-                                opts,
-                                (const char**)files,
-                                nfiles);
+                               config.java_opts,
+                               config.jedit_jar,
+                               config.jedit_opts,
+                               config.working_dir,
+                               opts,
+                               (const char**)files,
+                               nfiles);
 }
