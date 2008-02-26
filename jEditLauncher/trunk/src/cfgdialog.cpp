@@ -9,6 +9,8 @@
 #include "cfgdialog.h"
 #include "jeditlib.h"
 
+extern CAppModule _Module;
+
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     // center the dialog on the screen
