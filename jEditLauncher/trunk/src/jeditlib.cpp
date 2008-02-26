@@ -240,7 +240,7 @@ get_edit_server_info(const char* server_file,
     }
     log_to_file(J_LOG_FILE, J_LOG_SOURCE, "getting server info from '%s'\n",
                 server_file);
-    char* first_line[64] = {'\0'};
+    char first_line[64] = {'\0'};
     FILE* f;
     f = fopen(server_file, "r");
     if(0 == f)
@@ -248,7 +248,7 @@ get_edit_server_info(const char* server_file,
         log_to_file(J_LOG_FILE, J_LOG_SOURCE, "failed to open server file\n");
         return 1;
     }
-    fscanf(f, "%s", &first_line);
+    fscanf(f, "%s", first_line);
     fscanf(f, "%u", &edit_server->port);
     fscanf(f, "%u", &edit_server->key);
     fclose(f);
@@ -1196,7 +1196,7 @@ parse_args(int argc,
                     // copy name (exclude "-" and "=")
                     strncpy(name, arg+1, j-1);
                     // copy value (exclude "=")
-                    strncpy(value, arg+j+1, MAX_PATH);
+                    strncpy(value, arg+j+1, OPT_VALUE_LEN);
                     log_to_file(J_LOG_FILE, J_LOG_SOURCE,
                                 "arg[%d]: %s, name=%s, value=%s\n", i, arg, name, value);   // XXX
                     strcpy(p->name,name);
