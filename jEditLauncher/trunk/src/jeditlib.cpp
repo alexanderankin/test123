@@ -718,8 +718,11 @@ create_launch_command(const char * java,
         strcat(cmd, " ");
     }
 
+    int i;
+
     // add command-line options, if given
-    for(int i = 0; options != NULL && i < options->len; i++){
+    for(i = 0; options != NULL && i < options->len; i++)
+    {
         Opt* opt = &(options->opts[i]);
         strcat(cmd, "-");
         strcat(cmd, opt->name);
@@ -1112,8 +1115,10 @@ parse_args(int argc,
            const char** argv)
 {
     int nopts = 0;
+    int i;
+
     // do one pass through to count the number of args
-    for(int i=1; i < argc; i++)
+    for(i=1; i < argc; i++)
     {
         const char* arg = argv[i];
         if(strcmp(arg, "--") == 0)  /* end of options */
