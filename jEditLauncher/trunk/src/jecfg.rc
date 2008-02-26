@@ -2,49 +2,22 @@
 //
 #include "resource.h"
 
+#include <atlres.h>
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "atlres.h"
-
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+LANGUAGE 9, 1
 #pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""atlres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST ""jecfg.exe.manifest""\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -54,83 +27,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+
 IDR_MAINFRAME           ICON                    "jedit.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_MAINDLG DIALOGEX 0, 0, 256, 276
-STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
-CAPTION "jEdit Launcher Settings"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,144,258,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,198,258,50,14
-    LTEXT           "Location of Java application loader (location of ""java.exe"" or ""javaw.exe""):",
-                    IDC_STATIC,6,6,236,8
-    EDITTEXT        IDC_JAVA_PATH,6,18,222,14,ES_AUTOHSCROLL
-    LTEXT           "Java parameters (run ""java -help"" or ""java -X"" for options):",
-                    IDC_STATIC,6,36,184,8
-    EDITTEXT        IDC_JAVA_OPTS,6,48,222,14,ES_AUTOHSCROLL
-    LTEXT           "Location of jEdit target (usually path to ""jedit.jar"")",
-                    IDC_STATIC,6,72,154,8
-    EDITTEXT        IDC_JEDIT_PATH,6,84,222,14,ES_AUTOHSCROLL
-    LTEXT           "jEdit options:",IDC_STATIC,6,102,41,8
-    EDITTEXT        IDC_JEDIT_OPTS,6,114,222,14,ES_AUTOHSCROLL
-    LTEXT           "Working directory:",IDC_STATIC,6,138,58,8
-    EDITTEXT        IDC_WORKING_DIR,6,150,222,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BROWSE_JAVA,228,18,18,14
-    PUSHBUTTON      "...",IDC_BROWSE_JEDIT,228,84,18,14
-    PUSHBUTTON      "...",IDC_BROWSE_WORKING_DIR,228,150,18,14
-    GROUPBOX        "Complete command line",IDC_STATIC,6,174,240,78
-    EDITTEXT        IDC_CMD_LINE,12,186,228,60,ES_MULTILINE | 
-                    ES_READONLY | NOT WS_BORDER,WS_EX_STATICEDGE
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_MAINDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 249
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 269
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS 
-BEGIN
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
-    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
-    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -173,15 +71,118 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAINDLG DIALOGEX 0, 0, 256, 276
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
+CAPTION "jEdit Launcher Settings"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,144,258,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,198,258,50,14
+    LTEXT           "Location of Java application loader (location of ""java.exe"" or ""javaw.exe""):",
+                    IDC_STATIC,6,6,236,8
+    EDITTEXT        IDC_JAVA_PATH,6,18,222,14,ES_AUTOHSCROLL
+    LTEXT           "Java parameters (run ""java -help"" or ""java -X"" for options):",
+                    IDC_STATIC,6,36,184,8
+    EDITTEXT        IDC_JAVA_OPTS,6,48,222,14,ES_AUTOHSCROLL
+    LTEXT           "Location of jEdit target (usually path to ""jedit.jar"")",
+                    IDC_STATIC,6,72,154,8
+    EDITTEXT        IDC_JEDIT_PATH,6,84,222,14,ES_AUTOHSCROLL
+    LTEXT           "jEdit options:",IDC_STATIC,6,102,41,8
+    EDITTEXT        IDC_JEDIT_OPTS,6,114,222,14,ES_AUTOHSCROLL
+    LTEXT           "Working directory:",IDC_STATIC,6,138,58,8
+    EDITTEXT        IDC_WORKING_DIR,6,150,222,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BROWSE_JAVA,228,18,18,14
+    PUSHBUTTON      "...",IDC_BROWSE_JEDIT,228,84,18,14
+    PUSHBUTTON      "...",IDC_BROWSE_WORKING_DIR,228,150,18,14
+    GROUPBOX        "Complete command line",IDC_STATIC,6,174,240,78
+    EDITTEXT        IDC_CMD_LINE,12,186,228,60,ES_MULTILINE |
+                    ES_READONLY | NOT WS_BORDER,WS_EX_STATICEDGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAINDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 249
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 269
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+#ifdef APSTUDIO_INVOKED
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "\r\n"
+    "\0"
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "jecfg"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -194,19 +195,19 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
@@ -216,7 +217,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -231,7 +232,7 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCSIZE          "Change the window size"
     ATL_IDS_SCMOVE          "Change the window position"
@@ -242,19 +243,19 @@ BEGIN
     ATL_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCRESTORE       "Restore the window to normal size"
     ATL_IDS_SCTASKLIST      "Activate Task List"
     ATL_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
 END
@@ -263,14 +264,11 @@ END
 /////////////////////////////////////////////////////////////////////////////
 
 
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "jecfg.exe.manifest"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
