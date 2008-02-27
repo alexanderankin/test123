@@ -1,0 +1,8 @@
+; jeditext.def
+; Declares the module parameters for the DLL.
+
+EXPORTS
+    DllCanUnloadNow private
+    DllGetClassObject private
+    DllRegisterServer private
+    DllUnregisterServer private
