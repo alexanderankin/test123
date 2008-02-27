@@ -87,24 +87,6 @@
   The preferred way to send bug reports or feature requests is to use the Sourceforge Bug Tracker at 
   <ulink url="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</ulink> 
   </para>
-  <para>You can also write to:</para> 
-<itemizedlist>
-<listitem><para>
-  Andr&eacute; Kaplan 
-  <email>akaplan@jedit.org</email> 
-  ; </para>
-  </listitem>
-<listitem><para>
-  or jEdit-users mailing-list 
-  <email>jedit-users@lists.sourceforge.net</email> 
-  ; </para>
-  </listitem>
-<listitem><para>
-  or jEdit-devel mailing-list 
-  <email>jedit-devel@lists.sourceforge.net</email> 
-  . </para>
-  </listitem>
-  </itemizedlist>
   </chapter>
 <chapter id="credits">
   <title>Credits</title> 
@@ -117,7 +99,15 @@
   </chapter>
 <appendix id="changelog">
   <title>Change log</title> 
-      <formalpara>
+  <formalpara>
+	  <title>Version 0.8.3</title>
+		  <para>Requires JDK 1.5, jEdit 4.3pre12
+		  <itemizedlist>
+		  <listitem><para>The gnu.regex dependency was removed</para></listitem>
+	  </itemizedlist></para>
+  </formalpara>
+  
+  <formalpara>
         <title>Version 0.8.3</title>
         <para>Requires JDK 1.3, jEdit 4.2
         <itemizedlist>
