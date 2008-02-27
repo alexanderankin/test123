@@ -56,8 +56,7 @@ typedef struct{
 /**
  * EditServer information.
  */
-typedef struct
-{
+typedef struct{
     unsigned int port;
     unsigned int key;
 } EditServerInfo;
@@ -74,6 +73,9 @@ typedef struct{
     char working_dir[MAX_PATH];
 } LaunchConfig;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Extracts command-line options.
@@ -184,7 +186,7 @@ launch_jedit(const char * java,
  */
 size_t
 get_home(char* dest,
-         const int ndest);
+         const size_t ndest);
 
 /**
  * Copies path to server file into "server_file",
@@ -369,7 +371,7 @@ set_working_dir(const char* working_dir);
 /**
  * printf-like log function that appends output to a log file.
  *
- * The implentation is pretty hacky -- it opens and closes the
+ * The implementation is pretty hacky -- it opens and closes the
  * file every time.  Need to figure out how to tote around a
  * single global reference.
  *
@@ -391,4 +393,8 @@ log_to_file(const char* filename,
 char*
 strip_quotes(char*);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif // __JEDITLIB_H__

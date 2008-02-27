@@ -9,8 +9,6 @@
  */
 
 #include "jeditlib.h"
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #define DIFF_SCRIPT_LEN (2048+(MAX_PATH*2))
 #define J_LOG_SOURCE "jeditlib"
@@ -104,7 +102,7 @@ static const char* FOCUS_SCRIPT = ""
  * @param nfiles size of list of files
  * @param count number of files in "files".
  *
- * @return ADDFILE_OK if filename appened to files, ADDFILE_OOM if unable
+ * @return ADDFILE_OK if filename appended to files, ADDFILE_OOM if unable
  *         to copy file (out of memory), and ADDFILE_OVERFLOW if files
  *         isn't long enough to fit filename.
  */
@@ -124,7 +122,7 @@ add_file_to_list(const char* filename,
 
 
 size_t
-get_home(char* dest, size_t ndest)
+get_home(char* dest, const size_t ndest)
 {
     char* path;
     size_t path_len;
