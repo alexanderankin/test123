@@ -8,6 +8,7 @@ plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.5
 plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.03.12.00
+plugin.buffertabs.BufferTabsPlugin.usePluginHome=true
 
 buffertabs.toggle-vis.label=BufferTabs
 
