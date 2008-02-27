@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="jEditExt"
 	ProjectGUID="{C60D4F97-396E-4E65-AA1D-56FC153DF2B1}"
 	RootNamespace="jEditExt"
@@ -64,6 +64,7 @@
 				AdditionalDependencies="Ws2_32.lib"
 				OutputFile="$(OutDir)\jeditext_d.dll"
 				LinkIncremental="2"
+				ModuleDefinitionFile="..\src\jeditext.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -146,6 +147,7 @@
 				AdditionalDependencies="Ws2_32.lib"
 				OutputFile="$(OutDir)\jeditext.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="..\src\jeditext.def"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -183,6 +185,10 @@
 	<Files>
 		<File
 			RelativePath="..\src\jeditext.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\src\jeditext.def"
 			>
 		</File>
 		<File
