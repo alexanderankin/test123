@@ -68,7 +68,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     if(!r) r = set_working_dir(m_szWorkingDir);
     if(r)
     {
-        sprintf(err_msg,"Error saving settings: %d", r);
+        sprintf_s(err_msg,"Error saving settings: %d", r);
         MessageBox(err_msg, "Error", MB_OK | MB_ICONERROR);
     }
 

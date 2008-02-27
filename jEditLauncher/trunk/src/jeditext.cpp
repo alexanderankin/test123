@@ -118,7 +118,7 @@ DllRegisterServer(void)
                       0,
                       REG_SZ,
                       (LPBYTE)value,
-                      strlen(value) + 1);
+                      (DWORD)strlen(value) + 1);
         RegCloseKey(hKey);
     }
     else
@@ -145,7 +145,7 @@ DllRegisterServer(void)
                       0,
                       REG_SZ,
                       (LPBYTE)value,
-                      strlen(value) + 1);
+                      (DWORD)strlen(value) + 1);
         // "ThreadingModel"="Apartment"
         strcpy(value,"Apartment");
         RegSetValueEx(hKey,
@@ -153,7 +153,7 @@ DllRegisterServer(void)
                       0,
                       REG_SZ,
                       (LPBYTE)value,
-                      strlen(value) + 1);
+                      (DWORD)strlen(value) + 1);
         RegCloseKey(hKey);
     }
     else
@@ -179,7 +179,7 @@ DllRegisterServer(void)
                       0,
                       REG_SZ,
                       (LPBYTE)value,
-                      strlen(value) + 1);
+                      (DWORD)strlen(value) + 1);
         RegCloseKey(hKey);
     }
     else
@@ -210,7 +210,7 @@ DllRegisterServer(void)
                           0,
                           REG_SZ,
                           (LPBYTE)value,
-                          strlen(value) + 1);
+                          (DWORD)strlen(value) + 1);
             RegCloseKey(hKey);
         }
     }
@@ -490,7 +490,6 @@ CShellExt::QueryContextMenu(HMENU hMenu,
     char drive[MAX_PATH] = {'\0'};
     char directory[MAX_PATH] = {'\0'};
 
-
     hres = m_pDataObj->GetData(&fmte, &medium);
     // get number of files selected
     if (medium.hGlobal)
@@ -525,7 +524,7 @@ CShellExt::QueryContextMenu(HMENU hMenu,
                       0,
                       path,
                       MAX_PATH);
-        _splitpath(path,drive,directory,filename,ext);
+        _splitpath_s(path,drive,directory,filename,ext);
         if(ext && strlen(ext))
         {
             sprintf(label, "Open &*%s with jEdit", ext);
@@ -696,7 +695,7 @@ CShellExt::OpenByExtInJEdit(HWND hParent,
 
     // split path into chunks, so we can find
     // all matching files in the directory
-    _splitpath(path,drive,directory,filename,ext);
+    _splitpath_s(path,drive,directory,filename,ext);
     // <drive>\<dir>\*<ext>
     sprintf(glob,"%s%s*%s", drive, directory, ext);
 
@@ -754,7 +753,7 @@ CShellExt::OpenInJEdit(HWND hParent,
     int r = 0;
     LaunchConfig config;
     char** files = 0;
-    int i;
+    UINT i;
 
     files = (char**)malloc(sizeof(char*) * cbFiles);
     if(!files)

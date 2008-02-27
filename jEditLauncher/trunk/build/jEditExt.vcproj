@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="jEditExt"
 	ProjectGUID="{C60D4F97-396E-4E65-AA1D-56FC153DF2B1}"
 	RootNamespace="jEditExt"
@@ -40,11 +40,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JEDITEXT_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JEDITEXT_EXPORTS;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -118,7 +119,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JEDITEXT_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JEDITEXT_EXPORTS;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="2"
@@ -126,9 +127,10 @@
 				EnableFunctionLevelLinking="true"
 				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -144,7 +146,7 @@
 				AdditionalDependencies="Ws2_32.lib"
 				OutputFile="$(OutDir)\jeditext.dll"
 				LinkIncremental="1"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
