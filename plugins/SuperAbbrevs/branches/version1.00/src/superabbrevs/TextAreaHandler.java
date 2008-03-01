@@ -9,15 +9,30 @@
 
 package superabbrevs;
 
+import superabbrevs.model.Abbrev;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
+import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenu;
+import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenuEvent;
+import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenuListner;
+import superabbrevs.gui.searchdialog.SearchAcceptedListener;
+import superabbrevs.gui.searchdialog.SearchDialogModel;
+import superabbrevs.gui.searchdialog.SearchDialog;
+import superabbrevs.gui.searchdialog.SearchDialogModel;
+import superabbrevs.utilities.Log;
 
 /**
  *
  * @author Sune Simonsen
  */
 public class TextAreaHandler {
+    private TemplateHandler templateHandler;
 
     private JEditTextArea textArea;
 
@@ -30,6 +45,7 @@ public class TextAreaHandler {
         this.view = view;
         this.buffer = buffer;
         this.textArea = textArea;
+        this.templateHandler = new TemplateHandler(view, textArea, buffer);
     }
     
     public String getTextBeforeCaret() {
@@ -53,7 +69,69 @@ public class TextAreaHandler {
         int caretPos = textArea.getCaretPosition();
 
         // a string indication the mode of the current buffer 
+        String mode = buffer.getContextSensitiveProperty(caretPos, "mode");
+        Log.log(Log.Level.DEBUG, TextAreaHandler.class, "Mode: " + mode + " " + 
+                buffer.getRuleSetAtOffset(caretPos).getModeName());
         return buffer.getRuleSetAtOffset(caretPos).getModeName();
     }
+   
+    void showAbbrevsPopup(LinkedList<Abbrev> abbrevs) {
+        int offset = textArea.getCaretPosition();
+        Point location = textArea.offsetToXY(offset);
+        location.y += textArea.getPainter().getFontMetrics().getHeight();
+
+        SwingUtilities.convertPointToScreen(location,textArea.getPainter());
+        
+        ScrollablePopupMenu<Abbrev> menu = 
+                new ScrollablePopupMenu<Abbrev>(view, location, abbrevs);
+        
+        menu.addActionListener(new ScrollablePopupMenuListner<Abbrev>() {
+            public void selectedMenuItem(ScrollablePopupMenuEvent<Abbrev> event) {
+                Abbrev a = event.getSelectedObject();
+                removeAbbrev(a);
+                expandAbbrev(a, false);
+            }
+        });
+        
+        menu.setVisible(true);
+    }
     
+    void removeAbbrev(Abbrev abbrev) {
+        // the offset of the caret in the full text 
+        int end = textArea.getCaretPosition();
+        int start = end - abbrev.abbreviation.length();
+        textArea.setSelection(new Selection.Range(start, end));
+        textArea.setSelectedText("");
+    }
+    
+    void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand) {
+        templateHandler.expandAbbrev(abbrev, invokedAsACommand);
+    }
+    
+    boolean selectNextAbbrev() {
+        return templateHandler.selectNextAbbrev();
+    }
+    
+    void selectPrevAbbrev() {
+        templateHandler.selectPrevAbbrev();
+    }
+    
+    public boolean isInTemplateMode()
+    {
+        return templateHandler.isInTempateMode();
+    }
+
+    void showSearchDialog(ArrayList<Abbrev> abbrevs) {
+        SearchDialogModel model = new SearchDialogModel(abbrevs);
+        SearchDialog dialog = new SearchDialog(view, "Search for abbreviation", 
+                false, model);
+        dialog.setLocationRelativeTo(view);
+        dialog.addSearchAcceptedListener(new SearchAcceptedListener() {
+            public void accepted(Object o) {
+                Abbrev a = (Abbrev)o;
+                expandAbbrev(a, true);
+            }
+        });
+        dialog.setVisible(true);
+    }
 }

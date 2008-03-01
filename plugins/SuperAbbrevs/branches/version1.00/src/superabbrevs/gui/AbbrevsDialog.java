@@ -6,31 +6,33 @@
 
 package superabbrevs.gui;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 import superabbrevs.AbbrevsOptionPaneController;
 
 /**
  *
  * @author  Sune Simonsen
  */
-public class AbbrevsDialog extends javax.swing.JDialog {
+public class AbbrevsDialog extends EnhancedDialog {
     
     private AbbrevsOptionPane abbrevsOptionPane;
     
     /** Creates new form AbbrevsDialog */
     public AbbrevsDialog(View view, boolean modal, AbbrevsOptionPaneController controller) {
-        super(view, modal);
+        super(view, "Abbreviations", modal);
+        setEnterEnabled(false);
+        
         initComponents();
         
         abbrevsOptionPane = new AbbrevsOptionPane(view,controller);
         abbrevsOptionPane.setVisible(true);
         setContentPane(abbrevsOptionPane);
-        
-        setLocationRelativeTo(view);
     }
     
     /** This method is called from within the constructor to
@@ -69,4 +71,12 @@ public class AbbrevsDialog extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    public void ok() {
+    }
+
+    public void cancel() {
+        abbrevsOptionPane.save();
+        dispose();
+    }
 }

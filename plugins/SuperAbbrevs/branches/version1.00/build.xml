@@ -96,12 +96,14 @@
             <fileset dir="${build.dir}"/>
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
+                <include name="**/*.gif"/>
+                <include name="**/*.png"/>
                 <include name="**/*.props"/>
+            </fileset>
+            <fileset dir=".">
                 <include name="**/*.html"/>
                 <include name="**/*.gif"/>
                 <include name="**/*.png"/>
-                <include name="**/*.bsh"/>
-                <include name="*.bsh"/>
                 <include name="resources/*"/>
             </fileset>
         </jar>

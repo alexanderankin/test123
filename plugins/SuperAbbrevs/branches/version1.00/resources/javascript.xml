@@ -1,0 +1,20 @@
+<list>
+  <Abbrev>
+    <name>Function</name>
+    <abbrev>fun</abbrev>
+    <expansion>/**
+ * ${1=s.toUpperCase()}
+ * ${2:Comment}
+ */
+function ${1:&lt;#=&quot;name&quot;.toUpperCase()#&gt;} {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>Input</name>
+    <abbrev>input</abbrev>
+    <expansion>&lt;#=input.toUpperCase()#&gt;</expansion>
+    <inputType>WORD</inputType>
+  </Abbrev>
+</list>

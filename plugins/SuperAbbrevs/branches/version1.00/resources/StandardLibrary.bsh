@@ -1,5 +1,48 @@
+/*******************************************************************************
+** Dont change this file it migth be overriden in future releases,            **
+** use the abbrev_functions.bsh file instead                                  **
+*******************************************************************************/
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+public void print(String s){
+	_out.append(s);
+}
+
+public void println(String s){
+	
+	_out.append(s+"\n");
+}
+
+public String date() {
+    Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+    
+    java.text.SimpleDateFormat sdf = 
+          new java.text.SimpleDateFormat(DATE_FORMAT);
+    
+    sdf.setTimeZone(TimeZone.getDefault());          
+          
+    return sdf.format(cal.getTime());
+}
+
+public String variable(int number, String value){
+	return "${"+number+":"+value+"}";
+}
+
+public String reference(int number){
+	return "$"+number;
+}
+
+public String transformationField(int number, String code) {
+    return "${"+number+"="+code+"}";
+}
+
+public String completeField(int number, String words) {
+    wordArray = words.split(",");
+    value = wordArray.length == 0 ? "": wordArray[0];
+    code = "complete(s,\""+words+"\")";
+    return variable(number, value) + transformationField(number, code);
+}
 
 public String firstUp(String s){
 	StringBuffer res = new StringBuffer(s);
@@ -79,8 +122,8 @@ public String ifEmpty(String s,String emptyValue){
 }
 
 public String ifNotEmpty(String s,String notEmptyValue){
-	return s.trim().equals("")?s:notEmptyValue;
-} 
+	return s.trim().equals("") ? s : notEmptyValue;
+}
 
 // use this instead of choose if possible
 public String ifEquals(String s,String pattern, String match, String noMatch){
@@ -142,7 +185,7 @@ public String complete(String s, String words){
 *@param words a list of words to complete against
 */
 public String complete(String s, String[] words){
-    Arrays.sort(words);
+    //Arrays.sort(words);
     
     int longestPrefix = 0;
     int longestPrefixIndex = -1;

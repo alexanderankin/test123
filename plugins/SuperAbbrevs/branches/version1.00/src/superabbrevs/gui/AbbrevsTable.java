@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
-import superabbrevs.Abbrev;
+import superabbrevs.model.Abbrev;
 
 /**
  * @author sune

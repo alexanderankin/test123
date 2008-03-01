@@ -1,5 +1,6 @@
 package superabbrevs;
 
+import superabbrevs.model.Abbrev;
 import java.util.Hashtable;
 
 /**

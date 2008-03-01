@@ -63,12 +63,13 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/xpp3_min-1.1.3.4.O.jar;lib/xstream-1.2.1.jar;../jedit/build/jedit.jar;extlib/junit-3.8.1.jar</classpath>
+                <classpath mode="compile">lib/xpp3_min-1.1.3.4.O.jar;lib/xstream-1.2.1.jar;../../../jedit/build/jedit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>test</package-root>
                 <unit-tests/>
+                <classpath mode="compile">extlib/junit-3.8.1.jar;lib/xpp3_min-1.1.3.4.O.jar;lib/xstream-1.2.1.jar;src</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
