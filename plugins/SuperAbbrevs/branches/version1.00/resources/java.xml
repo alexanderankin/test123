@@ -1,0 +1,58 @@
+<list>
+  <Abbrev>
+    <name>For Loop</name>
+    <abbrev>for</abbrev>
+    <expansion>for (int ${1:i} = 0; $1 &lt; ${2:to}; $1++) {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>SuperAbbrevs</name>
+    <abbrev>SuperAbbrevs</abbrev>
+    <expansion>Nice</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>While</name>
+    <abbrev>while</abbrev>
+    <expansion>while($1) {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>for</name>
+    <abbrev>for</abbrev>
+    <expansion>&lt;#for(i=0;i&lt;10;i++) {#&gt;
+foreach
+&lt;#}#&gt;</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>for1</name>
+    <abbrev>for</abbrev>
+    <expansion>for1</expansion>
+    <inputType>DOCUMENT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>for2</name>
+    <abbrev>for</abbrev>
+    <expansion>for2</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>if</name>
+    <abbrev>if</abbrev>
+    <expansion>if ($1) {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+  <Abbrev>
+    <name>or</name>
+    <abbrev>or</abbrev>
+    <expansion>||</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+</list>

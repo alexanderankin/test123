@@ -1,0 +1,10 @@
+<list>
+  <Abbrev>
+    <name>For-loop</name>
+    <abbrev>for</abbrev>
+    <expansion>for (int i=0) {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+</list>

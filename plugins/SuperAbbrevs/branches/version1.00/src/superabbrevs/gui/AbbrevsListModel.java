@@ -6,7 +6,7 @@ import java.util.Comparator;
 import javax.swing.AbstractListModel;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
-import superabbrevs.Abbrev;
+import superabbrevs.model.Abbrev;
 
 /**
  * @author sune

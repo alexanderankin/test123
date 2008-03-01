@@ -1,0 +1,10 @@
+<list>
+  <Abbrev>
+    <name>Else</name>
+    <abbrev>else</abbrev>
+    <expansion>else {
+	$end
+}</expansion>
+    <inputType>NO_INPUT</inputType>
+  </Abbrev>
+</list>

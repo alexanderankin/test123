@@ -1,17 +1,16 @@
 package superabbrevs;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
-import superabbrevs.Abbrev;
-import superabbrevs.Persistence;
+import superabbrevs.model.Abbrev;
+import superabbrevs.model.Mode;
 
 /**
  * @author sune
@@ -20,31 +19,33 @@ import superabbrevs.Persistence;
  */
 public class AbbrevsOptionPaneController {
     
-    private String mode;
+    private String modeName;
     private int modeIndex;
+    
+    Hashtable<String,Mode> modes = new Hashtable<String, Mode>();
     
     /**
      * Creates a new instance of AbbrevsOptionPaneController
      */
-    public AbbrevsOptionPaneController(String mode) {
-        this.mode = mode;
+    public AbbrevsOptionPaneController(String modeName) {
+        this.modeName = modeName;
     }
 
     public String[] getModes() {
-        Mode[] modes = jEdit.getModes();
-        String[] modeNames = new String[modes.length+1];
+        org.gjt.sp.jedit.Mode[] jEditModes = jEdit.getModes();
+        String[] modeNames = new String[jEditModes.length+1];
         
         modeNames[0] = "global";
         
-        for (int i = 0; i < modes.length; i++) {
-            modeNames[i+1] = modes[i].getName(); 
+        for (int i = 0; i < jEditModes.length; i++) {
+            modeNames[i+1] = jEditModes[i].getName(); 
         }
         
-        Arrays.sort(modeNames,1,modes.length-1,
+        Arrays.sort(modeNames,1,jEditModes.length-1,
                 new MiscUtilities.StringICaseCompare());
         
-        for (int i = 1; i < modes.length; i++) {
-            if (modeNames[i].equals(this.mode)) {
+        for (int i = 1; i < jEditModes.length; i++) {
+            if (modeNames[i].equals(this.modeName)) {
                 // We found the selected index
                 modeIndex = i;
                 break;
@@ -58,22 +59,20 @@ public class AbbrevsOptionPaneController {
         return modeIndex;
     }
     
-    public ArrayList<Abbrev> loadsAbbrevs(String mode) {
-        if (abbrevs.containsKey(mode)) {
-            return abbrevs.get(mode);
+    public ArrayList<Abbrev> loadsAbbrevs(String modeName) {
+        if (modes.containsKey(modeName)) {
+            return modes.get(modeName).getAbbreviations();
         } else {
-            ArrayList<Abbrev> modeAbbrevs = Persistence.loadAbbrevs(mode);
-            abbrevs.put(mode, modeAbbrevs);
-            return modeAbbrevs;
+            Mode mode = Persistence.loadMode(modeName);
+            modes.put(modeName, mode);
+            return mode.getAbbreviations();
         }
     }
 
     public void saveAbbrevs() throws IOException {
-        for(Entry<String, ArrayList<Abbrev>> e : abbrevs.entrySet()) {
-            Persistence.saveAbbrevs(e.getKey(),e.getValue());  
+        for(Mode mode : modes.values()) {
+            AbbrevsHandler.invalidateMode(mode.getName());
+            Persistence.saveMode(mode);  
         }
     }
-    
-    TreeMap<String,ArrayList<Abbrev>> abbrevs = 
-            new TreeMap<String,ArrayList<Abbrev>>();
 }

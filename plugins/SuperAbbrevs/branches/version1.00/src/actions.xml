@@ -13,9 +13,9 @@
 			superabbrevs.SuperAbbrevsPlugin.tab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="SuperAbbrevs.showDialog">
+	<ACTION NAME="SuperAbbrevs.showSearchDialog">
 		<CODE>
-			superabbrevs.SuperAbbrevsPlugin.showDialog(view, textArea, buffer);
+			superabbrevs.SuperAbbrevsPlugin.showSearchDialog(view, textArea, buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="SuperAbbrevs.showOptionPane">

@@ -9,6 +9,11 @@
 
 package superabbrevs;
 
+import java.util.ArrayList;
+import superabbrevs.model.Abbrev;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.Buffer;
@@ -29,10 +34,8 @@ public class InputHandler {
 
     private TextAreaHandler textAreaHandler;
 
-    private AbbrevsHandler abbrevsHandler;
-    
-    private TemplateHandler templateHandler;
-    
+    private AbbrevsHandler abbrevsHandler = new AbbrevsHandler();
+       
     /** Creates a new instance of InputHandler */
     public InputHandler(View view, JEditTextArea textArea, Buffer buffer) {
         this.view = view;
@@ -40,36 +43,60 @@ public class InputHandler {
         this.buffer = buffer;
         
         textAreaHandler = new TextAreaHandler(view, textArea, buffer);
-        abbrevsHandler = new AbbrevsHandler();
     }
     
     public void tab() {
-        LinkedList<Abbrev> abbrevs;
-                
         if (!textArea.isEditable()){
             // beep if the textarea is not editable
             textArea.getToolkit().beep();
-        } else if(templateHandler != null){
+        } else if(textAreaHandler.isInTemplateMode()){
             // If we already is in template mode, jump to the next field
-            
+            boolean selectedNextAbbrev = textAreaHandler.selectNextAbbrev();
+            if (!selectedNextAbbrev) {
+                tab();
+            }
         } else if(0 < textArea.getSelectionCount()){
             // If there is a selection in the buffer use the default behavior
             // for the tab key
             textArea.insertTabAndIndent();
         } else {
-            textAreaHandler = new TextAreaHandler(view, textArea, buffer);
-            
             String getTextBeforeCaret = textAreaHandler.getTextBeforeCaret();
             String mode = textAreaHandler.getModeAtCursor();
-            abbrevs = abbrevsHandler.getAbbrevs(mode, getTextBeforeCaret);
+            LinkedList<Abbrev> abbrevs = 
+                    abbrevsHandler.getAbbrevs(mode, getTextBeforeCaret);
             
-            if (!abbrevs.isEmpty()) {
-                JOptionPane.showMessageDialog(view, abbrevs);
+            if (abbrevs.size() == 1) {
+                // There is only one expansion
+                Abbrev a = abbrevs.getFirst();
+                textAreaHandler.removeAbbrev(a);
+                textAreaHandler.expandAbbrev(a, false);
+            } else if (!abbrevs.isEmpty()) {
+                Collections.sort(abbrevs);
+                                                
+                textAreaHandler.showAbbrevsPopup(abbrevs);
             } else {
                 // There was no abbreviation to expand before the caret
                 textArea.insertTabAndIndent();
             }
         }
+    }
+
+    void shiftTab() {
+        if (!textArea.isEditable()){
+            // beep if the textarea is not editable
+            textArea.getToolkit().beep();
+        } else if(textAreaHandler.isInTemplateMode()){
+            // If we already is in template mode, jump to the next field
+            textAreaHandler.selectPrevAbbrev();
+        } else {
+            textArea.shiftIndentLeft();
+        }
+    }
+
+    void showSearchDialog() {
+        String mode = textAreaHandler.getModeAtCursor();
+        ArrayList<Abbrev> abbrevs = abbrevsHandler.getAbbrevs(mode);
+        textAreaHandler.showSearchDialog(abbrevs);
     }
     
 }

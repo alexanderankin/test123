@@ -6,7 +6,6 @@
  */
 
 import junit.framework.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import trie.*;
 
@@ -79,8 +78,6 @@ public class BackwardsTrieTest extends TestCase {
         System.out.println("remove");
         
         String key = "aba";
-                
-        boolean expResult = true;
         boolean result = trie.remove(key, 4);
         assertTrue(result);
     }
