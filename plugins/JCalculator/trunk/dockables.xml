@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="jcalculator">
+		new org.DFish.tools.calculator.plugin.JCalculatorPluginPanel(view, position);
+	</DOCKABLE>
+</DOCKABLES>
+

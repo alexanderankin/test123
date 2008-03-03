@@ -1,0 +1,608 @@
+<html>
+  <head>
+    <title>JCalculator</title>
+    
+  </head>
+  <body>
+    <div>
+      <table border="0" bgcolor="#ccccff" cellspacing="0" cellpadding="5" width="100%">
+        <tr>
+          <td>
+            <h1>
+              JCalculator
+            </h1>
+          </td>
+          <td align="right">
+            <small>By Yiwen Yu<br><em><a href="mailto:yuyiwei@msn.com">yuyiwei@msn.com</a></em></small>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="Introduction">
+      <tr align="center" width="100%">
+        <td bgcolor="#7fb2ff" width="100%">
+          <strong><font size="+1" color="#ffffff"><a name="intro">Introduction</a></font></strong>
+        </td>
+      </tr>
+    </table>
+    <p>
+      With this plugin JCalculator we can calculate the words in line, and 
+      JCalculator can recorder the lines you input. JCalculator also provides 
+      some options for you e.g. remove blank character(s) from the calculate 
+      result ect.
+    </p>
+    <div>
+      
+    </div>
+    <div>
+      
+    </div>
+    <div>
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="screen">
+        <tr align="center" width="100%">
+          <td bgcolor="#7fb2ff" width="100%">
+            <strong><font size="+1" color="#ffffff"><a name="sreen copy">Screen 
+            Copy</a></font></strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p align="center">
+      <img src="pictures/screen.JPG">
+      
+    </p>
+    <div>
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="application panel">
+        <tr align="center" width="100%">
+          <td bgcolor="#7fb2ff" width="100%">
+            <strong><font size="+1" color="#ffffff"><a name="how to use it">Application 
+            Panel</a></font></strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p align="center">
+      <img src="pictures/intro.JPG">
+      
+    </p>
+    <div>
+      
+    </div>
+    <ol>
+      <li>
+        <font color="#4169e1">Numeral system </font>(in red range)<br>We can 
+        select the numeral system for the calculate result as hexadecimal or 
+        decimalization(default) or octal or binary system.
+      </li>
+      <li>
+        <font color="#4169e1">Image buttons </font>(in green range)<br><strong>a.</strong> 
+        Calculate the words in the input line<br><strong>b.</strong> Clear the 
+        words in the input line
+      </li>
+      <li>
+        <font color="#4169e1">Input line </font>(in blue range)<br><strong>a.</strong> 
+        Input the words what you want to calculate into here.<br><strong>b.</strong> 
+        It's class 'org.gjt.sp.jedit.gui.HistoryTextField', it can record what 
+        you input after pressing the key 'ENTER', and can pop up the list with 
+        the recorded words when clicking it with right mouse button.<br><strong>c.</strong> 
+        Please read the section 'History Text Feilds' in the help of jEdit to 
+        know more about.<br><b>d.</b> The words in Input line would be cleared 
+        by pressing the key 'ESCAPE'.
+      </li>
+      <li>
+        <font color="#4169e1">Calculate result </font>(in pink range)<br><strong>a.</strong> 
+        Show the calculate result.<br><strong>b.</strong> There are some 
+        options for the calculate result<br><strong>c.</strong> There 
+        calculate result will be stored into the system cipboard by clicking it.
+      </li>
+    </ol>
+
+    <p>
+      
+    </p>
+    <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="numbers in JCalcualtor">
+      <tr align="center" width="100%">
+        <td bgcolor="#7fb2ff" width="100%">
+          <strong><font size="+1" color="#ffffff"><a name="number">Numbers in JCalculator</a></font></strong>
+        </td>
+      </tr>
+    </table>
+    <p>
+      
+    </p>
+
+    </p>
+    <table border="1" cellspacing="2" valign="top" cellpadding="4">
+		<tbody>
+      <tr>
+        <td>
+          <font color="#4169e1">Numeral System</font>
+        </td>
+				<td>
+					<font color="#4169e1">Prefix</font>
+				</td>
+				<td>
+					<font color="#4169e1">Example</font>
+				</td>
+			</tr>
+			<tr>
+				<td rowspan="2">Hexadecimal</td>
+				<td>0x</td>
+				<td>0x2aF</td>
+			</tr>
+			<tr>
+				<td>0X</td>
+				<td>0X2aF</td>
+			</tr>
+			<tr>
+				<td>Decimalization</td>
+				<td>&nbsp;</td>
+				<td>12345678</td>
+			</tr>
+			<tr>
+				<td>Octal</td>
+				<td>0</td>
+				<td>037</td>
+			</tr>
+			<tr>
+				<td>Binary</td>
+				<td>b</td>
+				<td>b101</td>
+			</tr>
+		</tbody>
+		</table>
+
+		<p>
+    <table border="1" cellspacing="2" valign="top" cellpadding="4">
+		<tbody>
+      <tr>
+        <td>
+          <font color="#4169e1">Specail<br />const number</font>
+        </td>
+				<td>
+					<font color="#4169e1">Macro</font>
+				</td>
+				<td>
+					<font color="#4169e1">Value</font>
+				</td>
+				<td>
+					<font color="#4169e1">Example in the <br />'Input Line' </font>
+				</td>
+				<td>
+					<font color="#4169e1">Result of example</font>
+				</td>
+			</tr>
+			<tr>
+				<td>&#960;</td>
+				<td>PI</td>
+				<td>Math.PI</td>
+				<td>2 * PI * 10</td>
+				<td>62.83185307179586</td>
+			</tr>
+		</tbody>
+		</table>
+		</p>Select the words 
+		
+		<p>
+		
+		</p>
+    <div>
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="what jcalculator supports">
+        <tr align="center" width="100%">
+          <td bgcolor="#7fb2ff" width="100%">
+            <strong><font size="+1" color="#ffffff"><a name="what jcalculator supports">What 
+            JCalculator Supports</a></font></strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p>
+      
+    </p>
+    <table border="1" cellspacing="2" valign="top" cellpadding="4">
+		<tbody>
+      <tr>
+        <td>
+          <font color="#4169e1">Name</font>
+        </td>
+        <td>
+          <font color="#4169e1">Operator</font>
+        </td>
+        <td>
+          <font color="#4169e1">Example in the <br />'Input Line'</font>
+        </td>
+        <td>
+          <font color="#4169e1">Result of Example</font>
+        </td>
+        <td>
+          <font color="#4169e1">Support <br />Decimal Fraction</font>
+        </td>
+				<td>
+          <font color="#4169e1">Priority</font>
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+					Bracket
+        </td>
+        <td>
+          (
+        </td>
+        <td>
+          (1 + 2) * 3
+        </td>
+        <td align="center">
+          9
+        </td>
+				<td rowspan="2">&nbsp;</td>
+				<td rowspan="2" align="center">The max priority</td>
+      </tr>
+      <tr>
+        <td>
+          )
+        </td>
+        <td>
+          (1 + 2.0) * 3
+        </td>
+        <td align="center">
+          9.0
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+					Power
+        </td>
+        <td rowspan="2">
+          POWER
+        </td>
+        <td>
+          2 POWER 3
+        </td>
+        <td align="center">
+          8
+        </td>
+				<td rowspan="2" align="center">&#8730;</td>
+				<td rowspan="2" align="center">The max priority - 1</td>
+      </tr>
+      <tr>
+        <td>
+          2.0 POWER 3
+        </td>
+        <td align="center">
+          8.0
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Multiply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          2 * 3
+        </td>
+        <td align="center">
+          6
+        </td>
+				<td rowspan="2" align="center">&#8730;</td>
+				<td rowspan="6" align="center">11</td>
+      </tr>
+      <tr>
+        <td>
+          MULTIPLY
+        </td>
+        <td>
+          2.0 MULTIPLY 3
+        </td>
+        <td align="center">
+          6.0
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Divide
+        </td>
+        <td>
+          /
+        </td>
+        <td>
+          2 / 3
+        </td>
+        <td align="center">
+          0
+        </td>
+				<td rowspan="2" align="center">&#8730;</td>
+      </tr>
+      <tr>
+        <td>
+          DIVIDE
+        </td>
+        <td>
+          2.0 DIVIDE 3
+        </td>
+        <td align="center">
+          0.6666666666666666
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Mode
+        </td>
+        <td>
+          %
+        </td>
+        <td>
+          10 % 3
+        </td>
+        <td align="center">
+          1
+        </td>
+				<td rowspan="2">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          MODE
+        </td>
+        <td>
+          10 MODE 3
+        </td>
+        <td align="center">
+          1
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Plus
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          2 + 3
+        </td>
+        <td align="center">
+          5
+        </td>
+				<td rowspan="2" align="center">&#8730;</td>
+				<td rowspan="4" align="center">10</td>
+      </tr>
+      <tr>
+        <td>
+          PLUS
+        </td>
+        <td>
+          2 PLUS 3.0
+        </td>
+        <td align="center">
+          5.0
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="2">
+          Decrease
+        </td>
+        <td>
+          -
+        </td>
+        <td>
+          2 - 3.0
+        </td>
+        <td align="center">
+          -1.0
+        </td>
+				<td rowspan="2" align="center">&#8730;</td>
+      </tr>
+      <tr>
+        <td>
+          DECREASE
+        </td>
+        <td>
+          2 DECREASE 3
+        </td>
+        <td align="center">
+          -1
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Left Shift
+        </td>
+        <td>
+          &lt;&lt;
+        </td>
+        <td>
+          1 &lt;&lt; 2
+        </td>
+        <td align="center">
+          4
+        </td>
+				<td rowspan="2">&nbsp;</td>
+				<td rowspan="4" align="center">9</td>
+      </tr>
+      <tr>
+        <td>
+          LEFT_SHIFT
+        </td>
+        <td>
+          1 LEFT_SHIFT 2
+        </td>
+        <td align="center">
+          4
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+          Right Shift
+        </td>
+        <td>
+          &gt;&gt;
+        </td>
+        <td>
+          8 &gt;&gt; 2
+        </td>
+        <td align="center">
+          2
+        </td>
+				<td rowspan="2">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          RIGHT_SHIFT
+        </td>
+        <td>
+          8 RIGHT_SHIFT 2
+        </td>
+        <td align="center">
+          2
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+					And
+        </td>
+        <td>
+          &
+        </td>
+        <td>
+          0xF & 3
+        </td>
+        <td align="center">
+          3
+        </td>
+				<td rowspan="2">&nbsp;</td>
+				<td rowspan="2" align="center">6</td>
+      </tr>
+      <tr>
+        <td>
+          AND
+        </td>
+        <td>
+          0xF AND 3
+        </td>
+        <td align="center">
+          3
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+					Or
+        </td>
+        <td>
+          |
+        </td>
+        <td>
+          0x7 | 5
+        </td>
+        <td align="center">
+          7
+        </td>
+				<td rowspan="2">&nbsp;</td>
+				<td rowspan="2" align="center">5</td>
+      </tr>
+      <tr>
+        <td>
+          OR
+        </td>
+        <td>
+          0x7 OR 5
+        </td>
+        <td align="center">
+          7
+        </td>
+      </tr>
+
+      <tr>
+        <td rowspan="2">
+					Xor
+        </td>
+        <td>
+          ^
+        </td>
+        <td>
+          0x7 ^ 5
+        </td>
+        <td align="center">
+          2
+        </td>
+				<td rowspan="2">&nbsp;</td>
+				<td rowspan="2" align="center">4</td>
+      </tr>
+      <tr>
+        <td>
+          XOR
+        </td>
+        <td>
+          0x7 XOR 5
+        </td>
+        <td align="center">
+          2
+        </td>
+      </tr>
+
+			</tbody>
+    </table>
+		
+    <p>
+      
+    </p>
+    <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="begin the calculation">
+      <tr align="center" width="100%">
+        <td bgcolor="#7fb2ff" width="100%">
+          <strong><font size="+1" color="#ffffff"><a name="begin">Begin the 
+          calculation</a></font></strong>
+        </td>
+      </tr>
+    </table>
+		<ul>
+		<li>Input the words what you want to calculate into the 'Input Line', press the key 'ENTER' or click the button to calculate them. </li>
+		<li>Select the words within the text buffer of jEdit, then click the menu of jEdit as Plugins-&gt;JCalculator-&gt;Calculate the selected text.
+			<br />Therefore the selected text would be copy into the 'Input Line' to begin the calculation.</li>
+		<li>JCalculator would highlight the first character of the first error within the input words.</li>
+		</ul>
+		<p></p>
+		
+    <div>
+      <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="plugin options">
+        <tr align="center" width="100%">
+          <td bgcolor="#7fb2ff" width="100%">
+            <strong><font size="+1" color="#ffffff"><a name="option">Plugin Options</a></font></strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p align="center">
+      <img src="pictures/options.JPG">
+      
+    </p>
+		<br />
+		JCalculate provides some options as the above picture shows, you can enable or disable them in jEdit's Plugin Options.
+    <div>
+      
+    </div>
+
+    <p>
+      
+    </p>
+    <table border="0" cellspacing="0" cellpadding="3" width="100%" summary="history">
+      <tr align="center" width="100%">
+        <td bgcolor="#7fb2ff" width="100%">
+          <strong><font size="+1" color="#ffffff"><a name="history">History</a></font></strong>
+        </td>
+      </tr>
+    </table>
+		<ul>
+			<li><strong>Version 1.0.</strong> require JDK1.5 (or later) and jEidt pre11 (or later)<br />The first version.</li>
+		</ul>
+	</body>
+</html>
