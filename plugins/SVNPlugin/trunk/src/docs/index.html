@@ -11,6 +11,7 @@ Author: Dale Anson
 
 <p>
 <a href="#intro">Intro</a><br/>
+<a href="#installation">Installation</a><br/>
 <a href="#0">Dockables</a><br/>
 <a href="#1">Checking out a project</a><br/>
 <a href="#2">Creating a project from existing files</a><br/>
@@ -23,24 +24,38 @@ Author: Dale Anson
 <a name="intro"><h2>Intro</h2></a>
 </p>
 <p>
-A plugin for using Subversion from within jEdit.  This is an all Java implementation,
-no external libraries or subversion clients are required.  This guide assumes you have
-some experience with Subversion.
-The official Subversion reference manual is here:
+Subversion is a powerful, open source version control system designed as a replacement for the popular Concurrent Versions System (CVS).  It offers many enhancements to CVS, such as versioned directories and atomic commits, and is architected for simpler, more flexible network access.
+</p>
+<p>
+The SVNPlugin is a plugin for using Subversion from within jEdit.  This is an all Java implementation, using the SVNKit library internally, so no external libraries or subversion clients are required.  This guide assumes you have some experience with Subversion.
+</p>
+<p>
+For Subversion command reference and general Subversion information, see the official Subversion reference manual:
 
    <a href="http://svnbook.red-bean.com/index.en.html" title="English"
       hreflang="en" lang="en" rel="alternate">Subversion Book</a> <br>
 
 </p>
 <p>
-This plugin is tightly
-integrated with ProjectViewer, and most commands are available by right clicking on
-files or folders in the ProjectViewer trees.  Some commands for the current file
-are also available
-in the jEdit text area context menu.  The SVN Browser has commands to work directly
-with repository files without needing to have a local copy of the files.
+This plugin is tightly integrated with ProjectViewer, and most commands are available by right clicking on files or folders in the ProjectViewer trees.  Some commands for the current file are also available in the jEdit text area context menu.  The SVN Browser has commands to work directly with repository files without needing to have a local copy of the files.
 </p>
 
+<hr>
+<p>
+<a name="installation"><h2>Installation</h2></a>
+</p>
+<p>
+Install SVNPlugin from within jEdit like any other plugin:
+<ol>
+<li>Click Plugins -&gt; Plugin Manager</li>
+<li>Select the "Install" tab.</li>
+<li>Check "SVNPlugin"</li>
+<li>Click the "Install" button</li>
+</ol>
+</p>
+<p>
+SVNPlugin depends on the Project Viewer, Common Controls, and JDiff plugins.  If you don't have these plugins installed, Plugin Manager will install them for you.
+</p>
 
 <hr>
 <p>
@@ -54,10 +69,10 @@ The Subversion plugin provides 2 dockables to jEdit:<br/>
 </ol>
 </p>
 <p>
-Access the dockables via the Plugins menu, Plugins -> SVN Plugin -> SVN Browser or SVN Console.
+Access the dockables via the Plugins menu, Plugins -&gt; SVN Plugin -&gt; SVN Browser or SVN Console.
 </p>
 <p>
-You can dock them for easier access using Utilities -> Global Options... -> Docking.
+You can dock them for easier access using Utilities -&gt; Global Options... -&gt; Docking.
 </p>
 <p>
 <a name="svn_browser"><h3>SVN Browser</h3></a>
