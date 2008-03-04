@@ -19,7 +19,8 @@ plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.10.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 1.7.0
-plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar
+#plugin.ise.plugin.svn.SVNPlugin.jars=ganymed.jar svnkit.jar svnkit-cli.jar
+plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar
 
 # titles for DockableWindowManager
 subversion.title=SVN
@@ -48,7 +49,7 @@ plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
 plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
 subversion.label=SVN Console
 
-# subversion commands for ProjectViewer
+# subversion commands for ProjectViewer popup menu
 ise.plugin.svn.action.label.1=Status
 ise.plugin.svn.action.code.1=ise.plugin.svn.pv.StatusAction
 ise.plugin.svn.action.label.2=Update...
@@ -99,7 +100,7 @@ ise.plugin.svn.action.code.25=ise.plugin.svn.pv.UnlockActor
 # register subversion commands with ProjectViewer
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.context-menu-actions=ise.plugin.svn.pv.SVNAction
 
-# subversion commands for SVN Browser
+# subversion commands for SVN Browser popup menu
 ise.plugin.svn.gui.br.label.1=Checkout...
 ise.plugin.svn.gui.br.code.1=ise.plugin.svn.gui.br.Checkout
 ise.plugin.svn.gui.br.label.2=Info
