@@ -162,6 +162,11 @@ public class Log {
         }
 
         public List<SVNLogEntry> getEntries() {
+            if ( logEntries == null ) {
+                logEntries = new ArrayList<SVNLogEntry>();
+                SVNLogEntry logEntry = new SVNLogEntry(null, 0, "---", null, "No entries found.");
+                logEntries.add(logEntry);
+            }
             return logEntries;
         }
     }

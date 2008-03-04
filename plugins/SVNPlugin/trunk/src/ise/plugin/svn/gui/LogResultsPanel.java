@@ -30,7 +30,6 @@ package ise.plugin.svn.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
@@ -98,7 +97,7 @@ public class LogResultsPanel extends JPanel {
 
             // sort the entries
             List<SVNLogEntry> entries = me.getValue();
-            if (entries == null) {
+            if ( entries == null ) {
                 continue;
             }
             Collections.sort( entries, new EntryComparator() );
@@ -110,7 +109,7 @@ public class LogResultsPanel extends JPanel {
             for ( int i = 0; it.hasNext(); i++ ) {
                 SVNLogEntry entry = ( SVNLogEntry ) it.next();
                 String revision = String.valueOf( entry.getRevision() );
-                String date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( entry.getDate() );
+                String date = entry.getDate() != null ? new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( entry.getDate() ) : "---";
                 String author = entry.getAuthor();
                 String comment = entry.getMessage();
                 data[ i ][ 0 ] = revision;
@@ -119,7 +118,7 @@ public class LogResultsPanel extends JPanel {
                 data[ i ][ 3 ] = comment;
 
                 StringBuffer associated_files;      // Perforce calls this a "changelist"
-                if ( showPaths && entry.getChangedPaths().size() > 0 ) {
+                if ( showPaths && entry.getChangedPaths() != null && entry.getChangedPaths().size() > 0 ) {
                     associated_files = new StringBuffer();
                     String ls = System.getProperty( "line.separator" );
                     // entry.changedPaths has the path as a string as the key,
@@ -290,7 +289,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Create the context menu.
      */
-    private JPopupMenu getPopupMenu( final LogTable table, final int col, final int row, final int x, final int y) {
+    private JPopupMenu getPopupMenu( final LogTable table, final int col, final int row, final int x, final int y ) {
         final int[] rows = table.getSelectedRows();
         JPopupMenu popup = new JPopupMenu();
 
@@ -377,14 +376,15 @@ public class LogResultsPanel extends JPanel {
                                 );
         }
         //popup.addSeparator();
-        JMenuItem mi = new JMenuItem("Zoom");
-        mi.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ae) {
-                    TableCellViewer viewer = new TableCellViewer(table);
-                    viewer.doPopup(col, row, x, y);
+        JMenuItem mi = new JMenuItem( "Zoom" );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        TableCellViewer viewer = new TableCellViewer( table );
+                        viewer.doPopup( col, row, x, y );
+                    }
                 }
-        });
-        popup.add(mi);
+                            );
+        popup.add( mi );
 
         return popup;
     }
