@@ -142,7 +142,6 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             }
         }
         controller.repaint();
-        System.out.println("+++++ done installing components");
     }
 
     /**
