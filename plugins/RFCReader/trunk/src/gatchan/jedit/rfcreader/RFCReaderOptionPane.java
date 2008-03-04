@@ -72,7 +72,6 @@ public class RFCReaderOptionPane extends AbstractOptionPane
 		addComponent("Mirror : ", new JScrollPane(mirrorList));
 	} //}}}
 
-
 	//{{{ _save() method
 	public void _save()
 	{

@@ -33,6 +33,7 @@ public class RFCHyperlink extends AbstractHyperlink
 	public static final String MIRROR_PROPERTY = "options.rfcreader.source";
 	private int rfcNum;
 
+	//{{{ RFCHyperlink constructors
 	public RFCHyperlink(int start, int end, int startLine, String tooltip, int rfcNum)
 	{
 		this(start, end, startLine, startLine, tooltip, rfcNum);
@@ -42,8 +43,9 @@ public class RFCHyperlink extends AbstractHyperlink
 	{
 		super(start, end, startLine, endLine, tooltip);
 		this.rfcNum = rfcNum;
-	}
+	} //}}}
 
+	//{{{ click() method
 	/**
 	 * Do the click action on the link.
 	 *
@@ -51,6 +53,6 @@ public class RFCHyperlink extends AbstractHyperlink
 	 */
 	public void click(View view)
 	{
-        RFCReaderPlugin.openRFC(view, rfcNum);
-	}
+		RFCReaderPlugin.openRFC(view, rfcNum);
+	} //}}}
 }
