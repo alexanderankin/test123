@@ -28,11 +28,11 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.net.*;
+import java.util.regex.*;
 import java.util.StringTokenizer;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-import gnu.regexp.*;
 import org.gjt.sp.util.Log;
 import tasklist.*;
 //}}}
@@ -416,15 +416,14 @@ class TaskTypeDialog extends EnhancedDialog
 			return;
 		}
 
-		RE re = null;
+		Pattern re = null;
 
 		// test if the regular expression is valid
-		try{
-			re = new RE(_pattern,
-				ignoreCase.isSelected() ? RE.REG_ICASE : 0,
-				TaskType.RE_SYNTAX);
+		try
+		{
+			re = Pattern.compile(_pattern, ignoreCase.isSelected() ? Pattern.CASE_INSENSITIVE : 0);
 		}
-		catch(REException rex)
+		catch(PatternSyntaxException rex)
 		{
 			Object[] args = new Object[] {rex.getMessage(),};
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
@@ -432,9 +431,9 @@ class TaskTypeDialog extends EnhancedDialog
 			return;
 		}
 
-		// test if the regular expression matches the sample text
-		REMatch match = re.getMatch(_sample);
-		if(match == null)
+		// TODO: test if the regular expression matches the sample text
+		Matcher match = re.matcher(_sample);
+		if(match.matches())
 		{
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"task.sample-doesnt-match",null);

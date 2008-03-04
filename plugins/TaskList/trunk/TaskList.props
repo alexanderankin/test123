@@ -5,10 +5,10 @@ plugin.tasklist.TaskListPlugin.activate=defer
 
 plugin.tasklist.TaskListPlugin.name=TaskList
 plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.tasklist.TaskListPlugin.version=0.4.4
+plugin.tasklist.TaskListPlugin.version=1.0.0
 plugin.tasklist.TaskListPlugin.docs=index.html
-plugin.tasklist.TaskListPlugin.depend.0=jdk 1.3
-plugin.tasklist.TaskListPlugin.depend.1=jedit 04.02.02.00
+plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
+plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.12.00
 
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \

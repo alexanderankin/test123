@@ -23,6 +23,7 @@ package tasklist;
 
 //{{{ imports
 import java.net.URL;
+import java.util.regex.*;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import javax.swing.Icon;
@@ -30,16 +31,11 @@ import javax.swing.ImageIcon;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
-import gnu.regexp.*;
 //}}}
 
 public class TaskType
 {
-	public static final RESyntax RE_SYNTAX = new RESyntax(
-		RESyntax.RE_SYNTAX_PERL5).set(
-			RESyntax.RE_CHAR_CLASSES);
-
-	//{{{ default constructors
+	//{{{ TaskType constructors
 	public TaskType()
 	{
 		setName("");
@@ -65,46 +61,29 @@ public class TaskType
 	public Task extractTask(Buffer buffer, String tokenText,
 		int line, int tokenOffset)
 	{
-		REMatch match = this.re.getMatch(tokenText);
-
-		if(match == null)
+		Matcher match = this.re.matcher(tokenText);
+		if(!match.matches())
 			return null;
-
-		int start = (displayIdentifier == true ? match.getStartIndex(1) :
-			match.getStartIndex(2));
-		int end = match.getEndIndex(2);
-
-		/*
-		Log.log(Log.DEBUG,this,"Task '" + this.name + "' found");
-		Log.log(Log.DEBUG,this,"re: " + re.toString());
-		Log.log(Log.DEBUG,this,"on: " + tokenText);
-		Log.log(Log.DEBUG,this,"Match = `" + match.toString() + "`");
-		Log.log(Log.DEBUG,this,"start = " + start);
-		Log.log(Log.DEBUG,this,"end = " + end);
-		Log.log(Log.DEBUG,this,"buffer = " + buffer.toString());
-		Log.log(Log.DEBUG,this,"id/tag = " + tokenText.substring(match.getStartIndex(1), match.getEndIndex(1)));
-		Log.log(Log.DEBUG,this,"comment = " + tokenText.substring(match.getStartIndex(2), match.getEndIndex(2)));
-		Log.log(Log.DEBUG,this,"text = " + tokenText.substring(start, end));
-		Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
-		Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
-		Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
-		Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
-		*/
+		String textDisplay;
+		if (displayIdentifier)
+			textDisplay = tokenText;
+		else
+			textDisplay = match.group(1);
 
 		return new Task(buffer,
-			icon,
-			/* line number */
-			line,
-			/* identifier/name */
-			tokenText.substring(match.getStartIndex(1), match.getEndIndex(1)),
-			/* comment */
-			tokenText.substring(match.getStartIndex(2), match.getEndIndex(2)),
-			/* text to display in list: identifier, whitespace, and any comment */
-			tokenText.substring(start, end),
-			/* start position */
-			tokenOffset + start,
-			/* end position */
-			tokenOffset + end);
+						icon,
+						/* line number */
+						line,
+						/* identifier/name */
+						match.group(0),
+						/* comment */
+						match.group(1),
+						/* text to display in list: identifier, whitespace, and any comment */
+						textDisplay,
+						/* start position */
+						tokenOffset,
+						/* end position */
+						tokenOffset + tokenText.length());
 	}//}}}
 
 	//{{{ get/setName() methods
@@ -143,7 +122,7 @@ public class TaskType
 		if(this.ignoreCase != ignoreCase)
 		{
 			this.ignoreCase = ignoreCase;
-			this.reFlags = (ignoreCase ? RE.REG_ICASE : 0);
+			this.reFlags = ignoreCase ? Pattern.CASE_INSENSITIVE : 0;
 			compileRE();
 		}
 	}//}}}
@@ -177,10 +156,9 @@ public class TaskType
 
 		try
 		{
-			this.re = new RE(this.pattern, this.getREFlags(),
-				TaskType.RE_SYNTAX);
+			this.re = Pattern.compile(this.pattern, this.getREFlags());
 		}
-		catch(REException e)
+		catch(PatternSyntaxException e)
 		{
 			Log.log(Log.ERROR, TaskType.class,
 				"Failed to compile task pattern: " + pattern +
@@ -205,7 +183,7 @@ public class TaskType
 	}//}}}
 
 	//{{{ private members
-	private RE re;
+	private Pattern re;
 	private int reFlags;
 	private String name;
 	private String pattern;
