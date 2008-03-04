@@ -29,30 +29,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.LogData;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
+import ise.plugin.svn.gui.component.*;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -61,13 +51,12 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  */
 public class LogDialog extends JDialog {
     // instance fields
-    private View view = null;
     private LogData data = null;
 
     private boolean recursive = false;
 
-    private transient SVNRevision startRevision = SVNRevision.create( 0L );
-    private transient SVNRevision endRevision = SVNRevision.HEAD;
+    private SVNRevision startRevision = SVNRevision.create( 0L );
+    private SVNRevision endRevision = SVNRevision.HEAD;
 
     private boolean canceled = false;
 
@@ -76,7 +65,6 @@ public class LogDialog extends JDialog {
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = data;
         _init();
     }
@@ -257,7 +245,7 @@ public class LogDialog extends JDialog {
         panel.add( "0, 6, 2, 1, W,  , 3", show_all );
         panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
         panel.add( "0, 8, 1, 1, W, w, 3", start_revision_panel );
-        panel.add( "1, 8, 1, 1, E,  w, 3", end_revision_panel );
+        panel.add( "1, 8, 1, 1, E, w, 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy );

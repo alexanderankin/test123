@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.UpdateData;
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.gui.component.*;
 
 public class UpdateDialog extends JDialog {
 

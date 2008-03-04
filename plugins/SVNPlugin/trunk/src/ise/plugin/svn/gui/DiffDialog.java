@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.DiffData;
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.gui.component.*;
 
 
 public class DiffDialog extends JDialog {
