@@ -124,6 +124,7 @@ public class TaskHighlight extends TextAreaExtension
 			}
 			if(task != null)
 			{
+				System.out.println(task);
 				FontMetrics fm = textArea.getPainter().getFontMetrics();
 				underlineTask(task, gfx, physicalLine, start, end, 
 							  y + fm.getAscent());

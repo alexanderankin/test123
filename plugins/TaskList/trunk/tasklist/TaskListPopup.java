@@ -166,7 +166,7 @@ public class TaskListPopup extends JPopupMenu
 		}
 	} //}}}
 
-	//{{{ createMenuItem method
+	//{{{ createMenuItem methods
 	/**
 	 * Creates a menu item for the popup menu
 	 *
@@ -176,12 +176,13 @@ public class TaskListPopup extends JPopupMenu
 	 *
 	 * @return a JMenuItem representing the new menu item
 	 */
-	private JMenuItem createMenuItem(String name, String cmd) {
+	private JMenuItem createMenuItem(String name, String cmd) 
+	{
 		JMenuItem mi = new JMenuItem(name);
 		mi.setActionCommand(cmd != null ? cmd : name);
 		mi.addActionListener(listener);
 		return mi;
-	} //}}}
+	}
 
 	/**
 	 * Creates a menu item for the popup menu containing an
@@ -191,9 +192,10 @@ public class TaskListPopup extends JPopupMenu
 	 *
 	 * @return a JMenuItem representing the new menu item
 	 */
-	private JMenuItem createMenuItem(String name) {
+	private JMenuItem createMenuItem(String name) 
+	{
 		return createMenuItem(name, null);
-	}
+	} //}}}
 
 	//{{{ ActionHandler class
 	/**
