@@ -50,6 +50,7 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
+import ise.plugin.svn.gui.component.*;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;

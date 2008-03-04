@@ -37,6 +37,7 @@ import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.View;
 
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.gui.component.*;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 

@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.DiffData;
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.gui.component.*;
 
 /**
  * Dialog to allow the user to select the revisions for 2 remote files to diff.
