@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : actions.xml
+    Created on : 4 / gener / 2008, 16:18
+    Author     : yuyiwei
+    Description:
+        Purpose of the document follows.
+-->
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="jcalculator.calculate-text">
+    <CODE>
+      wm.addDockableWindow("jcalculator");
+      wm.getDockableWindow("jcalculator").getPanel().calculate(textArea.getSelectedText());
+    </CODE>
+  </ACTION>
+</ACTIONS>
+
