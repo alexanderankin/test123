@@ -7,7 +7,7 @@ import org.gjt.sp.jedit.*;
  * The RecentBufferSwitcher plugin, shows a dialog of most recently uses buffer
  *
  * @author Michael Thornhill
- * @version   $Revision: 1.1 $ $Date: 2005-10-21 11:48:39 $
+ * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
 public class RecentBufferSwitcherPlugin extends EditPlugin
 {

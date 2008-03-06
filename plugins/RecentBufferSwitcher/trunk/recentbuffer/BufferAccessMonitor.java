@@ -23,7 +23,7 @@ import org.gjt.sp.util.Log;
  * Implements a vector of BufferTime objects and sorts by most recently accessed
  *
  * @author Michael Thornhill
- * @version   $Revision: 1.1 $ $Date: 2005-10-21 11:48:39 $
+ * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
 public class BufferAccessMonitor extends Vector implements EBComponent {
 	/**

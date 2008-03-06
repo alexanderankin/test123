@@ -1,5 +1,5 @@
 # Properties file for QuickNotepad plugin
-# $Id: RecentBufferSwitcher.props,v 1.1 2005-10-21 11:48:39 jchoyt Exp $
+# $Id: RecentBufferSwitcher.props,v 1.1.1.1 2005/10/06 13:51:32 mickthornhill Exp $
 
 # jEdit only needs to load the plugin the first time the user accesses it
 # the presence of this property also tells jEdit the plugin is using the new API
@@ -9,7 +9,7 @@ plugin.recentbuffer.RecentBufferSwitcherPlugin.activate=defer
 plugin.recentbuffer.RecentBufferSwitcherPlugin.name=RecentBufferSwitcher
 plugin.recentbuffer.RecentBufferSwitcherPlugin.author=Michael Thornhill
 # version number == jEdit version number
-plugin.recentbuffer.RecentBufferSwitcherPlugin.version=0.1
+plugin.recentbuffer.RecentBufferSwitcherPlugin.version=0.2
 
 # online help
 plugin.recentbuffer.RecentBufferSwitcherPlugin.docs=index.html
