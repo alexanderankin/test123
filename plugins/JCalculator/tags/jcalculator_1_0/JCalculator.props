@@ -1,0 +1,67 @@
+# Properties file for the plugin JCalculator
+# Created by Yiwen YU on 2008/01/04
+
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.name=JCalculator
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.author=Yiwen Yu
+
+# version number
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.version=1.0
+
+# description
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.description=This plugin provides calculator for the formula on text
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.longdescription=description.html
+
+
+# docs
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.docs=index.html
+
+# Dependencies
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.depend.0=jdk 1.5
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.depend.1=jedit 04.03.11.00
+
+
+# plugin menu
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.menu=jcalculator \
+	- \
+	jcalculator.calculate-text
+
+# labels for memu
+jcalculator.label=JCalculator
+jcalculator.calculate-text.label=Calculate the selected text
+
+# title for dockable
+jcalculator.title=JCalculator
+
+# plugin option pane
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.option-pane=jcalculatorOption
+
+# Option pane activation BeanShell snippet
+options.jcalculatorOption.code=new org.DFish.tools.calculator.plugin.JCalculatorOptionPane();
+
+# Option pane labels
+options.jcalculatorOption.name.label=Name
+options.jcalculatorOption.author.label=Author
+options.jcalculatorOption.version.label=Version
+options.jcalculatorOption.label=JCalculator
+options.jcalculatorOption.changeOperator.title=Change '*' to 'x'
+options.jcalculatorOption.toUpcase.title=Change the calculate result as upcase
+options.jcalculatorOption.removeblank.title=Remove the blank char from the calculate result
+options.jcalculatorOption.onlyResult.title=Only copy the calculate result when clicking the result label
+
+# default settings
+options.jcalculatorOption.changeOperator=false
+options.jcalculatorOption.toUpcase=false
+options.jcalculatorOption.removeblank=false
+options.jcalculatorOption.onlyResult=true
+
+# buttons
+jcalculator.calculate.label=Calculate Now
+jcalculator.calculate.icon=Save.png
+jcalculator.clear.label=Clear All
+jcalculator.clear.icon=Cut.png
+
