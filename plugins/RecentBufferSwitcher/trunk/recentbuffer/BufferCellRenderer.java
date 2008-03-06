@@ -1,29 +1,21 @@
 package recentbuffer;
 
 // from Java:
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.Vector;
-import java.util.Collections;
+import java.awt.Color;
+import java.awt.Component;
 
-// from Swing:
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 
-// from jEdit:
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.io.VFS;
 /**
  * Allows a list of buffers to be rendered with jEdits colors
  *
  * @author Michael Thornhill
- * @version   $Revision: 1.1 $ $Date: 2005-10-21 11:48:39 $
+ * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
+@SuppressWarnings("serial")
 public class BufferCellRenderer extends DefaultListCellRenderer {
 	/**
 	 * Constructor
@@ -36,8 +28,10 @@ public class BufferCellRenderer extends DefaultListCellRenderer {
 		super.getListCellRendererComponent(jlist, value, index, isSelected, cellHasFocus);
 		Buffer buf = (Buffer)value;
 		setIcon(buf.getIcon());
-		java.awt.Color color = VFS.getDefaultColorFor(buf.getName());		
-		setForeground(color);
+		if (isSelected) 
+			setForeground( new Color(0xFFFFFF) );
+		else
+			setForeground( VFS.getDefaultColorFor(buf.getName()) );
 		return this;
 	}	
 }

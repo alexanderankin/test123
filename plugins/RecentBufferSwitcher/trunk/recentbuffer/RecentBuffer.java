@@ -1,45 +1,43 @@
 package recentbuffer;
 
-// from Java:
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.Vector;
-import java.util.Collections;
+import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 
-// from Swing:
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
-// from jEdit:
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * The RecentBufferSwitcher dialog box
  *
  * @author Michael Thornhill
- * @version   $Revision: 1.1 $ $Date: 2005-10-21 11:48:39 $
+ * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
+@SuppressWarnings("serial")
 public class RecentBuffer extends JDialog implements KeyListener, MouseListener {
 	private View view;
 	private JList bufferList;
 	private BufferAccessMonitor bufAccessObj = null;
-	private Action switchBufferAction;
+	/*private Action switchBufferAction;
 	private Action closeAction;
 	private Action prevBufferAction;
 	private Action nextBufferAction;
-	private Action closeBufferAction;
+	private Action closeBufferAction;*/
 
 	/**
 	 * Default Constructor for the <tt>RecentBuffer</tt> object
 	 */
 	public RecentBuffer(View view, BufferAccessMonitor debufAccessObj) {
 		super(view, "Open Buffers", true);
+		this.setUndecorated(true);
 		this.bufAccessObj = debufAccessObj;
 		this.view = view;		
 		this.createLayout();	
@@ -112,7 +110,7 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 	}
 	
 	
-	public void keyPressed(java.awt.event.KeyEvent evt)	{		
+	public void keyPressed(java.awt.event.KeyEvent evt)	{
 		if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
             close();
 		}
@@ -121,9 +119,9 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
             close();
 		}
         else if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
-            switchToBuffer();			
+            switchToBuffer();		
 		}
-        else if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+        else if (evt.getKeyCode() == KeyEvent.VK_TAB || evt.getKeyChar()=='`') {
             int modifiers = evt.getModifiersEx();
             int curIndex = bufferList.getSelectedIndex();
             if (modifiers == 128) { // if modifier is ctrl
@@ -177,10 +175,10 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 	public void mousePressed(java.awt.event.MouseEvent action){}
 	
 	public void mouseClicked(java.awt.event.MouseEvent action) {
-		if (action.getClickCount() > 1) {
+		//if (action.getClickCount() > 1) {
             switchToBuffer();
             close();
-		}     
+		//}     
 	}	
 }
 
