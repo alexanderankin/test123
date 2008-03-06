@@ -21,10 +21,26 @@
  */
 package com.townsfolkdesigns.common.ui;
 
+import java.awt.Component;
+
+import javax.swing.Action;
+
 /**
  * 
  * @author eberry
  */
 public interface Form {
+	
+	public Action getSubmitAction();
+	
+	public Action getCancelAction();
+	
+	public Component getFormView();
+	
+	public void init();
+	
+	public void save();
+	
+	public void cancel();
 
 }
