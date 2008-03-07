@@ -34,7 +34,7 @@ public class SimpleFormManager implements FormManager {
    private static SimpleFormManager instance;
    public static final String FORM_CONTEXT_CLASS_PROPERTY = "form.context.class";
    private FormContext formContext;
-   private Map<String, Form> forms;
+   private Map<String, FormController> forms;
 
    protected FormContext getFormContext() {
       return formContext;
@@ -73,7 +73,7 @@ public class SimpleFormManager implements FormManager {
       return instance;
    }
    
-   public FormContext register(Form form) {
+   public FormContext register(FormController form) {
       return formContext;
    }
 
