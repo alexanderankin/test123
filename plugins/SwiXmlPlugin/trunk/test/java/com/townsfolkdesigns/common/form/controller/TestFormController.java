@@ -22,17 +22,48 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.bind;
+package com.townsfolkdesigns.common.form.controller;
 
-import java.lang.reflect.Field;
-
-import com.townsfolkdesigns.common.form.controller.FormController;
+import com.townsfolkdesigns.common.form.controller.SimpleFormController;
 
 /**
  * @author elberry
  *
  */
-public interface FormControllerFieldBinder {
+public class TestFormController extends SimpleFormController<TestForm> {
 	
-	public void bindField(Field field, FormController controller);
+	@Override
+   public void createBackingObject() {
+	   // TODO Auto-generated method stub
+	   super.createBackingObject();
+   }
+
+	public TestFormController() {
+		super("/forms/TestForm.xml", TestForm.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.townsfolkdesigns.common.ui.FormController#cancel()
+	 */
+	public void cancel() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see com.townsfolkdesigns.common.ui.FormController#init()
+	 */
+	public void init() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see com.townsfolkdesigns.common.ui.FormController#save()
+	 */
+	public void save() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

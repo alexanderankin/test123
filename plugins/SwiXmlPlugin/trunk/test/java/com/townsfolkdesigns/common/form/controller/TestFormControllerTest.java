@@ -22,17 +22,40 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.bind;
+package com.townsfolkdesigns.common.form.controller;
 
-import java.lang.reflect.Field;
+import javax.swing.JTextField;
 
-import com.townsfolkdesigns.common.form.controller.FormController;
+import junit.framework.TestCase;
+
+import org.swixml.SwingEngine;
 
 /**
  * @author elberry
  *
  */
-public interface FormControllerFieldBinder {
+public class TestFormControllerTest extends TestCase {
 	
-	public void bindField(Field field, FormController controller);
+	public void testBackingObjectCreation() {
+		TestFormController controller = new TestFormController();
+		controller.createBackingObject();
+		TestForm testForm = controller.getBackingObject();
+		assertNotNull(testForm);
+		assertEquals(0, testForm.getBirthDay());
+		assertEquals(0, testForm.getBirthMonth());
+		assertEquals(0, testForm.getBirthYear());
+	}
+	
+	public void testBackingObjectBinding() {
+		TestFormController controller = new TestFormController();
+		SwingEngine swingEngine = controller.getSwingEngine();
+		((JTextField)swingEngine.find("firstName")).setText("Eric");
+		((JTextField)swingEngine.find("lastName")).setText("Cartman");
+		((JTextField)swingEngine.find("phoneNumber")).setText("555-123-4567");
+		((JTextField)swingEngine.find("birthDay")).setText("4");
+		((JTextField)swingEngine.find("birthMonth")).setText("2");
+		((JTextField)swingEngine.find("birthYear")).setText("1997");
+		controller.getSubmitAction().actionPerformed(null);
+	}
+
 }
