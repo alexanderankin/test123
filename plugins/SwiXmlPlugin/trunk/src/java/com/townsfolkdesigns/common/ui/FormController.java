@@ -29,13 +29,15 @@ import javax.swing.Action;
  * 
  * @author eberry
  */
-public interface Form {
+public interface FormController<T> {
 	
 	public Action getSubmitAction();
 	
 	public Action getCancelAction();
 	
 	public Component getFormView();
+	
+	public T getBackingObject();
 	
 	public void init();
 	

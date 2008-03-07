@@ -27,6 +27,6 @@ package com.townsfolkdesigns.common.ui;
  */
 public interface FormManager {
    
-   public FormContext register(Form form);
+   public FormContext register(FormController form);
 
 }
