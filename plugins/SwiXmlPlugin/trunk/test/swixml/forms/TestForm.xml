@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel name="view" constraints="BorderLayout.CENTER" layout="GridBagLayout">
+	<panel border="TitledBorder(Register)" layout="GridLayout(0, 3)">
+		<gridbagconstraints id="gbc" gridx="0" gridy="0" weightx="1" weighty="0" fill="GridBagConstraints.BOTH" />
+		<label text="First Name: " horizontalAlignment="RIGHT" /><textfield id="firstName" /><label />
+		<label text="Last Name: " horizontalAlignment="RIGHT" /><textfield id="lastName" /><label />
+		<label text="Phone Number: " horizontalAlignment="RIGHT" /><textfield id="phoneNumber" /><label />
+		<label text="BirthDate: " horizontalAlignment="RIGHT" />
+		<hbox>
+			<label text="mm: " /><textfield id="birthMonth" columns="3"/>
+			<label text="dd: " /><textfield id="birthDay" columns="3"/>
+			<label text="yyyy: " /><textfield id="birthYear" columns="5"/>
+		</hbox>
+		<label />
+		<label text="Send me Product News: " horizontalAlignment="RIGHT" /><checkbox id="newsWanted" /><label />
+		<label />
+		<hbox>
+			<button text="Submit" action="submitAction"/>
+			<button text="Cancel" action="cancelAction" />
+		</hbox>
+		<label />
+	</panel>
+</panel>

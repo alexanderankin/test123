@@ -22,7 +22,7 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.ui;
+package com.townsfolkdesigns.common.form.controller;
 
 import java.awt.Component;
 import java.awt.Container;
