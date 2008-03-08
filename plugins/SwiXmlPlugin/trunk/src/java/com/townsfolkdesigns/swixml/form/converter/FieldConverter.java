@@ -19,20 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * 
- */
-package com.townsfolkdesigns.common.form.bind;
+package com.townsfolkdesigns.swixml.form.converter;
 
-import java.lang.reflect.Field;
+import java.awt.Component;
 
-import com.townsfolkdesigns.swixml.form.Form;
-
-/**
- * @author elberry
- *
- */
-public interface FormControllerFieldBinder {
+public interface FieldConverter<T> {
 	
-	public void bindField(Field field, Form controller);
+	public T convertComponent(Component component);
+
 }

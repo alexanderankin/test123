@@ -19,25 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.townsfolkdesigns.common.form.controller;
+package com.townsfolkdesigns.swixml.form;
 
 import java.awt.Component;
-
-import javax.swing.Action;
 
 /**
  * 
  * @author eberry
  */
-public interface FormController<T> {
-	
-	public Action getSubmitAction();
-	
-	public Action getCancelAction();
-	
+public interface Form {
+		
 	public Component getFormView();
-	
-	public T getBackingObject();
 	
 	public void init();
 	
