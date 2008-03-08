@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.util.Log;
 
-import com.townsfolkdesigns.common.form.controller.FormController;
+import com.townsfolkdesigns.swixml.form.Form;
 
 /**
  *
@@ -37,7 +37,7 @@ public class SimpleFormManager implements FormManager {
    private static SimpleFormManager instance;
    public static final String FORM_CONTEXT_CLASS_PROPERTY = "form.context.class";
    private FormContext formContext;
-   private Map<String, FormController> forms;
+   private Map<String, Form> forms;
 
    protected FormContext getFormContext() {
       return formContext;
@@ -76,7 +76,7 @@ public class SimpleFormManager implements FormManager {
       return instance;
    }
    
-   public FormContext register(FormController form) {
+   public FormContext register(Form form) {
       return formContext;
    }
 

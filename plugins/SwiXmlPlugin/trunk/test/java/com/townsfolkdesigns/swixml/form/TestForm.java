@@ -22,15 +22,16 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.controller;
+package com.townsfolkdesigns.swixml.form;
+
+import com.townsfolkdesigns.swixml.form.SimpleForm;
 
 /**
  * @author elberry
  * 
  */
-public class TestForm {
+public class TestForm extends SimpleForm {
 
-	// fields need to be made protected so that the FormController can easily bind their values.
 	protected int birthDay;
 	protected int birthMonth;
 	protected int birthYear;
@@ -40,63 +41,47 @@ public class TestForm {
 	protected String phoneNumber;
 
 	public TestForm() {
+		super("/forms/TestForm.xml");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.common.ui.FormController#cancel()
+	 */
+	public void cancel() {
+		// TODO Auto-generated method stub
 
 	}
 
-	public int getBirthDay() {
-		return birthDay;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.common.ui.FormController#init()
+	 */
+	public void init() {
+		// TODO Auto-generated method stub
+
 	}
 
-	public int getBirthMonth() {
-		return birthMonth;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.common.ui.FormController#save()
+	 */
+	public void save() {
+		// TODO Auto-generated method stub
+
 	}
 
-	public int getBirthYear() {
-		return birthYear;
+	@Override
+	protected void cancelAction() {
+		super.cancelAction();
 	}
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public boolean isNewsWanted() {
-		return newsWanted;
-	}
-
-	public void setBirthDay(int birthDay) {
-		this.birthDay = birthDay;
-	}
-
-	public void setBirthMonth(int birthMonth) {
-		this.birthMonth = birthMonth;
-	}
-
-	public void setBirthYear(int birthYear) {
-		this.birthYear = birthYear;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public void setNewsWanted(boolean newsWanted) {
-		this.newsWanted = newsWanted;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	@Override
+	protected void submitAction() {
+		super.submitAction();
 	}
 
 }

@@ -21,7 +21,8 @@
  */
 package com.townsfolkdesigns.common.ui;
 
-import com.townsfolkdesigns.common.form.controller.FormController;
+import com.townsfolkdesigns.swixml.form.Form;
+
 
 /**
  *
@@ -29,6 +30,6 @@ import com.townsfolkdesigns.common.form.controller.FormController;
  */
 public interface FormManager {
    
-   public FormContext register(FormController form);
+   public FormContext register(Form form);
 
 }

@@ -22,48 +22,29 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.controller;
+package com.townsfolkdesigns.swixml.form.converter;
 
-import com.townsfolkdesigns.common.form.controller.SimpleFormController;
+import java.awt.Component;
+
+import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
+import javax.swing.text.JTextComponent;
 
 /**
  * @author elberry
- *
+ * 
  */
-public class TestFormController extends SimpleFormController<TestForm> {
-	
-	@Override
-   public void createBackingObject() {
-	   // TODO Auto-generated method stub
-	   super.createBackingObject();
-   }
+public abstract class ConverterUtils {
 
-	public TestFormController() {
-		super("/forms/TestForm.xml", TestForm.class);
+	public static Object getComponentValue(Component component) {
+		Object value = null;
+		if (component instanceof JTextComponent) {
+			value = ((JTextComponent) component).getText();
+		} else if (component instanceof JCheckBox) {
+			value = ((JCheckBox)component).isSelected();
+		} else if (component instanceof JRadioButton) {
+			value = ((JRadioButton)component).isSelected();
+		}
+		return value;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.townsfolkdesigns.common.ui.FormController#cancel()
-	 */
-	public void cancel() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.townsfolkdesigns.common.ui.FormController#init()
-	 */
-	public void init() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.townsfolkdesigns.common.ui.FormController#save()
-	 */
-	public void save() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

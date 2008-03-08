@@ -22,7 +22,10 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.controller;
+package com.townsfolkdesigns.swixml.form;
+
+import java.awt.Component;
+import java.util.Map;
 
 import javax.swing.JTextField;
 
@@ -34,20 +37,20 @@ import org.swixml.SwingEngine;
  * @author elberry
  *
  */
-public class TestFormControllerTest extends TestCase {
+public class TestFormTest extends TestCase {
 	
-	public void testBackingObjectCreation() {
-		TestFormController controller = new TestFormController();
-		controller.createBackingObject();
-		TestForm testForm = controller.getBackingObject();
-		assertNotNull(testForm);
-		assertEquals(0, testForm.getBirthDay());
-		assertEquals(0, testForm.getBirthMonth());
-		assertEquals(0, testForm.getBirthYear());
+	public void testRadioButtonGroup() {
+		TestForm controller = new TestForm();
+		SwingEngine swingEngine = controller.getSwingEngine();
+		Map<String, Object> idObjects = swingEngine.getIdMap();
+		Object favoriteSeason = swingEngine.find("favoriteSeason");
+		System.out.println("Favorite Season (comp): " + favoriteSeason);
+		favoriteSeason = idObjects.get("favoriteSeason");
+		System.out.println("Favorite Season (obj): " + favoriteSeason);
 	}
 	
-	public void testBackingObjectBinding() {
-		TestFormController controller = new TestFormController();
+	public void testFieldBinding() {
+		TestForm controller = new TestForm();
 		SwingEngine swingEngine = controller.getSwingEngine();
 		((JTextField)swingEngine.find("firstName")).setText("Eric");
 		((JTextField)swingEngine.find("lastName")).setText("Cartman");
@@ -55,7 +58,7 @@ public class TestFormControllerTest extends TestCase {
 		((JTextField)swingEngine.find("birthDay")).setText("4");
 		((JTextField)swingEngine.find("birthMonth")).setText("2");
 		((JTextField)swingEngine.find("birthYear")).setText("1997");
-		controller.getSubmitAction().actionPerformed(null);
+		controller.submitAction();
 	}
 
 }

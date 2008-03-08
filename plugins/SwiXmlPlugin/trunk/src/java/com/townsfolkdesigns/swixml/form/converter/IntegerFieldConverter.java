@@ -19,20 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * 
- */
-package com.townsfolkdesigns.common.form.bind;
+package com.townsfolkdesigns.swixml.form.converter;
 
-import java.lang.reflect.Field;
+import java.awt.Component;
 
-import com.townsfolkdesigns.swixml.form.Form;
+import javax.swing.text.JTextComponent;
 
-/**
- * @author elberry
- *
- */
-public interface FormControllerFieldBinder {
-	
-	public void bindField(Field field, Form controller);
+public class IntegerFieldConverter implements FieldConverter<Integer> {
+
+	/* (non-Javadoc)
+    * @see com.townsfolkdesigns.swixml.form.converter.FieldConverter#convertComponent(java.awt.Component)
+    */
+   public Integer convertComponent(Component component) {
+	   Object componentValue = ConverterUtils.getComponentValue(component);
+	   if(componentValue instanceof String) {
+	   	//componentValue = Integer.parseInt();
+	   }
+	   return 0; //componentValue;
+   }
+
 }

@@ -22,63 +22,40 @@
 /**
  * 
  */
-package com.townsfolkdesigns.common.form.controller;
+package com.townsfolkdesigns.swixml.form;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.util.Log;
 import org.swixml.SwingEngine;
 
+import com.townsfolkdesigns.swixml.form.converter.FieldConverter;
 import com.townsfolkdesigns.swixml.jedit.JEditSwingEngine;
 
 /**
  * @author elberry
  * 
  */
-public abstract class SimpleFormController<T> implements FormController<T> {
-
-	private T backingObject;
-
-	private Class<T> backingObjectClass;
-
-	private Action cancelAction = new AbstractAction() {
-
-		public void actionPerformed(ActionEvent arg0) {
-			doCancel();
-		}
-
-	};
-
+public abstract class SimpleForm implements Form {
+	
+	private Map<Class, FieldConverter> fieldConverters = createDefaultFieldConverters();
+	
 	private Component formView;
 
-	private Action submitAction = new AbstractAction() {
-
-		public void actionPerformed(ActionEvent arg0) {
-			createBackingObject();
-			bindBackingObject();
-
-			doSubmit();
-		}
-
-	};
+	private Map<String, Object> idMap;
 
 	private SwingEngine swingEngine;
-
-	protected SimpleFormController(String formViewPath, Class<T> backingObjectClass) {
+	
+	protected SimpleForm(String formViewPath) {
 		setSwingEngine(new JEditSwingEngine(this));
-		setBackingObjectClass(backingObjectClass);
 		URL formViewUrl = getClass().getResource(formViewPath);
 		Container formView = null;
 		try {
@@ -87,16 +64,13 @@ public abstract class SimpleFormController<T> implements FormController<T> {
 			Log.log(Log.ERROR, this, "Error rendering option pane xml file.", e);
 		}
 		setFormView(formView);
+		setIdMap(getSwingEngine().getIdMap());
 	}
-
-	public T getBackingObject() {
-		return backingObject;
+	
+	protected Object getElementById(String id) {
+		return getIdMap().get(id);
 	}
-
-	public Action getCancelAction() {
-		return cancelAction;
-	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -106,45 +80,95 @@ public abstract class SimpleFormController<T> implements FormController<T> {
 		return formView;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.townsfolkdesigns.common.ui.Form#getSubmitAction()
-	 */
-	public Action getSubmitAction() {
-		return submitAction;
-	}
-
 	public SwingEngine getSwingEngine() {
 		return swingEngine;
 	}
-
-	protected void bindBackingObject() {
-		Field[] declaredFields = backingObjectClass.getDeclaredFields();
-		Field[] publicAndInheritedFields = backingObjectClass.getFields();
-		String fieldName = null;
-		Component component = null;
-		// loop through the declared fields first.
-		for (Field field : declaredFields) {
-			fieldName = field.getName();
-			component = getSwingEngine().find(fieldName);
-			if (component != null) {
-				bindField(field, component);
-			} else {
-				Log.log(Log.WARNING, this, "Couldn't find component for field - name: " + fieldName);
+/*
+	protected void bindField(Field field, Object fieldElement) {
+		Class fieldType = field.getType();
+		FieldConverter converter = getFieldConverter(fieldType);
+		if(converter != null) {
+			field.set(this, converter.convertComponent(component));
+		}
+		if(field.getType().isPrimitive()) {
+			bindPrimitive(field, component);
+		} else {
+			bindSynthetic(field, component);
+		}
+		Object fieldValue = null;
+		if (fieldType.isAssignableFrom(String.class)) {
+			// field is a string.
+			fieldValue = getTextFieldValue(fieldName);
+		} else if (fieldType.isAssignableFrom(Integer.class) || fieldType.isAssignableFrom(int.class)) {
+			// field is an integer.
+			fieldValue = getTextFieldValue(fieldName);
+			try {
+				fieldValue = Integer.parseInt((String) fieldValue);
+			} catch (Exception e) {
+				Log.log(Log.ERROR, this, "Integer value from field \"" + fieldName + "\" expected - was: '" + fieldValue
+				      + "'", e);
+			}
+		} else if (fieldType.isAssignableFrom(Boolean.class) || fieldType.isAssignableFrom(boolean.class)) {
+			// field is a boolean.
+			if (component instanceof JTextComponent) {
+				// component is a text field.
+				fieldValue = Boolean.valueOf(getTextFieldValue(fieldName));
+			} else if (component instanceof JCheckBox) {
+				// component is a check box.
+				fieldValue = getCheckBoxValue(fieldName);
+			}
+		}
+		if (Modifier.isPrivate(field.getModifiers())) {
+			// use accessor method instead of field.
+		} else {
+			// use field directly.
+			try {
+				field.set(this, fieldValue);
+			} catch (Exception e) {
+				Log.log(Log.ERROR, this, "Error binding field - name: " + fieldName, e);
 			}
 		}
 	}
 
-	protected void createBackingObject() {
-		T backingObject = null;
-		try {
-			backingObject = getBackingObjectClass().newInstance();
-		} catch (Exception e) {
-			Log.log(Log.ERROR, this, "Error creating new instance of backing object - class: " + getBackingObjectClass(),
-			      e);
+	protected void bindFields() {
+		Field[] declaredFields = getClass().getDeclaredFields();
+		// Field[] publicAndInheritedFields = getClass().getFields();
+		String fieldName = null;
+		Object fieldElement = null;
+		// loop through the declared fields first.
+		for (Field field : declaredFields) {
+			fieldName = field.getName();
+			fieldElement = getIdMap().get(fieldName);
+			if (fieldElement != null) {
+				bindField(field, fieldElement);
+			} else {
+				Log.log(Log.WARNING, this, "Couldn't find element for field - name: " + fieldName);
+			}
 		}
-		setBackingObject(backingObject);
+	}
+
+	protected void bindPrimitive(Field field, Component component) {
+		Class fieldType = field.getType();
+		Object fieldValue = getFieldValue(field.getName(), component);
+		try {
+			field.set(this, fieldValue);
+		} catch(Exception e) {
+			Log.log(Log.ERROR, this, "Error binding field - name: " + field.getName() + " | value: " + fieldValue, e);
+		}
+   }
+
+	protected void bindSynthetic(Field field, Component component) {
+		Class fieldType = field.getType();
+		Object fieldValue = getFieldValue(field.getName(), component);
+		try {
+			field.set(this, fieldValue);
+		} catch(Exception e) {
+			Log.log(Log.ERROR, this, "Error binding field - name: " + field.getName() + " | value: " + fieldValue, e);
+		}
+   }
+*/
+	protected void cancelAction() {
+		doCancel();
 	}
 
 	protected void doCancel() {
@@ -176,6 +200,20 @@ public abstract class SimpleFormController<T> implements FormController<T> {
 		return component;
 	}
 
+	protected FieldConverter getFieldConverter(Class clazz) {
+		return fieldConverters.get(clazz);
+	}
+
+	protected Object getFieldValue(String fieldName, Component component) {
+		Object fieldValue = null;
+		if(component instanceof JTextComponent) {
+			fieldValue = getTextFieldValue(fieldName);
+		} else if (component instanceof JCheckBox) {
+			fieldValue = getCheckBoxValue(fieldName);
+		}
+		return fieldValue;
+   }
+
 	protected String getTextFieldValue(String fieldName) {
 		String fieldValue = null;
 		Component component = getComponent(fieldName);
@@ -200,6 +238,10 @@ public abstract class SimpleFormController<T> implements FormController<T> {
 		}
 	}
 
+	protected void setFieldConverter(Class clazz, FieldConverter converter) {
+		fieldConverters.put(clazz, converter);
+	}
+
 	protected void setFormView(Component formView) {
 		this.formView = formView;
 	}
@@ -215,60 +257,32 @@ public abstract class SimpleFormController<T> implements FormController<T> {
 		}
 	}
 
-	private void bindField(Field field, Component component) {
-		// TODO For the love of java change this over to a binder object arch.
-		String fieldName = field.getName();
-		String methodName = "set" + StringUtils.capitalize(fieldName);
-		Class fieldType = field.getType();
-		Object fieldValue = null;
-		if (fieldType.isAssignableFrom(String.class)) {
-			// field is a string.
-			fieldValue = getTextFieldValue(fieldName);
-		} else if (fieldType.isAssignableFrom(Integer.class) || fieldType.isAssignableFrom(int.class)) {
-			// field is an integer.
-			fieldValue = getTextFieldValue(fieldName);
-			try {
-				fieldValue = Integer.parseInt((String) fieldValue);
-			} catch (Exception e) {
-				Log.log(Log.ERROR, this, "Integer value from field \"" + fieldName + "\" expected - was: '" + fieldValue
-				      + "'", e);
-			}
-		} else if (fieldType.isAssignableFrom(Boolean.class) || fieldType.isAssignableFrom(boolean.class)) {
-			// field is a boolean.
-			if (component instanceof JTextComponent) {
-				// component is a text field.
-				fieldValue = Boolean.valueOf(getTextFieldValue(fieldName));
-			} else if (component instanceof JCheckBox) {
-				// component is a check box.
-				fieldValue = getCheckBoxValue(fieldName);
-			}
-		}
-		if(Modifier.isPrivate(field.getModifiers())) {
-			// use accessor method instead of field.
-		} else {
-			// use field directly.
-			try {
-				field.set(backingObject, fieldValue);
-			} catch (Exception e) {
-				Log.log(Log.ERROR, this, "Error binding field - name: " + fieldName, e);
-			}
-		}
+	protected void submitAction() {
+		//bindFields();
+		doSubmit();
 	}
 
-	private Class<T> getBackingObjectClass() {
-		return backingObjectClass;
-	}
-
-	private void setBackingObject(T backingObject) {
-		this.backingObject = backingObject;
-	}
-
-	private void setBackingObjectClass(Class<T> backingObjectClass) {
-		this.backingObjectClass = backingObjectClass;
-	}
+	private Map<Class, FieldConverter> createDefaultFieldConverters() {
+	   Map<Class, FieldConverter> fieldConverters = new ConcurrentHashMap<Class, FieldConverter>();
+	   return fieldConverters;
+   }
 
 	private void setSwingEngine(SwingEngine swingEngine) {
 		this.swingEngine = swingEngine;
 	}
+
+	/**
+    * @return the elements with IDs.
+    */
+   protected Map<String, Object> getIdMap() {
+   	return idMap;
+   }
+
+	/**
+    * @param idElements the idElements to set
+    */
+   private void setIdMap(Map<String, Object> idElements) {
+   	this.idMap = idElements;
+   }
 
 }
