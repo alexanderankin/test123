@@ -21,12 +21,30 @@
  */
 package com.townsfolkdesigns.lucene.jedit;
 
+import java.io.File;
+
+import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  *
  * @author eberry
  */
 public class LucenePlugin extends EditPlugin {
+	
+	public LucenePlugin() {
+		
+	}
+
+	@Override
+   public File getPluginHome() {
+		String pluginHomePath = StringUtils.defaultIfEmpty(jEdit.getSettingsDirectory(), System.getProperty("user.dir"));
+		File pluginHomeFile = new File(pluginHomePath, "LucenePlugin");
+		if(!pluginHomeFile.exists()) {
+			pluginHomeFile.mkdirs();
+		}
+	   return pluginHomeFile;
+   }
 
 }

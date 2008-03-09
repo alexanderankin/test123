@@ -21,21 +21,18 @@
  */
 package com.townsfolkdesigns.lucene.indexer;
 
-import com.townsfolkdesigns.lucene.parser.FileDocumentParser;
-import com.townsfolkdesigns.lucene.util.FileUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.lucene.document.Document;
-
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Document;
+
+import com.townsfolkdesigns.lucene.parser.FileDocumentParser;
+import com.townsfolkdesigns.lucene.util.FileUtils;
 
 /**
  * The FileTypeDelegatingIndexer delegates file indexing to FileDocumentParsers.
@@ -51,91 +48,91 @@ import java.util.Map;
  * form (for quick searching), or the list of imports, or method names, etc...<br />
  * <br />
  * All Fields from all document parsers get added to one document.
- *
+ * 
  * @author eberry
  */
 public class FileTypeDelegatingIndexer extends Indexer {
 
-   private FileDocumentParser defaultDocumentParser;
-   private Map<String, Collection<FileDocumentParser>> documentParsers;
-   private Log log = LogFactory.getLog(getClass());
+	private FileDocumentParser defaultDocumentParser;
+	private Map<String, Collection<FileDocumentParser>> documentParsers;
+	private Log log = LogFactory.getLog(getClass());
 
-   public FileTypeDelegatingIndexer() {
+	public FileTypeDelegatingIndexer() {
 
-      documentParsers = new LinkedHashMap<String, Collection<FileDocumentParser>>();
-   }
+		documentParsers = new LinkedHashMap<String, Collection<FileDocumentParser>>();
+	}
 
-   public FileDocumentParser getDefaultDocumentParser() {
+	public FileDocumentParser getDefaultDocumentParser() {
 
-      return defaultDocumentParser;
-   }
+		return defaultDocumentParser;
+	}
 
-   public Collection<FileDocumentParser> getDocumentParsers() {
+	public Collection<FileDocumentParser> getDocumentParsers() {
 
-      Collection<FileDocumentParser> documentParserCollection = new ArrayList<FileDocumentParser>();
+		Collection<FileDocumentParser> documentParserCollection = new ArrayList<FileDocumentParser>();
 
-      for (Collection<FileDocumentParser> documentParsers : this.documentParsers.values()) {
-         documentParserCollection.addAll(documentParsers);
-      }
+		for (Collection<FileDocumentParser> documentParsers : this.documentParsers.values()) {
+			documentParserCollection.addAll(documentParsers);
+		}
 
-      return documentParserCollection;
-   }
+		return documentParserCollection;
+	}
 
-   public void setDefaultDocumentParser(FileDocumentParser defaultDocumentParser) {
+	public void setDefaultDocumentParser(FileDocumentParser defaultDocumentParser) {
 
-      this.defaultDocumentParser = defaultDocumentParser;
-   }
+		this.defaultDocumentParser = defaultDocumentParser;
+	}
 
-   public void setDocumentParsers(Collection<FileDocumentParser> indexers) {
+	public void setDocumentParsers(Collection<FileDocumentParser> indexers) {
 
-      Collection<FileDocumentParser> knownParsers = null;
+		Collection<FileDocumentParser> knownParsers = null;
 
-      for (FileDocumentParser parser : indexers) {
+		for (FileDocumentParser parser : indexers) {
 
-         for (String type : parser.getTypes()) {
-            knownParsers = documentParsers.get(type);
+			for (String type : parser.getTypes()) {
+				knownParsers = documentParsers.get(type);
 
-            if (knownParsers == null) {
-               knownParsers = new ArrayList<FileDocumentParser>();
-               documentParsers.put(type, knownParsers);
-            }
+				if (knownParsers == null) {
+					knownParsers = new ArrayList<FileDocumentParser>();
+					documentParsers.put(type, knownParsers);
+				}
 
-            knownParsers.add(parser);
-         }
-      }
-   }
+				knownParsers.add(parser);
+			}
+		}
+	}
 
-   @Override
-   protected Document indexFile(File file) {
+	@Override
+	protected Document indexFile(File file) {
 
-      Document document = new Document();
-      String fileType = FileUtils.getFileType(file);
-      Collection<FileDocumentParser> documentParsers = getDocumentParsers(fileType);
+		Document document = new Document();
+		String fileType = FileUtils.getFileType(file);
+		Collection<FileDocumentParser> documentParsers = getDocumentParsers(fileType);
 
-      if (documentParsers != null) {
+		if (documentParsers != null) {
 
-         if (log.isDebugEnabled()) {
-            log.debug("File type: " + fileType + " | parser count: " + documentParsers.size());
-         }
+			if (log.isDebugEnabled()) {
+				log.debug("File type: " + fileType + " | parser count: " + documentParsers.size());
+			}
 
-         for (FileDocumentParser documentParser : documentParsers) {
-            documentParser.parse(file, document);
-         }
-      } else {
+			for (FileDocumentParser documentParser : documentParsers) {
+				documentParser.parse(file, document);
+			}
+		} else {
 
-         if (log.isDebugEnabled()) {
-            log.debug("No parsers found for file type, \"" + fileType + "\" using default parser.");
-         }
+			if (log.isDebugEnabled()) {
+				log.debug("No parsers found for file type, \"" + fileType + "\" using default parser.");
+			}
 
-         // no parsers given, just add the default attributes.
-         getDefaultDocumentParser().parse(file, document);
-      }
+			// no parsers given, just add the default attributes.
+			getDefaultDocumentParser().parse(file, document);
+		}
 
-      return document;
-   }
+		return document;
+	}
 
-   private Collection<FileDocumentParser> getDocumentParsers(String fileType) {
+	private Collection<FileDocumentParser> getDocumentParsers(String fileType) {
 
-      return documentParsers.get(fileType);
-   }
+		return documentParsers.get(fileType);
+	}
 }

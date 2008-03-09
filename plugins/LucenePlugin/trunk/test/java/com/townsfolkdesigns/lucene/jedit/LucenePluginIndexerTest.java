@@ -19,47 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/**
+ * 
+ */
 package com.townsfolkdesigns.lucene.jedit;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-
-import org.gjt.sp.jedit.AbstractOptionPane;
+import junit.framework.TestCase;
 
 /**
  * @author elberry
- * 
+ *
  */
-public class LucenePluginOptionPane extends AbstractOptionPane {
-
-	private static final long serialVersionUID = -3394324042468241867L;
-	private OptionsForm optionsForm;
-
-	public LucenePluginOptionPane() {
-		super("Lucene Plugin Option Pane");
-		setOptionsForm(new OptionsForm());
-	}
-
-	public OptionsForm getOptionsForm() {
-		return optionsForm;
-	}
-
-	public void setOptionsForm(OptionsForm optionsForm) {
-		this.optionsForm = optionsForm;
-	}
-
-	@Override
-	protected void _init() {
-		getOptionsForm().init();
-		Component view = getOptionsForm().getFormView();
-		if (view != null) {
-			addComponent(view, GridBagConstraints.BOTH);
-		}
-	}
-
-	@Override
-	protected void _save() {
-		getOptionsForm().save();
-	}
+public class LucenePluginIndexerTest extends TestCase {
 
 }
