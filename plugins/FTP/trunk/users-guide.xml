@@ -9,7 +9,6 @@
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <bookinfo><title>FTP plugin user's guide</title>
-
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Nicholas</firstname><surname>O'Leary</surname></author>
@@ -27,6 +26,7 @@
   </para>
  </legalnotice>
 </bookinfo>
+
 
 <chapter id="ftp"><title>Connecting to FTP servers</title>
 
@@ -111,6 +111,11 @@ features:
 </para>
 
 <itemizedlist>
+<listitem><para> URLs of the form <literal>(s)ftp://user@host/path</literal> 
+can be pasted directly in a (docked) File System Browser, allowing you to 
+browse remote file systems more easily. In addition, these 
+paths can be bookmarked just as easily as local paths.  
+</para> </listitem>
 
 <listitem><para>
 Remote directory listings are cached. Changing files
