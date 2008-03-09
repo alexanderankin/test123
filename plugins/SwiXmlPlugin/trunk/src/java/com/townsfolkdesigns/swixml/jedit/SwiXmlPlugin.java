@@ -78,7 +78,7 @@ public class SwiXmlPlugin extends EBPlugin {
       }
    }
 
-   private static void showContainer(Container container) {
+   public static void showContainer(Container container) {
       // if the container isn't an instance of JFrame, put it in one.
       if ((container instanceof JFrame) == false) {
          Dimension containerSize = container.getSize();
