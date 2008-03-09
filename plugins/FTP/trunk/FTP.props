@@ -2,7 +2,7 @@
 plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
-plugin.ftp.FtpPlugin.author=Slava Pestov
+plugin.ftp.FtpPlugin.author=Slava Pestov, Nicholas O'Leary, Vadim Voituk
 plugin.ftp.FtpPlugin.version=0.9.4
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html

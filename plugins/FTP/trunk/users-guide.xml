@@ -94,12 +94,13 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 </para>
 
 <para>
-
 SFTP support is provided using the
 <ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink>
 library, licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
-
 </para>
+
+<para> To execute remote commands on the same host as your SFTP connection,
+use the SshConsole plugin. </para>
 
 </chapter>
 
