@@ -7,7 +7,7 @@
 	<!-- Latter ones override previous properties. -->
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
-	<property name="javadoc.packagenames"	value="ctagssidekick.*" />
+	<property name="javadoc.packagenames"	value="ctags.*" />
 	<property name="user-doc.xml" location = "users-guide.xml"/>
 	<property name="plugin.dependencies" 	value="ErrorList,SideKick,CommonControls" />
 	<property name="dist.target" 			value="dist.complete" />
