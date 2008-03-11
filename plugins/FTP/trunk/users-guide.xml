@@ -12,6 +12,7 @@
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Nicholas</firstname><surname>O'Leary</surname></author>
+  <author><firstname>Voituk</firstname><surname>Vadim</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -154,6 +155,13 @@ You can close unused connections at any other time using the
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+    <listitem><para> <emphasis role="bold">Version 0.9.5</emphasis>
+   Requires java 1.5 and jEdit 4.3pre12. </para>
+	<itemizedlist>
+   		<listitem><para>Fixed: Password in address not detected (# 1712941  - Voituk Vadim) </para></listitem>
+	</itemizedlist> </listitem>
+
+
     <listitem><para> <emphasis role="bold">Version 0.9.4</emphasis>
    Requires java 1.5 and jEdit 4.3pre12. </para>
    <itemizedlist>

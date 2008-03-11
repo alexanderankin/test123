@@ -27,6 +27,7 @@ public class FtpAddress
 	public boolean secure;
 	public String host;
 	public String user;
+	public String password;
 	public String path;
 
 	//{{{ FtpAddress constructor
@@ -56,6 +57,12 @@ public class FtpAddress
 		if(index != -1)
 		{
 			user = url.substring(0,index);
+			// get password
+			if (user.indexOf(":") != -1)
+			{
+				password = user.substring(user.indexOf(":") + 1, user.length());
+				user = user.substring(0, user.indexOf(":"));
+			}
 			url = url.substring(index + 1);
 		}
 

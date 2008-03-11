@@ -331,8 +331,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		if (pass != null)
 			passwordField.setText(pass);
-		else
-			passwordField.setText("");
 
 	}
 	//}}}
