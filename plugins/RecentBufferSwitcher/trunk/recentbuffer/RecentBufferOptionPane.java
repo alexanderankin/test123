@@ -1,6 +1,5 @@
 package recentbuffer;
 
-// from Java:
 import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
