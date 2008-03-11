@@ -41,6 +41,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${install.dir}/ProjectViewer.jar"/>
+		<pathelement location="${install.dir}/GnuRegexp.jar"/>        
 	</path>
 
 </project>

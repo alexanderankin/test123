@@ -611,7 +611,7 @@ xsearch.SearchSettings.pop();
 </formalpara>
 <itemizedlist>
 <listitem><para>
-Now includes <tt>gnu.regexp</tt>, recently removed from jEdit core. 
+Now includes <literal>gnu.regexp</literal>, recently removed from jEdit core. 
 </para>
 </listitem>
 </itemizedlist>
