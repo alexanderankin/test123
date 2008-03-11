@@ -46,5 +46,14 @@ public class LucenePlugin extends EditPlugin {
 		}
 	   return pluginHomeFile;
    }
+	
+	public File getIndexStoreDirectory() {
+		File pluginHome = getPluginHome();
+		File indexStoreDir = new File(pluginHome, "indexes");
+		if(!indexStoreDir.exists()) {
+			indexStoreDir.mkdirs();
+		}
+		return indexStoreDir;
+	}
 
 }
