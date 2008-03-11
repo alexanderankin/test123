@@ -18,9 +18,9 @@ public class RecentBufferSwitcherPlugin extends EditPlugin
 	/**
 	 * Default Constructor for the <tt>RecentBufferSwitcherPlugin</tt> object
 	 */
-	public void RecentBufferSwitcherPlugin() {}
+	public RecentBufferSwitcherPlugin() {}
 	
 	public static void openBufferSwitcher(View view) {		
-		RecentBuffer rb = new RecentBuffer(jEdit.getActiveView(), bufAccessObj);
+		new RecentBuffer(jEdit.getActiveView(), bufAccessObj);
 	}
 }

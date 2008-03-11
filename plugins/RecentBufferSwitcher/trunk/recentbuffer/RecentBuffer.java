@@ -36,7 +36,7 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 	 * Default Constructor for the <tt>RecentBuffer</tt> object
 	 */
 	public RecentBuffer(View view, BufferAccessMonitor debufAccessObj) {
-		super(view, "Open Buffers", true);
+		super(view, null, true);
 		this.setUndecorated(true);
 		this.bufAccessObj = debufAccessObj;
 		this.view = view;		
