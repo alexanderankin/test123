@@ -25,8 +25,14 @@
 package com.townsfolkdesigns.lucene.jedit;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.gjt.sp.util.Log;
 
 import com.townsfolkdesigns.lucene.indexer.FileTypeDelegatingIndexer;
 import com.townsfolkdesigns.lucene.jedit.manager.IndexStatsManager;
@@ -35,56 +41,59 @@ import com.townsfolkdesigns.lucene.parser.DefaultFileDocumentParser;
 
 /**
  * @author elberry
- *
+ * 
  */
 public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
-	
+
 	private OptionsManager optionsManager;
 	private IndexStatsManager indexStatsManager;
-		
+
 	public LucenePluginIndexer() {
-		File pluginHome = new LucenePlugin().getPluginHome();
-		File indexStoreDir = new File(pluginHome, "indexes");
-		if(!indexStoreDir.exists()) {
+		File indexStoreDir = new LucenePlugin().getIndexStoreDirectory();
+		if (!indexStoreDir.exists()) {
 			indexStoreDir.mkdirs();
 		}
 		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
 		setIndexStore(indexStoreFile.getPath());
 		setDefaultDocumentParser(new DefaultFileDocumentParser());
+		setOptionsManager(OptionsManager.getInstance());
+		setIndexStatsManager(new IndexStatsManager());
+		try {
+			setIndexWriter(new IndexWriter(indexStoreFile, new StandardAnalyzer()));
+		} catch (Exception e) {
+			Log.log(Log.ERROR, this, "Error creating index writer", e);
+		}
 	}
 
 	@Override
-   public void run() {
+	public void run() {
 		// get locations from the options manager.
 		List<String> directories = getOptionsManager().getDirectories();
-		String[] locations = new String[directories.size()];
-		for(int index = 0; index < locations.length; index++) {
-			locations[index] = directories.get(index);
-		}
+		String[] locations = directories.toArray(new String[0]);
 		setLocations(locations);
 		// run method overridden so that the stats can be saved in the manager.
 		indexStatsManager.setIndexStartTime(new Date());
 		indexStatsManager.setIndexing(true);
-	   super.run();
-	   indexStatsManager.setIndexEndTime(new Date());
-	   indexStatsManager.setDirectoriesIndexed(getDirectoriesIndexed());
-	   indexStatsManager.setFilesIndexed(getFilesIndexed());
-   }
+		super.run();
+		indexStatsManager.setIndexEndTime(new Date());
+		indexStatsManager.setDirectoriesIndexed(getDirectoriesIndexed());
+		indexStatsManager.setFilesIndexed(getFilesIndexed());
+	}
 
 	public OptionsManager getOptionsManager() {
-   	return optionsManager;
-   }
+		return optionsManager;
+	}
 
 	public void setOptionsManager(OptionsManager optionsManager) {
-   	this.optionsManager = optionsManager;
-   }
+		this.optionsManager = optionsManager;
+	}
 
 	public IndexStatsManager getIndexStatsManager() {
-   	return indexStatsManager;
-   }
+		return indexStatsManager;
+	}
 
 	public void setIndexStatsManager(IndexStatsManager indexStatsManager) {
-   	this.indexStatsManager = indexStatsManager;
-   }
+		this.indexStatsManager = indexStatsManager;
+	}
 
 }

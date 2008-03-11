@@ -47,7 +47,6 @@ public class DefaultFileDocumentParser implements FileDocumentParser {
 
    public static final String[] DEFAULT_TYPES = new String[] { "" };
    private Collection<SearchField> fields;
-   private String[] locations;
    private Log log = LogFactory.getLog(getClass());
 
    public DefaultFileDocumentParser() {
@@ -62,10 +61,6 @@ public class DefaultFileDocumentParser implements FileDocumentParser {
 
    public Collection<SearchField> getFields() {
       return fields;
-   }
-
-   public String[] getLocations() {
-      return locations;
    }
 
    public String[] getTypes() {
@@ -92,19 +87,6 @@ public class DefaultFileDocumentParser implements FileDocumentParser {
          document.add(new Field("last-modified", String.valueOf(source.lastModified()), Field.Store.YES,
                Field.Index.UN_TOKENIZED));
 
-         // add fields that may not be available.
-         boolean rootRemoved = false;
-         String location = null;
-
-         for (int i = 0; (i < locations.length) && !rootRemoved; i++) {
-            location = locations[i];
-
-            if (filePath.startsWith(location)) {
-               rootRemoved = true;
-               filePath = StringUtils.removeStart(filePath, location);
-            }
-         }
-
          if (StringUtils.isNotBlank(fileContent)) {
             document.add(new Field("content", fileContent, Field.Store.YES, Field.Index.TOKENIZED));
          }
@@ -125,10 +107,6 @@ public class DefaultFileDocumentParser implements FileDocumentParser {
 
    public void setFields(Collection<SearchField> fields) {
       this.fields = fields;
-   }
-
-   public void setLocations(String[] locations) {
-      this.locations = locations;
    }
 
    protected SearchField createSearchField(String name, String displayName, boolean text) {

@@ -24,7 +24,13 @@
  */
 package com.townsfolkdesigns.lucene.jedit;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
+
+import com.townsfolkdesigns.lucene.jedit.manager.OptionsManager;
 
 /**
  * @author elberry
@@ -32,4 +38,29 @@ import junit.framework.TestCase;
  */
 public class LucenePluginIndexerTest extends TestCase {
 
+	public void testIndexer() throws Exception {
+		File pluginHome = new LucenePlugin().getPluginHome();
+		File testFile1 = new File(pluginHome, "test1.txt");
+		File testFile2 = new File(pluginHome, "test2.txt");
+		if(!testFile1.exists()) {
+			testFile1.createNewFile();
+		}
+		if(!testFile2.exists()) {
+			testFile2.createNewFile();
+		}
+		List<String> directories = new ArrayList<String>();
+		directories.add(pluginHome.getPath());
+		OptionsManager optionsManager = OptionsManager.getInstance();
+		optionsManager.clear();
+		optionsManager.setDirectories(directories);
+		optionsManager.save();
+		LucenePluginIndexer indexer = new LucenePluginIndexer();
+		indexer.run();
+		if(testFile1.exists()) {
+			testFile1.delete();
+		}
+		if(testFile2.exists()) {
+			testFile2.delete();
+		}
+	}
 }
