@@ -42,6 +42,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 
 	public final static String SPECIAL_URL_PROP = "url...";
 	public static String QUOTE;
+	private static boolean choosingFile = false;
 
 	//{{{ CssSideKickCompletion constructor
 	public CssSideKickCompletion(List completions, String word, boolean selectedProperty) {
@@ -64,6 +65,12 @@ public class CssSideKickCompletion extends SideKickCompletion {
 		JEditBuffer buffer = textArea.getBuffer();
 		int caret = textArea.getCaretPosition();
 		int moveCaret = 0;
+		
+		// when "url..." confirmed by ENTER, the this method is called twice
+		// it seem as a Sidekick's bug to me.
+		if (choosingFile) {
+			return;
+		}
 
 
 		// If selected property, handle colon
@@ -89,8 +96,9 @@ public class CssSideKickCompletion extends SideKickCompletion {
 			moveCaret = -2;
 
 		} else if (selected.equals(SPECIAL_URL_PROP)){
-
+			choosingFile = true;
 			selected = "url(" + QUOTE + Utils.chooseFileAndGetRelativePath() + QUOTE + ")";
+			choosingFile = false;
 
 		}
 
