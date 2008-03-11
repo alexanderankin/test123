@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.xerces.XercesPlugin.name=XercesPlugin
 plugin.xerces.XercesPlugin.activate=defer
-plugin.xerces.XercesPlugin.author=
+plugin.xerces.XercesPlugin.author=xerces.apache.org
 plugin.xerces.XercesPlugin.version=2.9.0
 plugin.xerces.XercesPlugin.docs=docs/index.html
 plugin.xerces.XercesPlugin.jars=resolver.jar xercesImpl.jar
