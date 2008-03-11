@@ -259,7 +259,7 @@ public class ConnectionManager
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
-		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null);
+		LoginDialog dialog = new LoginDialog(comp,secure,host,user,address.password);
 		if(!dialog.isOK())
 			return null;
 		host = dialog.getHost();
