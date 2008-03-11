@@ -606,12 +606,12 @@ xsearch.SearchSettings.pop();
 <title>Change log</title>
 
 
-<formalpara><title> Version 5 (ae) </title>
-<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12</emphasis>, ProjectViewer 2.1.x</para>
+<formalpara><title> Version 1.5 (ae) </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12, GnuRegexpPlugin 1.0</emphasis>, and ProjectViewer 2.1.x</para>
 </formalpara>
 <itemizedlist>
 <listitem><para>
-Now includes <literal>gnu.regexp</literal>, recently removed from jEdit core. 
+Now uses new <literal>gnu.regexp</literal> plugin, recently removed from jEdit core. 
 </para>
 </listitem>
 </itemizedlist>
