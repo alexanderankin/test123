@@ -971,96 +971,136 @@ void Php() :
 //{{{ interfaceDeclaration()
 InterfaceDeclaration interfaceDeclaration() :
 {
-  Token visibilityToken = null;
-  Token interfaceToken, rBraceToken;
-  Token nameToken = null;
-  InterfaceDeclaration interfaceDeclaration;
-  String interfaceNameImage = SYNTAX_ERROR_CHAR;
-  MethodDeclaration methodDeclaration;
-  List superInterfaces = null;
-  List modifiers = new ArrayList(1);
-  ClassConstant classConstant;
+	Token modifierToken = null;
+	Token interfaceToken, rBraceToken;
+	Token nameToken = null;
+	InterfaceDeclaration interfaceDeclaration;
+	String interfaceNameImage = SYNTAX_ERROR_CHAR;
+	MethodDeclaration methodDeclaration;
+	List superInterfaces = null;
+	List modifiers = new ArrayList(1);
+	ClassConstant classConstant;
 }
 {
-  interfaceToken = <INTERFACE>
-  try {
-    nameToken = <IDENTIFIER>
-    {
-      interfaceNameImage = nameToken.image;
-    }
-  } catch (ParseException e) {
-    fireParseError("identifier expected","identifier",e.currentToken.next);
-  }
-  [
-    {
-        superInterfaces = new ArrayList();
-    }
-    <EXTENDS> nameToken = <IDENTIFIER>
-    {
-        superInterfaces.add(nameToken.image);
-    }
-  (
-    <COMMA> nameToken = <IDENTIFIER>
-    {
-        superInterfaces.add(nameToken.image);
-    }
-  )*
-  ]
+	//{{{ interface <IDENTIFIER>
+	interfaceToken = <INTERFACE>
+	try 
+	{
+		nameToken = <IDENTIFIER>
+		{
+			interfaceNameImage = nameToken.image;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("identifier expected","identifier",e.currentToken.next);
+	} //}}}
+	[
+		//{{{ extends <IDENTIFIER [, IDENTIFIER]
+		<EXTENDS> nameToken = <IDENTIFIER>
+		{
+			superInterfaces = new ArrayList();
+			superInterfaces.add(nameToken.image);
+		}
+		(
+		<COMMA> nameToken = <IDENTIFIER>
+		{
+			superInterfaces.add(nameToken.image);
+		}
+		)* //}}}
+	]
   
-  {
-    interfaceDeclaration = new InterfaceDeclaration(path,
-                                                    currentSegment,
-                                                    interfaceNameImage,
-                                                    superInterfaces,
-                                                    interfaceToken.sourceStart,
-                                                    interfaceToken.beginLine,
-                                                    interfaceToken.beginColumn);
-    currentSegment.add(interfaceDeclaration);
-    currentSegment = interfaceDeclaration;
-    scope = new Scope();
-    scopeStack.push(scope);
-  }
-  try 
-  {
-    <LBRACE>
-  } 
-  catch (ParseException e) 
-  {
-    fireParseError("{ expected","{",e.currentToken.next);
-  }
-  (
-    [
-      visibilityToken = <PUBLIC>
-      {
-        modifiers.add(new Modifier(visibilityToken));
-      }
-    ]
-    methodDeclaration = interfaceMethodDeclaration(modifiers)
-    {
-      interfaceDeclaration.add(methodDeclaration);
-    }
-    |
-      classConstant = classConstant()
-      {
-        interfaceDeclaration.addConstant(classConstant);
-      }
-
-  )*
-  try {
-    rBraceToken = <RBRACE>
-    {
-      interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
-      interfaceDeclaration.setEndLine(rBraceToken.endLine);
-      interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
-    }
-  } catch (ParseException e) {
-    fireParseError("} expected","}",e.currentToken.next);
-  }
-  {
-    currentSegment = interfaceDeclaration.getParent();
-    scope = (Scope) scopeStack.pop();
-    return interfaceDeclaration;
-  }
+	{
+		interfaceDeclaration = new InterfaceDeclaration(path,
+								currentSegment,
+								interfaceNameImage,
+								superInterfaces,
+								interfaceToken.sourceStart,
+								interfaceToken.beginLine,
+								interfaceToken.beginColumn);
+		currentSegment.add(interfaceDeclaration);
+		currentSegment = interfaceDeclaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	try 
+	{
+		<LBRACE>
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError("{ expected","{",e.currentToken.next);
+	}
+	(
+	 	 [
+		 (
+			 //{{{ public [static]
+			 modifierToken = <PUBLIC>
+			 {
+				 modifiers.add(new Modifier(modifierToken));
+			 }
+			 [
+			 try
+			 {
+				 modifierToken = <STATIC>
+				 {
+					 modifiers.add(new Modifier(modifierToken));
+				 }
+			 }
+			 catch (ParseException e)
+			 {
+				 fireParseError("static or function token expected","static|function",e.currentToken.next);
+			 }
+			 ] //}}}
+		 |
+			 //{{{ static [public]
+			 modifierToken = <STATIC>
+			 {
+				 modifiers.add(new Modifier(modifierToken));
+			 }
+			 [
+			 try
+			 {
+				 modifierToken = <PUBLIC>
+				 {
+					 modifiers.add(new Modifier(modifierToken));
+				 }
+			 }
+			 catch (ParseException e)
+			 {
+				 fireParseError("public or function token expected","public|function",e.currentToken.next);
+			 }
+			 ] //}}}
+		 )
+		 ]
+		 methodDeclaration = interfaceMethodDeclaration(modifiers)
+		 {
+			 interfaceDeclaration.add(methodDeclaration);
+		 }
+		 |
+		 classConstant = classConstant()
+		 {
+			 interfaceDeclaration.addConstant(classConstant);
+		 }
+	)*
+	try 
+	{
+		rBraceToken = <RBRACE>
+		{
+			interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
+			interfaceDeclaration.setEndLine(rBraceToken.endLine);
+			interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
+		}
+	}
+	catch (ParseException e) 
+	{
+		fireParseError("} expected","}",e.currentToken.next);
+	}
+	{
+		currentSegment = interfaceDeclaration.getParent();
+		scope = (Scope) scopeStack.pop();
+		return interfaceDeclaration;
+	}
 } //}}}
 
 //{{{ ClassConstant()
