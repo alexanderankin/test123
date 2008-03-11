@@ -158,7 +158,7 @@ You can close unused connections at any other time using the
     <listitem><para> <emphasis role="bold">Version 0.9.5</emphasis>
    Requires java 1.5 and jEdit 4.3pre12. </para>
 	<itemizedlist>
-   		<listitem><para>Fixed: Password in address not detected (# 1712941  - Voituk Vadim) </para></listitem>
+   		<listitem><para>Fixed: Password in address not detected (# 1712941 - Jakub Roztocil) </para></listitem>
 	</itemizedlist> </listitem>
 
 
