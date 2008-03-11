@@ -1,0 +1,10 @@
+# Plugin properties
+plugin.GnuRegexpPlugin.name=GnuRegexpPlugin
+plugin.GnuRegexpPlugin.activate=defer
+plugin.GnuRegexpPlugin.author=Alan Ezust
+plugin.GnuRegexpPlugin.version=1.0
+plugin.GnuRegexpPlugin.jars=
+plugin.GnuRegexpPlugin.docs=index.html
+plugin.GnuRegexpPlugin.depend.0=jedit 04.03.13.00
+plugin.GnuRegexpPlugin.depend.1=jdk 1.5
+plugin.GnuRegexpPlugin.description=gnu.regexp, an old reliable library for evaluating regular expressions.
