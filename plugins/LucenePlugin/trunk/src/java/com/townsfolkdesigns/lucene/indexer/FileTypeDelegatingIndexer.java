@@ -29,7 +29,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 
 import com.townsfolkdesigns.lucene.parser.FileDocumentParser;
 import com.townsfolkdesigns.lucene.util.FileUtils;
@@ -134,5 +136,21 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 	private Collection<FileDocumentParser> getDocumentParsers(String fileType) {
 
 		return documentParsers.get(fileType);
+	}
+
+	/**
+	 * A default init method. This method simply creates the IndexWriter based on
+	 * the IndexStoreDirectory. Subclasses should override this method to set the
+	 * IndexStoreDirectory, then just call super.init() to create the
+	 * IndexWriter.
+	 */
+	public void init() {
+		if (getIndexStoreDirectory() != null) {
+			try {
+				setIndexWriter(new IndexWriter(getIndexStoreDirectory(), new StandardAnalyzer()));
+			} catch (Exception e) {
+				log.error("Error creating the IndexWriter - store directory: " + getIndexStoreDirectory().getPath(), e);
+			}
+		}
 	}
 }

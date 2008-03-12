@@ -25,14 +25,8 @@
 package com.townsfolkdesigns.lucene.jedit;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.gjt.sp.util.Log;
 
 import com.townsfolkdesigns.lucene.indexer.FileTypeDelegatingIndexer;
 import com.townsfolkdesigns.lucene.jedit.manager.IndexStatsManager;
@@ -45,55 +39,65 @@ import com.townsfolkdesigns.lucene.parser.DefaultFileDocumentParser;
  */
 public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
 
-	private OptionsManager optionsManager;
 	private IndexStatsManager indexStatsManager;
+	private OptionsManager optionsManager;
 
 	public LucenePluginIndexer() {
-		File indexStoreDir = new LucenePlugin().getIndexStoreDirectory();
-		if (!indexStoreDir.exists()) {
-			indexStoreDir.mkdirs();
-		}
-		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
-		setIndexStore(indexStoreFile.getPath());
-		setDefaultDocumentParser(new DefaultFileDocumentParser());
-		setOptionsManager(OptionsManager.getInstance());
-		setIndexStatsManager(new IndexStatsManager());
-		try {
-			setIndexWriter(new IndexWriter(indexStoreFile, new StandardAnalyzer()));
-		} catch (Exception e) {
-			Log.log(Log.ERROR, this, "Error creating index writer", e);
-		}
-	}
-
-	@Override
-	public void run() {
-		// get locations from the options manager.
-		List<String> directories = getOptionsManager().getDirectories();
-		String[] locations = directories.toArray(new String[0]);
-		setLocations(locations);
-		// run method overridden so that the stats can be saved in the manager.
-		indexStatsManager.setIndexStartTime(new Date());
-		indexStatsManager.setIndexing(true);
-		super.run();
-		indexStatsManager.setIndexEndTime(new Date());
-		indexStatsManager.setDirectoriesIndexed(getDirectoriesIndexed());
-		indexStatsManager.setFilesIndexed(getFilesIndexed());
-	}
-
-	public OptionsManager getOptionsManager() {
-		return optionsManager;
-	}
-
-	public void setOptionsManager(OptionsManager optionsManager) {
-		this.optionsManager = optionsManager;
 	}
 
 	public IndexStatsManager getIndexStatsManager() {
 		return indexStatsManager;
 	}
 
+	public OptionsManager getOptionsManager() {
+		return optionsManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.indexer.AbstractFileIndexer#index()
+	 */
+	@Override
+	public void index() {
+		// get locations from the options manager.
+		List<String> directories = getOptionsManager().getDirectories();
+		String[] locations = directories.toArray(new String[0]);
+		setLocations(locations);
+		// index method overridden so that the stats can be saved in the manager.
+		indexStatsManager.setIndexStartTime(new Date());
+		indexStatsManager.setIndexing(true);
+		super.index();
+		indexStatsManager.setIndexEndTime(new Date());
+		indexStatsManager.setDirectoriesIndexed(getDirectoriesIndexed());
+		indexStatsManager.setFilesIndexed(getFilesIndexed());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.indexer.FileTypeDelegatingIndexer#init()
+	 */
+	@Override
+	public void init() {
+		File indexStoreDir = new LucenePlugin().getIndexStoreDirectory();
+		if (!indexStoreDir.exists()) {
+			indexStoreDir.mkdirs();
+		}
+		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
+		setIndexStoreDirectory(indexStoreFile);
+		setDefaultDocumentParser(new DefaultFileDocumentParser());
+		setOptionsManager(OptionsManager.getInstance());
+		setIndexStatsManager(new IndexStatsManager());
+		super.init();
+	}
+
 	public void setIndexStatsManager(IndexStatsManager indexStatsManager) {
 		this.indexStatsManager = indexStatsManager;
+	}
+
+	public void setOptionsManager(OptionsManager optionsManager) {
+		this.optionsManager = optionsManager;
 	}
 
 }

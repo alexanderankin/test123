@@ -33,36 +33,39 @@ import java.io.FileFilter;
 import java.util.Date;
 
 /**
- * An AbstractFileIndexer indexes files, and converts them into Documents to be added to the
- * IndexWriter. Each AbstractFileIndexer only needs to implement the indexFile method,
- * traversing directories, opening and closing the IndexWriter is all done by
- * this abstract class.
+ * An AbstractFileIndexer indexes files, and converts them into Documents to be
+ * added to the IndexWriter. Each AbstractFileIndexer only needs to implement
+ * the indexFile method, traversing directories, opening and closing the
+ * IndexWriter is all done by this abstract class.
  * 
  * @author eberry
  */
-public abstract class AbstractFileIndexer implements Runnable {
+public abstract class AbstractFileIndexer implements Runnable, Indexer {
+
 	private int directoriesIndexed = 0;
 	private FileFilter fileFilter;
 	private int filesIndexed = 0;
-	private String indexStore;
+	private File indexStoreDirectory;
 	private IndexWriter indexWriter;
+	private boolean initialized;
 	private String[] locations;
 	private Log log = LogFactory.getLog(getClass());
 	private boolean recursivelyIndexDirectoriesOn;
 
 	protected AbstractFileIndexer() {
-		String currentDirectory = System.getProperty("user.dir");
-		File indexStoreDirectory = new File(currentDirectory, "indexes");
-		File indexStoreFile = new File(indexStoreDirectory, "default");
-		setIndexStore(indexStoreFile.getPath());
 	}
 
 	public FileFilter getFileFilter() {
 		return fileFilter;
 	}
 
-	public String getIndexStore() {
-		return indexStore;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.indexer.Indexer#getIndexStoreDirectory()
+	 */
+	public File getIndexStoreDirectory() {
+		return indexStoreDirectory;
 	}
 
 	public IndexWriter getIndexWriter() {
@@ -73,17 +76,17 @@ public abstract class AbstractFileIndexer implements Runnable {
 		return locations;
 	}
 
-	public boolean isRecursivelyIndexDirectoriesOn() {
-		return recursivelyIndexDirectoriesOn;
-	}
-
-	public void run() {
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.indexer.Indexer#index()
+	 */
+	public void index() {
 		if (getIndexWriter() != null) {
 			// reset the counts.
 			setDirectoriesIndexed(0);
 			setFilesIndexed(0);
-			
+
 			File locationFile = null;
 			Document document = null;
 
@@ -138,16 +141,49 @@ public abstract class AbstractFileIndexer implements Runnable {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.indexer.Indexer#isInitialized()
+	 */
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public boolean isRecursivelyIndexDirectoriesOn() {
+		return recursivelyIndexDirectoriesOn;
+	}
+
+	public void run() {
+		if (!isInitialized()) {
+			init();
+			setInitialized(true);
+		}
+		index();
+	}
+
 	public void setFileFilter(FileFilter fileFilter) {
 		this.fileFilter = fileFilter;
 	}
 
-	public void setIndexStore(String indexStore) {
-		this.indexStore = indexStore;
+	/**
+	 * @param indexStoreDirectory
+	 *           the indexStoreDirectory to set
+	 */
+	public void setIndexStoreDirectory(File indexStoreDirectory) {
+		this.indexStoreDirectory = indexStoreDirectory;
 	}
 
 	public void setIndexWriter(IndexWriter indexWriter) {
 		this.indexWriter = indexWriter;
+	}
+
+	/**
+	 * @param initialized
+	 *           the initialized to set
+	 */
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
 	}
 
 	public void setLocations(String[] locations) {
@@ -158,9 +194,17 @@ public abstract class AbstractFileIndexer implements Runnable {
 		this.recursivelyIndexDirectoriesOn = recursivelyIndexDirectoriesOn;
 	}
 
+	protected int getDirectoriesIndexed() {
+		return directoriesIndexed;
+	}
+
+	protected int getFilesIndexed() {
+		return filesIndexed;
+	}
+
 	/**
-	 * Each indexer only needs to be responsble for turning the given file in to
-	 * a Document and adding that document to the IndexWriter.
+	 * Each AbstractFileIndexer only needs to be responsble for turning the given
+	 * file in to a Document and adding that document to the IndexWriter.
 	 * 
 	 * @param file
 	 */
@@ -205,19 +249,11 @@ public abstract class AbstractFileIndexer implements Runnable {
 		}
 	}
 
-	protected int getDirectoriesIndexed() {
-   	return directoriesIndexed;
-   }
-
 	private void setDirectoriesIndexed(int directoriesIndexed) {
-   	this.directoriesIndexed = directoriesIndexed;
-   }
-
-	protected int getFilesIndexed() {
-   	return filesIndexed;
-   }
+		this.directoriesIndexed = directoriesIndexed;
+	}
 
 	private void setFilesIndexed(int filesIndexed) {
-   	this.filesIndexed = filesIndexed;
-   }
+		this.filesIndexed = filesIndexed;
+	}
 }
