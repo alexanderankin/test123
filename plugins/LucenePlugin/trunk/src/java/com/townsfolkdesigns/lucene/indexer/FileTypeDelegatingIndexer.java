@@ -51,7 +51,7 @@ import com.townsfolkdesigns.lucene.util.FileUtils;
  * 
  * @author eberry
  */
-public class FileTypeDelegatingIndexer extends Indexer {
+public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 
 	private FileDocumentParser defaultDocumentParser;
 	private Map<String, Collection<FileDocumentParser>> documentParsers;
