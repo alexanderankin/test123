@@ -33,14 +33,14 @@ import java.io.FileFilter;
 import java.util.Date;
 
 /**
- * An Indexer indexes files, and converts them into Documents to be added to the
- * IndexWriter. Each Indexer only needs to implement the indexFile method,
+ * An AbstractFileIndexer indexes files, and converts them into Documents to be added to the
+ * IndexWriter. Each AbstractFileIndexer only needs to implement the indexFile method,
  * traversing directories, opening and closing the IndexWriter is all done by
  * this abstract class.
  * 
  * @author eberry
  */
-public abstract class Indexer implements Runnable {
+public abstract class AbstractFileIndexer implements Runnable {
 	private int directoriesIndexed = 0;
 	private FileFilter fileFilter;
 	private int filesIndexed = 0;
@@ -50,7 +50,7 @@ public abstract class Indexer implements Runnable {
 	private Log log = LogFactory.getLog(getClass());
 	private boolean recursivelyIndexDirectoriesOn;
 
-	protected Indexer() {
+	protected AbstractFileIndexer() {
 		String currentDirectory = System.getProperty("user.dir");
 		File indexStoreDirectory = new File(currentDirectory, "indexes");
 		File indexStoreFile = new File(indexStoreDirectory, "default");
