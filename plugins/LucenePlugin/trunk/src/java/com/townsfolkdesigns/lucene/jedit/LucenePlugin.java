@@ -25,7 +25,9 @@ import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 /**
  *
@@ -35,6 +37,15 @@ public class LucenePlugin extends EditPlugin {
 	
 	public LucenePlugin() {
 		
+	}
+
+	public File getIndexStoreDirectory() {
+		File pluginHome = getPluginHome();
+		File indexStoreDir = new File(pluginHome, "indexes");
+		if (!indexStoreDir.exists()) {
+			indexStoreDir.mkdirs();
+		}
+		return indexStoreDir;
 	}
 
 	@Override
@@ -47,13 +58,35 @@ public class LucenePlugin extends EditPlugin {
 	   return pluginHomeFile;
    }
 	
-	public File getIndexStoreDirectory() {
-		File pluginHome = getPluginHome();
-		File indexStoreDir = new File(pluginHome, "indexes");
-		if(!indexStoreDir.exists()) {
-			indexStoreDir.mkdirs();
-		}
-		return indexStoreDir;
-	}
+	/* (non-Javadoc)
+    * @see org.gjt.sp.jedit.EditPlugin#start()
+    */
+   @Override
+   public void start() {
+   	// adding indexers to IndexerExecutor
+   	String indexerClassName = JEditIndexer.class.getName();
+	   String[] indexerNames = ServiceManager.getServiceNames(indexerClassName);
+	   JEditIndexer indexer = null;
+	   for(String indexerName : indexerNames) {
+	   	try {
+	   		Log.log(Log.DEBUG, this, "Loading Indexer - name: " + indexerName);
+	   		indexer = (JEditIndexer) ServiceManager.getService(indexerClassName, indexerName);
+	   	} catch(Exception e) {
+	   		Log.log(Log.ERROR, this, "Error loading Indexer - name: " + indexerName, e);
+	   	}
+	   	if(indexer != null) {
+	   		Log.log(Log.DEBUG, this, "Adding Indexer to executor service - name: " + indexerName);
+	   		IndexerExecutor.getInstance().addIndexer(indexer);
+	   	}
+	   }
+   }
+
+	/* (non-Javadoc)
+    * @see org.gjt.sp.jedit.EditPlugin#stop()
+    */
+   @Override
+   public void stop() {
+	   IndexerExecutor.getInstance().shutdown();
+   }
 
 }

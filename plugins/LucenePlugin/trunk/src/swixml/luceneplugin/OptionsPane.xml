@@ -61,6 +61,14 @@
 		<checkbox id="indexProjects" name="indexProjects" text="Automatically index project files.">
 			<gridbagconstraints use="gbc1" gridx="1" gridy="2" weightx="0" weighty="0" />
 		</checkbox>
+		<!-- Row 4 - Indexer Thread Pool. -->
+		<label text="Thread Pool Size:" horizontalAlignment="RIGHT">
+			<gridbagconstraints use="gbc1" gridx="0" gridy="3" />
+		</label>
+		<panel>
+			<gridbagconstraints use="gbc1" gridx="1" gridy="3" weightx="1" fill="GridBagConstraints.NONE" anchor="GridBagConstraints.WEST"/>
+			<textfield id="threadPoolSize" name="threadPoolSize" columns="10" horizontalAlignment="LEFT" text="1"/>
+		</panel>
 	</panel>
 	<panel border="TitledBorder(Directories)" layout="GridBagLayout">
 		<gridbagconstraints use="gbc" gridy="2" weighty="1" />
@@ -76,7 +84,7 @@
 				<gridbagconstraints id="gbc3" insets="0,0,0,0" ipadx="0" ipady="0" gridx="0" gridy="0" weightx="0" weighty="0" fill="GridBagConstraints.NONE" />
 			</rolloverbutton>
 			<rolloverbutton icon="org/gjt/sp/jedit/icons/Minus.png" action="removeDirectory">
-				<gridbagconstraints use="gbc3" insets="0,0,0,0" ipadx="0" ipady="0" gridx="1" weightx="0" weighty="0"  fill="GridBagConstraints.NONE" />
+				<gridbagconstraints use="gbc3" insets="0,0,0,0" ipadx="0" ipady="0" gridx="1" weightx="0" weighty="0" fill="GridBagConstraints.NONE" />
 			</rolloverbutton>
 			<label text="">
 				<gridbagconstraints use="gbc3" gridx="2" weightx="1" />

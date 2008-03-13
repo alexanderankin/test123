@@ -24,44 +24,33 @@
  */
 package com.townsfolkdesigns.lucene.jedit;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import com.townsfolkdesigns.lucene.jedit.manager.OptionsManager;
+import com.townsfolkdesigns.lucene.indexer.Indexer;
 
 /**
+ * The JEditIndexer is used with jEdit's Service API, as well as it provides a
+ * method to retrieve the interval between indexes for this Indexer.
+ * 
  * @author elberry
- *
+ * 
  */
-public class LucenePluginIndexerTest extends TestCase {
+public interface JEditIndexer extends Indexer {
 
-	public void testIndexer() throws Exception {
-		File pluginHome = new LucenePlugin().getPluginHome();
-		File testFile1 = new File(pluginHome, "test1.txt");
-		File testFile2 = new File(pluginHome, "test2.txt");
-		if(!testFile1.exists()) {
-			testFile1.createNewFile();
-		}
-		if(!testFile2.exists()) {
-			testFile2.createNewFile();
-		}
-		List<String> directories = new ArrayList<String>();
-		directories.add(pluginHome.getPath());
-		OptionsManager optionsManager = OptionsManager.getInstance();
-		optionsManager.clear();
-		optionsManager.setDirectories(directories);
-		optionsManager.save();
-		LucenePluginIndexer indexer = new LucenePluginIndexer();
-		indexer.init();
-		indexer.index();
-		if(testFile1.exists()) {
-			testFile1.delete();
-		}
-		if(testFile2.exists()) {
-			testFile2.delete();
-		}
-	}
+	/**
+	 * Gets the interval between this Indexer should index. The interval will act
+	 * as the maximum time between indexes.<br>
+	 * <br>
+	 * Eg. If Indexer A has a index interval of 5 minutes, and the actual
+	 * indexing takes 1 minute, the indexer will reindex 4 minutes after it
+	 * finishes.<br>
+	 * <br>
+	 * If Indexer B has an index interval of 5 minutes, and the actual indexing
+	 * takes 6 minutes Indexer B will start indexing again as soon as it finishes
+	 * the first time.
+	 * 
+	 * @return The maximum amount of time between indexes in milliseconds.
+	 * @see java.util.concurrent.ScheduledThreadPoolExecutor#scheduleAtFixedRate(Runnable,
+	 *      long, long, java.util.concurrent.TimeUnit)
+	 */
+	public long getIndexInterval();
+
 }
