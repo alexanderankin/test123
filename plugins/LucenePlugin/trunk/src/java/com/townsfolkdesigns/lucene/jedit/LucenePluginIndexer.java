@@ -37,20 +37,26 @@ import com.townsfolkdesigns.lucene.parser.DefaultFileDocumentParser;
  * @author elberry
  * 
  */
-public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
+public class LucenePluginIndexer extends FileTypeDelegatingIndexer implements JEditIndexer {
+
+	private static final OptionsManager optionsManager = OptionsManager.getInstance();
 
 	private IndexStatsManager indexStatsManager;
-	private OptionsManager optionsManager;
 
 	public LucenePluginIndexer() {
 	}
 
-	public IndexStatsManager getIndexStatsManager() {
-		return indexStatsManager;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.townsfolkdesigns.lucene.jedit.JEditIndexer#getIndexInterval()
+	 */
+	public long getIndexInterval() {
+		return optionsManager.getIndexInterval();
 	}
 
-	public OptionsManager getOptionsManager() {
-		return optionsManager;
+	public IndexStatsManager getIndexStatsManager() {
+		return indexStatsManager;
 	}
 
 	/*
@@ -61,7 +67,7 @@ public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
 	@Override
 	public void index() {
 		// get locations from the options manager.
-		List<String> directories = getOptionsManager().getDirectories();
+		List<String> directories = optionsManager.getDirectories();
 		String[] locations = directories.toArray(new String[0]);
 		setLocations(locations);
 		// index method overridden so that the stats can be saved in the manager.
@@ -87,7 +93,6 @@ public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
 		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
 		setIndexStoreDirectory(indexStoreFile);
 		setDefaultDocumentParser(new DefaultFileDocumentParser());
-		setOptionsManager(OptionsManager.getInstance());
 		setIndexStatsManager(new IndexStatsManager());
 		super.init();
 	}
@@ -95,9 +100,4 @@ public class LucenePluginIndexer extends FileTypeDelegatingIndexer {
 	public void setIndexStatsManager(IndexStatsManager indexStatsManager) {
 		this.indexStatsManager = indexStatsManager;
 	}
-
-	public void setOptionsManager(OptionsManager optionsManager) {
-		this.optionsManager = optionsManager;
-	}
-
 }

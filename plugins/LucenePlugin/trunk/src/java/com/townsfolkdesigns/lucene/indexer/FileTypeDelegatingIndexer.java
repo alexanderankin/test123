@@ -141,8 +141,8 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 	/**
 	 * A default init method. This method simply creates the IndexWriter based on
 	 * the IndexStoreDirectory. Subclasses should override this method to set the
-	 * IndexStoreDirectory, then just call super.init() to create the
-	 * IndexWriter.
+	 * IndexStoreDirectory, then just call super.init() to create the IndexWriter
+	 * and set this Indexer to being initialized.
 	 */
 	public void init() {
 		if (getIndexStoreDirectory() != null) {
@@ -152,5 +152,6 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 				log.error("Error creating the IndexWriter - store directory: " + getIndexStoreDirectory().getPath(), e);
 			}
 		}
+		setInitialized(true);
 	}
 }

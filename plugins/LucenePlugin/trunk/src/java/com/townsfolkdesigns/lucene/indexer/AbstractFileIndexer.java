@@ -40,7 +40,7 @@ import java.util.Date;
  * 
  * @author eberry
  */
-public abstract class AbstractFileIndexer implements Runnable, Indexer {
+public abstract class AbstractFileIndexer implements Indexer {
 
 	private int directoriesIndexed = 0;
 	private FileFilter fileFilter;
@@ -152,14 +152,6 @@ public abstract class AbstractFileIndexer implements Runnable, Indexer {
 
 	public boolean isRecursivelyIndexDirectoriesOn() {
 		return recursivelyIndexDirectoriesOn;
-	}
-
-	public void run() {
-		if (!isInitialized()) {
-			init();
-			setInitialized(true);
-		}
-		index();
 	}
 
 	public void setFileFilter(FileFilter fileFilter) {
