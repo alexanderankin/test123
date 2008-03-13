@@ -1,10 +1,11 @@
 plugin.javascriptshell.JavaScriptShellPlugin.name=JavaScript Shell
 plugin.javascriptshell.JavaScriptShellPlugin.author=Jakub Roztocil
+plugin.javascriptshell.JavaScriptShellPlugin.description=JavaScript shell and macros handler
 plugin.javascriptshell.JavaScriptShellPlugin.version=0.1
 plugin.javascriptshell.JavaScriptShellPlugin.docs=index.html
 plugin.javascriptshell.JavaScriptShellPlugin.activate=startup
 plugin.javascriptshell.JavaScriptShellPlugin.depend.0=jedit 04.03.06.00
-plugin.javascriptshell.JavaScriptShellPlugin.depend.1=jdk 1.6
+plugin.javascriptshell.JavaScriptShellPlugin.depend.1=jdk 1.5
 plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlugin 4.3.3
 
 macro-handler.javascript.label=JavaScript
