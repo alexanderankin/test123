@@ -28,13 +28,12 @@ Tiger2.label=JavaSideKick
 # Menu bar properties
 plugin.sidekick.java.JavaSideKickPlugin.option-pane=sidekick.java
 #plugin.sidekick.java.JavaSideKickPlugin.label=JavaSideKick
-plugin.sidekick.java.JavaSideKickPlugin.menu=javasidekick-check-imports sidekick-tree
+plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick-tree
 
 
 # action labels
-javasidekick-check-imports.label=Check Imports
+#javasidekick-check-imports.label=Check Imports
 javasidekick-gotodockable.label=Go to structure browser
-javasidekick-check-imports.label=Check imports
 
 
 # registration with SideKick as a mode parser
@@ -201,5 +200,5 @@ sidekick.java.pv.useJavaClasspath.label=Include system classpath?
 sidekick.java.pv.useJavaClasspath=true
 sidekick.java.pv.optionalClasspath.label=Classpath:
 sidekick.java.pv.optionalSourcepath.label=Source path:
-
+sidekick.java.pv.buildOutputPath.label=Build output path:
 

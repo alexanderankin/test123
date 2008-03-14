@@ -91,6 +91,10 @@ public class PVHelper {
         return path;
     }
 
+    public static String getBuildOutputPathForProject( String projectName ) {
+        return jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalBuildpath", "" );
+    }
+
     /**
      * @return a Path containing the sourcepath as set in ProjectViewer for the given project
      */
@@ -99,4 +103,11 @@ public class PVHelper {
         Path path = new Path( sourcepath );
         return path;
     }
+
+    public static String getProjectRoot( View view ) {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        return project == null ? "" : project.getRootPath();
+    }
+
+
 }

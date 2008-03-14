@@ -8,7 +8,8 @@ import errorlist.*;
 import org.gjt.sp.jedit.*;
 import sidekick.util.Range;
 
-
+// deprecated, use PMD plugin instead.  This is way slow where as PMD is fast.
+@Deprecated
 public class CheckImports {
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
     private JavaCompletionFinder finder = new JavaCompletionFinder();
