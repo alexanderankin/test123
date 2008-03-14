@@ -3,10 +3,12 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="javasidekick-check-imports">
-		<CODE>
-			sidekick.java.tools.CheckImports tool = new sidekick.java.tools.CheckImports();
+    <!-- deprecated
+    <ACTION NAME="javasidekick-check-imports">
+        <CODE>
+            sidekick.java.tools.CheckImports tool = new sidekick.java.tools.CheckImports();
             tool.checkImports(buffer);
-		</CODE>
-	</ACTION>
+        </CODE>
+    </ACTION>
+    -->
 </ACTIONS>

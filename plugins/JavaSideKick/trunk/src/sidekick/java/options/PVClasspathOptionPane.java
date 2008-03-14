@@ -1,35 +1,21 @@
 package sidekick.java.options;
 
 // imports
-import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 
+import sidekick.java.PVHelper;
 import projectviewer.config.ProjectOptions;
 
 
@@ -42,6 +28,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     private PathBuilder classpathBuilder;
     private PathBuilder sourcepathBuilder;
     private JCheckBox useJavaClassPath;
+    private JTextField buildPath;
 
     public static String PREFIX = "sidekick.java.pv.";
 
@@ -70,23 +57,43 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         classpathBuilder.setPath(
             jEdit.getProperty( PREFIX + name + ".optionalClasspath", "" )
         );
-        classpathBuilder.setStartDirectory(ProjectOptions.getProject().getRootPath());
-        classpathBuilder.setEnabled(true);
+        classpathBuilder.setStartDirectory( ProjectOptions.getProject().getRootPath() );
+        classpathBuilder.setEnabled( true );
         addComponent( classpathBuilder );
 
         // Sourcepath components
         sourcepathBuilder = new PathBuilder(
-            jEdit.getProperty(PREFIX + "optionalSourcepath.label")
-        );
-        sourcepathBuilder.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        sourcepathBuilder.setFileFilter(new SourceFileFilter());
+                    jEdit.getProperty( PREFIX + "optionalSourcepath.label" )
+                );
+        sourcepathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+        sourcepathBuilder.setFileFilter( new SourceFileFilter() );
         sourcepathBuilder.setPath(
-            jEdit.getProperty(PREFIX + name + ".optionalSourcepath", "")
+            jEdit.getProperty( PREFIX + name + ".optionalSourcepath", "" )
         );
-        sourcepathBuilder.setStartDirectory(ProjectOptions.getProject().getRootPath());
-        sourcepathBuilder.setEnabled(true);
-        addComponent(sourcepathBuilder);
+        sourcepathBuilder.setStartDirectory( ProjectOptions.getProject().getRootPath() );
+        sourcepathBuilder.setEnabled( true );
+        addComponent( sourcepathBuilder );
 
+        // build path components
+        JLabel buildPathLabel = new JLabel( jEdit.getProperty( PREFIX + "buildOutputPath.label" ) );
+        buildPath = new JTextField( 30 );
+        buildPath.setText( jEdit.getProperty( PREFIX + name + ".optionalBuildpath", "" ) );
+        JButton browse_btn = new JButton( "Browse" );
+        browse_btn.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        View view = GUIUtilities.getView( PVClasspathOptionPane.this );
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot( view ), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        if ( dirs != null && dirs.length > 0 ) {
+                            buildPath.setText( dirs[ 0 ] );
+                        }
+                    }
+                }
+                                    );
+        JPanel buildPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buildPathPanel.add( buildPathLabel );
+        buildPathPanel.add( buildPath );
+        buildPathPanel.add( browse_btn );
+        addComponent( buildPathPanel );
     }
 
     // #_save() : void
@@ -105,17 +112,21 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
             PREFIX + name + ".optionalSourcepath",
             sourcepathBuilder.getPath()
         );
+        jEdit.setProperty(
+            PREFIX + name + ".optionalBuildpath",
+            buildPath.getText()
+        );
     }
 
     private String getProjectName() {
         String project_name = "";
-        if (ProjectOptions.getProject().getName() != null) {
+        if ( ProjectOptions.getProject().getName() != null ) {
             project_name = ProjectOptions.getProject().getName();
         }
         return project_name;
     }
 
-    public void addComponent( PathBuilder comp ) {
+    public void addComponent( JComponent comp ) {
         GridBagConstraints cons = new GridBagConstraints();
         cons.gridy = y++; // y is a protected member of AbstractOptionPane
         cons.gridheight = 1;
@@ -151,23 +162,18 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         }
     }
     // -class _SourceFileFilter_
-    private static class SourceFileFilter extends FileFilter
-    {
+    private static class SourceFileFilter extends FileFilter {
         // +accept(File) : boolean
-        public boolean accept(File file)
-        {
-            if(file.isDirectory())
-            {
+        public boolean accept( File file ) {
+            if ( file.isDirectory() ) {
                 return true;
             }
 
             String filename = file.getName();
-            int idx = filename.lastIndexOf('.');
-            if(idx >= 0)
-            {
-                String ext = filename.substring(idx);
-                if(ext.equalsIgnoreCase(".zip"))
-                {
+            int idx = filename.lastIndexOf( '.' );
+            if ( idx >= 0 ) {
+                String ext = filename.substring( idx );
+                if ( ext.equalsIgnoreCase( ".zip" ) ) {
                     return true;
                 }
             }
@@ -175,8 +181,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         }
 
         // +getDescription() : String
-        public String getDescription()
-        {
+        public String getDescription() {
             return "Sourcepath elements (directories, *.zip)";
         }
     }
