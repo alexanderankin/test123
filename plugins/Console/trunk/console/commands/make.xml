@@ -22,7 +22,7 @@
 		<!-- <CAPTION LABEL="Config"> -->
         <DIR_ENTRY LABEL="Project Root" 
          VARNAME = "projectroot"
-         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
+         EVAL = 'console.ConsolePlugin.getProjectRoot(view, buffer)' />
          <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
 
 		<ENTRY LABEL="Makefile if not default" VARNAME="makefile"

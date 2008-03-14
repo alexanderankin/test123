@@ -6,7 +6,7 @@
 -->
 <COMMANDO>
 	<UI>
-    		<ENTRY LABEL="Targets to build" VARNAME="targets" />
+    		<ENTRY LABEL="Targets  build" VARNAME="targets" />
 
         <CHOICE LABEL="Build in" VARNAME="makeIn" DEFAULT="projectroot">
             <OPTION LABEL="Project Root" VALUE="projectroot" />
@@ -20,7 +20,7 @@
 
         <DIR_ENTRY LABEL="Project Root" 
          VARNAME = "projectroot"
-         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
+         EVAL = 'console.ConsolePlugin.getProjectRoot(view, buffer)' />
          <DIR_ENTRY LABEL="Custom Location" 
          VARNAME = "customlocation" />         
          

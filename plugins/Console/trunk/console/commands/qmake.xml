@@ -9,12 +9,12 @@
 	<UI>
         <FILE_ENTRY LABEL="Build location"
             VARNAME = "location"
-            EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' 
+            EVAL = 'console.ConsolePlugin.getProjectRoot(buffer)' 
             />
     
 		<TOGGLE LABEL="Build Project file" VARNAME="makeProject" />
-		<ENTRY LABEL="Project file to use" VARNAME="projectFile"
-                        VALUE=" " />
+		<ENTRY LABEL="Project file to use" VARNAME="projectFile" 
+                        DEFAULT=" " />
 	</UI>
 
 	<COMMANDS>

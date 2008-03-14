@@ -19,7 +19,7 @@
 		<ENTRY LABEL="Class path" VARNAME="classpath"
 			EVAL="getBufferClassPath(buffer)" />
 		<ENTRY LABEL="Source path" VARNAME="sourcepath"
-			EVAL="console.ConsolePlugin.getPackageRoot(buffer)" />
+			EVAL="console.ConsolePlugin.getProjectRoot(view, buffer)" />
 		<DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" />
 		<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
