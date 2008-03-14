@@ -181,6 +181,7 @@ public class PathBuilder extends JPanel {
                     }
 
                     chooser.setDialogTitle( fileDialogTitle );
+                    chooser.setFileHidingEnabled( false );
                     chooser.setApproveButtonText( jEdit.getProperty( "common.ok" ) );
                     int returnVal = chooser.showDialog(
                                 PathBuilder.this.getRootPane(),
