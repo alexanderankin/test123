@@ -40,9 +40,12 @@ import org.gjt.sp.jedit.bsh.NameSpace;
 // {{{ ProjectTreeListener class
 /**
  *
- * Listener of ProjectViewer node selection events, to trigger console beanshell
- * scripts as actions in response.
- *
+ * Listener of ProjectViewer 2.1 node selection events.
+ * Triggers console beanshell scripts as actions in response.
+
+ * @deprecated: this class will be obsolete once ProjectViewer 3.0 is released, since
+ * future events will (hopefully) derive from jedit core classes. 
+ * 
  * @author ezust
  *
  */

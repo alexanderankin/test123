@@ -33,7 +33,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.*;
@@ -43,6 +45,10 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
+
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
 
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
@@ -93,7 +99,29 @@ public class ConsolePlugin extends EBPlugin
 	 {
 		return shellSwitchActions;
 	} // }}}
-
+	 
+	 public static String getProjectRoot(View view, Buffer buffer) {
+	    DockableWindowManager wm = view.getDockableWindowManager();
+	    if (wm == null) return ".";
+	    JComponent comp = wm.getDockable("projectviewer");
+	    if (comp == null) return ".";
+	    ProjectViewer pv = (ProjectViewer) comp;	    
+	    VPTProject project = pv.getActiveProject(view);
+	    if (project != null) {
+	        return project.getRootPath();
+	    }
+	    // no active project - find out which one it is based on the nodes
+	    Iterator iterator = projectviewer.ProjectManager.getInstance().getProjects();
+	    while (iterator.hasNext()) {
+		    project = (VPTProject) iterator.next();
+		    VPTNode node = project.getChildNode(buffer.getPath());
+		    if (node != null) {
+			    return project.getRootPath();
+		    }
+	    }
+	    return ".";
+	 }
+	 
 	// {{{ getAllCommands()
 	/**
 	   @return all commands that are represented as

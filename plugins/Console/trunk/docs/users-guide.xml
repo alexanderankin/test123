@@ -67,9 +67,24 @@
 
  <bridgehead> Option Panes </bridgehead>
 
- <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do.
+ <para> By selecting <literal>Plugin Options - Console </literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do.
  </para>
 
+ <bridgehead> Console - General Options </bridgehead>
+ 
+  <para> Here, you can set general options that apply to all shells, such as showing the welcome message, character encoding to use, scrollback buffer size, colors, etc. </para>
+   
+ <itemizedlist>
+  <listitem><para><emphasis>Show Welcome Message</emphasis> - suppress welcome message on shells. </para>
+  </listitem>
+ 
+  <listitem><para><emphasis>Character Encoding</emphasis> - If you want to
+  display characters in a different language, change the encoding here.
+  </para></listitem>
+ </itemizedlist> 
+ 
+ <bridgehead> Console - System Shell Options </bridgehead> 
+ 
  <itemizedlist>
  <listitem>
 	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command.
@@ -94,10 +109,7 @@
 		  some files in the path, add those directories here.
 	  </para></listitem>
 
-  <listitem><para><emphasis>Character Encoding</emphasis> - If you want to
-  display characters in a different language, change the encoding here.
-  </para></listitem>
-
+ 
  </itemizedlist>
  
  <section id="errorpatterns">
@@ -1505,7 +1517,18 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
  <appendix id="changes">
   <title>Change log</title>
 
+  
+  
   <itemizedlist>
+  
+  <listitem id="ver4.3.7"><para>
+    <emphasis role="bold">Version 4.3.7</emphasis> Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional). <itemizedlist>
+      <listitem><para> Rebuilt against pre13 for binary compatibility </para></listitem>
+      <listitem><para> getProjectRoot directory more robust from make.xml, ant.xml and javac.xml - doesn't care if you don't have ProjectViewer or an active project. </para></listitem>
+    </itemizedlist>
+  </para></listitem>
+      
+  
   <listitem id="ver4.3.6"><para>
     <emphasis role="bold">Version 4.3.6</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
     <listitem><para> New option to remember current working directory from previous sessions (ezust) </para></listitem>
