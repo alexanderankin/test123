@@ -638,8 +638,11 @@ public class OptionPanel extends AbstractOptionPane
 		import_enginesOptionsMap = (HashMap<String,List<OptionPanel.OptionGroup>>)
 						import_optionsMap.get("engines");
 		import_eoMap = (HashMap<String, OptionPanel.EngineOpts>)import_optionsMap.get("engine-opts");
-		enginesOptionsMap.put("View Buffers", import_enginesOptionsMap.get("View Buffers"));
-		eoMap.put("View Buffers", import_eoMap.get("View Buffers"));
+		String[] _names = new String[] {"View Buffers", "Buffers"};
+		for (String _n : _names) {
+		    enginesOptionsMap.put(_n, import_enginesOptionsMap.get(_n));
+		    eoMap.put(_n, import_eoMap.get(_n));
+		}
 	    } catch (Exception e) {} /* Naturally, should never happen.*/
 	}
 		
