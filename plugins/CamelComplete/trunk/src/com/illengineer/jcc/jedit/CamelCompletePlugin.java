@@ -12,6 +12,8 @@ import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 
 import org.gjt.sp.jedit.bsh.Interpreter;
 
+import javax.swing.JOptionPane;
+
 public class CamelCompletePlugin extends EditPlugin {
 
 	// {{{ Member Variables
@@ -95,6 +97,10 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("cache", Boolean.TRUE);
 	    if (!optionsMap.containsKey("update"))
 		optionsMap.put("update", Boolean.FALSE);
+	    if (!optionsMap.containsKey("simple-mode"))
+		optionsMap.put("simple-mode", Boolean.TRUE);
+	    if (!optionsMap.containsKey("simple-search-all"))
+		optionsMap.put("simple-search-all", Boolean.FALSE);
 	    if (!optionsMap.containsKey("popup-rows"))
 		optionsMap.put("popup-rows", new Integer(12));
 	    if (!optionsMap.containsKey("remove-dups"))
@@ -302,6 +308,7 @@ public class CamelCompletePlugin extends EditPlugin {
 		return;
 		
 	    enginesOptionsMap.remove(engineName);
+	    eoMap.remove(engineName);
 	    EngineGroup eg = engineMap.remove(engineName);
 	    if (eg != null)
 		engines.remove(eg.engine);
@@ -330,7 +337,24 @@ public class CamelCompletePlugin extends EditPlugin {
 	    // completionTypes: 1 = CamelCase, 2 = Normal, 3 = Total
 	    CompleteWord.completeWord(view, completionType, engineNames);
 	}
-	
+
+	public static void simpleComplete(View view, JEditTextArea textArea) {
+	    if (isEngineEnabled("View Buffers") && isEngineEnabled("Buffers")) {
+		processConfiguration("View Buffers");
+		ArrayList l = new ArrayList(1);
+		l.add("View Buffers");
+		if (((Boolean)CamelCompletePlugin.getOption("simple-search-all")).booleanValue()) {
+		    processConfiguration("Buffers");
+		    l.add("Buffers");
+		}
+		CamelCompletePlugin.complete(view, textArea, 1, l);
+	    } else {
+		JOptionPane.showMessageDialog(jEdit.getFirstView(),
+		    "CamelComplete is not configured for simple usage.\n" +
+		    "Go to Plugin Options to set simple mode.",
+		    "CamelComplete", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
 	
 	public static List<String> getCompletions(String word, List<String> engineNames) {
 	    TreeSet<String> t = new TreeSet<String>();

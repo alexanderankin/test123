@@ -52,6 +52,7 @@
         <include name="CamelComplete.props"/>
 	<include name="actions.xml"/>
 	<include name="default.options"/>
+	<include name="simple-complete-config.options"/>
       </fileset>
     </copy>
   </target>
