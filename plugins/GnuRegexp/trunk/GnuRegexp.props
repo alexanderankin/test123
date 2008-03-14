@@ -1,6 +1,6 @@
 # Plugin properties
-plugin.GnuRegexpPlugin.name=GnuRegexpPlugin
-plugin.GnuRegexpPlugin.activate=defer
+plugin.GnuRegexpPlugin.name=GnuRegexp
+plugin.GnuRegexpPlugin.activate=startup
 plugin.GnuRegexpPlugin.author=gnu.regexp
 plugin.GnuRegexpPlugin.version=1.0
 plugin.GnuRegexpPlugin.jars=
