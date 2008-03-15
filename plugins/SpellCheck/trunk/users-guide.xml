@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+
+<!-- Spell Check plugin  user's guide -->
+<!-- (C) 2001, 2008 C.S. Willy, L. Fiol, Eric Le Lay -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<book>
+
+ <bookinfo>
+  <title>SpellCheck plugin user's guide</title>
+
+  <author>
+   <firstname>C.S.</firstname>
+   <surname>Willy</surname>
+  </author>
+  <author>
+   <firstname>L.</firstname>
+   <surname>Fiol</surname>
+  </author>
+  <author>
+   <firstname>Eric</firstname>
+   <surname>Le Lay</surname>
+  </author>
+
+<legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+ </bookinfo>
+
+ <chapter id="intro">
+  <title>Introduction</title>
+
+  <para>
+This is a jEdit plugin to perform spell checking of text in a jEdit buffer.
+It is based on <ulink url="http://aspell.sourceforge.net/">Aspell</ulink>
+(which you may need to download and install before using this plugin) which is
+available for Windows and various Unix platforms.
+</para>
+ </chapter>
+ <chapter id="features">
+  <title>Features</title>
+  <itemizedlist>
+   <listitem>
+    <para>An jEdit action to spell check selected text or entire buffer if
+    no selection.</para>
+   </listitem>
+   <listitem>
+    <para>An jEdit action to spell check selected text or entire buffer if
+    no selection using an alternate lang dictionary.</para>
+   </listitem>
+   <listitem>
+    <para>Configurable location of <ulink url="http://aspell.sourceforge.net/">Aspell</ulink>
+    executable.</para>
+   </listitem>
+   <listitem>
+    <para>Configurable main language dictionary (requires the correct installation
+    of the corresponding language for Aspell).</para>
+   </listitem>
+   <listitem>
+    <para>Automatically (or manually) discards tags for all defined markup edit modes
+    likes html, xml, ...</para>
+   </listitem>
+   <listitem>
+    <para>Spell check dialog to allow the user to validate each suspect word. The
+    dialog has buttons for: Cancel, Change, Change All, Ignore, and Ignore All.
+    It shows the suspect word, lists suggested replacements, and has a field
+    where the user can type in the replacement word.</para>
+   </listitem>
+  </itemizedlist>
+ </chapter>
+
+ <chapter id="sysreq">
+  <title>System Requirements</title>
+
+  <itemizedlist>
+   <listitem>
+    <para>The plugin requires jEdit 4.0 or later.</para>
+   </listitem>
+   <listitem>
+    <para>The plugin requires Java JDK 1.3 --for no real reason (bummer).</para>
+   </listitem>
+   <listitem>
+    <para>Tested on Windows 2000, XP and Linux.</para>
+   </listitem>
+   <listitem>
+    <para>Aspell .32.6 alpha or better (I am using Aspell .33.5 alpha).</para>
+   </listitem>
+  </itemizedlist>
+
+ </chapter>
+
+ <chapter id="install">
+  <title>Installation and Configuration</title>
+
+  <itemizedlist>
+   <listitem>
+    <para>Download and install <ulink url="http://prdownloads.sourceforge.net/aspell/aspell-.33.5-win32-i386.zip">aspell-.33.5-win32-i386.zip</ulink>
+    for Windows. If you are running some flavor of Unix, you can get the source
+    as well as some binaries from <ulink url="http://aspell.sourceforge.net/">Aspell</ulink> (note that Aspell
+    is generally installed by default on Linux and is in the path).</para>
+   </listitem>
+   <listitem>
+    <para>Copy the the <code>SpellCheck.jar</code> file to your jEdit <code>jars</code>
+    directory.</para>
+   </listitem>
+   <listitem>
+    <para>Restart jEdit. You should see a <code>Spell Check</code> entry on the <code>Plugins</code>
+    menu.</para>
+   </listitem>
+   <listitem>
+    <para>In the <code>Utilities/Global Options.../Plugin Options/Spell Check</code>
+    option dialog set the <code>Aspell executable filename</code> to where you have
+    installed it or leave the default if any. You can also specify here a different
+    language dictionary or choose in the dictionary list (correct Aspell executable
+    path must be correctly set for that). You can also choose to let markup mode be
+    set automatically or not and add any extra Aspell command line arguments (type
+    Aspell --help in a console to know what they are).</para>
+   </listitem>
+  </itemizedlist>
+
+ </chapter>
+
+ <chapter id="usage">
+  <title>Usage</title>
+  <section id="usage.general">
+   <title>General Usage</title>
+   <itemizedlist>
+    <listitem>
+     <para>Select the text you would like to spell check (no selection will spell check all the buffer).</para>
+    </listitem>
+    <listitem>
+     <para>Choose the menu item <code>Plugins/Spell check/Spell check selection...</code>
+    for default lang dictionary or <code>Plugins/Spell check/Spell check selection with lang...</code>
+    to use an alternate lang dictionary.</para>
+    </listitem>
+    <listitem>
+     <para>The Aspell subprocess will start. (On Windows for JDK older than 1.4.0 a DOS
+    console is displayed and may hide the Spell Check validation dialog).</para>
+    </listitem>
+    <listitem>
+     <para>You will be prompted with a MS-Office-like spell check dialog box for each
+    word that needs to be validated.</para>
+    </listitem>
+    <listitem>
+     <para>See <xref linkend="dialog-box"/> for more info on the dialog box.</para>
+    </listitem>
+   </itemizedlist>
+  </section>
+  <section id="dialog-box">
+   <title>Spell Check Dialog Box</title>
+
+   <para>For each misspelled word the user has buttons to choose to:
+<glosslist>
+  <glossentry>
+  <glossterm>Add (not in this version)</glossterm>
+      <glossdef>
+       <para>Adds the word not in the <code> Not in Dictionary</code> field to the dictionary.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Cancel HystoryTextField</glossterm>
+      <glossdef>
+       <para>Closes the dialog box without making any changes you have made.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Change</glossterm>
+      <glossdef>
+       <para>Replaces the word not in the <code> Not in Dictionary</code> text field with the word in the
+    <code> Change to</code>  text field. If the <code> Change to</code> text field is empty,
+    the button name changes to <code>Delete</code>. To remove the selected word from the item, click
+    <code>Delete</code>.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Change All</glossterm>
+      <glossdef>
+       <para>Replaces all instances of the word not in the <code> Not in Dictionary</code>
+    text field with the word in the
+    <code> Change to</code>  text field. If the <code> Change to</code> text field is empty,
+    the button name changes to <code>Delete All</code>. To remove all instances of the selected word from the item, click
+    <code>Delete</code>.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Ignore</glossterm>
+      <glossdef>
+       <para>Leaves the word not in the <code> Not in Dictionary</code> text field unchanged.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Ignore All</glossterm>
+      <glossdef>
+       <para>Leaves all instances of the word not in the <code> Not in Dictionary</code>
+    text field unchanged.</para>
+      </glossdef>
+     </glossentry>
+    </glosslist>
+   </para>
+   <para>The dialog has the following components:
+<glosslist>
+  <glossentry><glossterm>Not in Dictionary</glossterm>
+      <glossdef>
+       <para>Displays a possible error, such as a misspelled word, a duplicate word, or a incorrect capitalization.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Change to:</glossterm>
+      <glossdef>
+       <para>Displays a suggested word to replace the word that appears in the <code> Not in Dictionary</code>
+    text field. To accept the suggested replacement, click <code>Change</code>. To delete the word in the
+    <code> Not in Dictionary</code> text field, delete the text in the <code> Change to</code>
+    text field, and then click <code>Delete</code>.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Suggestions:</glossterm>
+      <glossdef>
+       <para>Lists suggested replacement words.</para>
+      </glossdef>
+     </glossentry>
+    </glosslist>
+   </para>
+  </section>
+
+
+ </chapter>
+
+ <chapter id="building"><title>Building</title>
+<para>
+As of release R005, the build process is the same as other plugins.
+It uses the <code>build-support/plugin-build.xml</code> build file,
+available from jedit repository. The documentation is generated using docbook xsl.
+</para> 
+ </chapter>
+<chapter id="bugs">
+<title>Current Bugs</title>
+<itemizedlist>
+  <listitem>
+  <para>
+  The Aspell subprocess creates a visible console window on Windows
+  95/98/NT/2000.
+  The console window is a long-standing Java
+  <ulink url="http://developer.java.sun.com/developer/bugParade/bugs/4244515.html">bug</ulink>..
+  Sun encountered problems under Windows 95 and 98 when the JVM ran system calls in a
+  hidden window, which are still there under Windows NT/2000.
+  </para>
+  <para>
+  If you kill the visible console window, when you next spell check you will get
+  an error. If you spell check again, it should work as the subprocess is
+  recreated.
+  </para>
+  <para>Fixed with JDK 1.4.</para>
+  </listitem>
+  <listitem>
+  <para>
+  Freeze
+  ******* TODO ********
+  </para>
+  </listitem>
+  <listitem>
+  <para>
+  Dicts...
+  </para>
+  </listitem>
+</itemizedlist>
+</chapter>
+<chapter id="todo"><title>Current ToDo List</title>
+<itemizedlist>
+  <listitem><para>Add words to an user dictionary</para></listitem>
+  <listitem><para>Allow the user to reset Ignore All and Change All options (currently these
+    are result only if jEdit is restarted)</para></listitem>
+  <listitem><para>Undo a change</para></listitem>
+  <listitem><para>Allow the user access all of Aspell options</para></listitem>
+  <listitem><para>Complete tool tips on the Validation dialog</para></listitem>
+  <listitem><para>Use the EditBus to report spelling errors (so they can be underlined like
+    Word does)</para></listitem>
+  <listitem><para>Highlight the context of the word being corrected</para></listitem>
+</itemizedlist>
+</chapter>
+
+<chapter id="changelog"><title>Change Log</title>
+
+<itemizedlist>
+<listitem><para>Release 004 (Jul 25, 2002) - <ulink url="mailto:lio-sand@ifrance.com">L.Fiol</ulink></para>
+  <itemizedlist>
+    <listitem><para>Fix: the current buffer is no more changed when there were no spell
+      errors corrected in the buffer. Instead a status message tells there
+      were nothing to correct.</para></listitem>
+    <listitem><para>Fix: the last line separator of the selection which is spell
+      checked is removed if any.</para></listitem>
+    <listitem><para>Fix: Exception was thrown when there was no suggestion for a word.</para></listitem>
+    <listitem><para>Updated for jEdit 4.0 API.</para></listitem>
+    <listitem><para>Spell checks for entire buffer when no selection.</para></listitem>
+    <listitem><para>If the Aspell executable field is empty it is defaulted to 'Aspell'
+      on Unix systems. On others systems an open file dialog is displayed.
+      The Aspell executable property is saved afterward.</para></listitem>
+    <listitem><para>Add the ability to choose another language dictionary than the default
+      one (use both the --lang and --language-tag parameters as some systems
+      seems to need the first and others the second).</para></listitem>
+    <listitem><para>Add the ability to choose to automatically discard tags in all defined
+      markup edit modes.</para></listitem>
+    <listitem><para>Add the ability to specify any additional Aspell parameter.</para></listitem>
+  </itemizedlist>
+</listitem>
+
+<listitem>
+<para>Release 003 (Sep 09, 2001)</para>
+  <itemizedlist>
+    <listitem><para>Same functionality as R002, but now in SourceForge's CVS.</para></listitem>
+    <listitem><para>Cleaned and improved the build.xml and build.cmd files.</para></listitem>
+  </itemizedlist>
+</listitem>
+
+<listitem>
+<para>Release 002 (Apr 22, 2001)</para>
+<itemizedlist>
+  <listitem><para>Added build files (<code>build.xml</code> and <code>makefile.jmk</code>)
+    to distribution</para></listitem>
+  <listitem><para>Updated <code>help.html</code> with test feedback and system requirements</para></listitem>
+  <listitem><para>The <code>ValidationDialog</code> now remembers its last placement. This
+    means that once you move it out-of-the-way, it stays out-of-the-way.</para></listitem>
+</itemizedlist>
+</listitem>
+
+<listitem>
+<para>Release 001 (Apr 16, 2001)</para>
+  <itemizedlist>
+    <listitem><para>First release.</para></listitem>
+  </itemizedlist>
+</listitem>
+</itemizedlist>
+</chapter>
+</book>
