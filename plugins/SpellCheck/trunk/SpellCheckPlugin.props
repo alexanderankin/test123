@@ -1,16 +1,19 @@
 ### Properties used by jEdit
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=cswilly/jeditPlugins/spell/help.html
-
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004-newapi
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=defer
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
 ### These tell jEdit what JDK and jEdit version we require
 
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.00.01.00
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.2
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.11.00
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.5
 
 ### Option panel labels
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.option-pane=SpellCheck
+options.SpellCheck.code=new cswilly.jeditPlugins.spell.SpellCheckOptionPane();
 
 options.SpellCheck.label=Spell Check
 options.SpellCheck.fileChooser=Choose
@@ -25,7 +28,7 @@ options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
 options.SpellCheck.aspellOtherParams=Additional parameters:
 
 ### Menu item labels
-spell-check-menu=\
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
     spell-check-selection-with-lang
 
