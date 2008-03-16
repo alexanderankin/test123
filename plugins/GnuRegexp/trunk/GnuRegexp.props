@@ -2,7 +2,7 @@
 plugin.GnuRegexpPlugin.name=GnuRegexp
 plugin.GnuRegexpPlugin.activate=startup
 plugin.GnuRegexpPlugin.author=gnu.regexp
-plugin.GnuRegexpPlugin.version=1.0
+plugin.GnuRegexpPlugin.version=1.0.1
 plugin.GnuRegexpPlugin.jars=
 plugin.GnuRegexpPlugin.docs=index.html
 plugin.GnuRegexpPlugin.depend.0=jedit 04.03.13.00
