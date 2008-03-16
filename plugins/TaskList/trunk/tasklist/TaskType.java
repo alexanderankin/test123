@@ -62,7 +62,7 @@ public class TaskType
 		int line, int tokenOffset)
 	{
 		Matcher match = this.re.matcher(tokenText);
-		if(!match.matches())
+		if(!match.find())
 			return null;
 		String textDisplay;
 		if (displayIdentifier)
