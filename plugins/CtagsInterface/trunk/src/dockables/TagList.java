@@ -34,7 +34,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	JList tags;
 	DefaultListModel tagModel;
 	static String [] extensionOrder = new String [] {
-		"class", "access" 
+		"class", "struct", "access" 
 	};
 	
 	TagList(View view) {
