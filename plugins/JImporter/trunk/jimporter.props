@@ -5,53 +5,65 @@
 #Core plugin properties
 plugin.jimporter.JImporterPlugin.name=JImporter
 plugin.jimporter.JImporterPlugin.author=Matthew Flower
-plugin.jimporter.JImporterPlugin.version=0.6.0
-plugin.jimporter.JImporterPlugin.docs=index.html
+plugin.jcompiler.JCompilerPlugin.contributors=Gerard Smyth
+plugin.jimporter.JImporterPlugin.version=0.7.0
+plugin.jimporter.JImporterPlugin.docs=docs/index.html
+plugin.jimporter.JImporterPlugin.usePluginHome=true
+plugin.jimporter.JImporterPlugin.description=\
+    JImporter is a plugin for JEdit that will generate import statements at the \
+    top of a Java Class given the (non-fully qualified) name of a class.  It does \
+    this by searching through a classpath that you specify through the JImporter \
+    options.  JImporter includes options to group imports into your favorite \
+    categories and to sort them in the way that you prefer.
 
 #Auto-reload
 plugin.jimporter.JImporterPlugin.activate=defer
 
 #Dependencies
-plugin.jimporter.depend.0=jedit 04.02.01.00
-plugin.jimporter.depend.1=jdk 1.4
+plugin.jimporter.JImporterPlugin.depend.0=jedit 04.03.12.00
+plugin.jimporter.JImporterPlugin.depend.1=jdk 1.5
+plugin.jcompiler.JImporterPlugin.depend.2=optional plugin sidekick.java.JavaSideKickPlugin 2.3.5
+plugin.jcompiler.JImporterPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.1.3
+
 
 #Menu Definition
 plugin.jimporter.JImporterPlugin.menu.label=JImporter
 plugin.jimporter.JImporterPlugin.menu=jimporter.import-class \
-			jimporter.import-class-at-point \
-			jimporter.insert-classname-at-point \
-			jimporter.sort-imports \
-			jimporter.options
+                                      jimporter.import-class-at-point \
+                                      jimporter.insert-classname-at-point \
+                                      jimporter.sort-imports \
+                                      jimporter.options
 jimporter.import-class.label=Import Class
 jimporter.import-class-at-point.label=Import Class At Point
 jimporter.insert-classname-at-point.label=Insert FQ ClassName at Point
 jimporter.sort-imports.label=Sort Imports
 jimporter.options.label=Options
 
-#option pane definition
+#OptionPane text
 plugin.jimporter.JImporterPlugin.option-group=jimporter.classpath jimporter.sorting jimporter.miscellaneous
-options.jimporter.label=JImporter
+options.jimporter.label=JImporter Options
 options.jimporter.classpath.label=Classpath
 options.jimporter.classpath.code=new jimporter.options.ClasspathOptionPane();
+options.jimporter.miscellaneous.label=Miscellaneous
+options.jimporter.miscellaneous.code=new jimporter.options.MiscellaneousOptionPane();
+options.jimporter.sorting.label=Sorting
+options.jimporter.sorting.code=new jimporter.options.SortingOptionPane();
+
 options.jimporter.classpath.usethis.label=Use this Classpath
 options.jimporter.classpath.usespeedjava.label=Use SpeedJava's classpath
 options.jimporter.classpath.usejcompiler.label=Use JCompiler's classpath
 options.jimporter.classpath.usesystem.label=Use System classpath
+options.jimporter.classpath.useprojectpath.label=Use project specifc classpath if possible
 options.jimporter.classpath.useprojectmountpoints.label=Use Project Mountpoints
 options.jimporter.searchmethod.label=Search Method
 options.jimporter.searchmethod.usebruteforce.label=Use Brute Force Method
 options.jimporter.searchmethod.usebuffered.label=Use Buffered Method
-options.jimporter.miscellaneous.label=Miscellaneous
-options.jimporter.miscellaneous.code=new jimporter.options.MiscellaneousOptionPane();
 options.jimporter.autoimportonmatch.label=Automatically Import Class If Only One Match Exists
 options.jimporter.dialogboxbehavior.label=Dialog Box Behavior
 options.jimporter.autosearchatpoint.label=Automatically Search When Importing at Point
 options.jimporter.classpath.appendrtjar.label=Automatically Search JDK classes (rt.jar)
-options.jimporter.sorting.label=Sorting
-options.jimporter.sorting.code=new jimporter.options.SortingOptionPane();
 options.jimporter.sorting.sortonimport.label=Sort Import Statements on Every Import
 options.jimporter.sorting.caseinsensitive.label=Uppercase letters are equal to lowercase for sorting
 
 # window title
 jimporter.title=JImporter
-

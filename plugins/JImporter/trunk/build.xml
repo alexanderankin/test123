@@ -1,81 +1,29 @@
-<?xml version="1.0"?>
+<!-- ================================================== -->
+<!-- Build file for the JImporter plugin                -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="JImporter" default="build" basedir=".">
 
-<!--
-  This is the build file for JImporter
-  -->  
-<project name="JImporter" default="jar" basedir=".">
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    <property name="build.support" value="../build-support" />
 
-	<property file="../build.properties" />
-    <property name="plugin.src.dir" value="."/>
-    <property name="plugin.build.dir" location="./build"/>
-    <property name="plugin.build.debugflag" value="on"/>
-    <property name="plugin.docs.dir" location="./docs"/>
-    <property name="plugin.jar.filename" value="${ant.project.name}.jar"/>
-    <property name="plugin.jar.destpath" location="."/>
-    <property name="plugin.lib.dir" location="./lib"/>
-    <property name="plugin.javadoc.src" location="${plugin.src.dir}"/>
-    <property name="plugin.javadoc.dest" location="${plugin.docs.dir}/api"/>
-    <property name="plugin.doccheck.src" location="${plugin.src.dir}"/>
-    <property name="plugin.doccheck.dest" location="${plugin.docs.dir}/doccheck"/>
-    <property name="plugin.doccheck.jarpath" location="c:\java\doccheck\lib\doccheck.jar"/>
-    <property name="jedit.home" location="../../"/>
-    <property name="jedit.install.dir" location="${user.home}/.jedit/jars" />
-    
-    <path id="plugin.build.classpath">
-        <pathelement path="${plugin.src.dir}"/>
-        <pathelement path="${jedit.home}/jedit.jar"/>
-        <pathelement path="${plugin.lib.dir}/jdom.jar"/>
+    <property name="jedit.install.dir"  value="C:\Program Files\jEdit" />
+
+    <import file="${build.support}/plugin-build.xml" />
+
+    <selector id="packageFiles">
+        <or>
+            <filename name="docs/**/*.*" />
+            <filename name="images/*.gif" />
+        </or>
+    </selector>
+
+    <path id="project.class.path">
+        <pathelement location="${install.dir}/JCompiler.jar"/>
+        <pathelement location="${install.dir}/JavaSideKick.jar"/>
     </path>
-    
-    <target name="compile" description="Compile all of the plugin files">
-        <mkdir dir="${plugin.build.dir}"/>
-        <javac srcdir="${plugin.src.dir}" destdir="${plugin.build.dir}"
-               deprecation="on" debug="${plugin.build.debugflag}"
-               classpathref="plugin.build.classpath"/>        
-    </target>
 
-    <target name="clean" description="Removed compiled files and generated jar files">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${plugin.build.dir}" includes="**/*"/>
-            <fileset dir="${plugin.build.dir}"/>
-            <fileset dir="${plugin.jar.destpath}" includes="${plugin.jar.filename}"/>
-            <fileset dir="${plugin.doccheck.dest}" includes="**/*"/>
-            <fileset dir="${plugin.doccheck.dest}"/>
-            <fileset dir="${plugin.javadoc.dest}" includes="**/*"/>
-            <fileset dir="${plugin.javadoc.dest}"/>            
-        </delete>
-    </target>
-        
-    <target name="jar" depends="compile" description="Groups together the plugin into a jar file">
-        <jar jarfile="${plugin.jar.filename}">
-            <fileset dir="${plugin.docs.dir}" includes="*"/>
-            <fileset dir="${plugin.build.dir}" includes="**/*.class"/>
-            <fileset dir="${plugin.src.dir}" includes="images/*.gif"/>
-            <fileset dir="${plugin.src.dir}" includes="actions.xml"/>
-            <fileset dir="${plugin.src.dir}" includes="**/*.props"/>
-            <fileset dir="${plugin.src.dir}" includes="TODO.txt"/>
-            <fileset dir="${plugin.src.dir}" includes="changelog.txt"/>
-        </jar>
-    </target>
-    
-    <target name="javadoc" depends="compile" description="Generate the Javadoc for JImporter">
-        <javadoc sourcepath="${plugin.javadoc.src}" 
-                 destdir="${plugin.javadoc.dest}"
-                 windowtitle="JImporter Javadoc"
-                 packagenames="*"
-                 link="http://java.sun.com/j2se/1.4/docs/api/index.html"/>                    
-    </target>
-    
-    <target name="verify-javadoc" depends="compile" description="Verify the validity of javadoc tags in accordance to sun specification">
-        <mkdir dir="${plugin.doccheck.dest}"/>
-        <javadoc sourcepath="${plugin.doccheck.src}" 
-                 destdir="${plugin.doccheck.dest}"
-                 doclet="com.sun.tools.doclets.doccheck.DocCheck"
-                 docletpath="${plugin.doccheck.jarpath}"
-                 packagenames="*"/>                    
-    </target>
-    
-    <target name="dist" depends="jar" description="Copy the jar file to the jedit jars directory">
-        <copy todir="${install.dir}" file="${plugin.jar.filename}"/>
-    </target>
 </project>
+
