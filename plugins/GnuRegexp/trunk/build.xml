@@ -17,7 +17,7 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
 	<selector id="packageFiles">
 	  <or>
 	    <filename name="index.html" />
-	    <filename name="**/*.properties" />
+	    <filename name="gnu/regexp/MessagesBundle.properties" />
         
 	  </or>
 	 </selector>
