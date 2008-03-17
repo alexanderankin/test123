@@ -133,6 +133,21 @@ public class JCompilerOptionPaneCompiler
 		addComponent(jEdit.getProperty("options.jcompiler.otheroptions"), otherOptions);
 
 		addComponent(Box.createVerticalStrut(12));
+		addSeparator("options.jcompiler.pathsSeperator");
+		addComponent(Box.createVerticalStrut(12));
+
+		//Project Viewer / JavaSideKick path option
+		//if this is selected, then we take the classpath, sourcepath & basepath from
+		//these plugins instead of the above options when possible
+		if ((PluginJAR.findPlugin("sidekick.java.JavaSideKickPlugin") != null) &&
+			(PluginJAR.findPlugin("projectviewer.ProjectPlugin") != null))
+		{
+			useJskPaths = new JCheckBox(jEdit.getProperty("options.jcompiler.useJskPaths"));
+			useJskPaths.setSelected(jEdit.getBooleanProperty("jcompiler.useJskPaths", true));
+			addComponent(useJskPaths);
+		}
+
+		addComponent(Box.createVerticalStrut(12));
 
 		// "Set the base directory of your current project here (or leave it empty)"
 		addComponent(new JLabel(jEdit.getProperty("options.jcompiler.basepath.description1")));
@@ -150,18 +165,9 @@ public class JCompilerOptionPaneCompiler
 		basePathPanel.add(pickBasePathButton, BorderLayout.EAST);
 		addComponent(jEdit.getProperty("options.jcompiler.basepath"), basePathPanel);
 
-		addComponent(Box.createVerticalStrut(12));
-
 		// "You may use the $basepath variable in the following paths:"
 		addComponent(new JLabel(jEdit.getProperty("options.jcompiler.basepath.description2")));
-
-		// "Required library path"
-		libPath = new HistoryTextField("jcompiler.libpath");
-		String libPathValue = jEdit.getProperty("jcompiler.libpath");
-		libPath.setText(libPathValue == null ? "" : libPathValue);
-		libPath.setPreferredSize(new Dimension(270, libPath.getPreferredSize().height));
-		addComponent(jEdit.getProperty("options.jcompiler.libpath"), libPath);
-
+		addComponent(Box.createVerticalStrut(12));
 
 		// Output directory text field (+ select button)
 		String output = null;
@@ -179,12 +185,14 @@ public class JCompilerOptionPaneCompiler
 		outputPanel.add(pickDirectory, BorderLayout.EAST);
 		addComponent(jEdit.getProperty("options.jcompiler.outputDirectory"), outputPanel);
 
-		// "Add package of current sourcefile to CLASSPATH"
-		addPkg2CP = new JCheckBox(jEdit.getProperty("options.jcompiler.addpkg2cp"));
-		addPkg2CP.setSelected(jEdit.getBooleanProperty("jcompiler.addpkg2cp", true));
-		addComponent("", addPkg2CP);
-
 		addComponent(Box.createVerticalStrut(12));
+
+		// "Required library path"
+		libPath = new HistoryTextField("jcompiler.libpath");
+		String libPathValue = jEdit.getProperty("jcompiler.libpath");
+		libPath.setText(libPathValue == null ? "" : libPathValue);
+		libPath.setPreferredSize(new Dimension(270, libPath.getPreferredSize().height));
+		addComponent(jEdit.getProperty("options.jcompiler.libpath"), libPath);
 
 		// "Class path" (+ select system cp button)
 		classPath = new HistoryTextField("jcompiler.classpath");
@@ -198,6 +206,14 @@ public class JCompilerOptionPaneCompiler
 		JPanel cpPanel = new JPanel(new BorderLayout());
 		cpPanel.add(classPath, BorderLayout.CENTER);
 		cpPanel.add(pickCP, BorderLayout.EAST);
+		addComponent(jEdit.getProperty("options.jcompiler.classpath"), cpPanel);
+
+		// "Add package of current sourcefile to CLASSPATH"
+		addPkg2CP = new JCheckBox(jEdit.getProperty("options.jcompiler.addpkg2cp"));
+		addPkg2CP.setSelected(jEdit.getBooleanProperty("jcompiler.addpkg2cp", true));
+		addComponent("", addPkg2CP);
+
+		addComponent(Box.createVerticalStrut(12));
 
 		// "Source path"
 		srcPath = new HistoryTextField("jcompiler.sourcepath");
@@ -205,22 +221,8 @@ public class JCompilerOptionPaneCompiler
 		srcPath.setText(srcPathValue == null ? "" : srcPathValue);
 		srcPath.setPreferredSize(new Dimension(270, srcPath.getPreferredSize().height));
 
-		// disable these text fields if a different JavaCore ClasspathSource
-		// is being used (don't want to confuse the user as to which is active)
-		if (!(javacore.JavaCorePlugin.getClasspathSource() instanceof
-			  jcompiler.JCompilerClasspathSource))
-		{
-			addComponent(new JLabel(
-			    jEdit.getProperty("options.jcompiler.pathsDisabled")));
-			classPath.setEnabled(false);
-			classPath.setEditable(false);
-			pickCP.setEnabled(false);
-			srcPath.setEnabled(false);
-			srcPath.setEditable(false);
-		}
-
-		addComponent(jEdit.getProperty("options.jcompiler.classpath"), cpPanel);
 		addComponent(jEdit.getProperty("options.jcompiler.sourcepath"), srcPath);
+
 	}
 
 
@@ -239,6 +241,8 @@ public class JCompilerOptionPaneCompiler
 		jEdit.setProperty("jcompiler.otheroptions", otherOptions.getText().trim());
 		jEdit.setProperty("jcompiler.externalcompiler",externalCompilerTextField.getText().trim());
 		jEdit.setProperty("jcompiler.sourcepath", srcPath.getText().trim());
+
+		jEdit.setBooleanProperty("jcompiler.useJskPaths", useJskPaths.isSelected());
 
 		String outputDir = outputDirectory.getText().trim();
 		jEdit.setBooleanProperty("jcompiler.specifyoutputdirectory", outputDir.length() > 0);
@@ -318,7 +322,7 @@ public class JCompilerOptionPaneCompiler
 			catch(IOException e)
 			{
 				Log.log(Log.ERROR, this, "Something went wrong getting the canonical path for directory " + file);
-                Log.log(Log.ERROR, this, e);
+				Log.log(Log.ERROR, this, e);
 			}
 		}
 	}
@@ -331,6 +335,7 @@ public class JCompilerOptionPaneCompiler
 	private JCheckBox genOptimized;
 	private JCheckBox showDeprecation;
 	private JCheckBox addPkg2CP;
+	private JCheckBox useJskPaths;
 	private JLabel cpLabel;
 	private JButton pickDirectory;
 	private JButton pickCP;

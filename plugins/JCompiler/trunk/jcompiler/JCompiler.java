@@ -32,6 +32,11 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.*;
 import buildtools.*;
+import sidekick.java.PVHelper;
+import sidekick.java.util.Path;
+import projectviewer.vpt.VPTProject;
+import projectviewer.ProjectManager;
+import projectviewer.ProjectViewer;
 
 
 /**
@@ -84,7 +89,7 @@ public class JCompiler
 		}
 
 		// Check output directory:
-		String outDir = getOutputDirectory();
+		String outDir = getOutputDirectory(buffer.getPath());
 
 		if (outDir != null)
 		{
@@ -166,7 +171,7 @@ public class JCompiler
 		);
 
 		// Construct arguments for javac:
-		String[] arguments = constructArguments(getClassPath(filename), getSourcePath(), outDir, files);
+		String[] arguments = constructArguments(getClassPath(filename), getSourcePath(filename), outDir, files);
 
 		// Show command line:
 		if (jEdit.getBooleanProperty("jcompiler.showcommandline", false))
@@ -534,18 +539,30 @@ public class JCompiler
 	 *   </li>
 	 * </ul>
 	 *
-	 * @param  s  the string, possibly containing placeholders
+	 * @param s  the string, possibly containing placeholders
+	 * @param bufferFileName The full path of the file being compiled
 	 * @return the string with all placeholders expanded.
 	 */
-	public static String expandVariables(String s)
+	public static String expandVariables(String s, String bufferFileName)
 	{
 		if (s == null)
 			return "";
 		if (s.length() == 0)
 			return s;
 
+		String basepath;
+		String projectName = getProjectName(bufferFileName);
+		if (projectName != null)
+		{
+			VPTProject proj = ProjectManager.getInstance().getProject(projectName);
+			basepath = proj.getRootPath();
+		}
+		else
+		{
+			basepath = jEdit.getProperty("jcompiler.basepath", "").trim();
+		}
+
 		// fun: $basepath may contain '~' itself
-		String basepath = jEdit.getProperty("jcompiler.basepath", "").trim();
 		basepath = replaceAll(basepath, "~", System.getProperty("user.home", ""));
 
 		// now replace placeholders in the specified string s
@@ -690,6 +707,26 @@ public class JCompiler
 			VFSManager.waitForRequests();
 	}
 
+	/**
+	 * Helper function to check if the current file is within a defined project,
+	 * and if the project settings should be used.
+	 * @return the name of the project to take settings from, or null if project
+	 *			based settings should not be used.
+	 */
+	private static String getProjectName(String bufferFileName)
+	{
+		if ((jEdit.getPlugin("sidekick.java.JavaSideKickPlugin", true) != null) &&
+			(jEdit.getPlugin("projectviewer.ProjectPlugin", true) != null) &&
+			(jEdit.getBooleanProperty("jcompiler.useJskPaths", true)))
+		{
+			return PVHelper.getProjectNameForFile(bufferFileName);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 
 	/**
 	 * Returns the classpath, made up of the expanded classpath
@@ -701,17 +738,30 @@ public class JCompiler
 	 * use the getClassPath(String) method.
 	 *
 	 * @see #getClassPath(String)
+	 * @param bufferFileName The file name of the file being compiled, used to
+	 * find the current project if any
 	 */
-	public static String getClassPath()
+	public static String getBaseClassPath(String bufferFileName)
 	{
-//		String cp = expandVariables(jEdit.getProperty("jcompiler.classpath"));
-		String cp = javacore.JavaCorePlugin.getClasspathSource().getClasspath();
-		String outputDir = getOutputDirectory();
+		String outputDir = getOutputDirectory(bufferFileName);
 
-		if (outputDir != null)
-			cp = appendClassPath(cp, outputDir);
+		String cp;
+		String projectName = getProjectName(bufferFileName);
+		if (projectName != null)
+		{
+			cp = PVHelper.getClassPathForProject(projectName).toString();
+			if (outputDir != null)
+				cp = appendClassPath(cp, outputDir);
+		}
+		else
+		{
+			cp = expandVariables(jEdit.getProperty("jcompiler.classpath"), bufferFileName);
+			if (outputDir != null)
+				cp = appendClassPath(cp, outputDir);
 
-		cp = appendClassPath(cp, getRequiredLibraryPath());
+			cp = appendClassPath(cp, getRequiredLibraryPath(bufferFileName));
+		}
+
 		return cp;
 	}
 
@@ -721,19 +771,19 @@ public class JCompiler
 	 * directory of the class to be compiled if the
 	 * jcompiler.addpkg2cp option is turned on.
 	 *
-	 * @param filename the filename of the class for determining the package.
+	 * @param bufferFileName The jedit View containing the buffer being compiled.
 	 */
-	public static String getClassPath(String filename)
+	public static String getClassPath(String bufferFileName)
 	{
-		String cp = getClassPath();
+		String cp = getBaseClassPath(bufferFileName);
 
 		// Check if package dir should be added to classpath:
 		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp"))
 		{
 			try
 			{
-				String pkgName = JavaUtils.getPackageName(filename);
-				String parent = new File(filename).getParent();
+				String pkgName = JavaUtils.getPackageName(bufferFileName);
+				String parent = new File(bufferFileName).getParent();
 
 				// If no package stmt found then pkgName would be null
 				if (parent != null)
@@ -766,10 +816,20 @@ public class JCompiler
 	 * @return the sourcepath defined by jcompiler.sourcepath, with
 	 * variable expansion.
 	 */
-	public static String getSourcePath()
+	public static String getSourcePath(String bufferFileName)
 	{
-		//return expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
-		return javacore.JavaCorePlugin.getClasspathSource().getSourcepath();
+		String sp;
+		String projectName = getProjectName(bufferFileName);
+		if (projectName != null)
+		{
+			sp = PVHelper.getSourcePathForProject(projectName).toString();
+		}
+		else
+		{
+			sp = expandVariables(jEdit.getProperty("jcompiler.sourcepath"), bufferFileName);
+		}
+
+		return sp;
 	}
 
 
@@ -777,10 +837,10 @@ public class JCompiler
 	 * Returns the expanded value of the jcompiler.libpath property,
 	 * which is the required library path.
 	 */
-	public static String getRequiredLibraryPath()
+	public static String getRequiredLibraryPath(String bufferFileName)
 	{
 		// expand variables first
-		String libPath = expandVariables(jEdit.getProperty("jcompiler.libpath"));
+		String libPath = expandVariables(jEdit.getProperty("jcompiler.libpath"), bufferFileName);
 		// expand directories to get all jars
 		return expandLibPath(libPath);
 	}
@@ -794,11 +854,19 @@ public class JCompiler
 	 *
 	 * @return the expanded output directory or null if the option is turned off.
 	 */
-	public static String getOutputDirectory()
+	public static String getOutputDirectory(String bufferFileName)
 	{
 		String outDir = null;
-		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory"))
-			outDir = expandVariables(jEdit.getProperty("jcompiler.outputdirectory"));
+		//try and get the project output directory if specified
+		String projectName = getProjectName(bufferFileName);
+		if (projectName != null)
+		{
+			outDir = PVHelper.getBuildOutputPathForProject(projectName);
+			if ((outDir != null) && (outDir.equals("")))
+				outDir = null;
+		}
+		if ((outDir == null) && (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory")))
+			outDir = expandVariables(jEdit.getProperty("jcompiler.outputdirectory"), bufferFileName);
 		return outDir;
 	}
 

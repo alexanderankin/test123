@@ -14,8 +14,8 @@ Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
 Modified by Logan Bauer, Mike Hansen, Dirk M&ouml;bius,
 Andreas Sch&ouml;rk, Dominic Stolerman and Doug Breaux.<p>
 
-Current maintainer: Dirk M&ouml;bius
-(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
+Current maintainer: Gerard Smyth
+(<a href="mailto:gerard.smyth@gmail.com">gerard.smyth@gmail.com</a>)<p>
 
 <ol>
   <li><a href="#requirements">Requirements</a></li>
@@ -30,12 +30,12 @@ Current maintainer: Dirk M&ouml;bius
 <h2>Requirements</h2>
 
 <ul>
-  <li>jEdit &gt;= 4.2pre6</li>
+  <li>jEdit &gt;= 4.3pre12</li>
   <li>plugin ErrorList &gt;= 1.3.1</li>
-  <li>plugin Console &gt;= 3.6</li>
-  <li>plugin JavaCore &gt;= 0.7.1</li>
+  <li>plugin Console &gt;= 4.2.5.1</li>
   <li>a Java Development Kit (JDK), but <b>not</b> a Java Runtime
       Environment (JRE) !</li>
+  <li><b>Optionaly</b> - JavaSideKick &gt;= 2.3.5 and ProjectViewer &gt;= 2.1.3</li>
 </ul>
 
 
@@ -206,6 +206,12 @@ abbreviation for your home directory.<br>
 
 <ul>
   <li>
+    <b>Override the following options with project specific settings where possible?</b>
+    <p>If this option is set the compile process will try and use project specific settings
+    instead of the values entered below.  For this to work, the ProjectViewer and JavaSideKick
+    plugins must be installed, and the current file must belong to a project.</p>
+  </li>
+  <li>
     <b>$basepath</b><p>
     Set the <tt>$basepath</tt> variable to the base directory of your project.
     Use this variable in the classpath, sourcepath, required library path and
@@ -219,9 +225,6 @@ abbreviation for your home directory.<br>
     Output directory = "<tt>$<em>basepath</em>\classes</tt>"<br>
     </blockquote><p>
 
-    <em>PS: I know, this feature screams for proper project managing,
-    e.g. </em>project files<em>. Someday the ProjectManager plugin will be
-    ready to do this. Have patience and faith, please.</em> {:-} <p>
   </li>
 
   <li>
