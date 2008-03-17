@@ -116,7 +116,7 @@ public class JCompilerShell extends Shell
 			String[] args;
 			try
 			{
-				args = parseCmdLineArguments(cmd.substring(6));
+				args = parseCmdLineArguments(cmd.substring(6), console.getView().getBuffer().getPath());
 			}
 			catch (IOException ex)
 			{
@@ -183,10 +183,10 @@ public class JCompilerShell extends Shell
 	// ----- End Shell implementation -----
 
 
-	private String[] parseCmdLineArguments(String cmd) throws IOException
+	private String[] parseCmdLineArguments(String cmd, String bufferFileName) throws IOException
 	{
 		// Expand any variables in the command line arguments:
-		cmd = JCompiler.expandVariables(cmd);
+		cmd = JCompiler.expandVariables(cmd, bufferFileName);
 
 		// The following is stolen from Slava Pestov's SystemShell.java (Console plugin):
 

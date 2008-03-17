@@ -5,28 +5,27 @@
 <!-- ================================================== -->
 <project name="JCompiler" default="build" basedir=".">
 
-	<property name="compiler.source" value="1.5" />
-	<property name="compiler.target" value="1.5" />
-	<property name="build.support" value="../build-support" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    <property name="build.support" value="../build-support" />
+
+    <property name="jedit.install.dir"  value="C:\Program Files\jEdit" />
 
     <import file="${build.support}/plugin-build.xml" />
 
-    <selector id="compileFiles">
-        <filename name="**/*.java" />
-    </selector>
-
     <selector id="packageFiles">
-        <filename name="index.html" />
+        <or>
+            <filename name="index.html" />
+            <filename name="description.html" />
+            <filename name="**/*.gif" />
+        </or>
     </selector>
 
     <path id="project.class.path">
-        <fileset dir="..">
-            <include name="*.jar" />
-            <exclude name="JCompiler*" />
-        </fileset>
         <pathelement location="${install.dir}/ErrorList.jar"/>
         <pathelement location="${install.dir}/Console.jar"/>
-        <pathelement location="${install.dir}/JavaCore.jar"/>
+        <pathelement location="${install.dir}/JavaSideKick.jar"/>
+        <pathelement location="${install.dir}/ProjectViewer.jar"/>
     </path>
 
 </project>
