@@ -15,16 +15,18 @@
             <td valign="center" bgcolor="#CCCCFF">
                 <div align="right">
                     <font size="-1">By Matthew Flower<br>
-                    <a href="mailto:MattFlower@yahoo.com">MattFlower@yahoo.com</a></font>
+                    <a href="mailto:MattFlower@yahoo.com">MattFlower@yahoo.com</a><br>
+                    Currently maintained by Gerard Smyth (<a href="mailto:gerard.smyth@gmail.com">gerard.smyth@gmail.com</a>)</font>
+
                 </div>
             </td>
         </tr>
     </table>
-    
+
     <a href="#intro">Introduction</a><br>
     <a href="#classpath">Classpath</a><br>
     <a href="#sortinggrouping">Sorting and Grouping</a><br>
-    <a href="#otheroptions">Miscellaneous Options</a><br>            
+    <a href="#otheroptions">Miscellaneous Options</a><br>
     <a href="#keyboarding">Keyboard-only use</a><br>
     <a href="#contactinfo">Contact Information</a><br>
     <a href="TODO.txt">Todo</a><br>
@@ -44,49 +46,56 @@
     <br>
     <a name="classpath"></a>
     <h2>Classpath Options</h2>
-    The classpath that is searched can come from a variety of sources.  You 
-    choose which source you'd like to use through the configuration page of 
+    The classpath that is searched can come from a variety of sources.  You
+    choose which source you'd like to use through the configuration page of
     JImporter, a screenshot of which is shown below.<br>
     <br>
     <img src="ClasspathDialog.png"><br>
     <i>The Classpath option pane allows you to choose where jEdit will find your classpath</i><br>
     <br>
+    <h3>Use project specific classpath if possible</h3>
+    This option should be used in combination with the ProjectViewer and JavaSideKick
+    plugins. JImporter will then use the classpath specified in the project settings if
+    the current file is in a project.<br/>
+    If not, then the classpath entered below will be used.
+
+
     <h3>Use this Classpath</h3>
     Use the classpath that is indicated in the textbox.  The classpath should
-    be in the same format you'd expect in an environment variable in your 
+    be in the same format you'd expect in an environment variable in your
     operating system.  For example, if you are in Windows, your classpath should
-    be delimited with semicolons.  In unix, the classpath should be delimited 
+    be delimited with semicolons.  In unix, the classpath should be delimited
     with colons.
-    
-    <h3>Use SpeedJava's classpath</h3>
-    Use the classpath that was specified for the SpeedJava plugin.  This 
-    prevents you from having to specify your classpath in (yet another) place.
-    
+
+    <!--<h3>Use SpeedJava's classpath</h3>
+    Use the classpath that was specified for the SpeedJava plugin.  This
+    prevents you from having to specify your classpath in (yet another) place.-->
+
     <h3>Use JCompiler's classpath</h3>
-    Use the classpath that was specified for the JCompiler plugin.  This 
+    Use the classpath that was specified for the JCompiler plugin.  This
     prevents you from having to specify your classpath in (yet another) place.
-    
+
     <h3>Use System classpath</h3>
     Use the classpath that was specified when you started JEdit.
-    
+
     <h3>Automatically Search JDK Classes</h3>
     When this option is selected, JImporter will append the location of the rt.jar
     library to your classpath automatically.  This is useful because newer JDK's
     no longer require the location of this jar to be in the classpath.
-    
+
     <BR>
     <a name="sortinggrouping"></a>
     <h2>Sorting and Grouping Options</h2>
-    JImporter allows you to sort your imports, either automatically when you 
+    JImporter allows you to sort your imports, either automatically when you
     import a file, or by choosing the "Sort Imports" action from the JImporter
     menu.  This sorting allows you to keep your import statements "tidy."<br>
     <br>
     Sorting often isn't as easy as alphabetically arranging imports though.  Some
-    users would like to have case sensitive sorting, others do not.  Another 
+    users would like to have case sensitive sorting, others do not.  Another
     category of users like to have certain import statements appear above others,
     even though they aren't alphabetically supposed to be ordered in that way.<br>
     <br>
-    For these reasons, JImporter attempts to allow a lot of configurability.  It 
+    For these reasons, JImporter attempts to allow a lot of configurability.  It
     is possible to group your imports according to package, or pattern.<br>
     <br>
     <img src="SortingPaneScreenshot.png"><br>
@@ -101,78 +110,78 @@
     <a name="otheroptions"></a>
     <h2>Miscellaneous options</h2>
     JImporter provides configurability so it can try to make at least some of its
-    users happy.  Here are some other miscellaneous options that you might be 
+    users happy.  Here are some other miscellaneous options that you might be
     interested in:
-    
+
     <h3>Automatically Search When Importing at Point</h3>
-    If you have bound a key to "Import Class at Point" and if you have a fast 
-    machine, this can be a good option for you.  Effectively, this option 
+    If you have bound a key to "Import Class at Point" and if you have a fast
+    machine, this can be a good option for you.  Effectively, this option
     automatically clicks on the "Search" button to save you time.  You must have
     this option selected if you want to automatically import classes when only
     one exists.<br>
     <br>
     <h3>Automatically Import when only 1 Match Exists</h3>
-    The name says it all.  If there is only one match when you do an import at 
+    The name says it all.  If there is only one match when you do an import at
     point, automatically generate that import without showing the dialog box.<br>
     <br>
     <h3>Searching Method</h3>
     This is the method that JImporter will use to find the package name of any
     classes that you decide to import.  In the early versions of JImporter, I've
     decided to stick with the brute-force method of searching.  This method will
-    iterate through all of the directories and jar files in your classpath to 
+    iterate through all of the directories and jar files in your classpath to
     search for matching classes. <br>
     <br>
-    Initially, this sounded really awful, as I was concerned that performance 
-    would be abysmal.  However, I found out that modern operating systems do a 
-    reasonably good job at caching their filesystem entries.  While the first 
+    Initially, this sounded really awful, as I was concerned that performance
+    would be abysmal.  However, I found out that modern operating systems do a
+    reasonably good job at caching their filesystem entries.  While the first
     search is pretty slow, subsequent searches aren't.<br>
     <br>
     I fully intend to replace this searching method, eventually.  It isn't that
-    I don't know how to use Hashmaps, it just turns out that the problem is 
-    slightly more complicated than that to solve.  I have a big list of things 
+    I don't know how to use Hashmaps, it just turns out that the problem is
+    slightly more complicated than that to solve.  I have a big list of things
     I keep in the <a href="todo.txt">Todo List</a> to keep me busy and this one
     hasn't bubbled up far enough to get fixed.  I will do it eventually though.
-    (If someone donates code, I won't turn it away though.)     
+    (If someone donates code, I won't turn it away though.)
     <br>
     <a name="keyboarding"></a>
     <h2>Keyboarding Issues and Solutions</h2>
-    There are currently some keyboarding interface issues in JImporter from my 
+    There are currently some keyboarding interface issues in JImporter from my
     startpoint.  In my perfect world, this would be how everything would work:<br>
     <br>
     1. You put your cursor on a class and press a key combination to import the
-    class at the point.  (I use CS-i as my shortcut.)<br>  
-    2. The import dialog box would come up.  As you type in the name of the 
+    class at the point.  (I use CS-i as my shortcut.)<br>
+    2. The import dialog box would come up.  As you type in the name of the
     class, the field of classes would quickly narrow and be shown in the dialog
     box. <br>
-    3. Once you had a reasonable number of classes left in your box, you'd 
+    3. Once you had a reasonable number of classes left in your box, you'd
     use your up and down arrows to select a class and hit enter.<br>
     <br>
     Boy, I wish that were the case.  The problem is that my current "brute force"
     method of searching is just a bit too slow to keep up with this.  Every
-    character that you type will take a few seconds to generate a matching 
+    character that you type will take a few seconds to generate a matching
     result set.  For the meantime, here is how it works:<br>
     <br>
     1. You put your cursor on a class and press a key combination to import the
-    class at the point.<br>  
-    2. The import dialog box would come up.  Press enter to search for the 
+    class at the point.<br>
+    2. The import dialog box would come up.  Press enter to search for the
     class your cursor was on, or type a new name and press enter.<br>
-    3. A list of matching classes comes up.  Use the up and down arrows.  When 
+    3. A list of matching classes comes up.  Use the up and down arrows.  When
     you find one you like, press Alt-I to import.<br>
     <br>
-    I'll probably always keep the brute force method around though.  It just 
+    I'll probably always keep the brute force method around though.  It just
     doesn't take a lot of memory, which makes me happy.<br>
     <a name="contactinfo"></a>
     <h2>Contact Information</h2>
-    Please feel free to contact me regarding this plugin.  I can be reached at 
+    Please feel free to contact me regarding this plugin.  I can be reached at
     MattFlower@yahoo.com.
-    
+
     <h3>Bugs or feature requests</h3>
-    If you find a bug, please report it on the JEdit project on sourceforge.  
+    If you find a bug, please report it on the JEdit project on sourceforge.
     Feature requests should be sent directly to my email address.  It might not
     be a bad idea to CC the JEdit mailing list too.
-    
+
     <h3>Code contributions</h3>
-    I welcome all contribution of code!  
+    I welcome all contribution of code!
     <br>
     If you would like to contribute code to JImporter, please send any patches
     in unified diff format to <a href="mailto:MattFlower@yahoo.com">my email address.</a>
