@@ -1,5 +1,15 @@
 CHANGES file for Templates plugin.
 
+Version 4.1.2 (17-MAR-2008)
+=============================
+CHANGES:
+- updated dependencies as a result of the gnu.regexp library being moved out of core and into the GnuRegexp plugin
+
+Version 4.1.1 (24-JAN-2008)
+=============================
+CHANGES:
+- Modified for API changes introduced in jEdit 4.3pre12
+
 Version 4.1.0 (22-AUG-2007)
 =============================
 CHANGES:
