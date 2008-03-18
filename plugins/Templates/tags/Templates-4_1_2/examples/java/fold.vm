@@ -1,0 +1,6 @@
+## template=jEdit Fold
+#prompt ( "Label:" $label )
+//{{{ ${label}
+${_jeditIndentation}
+#caret ()
+${_jeditIndentation}//}}}

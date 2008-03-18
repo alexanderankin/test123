@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="Templates.refresh-templates">
+        <CODE>
+            templates.TemplatesPlugin.refreshTemplates();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="Templates.edit-template">
+        <CODE>
+            templates.TemplatesPlugin.editTemplate(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="Templates.save-template">
+        <CODE>
+            templates.TemplatesPlugin.saveTemplate(view);
+        </CODE>
+    </ACTION>
+	<ACTION NAME="Templates.expand-accelerator">
+		<CODE>
+			templates.AcceleratorManager.getInstance().expandAccelerator(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="Templates.browse-templates">
+		<CODE>
+			mgr = view.getDockableWindowManager();
+			mgr.showDockableWindow(VFSBrowser.NAME);
+			mgr.getDockable(VFSBrowser.NAME)
+				.setDirectory(templates.TemplatesPlugin.getVelocityResourcePath());
+		</CODE>
+	</ACTION>
+</ACTIONS>

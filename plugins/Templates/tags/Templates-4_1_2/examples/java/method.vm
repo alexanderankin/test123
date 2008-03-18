@@ -1,0 +1,17 @@
+## template=Method with Javadoc
+#prompt ( "Method Description:" $methodDescription  )
+#prompt ( "Access Modifier:" $accessModifier  "public" )
+#prompt ( "Additional Modifiers:" $modifiers  "void" )
+#prompt ( "Method Name:" $methodName )
+#prompt ( "Parameters:" $parameters "" )
+#if ( $modifiers != "" )
+   #set ( $modifiers = " ${modifiers}" )
+#end
+/**
+${_jeditIndentation} * $methodDescription
+${_jeditIndentation} */
+${_jeditIndentation}${accessModifier}${modifiers} ${methodName}(${parameters})
+${_jeditIndentation}{
+${_jeditIndentation}${_jeditTab}
+#caret ()
+${_jeditIndentation}}
