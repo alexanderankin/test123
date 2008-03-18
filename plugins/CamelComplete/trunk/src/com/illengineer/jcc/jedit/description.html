@@ -1,18 +1,25 @@
-This plugin provides a "CamelComplete Word" command for jEdit. This can
-expand abbreviations into their full words as shown &nbsp;by these
-examples, which show identifiers and their abbreviations:<br>
+<pre>
 
-<pre>	SwingUtilities 	-&gt; SU<br>
-	GtkMessageBox 	-&gt; GMB<br>
-	IOException	-&gt; IOE<br>
-</pre>
+This plugin provides a "CamelComplete Word" command for jEdit. This can
+expand abbreviations into their full words as shown by these examples,
+which show identifiers and their abbreviations:
+
+    SwingUtilities -> SU
+    GtkMessageBox -> GMB
+    IOException -> IOE
 
 The plugin also comes with a Regular Expression parser, so that you can
 break words apart using a regexp. This is useful for C and Lisp, among
-others.<br>
+others.
 
-<pre>Regexp: [_-]<br>
-<br>
-	gtk_check_menu_item_set_inconsistent -&gt; gcmisi<br>
-	gtk_menu_item_new 		     -&gt; gmin<br>
-	multi-define-syntax 		     -&gt; mds</pre>
+    Regexp: [_-]
+
+    gtk_check_menu_item_set_inconsistent -> gcmisi
+    gtk_menu_item_new -> gmin
+    multi-define-syntax -> mds
+    
+In its default, Simple Mode, the plugin will work with CamelCase and
+underscore-separated words. Almost anything is configurable using its
+Advanced Mode.
+
+</pre>
