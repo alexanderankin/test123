@@ -1,6 +1,18 @@
 CHANGELOG for LookAndFeel plugin
 ================================
 
+VERSION 1.2
+-----------
+
+* added Lipstik LAF
+
+
+VERSION 1.1.1
+-------------
+
+* added Napkin LAF
+
+
 VERSION 1.1
 -----------
 

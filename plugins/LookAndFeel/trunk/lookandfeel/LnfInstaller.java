@@ -23,7 +23,6 @@
 package lookandfeel;
 
 import java.awt.Component;
-import javax.swing.LookAndFeel;
 
 
 /**
@@ -48,7 +47,8 @@ public abstract class LnfInstaller
 			"Skin",
 			"Tonic",
 			"NimROD",
-			"Napkin"
+			"Napkin",
+			"Lipstik"
 		};
 	}
 
