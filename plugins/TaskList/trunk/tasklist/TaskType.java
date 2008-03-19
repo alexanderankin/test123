@@ -63,7 +63,9 @@ public class TaskType
 	{
 		Matcher match = this.re.matcher(tokenText);
 		if(!match.find())
+		{
 			return null;
+		}
 		String textDisplay;
 		if (displayIdentifier)
 			textDisplay = tokenText;
