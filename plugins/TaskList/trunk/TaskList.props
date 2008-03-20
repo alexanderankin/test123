@@ -9,7 +9,7 @@ plugin.tasklist.TaskListPlugin.version=1.0.0
 plugin.tasklist.TaskListPlugin.docs=index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
 plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.12.00
-
+plugin.tasklist.TaskListPlugin.usePluginHome=true
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \
 	tasklist.parse-buffer \
