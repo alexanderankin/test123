@@ -33,13 +33,10 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Property;
 import ise.plugin.svn.data.PropertyData;
-import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.gui.PropertyPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -50,9 +47,8 @@ import org.gjt.sp.jedit.View;
  * ActionListener to show SVN properties.
  * This is not dependent on ProjectViewer.
  */
-public class PropertyAction implements ActionListener {
+public class PropertyAction extends SVNAction {
 
-    private View view = null;
     private PropertyData data = null;
 
     /**
@@ -60,13 +56,10 @@ public class PropertyAction implements ActionListener {
      * @param data what to show
      */
     public PropertyAction( View view, PropertyData data ) {
-        if ( view == null ) {
-            throw new IllegalArgumentException( "view may not be null" );
-        }
+        super(view, "Property");
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = data;
     }
 
@@ -74,25 +67,17 @@ public class PropertyAction implements ActionListener {
         if ( data != null ) {
             // ask if properties should be found for children
             if ( data.hasDirectory() ) {
-                int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int answer = JOptionPane.showConfirmDialog( getView(), "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
-
-            if ( data.getUsername() == null || data.getUsername().length() == 0 ) {
-                LoginDialog ld = new LoginDialog( view, "Properties", "Confirm SVN login for Property command:", data.getPaths().get( 0 ) );
-                GUIUtils.center( view, ld );
-                ld.setVisible( true );
-                if ( ld.getCanceled() == true ) {
-                    return ;
-                }
-                data.setUsername( ld.getUsername() );
-                data.setPassword( ld.getPassword() );
-            }
+            verifyLogin();
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
 
             // set up the svn console
-            data.setOut( new ConsolePrintStream( view ) );
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            data.setOut( new ConsolePrintStream( getView() ) );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Fetching properties ..." );
@@ -125,10 +110,10 @@ public class PropertyAction implements ActionListener {
                     try {
                         TreeMap<String, Properties> results = get();
                         if ( results != null ) {
-                            panel.addTab( "Properties", new PropertyPanel( view, results, data ) );
+                            panel.addTab( "Properties", new PropertyPanel( getView(), results, data ) );
                         }
                         else {
-                            JOptionPane.showMessageDialog( view, "No properties found.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(), "No properties found.", "Error", JOptionPane.ERROR_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {

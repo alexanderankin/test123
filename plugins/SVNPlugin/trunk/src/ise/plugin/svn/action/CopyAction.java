@@ -33,22 +33,17 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Copy;
 import ise.plugin.svn.data.AddResults;
-import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.CopyResultsPanel;
 import ise.plugin.svn.gui.ErrorPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
@@ -65,9 +60,8 @@ import org.tmatesoft.svn.core.SVNURL;
  * ActionListener to perform an svn copy.
  * This is not dependent on ProjectViewer.
  */
-public class CopyAction implements ActionListener {
+public class CopyAction extends SVNAction {
 
-    private View view = null;
     private CopyData data = null;
     private String title = "Copy";
 
@@ -81,11 +75,9 @@ public class CopyAction implements ActionListener {
      * @param data CopyData object containing the info for a copy of some sort
      */
     public CopyAction( View view, CopyData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Copy");
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.view = view;
         this.data = data;
         this.title = data.getTitle();
     }
@@ -93,10 +85,10 @@ public class CopyAction implements ActionListener {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data != null ) {
-            data.setOut( new ConsolePrintStream( view ) );
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
             String log_msg = title.equals("Tag") ? "Tagging" : title + "ing";
@@ -249,15 +241,15 @@ public class CopyAction implements ActionListener {
                                     for ( String path : results.keySet() ) {
                                         ar.addPath( path );
                                     }
-                                    JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, view, data.getUsername(), data.getPassword() );
+                                    JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, getView(), data.getUsername(), data.getPassword() );
                                     panel.addTab( title, results_panel );
 
                                     // open the file(s) and signal ProjectViewer to possibly add the file
                                     for ( String path : results.keySet() ) {
                                         File f = new File( path );
                                         if ( !f.isDirectory() ) {
-                                            Buffer buffer = jEdit.openFile( view, path );
-                                            BufferUpdate bu = new BufferUpdate( buffer, view, BufferUpdate.SAVED );
+                                            Buffer buffer = jEdit.openFile( getView(), path );
+                                            BufferUpdate bu = new BufferUpdate( buffer, getView(), BufferUpdate.SAVED );
                                             EditBus.send( bu );
                                         }
                                     }

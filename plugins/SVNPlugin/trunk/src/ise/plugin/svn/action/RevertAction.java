@@ -28,41 +28,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
-import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Revert;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
-import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
  * ActionListener to perform an svn revert.
  * This is not dependent on ProjectViewer.
  */
-public class RevertAction implements ActionListener {
-    private View view = null;
+public class RevertAction extends SVNAction {
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -71,14 +63,12 @@ public class RevertAction implements ActionListener {
      * @param password the password for the username
      */
     public RevertAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Revert" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
 
@@ -100,7 +90,7 @@ public class RevertAction implements ActionListener {
             // user confirmations
             if ( recursive ) {
                 // have the user verify they want a recursive revert
-                int response = JOptionPane.showConfirmDialog( view, "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.CANCEL_OPTION ) {
                     return ;
                 }
@@ -108,35 +98,21 @@ public class RevertAction implements ActionListener {
             }
             else {
                 // have the user confirm they really want to revert
-                if ( username == null || username.length() == 0 ) {
-                    LoginDialog ld = new LoginDialog( view, "Confirm Revert", "Are you sure you want to revert?", paths.get( 0 ) );
-                    GUIUtils.center( view, ld );
-                    ld.setVisible( true );
-                    if ( ld.getCanceled() == true ) {
-                        return ;
-                    }
-                    username = ld.getUsername();
-                    password = ld.getPassword();
-                }
-                else {
-                    int response = JOptionPane.showConfirmDialog( view, "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                    if ( response == JOptionPane.NO_OPTION ) {
-                        return ;
-                    }
+                int response = JOptionPane.showConfirmDialog( getView(), "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                if ( response == JOptionPane.NO_OPTION ) {
+                    return ;
                 }
             }
 
             data.setPaths( paths );
 
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Reverting ..." );
@@ -165,12 +141,12 @@ public class RevertAction implements ActionListener {
                 protected void done() {
                     try {
                         AddResults results = get();
-                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, view, username, password );
+                        JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, getView(), getUsername(), getPassword() );
                         panel.addTab( "Revert", results_panel );
                         for ( String path : results.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
-                                buffer.reload( RevertAction.this.view );
+                                buffer.reload( RevertAction.this.getView() );
                             }
                         }
                     }

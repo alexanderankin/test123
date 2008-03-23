@@ -91,4 +91,20 @@ public class CommitData extends SVNData {
         this.info = info;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        try {
+            sb.append(getClass().getName()).append('[');
+            java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+            for (java.lang.reflect.Field field : fields) {
+                sb.append(field.getName()).append('=').append(ise.plugin.svn.library.PrivilegedAccessor.getValue(this, field.getName())).append(',');
+            }
+            sb.append(']');
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
 }

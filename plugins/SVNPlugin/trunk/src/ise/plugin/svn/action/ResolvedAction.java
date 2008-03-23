@@ -28,27 +28,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
-import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Resolved;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 
-import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import org.gjt.sp.jedit.View;
 
@@ -57,12 +52,9 @@ import org.gjt.sp.jedit.View;
  * ActionListener to perform an svn add.
  * This is not dependent on ProjectViewer.
  */
-public class ResolvedAction implements ActionListener {
+public class ResolvedAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -71,14 +63,12 @@ public class ResolvedAction implements ActionListener {
      * @param password the password for the username
      */
     public ResolvedAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Resolved" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -98,7 +88,7 @@ public class ResolvedAction implements ActionListener {
             // user confirmations
             if ( recursive ) {
                 // have the user verify they want a recursive resolve
-                int response = JOptionPane.showConfirmDialog( view, "Recursively resolve all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), "Recursively resolve all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.CANCEL_OPTION ) {
                     return ;
                 }
@@ -106,35 +96,22 @@ public class ResolvedAction implements ActionListener {
             }
             else {
                 // have the user confirm they really want to resolve
-                if ( username == null || username.length() == 0 ) {
-                    LoginDialog ld = new LoginDialog( view, "Confirm Resolve", "Are you sure you want to mark as resolved?", paths.get( 0 ) );
-                    GUIUtils.center( view, ld );
-                    ld.setVisible( true );
-                    if ( ld.getCanceled() == true ) {
-                        return ;
-                    }
-                    username = ld.getUsername();
-                    password = ld.getPassword();
-                }
-                else {
-                    int response = JOptionPane.showConfirmDialog( view, "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                    if ( response == JOptionPane.NO_OPTION ) {
-                        return ;
-                    }
+                int response = JOptionPane.showConfirmDialog( getView(), "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                if ( response == JOptionPane.NO_OPTION ) {
+                    return ;
                 }
             }
+
+            verifyLogin( paths.get( 0 ) );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
 
             data.setPaths( paths );
 
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Resolving ..." );
@@ -162,7 +139,7 @@ public class ResolvedAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, view, username, password );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, getView(), getUsername(), getPassword() );
                         panel.addTab( "Resolved", results_panel );
                     }
                     catch ( Exception e ) {

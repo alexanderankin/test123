@@ -32,17 +32,14 @@ import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Update;
-import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.UpdateData;
 import ise.plugin.svn.gui.UpdateDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -55,13 +52,10 @@ import org.gjt.sp.jedit.View;
  * ActionListener to perform an svn update.
  * This is not dependent on ProjectViewer.
  */
-public class UpdateAction implements ActionListener {
+public class UpdateAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
     private UpdateData data = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -70,14 +64,12 @@ public class UpdateAction implements ActionListener {
      * @param password the password for the username
      */
     public UpdateAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Update" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
 
@@ -97,14 +89,15 @@ public class UpdateAction implements ActionListener {
             }
             data.setRecursive( recursive ); // if recursive is false here, it means paths contains only files, no directories
 
-            data.setUsername( username );
-            data.setPassword( password );
+            verifyLogin( paths.get( 0 ) );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
 
-            data.setOut( new ConsolePrintStream( view ) );
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             // show dialog
-            UpdateDialog dialog = new UpdateDialog( view, data, data.getUsername() == null );
-            GUIUtils.center( view, dialog );
+            UpdateDialog dialog = new UpdateDialog( getView(), data, false );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             data = dialog.getData();
             if ( data == null ) {
@@ -112,8 +105,8 @@ public class UpdateAction implements ActionListener {
             }
 
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Updating ..." );
@@ -142,12 +135,12 @@ public class UpdateAction implements ActionListener {
                 protected void done() {
                     try {
                         UpdateData data = get();
-                        JPanel results_panel = new UpdateResultsPanel( view, data );
+                        JPanel results_panel = new UpdateResultsPanel( getView(), data );
                         panel.addTab( "Update", results_panel );
                         for ( String path : data.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
-                                buffer.reload(view);
+                                buffer.reload( getView() );
                             }
                         }
                     }

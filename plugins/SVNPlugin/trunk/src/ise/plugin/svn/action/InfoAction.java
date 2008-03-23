@@ -32,16 +32,12 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.gui.ErrorPanel;
-import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -52,13 +48,10 @@ import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
-public class InfoAction implements ActionListener {
+public class InfoAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
     private boolean pathsAreUrls = false;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -67,28 +60,24 @@ public class InfoAction implements ActionListener {
      * @param password the password for the username
      */
     public InfoAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Info");
+        this.paths = paths;
+        setUsername(username);
+        setPassword(password);
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
-        this.paths = paths;
-        this.username = username;
-        this.password = password;
     }
 
     public InfoAction( View view, SVNData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Info");
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = data.getPaths();
         this.pathsAreUrls = data.pathsAreURLs();
-        this.username = data.getUsername();
-        this.password = data.getPassword();
+        setUsername(data.getUsername());
+        setPassword(data.getPassword());
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -97,36 +86,13 @@ public class InfoAction implements ActionListener {
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
-            if ( password != null && password.length() > 0 ) {
-                try {
-                    PasswordHandler ph = new PasswordHandler();
-                    password = ph.decrypt( password );
-                }
-                catch ( Exception e ) {
-                    password = "";
-                }
-            }
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            if ( username == null ) {
-                LoginDialog ld = new LoginDialog( view, "Info", "Confirm SVN login for Info command:", paths.get( 0 ) );
-                GUIUtils.center( view, ld );
-                ld.setVisible( true );
-                if ( ld.getCanceled() == true ) {
-                    return ;
-                }
-                username = ld.getUsername();
-                password = ld.getPassword();
-            }
-
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
-
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Fetching info..." );

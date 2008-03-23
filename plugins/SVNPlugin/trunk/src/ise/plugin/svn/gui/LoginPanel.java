@@ -42,6 +42,10 @@ public class LoginPanel extends JPanel {
     private JLabel password_label;
     private JPasswordField password;
 
+    /**
+     * Attempts to look up the given file name in ProjectViewer and uses the
+     * associated username and password, if any.
+     */
     public LoginPanel( String filename ) {
         String[] login = PVHelper.getSVNLogin( filename );
         init( login[ 0 ], login[ 1 ] );

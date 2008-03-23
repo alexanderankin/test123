@@ -40,7 +40,6 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
@@ -52,13 +51,10 @@ import org.gjt.sp.jedit.View;
  * ActionListener to perform an svn commit.
  * This is not dependent on ProjectViewer.
  */
-public class CommitAction implements ActionListener {
+public class CommitAction extends SVNAction {
 
     private CommitDialog dialog = null;
-    private View view = null;
-    private Map<String, String> paths = null;
-    private String username = null;
-    private String password = null;
+    private TreeMap<String, String> paths = null;
 
     /**
      * @param view the View in which to display results
@@ -67,31 +63,34 @@ public class CommitAction implements ActionListener {
      * @param password the password for the username
      */
     public CommitAction( View view, TreeMap<String, String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Commit" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new CommitDialog( view, paths, username == null );
-            GUIUtils.center( view, dialog );
+            dialog = new CommitDialog( getView(), paths, false );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             final CommitData cd = dialog.getCommitData();
             if ( cd == null ) {
                 return ;     // null means user canceled
             }
 
-            cd.setOut( new ConsolePrintStream( view ) );
+            System.out.println("+++++ path? " + (String)paths.firstKey());
+            verifyLogin( (String)paths.firstKey() );
+            cd.setUsername( getUsername() );
+            cd.setPassword( getPassword() );
+            System.out.println("+++++ username = " + getUsername() + ", password = " + getPassword());
+            cd.setOut( new ConsolePrintStream( getView() ) );
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Committing ..." );
@@ -120,7 +119,7 @@ public class CommitAction implements ActionListener {
                 protected void done() {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
-                        panel.addTab("Commit", results_panel);
+                        panel.addTab( "Commit", results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored
@@ -128,7 +127,6 @@ public class CommitAction implements ActionListener {
                 }
             }
             ( new Runner() ).execute();
-
         }
     }
 }

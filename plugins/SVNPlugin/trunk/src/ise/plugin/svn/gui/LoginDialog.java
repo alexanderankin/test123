@@ -29,49 +29,51 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
-import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.PVHelper;
-import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 
-
+/**
+ * This dialog does not encrypt or decrypt passwords.
+ */
 public class LoginDialog extends JDialog {
 
-    private View view = null;
     private LoginPanel login = null;
 
     private boolean canceled = true;
 
+    public LoginDialog( View view, String title, String message, String username, String password) {
+        super( ( JFrame ) view, title, true );
+        init( message, username, password );
+    }
+
     public LoginDialog( View view, String title, String message, String filename ) {
         super( ( JFrame ) view, title, true );
-        this.view = view;
-        init( message, filename );
+        String[] login = PVHelper.getSVNLogin( filename );
+        init( message, login[ 0 ], login[ 1 ] );
+    }
+
+    public LoginDialog( View view, String title, String message ) {
+        super( ( JFrame ) view, title, true );
+        init( message, "", "" );
     }
 
     /** Initialises the option pane. */
-    protected void init( String msg, String filename ) {
+    protected void init( String msg, String username, String password ) {
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         JLabel message = new JLabel(msg);
 
-        login = new LoginPanel( filename );
+        login = new LoginPanel( username, password );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -123,5 +125,4 @@ public class LoginDialog extends JDialog {
     public String getPassword() {
         return login.getPassword();
     }
-
 }

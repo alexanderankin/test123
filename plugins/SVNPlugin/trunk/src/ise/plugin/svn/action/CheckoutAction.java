@@ -34,7 +34,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
-import java.util.Stack;
 import javax.swing.*;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
@@ -55,9 +54,8 @@ import ise.plugin.svn.library.swingworker.SwingWorker;
 import org.gjt.sp.jedit.View;
 
 
-public class CheckoutAction implements ActionListener, PropertyChangeListener {
+public class CheckoutAction extends SVNAction implements PropertyChangeListener {
 
-    private View view = null;
     private CheckoutData cd = null;
 
     /**
@@ -65,11 +63,9 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
      * @param data information necessary to do a checkout
      */
     public CheckoutAction( View view, CheckoutData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Checkout");
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.view = view;
         this.cd = data;
     }
 
@@ -81,18 +77,18 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        CheckoutDialog dialog = new CheckoutDialog( view, cd.getURL() );
-        GUIUtils.center( view, dialog );
+        CheckoutDialog dialog = new CheckoutDialog( getView(), cd.getURL() );
+        GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
         cd = dialog.getValues();
         if ( cd == null ) {
             return ;        // user canceled
         }
 
-        cd.setOut( new ConsolePrintStream( view ) );
+        cd.setOut( new ConsolePrintStream( getView() ) );
 
-        view.getDockableWindowManager().showDockableWindow( "subversion" );
-        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+        getView().getDockableWindowManager().showDockableWindow( "subversion" );
+        final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
         logger.log( Level.INFO, "Check out ..." );
@@ -139,7 +135,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
     }
 
     private void createProject( String revision ) {
-        int make_project = JOptionPane.showConfirmDialog( view,
+        int make_project = JOptionPane.showConfirmDialog( getView(),
                 "Checkout complete at revision " + revision + ".\n" +
                 "Would you like to create a project from these files?",
                 "Create Project?",
@@ -162,7 +158,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
 
         // dialog for the project properties
         final ProjectPropertiesPane pp_pane = new ProjectPropertiesPane( project, true, path );
-        final JDialog dialog = new JDialog( view, "Create Project", true );
+        final JDialog dialog = new JDialog( getView(), "Create Project", true );
         JPanel panel = new JPanel( new BorderLayout() );
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
         panel.add( pp_pane, BorderLayout.CENTER );
@@ -201,7 +197,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
                                     // Note that Importers are runnable, so add the importer to the
                                     // event queue for handling.  If Importer.doImport is called here,
                                     // there will be a deadlock.
-                                    RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
+                                    RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( getView() ), true );
                                     SwingUtilities.invokeLater(importer);
 
                                     /// TODO: I wonder about this -- if the import happens later
@@ -209,7 +205,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
                                     pm.save();
 
                                     // set ProjectViewer to show the new node
-                                    ProjectViewer.setActiveNode( view, project );
+                                    ProjectViewer.setActiveNode( getView(), project );
                                 }
                                 catch ( Exception e ) {
                                     e.printStackTrace( System.err );
@@ -234,7 +230,7 @@ public class CheckoutAction implements ActionListener, PropertyChangeListener {
         dialog.setContentPane( panel );
         pp_pane.init();
         dialog.pack();
-        GUIUtils.center( view, dialog );
+        GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
     }
 

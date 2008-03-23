@@ -29,8 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.data;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.*;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.PrivilegedAccessor;
 
 /**
  * Base class to contain data to pass to the various subversion commands.
@@ -50,14 +52,14 @@ public class SVNData implements Serializable {
     private boolean dryRun = false;
     private boolean remote = true;
 
-    public SVNData(){}
+    public SVNData() {}
 
     public SVNData( ConsolePrintStream out,
             ConsolePrintStream err,
             List<String> paths,
             String username,
             String password,
-            boolean recursive) {
+            boolean recursive ) {
         this.out = out;
         this.err = err;
         this.paths = paths;
@@ -100,7 +102,7 @@ public class SVNData implements Serializable {
      * Returns the value of paths.
      */
     public List<String> getPaths() {
-        return new ArrayList<String>(paths);
+        return new ArrayList<String>( paths );
     }
 
     /**
@@ -111,18 +113,18 @@ public class SVNData implements Serializable {
         this.paths = paths;
     }
 
-    public void addPath(String path) {
-        if (paths == null) {
+    public void addPath( String path ) {
+        if ( paths == null ) {
             paths = new ArrayList<String>();
         }
-        paths.add(path);
+        paths.add( path );
     }
 
     public boolean pathsAreURLs() {
         return pathsAreUrls;
     }
 
-    public void setPathsAreURLs(boolean b) {
+    public void setPathsAreURLs( boolean b ) {
         pathsAreUrls = b;
     }
 
@@ -214,6 +216,22 @@ public class SVNData implements Serializable {
      */
     public void setRemote( boolean b ) {
         remote = b;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        try {
+            sb.append(getClass().getName()).append('[');
+            Field[] fields = getClass().getDeclaredFields();
+            for (Field field : fields) {
+                sb.append(field.getName()).append('=').append(PrivilegedAccessor.getValue(this, field.getName())).append(',');
+            }
+            sb.append(']');
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 
 }

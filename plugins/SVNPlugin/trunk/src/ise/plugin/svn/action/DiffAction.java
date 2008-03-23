@@ -30,24 +30,18 @@ package ise.plugin.svn.action;
 
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Add;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.DiffData;
-import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.gui.DiffDialog;
-import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
@@ -61,17 +55,14 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  * I'm delegating to the JDiff plugin to create and display the diff.
  * This is not dependent on ProjectViewer.
  */
-public class DiffAction implements ActionListener {
+public class DiffAction extends SVNAction {
 
     private DiffDialog dialog = null;
 
-    private View view = null;
     private String path1 = null;
     private String path2 = null;
     private String revision1 = null;
     private String revision2 = null;
-    private String username = null;
-    private String password = null;
 
     private DiffData data;
     private Logger logger = null;
@@ -85,14 +76,12 @@ public class DiffAction implements ActionListener {
      * @param password the password for the username
      */
     public DiffAction( View view, String path, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Diff" );
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
-        this.view = view;
         this.path1 = path;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
     /**
@@ -106,19 +95,17 @@ public class DiffAction implements ActionListener {
      * @param password the password for the username
      */
     public DiffAction( View view, String path, String revision1, String revision2, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Diff" );
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
         if ( revision1 == null || revision2 == null ) {
             throw new IllegalArgumentException( "neither revision may be null, " + ( revision1 == null ? "revision1" : "revision2" ) + " is null." );
         }
-        this.view = view;
         this.path1 = path;
         this.revision1 = revision1;
         this.revision2 = revision2;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
     }
 
     private void log( String msg ) {
@@ -136,8 +123,8 @@ public class DiffAction implements ActionListener {
                 // if here, then the first constructor was called, the user is
                 // wanting to diff a local file against a remote version of the
                 // file. Show a DiffDialog to get the revision of the remote file.
-                dialog = new DiffDialog( view, path1 );
-                GUIUtils.center( view, dialog );
+                dialog = new DiffDialog( getView(), path1 );
+                GUIUtils.center( getView(), dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();
                 if ( data == null ) {
@@ -152,17 +139,15 @@ public class DiffAction implements ActionListener {
                 data.setRevision1( SVNRevision.parse( revision1 ) );
                 data.setRevision2( SVNRevision.parse( revision2 ) );
             }
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
 
             // set up the console output
-            data.setOut( new ConsolePrintStream( view ) );
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             // show the svn console
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole( );
 
             logger = panel.getLogger();
@@ -226,42 +211,42 @@ public class DiffAction implements ActionListener {
                     try {
                         File[] files = get();
                         if ( files == null ) {
-                            JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         File remote1 = files[ 0 ];
                         File remote2 = files[ 1 ];
 
                         if ( remote1 == null && remote2 == null ) {
-                            JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {
-                            JOptionPane.showMessageDialog( view, "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(), "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
 
                         // show JDiff
-                        view.unsplit();
-                        DualDiff.toggleFor( view );
+                        getView().unsplit();
+                        DualDiff.toggleFor( getView() );
 
                         // set the edit panes in the view
-                        EditPane[] editPanes = view.getEditPanes();
+                        EditPane[] editPanes = getView().getEditPanes();
 
                         // always show the 1st remote revision in the left edit pane
-                        editPanes[ 0 ].setBuffer( jEdit.openFile( view, remote1.getAbsolutePath() ) );
+                        editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
 
                         if ( remote2 != null ) {
                             // show the 2nd remote revision in the right edit pane
-                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, remote2.getAbsolutePath() ) );
+                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
                         }
                         else {
                             // or show the local working copy in the right edit pane
-                            editPanes[ 1 ].setBuffer( jEdit.openFile( view, path1 ) );
+                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
                         }
 
                         // do an explicit repaint of the view to clean up the display
-                        view.repaint();
+                        getView().repaint();
                     }
                     catch ( Exception e ) {
                         // ignored
