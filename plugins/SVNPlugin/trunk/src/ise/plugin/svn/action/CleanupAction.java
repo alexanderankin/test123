@@ -33,23 +33,17 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import org.gjt.sp.jedit.View;
 
-public class CleanupAction implements ActionListener {
+public class CleanupAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -58,14 +52,12 @@ public class CleanupAction implements ActionListener {
      * @param password the password for the username
      */
     public CleanupAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Cleanup");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -73,22 +65,13 @@ public class CleanupAction implements ActionListener {
             final SVNData data = new SVNData();
 
             data.setPaths( paths );
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            if ( data.getUsername() == null || data.getUsername().length() == 0 ) {
-                LoginDialog ld = new LoginDialog( view, "Cleanup", "Confirm SVN login for Cleanup command:", data.getPaths().get( 0 ) );
-                GUIUtils.center( view, ld );
-                ld.setVisible( true );
-                if ( ld.getCanceled() == true ) {
-                    return ;
-                }
-                data.setUsername( ld.getUsername() );
-                data.setPassword( ld.getPassword() );
-            }
-
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Cleaning up ..." );

@@ -31,17 +31,14 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Add;
-import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.gui.AddDialog;
 import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -52,14 +49,11 @@ import org.gjt.sp.jedit.View;
  * ActionListener to perform an svn add.
  * This is not dependent on ProjectViewer.
  */
-public class AddAction implements ActionListener {
+public class AddAction extends SVNAction {
 
     private AddDialog dialog = null;
 
-    private View view = null;
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -68,34 +62,31 @@ public class AddAction implements ActionListener {
      * @param password the password for the username
      */
     public AddAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Add");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
     }
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new AddDialog( view, paths, username == null );
-            GUIUtils.center( view, dialog );
+            dialog = new AddDialog( getView(), paths, false );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             final SVNData cd = dialog.getSVNData();
             if ( cd == null ) {
                 return ;     // null means user canceled
             }
 
-            if ( username != null && cd.getUsername() == null) {
-                cd.setUsername( username );
-                cd.setPassword( password );
-            }
-            cd.setOut( new ConsolePrintStream( view ) );
+            verifyLogin(paths.get(0));
+            cd.setUsername( getUsername());
+            cd.setPassword( getPassword());
+            cd.setOut( new ConsolePrintStream( getView() ) );
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole( );
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Preparing to add ..." );
@@ -123,7 +114,7 @@ public class AddAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, view, username, password );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
                         panel.addTab("Add", results_panel);
                     }
                     catch ( Exception e ) {

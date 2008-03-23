@@ -33,17 +33,14 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Switch;
-import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.UpdateData;
 import ise.plugin.svn.gui.SwitchDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -58,9 +55,8 @@ import org.gjt.sp.jedit.View;
  * added or deleted as a result of the switch, this class will ask the user if
  * the project files should be reimported.
  */
-public class SwitchAction implements ActionListener {
+public class SwitchAction extends SVNAction {
 
-    private View view = null;
     private UpdateData data = null;
 
     /**
@@ -70,11 +66,9 @@ public class SwitchAction implements ActionListener {
      * @param password the password for the username
      */
     public SwitchAction( View view, UpdateData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Switch" );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.view = view;
         this.data = data;
     }
 
@@ -82,11 +76,11 @@ public class SwitchAction implements ActionListener {
     public void actionPerformed( ActionEvent ae ) {
         if ( data.getPaths() != null && data.getPaths().size() > 0 ) {
 
-            data.setOut( new ConsolePrintStream( view ) );
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             // show dialog
-            SwitchDialog dialog = new SwitchDialog( view, data );
-            GUIUtils.center( view, dialog );
+            SwitchDialog dialog = new SwitchDialog( getView(), data );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             data = dialog.getData();
             if ( data == null ) {
@@ -94,8 +88,12 @@ public class SwitchAction implements ActionListener {
             }
 
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            verifyLogin( data.getPaths().get( 0 ) );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Switching ..." );
@@ -124,21 +122,21 @@ public class SwitchAction implements ActionListener {
                 protected void done() {
                     try {
                         UpdateData data = get();
-                        JPanel results_panel = new UpdateResultsPanel( view, data );
+                        JPanel results_panel = new UpdateResultsPanel( getView(), data );
                         panel.addTab( "Switch", results_panel );
 
                         // reload affected buffers
                         for ( String path : data.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
-                                buffer.reload( view );
+                                buffer.reload( getView() );
                             }
                         }
 
                         // offer to reload project files if there are added or deleted files
                         if ( ( data.getAddedFiles() != null && data.getAddedFiles().size() > 0 ) ||
                                 ( data.getDeletedFiles() != null && data.getDeletedFiles().size() > 0 ) ) {
-                            PVHelper.reimportProjectFiles( view );
+                            PVHelper.reimportProjectFiles( getView() );
                         }
                     }
                     catch ( Exception e ) {

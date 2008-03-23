@@ -31,18 +31,13 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Update;
-import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.UpdateData;
-import ise.plugin.svn.gui.UpdateDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -60,9 +55,8 @@ import org.tmatesoft.svn.core.SVNURL;
  * ActionListener to perform an svn export.
  * This is not dependent on ProjectViewer.
  */
-public class ExportAction implements ActionListener {
+public class ExportAction extends SVNAction {
 
-    private View view = null;
     private ExportData data = new ExportData();
 
     /**
@@ -70,14 +64,14 @@ public class ExportAction implements ActionListener {
      * @param sourceFile what to export
      */
     public ExportAction( View view, List<File> sourceFiles, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Export" );
         if ( sourceFiles == null )
             throw new IllegalArgumentException( "sourceFile may not be null" );
-        this.view = view;
-        data.setSourceFiles(sourceFiles);
-        data.setUsername(username);
-        data.setPassword(password);
+        setUsername( username );
+        setPassword( password );
+        data.setSourceFiles( sourceFiles );
+        data.setUsername( username );
+        data.setPassword( password );
     }
 
     /**
@@ -85,32 +79,32 @@ public class ExportAction implements ActionListener {
      * @param sourceUrl what to export
      */
     public ExportAction( View view, String username, String password, List<String> sourceUrls ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Export" );
         if ( sourceUrls == null )
             throw new IllegalArgumentException( "sourceUrl may not be null" );
-        this.view = view;
         try {
             List<SVNURL> urls = new ArrayList<SVNURL>();
-            for (String url : sourceUrls) {
-                urls.add(SVNURL.parseURIDecoded(url));
+            for ( String url : sourceUrls ) {
+                urls.add( SVNURL.parseURIDecoded( url ) );
             }
-            data.setSourceURLs(urls);
+            data.setSourceURLs( urls );
         }
-        catch(Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+        catch ( Exception e ) {
+            throw new IllegalArgumentException( e.getMessage() );
         }
-        data.setUsername(username);
-        data.setPassword(password);
+        setUsername( username );
+        setPassword( password );
+        data.setUsername( username );
+        data.setPassword( password );
     }
 
     public void actionPerformed( ActionEvent ae ) {
 
-        data.setOut( new ConsolePrintStream( view ) );
+        data.setOut( new ConsolePrintStream( getView() ) );
 
         // show dialog
-        ExportDialog dialog = new ExportDialog( view, data );
-        GUIUtils.center( view, dialog );
+        ExportDialog dialog = new ExportDialog( getView(), data );
+        GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
         data = dialog.getData();
         if ( data == null ) {
@@ -118,8 +112,8 @@ public class ExportAction implements ActionListener {
         }
 
 
-        view.getDockableWindowManager().showDockableWindow( "subversion" );
-        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+        getView().getDockableWindowManager().showDockableWindow( "subversion" );
+        final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
         logger.log( Level.INFO, "Exporting ..." );
@@ -148,12 +142,12 @@ public class ExportAction implements ActionListener {
             protected void done() {
                 try {
                     UpdateData data = get();
-                    JPanel results_panel = new UpdateResultsPanel( view, data, true );
+                    JPanel results_panel = new UpdateResultsPanel( getView(), data, true );
                     panel.addTab( "Export", results_panel );
                     for ( String path : data.getPaths() ) {
                         Buffer buffer = jEdit.getBuffer( path );
                         if ( buffer != null ) {
-                            buffer.reload( view );
+                            buffer.reload( getView() );
                         }
                     }
                 }

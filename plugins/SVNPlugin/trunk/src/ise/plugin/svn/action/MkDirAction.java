@@ -40,7 +40,6 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -48,20 +47,16 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 
-import org.tmatesoft.svn.core.SVNCommitInfo;
 
 
 /**
  * ActionListener to perform an svn mkdir.
  * This is not dependent on ProjectViewer.
  */
-public class MkDirAction implements ActionListener {
+public class MkDirAction extends SVNAction {
 
     private MkDirDialog dialog = null;
-    private View view = null;
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
     private String defaultDestination = null;
 
     /**
@@ -71,36 +66,33 @@ public class MkDirAction implements ActionListener {
      * @param password the password for the username
      */
     public MkDirAction( View view, List<String> paths, String username, String password, String defaultDestination ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Make Dir");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
         this.defaultDestination = defaultDestination;
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new MkDirDialog( view, defaultDestination );
-            GUIUtils.center( view, dialog );
+            dialog = new MkDirDialog( getView(), defaultDestination );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
-            final CommitData cd = dialog.getData();
-            if ( cd == null ) {
+            final CommitData data = dialog.getData();
+            if ( data == null ) {
                 return ;     // null means user canceled
             }
 
-            if ( username != null && password != null ) {
-                cd.setUsername( username );
-                cd.setPassword( password );
-            }
-            cd.setOut( new ConsolePrintStream( view ) );
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Creating directory..." );
@@ -114,13 +106,13 @@ public class MkDirAction implements ActionListener {
                 public CommitData doInBackground() {
                     try {
                         MkDir mkdir = new MkDir( );
-                        return mkdir.mkdir( cd );
+                        return mkdir.mkdir( data );
                     }
                     catch ( Exception e ) {
-                        cd.getOut().printError( e.getMessage() );
+                        data.getOut().printError( e.getMessage() );
                     }
                     finally {
-                        cd.getOut().close();
+                        data.getOut().close();
                     }
                     return null;
                 }

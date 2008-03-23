@@ -41,7 +41,6 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.logging.*;
 import javax.swing.JPanel;
 
@@ -52,10 +51,9 @@ import org.gjt.sp.jedit.View;
  * ActionListener to perform an svn commit.
  * This is not dependent on ProjectViewer.
  */
-public class ImportAction implements ActionListener {
+public class ImportAction extends SVNAction {
 
     private ImportDialog dialog = null;
-    private View view = null;
 
     /**
      * @param view the View in which to display results
@@ -63,25 +61,23 @@ public class ImportAction implements ActionListener {
      * @param password the password for the username
      */
     public ImportAction( View view ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
-        this.view = view;
+        super(view, "Import");
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
-        dialog = new ImportDialog( view );
-        GUIUtils.center( view, dialog );
+        dialog = new ImportDialog( getView() );
+        GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
         final CopyData cd = dialog.getData();
         if ( cd == null ) {
             return ;     // null means user canceled
         }
 
-        cd.setOut( new ConsolePrintStream( view ) );
+        cd.setOut( new ConsolePrintStream( getView() ) );
 
-        view.getDockableWindowManager().showDockableWindow( "subversion" );
-        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+        getView().getDockableWindowManager().showDockableWindow( "subversion" );
+        final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         final Logger logger = panel.getLogger();
         logger.log( Level.INFO, "Importing ..." );

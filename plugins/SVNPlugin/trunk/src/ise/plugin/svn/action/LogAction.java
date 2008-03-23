@@ -34,33 +34,24 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Log;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.LogResults;
-import ise.plugin.svn.gui.LogDialog;
 import ise.plugin.svn.gui.LogResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
-import org.tmatesoft.svn.core.SVNLogEntry;
 import org.gjt.sp.jedit.View;
 
 /**
  * ActionListener to perform an svn log.
  * This is not dependent on ProjectViewer.
  */
-public class LogAction implements ActionListener {
+public class LogAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
     private boolean pathsAreUrls = false;
-    private String username = null;
-    private String password = null;
     private LogData data = null;
 
     /**
@@ -70,28 +61,24 @@ public class LogAction implements ActionListener {
      * @param password the password for the username
      */
     public LogAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Log");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
     }
 
     public LogAction(View view, LogData data) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Log");
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = data.getPaths();
         this.pathsAreUrls = data.pathsAreURLs();
-        this.username = data.getUsername();
-        this.password = data.getPassword();
+        setUsername(data.getUsername());
+        setPassword(data.getPassword());
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -100,33 +87,13 @@ public class LogAction implements ActionListener {
             data.setPaths( paths );
             data.setPathsAreURLs(pathsAreUrls);
 
-            if ( password != null && password.length() > 0 ) {
-                try {
-                    PasswordHandler ph = new PasswordHandler();
-                    password = ph.decrypt( password );
-                }
-                catch ( Exception e ) {
-                    password = "";
-                }
-            }
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
-            LogDialog dialog = new LogDialog(view, data);
-            GUIUtils.center( view, dialog );
-            dialog.setVisible(true);
-            data = dialog.getData();
-            if (data == null) {
-                return;     // null data signals user canceled
-            }
-
-            if ( username != null && password != null ) {
-                data.setUsername( username );
-                data.setPassword( password );
-            }
-
-            data.setOut( new ConsolePrintStream( view ) );
-
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Fetching log ..." );
@@ -155,7 +122,7 @@ public class LogAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), view, username, password );
+                        JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
                         panel.addTab( "Log", results_panel );
                     }
                     catch ( Exception e ) {

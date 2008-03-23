@@ -36,7 +36,6 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
-import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
@@ -76,6 +75,7 @@ public class Commit {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
+        System.out.println("+++++ commit: username = " + cd.getUsername() + ", password = " + cd.getPassword());
         SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
 
         // get a commit client

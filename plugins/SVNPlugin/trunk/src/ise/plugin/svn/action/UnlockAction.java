@@ -41,7 +41,6 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -49,20 +48,16 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 
-import org.tmatesoft.svn.core.SVNCommitInfo;
 
 
 /**
  * ActionListener to perform an svn lock.
  * This is not dependent on ProjectViewer.
  */
-public class UnlockAction implements ActionListener {
+public class UnlockAction extends SVNAction {
 
     private LockDialog dialog = null;
-    private View view = null;
     private List<String> paths = null;
-    private String username = null;
-    private String password = null;
     private boolean remote = false;
 
     /**
@@ -72,36 +67,33 @@ public class UnlockAction implements ActionListener {
      * @param password the password for the username
      */
     public UnlockAction( View view, List<String> paths, String username, String password, boolean remote ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Unlock" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername( username );
+        setPassword( password );
         this.remote = remote;
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
-            dialog = new LockDialog( view, paths, false, remote );
-            GUIUtils.center( view, dialog );
+            dialog = new LockDialog( getView(), paths, false, remote );
+            GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             final CommitData cd = dialog.getData();
             if ( cd == null ) {
                 return ;     // null means user canceled
             }
 
-            if ( username != null && password != null ) {
-                cd.setUsername( username );
-                cd.setPassword( password );
-            }
-            cd.setOut( new ConsolePrintStream( view ) );
+            verifyLogin(paths.get(0));
+            cd.setUsername( getUsername());
+            cd.setPassword( getPassword());
+            cd.setOut( new ConsolePrintStream( getView() ) );
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Unlocking ..." );
@@ -129,7 +121,7 @@ public class UnlockAction implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.UNLOCK, view, username, password );
+                        JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.UNLOCK, getView(), getUsername(), getPassword() );
                         panel.addTab( "Unlocked", results_panel );
                     }
                     catch ( Exception e ) {

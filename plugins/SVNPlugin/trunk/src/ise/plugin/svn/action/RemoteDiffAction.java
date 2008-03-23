@@ -30,32 +30,21 @@ package ise.plugin.svn.action;
 
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Add;
 import ise.plugin.svn.command.BrowseRepository;
-import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.DiffData;
-import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.gui.RemoteDiffDialog;
-import ise.plugin.svn.gui.AddResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
 import jdiff.DualDiff;
-import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
  * ActionListener to perform sort of an svn diff.  While subversion can do a diff,
@@ -63,18 +52,15 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  * This is not dependent on ProjectViewer.  This version does a diff of 2 repository
  * items.
  */
-public class RemoteDiffAction implements ActionListener {
+public class RemoteDiffAction extends SVNAction {
 
-    private View view = null;
     private DiffData data;
     private Logger logger = null;
 
     public RemoteDiffAction( View view, DiffData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super( view, "Remote Diff" );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.view = view;
         this.data = data;
         if ( data.pathsAreURLs() == false ) {
             throw new IllegalArgumentException( "RemoteDiffAction is for remote diffs, the given paths must be repository URLs." );
@@ -91,20 +77,24 @@ public class RemoteDiffAction implements ActionListener {
     public void actionPerformed( ActionEvent ae ) {
         // RemoteDiffDialog validates that there are exactly 2 paths in the
         // diff data
-        RemoteDiffDialog dialog = new RemoteDiffDialog( view, data );
-        GUIUtils.center( view, dialog );
+        RemoteDiffDialog dialog = new RemoteDiffDialog( getView(), data );
+        GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
         data = dialog.getData();
         if ( data == null ) {
             return ;     // null means user canceled
         }
 
+        verifyLogin();
+        data.setUsername( getUsername() );
+        data.setPassword( getPassword() );
+
         // set up the console output
-        data.setOut( new ConsolePrintStream( view ) );
+        data.setOut( new ConsolePrintStream( getView() ) );
 
         // show the svn console
-        view.getDockableWindowManager().showDockableWindow( "subversion" );
-        final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+        getView().getDockableWindowManager().showDockableWindow( "subversion" );
+        final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole( );
 
         logger = panel.getLogger();
@@ -115,19 +105,19 @@ public class RemoteDiffAction implements ActionListener {
             @Override
             public File[] doInBackground() {
                 try {
-                    String path1 = data.getPaths().get(0);
-                    if (path1.startsWith(data.getURL())) {
-                        path1 = path1.substring(data.getURL().length());
+                    String path1 = data.getPaths().get( 0 );
+                    if ( path1.startsWith( data.getURL() ) ) {
+                        path1 = path1.substring( data.getURL().length() );
                     }
-                    if (path1.startsWith("/")) {
-                        path1 = path1.substring(1);
+                    if ( path1.startsWith( "/" ) ) {
+                        path1 = path1.substring( 1 );
                     }
-                    String path2 = data.getPaths().get(1);
-                    if (path2.startsWith(data.getURL())) {
-                        path2 = path2.substring(data.getURL().length());
+                    String path2 = data.getPaths().get( 1 );
+                    if ( path2.startsWith( data.getURL() ) ) {
+                        path2 = path2.substring( data.getURL().length() );
                     }
-                    if (path2.startsWith("/")) {
-                        path2 = path2.substring(1);
+                    if ( path2.startsWith( "/" ) ) {
+                        path2 = path2.substring( 1 );
                     }
 
 
@@ -155,35 +145,35 @@ public class RemoteDiffAction implements ActionListener {
                 try {
                     File[] files = get();
                     if ( files == null ) {
-                        JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
                     File remote1 = files[ 0 ];
                     File remote2 = files[ 1 ];
 
                     if ( remote1 == null || remote2 == null ) {
-                        JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
                     if ( remote1.isDirectory() || remote2.isDirectory() ) {
-                        JOptionPane.showMessageDialog( view, "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
 
                     // show JDiff
-                    view.unsplit();
-                    DualDiff.toggleFor( view );
+                    getView().unsplit();
+                    DualDiff.toggleFor( getView() );
 
                     // set the edit panes in the view
-                    EditPane[] editPanes = view.getEditPanes();
+                    EditPane[] editPanes = getView().getEditPanes();
 
                     // always show the 1st remote revision in the left edit pane
-                    editPanes[ 0 ].setBuffer( jEdit.openFile( view, remote1.getAbsolutePath() ) );
+                    editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
 
-                    editPanes[ 1 ].setBuffer( jEdit.openFile( view, remote2.getAbsolutePath() ) );
+                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
 
                     // do an explicit repaint of the view to clean up the display
-                    view.repaint();
+                    getView().repaint();
                 }
                 catch ( Exception e ) {
                     // ignored
@@ -192,15 +182,5 @@ public class RemoteDiffAction implements ActionListener {
             }
         }
         ( new Runner() ).execute();
-    }
-
-    /**
-     * @return true if rev1 is before rev2
-     */
-    private boolean lessThan( SVNRevision rev1, SVNRevision rev2 ) {
-        if ( rev1.getDate() != null && rev2.getDate() != null ) {
-            return rev1.getDate().getTime() < rev2.getDate().getTime();
-        }
-        return rev1.getNumber() < rev2.getNumber();
     }
 }

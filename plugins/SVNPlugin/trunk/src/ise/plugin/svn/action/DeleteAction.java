@@ -38,33 +38,25 @@ import ise.plugin.svn.data.DeleteResults;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.gui.DeleteDialog;
 import ise.plugin.svn.gui.RemoteDeleteDialog;
-import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
 /**
  * ActionListener to perform an svn delete.
  * This is not dependent on ProjectViewer.
  */
-public class DeleteAction implements ActionListener {
+public class DeleteAction extends SVNAction {
 
-    private View view = null;
     private List<String> paths = null;
     private DeleteData data = null;
-    private String username = null;
-    private String password = null;
 
     /**
      * @param view the View in which to display results
@@ -73,14 +65,12 @@ public class DeleteAction implements ActionListener {
      * @param password the password for the username
      */
     public DeleteAction( View view, List<String> paths, String username, String password ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Delete");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.view = view;
         this.paths = paths;
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
 
         data = new DeleteData();
         data.setPaths( paths );
@@ -89,25 +79,25 @@ public class DeleteAction implements ActionListener {
     }
 
     public DeleteAction( View view, DeleteData data ) {
-        if ( view == null )
-            throw new IllegalArgumentException( "view may not be null" );
+        super(view, "Delete");
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.view = view;
         this.data = data;
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data.getPaths() != null && data.getPaths().size() > 0 ) {
-
-            data.setOut( new ConsolePrintStream( view ) );
+            verifyLogin(paths.get(0));
+            data.setUsername( getUsername());
+            data.setPassword( getPassword());
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             // show dialog
             if ( !data.pathsAreURLs() ) {
                 // working copy delete
-                DeleteDialog dialog = new DeleteDialog( view, data, data.getUsername() == null );
-                GUIUtils.center( view, dialog );
+                DeleteDialog dialog = new DeleteDialog( getView(), data, false );
+                GUIUtils.center( getView(), dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();
                 if ( data == null ) {
@@ -117,8 +107,8 @@ public class DeleteAction implements ActionListener {
             else {
                 // remote copy delete -- show path(s) to delete and commit
                 // message textbox and dropdown.
-                RemoteDeleteDialog dialog = new RemoteDeleteDialog( view, data );
-                GUIUtils.center( view, dialog );
+                RemoteDeleteDialog dialog = new RemoteDeleteDialog( getView(), data );
+                GUIUtils.center( getView(), dialog );
                 dialog.setVisible( true );
                 data = dialog.getData();
                 if ( data == null ) {
@@ -126,27 +116,14 @@ public class DeleteAction implements ActionListener {
                 }
             }
 
-            view.getDockableWindowManager().showDockableWindow( "subversion" );
-            final OutputPanel panel = SVNPlugin.getOutputPanel( view );
+            getView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
             logger.log( Level.INFO, "Deleting ..." );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
-
-            username = data.getUsername();
-            password = data.getPassword();
-            if ( password != null && password.length() > 0 ) {
-                try {
-                    PasswordHandler ph = new PasswordHandler();
-                    password = ph.decrypt( password );
-                }
-                catch ( Exception e ) {
-                    password = "";
-                }
-            }
-            data.setPassword(password);
 
             class Runner extends SwingWorker<DeleteResults, Object> {
 
@@ -169,7 +146,7 @@ public class DeleteAction implements ActionListener {
                 protected void done() {
                     try {
                         AddResults results = ( AddResults ) get();
-                        JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, view, username, password );
+                        JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, getView(), getUsername(), getPassword() );
                         panel.addTab( "Delete", results_panel );
                     }
                     catch ( Exception e ) {
