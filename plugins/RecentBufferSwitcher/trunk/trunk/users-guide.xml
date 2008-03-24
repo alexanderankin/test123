@@ -1,0 +1,158 @@
+<?xml version="1.0" standalone="no" ?>
+<!-- RecentBufferSwitcher 0.1 help documentation -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+		"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article id="RecentBufferSwitcher">
+	<articleinfo>
+		<author>
+			<firstname>Michael</firstname>
+			<surname>Thornhill</surname>
+		</author>
+		<copyright>
+			<year>2004,2005</year>
+			<holder>Michael Thornhill</holder>
+		</copyright>
+		<legalnotice>
+			<title>Legal Notice</title>
+			<para>
+				Permission is granted to copy, distribute and/or modify this document
+				under the terms of the GNU Free Documentation License, Version 1.1 or
+				any later version published by the Free Software Foundation; with no
+				<quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+				the license is included in the file <filename>COPYING.DOC.txt</filename>
+				included with the jEdit distribution.
+			</para>
+		</legalnotice>
+		<title>RecentBufferSwitcher 0.1</title>
+	</articleinfo>
+	
+	<simplesect>
+		<title>Introduction</title>
+		<indexterm>
+			<primary>RecentBufferSwitcher</primary>
+		</indexterm>
+		<para>
+		Map this plugin to the <keycombo action="simul"><keysym>Ctrl Tab</keysym>
+			</keycombo> shortcut to provide access to a list of open buffers ordered by recent access time.
+		</para>
+	</simplesect>
+	
+	<simplesect>
+		<title>Operation</title>
+		
+		<para>
+			<indexterm>
+				<primary>RecentBufferSwitcher</primary>
+				<secondary>shortcut keys</secondary>
+			</indexterm>
+		</para>
+		
+		<informaltable align="center" frame="none">
+			<tgroup cols="4" align="left">
+				<colspec colnum="1"/> <!-- blank column -->
+				<colspec colnum="2"/>
+				<colspec colnum="3"/> <!-- blank column -->
+				<colspec colnum="4"/>
+				<tbody>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>close selected buffer</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>Delete</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>switch to selected buffer and close dialog</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>Enter</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>close dialog</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>ESC</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>scroll down list of buffers</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>Ctrl</keysym>
+								<keysym>TAB</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>scroll up list of buffers</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>Ctrl</keysym>
+								<keysym>SHIFT</keysym>
+								<keysym>TAB</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>releasing CTRL switches to selected buffer in list.</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>Ctrl</keysym>
+							</keycombo>
+						</entry>
+					</row>
+					<row>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>switches to selected buffer.</entry>
+						<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+						<entry>
+							<keycombo action="simul">
+								<keysym>SPACE</keysym>
+							</keycombo>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</simplesect>
+	<simplesect id="options">
+		<title>Options</title>
+		<indexterm>
+			<primary>RecentBufferSwitcher</primary>
+			<secondary>options</secondary>
+		</indexterm>
+		<para>
+	The maximum number of visible lines in the pop up dialog can be set here
+		</para>
+	</simplesect>
+	<simplesect id="tips">
+		<title>Hints and Tips</title>
+		<indexterm>
+			<primary>RecentBufferSwitcher</primary>
+			<secondary>options</secondary>
+		</indexterm>
+		<para>Map <keycombo action="simul"><keysym>Ctrl Tab</keysym>
+			</keycombo> to RecentBufferSwitcher - Open Buffers for quick switching.</para>
+		<para>Map <keycombo action="simul"><keysym>Alt W</keysym>
+			</keycombo> (or any combination) to RecentBufferSwitcher - Open Buffers to open the dialog, type the first few letters of the buffer to move to it, then press enter to open it.</para>
+		<para>Utilities - Global Options - Filesystem Browser - Colors: map filename regular expressions to colors here e.g. *.py to green.  These colours will then appear in the recent buffer dialog switcher.</para>
+	</simplesect>
+</article>
+
