@@ -1,11 +1,11 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+  <!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
+]>
 <!-- Look And Feel user's guide -->
-
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=2:indentSize=2:noTabs=true: -->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <book>
 
   <bookinfo>
@@ -450,7 +450,7 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
 
         <para>The Typewriter Font "1942 report"</para>
 
-        <para> 1942 report &mdash; monospaced typewriter font.
+        <para> 1942 report &mdash; monospaced typewriter font. </para>
 
 <para> This truetype typewriter font was borned at Free Typewriter Fonts Homepage:
     http://www.free-typewriter-fonts.com</para>
@@ -465,7 +465,7 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
     webmaster@free-typewriter-fonts.com</para>
 
           <para> March 2001</para>
-        </para>
+
       </sect1>
     </chapter>
 
