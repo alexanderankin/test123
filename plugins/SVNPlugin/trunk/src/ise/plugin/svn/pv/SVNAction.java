@@ -111,15 +111,6 @@ public class SVNAction extends projectviewer.action.Action {
         String project_root = PVHelper.getProjectRoot( view );
         String username = jEdit.getProperty( PREFIX + project_name + ".username" );
         String password = jEdit.getProperty( PREFIX + project_name + ".password" );
-        if ( password != null && password.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                password = ph.decrypt( password );
-            }
-            catch ( Exception e ) {
-                password = "";
-            }
-        }
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );

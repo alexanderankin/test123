@@ -133,16 +133,16 @@ public abstract class SVNAction implements ActionListener {
         String uname = getUsername();
         String pwd = getPassword();
 
+        // decrypt password if possible.  Password should be encrypted up to here.
+        pwd = decryptPassword( pwd );
+
         // no username, so assume no password.  Attempt to get username and
         // password from project the file belongs to
         if ( ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) && filename != null ) {
             String[] login = PVHelper.getSVNLogin( filename );
             uname = login[ 0 ];
-            pwd = login[ 1 ];
+            pwd = login[ 1 ];           // decrypted password from PVHelper
         }
-
-        // decrypt password if possible.  Password should be encrypted up to here.
-        pwd = decryptPassword( pwd );
 
         // still no username, so ask the user for it.
         if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
@@ -157,7 +157,7 @@ public abstract class SVNAction implements ActionListener {
         }
 
         setUsername( uname );
-        setPassword( pwd );         // non-encrypted password
+        setPassword( pwd );             // non-encrypted password
     }
 
     private String decryptPassword( String pwd ) {

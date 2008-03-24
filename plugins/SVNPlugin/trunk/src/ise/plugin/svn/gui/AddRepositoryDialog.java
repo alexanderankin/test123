@@ -81,15 +81,12 @@ public class AddRepositoryDialog extends JDialog {
         name.setText(name_value);
         name.setColumns(30);
 
-        //name = new JTextField( name_value, 30 );
-
         // subversion repository url field
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
         String url_value = data != null ? data.getURL() : "";
         url = new HistoryTextField(URL);
         url.setText(url_value);
         url.setColumns(30);
-        //url = new JTextField( url_value, 30 );
 
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
@@ -97,7 +94,6 @@ public class AddRepositoryDialog extends JDialog {
         username = new HistoryTextField(USERNAME);
         username.setText(username_value);
         username.setColumns(30);
-        //username = new JTextField( username_value, 30 );
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
