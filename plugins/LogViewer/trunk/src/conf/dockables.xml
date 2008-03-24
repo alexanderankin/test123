@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-    <DOCKABLE NAME="logviewer">
+    <DOCKABLE NAME="logviewer" MOVABLE="TRUE">
         new logviewer.LogViewer(view, position);
     </DOCKABLE>
 </DOCKABLES>
