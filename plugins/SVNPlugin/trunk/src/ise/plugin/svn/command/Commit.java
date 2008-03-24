@@ -75,7 +75,6 @@ public class Commit {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        System.out.println("+++++ commit: username = " + cd.getUsername() + ", password = " + cd.getPassword());
         SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
 
         // get a commit client

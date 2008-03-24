@@ -54,7 +54,7 @@ import org.gjt.sp.jedit.View;
 public class CommitAction extends SVNAction {
 
     private CommitDialog dialog = null;
-    private TreeMap<String, String> paths = null;
+    private TreeMap<String, String> paths = null; // <path, status>, where status is added, modified, etc
 
     /**
      * @param view the View in which to display results
@@ -82,11 +82,9 @@ public class CommitAction extends SVNAction {
                 return ;     // null means user canceled
             }
 
-            System.out.println("+++++ path? " + (String)paths.firstKey());
             verifyLogin( (String)paths.firstKey() );
             cd.setUsername( getUsername() );
             cd.setPassword( getPassword() );
-            System.out.println("+++++ username = " + getUsername() + ", password = " + getPassword());
             cd.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
