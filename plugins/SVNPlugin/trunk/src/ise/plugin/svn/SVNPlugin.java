@@ -38,8 +38,6 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.options.GlobalOptions;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.TextAreaContextMenu;
-import ise.plugin.svn.pv.NodeActor;
-import java.awt.Component;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -65,7 +63,7 @@ public class SVNPlugin extends EBPlugin {
         addContextMenu( jEdit.getActiveView() );
         if ( message instanceof ViewUpdate ) {
             ViewUpdate vu = ( ViewUpdate ) message;
-            if ( ViewUpdate.CLOSED == vu.getWhat() ) {
+            if ( ViewUpdate.CLOSED == vu.getWhat() && panelMap != null ) {
                 panelMap.remove( vu.getView() );
             }
         }
