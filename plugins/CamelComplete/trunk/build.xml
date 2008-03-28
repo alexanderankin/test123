@@ -49,7 +49,10 @@
       <fileset dir="${build}"/>
     </copy>
     <unjar src="${lib}/forms.jar" dest="${dist}"/> 
-    <copy todir="${dist}" file="doc/CamelComplete.html"/>
+    <mkdir dir="${dist}/doc"/>
+    <copy todir="${dist}/doc">
+	<fileset dir="${doc}"/>
+    </copy>
     <copy todir="${dist}">
       <fileset dir="${src}/com/illengineer/jcc/jedit">
         <include name="CamelComplete.props"/>
