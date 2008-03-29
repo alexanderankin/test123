@@ -647,6 +647,7 @@ public class SystemShell extends Shell
 	// {{{ getVariables() method
 	Map<String, String> getVariables()
 	{
+        init();
 		return variables;
 	} // }}}
 
