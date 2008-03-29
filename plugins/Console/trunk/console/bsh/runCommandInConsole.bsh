@@ -16,5 +16,5 @@ runCommandInConsole(View view, String shell, String command)
 	console.run(_shell, command);
 }
 
-bsh.help.runCommandInConsole
+help.runCommandInConsole
 	= "usage: runCommandInConsole(View view, String shell, String command)";

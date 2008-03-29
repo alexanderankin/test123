@@ -8,5 +8,5 @@ waitForConsole(View view)
 	console.getShell().waitFor(console);
 }
 
-bsh.help.waitForConsole
+help.waitForConsole
 	= "usage: waitForConsole(View view)";

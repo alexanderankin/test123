@@ -4,5 +4,5 @@ runInSystemShell(View view, String command)
 	runCommandInConsole(view,"System",command);
 }
 
-bsh.help.runInSystemShell
+help.runInSystemShell
 	= "usage: runInSystemShell(View view, String shell, String command)";
