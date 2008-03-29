@@ -28,8 +28,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import jdiff.component.ui.*;
-
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.*;
 
