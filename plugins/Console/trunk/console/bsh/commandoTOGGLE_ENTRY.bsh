@@ -1,5 +1,3 @@
-import org.gjt.sp.jedit.bsh;
-
 commandoTOGGLE_ENTRY(view,pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
@@ -9,7 +7,7 @@ commandoTOGGLE_ENTRY(view,pane,ns,label,var,options)
 	else
 		value1 = ns.getVariable(var + "Toggle");
 	value2 = ns.getVariable(var);
-	if(new bsh.Primitive(true).equals(value))
+	if(new Primitive(true).equals(value))
 	{
 		toggle.setSelected(true);
 		entry.setEnabled(false);
