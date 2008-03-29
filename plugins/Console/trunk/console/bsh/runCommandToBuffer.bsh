@@ -22,5 +22,5 @@ runCommandToBuffer(View view, String shell, String command)
 	console.run(_shell,new BufferOutput(console),command);
 }
 
-bsh.help.runCommandToBuffer
+help.runCommandToBuffer
 	= "usage: runCommandToBuffer(View view, String shell, String command)";

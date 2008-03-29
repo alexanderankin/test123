@@ -24,4 +24,4 @@ print(arg)
 	}
 }
 
-bsh.help.print = "usage: print ( arg )";
+help.print = "usage: print ( arg )";

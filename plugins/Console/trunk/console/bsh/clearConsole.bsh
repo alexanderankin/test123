@@ -8,5 +8,5 @@ clearConsole(View view)
 	console.clear();
 }
 
-bsh.help.clearConsole
+help.clearConsole
 	= "usage: clearConsole(View view)";

@@ -6,4 +6,4 @@ getenv(String env)
 	return ConsolePlugin.getSystemShellVariableValue(null,env);
 }
 
-bsh.help.getenv = "usage: getenv ( env )";
+help.getenv = "usage: getenv ( env )";

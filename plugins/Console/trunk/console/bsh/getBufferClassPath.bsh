@@ -1,3 +1,4 @@
+
 /* Returns $CLASSPATH, plus the current buffer's package root. */
 getBufferClassPath(buffer)
 {
@@ -7,4 +8,4 @@ getBufferClassPath(buffer)
 		+ ConsolePlugin.getPackageRoot(buffer);
 }
 
-bsh.help.getBufferClassPath = "usage: getBufferClassPath ( buffer )";
+help.getBufferClassPath = "usage: getBufferClassPath ( buffer )";

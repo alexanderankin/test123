@@ -6,4 +6,4 @@ setenv(String env, String value)
 	return ConsolePlugin.setSystemShellVariableValue(env,value);
 }
 
-bsh.help.setenv = "usage: setenv ( env, value )";
+help.setenv = "usage: setenv ( env, value )";
