@@ -1,0 +1,15 @@
+plugin.candyfolds.CandyFoldsPlugin.activate=startup
+plugin.candyfolds.CandyFoldsPlugin.name=CandyFolds
+plugin.candyfolds.CandyFoldsPlugin.author=Nicolás Carranza 
+# inspired and based on work by André Kaplan & Nathan Jones (WhiteSpace plugin)
+plugin.candyfolds.CandyFoldsPlugin.version=0.5.0
+plugin.candyfolds.CandyFoldsPlugin.description=CandyFolds draws colored fold-guides on the text area to improve code readability. CandyFolds was based on the WhiteSpace plugin's fold-guides. Visit the http://candyfolds.sf.net to report bugs or post comments.
+
+#v Dependencies
+plugin.candyfolds.CandyFoldsPlugin.depend.0=jdk 1.6
+plugin.candyfolds.CandyFoldsPlugin.depend.1=jedit 04.03.12.00
+
+#v Plugin Option Pane:
+plugin.candyfolds.CandyFoldsPlugin.option-pane=CandyFolds
+options.CandyFolds.label=CandyFolds
+options.CandyFolds.code=candyfolds.config.gui.CandyFoldsOptionPane.getInstance()
