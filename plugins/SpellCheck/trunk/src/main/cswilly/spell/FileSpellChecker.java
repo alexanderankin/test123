@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.4 $
- * $Date: 2002-07-26 15:36:20 $
- * $Author: lio-sand $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -35,7 +35,7 @@ public
 class FileSpellChecker
 {
   private String       _aspellExeFilename;
-  private String       _aspellCommandLine;
+  private String[]       _aspellArgs;
   private AspellEngine _spellEngine          = null;
   private Validator    _spellValidator       = null;
 
@@ -68,15 +68,15 @@ class FileSpellChecker
     System.exit( exitStatus );
   }
 
-  public FileSpellChecker( String aspellExeFilename, String aspellCommandLine )
+  public FileSpellChecker( String aspellExeFilename, String[] aspellArgs )
   {
     _aspellExeFilename = aspellExeFilename;
-    _aspellCommandLine = aspellCommandLine;
+    _aspellArgs = aspellArgs;
   }
 
   public FileSpellChecker()
   {
-      this( "O:\\local\\aspell\\aspell.exe", "" );
+      this( "/opt/local/bin/aspell", new String[]{"pipe"} );
   }
 
   /**
@@ -135,9 +135,9 @@ class FileSpellChecker
   }
 
   public
-  String getAspellCommandLine()
+  String[] getAspellArgs()
   {
-    return _aspellCommandLine;
+    return _aspellArgs;
   }
 
   public
@@ -154,9 +154,9 @@ class FileSpellChecker
   Engine _getSpellEngine()
     throws SpellException
   {
-    if( _spellEngine == null )
-      _spellEngine = new AspellEngine( _aspellExeFilename + _aspellCommandLine );
-
+	  if( _spellEngine == null ){
+      _spellEngine = new AspellEngine(_aspellExeFilename,_aspellArgs);
+	  }
     return _spellEngine;
   }
 

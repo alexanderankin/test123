@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.4 $
- * $Date: 2002-07-26 15:36:20 $
- * $Author: lio-sand $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -35,7 +35,9 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.util.Log;
 
+import cswilly.spell.SpellException;
 
 public class SpellCheckOptionPane
   extends AbstractOptionPane
@@ -57,8 +59,8 @@ public class SpellCheckOptionPane
 
   public void _init()
   {
-    Vector values = SpellCheckPlugin.getAlternateLangDictionaries();
-
+    Vector values = null;
+	
     /* aspell executable */
     JLabel _aspellExeFilenameLabel = new JLabel();
     _aspellExeFilenameLabel.setText( jEdit.getProperty( "options.SpellCheck.aspellExe" ) );
@@ -89,14 +91,23 @@ public class SpellCheckOptionPane
 
     String  aspellMainLanguage = jEdit.getProperty( SpellCheckPlugin.ASPELL_LANG_PROP, "" );
 
-    if ( !values.contains( aspellMainLanguage ) )
-      values.add( aspellMainLanguage );
-
-    _aspellMainLanguageList = new JComboBox( values );
-    _aspellMainLanguageList.setSelectedItem( aspellMainLanguage );
-    _aspellMainLanguageList.setEditable( true );
-
-    addComponent( _aspellMainLanguageList );
+	try{
+		values = SpellCheckPlugin.getAlternateLangDictionaries();
+		if (!"".equals(aspellMainLanguage) && !values.contains( aspellMainLanguage ) )
+			  values.add( aspellMainLanguage );
+		
+		_aspellMainLanguageList = new JComboBox( values );
+		_aspellMainLanguageList.setSelectedItem( aspellMainLanguage );
+		_aspellMainLanguageList.setEditable( true );
+	
+		addComponent( _aspellMainLanguageList );
+	}catch(SpellException spe){
+		Log.log(Log.ERROR,SpellCheckOptionPane.class,spe);
+		JLabel erreur = new JLabel(jEdit.getProperty("list-dict-error.message",
+									new Object[]{spe.getMessage()}));
+		addComponent(erreur);
+		_aspellMainLanguageList=null;
+	}
 
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
@@ -156,7 +167,10 @@ public class SpellCheckOptionPane
   public void _save()
   {
     jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, _aspellExeFilenameField.getText().trim() );
-    jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, _aspellMainLanguageList.getSelectedItem().toString().trim() );
+	if(_aspellMainLanguageList != null)
+		jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, _aspellMainLanguageList.getSelectedItem().toString().trim() );
+	else
+		jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP,"");
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_NO_MARKUP_MODE, _aspellNoMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_MANUAL_MARKUP_MODE, _aspellManualMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_AUTO_MARKUP_MODE, _aspellAutoMarkupMode.isSelected() );

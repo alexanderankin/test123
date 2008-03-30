@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -38,13 +38,18 @@ class AspellEngine
   BufferedWriter _aSpellWriter;
   String         _aSpellWelcomeMsg;
   Process        _aSpellProcess;
-  public AspellEngine( String aSpellCommandLine )
+  public AspellEngine( String aspell, String[] aSpellArgs)
     throws SpellException
   {
+      List l = new ArrayList(aSpellArgs.length+1);
+	  l.add(aspell);
+	  l.addAll(Arrays.asList(aSpellArgs));
     try
     {
-      Runtime runtime = Runtime.getRuntime();
-      _aSpellProcess = runtime.exec( aSpellCommandLine );
+	  ProcessBuilder pb = new ProcessBuilder(l);
+	  //this to allow us to catch error messages from Aspell
+	  pb.redirectErrorStream(true);
+      _aSpellProcess = pb.start();
 
       _aSpellReader =
         new BufferedReader( new InputStreamReader( _aSpellProcess.getInputStream() ) );
@@ -53,10 +58,15 @@ class AspellEngine
         new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream() ) );
 
       _aSpellWelcomeMsg = _aSpellReader.readLine();
+	  if(_aSpellWelcomeMsg == null){
+		  throw new SpellException("Can't read Aspell Welcome Message");
+	  }else if(_aSpellWelcomeMsg.startsWith("Error:")){
+			  throw new SpellException("Aspell responded : "+_aSpellWelcomeMsg);
+	  }
     }
     catch( IOException e )
     {
-      String msg = "Cannot create aspell process.";
+      String msg = "Cannot create aspell process.("+l+")";
       throw new SpellException( msg, e );
     }
   }

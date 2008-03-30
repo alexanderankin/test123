@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.5 $
- * $Date: 2002-07-26 15:36:20 $
- * $Author: lio-sand $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -38,6 +38,7 @@ import org.gjt.sp.util.Log;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import java.util.regex.Pattern;
 
 public class SpellCheckPlugin
   extends EditPlugin
@@ -50,13 +51,14 @@ public class SpellCheckPlugin
   public static final String ASPELL_MANUAL_MARKUP_MODE          = "spell-check-aspell-manual-markup-mode";
   public static final String ASPELL_AUTO_MARKUP_MODE            = "spell-check-aspell-auto-markup-mode";
   public static final String ASPELL_OTHER_PARAMS                = "spell-check-aspell-other-params";
+  public static final String FILTERS_PROP						= "spell-check-filter";					
 
   public static final ArrayList defaultModes = new ArrayList( Arrays.asList( new String[] {"html", "shtml", "sgml", "xml", "xsl"} ) );
 
   private static FileSpellChecker _fileSpellChecker = null;
 
   private static String aspellMainLanguage;
-  private static String aspellCommandLine;
+  private static List<String> aspellCommandLine;
 
 
   /**
@@ -126,21 +128,29 @@ public class SpellCheckPlugin
     FileSpellChecker checker = null;
 
     // Construct aspell command line arguments
-    String aspellCommandLine = "";
+    List aspellCommandLine = new ArrayList(4);
 
     String mode = view.getBuffer().getMode().getName();
-    if ( getAspellManualMarkupMode() || ( getAspellAutoMarkupMode() && isMarkupModeSelected( mode ) ) )
-      aspellCommandLine += " --mode=sgml";
+    if ( getAspellManualMarkupMode() || ( getAspellAutoMarkupMode() && isMarkupModeSelected( mode ) ) ){
+		aspellCommandLine.add("--mode="+jEdit.getProperty(FILTERS_PROP+"."+mode,"none"));
+	}
 
     String aspellMainLanguage = getAspellMainLanguage();
-    if ( !aspellMainLanguage.equals("") )
-      aspellCommandLine += " --lang=" + aspellMainLanguage + " --language-tag=" + aspellMainLanguage;
+    if ( !aspellMainLanguage.equals("") ){
+      aspellCommandLine.add("--lang=" + aspellMainLanguage);
+	  //can't find this option:
+	  //aspellCommandLine.add("--language-tag=" + aspellMainLanguage);
+	}
 
-    String aspellOtherParams = getAspellOtherParams();
-    if ( !aspellMainLanguage.equals("") )
-      aspellCommandLine += " " + aspellOtherParams;
+    if ( !aspellMainLanguage.equals("") ){
+		String aspellOtherParams = getAspellOtherParams();
+		//TODO : fix params with spaces protected with quotes
+		for(StringTokenizer st=new StringTokenizer(aspellOtherParams);st.hasMoreTokens();){
+			aspellCommandLine.add(st.nextToken());
+		}
+	}
 
-    aspellCommandLine += " pipe";
+    aspellCommandLine.add("pipe");
 
     setAspellCommandLine( aspellCommandLine);
 
@@ -197,7 +207,7 @@ public class SpellCheckPlugin
   FileSpellChecker _getFileSpellChecker()
   {
     String  aspellExeFilename = getAspellExeFilename();
-    String  aspellCommandLine = getAspellCommandLine();
+    String[]  aspellCommandLine = (String[])getAspellCommandLine().toArray(new String[]{});
 
     if ( aspellExeFilename == null )
       return null;
@@ -206,7 +216,7 @@ public class SpellCheckPlugin
       _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
     else
       if( !aspellExeFilename.equals( _fileSpellChecker.getAspellExeFilename() )
-       || !aspellCommandLine.equals( _fileSpellChecker.getAspellCommandLine() ) )
+       || !aspellCommandLine.equals( _fileSpellChecker.getAspellArgs() ) )
       {
         _fileSpellChecker.stop();
         _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
@@ -243,16 +253,16 @@ public class SpellCheckPlugin
   }
 
   private static
-  String getAspellCommandLine()
+  List<String> getAspellCommandLine()
   {
     if( aspellCommandLine == null )
-      aspellCommandLine = "";
+      aspellCommandLine = new ArrayList<String>();
 
     return aspellCommandLine;
   }
 
   private static
-  void setAspellCommandLine(String newCommandLine)
+  void setAspellCommandLine(List<String> newCommandLine)
   {
     aspellCommandLine = newCommandLine;
   }
@@ -301,49 +311,33 @@ public class SpellCheckPlugin
   }
 
   public static
-  Vector getAlternateLangDictionaries()
+  Vector getAlternateLangDictionaries() throws SpellException
   {
-    String dictDirPath = null;
-    String line;
+	String line;
     String aspellExeFilename = getAspellExeFilename();
     Vector langs = new Vector();
-    try
-    {
-      // first we try to dump the aspell config into a BufferedReader
-      BufferedReader input  = new BufferedReader( new InputStreamReader( Runtime.getRuntime().exec( aspellExeFilename + " dump config" ).getInputStream() ) );
-      // then we search for the dict-dir keyword to pick up its value
-      while ( ( line = input.readLine() ) != null )
-      {
-        if ( line.indexOf( "dict-dir" ) > 0 )
-          dictDirPath = line.trim().substring( line.lastIndexOf( " " ) + 1 );
-      }
-      input.close();
-      if ( dictDirPath != null )
-      {
-        // ok, we have found it
-        File dictDir = new File( dictDirPath );
-        // now, we check that the value found is a directory...
-        if ( dictDir.isDirectory() )
-        {
-          // ...inside which we get all installed dictionaries (all files)
-          File[] langFiles = dictDir.listFiles();
-          for (int i = 0; i < langFiles.length; i++)
-          {
-            // we remove suffix if any
-            String dict = langFiles[i].getName();
-            int pos = dict.lastIndexOf(".");
-            if ( pos >= 0 )
-              dict = dict.substring(0,pos);
-            // and then add the dictionary into the vector unless it is already there
-            if ( ! langs.contains(dict) )
-              langs.add( dict );
-          }
-        }
-      }
-    }
-    catch ( IOException e )
-    {
-    }
+	try
+	{
+	  //directly dump the aspell dicts
+	  Process process = Runtime.getRuntime().exec(new String[]{aspellExeFilename,"dump","dicts"} );
+	  BufferedReader input  = new BufferedReader(new InputStreamReader(process.getInputStream() ) );
+	  // each line is a dictionnary
+	  Pattern p = Pattern.compile("^[a-z]{2}[-\\w]*$");//at least 2 letters language code, then anything
+	  
+	  while ( ( line = input.readLine() ) != null )
+	  {
+		  if(!p.matcher(line).matches())
+		  throw new IOException("Suspect dictionnary name ("+line+")");
+		  langs.add(line);
+	  }
+	}
+	catch ( IOException e )
+	{
+		Log.log(Log.ERROR, SpellCheckPlugin.class, "Exception while listing dicts");
+		Log.log(Log.ERROR, SpellCheckPlugin.class,e);
+		throw new SpellException(e.getMessage());
+	}
     return langs;
-  }
+  }  
+  
 }
