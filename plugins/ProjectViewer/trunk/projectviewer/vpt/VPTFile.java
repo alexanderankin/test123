@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import java.awt.Color;
+import java.io.File;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 
@@ -158,8 +159,9 @@ public class VPTFile extends VPTNode
 		if (isOpened()) {
 			baseIcon = fileOpenedIcon;
 		} else {
-			/* XXX: Need to fix this now that we don't have file anymore.
-			if (ProjectViewerConfig.getInstance().getUseSystemIcons()) {
+			if (VFSManager.getVFSForPath(url) == VFSManager.getFileVFS() &&
+				ProjectViewerConfig.getInstance().getUseSystemIcons()) {
+				File file = new File(url);
 				if (!loadedIcon) {
 					if (file.exists()) {
 						if (fsView == null) {
@@ -172,9 +174,9 @@ public class VPTFile extends VPTNode
 				} else {
 					baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
 				}
+			} else {
+				baseIcon = fileClosedIcon;
 			}
-			*/
-			baseIcon = fileClosedIcon;
 		}
 		return IconComposer.composeIcon(getFile(), url, baseIcon);
 	}
