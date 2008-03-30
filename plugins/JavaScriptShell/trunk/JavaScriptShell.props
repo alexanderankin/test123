@@ -1,3 +1,6 @@
+
+
+
 plugin.javascriptshell.JavaScriptShellPlugin.name=JavaScript Shell
 plugin.javascriptshell.JavaScriptShellPlugin.author=Jakub Roztocil
 plugin.javascriptshell.JavaScriptShellPlugin.description=JavaScript shell and macros handler
@@ -11,9 +14,17 @@ plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlug
 macro-handler.javascript.label=JavaScript
 macro-handler.javascript.glob=*.js
 
-plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show
-
 console.shell.JavaScript-show.label=JavaScript Shell
 
 javascript-error.title=JavaScript Error
 javascript-error.message=A JavaScript error occurred.
+
+
+javascriptshell.evaluate-selection.label=Evaluate selection in JavaScript
+javascriptshell.evaluate-buffer.label=Evaluate buffer in JavaScript
+
+
+plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show \
+	javascriptshell.evaluate-selection \
+	javascriptshell.evaluate-buffer
+

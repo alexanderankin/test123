@@ -30,6 +30,8 @@ import javax.script.*;
 import org.gjt.sp.jedit.Macros.Handler;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.TextAreaDialog;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 
 public class JavaScriptShell extends Shell {
@@ -86,22 +88,46 @@ public class JavaScriptShell extends Shell {
 
 	public static void runScript(String path, View view) {
 		File file = new File(path);
-		if (file.exists()) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			StringBuffer code = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				code.append(line+"\n");
+			}
+			evaluateCode(view, code.toString());
+		} catch (Exception e) {
+			Log.log(Log.ERROR, JavaScriptShell.class, e.toString());
+			new TextAreaDialog(view, "javascript-error", e);
+		}
+	}
+
+	public static void evaluateSelection() {
+		View view = jEdit.getActiveView();
+		TextArea textArea = view.getTextArea();
+		String selectedText = textArea.getSelectedText();
+		if (selectedText == null) {
+			view.getToolkit().beep();
+		} else {
+			evaluateCode(view, selectedText);
+		}
+	}
+
+	public static void evaluateBuffer() {
+		View view = jEdit.getActiveView();
+		JEditBuffer buffer = view.getBuffer();
+		evaluateCode(view, buffer.getText(0, buffer.getLength()));
+	}
+
+	public static void evaluateCode(View view, String code) {
 			try {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-				StringBuffer code = new StringBuffer();
-				String line;
-				while ((line = reader.readLine()) != null) {
-					code.append(line+"\n");
-				}
 				//Log.log(Log.DEBUG, JavaScriptShell.class, code.toString());
 				setGlobals(view);
-				engine.eval(code.toString());
+				engine.eval(code);
 			} catch (Exception e) {
 				Log.log(Log.ERROR, JavaScriptShell.class, e.toString());
 				new TextAreaDialog(view, "javascript-error", e);
 			}
-		}
 	}
 
 
