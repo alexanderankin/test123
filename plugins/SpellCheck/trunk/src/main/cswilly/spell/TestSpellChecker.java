@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -42,9 +42,10 @@ class TestSpellChecker
   {
     System.err.println( "TestSpellChecker()" );
 
-    String aSpellCommandLine = "O:\\local\\aspell\\aspell.exe pipe";
+    String aSpellCommand ="O:\\local\\aspell\\aspell.exe";
+  	String[] aSpellArgs = {"pipe"};
 
-    AspellEngine spellChecker = new AspellEngine( aSpellCommandLine );
+    AspellEngine spellChecker = new AspellEngine( aSpellCommand, aSpellArgs );
 
     String words;
     List results;
@@ -89,7 +90,7 @@ class TestSpellChecker
           new ValidationDialog( result.getOriginalWord(),
                                 result.getSuggestions() );
 
-        changeToDialog.show();
+        changeToDialog.setVisible(true);
         if( changeToDialog.getUserAction() == changeToDialog.CANCEL )
           break;
 
