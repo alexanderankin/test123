@@ -11,5 +11,9 @@ plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlug
 macro-handler.javascript.label=JavaScript
 macro-handler.javascript.glob=*.js
 
+plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show
+
+console.shell.JavaScript-show.label=JavaScript Shell
+
 javascript-error.title=JavaScript Error
 javascript-error.message=A JavaScript error occurred.
