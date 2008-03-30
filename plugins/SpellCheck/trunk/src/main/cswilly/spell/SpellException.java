@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 
  /*--
 
- $Id: SpellException.java,v 1.1 2001-09-09 15:04:14 cswilly Exp $
+ $Id$
 
  Copyright (C) 2000 Brett McLaughlin & Jason Hunter.
  All rights reserved.
