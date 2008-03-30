@@ -237,7 +237,6 @@ public class ImportDialog extends EnhancedDialog
 		getContentPane().add(BorderLayout.SOUTH, south);
 
 		actionPerformed(null);
-		GUIUtilities.loadGeometry(this, getClass().getName());
 	} //}}}
 
 	//{{{ +ok() : void
@@ -257,7 +256,7 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ +getSelectedFiles() : VFSFile[]
 	public VFSFile[] getSelectedFiles() {
-		return chooser.getSelectedFiles();
+		return isApproved ? chooser.getSelectedFiles() : null;
 	} //}}}
 
 	//{{{ +getTraverseDirectories() : boolean
@@ -388,6 +387,7 @@ public class ImportDialog extends EnhancedDialog
 		}
 
 		pack();
+		GUIUtilities.loadGeometry(this, getClass().getName());
 		super.setVisible(true);
 	} //}}}
 
