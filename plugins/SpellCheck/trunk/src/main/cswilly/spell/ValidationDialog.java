@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.3 $
- * $Date: 2002-07-26 15:36:20 $
- * $Author: lio-sand $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *

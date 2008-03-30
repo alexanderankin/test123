@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision$
+ * $Date$
+ * $Author$
  *
  * Copyright (C) 2001 C. Scott Willy
  *
