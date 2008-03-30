@@ -11,10 +11,12 @@
 <project name="SpellCheck" default="dist" basedir=".">
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
+	<property name="src.dir" value="src/main"/>
 	<!-- for build-support location -->
 	<property file="../build.properties"/>
 	<import file="${build.support}/plugin-build.xml" />
-	<property name="src.dir" value="src"/>
 
+	<!-- for junit tests -->
+	<property name="unit.test.target" value="test-junit"/>
 </project>
 

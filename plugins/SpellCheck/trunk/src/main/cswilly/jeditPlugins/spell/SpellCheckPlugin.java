@@ -60,42 +60,6 @@ public class SpellCheckPlugin
 
 
   /**
-  * Method called by jEdit to initialize the plugin.
-  */
-  //public void start() {}
-
-  /**
-  * Method called by jEdit before exiting. Usually, nothing
-  * needs to be done here.
-  */
-  //public void stop() {}
-
-  /**
-  * Method called every time a view is created to set up the
-  * Plugins menu. Menus and menu items should be loaded using the
-  * methods in the GUIUtilities class, and added to the list.
-  * @param menuItems Add menuitems here
-  */
-  public void createMenuItems(Vector menuItems)
-  {
-    menuItems.addElement( GUIUtilities.loadMenu( SPELL_CHECK_ACTIONS ) );
-  }
-
-  /**
-  * Method called every time the plugin options dialog box is
-  * displayed. Any option panes created by the plugin should be
-  * added here.
-  * @param optionsDialog The plugin options dialog box
-  *
-  * @see OptionPane
-  * @see OptionsDialog#addOptionPane(OptionPane)
-  */
-  public void createOptionPanes(OptionsDialog optionsDialog)
-  {
-    optionsDialog.addOptionPane( new SpellCheckOptionPane() );
-  }
-
-  /**
   * Displays the spell checker dialog box with specified lang dictionary. This method
   * is called by the spell-check-selection-with-lang action, defined in actions.xml.
   */
