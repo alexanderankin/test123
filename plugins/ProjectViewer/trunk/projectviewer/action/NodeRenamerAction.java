@@ -24,7 +24,8 @@ import java.io.File;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -128,8 +129,8 @@ public class NodeRenamerAction extends Action {
 			return;
 		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
-			VFS vfs = VFSManager.getVFSForPath(f.getURL());
 			String oldURL = f.getURL();
+			VFS vfs = VFSManager.getVFSForPath(oldURL);
 			String url = vfs.constructPath(vfs.getParentOfPath(oldURL), newName);
 			if (!renameFile(f, url, true)) {
 				JOptionPane.showMessageDialog(viewer,
@@ -141,14 +142,15 @@ public class NodeRenamerAction extends Action {
 			project.unregisterNodePath(oldURL);
 			reinsert(f, project);
 		} else if (node.isDirectory() ) {
-			/* XXX: need to fix now that we're working with VFS.
 			VPTDirectory dir = (VPTDirectory) node;
-			if (dir.getFile().exists()) {
-				String oldDir = dir.getFile().getAbsolutePath();
-				String newDir = dir.getFile().getParent() + File.separator + newName;
-				File newFile = new File(newDir);
+			if (VFSHelper.pathExists(dir.getURL())) {
+				VFS vfs = VFSManager.getVFSForPath(dir.getURL());
+				Object session = null;
+				String oldDir = dir.getURL();
+				String newDir = vfs.constructPath(vfs.getParentOfPath(oldDir), newName);
+				HashSet<VPTNode> openable;
 
-				if (!dir.getFile().renameTo(newFile)) {
+				if (!vfsRename(vfs, oldDir, newDir)) {
 					JOptionPane.showMessageDialog(viewer,
 							jEdit.getProperty("projectviewer.action.rename.rename_error"),
 							jEdit.getProperty("projectviewer.action.rename.title"),
@@ -156,13 +158,15 @@ public class NodeRenamerAction extends Action {
 					return;
 				}
 
-				dir.setFile(newFile);
+				dir.setURL(newDir);
 
 				// updates all files from the old directory to point to the new one
-				for (VPTNode n : project.getOpenableNodes()) {
+				openable = new HashSet<VPTNode>(project.getOpenableNodes());
+				for (VPTNode n : openable) {
 					if (n.isFile() && n.getNodePath().startsWith(oldDir)) {
 						String oldPath = n.getNodePath();
-						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()), false);
+						String newPath = vfs.constructPath(newDir, n.getName());
+						renameFile((VPTFile)n, newPath, false);
 						project.unregisterNodePath(oldPath);
 						project.registerNodePath(n);
 					}
@@ -171,7 +175,6 @@ public class NodeRenamerAction extends Action {
 				dir.setName(newName);
 			}
 			reinsert(dir, project);
-			*/
 		} else if (node.isProject()) {
 			String oldName = node.getName();
 			node.setName(newName);
@@ -193,10 +196,7 @@ public class NodeRenamerAction extends Action {
 			if (b != null)
 				dirty = b.isDirty();
 		}
-		cmItem.setVisible(!dirty && node != null &&
-						  ((node.isFile() && ((VPTFile)node).canRename()) ||
-						   (node.isDirectory() && ((VPTDirectory)node).canRename()) ||
-						   node.isProject()));
+		cmItem.setVisible(!dirty && node != null && node.canRename());
 	} //}}}
 
 	//{{{ -renameFile(VPTFile, File) : boolean
@@ -226,20 +226,9 @@ public class NodeRenamerAction extends Action {
 		}
 
 		if (rename) {
-			VFS vfs;
-			Object session = null;
-
-			vfs = VFSManager.getVFSForPath(f.getURL());
-
-			try {
-				session = VFSHelper.createVFSSession(vfs, f.getURL(), viewer.getView());
-				if (!vfs._rename(session, f.getURL(), url, viewer.getView())) {
-					return false;
-				}
-			} catch (java.io.IOException ioe) {
+			VFS vfs = VFSManager.getVFSForPath(f.getURL());
+			if (!vfsRename(vfs, f.getURL(), url)) {
 				return false;
-			} finally {
-				VFSHelper.endVFSSession(vfs, session, viewer.getView());
 			}
 		}
 
@@ -268,20 +257,45 @@ public class NodeRenamerAction extends Action {
 		}
 	} //}}}
 
+
+	/**
+	 *	Renames a file in the given VFS.
+	 *
+	 *	@param vfs VFS instance.
+	 *	@param from Source URL.
+	 *	@param to Target URL.
+	 *
+	 *	@return whether the operation was successful.
+	 */
+	private boolean vfsRename(VFS vfs,
+							  String from,
+							  String to)
+	{
+		Object session = null;
+		try {
+			session = VFSHelper.createVFSSession(vfs, from, viewer.getView());
+			if (!vfs._rename(session, from, to, viewer.getView())) {
+				return false;
+			}
+		} catch (java.io.IOException ioe) {
+			return false;
+		} finally {
+			VFSHelper.endVFSSession(vfs, session, viewer.getView());
+		}
+		return true;
+	}
+
 	//{{{ -class RenameDialog
 	/**
 	 *	A dialog for renaming nodes. Provides an extra checkbox to allow
 	 *	the user to rename the node but not the actual file/dir on disk,
 	 *	in case the node is a file or a directory.
 	 */
-	private class RenameDialog extends EnhancedDialog implements ActionListener {
+	private class RenameDialog extends EnhancedDialog {
 
 		//{{{ Private Members
 		private JTextField	fName;
 		private JCheckBox	chFile;
-
-		private JButton		okBtn;
-//		private JButton		cancelBtn;
 
 		private boolean		okPressed;
 		//}}}
@@ -304,6 +318,7 @@ public class NodeRenamerAction extends Action {
 			if (node.isProject() || !VFSHelper.pathExists(node.getNodePath())) {
 				getContentPane().add(BorderLayout.CENTER, fName);
 			} else {
+				boolean canRename;
 				JPanel p = new JPanel(new GridLayout(2, 1));
 				p.add(fName);
 				chFile = new JCheckBox(
@@ -314,12 +329,13 @@ public class NodeRenamerAction extends Action {
 				// default for not renaming node: if node is read only, if it's
 				// not a file, or if it's a file and the node name doesn't match
 				// the file's name.
-				if (!node.canWrite() || !node.isFile()
+				canRename = node.canRename();
+				if (!canRename || !node.canWrite() || !node.isFile()
 					|| !node.getName().equals(((VPTFile)node).getFile().getName()))
 				{
 					chFile.setSelected(true);
-					chFile.setEnabled(node.canWrite() && node.isFile());
 				}
+				chFile.setEnabled(canRename);
 				getContentPane().add(BorderLayout.CENTER, p);
 			}
 
@@ -347,15 +363,6 @@ public class NodeRenamerAction extends Action {
 		/** Cancels renaming. */
 		public void cancel() {
 			dispose();
-		} //}}}
-
-		//{{{ +actionPerformed(ActionEvent) : void
-		public void actionPerformed(ActionEvent ae) {
-			if (ae.getSource() == okBtn) {
-				ok();
-			} else {
-				cancel();
-			}
 		} //}}}
 
 		//{{{ +getInput() : String

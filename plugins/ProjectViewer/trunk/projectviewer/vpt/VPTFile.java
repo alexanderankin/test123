@@ -132,6 +132,8 @@ public class VPTFile extends VPTNode
 
 	/**
 	 *	Returns the VFS URL for this file.
+	 *
+	 *	@since PV 3.0.0
 	 */
 	public String getURL()
 	{
@@ -141,6 +143,8 @@ public class VPTFile extends VPTNode
 
 	/**
 	 *	Changes this file's URL.
+	 *
+	 *	@since PV 3.0.0
 	 */
 	public void setURL(String url)
 	{

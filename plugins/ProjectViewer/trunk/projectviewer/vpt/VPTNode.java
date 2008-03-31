@@ -192,6 +192,19 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 		return false;
 	} //}}}
 
+
+	/**
+	 *	Returns whether the underlying resource can be renamed.
+	 *
+	 *	@return Default implementation returns true.
+	 *	@since PV 3.0.0
+	 */
+	public boolean canRename()
+	{
+		return true;
+	}
+
+
 	//{{{ +toString() : String
 	/** Returns a string representation of the current node. */
 	public String toString() {

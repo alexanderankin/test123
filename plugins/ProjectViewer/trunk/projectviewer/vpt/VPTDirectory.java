@@ -51,10 +51,27 @@ public class VPTDirectory extends VPTNode {
 	}
 
 
-	/** Returns the URL of this directory. */
+	/**
+	 *	Returns the URL of this directory.
+	 *
+	 *	@since PV 3.0.0
+	 */
 	public String getURL() {
 		return url;
 	}
+
+
+	/**
+	 *	Changes this directory's URL.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public void setURL(String url)
+	{
+		this.url = url;
+		setName(VFSManager.getVFSForPath(url).getFileName(url));
+	}
+
 
 	/** Returns the real name of this directory. */
 	public String getFileName() {
