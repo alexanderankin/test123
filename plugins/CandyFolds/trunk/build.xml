@@ -13,6 +13,7 @@
 	
 	<selector id="packageFiles">
 		<or>
+			<filename name="*.txt" />
 			<filename name="CandyFolds-properties/*.properties" />
 			<filename name="description.html" />
 		</or>
