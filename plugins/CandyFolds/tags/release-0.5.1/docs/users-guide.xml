@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book lang="en">
+	<bookinfo>
+		<title>CandyFolds Plugin</title>
+		<author>
+			<firstname>Nicolás</firstname>
+			<surname>Carranza</surname>
+		</author>
+	</bookinfo>
+	
+	<preface>
+		<title>Credits</title>
+		<para> CandyFolds was based on the WhiteSpace (by Nathan Jones and Andre Kaplan) plugin's fold-guides.</para>
+	</preface>
+	
+	<chapter>
+		<title>Description</title>
+		<para>
+			CandyFolds draws colored fold-guides on the text-area to improve code readability. A fold-guide is a vertical line drawn from the start to the end of a fold, following the text indentation. The color used by each fold-guide can be configured using regular expressions: the regular expression tests the line of text on the starting point of the fold, if it matches then it uses the specified color to draw the fold-guide.
+		</para>
+		<para>
+			Visit the CandyFold's home page (http://candyfolds.sf.net) to report bugs or post comments.
+		</para>
+	</chapter>
+	
+	<chapter id="license">
+		<title>License</title>
+		<para>The source code is distributed under the GPL.	Please see	<ulink url="http://www.fsf.org/copyleft/gpl.html"> http://www.fsf.org/copyleft/gpl.html	</ulink>
+		</para>
+	</chapter>
+
+</book>
