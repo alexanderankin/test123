@@ -145,6 +145,7 @@ public class VPTFile extends VPTNode
 	public void setURL(String url)
 	{
 		this.url = url;
+		setName(VFSManager.getVFSForPath(url).getFileName(url));
 	}
 
 
@@ -197,7 +198,6 @@ public class VPTFile extends VPTNode
 	}
 
 
-
 	/** Returns a string representation of the current node. */
 	public String toString()
 	{
@@ -209,6 +209,18 @@ public class VPTFile extends VPTNode
 	public boolean canOpen()
 	{
 		return true;
+	}
+
+
+	/**
+	 *	Returns whether the VFS of the file allows renaming.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public boolean canRename()
+	{
+		int caps = VFSManager.getVFSForPath(url).getCapabilities();
+		return (caps & VFS.RENAME_CAP) != 0;
 	}
 
 
