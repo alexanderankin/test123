@@ -128,15 +128,17 @@ public class NodeRenamerAction extends Action {
 			return;
 		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
-			String oldPath = node.getNodePath();
-			if (!renameFile(f, newName, true)) {
+			VFS vfs = VFSManager.getVFSForPath(f.getURL());
+			String oldURL = f.getURL();
+			String url = vfs.constructPath(vfs.getParentOfPath(oldURL), newName);
+			if (!renameFile(f, url, true)) {
 				JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.rename_error"),
 						jEdit.getProperty("projectviewer.action.rename.title"),
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			project.unregisterNodePath(oldPath);
+			project.unregisterNodePath(oldURL);
 			reinsert(f, project);
 		} else if (node.isDirectory() ) {
 			/* XXX: need to fix now that we're working with VFS.
@@ -198,28 +200,36 @@ public class NodeRenamerAction extends Action {
 	} //}}}
 
 	//{{{ -renameFile(VPTFile, File) : boolean
-	/** Renames a file and tries not to mess up jEdit's current buffer. */
-	private boolean renameFile(VPTFile f, String newName, boolean rename) {
+	/**
+	 *	Renames a file and tries not to mess up jEdit's current buffer.
+	 *
+	 *	@param f File node to rename.
+	 *	@param url New URL for the file.
+	 *	@param rename Whether to actually perform a VFS rename, or just
+	 *				  change the node's URL.
+	 *
+	 *	@return Whether the operation was successful.
+	 */
+	private boolean renameFile(VPTFile f,
+							   String url,
+							   boolean rename) {
 		boolean open = false;
 		Buffer b = null;
 
+		b = jEdit.getActiveView().getBuffer();
+		if (b.getPath().equals(f.getURL())) {
+			b = null;
+		}
+		open = f.isOpened();
+		if (open) {
+			f.close();
+		}
+
 		if (rename) {
-			Object session = null;
-			String url;
 			VFS vfs;
+			Object session = null;
 
-			b = jEdit.getActiveView().getBuffer();
-			if (b.getPath().equals(f.getNodePath())) {
-				b = null;
-			}
-			open = f.isOpened();
-			if (open) {
-				f.close();
-			}
-			url = f.getURL();
-			vfs = VFSManager.getVFSForPath(url);
-
-			url = vfs.constructPath(vfs.getParentOfPath(url), newName);
+			vfs = VFSManager.getVFSForPath(f.getURL());
 
 			try {
 				session = VFSHelper.createVFSSession(vfs, f.getURL(), viewer.getView());
@@ -231,13 +241,11 @@ public class NodeRenamerAction extends Action {
 			} finally {
 				VFSHelper.endVFSSession(vfs, session, viewer.getView());
 			}
-
-			f.setURL(url);
-		} else {
-			f.setName(newName);
 		}
 
-		if (rename && open) {
+		f.setURL(url);
+
+		if (open) {
 			// this is an ugly hack to avoid "file has been modified on
 			// disk" warnings that shouldn't happen, but do.
 			try { Thread.sleep(1); } catch (Exception e) { }
