@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.VFSHelper;
@@ -68,6 +69,19 @@ public class VPTDirectory extends VPTNode {
 			return false;
 		}
 	}
+
+
+	/**
+	 *	Returns whether the VFS of the file allows renaming.
+	 *
+	 *	@since PV 3.0.0
+	 */
+	public boolean canRename()
+	{
+		int caps = VFSManager.getVFSForPath(url).getCapabilities();
+		return (caps & VFS.RENAME_CAP) != 0;
+	}
+
 
 	/**
 	 * Deleting directories is not supported.

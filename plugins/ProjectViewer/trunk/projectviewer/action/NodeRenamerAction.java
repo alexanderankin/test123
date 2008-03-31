@@ -38,6 +38,9 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
+
 import common.gui.OkCancelButtons;
 
 import projectviewer.ProjectViewer;
@@ -124,12 +127,9 @@ public class NodeRenamerAction extends Action {
 			reinsert(node, project);
 			return;
 		} else if (node.isFile()) {
-			/* XXX: need to fix now that we're working with VFS.
 			VPTFile f = (VPTFile) node;
 			String oldPath = node.getNodePath();
-			// updates all files from the old directory to point to the new one
-			project.unregisterNodePath(f);
-			if (!renameFile(f, new File(f.getFile().getParent(), newName), true)) {
+			if (!renameFile(f, newName, true)) {
 				JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.rename_error"),
 						jEdit.getProperty("projectviewer.action.rename.title"),
@@ -138,7 +138,6 @@ public class NodeRenamerAction extends Action {
 			}
 			project.unregisterNodePath(oldPath);
 			reinsert(f, project);
-			*/
 		} else if (node.isDirectory() ) {
 			/* XXX: need to fix now that we're working with VFS.
 			VPTDirectory dir = (VPTDirectory) node;
@@ -193,24 +192,52 @@ public class NodeRenamerAction extends Action {
 				dirty = b.isDirty();
 		}
 		cmItem.setVisible(!dirty && node != null &&
-			(node.isFile() || node.isDirectory() || node.isProject()));
+						  ((node.isFile() && ((VPTFile)node).canRename()) ||
+						   (node.isDirectory() && ((VPTDirectory)node).canRename()) ||
+						   node.isProject()));
 	} //}}}
 
 	//{{{ -renameFile(VPTFile, File) : boolean
 	/** Renames a file and tries not to mess up jEdit's current buffer. */
-	private boolean renameFile(VPTFile f, File newFile, boolean rename) {
-		/* XXX: need to fix this for VFS.
-		Buffer b = jEdit.getActiveView().getBuffer();
-		if (b.getPath().equals(f.getNodePath())) {
-			b = null;
+	private boolean renameFile(VPTFile f, String newName, boolean rename) {
+		boolean open = false;
+		Buffer b = null;
+
+		if (rename) {
+			Object session = null;
+			String url;
+			VFS vfs;
+
+			b = jEdit.getActiveView().getBuffer();
+			if (b.getPath().equals(f.getNodePath())) {
+				b = null;
+			}
+			open = f.isOpened();
+			if (open) {
+				f.close();
+			}
+			url = f.getURL();
+			vfs = VFSManager.getVFSForPath(url);
+
+			url = vfs.constructPath(vfs.getParentOfPath(url), newName);
+
+			try {
+				session = VFSHelper.createVFSSession(vfs, f.getURL(), viewer.getView());
+				if (!vfs._rename(session, f.getURL(), url, viewer.getView())) {
+					return false;
+				}
+			} catch (java.io.IOException ioe) {
+				return false;
+			} finally {
+				VFSHelper.endVFSSession(vfs, session, viewer.getView());
+			}
+
+			f.setURL(url);
+		} else {
+			f.setName(newName);
 		}
-		boolean open = f.isOpened();
-		f.close();
-		if (rename && !f.getFile().renameTo(newFile)) {
-			return false;
-		}
-		f.setFile(newFile);
-		if (open) {
+
+		if (rename && open) {
 			// this is an ugly hack to avoid "file has been modified on
 			// disk" warnings that shouldn't happen, but do.
 			try { Thread.sleep(1); } catch (Exception e) { }
@@ -220,7 +247,6 @@ public class NodeRenamerAction extends Action {
 			}
 
 		}
-		*/
 		return true;
 	} //}}}
 
