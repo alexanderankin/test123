@@ -122,8 +122,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 	public void nodeStructureChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
 		if (!n.isGroup()) {
-			node = VPTNode.findProjectFor(n);
-			checkOpenFiles((VPTProject) n);
+			checkOpenFiles((VPTProject) VPTNode.findProjectFor(n));
 			lastParent = null;
 			lastList = null;
 		}
