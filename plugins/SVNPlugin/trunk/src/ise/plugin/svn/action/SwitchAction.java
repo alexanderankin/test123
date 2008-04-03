@@ -89,6 +89,9 @@ public class SwitchAction extends SVNAction {
 
 
             verifyLogin( data.getPaths().get( 0 ) );
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
 

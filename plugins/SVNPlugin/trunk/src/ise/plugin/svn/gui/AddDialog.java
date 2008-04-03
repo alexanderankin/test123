@@ -29,8 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
@@ -40,14 +38,9 @@ import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
-import ise.java.awt.LambdaLayout;
-import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 
 
 /**

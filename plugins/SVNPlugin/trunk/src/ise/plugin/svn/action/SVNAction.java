@@ -45,6 +45,8 @@ public abstract class SVNAction implements ActionListener {
     private String password;
     private String actionName = "Subversion Command";
 
+    private boolean canceled = false;
+
     public SVNAction( View view, String actionName ) {
         if ( view == null )
             throw new IllegalArgumentException( "view may not be null" );
@@ -52,6 +54,14 @@ public abstract class SVNAction implements ActionListener {
         if ( actionName != null ) {
             this.actionName = actionName;
         }
+    }
+
+    public boolean isCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(boolean b) {
+        canceled = b;
     }
 
     /**
@@ -101,14 +111,21 @@ public abstract class SVNAction implements ActionListener {
     }
 
     /**
-     * Returns the value of password.
+     * Returns the value of encrypted password.
      */
     protected String getPassword() {
         return password;
     }
 
     /**
-     * Sets the value of password.
+     * Returns the value of decrypted password.
+     */
+    protected String getDecryptedPassword() {
+        return PasswordHandler.decryptPassword(password);
+    }
+
+    /**
+     * Sets the value of encrypted password.
      * @param password The value to assign password.
      */
     protected void setPassword( String password ) {
@@ -131,46 +148,32 @@ public abstract class SVNAction implements ActionListener {
             message = "Confirm SVN login:";
         }
         String uname = getUsername();
-        String pwd = getPassword();
-
-        // decrypt password if possible.  Password should be encrypted up to here.
-        pwd = decryptPassword( pwd );
+        String pwd = getDecryptedPassword();
+        //System.out.println("+++++ 1 uname = " + uname + ", pwd = " + pwd);
 
         // no username, so assume no password.  Attempt to get username and
         // password from project the file belongs to
-        if ( ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) && filename != null ) {
+        if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
             String[] login = PVHelper.getSVNLogin( filename );
             uname = login[ 0 ];
-            pwd = login[ 1 ];           // decrypted password from PVHelper
+            pwd = login[ 1 ];           // encrypted password from PVHelper
         }
 
         // still no username, so ask the user for it.
+        //System.out.println("+++++ 2 uname = " + uname + ", pwd = " + pwd);
         if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
             LoginDialog ld = new LoginDialog( view, getActionName(), message );
             GUIUtils.center( view, ld );
             ld.setVisible( true );
             if ( ld.getCanceled() == true ) {
-                return ;
+                setCanceled(true);
             }
             uname = ld.getUsername();
-            pwd = ld.getPassword();     // non-encrypted password from LoginDialog
+            pwd = PasswordHandler.encryptPassword(ld.getPassword());     // non-encrypted password from LoginDialog
+
         }
 
         setUsername( uname );
-        setPassword( pwd );             // non-encrypted password
+        setPassword( pwd );             // encrypted password
     }
-
-    private String decryptPassword( String pwd ) {
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.decrypt( pwd );
-            }
-            catch ( Exception e ) {
-                pwd = "";
-            }
-        }
-        return pwd;
-    }
-
 }

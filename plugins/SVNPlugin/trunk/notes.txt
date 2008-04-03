@@ -95,9 +95,11 @@ Done - Fix Info and Log commands to work correctly with svn:external links.
 
 - clean up popups, the tool tips are often too large to be useful and don't stay visible long enough. The TableCellViewer that I borrowed from Antelope conflicts with the popup menu mouse gesture.  Right now, there is a mix, should figure out how to avoid the popup menu conflict and use the TableCellViewer popup as it is more useful. Maybe a "zoom" menu item?
 
+*** add option to automatically tag external links when tagging a project?
+
 Done - in the property display, multi-line values are shown in a single line in the table.  They look good in the popup, but should look good in the table too. --> done, using BestRowTable
 
-- who owns JDiff? It needs some work, like the ability to move lines/blocks left or right between files.
+Done - who owns JDiff? It needs some work, like the ability to move lines/blocks left or right between files.  --> Looks like there is no owner at the moment, so I went ahead and make the changes.
 
 Done - Need to check, doesn't Eclipse have a "Move"? --> Don't care, move is done.
 
@@ -108,3 +110,15 @@ plugin rather than svn diff.
 
 Done - Update docs on undelete to point out that Move is really a copy and delete, so to undo a move, either move back or revert and undelete.
 
+Move doesn't work right if it's a rename.
+
+
+----------------------------------------------------------------------------
+
+Passwords:
+
+Passwords can be set per repository and per project.  Most likely, a project
+will be created by doing a checkout from the repository browser, but not
+necessarily.
+
+Passwords are always encrypted until needed.  SVNAction and SVNData both provide get/setPassword methods, these are assumed to be encrypted passwords.  They both also provide a getDecryptedPassword method for access to the decrypted password.

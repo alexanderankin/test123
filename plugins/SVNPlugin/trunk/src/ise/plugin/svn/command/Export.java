@@ -75,7 +75,7 @@ public class Export {
 
         // get an svn update client using default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
         SVNUpdateClient client = clientManager.getUpdateClient();
 
         // set an event handler so that messages go to the streams for display

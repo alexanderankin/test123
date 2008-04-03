@@ -34,6 +34,7 @@ import ise.plugin.svn.PVHelper;
 
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
+import ise.plugin.svn.library.PasswordHandler;
 
 public class LoginPanel extends JPanel {
 
@@ -57,13 +58,14 @@ public class LoginPanel extends JPanel {
 
 
     /** Initialises the option pane. */
+    // p must be encrypted if it is not null
     protected void init( String u, String p ) {
         setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "SVN Login" ) );
         setLayout( new LambdaLayout() );
 
         // possible username and password values
         u = u == null ? "" : u;
-        p = u == null ? "" : p;
+        p = PasswordHandler.decryptPassword(p);
 
         // username field
         username_label = new JLabel( "Username:" );
@@ -86,7 +88,10 @@ public class LoginPanel extends JPanel {
         return username.getText();
     }
 
+    /**
+     * @return encrypted password
+     */
     public String getPassword() {
-        return new String( password.getPassword() );
+        return PasswordHandler.encryptPassword(new String( password.getPassword() ));
     }
 }

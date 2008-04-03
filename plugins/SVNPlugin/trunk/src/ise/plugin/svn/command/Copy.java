@@ -70,7 +70,7 @@ public class Copy {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
 
         // get a copy client
         SVNCopyClient client = clientManager.getCopyClient();

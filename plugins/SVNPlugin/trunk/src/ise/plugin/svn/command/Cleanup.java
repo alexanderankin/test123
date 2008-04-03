@@ -75,7 +75,7 @@ public class Cleanup {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getDecryptedPassword() );
 
         // get a client
         SVNWCClient client = clientManager.getWCClient();

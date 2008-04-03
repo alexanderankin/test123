@@ -81,6 +81,10 @@ public class AddAction extends SVNAction {
             }
 
             verifyLogin(paths.get(0));
+            if (isCanceled()) {
+                return;
+            }
+
             cd.setUsername( getUsername());
             cd.setPassword( getPassword());
             cd.setOut( new ConsolePrintStream( getView() ) );

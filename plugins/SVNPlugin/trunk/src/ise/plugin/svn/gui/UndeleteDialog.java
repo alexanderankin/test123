@@ -48,8 +48,6 @@ import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 
 
 /**

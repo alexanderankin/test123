@@ -38,6 +38,7 @@ import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.KappaLayout;
+import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
@@ -71,7 +72,7 @@ public class AddRepositoryDialog extends JDialog {
 
     /** Initialises the option pane. */
     protected void _init() {
-        JPanel panel = new JPanel( new KappaLayout() );
+        JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // name field
@@ -97,18 +98,7 @@ public class AddRepositoryDialog extends JDialog {
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
-        String password_value = data != null && data.getPassword() != null ? data.getPassword() : "";
-        // if there is a password, it should be encrypted, so attempt to decrypt
-        if ( password_value != null && password_value.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                password_value = ph.decrypt( password_value );
-            }
-            catch ( PasswordHandlerException e ) {
-                password_value = "";
-            }
-        }
-
+        String password_value = data != null ? data.getDecryptedPassword() : "";
         password = new JPasswordField( password_value, 30 );
 
         // buttons
@@ -174,16 +164,7 @@ public class AddRepositoryDialog extends JDialog {
         data.setUsername( username.getText() );
 
         // encrypt the password if there is one
-        String pwd = new String( password.getPassword() );
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.encrypt( pwd );
-            }
-            catch ( Exception e ) {
-                // ignore?
-            }
-        }
+        String pwd = PasswordHandler.encryptPassword(new String( password.getPassword() ));
         data.setPassword( pwd );
         return data;
     }

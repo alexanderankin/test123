@@ -88,17 +88,7 @@ public class BrowseRepository {
         }
 
         // set up authentication
-        String pwd = cd.getPassword();
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.decrypt( pwd );
-            }
-            catch ( Exception e ) {
-                pwd = "";
-            }
-        }
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), pwd );
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() );
         repository.setAuthenticationManager( authManager );
 
         List<DirTreeNode> children = null;
@@ -274,14 +264,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = new String( password );
-                try {
-                    PasswordHandler ph = new PasswordHandler();
-                    pwd = ph.decrypt( pwd );
-                }
-                catch ( Exception e ) {
-                    pwd = "";
-                }
+                pwd = PasswordHandler.decryptPassword(new String( password ));
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
@@ -314,14 +297,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = new String( password );
-                try {
-                    PasswordHandler ph = new PasswordHandler();
-                    pwd = ph.decrypt( pwd );
-                }
-                catch ( Exception e ) {
-                    pwd = "";
-                }
+                pwd = PasswordHandler.decryptPassword(new String( password ));
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );

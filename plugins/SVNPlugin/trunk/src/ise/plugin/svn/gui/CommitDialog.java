@@ -53,8 +53,6 @@ import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.library.PropertyComboBox;
 
 

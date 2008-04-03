@@ -85,7 +85,10 @@ public class MoveAction extends SVNAction {
         if ( data != null ) {
             data.setOut( new ConsolePrintStream( getView() ) );
 
-            verifyLogin();
+            verifyLogin(data.getPaths() == null ? null : data.getPaths().get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
 

@@ -32,6 +32,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.PasswordHandler;
 import ise.plugin.svn.library.PrivilegedAccessor;
 
 /**
@@ -150,8 +151,12 @@ public class SVNData implements Serializable {
         return password;
     }
 
+    public String getDecryptedPassword() {
+        return PasswordHandler.decryptPassword(password);
+    }
+
     /**
-     * Sets the value of password.
+     * Sets the value of encrypted password.
      * @param password The value to assign password.
      */
     public void setPassword( String password ) {
