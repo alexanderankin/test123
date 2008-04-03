@@ -244,13 +244,17 @@ public class ImportDialog extends EnhancedDialog
 		isApproved = true;
 		fGlob.addCurrentToHistory();
 		dGlob.addCurrentToHistory();
-		GUIUtilities.saveGeometry(this, getClass().getName());
+		if (showChooser) {
+			GUIUtilities.saveGeometry(this, getClass().getName());
+		}
 		dispose();
 	} //}}}
 
 	//{{{ +cancel() : void
 	public void cancel() {
-		GUIUtilities.saveGeometry(this, getClass().getName());
+		if (showChooser) {
+			GUIUtilities.saveGeometry(this, getClass().getName());
+		}
 		dispose();
 	} //}}}
 
@@ -387,7 +391,11 @@ public class ImportDialog extends EnhancedDialog
 		}
 
 		pack();
-		GUIUtilities.loadGeometry(this, getClass().getName());
+		if (showChooser) {
+			GUIUtilities.loadGeometry(this, getClass().getName());
+		} else {
+			setLocationRelativeTo(getParent());
+		}
 		super.setVisible(true);
 	} //}}}
 
