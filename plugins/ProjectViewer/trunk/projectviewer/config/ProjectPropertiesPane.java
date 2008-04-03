@@ -39,6 +39,10 @@ import javax.swing.JPopupMenu;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import common.gui.ModalJFileChooser;
 
@@ -106,33 +110,40 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	 */
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getSource() == chooseRoot) {
-			JFileChooser chooser = new ModalJFileChooser();
-			chooser.setDialogTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			String lastDir = jEdit.getProperty("projectviewer.filechooser.directory",
-				System.getProperty("user.home"));
-			chooser.setCurrentDirectory(new File(lastDir));
+			String path;
 			String root = projRoot.getText().trim();
+			VFSFileChooserDialog chooser;
+
 			if (root.length() > 0) {
-				chooser.setSelectedFile(new File(root));
-				chooser.setCurrentDirectory(new File(root).getParentFile());
+				path = VFSManager.getVFSForPath(root).getParentOfPath(root);
 			} else if (lookupPath != null) {
-				File f = new File(lookupPath);
-				if (f.isDirectory()) {
-					chooser.setCurrentDirectory(f.getParentFile());
-				}
+				path = VFSManager.getVFSForPath(lookupPath)
+				                 .getParentOfPath(lookupPath);
+			} else {
+				path = jEdit.getProperty("projectviewer.filechooser.directory",
+										 System.getProperty("user.home"));
 			}
 
-			if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
-					== JFileChooser.APPROVE_OPTION) {
+			chooser = new VFSFileChooserDialog(GUIUtilities.getParentDialog(this),
+											   jEdit.getActiveView(),
+											   path,
+											   VFSBrowser.CHOOSE_DIRECTORY_DIALOG,
+											   false,
+											   false);
 
-				root = chooser.getSelectedFile().getAbsolutePath();
-				jEdit.setProperty("projectviewer.filechooser.directory", root);
-				projRoot.setText(root);
+
+			chooser.setTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
+			chooser.setVisible(true);
+
+			if (chooser.getSelectedFiles() != null) {
+				path = chooser.getSelectedFiles()[0];
+				jEdit.setProperty("projectviewer.filechooser.directory", path);
+				projRoot.setText(path);
 				projRoot.setToolTipText(projRoot.getText());
 
 				if (projName.getText() != null && projName.getText().length() == 0) {
-					String name = root.substring(root.lastIndexOf(File.separator) + 1, root.length());
+					String name = VFSManager.getVFSForPath(path)
+					                        .getFileName(path);
 					projName.setText(name);
 				}
 			}
