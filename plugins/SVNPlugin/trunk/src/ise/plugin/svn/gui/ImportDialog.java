@@ -184,15 +184,7 @@ public class ImportDialog extends JDialog {
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( SVNAction.PREFIX + project_name + ".password" );
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.decrypt( pwd );
-            }
-            catch ( PasswordHandlerException e ) {
-                pwd = "";
-            }
-        }
+        pwd = PasswordHandler.decryptPassword(pwd);
         password = new JPasswordField( pwd, 30 );
 
         // buttons
@@ -264,7 +256,7 @@ public class ImportDialog extends JDialog {
             cd.setSourceFile(new File(path.getText()));
             cd.setDestinationURL(SVNURL.parseURIDecoded(url.getText()));
             cd.setUsername(username.getText());
-            cd.setPassword(new String(password.getPassword()));
+            cd.setPassword(PasswordHandler.encryptPassword(new String(password.getPassword())));
         }
         catch(Exception e) {
             e.printStackTrace();

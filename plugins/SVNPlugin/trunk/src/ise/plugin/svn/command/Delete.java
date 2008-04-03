@@ -69,7 +69,7 @@ public class Delete {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
 
         if ( !data.pathsAreURLs() ) {
             // working copies, convert paths to Files

@@ -32,18 +32,20 @@ import java.util.*;
 
 import org.gjt.sp.jedit.*;
 import projectviewer.vpt.VPTProject;
-import projectviewer.vpt.VPTNode;
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.importer.RootImporter;
 import javax.swing.SwingUtilities;
-import ise.plugin.svn.library.PasswordHandler;
 
+/**
+ * Some methods to help work with ProjectViewer.
+ */
 public class PVHelper {
-    // prefix for properties stored for PV settings
+    // prefix for properties stored for Subversion per ProjectViewer project
     public final static String PREFIX = "ise.plugin.svn.pv.";
 
-    // filename to project name lookup
+    // filename to project name lookup, caching these to improve performance, but
+    // I have no idea if the performance hit of going to PV every time is significant...
     private static HashMap<String, VPTProject> projectForFile = new HashMap<String, VPTProject>();
 
 
@@ -55,68 +57,81 @@ public class PVHelper {
         return pv != null;
     }
 
+    /**
+     * @return the name of the active project, if any, in the given view.  Returns an
+     * empty string if there is no active project in the view.
+     */
     public static String getProjectName( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getName();
     }
 
+    /**
+     * Reimport the files for the active project in the given view.
+     */
     public static void reimportProjectFiles( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
+        if ( project == null ) {
+            return ;
+        }
         RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
         SwingUtilities.invokeLater( importer );
     }
 
+    /**
+     * @return the name of the root of the active project, if any, in the given view.
+     * Returns an empty string if there is no active project in the view.
+     */
     public static String getProjectRoot( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getRootPath();
     }
 
     /**
-     * @return the name of the project containing the given filename
+     * @return the name of the project containing the given filename, or null if
+     * no project contains the file.
      */
     public static VPTProject getProjectNameForFile( String filename ) {
+        // the simplest check
         if ( filename == null ) {
             return null;
         }
+
+        // check the cache
         VPTProject project = projectForFile.get( filename );
         if ( project != null ) {
             return project;
         }
+
+        // another simple check
         if ( !isProjectViewerAvailable() ) {
             return null;
         }
+
+        // check ProjectViewer
         ProjectManager pm = ProjectManager.getInstance();
         for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
             project = ( VPTProject ) it.next();
-            Collection nodes = project.getOpenableNodes();
-            for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
-                VPTNode node = ( VPTNode ) iter.next();
-                if ( node != null && filename.equals( node.getNodePath() ) ) {
-                    projectForFile.put( filename, project );
-                    return project;
-                }
+            if ( project.isInProject( filename ) || ( project.getRootPath() != null && filename.startsWith( project.getRootPath() ) )) {
+                projectForFile.put(filename, project);
+                return project;
             }
         }
         return null;
     }
 
-    public static String[] getSVNLogin(String filename) {
-        VPTProject project = getProjectNameForFile(filename);
-        if (project == null) {
-            return new String[]{null, null};
+    /**
+     * @return {username, encrypted_password} The returned array will never be null,
+     * but username and/or password can be null.
+     */
+    public static String[] getSVNLogin( String filename ) {
+        VPTProject project = getProjectNameForFile( filename );
+        if ( project == null ) {
+            return new String[] {null, null};
         }
         String project_name = project.getName();
         String username = jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" );
         String password = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
-        if ( password != null && password.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                password = ph.decrypt( password );
-            }
-            catch ( Exception e ) {
-                password = "";
-            }
-        }
-        return new String[]{username, password};
+        return new String[] {username, password};
     }
 }

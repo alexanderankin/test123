@@ -80,7 +80,7 @@ public class Status {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getDecryptedPassword() );
 
         // get a client
         SVNStatusClient client = clientManager.getStatusClient();

@@ -66,6 +66,9 @@ public class CleanupAction extends SVNAction {
 
             data.setPaths( paths );
             verifyLogin(paths.get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
             data.setOut( new ConsolePrintStream( getView() ) );

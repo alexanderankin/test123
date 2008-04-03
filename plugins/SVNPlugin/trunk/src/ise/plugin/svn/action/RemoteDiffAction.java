@@ -85,7 +85,10 @@ public class RemoteDiffAction extends SVNAction {
             return ;     // null means user canceled
         }
 
-        verifyLogin();
+        verifyLogin(data.getPaths() == null ? null : data.getPaths().get(0));
+            if (isCanceled()) {
+                return;
+            }
         data.setUsername( getUsername() );
         data.setPassword( getPassword() );
 

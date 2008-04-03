@@ -83,6 +83,9 @@ public class CommitAction extends SVNAction {
             }
 
             verifyLogin( (String)paths.firstKey() );
+            if (isCanceled()) {
+                return;
+            }
             cd.setUsername( getUsername() );
             cd.setPassword( getPassword() );
             cd.setOut( new ConsolePrintStream( getView() ) );

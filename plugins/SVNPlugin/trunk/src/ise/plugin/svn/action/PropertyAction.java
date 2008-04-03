@@ -70,7 +70,10 @@ public class PropertyAction extends SVNAction {
                 int answer = JOptionPane.showConfirmDialog( getView(), "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
-            verifyLogin();
+            verifyLogin(data.getPaths() == null ? null : data.getPaths().get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
 

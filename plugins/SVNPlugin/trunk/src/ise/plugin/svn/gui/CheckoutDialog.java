@@ -183,15 +183,7 @@ public class CheckoutDialog extends JDialog {
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( SVNAction.PREFIX + project_name + ".password" );
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.decrypt( pwd );
-            }
-            catch ( Exception e ) {
-                pwd = "";
-            }
-        }
+        pwd = PasswordHandler.decryptPassword(pwd);
         password = new JPasswordField( pwd, 30 );
 
         // buttons
@@ -260,7 +252,7 @@ public class CheckoutDialog extends JDialog {
         CheckoutData cd = new CheckoutData();
         cd.setURL(url.getText());
         cd.setUsername(username.getText());
-        cd.setPassword(new String(password.getPassword()));
+        cd.setPassword(PasswordHandler.encryptPassword(new String(password.getPassword())));
         List<String> paths = new ArrayList<String>();
         paths.add(path.getText());
         cd.setPaths(paths);

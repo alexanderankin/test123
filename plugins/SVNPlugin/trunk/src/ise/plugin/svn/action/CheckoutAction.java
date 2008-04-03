@@ -52,6 +52,7 @@ import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class CheckoutAction extends SVNAction implements PropertyChangeListener {
@@ -203,9 +204,14 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                                     /// TODO: I wonder about this -- if the import happens later
                                     // (because of the invokeLater), will the save happen correctly?
                                     pm.save();
+                                    saveProjectSVNInfo(project.getName());
 
                                     // set ProjectViewer to show the new node
                                     ProjectViewer.setActiveNode( getView(), project );
+
+                                    // make ProjectViewer visible
+                                    getView().getDockableWindowManager().showDockableWindow( "projectviewer" );
+
                                 }
                                 catch ( Exception e ) {
                                     e.printStackTrace( System.err );
@@ -232,6 +238,27 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         dialog.pack();
         GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
+    }
+
+    private void saveProjectSVNInfo(String projectName) {
+        if (projectName == null || projectName.length() == 0) {
+            return;
+        }
+
+        jEdit.setProperty(
+            PVHelper.PREFIX + projectName + ".url",
+            ( cd.getURL() == null ? "" : cd.getURL() )
+        );
+
+        jEdit.setProperty(
+            PVHelper.PREFIX + projectName + ".username",
+            ( getUsername() == null ? "" : getUsername() )
+        );
+
+        jEdit.setProperty(
+            PVHelper.PREFIX + projectName + ".password",
+            getPassword()
+        );
     }
 
 }

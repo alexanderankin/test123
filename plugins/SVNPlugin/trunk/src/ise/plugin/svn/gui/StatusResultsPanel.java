@@ -30,14 +30,11 @@ package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.tree.*;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.EmptyBorder;
-import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
 import org.tmatesoft.svn.core.wc.SVNStatus;

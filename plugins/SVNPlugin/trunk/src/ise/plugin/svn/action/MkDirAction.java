@@ -87,6 +87,9 @@ public class MkDirAction extends SVNAction {
             }
 
             verifyLogin(paths.get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
             data.setOut( new ConsolePrintStream( getView() ) );

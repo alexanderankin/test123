@@ -36,6 +36,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
@@ -106,11 +107,29 @@ public class PropertyEditor extends JDialog {
     protected void _init() {
         propertyData = new PropertyData();
 
+        String[] filePropNames = null;
+        String file_props = jEdit.getProperty("ise.plugin.svn.gui.PropertyEditor.defaultFilePropNames");
+        if (file_props == null || file_props.length() == 0) {
+            filePropNames = default_file_prop_names;
+        }
+        else {
+            filePropNames = file_props.split("[,]");
+        }
+
+        String[] dirPropNames = null;
+        String dir_props = jEdit.getProperty("ise.plugin.svn.gui.PropertyEditor.defaultDirPropNames");
+        if (dir_props == null || dir_props.length() == 0) {
+            dirPropNames = default_dir_prop_names;
+        }
+        else {
+            dirPropNames = dir_props.split("[,]");
+        }
+
         JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         JLabel prop_name_label = new JLabel( "Property name:" );
-        final JComboBox prop_chooser = new JComboBox( isDirectory ? default_dir_prop_names : default_file_prop_names );
+        final JComboBox prop_chooser = new JComboBox( isDirectory ? dirPropNames : filePropNames );
         prop_chooser.setEditable( true );
         prop_chooser.setSelectedItem( name == null ? "" : name );
 

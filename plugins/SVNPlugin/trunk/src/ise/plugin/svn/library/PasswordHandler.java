@@ -142,6 +142,34 @@ public class PasswordHandler {
         }
     }
 
+    public static String decryptPassword( String pwd ) {
+        String password = pwd;
+        if ( password != null && password.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                password = ph.decrypt( password );
+            }
+            catch ( Exception e ) {
+                password = "";
+            }
+        }
+        return password;
+    }
+
+    public static String encryptPassword( String pwd ) {
+        String password = pwd;
+        if ( password != null && password.length() > 0 ) {
+            try {
+                PasswordHandler ph = new PasswordHandler();
+                password = ph.encrypt( password );
+            }
+            catch ( Exception e ) {
+                password = "";
+            }
+        }
+        return password;
+    }
+
     /**
      * for testing only
      *

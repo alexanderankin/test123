@@ -88,7 +88,10 @@ public class DeleteAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data.getPaths() != null && data.getPaths().size() > 0 ) {
-            verifyLogin(paths.get(0));
+            verifyLogin(data.getPaths().get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
             data.setOut( new ConsolePrintStream( getView() ) );

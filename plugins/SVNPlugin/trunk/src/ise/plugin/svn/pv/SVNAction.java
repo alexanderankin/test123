@@ -32,11 +32,9 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
-import projectviewer.action.Action;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.command.*;
-import ise.plugin.svn.library.PasswordHandler;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
@@ -107,10 +105,12 @@ public class SVNAction extends projectviewer.action.Action {
     // act accordingly.
     public void prepareForNode( VPTNode node ) {
         View view = viewer.getView();
-        String project_name = PVHelper.getProjectName( view );
+        //String project_name = PVHelper.getProjectName( view );
         String project_root = PVHelper.getProjectRoot( view );
-        String username = jEdit.getProperty( PREFIX + project_name + ".username" );
-        String password = jEdit.getProperty( PREFIX + project_name + ".password" );
+
+        // don't handle username/password here anymore, see i.p.s.a.SVNAction
+        String username = null; //jEdit.getProperty( PREFIX + project_name + ".username" );
+        String password = null; //jEdit.getProperty( PREFIX + project_name + ".password" );
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );

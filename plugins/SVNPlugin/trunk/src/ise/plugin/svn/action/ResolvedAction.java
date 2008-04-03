@@ -103,6 +103,9 @@ public class ResolvedAction extends SVNAction {
             }
 
             verifyLogin( paths.get( 0 ) );
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
 

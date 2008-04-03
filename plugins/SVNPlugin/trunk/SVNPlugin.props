@@ -146,3 +146,7 @@ ise.plugin.svn.gui.StatusResultsPanel.conflicted=Files with conflicts (need fixe
 ise.plugin.svn.gui.StatusResultsPanel.outofdate=Out of date files (need updated?):
 ise.plugin.svn.gui.StatusResultsPanel.statuschecked=
 
+# pre-defined svn property names.  Do not remove the leading comma from these values, it is important.
+ise.plugin.svn.gui.PropertyEditor.defaultFilePropNames=,svn:executable,svn:mime-type,svn:ignore,svn:keywords,svn:eol-style,svn:externals,svn:special,bugtraq:url,bugtraq:warnifnoissue,bugtraq:label,bugtraq:message,bugtraq:number,bugtraq:append
+ise.plugin.svn.gui.PropertyEditor.defaultDirPropNames=,svn:mime-type,svn:ignore,svn:keywords,svn:eol-style,svn:externals,svn:special,bugtraq:url,bugtraq:warnifnoissue,bugtraq:label,bugtraq:message,bugtraq:number,bugtraq:append,tsvn:logtemplate
+

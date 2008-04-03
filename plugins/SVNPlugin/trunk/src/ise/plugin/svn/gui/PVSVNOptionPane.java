@@ -85,15 +85,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         // password field
         password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
-        if ( pwd != null && pwd.length() > 0 ) {
-            try {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.decrypt( pwd );
-            }
-            catch ( Exception e ) {
-                pwd = "";
-            }
-        }
+        pwd = PasswordHandler.decryptPassword(pwd);
         password = new JPasswordField( pwd, 30 );
 
         // initially, some parts are not visible, they are made visible in the
@@ -137,15 +129,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         for ( int i = 0; i < pwd_chars.length; i++ ) {
             pwd_chars[ i ] = '0';
         }
-        try {
-            if ( pwd.length() > 0 ) {
-                PasswordHandler ph = new PasswordHandler();
-                pwd = ph.encrypt( pwd );
-            }
-        }
-        catch ( PasswordHandlerException e ) {
-            e.printStackTrace();
-        }
+        pwd = PasswordHandler.encryptPassword(pwd);
         jEdit.setProperty(
             PVHelper.PREFIX + name + ".password",
             pwd

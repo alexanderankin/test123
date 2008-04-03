@@ -34,8 +34,10 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Log;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.LogResults;
+import ise.plugin.svn.gui.LogDialog;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -87,7 +89,18 @@ public class LogAction extends SVNAction {
             data.setPaths( paths );
             data.setPathsAreURLs(pathsAreUrls);
 
+            LogDialog dialog = new LogDialog(getView(), data);
+            GUIUtils.center( getView(), dialog );
+            dialog.setVisible(true);
+            data = dialog.getData();
+            if (data == null) {
+                return;     // null data signals user canceled
+            }
+
             verifyLogin(paths.get(0));
+            if (isCanceled()) {
+                return;
+            }
             data.setUsername( getUsername());
             data.setPassword( getPassword());
             data.setOut( new ConsolePrintStream( getView() ) );

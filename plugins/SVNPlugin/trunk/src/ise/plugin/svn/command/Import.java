@@ -77,7 +77,7 @@ public class Import {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getDecryptedPassword() );
 
         // get a commit client
         SVNCommitClient client = clientManager.getCommitClient();
