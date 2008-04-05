@@ -203,7 +203,7 @@ public class AddResultsPanel extends JPanel {
                 if ( me.isPopupTrigger() ) {
                     JPopupMenu popup = getPopupMenu( table );
                     if ( popup != null ) {
-                        GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+                        GUIUtils.showPopupMenu( popup, table, me.getX(), me.getY() );
                     }
                 }
                 else if ( me.getClickCount() == 2 ) {

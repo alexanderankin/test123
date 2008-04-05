@@ -37,10 +37,10 @@ import javax.swing.tree.*;
 import javax.swing.border.EmptyBorder;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
+import ise.plugin.svn.library.GUIUtils;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Shows the results of a status check.
@@ -157,7 +157,7 @@ public class StatusResultsPanel extends JPanel {
 
         private void handleClick( MouseEvent e ) {
             if ( e.isPopupTrigger() && tree.getSelectionCount() > 0 ) {
-                GUIUtilities.showPopupMenu( popupMenu, StatusResultsPanel.this, e.getX(), e.getY() );
+                GUIUtils.showPopupMenu( popupMenu, StatusResultsPanel.this, e.getX(), e.getY() );
             }
             else if ( e.getClickCount() == 2 ) {
                 // for double-click on a text file, open the file in jEdit

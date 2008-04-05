@@ -30,7 +30,6 @@ package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -40,9 +39,7 @@ import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.data.UpdateData;
-import org.tmatesoft.svn.core.SVNLogEntry;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Shows the results of an update.  Conflicted files, updated files,
@@ -167,7 +164,7 @@ public class UpdateResultsPanel extends JPanel {
                     table.setRowSelectionInterval( row, row );
                     table.setColumnSelectionInterval( col, col );
                 }
-                GUIUtilities.showPopupMenu( popupMenu, UpdateResultsPanel.this, me.getX(), me.getY() );
+                GUIUtils.showPopupMenu( popupMenu, UpdateResultsPanel.this, me.getX(), me.getY() );
             }
         }
     }
