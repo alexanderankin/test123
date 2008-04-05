@@ -42,6 +42,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
@@ -187,10 +188,12 @@ public class DiffAction extends SVNAction {
 
                             // sort, oldest revision first
                             boolean lessThan = lessThan( data.getRevision2(), data.getRevision1() );
-                            File temp = remote1;
-                            remote1 = remote2;
-                            remote2 = temp;
-                            temp = null;
+                            if ( lessThan ) {
+                                File temp = remote1;
+                                remote1 = remote2;
+                                remote2 = temp;
+                                temp = null;
+                            }
                         }
                         File[] files = new File[ 2 ];
                         files[ 0 ] = remote1;
@@ -214,8 +217,8 @@ public class DiffAction extends SVNAction {
                             JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        File remote1 = files[ 0 ];
-                        File remote2 = files[ 1 ];
+                        final File remote1 = files[ 0 ];
+                        final File remote2 = files[ 1 ];
 
                         if ( remote1 == null && remote2 == null ) {
                             JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
@@ -230,23 +233,32 @@ public class DiffAction extends SVNAction {
                         getView().unsplit();
                         DualDiff.toggleFor( getView() );
 
-                        // set the edit panes in the view
-                        EditPane[] editPanes = getView().getEditPanes();
+                        Runnable r = new Runnable() {
+                                    public void run() {
+                                        // set the edit panes in the view
+                                        EditPane[] editPanes = getView().getEditPanes();
 
-                        // always show the 1st remote revision in the left edit pane
-                        editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
+                                        // always show the 1st remote revision in the left edit pane
+                                        editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
 
-                        if ( remote2 != null ) {
-                            // show the 2nd remote revision in the right edit pane
-                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
-                        }
-                        else {
-                            // or show the local working copy in the right edit pane
-                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
-                        }
+                                        if ( remote2 == null ) {
+                                            // or show the local working copy in the right edit pane
+                                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
+                                        }
+                                        else {
+                                            // show the 2nd remote revision in the right edit pane
+                                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
+                                        }
 
-                        // do an explicit repaint of the view to clean up the display
-                        getView().repaint();
+                                        // show the jdiff dockable
+                                        getView().getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+
+                                        // do an explicit repaint of the view to clean up the display
+                                        getView().repaint();
+                                    }
+                                };
+                        SwingUtilities.invokeLater( r );
+
                     }
                     catch ( Exception e ) {
                         // ignored
