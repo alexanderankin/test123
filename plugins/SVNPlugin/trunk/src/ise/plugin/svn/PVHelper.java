@@ -87,6 +87,11 @@ public class PVHelper {
         return project == null ? "" : project.getRootPath();
     }
 
+    public static String getProjectRoot( String filename ) {
+        VPTProject project = getProjectNameForFile( filename );
+        return project == null ? "" : project.getRootPath();
+    }
+
     /**
      * @return the name of the project containing the given filename, or null if
      * no project contains the file.

@@ -40,7 +40,6 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
-import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.PropertyData;
@@ -166,14 +165,14 @@ public class Property {
             for ( String path : data.getPaths() ) {
                 SVNURL svnurl = SVNURL.parseURIDecoded( path );
                 PropertyHandler handler = new PropertyHandler( path );
-                wc_client.doGetProperty( svnurl, null, SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
+                wc_client.doGetProperty( svnurl, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }
         else {
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
-                wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
+                wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
                 mergeResults( handler.getResults() );
             }
         }

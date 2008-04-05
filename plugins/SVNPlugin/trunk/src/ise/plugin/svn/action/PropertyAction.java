@@ -66,7 +66,7 @@ public class PropertyAction extends SVNAction {
     public void actionPerformed( ActionEvent ae ) {
         if ( data != null ) {
             // ask if properties should be found for children
-            if ( data.hasDirectory() ) {
+            if ( data.hasDirectory() && data.askRecursive() ) {
                 int answer = JOptionPane.showConfirmDialog( getView(), "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
