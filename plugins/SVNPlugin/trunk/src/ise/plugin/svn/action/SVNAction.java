@@ -148,8 +148,7 @@ public abstract class SVNAction implements ActionListener {
             message = "Confirm SVN login:";
         }
         String uname = getUsername();
-        String pwd = getDecryptedPassword();
-        //System.out.println("+++++ 1 uname = " + uname + ", pwd = " + pwd);
+        String pwd = getPassword();     // encrypted password
 
         // no username, so assume no password.  Attempt to get username and
         // password from project the file belongs to
@@ -160,7 +159,6 @@ public abstract class SVNAction implements ActionListener {
         }
 
         // still no username, so ask the user for it.
-        //System.out.println("+++++ 2 uname = " + uname + ", pwd = " + pwd);
         if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
             LoginDialog ld = new LoginDialog( view, getActionName(), message );
             GUIUtils.center( view, ld );
@@ -169,7 +167,7 @@ public abstract class SVNAction implements ActionListener {
                 setCanceled(true);
             }
             uname = ld.getUsername();
-            pwd = PasswordHandler.encryptPassword(ld.getPassword());     // non-encrypted password from LoginDialog
+            pwd = ld.getPassword();     // encrypted password from login dialog
 
         }
 

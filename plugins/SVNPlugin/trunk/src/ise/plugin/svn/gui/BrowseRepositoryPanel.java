@@ -44,17 +44,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.command.BrowseRepository;
-import ise.plugin.svn.data.CopyData;
-import ise.plugin.svn.data.DeleteData;
-import ise.plugin.svn.data.DiffData;
-import ise.plugin.svn.data.LogData;
-import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.data.RepositoryData;
-import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.gui.CopyDialog;
-import ise.plugin.svn.gui.RepositoryComboBox;
-import ise.plugin.svn.gui.RevisionDialog;
-import ise.plugin.svn.gui.TagBranchDialog;
 import ise.plugin.svn.gui.br.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PrivilegedAccessor;
@@ -71,7 +61,7 @@ public class BrowseRepositoryPanel extends JPanel {
     private RepositoryComboBox chooser = null;
     private String repositoryUrl = null;
     private JTree tree = null;
-    private JPopupMenu popupMenu = null;
+    //private JPopupMenu popupMenu = null;
     private String username = null;
     private String password = null;
 
@@ -206,7 +196,7 @@ public class BrowseRepositoryPanel extends JPanel {
             tree.addMouseListener( new TreeMouseListener() );
 
             // create the context menu
-            popupMenu = createPopupMenu();
+            //popupMenu = createPopupMenu();
 
             // create the control buttons -- add repository
             Icon new_icon = GUIUtilities.loadIcon( "New.png" );
@@ -393,7 +383,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
                     tree.addSelectionPath( path );
                 }
-                GUIUtilities.showPopupMenu( popupMenu, BrowseRepositoryPanel.this, me.getX(), me.getY(), true );
+                GUIUtils.showPopupMenu( createPopupMenu(), BrowseRepositoryPanel.this, me.getX(), me.getY() );
             }
         }
     }
@@ -413,7 +403,6 @@ public class BrowseRepositoryPanel extends JPanel {
     private JPopupMenu createPopupMenu() {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
-        String repositoryUrl = null;
         if ( chooser != null ) {
             RepositoryData rd = chooser.getSelectedRepository();
             if ( rd != null ) {

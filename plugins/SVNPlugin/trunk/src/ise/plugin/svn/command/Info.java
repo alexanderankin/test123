@@ -31,27 +31,21 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 import java.text.BreakIterator;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
-import org.tmatesoft.svn.cli.SVNArgument;
-import org.tmatesoft.svn.cli.SVNCommand;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLock;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
 import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
-import org.tmatesoft.svn.core.wc.ISVNInfoHandler;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
 import ise.plugin.svn.data.SVNData;
 

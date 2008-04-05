@@ -280,7 +280,7 @@ public class LogResultsPanel extends JPanel {
                 int row = table.rowAtPoint( p );
                 JPopupMenu popup = getPopupMenu( table, col, row, me.getX(), me.getY() );
                 if ( popup != null ) {
-                    GUIUtilities.showPopupMenu( popup, table, me.getX(), me.getY() );
+                    GUIUtils.showPopupMenu( popup, table, me.getX(), me.getY() );
                 }
             }
         }
