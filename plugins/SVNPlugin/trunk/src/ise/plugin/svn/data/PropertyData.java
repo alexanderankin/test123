@@ -42,6 +42,7 @@ public class PropertyData extends CheckoutData {
     private Properties properties = null;
     private String name = null;
     private String value = null;
+    private boolean askRecursive = true;
 
     public String toString() {
         return "PropertyData[pegRevision=" + pegRevision + ", revision=" + revision + "]";
@@ -60,6 +61,14 @@ public class PropertyData extends CheckoutData {
      */
     public void setPegRevision( SVNRevision pegRevision ) {
         this.pegRevision = pegRevision;
+    }
+
+    public void setAskRecursive(boolean b) {
+        askRecursive = b;
+    }
+
+    public boolean askRecursive() {
+        return askRecursive;
     }
 
     /**
@@ -105,7 +114,7 @@ public class PropertyData extends CheckoutData {
         name = n;
     }
     public String getName() {
-        return new String( name );
+        return name;
     }
 
     public void setValue( String v ) {

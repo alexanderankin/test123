@@ -31,6 +31,10 @@ subversion.browser.label=SVN Browser
 # new setting for jEdit 4.2
 plugin.ise.plugin.svn.SVNPlugin.activate=startup
 
+# plugin option pane
+plugin.ise.plugin.svn.SVNPlugin.option-pane=svnplugin
+options.svnplugin.label=Subversion
+options.svnplugin.code=new ise.plugin.svn.gui.SubversionOptions()
 
 # ProjectViewer option pane
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugin.svn.pv.options

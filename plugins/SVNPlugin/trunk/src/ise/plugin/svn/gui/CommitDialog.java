@@ -29,8 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
@@ -39,21 +37,17 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.CommitData;
-import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.library.PropertyComboBox;
+import ise.plugin.svn.PVHelper;
+import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.command.Property;
 
 
 /**
@@ -73,20 +67,20 @@ public class CommitDialog extends JDialog {
 
 
     public CommitDialog( View view, Map<String, String> nodes ) {
-        this(view, nodes, false);
+        this( view, nodes, false );
     }
 
-    public CommitDialog( View view, Map<String, String> nodes, boolean showLogin) {
+    public CommitDialog( View view, Map<String, String> nodes, boolean showLogin ) {
         super( ( JFrame ) view, "Commit", true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
         this.view = view;
         this.nodes = nodes;
-        init(showLogin);
+        init( showLogin );
     }
 
-    protected void init(boolean showLogin) {
+    protected void init( boolean showLogin ) {
 
         commitData = new CommitData();
 
@@ -112,6 +106,7 @@ public class CommitDialog extends JDialog {
         file_table.setModel( file_table_model );
 
         // load the table model, determine if recursive, accumulate file paths
+        String project_root = null;
         boolean recursive = false;
         List<String> paths = new ArrayList<String>();
         int i = 0;
@@ -120,6 +115,9 @@ public class CommitDialog extends JDialog {
             String path = me.getKey();
             String status = me.getValue() == null ? "" : me.getValue();
             if ( path != null ) {
+                if ( project_root == null ) {
+                    project_root = PVHelper.getProjectRoot( path );
+                }
                 File file = new File( path );
                 if ( file.isDirectory() ) {
                     recursive = true;
@@ -134,6 +132,41 @@ public class CommitDialog extends JDialog {
         commitData.setPaths( paths );
         commitData.setRecursive( recursive );
 
+        // check for commit template stored in tsvn:logtemplate
+        // TODO: check other tsvn properties, add a setting for this.  Add
+        // ability for the user to set custom templates per project?
+        String template = null;
+        if ( jEdit.getBooleanProperty("ise.plugin.svn.useTsvnTemplate", false) ) {
+            PropertyData data = new PropertyData();
+            data.setOut( new ConsolePrintStream( view ) );
+            data.addPath( project_root );
+            data.setName( "tsvn:logtemplate" );
+            data.setRecursive( false );
+            data.setAskRecursive( false );
+            String[] credentials = PVHelper.getSVNLogin( project_root );
+            data.setUsername( credentials[ 0 ] );
+            data.setPassword( credentials[ 1 ] );
+            Property cmd = new Property();
+            try {
+                cmd.doGetProperties( data );
+            }
+            catch ( Exception e ) {
+                // oh well...
+            }
+            if ( cmd.getProperties() != null ) {
+                TreeMap map = cmd.getProperties();
+                for ( Object key : map.keySet() ) {
+                    Properties p = cmd.getProperties().get( key );
+                    if ( p != null ) {
+                        template = ( String )
+                                p.get( "tsvn:logtemplate" );
+                    }
+                    break;
+                }
+            }
+        }
+
+        // table column widths
         file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 450 );
         file_table.getColumnModel().getColumn( 2 ).setPreferredWidth( 50 );
@@ -152,6 +185,9 @@ public class CommitDialog extends JDialog {
         comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
+        if ( template != null ) {
+            comment.setText( template );
+        }
 
         // list for previous comments
         final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
@@ -167,8 +203,8 @@ public class CommitDialog extends JDialog {
                                    );
 
         // possible login
-        final LoginPanel login = new LoginPanel(paths.get(0));
-        login.setVisible(showLogin);
+        final LoginPanel login = new LoginPanel( paths.get( 0 ) );
+        login.setVisible( showLogin );
 
 
         // buttons
@@ -208,8 +244,8 @@ public class CommitDialog extends JDialog {
                             }
                             commitData.setCommitMessage( msg );
 
-                            commitData.setUsername(login.getUsername());
-                            commitData.setPassword(login.getPassword());
+                            commitData.setUsername( login.getUsername() );
+                            commitData.setPassword( login.getPassword() );
                         }
                         CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
@@ -258,7 +294,7 @@ public class CommitDialog extends JDialog {
             panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
         }
 
-        if (showLogin) {
+        if ( showLogin ) {
             panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
             panel.add( "0, 12, 6, 1, 0, w", login );
         }
