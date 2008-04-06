@@ -34,3 +34,8 @@ options.rfcreader.rfcsources.ietf.org.url=http://www.ietf.org/rfc/rfc{0}.txt
 #the rfc site that will be used
 options.rfcreader.source=rfc.net
 
+# default folding and sidekick parsing modes for rfc files
+mode.rfc.folding=rfc-chapters
+mode.rfc.customSettings=true
+mode.rfc.sidekick.parser=outline
+
