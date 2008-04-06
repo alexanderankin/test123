@@ -38,4 +38,4 @@ options.rfcreader.source=rfc.net
 mode.rfc.folding=rfc-chapters
 mode.rfc.customSettings=true
 mode.rfc.sidekick.parser=outline
-
+mode.rfc.hyperlink.source=rfc
