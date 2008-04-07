@@ -2,7 +2,7 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004-newapi
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004-newapi-fix-freeze
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=defer
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
@@ -26,7 +26,7 @@ options.SpellCheck.aspellAutoMarkupMode=Automatic markup mode (for following edi
 options.SpellCheck.aspellAutoMarkupMode.name=Edit modes
 options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
 options.SpellCheck.aspellOtherParams=Additional parameters:
-
+options.SpellCheck.refresh-langs=Refresh list...
 ### Menu item labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
@@ -46,3 +46,8 @@ spell-check-noAspellExe.message=The spell check engine is unable to locate your 
 
 spell-check-error.title=Error spell checking (Aspell).
 spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}
+
+list-dict-error.message=<html><p style='color:red'>Unable to list dictionnaries :<br>{0}</p>
+
+spell-check.workthread-status=listing dictionnaries
+spell-check.listing-dicts.combo-item=listing...

@@ -311,16 +311,34 @@ public class SpellCheckPlugin
   }
 
   public static
-  Vector getAlternateLangDictionaries() throws SpellException
+  Vector<String> getAlternateLangDictionaries() throws SpellException
   {
 	String line;
     String aspellExeFilename = getAspellExeFilename();
-    Vector langs = new Vector();
+    Vector<String> langs = new Vector<String>();
+	Process process = null;
 	try
 	{
 	  //directly dump the aspell dicts
-	  Process process = Runtime.getRuntime().exec(new String[]{aspellExeFilename,"dump","dicts"} );
-	  BufferedReader input  = new BufferedReader(new InputStreamReader(process.getInputStream() ) );
+	  ProcessBuilder pb = new ProcessBuilder(Arrays.asList(new String[]{aspellExeFilename,"dumps","dicts"}));
+	  //this to allow us to catch error messages from Aspell
+	  pb.redirectErrorStream(true);
+	  process = pb.start();
+	  InputStream is = process.getInputStream();
+	  for(int i=0;is.available()==0 && i<5;i++){
+		  try{
+			  Thread.sleep(500);
+		  }catch(InterruptedException ie){
+				Log.log(Log.ERROR, SpellCheckPlugin.class, "Interrupted while listing dicts");
+				throw new SpellException("Interrupted while listing dictionnaries");
+		  }
+	  }
+	  if(is.available()==0){
+			Log.log(Log.ERROR, SpellCheckPlugin.class, "Timeout while listing dicts");
+			throw new SpellException("Timeout while listing dictionnaries");
+	  }
+	  Log.log(Log.DEBUG,SpellCheckPlugin.class, "might have dictionnaries");
+	  BufferedReader input  = new BufferedReader(new InputStreamReader(is ) );
 	  // each line is a dictionnary
 	  Pattern p = Pattern.compile("^[a-z]{2}[-\\w]*$");//at least 2 letters language code, then anything
 	  
@@ -336,8 +354,10 @@ public class SpellCheckPlugin
 		Log.log(Log.ERROR, SpellCheckPlugin.class, "Exception while listing dicts");
 		Log.log(Log.ERROR, SpellCheckPlugin.class,e);
 		throw new SpellException(e.getMessage());
+	}finally{
+		if(process!=null)process.destroy();
 	}
     return langs;
-  }  
+  }
   
 }
