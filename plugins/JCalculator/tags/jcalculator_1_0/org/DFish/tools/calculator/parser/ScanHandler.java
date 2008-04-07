@@ -73,30 +73,30 @@ public class ScanHandler implements CalculatorHandler {
     return (scanString == null) ? null : scanString.toString();
   }
 
-  @Override
+  //@Override
   public void startFormula(String formula) throws Exception {
     scanString = new StringBuffer(formula);
 
     readyNow();
   }
 
-  @Override
+  //@Override
   public void endFormula() throws Exception {
     if (!checkBracket()) {
       throw new Exception("The number of left brackets is not equal to right brackets");
     }
   }
 
-  @Override
+  //@Override
   public void error(String message) throws Exception {
     throw new Exception(" Find error:" + message);
   }
 
-  @Override
+  //@Override
   public void fatalError(String message) {
   }
 
-  @Override
+  //@Override
   public void number(Number n) throws Exception {
     if (!nextCouldBeNumber) {
       throw new Exception("No number(" + n + " is expected here");
@@ -121,7 +121,7 @@ public class ScanHandler implements CalculatorHandler {
     nextCouldBeRightBracket = true;
   }
 
-  @Override
+  //@Override
   public void operator(CalculatorOperator o) throws Exception {
     if (o.equals(CalculatorOperator.LEFT_BRACKET)) {
       if (!nextCouldBeLeftBracket) {
@@ -197,13 +197,13 @@ public class ScanHandler implements CalculatorHandler {
     nextCouldBeNumber = true;
   }
 
-  @Override
+  //@Override
   public void blank(char c) {
     scanString.delete(appendedSize + curPositionBegin, appendedSize + curPositionEnd);
     appendedSize -= 1;
   }
 
-  @Override
+  //@Override
   public void currentPosition(int begin, int end) {
     curPositionBegin = begin;
     curPositionEnd = end;
