@@ -31,7 +31,7 @@ public class FormulaParser implements CalculatorParser {
   }
   
   protected void initOperatorMap(){
-    opMap = new HashMap<String, CalculatorOperator>();
+    opMap = new HashMap();
     
     // symbols
     opMap.put("+", CalculatorOperator.PLUS);
@@ -179,7 +179,7 @@ public class FormulaParser implements CalculatorParser {
     return;
   }
   
-    @Override
+  //@Override
   public int parse(String formula) {
     if(formula.length() == 0){
       handler.currentPosition(-1, -1);
@@ -299,12 +299,12 @@ public class FormulaParser implements CalculatorParser {
     return CalculatorParser.PARSER_OK;
   }
   
-    @Override
+  //@Override
   public void terminate() {
     // do nothing
   }
 
-    @Override
+  //@Override
   public void applyHandler(CalculatorHandler handler) {
     this.handler = handler;
   }
