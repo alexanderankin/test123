@@ -31,17 +31,24 @@ import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.WorkRequest;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import cswilly.spell.SpellException;
 
 public class SpellCheckOptionPane
   extends AbstractOptionPane
 {
+	static final String LISTING_DICTS = "spell-check.listing-dicts.combo-item";
+	static final String REFRESH_BUTTON= "options.SpellCheck.refresh-langs";
   private JTextField    _aspellExeFilenameField;
   private JComboBox     _aspellMainLanguageList;
   private JRadioButton  _aspellNoMarkupMode;
@@ -59,7 +66,7 @@ public class SpellCheckOptionPane
 
   public void _init()
   {
-    Vector values = null;
+    Vector<String> values = null;
 	
     /* aspell executable */
     JLabel _aspellExeFilenameLabel = new JLabel();
@@ -89,25 +96,20 @@ public class SpellCheckOptionPane
 
     addComponent( _aspellMainLanguageLabel );
 
-    String  aspellMainLanguage = jEdit.getProperty( SpellCheckPlugin.ASPELL_LANG_PROP, "" );
+    JPanel listingPanel = new JPanel( new BorderLayout( 5, 0 ) );
 
-	try{
-		values = SpellCheckPlugin.getAlternateLangDictionaries();
-		if (!"".equals(aspellMainLanguage) && !values.contains( aspellMainLanguage ) )
-			  values.add( aspellMainLanguage );
-		
-		_aspellMainLanguageList = new JComboBox( values );
-		_aspellMainLanguageList.setSelectedItem( aspellMainLanguage );
-		_aspellMainLanguageList.setEditable( true );
+	DefaultComboBoxModel model = new DefaultComboBoxModel();
+	_aspellMainLanguageList = new JComboBox( model );
+	_aspellMainLanguageList.setEditable( true );
+	refreshList(model);
+	listingPanel.add( _aspellMainLanguageList, BorderLayout.WEST );
 	
-		addComponent( _aspellMainLanguageList );
-	}catch(SpellException spe){
-		Log.log(Log.ERROR,SpellCheckOptionPane.class,spe);
-		JLabel erreur = new JLabel(jEdit.getProperty("list-dict-error.message",
-									new Object[]{spe.getMessage()}));
-		addComponent(erreur);
-		_aspellMainLanguageList=null;
-	}
+    String  refresh = jEdit.getProperty( REFRESH_BUTTON, "" );
+    JButton refreshButton = new JButton(refresh);
+	refreshButton.addActionListener(new ListDictsActionHandler(model));
+	listingPanel.add( refreshButton, BorderLayout.EAST );
+	
+	addComponent(listingPanel);
 
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
@@ -167,10 +169,7 @@ public class SpellCheckOptionPane
   public void _save()
   {
     jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, _aspellExeFilenameField.getText().trim() );
-	if(_aspellMainLanguageList != null)
-		jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, _aspellMainLanguageList.getSelectedItem().toString().trim() );
-	else
-		jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP,"");
+	jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, _aspellMainLanguageList.getSelectedItem().toString().trim() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_NO_MARKUP_MODE, _aspellNoMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_MANUAL_MARKUP_MODE, _aspellManualMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_AUTO_MARKUP_MODE, _aspellAutoMarkupMode.isSelected() );
@@ -208,6 +207,17 @@ public class SpellCheckOptionPane
     return scroller;
   }
 
+	/**
+	 * Trigger async call to SpellCheckPlugin.getAlternateLangDictionaries()
+	 * in a WorkThread
+	**/
+	private void refreshList(MutableComboBoxModel model){
+		String  listing = jEdit.getProperty( LISTING_DICTS, "" );
+		model.addElement(listing);
+		model.setSelectedItem(listing);
+		VFSManager.runInWorkThread(new ListDictionnariesThread(model));
+	}
+  
   class CheckBoxCellRenderer extends JCheckBox
     implements TableCellRenderer
   {
@@ -241,6 +251,62 @@ public class SpellCheckOptionPane
         SpellCheckOptionPane.this._aspellExeFilenameField.setText( paths[0] );
     }
   }
+  
+  private class ListDictsActionHandler implements ActionListener{
+	  private MutableComboBoxModel model;
+	  public ListDictsActionHandler(MutableComboBoxModel m){
+		  model=m;
+	  }
+    public void actionPerformed( ActionEvent evt )
+    {
+			refreshList(model);
+	}
+  }
+
+  /** run SpellCheckPlugin.listDictionnaries in a separate thread
+   *  adapted from Proxy listing in PluginManagerOptionPane
+   */
+	class ListDictionnariesThread extends WorkRequest
+	{
+		private MutableComboBoxModel model;
+		public ListDictionnariesThread(MutableComboBoxModel m){
+			model = m;
+			setAbortable(true);
+		}
+		public void run()
+		{
+			setStatus(jEdit.getProperty("spell-check.workthread-status"));
+			setMaximum(1);
+			setValue(0);
+
+			final Vector<String> dicts = new Vector<String>();
+			try
+			{
+				dicts.addAll(SpellCheckPlugin.getAlternateLangDictionaries());
+			}
+			catch (SpellException ex)
+			{
+				Log.log(Log.ERROR,this,ex);
+				GUIUtilities.error(SpellCheckOptionPane.this,
+					"ioerror",new String[] { ex.toString() });
+			}
+
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					while(model.getSize()!=0)model.removeElementAt(0);//remove listing...
+					for(int i=0;i<dicts.size();i++)model.addElement(dicts.get(i));
+						
+
+					String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
+					model.setSelectedItem(dict);
+				}
+			});
+
+			setValue(1);
+		}
+	} //}}}
 }
 
 class ModeTableModel extends AbstractTableModel
@@ -352,4 +418,5 @@ class Entry
     else
       jEdit.unsetProperty( "spell-check-mode-" + name + "-isSelected" );
   }
+  
 }

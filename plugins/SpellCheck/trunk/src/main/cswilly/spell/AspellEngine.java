@@ -51,8 +51,20 @@ class AspellEngine
 	  pb.redirectErrorStream(true);
       _aSpellProcess = pb.start();
 
+	  InputStream is = _aSpellProcess.getInputStream();
+	  for(int i=0;is.available()==0 && i<5;i++){
+		  try{
+			  Thread.sleep(500);
+		  }catch(InterruptedException ie){
+				throw new SpellException("Interrupted while  while starting aspell");
+		  }
+	  }
+	  if(is.available()==0){
+			throw new SpellException("Timeout while starting aspell");
+	  }
+
       _aSpellReader =
-        new BufferedReader( new InputStreamReader( _aSpellProcess.getInputStream() ) );
+        new BufferedReader( new InputStreamReader(is) );
 
       _aSpellWriter =
         new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream() ) );
