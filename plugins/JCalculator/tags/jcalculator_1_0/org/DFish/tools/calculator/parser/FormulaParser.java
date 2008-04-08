@@ -31,7 +31,7 @@ public class FormulaParser implements CalculatorParser {
   }
   
   protected void initOperatorMap(){
-    opMap = new HashMap();
+    opMap = new HashMap<String, CalculatorOperator>();
     
     // symbols
     opMap.put("+", CalculatorOperator.PLUS);
