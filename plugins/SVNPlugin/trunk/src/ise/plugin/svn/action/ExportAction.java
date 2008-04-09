@@ -111,6 +111,19 @@ public class ExportAction extends SVNAction {
             return ;     // null data signals user canceled
         }
 
+        if ( data.getUsername() == null ) {
+            verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+            if ( isCanceled() ) {
+                return ;
+            }
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+        }
+        else {
+            setUsername( data.getUsername() );
+            setPassword( data.getPassword() );
+        }
+
 
         getView().getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );

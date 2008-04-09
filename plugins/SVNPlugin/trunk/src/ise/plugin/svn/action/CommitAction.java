@@ -77,18 +77,21 @@ public class CommitAction extends SVNAction {
             dialog = new CommitDialog( getView(), paths, false );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
-            final CommitData cd = dialog.getCommitData();
-            if ( cd == null ) {
+            final CommitData data = dialog.getCommitData();
+            if ( data == null ) {
                 return ;     // null means user canceled
             }
 
-            verifyLogin( (String)paths.firstKey() );
-            if (isCanceled()) {
-                return;
+            if ( getUsername() == null ) {
+                verifyLogin( (String)paths.firstKey() );
+                if ( isCanceled() ) {
+                    return ;
+                }
             }
-            cd.setUsername( getUsername() );
-            cd.setPassword( getPassword() );
-            cd.setOut( new ConsolePrintStream( getView() ) );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
@@ -105,13 +108,13 @@ public class CommitAction extends SVNAction {
                 public CommitData doInBackground() {
                     try {
                         Commit commit = new Commit( );
-                        return commit.commit( cd );
+                        return commit.commit( data );
                     }
                     catch ( Exception e ) {
-                        cd.getOut().printError( e.getMessage() );
+                        data.getOut().printError( e.getMessage() );
                     }
                     finally {
-                        cd.getOut().close();
+                        data.getOut().close();
                     }
                     return null;
                 }

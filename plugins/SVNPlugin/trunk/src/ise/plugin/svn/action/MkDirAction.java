@@ -86,12 +86,15 @@ public class MkDirAction extends SVNAction {
                 return ;     // null means user canceled
             }
 
-            verifyLogin(paths.get(0));
-            if (isCanceled()) {
-                return;
+            if ( data.getUsername() == null ) {
+                verifyLogin(paths.get(0));
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername());
-            data.setPassword( getPassword());
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );

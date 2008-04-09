@@ -97,12 +97,15 @@ public class LogAction extends SVNAction {
                 return;     // null data signals user canceled
             }
 
-            verifyLogin(paths.get(0));
-            if (isCanceled()) {
-                return;
+            if ( getUsername() == null ) {
+                verifyLogin(paths.get(0));
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername());
-            data.setPassword( getPassword());
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );

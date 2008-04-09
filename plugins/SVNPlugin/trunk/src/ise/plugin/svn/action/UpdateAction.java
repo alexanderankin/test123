@@ -89,12 +89,14 @@ public class UpdateAction extends SVNAction {
             }
             data.setRecursive( recursive ); // if recursive is false here, it means paths contains only files, no directories
 
-            verifyLogin( paths.get( 0 ) );
-            if (isCanceled()) {
-                return;
+            if ( getUsername() == null ) {
+                verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername() );
-            data.setPassword( getPassword() );
 
             data.setOut( new ConsolePrintStream( getView() ) );
 

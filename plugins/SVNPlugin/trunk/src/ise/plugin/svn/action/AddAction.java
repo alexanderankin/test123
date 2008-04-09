@@ -62,12 +62,12 @@ public class AddAction extends SVNAction {
      * @param password the password for the username
      */
     public AddAction( View view, List<String> paths, String username, String password ) {
-        super(view, "Add");
+        super( view, "Add" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -80,13 +80,15 @@ public class AddAction extends SVNAction {
                 return ;     // null means user canceled
             }
 
-            verifyLogin(paths.get(0));
-            if (isCanceled()) {
-                return;
+            if ( getUsername() == null ) {
+                verifyLogin( paths.get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
             }
 
-            cd.setUsername( getUsername());
-            cd.setPassword( getPassword());
+            cd.setUsername( getUsername() );
+            cd.setPassword( getPassword() );
             cd.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -119,10 +121,10 @@ public class AddAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                        panel.addTab("Add", results_panel);
+                        panel.addTab( "Add", results_panel );
                     }
                     catch ( Exception e ) {
-                        System.err.println(e.getMessage());
+                        System.err.println( e.getMessage() );
                     }
                 }
             }

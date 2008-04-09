@@ -55,7 +55,6 @@ import org.gjt.sp.jedit.View;
  */
 public class DeleteAction extends SVNAction {
 
-    private List<String> paths = null;
     private DeleteData data = null;
 
     /**
@@ -68,7 +67,6 @@ public class DeleteAction extends SVNAction {
         super(view, "Delete");
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        this.paths = paths;
         setUsername(username);
         setPassword(password);
 
@@ -88,12 +86,21 @@ public class DeleteAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data.getPaths() != null && data.getPaths().size() > 0 ) {
-            verifyLogin(data.getPaths().get(0));
-            if (isCanceled()) {
-                return;
+
+
+
+            if ( data.getUsername() == null ) {
+                verifyLogin(data.getPaths().get(0));
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername());
-            data.setPassword( getPassword());
+            else {
+                setUsername( data.getUsername() );
+                setPassword( data.getPassword() );
+            }
             data.setOut( new ConsolePrintStream( getView() ) );
 
             // show dialog

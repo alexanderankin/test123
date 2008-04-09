@@ -86,12 +86,20 @@ public class InfoAction extends SVNAction {
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
-            verifyLogin(paths.get(0));
-            if (isCanceled()) {
-                return;
+
+            if ( data.getUsername() == null ) {
+                verifyLogin(paths.get(0));
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername());
-            data.setPassword( getPassword());
+            else {
+                setUsername( data.getUsername() );
+                setPassword( data.getPassword() );
+            }
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );

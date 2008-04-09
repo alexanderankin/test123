@@ -140,8 +140,23 @@ public class DiffAction extends SVNAction {
                 data.setRevision1( SVNRevision.parse( revision1 ) );
                 data.setRevision2( SVNRevision.parse( revision2 ) );
             }
-            data.setUsername( getUsername() );
-            data.setPassword( getPassword() );
+
+            if ( getUsername() == null && data.getUsername() == null ) {
+                verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
+            }
+            else if ( data.getUsername() != null ) {
+                setUsername( data.getUsername() );
+                setPassword( data.getPassword() );
+            }
+            else {
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
+            }
 
             // set up the console output
             data.setOut( new ConsolePrintStream( getView() ) );
