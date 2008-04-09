@@ -14,6 +14,7 @@ Author: Dale Anson
 <a href="#installation">Installation</a><br/>
 <a href="#0">Dockables</a><br/>
 <a href="#1">Checking out a project</a><br/>
+<a href="#1a">Option Settings</a><br/>
 <a href="#2">Creating a project from existing files</a><br/>
 <a href="#3">Handling individual files</a><br/>
 <a href="#4">How to undelete a deleted file</a><br/>
@@ -265,6 +266,15 @@ Project Viewer will automatically switch to your new project so you can begin wo
 </li>
 </ol>
 
+</p>
+
+<hr>
+<a name="1a">
+<h2>Option Settings</h2>
+</a>
+
+<p>
+Option settings are accessed from Plugins - Plugin Options - Subversion. Currently, there is only one setting for this plugin, whether or not to use a "tsvn:logtemplate" property as a template for commit messages.  This is a property defined by the Tortoise SVN project and supported by many Subversion clients.  It allows a template for commit comments to be set, usually on a project basis.  Usually, this property is in set in Subversion on the top level folder and applies to all files contained within the folder.  If checked, it may take slightly longer for a commit dialog to appear, as the SVN Plugin will need to query the Subversion server for the value of this property.  Once the commit dialog does appear, the commit template will be displayed, which helps programmers remember to fill in particular pieces of information, such as bug number, reviewed by, and so on.
 </p>
 
 <hr>

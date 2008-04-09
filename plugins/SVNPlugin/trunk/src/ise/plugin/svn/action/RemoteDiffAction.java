@@ -41,6 +41,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
@@ -75,7 +76,7 @@ public class RemoteDiffAction extends SVNAction {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        // RemoteDiffDialog validates that there are exactly 2 paths in the
+        // RemoteDiffDialog validates that there are exactly 1 or 2 paths in the
         // diff data
         RemoteDiffDialog dialog = new RemoteDiffDialog( getView(), data );
         GUIUtils.center( getView(), dialog );
@@ -85,12 +86,18 @@ public class RemoteDiffAction extends SVNAction {
             return ;     // null means user canceled
         }
 
-        verifyLogin(data.getPaths() == null ? null : data.getPaths().get(0));
-            if (isCanceled()) {
-                return;
+        if ( data.getUsername() == null ) {
+            verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+            if ( isCanceled() ) {
+                return ;
             }
-        data.setUsername( getUsername() );
-        data.setPassword( getPassword() );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+        }
+        else {
+            setUsername(data.getUsername());
+            setPassword(data.getPassword());
+        }
 
         // set up the console output
         data.setOut( new ConsolePrintStream( getView() ) );
@@ -116,6 +123,9 @@ public class RemoteDiffAction extends SVNAction {
                         path1 = path1.substring( 1 );
                     }
                     String path2 = data.getPaths().get( 1 );
+                    if ( path2 == null ) {
+                        path2 = path1;
+                    }
                     if ( path2.startsWith( data.getURL() ) ) {
                         path2 = path2.substring( data.getURL().length() );
                     }
@@ -151,8 +161,8 @@ public class RemoteDiffAction extends SVNAction {
                         JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
-                    File remote1 = files[ 0 ];
-                    File remote2 = files[ 1 ];
+                    final File remote1 = files[ 0 ];
+                    final File remote2 = files[ 1 ];
 
                     if ( remote1 == null || remote2 == null ) {
                         JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
@@ -167,16 +177,24 @@ public class RemoteDiffAction extends SVNAction {
                     getView().unsplit();
                     DualDiff.toggleFor( getView() );
 
-                    // set the edit panes in the view
-                    EditPane[] editPanes = getView().getEditPanes();
+                    Runnable r = new Runnable() {
+                                public void run() {
+                                    // set the edit panes in the view
+                                    EditPane[] editPanes = getView().getEditPanes();
 
-                    // always show the 1st remote revision in the left edit pane
-                    editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
+                                    // always show the 1st remote revision in the left edit pane
+                                    editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
 
-                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
+                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
 
-                    // do an explicit repaint of the view to clean up the display
-                    getView().repaint();
+                                    // show the jdiff dockable
+                                    getView().getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+
+                                    // do an explicit repaint of the view to clean up the display
+                                    getView().repaint();
+                                }
+                            };
+                    SwingUtilities.invokeLater( r );
                 }
                 catch ( Exception e ) {
                     // ignored
