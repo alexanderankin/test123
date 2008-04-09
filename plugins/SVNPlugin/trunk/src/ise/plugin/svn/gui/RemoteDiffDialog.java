@@ -41,56 +41,67 @@ import ise.java.awt.KappaLayout;
 import ise.plugin.svn.gui.component.*;
 
 /**
- * Dialog to allow the user to select the revisions for 2 remote files to diff.
+ * Dialog to allow the user to select the revisions for 1 or 2 remote files to
+ * diff.
  */
 public class RemoteDiffDialog extends JDialog {
 
-    private View view = null;
     private DiffData data = null;
 
     /**
      * @param view the parent frame
      * @param data contains the paths to be diffed.
      */
-    public RemoteDiffDialog(View view, final DiffData dd) {
+    public RemoteDiffDialog( View view, final DiffData dd ) {
         super( ( JFrame ) view, "Diff", true );
         if ( dd == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = dd;
 
         // do some validation on the paths
         java.util.List<String> paths = data.getPaths();
-        if (paths.size() != 2) {
-            throw new IllegalArgumentException("can only compare 2 paths");
+        String path1 = paths.get( 0 );
+        String path2 = paths.get( 1 );
+
+        // validate at least first path is present
+        int count = 0;
+        if ( path1 == null || path1.length() == 0 ) {
+            throw new IllegalArgumentException( "cannot compare empty path" );
         }
-        String path1 = paths.get(0);
-        String path2 = paths.get(1);
-        if (path1 == null || path1.length() == 0 || path2 == null || path2.length() == 0){
-            throw new IllegalArgumentException("cannot compare empty path");
+        count = 1;
+        if ( path2 != null && path2.length() > 0 ) {
+            count = 2;
+        }
+        else {
+            // comparing 2 revisions of same file, so put first filename in
+            // the place for the 2nd file name
+            paths.add( 1, path1 );
         }
 
         // set up the main panel.  Layout is:
         // path1
         // revision selection panel for path1
-        // path2
-        // revision selection panel for path2
+        // path2 (if count == 2)
+        // revision selection panel for path2 (if count == 2, else 2nd revision for path1)
         // button panel
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // path1 display and revision chooser
-        JPanel file_panel1 = new JPanel(new BorderLayout());
+        JPanel file_panel1 = new JPanel( new BorderLayout() );
         file_panel1.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
-        file_panel1.add(new JLabel(path1), BorderLayout.CENTER);
-        final RevisionSelectionPanel rsp1 = new RevisionSelectionPanel("Diff Revision:");
+        file_panel1.add( new JLabel( path1 ), BorderLayout.CENTER );
+        final RevisionSelectionPanel rsp1 = new RevisionSelectionPanel( count == 1 ? "Diff Revision 1:" : "Diff Revision:" );
 
         // path2 display and revision chooser
-        JPanel file_panel2 = new JPanel(new BorderLayout());
-        file_panel2.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
-        file_panel2.add(new JLabel(path2), BorderLayout.CENTER);
-        final RevisionSelectionPanel rsp2 = new RevisionSelectionPanel("Diff Revision:");
+        JPanel file_panel2 = null;
+        if ( count == 2 ) {
+            file_panel2 = new JPanel( new BorderLayout() );
+            file_panel2.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
+            file_panel2.add( new JLabel( path2 ), BorderLayout.CENTER );
+        }
+        final RevisionSelectionPanel rsp2 = new RevisionSelectionPanel( count == 1 ? "Diff Revision 2" : "Diff Revision:" );
 
         // button panel
         KappaLayout kl = new KappaLayout();
@@ -102,16 +113,18 @@ public class RemoteDiffDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         // layout main panel
-        panel.add(file_panel1, "0, 0, 1, 1, W");
-        panel.add(KappaLayout.createVerticalStrut(6), "0, 1, 1, 1");
-        panel.add(rsp1, "0, 2, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(11), "0, 3, 1, 1");
-        panel.add(file_panel2, "0, 4, 1, 1, W");
-        panel.add(KappaLayout.createVerticalStrut(6), "0, 5, 1, 1");
-        panel.add(rsp2, "0, 6, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(11), "0, 7, 1, 1");
-        panel.add(btn_panel, "0, 8, 1, 1, E");
-        setContentPane(panel);
+        panel.add( file_panel1, "0, 0, 1, 1, W" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 1, 1, 1" );
+        panel.add( rsp1, "0, 2, 1, 1, W, w" );
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 3, 1, 1" );
+        if ( count == 2 ) {
+            panel.add( file_panel2, "0, 4, 1, 1, W" );
+            panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 5, 1, 1" );
+        }
+        panel.add( rsp2, "0, 6, 1, 1, W, w" );
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 7, 1, 1" );
+        panel.add( btn_panel, "0, 8, 1, 1, E" );
+        setContentPane( panel );
         pack();
 
         // action listeners for ok and cancel buttons
