@@ -82,14 +82,20 @@ public class LockAction extends SVNAction {
             dialog = new LockDialog( getView(), paths, true, remote );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
-            final CommitData cd = dialog.getData();
-            if ( cd == null ) {
+            final CommitData data = dialog.getData();
+            if ( data == null ) {
                 return ;     // null means user canceled
             }
 
-            cd.setUsername( getUsername() );
-            cd.setPassword( getPassword() );
-            cd.setOut( new ConsolePrintStream( getView() ) );
+            if ( getUsername() == null ) {
+                verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
+            }
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
@@ -106,13 +112,13 @@ public class LockAction extends SVNAction {
                 public LockResults doInBackground() {
                     try {
                         Lock lock = new Lock();
-                        return lock.lock( cd );
+                        return lock.lock( data );
                     }
                     catch ( Exception e ) {
-                        cd.getOut().printError( e.getMessage() );
+                        data.getOut().printError( e.getMessage() );
                     }
                     finally {
-                        cd.getOut().close();
+                        data.getOut().close();
                     }
                     return null;
                 }

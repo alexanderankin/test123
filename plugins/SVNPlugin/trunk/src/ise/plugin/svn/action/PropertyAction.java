@@ -56,7 +56,7 @@ public class PropertyAction extends SVNAction {
      * @param data what to show
      */
     public PropertyAction( View view, PropertyData data ) {
-        super(view, "Property");
+        super( view, "Property" );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
@@ -70,12 +70,19 @@ public class PropertyAction extends SVNAction {
                 int answer = JOptionPane.showConfirmDialog( getView(), "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
-            verifyLogin(data.getPaths() == null ? null : data.getPaths().get(0));
-            if (isCanceled()) {
-                return;
+
+            if ( data.getUsername() == null ) {
+                verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername());
-            data.setPassword( getPassword());
+            else {
+                setUsername( data.getUsername() );
+                setPassword( data.getPassword() );
+            }
 
             // set up the svn console
             data.setOut( new ConsolePrintStream( getView() ) );

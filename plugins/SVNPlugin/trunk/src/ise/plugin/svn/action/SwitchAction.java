@@ -88,12 +88,18 @@ public class SwitchAction extends SVNAction {
             }
 
 
-            verifyLogin( data.getPaths().get( 0 ) );
-            if (isCanceled()) {
-                return;
+            if ( data.getUsername() == null ) {
+                verifyLogin( data.getPaths().get( 0 ) );
+                if ( isCanceled() ) {
+                    return ;
+                }
+                data.setUsername( getUsername() );
+                data.setPassword( getPassword() );
             }
-            data.setUsername( getUsername() );
-            data.setPassword( getPassword() );
+            else {
+                setUsername( data.getUsername() );
+                setPassword( data.getPassword() );
+            }
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
