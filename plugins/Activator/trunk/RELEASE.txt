@@ -1,3 +1,6 @@
+Activator 1.2.2
+   #1936358: Prettiness for Activator Plugin reloader panel (dale anson) 
+
 Activator 1.2.1 (ezust)
    Clears summary file when unloading plugins
 
