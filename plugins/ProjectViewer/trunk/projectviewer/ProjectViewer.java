@@ -968,11 +968,12 @@ public final class ProjectViewer extends JPanel
 						getTreePanel().projectFileOpened(f);
 					}
 
-					if (!isClosingProject && bu.getWhat() == BufferUpdate.CLOSED) {
-						((VPTProject)where).removeOpenFile(bu.getBuffer().getPath());
+					if (!isClosingProject) {
+						if (bu.getWhat() == BufferUpdate.CLOSED) {
+							((VPTProject)where).removeOpenFile(bu.getBuffer().getPath());
+						}
+						ProjectViewer.nodeChanged(f);
 					}
-
-					ProjectViewer.nodeChanged(f);
 					return true;
 				}
 			} else if (where != null) {

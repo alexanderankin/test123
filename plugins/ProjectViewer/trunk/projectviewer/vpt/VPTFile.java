@@ -115,6 +115,7 @@ public class VPTFile extends VPTNode
 		try {
 			return VFSHelper.getFile(url);
 		} catch (IOException ioe) {
+			Log.log(Log.WARNING, this, ioe);
 			return null;
 		}
 	}
