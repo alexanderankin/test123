@@ -65,6 +65,7 @@ public class UnlockAction extends SVNAction {
      * @param paths a list of paths to be added
      * @param username the username for the svn repository
      * @param password the password for the username
+     * @param remote true if attempting to lock a remote repository file
      */
     public UnlockAction( View view, List<String> paths, String username, String password, boolean remote ) {
         super( view, "Unlock" );
