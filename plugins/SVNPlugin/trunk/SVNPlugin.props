@@ -55,7 +55,7 @@ subversion.label=SVN Console
 
 # subversion commands for ProjectViewer popup menu
 ise.plugin.svn.action.label.1=Status
-ise.plugin.svn.action.code.1=ise.plugin.svn.pv.StatusAction
+ise.plugin.svn.action.code.1=ise.plugin.svn.pv.StatusActor
 ise.plugin.svn.action.label.2=Update...
 ise.plugin.svn.action.code.2=ise.plugin.svn.pv.UpdateActor
 ise.plugin.svn.action.label.3=Commit...

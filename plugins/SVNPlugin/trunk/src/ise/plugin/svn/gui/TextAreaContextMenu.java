@@ -29,12 +29,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.event.*;
+import java.io.File;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.*;
 import org.gjt.sp.jedit.View;
+import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.action.*;
-import ise.plugin.svn.data.PropertyData;
+import ise.plugin.svn.data.*;
+import ise.plugin.svn.library.GUIUtils;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
@@ -48,36 +51,102 @@ public class TextAreaContextMenu extends JMenu {
         super( "Subversion" );
         this.view = view;
 
-        // these items act on working copies.
-        JMenuItem item = new JMenuItem( "Add..." );
-        item.addActionListener( getAddActionListener() );
+        /* these items act on working copies. This is the order in the PV
+        context menu:
+
+        status
+        update
+        commit
+        -
+        revert
+        add
+        resolve
+        delete
+        -
+        info
+        log
+        properties
+        diff
+        -
+        checkout
+        switch
+        cleanup
+        -
+        copy
+        move
+        import
+        export
+        -
+        lock
+        unlock
+        */
+
+        JMenuItem item = new JMenuItem( "Status" );
+        item.addActionListener( getStatusActionListener() );
         add( item );
         item = new JMenuItem( "Update..." );
         item.addActionListener( getUpdateActionListener() );
         add( item );
-        item = new JMenuItem( "Revert..." );
-        item.addActionListener( getRevertActionListener() );
-        add( item );
         item = new JMenuItem( "Commit..." );
         item.addActionListener( getCommitActionListener() );
         add( item );
+        addSeparator();
+        item = new JMenuItem( "Revert..." );
+        item.addActionListener( getRevertActionListener() );
+        add( item );
+        item = new JMenuItem( "Add..." );
+        item.addActionListener( getAddActionListener() );
+        add( item );
         item = new JMenuItem( "Resolve..." );
         item.addActionListener( getResolvedActionListener() );
+        add( item );
+        item = new JMenuItem( "Delete..." );
+        item.addActionListener( getDeleteActionListener() );
         add( item );
         addSeparator();
         item = new JMenuItem( "Info..." );
         item.addActionListener( getInfoActionListener() );
         add( item );
+        item = new JMenuItem( "Log..." );
+        item.addActionListener( getLogActionListener() );
+        add( item );
         item = new JMenuItem( "Properties..." );
         item.addActionListener( getPropertyActionListener() );
         add( item );
+        item = new JMenuItem( "Diff..." );
+        item.addActionListener( getDiffActionListener() );
+        add( item );
         addSeparator();
+        item = new JMenuItem( "Checkout" );
+        item.addActionListener( getCheckoutActionListener() );
+        add( item );
+        item = new JMenuItem( "Switch" );
+        item.addActionListener( getSwitchActionListener() );
+        add( item );
         item = new JMenuItem( "Cleanup..." );
         item.addActionListener( getCleanupActionListener() );
         add( item );
-        item = new JMenuItem( "Delete..." );
-        item.addActionListener( getDeleteActionListener() );
+        addSeparator();
+        item = new JMenuItem( "Copy" );
+        item.addActionListener( getCopyActionListener() );
         add( item );
+        item = new JMenuItem( "Move" );
+        item.addActionListener( getMoveActionListener() );
+        add( item );
+        item = new JMenuItem( "Import" );
+        item.addActionListener( getImportActionListener() );
+        add( item );
+        item = new JMenuItem( "Export" );
+        item.addActionListener( getExportActionListener() );
+        add( item );
+        addSeparator();
+        item = new JMenuItem( "Lock" );
+        item.addActionListener( getLockActionListener() );
+        add( item );
+        item = new JMenuItem( "Unlock" );
+        item.addActionListener( getUnlockActionListener() );
+        add( item );
+
     }
 
     public String toString() {
@@ -93,10 +162,10 @@ public class TextAreaContextMenu extends JMenu {
         return paths;
     }
 
-    private ActionListener getInfoActionListener() {
+    private ActionListener getStatusActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
-                       InfoAction action = new InfoAction( view, getPaths(), null, null );
+                       StatusAction action = new StatusAction( view, getPaths(), null, null );
                        action.actionPerformed( ae );
                    }
                };
@@ -120,6 +189,42 @@ public class TextAreaContextMenu extends JMenu {
                };
     }
 
+    private ActionListener getResolvedActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       ResolvedAction action = new ResolvedAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getDeleteActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       DeleteAction action = new DeleteAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getInfoActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       InfoAction action = new InfoAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getLogActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       LogAction action = new LogAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
     private ActionListener getPropertyActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
@@ -135,6 +240,36 @@ public class TextAreaContextMenu extends JMenu {
                };
     }
 
+    private ActionListener getDiffActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       DiffAction action = new DiffAction( view, getPaths().get( 0 ), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getCheckoutActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       CheckoutData data = new CheckoutData( null, null, null );
+                       CheckoutAction action = new CheckoutAction( view, data );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getSwitchActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       UpdateData data = new UpdateData();
+                       data.setPaths( getPaths() );
+                       SwitchAction action = new SwitchAction( view, data );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
     private ActionListener getCleanupActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
@@ -144,19 +279,82 @@ public class TextAreaContextMenu extends JMenu {
                };
     }
 
-    private ActionListener getDeleteActionListener() {
+    private ActionListener getCopyActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
-                       DeleteAction action = new DeleteAction( view, getPaths(), null, null );
+                       // show the copy dialog
+                       List<File> files = new ArrayList<File>();
+                       files.add( new File( getPaths().get( 0 ) ) );
+                       String default_destination = files.size() == 1 ? files.get( 0 ).getAbsolutePath() : PVHelper.getProjectRoot( view );
+                       CopyDialog dialog = new CopyDialog( view, files, default_destination, null );   // TODO: fill in remote destination
+                       GUIUtils.center( view, dialog );
+                       dialog.setVisible( true );
+                       CopyData data = dialog.getData();
+                       if ( data == null ) {
+                           return ;     // user canceled
+                       }
+
+                       // do the copy
+                       CopyAction action = new CopyAction( view, data );
+                       action.actionPerformed( null );
+                   }
+               };
+    }
+
+    private ActionListener getMoveActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       // show the copy dialog
+                       List<File> files = new ArrayList<File>();
+                       files.add( new File( getPaths().get( 0 ) ) );
+                       String default_destination = files.size() == 1 ? files.get( 0 ).getAbsolutePath() : PVHelper.getProjectRoot( view );
+                       MoveDialog dialog = new MoveDialog( view, files, default_destination );
+                       GUIUtils.center( view, dialog );
+                       dialog.setVisible( true );
+                       CopyData data = dialog.getData();
+                       if ( data == null ) {
+                           return ;     // user canceled
+                       }
+
+                       MoveAction action = new MoveAction( view, data );
+                       action.actionPerformed( null );
+                   }
+               };
+    }
+
+    private ActionListener getImportActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       ImportAction action = new ImportAction( view );
                        action.actionPerformed( ae );
                    }
                };
     }
 
-    private ActionListener getResolvedActionListener() {
+    private ActionListener getExportActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
-                       ResolvedAction action = new ResolvedAction( view, getPaths(), null, null );
+                       List<File> file = new ArrayList<File>();
+                       file.add( new File( getPaths().get( 0 ) ) );
+                       ExportAction action = new ExportAction( view, file, null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getLockActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       LockAction action = new LockAction( view, getPaths(), null, null, false );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getUnlockActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       UnlockAction action = new UnlockAction( view, getPaths(), null, null, false );
                        action.actionPerformed( ae );
                    }
                };
