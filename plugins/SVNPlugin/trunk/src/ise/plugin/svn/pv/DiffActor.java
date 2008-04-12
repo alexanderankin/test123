@@ -45,11 +45,11 @@ public class DiffActor extends NodeActor {
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
             DiffData data = new DiffData();
-            data.setPaths(getNodePaths());
-            data.setUsername(username);
-            data.setPassword(password);
-            data.setSvnDiff(nodes.size() > 1);
-            data.setRecursive(hasDirectory);
+            data.setPaths( getNodePaths() );
+            data.setUsername( username );
+            data.setPassword( password );
+            data.setRecursive( hasDirectory );
+            data.setSvnDiff( hasDirectory || nodes.size() > 1 );
             DiffAction action = new DiffAction( view, data );
             action.actionPerformed( ae );
         }
