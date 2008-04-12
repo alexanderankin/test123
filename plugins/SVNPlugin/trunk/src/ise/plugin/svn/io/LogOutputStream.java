@@ -45,6 +45,7 @@ public class LogOutputStream extends OutputStream {
     public LogOutputStream( View view ) {
         OutputPanel panel = SVNPlugin.getOutputPanel( view );
         logger = panel.getLogger();
+        logger.setUseParentHandlers(false);
     }
 
     public void setLevel( Level el ) {
