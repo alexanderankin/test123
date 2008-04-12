@@ -43,10 +43,11 @@ public class DiffData extends SVNData {
     private static final long serialVersionUID = 42L;
 
     private String repositoryUrl = null;
-    private transient SVNRevision revision1 = SVNRevision.HEAD;
-    private transient SVNRevision revision2 = null;
+    private SVNRevision revision1 = SVNRevision.HEAD;
+    private SVNRevision revision2 = null;
+    private boolean svnDiff = false;
 
-    public void setURL(String url) {
+    public void setURL( String url ) {
         repositoryUrl = url;
     }
 
@@ -74,9 +75,20 @@ public class DiffData extends SVNData {
         return revision2;
     }
 
+    /**
+     * @return true if the user is requesting an svn diff rather than a jdiff diff.
+     */
+    public boolean getSvnDiff() {
+        return svnDiff;
+    }
+
+    public void setSvnDiff( boolean svnDiff ) {
+        this.svnDiff = svnDiff;
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("DiffData[").append("path1=").append(getPaths().get(0)).append(", path2=").append(getPaths().get(1)).append(", url=").append(repositoryUrl).append(", rev1=" ).append(revision1).append(", rev2=").append(revision2).append("]");
+        sb.append( "DiffData[" ).append( "path1=" ).append( getPaths().get( 0 ) ).append( ", path2=" ).append( getPaths().get( 1 ) ).append( ", url=" ).append( repositoryUrl ).append( ", rev1=" ).append( revision1 ).append( ", rev2=" ).append( revision2 ).append( "]" );
         return sb.toString();
     }
 }

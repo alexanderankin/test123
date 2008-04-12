@@ -103,6 +103,16 @@ public class RemoteDiffDialog extends JDialog {
         }
         final RevisionSelectionPanel rsp2 = new RevisionSelectionPanel( count == 1 ? "Diff Revision 2" : "Diff Revision:" );
 
+        // svn diff?
+        final JCheckBox svn_diff = new JCheckBox("Create SVN diff");
+        svn_diff.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    data.setSvnDiff(svn_diff.isSelected());
+                }
+            }
+        );
+
         // button panel
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
@@ -122,8 +132,10 @@ public class RemoteDiffDialog extends JDialog {
             panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 5, 1, 1" );
         }
         panel.add( rsp2, "0, 6, 1, 1, W, w" );
-        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 7, 1, 1" );
-        panel.add( btn_panel, "0, 8, 1, 1, E" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 7, 1, 1" );
+        ///panel.add( svn_diff, "0, 8, 1, 1, W, w" );
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 9, 1, 1" );
+        panel.add( btn_panel, "0, 10, 1, 1, E" );
         setContentPane( panel );
         pack();
 
