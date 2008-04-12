@@ -68,6 +68,15 @@ public class DiffDialog extends JDialog {
 
         final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Diff Against:");
 
+        final JCheckBox svn_diff = new JCheckBox("Create SVN diff");
+        svn_diff.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    data.setSvnDiff(svn_diff.isSelected());
+                }
+            }
+        );
+
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( "Ok" );
@@ -104,8 +113,10 @@ public class DiffDialog extends JDialog {
         panel.add(file_panel, "0, 0, 1, 1, W");
         panel.add(KappaLayout.createVerticalStrut(6), "0, 1, 1, 1");
         panel.add(rsp, "0, 2, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(11), "0, 3, 1, 1");
-        panel.add(btn_panel, "0, 4, 1, 1, E");
+        panel.add(KappaLayout.createVerticalStrut(6), "0, 3, 1, 1");
+        panel.add(svn_diff, "0, 4, 1, 1, W, w");
+        panel.add(KappaLayout.createVerticalStrut(11), "0, 5, 1, 1");
+        panel.add(btn_panel, "0, 6, 1, 1, E");
         setContentPane(panel);
         pack();
     }

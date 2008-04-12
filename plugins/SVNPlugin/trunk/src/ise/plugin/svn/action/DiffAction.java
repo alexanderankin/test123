@@ -31,6 +31,7 @@ package ise.plugin.svn.action;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
+import ise.plugin.svn.command.Diff;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.DiffData;
 import ise.plugin.svn.gui.DiffDialog;
@@ -169,119 +170,12 @@ public class DiffAction extends SVNAction {
             logger = panel.getLogger();
             log( "Preparing to diff..." );
 
-            class Runner extends SwingWorker < File[], Object > {
-
-                @Override
-                public File[] doInBackground() {
-                    try {
-                        SVNURL url = null;
-                        String svn_path = null;
-                        File remote1 = null;
-                        File remote2 = null;
-
-                        // fetch repository and path info about the file
-                        Info info = new Info( );
-                        List<SVNInfo> infos = info.getInfo( data );
-                        if ( infos.size() == 0 ) {
-                            return null;
-                        }
-                        SVNInfo svn_info = infos.get( 0 );
-                        url = svn_info.getRepositoryRootURL();
-                        svn_path = svn_info.getPath();
-                        BrowseRepository br = new BrowseRepository();
-
-                        // there should always be one remote revision to fetch for diffing against a working copy
-                        // or for diffing against another revision
-                        log( "Diff, fetching file data..." );
-                        remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
-
-                        // there may be a second remote revision for diffing between 2 remote revisions
-                        remote2 = null;
-                        if ( data.getRevision2() != null ) {
-                            log( "Diff, fetching revision data..." );
-                            remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
-
-                            // sort, oldest revision first
-                            boolean lessThan = lessThan( data.getRevision2(), data.getRevision1() );
-                            if ( lessThan ) {
-                                File temp = remote1;
-                                remote1 = remote2;
-                                remote2 = temp;
-                                temp = null;
-                            }
-                        }
-                        File[] files = new File[ 2 ];
-                        files[ 0 ] = remote1;
-                        files[ 1 ] = remote2;
-                        return files;
-                    }
-                    catch ( Exception e ) {
-                        data.getOut().printError( e.getMessage() );
-                    }
-                    finally {
-                        data.getOut().close();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        File[] files = get();
-                        if ( files == null ) {
-                            JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        final File remote1 = files[ 0 ];
-                        final File remote2 = files[ 1 ];
-
-                        if ( remote1 == null && remote2 == null ) {
-                            JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-                        if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {
-                            JOptionPane.showMessageDialog( getView(), "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
-                            return ;
-                        }
-
-                        // show JDiff
-                        getView().unsplit();
-                        DualDiff.toggleFor( getView() );
-
-                        Runnable r = new Runnable() {
-                                    public void run() {
-                                        // set the edit panes in the view
-                                        EditPane[] editPanes = getView().getEditPanes();
-
-                                        // always show the 1st remote revision in the left edit pane
-                                        editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
-
-                                        if ( remote2 == null ) {
-                                            // or show the local working copy in the right edit pane
-                                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
-                                        }
-                                        else {
-                                            // show the 2nd remote revision in the right edit pane
-                                            editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
-                                        }
-
-                                        // show the jdiff dockable
-                                        getView().getDockableWindowManager().showDockableWindow( "jdiff-lines" );
-
-                                        // do an explicit repaint of the view to clean up the display
-                                        getView().repaint();
-                                    }
-                                };
-                        SwingUtilities.invokeLater( r );
-
-                    }
-                    catch ( Exception e ) {
-                        // ignored
-                        e.printStackTrace();
-                    }
-                }
+            if ( data.getSvnDiff() ) {
+                new SVNRunner().execute();
             }
-            ( new Runner() ).execute();
+            else {
+                new JDiffRunner().execute();
+            }
         }
     }
 
@@ -291,4 +185,153 @@ public class DiffAction extends SVNAction {
         }
         return rev1.getNumber() < rev2.getNumber();
     }
+
+    /**
+     * Uses JDiff to show the differences between 2 files.
+     */
+    class JDiffRunner extends SwingWorker < File[], Object > {
+
+        @Override
+        public File[] doInBackground() {
+            try {
+                SVNURL url = null;
+                String svn_path = null;
+                File remote1 = null;
+                File remote2 = null;
+
+                // fetch repository and path info about the file
+                Info info = new Info( );
+                List<SVNInfo> infos = info.getInfo( data );
+                if ( infos.size() == 0 ) {
+                    return null;
+                }
+                SVNInfo svn_info = infos.get( 0 );
+                url = svn_info.getRepositoryRootURL();
+                svn_path = svn_info.getPath();
+                BrowseRepository br = new BrowseRepository();
+
+                // there should always be one remote revision to fetch for diffing against a working copy
+                // or for diffing against another revision
+                log( "Diff, fetching file data..." );
+                remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+
+                // there may be a second remote revision for diffing between 2 remote revisions
+                remote2 = null;
+                if ( data.getRevision2() != null ) {
+                    log( "Diff, fetching revision data..." );
+                    remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
+
+                    // sort, oldest revision first
+                    boolean lessThan = lessThan( data.getRevision2(), data.getRevision1() );
+                    if ( lessThan ) {
+                        File temp = remote1;
+                        remote1 = remote2;
+                        remote2 = temp;
+                        temp = null;
+                    }
+                }
+                File[] files = new File[ 2 ];
+                files[ 0 ] = remote1;
+                files[ 1 ] = remote2;
+                return files;
+            }
+            catch ( Exception e ) {
+                data.getOut().printError( e.getMessage() );
+            }
+            finally {
+                data.getOut().close();
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                File[] files = get();
+                if ( files == null ) {
+                    JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                    return ;
+                }
+                final File remote1 = files[ 0 ];
+                final File remote2 = files[ 1 ];
+
+                if ( remote1 == null && remote2 == null ) {
+                    JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                    return ;
+                }
+                if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {
+                    JOptionPane.showMessageDialog( getView(), "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
+                    return ;
+                }
+
+                // show JDiff
+                getView().unsplit();
+                DualDiff.toggleFor( getView() );
+
+                Runnable r = new Runnable() {
+                            public void run() {
+                                // set the edit panes in the view
+                                EditPane[] editPanes = getView().getEditPanes();
+
+                                // always show the 1st remote revision in the left edit pane
+                                editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
+
+                                if ( remote2 == null ) {
+                                    // or show the local working copy in the right edit pane
+                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
+                                }
+                                else {
+                                    // show the 2nd remote revision in the right edit pane
+                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
+                                }
+
+                                // show the jdiff dockable
+                                getView().getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+
+                                // do an explicit repaint of the view to clean up the display
+                                getView().repaint();
+                            }
+                        };
+                SwingUtilities.invokeLater( r );
+
+            }
+            catch ( Exception e ) {
+                // ignored
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class SVNRunner extends SwingWorker < String, Object > {
+
+        @Override
+        public String doInBackground() {
+            try {
+                Diff diff = new Diff();
+                return diff.diff(data);
+            }
+            catch ( Exception e ) {
+                data.getOut().printError( e.getMessage() );
+            }
+            finally {
+                data.getOut().close();
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                String filediff = get();
+                if (filediff != null) {
+                    jEdit.newFile(getView()).insert(0, filediff);
+                }
+            }
+            catch ( Exception e ) {
+                // ignored
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
