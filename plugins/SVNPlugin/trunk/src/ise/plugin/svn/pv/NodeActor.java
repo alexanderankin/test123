@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
-import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -44,6 +43,9 @@ public abstract class NodeActor implements ActionListener {
 
     // this is a list of the currently selected nodes in ProjectViewer
     protected List<VPTNode> nodes = null;
+
+    // is set to true if any of nodes is a directory
+    protected boolean hasDirectory = false;
 
     // this is the current view containing the ProjectViewer
     protected View view = null;
@@ -70,9 +72,26 @@ public abstract class NodeActor implements ActionListener {
         projectRoot = project_root;
         this.username = username;
         this.password = password;
+        for (VPTNode node : n) {
+            if (node.isDirectory()) {
+                hasDirectory = true;
+                break;
+            }
+        }
     }
 
     public View getView() {
         return view;
+    }
+
+    public List<String> getNodePaths() {
+        if (nodes == null) {
+            return null;
+        }
+        List<String> paths = new ArrayList<String>();
+        for (VPTNode node : nodes ) {
+            paths.add(node.getNodePath());
+        }
+        return paths;
     }
 }

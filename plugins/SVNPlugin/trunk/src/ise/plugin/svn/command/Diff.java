@@ -98,9 +98,9 @@ public class Diff {
         // File, rev, file, rev -- TODO
         // File, rev, rev -- from PV, working file against revision
         // File, rev, URL, rev -- TODO
-        // URL, rev, rev -- from SVN Browser, remote file against revision
+        // URL, rev, rev -- TODO from SVN Browser, remote file against revision
         // URL, rev, URL, rev -- TODO
-        // for all, recursive = false, use ancestry = false
+        // for all, use ancestry = false
 
         // where to put the resulting output
         ByteArrayOutputStream diff_output = new ByteArrayOutputStream();
@@ -112,11 +112,14 @@ public class Diff {
         }
         if ( data.pathsAreURLs() ) {
             // URL, rev, rev -- from SVN Browser, remote file against revision
-            client.doDiff( SVNURL.parseURIDecoded( paths.get( 0 ) ), SVNRevision.create( 0 ), data.getRevision1(), data.getRevision2(), false, false, diff_output );
+            /// TODO:
+            //client.doDiff( SVNURL.parseURIDecoded( paths.get( 0 ) ), SVNRevision.create( 0 ), data.getRevision1(), data.getRevision2(), false, false, diff_output );
         }
         else {
             // File, rev, rev -- from PV, working file against revision
-            client.doDiff( localPaths[ 0 ], SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), false, false, diff_output );
+            for (File file : localPaths) {
+                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), file.isDirectory(), false, diff_output );
+            }
         }
         return diff_output.toString();
     }

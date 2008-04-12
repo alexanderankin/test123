@@ -43,7 +43,6 @@ import ise.plugin.svn.gui.component.*;
 
 public class DiffDialog extends JDialog {
 
-    private View view = null;
     private String path1 = null;
     private String path2 = null;
     private DiffData data = null;
@@ -52,31 +51,47 @@ public class DiffDialog extends JDialog {
      * @param view the parent frame
      * @param path the local working file to diff against.
      */
-    public DiffDialog(View view, String path) {
+    public DiffDialog( View view, String path ) {
         super( ( JFrame ) view, "Diff", true );
-        if ( path == null ) {
-            throw new IllegalArgumentException( "path may not be null" );
-        }
-        this.view = view;
-        this.path1 = path;
+        DiffData data = new DiffData();
+        data.addPath( path );
+        path1 = path;
+        this.data = data;
+        init();
+    }
 
-        data = new DiffData();
-        data.addPath(path1);
+    public DiffDialog( View view, DiffData data ) {
+        super( ( JFrame ) view, "Diff", true );
+        this.data = data;
+        init();
+    }
+
+    private void init() {
+        if ( data == null ) {
+            throw new IllegalArgumentException( "data may not be null" );
+        }
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Diff Against:");
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( path1 != null ? "Diff Against:" : "Diff Multiple Files Against:" );
 
-        final JCheckBox svn_diff = new JCheckBox("Create SVN diff");
+        final JCheckBox svn_diff = new JCheckBox( "Create SVN diff" );
+        if ( data.getRecursive() || data.getSvnDiff() ) {
+            // if recursive or svn diff, only possible to do an svn diff, so
+            // must select and disable the checkbox
+            svn_diff.setSelected( true );
+            svn_diff.setEnabled( false );
+        }
         svn_diff.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    data.setSvnDiff(svn_diff.isSelected());
+                    data.setSvnDiff( svn_diff.isSelected() );
                 }
             }
         );
 
+        // create button panel
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( "Ok" );
@@ -85,11 +100,11 @@ public class DiffDialog extends JDialog {
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
 
+        // add button actions
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         // get revision of remote file to diff against
                         data.setRevision1( rsp.getRevision() );
-
                         DiffDialog.this.setVisible( false );
                         DiffDialog.this.dispose();
                     }
@@ -100,24 +115,27 @@ public class DiffDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         // user canceled, set data to null to signal as much.
                         data = null;
-
                         DiffDialog.this.setVisible( false );
                         DiffDialog.this.dispose();
                     }
                 }
                                     );
 
-        JPanel file_panel = new JPanel(new BorderLayout());
-        file_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
-        file_panel.add(new JLabel(path), BorderLayout.CENTER);
-        panel.add(file_panel, "0, 0, 1, 1, W");
-        panel.add(KappaLayout.createVerticalStrut(6), "0, 1, 1, 1");
-        panel.add(rsp, "0, 2, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(6), "0, 3, 1, 1");
-        panel.add(svn_diff, "0, 4, 1, 1, W, w");
-        panel.add(KappaLayout.createVerticalStrut(11), "0, 5, 1, 1");
-        panel.add(btn_panel, "0, 6, 1, 1, E");
-        setContentPane(panel);
+        // layout main panel
+        if ( path1 != null ) {
+            // if just 1 file, display the name of the file
+            JPanel file_panel = new JPanel( new BorderLayout() );
+            file_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
+            file_panel.add( new JLabel( path1 ), BorderLayout.CENTER );
+            panel.add( file_panel, "0, 0, 1, 1, W" );
+            panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 1, 1, 1" );
+        }
+        panel.add( rsp, "0, 2, 1, 1, W, w" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 3, 1, 1" );
+        panel.add( svn_diff, "0, 4, 1, 1, W, w" );
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 5, 1, 1" );
+        panel.add( btn_panel, "0, 6, 1, 1, E" );
+        setContentPane( panel );
         pack();
     }
 
