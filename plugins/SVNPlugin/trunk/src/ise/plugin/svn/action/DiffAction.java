@@ -120,7 +120,7 @@ public class DiffAction extends SVNAction {
         }
 
         // if data only has 1 path, set path1 to that path
-        if ( paths.size() == 1 ) {
+        if ( !data.getSvnDiff() && paths.size() == 1 ) {
             path1 = paths.get( 0 );
             this.paths = null;
         }
