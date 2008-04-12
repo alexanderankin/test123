@@ -1,5 +1,6 @@
 Activator 1.2.2
    #1936358: Prettiness for Activator Plugin reloader panel (dale anson) 
+   #1938179: Prevent EmptyStackException from Activator plugin on reloading a plugin (dale anson)
 
 Activator 1.2.1 (ezust)
    Clears summary file when unloading plugins
