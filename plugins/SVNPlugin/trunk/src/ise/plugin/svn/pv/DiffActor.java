@@ -29,8 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.pv;
 
 import java.awt.event.ActionEvent;
+import java.util.*;
 import javax.swing.JOptionPane;
 import ise.plugin.svn.action.DiffAction;
+import ise.plugin.svn.data.DiffData;
 
 
 /**
@@ -41,12 +43,18 @@ import ise.plugin.svn.action.DiffAction;
 public class DiffActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        if ( nodes != null && nodes.size() == 1 && nodes.get( 0 ).isFile() ) {
-            DiffAction action = new DiffAction( view, nodes.get( 0 ).getNodePath(), username, password );
+        if ( nodes != null && nodes.size() > 0 ) {
+            DiffData data = new DiffData();
+            data.setPaths(getNodePaths());
+            data.setUsername(username);
+            data.setPassword(password);
+            data.setSvnDiff(nodes.size() > 1);
+            data.setRecursive(hasDirectory);
+            DiffAction action = new DiffAction( view, data );
             action.actionPerformed( ae );
         }
         else {
-            JOptionPane.showMessageDialog( view, "Please select a single file for diff.", "Error", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( view, "Nothing selected for diff.", "Error", JOptionPane.ERROR_MESSAGE );
         }
     }
 }

@@ -82,7 +82,7 @@ public class SVNAction extends projectviewer.action.Action {
             catch ( Exception e ) {
                 // class not found or instantiation exception, don't worry
                 // about it, assume it's a typo
-                e.printStackTrace();
+                //e.printStackTrace();
                 continue;
             }
         }
@@ -109,8 +109,8 @@ public class SVNAction extends projectviewer.action.Action {
         String project_root = PVHelper.getProjectRoot( view );
 
         // don't handle username/password here anymore, see i.p.s.a.SVNAction
-        String username = null; //jEdit.getProperty( PREFIX + project_name + ".username" );
-        String password = null; //jEdit.getProperty( PREFIX + project_name + ".password" );
+        String username = null;
+        String password = null;
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );

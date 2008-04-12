@@ -61,6 +61,7 @@ public class DiffAction extends SVNAction {
 
     private DiffDialog dialog = null;
 
+    private List<String> paths = null;
     private String path1 = null;
     private String path2 = null;
     private String revision1 = null;
@@ -110,6 +111,23 @@ public class DiffAction extends SVNAction {
         setPassword( password );
     }
 
+    public DiffAction( View view, DiffData data ) {
+        super( view, "Diff" );
+        this.data = data;
+        this.paths = data.getPaths();
+        if ( paths == null || paths.size() == 0 ) {
+            throw new IllegalArgumentException( "paths may not be null" );
+        }
+
+        // if data only has 1 path, set path1 to that path
+        if ( paths.size() == 1 ) {
+            path1 = paths.get( 0 );
+            this.paths = null;
+        }
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
+    }
+
     private void log( String msg ) {
         logger.log( Level.INFO, msg );
         for ( Handler handler : logger.getHandlers() ) {
@@ -121,7 +139,19 @@ public class DiffAction extends SVNAction {
         if ( ( path1 != null && path1.length() > 0 ) || data != null ) {
 
             // pick or set the revisions
-            if ( revision1 == null && path2 == null ) {
+            if ( paths != null ) {
+                // if here, then the 3rd constructor was called.  The user has
+                // selected to diff more than one file, which means all that can
+                // be done is an svn diff.
+                dialog = new DiffDialog( getView(), data );
+                GUIUtils.center( getView(), dialog );
+                dialog.setVisible( true );
+                data = dialog.getData();
+                if ( data == null ) {
+                    return ;     // null means user canceled
+                }
+            }
+            else if ( revision1 == null && path2 == null ) {
                 // if here, then the first constructor was called, the user is
                 // wanting to diff a local file against a remote version of the
                 // file. Show a DiffDialog to get the revision of the remote file.
@@ -137,7 +167,6 @@ public class DiffAction extends SVNAction {
                 // diffing two repository versions of the same file
                 data = new DiffData();
                 data.addPath( path1 );
-
                 data.setRevision1( SVNRevision.parse( revision1 ) );
                 data.setRevision2( SVNRevision.parse( revision2 ) );
             }
@@ -168,10 +197,9 @@ public class DiffAction extends SVNAction {
             panel.showConsole( );
 
             logger = panel.getLogger();
-            log( "Preparing to diff..." );
 
             if ( data.getSvnDiff() ) {
-                new SVNRunner().execute();
+                new SVNDiffRunner().execute();
             }
             else {
                 new JDiffRunner().execute();
@@ -194,6 +222,7 @@ public class DiffAction extends SVNAction {
         @Override
         public File[] doInBackground() {
             try {
+                log( "Preparing to diff..." );
                 SVNURL url = null;
                 String svn_path = null;
                 File remote1 = null;
@@ -296,19 +325,20 @@ public class DiffAction extends SVNAction {
 
             }
             catch ( Exception e ) {
-                // ignored
                 e.printStackTrace();
+                log( "Error: " + e.getMessage() );
             }
         }
     }
 
-    class SVNRunner extends SwingWorker < String, Object > {
+    class SVNDiffRunner extends SwingWorker < String, Object > {
 
         @Override
         public String doInBackground() {
             try {
+                log( "Preparing SVN diff..." );
                 Diff diff = new Diff();
-                return diff.diff(data);
+                return diff.diff( data );
             }
             catch ( Exception e ) {
                 data.getOut().printError( e.getMessage() );
@@ -323,13 +353,17 @@ public class DiffAction extends SVNAction {
         protected void done() {
             try {
                 String filediff = get();
-                if (filediff != null) {
-                    jEdit.newFile(getView()).insert(0, filediff);
+                if ( filediff != null ) {
+                    jEdit.newFile( getView() ).insert( 0, filediff );
+                    log( "SVN Diff created." );
+                }
+                else {
+                    log( "Unable to create SVN diff." );
                 }
             }
             catch ( Exception e ) {
-                // ignored
                 e.printStackTrace();
+                log( "Error: " + e.getMessage() );
             }
         }
     }
