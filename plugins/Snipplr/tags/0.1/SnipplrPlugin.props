@@ -1,0 +1,98 @@
+plugin.snipplr.SnipplrPlugin.activate=startup
+plugin.snipplr.SnipplrPlugin.name=Snipplr
+plugin.snipplr.SnipplrPlugin.author=Ian Lewis
+plugin.snipplr.SnipplrPlugin.version=0.1
+
+#snipplr.SnipplrPlugin.docs=QuickNotepad.html
+# depends on jedit 4.2final
+plugin.snipplr.SnipplrPlugin.depend.0=jedit 04.02.99.00
+plugin.snipplr.SnipplrPlugin.depend.1=jdk 1.5.0
+plugin.snipplr.SnipplrPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.6
+plugin.snipplr.SnipplrPlugin.description=A plugin that allows posting and searching code snippets on Snipplr
+plugin.snipplr.SnipplrPlugin.longdescription=description.html
+
+plugin.snipplr.SnipplrPlugin.menu=new-snippet
+
+#{{{ Labels
+new-snippet.label=New Snippet...
+snipplr-search.tags.label=Tags/Keywords:
+snipplr-search.search.label=Search
+
+snipplr-search.label=Snipplr
+snipplr-search.title=Snipplr
+snipplr-search.loading.msg=Loading...
+snipplr-search.no.results.msg=Search returned 0 results
+snipplr.apikey.error.title=Invalid API key.
+snipplr.apikey.error.message=Invalid API key. Please enter your API key in the Plugin Options.
+
+snipplr-snippet.delete-snippet.label=Delete
+snipplr-snippet.delete.confirm.title=Really delete?
+snipplr-snippet.delete.confirm.message=This will delete the snippet permanently. Are you sure you want to delete the snippet?
+
+snipplr.request.error.title=Snipplr Error
+snipplr.request.error.message=An error occurred while making a request to Snipplr:\n{0}
+
+snipplr-snippet.title.label=Title:
+snipplr-snippet.tags.label=Tags:
+snipplr-snippet.url.label=URL:
+snipplr-snippet.comment.label=Comment:
+snipplr-snippet.source.label=Source Code:
+snipplr-snippet.language.label=Language:
+
+snipplr-snippet.copy-source.label=Copy source
+snipplr-snippet.buffer-insert.label=Insert into Buffer
+snipplr-snippet.edit-snippet.label=Properties
+
+snipplr.save=Save
+#}}}
+
+#{{{ Options
+plugin.snipplr.SnipplrPlugin.option-pane=Snipplr
+options.Snipplr.label=Snipplr
+options.Snipplr.code=new snipplr.SnipplrOptionPane();
+options.Snipplr.apikey.title=Snipplr.com API Key
+#}}}
+
+#{{{ Snipplr Language Mappings
+plugin.snipplr.language.actionscript=actionscript-3
+plugin.snipplr.language.apacheconf=apache
+plugin.snipplr.language.applescript=applescript
+plugin.snipplr.language.asp=asp
+plugin.snipplr.language.assembly-m68k=assembler
+plugin.snipplr.language.assembly-macro32=assembler
+plugin.snipplr.language.assembly-r2000S=assembler
+plugin.snipplr.language.assembly-parrot=assembler
+plugin.snipplr.language.assembly-x86=assembler
+plugin.snipplr.language.beanshell=java
+plugin.snipplr.language.bibtex=latex
+plugin.snipplr.language.c=objective-c
+plugin.snipplr.language.coldfusion=cold-fusion
+plugin.snipplr.language.c++=c-plus-plus
+plugin.snipplr.language.c#=c-sharp
+plugin.snipplr.language.css=css
+plugin.snipplr.language.django=django
+plugin.snipplr.language.embperl=perl
+plugin.snipplr.language.forth=forth
+plugin.snipplr.language.fortran=fortran
+plugin.snipplr.language.html=html
+plugin.snipplr.language.java=java
+plugin.snipplr.language.javascript=javascript
+plugin.snipplr.language.latex=latex
+plugin.snipplr.language.lisp=lisp
+plugin.snipplr.language.lua=lua
+plugin.snipplr.language.mysql=sql
+plugin.snipplr.language.pascal=pascal
+plugin.snipplr.language.patch=diff
+plugin.snipplr.language.perl=perl
+plugin.snipplr.language.php=php
+plugin.snipplr.language.pl-sql=sql
+plugin.snipplr.language.python=python
+plugin.snipplr.language.ruby=ruby
+plugin.snipplr.language.scheme=scheme
+plugin.snipplr.language.smalltalk=smalltalk
+plugin.snipplr.language.svn-commit=svn
+plugin.snipplr.language.transact-sql=sql
+plugin.snipplr.language.typoscript=typo3
+plugin.snipplr.language.vbscript=vbnet
+plugin.snipplr.language.xml=xml
+#}}}
