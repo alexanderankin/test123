@@ -7,7 +7,7 @@ plugin.snipplr.SnipplrPlugin.version=1.0
 # depends on jedit 4.2final
 plugin.snipplr.SnipplrPlugin.depend.0=jedit 04.02.99.00
 plugin.snipplr.SnipplrPlugin.depend.1=jdk 1.5.0
-plugin.snipplr.SnipplrPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.6
+plugin.snipplr.SnipplrPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.6
 plugin.snipplr.SnipplrPlugin.description=A plugin that allows posting and searching code snippets on Snipplr
 plugin.snipplr.SnipplrPlugin.longdescription=description.html
 
