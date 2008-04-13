@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="new-snippet">
+		<CODE>
+			snipplr.SnipplrPlugin.newSnippet(view,textArea);
+		</CODE>
+	</ACTION>
+</ACTIONS>
