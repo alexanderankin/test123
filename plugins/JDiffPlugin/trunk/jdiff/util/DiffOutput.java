@@ -36,7 +36,7 @@ public abstract class DiffOutput {
 
 
     protected DiffOutput(Object[] a,Object[] b) {
-        this.lineSeparator = System.getProperty("java.line.separator");
+        this.lineSeparator = System.getProperty("line.separator");
         this.out = new OutputStreamWriter(System.out);
         this.file0 = a;
         this.file1 = b;

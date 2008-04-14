@@ -20,6 +20,9 @@
 
 package jdiff;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
@@ -27,23 +30,22 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.StringWriter;
-
+import java.io.*;
 import java.nio.*;
 
-import java.util.HashMap;
+import java.util.*;
 import javax.swing.*;
 
 import jdiff.component.DiffLocalOverview;
 import jdiff.component.DiffGlobalPhysicalOverview;
 import jdiff.component.DiffOverview;
 import jdiff.component.DiffLineOverview;
+import jdiff.component.PatchSelectionDialog;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
 import jdiff.util.DiffNormalOutput;
+import jdiff.util.patch.Patch;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -772,6 +774,68 @@ public class DualDiff implements EBComponent {
         }
     }
 
+    /**
+     * Shows a dialog for the user to select
+     * a patch file, then applies that patch file to the current buffer.
+     * @param view the view displaying the buffer
+     */
+    public static void applyPatch( View view ) {
+        try {
+            // let the user select the patch file and patch file type
+            PatchSelectionDialog dialog = new PatchSelectionDialog( view );
+            center(view, dialog);
+            dialog.setVisible( true );
+            String patch_file = dialog.getPatchFile();
+            if ( patch_file == null || patch_file.length() == 0 ) {
+                // null means user canceled
+                return ;
+            }
+
+            // load the patch file
+            FileReader reader = new FileReader( patch_file );
+            StringWriter writer = new StringWriter();
+            copyToWriter( reader, writer );
+            String patch = writer.toString();
+            if ( patch == null || patch.length() == 0 ) {
+                // say something?
+                return ;
+            }
+
+            // load the file to be patched
+            Buffer buffer = view.getEditPane().getBuffer();
+            String bufferText = buffer.getText( 0, buffer.getLength() );
+
+            String results = "";
+            int patch_type = dialog.getPatchType();
+            switch ( patch_type ) {
+                case PatchSelectionDialog.NORMAL:
+                    results = Patch.patchNormal( patch, bufferText );
+                    break;
+                default:
+                    results = Patch.patchUnified( patch, bufferText );
+                    break;
+            }
+            jEdit.newFile( view ).insert( 0, results );
+        }
+        catch ( Exception e ) {
+            // say something?
+            e.printStackTrace();
+        }
+    }
+
+    public static void copyToWriter( Reader from, Writer to ) throws Exception {
+        char[] buffer = new char[ 8192 ];
+        int chars_read;
+        while ( true ) {
+            chars_read = from.read( buffer );
+            if ( chars_read == -1 )
+                break;
+            to.write( buffer, 0, chars_read );
+        }
+        to.flush();
+        from.close();
+    }
+
     private void nextDiff0() {
         Diff.Change hunk = this.edits;
         int firstLine = this.textArea0.getCaretLine();
@@ -789,10 +853,10 @@ public class DualDiff implements EBComponent {
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea0.getLineStartOffset( line );
                 this.textArea0.setCaretPosition( caret_position, false );
-                this.textArea0.scrollToCaret(false);
+                this.textArea0.scrollToCaret( false );
                 caret_position = textArea1.getLineStartOffset( hunk.line1 );
                 this.textArea1.setCaretPosition( caret_position, false );
-                this.textArea1.scrollToCaret(false);
+                this.textArea1.scrollToCaret( false );
 
                 if ( this.textArea0.getFirstLine() != line ) {
                     this.textArea0.getToolkit().beep();
@@ -821,10 +885,10 @@ public class DualDiff implements EBComponent {
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea1.getLineStartOffset( line );
                 this.textArea1.setCaretPosition( caret_position, false );
-                this.textArea1.scrollToCaret(false);
+                this.textArea1.scrollToCaret( false );
                 caret_position = textArea0.getLineStartOffset( hunk.line0 );
                 this.textArea0.setCaretPosition( caret_position, false );
-                this.textArea0.scrollToCaret(false);
+                this.textArea0.scrollToCaret( false );
 
                 if ( this.textArea1.getFirstLine() != line ) {
                     this.textArea1.getToolkit().beep();
@@ -854,10 +918,10 @@ public class DualDiff implements EBComponent {
                     // move the caret to the start of the first line of the diff
                     int caret_position = textArea0.getLineStartOffset( line );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.scrollToCaret(false);
+                    this.textArea0.scrollToCaret( false );
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.scrollToCaret(false);
+                    this.textArea1.scrollToCaret( false );
 
                     if ( this.textArea0.getFirstLine() != line ) {
                         this.textArea0.getToolkit().beep();
@@ -888,10 +952,10 @@ public class DualDiff implements EBComponent {
                     // move the caret to the start of the first line of the diff
                     int caret_position = textArea1.getLineStartOffset( line );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.scrollToCaret(false);
+                    this.textArea1.scrollToCaret( false );
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.scrollToCaret(false);
+                    this.textArea0.scrollToCaret( false );
 
                     if ( this.textArea1.getFirstLine() != line ) {
                         this.textArea1.getToolkit().beep();
@@ -1039,5 +1103,24 @@ public class DualDiff implements EBComponent {
             ignoreAmountOfWhitespaceDefault = newIgnoreAmountOfWhitespaceDefault;
             ignoreAllWhitespaceDefault = newIgnoreAllWhitespaceDefault;
         }
+    }
+
+    /**
+     * Centers <code>you</code> on <code>me</code>. Useful for centering
+     * dialogs on their parent frames.
+     *
+     * @param me   Component to use as basis for centering.
+     * @param you  Component to center on <code>me</code>.
+     */
+    public static void center( Component me, Component you ) {
+        Rectangle my = me.getBounds();
+        Dimension your = you.getSize();
+        int x = my.x + ( my.width - your.width ) / 2;
+        if ( x < 0 )
+            x = 0;
+        int y = my.y + ( my.height - your.height ) / 2;
+        if ( y < 0 )
+            y = 0;
+        you.setLocation( x, y );
     }
 }

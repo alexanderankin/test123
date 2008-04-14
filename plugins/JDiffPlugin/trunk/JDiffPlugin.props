@@ -28,7 +28,8 @@ plugin.jdiff.JDiffPlugin.menu=\
     jdiff.toggle-ignore-amount-whitespace \
     jdiff.toggle-ignore-all-whitespace \
     - \
-    jdiff.diff-normal-output
+    jdiff.diff-normal-output \
+    jdiff.apply-patch
 
 plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
     jdiff.overview \
@@ -57,6 +58,7 @@ jdiff.toggle-ignore-amount-whitespace.label=Ignore amount of whitespace
 jdiff.toggle-ignore-all-whitespace.label=Ignore all whitespace
 jdiff.auto-show-dockable.label=Automatically show dockable on diff
 jdiff.diff-normal-output.label=Normal Diff Output
+jdiff.apply-patch.label=Apply Patch
 
 jdiff.ignore-case=false
 jdiff.trim-whitespace=false
