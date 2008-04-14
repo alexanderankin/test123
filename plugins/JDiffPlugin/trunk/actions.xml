@@ -86,6 +86,12 @@
         </CODE>
     </ACTION>
 
+    <ACTION NAME="jdiff.apply-patch">
+        <CODE>
+            jdiff.DualDiff.applyPatch(view);
+        </CODE>
+    </ACTION>
+
     <ACTION NAME="jdiff.move-right">
         <CODE>
             jdiff.DualDiff.moveRight(editPane);
