@@ -5,6 +5,7 @@ Ancestor        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Ancestor
 AntFarm         https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AntFarm/trunk
 Background      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Background/trunk
 Beauty          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Beauty/trunk
+BufferList      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferList/trunk
 BufferTabs      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferTabs/trunk
 BufferLocal     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferLocal/trunk
 Calculator      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk
