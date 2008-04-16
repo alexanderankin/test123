@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="typoscript.opentemplate">
+        <CODE>
+            typoscript.TypoScriptPlugin.openTemplate(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>

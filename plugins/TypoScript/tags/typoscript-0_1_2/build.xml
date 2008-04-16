@@ -1,0 +1,50 @@
+<project name="TypoScript" default="dist" basedir=".">
+
+  <property name="jedit.install.dir"  value="../.."/>
+  <property name="jar.name"  value="TypoScript.jar"/>
+
+  <property name="install.dir"  value=".."/>
+
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="../xmlrpc-client-3.0.jar"/>
+    <pathelement location="../commons-httpclient-3.0.1.jar"/>
+  	<pathelement location="../xmlrpc-common-3.0.jar"/>
+    <pathelement location="."/>
+  </path>
+
+
+  <target name="compile">
+    <javac
+      srcdir="."
+      deprecation="on"
+      includeJavaRuntime="yes"
+      debug="yes"
+    >
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+  
+  <target name="clean">
+	  <delete>
+		  <fileset dir="./typoscript" includes="*.class"/>
+	  </delete>
+  </target>
+
+  <target name="dist" depends="compile">
+    <mkdir dir="${install.dir}"/>
+    <jar jarfile="${install.dir}/${jar.name}">
+      <fileset dir=".">
+        <include name="**/*.class"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="**/*.png"/>
+	<include name="typoscript/typoscript.xml"/>
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+	<include name="services.xml"/>
+      </fileset>
+    </jar>
+  </target>
+</project>
