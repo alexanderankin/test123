@@ -5,6 +5,10 @@ plugin.typoscript.TypoScriptPlugin.version=0.1.2
 plugin.typoscript.TypoScriptPlugin.docs=docs/index.html
 plugin.typoscript.TypoScriptPlugin.depend.0=jedit 04.03.99.00
 plugin.typoscript.TypoScriptPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.6
+plugin.typoscript.TypoScriptPlugin.depend.2=jdk 1.4.3
+
+plugin.typoscript.TypoScriptPlugin.description=Allows loading and saving TypoScript templates within a TYPO3 CMS
+plugin.typoscript.TypoScriptPlugin.longdescription=description.html
 
 plugin.typoscript.TypoScriptPlugin.typenum=761
 
