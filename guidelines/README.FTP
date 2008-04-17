@@ -2,6 +2,7 @@ SVN policy file
 
 plugin: FTP
 author: Slava Pestov <sp@gjt.org>
-maintainer: Nicholas O'Leary
+Former maintainer: Nicholas O'Leary
+Maintainer:  Vadim Voituk <voituk@users.sourceforge.net>
 
 Please submit patches to the jedit-patches tracker.

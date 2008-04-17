@@ -1,6 +1,7 @@
-CVS policy file
+SVN policy file
 
 plugin: FindFile
 author: Nicholas O'Leary <nol@nol-edge.co.uk>
 
-Please do not commit any changes without consulting me first.
+Any volunteers to take over maintenance of this plugin?
+
