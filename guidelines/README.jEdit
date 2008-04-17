@@ -1,9 +1,6 @@
-GUIDELINES FILE FOR JEDIT MODULE
+SVN GUIDELINES FILE FOR JEDIT MODULE
 
-The following people may commit to the jEdit module:
-
-- Slava Pestov <slava@jedit.org>
-- John Gellene <jgellene@jedit.org>
+Current committers:
 - Alan Ezust <ezust@users.sourceforge.net>
 - Marcelo Vanzin <vanza@users.sourceforge.net>
 - Matthieu Casanova
@@ -11,6 +8,9 @@ The following people may commit to the jEdit module:
 - Shlomy Reinstein
 - Dale Anson
 
+Committers who are no longer active:
+- Slava Pestov <slava@jedit.org>
+- John Gellene <jgellene@jedit.org>
 
 Others should submit a patch (unified diff -u format)
 to the jedit patches tracker:

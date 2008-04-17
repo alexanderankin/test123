@@ -2,8 +2,10 @@ SVN policy file
 
 plugin: Console
 author: Slava Pestov <sp@gjt.org>
-Maintainer: Alan Ezust <alan.ezust@gmail.com>
-Committers: Marcelo Vanzin <vanza@users.sourceforge.net>
+Committers: 
+Alan Ezust <alan.ezust@gmail.com>
+Marcelo Vanzin <vanza@users.sourceforge.net>
+Kazutoshi Satoda
 
-Please submit patches to the jedit patches tracker.
+Others, please submit patches to the jedit plugin patches tracker.
 
