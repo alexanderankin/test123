@@ -4,4 +4,5 @@ plugin: JBrowse
 author/maintainer: Andre Kaplan <akaplan@jedit.org>
 original author:   George Latkiewicz
 
-please do not commit changes to this plugin without first consulting the author.
+This plugin is no longer maintained. Please use JavaSideKick.
+

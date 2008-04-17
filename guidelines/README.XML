@@ -1,4 +1,4 @@
-CVS policy file
+SVN policy file
 
 plugin: XML
 
@@ -8,6 +8,8 @@ Andre Kaplan <akaplan@jedit.org>
 Slava Pestov <slava@jedit.org> 
 Alan Ezust <alan.ezust@gmail.com>  
 Dale Anson <danson@users.sourceforge.net>
+Rob McKinnon
+Martin Raspe
+Jakub Roztocil
 
-
-Others should send unified diffs to the jEdit-patches tracker
+Others, please submit patches to the plugin patches tracker.
