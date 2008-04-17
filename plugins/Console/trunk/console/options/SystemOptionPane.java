@@ -22,6 +22,7 @@ public class SystemOptionPane extends AbstractOptionPane
 	private JCheckBox pvselect;
 	private JCheckBox pvchange;
 	private JTextField pathDirs ;
+	private JCheckBox pathDirsAppend;
 	
 
 	public SystemOptionPane()
@@ -48,6 +49,10 @@ public class SystemOptionPane extends AbstractOptionPane
 		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
 		addComponent(pathLabel, pathDirs);
 
+		pathDirsAppend = new JCheckBox(jEdit.getProperty("options.console.general.pathdirs.append"));
+		pathDirsAppend.setSelected(jEdit.getBooleanProperty("console.shell.pathdirs.append"));
+		addComponent(pathDirsAppend);
+		
 		rememberCWD = new JCheckBox(jEdit.getProperty("options.console.general.rememberCWD"));
 		rememberCWD.setSelected(jEdit.getBooleanProperty("console.rememberCWD"));
 		addComponent(rememberCWD);	
@@ -89,6 +94,7 @@ public class SystemOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
+		jEdit.setBooleanProperty("console.shell.pathdirs.append", pathDirsAppend.isSelected());
 		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
 
 		
