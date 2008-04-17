@@ -91,11 +91,13 @@ public abstract class ProcessRunner
 	 */
 	private void prependUserPath(Map<String, String> environment)  {
 		String extra = jEdit.getProperty("console.shell.pathdirs");
+		boolean appendExtra = jEdit.getBooleanProperty("console.shell.pathdirs.append");
 		if (extra == null || extra.length() == 0) return;
 		String oldPath = environment.get("PATH");
 		String newPath = extra;
 		if (oldPath != null) {
-			newPath = extra + File.pathSeparator + oldPath;
+			if (appendExtra) newPath = oldPath + File.pathSeparator + extra;
+			else newPath = extra + File.pathSeparator + oldPath;
 		}
 		environment.put("PATH", newPath);
 	} // }}}
