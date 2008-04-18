@@ -159,6 +159,7 @@ You can close unused connections at any other time using the
    Requires java 1.5 and jEdit 4.3pre12. </para>
 	<itemizedlist>
    		<listitem><para>Fixed: Password in address not detected (# 1712941 - Jakub Roztocil) </para></listitem>
+   		<listitem><para>Fixed: Weird directory listing with wu-ftpd (# 1929705 - Vadim Voituk) </para></listitem>
 	</itemizedlist> </listitem>
 
 
