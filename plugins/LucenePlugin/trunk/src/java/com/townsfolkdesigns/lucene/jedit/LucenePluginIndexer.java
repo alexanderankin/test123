@@ -25,10 +25,13 @@
 package com.townsfolkdesigns.lucene.jedit;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.townsfolkdesigns.lucene.indexer.FileTypeDelegatingIndexer;
+import org.gjt.sp.util.Log;
+
+import com.townsfolkdesigns.lucene.jedit.manager.IndexManager;
 import com.townsfolkdesigns.lucene.jedit.manager.IndexStatsManager;
 import com.townsfolkdesigns.lucene.jedit.manager.OptionsManager;
 import com.townsfolkdesigns.lucene.parser.DefaultFileDocumentParser;
@@ -37,7 +40,7 @@ import com.townsfolkdesigns.lucene.parser.DefaultFileDocumentParser;
  * @author elberry
  * 
  */
-public class LucenePluginIndexer extends FileTypeDelegatingIndexer implements JEditIndexer {
+public class LucenePluginIndexer extends JEditFileTypeDelegatingIndexer {
 
 	private static final OptionsManager optionsManager = OptionsManager.getInstance();
 
@@ -70,13 +73,49 @@ public class LucenePluginIndexer extends FileTypeDelegatingIndexer implements JE
 		List<String> directories = optionsManager.getDirectories();
 		String[] locations = directories.toArray(new String[0]);
 		setLocations(locations);
+		Log.log(Log.DEBUG, this, "Indexing - locations: " + Arrays.toString(locations));
 		// index method overridden so that the stats can be saved in the manager.
-		indexStatsManager.setIndexStartTime(new Date());
+		Date startDate = new Date();
+		long startTime = startDate.getTime();
+		indexStatsManager.setIndexStartTime(startDate);
 		indexStatsManager.setIndexing(true);
 		super.index();
-		indexStatsManager.setIndexEndTime(new Date());
+		Date endDate = new Date();
+		long endTime = endDate.getTime();
+		long indexingTime = endTime - startTime;
+		indexStatsManager.setIndexEndTime(endDate);
 		indexStatsManager.setDirectoriesIndexed(getDirectoriesIndexed());
 		indexStatsManager.setFilesIndexed(getFilesIndexed());
+		Log.log(Log.DEBUG, this, "Indexing complete - time: " + indexingTime + " | directories: "
+		      + getDirectoriesIndexed() + " | files: " + getFilesIndexed());
+		// overwrite the old index.
+		File indexStoreDir = new LucenePlugin().getIndexStoreDirectory();
+		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
+		File tempIndexStoreFile = new File(indexStoreFile, "temp");
+		if (indexStoreFile.exists()) {
+			// get a write lock so no searches can be done.
+			IndexManager.getInstance().aquireWriteLock();
+			// delete old index.
+			indexStoreFile.delete();
+			// replace it with the new one.
+			tempIndexStoreFile.renameTo(indexStoreFile);
+			// delete the temp directory.
+			tempIndexStoreFile.delete();
+			// release the write lock so searches can resume.
+			IndexManager.getInstance().releaseWriteLock();
+		} else {
+			// something happened to the old index or this is the first time
+			// indexing, just move the new one over.
+
+			// get a write lock so no searches can be done.
+			IndexManager.getInstance().aquireWriteLock();
+			// replace it with the new one.
+			tempIndexStoreFile.renameTo(indexStoreFile);
+			// delete the temp directory.
+			tempIndexStoreFile.delete();
+			// release the write lock so searches can resume.
+			IndexManager.getInstance().releaseWriteLock();
+		}
 	}
 
 	/*
@@ -91,9 +130,14 @@ public class LucenePluginIndexer extends FileTypeDelegatingIndexer implements JE
 			indexStoreDir.mkdirs();
 		}
 		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
+		// actually write the index out to a temp directory so the reader can read
+		// the old index while this indexer is creating the new one. The reading
+		// index is the same as above.
+		indexStoreFile = new File(indexStoreFile, "temp");
 		setIndexStoreDirectory(indexStoreFile);
 		setDefaultDocumentParser(new DefaultFileDocumentParser());
 		setIndexStatsManager(new IndexStatsManager());
+		setRecursivelyIndexDirectoriesOn(true);
 		super.init();
 	}
 

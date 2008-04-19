@@ -80,6 +80,23 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 		return documentParserCollection;
 	}
 
+	/**
+	 * A default init method. This method simply creates the IndexWriter based on
+	 * the IndexStoreDirectory. Subclasses should override this method to set the
+	 * IndexStoreDirectory, then just call super.init() to create the IndexWriter
+	 * and set this Indexer to being initialized.
+	 */
+	public void init() {
+		if (getIndexStoreDirectory() != null) {
+			try {
+				setIndexWriter(new IndexWriter(getIndexStoreDirectory(), new StandardAnalyzer()));
+			} catch (Exception e) {
+				log.error("Error creating the IndexWriter - store directory: " + getIndexStoreDirectory().getPath(), e);
+			}
+		}
+		setInitialized(true);
+	}
+
 	public void setDefaultDocumentParser(FileDocumentParser defaultDocumentParser) {
 
 		this.defaultDocumentParser = defaultDocumentParser;
@@ -107,6 +124,9 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 	@Override
 	protected Document indexFile(File file) {
 
+		// ++: This document might be "poolable" which would improve indexing
+		// speed. Perhaps pooling it by file type, since the document parsers
+		// should be the same.
 		Document document = new Document();
 		String fileType = FileUtils.getFileType(file);
 		Collection<FileDocumentParser> documentParsers = getDocumentParsers(fileType);
@@ -136,22 +156,5 @@ public class FileTypeDelegatingIndexer extends AbstractFileIndexer {
 	private Collection<FileDocumentParser> getDocumentParsers(String fileType) {
 
 		return documentParsers.get(fileType);
-	}
-
-	/**
-	 * A default init method. This method simply creates the IndexWriter based on
-	 * the IndexStoreDirectory. Subclasses should override this method to set the
-	 * IndexStoreDirectory, then just call super.init() to create the IndexWriter
-	 * and set this Indexer to being initialized.
-	 */
-	public void init() {
-		if (getIndexStoreDirectory() != null) {
-			try {
-				setIndexWriter(new IndexWriter(getIndexStoreDirectory(), new StandardAnalyzer()));
-			} catch (Exception e) {
-				log.error("Error creating the IndexWriter - store directory: " + getIndexStoreDirectory().getPath(), e);
-			}
-		}
-		setInitialized(true);
 	}
 }
