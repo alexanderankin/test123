@@ -4,6 +4,7 @@ Current committers:
 - Alan Ezust <ezust@users.sourceforge.net>
 - Marcelo Vanzin <vanza@users.sourceforge.net>
 - Matthieu Casanova
+- Björn "Vampire" Kautler
 - Kazutoshi Satoda
 - Shlomy Reinstein
 - Dale Anson
@@ -12,6 +13,7 @@ Current committers:
 Committers who are no longer active:
 - Slava Pestov <slava@jedit.org>
 - John Gellene <jgellene@jedit.org>
+- Oliver Rutherfurd
 
 Others should submit a patch (unified diff -u format)
 to the jedit patches tracker:
