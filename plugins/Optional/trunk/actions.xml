@@ -31,5 +31,12 @@
 			new optional.CombinedOptions(view);
 		</CODE>
 	</ACTION>
+    
+    <ACTION NAME="optional.export.settings">
+        <CODE>
+            new optional.ExportOptionsDialog(view);
+        </CODE>
+    </ACTION>
+    
 </ACTIONS>
 
