@@ -1,0 +1,515 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>CamelComplete Guide</TITLE>
+	<META NAME="GENERATOR" CONTENT="NeoOffice 2.2  (Unix)">
+	<META NAME="CREATED" CONTENT="20080324;14304500">
+	<META NAME="CHANGEDBY" CONTENT="J P">
+	<META NAME="CHANGED" CONTENT="20080328;12331200">
+	<META NAME="SDFOOTNOTE" CONTENT=";;;.">
+	<STYLE TYPE="text/css">
+	<!--
+		TD P { margin-bottom: 0in; color: #000000; text-align: justify; page-break-before: auto; page-break-after: auto }
+		TD P.western { font-size: 12pt }
+		H1 { margin-top: 0in; margin-bottom: 0.08in; color: #000000; page-break-before: auto; page-break-after: auto }
+		H1.western { font-family: "Times New Roman", serif; font-size: 14pt; font-weight: medium }
+		H1.cjk { font-family: "MS Mincho"; font-size: 16pt }
+		H1.ctl { font-family: "Tahoma"; font-size: 16pt }
+		P { margin-bottom: 0.08in; color: #000000; text-align: justify; page-break-before: auto; page-break-after: auto }
+		P.western { font-size: 12pt }
+		H2 { margin-top: 0.08in; margin-bottom: 0.08in; color: #000000; page-break-before: auto; page-break-after: auto }
+		H2.western { font-size: 13pt; font-style: normal; font-weight: medium }
+		H2.cjk { font-family: "MS Mincho"; font-size: 14pt; font-style: italic }
+		H2.ctl { font-size: 14pt; font-style: italic }
+		P.sdfootnote { margin-left: 0.2in; text-indent: -0.2in; margin-bottom: 0in; background: transparent; font-size: 10pt; text-align: left; page-break-before: auto; page-break-after: auto }
+		PRE { color: #000000 }
+		PRE.western { font-size: 11pt }
+		TH P { margin-bottom: 0in; color: #000000; page-break-before: auto; page-break-after: auto }
+		TH P.western { font-size: 12pt }
+		A:link { color: #000000; background: transparent; text-decoration: none }
+		A.western:link { font-family: "Times New Roman", serif; font-size: 11pt }
+		A:visited { color: #000000 }
+		A.sdfootnoteanc { font-size: 57% }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" LINK="#000000" VLINK="#000000" DIR="LTR" STYLE="border: none; padding: 0in">
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in"><FONT SIZE=4>CamelComplete
+Plugin</FONT></P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<FONT SIZE=2 STYLE="font-size: 11pt">for JEdit</FONT></P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+This guide corresponds to version 2.7.0 of the plugin.</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+The authoritative version of this document is a PDF file, available for
+download at</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-left: 0.1in; margin-bottom: 0in">
+<FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">http://www.box.net/shared/0iuypzx8gs</FONT></FONT></P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<DIV ID="Table of Contents1" DIR="LTR">
+	<P CLASS="western"><BR><BR>
+	</P>
+	<DIV ID="Table of Contents1_Head" DIR="LTR">
+		<P CLASS="western" ALIGN=LEFT STYLE="margin-top: 0.08in; page-break-after: avoid">
+		<FONT FACE="Times New Roman, serif"><FONT SIZE=4><B>Table of
+		Contents</B></FONT></FONT></P>
+	</DIV>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	1. <A CLASS="western" HREF="#1.Introduction|outline">Introduction</A>
+		</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	2. <A CLASS="western" HREF="#2.Usage|outline">Usage</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	3. <A CLASS="western" HREF="#3.Advanced Mode Options|outline">Advanced
+	Mode Options</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.1. <A CLASS="western" HREF="#3.1.Mode|outline">Mode</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.2. <A CLASS="western" HREF="#3.2.Engines|outline">Engines</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.3. <A CLASS="western" HREF="#3.3.Providers|outline">Providers</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.4. <A CLASS="western" HREF="#3.4.Tokenizers|outline">Tokenizers</A>
+		</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.5. <A CLASS="western" HREF="#3.5.Option Sets|outline">Option Sets</A>
+		</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+	3.6. <A CLASS="western" HREF="#3.6.Miscellaneous Options|outline">Miscellaneous
+	Options</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	4. <A CLASS="western" HREF="#4.Internals|outline">Internals</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	5. <A CLASS="western" HREF="#5.Future Improvements|outline">Future
+	Improvements</A> 
+	</P>
+	<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; background: transparent">
+	6. <A CLASS="western" HREF="#6.Example Macros|outline">Example
+	Macros</A> 
+	</P>
+</DIV>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<H1 CLASS="western" STYLE="page-break-before: always"><A NAME="1.Introduction|outline"></A>
+1.Introduction</H1>
+<P CLASS="western">JEdit already has a built-in facility for simple
+word completion, where for instance the user types “IOExc” and
+JEdit will complete it into “IOException”. CamelComplete provides
+a different type of completion, one that works well for most
+programming languages: it breaks down words like “IOException”,
+“setEnabled”, and “gtk_file_chooser_new” into their
+constituent words, so that you can type the first letter of each
+part—“IOE”, “sE”, and “gfcn” for these examples—and
+then hit one key and have them expanded into the full identifier.</P>
+<P CLASS="western">A few more examples of identifiers and their
+abbreviations are,</P>
+<DL>
+	<DL>
+		<DD>
+		<TABLE WIDTH=453 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0 FRAME=VOID RULES=COLS>
+			<COL WIDTH=314>
+			<COL WIDTH=123>
+			<TBODY>
+				<TR VALIGN=TOP>
+					<TH WIDTH=314>
+						<P CLASS="western" STYLE="font-weight: medium">Identifier</P>
+					</TH>
+					<TH WIDTH=123>
+						<P CLASS="western" STYLE="font-weight: medium">Abbreviation</P>
+					</TH>
+				</TR>
+			</TBODY>
+			<TBODY>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>SwingUtilities</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>SU</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>GtkMessageBox</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>GMB</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>IOException</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>IOE</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>gtk_check_menu_item_set_inconsistent</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>gcmisi</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>apr_thread_lock_hold</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>atlh</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=314>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>multi-define-syntax</FONT></P>
+					</TD>
+					<TD WIDTH=123>
+						<P CLASS="western" ALIGN=JUSTIFY><FONT SIZE=2>mdx</FONT></P>
+					</TD>
+				</TR>
+			</TBODY>
+		</TABLE>
+	</DL>
+</DL>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<H1 CLASS="western"><A NAME="2.Usage|outline"></A>2.Usage</H1>
+<P CLASS="western">The one-minute quickstart to using CamelComplete
+is to</P>
+<OL>
+	<LI><P CLASS="western">Install CamelComplete from JEdit’s Plugin
+	Manager</P>
+	<LI><P CLASS="western">Ensure that Simple Mode is selected in the
+	plugin’s options</P>
+	<LI><P CLASS="western">Bind CamelComplete→Simple Complete to an
+	easy shortcut from JEdit’s general preferences.</P>
+</OL>
+<P CLASS="western">This configuration will work for languages like C
+and Java, that use either “CamelCase” notation, or underscore
+separators. To have CamelComplete work with other types of
+identifiers, you’ll need to delve into Advanced Mode, where madness
+awaits.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<H1 CLASS="western"><A NAME="3.Advanced Mode Options|outline"></A>3.Advanced
+Mode Options</H1>
+<P CLASS="western">Before version 2.7.0, Advanced Mode was the only
+way to configure CamelComplete, and it was so daunting that even the
+author forgot how to use it after three days. This section of the
+guide is as much a reminder and reference to him as it is for the
+user.</P>
+<P CLASS="western">To get started, here is a graphical overview of
+the concepts involved in CamelComplete.</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<IMG SRC="CamelComplete-Guide_html_m658d8f7d.gif" NAME="graphics1" ALIGN=MIDDLE WIDTH=501 HEIGHT=250 BORDER=0></P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<P CLASS="western">An <EM>engine </EM>is basically a database of
+identifiers along with the abbreviations associated with them. A
+<EM>provider</EM> is a source of identifiers, such as a Ctags output
+file containing the names of functions in a C library. A <EM>tokenizer</EM>
+is what breaks each identifier name into its constituent words and
+determines the abbreviation for it.</P>
+<P CLASS="western">As in the above diagram, each engine can have
+multiple providers, and each provider can have multiple tokenizers
+operating on the identifiers it loads. Having more than one tokenizer
+per provider is useful because you might want to have an identifier
+like “HgLib_Error” have both the “HLE” and “HE”
+abbreviations, to account for different styles of naming at the same
+time. Since you can enable or disable engines one by one, having
+multiple engines lets you process only the identifiers you need for
+your current project, without wasting time searching engines with
+unrelated abbreviations loaded in them.</P>
+<P CLASS="western">Okay, with that under our belts, we’ll go to the
+interface itself.</P>
+<H2 CLASS="western"><A NAME="3.1.Mode|outline"></A>3.1.Mode</H2>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<IMG SRC="CamelComplete-Guide_html_121f993c.png" NAME="graphics1" ALIGN=BOTTOM WIDTH=249 HEIGHT=35 BORDER=0>
+At the very top is a set of radio buttons that let you choose between
+simple and advanced mode. In simple mode, all the options controls
+will disappear, and you’ll just see this:</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<IMG SRC="CamelComplete-Guide_html_7f74968c.png" NAME="graphics2" ALIGN=BOTTOM WIDTH=388 HEIGHT=32 BORDER=0>
+If you check “Search All Buffers” then the plugin will search all
+of your open buffers for identifiers, while otherwise it searches
+only visible buffers, as the built-in completion command does.</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<H2 CLASS="western"><A NAME="3.2.Engines|outline"></A>3.2.Engines</H2>
+<P CLASS="western"><IMG SRC="CamelComplete-Guide_html_m1560669d.png" NAME="graphics3" ALIGN=BOTTOM WIDTH=546 HEIGHT=81 BORDER=0></P>
+<P CLASS="western">The names of all your saved engines are listed in
+the drop down combo box. To create a new engine, click <EM>New</EM>,
+set up the providers for it (as you’ll see below), type a name for
+it in the combo box, and click <EM>Save</EM>. To delete an engine,
+select it from the list and click <EM>Delete</EM>. Uncheck the
+<EM>Enabled</EM> box and click <EM>Save</EM> to temporarily disable
+the displayed engine. The plugin will skip over it when it’s trying
+to expand an abbreviation.</P>
+<P CLASS="western"><EM>Export</EM> allows you to save a number of
+your configured engines to a file, from which they can be loaded
+later or sent to another user. Load such a saved file by clicking
+<EM>Import. </EM>For both these functions, you’ll see a list of the
+saved engine names. Highlight the ones you want to export or import,
+and confirm.</P>
+<H2 CLASS="western"><A NAME="3.3.Providers|outline"></A>3.3.Providers</H2>
+<P CLASS="western" ALIGN=LEFT><IMG SRC="CamelComplete-Guide_html_m7feaf4fe.png" NAME="graphics4" ALIGN=BOTTOM WIDTH=442 HEIGHT=261 BORDER=0></P>
+<P CLASS="western" ALIGN=LEFT>This is the section where you manage
+providers. To create a new provider, you first select one of the
+types:</P>
+<UL>
+	<LI><P CLASS="western" ALIGN=LEFT>Ctags – load identifiers from a
+	file that contains output from the <FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">ctags</FONT></FONT><A CLASS="sdfootnoteanc" NAME="sdfootnote1anc" HREF="#sdfootnote1sym"><SUP>1</SUP></A>
+	program. You’ll <EM>Choose</EM> the file using JEdit’s file
+	system browser.</P>
+	<LI><P CLASS="western" ALIGN=LEFT>JAR – load class names (but not
+	methods, fields, etc.) from a .jar file.</P>
+	<LI><P CLASS="western" ALIGN=LEFT>Text – read identifiers, one per
+	line, from a standard text file.</P>
+	<LI><P CLASS="western" ALIGN=LEFT>Bsh Code – This is for users who
+	want to use custom providers. The snippet of BeanShell code that you
+	enter should return an instance of
+	<FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">com.illengineer.jcc.IdentifierProvider</FONT></FONT></P>
+	<LI><P CLASS="western" ALIGN=LEFT>Buffer Words – Collects
+	identifiers from currently opened buffers. If you select this
+	button, you’ll see two new options: <EM>Only Active Views</EM>,
+	which causes the provider to search only displayed buffers; and
+	<EM>Regex,</EM> where you type in a regular expression that defines
+	the identifiers you want to collect. The regex I use is <FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">\w{4,}</FONT></FONT>
+	which collects all words of length four or higher.</P>
+</UL>
+<P CLASS="western">Once you have set up the provider (including
+tokenizers, as below) you’ll click <EM>Save.</EM> To delete, copy,
+or edit a provider, use one of the other buttons. Note that after you
+click <EM>Edit</EM> and make your changes, you’ll need to click
+<EM>Save</EM> to commit them.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western" ALIGN=LEFT><IMG SRC="CamelComplete-Guide_html_52036d8d.png" NAME="graphics5" ALIGN=BOTTOM WIDTH=413 HEIGHT=68 BORDER=0></P>
+<P CLASS="western" ALIGN=LEFT>These controls, below the tokenizer
+options, set parameters of the current provider. 
+</P>
+<UL>
+	<LI VALUE=1><P CLASS="western" ALIGN=LEFT>Provider Ignore Case –
+	this stores identifiers in such a way that both &quot;AIOOBE&quot;
+	and &quot;aioobe&quot;, or any case combination between, will expand
+	to &quot;ArrayIndexOutOfBoundsException&quot;</P>
+	<LI><P CLASS="western" ALIGN=LEFT>Filter Regexp – any identifier
+	matching this regular expression will not be considered for
+	inclusion.</P>
+	<LI><P CLASS="western" ALIGN=LEFT>Minimum and Maximum Parts –
+	described in the section on Tokenizers, as a way to choose which of
+	this provider’s tokenizers should be used for a given identifier.</P>
+</UL>
+<P CLASS="western" ALIGN=LEFT><BR><BR>
+</P>
+<H2 CLASS="western"><A NAME="3.4.Tokenizers|outline"></A>3.4.Tokenizers</H2>
+<P CLASS="western"><IMG SRC="CamelComplete-Guide_html_402357f4.png" NAME="graphics6" ALIGN=BOTTOM WIDTH=446 HEIGHT=171 BORDER=0></P>
+<P CLASS="western">Tokenizers are what break up an identifier into
+the parts that will be used for its abbreviation. The CamelCase
+tokenizer splits an identifier by breaking it at every capital
+letter, so that “setMenuOption” will be reduced to “sMO” and
+“IOException” as “IOE”. The Regex tokenizer allows you to
+enter a regular expression that will be used to split identifiers;
+this allows almost complete control, and in fact can be used to
+perform custom CamelCase tokenization.</P>
+<P CLASS="western">As an example, here is the regex that I prefer:</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in"><FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">(?&lt;=[A-Z])(?=[A-Z][a-z])|(?&lt;=[a-z0-9])(?=[A-Z])|_</FONT></FONT></P>
+<P CLASS="western">this uses look-ahead and look-behind assertions to
+split CamelCased words a little differently—“IOException” maps
+to “IE” instead of “IOE” as before. Also, it splits on
+underscores, for typical C-language names. If you’re using XML or
+Lisp and want to split on dashes, just append a “<FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">|-</FONT></FONT>”
+to the end of that regex.</P>
+<P CLASS="western">Checking <EM>Regex Ignore Case</EM> will make the
+regular expression case-insensitive.</P>
+<P CLASS="western">When you have multiple tokenizers for one provider
+is when the minimum and maximum parts options become useful. Let’s
+say some identifiers in your file are CamelCase’d, and some split
+by underscores, and so you add both a CamelCase and Regex tokenizer
+(with the regex being “<FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">-</FONT></FONT>”)
+to the provider; but you don’t want IOException to be processed by
+the regexp tokenizer to be “I”, and you don’t want
+“get_input_stream” to be processed by CamelCase to be “g”,
+and so by setting the minimum parts to be 2, these invalid
+abbreviations will be discarded. The maximum parts option ensures
+that “OPEN_SAVE_FILE_HANDLE” isn’t abbreviated by CamelCase to
+be “OPENSAVEFILEHANDLE”, but rather is treated by the regex
+tokenizer.</P>
+<H2 CLASS="western"><A NAME="3.5.Option Sets|outline"></A>3.5.Option
+Sets</H2>
+<P CLASS="western"><FONT COLOR="#cccccc"><IMG SRC="CamelComplete-Guide_html_3f74a5f8.png" NAME="graphics7" ALIGN=LEFT HSPACE=5 VSPACE=5 WIDTH=169 HEIGHT=128 BORDER=1></FONT>Option
+Sets are a way to store groups of configured providers and
+tokenizers, so that you don’t lose them if you delete the engine
+they’re in, or so you can move them among different engines without
+re-entering them.</P>
+<P CLASS="western">This feature was added before the plugin had
+support for multiple engines, but now isn’t quite so useful
+anymore. I’ve left it in in case someone prefers using option sets
+to multiple engines.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<H2 CLASS="western"><A NAME="3.6.Miscellaneous Options|outline"></A>3.6.Miscellaneous
+Options</H2>
+<P CLASS="western"><FONT COLOR="#cccccc"><IMG SRC="CamelComplete-Guide_html_125aade4.png" NAME="graphics11" ALIGN=LEFT HSPACE=3 VSPACE=3 WIDTH=138 HEIGHT=118 BORDER=1></FONT><EM>Normal
+Completion</EM> is like JEdit’s built-in completion function, but
+more versatile. First, you can collect words using a custom regexp as
+given in the Buffer Words provider option, and second, if you select
+<EM>Contains, </EM>you can type any part of the word to have it
+completed. For instance, if you have both “setButtonText” and
+“setLabelText”, you can just type “Button” or “Label” and
+have the plugin complete the identifier for you</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western" ALIGN=LEFT><BR><BR>
+</P>
+<P CLASS="western" ALIGN=LEFT><IMG SRC="CamelComplete-Guide_html_28ce058.png" NAME="graphics8" ALIGN=BOTTOM WIDTH=139 HEIGHT=116 BORDER=0></P>
+<P CLASS="western" ALIGN=LEFT><FONT COLOR="#cccccc"><FONT COLOR="#cccccc"><IMG SRC="CamelComplete-Guide_html_m79628a62.png" NAME="graphics9" ALIGN=MIDDLE WIDTH=249 HEIGHT=34 BORDER=1></FONT></FONT>
+</P>
+<P CLASS="western">These are global options.</P>
+<UL>
+	<LI VALUE=1><P CLASS="western"><EM>Show Loading Dialog</EM> will
+	cause a message to appear during the sometimes lengthy plugin
+	initialization process, so you don’t think JEdit has crashed.</P>
+	<LI><P CLASS="western"><EM>Popup List Rows</EM> controls how many
+	rows of completions the plugin’s popup dialog shows.</P>
+	<LI><P CLASS="western"><EM>Cache Data</EM> will write the lists of
+	identifiers and abbreviations to disk when the plugin exits, and
+	load them again when it starts.</P>
+	<LI><P CLASS="western"><EM>Update on Startup</EM> processes all of
+	the engines when the plugin loads. This means that Ctags and Jar
+	files will be examined, and words loaded from open buffers.</P>
+</UL>
+<P CLASS="western"><FONT COLOR="#cccccc"><FONT COLOR="#cccccc"><IMG SRC="CamelComplete-Guide_html_292922df.png" NAME="graphics10" ALIGN=MIDDLE WIDTH=276 HEIGHT=36 BORDER=1></FONT></FONT>
+Finally, if you’ve made changes to one or more engines, you can
+update only the currently displayed engine, or all of your engines,
+by using these buttons.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<H1 CLASS="western"><A NAME="4.Internals|outline"></A>4.Internals</H1>
+<P CLASS="western">Currently, the CamelComplete plugin uses HashMaps
+and ArrayLists to store identifiers and abbreviations. This works
+well and quickly for small to medium size data sets, but since
+everything is kept in memory, loading large identifier lists would
+consume a lot of RAM.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<H1 CLASS="western"><A NAME="5.Future Improvements|outline"></A>5.Future
+Improvements</H1>
+<UL>
+	<LI VALUE=1><P CLASS="western">Have the Jar file loader use
+	reflection to also load method and field names. This would create
+	very large lists of identifiers, so we would need something like the
+	next improvement at the same time.</P>
+	<LI><P CLASS="western">Use a disk-based storage mechanism instead of
+	in-memory maps and lists. This could be an RDBMS (with a table for
+	each abbreviation length) such as HSQLDB<A CLASS="sdfootnoteanc" NAME="sdfootnote2anc" HREF="#sdfootnote2sym"><SUP>2</SUP></A>,
+	or a tree-based database like BerkeleyDB Java Edition<A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>.</P>
+</UL>
+<P CLASS="western"><BR><BR>
+</P>
+<H1 CLASS="western"><A NAME="6.Example Macros|outline"></A>6.Example
+Macros</H1>
+<P CLASS="western">These examples show how the plugin can be scripted
+from your own macros.</P>
+<P CLASS="western">Because of page-width limitations here, the ↩
+symbol will be used to indicate that the code should be written all
+on one line without any breaks or whitespace.</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><EM>Macro #1 – Update Buffer Words</EM></P>
+<P CLASS="western">Assuming that you have an engine named Buffers
+that has a Buffer Words provider that reads identifiers from all
+buffers, and you want to update its list:</P>
+<PRE CLASS="western">com.illengineer.jcc.jedit.↩
+        CamelCompletePlugin.processConfiguration(&quot;Buffers&quot;);</PRE><P CLASS="western">
+<EM>Macro #2 – Update and CamelComplete</EM></P>
+<P CLASS="western">If you have both “Buffers” and “View
+Buffers” engines, as you will if you use simple mode, and you want
+to update your buffer words and perform CamelCase Completion all in
+one keystroke, this macro will do it. Also, it shows how to test if
+another engine, “XML”, is enabled, and if so, use that engine to
+complete as well</P>
+<PRE CLASS="western"><EM><SPAN STYLE="font-style: normal">import java.util.ArrayList;</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">import com.illengineer.jcc.jedit.CamelCompletePlugin;</SPAN></EM>
+
+<EM><SPAN STYLE="font-style: normal">CamelCompletePlugin.processConfiguration(&quot;View Buffers&quot;);</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">ArrayList list = new ArrayList(4);</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">if (CamelCompletePlugin.isEngineEnabled(&quot;XML&quot;)) {</SPAN></EM>
+<EM>    </EM><EM><SPAN STYLE="font-style: normal">CamelCompletePlugin.processConfiguration(&quot;XML&quot;);</SPAN></EM>
+<EM>    </EM><EM><SPAN STYLE="font-style: normal">list.add(&quot;XML&quot;);</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">}</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">list.add(&quot;View Buffers&quot;);</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">list.add(&quot;Buffers&quot;);</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">CamelCompletePlugin.complete(view, textArea, 1, list);</SPAN></EM></PRE><P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in">
+<BR>
+</P>
+<P CLASS="western"><BR><BR>
+</P>
+<P CLASS="western"><EM>Macro #3 – Update and Normal Complete</EM></P>
+<P CLASS="western" ALIGN=LEFT>Normal completion is selected by
+passing a different numerical parameter to
+the<BR><FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 11pt">CamelCompletePlugin.complete()</FONT></FONT>
+method, specifically, 2, as shown here.</P>
+<PRE CLASS="western"><EM><SPAN STYLE="font-style: normal">[... previous lines same as above ...]</SPAN></EM>
+<EM><SPAN STYLE="font-style: normal">CamelCompletePlugin.complete(view, textArea, </SPAN></EM><EM><SPAN STYLE="font-style: normal"><U>2</U></SPAN></EM><EM><SPAN STYLE="font-style: normal">, list);</SPAN></EM></PRE><P CLASS="western" ALIGN=LEFT STYLE="margin-left: 0.1in; margin-bottom: 0in">
+<BR>
+</P>
+<P CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0in; page-break-before: auto; page-break-after: auto">
+<BR>
+</P>
+<DIV ID="sdfootnote1">
+	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.2in"><A CLASS="sdfootnotesym" NAME="sdfootnote1sym" HREF="#sdfootnote1anc">1.</A><SAMP><A CLASS="western" HREF="http://ctags.sourceforge.net/"><FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 9pt">http://ctags.sourceforge.net/</FONT></FONT></A></SAMP></P>
+</DIV>
+<DIV ID="sdfootnote2">
+	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.2in"><A CLASS="sdfootnotesym" NAME="sdfootnote2sym" HREF="#sdfootnote2anc">2.</A><A CLASS="western" HREF="http://hsqldb.org/"><FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 9pt">http://hsqldb.org/</FONT></FONT></A></P>
+</DIV>
+<DIV ID="sdfootnote3">
+	<P CLASS="sdfootnote" STYLE="margin-bottom: 0.2in"><A CLASS="sdfootnotesym" NAME="sdfootnote3sym" HREF="#sdfootnote3anc">3.</A><A CLASS="western" HREF="http://www.oracle.com/database/berkeley-db/je/index.html"><FONT FACE="Courier, sans-serif"><FONT SIZE=2 STYLE="font-size: 9pt">http://www.oracle.com/database/berkeley-db/je/index.html</FONT></FONT></A></P>
+</DIV>
+</BODY>
+</HTML>
