@@ -29,6 +29,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.MediaTracker;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -37,6 +40,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -196,11 +200,11 @@ implements EBComponent, DefaultFocusComponent
 		}
 
 		text.setDocument(shellState.scrollback);
-		updateAnimation();
 		if (shell != this.currentShell) {
 			shellCombo.setSelectedItem(name);
 		}
 		this.currentShell = shell;
+		updateAnimation();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -409,7 +413,6 @@ implements EBComponent, DefaultFocusComponent
 		shellState.commandRunning = true;
 		animationLabel.setVisible(true);
 		animation.start();
-		animation.setRate(5);
 	} // }}}
 
 	//{{{ run() methods
@@ -541,19 +544,9 @@ implements EBComponent, DefaultFocusComponent
 
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
-		Toolkit toolkit = getToolkit();
 
-
-
-		animation = new AnimatedIcon(
-			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
-			new Image[] {
-				toolkit.getImage(Console.class.getResource("/console/Active1.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active2.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active3.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active4.png"))
-			},10,animationLabel
-		);
+		initAnimation();
+		
 		animationLabel.setIcon(animation);
 		animationLabel.setVisible(false);
 		animation.stop();
@@ -621,6 +614,66 @@ implements EBComponent, DefaultFocusComponent
 		scroller.setPreferredSize(new Dimension(400,100));
 		add(BorderLayout.CENTER,scroller);
 	} //}}}
+	
+	//{{{ initAnimation() method
+	private void initAnimation()
+	{
+		// TODO: First frame of animation icon should be visible at gui init
+		
+		Toolkit toolkit = getToolkit();
+		Image processImg = toolkit.getImage(Console.class.getResource("/console/process-working2.png"));
+		Image standbyImg = null;
+		
+		int iconSize = 22;
+		
+		ArrayList<Image> frames = new ArrayList<Image>();
+		
+		// Wait for the image to load by setting up an icon and discarding it again
+		new ImageIcon(processImg).getImage();
+		int procImgWidth = processImg.getWidth(null);
+		int procImgHeight = processImg.getHeight(null);
+		
+		int currentX = 0, currentY = 0;
+		int frameNo = 0;
+		while(currentY < procImgHeight)
+		{
+			BufferedImage bufImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D bufGraphics = bufImg.createGraphics();
+			bufGraphics.drawImage(processImg,
+				0,
+				0,
+				iconSize-1,
+				iconSize-1,
+				currentX,
+				currentY,
+				currentX + iconSize - 1,
+				currentY + iconSize - 1,
+				null);
+			
+			// First frame is the standby icon
+			if(frameNo == 0)
+				standbyImg = bufImg;
+			else
+				frames.add(bufImg);
+			
+			frameNo++;
+			currentX += iconSize;
+			if(currentX + iconSize > procImgWidth)
+			{
+				currentX = 0;
+				currentY += iconSize;
+			}
+		}
+		
+		animation = new AnimatedIcon(
+			standbyImg,
+			frames.toArray(new Image[0]),
+			25,
+			animationLabel
+		);
+		animation.start();
+	}
+	//}}}
 
 	//{{{ updateShellList() method
 	private void updateShellList()
