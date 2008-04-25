@@ -31,7 +31,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
-import java.awt.MediaTracker;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -621,7 +620,7 @@ implements EBComponent, DefaultFocusComponent
 		// TODO: First frame of animation icon should be visible at gui init
 		
 		Toolkit toolkit = getToolkit();
-		Image processImg = toolkit.getImage(Console.class.getResource("/console/process-working2.png"));
+		Image processImg = toolkit.getImage(Console.class.getResource("/console/process-working.png"));
 		Image standbyImg = null;
 		
 		int iconSize = 22;
@@ -671,7 +670,6 @@ implements EBComponent, DefaultFocusComponent
 			25,
 			animationLabel
 		);
-		animation.start();
 	}
 	//}}}
 
