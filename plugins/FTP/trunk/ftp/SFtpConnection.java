@@ -80,7 +80,8 @@ public class SFtpConnection extends Connection implements UserInfo
 			if (proxy != null)
 				session.setProxy(proxy);
 			
-			if (info.privateKey != null) {
+			Log.log(Log.DEBUG, this, "info.privateKey=" + info.privateKey);
+			if (info.privateKey != null && info.privateKey.length()>0) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
 				Log.log(Log.DEBUG,this,"Using key: "+info.privateKey);
 				ConnectionManager.client.addIdentity(info.privateKey);
@@ -272,11 +273,13 @@ public class SFtpConnection extends Connection implements UserInfo
 	
 	public String getPassphrase()
 	{
+		Log.log(Log.DEBUG, this, "->getPassphrase()=" + passphrase);
 		return passphrase;
 	}
 	
 	public String getPassword()
 	{
+		Log.log(Log.DEBUG, this, "->getPassword()=" + info.password);
 		return new String(info.password);
 	}
 	
