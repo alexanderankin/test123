@@ -241,7 +241,7 @@ public class SFtpConnection extends Connection implements UserInfo
 	private ChannelSftp sftp;
 	private int keyAttempts = 0;
 	
-	private int symLinkDepth = 0;
+	// private int symLinkDepth = 0; // not used now
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String name, SftpATTRS attrs)
 	{
 		long length = attrs.getSize();
@@ -262,8 +262,8 @@ public class SFtpConnection extends Connection implements UserInfo
 			//	int type, long length, boolean hidden, int permissions)
 		FtpVFS.FtpDirectoryEntry entry = new FtpVFS.FtpDirectoryEntry(
 			name, null, null, type, length, name.startsWith("."), permissions,null);
-		boolean w = (permissions&00200)!=0;
-		boolean r = (permissions&00400)!=0;
+		//boolean w = (permissions&00200)!=0;
+		//boolean r = (permissions&00400)!=0;
 		entry.setWriteable( (permissions&00200)!=0 );
 		entry.setReadable( (permissions&00400)!=0 );
 		return entry;
@@ -273,13 +273,11 @@ public class SFtpConnection extends Connection implements UserInfo
 	
 	public String getPassphrase()
 	{
-		Log.log(Log.DEBUG, this, "->getPassphrase()=" + passphrase);
 		return passphrase;
 	}
 	
 	public String getPassword()
 	{
-		Log.log(Log.DEBUG, this, "->getPassword()=" + info.password);
 		return new String(info.password);
 	}
 	
