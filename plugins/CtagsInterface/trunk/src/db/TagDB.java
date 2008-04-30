@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import options.GeneralOptionPane;
+
 import org.gjt.sp.jedit.jEdit;
 
 import ctags.Tag;
@@ -21,6 +23,7 @@ import ctags.Tag;
 public class TagDB {
 	private Connection conn;
 	private Set<String> columns;
+	Statement st;
 	// Column types
 	public static final String IDENTITY_TYPE = "IDENTITY";
 	public static final String VARCHAR_TYPE = "VARCHAR";
@@ -55,9 +58,11 @@ public class TagDB {
 	public TagDB() {
 		removeStaleLock();
         try {
-			Class.forName("org.hsqldb.jdbcDriver");
-			conn = DriverManager.getConnection("jdbc:hsqldb:file:" +
+			Class.forName(GeneralOptionPane.getDbClass());
+			conn = DriverManager.getConnection("jdbc:" +
+					GeneralOptionPane.getDbName() + ":" +
 					getDBFilePath(), "sa", "");
+			st = conn.createStatement();
         } catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -224,14 +229,14 @@ public class TagDB {
 		if (originId < 0)
 			return;
 		// Remove all mappings to the origin
-		query("DELETE FROM " + MAP_TABLE + " WHERE " + MAP_ORIGIN_ID + "=" +
+		update("DELETE FROM " + MAP_TABLE + " WHERE " + MAP_ORIGIN_ID + "=" +
 			quote(originId));
 		// Remove all orphaned (with no origin) files
-		query("DELETE FROM " + FILES_TABLE + " WHERE NOT EXISTS " +
+		update("DELETE FROM " + FILES_TABLE + " WHERE NOT EXISTS " +
 			"(SELECT " + MAP_FILE_ID + " FROM " + MAP_TABLE + " WHERE " +
 			MAP_FILE_ID + "=" + FILES_ID + ")");
 		// Remove all orphaned (with no file) tags
-		query("DELETE FROM " + TAGS_TABLE + " WHERE NOT EXISTS " +
+		update("DELETE FROM " + TAGS_TABLE + " WHERE NOT EXISTS " +
 			"(SELECT " + FILES_ID + " FROM " + FILES_TABLE + " WHERE " +
 			FILES_ID + "=" + TAGS_FILE_ID + ")");
 	}
@@ -239,7 +244,7 @@ public class TagDB {
 	// Deletes an origin and all its associated data from the DB
 	public void deleteOrigin(String type, String name) throws SQLException {
 		deleteOriginAssociatedData(type, name); 
-		query("DELETE FROM " + ORIGINS_TABLE + " WHERE " +
+		update("DELETE FROM " + ORIGINS_TABLE + " WHERE " +
 			ORIGINS_TYPE + "=" + quote(type) + " AND " +
 			ORIGINS_NAME + "=" + quote(name));
 	}
@@ -327,7 +332,6 @@ public class TagDB {
 	}
 	
 	public synchronized void update(String expression) throws SQLException {
-		Statement st = conn.createStatement();
 		try {
 			if (st.executeUpdate(expression) == -1)
 	            System.err.println("db error : " + expression);
@@ -335,7 +339,6 @@ public class TagDB {
 			System.err.println("SQL update: " + expression);
 			throw e;
 		}
-        st.close();
     }
 	
 	public synchronized ResultSet query(Query query) throws SQLException {
@@ -343,10 +346,10 @@ public class TagDB {
 	}
 	public synchronized ResultSet query(String expression) throws SQLException {
 		try {
-	        Statement st = conn.createStatement();
-	        ResultSet rs = st.executeQuery(expression);
-	        st.close();
-	        return rs;
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(expression);
+			st.close();
+			return rs;
 		}
 		catch (SQLException e) {
 			System.err.println("Failed query: " + expression);
@@ -369,8 +372,8 @@ public class TagDB {
 	public void shutdown()
 	{
 		try {
-			Statement st = conn.createStatement();
 	        st.execute("SHUTDOWN");
+	        st.close();
 	        conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -385,7 +388,7 @@ public class TagDB {
 	
 	public void deleteRowsWithValue(String table, String column, Object value) {
 		try {
-			query("DELETE FROM " + table + " WHERE " + column + "=" + quote(value));
+			update("DELETE FROM " + table + " WHERE " + column + "=" + quote(value));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -434,7 +437,7 @@ public class TagDB {
 	
 	private void createTable(String table, String [] columns)
 	throws SQLException {
-		StringBuffer st = new StringBuffer("CREATE CACHED TABLE ");
+		StringBuffer st = new StringBuffer("CREATE TABLE ");
 		st.append(table);
 		st.append("(");
 		for (int i = 0; i < columns.length; i += 2) {

@@ -29,6 +29,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
+	static public final String DB_CLASS = OPTION + "dbClass";
+	static public final String DB_NAME = OPTION + "dbName";
 	JTextField ctags;
 	JTextField cmd;
 	JTextField pattern;
@@ -38,6 +40,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox previewToolbar;
 	JCheckBox previewWrap;
 	JTextField previewDelay;
+	JTextField dbClass;
+	JTextField dbName;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -90,6 +94,22 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		previewDelayPanel.add(previewDelay);
 		previewPanel.add(previewDelayPanel);
 		addComponent(previewPanel);
+
+		JPanel dbPanel = new JPanel();
+		dbPanel.setLayout(new GridLayout(0, 1));
+		dbPanel.setBorder(new TitledBorder(jEdit.getProperty(
+			MESSAGE + "dbTitle")));
+		JPanel dbClassPanel = new JPanel();
+		dbClassPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbClass")));
+		dbClass = new JTextField(jEdit.getProperty(DB_CLASS), 40);
+		dbClassPanel.add(dbClass);
+		dbPanel.add(dbClassPanel);
+		JPanel dbNamePanel = new JPanel();
+		dbNamePanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbName")));
+		dbName = new JTextField(jEdit.getProperty(DB_NAME), 40);
+		dbNamePanel.add(dbName);
+		dbPanel.add(dbNamePanel);
+		addComponent(dbPanel);
 	}
 
 	@Override
@@ -103,6 +123,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
+		jEdit.setProperty(DB_CLASS, dbClass.getText());
+		jEdit.setProperty(DB_NAME, dbName.getText());
 	}
 
 	public static String getCtags() {
@@ -143,5 +165,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static int getPreviewDelay() {
 		return jEdit.getIntegerProperty(PREVIEW_DELAY, 0);
+	}
+	public static String getDbClass() {
+		return jEdit.getProperty(DB_CLASS);
+	}
+	public static String getDbName() {
+		return jEdit.getProperty(DB_NAME);
 	}
 }
