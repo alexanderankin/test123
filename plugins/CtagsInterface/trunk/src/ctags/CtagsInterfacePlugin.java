@@ -87,7 +87,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
     static public void dumpQuery(String expression) {
     	try {
-			dump(db.query(expression));
+			dump(db.query(expression)); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -451,14 +451,14 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				filesStr.append(",");
 			filesStr.append(db.quote(files.get(i)));
 		}
-		String query = "DELETE FROM " + TagDB.FILES_TABLE + " WHERE " +
+		String st = "DELETE FROM " + TagDB.FILES_TABLE + " WHERE " +
 			TagDB.FILES_NAME + " IN (" + filesStr.toString() + ")" +
 			" AND NOT EXISTS " +
 			"(SELECT " + TagDB.MAP_FILE_ID + " FROM " + TagDB.MAP_TABLE +
 			" WHERE " + TagDB.MAP_ORIGIN_ID + "<>" + projectId +
 			" AND " + TagDB.MAP_FILE_ID + "=" + TagDB.FILES_ID + ")";
 		try {
-			db.query(query);
+			db.update(st);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
