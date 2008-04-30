@@ -348,7 +348,6 @@ public class TagDB {
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(expression);
-			st.close();
 			return rs;
 		}
 		catch (SQLException e) {
