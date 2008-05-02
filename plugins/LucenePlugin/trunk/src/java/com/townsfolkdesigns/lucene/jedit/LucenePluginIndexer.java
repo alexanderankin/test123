@@ -93,6 +93,7 @@ public class LucenePluginIndexer extends JEditFileTypeDelegatingIndexer {
 		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
 		File tempIndexStoreFile = new File(indexStoreFile, "temp");
 		if (indexStoreFile.exists()) {
+			Log.log(Log.DEBUG, this, "Replacing old index files with new ones.");
 			// get a write lock so no searches can be done.
 			IndexManager.getInstance().aquireWriteLock();
 			// delete old index.
@@ -106,6 +107,7 @@ public class LucenePluginIndexer extends JEditFileTypeDelegatingIndexer {
 		} else {
 			// something happened to the old index or this is the first time
 			// indexing, just move the new one over.
+			Log.log(Log.DEBUG, this, "Couldn't find old index files, moving new ones in place.");
 
 			// get a write lock so no searches can be done.
 			IndexManager.getInstance().aquireWriteLock();
