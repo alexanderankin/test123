@@ -22,10 +22,12 @@
 package com.townsfolkdesigns.lucene.search;
 
 import java.io.File;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 
 /**
@@ -61,6 +63,7 @@ public class SimpleSearcher implements Searcher {
 		QueryResults results = null;
 		if (getIndexSearcher() != null && getQueryParser() != null) {
 			results = new QueryResults();
+			results.setQuery(query);
 			parseQuery(query, results);
 			executeQuery(query, results);
 		} else if (getIndexSearcher() == null) {
@@ -101,7 +104,11 @@ public class SimpleSearcher implements Searcher {
 	protected void executeQuery(Query query, QueryResults results) {
 		if (query != null) {
 			try {
-				results.setHits(getIndexSearcher().search(query.getLuceneQuery()));
+				query.setExecutionDate(new Date());
+				Hits hits = getIndexSearcher().search(query.getLuceneQuery());
+				query.setCompletionDate(new Date());
+				results.setHits(hits);
+				results.setHitCount(hits.length());
 			} catch (Exception e) {
 				results.addError(e);
 				log.error("Error searching for query: " + query.getText(), e);

@@ -130,6 +130,9 @@ public abstract class AbstractFileIndexer implements Indexer {
 			if (getIndexWriter() != null) {
 
 				try {
+					if (log.isDebugEnabled()) {
+						log.debug("Optimizing and closing IndexWriter");
+					}
 					getIndexWriter().optimize();
 					getIndexWriter().close();
 				} catch (Exception ex) {
