@@ -15,7 +15,7 @@ import org.gjt.sp.jedit.options.BufferOptionPane;
  * An OptionDialog which combines all of jEdit's options into 3 tabs on a single
  * dialog.
  * 
- * @author ezust
+ * @author Alan Ezust
  * 
  */
 
@@ -25,15 +25,21 @@ public class CombinedOptions extends TabbedOptionDialog
 	// {{{ Members
 
 	GlobalOptionGroup globalOptions;
-
 	PluginOptionGroup pluginOptions;
-
 	BufferOptionPane bufferOptions;
 
 	int startingIndex = 0;
 
 	// }}}
-    
+
+	/**
+	 * Remembers the previously used tab.
+	 */
+	public static CombinedOptions combinedOptions(Frame parent) {
+		int startingIndex = jEdit.getIntegerProperty("optional.last.tab", 0);
+		return new CombinedOptions(parent, startingIndex);
+	}
+	
 	// {{{ CombinedOptions Constructors
 	public CombinedOptions(Frame parent, int tabIndex)
 	{
