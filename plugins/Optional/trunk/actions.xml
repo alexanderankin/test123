@@ -28,7 +28,7 @@
     
 	<ACTION NAME="optional.combined-options">
 		<CODE>
-			new optional.CombinedOptions(view);
+			optional.CombinedOptions.combinedOptions(view);
 		</CODE>
 	</ACTION>
     

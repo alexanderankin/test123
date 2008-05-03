@@ -67,7 +67,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	// {{{ Members
 	JTabbedPane tabs;
 
-	LinkedList panes;
+	LinkedList<OptionPane> panes;
 
 	private JButton ok;
 
@@ -104,7 +104,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	// {{{ setupTabs()
 	void setupTabs()
 	{
-		panes = new LinkedList();
+		panes = new LinkedList<OptionPane>();
 		tabs = new JTabbedPane();
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12, 12, 12, 12));
@@ -182,10 +182,10 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	{
 		GUIUtilities.saveGeometry(this, getName());
 
-		Iterator itr = panes.iterator();
+		Iterator<OptionPane> itr = panes.iterator();
 		while (itr.hasNext())
 		{
-			OptionPane op = (OptionPane) itr.next();
+			OptionPane op = itr.next();
 			op.save();
 		}
 		Point p = getLocation();
@@ -226,6 +226,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	{
 
 		OptionPane op = (OptionPane) tabs.getSelectedComponent();
+		jEdit.setIntegerProperty("optional.last.tab", tabs.getSelectedIndex());
 		setTitle(op.getName());
 	} // }}}
 
