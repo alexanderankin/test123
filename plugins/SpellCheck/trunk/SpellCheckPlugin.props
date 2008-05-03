@@ -27,6 +27,8 @@ options.SpellCheck.aspellAutoMarkupMode.name=Edit modes
 options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
 options.SpellCheck.aspellOtherParams=Additional parameters:
 options.SpellCheck.refresh-langs=Refresh list...
+options.SpellCheck.stop-refresh-langs=Stop!
+options.SpellCheck.no-dictionary=<No Dictionary Found>
 ### Menu item labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
@@ -47,7 +49,19 @@ spell-check-noAspellExe.message=The spell check engine is unable to locate your 
 spell-check-error.title=Error spell checking (Aspell).
 spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}
 
-list-dict-error.message=<html><p style='color:red'>Unable to list dictionnaries :<br>{0}</p>
+list-dict-error.message = Dictionary listing aborted with message:\n{0}
+list-dict-timeout-error.message=Aspell Execution took more than 10 seconds.\nIt's very likely that you have a problem with the executable.\nConsulting the Help Section for SpellCheck might help.
 
-spell-check.workthread-status=listing dictionnaries
+spell-check.workthread-status=listing dictionaries
 spell-check.listing-dicts.combo-item=listing...
+
+#mode-filter mappings
+spell-check-filter.xml=html
+spell-check-filter.html=html
+spell-check-filter.sgml=html
+spell-check-filter.tex=tex
+spell-check-filter.latex=tex
+spell-check-filter.xml=sgml
+spell-check-filter.java=ccpp
+spell-check-filter.c=ccpp
+spell-check-filter.c++=ccpp

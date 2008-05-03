@@ -55,7 +55,7 @@ class Result
 {
   private  int     _offset;
   private  Type    _type;
-  private  List    _suggestions;
+  private  List<String>    _suggestions;
   private  String  _originalWord;
 
   public static final Type ERROR      = new Type( "Error" );
@@ -102,6 +102,18 @@ class Result
     return _originalWord;
   }
 
+  public boolean equals(Object o){
+	  if(o==null)return false;
+	  if(o==this)return true;
+	  if(!(o instanceof Result))return false;
+	  
+	  Result other = (Result)o;
+	  return(_offset == other._offset
+		     && ((_type == null && other._type == null) || _type.equals(other._type))
+			 && ((_originalWord == null && other._originalWord == null) || _originalWord.equals(other._originalWord))
+		     && ((_suggestions == null && other._suggestions == null) || _suggestions.equals(other._suggestions))
+	  );
+  }
   public
   String toString()
   {
@@ -139,7 +151,7 @@ class Result
   void processNone( String line )
   {
     _type = NONE;
-    _suggestions = new ArrayList();
+    _suggestions = new ArrayList<String>();
 
     StringTokenizer st = new StringTokenizer( line );
     st.nextToken(); // skip '#'
@@ -177,6 +189,15 @@ class Result
       _typeName = typeName;
     }
 
+	public boolean equals(Object o){
+		if(o==null)return false;
+		if(o==this)return true;
+		if(!(o instanceof Type))return false;
+		Type t = (Type) o;
+		return ((_typeName == null && t._typeName == null)
+			   || _typeName.equals(t._typeName)); 
+	}
+	
     public
     String toString()
     {

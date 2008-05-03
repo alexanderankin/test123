@@ -43,7 +43,7 @@
 
   <para>
 This is a jEdit plugin to perform spell checking of text in a jEdit buffer.
-It is based on <ulink url="http://aspell.sourceforge.net/">Aspell</ulink>
+It is based on Aspell (<uri>http://aspell.sourceforge.net/</uri>)
 (which you may need to download and install before using this plugin) which is
 available for Windows and various Unix platforms.
 </para>
@@ -85,16 +85,16 @@ available for Windows and various Unix platforms.
 
   <itemizedlist>
    <listitem>
-    <para>The plugin requires jEdit 4.0 or later.</para>
+    <para>The plugin requires jEdit 4.3pre12 or later.</para>
    </listitem>
    <listitem>
-    <para>The plugin requires Java JDK 1.3 --for no real reason (bummer).</para>
+    <para>The plugin requires Java JDK 1.5.</para>
    </listitem>
    <listitem>
-    <para>Tested on Windows 2000, XP and Linux.</para>
+    <para>Tested on Mac OS X, Windows XP and Linux.</para>
    </listitem>
    <listitem>
-    <para>Aspell .32.6 alpha or better (I am using Aspell .33.5 alpha).</para>
+    <para>Aspell 0.32.6 alpha or better (I am using Aspell 0.60.5).</para>
    </listitem>
   </itemizedlist>
 
@@ -104,31 +104,129 @@ available for Windows and various Unix platforms.
   <title>Installation and Configuration</title>
 
   <itemizedlist>
-   <listitem>
-    <para>Download and install <ulink url="http://prdownloads.sourceforge.net/aspell/aspell-.33.5-win32-i386.zip">aspell-.33.5-win32-i386.zip</ulink>
-    for Windows. If you are running some flavor of Unix, you can get the source
-    as well as some binaries from <ulink url="http://aspell.sourceforge.net/">Aspell</ulink> (note that Aspell
-    is generally installed by default on Linux and is in the path).</para>
+   <listitem><para>First, you must have Aspell, as well as some dictionary installed.</para>
+   <glosslist>
+   <glossentry>
+   <glossterm>On Windows</glossterm>
+   <glossdef>
+   <para><code>Aspell</code> is not pre-installed on Windows.
+   You can get it from <emphasis>Gnu</emphasis>: <uri>http://ftp.gnu.org/gnu/aspell/w32/</uri>.
+   The installer is <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-0-50-3-3-Setup.exe">Aspell-0-50-3-3-Setup.exe</ulink>.
+   The dictionary for your language of choice comes by the two letter ISO code of the language, like
+   <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-fr-0.50-3-3.exe">Aspell-fr-0.50-3-3.exe</ulink> for French,
+   or <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-uk-0.50-3-3.exe">Aspell-uk-0.50-3-3.exe</ulink> for UK English.
+   These are installers, so you only have to execute the full installer, then the dictionary installer
+   to be done with this.</para>
+   </glossdef>
+   </glossentry>
+   <glossentry>
+   <glossterm>On Linux</glossterm>
+   <glossdef>
+   <para>Depending on your distribution, <code>Aspell</code> can be already present.
+    You can check this by typing <code>aspell -v</code> in a terminal console.
+    If you see something like <code>@(#) International Ispell Version 3.1.20 (but really Aspell 0.60.5)</code>,
+    it's OK.
+   </para>
+   <para>If aspell is not present (you are getting <code>-bash: aspell: command not found</code>),
+   use your package manager to install it automatically.
+   Alternatively, you can get the source from <uri>http://ftp.gnu.org/gnu/aspell/</uri>.
+   </para>
+   </glossdef>
+   </glossentry>
+   <glossentry>
+   <glossterm>On Mac OS X</glossterm>
+   <glossdef><para>
+    You should use <ulink url="http://www.macports.org">Macports</ulink> to get aspell.
+    If you are already using Macports, all you have to do is <code>sudo port install aspell</code>.
+    If you do not, there is some guidance on <uri>http://docs.moodle.org/en/Configuring_aspell_on_Mac_OS_X</uri>.
+    </para>
+    </glossdef>
+    </glossentry>
+   </glosslist>
    </listitem>
    <listitem>
-    <para>Copy the the <code>SpellCheck.jar</code> file to your jEdit <code>jars</code>
-    directory.</para>
+    <para>Use the <emphasis>Plugin Manager</emphasis> to download and install automatically the SpellCheck plugin.
+    </para><para>Alternatively, copy the the <code>SpellCheck.jar</code> file to your jEdit <code>jars</code>
+    directory (in that case, you will have to restart jEdit)</para>
    </listitem>
    <listitem>
-    <para>Restart jEdit. You should see a <code>Spell Check</code> entry on the <code>Plugins</code>
+    <para>You should see a <guisubmenu>Spell Check</guisubmenu> entry on the <guimenu>Plugins</guimenu>
     menu.</para>
    </listitem>
    <listitem>
-    <para>In the <code>Utilities/Global Options.../Plugin Options/Spell Check</code>
-    option dialog set the <code>Aspell executable filename</code> to where you have
-    installed it or leave the default if any. You can also specify here a different
-    language dictionary or choose in the dictionary list (correct Aspell executable
-    path must be correctly set for that). You can also choose to let markup mode be
-    set automatically or not and add any extra Aspell command line arguments (type
-    Aspell --help in a console to know what they are).</para>
+   <para>
+   In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
+    option dialog, section <code>SpellCheck</code>, there are some options to set.
+    See <link linkend="options">Options</link> chapter below.
+    </para>
    </listitem>
-  </itemizedlist>
+   </itemizedlist>
+  </chapter>
+   <chapter id="options">
+   <title>Options</title>
+   <para>In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
+    option dialog, section <code>SpellCheck</code>, there are some options to set.
+    </para>
 
+    <glosslist>
+      <glossentry>
+  <glossterm>Aspell executable filename</glossterm>
+      <glossdef>
+       <para>It is important to set the <code>Aspell executable filename</code> to where you have
+    installed aspell. If you didn't install it manually, try to leave it to "aspell".</para>
+    <para>Here are some potential locations:</para>
+      <itemizedlist>
+      <listitem><para>On <emphasis>Windows</emphasis> it's in TODO</para></listitem>
+      <listitem><para>On <emphasis>Mac OS X</emphasis> it's in <code>/opt/local/bin</code></para></listitem>
+      <listitem><para>On <emphasis>Linux</emphasis> it's in <code>/usr/local/bin</code></para></listitem>
+      </itemizedlist>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+     <glossterm>Lang dictionary to use</glossterm>
+    <glossdef><para>You can choose in the dictionary list which dictionary to use for spell-checking.
+    (the list is taken from aspell output, so Aspell executable path must be correctly set for that).</para>
+    </glossdef>
+    </glossentry>
+    <glossentry>
+    <glossterm>Markup Mode</glossterm>
+    <glossdef>
+    <para>Aspell is able to deal automatically with certain kinds of documents,
+    via <emphasis>Filter Modes</emphasis>. Here is an extract of what <code>aspell --help</code>
+    says on my computer:</para>
+    <programlisting linenumbering="unnumbered">
+    Available Filter Modes:
+    Filter Modes are reconfigured combinations of filters optimized for
+    files of a specific type. A mode is selected via the "mode" option.
+    This will happen implicitly if Aspell is able to identify the file
+    type from the extension, and possibility the contents, of the file.
+
+  ccpp           mode for checking C++ comments and string literals
+  comment        mode to check any lines starting with a #
+  email          mode for skipping quoted text in email messages
+  html           mode for checking HTML documents
+  none           mode to disable all filters
+  nroff          mode for checking Nroff documents
+  perl           mode for checking Perl comments and string literals
+  sgml           mode for checking generic SGML/XML documents
+  tex            mode for checking TeX/LaTeX documents
+  texinfo        mode for checking Texinfo documents
+  url            mode to skip URL like constructs (default mode)
+</programlisting>
+  <para>You can choose to
+  <itemizedlist>
+  <listitem><para><emphasis>Disable Markup mode</emphasis>:
+  SpellCheck plugin will not tell Aspell which filter mode to use</para></listitem>
+  <listitem><para><emphasis>Enable Markup mode</emphasis>:
+  SpellCheck plugin will tell Aspell which mode to use</para></listitem>
+  <listitem><para><emphasis>Automatic Markup mode</emphasis>:
+  SpellCheck plugin will tell Aspell which mode to use <emphasis>ONLY for selected modes</emphasis></para></listitem>
+  </itemizedlist>
+  </para>
+  
+  </glossdef>
+  </glossentry>
+  </glosslist>
  </chapter>
 
  <chapter id="usage">
@@ -140,12 +238,14 @@ available for Windows and various Unix platforms.
      <para>Select the text you would like to spell check (no selection will spell check all the buffer).</para>
     </listitem>
     <listitem>
-     <para>Choose the menu item <code>Plugins/Spell check/Spell check selection...</code>
-    for default lang dictionary or <code>Plugins/Spell check/Spell check selection with lang...</code>
+     <para>Choose the menu item
+     <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Spell check selection...</guimenuitem>
+    for default lang dictionary or
+    <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Spell check selection with lang...</guimenuitem>
     to use an alternate lang dictionary.</para>
     </listitem>
     <listitem>
-     <para>The Aspell subprocess will start. (On Windows for JDK older than 1.4.0 a DOS
+     <para>The Aspell sub-process will start. (On Windows for JDK older than 1.4.0 a DOS
     console is displayed and may hide the Spell Check validation dialog).</para>
     </listitem>
     <listitem>
@@ -249,7 +349,7 @@ available from jedit repository. The documentation is generated using docbook xs
 <itemizedlist>
   <listitem>
   <para>
-  The Aspell subprocess creates a visible console window on Windows
+  The Aspell sub-process creates a visible console window on Windows
   95/98/NT/2000.
   The console window is a long-standing Java
   <ulink url="http://developer.java.sun.com/developer/bugParade/bugs/4244515.html">bug</ulink>..
@@ -258,7 +358,7 @@ available from jedit repository. The documentation is generated using docbook xs
   </para>
   <para>
   If you kill the visible console window, when you next spell check you will get
-  an error. If you spell check again, it should work as the subprocess is
+  an error. If you spell check again, it should work as the sub-process is
   recreated.
   </para>
   <para>Fixed with JDK 1.4.</para>
@@ -267,11 +367,6 @@ available from jedit repository. The documentation is generated using docbook xs
   <para>
   Freeze
   ******* TODO ********
-  </para>
-  </listitem>
-  <listitem>
-  <para>
-  Dicts...
   </para>
   </listitem>
 </itemizedlist>
@@ -287,6 +382,7 @@ available from jedit repository. The documentation is generated using docbook xs
   <listitem><para>Use the EditBus to report spelling errors (so they can be underlined like
     Word does)</para></listitem>
   <listitem><para>Highlight the context of the word being corrected</para></listitem>
+  <listitem><para>Use the output of <code>aspell dump modes</code> in Option pane</para></listitem>
 </itemizedlist>
 </chapter>
 

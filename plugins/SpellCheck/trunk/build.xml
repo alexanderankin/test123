@@ -11,12 +11,43 @@
 <project name="SpellCheck" default="dist" basedir=".">
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
-	<property name="src.dir" value="src/main"/>
+	<property name="src.dir" value="src"/>
+	<property name="src.test.dir" value="src/test"/>
+
+	<!-- my only Test Case -->
+	
 	<!-- for build-support location -->
 	<property file="../build.properties"/>
+	<!-- build support -->
 	<import file="${build.support}/plugin-build.xml" />
+
+
+	<!-- can switch-off compilation of test-cases -->
+	<selector id="compileFiles">
+		<or>
+        <filename name="main/**/*.java" />
+        <filename name="test/**/*.java" />
+		</or>		
+    </selector>
+
+	<selector id="junit.testcases">
+        <filename name="cswilly/**/*Test.java" />
+    </selector>
 
 	<!-- for junit tests -->
 	<property name="unit.test.target" value="test-junit"/>
+	
+
+	<target name="build.prepare"
+		depends="compile"
+		description="Remove Unit-Tests from the build classes">
+		<echo message="Removing test classes.."/>
+		<delete dir="${build.classes}">
+			<and>
+			<filename name="**/*Test*.class"/>
+			<not><filename name="cswilly/spell/Test.class"/></not>
+			</and>
+		</delete>
+	</target>
 </project>
 
