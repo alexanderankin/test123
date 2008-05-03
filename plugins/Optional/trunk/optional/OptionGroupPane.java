@@ -174,14 +174,14 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 			if (label != null)
 				buf.append(label);
 
-			if (i != lastIdx)
+			if (i > 0 && i < lastIdx)
 				buf.append(": ");
 		}
 
 		if (optionPane == null)
 			return;
 		
-		String ttext = jEdit.getProperty("options.title-template", new Object[] {
+		String ttext = jEdit.getProperty("optional.title-template", new Object[] {
 			optionGroup.getName(), buf.toString() });
 		setTitle(ttext);
 
