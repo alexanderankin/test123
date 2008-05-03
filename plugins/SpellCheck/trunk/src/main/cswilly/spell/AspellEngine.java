@@ -81,6 +81,15 @@ class AspellEngine
       String msg = "Cannot create aspell process.("+l+")";
       throw new SpellException( msg, e );
     }
+	catch( SpellException e)
+	{
+		if(_aSpellProcess!=null)
+		{
+			_aSpellProcess.destroy();
+			_aSpellProcess = null;
+		}
+		throw e;
+	}
   }
 
   /**
@@ -93,26 +102,26 @@ class AspellEngine
    * @param words {@link String} with list of works to be spell checked.
    * @return List of {@link Result}
    */
-  public List checkLine( String line )
+  public List<Result> checkLine( String line )
     throws SpellException
   {
     try
     {
-      List results = new ArrayList();
+      List<Result> results = new ArrayList<Result>();
 
       final String spellCheckLinePrefix = "^";
       _aSpellWriter.write( spellCheckLinePrefix + line );
       _aSpellWriter.newLine();
       _aSpellWriter.flush();
 
-      String response = _aSpellReader.readLine();
+      String response = readLine();
       while( response != null &&
         !response.equals( "" ) )
         {
           Result result = new Result( response );
           results.add( result );
 
-          response = _aSpellReader.readLine();
+          response = readLine();
         }
 
         return results;
@@ -122,6 +131,10 @@ class AspellEngine
       String msg = "Cannot access aspell process.";
       throw new SpellException( msg, e );
     }
+	catch( SpellException spe){
+		stop();
+		throw spe;
+	}
   }
 
   public
@@ -134,5 +147,31 @@ class AspellEngine
   void stop()
   {
     _aSpellProcess.destroy();
+  }
+  
+  private String readLine() throws SpellException,IOException{
+	  final String[] a_res = new String[1];
+	  final IOException[] a_ioe = new IOException[1];
+	  Thread t = new Thread(){
+		  public void run(){
+			  try{
+				  a_res[0] = _aSpellReader.readLine();
+			  }catch(IOException ioe){
+				  a_ioe[0] = ioe;
+			  }
+		  }
+	  };
+	  t.start();
+	  try{
+	  t.join(2000);//2 seconds !
+	  }catch(InterruptedException ie){
+		  throw new SpellException("Interrupted while waiting for Aspell Process");
+	  }
+	  if(t.isAlive())
+	  {
+		  throw new SpellException("Timeout waiting for Aspell Process");
+	  }
+	  if(a_ioe[0] != null) throw a_ioe[0];
+	  return a_res[0];
   }
 }

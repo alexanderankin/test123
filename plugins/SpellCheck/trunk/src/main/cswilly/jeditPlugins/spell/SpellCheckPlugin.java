@@ -24,6 +24,8 @@ package cswilly.jeditPlugins.spell;
 
 import cswilly.spell.FileSpellChecker;
 import cswilly.spell.SpellException;
+import cswilly.spell.FutureListDicts;
+
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -38,7 +40,8 @@ import org.gjt.sp.util.Log;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import java.util.regex.Pattern;
+
+import java.util.concurrent.Future;
 
 public class SpellCheckPlugin
   extends EditPlugin
@@ -265,6 +268,7 @@ public class SpellCheckPlugin
   void setAspellCommandLine(List<String> newCommandLine)
   {
     aspellCommandLine = newCommandLine;
+	Log.log(Log.DEBUG,SpellCheckPlugin.class,"setting command line "+newCommandLine);
   }
 
   private static
@@ -311,53 +315,16 @@ public class SpellCheckPlugin
   }
 
   public static
-  Vector<String> getAlternateLangDictionaries() throws SpellException
+  Future<Vector<String>> getAlternateLangDictionaries()
   {
-	String line;
-    String aspellExeFilename = getAspellExeFilename();
-    Vector<String> langs = new Vector<String>();
-	Process process = null;
-	try
-	{
-	  //directly dump the aspell dicts
-	  ProcessBuilder pb = new ProcessBuilder(Arrays.asList(new String[]{aspellExeFilename,"dumps","dicts"}));
-	  //this to allow us to catch error messages from Aspell
-	  pb.redirectErrorStream(true);
-	  process = pb.start();
-	  InputStream is = process.getInputStream();
-	  for(int i=0;is.available()==0 && i<5;i++){
-		  try{
-			  Thread.sleep(500);
-		  }catch(InterruptedException ie){
-				Log.log(Log.ERROR, SpellCheckPlugin.class, "Interrupted while listing dicts");
-				throw new SpellException("Interrupted while listing dictionnaries");
-		  }
+	  return new FutureListDicts(getAspellExeFilename());
+  }
+
+  public void stop(){
+	  if(_fileSpellChecker != null){
+		  _fileSpellChecker.stop();
+		  _fileSpellChecker = null;
 	  }
-	  if(is.available()==0){
-			Log.log(Log.ERROR, SpellCheckPlugin.class, "Timeout while listing dicts");
-			throw new SpellException("Timeout while listing dictionnaries");
-	  }
-	  Log.log(Log.DEBUG,SpellCheckPlugin.class, "might have dictionnaries");
-	  BufferedReader input  = new BufferedReader(new InputStreamReader(is ) );
-	  // each line is a dictionnary
-	  Pattern p = Pattern.compile("^[a-z]{2}[-\\w]*$");//at least 2 letters language code, then anything
-	  
-	  while ( ( line = input.readLine() ) != null )
-	  {
-		  if(!p.matcher(line).matches())
-		  throw new IOException("Suspect dictionnary name ("+line+")");
-		  langs.add(line);
-	  }
-	}
-	catch ( IOException e )
-	{
-		Log.log(Log.ERROR, SpellCheckPlugin.class, "Exception while listing dicts");
-		Log.log(Log.ERROR, SpellCheckPlugin.class,e);
-		throw new SpellException(e.getMessage());
-	}finally{
-		if(process!=null)process.destroy();
-	}
-    return langs;
   }
   
 }

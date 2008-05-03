@@ -25,30 +25,41 @@ package cswilly.jeditPlugins.spell;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusAdapter;
+
 import javax.swing.border.*;
 import javax.swing.table.*;
 import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.util.Log;
+
+/*
 import org.gjt.sp.util.WorkRequest;
 import org.gjt.sp.jedit.io.VFSManager;
+*/
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 
 import cswilly.spell.SpellException;
-
+import cswilly.spell.FutureListDicts;
 public class SpellCheckOptionPane
   extends AbstractOptionPane
 {
 	static final String LISTING_DICTS = "spell-check.listing-dicts.combo-item";
-	static final String REFRESH_BUTTON= "options.SpellCheck.refresh-langs";
+	static final String REFRESH_BUTTON_START= "options.SpellCheck.refresh-langs";
+	static final String REFRESH_BUTTON_STOP= "options.SpellCheck.stop-refresh-langs";
+	static final String NO_DICTIONARY="options.SpellCheck.no-dictionary";
   private JTextField    _aspellExeFilenameField;
   private JComboBox     _aspellMainLanguageList;
   private JRadioButton  _aspellNoMarkupMode;
@@ -56,6 +67,8 @@ public class SpellCheckOptionPane
   private JRadioButton  _aspellAutoMarkupMode;
   // private JTextField    _aspellMarkupModesField;
   private JTextField    _aspellOtherParamsField;
+  	private JButton _refreshButton;
+	private Future<Vector<String>> ft = null;
 
   private static final int ASPELL_OPTION_VERTICAL_STRUT  = 7;
 
@@ -78,6 +91,7 @@ public class SpellCheckOptionPane
 
     _aspellExeFilenameField = new JTextField( 25 );
     _aspellExeFilenameField.setText( aspellExecutable );
+    _aspellExeFilenameField.addFocusListener( new ExeFilenameHandler() );
 
     JButton _fileChooser = new JButton( jEdit.getProperty( "options.SpellCheck.fileChooser" ) );
     _fileChooser.addActionListener( new FileActionHandler() );
@@ -96,21 +110,8 @@ public class SpellCheckOptionPane
 
     addComponent( _aspellMainLanguageLabel );
 
-    JPanel listingPanel = new JPanel( new BorderLayout( 5, 0 ) );
-
-	DefaultComboBoxModel model = new DefaultComboBoxModel();
-	_aspellMainLanguageList = new JComboBox( model );
-	_aspellMainLanguageList.setEditable( true );
-	refreshList(model);
-	listingPanel.add( _aspellMainLanguageList, BorderLayout.WEST );
+	addComponent( createListingPanel() );
 	
-    String  refresh = jEdit.getProperty( REFRESH_BUTTON, "" );
-    JButton refreshButton = new JButton(refresh);
-	refreshButton.addActionListener(new ListDictsActionHandler(model));
-	listingPanel.add( refreshButton, BorderLayout.EAST );
-	
-	addComponent(listingPanel);
-
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
     /* aspell markup mode */
@@ -169,7 +170,11 @@ public class SpellCheckOptionPane
   public void _save()
   {
     jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, _aspellExeFilenameField.getText().trim() );
-	jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, _aspellMainLanguageList.getSelectedItem().toString().trim() );
+
+	String lang = _aspellMainLanguageList.getSelectedItem().toString().trim();
+	if(jEdit.getProperty(NO_DICTIONARY).equals(lang))lang="";
+		jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, lang);
+	
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_NO_MARKUP_MODE, _aspellNoMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_MANUAL_MARKUP_MODE, _aspellManualMarkupMode.isSelected() );
     jEdit.setBooleanProperty( SpellCheckPlugin.ASPELL_AUTO_MARKUP_MODE, _aspellAutoMarkupMode.isSelected() );
@@ -180,6 +185,35 @@ public class SpellCheckOptionPane
 
   private ModeTableModel model;
 
+  private JComponent  createListingPanel()
+  {
+    JPanel listingPanel = new JPanel( new BorderLayout( 5, 0 ) );
+
+	final DefaultComboBoxModel model = new DefaultComboBoxModel();
+	_aspellMainLanguageList = new JComboBox( model );
+	_aspellMainLanguageList.setEditable( true );
+	listingPanel.add( _aspellMainLanguageList, BorderLayout.WEST );
+	
+    String  refresh = jEdit.getProperty( REFRESH_BUTTON_STOP, "" );
+    _refreshButton = new JButton(refresh);
+	_refreshButton.addActionListener(new ListDictsActionHandler(model));
+	_refreshButton.setEnabled(false);
+	listingPanel.add( _refreshButton, BorderLayout.EAST );
+	
+	/* to prevent a bug when
+	   dictionnary listing exit quickly with an error,
+	   so refreshList() displays an Error Dialog before the OptionPane is
+	   visible, so the Option Pane is on top of it, and we can close neither of them. 
+	 */
+	SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				refreshList(model);
+			}
+	});
+	
+	return listingPanel;
+  }
+  
   private JScrollPane createModesSelector()
   {
     model = new ModeTableModel();
@@ -208,14 +242,74 @@ public class SpellCheckOptionPane
   }
 
 	/**
-	 * Trigger async call to SpellCheckPlugin.getAlternateLangDictionaries()
+	 * Trigger asynchronously call to SpellCheckPlugin.getAlternateLangDictionaries()
 	 * in a WorkThread
 	**/
-	private void refreshList(MutableComboBoxModel model){
-		String  listing = jEdit.getProperty( LISTING_DICTS, "" );
-		model.addElement(listing);
-		model.setSelectedItem(listing);
-		VFSManager.runInWorkThread(new ListDictionnariesThread(model));
+	private void refreshList(final MutableComboBoxModel model){
+		new Thread(){
+			public void run(){
+			_refreshButton.setText(jEdit.getProperty(REFRESH_BUTTON_STOP));
+			String listing = jEdit.getProperty( LISTING_DICTS, "" );
+			model.addElement(listing);
+			model.setSelectedItem(listing);
+			//VFSManager.runInWorkThread(new ListDictionnariesThread(model));
+			final Vector<String> dicts = new Vector<String>();
+			
+			_refreshButton.setEnabled(true);
+			
+			ft = new FutureListDicts(_aspellExeFilenameField.getText().trim());
+			try
+			{
+				dicts.addAll(ft.get(10,TimeUnit.SECONDS));
+			}
+			catch(InterruptedException ie){
+				Log.log(Log.ERROR,this,ie);
+				GUIUtilities.error(SpellCheckOptionPane.this,
+					"ioerror",new String[] { "Interrupted while listing dictionaries" });
+				ft.cancel(true);
+			}
+			catch(CancellationException ce){
+				Log.log(Log.DEBUG,this,"Cancel Button worked");
+			}
+			catch(ExecutionException ee){
+				Log.log(Log.ERROR,this,ee);
+				GUIUtilities.error(SpellCheckOptionPane.this,
+					"ioerror",new String[] { jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}) });
+			}
+			catch(TimeoutException te){
+				Log.log(Log.ERROR,this,te);
+				GUIUtilities.error(SpellCheckOptionPane.this,
+					"ioerror",new String[] { jEdit.getProperty("list-dict-timeout-error.message") });
+				ft.cancel(true);
+			}finally{
+				ft.cancel(true);
+				ft = null;
+			}
+			if(!dicts.isEmpty())
+				Log.log(Log.DEBUG,this,"finished refreshList ("+dicts.size()+" dictionaries found)");
+			else
+				Log.log(Log.ERROR,this,"no dictionary found)");
+
+			_refreshButton.setText(jEdit.getProperty(REFRESH_BUTTON_START));
+			_refreshButton.setEnabled(true);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+
+				public void run()
+				{
+					while(model.getSize()!=0)model.removeElementAt(0);//remove listing...
+					for(int i=0;i<dicts.size();i++)model.addElement(dicts.get(i));
+					if(dicts.isEmpty()){
+						String nothing = jEdit.getProperty( NO_DICTIONARY, "" );
+						model.addElement(nothing);
+						model.setSelectedItem(nothing);
+					}else{
+						String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
+						if(dicts.contains(dict))model.setSelectedItem(dict);
+					}
+				}
+			});
+		}}.start();
 	}
   
   class CheckBoxCellRenderer extends JCheckBox
@@ -238,7 +332,12 @@ public class SpellCheckOptionPane
       return this;
     }
   }
-
+  private class ExeFilenameHandler extends FocusAdapter{
+	  public void focusLost(FocusEvent fe){
+		  if(ft==null)_refreshButton.setEnabled(true);
+	  }
+  }
+  
   private class FileActionHandler implements ActionListener
   {
     public void actionPerformed( ActionEvent evt )
@@ -249,6 +348,7 @@ public class SpellCheckOptionPane
 
       if ( paths != null )
         SpellCheckOptionPane.this._aspellExeFilenameField.setText( paths[0] );
+		  if(ft==null)_refreshButton.setEnabled(true);
     }
   }
   
@@ -259,54 +359,18 @@ public class SpellCheckOptionPane
 	  }
     public void actionPerformed( ActionEvent evt )
     {
+		String  refresh;
+		if(ft == null){
 			refreshList(model);
+		}else{
+			ft.cancel(true);
+			((JButton)evt.getSource()).setEnabled(false);
+			ft = null;
+		}
+		
 	}
   }
 
-  /** run SpellCheckPlugin.listDictionnaries in a separate thread
-   *  adapted from Proxy listing in PluginManagerOptionPane
-   */
-	class ListDictionnariesThread extends WorkRequest
-	{
-		private MutableComboBoxModel model;
-		public ListDictionnariesThread(MutableComboBoxModel m){
-			model = m;
-			setAbortable(true);
-		}
-		public void run()
-		{
-			setStatus(jEdit.getProperty("spell-check.workthread-status"));
-			setMaximum(1);
-			setValue(0);
-
-			final Vector<String> dicts = new Vector<String>();
-			try
-			{
-				dicts.addAll(SpellCheckPlugin.getAlternateLangDictionaries());
-			}
-			catch (SpellException ex)
-			{
-				Log.log(Log.ERROR,this,ex);
-				GUIUtilities.error(SpellCheckOptionPane.this,
-					"ioerror",new String[] { ex.toString() });
-			}
-
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					while(model.getSize()!=0)model.removeElementAt(0);//remove listing...
-					for(int i=0;i<dicts.size();i++)model.addElement(dicts.get(i));
-						
-
-					String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
-					model.setSelectedItem(dict);
-				}
-			});
-
-			setValue(1);
-		}
-	} //}}}
 }
 
 class ModeTableModel extends AbstractTableModel
