@@ -97,7 +97,10 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( "Add..." );
         item.addActionListener( getAddActionListener() );
         add( item );
-        item = new JMenuItem( "Resolve..." );
+        item = new JMenuItem( "Resolve Conflicts...");
+        item.addActionListener( getResolveConflictsActionListener());
+        add( item );
+        item = new JMenuItem( "Mark File Resolved..." );
         item.addActionListener( getResolvedActionListener() );
         add( item );
         item = new JMenuItem( "Delete..." );
@@ -185,6 +188,15 @@ public class TextAreaContextMenu extends JMenu {
                    public void actionPerformed( ActionEvent ae ) {
                        AddAction action = new AddAction( view, getPaths(), null, null );
                        action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getResolveConflictsActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                        ResolveConflictDialog dialog = new ResolveConflictDialog(view, view.getBuffer().getPath());
+                        dialog.setVisible(true);
                    }
                };
     }

@@ -105,6 +105,10 @@ public class UpdateEventHandler implements ISVNEventHandler {
                 }
                 else if ( event.getContentsStatus() == SVNStatusType.CONFLICTED ) {
                     sb.append( "C" );
+                    if ( conflictedFiles == null ) {
+                        conflictedFiles = new ArrayList<String>();
+                    }
+                    conflictedFiles.add( event.getFile().toString() );
                 }
                 else if ( event.getContentsStatus() == SVNStatusType.MERGED ) {
                     sb.append( "G" );
@@ -121,6 +125,10 @@ public class UpdateEventHandler implements ISVNEventHandler {
             }
             else if ( event.getPropertiesStatus() == SVNStatusType.CONFLICTED ) {
                 sb.append( "C" );
+                if ( conflictedFiles == null ) {
+                    conflictedFiles = new ArrayList<String>();
+                }
+                conflictedFiles.add( event.getFile().toString() );
             }
             else if ( event.getPropertiesStatus() == SVNStatusType.MERGED ) {
                 sb.append( "G" );
@@ -210,10 +218,10 @@ public class UpdateEventHandler implements ISVNEventHandler {
     public void checkCancelled() throws SVNCancelException {}
 
     public UpdateData getData() {
-        data.setAddedFiles(addedFiles);
-        data.setConflictedFiles(conflictedFiles);
-        data.setDeletedFiles(deletedFiles);
-        data.setUpdatedFiles(updatedFiles);
+        data.setAddedFiles( addedFiles );
+        data.setConflictedFiles( conflictedFiles );
+        data.setDeletedFiles( deletedFiles );
+        data.setUpdatedFiles( updatedFiles );
         return data;
     }
 

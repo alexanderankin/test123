@@ -52,7 +52,8 @@ public class StatusResultsPanel extends JPanel {
     private String password = null;
 
     private JTree tree = null;
-    private JPopupMenu popupMenu = null;
+
+    private boolean hasConflicts = false;
 
     public StatusResultsPanel( StatusData results, View view, String username, String password ) {
         super( new BorderLayout() );
@@ -75,6 +76,7 @@ public class StatusResultsPanel extends JPanel {
         if ( list != null ) {
             root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts (need fixed?):" ), list ) );
             added = true;
+            hasConflicts = true;
         }
 
         list = results.getOutOfDate();
@@ -127,7 +129,6 @@ public class StatusResultsPanel extends JPanel {
             }
             tree.addMouseListener( new TreeMouseListener() );
             add( tree, BorderLayout.CENTER );
-            popupMenu = createPopupMenu();
         }
         else {
             label.setText( label.getText() + " (All files up to date.)" );
@@ -137,10 +138,23 @@ public class StatusResultsPanel extends JPanel {
     private DefaultMutableTreeNode createNode( String title, List<SVNStatus> values ) {
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( title );
         for ( SVNStatus status : values ) {
-            DefaultMutableTreeNode child = new DefaultMutableTreeNode( status.getFile().toString() );
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode( new Status(status) );
             node.add( child );
         }
         return node;
+    }
+
+    class Status {
+        private SVNStatus status;
+        public Status(SVNStatus s) {
+            status = s;
+        }
+        public String toString() {
+            return status.getFile().toString();
+        }
+        public SVNStatus getStatus() {
+            return status;
+        }
     }
 
     /**
@@ -156,16 +170,17 @@ public class StatusResultsPanel extends JPanel {
         }
 
         private void handleClick( MouseEvent e ) {
-            if ( e.isPopupTrigger() && tree.getSelectionCount() > 0 ) {
-                GUIUtils.showPopupMenu( popupMenu, StatusResultsPanel.this, e.getX(), e.getY() );
+            TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
+            Status status = null;
+            if ( path.getPathCount() > 2 ) {
+                status = ( Status ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
             }
-            else if ( e.getClickCount() == 2 ) {
+            if ( e.isPopupTrigger() && tree.getSelectionCount() > 0 ) {
+                GUIUtils.showPopupMenu( createPopupMenu(status), StatusResultsPanel.this, e.getX(), e.getY() );
+            }
+            else if ( e.getClickCount() == 2 && status != null) {
                 // for double-click on a text file, open the file in jEdit
-                TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
-                if ( path.getPathCount() > 2 ) {
-                    String filename = ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
-                    jEdit.openFile( view, filename );
-                }
+                jEdit.openFile( view, status.toString() );
             }
         }
     }
@@ -173,11 +188,26 @@ public class StatusResultsPanel extends JPanel {
     /**
      * Create the context menu.
      */
-    private JPopupMenu createPopupMenu() {
+    private JPopupMenu createPopupMenu(final Status status) {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
 
-        JMenuItem mi = new JMenuItem( "Update" );
+        JMenuItem mi;
+
+        if (hasConflicts && status != null && status.getStatus().getConflictWrkFile() != null && status.getStatus().getConflictWrkFile().exists()) {
+            mi = new JMenuItem( "Resolve Conflicts" );
+            pm.add( mi );
+            mi.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        ResolveConflictDialog dialog = new ResolveConflictDialog(view, status.getStatus());
+                        dialog.setVisible(true);
+                    }
+                }
+            );
+        }
+
+        mi = new JMenuItem( "Update" );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -210,7 +240,7 @@ public class StatusResultsPanel extends JPanel {
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
                                 DefaultMutableTreeNode type = ( DefaultMutableTreeNode ) path.getPathComponent( 1 );
-                                String pathname = ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
+                                String pathname = (( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString();
                                 if ( type != null ) {
                                     String comp = type.getUserObject().toString();
                                     // really should get these strings replaced
@@ -269,7 +299,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( (( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString());
                             }
                         }
                         RevertAction action = new RevertAction( view, paths, username, password );
@@ -287,7 +317,7 @@ public class StatusResultsPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String path = ( String ) ( ( DefaultMutableTreeNode ) tree_paths[ 0 ].getLastPathComponent() ).getUserObject();
+                        String path = ( ( DefaultMutableTreeNode ) tree_paths[ 0 ].getLastPathComponent() ).getUserObject().toString();
                         DiffAction action = new DiffAction( view, path, username, password );
                         action.actionPerformed( ae );
                     }
@@ -305,7 +335,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
                             }
                         }
                         AddAction action = new AddAction( view, paths, username, password );
@@ -325,7 +355,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
                             }
                         }
                         LogAction action = new LogAction( view, paths, username, password );
@@ -345,7 +375,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
                             }
                         }
                         DeleteAction action = new DeleteAction( view, paths, username, password );
@@ -365,7 +395,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
                             }
                         }
                         UnlockAction action = new UnlockAction( view, paths, username, password, false );
