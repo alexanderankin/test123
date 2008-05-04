@@ -52,10 +52,10 @@ public class UpdateResultsPanel extends JPanel {
     private JPopupMenu popupMenu = null;
 
     public UpdateResultsPanel( View view, UpdateData results ) {
-        this(view, results, false);
+        this( view, results, false );
     }
 
-    public UpdateResultsPanel( View view, UpdateData results, boolean isExport) {
+    public UpdateResultsPanel( View view, UpdateData results, boolean isExport ) {
         super( new LambdaLayout() );
         this.view = view;
         this.data = results;
@@ -63,7 +63,7 @@ public class UpdateResultsPanel extends JPanel {
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
         JLabel label;
-        if (isExport) {
+        if ( isExport ) {
             label = new JLabel( "Exported at revision: " + results.getRevision() );
         }
         else {
@@ -85,7 +85,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( size +  " file" + (size != 1 ? "s" : "") + " with conflicts:", list ), con );
+            add( createPanel( size + " file" + ( size != 1 ? "s" : "" ) + " with conflicts:", list ), con );
             added = true;
         }
 
@@ -93,7 +93,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( "Updated " + size + " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            add( createPanel( "Updated " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
@@ -101,11 +101,11 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            if (isExport) {
-                add( createPanel( "Exported " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            if ( isExport ) {
+                add( createPanel( "Exported " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             else {
-                add( createPanel( "Added " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+                add( createPanel( "Added " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             added = true;
         }
@@ -114,7 +114,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( "Deleted " + size +  " file" + (size != 1 ? "s" : "") + ":", list ), con );
+            add( createPanel( "Deleted " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
@@ -134,6 +134,7 @@ public class UpdateResultsPanel extends JPanel {
         panel.setBorder( new EtchedBorder() );
         panel.add( label, BorderLayout.NORTH );
         panel.add( GUIUtils.createTablePanel( table ), BorderLayout.CENTER );
+        table.addMouseListener(new TableMouseListener(table));
         return panel;
     }
 
@@ -164,7 +165,7 @@ public class UpdateResultsPanel extends JPanel {
                     table.setRowSelectionInterval( row, row );
                     table.setColumnSelectionInterval( col, col );
                 }
-                GUIUtils.showPopupMenu( popupMenu, UpdateResultsPanel.this, me.getX(), me.getY() );
+                GUIUtils.showPopupMenu( createPopupMenu( table ), UpdateResultsPanel.this, me.getX(), me.getY() );
             }
         }
     }
@@ -210,6 +211,21 @@ public class UpdateResultsPanel extends JPanel {
                         }
                         LogAction action = new LogAction( view, paths, data.getUsername(), data.getPassword() );
                         action.actionPerformed( ae );
+                    }
+                }
+                            );
+        mi = new JMenuItem( "Resolve Conflicts" );
+        pm.add( mi );
+        mi.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        int[] rows = table.getSelectedRows();
+                        if ( rows.length > 1 ) {
+                            JOptionPane.showMessageDialog( view, "Please select one file at a time.", "Error", JOptionPane.ERROR_MESSAGE );
+                            return ;
+                        }
+                        String path = ( String ) table.getValueAt( 0, 0 );
+                        ResolveConflictDialog dialog = new ResolveConflictDialog( view, path );
+                        dialog.setVisible( true );
                     }
                 }
                             );

@@ -148,6 +148,16 @@ public class UpdateAction extends SVNAction {
                                 buffer.reload( getView() );
                             }
                         }
+                        if (data.getConflictedFiles() != null) {
+                            StringBuffer sb = new StringBuffer();
+                            for ( String path : data.getConflictedFiles()) {
+                                sb.append(path).append("\n");
+                            }
+                            String filelist = sb.toString();
+                            if (filelist.length() > 0) {
+                                JOptionPane.showMessageDialog( getView(), "One or more files have conflicts:\n\n" + filelist, "Conflicts", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();

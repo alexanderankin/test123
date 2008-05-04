@@ -81,11 +81,6 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void start() {
-        /*
-        for ( View view : jEdit.getViews() ) {
-            addContextMenu( view );
-    }
-        */
     }
 
     private static TextAreaContextMenu createContextMenu( View view ) {
@@ -131,5 +126,4 @@ public class SVNPlugin extends EBPlugin {
             view.getTextArea().setRightClickPopup( popup );
         }
     }
-
 }

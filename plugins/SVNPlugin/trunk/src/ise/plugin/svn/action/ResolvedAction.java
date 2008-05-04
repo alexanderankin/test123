@@ -55,6 +55,7 @@ import org.gjt.sp.jedit.View;
 public class ResolvedAction extends SVNAction {
 
     private List<String> paths = null;
+    private boolean force = false;
 
     /**
      * @param view the View in which to display results
@@ -63,12 +64,17 @@ public class ResolvedAction extends SVNAction {
      * @param password the password for the username
      */
     public ResolvedAction( View view, List<String> paths, String username, String password ) {
+        this(view, paths, username, password, false);
+    }
+
+    public ResolvedAction( View view, List<String> paths, String username, String password, boolean force ) {
         super( view, "Resolved" );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
         setUsername( username );
         setPassword( password );
+        this.force = force;
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -94,7 +100,7 @@ public class ResolvedAction extends SVNAction {
                 }
                 recursive = response == JOptionPane.YES_OPTION;
             }
-            else {
+            else if (!force) {
                 // have the user confirm they really want to resolve
                 int response = JOptionPane.showConfirmDialog( getView(), "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.NO_OPTION ) {
