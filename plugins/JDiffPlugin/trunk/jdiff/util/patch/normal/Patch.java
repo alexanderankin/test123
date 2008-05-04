@@ -40,6 +40,44 @@ import java.util.StringTokenizer;
  *
  * @author Dominik
  */
+
+/*
+This comment is covered under the GNU Free Documentation License.
+
+Detailed Description of Normal Format
+
+The normal output format consists of one or more hunks of differences; each hunk
+shows one area where the files differ. Normal format hunks look like this:
+
+change-command
+< from-file-line
+< from-file-line...
+---
+> to-file-line
+> to-file-line...
+
+There are three types of change commands. Each consists of a line number or
+comma-separated range of lines in the first file, a single character indicating
+the kind of change to make, and a line number or comma-separated range of lines
+in the second file. All line numbers are the original line numbers in each file.
+The types of change commands are:
+
+lar
+    Add the lines in range r of the second file after line l of the first file.
+    For example, 8a12,15 means append lines 12-15 of file 2 after line 8 of file
+    1; or, if changing file 2 into file 1, delete lines 12-15 of file 2.
+fct
+    Replace the lines in range f of the first file with lines in range t of the
+    second file. This is like a combined add and delete, but more compact. For
+    example, 5,7c8,10 means change lines 5-7 of file 1 to read as lines 8-10 of
+    file 2; or, if changing file 2 into file 1, change lines 8-10 of file 2 to
+    read as lines 5-7 of file 1.
+rdl
+    Delete the lines in range r from the first file; line l is where they would
+    have appeared in the second file had they not been deleted. For example,
+    5,7d3 means delete lines 5-7 of file 1; or, if changing file 2 into file 1,
+    append lines 5-7 of file 1 after line 3 of file 2.
+*/
 public class Patch {
 
     /**
@@ -49,11 +87,8 @@ public class Patch {
      * @return true if the string starts with a number.
      */
     public static boolean startWithNumber( String str ) {
-        if ( str.startsWith( "1" ) || str.startsWith( "2" ) || str.startsWith( "3" ) || str.startsWith( "4" )
-                || str.startsWith( "5" ) || str.startsWith( "6" ) || str.startsWith( "7" ) || str.startsWith( "8" )
-                || str.startsWith( "9" ) || str.startsWith( "0" ) )
-            return true;
-        return false;
+        char c = str.charAt( 0 );
+        return ( '\u0030' <= c && c <= '\u0039' );
     }
 
     /**
@@ -69,6 +104,7 @@ public class Patch {
                 numChunks++;
             }
         }
+
         // split into chunks (start at (some number) to (some number)).
         Chunk[] chunks = new Chunk[ numChunks ];
         numChunks = -1; // must be -1 because in the next step its incremented
@@ -90,6 +126,9 @@ public class Patch {
                 numChunks++; // increment to the next chunk
                 fromBuf = new ArrayList<String>(); // reset the arrayLists
                 toBuf = new ArrayList<String>();
+
+
+                // parse the change-command line
                 StringTokenizer tok1;
                 if ( patchSrc[ i ].contains( "a" ) ) {
                     tok1 = new StringTokenizer( patchSrc[ i ], "a" );
@@ -146,8 +185,8 @@ public class Patch {
                 log( "> " + line );
                 toBuf.add( line );
             }
-            else if ( patchSrc[ i ].contains( "---" ) ) {
-                log( "Got seperation line: " + patchSrc[ i ] );
+            else if ( patchSrc[ i ].startsWith( "---" ) ) {
+                log( "Got separation line: " + patchSrc[ i ] );
             }
             else {
                 log( "Ignoring: " + patchSrc[ i ] );
