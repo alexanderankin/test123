@@ -488,6 +488,8 @@ public class DualDiff implements EBComponent {
                         if ( DualDiff.isEnabledFor( view ) ) {
                             DualDiff.removeFrom( view );
                             view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
+                            view.unsplit();
+                            EditBus.send(new DiffMessage(view, DiffMessage.OFF));
                         }
                         else {
                             EditPane[] editPanes = view.getEditPanes();
@@ -515,6 +517,7 @@ public class DualDiff implements EBComponent {
                                     dwm.showDockableWindow( "jdiff-lines" );
                                 }
                             }
+                            EditBus.send(new DiffMessage(view, DiffMessage.ON));
                         }
 
                         view.invalidate();
