@@ -59,13 +59,21 @@ public class Patch {
         return applyUnifiedChunks( targetSrc, chunks );
     }
 
+    /**
+     * Splits the given string in to a list of lines.  If pad is true, each
+     * 0-length line will be prepended with a single space character.
+     * @param s the string to split into lines
+     * @param pad if true, each 0-length line will be prepended with a single space
+     * @return a list of strings, one per line in the original.  Line separators
+     * are not included.
+     */
     private static List<String> getLines( String s, boolean pad ) {
         List<String> lines = new ArrayList<String>();
         try {
             BufferedReader reader = new BufferedReader( new StringReader( s ) );
             String line = null;
             while ( ( line = reader.readLine() ) != null ) {
-                if ( line.length() == 0 && pad) {
+                if ( line.length() == 0 && pad ) {
                     // in a patch file created by a unified diff, each line must
                     // start with +, -, or space, put a space at the front of any
                     // blank lines
@@ -81,13 +89,18 @@ public class Patch {
     }
 
     private static List<UnifiedChunk> getUnifiedChunks( List<String> patchSrc ) {
-        // count the chunks and calculate offsets to the start of each chunk
+        // count the chunks
         int numChunks = 0;
         for ( String line : patchSrc ) {
             if ( line.startsWith( "@@" ) ) {
                 ++numChunks;
             }
         }
+
+        // calculate offsets to the start of each chunk. Need one more offset than
+        // the actual number of chunks, the last offset points to the last line
+        // of the patchSrc.  This is so the chunks can be extracted as a range
+        // of lines.
         int[] chunkOffsets = new int[ numChunks + 1 ];
         int index = 0;
         for ( int i = 0; i < patchSrc.size(); i++ ) {
@@ -99,7 +112,7 @@ public class Patch {
         }
         chunkOffsets[ chunkOffsets.length - 1 ] = patchSrc.size();
 
-        // split the lines into their individual chunks
+        // group the lines into individual chunks
         List < List < String >> chunkLines = new ArrayList < List < String >> ();
         for ( int i = 0; i < chunkOffsets.length - 1; i++ ) {
             int start = chunkOffsets[ i ];
@@ -113,7 +126,13 @@ public class Patch {
             }
         }
 
-        // parse the individual sets of chunk lines
+        // parse the individual sets of chunk lines to create UnifiedChunks.
+        // Each chunk of a patch file created by a unified diff starts with a
+        // range line followed by the lines that have changed.  Changed
+        // lines are marked with + (for added) or - (for removed).  Unified diff
+        // also produces context lines. By default, there are 3 lines before and
+        // 3 lines after that help show how the changed lines fit in the file
+        // overall.  Context lines start with a space.
         List<UnifiedChunk> unifiedChunks = new ArrayList<UnifiedChunk>();
         for ( List<String> lines : chunkLines ) {
             if ( lines.size() == 0 ) {
@@ -121,15 +140,17 @@ public class Patch {
             }
             String rangeLine = lines.get( 0 );
 
-            // Format of the range line is "@@ -L,S +L,S @@" where
-            // - means the old file,
-            // + means the new file,
-            // L is the offset line in that file,
-            // S is the number of lines following the offset line
-            // so "@@ -86,3 +86,12 @@"
-            // means replace the 3 lines starting at line 86 in the old file
-            // with 12 patch lines.  The comma and S value are optional,
-            // if missing, assume S = 1.
+            /*
+            Format of the range line is "@@ -L,S +L,S @@" where
+               - means the old file,
+               + means the new file,
+               L is the offset line in that file, this is 1 based,
+               S is the number of lines following the offset line
+            so "@@ -86,3 +86,12 @@"
+            means replace the 3 lines starting at line 86 in the old file
+            with 12 patch lines.  The comma and S value are optional,
+            if missing, assume S = 1.
+            */
 
             // parse the range line to get the L and S values
             rangeLine = rangeLine.replaceAll( "@", "" );
@@ -142,7 +163,9 @@ public class Patch {
                 continue;
             }
 
-            // get the L and S values for the 1st range
+            // get the L and S values for the 1st range.  Need to subtract 1 from
+            // the L value since it is 1-based where the list of patch file lines
+            // is 0-based.
             String[] oldParts = ranges[ 0 ].split( "[,]" );
             int oldStartLine = Integer.parseInt( oldParts[ 0 ].substring( 1 ) ) - 1;
             int oldRange = 1;
