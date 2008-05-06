@@ -14,9 +14,6 @@ plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.Project
 plugin.ctags.CtagsInterfacePlugin.jars=hsqldb.jar
 plugin.ctags.CtagsInterfacePlugin.docs=index.html
 
-# Use the plugin home directory for the tag database
-plugin.ctags.CtagsInterfacePlugin.usePluginHome=true
-
 # action labels
 ctags-interface-add-file.label=Add tag file...
 ctags-interface-print-tags.label=Print tags
