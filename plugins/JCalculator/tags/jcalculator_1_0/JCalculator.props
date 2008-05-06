@@ -63,5 +63,5 @@ options.jcalculatorOption.onlyResult=true
 jcalculator.calculate.label=Calculate Now
 jcalculator.calculate.icon=Save.png
 jcalculator.clear.label=Clear All
-jcalculator.clear.icon=Cut.png
+jcalculator.clear.icon=Clear.png
 
