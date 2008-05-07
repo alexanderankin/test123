@@ -33,6 +33,10 @@ import org.gjt.sp.jedit.msg.*;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+/**
+ * Panel to let the user choose a revision by pre-defined value (HEAD, etc), or
+ * by date or by specific revision.  This is the "C" in MVC.
+ */
 public class RevisionSelectionPanel extends JComponent {
 
     private static final String uiClassID = "RevisionSelectionPanelUI";
@@ -42,16 +46,30 @@ public class RevisionSelectionPanel extends JComponent {
     private Set<ChangeListener> changeListeners = new HashSet<ChangeListener>();
     private Set<PropertyChangeListener> propertyChangeListeners = new HashSet<PropertyChangeListener>();
 
+    // data model
     private RevisionSelectionPanelModel model;
 
+    /**
+     * Set a title on vertical panel, do not show WORKING revision as a choice.
+     * @param title title for the panel
+     */
     public RevisionSelectionPanel( String title ) {
         this( title, SwingConstants.VERTICAL, false );
     }
 
+    /**
+     * Set a title on vertical panel, optionally show WORKING revision as a choice.
+     * @param title title for the panel
+     * @param direction either SwingConstants.HORIZONTAL or VERTICAL
+     * @param showWorking if true, WORKING will be shown as a revision choice.
+     */
     public RevisionSelectionPanel( String title, int direction, boolean showWorking ) {
         this( title, direction, true, true, true, true, showWorking );
     }
 
+    /**
+     * Fully specify which revision choices to show.
+     */
     public RevisionSelectionPanel( String title, int direction, boolean showHead, boolean showBase, boolean showNumber, boolean showDate, boolean showWorking ) {
         model = new RevisionSelectionPanelModel();
         model.setTitle( title );
@@ -76,6 +94,9 @@ public class RevisionSelectionPanel extends JComponent {
         super.setUI( ui );
     }
 
+    /**
+     * Install the UI.
+     */
     public void updateUI() {
         if ( UIManager.get( getUIClassID() ) != null ) {
             setUI( ( RevisionSelectionPanelUI ) UIManager.getUI( this ) );

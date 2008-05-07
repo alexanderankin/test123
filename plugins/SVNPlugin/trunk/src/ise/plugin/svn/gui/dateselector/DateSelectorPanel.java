@@ -7,7 +7,6 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.Date;
 import java.util.Calendar;
-import java.net.URL;
 
 /** A calendar-dispaly/date-selection widget.
  *  Here's what it looks like:

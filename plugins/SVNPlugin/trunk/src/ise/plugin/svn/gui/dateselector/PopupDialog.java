@@ -5,8 +5,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.geom.Line2D;
 import java.net.URL;
 
 // Test this class by instantiating DateSelector

@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.Calendar;
 import java.net.URL;
 
-import ise.plugin.svn.gui.dateselector.DateSelector;
-
 /** This class is wrapper for a {@link DateSelector} that adds a
  *  navigation bar to manipulate the wrapped selector.
  *  See {@link DateSelectorPanel} for a description and picture

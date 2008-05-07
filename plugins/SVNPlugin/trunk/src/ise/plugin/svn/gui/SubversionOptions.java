@@ -37,6 +37,9 @@ import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import ise.java.awt.KappaLayout;
 
+/**
+ * Plugin option pane.
+ */
 public class SubversionOptions implements OptionPane {
    private JPanel panel = null;
 

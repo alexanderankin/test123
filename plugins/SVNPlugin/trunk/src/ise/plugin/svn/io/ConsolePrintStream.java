@@ -28,14 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.io;
 
-import java.awt.Color;
 import java.io.*;
 import java.util.logging.*;
 
 import org.gjt.sp.jedit.View;
 
-import ise.plugin.svn.gui.OutputPanel;
-import ise.plugin.svn.SVNPlugin;
 
 public class ConsolePrintStream extends PrintStream {
 
