@@ -13,7 +13,7 @@ plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.author=Yiwen Yu
 plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.version=1.0
 
 # description
-plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.description=This plugin provides calculator for the formula on text
+plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.description=This plugin provides a calculator for evaluating expressions, from a dockable or the text area.
 plugin.org.DFish.tools.calculator.plugin.JCalculatorPlugin.longdescription=description.html
 
 
