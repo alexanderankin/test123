@@ -113,6 +113,9 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( "Log..." );
         item.addActionListener( getLogActionListener() );
         add( item );
+        item = new JMenuItem( "Blame..." );
+        item.addActionListener( getBlameActionListener() );
+        add( item );
         item = new JMenuItem( "Properties..." );
         item.addActionListener( getPropertyActionListener() );
         add( item );
@@ -232,6 +235,15 @@ public class TextAreaContextMenu extends JMenu {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
                        LogAction action = new LogAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getBlameActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       BlameAction action = new BlameAction( view, getPaths(), null, null );
                        action.actionPerformed( ae );
                    }
                };
