@@ -28,22 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
-import ise.plugin.svn.gui.OutputPanel;
-
-import ise.plugin.svn.SVNPlugin;
-import ise.plugin.svn.command.Log;
-import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.gui.LogResultsPanel;
-import ise.plugin.svn.gui.SVNInfoPanel;
-import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
 import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.action.LogAction;
 
