@@ -33,6 +33,11 @@ import ise.plugin.svn.library.GUIUtils;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+/**
+ * Basic implementation of the UI for the RevisionSelectionPanel.  Look and feels
+ * should subclass as appropriate.  This class handles the actual layout of the
+ * panel.  This is the "V" in MVC.
+ */
 public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener, PropertyChangeListener {
 
     private RevisionSelectionPanel controller;

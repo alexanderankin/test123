@@ -3,6 +3,10 @@ package ise.plugin.svn.gui.component;
 import javax.swing.SwingConstants;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+/**
+ * Tracks the state of the UI for the RevisionSelectionPanel.  This is the "M"
+ * in MVC.
+ */
 public class RevisionSelectionPanelModel {
 
     private String title = "";

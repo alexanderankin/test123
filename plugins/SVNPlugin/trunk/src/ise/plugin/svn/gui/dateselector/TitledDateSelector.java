@@ -7,8 +7,6 @@ import java.awt.event.*;
 
 import java.util.Date;
 
-import ise.plugin.svn.gui.dateselector.DateSelector;
-
 /************************************************************************
  *  This class is a GoF "Decorator" that augements the "raw"
  *  </code>DateSelectorPanel</code> with
@@ -53,7 +51,8 @@ public class TitledDateSelector extends JPanel implements DateSelector {
         title.setBackground ( ise.plugin.svn.gui.dateselector.Colors.LIGHT_YELLOW );
         title.setFont ( title.getFont().deriveFont( Font.BOLD ) );
 
-        selector.addActionListener( new ActionListener() {
+        selector.addActionListener
+( new ActionListener() {
               public void actionPerformed( ActionEvent e ) {
                   if ( e.getID() == DateSelectorPanel.CHANGE_ACTION )
                       title.setText( e.getActionCommand() );

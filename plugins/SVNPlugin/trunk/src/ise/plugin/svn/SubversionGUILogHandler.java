@@ -96,8 +96,14 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         _content_pane.putClientProperty("isCloseable", Boolean.FALSE);
 
         _text = new JTextPane();
-        _text.setBackground(jEdit.getColorProperty("view.bgColor"));
-        _text.setForeground(jEdit.getColorProperty("view.fgColor"));
+        try {
+            _text.setBackground(jEdit.getColorProperty("view.bgColor"));
+            _text.setForeground(jEdit.getColorProperty("view.fgColor"));
+        }
+        catch(Exception e) {
+            _text.setBackground(Color.WHITE);
+            _text.setForeground(Color.BLACK);
+        }
         _text.setCaretPosition( 0 );
         _content_pane.add( new JScrollPane( _text ), BorderLayout.CENTER );
         _content_pane.add( getControlPanel(), BorderLayout.SOUTH );
