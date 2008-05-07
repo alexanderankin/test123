@@ -4,7 +4,7 @@
     <!-- read build.props to override properties set below -->
     <property file="../build.properties"/>
     <property file="build.properties"/>
-
+    <property file="JDiffPlugin.props" />
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir" value="../.."/>
 
@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
 
     <!-- version number -->
-    <property name="build.num" value="1.8.0"/>
+    <property name="build.num" value="${plugin.jdiff.JDiffPlugin.version}"/>
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
