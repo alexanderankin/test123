@@ -118,8 +118,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
             gfx.setColor( Color.BLACK );
             java.util.List<String> blame = model.getBlame();
             for ( int i = firstLine; i <= lastLine; i++ ) {
-                int offset = i - firstLine;
-                if ( offset >= 0 && offset < blame.size() ) {
+                if ( i >= 0 && i < blame.size() ) {
                     gfx.drawString( blame.get( i ), 3, ( i - firstLine + 1 ) * pixelsPerLine );
                 }
             }

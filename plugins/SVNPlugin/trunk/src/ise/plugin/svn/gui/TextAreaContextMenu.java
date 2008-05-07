@@ -113,7 +113,7 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( "Log..." );
         item.addActionListener( getLogActionListener() );
         add( item );
-        item = new JMenuItem( "Blame..." );
+        item = new JMenuItem( "Blame" );
         item.addActionListener( getBlameActionListener() );
         add( item );
         item = new JMenuItem( "Properties..." );
