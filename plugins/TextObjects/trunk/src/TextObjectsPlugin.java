@@ -9,6 +9,7 @@ import java.lang.Math;
 import java.lang.Class;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.CharSequence;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.*;
@@ -93,18 +94,18 @@ public class TextObjectsPlugin extends EditPlugin
         */
     }
     
-    private static abstract class StringIterator implements Iterator 
+    private static abstract class CharSequenceIterator implements Iterator 
     {
-        public final String text;
+        public CharSequence text;
         protected int offset;
         
-        public StringIterator(String text_, int offset_)
+        public CharSequenceIterator(CharSequence text_, int offset_)
         {
             this.text = text_;
             this.offset = offset_;
         }
         
-        public StringIterator(StringIterator i)
+        public CharSequenceIterator(CharSequenceIterator i)
         {
             this.text = i.text;
             this.offset = i.offset();
@@ -115,23 +116,23 @@ public class TextObjectsPlugin extends EditPlugin
         public abstract void remove();
         protected abstract int adjust();
         
-        public String substring(int len)
+        public CharSequence subSequence(int len)
         {
-            return text.substring(offset, offset + len);
+            return text.subSequence(offset, len);
         }
         public int offset()
         {
             return offset;
         }
-        public final String text()
+        public CharSequence text()
         {
             return text;
         }
     }
     
-    private static class BackStringIterator extends StringIterator
+    private static class BackCharSequenceIterator extends CharSequenceIterator
     {
-        BackStringIterator(final String text_, int offset_)
+        BackCharSequenceIterator(CharSequence text_, int offset_)
         {
             super(text_, offset_);
         }
@@ -147,13 +148,13 @@ public class TextObjectsPlugin extends EditPlugin
         protected int adjust() { return 1; }
     }
     
-    private static class ForwardStringIterator extends StringIterator
+    private static class ForwardCharSequenceIterator extends CharSequenceIterator
     {
-        public ForwardStringIterator(final String text_, int offset_)
+        public ForwardCharSequenceIterator(CharSequence text_, int offset_)
         {
             super(text_, offset_);
         }
-        public ForwardStringIterator(StringIterator i)
+        public ForwardCharSequenceIterator(CharSequenceIterator i)
         {
             super(i);
         }
@@ -169,9 +170,9 @@ public class TextObjectsPlugin extends EditPlugin
         protected int adjust() { return -1; }
     }
     
-    private static ForwardStringIterator forward(StringIterator i)
+    private static ForwardCharSequenceIterator forward(CharSequenceIterator i)
     {
-        return new ForwardStringIterator(i);
+        return new ForwardCharSequenceIterator(i);
     }
     
     public static class Functors
@@ -391,7 +392,7 @@ public class TextObjectsPlugin extends EditPlugin
         }
     }
     
-    private static int match(StringIterator iter, Predicate p)
+    private static int match(CharSequenceIterator iter, Predicate p)
     {
         int num_match = 0;
         while (iter.hasNext()) {
@@ -413,7 +414,7 @@ public class TextObjectsPlugin extends EditPlugin
     /** Returns the number of non-matched characters; -1 if no character
         matched.
       */
-    private static int find_first(StringIterator iter, Predicate p)
+    private static int find_first(CharSequenceIterator iter, Predicate p)
     {
         int offset = 0;
         while (iter.hasNext()) {
@@ -432,7 +433,7 @@ public class TextObjectsPlugin extends EditPlugin
     
     /** Returns the number of matched characters.
       */
-    private static int find_last(StringIterator iter, Predicate p)
+    private static int find_last(CharSequenceIterator iter, Predicate p)
     {
         int offset = 0;
         while (iter.hasNext()) {
@@ -458,7 +459,7 @@ public class TextObjectsPlugin extends EditPlugin
     }
     
     private static HashMap<String, Integer> 
-    find_seq(StringIterator iter, ArrayList<Vector<Predicate>> fifos_)
+    find_seq(CharSequenceIterator iter, ArrayList<Vector<Predicate>> fifos_)
     {
         HashMap<String, Integer> failed = new HashMap<String, Integer>();
         failed.put("offset", -1);
@@ -478,7 +479,7 @@ public class TextObjectsPlugin extends EditPlugin
             fs_debug("Outer loop at " + iter.offset());
             int seq_len = 0;
             //int match_len = 0;
-            ForwardStringIterator seq_iter = forward(iter);
+            ForwardCharSequenceIterator seq_iter = forward(iter);
             fs_debug("Inner loop initialized at " + seq_iter.offset());
             iter.next();
             
@@ -554,33 +555,33 @@ public class TextObjectsPlugin extends EditPlugin
         return failed;
     }
    
-    private static Selection pair_first(final String text, int pos, 
+    private static Selection pair_first(CharSequence text, int pos, 
                                   Predicate start, Predicate end)
     {
-        int s = pos - find_first(new BackStringIterator(text, pos - 1), start);
-        int e = pos + find_first(new ForwardStringIterator(text, pos), end);
+        int s = pos - find_first(new BackCharSequenceIterator(text, pos - 1), start);
+        int e = pos + find_first(new ForwardCharSequenceIterator(text, pos), end);
         if (s == -1 || e == -1)
             return null;
         return new Selection.Range(s, e);
     }
     
-    private static Selection pair_last(final String text, int pos, 
+    private static Selection pair_last(CharSequence text, int pos, 
                                   Predicate start, Predicate end)
     {
-        int s = pos - find_last(new BackStringIterator(text, pos - 1), start);
-        int e = pos + find_last(new ForwardStringIterator(text, pos), end);
+        int s = pos - find_last(new BackCharSequenceIterator(text, pos - 1), start);
+        int e = pos + find_last(new ForwardCharSequenceIterator(text, pos), end);
         debug("pair_last returned " + s + " " + e);
         return new Selection.Range(s, e);
     }
     
-    private static ForwardStringIterator forward(final String text, int pos)
+    private static ForwardCharSequenceIterator forward(CharSequence text, int pos)
     {
-        return new ForwardStringIterator(text, pos);
+        return new ForwardCharSequenceIterator(text, pos);
     }
     
-    private static BackStringIterator back(final String text, int pos)
+    private static BackCharSequenceIterator back(CharSequence text, int pos)
     {
-        return new BackStringIterator(text, pos);
+        return new BackCharSequenceIterator(text, pos);
     }
 
     private static<T> ArrayList<T> make_array(T... args)
@@ -594,7 +595,7 @@ public class TextObjectsPlugin extends EditPlugin
     }
     
     private static Selection 
-    extend_whitespace(final String text, Selection selection, 
+    extend_whitespace(CharSequence text, Selection selection, 
                       boolean stop_on_newline)
     {
         Predicate word = new Functors.Word();
@@ -613,7 +614,7 @@ public class TextObjectsPlugin extends EditPlugin
         return new Selection.Range(selection.getStart(), extension);
     }
     
-    private static Selection extend_whitespace(final String text, Selection selection)
+    private static Selection extend_whitespace(CharSequence text, Selection selection)
     {
         return extend_whitespace(text, selection, true);
     }
@@ -623,7 +624,7 @@ public class TextObjectsPlugin extends EditPlugin
     public static Selection word(TextArea ta, int pos, boolean whole)
     {
         Selection res;
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
         if (text.length() == 0)
@@ -672,7 +673,7 @@ public class TextObjectsPlugin extends EditPlugin
     {
     }
     
-    private static int get_block_end(final String text, int pos, String pair)
+    private static int get_block_end(CharSequence text, int pos, String pair)
         throws InvalidBlock
     {
         char open_char = pair.charAt(0);
@@ -706,7 +707,7 @@ public class TextObjectsPlugin extends EditPlugin
         return end_pos;
     }
     
-    private static int get_block_begin(final String text, int pos, String pair)
+    private static int get_block_begin(CharSequence text, int pos, String pair)
         throws InvalidBlock
     {
         char open_char = pair.charAt(0);
@@ -741,7 +742,7 @@ public class TextObjectsPlugin extends EditPlugin
         return begin_pos;
     }
     
-    private static Selection block(final String text, int pos, String pair)
+    private static Selection block(CharSequence text, int pos, String pair)
     {
         block_debug("Starting block search with " + pair + " at " + pos);
         char open_char = pair.charAt(0);
@@ -775,7 +776,7 @@ public class TextObjectsPlugin extends EditPlugin
     public static Selection block(TextArea ta, int pos, boolean whole, String pair)
     {
         Selection res;
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
         if (text.length() == 0)
@@ -790,7 +791,7 @@ public class TextObjectsPlugin extends EditPlugin
         return res;
     }
     
-    private static int find_quote(final String text, int pos, Character quote, 
+    private static int find_quote(CharSequence text, int pos, Character quote, 
                                   boolean do_forward)
     {
         int orig_pos = pos;
@@ -800,7 +801,7 @@ public class TextObjectsPlugin extends EditPlugin
         int offset_sign = do_forward ? 1 : -1;
         
         while (true) {
-            StringIterator iter = do_forward ? forward(text, pos) : back(text, pos);
+            CharSequenceIterator iter = do_forward ? forward(text, pos) : back(text, pos);
             int offset = find_first(iter, either);
             if (offset == -1) {
                 return -1;
@@ -823,7 +824,7 @@ public class TextObjectsPlugin extends EditPlugin
     public static Selection quote(TextArea ta, int pos, boolean whole, Character quote)
     {
         Selection res, s;
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
         if (text.length() == 0)
@@ -876,7 +877,7 @@ public class TextObjectsPlugin extends EditPlugin
     
     public static Selection paragraph(TextArea ta, int pos, boolean whole)
     {
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
          if (text.length() == 0)
@@ -953,7 +954,7 @@ public class TextObjectsPlugin extends EditPlugin
     
     public static Selection comment(TextArea ta, int pos, boolean whole)
     {
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
         Predicate ws = new Functors.Whitespace();
@@ -1028,7 +1029,7 @@ public class TextObjectsPlugin extends EditPlugin
     
     public static Selection sentence(TextArea ta, int pos, boolean whole)
     {
-        final String text = ta.getText();
+        CharSequence text = ta.getBuffer().getSegment(0, ta.getBufferLength());
         pos = Math.min(pos, text.length() - 1);
         
         Predicate punct = new Functors.InString(".!?");
