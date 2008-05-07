@@ -556,7 +556,7 @@ public class TextObjectsPlugin extends EditPlugin
     }
    
     private static Selection pair_first(CharSequence text, int pos, 
-                                  Predicate start, Predicate end)
+                                        Predicate start, Predicate end)
     {
         int s = pos - find_first(new BackCharSequenceIterator(text, pos - 1), start);
         int e = pos + find_first(new ForwardCharSequenceIterator(text, pos), end);
@@ -566,7 +566,7 @@ public class TextObjectsPlugin extends EditPlugin
     }
     
     private static Selection pair_last(CharSequence text, int pos, 
-                                  Predicate start, Predicate end)
+                                       Predicate start, Predicate end)
     {
         int s = pos - find_last(new BackCharSequenceIterator(text, pos - 1), start);
         int e = pos + find_last(new ForwardCharSequenceIterator(text, pos), end);
