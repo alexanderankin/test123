@@ -40,7 +40,10 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import javax.swing.JComponent;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
  * ActionListener to perform an svn blame.
@@ -131,12 +134,23 @@ public class BlameAction extends SVNAction {
                         model.setTextArea( getView().getEditPane().getTextArea() );
                         BlamePane pane = new BlamePane();
                         pane.setModel( model );
-                        getView().getEditPane().getTextArea().addLeftOfScrollBar( pane );
-                        getView().getEditPane().getTextArea().addTopComponent( pane.getCloser( getView() ) );
-                        getView().getEditPane().getTextArea().addCaretListener( pane );
+                        JEditTextArea textArea = getView().getEditPane().getTextArea();
+                        JEditBuffer buffer = textArea.getBuffer();
+                        Object old_blame = buffer.getProperty( "_old_blame_" );
+                        if ( old_blame != null ) {
+                            textArea.removeLeftOfScrollBar( ( JComponent ) old_blame );
+                            Object old_closer = buffer.getProperty( "_old_closer_" );
+                            textArea.removeTopComponent( ( JComponent ) old_closer );
+                        }
+                        textArea.addLeftOfScrollBar( pane );
+                        JComponent closer = pane.getCloser( getView() );
+                        textArea.addTopComponent( closer );
+                        textArea.addCaretListener( pane );
+                        buffer.setProperty( "_old_blame_", pane );
+                        buffer.setProperty( "_old_closer_", closer );
                         getView().invalidate();
                         getView().validate();
-
+                        logger.log( Level.INFO, "Done." );
                     }
                     catch ( Exception e ) {
                         // ignored
