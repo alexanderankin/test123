@@ -49,7 +49,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
         uninstallComponents();
         uninstallDefaults();
 
-        blamePane = null;
+        //blamePane = null;
     }
 
     public void installDefaults() {}
@@ -67,7 +67,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
 
     public void uninstallComponents() {
         blamePane.remove( blameRendererPane );
-        blamePane = null;
+        //blamePane = null;
     }
 
     public void uninstallListeners() {
