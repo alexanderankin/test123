@@ -64,7 +64,7 @@ public class ExportAction extends SVNAction {
      * @param sourceFile what to export
      */
     public ExportAction( View view, List<File> sourceFiles, String username, String password ) {
-        super( view, "Export" );
+        super( view, jEdit.getProperty("ips.Export", "Export") );
         if ( sourceFiles == null )
             throw new IllegalArgumentException( "sourceFile may not be null" );
         setUsername( username );
@@ -79,7 +79,7 @@ public class ExportAction extends SVNAction {
      * @param sourceUrl what to export
      */
     public ExportAction( View view, String username, String password, List<String> sourceUrls ) {
-        super( view, "Export" );
+        super( view, jEdit.getProperty("ips.Export", "Export") );
         if ( sourceUrls == null )
             throw new IllegalArgumentException( "sourceUrl may not be null" );
         try {
@@ -156,7 +156,7 @@ public class ExportAction extends SVNAction {
                 try {
                     UpdateData data = get();
                     JPanel results_panel = new UpdateResultsPanel( getView(), data, true );
-                    panel.addTab( "Export", results_panel );
+                    panel.addTab( jEdit.getProperty("ips.Export", "Export"), results_panel );
                     for ( String path : data.getPaths() ) {
                         Buffer buffer = jEdit.getBuffer( path );
                         if ( buffer != null ) {

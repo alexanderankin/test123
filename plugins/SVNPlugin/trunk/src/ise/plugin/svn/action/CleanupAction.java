@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 public class CleanupAction extends SVNAction {
 
@@ -52,7 +53,7 @@ public class CleanupAction extends SVNAction {
      * @param password the password for the username
      */
     public CleanupAction( View view, List<String> paths, String username, String password ) {
-        super(view, "Cleanup");
+        super(view, jEdit.getProperty("ips.Cleanup", "Cleanup"));
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -85,7 +86,7 @@ public class CleanupAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Cleaning up ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Cleaning_up_...", "Cleaning up ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }

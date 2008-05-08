@@ -43,6 +43,7 @@ import java.util.logging.*;
 import javax.swing.JTree;
 import javax.swing.tree.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 public class BrowseRepositoryAction extends SVNAction {
 
@@ -51,7 +52,7 @@ public class BrowseRepositoryAction extends SVNAction {
     private CheckoutData data = null;
 
     public BrowseRepositoryAction( View view, JTree tree, DirTreeNode node, CheckoutData data ) {
-        super( view, "Browse Repository" );
+        super( view, jEdit.getProperty("ips.Browse_Repository", "Browse Repository") );
         this.tree = tree;
         this.node = node;
         this.data = data;
@@ -67,7 +68,7 @@ public class BrowseRepositoryAction extends SVNAction {
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
-        logger.log( Level.INFO, "Fetching repository info for\n" + data.getURL() + "..." );
+        logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_repository_info_for", "Fetching repository info for") + "\n" + data.getURL() + "..." );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }

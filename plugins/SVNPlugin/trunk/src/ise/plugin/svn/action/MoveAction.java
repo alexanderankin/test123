@@ -74,7 +74,7 @@ public class MoveAction extends SVNAction {
      * @param data CopyData object containing the info for a copy of some sort
      */
     public MoveAction( View view, CopyData data ) {
-        super(view, "Move");
+        super(view, jEdit.getProperty("ips.Move", "Move"));
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -103,7 +103,7 @@ public class MoveAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Moving ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Moving_...", "Moving ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -200,7 +200,7 @@ public class MoveAction extends SVNAction {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( "Move Error", error_panel );
+                            panel.addTab( jEdit.getProperty("ips.Move_Error", "Move Error"), error_panel );
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();
@@ -214,7 +214,7 @@ public class MoveAction extends SVNAction {
                                         ar.addPath( path );
                                     }
                                     JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                                    panel.addTab( "Move", results_panel );
+                                    panel.addTab( jEdit.getProperty("ips.Move", "Move"), results_panel );
 
                                     // open the file(s) and signal ProjectViewer to possibly add the file
                                     for ( String path : results.keySet() ) {
@@ -231,7 +231,7 @@ public class MoveAction extends SVNAction {
                                     // these cases result in an immediate commit, so
                                     // the SVNCommitInfo objects in the map are valid
                                     JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), true );
-                                    panel.addTab( "Move", results_panel );
+                                    panel.addTab( jEdit.getProperty("ips.Move", "Move"), results_panel );
                                 }
                                 break;
                             default:

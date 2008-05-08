@@ -46,7 +46,7 @@ import ise.plugin.svn.library.swingworker.*;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Collects status of working copy files from PV tree.
@@ -56,7 +56,7 @@ public class StatusAction extends SVNAction {
     private SVNData data = null;
 
     public StatusAction( View view, List<String> paths, String username, String password ) {
-        super( view, "Status" );
+        super( view, jEdit.getProperty("ips.Status", "Status") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         setUsername( username );
@@ -69,7 +69,7 @@ public class StatusAction extends SVNAction {
     }
 
     public StatusAction( View view, SVNData data ) {
-        super( view, "Status" );
+        super( view, jEdit.getProperty("ips.Status", "Status") );
         this.data = data;
     }
 
@@ -94,7 +94,7 @@ public class StatusAction extends SVNAction {
         final OutputPanel output_panel = SVNPlugin.getOutputPanel( getView() );
         output_panel.showConsole();
         Logger logger = output_panel.getLogger();
-        logger.log( Level.INFO, "Gathering status ..." );
+        logger.log( Level.INFO, jEdit.getProperty("ips.Gathering_status_...", "Gathering status ...") );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -121,7 +121,7 @@ public class StatusAction extends SVNAction {
             protected void done() {
                 try {
                     JPanel panel = new StatusResultsPanel( get(), getView(), getUsername(), getPassword() );
-                    output_panel.addTab( "Status", panel );
+                    output_panel.addTab( jEdit.getProperty("ips.Status", "Status"), panel );
                 }
                 catch ( Exception e ) {
                     System.err.println( e.getMessage() );

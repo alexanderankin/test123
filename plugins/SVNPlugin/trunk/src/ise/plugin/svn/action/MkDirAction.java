@@ -46,7 +46,7 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -66,7 +66,7 @@ public class MkDirAction extends SVNAction {
      * @param password the password for the username
      */
     public MkDirAction( View view, List<String> paths, String username, String password, String defaultDestination ) {
-        super(view, "Make Dir");
+        super(view, jEdit.getProperty("ips.Make_Dir", "Make Dir"));
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -101,7 +101,7 @@ public class MkDirAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Creating directory..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Creating_directory...", "Creating directory...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -127,7 +127,7 @@ public class MkDirAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
-                        panel.addTab("mkdir", results_panel);
+                        panel.addTab(jEdit.getProperty("ips.mkdir", "mkdir"), results_panel);
                     }
                     catch ( Exception e ) {
                         // ignored

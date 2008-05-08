@@ -227,7 +227,7 @@ public class CopyAction extends SVNAction {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( "Copy Error", error_panel );
+                            panel.addTab( jEdit.getProperty("ips.Copy_Error", "Copy Error"), error_panel );
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();

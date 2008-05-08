@@ -46,6 +46,8 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 public class InfoAction extends SVNAction {
@@ -60,7 +62,7 @@ public class InfoAction extends SVNAction {
      * @param password the password for the username
      */
     public InfoAction( View view, List<String> paths, String username, String password ) {
-        super(view, "Info");
+        super(view, jEdit.getProperty("ips.Info", "Info"));
         this.paths = paths;
         setUsername(username);
         setPassword(password);
@@ -69,7 +71,7 @@ public class InfoAction extends SVNAction {
     }
 
     public InfoAction( View view, SVNData data ) {
-        super(view, "Info");
+        super(view, jEdit.getProperty("ips.Info", "Info"));
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
@@ -106,7 +108,7 @@ public class InfoAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching info..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_info...", "Fetching info...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -135,13 +137,13 @@ public class InfoAction extends SVNAction {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( "Info Error", error_panel );
+                            panel.addTab( jEdit.getProperty("ips.Info_Error", "Info Error"), error_panel );
                             return ;
                         }
                         JPanel info_panel = new SVNInfoPanel( get() );
                         //panel.setResultsPanel( info_panel );
                         //panel.showTab( OutputPanel.RESULTS );
-                        panel.addTab( "Info", info_panel );
+                        panel.addTab( jEdit.getProperty("ips.Info", "Info"), info_panel );
 
                     }
                     catch ( Exception e ) {

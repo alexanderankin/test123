@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JComponent;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -62,7 +63,7 @@ public class BlameAction extends SVNAction {
      * @param password the password for the username
      */
     public BlameAction( View view, List<String> paths, String username, String password ) {
-        super( view, "Blame" );
+        super( view, jEdit.getProperty("ips.Blame", "Blame") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -71,7 +72,7 @@ public class BlameAction extends SVNAction {
     }
 
     public BlameAction( View view, LogData data ) {
-        super( view, "Blame" );
+        super( view, jEdit.getProperty("ips.Blame", "Blame") );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
@@ -103,7 +104,7 @@ public class BlameAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching annotation info ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_annotation_info_...", "Fetching annotation info ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -128,7 +129,7 @@ public class BlameAction extends SVNAction {
                 @Override
                 protected void done() {
                     try {
-                        logger.log( Level.INFO, "Formatting annotation info ..." );
+                        logger.log( Level.INFO, jEdit.getProperty("ips.Formatting_annotation_info_...", "Formatting annotation info ...") );
                         BlameModel model = new BlameModel();
                         model.setBlame( get() );
                         model.setTextArea( getView().getEditPane().getTextArea() );
@@ -150,7 +151,7 @@ public class BlameAction extends SVNAction {
                         buffer.setProperty( "_old_closer_", closer );
                         getView().invalidate();
                         getView().validate();
-                        logger.log( Level.INFO, "Done." );
+                        logger.log( Level.INFO, jEdit.getProperty("ips.Done.", "Done.") );
                     }
                     catch ( Exception e ) {
                         // ignored

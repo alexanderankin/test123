@@ -47,7 +47,7 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -68,7 +68,7 @@ public class UnlockAction extends SVNAction {
      * @param remote true if attempting to lock a remote repository file
      */
     public UnlockAction( View view, List<String> paths, String username, String password, boolean remote ) {
-        super( view, "Unlock" );
+        super( view, jEdit.getProperty("ips.Unlock", "Unlock") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -102,7 +102,7 @@ public class UnlockAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Unlocking ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Unlocking_...", "Unlocking ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -128,7 +128,7 @@ public class UnlockAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.UNLOCK, getView(), getUsername(), getPassword() );
-                        panel.addTab( "Unlocked", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Unlocked", "Unlocked"), results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored

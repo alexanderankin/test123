@@ -64,7 +64,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
      * @param data information necessary to do a checkout
      */
     public CheckoutAction( View view, CheckoutData data ) {
-        super(view, "Checkout");
+        super(view, jEdit.getProperty("ips.Checkout", "Checkout"));
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.cd = data;
@@ -92,7 +92,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
-        logger.log( Level.INFO, "Check out ..." );
+        logger.log( Level.INFO, jEdit.getProperty("ips.Check_out_...", "Check out ...") );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -119,9 +119,9 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                 try {
                     Long revision = get();
                     if ( revision == null ) {
-                        throw new Exception( "Checkout failed." );
+                        throw new Exception( jEdit.getProperty("ips.Checkout_failed.", "Checkout failed.") );
                     }
-                    cd.getOut().print( "Checkout completed, revision " + revision );
+                    cd.getOut().print( jEdit.getProperty("ips.Checkout_completed,_revision", "Checkout completed, revision") + " " + revision );
                     firePropertyChange( "done", "false", revision.toString() );
                 }
                 catch ( Exception e ) {
@@ -137,9 +137,9 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
 
     private void createProject( String revision ) {
         int make_project = JOptionPane.showConfirmDialog( getView(),
-                "Checkout complete at revision " + revision + ".\n" +
-                "Would you like to create a project from these files?",
-                "Create Project?",
+                jEdit.getProperty("ips.Checkout_complete_at_revision", "Checkout complete at revision") + " " + revision + ".\n" +
+                jEdit.getProperty("ips.Would_you_like_to_create_a_project_from_these_files?", "Would you like to create a project from these files?"),
+                jEdit.getProperty("ips.Create_Project?", "Create Project?"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE );
         if ( make_project != JOptionPane.YES_OPTION ) {

@@ -48,6 +48,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * ActionListener to perform an svn delete.
@@ -64,7 +65,7 @@ public class DeleteAction extends SVNAction {
      * @param password the password for the username
      */
     public DeleteAction( View view, List<String> paths, String username, String password ) {
-        super(view, "Delete");
+        super(view, jEdit.getProperty("ips.Delete", "Delete"));
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         setUsername(username);
@@ -77,7 +78,7 @@ public class DeleteAction extends SVNAction {
     }
 
     public DeleteAction( View view, DeleteData data ) {
-        super(view, "Delete");
+        super(view, jEdit.getProperty("ips.Delete", "Delete"));
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -130,7 +131,7 @@ public class DeleteAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Deleting ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Deleting_...", "Deleting ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -157,7 +158,7 @@ public class DeleteAction extends SVNAction {
                     try {
                         AddResults results = ( AddResults ) get();
                         JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, getView(), getUsername(), getPassword() );
-                        panel.addTab( "Delete", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Delete", "Delete"), results_panel );
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();

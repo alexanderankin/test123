@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * ActionListener to perform an svn log.
@@ -63,7 +64,7 @@ public class LogAction extends SVNAction {
      * @param password the password for the username
      */
     public LogAction( View view, List<String> paths, String username, String password ) {
-        super(view, "Log");
+        super(view, jEdit.getProperty("ips.Log", "Log"));
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -72,7 +73,7 @@ public class LogAction extends SVNAction {
     }
 
     public LogAction(View view, LogData data) {
-        super(view, "Log");
+        super(view, jEdit.getProperty("ips.Log", "Log"));
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
@@ -112,7 +113,7 @@ public class LogAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching log ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_log_...", "Fetching log ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -139,7 +140,7 @@ public class LogAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
-                        panel.addTab( "Log", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Log", "Log"), results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored
