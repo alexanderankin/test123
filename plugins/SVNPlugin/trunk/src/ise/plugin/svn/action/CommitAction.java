@@ -45,6 +45,7 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -63,7 +64,7 @@ public class CommitAction extends SVNAction {
      * @param password the password for the username
      */
     public CommitAction( View view, TreeMap<String, String> paths, String username, String password ) {
-        super( view, "Commit" );
+        super( view, jEdit.getProperty("ips.Commit", "Commit") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -97,7 +98,7 @@ public class CommitAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Committing ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Committing_...", "Committing ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -123,7 +124,7 @@ public class CommitAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
-                        panel.addTab( "Commit", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Commit", "Commit"), results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored

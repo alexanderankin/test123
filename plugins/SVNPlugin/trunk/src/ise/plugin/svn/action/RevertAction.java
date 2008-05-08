@@ -63,7 +63,7 @@ public class RevertAction extends SVNAction {
      * @param password the password for the username
      */
     public RevertAction( View view, List<String> paths, String username, String password ) {
-        super( view, "Revert" );
+        super( view, jEdit.getProperty("ips.Revert", "Revert") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -90,7 +90,7 @@ public class RevertAction extends SVNAction {
             // user confirmations
             if ( recursive ) {
                 // have the user verify they want a recursive revert
-                int response = JOptionPane.showConfirmDialog( getView(), "Recursively revert all files in selected directories?", "Recursive Revert?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Recursively_revert_all_files_in_selected_directories?", "Recursively revert all files in selected directories?"), jEdit.getProperty("ips.Recursive_Revert?", "Recursive Revert?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.CANCEL_OPTION ) {
                     return ;
                 }
@@ -98,7 +98,7 @@ public class RevertAction extends SVNAction {
             }
             else {
                 // have the user confirm they really want to revert
-                int response = JOptionPane.showConfirmDialog( getView(), "Revert selected files?", "Confirm Revert", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Revert_selected_files?", "Revert selected files?"), jEdit.getProperty("ips.Confirm_Revert", "Confirm Revert"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.NO_OPTION ) {
                     return ;
                 }
@@ -125,7 +125,7 @@ public class RevertAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Reverting ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Reverting_...", "Reverting ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -152,7 +152,7 @@ public class RevertAction extends SVNAction {
                     try {
                         AddResults results = get();
                         JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, getView(), getUsername(), getPassword() );
-                        panel.addTab( "Revert", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Revert", "Revert"), results_panel );
                         for ( String path : results.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {

@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * ActionListener to show SVN properties.
@@ -56,7 +57,7 @@ public class PropertyAction extends SVNAction {
      * @param data what to show
      */
     public PropertyAction( View view, PropertyData data ) {
-        super( view, "Property" );
+        super( view, jEdit.getProperty("ips.Property", "Property") );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
@@ -67,7 +68,8 @@ public class PropertyAction extends SVNAction {
         if ( data != null ) {
             // ask if properties should be found for children
             if ( data.hasDirectory() && data.askRecursive() ) {
-                int answer = JOptionPane.showConfirmDialog( getView(), "One or more of the items selected is a directory.\nWould you like to see properties for subdirectories and files?", "Show Child Properties?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int answer = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.One_or_more_of_the_items_selected_is_a_directory.", "One or more of the items selected is a directory.") + "\n" + jEdit.getProperty("ips.Would_you_like_to_see_properties_for_subdirectories_and_files?", "Would you like to see properties for subdirectories and files?"), jEdit.getProperty("ips.Show_Child_Properties?", "Show Child Properties?"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
 
@@ -90,7 +92,7 @@ public class PropertyAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Fetching properties ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_properties_...", "Fetching properties ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -120,10 +122,10 @@ public class PropertyAction extends SVNAction {
                     try {
                         TreeMap<String, Properties> results = get();
                         if ( results != null ) {
-                            panel.addTab( "Properties", new PropertyPanel( getView(), results, data ) );
+                            panel.addTab( jEdit.getProperty("ips.Properties", "Properties"), new PropertyPanel( getView(), results, data ) );
                         }
                         else {
-                            JOptionPane.showMessageDialog( getView(), "No properties found.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.No_properties_found.", "No properties found."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {

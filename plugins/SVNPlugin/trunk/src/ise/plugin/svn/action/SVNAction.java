@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.gui.LoginDialog;
@@ -145,7 +146,7 @@ public abstract class SVNAction implements ActionListener {
 
     protected void verifyLogin( String filename, String message ) {
         if ( message == null ) {
-            message = "Confirm SVN login:";
+            message = jEdit.getProperty("ips.Confirm_SVN_login>", "Confirm SVN login:");
         }
         String uname = getUsername();
         String pwd = getPassword();     // encrypted password

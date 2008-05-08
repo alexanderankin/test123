@@ -64,7 +64,7 @@ public class UpdateAction extends SVNAction {
      * @param password the password for the username
      */
     public UpdateAction( View view, List<String> paths, String username, String password ) {
-        super( view, "Update" );
+        super( view, jEdit.getProperty("ips.Update", "Update") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -114,7 +114,7 @@ public class UpdateAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Updating ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Updating_...", "Updating ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -141,7 +141,7 @@ public class UpdateAction extends SVNAction {
                     try {
                         UpdateData data = get();
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );
-                        panel.addTab( "Update", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Update", "Update"), results_panel );
                         for ( String path : data.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
@@ -155,7 +155,7 @@ public class UpdateAction extends SVNAction {
                             }
                             String filelist = sb.toString();
                             if (filelist.length() > 0) {
-                                JOptionPane.showMessageDialog( getView(), "One or more files have conflicts:\n\n" + filelist, "Conflicts", JOptionPane.WARNING_MESSAGE);
+                                JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.One_or_more_files_have_conflicts>", "One or more files have conflicts:") + "\n\n" + filelist, jEdit.getProperty("ips.Conflicts", "Conflicts"), JOptionPane.WARNING_MESSAGE);
                             }
                         }
                     }

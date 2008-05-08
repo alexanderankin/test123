@@ -45,6 +45,7 @@ import java.util.logging.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -61,7 +62,7 @@ public class ImportAction extends SVNAction {
      * @param password the password for the username
      */
     public ImportAction( View view ) {
-        super(view, "Import");
+        super(view, jEdit.getProperty("ips.Import", "Import"));
     }
 
 
@@ -80,7 +81,7 @@ public class ImportAction extends SVNAction {
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         final Logger logger = panel.getLogger();
-        logger.log( Level.INFO, "Importing ..." );
+        logger.log( Level.INFO, jEdit.getProperty("ips.Importing_...", "Importing ...") );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -106,7 +107,7 @@ public class ImportAction extends SVNAction {
             protected void done() {
                 try {
                     JPanel results_panel = new CommitResultsPanel( get() );
-                    panel.addTab( "Import", results_panel );
+                    panel.addTab( jEdit.getProperty("ips.Import", "Import"), results_panel );
                 }
                 catch ( Exception e ) {
                     // ignored

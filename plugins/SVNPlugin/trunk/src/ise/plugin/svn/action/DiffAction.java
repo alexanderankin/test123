@@ -79,7 +79,7 @@ public class DiffAction extends SVNAction {
      * @param password the password for the username
      */
     public DiffAction( View view, String path, String username, String password ) {
-        super( view, "Diff" );
+        super( view, jEdit.getProperty("ips.Diff", "Diff") );
         if ( path == null || path.length() == 0 )
             throw new IllegalArgumentException( "path may not be null" );
         this.path1 = path;
@@ -112,7 +112,7 @@ public class DiffAction extends SVNAction {
     }
 
     public DiffAction( View view, DiffData data ) {
-        super( view, "Diff" );
+        super( view, jEdit.getProperty("ips.Diff", "Diff") );
         this.data = data;
         this.paths = data.getPaths();
         if ( paths == null || paths.size() == 0 ) {
@@ -222,7 +222,7 @@ public class DiffAction extends SVNAction {
         @Override
         public File[] doInBackground() {
             try {
-                log( "Preparing to diff..." );
+                log( jEdit.getProperty("ips.Preparing_to_diff...", "Preparing to diff...") );
                 SVNURL url = null;
                 String svn_path = null;
                 File remote1 = null;
@@ -241,13 +241,13 @@ public class DiffAction extends SVNAction {
 
                 // there should always be one remote revision to fetch for diffing against a working copy
                 // or for diffing against another revision
-                log( "Diff, fetching file data..." );
+                log( jEdit.getProperty("ips.Diff,_fetching_file_data...", "Diff, fetching file data...") );
                 remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
 
                 // there may be a second remote revision for diffing between 2 remote revisions
                 remote2 = null;
                 if ( data.getRevision2() != null ) {
-                    log( "Diff, fetching revision data..." );
+                    log( jEdit.getProperty("ips.Diff,_fetching_revision_data...", "Diff, fetching revision data...") );
                     remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
 
                     // sort, oldest revision first
@@ -278,18 +278,18 @@ public class DiffAction extends SVNAction {
             try {
                 File[] files = get();
                 if ( files == null ) {
-                    JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return ;
                 }
                 final File remote1 = files[ 0 ];
                 final File remote2 = files[ 1 ];
 
                 if ( remote1 == null && remote2 == null ) {
-                    JOptionPane.showMessageDialog( getView(), "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return ;
                 }
                 if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {
-                    JOptionPane.showMessageDialog( getView(), "Unable to compare directories.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_compare_directories.", "Unable to compare directories."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return ;
                 }
 
@@ -336,7 +336,7 @@ public class DiffAction extends SVNAction {
         @Override
         public String doInBackground() {
             try {
-                log( "Preparing SVN diff..." );
+                log( jEdit.getProperty("ips.Preparing_SVN_diff...", "Preparing SVN diff...") );
                 Diff diff = new Diff();
                 return diff.diff( data );
             }
@@ -355,10 +355,10 @@ public class DiffAction extends SVNAction {
                 String filediff = get();
                 if ( filediff != null ) {
                     jEdit.newFile( getView() ).insert( 0, filediff );
-                    log( "SVN Diff created." );
+                    log( jEdit.getProperty("ips.SVN_Diff_created.", "SVN Diff created.") );
                 }
                 else {
-                    log( "Unable to create SVN diff." );
+                    log( jEdit.getProperty("ips.Unable_to_create_SVN_diff.", "Unable to create SVN diff.") );
                 }
             }
             catch ( Exception e ) {

@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * ActionListener to perform an svn add.
@@ -62,7 +63,7 @@ public class AddAction extends SVNAction {
      * @param password the password for the username
      */
     public AddAction( View view, List<String> paths, String username, String password ) {
-        super( view, "Add" );
+        super( view, jEdit.getProperty("ips.Add", "Add") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -95,7 +96,7 @@ public class AddAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole( );
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Preparing to add ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Preparing_to_add_...", "Preparing to add ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -121,7 +122,7 @@ public class AddAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                        panel.addTab( "Add", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Add", "Add"), results_panel );
                     }
                     catch ( Exception e ) {
                         System.err.println( e.getMessage() );

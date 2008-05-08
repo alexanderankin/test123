@@ -46,7 +46,7 @@ import ise.plugin.svn.io.ConsolePrintStream;
 
 
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * ActionListener to perform an svn add.
@@ -68,7 +68,7 @@ public class ResolvedAction extends SVNAction {
     }
 
     public ResolvedAction( View view, List<String> paths, String username, String password, boolean force ) {
-        super( view, "Resolved" );
+        super( view, jEdit.getProperty("ips.Resolved", "Resolved") );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -94,7 +94,7 @@ public class ResolvedAction extends SVNAction {
             // user confirmations
             if ( recursive ) {
                 // have the user verify they want a recursive resolve
-                int response = JOptionPane.showConfirmDialog( getView(), "Recursively resolve all files in selected directories?", "Recursive Resolved?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Recursively_resolve_all_files_in_selected_directories?", "Recursively resolve all files in selected directories?"), jEdit.getProperty("ips.Recursive_Resolved?", "Recursive Resolved?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.CANCEL_OPTION ) {
                     return ;
                 }
@@ -102,7 +102,7 @@ public class ResolvedAction extends SVNAction {
             }
             else if (!force) {
                 // have the user confirm they really want to resolve
-                int response = JOptionPane.showConfirmDialog( getView(), "Resolve selected files?", "Confirm Resolve", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Resolve_selected_files?", "Resolve selected files?"), jEdit.getProperty("ips.Confirm_Resolve", "Confirm Resolve"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                 if ( response == JOptionPane.NO_OPTION ) {
                     return ;
                 }
@@ -125,7 +125,7 @@ public class ResolvedAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, "Resolving ..." );
+            logger.log( Level.INFO, jEdit.getProperty("ips.Resolving_...", "Resolving ...") );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -151,7 +151,7 @@ public class ResolvedAction extends SVNAction {
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, getView(), getUsername(), getPassword() );
-                        panel.addTab( "Resolved", results_panel );
+                        panel.addTab( jEdit.getProperty("ips.Resolved", "Resolved"), results_panel );
                     }
                     catch ( Exception e ) {
                         System.err.println( e.getMessage() );
