@@ -47,6 +47,11 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
     private BlameModel model = null;
 
     public BlamePane() {
+        this( null );
+    }
+
+    public BlamePane(BlameModel model) {
+        this.model = model;
         updateUI();
         EditBus.addToBus( this );
     }

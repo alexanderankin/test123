@@ -98,7 +98,7 @@ public class Blame {
 
         if ( data.pathsAreURLs() ) {
             SVNURL svnurl = SVNURL.parseURIDecoded( path );
-            client.doAnnotate( svnurl, SVNRevision.create( 0L ), data.getStartRevision(), data.getEndRevision(), handler );
+            client.doAnnotate( svnurl, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
         }
         else {
             client.doAnnotate( file, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
