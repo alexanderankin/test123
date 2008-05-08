@@ -1,16 +1,15 @@
 package ise.plugin.nav;
 
 import java.awt.event.*;
-import java.util.Stack;
 import java.util.Vector;
 
 import javax.swing.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.CaretChanging;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -45,7 +44,7 @@ public class Navigator implements ActionListener
     /** Action command to indicate that it is not okay to go forward. */
     public final static String CANNOT_GO_FORWARD = "cannotGoForward";
 
-    private Vector history;
+    private Vector<NavPosition> history;
     private int current;
     private boolean jumpBack;
 
@@ -53,17 +52,18 @@ public class Navigator implements ActionListener
 
     private DefaultButtonModel forwardButtonModel;
 
-    private Object currentNode = null;
+    private NavPosition currentNode = null;
 
     private int maxStackSize = 512;
 
-    private View view;
+    // private View view;
+    private EditPane editPane;
 
     private boolean ignoreUpdates;
 
-    public Navigator(View view)
+    public Navigator(EditPane pane)
     {
-        this(view, "");
+        this(pane, "");
     }
 
     /**
@@ -72,9 +72,9 @@ public class Navigator implements ActionListener
      * @param vw
      * @param position
      */
-    public Navigator(View vw, String position)
+    public Navigator(EditPane pane, String position)
     {
-        this.view = vw;
+        this.editPane= pane;
 
         backButtonModel = new DefaultButtonModel();
         forwardButtonModel = new DefaultButtonModel();
@@ -86,7 +86,7 @@ public class Navigator implements ActionListener
         forwardButtonModel.addActionListener(this);
 
         // set up the history stacks
-        history = new Vector();
+        history = new Vector<NavPosition>();
         clearStacks();
         update();
 
@@ -95,7 +95,7 @@ public class Navigator implements ActionListener
          * area in the view is stored
          */
 
-        view.getTextArea().getPainter().addMouseListener(new MouseAdapter()
+        pane.getTextArea().getPainter().addMouseListener(new MouseAdapter()
         {
             public void mouseClicked(MouseEvent ce)
             {
@@ -112,8 +112,8 @@ public class Navigator implements ActionListener
 
     NavPosition currentPosition() throws DontBother
     {
-        Buffer b = view.getBuffer();
-        JEditTextArea ta = view.getTextArea();
+        Buffer b = editPane.getBuffer();
+        JEditTextArea ta = editPane.getTextArea();
         if (ta == null)
             throw new DontBother();
         int cp = ta.getCaretPosition();
@@ -254,10 +254,10 @@ public class Navigator implements ActionListener
         // JEditBuffer buffer = np.buffer; // for jEdit 4.3
         int caret = np.caret;
 
-        if (buffer.equals(view.getBuffer()))
+        if (buffer.equals(editPane.getBuffer()))
         {
             // nav in current buffer, just set cursor position
-            view.getTextArea().setCaretPosition(caret, true);
+            editPane.getTextArea().setCaretPosition(caret, true);
             return;
         }
 
@@ -272,9 +272,9 @@ public class Navigator implements ActionListener
             if (buffers[i].equals(buffer))
             {
                 // found it
-                view.goToBuffer(buffer);
-                EditBus.send(new CaretChanging(view.getTextArea()));
-                view.getTextArea().setCaretPosition(caret, true);
+                editPane.getView().goToBuffer(buffer);
+                EditBus.send(new PositionChanging(editPane));
+                editPane.getTextArea().setCaretPosition(caret, true);
                 ignoreUpdates = false;
                 return;
             }
@@ -282,7 +282,7 @@ public class Navigator implements ActionListener
 
         // buffer isn't open
         String path = buffer.getPath();
-        buffer = jEdit.openFile(view, path);
+        buffer = jEdit.openFile(editPane.getView(), path);
 
         // Now we can listen to events again
         ignoreUpdates = false;
@@ -304,7 +304,7 @@ public class Navigator implements ActionListener
         }
         try
         {
-            view.getTextArea().setCaretPosition(caret, true);
+            editPane.getTextArea().setCaretPosition(caret, true);
         }
         catch (NullPointerException npe)
         {
@@ -312,22 +312,22 @@ public class Navigator implements ActionListener
             // it
             // and silently ignore it.
         }
-        view.getTextArea().requestFocus();
+        editPane.getTextArea().requestFocus();
     }
 
     synchronized public void backList()
     {
         if (current < 1)
         {
-            JOptionPane.showMessageDialog(view, "No backward items", "Info",
+            JOptionPane.showMessageDialog(editPane, "No backward items", "Info",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Vector list = new Vector();
+        Vector<NavPosition> list = new Vector<NavPosition>();
         for (int i = current - 1; i >= 0; i--)
             list.add(history.get(i));
         jumpBack = true;
-        new NavHistoryPopup(view, this, list, false);
+        new NavHistoryPopup(editPane.getView(), this, list, false);
     }
 
     synchronized public void jump(int index)
@@ -367,15 +367,15 @@ public class Navigator implements ActionListener
     {
         if (current > history.size() - 2)
         {
-            JOptionPane.showMessageDialog(view, "No forward items", "Info",
+            JOptionPane.showMessageDialog(editPane.getView(), "No forward items", "Info",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Vector list = new Vector();
+        Vector<NavPosition> list = new Vector<NavPosition>();
         for (int i = current + 1; i < history.size(); i++)
             list.add(history.get(i));
         jumpBack = false;
-        new NavHistoryPopup(view, this, list, false);
+        new NavHistoryPopup(editPane.getView(), this, list, false);
     }
 
     /** Moves to the next item in the "forward" history. */

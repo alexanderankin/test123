@@ -5,15 +5,15 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=1.5.1
+plugin.ise.plugin.nav.NavigatorPlugin.version=1.6
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     provides a set of "Back" and "Forward" actions similar to a web browser. \
     This is surprisingly handy.
 
 # dependencies
-plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.4
-plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.05.00
+plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.5
+plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.15.00
 
 # docs
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
