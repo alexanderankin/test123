@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+
+<ACTIONS>
+	<ACTION NAME="sidekick-prev-asset">
+		<CODE>
+			sidekick.SideKickActions.goToPrevAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-next-asset">
+		<CODE>
+			sidekick.SideKickActions.goToNextAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-select-asset">
+		<CODE>
+			sidekick.SideKickActions.selectAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-narrow-asset">
+		<CODE>
+			sidekick.SideKickActions.narrowToAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-complete">
+		<CODE>
+			sidekick.SideKickActions.complete(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-keystroke-parse">
+		<CODE>
+			buffer.putBooleanProperty("sidekick.keystroke-parse",
+				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
+			sidekick.SideKickPlugin.parse(view,true);
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("sidekick.keystroke-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-parse">
+		<CODE>
+			sidekick.SideKickPlugin.parse(view,true);
+		</CODE>
+	</ACTION>
+</ACTIONS>

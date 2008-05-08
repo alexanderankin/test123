@@ -1,0 +1,98 @@
+# Plugin properties
+plugin.sidekick.SideKickPlugin.activate=startup
+
+plugin.sidekick.SideKickPlugin.name=SideKick
+plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust
+plugin.sidekick.SideKickPlugin.version=0.5
+plugin.sidekick.SideKickPlugin.docs=index.html
+plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
+plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+
+# Menu bar stuff
+plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
+                                    sidekick-enhanced-tree
+                                    - \
+                                    sidekick-prev-asset \
+                                    sidekick-next-asset \
+                                    sidekick-select-asset \
+                                    sidekick-narrow-asset \
+                                    - \
+                                    sidekick-complete \
+                                    - \
+                                    sidekick-parse \
+                                    sidekick-keystroke-parse
+
+sidekick-enhanced-tree.label=Enhanced Source Tree
+sidekick-tree.label=Structure Browser
+sidekick-prev-asset.label=Go to Previous Asset
+sidekick-next-asset.label=Go to Next Asset
+sidekick-select-asset.label=Select Asset at Caret
+sidekick-narrow-asset.label=Narrow to Asset at Caret
+sidekick-complete.label=Show Completion Popup
+sidekick-parse.label=Parse Buffer
+sidekick-keystroke-parse.label=Parse on Keystroke
+
+# Option pane
+plugin.sidekick.SideKickPlugin.option-group=sidekick sidekick.parser
+
+options.sidekick.label=General
+options.sidekick.code=new sidekick.SideKickOptionPane();
+options.sidekick.parser.label=Parsers
+options.sidekick.parser.code=new sidekick.ParserOptionPane();
+options.sidekick.parser.mode=Mode
+options.sidekick.parser.parser=Parser
+
+options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.auto-expand-tree-depth=Auto expand tree depth
+options.sidekick.buffer-change-parse=Parse on buffer switch and save
+options.sidekick.keystroke-parse=Parse on keystroke
+options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
+options.sidekick.complete-instant.toggle=Immediately complete if possible
+options.sidekick.complete-delay.toggle=Show completion popups where possible
+options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
+
+# Global parse on buffer change switch
+buffer.sidekick.buffer-change-parse=true
+
+# Global parse on keystroke switch
+buffer.sidekick.keystroke-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+sidekick.auto-parse-delay=500
+
+# Should the tree selection follow the caret position
+sidekick-tree.follows-caret=true
+
+# Enable completion
+sidekick.complete-delay.toggle=true
+sidekick.complete-instant.toggle=true
+
+# Delay after complete trigger before showing completion popup
+sidekick.complete-delay=500
+
+# XML tree window
+sidekick-tree.title=Structure Browser
+sidekick-tree.parse=Parse
+sidekick-tree.parsing=Parsing
+sidekick-tree.not-parsed=Not parsed
+
+sidekick-add-marker.title=Add Marker
+sidekick-remove-marker.title=Remove Marker
+sidekick-remove-all-markers.title=Remove All Markers
+sidekick-undirty-buffer.title=Undirty Buffer
+
+# enhanced source tree window
+sidekick-enhanced-tree.title=Source Tree
+sidekick-enhanced-gotodockable.label=Enhanced Source Tree
+sidekick-enhanced-hide-sidekick-tree.label=Hide original SideKick structure browser
+sidekick-enhanced-add-marker.label=Add marker here
+sidekick-enhanced-remove-marker.label=Remove marker
+sidekick-enhanced-remove-all-markers.label=Remove all markers
+sidekick-enhanced-undirty-buffer.label=Clear buffer dirty flag
+sidekick-enhanced-toggle-markers-flag.label=Show markers in structure tree
+
+# Status bar
+sidekick.parsing-complete={0} parsing complete, {1} error(s)
+
+# Popup
+sidekick-complete.none=No completions
