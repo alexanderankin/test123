@@ -1,0 +1,76 @@
+# Plugin properties
+plugin.sidekick.SideKickPlugin.activate=startup
+
+plugin.sidekick.SideKickPlugin.name=SideKick
+plugin.sidekick.SideKickPlugin.author=Slava Pestov
+plugin.sidekick.SideKickPlugin.version=0.3.2
+plugin.sidekick.SideKickPlugin.docs=index.html
+plugin.sidekick.SideKickPlugin.depend.0=jedit 04.02.99.00
+plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+
+# Menu bar stuff
+plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
+                                    - \
+                                    sidekick-prev-asset \
+                                    sidekick-next-asset \
+                                    sidekick-select-asset \
+                                    sidekick-narrow-asset \
+                                    - \
+                                    sidekick-complete \
+                                    - \
+                                    sidekick-parse \
+                                    sidekick-keystroke-parse
+
+sidekick-tree.label=Structure Browser
+sidekick-prev-asset.label=Go to Previous Asset
+sidekick-next-asset.label=Go to Next Asset
+sidekick-select-asset.label=Select Asset at Caret
+sidekick-narrow-asset.label=Narrow to Asset at Caret
+sidekick-complete.label=Show Completion Popup
+sidekick-parse.label=Parse Buffer
+sidekick-keystroke-parse.label=Parse on Keystroke
+
+# Option pane
+plugin.sidekick.SideKickPlugin.option-pane=sidekick
+
+options.sidekick.label=SideKick
+options.sidekick.code=new sidekick.SideKickOptionPane();
+
+options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.buffer-change-parse=Parse on buffer switch and save
+options.sidekick.keystroke-parse=Parse on keystroke
+options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
+options.sidekick.complete-instant.toggle=Immediately complete if possible
+options.sidekick.complete-delay.toggle=Show completion popups where possible
+options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
+
+# Global parse on buffer change switch
+buffer.sidekick.buffer-change-parse=true
+
+# Global parse on keystroke switch
+buffer.sidekick.keystroke-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+sidekick.auto-parse-delay=1500
+
+# Should the tree selection follow the caret position
+sidekick-tree.follows-caret=true
+
+# Enable completion
+sidekick.complete-delay.toggle=true
+sidekick.complete-instant.toggle=true
+
+# Delay after complete trigger before showing completion popup
+sidekick.complete-delay=500
+
+# XML tree window
+sidekick-tree.title=Structure Browser
+sidekick-tree.parse=Parse
+sidekick-tree.parsing=Parsing
+sidekick-tree.not-parsed=Not parsed
+
+# Status bar
+sidekick.parsing-complete={0} parsing complete, {1} error(s)
+
+# Popup
+sidekick-complete.none=No completions
