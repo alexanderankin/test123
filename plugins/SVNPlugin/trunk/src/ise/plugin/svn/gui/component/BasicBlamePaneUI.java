@@ -25,10 +25,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
 
-public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
+public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, MouseListener {
 
     private BlamePane blamePane;
     private BlameRendererPane blameRendererPane;
+    private int pixelsPerLine = 12;
 
     public static ComponentUI createUI( JComponent c ) {
         return new BasicBlamePaneUI();
@@ -61,6 +62,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
 
     public void installListeners() {
         blamePane.addChangeListener( this );
+        blamePane.addMouseListener( this );
     }
 
     public void uninstallDefaults() {}
@@ -82,10 +84,29 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
         blameRendererPane.repaint();
     }
 
+    public void mouseClicked( MouseEvent e ) {
+        BlameModel model = blamePane.getModel();
+        if ( model == null ) {
+            return ;
+        }
+        int line_number = ( e.getY() / pixelsPerLine ) + model.getTextArea().getFirstPhysicalLine();
+        model.getTextArea().setCaretPosition( model.getTextArea().getLineStartOffset( line_number ), false );
+    }
+    public void mouseEntered( MouseEvent e ) {}
+    public void mouseExited( MouseEvent e ) {}
+    public void mousePressed( MouseEvent e ) {}
+    public void mouseReleased( MouseEvent e ) {}
+
     public class BlameRendererPane extends JPanel {
 
         public BlameRendererPane( ) {
             BlameModel model = blamePane.getModel();
+            if (model == null) {
+                throw new IllegalArgumentException("blame model is null");
+            }
+            if (model.getBlame() == null) {
+                throw new IllegalArgumentException("no blame found in model");
+            }
             Dimension dim = getPreferredSize();
             if ( model == null ) {
                 dim.width = 60;
@@ -112,7 +133,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener {
 
             // get the visible lines, draw the corresponding blame lines
             BlameModel model = blamePane.getModel();
-            int pixelsPerLine = model.getTextArea().getPainter().getFontMetrics().getHeight();
+            pixelsPerLine = model.getTextArea().getPainter().getFontMetrics().getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
             int lastLine = model.getTextArea().getLastPhysicalLine();
             gfx.setColor( Color.BLACK );

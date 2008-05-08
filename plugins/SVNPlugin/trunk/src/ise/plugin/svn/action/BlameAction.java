@@ -133,8 +133,7 @@ public class BlameAction extends SVNAction {
                         BlameModel model = new BlameModel();
                         model.setBlame( get() );
                         model.setTextArea( getView().getEditPane().getTextArea() );
-                        BlamePane pane = new BlamePane();
-                        pane.setModel( model );
+                        BlamePane pane = new BlamePane(model);
                         JEditTextArea textArea = getView().getEditPane().getTextArea();
                         JEditBuffer buffer = textArea.getBuffer();
                         Object old_blame = buffer.getProperty( "_old_blame_" );

@@ -32,7 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTree;
 import org.gjt.sp.jedit.View;
-
+import ise.plugin.svn.gui.BrowseRepositoryPanel;
 
 /**
  * Base class for action listeners for the popup menu in the BrowseRepositoryPanel.
@@ -44,6 +44,7 @@ public abstract class BRAction implements ActionListener {
     protected JTree tree = null;
     protected String username = null;
     protected String password = null;
+    public BrowseRepositoryPanel parent = null;
 
     public void init( View view, String repositoryUrl, JTree tree, String username, String password ) {
         if ( view == null )
