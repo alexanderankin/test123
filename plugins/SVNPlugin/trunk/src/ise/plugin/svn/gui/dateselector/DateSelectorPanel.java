@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.Date;
 import java.util.Calendar;
+import org.gjt.sp.jedit.jEdit;
 
 /** A calendar-dispaly/date-selection widget.
  *  Here's what it looks like:
@@ -102,8 +103,12 @@ public class DateSelectorPanel extends JPanel implements DateSelector {
     //  can be internationalized.
     //
     private String[] months =
-        { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        { jEdit.getProperty("ips.Jan", "Jan"), jEdit.getProperty("ips.Feb", "Feb"),
+            jEdit.getProperty("ips.Mar", "Mar"), jEdit.getProperty("ips.Apr", "Apr"),
+            jEdit.getProperty("ips.May", "May"), jEdit.getProperty("ips.Jun", "Jun"),
+          jEdit.getProperty("ips.Jul", "Jul"), jEdit.getProperty("ips.Aug", "Aug"),
+          jEdit.getProperty("ips.Sep", "Sep"), jEdit.getProperty("ips.Oct", "Oct"),
+          jEdit.getProperty("ips.Nov", "Nov"), jEdit.getProperty("ips.Dec", "Dec")
         };
 
     private static final int DAYS_IN_WEEK = 7;  // days in a week
