@@ -48,7 +48,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * A panel to display SVN properties.
@@ -60,7 +60,6 @@ public class PropertyPanel extends JPanel {
     private View view = null;
     private Map<String, Properties> results = null;
     private PropertyData originalData = null;
-    private JButton new_btn = null;
 
     /**
      * Show properties for a single file.
@@ -120,14 +119,14 @@ public class PropertyPanel extends JPanel {
             final BestRowTable props_table = new BestRowTable( );
 
             // declare buttons here so table action listeners can react
-            final JButton add_btn = new JButton( "Add" );
-            final JButton edit_btn = new JButton( "Edit" );
-            final JButton delete_btn = new JButton( "Delete" );
+            final JButton add_btn = new JButton( jEdit.getProperty("ips.Add", "Add") );
+            final JButton edit_btn = new JButton( jEdit.getProperty("ips.Edit", "Edit") );
+            final JButton delete_btn = new JButton( jEdit.getProperty("ips.Delete", "Delete") );
 
             // set up table model and selection model
             final DefaultTableModel model = new DefaultTableModel(
                         new String[] {
-                            "Name", "Value"
+                            jEdit.getProperty("ips.Name", "Name"), jEdit.getProperty("ips.Value", "Value")
                         }, props.size() );
             props_table.setModel( model );
             props_table.setRowSelectionAllowed( true );
@@ -166,7 +165,7 @@ public class PropertyPanel extends JPanel {
             // create and add a panel with this result
             JPanel panel = new JPanel( new LambdaLayout() );
             panel.setBorder( new CompoundBorder( new EtchedBorder(), new EmptyBorder( 3, 3, 3, 3 ) ) );
-            JLabel filename_label = new JLabel( "Properties for: " + filename, JLabel.LEFT );
+            JLabel filename_label = new JLabel( jEdit.getProperty("ips.Properties_for>", "Properties for:") + " " + filename, JLabel.LEFT );
             panel.add( filename_label, "0, 0, 1, 1, W, w, 3" );
             props_table.packRows();
             panel.add(GUIUtils.createTablePanel(props_table), "0, 1, 1, 1, 0, wh, 3");
@@ -238,7 +237,6 @@ public class PropertyPanel extends JPanel {
                                     e.printStackTrace();
                                 }
                             }
-                            return ;
                         }
                     }
                 );
@@ -248,8 +246,8 @@ public class PropertyPanel extends JPanel {
                             int row = props_table.getSelectedRow();
                             String key = ( String ) model.getValueAt( row, 0 );
                             int confirm = JOptionPane.showConfirmDialog( view,
-                                    "Delete property named " + key + "?",
-                                    "Confirm Delete?",
+                                    jEdit.getProperty("ips.Delete_property_named", "Delete property named") + " " + key + "?",
+                                    jEdit.getProperty("ips.Confirm_Delete?", "Confirm Delete?"),
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE );
                             if ( confirm != JOptionPane.YES_OPTION ) {

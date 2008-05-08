@@ -29,25 +29,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
-import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.library.PropertyComboBox;
 
@@ -57,7 +48,6 @@ import ise.plugin.svn.library.PropertyComboBox;
  */
 public class RemoteDeleteDialog extends JDialog {
     // instance fields
-    private View view = null;
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
     private boolean canceled = false;
@@ -65,11 +55,10 @@ public class RemoteDeleteDialog extends JDialog {
     private DeleteData data = null;
 
     public RemoteDeleteDialog( View view, DeleteData data ) {
-        super( ( JFrame ) view, "Delete", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Delete", "Delete"), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = data;
         _init();
     }
@@ -82,11 +71,11 @@ public class RemoteDeleteDialog extends JDialog {
 
         data.setPathsAreURLs( true );       // should already be set, right?
 
-        JLabel file_label = new JLabel( "Delete these files:" );
+        JLabel file_label = new JLabel( jEdit.getProperty("ips.Delete_these_files>", "Delete these files:") );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File"
+                        "", jEdit.getProperty("ips.File", "File")
                     }, data.getPaths().size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -113,7 +102,7 @@ public class RemoteDeleteDialog extends JDialog {
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 625 );
         file_table.packRows();
 
-        JLabel label = new JLabel( "Enter comment for delete:" );
+        JLabel label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_delete>", "Enter comment for delete:") );
         comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -134,8 +123,8 @@ public class RemoteDeleteDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -159,7 +148,7 @@ public class RemoteDeleteDialog extends JDialog {
                             data.setPaths( paths );
                             String msg = comment.getText();
                             if ( msg == null || msg.length() == 0 ) {
-                                msg = "no comment";
+                                msg = jEdit.getProperty("ips.no_comment", "no comment");
                             }
                             else {
                                 if ( commentList != null ) {
@@ -198,7 +187,7 @@ public class RemoteDeleteDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 7, 1, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
             panel.add( "0, 8, 1, 1, W, w, 3", commentList );
         }
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );

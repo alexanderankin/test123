@@ -49,7 +49,6 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.SVNURL;
@@ -70,7 +69,7 @@ public class ImportDialog extends JDialog {
     private boolean canceled = false;
 
     public ImportDialog( View view ) {
-        super( ( JFrame ) view, "Import", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Import", "Import"), true );
         this.view = view;
         _init();
     }
@@ -82,7 +81,7 @@ public class ImportDialog extends JDialog {
         String project_name = PVHelper.getProjectName(view);
 
         // subversion repository url field
-        JLabel url_label = new JLabel( "To this repository URL:" );
+        JLabel url_label = new JLabel( jEdit.getProperty("ips.To_this_repository_URL>", "To this repository URL:") );
         url = new HistoryTextField(URL);
         url.setText("");
         url.setColumns(30);
@@ -111,11 +110,11 @@ public class ImportDialog extends JDialog {
         }
 
         // browse for url
-        JButton browse_remote_btn = new JButton( "Browse..." );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse...", "Browse...") );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, "Select Repository" );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository", "Select Repository") );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -123,7 +122,7 @@ public class ImportDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( "OK" );
+                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -136,7 +135,7 @@ public class ImportDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( "Cancel" );
+                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -160,11 +159,11 @@ public class ImportDialog extends JDialog {
         );
 
         // local destination directory
-        JLabel path_label = new JLabel( "Import files from this directory:" );
+        JLabel path_label = new JLabel( jEdit.getProperty("ips.Import_files_from_this_directory>", "Import files from this directory:") );
         path = new HistoryTextField(PATH);
         path.setText( PVHelper.getProjectRoot(view) );
         path.setColumns( 30 );
-        JButton browse_btn = new JButton( "Browse" );
+        JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse", "Browse") );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -190,8 +189,8 @@ public class ImportDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -199,11 +198,11 @@ public class ImportDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( url == null || url.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( ImportDialog.this, "URL is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty("ips.URL_is_required.", "URL is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( ImportDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty("ips.Directory_is_required.", "Directory is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         canceled = false;

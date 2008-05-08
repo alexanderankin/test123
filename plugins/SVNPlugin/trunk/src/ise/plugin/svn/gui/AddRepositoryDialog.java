@@ -43,7 +43,6 @@ import ise.plugin.svn.pv.SVNAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 /**
@@ -60,12 +59,12 @@ public class AddRepositoryDialog extends JDialog {
     private boolean canceled = false;
 
     public AddRepositoryDialog( View view ) {
-        super( ( JFrame ) view, "Add Repository Location", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Add_Repository_Location", "Add Repository Location"), true );
         _init();
     }
 
     public AddRepositoryDialog( View view, RepositoryData data ) {
-        super( ( JFrame ) view, "Edit Repository Location", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Edit_Repository_Location", "Edit Repository Location"), true );
         this.data = data;
         _init();
     }
@@ -104,8 +103,8 @@ public class AddRepositoryDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -113,7 +112,7 @@ public class AddRepositoryDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( url == null || url.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( AddRepositoryDialog.this, "URL is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( AddRepositoryDialog.this, jEdit.getProperty("ips.URL_is_required", "URL is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         canceled = false;

@@ -99,7 +99,7 @@ public class BrowseRepositoryPanel extends JPanel {
         chooser = new RepositoryComboBox();
 
         // the repository tree.  This is lazy loaded.
-        tree = new JTree( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
+        tree = new JTree( new DefaultTreeModel( new DirTreeNode( jEdit.getProperty("ips.SVN_Browser", "SVN Browser"), false ) ) );
         tree.setCellRenderer( new CellRenderer() );
         tree.getSelectionModel().setSelectionMode( TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
         ToolTipManager.sharedInstance().registerComponent( tree );
@@ -169,7 +169,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                     }
 
                                     // ask the user for the revision they want
-                                    RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, "Select Revision to View" );
+                                    RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty("ips.Select_Revision_to_View", "Select Revision to View") );
                                     GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
                                     rd.setVisible( true );
                                     SVNRevision revision = rd.getData();
@@ -205,7 +205,7 @@ public class BrowseRepositoryPanel extends JPanel {
             new_btn.setSize( dim );
             new_btn.setPreferredSize( dim );
             new_btn.setMaximumSize( dim );
-            new_btn.setToolTipText( "Add new repository" );
+            new_btn.setToolTipText( jEdit.getProperty("ips.Add_new_repository", "Add new repository") );
             new_btn.addActionListener( new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
                             AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
@@ -232,7 +232,7 @@ public class BrowseRepositoryPanel extends JPanel {
             edit_btn.setSize( dim );
             edit_btn.setPreferredSize( dim );
             edit_btn.setMaximumSize( dim );
-            edit_btn.setToolTipText( "Edit repository properties" );
+            edit_btn.setToolTipText( jEdit.getProperty("ips.Edit_repository_properties", "Edit repository properties") );
             edit_btn.setEnabled( false );
             edit_btn.addActionListener( new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
@@ -260,13 +260,13 @@ public class BrowseRepositoryPanel extends JPanel {
             remove_btn.setSize( dim );
             remove_btn.setPreferredSize( dim );
             remove_btn.setMaximumSize( dim );
-            remove_btn.setToolTipText( "Remove repository from browser" );
+            remove_btn.setToolTipText( jEdit.getProperty("ips.Remove_repository_from_browser", "Remove repository from browser") );
             remove_btn.setEnabled( false );
             remove_btn.addActionListener( new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
                             RepositoryData data = chooser.getSelectedRepository();
                             if ( data != null ) {
-                                int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, "Remove repository location " + data.getURL() + " ?\nThis only removes this repository from the browser, it does not delete any files.", "Confirm Remove", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                                int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty("ips.Remove_repository_location", "Remove repository location") + " " + data.getURL() + " ?\n" + jEdit.getProperty("ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_files.", "This only removes this repository from the browser, it does not delete any files."), jEdit.getProperty("ips.Confirm_Remove", "Confirm Remove"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                                 if ( delete == JOptionPane.YES_OPTION ) {
                                     chooser.removeRepository( data );
                                 }
@@ -282,7 +282,7 @@ public class BrowseRepositoryPanel extends JPanel {
             refresh_btn.setSize( dim );
             refresh_btn.setPreferredSize( dim );
             refresh_btn.setMaximumSize( dim );
-            refresh_btn.setToolTipText( "Refresh" );
+            refresh_btn.setToolTipText( jEdit.getProperty("ips.Refresh", "Refresh") );
             refresh_btn.setEnabled( false );
 
             // create a panel to hold the buttons
@@ -307,7 +307,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             action.actionPerformed( ae );
                         }
                         else {
-                            tree.setModel( new DefaultTreeModel( new DirTreeNode( "SVN Browser", false ) ) );
+                            tree.setModel( new DefaultTreeModel( new DirTreeNode( jEdit.getProperty("ips.SVN_Browser", "SVN Browser"), false ) ) );
                         }
                         if ( edit_btn != null ) {
                             edit_btn.setEnabled( data != null );

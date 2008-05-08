@@ -34,6 +34,7 @@ import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.plugin.svn.data.UpdateData;
 import ise.java.awt.KappaLayout;
@@ -53,7 +54,7 @@ public class UpdateDialog extends JDialog {
 
     public UpdateDialog( View view, UpdateData data, boolean showLogin ) {
 
-        super( ( JFrame ) view, "Update", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Update", "Update"), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
@@ -65,9 +66,9 @@ public class UpdateDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( "Update To:", SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( jEdit.getProperty("ips.Update_To>", "Update To:"), SwingConstants.HORIZONTAL, false );
 
-        final JCheckBox recursive_cb = new JCheckBox( "Recursive" );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursive", "Recursive") );
         recursive_cb.setSelected( data.getRecursive() );
         recursive_cb.setVisible( data.getRecursive() );
 
@@ -85,8 +86,8 @@ public class UpdateDialog extends JDialog {
 
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );

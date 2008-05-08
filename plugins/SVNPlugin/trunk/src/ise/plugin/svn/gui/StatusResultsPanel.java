@@ -64,7 +64,7 @@ public class StatusResultsPanel extends JPanel {
 
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( "Status checked against revision: " + results.getRevision() );
+        JLabel label = new JLabel( jEdit.getProperty("ips.Status_checked_against_revision>", "Status checked against revision:") + " " + results.getRevision() );
         label.setBorder( new EmptyBorder( 6, 3, 6, 3 ) );
         add( label, BorderLayout.NORTH );
 
@@ -117,7 +117,7 @@ public class StatusResultsPanel extends JPanel {
 
         list = results.getLocked();
         if (list != null) {
-            root.add( createNode("Locked files:", list));
+            root.add( createNode(jEdit.getProperty("ips.Locked_files>", "Locked files:"), list));
             added = true;
         }
 
@@ -131,7 +131,7 @@ public class StatusResultsPanel extends JPanel {
             add( tree, BorderLayout.CENTER );
         }
         else {
-            label.setText( label.getText() + " (All files up to date.)" );
+            label.setText( label.getText() + " " + jEdit.getProperty("ips.(All_files_up_to_date.)", "(All files up to date.)") );
         }
     }
 
@@ -195,7 +195,7 @@ public class StatusResultsPanel extends JPanel {
         JMenuItem mi;
 
         if (hasConflicts && status != null && status.getStatus().getConflictWrkFile() != null && status.getStatus().getConflictWrkFile().exists()) {
-            mi = new JMenuItem( "Resolve Conflicts" );
+            mi = new JMenuItem( jEdit.getProperty("ips.Resolve_Conflicts", "Resolve Conflicts") );
             pm.add( mi );
             mi.addActionListener(
                 new ActionListener() {
@@ -207,7 +207,7 @@ public class StatusResultsPanel extends JPanel {
             );
         }
 
-        mi = new JMenuItem( "Update" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Update", "Update") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -227,7 +227,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Commit" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Commit", "Commit") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -245,35 +245,35 @@ public class StatusResultsPanel extends JPanel {
                                     String comp = type.getUserObject().toString();
                                     // really should get these strings replaced
                                     if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts" ) ) ) {
-                                        message.append( pathname ).append( " has conflicts.\n" );
+                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.has_conflicts.", "has conflicts.")).append("\n" );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date" ) ) ) {
-                                        message.append( pathname ).append( " is out of date.\n" );
+                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.is_out_of_date.", "is out of date.")).append("\n" );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified" ) ) ) {
-                                        paths.put( pathname, "Modified" );
+                                        paths.put( pathname, jEdit.getProperty("ips.Modified", "Modified") );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.added", "Added" ) ) ) {
-                                        paths.put( pathname, "Added" );
+                                        paths.put( pathname, jEdit.getProperty("ips.Added", "Added") );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned" ) ) ) {
-                                        message.append( pathname ).append( " is not under version control.\n" );
+                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.is_not_under_version_control.", "is not under version control.")).append("\n" );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted" ) ) ) {
-                                        paths.put( pathname, "Deleted" );
+                                        paths.put( pathname, jEdit.getProperty("ips.Deleted", "Deleted") );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing" ) ) ) {
-                                        message.append( pathname ).append( " is missing.\n" );
+                                        message.append( pathname ).append( " ").append(jEdit.getProperty("ips.is_missing.", "is missing.")).append("\n" );
                                     }
                                 }
                             }
                         }
                         String error = message.toString();
                         if ( error.length() > 0 && paths.size() == 0 ) {
-                            JOptionPane.showMessageDialog( view, "Cannot commit selected files:\n\n" + error, "Cannot commit selected files", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Cannot_commit_selected_files>", "Cannot commit selected files:") + "\n\n" + error, jEdit.getProperty("ips.Cannot_commit_selected_files", "Cannot commit selected files"), JOptionPane.ERROR_MESSAGE );
                         }
                         else if ( error.length() > 0 && paths.size() > 0 ) {
-                            int answer = JOptionPane.showConfirmDialog( view, "Cannot commit all selected files:\n\n" + error + "\nCommit remaining file anyway?", "Cannot commit all selected files", JOptionPane.WARNING_MESSAGE );
+                            int answer = JOptionPane.showConfirmDialog( view, jEdit.getProperty("ips.Cannot_commit_all_selected_files>", "Cannot commit all selected files:") + "\n\n" + error + "\n" + jEdit.getProperty("ips.Commit_remaining_file_anyway?", "Commit remaining file anyway?"), jEdit.getProperty("ips.Cannot_commit_all_selected_files", "Cannot commit all selected files"), JOptionPane.WARNING_MESSAGE );
                             if ( answer == JOptionPane.YES_OPTION ) {
                                 CommitAction action = new CommitAction( view, paths, username, password );
                                 action.actionPerformed( ae );
@@ -288,7 +288,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Revert" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Revert", "Revert") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -308,13 +308,13 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Diff" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Diff", "Diff") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TreePath[] tree_paths = tree.getSelectionPaths();
                         if ( tree_paths.length != 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_a_single_entry.", "Please select a single entry."), jEdit.getProperty("ips.Too_many_selections", "Too many selections"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         String path = ( ( DefaultMutableTreeNode ) tree_paths[ 0 ].getLastPathComponent() ).getUserObject().toString();
@@ -324,7 +324,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Add" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Add", "Add") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -344,7 +344,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Log" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Log", "Log") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -364,7 +364,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Delete" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Delete", "Delete") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -384,7 +384,7 @@ public class StatusResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Unlock" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Unlock", "Unlock") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {

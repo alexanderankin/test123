@@ -34,33 +34,19 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import ise.java.awt.KappaLayout;
 
-import java.text.BreakIterator;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javax.swing.table.*;
 
-import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
-import org.tmatesoft.svn.cli.SVNArgument;
-import org.tmatesoft.svn.cli.SVNCommand;
-import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLock;
 import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
 import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
-import org.tmatesoft.svn.core.wc.ISVNInfoHandler;
-import org.tmatesoft.svn.core.wc.ISVNOptions;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
-import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
 
 import ise.plugin.svn.library.TableCellViewer;
+
+import org.gjt.sp.jedit.jEdit;
 
 public class SVNInfoPanel extends JPanel {
 
@@ -80,12 +66,12 @@ public class SVNInfoPanel extends JPanel {
 
         // load the table model
         if ( !info.isRemote() ) {
-            info_table_model.addRow( new String[] {"Path", SVNFormatUtil.formatPath( info.getFile() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Path", "Path"), SVNFormatUtil.formatPath( info.getFile() ) } );
         }
         else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
-            info_table_model.addRow( new String[] {"Path", path} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Path", "Path"), path} );
         }
         if ( info.getKind() != SVNNodeKind.DIR ) {
             String v = "";
@@ -95,83 +81,83 @@ public class SVNInfoPanel extends JPanel {
             else {
                 v = info.getFile().getName();
             }
-            info_table_model.addRow( new String[] {"Name", v} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Name", "Name"), v} );
         }
         if ( info.getURL() != null ) {
-            info_table_model.addRow( new String[] {"URL", info.getURL().toString() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.URL", "URL"), info.getURL().toString() } );
         }
         if ( info.getRepositoryRootURL() != null ) {
-            info_table_model.addRow( new String[] {"Repository Root", String.valueOf( info.getRepositoryRootURL() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Repository_Root", "Repository Root"), String.valueOf( info.getRepositoryRootURL() ) } );
         }
         if ( info.isRemote() && info.getRepositoryUUID() != null ) {
-            info_table_model.addRow( new String[] {"Repository UUID", info.getRepositoryUUID() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Repository_UUID", "Repository UUID"), info.getRepositoryUUID() } );
         }
         if ( info.getRevision() != null && info.getRevision().isValid() ) {
-            info_table_model.addRow( new String[] {"Revision", String.valueOf( info.getRevision() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Revision", "Revision"), String.valueOf( info.getRevision() ) } );
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
-            info_table_model.addRow( new String[] {"Node Kind", "directory"} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Node_Kind", "Node Kind"), jEdit.getProperty("ips.directory", "directory")} );
         }
         else if ( info.getKind() == SVNNodeKind.FILE ) {
-            info_table_model.addRow( new String[] {"Node Kind", "file"} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Node_Kind", "Node Kind"), jEdit.getProperty("ips.file", "file")} );
         }
         else if ( info.getKind() == SVNNodeKind.NONE ) {
-            info_table_model.addRow( new String[] {"Node Kind", "none"} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Node_Kind", "Node Kind"), jEdit.getProperty("ips.none", "none")} );
         }
         else {
-            info_table_model.addRow( new String[] {"Node Kind", "unknown"} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Node_Kind", "Node Kind"), jEdit.getProperty("ips.unknown", "unknown")} );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
-            info_table_model.addRow( new String[] {"Schedule", "normal"} );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Schedule", "Schedule"), jEdit.getProperty("ips.normal", "normal")} );
         }
         else if ( !info.isRemote() ) {
-            info_table_model.addRow( new String[] {"Schedule", info.getSchedule() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Schedule", "Schedule"), info.getSchedule() } );
         }
         if ( info.getAuthor() != null ) {
-            info_table_model.addRow( new String[] {"Last Changed Author", info.getAuthor() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Last_Changed_Author", "Last Changed Author"), info.getAuthor() } );
         }
         if ( info.getCommittedRevision() != null && info.getCommittedRevision().getNumber() >= 0 ) {
-            info_table_model.addRow( new String[] {"Last Changed Revision", String.valueOf( info.getCommittedRevision() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Last_Changed_Revision", "Last Changed Revision"), String.valueOf( info.getCommittedRevision() ) } );
         }
         if ( info.getCommittedDate() != null ) {
-            info_table_model.addRow( new String[] {"Last Changed Date", formatDate( info.getCommittedDate() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Last_Changed_Date", "Last Changed Date"), formatDate( info.getCommittedDate() ) } );
         }
         if ( !info.isRemote() ) {
             if ( info.getTextTime() != null ) {
-                info_table_model.addRow( new String[] {"Text Last Updated", formatDate( info.getTextTime() ) } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Text_Last_Updated", "Text Last Updated"), formatDate( info.getTextTime() ) } );
             }
             if ( info.getPropTime() != null ) {
-                info_table_model.addRow( new String[] {"Properties Last Updated", formatDate( info.getPropTime() ) } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Properties_Last_Updated", "Properties Last Updated"), formatDate( info.getPropTime() ) } );
             }
             if ( info.getChecksum() != null ) {
-                info_table_model.addRow( new String[] {"Checksum", info.getChecksum() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Checksum", "Checksum"), info.getChecksum() } );
             }
             if ( info.getCopyFromURL() != null ) {
-                info_table_model.addRow( new String[] {"Copied From URL", String.valueOf( info.getCopyFromURL() ) } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Copied_From_URL", "Copied From URL"), String.valueOf( info.getCopyFromURL() ) } );
             }
             if ( info.getCopyFromRevision() != null && info.getCopyFromRevision().getNumber() >= 0 ) {
-                info_table_model.addRow( new String[] {"Copied From Revision", String.valueOf( info.getCopyFromRevision() ) } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Copied_From_Revision", "Copied From Revision"), String.valueOf( info.getCopyFromRevision() ) } );
             }
             if ( info.getConflictOldFile() != null ) {
-                info_table_model.addRow( new String[] {"Conflict Previous Base File", info.getConflictOldFile().getName() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Conflict_Previous_Base_File", "Conflict Previous Base File"), info.getConflictOldFile().getName() } );
             }
             if ( info.getConflictWrkFile() != null ) {
-                info_table_model.addRow( new String[] {"Conflict Previous Working File", info.getConflictWrkFile().getName() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Conflict_Previous_Working_File", "Conflict Previous Working File"), info.getConflictWrkFile().getName() } );
             }
             if ( info.getConflictNewFile() != null ) {
-                info_table_model.addRow( new String[] {"Conflict Current Base File", info.getConflictNewFile().getName() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Conflict_Current_Base_File", "Conflict Current Base File"), info.getConflictNewFile().getName() } );
             }
             if ( info.getPropConflictFile() != null ) {
-                info_table_model.addRow( new String[] {"Conflict Properties File", info.getPropConflictFile().getName() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Conflict_Properties_File", "Conflict Properties File"), info.getPropConflictFile().getName() } );
             }
         }
         if ( info.getLock() != null ) {
             SVNLock lock = info.getLock();
-            info_table_model.addRow( new String[] {"Lock Token", lock.getID() } );
-            info_table_model.addRow( new String[] {"Lock Owner", lock.getOwner() } );
-            info_table_model.addRow( new String[] {"Lock Created", formatDate( lock.getCreationDate() ) } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Lock_Token", "Lock Token"), lock.getID() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Lock_Owner", "Lock Owner"), lock.getOwner() } );
+            info_table_model.addRow( new String[] {jEdit.getProperty("ips.Lock_Created", "Lock Created"), formatDate( lock.getCreationDate() ) } );
             if ( lock.getComment() != null ) {
-                info_table_model.addRow( new String[] {"Lock Comment", lock.getComment() } );
+                info_table_model.addRow( new String[] {jEdit.getProperty("ips.Lock_Comment", "Lock Comment"), lock.getComment() } );
             }
         }
 
