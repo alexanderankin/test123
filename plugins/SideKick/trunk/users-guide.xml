@@ -361,7 +361,11 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  
  <listitem><para>Fixed "sidekick fold starts in the previous line when the corresponding folding node starts at the beginning of the line ( 1767390 - Matthieu Casanova ) </para></listitem>
  
- <listitem><para>Fixed a minor memory leak when Sidekick is unloaded ( Matthieu Casanova ) </para></listitem>
+ <listitem><para>Fixed a minor memory leak when Sidekick is unloaded ( Matthieu Casanova ) </para> </listitem>
+ 
+ <listitem><para>Improved Mode Option Pane so it works properly when the edit mode is changed before an "ok/apply" (Shlomy Reinstein) </para></listitem>
+
+  
  
 </itemizedlist>
 </listitem>
