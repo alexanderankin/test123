@@ -38,7 +38,7 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.ListOps;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.CommitInfo;
-import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.gjt.sp.jedit.jEdit;
 
 public class CommitResultsPanel extends JPanel {
 
@@ -48,11 +48,11 @@ public class CommitResultsPanel extends JPanel {
         super( new BorderLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( "Committed:" );
+        JLabel label = new JLabel( jEdit.getProperty("ips.Committed>", "Committed:") );
         CommitInfo info = results.getInfo();
         String revision = String.valueOf( info.getRevision() );
         String author = info.getAuthor();
-        String date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( info.getDate() );
+        String date = new SimpleDateFormat( jEdit.getProperty("ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z"), Locale.getDefault() ).format( info.getDate() );
 
         List<String> paths = ListOps.toList(ListOps.toSet(results.getPaths()));
         Collections.sort( paths );
@@ -65,7 +65,7 @@ public class CommitResultsPanel extends JPanel {
             data[ i ][ 3 ] = author;
             ++i;
         }
-        JTable table = new JTable( data, new String[] {"Path", "Revision", "Date", "Author"} );
+        JTable table = new JTable( data, new String[] {jEdit.getProperty("ips.Path", "Path"), jEdit.getProperty("ips.Revision", "Revision"), jEdit.getProperty("ips.Date", "Date"), jEdit.getProperty("ips.Author", "Author")} );
         TableColumnModel column_model = table.getColumnModel();
         TableColumn column0 = column_model.getColumn( 1 );
         column0.setMaxWidth( 60 );

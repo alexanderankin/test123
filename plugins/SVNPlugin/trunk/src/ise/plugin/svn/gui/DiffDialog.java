@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.View;
 import ise.plugin.svn.data.DiffData;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.gui.component.*;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class DiffDialog extends JDialog {
@@ -52,7 +53,7 @@ public class DiffDialog extends JDialog {
      * @param path the local working file to diff against.
      */
     public DiffDialog( View view, String path ) {
-        super( ( JFrame ) view, "Diff", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Diff", "Diff"), true );
         DiffData data = new DiffData();
         data.addPath( path );
         path1 = path;
@@ -74,9 +75,9 @@ public class DiffDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( path1 != null ? "Diff Against:" : "Diff Multiple Files Against:" );
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel( path1 != null ? jEdit.getProperty("ips.Diff_Against>", "Diff Against:") : jEdit.getProperty("ips.Diff_Multiple_Files_Against>", "Diff Multiple Files Against:") );
 
-        final JCheckBox svn_diff = new JCheckBox( "Create SVN diff" );
+        final JCheckBox svn_diff = new JCheckBox( jEdit.getProperty("ips.Create_SVN_diff", "Create SVN diff") );
         if ( data.getRecursive() || data.getSvnDiff() ) {
             // if recursive or svn diff, only possible to do an svn diff, so
             // must select and disable the checkbox
@@ -94,8 +95,8 @@ public class DiffDialog extends JDialog {
         // create button panel
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -125,7 +126,7 @@ public class DiffDialog extends JDialog {
         if ( path1 != null ) {
             // if just 1 file, display the name of the file
             JPanel file_panel = new JPanel( new BorderLayout() );
-            file_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
+            file_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty("ips.File_to_diff>", "File to diff:") ) );
             file_panel.add( new JLabel( path1 ), BorderLayout.CENTER );
             panel.add( file_panel, "0, 0, 1, 1, W" );
             panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 1, 1, 1" );

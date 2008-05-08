@@ -95,7 +95,7 @@ public class PropertyEditor extends JDialog {
 
 
     public PropertyEditor( View view, String name, String value, boolean isDirectory ) {
-        super( ( JFrame ) view, "Property Editor", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Property_Editor", "Property Editor"), true );
         this.view = view;
         this.name = name;
         this.value = value;
@@ -128,16 +128,16 @@ public class PropertyEditor extends JDialog {
         JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        JLabel prop_name_label = new JLabel( "Property name:" );
+        JLabel prop_name_label = new JLabel( jEdit.getProperty("ips.Property_name>", "Property name:") );
         final JComboBox prop_chooser = new JComboBox( isDirectory ? dirPropNames : filePropNames );
         prop_chooser.setEditable( true );
         prop_chooser.setSelectedItem( name == null ? "" : name );
 
         JPanel content_panel = new JPanel( new LambdaLayout() );
-        content_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "Property value" ) );
-        final JRadioButton text_btn = new JRadioButton( "Enter a text value:" );
+        content_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty("ips.Property_value", "Property value") ) );
+        final JRadioButton text_btn = new JRadioButton( jEdit.getProperty("ips.Enter_a_text_value>", "Enter a text value:") );
         text_btn.setSelected( true );
-        final JRadioButton file_btn = new JRadioButton( "Or load value from file:" );
+        final JRadioButton file_btn = new JRadioButton( jEdit.getProperty("ips.Or_load_value_from_file>", "Or load value from file:") );
         ButtonGroup bg = new ButtonGroup();
         bg.add( text_btn );
         bg.add( file_btn );
@@ -148,7 +148,7 @@ public class PropertyEditor extends JDialog {
         final HistoryTextField file_value = new HistoryTextField( PATH );
         file_value.setColumns(30);
         file_value.setEnabled( false );
-        final JButton browse_btn = new JButton( "Browse..." );
+        final JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse...", "Browse...") );
         browse_btn.setEnabled( false );
         browse_btn.addActionListener(
             new ActionListener() {
@@ -177,7 +177,7 @@ public class PropertyEditor extends JDialog {
         content_panel.add( "1, 3, 5, 1, W, w, 3", file_value );
         content_panel.add( "6, 3, 1, 1, E,  , 3", browse_btn );
 
-        final JCheckBox recursive_cb = new JCheckBox( "Apply recursively?" );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Apply_recursively?", "Apply recursively?") );
         recursive_cb.setSelected( false );
         recursive_cb.setEnabled( isDirectory );
         recursive_cb.addActionListener( new ActionListener() {
@@ -190,8 +190,8 @@ public class PropertyEditor extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -207,7 +207,7 @@ public class PropertyEditor extends JDialog {
                             else {
                                 String filename = file_value.getText();
                                 if (filename == null || filename.length() == 0) {
-                                    JOptionPane.showMessageDialog( view, "No filename entered for property value.", "Error", JOptionPane.ERROR_MESSAGE );
+                                    JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.No_filename_entered_for_property_value.", "No filename entered for property value."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                                     file_value.requestFocusInWindow();
                                     return ;
                                 }
@@ -218,7 +218,7 @@ public class PropertyEditor extends JDialog {
                                     propertyData.setValue( writer.toString() );
                                 }
                                 catch ( Exception e ) {
-                                    JOptionPane.showMessageDialog( view, "Unable to read property value from file:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
+                                    JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Unable_to_read_property_value_from_file>", "Unable to read property value from file:") + "\n" + e.getMessage(), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                                     return ;
                                 }
                             }

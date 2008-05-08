@@ -39,7 +39,6 @@ import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PasswordHandlerException;
 import ise.plugin.svn.library.swingworker.SwingWorker;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
@@ -97,7 +96,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         password.setVisible( false );
 
         // add the components to the option panel
-        add( "0, 0, 3, 1, W,  , 3", new JLabel( "<html><b>Subversion Settings</b>" ) );
+        add( "0, 0, 3, 1, W,  , 3", new JLabel( "<html><b>" + jEdit.getProperty("ips.Subversion_Settings", "Subversion Settings") + "</b>" ) );
 
         add( "0, 1, 1, 1, E,  , 3", url_label );
         add( "1, 1, 2, 1, 0, w, 3", url );
@@ -159,7 +158,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         public List<SVNInfo> doInBackground() {
             try {
                 // adjust the UI while fetching the svn info
-                url_label.setText( "Just a moment, attempting to fetch current SVN info..." );
+                url_label.setText( jEdit.getProperty("ips.Just_a_moment,_attempting_to_fetch_current_SVN_info...", "Just a moment, attempting to fetch current SVN info...") );
 
                 // fetch any existing svn info
                 java.util.List<String> info_path = new java.util.ArrayList<String>();

@@ -35,8 +35,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.ListOps;
 import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Display the results of a copy that did an immediate commit.
@@ -47,7 +47,7 @@ public class CopyResultsPanel extends JPanel {
         super( new BorderLayout() );
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( (move? "Moved" : "Copied") + " and committed:" );
+        JLabel label = new JLabel( (move? jEdit.getProperty("ips.Moved", "Moved") : jEdit.getProperty("ips.Copied", "Copied")) + " " + jEdit.getProperty("ips.and_committed>", "and committed:") );
 
         String[][] data = new String[ results.size() ][ 4 ];
         Set < Map.Entry < String, SVNCommitInfo >> set = results.entrySet();
@@ -57,12 +57,12 @@ public class CopyResultsPanel extends JPanel {
             SVNCommitInfo info = result.getValue();
             data[ i ][ 0 ] = path;
             data[ i ][ 1 ] = String.valueOf(info.getNewRevision());
-            data[ i ][ 2 ] = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss Z", Locale.getDefault() ).format( info.getDate() );
+            data[ i ][ 2 ] = new SimpleDateFormat( jEdit.getProperty("ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z"), Locale.getDefault() ).format( info.getDate() );
             data[ i ][ 3 ] = info.getAuthor();
             ++i;
         }
 
-        JTable table = new JTable( data, new String[] {"Path", "Revision", "Date", "Author"} );
+        JTable table = new JTable( data, new String[] {jEdit.getProperty("ips.Path", "Path"), jEdit.getProperty("ips.Revision", "Revision"), jEdit.getProperty("ips.Date", "Date"), jEdit.getProperty("ips.Author", "Author")} );
         TableColumnModel column_model = table.getColumnModel();
         TableColumn column0 = column_model.getColumn( 1 );
         column0.setMaxWidth( 60 );
@@ -77,7 +77,7 @@ public class CopyResultsPanel extends JPanel {
 
         add( label, BorderLayout.NORTH );
         add( GUIUtils.createTablePanel( table ), BorderLayout.CENTER );
-        add( new JLabel((move ? "Moved" : "Copied") + " to: " + destination), BorderLayout.SOUTH);
+        add( new JLabel((move ? jEdit.getProperty("ips.Moved", "Moved") : jEdit.getProperty("ips.Copied", "Copied")) + " " + jEdit.getProperty("ips.to>", "to:") + " " + destination), BorderLayout.SOUTH);
     }
 
 }

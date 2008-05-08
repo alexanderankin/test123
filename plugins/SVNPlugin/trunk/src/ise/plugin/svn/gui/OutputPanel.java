@@ -34,6 +34,7 @@ import java.util.logging.*;
 import javax.swing.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Wraps a tabbed pane to show output.  There is always a 'console' tab that
@@ -93,7 +94,7 @@ public class OutputPanel extends JPanel {
                         }
                         final Component c = tabs.getComponentAt(index);
                         final JPopupMenu pm = new JPopupMenu();
-                        JMenuItem close_mi = new JMenuItem( "Close" );
+                        JMenuItem close_mi = new JMenuItem( jEdit.getProperty("ips.Close", "Close") );
                         pm.add( close_mi );
                         close_mi.addActionListener( new ActionListener() {
                                     public void actionPerformed( ActionEvent ae ) {
@@ -101,7 +102,7 @@ public class OutputPanel extends JPanel {
                                     }
                                 }
                                             );
-                        JMenuItem close_all_mi = new JMenuItem( "Close All" );
+                        JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty("ips.Close_All", "Close All") );
                         pm.add( close_all_mi );
                         close_all_mi.addActionListener( new ActionListener() {
                                     public void actionPerformed( ActionEvent ae ) {

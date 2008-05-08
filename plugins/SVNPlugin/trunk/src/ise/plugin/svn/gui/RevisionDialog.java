@@ -35,6 +35,7 @@ import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.gui.component.*;
@@ -60,12 +61,12 @@ public class RevisionDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final RevisionSelectionPanel rsp = new RevisionSelectionPanel("Select Revision:");
+        final RevisionSelectionPanel rsp = new RevisionSelectionPanel(jEdit.getProperty("ips.Select_Revision>", "Select Revision:"));
 
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );

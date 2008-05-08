@@ -29,23 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.data.SVNData;
 
@@ -63,7 +53,7 @@ public class UndeleteDialog extends JDialog {
     private SVNData undeleteData = null;
 
     public UndeleteDialog( View view, List<String> paths ) {
-        super( ( JFrame ) view, "Undelete", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Undelete", "Undelete"), true );
         if ( paths == null ) {
             throw new IllegalArgumentException( "paths may not be null" );
         }
@@ -81,11 +71,11 @@ public class UndeleteDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // list the selected files
-        JLabel file_label = new JLabel("Undelete these files:");
+        JLabel file_label = new JLabel(jEdit.getProperty("ips.Undelete_these_files>", "Undelete these files:"));
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File"
+                        "", jEdit.getProperty("ips.File", "File")
                     }, undeleteData.getPaths().size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -114,8 +104,8 @@ public class UndeleteDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );

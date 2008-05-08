@@ -38,11 +38,11 @@ import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.DeleteData;
 import ise.java.awt.KappaLayout;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class DeleteDialog extends JDialog {
 
-    private View view = null;
     private List<String> paths = null;
     private DeleteData data = null;
 
@@ -55,21 +55,20 @@ public class DeleteDialog extends JDialog {
     }
 
     public DeleteDialog( View view, DeleteData data, boolean showLogin ) {
-        super( ( JFrame ) view, "Delete", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Delete", "Delete"), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
-        this.view = view;
         this.data = data;
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        final JCheckBox force_cb = new JCheckBox( "Force" );
+        final JCheckBox force_cb = new JCheckBox( jEdit.getProperty("ips.Force", "Force") );
         force_cb.setSelected( data.getForce() );
-        final JCheckBox dry_run_cb = new JCheckBox( "Dry run" );
+        final JCheckBox dry_run_cb = new JCheckBox( jEdit.getProperty("ips.Dry_run", "Dry run") );
         dry_run_cb.setSelected( data.getDryRun() );
-        final JCheckBox delete_files_cb = new JCheckBox( "Delete files from file system" );
+        final JCheckBox delete_files_cb = new JCheckBox( jEdit.getProperty("ips.Delete_files_from_file_system", "Delete files from file system") );
         delete_files_cb.setSelected( data.getDeleteFiles() );
 
         // possible login
@@ -79,8 +78,8 @@ public class DeleteDialog extends JDialog {
 
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );

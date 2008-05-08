@@ -51,9 +51,9 @@ import org.gjt.sp.jedit.EditBus;
 
 public class ResolveConflictDialog extends JDialog implements EBComponent {
     private ButtonGroup bg = null;
-    private JRadioButton merge_rb = new JRadioButton( "Do manual merge with JDiff" );
-    private JRadioButton keep_mine_rb = new JRadioButton( "Keep mine" );
-    private JRadioButton keep_theirs_rb = new JRadioButton( "Use theirs" );
+    private JRadioButton merge_rb = new JRadioButton( jEdit.getProperty("ips.Do_manual_merge_with_JDiff", "Do manual merge with JDiff") );
+    private JRadioButton keep_mine_rb = new JRadioButton( jEdit.getProperty("ips.Keep_mine", "Keep mine") );
+    private JRadioButton keep_theirs_rb = new JRadioButton( jEdit.getProperty("ips.Use_theirs", "Use theirs") );
 
     private View view = null;
     private SVNStatus status = null;
@@ -71,7 +71,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
      * @param filename the name of the file to resolve conflicts for
      */
     public ResolveConflictDialog( View view, String filename ) {
-        super( ( JFrame ) view, "Resolve Conflict for " + filename, true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Resolve_Conflict_for", "Resolve Conflict for") + " " + filename, true );
         File file = new File( filename );
         File workFile = new File( filename + ".mine" );
         File newFile = findNewFile( file );
@@ -90,7 +90,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
      * user to resolve conflicts.
      */
     public ResolveConflictDialog( View view, SVNStatus status ) {
-        super( ( JFrame ) view, "Resolve Conflict for " + status.getFile().getName(), true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Resolve_Conflict_for", "Resolve Conflict for") + " " + status.getFile().getName(), true );
         init( view, status );
     }
 
@@ -157,7 +157,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
         kl.makeColumnsSameWidth( 0, 1 );
 
         // layout the parts
-        contents.add( "0, 0, , , W, , 3", new JLabel( "Select resolution method:" ) );
+        contents.add( "0, 0, , , W, , 3", new JLabel( jEdit.getProperty("ips.Select_resolution_method>", "Select resolution method:") ) );
         contents.add( "0, 1, , , W, , 3", KappaLayout.createVerticalStrut( 6, true ) );
         contents.add( "0, 2, , , W, , 3", merge_rb );
         contents.add( "0, 3, , , W, , 3", keep_mine_rb );
@@ -255,7 +255,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
             final File theirs = status.getConflictNewFile();
 
             if ( mine == null && theirs == null ) {
-                JOptionPane.showMessageDialog( view, "Unable to fetch contents for comparison.", "Error", JOptionPane.ERROR_MESSAGE );
+                JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                 return ;
             }
 
@@ -272,8 +272,8 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
                             // show mine in the left edit pane
                             editPanes[ 0 ].setBuffer( jEdit.openFile( view, mine.getAbsolutePath() ) );
-                            JButton mine_btn = new JButton( "Keep this file" );
-                            mine_btn.setToolTipText( "When done merging, click this button to keep this file as the merged file." );
+                            JButton mine_btn = new JButton( jEdit.getProperty("ips.Keep_this_file", "Keep this file") );
+                            mine_btn.setToolTipText( jEdit.getProperty("ips.When_done_merging,_click_this_button_to_keep_this_file_as_the_merged_file.", "When done merging, click this button to keep this file as the merged file.") );
                             mine_btn.addActionListener(
                                 new ActionListener() {
                                     public void actionPerformed( ActionEvent ae ) {
@@ -307,7 +307,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
                                             // mark file as resolved
                                             if ( hasConflictMarkers( editPanes[ 0 ].getTextArea().getText() ) ) {
-                                                int rtn = JOptionPane.showConfirmDialog( view, "This file appears to contain SVN conflict markers.\nAre you sure you want to use this file as is?", "Possible Conflict Markers", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
+                                                int rtn = JOptionPane.showConfirmDialog( view, jEdit.getProperty("ips.This_file_appears_to_contain_SVN_conflict_markers.", "This file appears to contain SVN conflict markers.") + "\n" + jEdit.getProperty("ips.Are_you_sure_you_want_to_use_this_file_as_is?", "Are you sure you want to use this file as is?"), jEdit.getProperty("ips.Possible_Conflict_Markers", "Possible Conflict Markers"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
                                                 if ( rtn == JOptionPane.NO_OPTION ) {
                                                     return ;
                                                 }
@@ -325,8 +325,8 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
                             // show theirs in the right edit pane
                             editPanes[ 1 ].setBuffer( jEdit.openFile( view, theirs.getAbsolutePath() ) );
-                            JButton theirs_btn = new JButton( "Keep this file" );
-                            theirs_btn.setToolTipText( "When done merging, click this button to keep this file as the merged file." );
+                            JButton theirs_btn = new JButton( jEdit.getProperty("ips.Keep_this_file", "Keep this file") );
+                            theirs_btn.setToolTipText( jEdit.getProperty("ips.When_done_merging,_click_this_button_to_keep_this_file_as_the_merged_file.", "When done merging, click this button to keep this file as the merged file.") );
                             theirs_btn.addActionListener(
                                 new ActionListener() {
                                     public void actionPerformed( ActionEvent ae ) {
@@ -360,7 +360,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
                                             // mark file as resolved
                                             if ( hasConflictMarkers( editPanes[ 1 ].getTextArea().getText() ) ) {
-                                                int rtn = JOptionPane.showConfirmDialog( view, "This file appears to contain SVN conflict markers.\nAre you sure you want to use this file as is?", "Possible Conflict Markers", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
+                                                int rtn = JOptionPane.showConfirmDialog( view, jEdit.getProperty("ips.This_file_appears_to_contain_SVN_conflict_markers.", "This file appears to contain SVN conflict markers.") + "\n" + jEdit.getProperty("ips.Are_you_sure_you_want_to_use_this_file_as_is?", "Are you sure you want to use this file as is?"), jEdit.getProperty("ips.Possible_Conflict_Markers", "Possible Conflict Markers"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
                                                 if ( rtn == JOptionPane.NO_OPTION ) {
                                                     return ;
                                                 }

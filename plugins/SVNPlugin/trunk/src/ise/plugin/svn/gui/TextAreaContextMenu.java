@@ -34,6 +34,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.util.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.data.*;
@@ -48,7 +49,7 @@ public class TextAreaContextMenu extends JMenu {
     private View view = null;
 
     public TextAreaContextMenu( View view ) {
-        super( "Subversion" );
+        super( jEdit.getProperty("ips.Subversion", "Subversion") );
         this.view = view;
 
         /* these items act on working copies. This is the order in the PV
@@ -81,82 +82,82 @@ public class TextAreaContextMenu extends JMenu {
         unlock
         */
 
-        JMenuItem item = new JMenuItem( "Status" );
+        JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Status", "Status") );
         item.addActionListener( getStatusActionListener() );
         add( item );
-        item = new JMenuItem( "Update..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Update...", "Update...") );
         item.addActionListener( getUpdateActionListener() );
         add( item );
-        item = new JMenuItem( "Commit..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Commit...", "Commit...") );
         item.addActionListener( getCommitActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( "Revert..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Revert...", "Revert...") );
         item.addActionListener( getRevertActionListener() );
         add( item );
-        item = new JMenuItem( "Add..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Add...", "Add...") );
         item.addActionListener( getAddActionListener() );
         add( item );
-        item = new JMenuItem( "Resolve Conflicts...");
+        item = new JMenuItem( jEdit.getProperty("ips.Resolve_Conflicts...", "Resolve Conflicts..."));
         item.addActionListener( getResolveConflictsActionListener());
         add( item );
-        item = new JMenuItem( "Mark File Resolved..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Mark_File_Resolved...", "Mark File Resolved...") );
         item.addActionListener( getResolvedActionListener() );
         add( item );
-        item = new JMenuItem( "Delete..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Delete...", "Delete...") );
         item.addActionListener( getDeleteActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( "Info..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Info...", "Info...") );
         item.addActionListener( getInfoActionListener() );
         add( item );
-        item = new JMenuItem( "Log..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Log...", "Log...") );
         item.addActionListener( getLogActionListener() );
         add( item );
-        item = new JMenuItem( "Blame" );
+        item = new JMenuItem( jEdit.getProperty("ips.Blame", "Blame") );
         item.addActionListener( getBlameActionListener() );
         add( item );
-        item = new JMenuItem( "Properties..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Properties...", "Properties...") );
         item.addActionListener( getPropertyActionListener() );
         add( item );
-        item = new JMenuItem( "Diff..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Diff...", "Diff...") );
         item.addActionListener( getDiffActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( "Checkout" );
+        item = new JMenuItem( jEdit.getProperty("ips.Checkout", "Checkout") );
         item.addActionListener( getCheckoutActionListener() );
         add( item );
-        item = new JMenuItem( "Switch" );
+        item = new JMenuItem( jEdit.getProperty("ips.Switch", "Switch") );
         item.addActionListener( getSwitchActionListener() );
         add( item );
-        item = new JMenuItem( "Cleanup..." );
+        item = new JMenuItem( jEdit.getProperty("ips.Cleanup...", "Cleanup...") );
         item.addActionListener( getCleanupActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( "Copy" );
+        item = new JMenuItem( jEdit.getProperty("ips.Copy", "Copy") );
         item.addActionListener( getCopyActionListener() );
         add( item );
-        item = new JMenuItem( "Move" );
+        item = new JMenuItem( jEdit.getProperty("ips.Move", "Move") );
         item.addActionListener( getMoveActionListener() );
         add( item );
-        item = new JMenuItem( "Import" );
+        item = new JMenuItem( jEdit.getProperty("ips.Import", "Import") );
         item.addActionListener( getImportActionListener() );
         add( item );
-        item = new JMenuItem( "Export" );
+        item = new JMenuItem( jEdit.getProperty("ips.Export", "Export") );
         item.addActionListener( getExportActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( "Lock" );
+        item = new JMenuItem( jEdit.getProperty("ips.Lock", "Lock") );
         item.addActionListener( getLockActionListener() );
         add( item );
-        item = new JMenuItem( "Unlock" );
+        item = new JMenuItem( jEdit.getProperty("ips.Unlock", "Unlock") );
         item.addActionListener( getUnlockActionListener() );
         add( item );
 
     }
 
     public String toString() {
-        return "Subversion";
+        return jEdit.getProperty("ips.Subversion", "Subversion");
     }
 
     // get a list containing a single path representing the file in the current

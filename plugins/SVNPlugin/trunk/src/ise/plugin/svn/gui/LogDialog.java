@@ -38,6 +38,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
@@ -54,14 +55,13 @@ public class LogDialog extends JDialog {
     private LogData data = null;
 
     private boolean recursive = false;
-
     private SVNRevision startRevision = SVNRevision.create( 0L );
     private SVNRevision endRevision = SVNRevision.HEAD;
 
     private boolean canceled = false;
 
     public LogDialog( View view, LogData data ) {
-        super( ( JFrame ) view, "Log Settings", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Log_Settings", "Log Settings"), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
@@ -75,11 +75,11 @@ public class LogDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // list the selected files
-        JLabel file_label = new JLabel( "Show log for these files:" );
+        JLabel file_label = new JLabel( jEdit.getProperty("ips.Show_log_for_these_files>", "Show log for these files:") );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File"
+                        "", jEdit.getProperty("ips.File", "File")
                     }, data.getPaths().size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -107,7 +107,7 @@ public class LogDialog extends JDialog {
         file_table.packRows();
 
         // ask if directories should be recursed
-        final JCheckBox recursive_cb = new JCheckBox( "Recurse subdirectories?" );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recurse_subdirectories?", "Recurse subdirectories?") );
         recursive_cb.setSelected( recursive );
         recursive_cb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -117,7 +117,7 @@ public class LogDialog extends JDialog {
                                       );
 
         // radio buttons to choose revision range, all, by number, or by date
-        final JRadioButton show_all = new JRadioButton( "All" );
+        final JRadioButton show_all = new JRadioButton( jEdit.getProperty("ips.All", "All") );
         show_all.setSelected( true );
         show_all.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -127,15 +127,15 @@ public class LogDialog extends JDialog {
                 }
                                   );
 
-        JRadioButton revision_range = new JRadioButton( "By range:" );
+        JRadioButton revision_range = new JRadioButton( jEdit.getProperty("ips.By_range>", "By range:") );
 
         ButtonGroup revision_group = new ButtonGroup();
         revision_group.add( show_all );
         revision_group.add( revision_range );
 
         // revision chooser panels
-        final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( "Start Revision" );
-        final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( "End Revision" );
+        final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Start_Revision", "Start Revision") );
+        final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.End_Revision", "End Revision") );
         start_revision_panel.setEnabled( false );
         end_revision_panel.setEnabled( false );
 
@@ -161,15 +161,15 @@ public class LogDialog extends JDialog {
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 100 ) );
 
-        final JCheckBox stopOnCopy = new JCheckBox( "Stop on copy" );
-        final JCheckBox showPaths = new JCheckBox( "Show paths" );
+        final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty("ips.Stop_on_copy", "Stop on copy") );
+        final JCheckBox showPaths = new JCheckBox( jEdit.getProperty("ips.Show_paths", "Show paths") );
         showPaths.setSelected( true );
 
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -241,7 +241,7 @@ public class LogDialog extends JDialog {
 
         panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 5, 2, 1, W,  , 3", new JLabel( "Revision Range:" ) );
+        panel.add( "0, 5, 2, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Revision_Range>", "Revision Range:") ) );
         panel.add( "0, 6, 2, 1, W,  , 3", show_all );
         panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
         panel.add( "0, 8, 1, 1, W, w, 3", start_revision_panel );
@@ -252,7 +252,7 @@ public class LogDialog extends JDialog {
         panel.add( "0, 11, 1, 1, W, , 3", showPaths );
 
         JPanel max_logs_panel = new JPanel( new FlowLayout() );
-        max_logs_panel.add( new JLabel( "Maximum log entries to show:" ) );
+        max_logs_panel.add( new JLabel( jEdit.getProperty("ips.Maximum_log_entries_to_show>", "Maximum log entries to show:") ) );
         max_logs_panel.add( max_logs );
         panel.add( "0, 12, 2, 1, W,  , 3", max_logs_panel );
 

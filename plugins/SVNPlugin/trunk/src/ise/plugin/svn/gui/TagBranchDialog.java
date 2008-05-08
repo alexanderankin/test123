@@ -35,6 +35,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
@@ -68,8 +69,8 @@ public class TagBranchDialog extends JDialog {
     public static final int TAG_DIALOG = 1;
     public static final int BRANCH_DIALOG = 2;
     private int type = TAG_DIALOG;
-    public static String TAG = "Tag";
-    public static String BRANCH = "Branch";
+    public static String TAG = jEdit.getProperty("ips.Tag", "Tag");
+    public static String BRANCH = jEdit.getProperty("ips.Branch", "Branch");
 
     private CopyData data = null;
     private boolean canceled = false;
@@ -101,14 +102,14 @@ public class TagBranchDialog extends JDialog {
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // source for tag/branch
-        JLabel to_copy_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from:" );
+        JLabel to_copy_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from>", "from:") );
         HistoryTextField source_file = new HistoryTextField( URL );
         source_file.setText( toCopy );
         source_file.setEditable( false );
         source_file.setBackground( Color.WHITE );
 
         // revision selection panel
-        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " from this revision:", SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from_this_revision>", "from this revision:"), SwingConstants.HORIZONTAL, false );
 
         JPanel source_panel = new JPanel( new LambdaLayout() );
         source_panel.add( "0, 0, 1, 1, W, w, 3", to_copy_label );
@@ -116,15 +117,15 @@ public class TagBranchDialog extends JDialog {
         source_panel.add( "0, 2, 1, 1, 0, w, 3", tag_revision_panel );
 
         // destination
-        JLabel path_label = new JLabel( "Create " + ( type == TAG_DIALOG ? "tag" : "branch" ) + " at this location:" );
+        JLabel path_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.at_this_location>", "at this location:") );
         path = new HistoryTextField( PATH );
         path.setText( defaultDestination );
         path.setColumns( 30 );
-        JButton browse_remote_btn = new JButton( "Browse Remote..." );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, "Select Repository Destination" );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Destination", "Select Repository Destination") );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -132,7 +133,7 @@ public class TagBranchDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( "OK" );
+                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -145,7 +146,7 @@ public class TagBranchDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( "Cancel" );
+                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -170,7 +171,7 @@ public class TagBranchDialog extends JDialog {
 
 
 
-        JLabel comment_label = new JLabel( "Enter comment for this " + ( type == TAG_DIALOG ? "tag:" : "branch:" ) );
+        JLabel comment_label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this", "Enter comment for this") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag>", "tag:") : jEdit.getProperty("ips.branch>", "branch:") ) );
         comment = new JTextArea( 3, 40 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -191,8 +192,8 @@ public class TagBranchDialog extends JDialog {
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -203,14 +204,14 @@ public class TagBranchDialog extends JDialog {
                             source = SVNURL.parseURIDecoded( toCopy );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( TagBranchDialog.this, "Source URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty("ips.Source_URL_is_invalid.", "Source URL is invalid."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         try {
                             destination = SVNURL.parseURIDecoded( path.getText() );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( TagBranchDialog.this, "Destination URL is invalid.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty("ips.Destination_URL_is_invalid.", "Destination URL is invalid."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = tag_revision_panel.getRevision();
@@ -224,7 +225,7 @@ public class TagBranchDialog extends JDialog {
                         data.setDestinationURL( destination );
                         String msg = comment.getText();
                         if ( msg == null || msg.length() == 0 ) {
-                            msg = "no comment";
+                            msg = jEdit.getProperty("ips.no_comment", "no comment");
                         }
                         data.setMessage( msg );
 
@@ -266,7 +267,7 @@ public class TagBranchDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 500, commentList.getPreferredSize().height ) );
-            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
             panel.add( "0, 12, 8, 1, W, w, 3", commentList );
         }
         panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );

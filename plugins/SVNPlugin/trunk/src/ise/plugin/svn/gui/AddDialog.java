@@ -38,6 +38,7 @@ import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.data.SVNData;
@@ -50,7 +51,6 @@ public class AddDialog extends JDialog {
 
     public final static String PREFIX = "ise.plugin.svn.pv.";
 
-    private View view = null;
     private List<String> nodes = null;
 
     private boolean canceled = false;
@@ -66,7 +66,6 @@ public class AddDialog extends JDialog {
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
-        this.view = view;
         this.nodes = nodes;
         _init( showLogin );
     }
@@ -96,11 +95,11 @@ public class AddDialog extends JDialog {
         addData.setPaths( paths );
         addData.setRecursive( recursive );
 
-        JLabel file_label = new JLabel( "Adding " + ( paths.size() == 1 ? "this file:" : "these files:" ) );
+        JLabel file_label = new JLabel( jEdit.getProperty("ips.Adding", "Adding") + " " + ( paths.size() == 1 ? jEdit.getProperty("ips.this_file", "this file") : jEdit.getProperty("ips.these_files", "these files")) + ":" );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File"
+                        "", jEdit.getProperty("ips.File", "File")
                     }, paths.size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -127,7 +126,7 @@ public class AddDialog extends JDialog {
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 625 );
         file_table.packRows();
 
-        final JCheckBox recursive_cb = new JCheckBox( "Recursively add?" );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursively_add", "Recursively add?") );
         recursive_cb.setSelected( recursive );
         recursive_cb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -143,8 +142,8 @@ public class AddDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -216,6 +215,7 @@ public class AddDialog extends JDialog {
     }
 
     public static void main ( String[] args ) {
+        // for testing
         List<String> paths = new ArrayList<String>();
         paths.add( "/home/danson/path/filename.txt" );
         paths.add( "/home/danson/path/filename2.txt" );

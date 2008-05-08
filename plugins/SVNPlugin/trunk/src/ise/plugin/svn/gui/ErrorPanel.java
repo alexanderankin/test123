@@ -31,6 +31,7 @@ package ise.plugin.svn.gui;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -50,7 +51,7 @@ public class ErrorPanel extends JPanel {
     private void init( ) {
         JLabel message = new JLabel();
         if ( errorMessage == null || errorMessage.length() == 0 ) {
-            message.setText( "<html><font color=red>Unknown error, check SVN Console output." );
+            message.setText( "<html><font color=red>" + jEdit.getProperty("ips.Unknown_error,_check_SVN_Console_output.", "Unknown error, check SVN Console output.") );
         }
         else {
             errorMessage = errorMessage.replaceAll("\\n", "<br>");

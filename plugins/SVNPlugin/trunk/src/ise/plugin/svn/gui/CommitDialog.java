@@ -71,7 +71,7 @@ public class CommitDialog extends JDialog {
     }
 
     public CommitDialog( View view, Map<String, String> nodes, boolean showLogin ) {
-        super( ( JFrame ) view, "Commit", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Commit", "Commit"), true );
         if ( nodes == null ) {
             throw new IllegalArgumentException( "nodes may not be null" );
         }
@@ -87,11 +87,11 @@ public class CommitDialog extends JDialog {
         JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
-        JLabel file_label = new JLabel( "Committing these files:" );
+        JLabel file_label = new JLabel( jEdit.getProperty("ips.Committing_these_files>", "Committing these files:") );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File", "Status"
+                        "", jEdit.getProperty("ips.File", "File"), jEdit.getProperty("ips.Status", "Status")
                     }, nodes.size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -172,7 +172,7 @@ public class CommitDialog extends JDialog {
         file_table.getColumnModel().getColumn( 2 ).setPreferredWidth( 50 );
         file_table.packRows();
 
-        final JCheckBox recursive_cb = new JCheckBox( "Recursively commit?" );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursively_commit?", "Recursively commit?") );
         recursive_cb.setSelected( recursive );
         recursive_cb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -181,7 +181,7 @@ public class CommitDialog extends JDialog {
                 }
                                       );
 
-        JLabel label = new JLabel( "Enter comment for this commit:" );
+        JLabel label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this_commit>", "Enter comment for this commit:") );
         comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -210,8 +210,8 @@ public class CommitDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -235,7 +235,7 @@ public class CommitDialog extends JDialog {
                             commitData.setPaths( paths );
                             String msg = comment.getText();
                             if ( msg == null || msg.length() == 0 ) {
-                                msg = "no comment";
+                                msg = jEdit.getProperty("ips.no_comment", "no comment");
                             }
                             else {
                                 if ( commentList != null ) {
@@ -264,7 +264,7 @@ public class CommitDialog extends JDialog {
                                     );
 
         // field for bug number
-        JLabel bug_label = new JLabel( "Issue #:" );
+        JLabel bug_label = new JLabel( jEdit.getProperty("ips.Issue_>>", "Issue #:") );
         JTextField bug_field = new JTextField( 10 );
 
         // add the components to the option panel
@@ -279,7 +279,7 @@ public class CommitDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( "Select a previous comment:" ) );
+            panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
             panel.add( "0, 5, 6, 1, W, w, 3", commentList );
         }
         panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );

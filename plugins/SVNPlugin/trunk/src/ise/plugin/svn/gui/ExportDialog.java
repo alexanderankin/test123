@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.java.awt.*;
 import ise.plugin.svn.data.*;
@@ -63,7 +64,7 @@ public class ExportDialog extends JDialog {
     private boolean canceled = false;
 
     public ExportDialog( View view, ExportData data ) {
-        super( ( JFrame ) view, "Export", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Export", "Export"), true );
         this.view = view;
         if ( data == null ) {
             throw new IllegalArgumentException( "data cannot be null" );
@@ -89,11 +90,11 @@ public class ExportDialog extends JDialog {
             paths = data.getSourceURLs();
         }
 
-        JLabel file_label = new JLabel( "Export " + ( paths.size() == 1 ? "this file:" : "these files:" ) );
+        JLabel file_label = new JLabel( jEdit.getProperty("ips.Export", "Export") + " " + ( paths.size() == 1 ? jEdit.getProperty("ips.this_file>", "this file:") : jEdit.getProperty("ips.these_files>", "these files:") ) );
         BestRowTable file_table = new BestRowTable();
         final DefaultTableModel file_table_model = new DefaultTableModel(
                     new String[] {
-                        "", "File"
+                        "", jEdit.getProperty("ips.File", "File")
                     }, paths.size() ) {
                     public Class getColumnClass( int index ) {
                         if ( index == 0 ) {
@@ -120,19 +121,19 @@ public class ExportDialog extends JDialog {
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 625 );
         file_table.packRows();
 
-        recursive_cb = new JCheckBox( "Recursive?" );
+        recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursive?", "Recursive?") );
         recursive_cb.setSelected( true );
 
         // revision selection panels
-        revision_panel = new RevisionSelectionPanel( "Export from this revision:", SwingConstants.VERTICAL, data.getSourceURLs() == null );
-        peg_revision_panel = new RevisionSelectionPanel( "Using this peg revision:", SwingConstants.VERTICAL, false, false, true, false, false );
+        revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Export_from_this_revision>", "Export from this revision:"), SwingConstants.VERTICAL, data.getSourceURLs() == null );
+        peg_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Using_this_peg_revision>", "Using this peg revision:"), SwingConstants.VERTICAL, false, false, true, false, false );
 
         // destination
-        JLabel path_label = new JLabel( "Export to this directory:" );
+        JLabel path_label = new JLabel( jEdit.getProperty("ips.Export_to_this_directory>", "Export to this directory:") );
         path = new HistoryTextField(PATH);
         path.setText("");
         path.setColumns(30);
-        JButton browse_local_btn = new JButton( "Browse Local..." );
+        JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, System.getProperty( "user.home" ), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -149,13 +150,13 @@ public class ExportDialog extends JDialog {
         eol.setEditable( false );
         eol.setSelectedItem( "native" );
 
-        force = new JCheckBox("Overwrite existing files?");
+        force = new JCheckBox(jEdit.getProperty("ips.Overwrite_existing_files?", "Overwrite existing files?"));
 
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -163,7 +164,7 @@ public class ExportDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( path.getText() == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( view, "Please select a destination directory for the export.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_a_destination_directory_for_the_export.", "Please select a destination directory for the export."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         if ( data.getSourceFiles() != null ) {
@@ -255,7 +256,7 @@ public class ExportDialog extends JDialog {
         panel.add( "4, 8, 2, 1, W,  , 0", force );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        panel.add( "0, 10, 1, 1, W,  , 3", new JLabel( "End-of-line style:" ) );
+        panel.add( "0, 10, 1, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.End-of-line_style>", "End-of-line style:") ) );
         panel.add( "1, 10, 2, 1, 0, w, 3", eol );
         panel.add( "0, 12, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 

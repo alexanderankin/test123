@@ -33,6 +33,8 @@ import ise.plugin.svn.library.GUIUtils;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  * Basic implementation of the UI for the RevisionSelectionPanel.  Look and feels
  * should subclass as appropriate.  This class handles the actual layout of the
@@ -43,12 +45,12 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     private RevisionSelectionPanel controller;
 
     private ButtonGroup bg = null;
-    private JRadioButton head_rb = new JRadioButton( "HEAD" );
-    private JRadioButton base_rb = new JRadioButton( "BASE" );
-    private JRadioButton working_rb = new JRadioButton( "WORKING" );
-    private JRadioButton revision_number_rb = new JRadioButton( "Revision:" );
+    private JRadioButton head_rb = new JRadioButton( jEdit.getProperty( "ips.HEAD", "HEAD" ) );
+    private JRadioButton base_rb = new JRadioButton( jEdit.getProperty( "ips.BASE", "BASE" ) );
+    private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
+    private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
     private JSpinner revision_number = null;
-    private JRadioButton date_rb = new JRadioButton( "Date:" );
+    private JRadioButton date_rb = new JRadioButton( jEdit.getProperty("ips.Date", "Date" ) + ":" );
     private JSpinner date_spinner = null;
     private JButton date_popup = null;
 
@@ -99,8 +101,8 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
 
         // set up date chooser
         date_spinner = getDateChooser();
-        ImageIcon icon = new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif"));
-        date_popup = icon == null ? new JButton("D") : new JButton(icon);
+        ImageIcon icon = new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif" ) );
+        date_popup = icon == null ? new JButton( "D" ) : new JButton( icon );
         date_popup.setMargin( new Insets( 1, 1, 1, 1 ) );
 
         if ( controller.getModel().getDirection() == SwingConstants.HORIZONTAL ) {
@@ -217,7 +219,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 public void actionPerformed( ActionEvent ae ) {
                     Dialog parent = GUIUtils.getParentDialog( controller );
                     final DateSelectorDialog dsd = new DateSelectorDialog( parent );
-                    dsd.setLocation( new Point(parent.getLocation().x + date_popup.getLocation().x, parent.getLocation().y + date_popup.getLocation().y ));
+                    dsd.setLocation( new Point( parent.getLocation().x + date_popup.getLocation().x, parent.getLocation().y + date_popup.getLocation().y ) );
                     dsd.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -320,7 +322,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         Date earliestDate = calendar.getTime();
         SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
         date_spinner = new JSpinner( model );
-        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, "dd MMM yyyy HH:mm" );
+        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty("ips.DateFormat", "dd MMM yyyy HH:mm") );
         date_spinner.setEditor( date_editor );
         date_spinner.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {

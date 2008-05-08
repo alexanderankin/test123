@@ -40,6 +40,7 @@ import ise.plugin.svn.action.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.data.UpdateData;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Shows the results of an update.  Conflicted files, updated files,
@@ -64,10 +65,10 @@ public class UpdateResultsPanel extends JPanel {
 
         JLabel label;
         if ( isExport ) {
-            label = new JLabel( "Exported at revision: " + results.getRevision() );
+            label = new JLabel( jEdit.getProperty("ips.Exported_at_revision>", "Exported at revision:") + " " + results.getRevision() );
         }
         else {
-            label = new JLabel( "Updated to revision: " + results.getRevision() );
+            label = new JLabel( jEdit.getProperty("ips.Updated_to_revision>", "Updated to revision:") + " " + results.getRevision() );
         }
 
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
@@ -85,7 +86,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( size + " file" + ( size != 1 ? "s" : "" ) + " with conflicts:", list ), con );
+            add( createPanel( size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + " " + jEdit.getProperty("ips.with_conflicts>", "with conflicts:"), list ), con );
             added = true;
         }
 
@@ -93,7 +94,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( "Updated " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
+            add( createPanel( jEdit.getProperty("ips.Updated", "Updated") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
@@ -102,10 +103,10 @@ public class UpdateResultsPanel extends JPanel {
             int size = list.size();
             ++con.y;
             if ( isExport ) {
-                add( createPanel( "Exported " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
+                add( createPanel( jEdit.getProperty("ips.Exported", "Exported") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             else {
-                add( createPanel( "Added " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
+                add( createPanel( jEdit.getProperty("ips.Added", "Added") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             added = true;
         }
@@ -114,12 +115,12 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( "Deleted " + size + " file" + ( size != 1 ? "s" : "" ) + ":", list ), con );
+            add( createPanel( jEdit.getProperty("ips.Deleted", "Deleted") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
         if ( !added ) {
-            label.setText( label.getText() + " (Already up to date.)" );
+            label.setText( label.getText() + " " + jEdit.getProperty("ips.(Already_up_to_date.)", "(Already up to date.)") );
         }
     }
 
@@ -129,7 +130,7 @@ public class UpdateResultsPanel extends JPanel {
         for ( int i = 0; i < values.size(); i++ ) {
             data[ i ][ 0 ] = values.get( i );
         }
-        JTable table = new JTable( data, new String[] {"Path:"} );
+        JTable table = new JTable( data, new String[] {jEdit.getProperty("ips.Path>", "Path:")} );
         JPanel panel = new JPanel( new BorderLayout() );
         panel.setBorder( new EtchedBorder() );
         panel.add( label, BorderLayout.NORTH );
@@ -177,7 +178,7 @@ public class UpdateResultsPanel extends JPanel {
         // update, commit, revert, add, log, need to add others as appropriate
         final JPopupMenu pm = new JPopupMenu();
 
-        JMenuItem mi = new JMenuItem( "Info" );
+        JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Info", "Info") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -196,7 +197,7 @@ public class UpdateResultsPanel extends JPanel {
                 }
                             );
 
-        mi = new JMenuItem( "Log" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Log", "Log") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -214,13 +215,13 @@ public class UpdateResultsPanel extends JPanel {
                     }
                 }
                             );
-        mi = new JMenuItem( "Resolve Conflicts" );
+        mi = new JMenuItem( jEdit.getProperty("ips.Resolve_Conflicts", "Resolve Conflicts") );
         pm.add( mi );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         int[] rows = table.getSelectedRows();
                         if ( rows.length > 1 ) {
-                            JOptionPane.showMessageDialog( view, "Please select one file at a time.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_one_file_at_a_time.", "Please select one file at a time."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         String path = ( String ) table.getValueAt( 0, 0 );

@@ -68,7 +68,7 @@ public class CheckoutDialog extends JDialog {
     private boolean canceled = false;
 
     public CheckoutDialog( View view, String url ) {
-        super( ( JFrame ) view, "Checkout", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Checkout", "Checkout"), true );
         this.view = view;
         this._url = url;
         _init();
@@ -110,11 +110,11 @@ public class CheckoutDialog extends JDialog {
         }
 
         // browse for url
-        JButton browse_remote_btn = new JButton( "Browse..." );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse...", "Browse...") );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, "Select Repository" );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository", "Select Repository") );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -122,7 +122,7 @@ public class CheckoutDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( "OK" );
+                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -135,7 +135,7 @@ public class CheckoutDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( "Cancel" );
+                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -163,7 +163,7 @@ public class CheckoutDialog extends JDialog {
         path = new HistoryTextField(PATH);
         path.setText( PVHelper.getProjectRoot(view));
         path.setColumns( 30 );
-        JButton browse_btn = new JButton( "Browse" );
+        JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse", "Browse") );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -189,8 +189,8 @@ public class CheckoutDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -198,11 +198,11 @@ public class CheckoutDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( url == null || url.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( CheckoutDialog.this, "URL is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( CheckoutDialog.this, jEdit.getProperty("ips.URL_is_required.", "URL is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( CheckoutDialog.this, "Directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( CheckoutDialog.this, jEdit.getProperty("ips.Directory_is_required.", "Directory is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         canceled = false;

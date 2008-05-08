@@ -35,6 +35,7 @@ import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import ise.plugin.svn.data.DiffData;
 import ise.java.awt.KappaLayout;
@@ -53,7 +54,7 @@ public class RemoteDiffDialog extends JDialog {
      * @param data contains the paths to be diffed.
      */
     public RemoteDiffDialog( View view, final DiffData dd ) {
-        super( ( JFrame ) view, "Diff", true );
+        super( ( JFrame ) view, jEdit.getProperty("ips.Diff", "Diff"), true );
         if ( dd == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
@@ -90,21 +91,21 @@ public class RemoteDiffDialog extends JDialog {
 
         // path1 display and revision chooser
         JPanel file_panel1 = new JPanel( new BorderLayout() );
-        file_panel1.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
+        file_panel1.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty("ips.File_to_diff>", "File to diff:") ) );
         file_panel1.add( new JLabel( path1 ), BorderLayout.CENTER );
-        final RevisionSelectionPanel rsp1 = new RevisionSelectionPanel( count == 1 ? "Diff Revision 1:" : "Diff Revision:" );
+        final RevisionSelectionPanel rsp1 = new RevisionSelectionPanel( count == 1 ? jEdit.getProperty("ips.Diff_Revision_1>", "Diff Revision 1:") : jEdit.getProperty("ips.Diff_Revision>", "Diff Revision:") );
 
         // path2 display and revision chooser
         JPanel file_panel2 = null;
         if ( count == 2 ) {
             file_panel2 = new JPanel( new BorderLayout() );
-            file_panel2.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "File to diff:" ) );
+            file_panel2.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty("ips.File_to_diff>", "File to diff:") ) );
             file_panel2.add( new JLabel( path2 ), BorderLayout.CENTER );
         }
-        final RevisionSelectionPanel rsp2 = new RevisionSelectionPanel( count == 1 ? "Diff Revision 2" : "Diff Revision:" );
+        final RevisionSelectionPanel rsp2 = new RevisionSelectionPanel( count == 1 ? jEdit.getProperty("ips.Diff_Revision_2", "Diff Revision 2") : jEdit.getProperty("ips.Diff_Revision>", "Diff Revision:") );
 
         // svn diff?
-        final JCheckBox svn_diff = new JCheckBox("Create SVN diff");
+        final JCheckBox svn_diff = new JCheckBox(jEdit.getProperty("ips.Create_SVN_diff", "Create SVN diff"));
         svn_diff.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
@@ -116,8 +117,8 @@ public class RemoteDiffDialog extends JDialog {
         // button panel
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( "Ok" );
-        JButton cancel_btn = new JButton( "Cancel" );
+        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
