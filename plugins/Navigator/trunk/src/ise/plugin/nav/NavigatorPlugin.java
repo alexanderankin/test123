@@ -14,9 +14,8 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.TextAreaUpdate;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 
@@ -38,10 +37,8 @@ public class NavigatorPlugin extends EBPlugin
 
 	public void start()
 	{
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; ++i)
-		{
-			createNavigator(views[i]);
+		for (View v: jEdit.getViews()) {
+			createNavigators(v);
 		}
 		setToolBars();
 	}
@@ -128,7 +125,7 @@ public class NavigatorPlugin extends EBPlugin
 			if (found)
 			{
 				StringBuffer sb = new StringBuffer();
-				Iterator itr = ll.iterator();
+				Iterator<String> itr = ll.iterator();
 				while (itr.hasNext())
 				{
 					sb.append(itr.next() + " ");
@@ -148,22 +145,26 @@ public class NavigatorPlugin extends EBPlugin
 	 * @param navigator
 	 *                The Navigator
 	 */
-	public static void addNavigator(View view, Navigator navigator)
+	public static void addNavigator(EditPane pane, Navigator navigator)
 	{
-		if (view == null)
+		if (pane== null)
 		{
 			return;
 		}
-		EditPane pane = view.getEditPane();
-		if (pane == null) return;
 		if (map.containsKey(pane))
 			return;
 		map.put(pane, navigator);
 	}
 
+	/**
+	 * Chooses an arbitrary editpane of the view (works fine if there is only 1) and 
+	 * creates a GUI for that navigator.
+	 * @param view
+	 * @return
+	 */
 	public static JComponent getToolBar(View view)
 	{
-		Navigator nav = getNavigator(view);
+		Navigator nav = getNavigator(view.getEditPane());
 		NavToolBar toolBar = new NavToolBar(nav);
 		return toolBar;
 	}
@@ -180,20 +181,34 @@ public class NavigatorPlugin extends EBPlugin
 		}
 	}
 
-	
-	public static Navigator getNavigator(View view)
+
+	/**
+	 * @return null if there is no Navigator for this pane
+	 */
+	public static Navigator getNavigator(EditPane pane)
 	{
-		EditPane pane = view.getEditPane();
-		return  (Navigator) map.get(pane);
+		return map.get(pane);
 	}
 
-	public static Navigator createNavigator(View view)
+	
+	public static void createNavigators(View v) {
+		for (EditPane p: v.getEditPanes()) {
+			createNavigator(p);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param pane
+	 * @return a previously existing or a newly created Navigator for this EditPane.
+	 */
+	public static Navigator createNavigator(EditPane pane)
 	{
-		Navigator navigator = getNavigator(view);
+		Navigator navigator = getNavigator(pane);
 		if (navigator == null)
 		{
-			navigator = new Navigator(view);
-			addNavigator(view, navigator);
+			navigator = new Navigator(pane);
+			addNavigator(pane, navigator);
 		}
 		return navigator;
 	}
@@ -206,7 +221,7 @@ public class NavigatorPlugin extends EBPlugin
 	 */
 	public static void backList(View view)
 	{
-		Navigator navigator = getNavigator(view);
+		Navigator navigator = getNavigator(view.getEditPane());
 		if (navigator != null)
 		{
 			navigator.backList();
@@ -221,7 +236,7 @@ public class NavigatorPlugin extends EBPlugin
 	 */
 	public static void goBack(View view)
 	{
-		Navigator navigator = getNavigator(view);
+		Navigator navigator = getNavigator(view.getEditPane());
 		if (navigator != null)
 		{
 			navigator.goBack();
@@ -238,7 +253,7 @@ public class NavigatorPlugin extends EBPlugin
 	public static void forwardList(View view)
 	{
 		
-		Navigator navigator = getNavigator(view);
+		Navigator navigator = getNavigator(view.getEditPane());
 		if (navigator != null)
 		{
 			navigator.forwardList();
@@ -255,7 +270,7 @@ public class NavigatorPlugin extends EBPlugin
 	public static void goForward(View view)
 	{
 		
-		Navigator navigator = getNavigator(view);
+		Navigator navigator = getNavigator(view.getEditPane());
 		if (navigator != null)
 		{
 			navigator.goForward();
@@ -273,35 +288,24 @@ public class NavigatorPlugin extends EBPlugin
 			View v = vu.getView();
 			Object what = vu.getWhat();
 			if (what == vu.CREATED || what == vu.EDIT_PANE_CHANGED) 
-				createNavigator(v);
+				createNavigators(v);
 			else if (what.equals(ViewUpdate.CLOSED))
 				removeNavigator(v);
 		}
 
-		/* If the editpane changes its current buffer, we want to know
+		/* If the editpane changes its current position, we want to know
 		     just before it happens.  */
-		
-		
-		else if (message instanceof CaretChanging) 
+		else if (message instanceof PositionChanging) 
 		{
-			CaretChanging cc = (CaretChanging) message;
-			View v = cc.getTextArea().getView();
-			Navigator n = getNavigator(v);
+			PositionChanging cc = (PositionChanging) message;
+			EditPane p = cc.getEditPane();
+			Navigator n = getNavigator(p);
 			if (n != null) n.update();
 		}
 		else if (message instanceof EditPaneUpdate) 
 		{
 			EditPaneUpdate epu = (EditPaneUpdate) message;
-			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGING) 
-			{	
-				View v = epu.getEditPane().getView();
-				Navigator n = getNavigator(v);
-				if (n != null) 
-				{
-					n.update();
-				}
-			}
-			else if (epu.getWhat() == epu.DESTROYED) {
+			if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
 				map.remove(epu.getEditPane());
 			}
 		}
