@@ -63,7 +63,7 @@ public class SideKickFoldHandler extends FoldHandler
 		else
 		{
 			TreeNode treeNode = (TreeNode) path.getLastPathComponent();
-			IAsset asset = SideKickParsedData.getAsset(treeNode);
+			IAsset asset = data.getAsset(treeNode);
 			if (asset.getStart().getOffset() == lineStartOffset)
 				return path.getPathCount() - 2;
 			
