@@ -215,7 +215,7 @@ public class SideKickParsedData
 	 * to return null.
 	 * @return the IAsset contained in the user object in the node.
 	 */
-        public static IAsset getAsset( TreeNode node ) {
+        public IAsset getAsset( TreeNode node ) {
 	       if ( !( node instanceof DefaultMutableTreeNode ) )
 	       {
 	       	       return null;
