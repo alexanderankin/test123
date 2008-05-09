@@ -40,7 +40,7 @@ import org.gjt.sp.jedit.jEdit;
  </pre>    
  * 
  * @author Alan Ezust ezust@users.sourceforge.net
- * @since SideKick 0.7.1
+ * @since SideKick 0.7.5
  *
  */
 
