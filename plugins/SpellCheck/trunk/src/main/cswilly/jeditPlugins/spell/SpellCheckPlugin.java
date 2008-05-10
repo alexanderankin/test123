@@ -49,13 +49,29 @@ public class SpellCheckPlugin
   public static final String PLUGIN_NAME                        = "SpellCheck";
   public static final String SPELL_CHECK_ACTIONS                = "spell-check-menu";
   public static final String ASPELL_EXE_PROP                    = "spell-check-aspell-exe";
+  public static final String ASPELL_MARKUP_MODE_PROP            = "spell-check-aspell-markup-mode";
   public static final String ASPELL_LANG_PROP                   = "spell-check-aspell-lang";
-  public static final String ASPELL_NO_MARKUP_MODE              = "spell-check-aspell-no-markup-mode";
-  public static final String ASPELL_MANUAL_MARKUP_MODE          = "spell-check-aspell-manual-markup-mode";
-  public static final String ASPELL_AUTO_MARKUP_MODE            = "spell-check-aspell-auto-markup-mode";
-  public static final String ASPELL_OTHER_PARAMS                = "spell-check-aspell-other-params";
+  public static final String ASPELL_OTHER_PARAMS_PROP			= "spell-check-aspell-other-params";
+  public static final String FILTER_AUTO						= "AUTO";					
   public static final String FILTERS_PROP						= "spell-check-filter";					
-
+  
+  public static enum AspellMarkupMode{
+	  NO_MARKUP_MODE("aspellNoMarkupMode"),
+	  MANUAL_MARKUP_MODE("aspellManualMarkupMode"),
+	  AUTO_MARKUP_MODE("aspellAutoMarkupMode");
+	  
+	  AspellMarkupMode(String v){ this.value = v; }
+	  
+	  private final String value;
+	  public String toString(){ return value; }
+	  public static AspellMarkupMode fromString(String s){
+		  for(AspellMarkupMode mode : AspellMarkupMode.values()){
+			  if(mode.value.equals(s))return mode;
+		  }
+		  throw new IllegalArgumentException("Invalid mode name :"+s);
+	  }
+  }
+  
   public static final ArrayList defaultModes = new ArrayList( Arrays.asList( new String[] {"html", "shtml", "sgml", "xml", "xsl"} ) );
 
   private static FileSpellChecker _fileSpellChecker = null;
@@ -289,19 +305,19 @@ public class SpellCheckPlugin
   private static
   String getAspellOtherParams()
   {
-    return jEdit.getProperty( ASPELL_OTHER_PARAMS, "");
+    return jEdit.getProperty( ASPELL_OTHER_PARAMS_PROP, "");
   }
 
   private static
   boolean getAspellManualMarkupMode()
   {
-    return jEdit.getBooleanProperty( ASPELL_MANUAL_MARKUP_MODE, false);
+    return AspellMarkupMode.MANUAL_MARKUP_MODE.toString().equals(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
   }
 
   private static
   boolean getAspellAutoMarkupMode()
   {
-    return jEdit.getBooleanProperty( ASPELL_AUTO_MARKUP_MODE, true);
+    return AspellMarkupMode.AUTO_MARKUP_MODE.toString().equals(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
   }
 
   private static

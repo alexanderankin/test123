@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 
 public class FutureListDictsTest extends TestCase{
 	private static final String SINK = System.getProperty("user.dir")+File.separator+"tests/sink.sh";
-	private static final String OK = "/opt/local/bin/aspell";//System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
+	private static final String OK = System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
 	
 	protected void setUp(){
 		System.out.println("Setting up FutureListDictsTest");
