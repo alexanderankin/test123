@@ -21,6 +21,7 @@
 	<!-- build support -->
 	<import file="${build.support}/plugin-build.xml" />
 
+    <property name="build.tests"  value="${build.dir}/tests" />
 
 	<!-- can switch-off compilation of test-cases -->
 	<selector id="compileFiles">
@@ -31,11 +32,42 @@
     </selector>
 
 	<selector id="junit.testcases">
-        <filename name="cswilly/**/*Test.java" />
+        <filename name="cswilly/**/FutureAspellTest.java" />
     </selector>
 
 	<!-- for junit tests -->
 	<property name="unit.test.target" value="test-junit"/>
+    <!-- {{{ Target: test-junit============================ -->
+    <!-- Executes a jUnit test case defined by the plugin's
+         build file. The classpath for the test will be the
+         ${build.class} directory, the ${junit.jar} file and
+         the default.class.path and project.class.path path
+         structures.
+         -->
+    <target name="test-junit"
+            description="Runs the plugin's jUnit tests.">
+        <echo message="Running tests..."/>
+        <mkdir dir="${build.tests}"/>
+        <junit printsummary="${junit.printsummary}"
+                haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}">
+
+            <classpath>
+                <pathelement location="${junit.jar}" />
+                <pathelement location="${build.classes}" />
+                <path refid="default.class.path" />
+                <path refid="project.class.path" />
+            </classpath>
+
+            <batchtest todir="${build.tests}">
+                <fileset dir="${src.test.dir}">
+                  <selector refid="junit.testcases"/>
+                </fileset>
+           </batchtest>
+           <formatter type="brief"/>
+        </junit>
+
+    </target>
+    <!-- ===============================================}}} -->
 	
 
 	<target name="build.prepare"
