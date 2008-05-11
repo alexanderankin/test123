@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 //}}}
 
@@ -113,7 +113,7 @@ public class BufferOutput implements Output
 	 */
 	public void printColored(String message)
 	{
-		throw new NotImplementedException();
+		throw new RuntimeException("Not Implemented");
 
 	}
 }
