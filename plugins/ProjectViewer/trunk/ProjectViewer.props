@@ -6,6 +6,7 @@ plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan 
 plugin.projectviewer.ProjectPlugin.version=2.9.0.0
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
+plugin.projectviewer.ProjectPlugin.usePluginHome=true
 plugin.projectviewer.ProjectPlugin.description=The ProjectViewer plugin provides an interface \
 	for managing a "project", i.e. a related group of \
 	source files.
