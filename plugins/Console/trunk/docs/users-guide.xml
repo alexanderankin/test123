@@ -13,7 +13,7 @@
   </copyright>
   <copyright>
    <year>2005</year>
-   <year>2007</year>
+   <year>2008</year>
    <holder>Alan Ezust</holder>
   </copyright>
 
@@ -105,9 +105,12 @@
   </listitem>
   <listitem><para><emphasis>Subshell extra PATH</emphasis> - This option
 		  prepends directories to the environment before spawning
-		  subprocesses. If you want your jedit console to be able to find
-		  some files in the path, add those directories here.
+		  subprocesses. If you want your jedit console to be able to find some files in the path, add those directories here.
 	  </para></listitem>
+  <listitem><para><emphasis>Append extra dirs to PATH</emphasis> - if  
+        checked, append instead of prepend the extra directories.
+  </para></listitem>
+  
 
  
  </itemizedlist>
@@ -254,7 +257,12 @@
   onto an three <firstterm>regular expressions</firstterm> - for
   errors, warnings, and extra lines. </para>
 
-   <para>
+  <para> The order of patterns on this list matters: more specific 
+  patterns should be earlier on the list.
+  Patterns for applications you do not use can be safely removed from 
+  this list, and this can speed things up during output parsing. </para>
+  
+  <para>
   If the output of a line matches the error
   pattern, then file name, line number and error
   message are extracted from it; if not, the line is then optionally
@@ -269,11 +277,13 @@
  </para>
 
    <para>
-  It is also possible to specify an <quote>extra</quote> regular expression,
-  against which lines subsequent to an error are checked and added to the
-  error message if they match. This can be used to handle compilers which
+  It is also possible to specify an <quote>extra</quote> regular expression, 
+  against which lines subsequent to an error or warning are checked and added to the
+  message if there is a match. 
+  This can be used to handle compilers which
   produce compiler errors and warnings that span several lines.
- </para>
+  For this pattern, the string to be appended to the error message must be in a back-reference (round braces).
+   </para>
 
    <para>
   Parsed error and warning messages are shown in the
@@ -318,6 +328,8 @@
   Java 2 version 1.3 and later. Earlier versions are also supported, because
   they output errors in the generic format documented above.</para>
     </listitem>
+    
+    <para> Errors produced by <command>python</command>. </para>
 
     <listitem>
      <para>Errors output by the <command>javac</command> compiler
@@ -1521,7 +1533,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <emphasis role="bold">Version 4.3.8</emphasis> Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional). <itemizedlist>
       <listitem><para> 1928738 Fix NPEs caused by patch #1859034 - k_satoda </para></listitem>
       <listitem><para> Updated console.bsh macros for reloacted beanshell in pre12. </para> </listitem>
-	  <listitem><para> Option to append subshell extra path. (ezust) </para></listitem>
+	  <listitem><para> Option to append subshell extra path. </para></listitem>
+      <listitem><para> Change to PV selected node no longer causes Console to show if it is not already showing.
+      </para></listitem>
   </itemizedlist> </para></listitem>
   
   
