@@ -61,9 +61,8 @@ import projectviewer.persist.ProjectPersistenceManager;
 public final class ProjectPlugin extends EBPlugin {
 
 	//{{{ Static Members
-	public final static String NAME = "projectviewer";
-
-	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	private static File CONFIG_DIR;
+	private static ProjectViewerConfig config;
 
 	//{{{ +_getResourceAsStream(String)_ : InputStream
 	/**
@@ -108,10 +107,7 @@ public final class ProjectPlugin extends EBPlugin {
 	 *	@return		The absolute path to the resource.
 	 */
 	public static String getResourcePath(String path) {
-		return jEdit.getSettingsDirectory()
-					+ File.separator + NAME
-					+ File.separator + path;
-
+		return new File(CONFIG_DIR, path).getAbsolutePath();
 	} //}}}
 
 	//}}}
@@ -119,12 +115,30 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ +start() : void
 	/** Start the plugin. */
 	public void start() {
-		File f = new File(getResourcePath("projects/null"));
-		if (!f.getParentFile().exists()) {
-			if (!f.getParentFile().mkdirs()) {
+		/*
+		 * First, try to see if the new config directory exists.
+		 * If it doesn't, try to move the old config directory to
+		 * the new location.
+		 */
+		File configDir = getPluginHome();
+		if (!configDir.isDirectory()) {
+			File oldConfig = new File(jEdit.getSettingsDirectory(),
+									  "projectviewer");
+			if (oldConfig.isDirectory()) {
+				if (!configDir.getParentFile().mkdirs()) {
+					Log.log(Log.WARNING, this, "Cannot create plugin home dir.");
+					configDir = oldConfig;
+				} else if (!oldConfig.renameTo(configDir)) {
+					Log.log(Log.WARNING, this, "Cannot move config directory.");
+					configDir = oldConfig;
+				}
+			} else if (!configDir.mkdirs()) {
 				Log.log(Log.ERROR, this, "Cannot create config directory; ProjectViewer will not function properly.");
 			}
 		}
+
+		CONFIG_DIR = configDir;
+		config = ProjectViewerConfig.getInstance();
 
 		/*
 		 * set up a task to check any available extensions after
