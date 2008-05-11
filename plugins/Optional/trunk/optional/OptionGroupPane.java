@@ -290,6 +290,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		rootGroup.addOptionGroup(optionGroup);
 		paneTree = new JTree(optionTreeModel);
 		paneTree.setVisibleRowCount(1);
+		paneTree.setRootVisible(false);
 		paneTree.setCellRenderer(new PaneNameRenderer());
 
 		JPanel content = new JPanel(new BorderLayout(12, 12));
