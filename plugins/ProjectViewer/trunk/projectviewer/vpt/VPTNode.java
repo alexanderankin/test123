@@ -431,11 +431,5 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 		}
 	}
 
-	//{{{ -class _TTEntry_
-	private static class TTEntry {
-		public String str;
-		public Component component;
-	} //}}}
-
 }
 
