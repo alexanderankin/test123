@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
 import projectviewer.importer.ImporterFileFilter;
@@ -77,21 +79,25 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
         return getRecurseDescription();
     }
 
-    public boolean accept(File f) {
-        return f.isDirectory() || accept(f.getParentFile(), f.getName());
-    }
+    public boolean accept(VFSFile f) {
+        if (f.getType() == VFSFile.DIRECTORY) {
+            return true;
+        }
+        if (f.getVFS() != VFSManager.getFileVFS()) {
+            return false;
+        }
 
-    public boolean accept(File dir, String name) {
         if (clientInfo != null && !clientInfo.isSuccess())
             return false;
 
-        File f = new File(dir.getAbsolutePath(), name);
-        if (f.isDirectory()) return true;
+        String name = f.getName();
+        String parent = f.getVFS().getParentOfPath(f.getPath());
+        parent = parent.substring(0, parent.length() - File.separator.length());
 
-        if (entries == null || !entries.containsKey(dir.getAbsolutePath()))
-            findEntries(dir.getAbsolutePath());
+        if (entries == null || !entries.containsKey(parent))
+            findEntries(parent);
 
-        List files = entries.get(dir.getAbsolutePath());
+        List files = entries.get(parent);
         if (files != null)
             return files.contains(name);
         return false;
