@@ -212,6 +212,8 @@ projectviewer.import-dlg.dir_globs=Directories to ignore (globs):
 projectviewer.import-dlg.file_filter=File filter for importing:
 projectviewer.import-dlg.file_globs=Files to include (globs):
 projectviewer.import-dlg.flatten_paths=Flatten file paths
+projectviewer.import-dlg.keep_tree=Keep Project Tree
+projectviewer.import-dlg.keep_tree.tooltip=Add files and all parent directories following the project's directory layout.
 projectviewer.import-dlg.options=Import options
 projectviewer.import-dlg.traverse_dirs=Traverse directories
 

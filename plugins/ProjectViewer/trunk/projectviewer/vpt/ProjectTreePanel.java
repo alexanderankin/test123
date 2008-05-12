@@ -442,7 +442,7 @@ public class ProjectTreePanel extends JPanel
                 case KeyEvent.VK_ESCAPE:
                     DockableWindowManager dwm
                         = viewer.getView().getDockableWindowManager();
-                    dwm.hideDockableWindow(ProjectPlugin.NAME);
+                    dwm.hideDockableWindow("projectviewer");
                     e.consume();
                     break;
 
