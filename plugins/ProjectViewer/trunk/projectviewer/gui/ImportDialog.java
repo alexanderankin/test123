@@ -48,7 +48,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -438,18 +437,12 @@ public class ImportDialog extends EnhancedDialog
 			ffilters.add(GlobFilter.getImportSettingsFilter());
 			ffilters.add(new CVSEntriesFilter());
 
-			EditPlugin[] plugins = jEdit.getPlugins();
-			for (int i = 0; i < plugins.length; i++) {
-				String list = jEdit.getProperty("plugin.projectviewer." +
-								plugins[i].getClassName() + ".file-filters");
+			List<Object> exts = ExtensionManager.getInstance()
+												.loadExtensions(ImporterFileFilter.class);
 
-				List<Object> exts = ExtensionManager.getInstance()
-													.loadExtensions(ImporterFileFilter.class);
-
-				if (exts != null && exts.size() > 0) {
-					for (Object o : exts) {
-						ffilters.add((VFSFileFilter) o);
-					}
+			if (exts != null && exts.size() > 0) {
+				for (Object o : exts) {
+					ffilters.add((VFSFileFilter) o);
 				}
 			}
 		}
