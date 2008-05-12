@@ -6,5 +6,16 @@
 	<SERVICE CLASS="console.Shell" NAME="Perforce">
 		new p4plugin.P4Shell();
 	</SERVICE>
+
+	<SERVICE CLASS="projectviewer.importer.ImporterFileFilter"
+	         NAME="Perforce File Filter">
+		new p4plugin.P4FileFilter();
+	</SERVICE>
+
+	<SERVICE CLASS="projectviewer.action.Action"
+	         NAME="Perforce Context Menu">
+		new p4plugin.action.P4FileMenu();
+	</SERVICE>
+
 </SERVICES>
 

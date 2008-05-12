@@ -38,6 +38,8 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
+import org.gjt.sp.jedit.syntax.ModeProvider;
+
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
@@ -108,7 +110,7 @@ public class P4Plugin extends EBPlugin {
                 mode.unsetProperty("filenameGlob");
                 mode.setProperty("firstlineGlob", "# A Perforce {Branch,Client,Change,User} Specification.*");
                 mode.init();
-                jEdit.addMode(mode);
+                ModeProvider.instance.addMode(mode);
             }
 
             jEdit.setIntegerProperty("p4plugin.mode_file_version", MODE_FILE_VERSION);

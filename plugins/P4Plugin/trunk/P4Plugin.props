@@ -10,9 +10,9 @@ plugin.p4plugin.P4Plugin.activate=defer
 plugin.p4plugin.P4Plugin.docs=index.html
 plugin.p4plugin.P4Plugin.description=Perforce integration for jEdit.
 
-plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.07.00
+plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.10.00
 plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
-plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.0
+plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0.0
 plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.2.5.1
 plugin.p4plugin.P4Plugin.depend.4=plugin CommonControlsPlugin 0.9.4
 
@@ -70,9 +70,6 @@ p4plugin_sync.label=Sync File/Directory
 plugin.projectviewer.p4plugin.P4Plugin.option-pane=p4-plugin-pv-cfg
 options.p4-plugin-pv-cfg.code=new p4plugin.config.P4OptionPane();
 options.p4-plugin-pv-cfg.label=Perforce
-
-plugin.projectviewer.p4plugin.P4Plugin.file-filters=p4plugin.P4FileFilter
-plugin.projectviewer.p4plugin.P4Plugin.context-menu-actions=p4plugin.action.P4FileMenu
 #}}}
 
 #{{{ GUI messages

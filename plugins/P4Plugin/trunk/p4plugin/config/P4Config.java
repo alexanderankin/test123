@@ -101,17 +101,7 @@ public class P4Config extends PropertiesBean {
             }
         }
 
-        try {
-            return (P4Config) proj.getObjectProperty(P4Config.KEY);
-        } catch (ClassCastException cce) {
-            // in case someone happens to be using a weirdly compiled
-            // version of the plugin from before I set the serialVersionUID
-            // field for this class.
-            Log.log(Log.WARNING, P4Config.class,
-                    "wrong class serial UID detected, can't read P4 configuration");
-            proj.removeProperty(P4Config.KEY);
-            return null;
-        }
+        return null;
     }
 
     private int         p4EditorType;
