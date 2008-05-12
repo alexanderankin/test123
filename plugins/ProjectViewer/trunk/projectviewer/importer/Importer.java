@@ -209,7 +209,7 @@ public abstract class Importer implements Runnable {
 	} //}}}
 
 	/**
-	 * Creates a subtree starting a the given root, going down to the
+	 * Creates a subtree starting at the given root, going down to the
 	 * given path, updating the given list of added nodes as necessary.
 	 *
 	 * @param root Root node where to start constructing the path.
@@ -233,23 +233,26 @@ public abstract class Importer implements Runnable {
 
 		assert path.startsWith(root.getNodePath()) : "Path not under root!";
 
+		if (path.endsWith(File.separator)) {
+			path = path.substring(0, path.length() - File.separator.length());
+		}
+
 		dirs = new Stack<String>();
 		vfs = VFSManager.getVFSForPath(path);
 		rootPath = root.getNodePath();
 		isFile = (VFSHelper.getFile(path).getType() == VFSFile.FILE);
 
-		/*
-		 * VFS.getParentOfPath() returns paths with a trailing slash...
-		 * BTW, it's interesting that it uses "File.separatorChar"
-		 * when all this is supposed to be URL-based.
-		 */
-		if (!rootPath.endsWith(File.separator)) {
-			rootPath += File.separator;
-		}
-
 		while (!path.equals(rootPath)) {
 			dirs.push(path);
 			path = vfs.getParentOfPath(path);
+			/*
+			 * VFS.getParentOfPath() returns paths with a trailing slash...
+			 * BTW, it's interesting that it uses "File.separatorChar"
+			 * when all this is supposed to be URL-based.
+			 */
+			 if (path.endsWith(File.separator)) {
+				 path = path.substring(0, path.length() - File.separator.length());
+			 }
 		}
 
 		while (!dirs.isEmpty()) {

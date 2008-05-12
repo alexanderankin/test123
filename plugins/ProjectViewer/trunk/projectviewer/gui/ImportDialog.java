@@ -98,6 +98,7 @@ public class ImportDialog extends EnhancedDialog
 	private JCheckBox flatten;
 	private JCheckBox newNode;
 	private JCheckBox traverse;
+	private JCheckBox keepTree;
 	private JComboBox filters;
 	private VFSBrowser chooser;
 
@@ -159,11 +160,20 @@ public class ImportDialog extends EnhancedDialog
 		gbl.setConstraints(flatten, gbc);
 		options.add(flatten);
 
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		keepTree = new JCheckBox(jEdit.getProperty("projectviewer.import-dlg.keep_tree"));
+		keepTree.setToolTipText(jEdit.getProperty("projectviewer.import-dlg.keep_tree.tooltip"));
+		keepTree.addActionListener(this);
+		keepTree.setSelected(true);
+		gbl.setConstraints(keepTree, gbc);
+		options.add(keepTree);
+
 		gbc.gridwidth = GridBagConstraints.RELATIVE;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0.0;
 		newNode = new JCheckBox(jEdit.getProperty("projectviewer.import-dlg.crate_new"));
 		newNode.addActionListener(this);
+		newNode.setEnabled(!keepTree.isSelected());
 		gbl.setConstraints(newNode, gbc);
 		options.add(newNode);
 
@@ -171,6 +181,7 @@ public class ImportDialog extends EnhancedDialog
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 2.0;
 		newNodeName = new JTextField();
+		newNodeName.setEnabled(false);
 		gbl.setConstraints(newNodeName, gbc);
 		options.add(newNodeName);
 
@@ -280,6 +291,11 @@ public class ImportDialog extends EnhancedDialog
 			 : null;
 	} //}}}
 
+	public boolean getKeepTree()
+	{
+		return keepTree.isSelected();
+	}
+
 	//{{{ +getImportFilter() : VFSFileFilter
 	public VFSFileFilter getImportFilter() {
 		if (filters.getSelectedItem() instanceof ImporterFileFilter) {
@@ -305,7 +321,8 @@ public class ImportDialog extends EnhancedDialog
 			ok();
 		} else {
 			flatten.setEnabled(traverse.isSelected());
-			newNodeName.setEnabled(newNode.isSelected());
+			newNode.setEnabled(!keepTree.isSelected());
+			newNodeName.setEnabled(newNode.isEnabled() && newNode.isSelected());
 			if (ae != null && ae.getSource() == newNode && newNodeName.isEnabled())
 				newNodeName.requestFocus();
 
@@ -368,7 +385,7 @@ public class ImportDialog extends EnhancedDialog
 	//{{{ -internalShow() : void
 	private void internalShow() {
 		if (showChooser && chooser == null) {
-			String initPath;
+			final String initPath;
 			if (selected != null && selected.isDirectory() &&
 				VFSHelper.pathExists(((VPTDirectory)selected).getURL()))
 			{
@@ -385,8 +402,14 @@ public class ImportDialog extends EnhancedDialog
 			for (VFSFileFilter f : ffilters) {
 				chooser.addVFSFileFilter(f);
 			}
-			// chooser.setFilenameFilter(npff);
 
+			SwingUtilities.invokeLater(
+				new Runnable() {
+					public void run() {
+						chooser.setDirectory(initPath);
+					}
+				}
+			);
 			getContentPane().add(BorderLayout.CENTER, chooser);
 		}
 

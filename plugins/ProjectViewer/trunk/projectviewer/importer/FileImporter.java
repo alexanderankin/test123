@@ -99,7 +99,8 @@ public class FileImporter extends Importer {
 
 		VPTNode where = null;
 		VPTNode root = selected;
-		if (id.getNewNodeName() != null) {
+		boolean keepTree = id.getKeepTree();
+		if (!keepTree && id.getNewNodeName() != null) {
 			VFS vfs = VFSManager.getVFSForPath(selected.getNodePath());
 			String newDir = vfs.constructPath(selected.getNodePath(),
 											  id.getNewNodeName());
@@ -116,25 +117,38 @@ public class FileImporter extends Importer {
 			VFSFileFilter fnf = id.getImportFilter();
 			for (VFSFile file : chosen) {
 				VPTNode node = null;
-				if (!VFSHelper.pathExists(file.getPath())) {
-					node = findDirectory(file.getPath(), root, true);
-				} else if (file.getType() == VFSFile.DIRECTORY) {
-					node = findDirectory(file.getPath(), root, true);
-					if (id.getTraverseDirectories()) {
+				if (keepTree &&
+					file.getPath().startsWith(project.getRootPath()))
+				{
+					node = constructPath(project,
+										 file.getPath(),
+										 lst);
+					if (node.isFile()) {
+						registerFile((VPTFile) node);
+					} else if (id.getTraverseDirectories()) {
 						addTree(node, fnf, id.getFlattenFilePaths());
 					}
-				} else if (findDirectory(file.getPath(), root, false) == null) {
-					node = new VPTFile(file.getPath());
-					registerFile((VPTFile) node);
-					fileCount++;
-				}
+				} else {
+					if (!VFSHelper.pathExists(file.getPath())) {
+						node = findDirectory(file.getPath(), root, true);
+					} else if (file.getType() == VFSFile.DIRECTORY) {
+						node = findDirectory(file.getPath(), root, true);
+						if (id.getTraverseDirectories()) {
+							addTree(node, fnf, id.getFlattenFilePaths());
+						}
+					} else if (findDirectory(file.getPath(), root, false) == null) {
+						node = new VPTFile(file.getPath());
+						registerFile((VPTFile) node);
+						fileCount++;
+					}
 
-				if (node != null && node.getParent() == null) {
-					if (where == null) {
-						lst.add(node);
-					} else {
-						where.add(node);
-						where.sortChildren();
+					if (node != null && node.getParent() == null) {
+						if (where == null) {
+							lst.add(node);
+						} else {
+							where.add(node);
+							where.sortChildren();
+						}
 					}
 				}
 			}
