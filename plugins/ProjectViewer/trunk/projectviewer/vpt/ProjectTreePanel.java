@@ -111,8 +111,17 @@ public class ProjectTreePanel extends JPanel
      */
     public JTree getCurrentTree()
     {
-        return (trees.size() == 0) ? null
-                                   : trees.get(treePane.getSelectedIndex());
+
+        switch (trees.size()) {
+        case 0:
+            return null;
+
+        case 1:
+            return trees.get(0);
+
+        default:
+            return trees.get(treePane.getSelectedIndex());
+        }
     }
 
 
