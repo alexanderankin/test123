@@ -393,7 +393,8 @@ public class ImportDialog extends EnhancedDialog
 				initPath = project.getRootPath();
 			}
 
-			chooser = new VFSBrowser(jEdit.getActiveView(), null);
+			chooser = new VFSBrowser(jEdit.getActiveView(), initPath,
+									 VFSBrowser.BROWSER,true,null);
 
 			VFSFileFilter npff = new NonProjectFileFilter(project);
 			chooser.addVFSFileFilter(npff);
@@ -402,13 +403,6 @@ public class ImportDialog extends EnhancedDialog
 				chooser.addVFSFileFilter(f);
 			}
 
-			SwingUtilities.invokeLater(
-				new Runnable() {
-					public void run() {
-						chooser.setDirectory(initPath);
-					}
-				}
-			);
 			getContentPane().add(BorderLayout.CENTER, chooser);
 		}
 
