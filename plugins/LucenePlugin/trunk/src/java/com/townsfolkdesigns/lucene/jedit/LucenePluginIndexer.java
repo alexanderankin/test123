@@ -90,34 +90,51 @@ public class LucenePluginIndexer extends JEditFileTypeDelegatingIndexer {
 		      + getDirectoriesIndexed() + " | files: " + getFilesIndexed());
 		// overwrite the old index.
 		File indexStoreDir = new LucenePlugin().getIndexStoreDirectory();
-		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
-		File tempIndexStoreFile = new File(indexStoreFile, "temp");
-		if (indexStoreFile.exists()) {
+		indexStoreDir = new File(indexStoreDir, "LucenePlugin");
+		File readIndexLocation = new File(indexStoreDir, "read");
+		File writeIndexLocation = new File(indexStoreDir, "write");
+		if (readIndexLocation.exists()) {
 			Log.log(Log.DEBUG, this, "Replacing old index files with new ones.");
-			// get a write lock so no searches can be done.
-			IndexManager.getInstance().aquireWriteLock();
-			// delete old index.
-			indexStoreFile.delete();
-			// replace it with the new one.
-			tempIndexStoreFile.renameTo(indexStoreFile);
-			// delete the temp directory.
-			tempIndexStoreFile.delete();
-			// release the write lock so searches can resume.
-			IndexManager.getInstance().releaseWriteLock();
+			replaceReadOnlyIndex(readIndexLocation, writeIndexLocation);
 		} else {
 			// something happened to the old index or this is the first time
 			// indexing, just move the new one over.
 			Log.log(Log.DEBUG, this, "Couldn't find old index files, moving new ones in place.");
-
-			// get a write lock so no searches can be done.
-			IndexManager.getInstance().aquireWriteLock();
-			// replace it with the new one.
-			tempIndexStoreFile.renameTo(indexStoreFile);
-			// delete the temp directory.
-			tempIndexStoreFile.delete();
-			// release the write lock so searches can resume.
-			IndexManager.getInstance().releaseWriteLock();
+			copyWriteIndexToReadIndex(readIndexLocation, writeIndexLocation);
 		}
+	}
+
+	private void copyWriteIndexToReadIndex(File readIndexLocation, File writeIndexLocation) {
+		// get a write lock so no searches can be done.
+		IndexManager.getInstance().aquireWriteLock();
+		
+		String indexFileName = null;
+		File renameFile = null;
+		for(File indexFile : writeIndexLocation.listFiles()) {
+			// loop through each index file and move it to the read index location.
+			if(indexFile.isFile()) {
+				indexFileName = indexFile.getName();
+				renameFile = new File(readIndexLocation, indexFileName);
+				indexFile.renameTo(renameFile);
+			}
+		}
+		// release the write lock so searches can resume.
+		IndexManager.getInstance().releaseWriteLock();
+   }
+
+	private void replaceReadOnlyIndex(File readIndexLocation, File writeIndexLocation) {
+		// get a write lock so no searches can be done.
+		IndexManager.getInstance().aquireWriteLock();
+		for(File indexFile : readIndexLocation.listFiles()) {
+			// loop through and delete all the old index files.
+			if(indexFile.isFile()) {
+				indexFile.delete();
+			}
+		}
+		// replace it with the new one.
+		copyWriteIndexToReadIndex(readIndexLocation, writeIndexLocation);
+		// release the write lock so searches can resume.
+		IndexManager.getInstance().releaseWriteLock();
 	}
 
 	/*
@@ -131,11 +148,12 @@ public class LucenePluginIndexer extends JEditFileTypeDelegatingIndexer {
 		if (!indexStoreDir.exists()) {
 			indexStoreDir.mkdirs();
 		}
-		File indexStoreFile = new File(indexStoreDir, LucenePlugin.class.getName());
-		// actually write the index out to a temp directory so the reader can read
+		// actually write the index out to a write directory so the reader can
+		// read
 		// the old index while this indexer is creating the new one. The reading
-		// index is the same as above.
-		indexStoreFile = new File(indexStoreFile, "temp");
+		// index is LucenePlugin.read.
+		File indexStoreFile = new File(indexStoreDir, "LucenePlugin");
+		indexStoreFile = new File(indexStoreFile, "write");
 		setIndexStoreDirectory(indexStoreFile);
 		setDefaultDocumentParser(new DefaultFileDocumentParser());
 		setIndexStatsManager(new IndexStatsManager());
