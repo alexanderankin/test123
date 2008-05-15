@@ -471,8 +471,14 @@ public class Diff {
         /** Line number of 1st deleted line.  */
         public final int line0;
 
+        /** Line number of last deleted line. */
+        public final int last0;
+
         /** Line number of 1st inserted line.  */
         public final int line1;
+
+        /*  line number of last inserted line. */
+        public final int last1;
 
         /** Cons an additional entry onto the front of an edit script OLD.
            LINE0 and LINE1 are the first affected lines in the two files (origin 0).
@@ -487,14 +493,18 @@ public class Diff {
             this.inserted = inserted;
             this.deleted = deleted;
             this.link = old;
-            //System.err.println(line0+","+line1+","+inserted+","+deleted);
+
+            this.last0 = line0 + (deleted == 0 ? 0 : deleted - 1);
+            this.last1 = line1 + (inserted == 0 ? 0 : inserted - 1);
         }
 
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append( "Change[" );
             sb.append( "line0=" ).append( line0 ).append( ",deleted=" ).append( deleted );
+            sb.append( ",last0=" ).append( last0 );
             sb.append( ",line1=" ).append( line1 ).append( ",inserted=" ).append( inserted );
+            sb.append( ",last1=" ).append( last1 );
             sb.append( "]" );
             return sb.toString();
         }
