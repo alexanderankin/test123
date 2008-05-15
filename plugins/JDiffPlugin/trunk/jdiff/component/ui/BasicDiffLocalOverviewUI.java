@@ -48,6 +48,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     private Rectangle leftRectangle;
     private Rectangle rightRectangle;
     private Rectangle centerRectangle;
+    private HashMap<Diff.Change, Point> leftConnectors = new HashMap<Diff.Change, Point>();
+    private HashMap<Diff.Change, Point> rightConnectors = new HashMap<Diff.Change, Point>();
 
     public static ComponentUI createUI( JComponent c ) {
         return new BasicDiffLocalOverviewUI();
@@ -146,17 +148,17 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             // for drawing the diffs for the left text area
             leftRectangle = new Rectangle(
-                        centerRectangle.x,                                        // 4
-                        centerRectangle.y,                                        // 0
-                        centerRectangle.width / 3,                                // (40 - 4 - 4) / 3 = 8
+                        centerRectangle.x,                                          // 4
+                        centerRectangle.y,                                          // 0
+                        centerRectangle.width / 3,                                  // (40 - 4 - 4) / 3 = 8
                         Math.max( 1, pixelsPerLine * leftVisibleLineCount )
                     );
 
             // for drawing the diffs for the right text area
             rightRectangle = new Rectangle(
-                        centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),                 // 4 + (32 - 8) = 28
-                        centerRectangle.y,                                        // 0
-                        centerRectangle.width / 3,                                // 8
+                        centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),                   // 4 + (32 - 8) = 28
+                        centerRectangle.y,                                          // 0
+                        centerRectangle.width / 3,                                  // 8
                         Math.max( 1, pixelsPerLine * rightVisibleLineCount )
                     );
 
@@ -170,7 +172,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
 
             // clear hunk cursors
-            paintCurrentHunkCursor(gfx, null);
+            paintCurrentHunkCursor( gfx, null );
 
             // draw the diff areas in the left and right rectangles, and draw the
             // connecting line between corresponding diffs in the center rectangle
@@ -197,7 +199,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         // output color for diff area
         Color color;
 
-        if (leftHunkMap != null) {
+        if ( leftHunkMap != null ) {
             // go through each of the visible lines, see if there is a corresponding
             // diff for that line
             for ( int i = leftFirstLine; i <= leftLastLine; i++ ) {
@@ -216,7 +218,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         color = hunk.inserted == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
                         // might be in the middle of a hunk because the hunk is
                         // scrolling off the top of the screen
-                        visible_lines = hunk.line0 >= leftFirstLine ? hunk.deleted : Math.max(1, hunk.last0 - leftFirstLine + 1);
+                        visible_lines = hunk.line0 >= leftFirstLine ? hunk.deleted : Math.max( 1, hunk.last0 - leftFirstLine + 1 );
                         first_visible_line = visible_lines == 1 ? hunk.line0 : hunk.last0 - visible_lines + 1;
                         leftRectangle.height = Math.max( 1, pixelsPerLine * visible_lines );
                         leftRectangle.y = centerRectangle.y + ( ( first_visible_line - leftFirstLine ) * pixelsPerLine );
@@ -224,9 +226,20 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     gfx.setColor( color );
 
                     // draw the hunk
-                    System.out.println("+++++ leftRectangle.height = " + leftRectangle.height);
                     gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
 
+                    // remember the coordinates to draw the connector later on
+                    leftConnectors.put( hunk, new Point( leftRectangle.x + leftRectangle.width + 1, leftRectangle.y ) );
+
+                    // draw the "move it right" arrow
+                    if ( hunk.deleted > 0 ) {
+                        gfx.setColor( Color.BLACK );
+                        int arrow_height = ( pixelsPerLine - 2 ) % 2 == 0 ? pixelsPerLine - 3 : pixelsPerLine - 2;
+                        for ( int j = 0; j < 6; j++ ) {
+                            gfx.drawLine( leftRectangle.x + 2 + j, leftRectangle.y + 1 + j,
+                                    leftRectangle.x + 2 + j, leftRectangle.y + j + arrow_height - ( 2 * j ) );
+                        }
+                    }
                     // skip any other lines covered by this hunk
                     i += visible_lines;
                 }
@@ -240,10 +253,10 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             // hunk cursor repaint, only the caret in the active text area should
             // do that.
             int caret_line = model.getLeftTextArea().getCaretLine();
-            Diff.Change hunk = leftHunkMap.get(caret_line);
+            Diff.Change hunk = leftHunkMap.get( caret_line );
             // here's a NPE waiting to happen...
-            if (hunk != null && model.getLeftTextArea().getView().getEditPane().getTextArea().equals(model.getLeftTextArea())) {
-                paintCurrentHunkCursor(gfx, hunk);
+            if ( hunk != null && model.getLeftTextArea().getView().getEditPane().getTextArea().equals( model.getLeftTextArea() ) ) {
+                paintCurrentHunkCursor( gfx, hunk );
             }
         }
     }
@@ -253,7 +266,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         int rightLastLine = model.getRightTextArea().getLastPhysicalLine();
         HashMap<Integer, Diff.Change> rightHunkMap = model.getRightHunkMap();
         Color color;
-        if (rightHunkMap != null) {
+        if ( rightHunkMap != null ) {
             for ( int i = rightFirstLine; i <= rightLastLine; i++ ) {
                 Diff.Change hunk = rightHunkMap.get( i );
                 int first_visible_line = 0;
@@ -268,83 +281,58 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         color = hunk.deleted == 0 ? JDiffPlugin.overviewInsertedColor : JDiffPlugin.overviewChangedColor;
                         // might be in the middle of a hunk because the hunk is
                         // scrolling off the top of the screen
-                        visible_lines = hunk.line1 >= rightFirstLine ? hunk.inserted : Math.max(1, hunk.last1 - rightFirstLine + 1);
+                        visible_lines = hunk.line1 >= rightFirstLine ? hunk.inserted : Math.max( 1, hunk.last1 - rightFirstLine + 1 );
                         first_visible_line = visible_lines == 1 ? hunk.line1 : hunk.last1 - visible_lines + 1;
                         rightRectangle.height = Math.max( 1, pixelsPerLine * visible_lines );
                         rightRectangle.y = centerRectangle.y + ( ( first_visible_line - rightFirstLine ) * pixelsPerLine );
                     }
                     gfx.setColor( color );
                     gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
+
+                    // remember the coordinates to draw the connector later on
+                    rightConnectors.put( hunk, new Point( rightRectangle.x - 1, rightRectangle.y ) );
+
+                    // draw the "move it left" arrow
+                    if ( hunk.inserted > 0 ) {
+                        gfx.setColor( Color.BLACK );
+                        int arrow_height = ( pixelsPerLine - 2 ) % 2 == 0 ? pixelsPerLine - 3 : pixelsPerLine - 2;
+                        int center = arrow_height / 2 + 1;
+                        for ( int j = 0; j < 6; j++ ) {
+                            gfx.drawLine( rightRectangle.x + 1 + j, rightRectangle.y + center - j,
+                                    rightRectangle.x + 1 + j, rightRectangle.y + center + j );
+                        }
+                    }
                     i += visible_lines;
                 }
             }
             int caret_line = model.getRightTextArea().getCaretLine();
-            Diff.Change hunk = rightHunkMap.get(caret_line);
-            if (hunk != null && model.getRightTextArea().getView().getEditPane().getTextArea().equals(model.getRightTextArea())) {
-                paintCurrentHunkCursor(gfx, hunk);
+            Diff.Change hunk = rightHunkMap.get( caret_line );
+            if ( hunk != null && model.getRightTextArea().getView().getEditPane().getTextArea().equals( model.getRightTextArea() ) ) {
+                paintCurrentHunkCursor( gfx, hunk );
             }
         }
     }
 
     private void fillCenter( Graphics gfx, DiffTextAreaModel model ) {
-        // draw a line to connect corresponding differences in the left and
-        // right rectangles.  Draw a right and left arrow.
-        // TODO:  optimize to use the hunk maps from the model rather than looping
-        Diff.Change hunk = model.getEdits();
-        JEditTextArea textArea0 = model.getLeftTextArea();
-        JEditTextArea textArea1 = model.getRightTextArea();
-        for ( int i0 = 0, i1 = 0; ( hunk != null ) && ( i0 < leftVisibleLineCount ) && ( i1 < rightVisibleLineCount ); ) {
-            int physicalLine0 = textArea0.getPhysicalLineOfScreenLine( i0 );
-            int physicalLine1 = textArea1.getPhysicalLineOfScreenLine( i1 );
+        // draw a line to connect corresponding diff blocks in the left and
+        // right rectangles.
+        int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
+        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
+        HashMap<Integer, Diff.Change> leftHunkMap = model.getLeftHunkMap();     // line number -> hunk
+        int rightFirstLine = model.getRightTextArea().getFirstPhysicalLine();
+        int rightLastLine = model.getRightTextArea().getLastPhysicalLine();
 
-            if ( physicalLine0 == -1 || physicalLine1 == -1 ) {
-                break;
-            }
-
-            for ( ; hunk != null; hunk = hunk.link ) {
-                if ( hunk.line0 < physicalLine0 || hunk.line1 < physicalLine1 ) {
-                    continue;
-                }
-
-                if ( ( hunk.line0 + hunk.deleted ) < physicalLine0 || ( hunk.line1 + hunk.inserted ) < physicalLine1 ) {
-                    continue;
-                }
-
-                if ( hunk.line0 > physicalLine0 ) {
-                    i0++;
-                    break;
-                }
-
-                if ( hunk.line1 > physicalLine1 ) {
-                    i1++;
-                    break;
-                }
-
-                int y0 = centerRectangle.y + ( i0 * pixelsPerLine );
-                int y1 = centerRectangle.y + ( i1 * pixelsPerLine );
-
-                // draw the "move it right" arrow
-                gfx.setColor( Color.BLACK );
-                int arrow_height = ( pixelsPerLine - 2 ) % 2 == 0 ? pixelsPerLine - 3 : pixelsPerLine - 2;
-                int center = arrow_height / 2 + 1;
-                if ( hunk.inserted == 0 || hunk.deleted > 0 ) {
-                    for ( int i = 0; i < 6; i++ ) {
-                        gfx.drawLine( leftRectangle.x + 2 + i, y0 + 1 + i, leftRectangle.x + 2 + i, y0 + i + arrow_height - ( 2 * i ) );
+        if ( leftHunkMap != null ) {
+            gfx.setColor( Color.BLACK );
+            for ( int leftLine = leftFirstLine; leftLine <= leftLastLine; leftLine++ ) {
+                Diff.Change leftHunk = leftHunkMap.get( leftLine );
+                if ( leftHunk != null && leftHunk.line0 == leftLine && leftHunk.line1 >= rightFirstLine && leftHunk.line1 < rightLastLine ) {
+                    Point leftPoint = leftConnectors.get( leftHunk );
+                    Point rightPoint = rightConnectors.get( leftHunk );
+                    if ( leftPoint != null && rightPoint != null ) {
+                        gfx.drawLine( leftPoint.x, leftPoint.y, rightPoint.x, rightPoint.y );
                     }
-                    y0 += center;
                 }
-
-                // draw the "move it left" arrow
-                if ( hunk.deleted == 0 || hunk.inserted > 0 ) {
-                    for ( int i = 0; i < 6; i++ ) {
-                        gfx.drawLine( rightRectangle.x + 1 + i, y1 + center - i, rightRectangle.x + 1 + i, y1 + center + i );
-                    }
-                    y1 += center;
-                }
-
-                // draw the lines
-                gfx.drawLine( leftRectangle.x + leftRectangle.width + 1, y0, rightRectangle.x - 1, y1 );
-
             }
         }
     }
@@ -403,7 +391,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             else {
                 leftSelection = new Selection.Range( start_sel, end_sel );
             }
-            String leftText = leftTextArea.getSelectedText(leftSelection);
+            String leftText = leftTextArea.getSelectedText( leftSelection );
 
             // replace text on right with text from left
             rightTextArea.selectNone();
@@ -460,7 +448,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             else {
                 rightSelection = new Selection.Range( start_sel, end_sel );
             }
-            String rightText = rightTextArea.getSelectedText(rightSelection);
+            String rightText = rightTextArea.getSelectedText( rightSelection );
 
             // replace text on left with text from right
             leftTextArea.selectNone();
@@ -543,7 +531,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
         // clear the current hunk cursors, if any
         if ( leftRectangle == null || rightRectangle == null ) {
-            return;
+            return ;
         }
         DiffTextAreaModel model = diffLocalOverview.getModel();
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
