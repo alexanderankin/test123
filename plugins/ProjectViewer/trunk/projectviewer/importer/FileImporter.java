@@ -197,10 +197,14 @@ public class FileImporter extends Importer {
 
 		for (String url: children) {
 			VFSFile file = VFSHelper.getFile(url);
+			VPTNode node;
 			if (file == null) {
 				continue;
 			}
-			constructPath(where, url, null);
+			node = constructPath(where, url, null);
+			if (node.isFile()) {
+				registerFile((VPTFile)node);
+			}
 		}
 	}
 
