@@ -202,25 +202,33 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             // diff for that line
             for ( int i = leftFirstLine; i <= leftLastLine; i++ ) {
                 Diff.Change hunk = leftHunkMap.get( i );
+                int first_visible_line = 0;
+                int visible_lines = 0;
                 if ( hunk != null ) {
                     // found a diff for a line, set the color and size.  Set the
                     // size all at once for the height of the hunk to minimize looping.
                     if ( hunk.deleted == 0 ) {
                         color = JDiffPlugin.overviewInvalidColor;
                         leftRectangle.height = 1;
+                        leftRectangle.y = centerRectangle.y + ( ( hunk.line0 - leftFirstLine ) * pixelsPerLine );
                     }
                     else {
                         color = hunk.inserted == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
-                        leftRectangle.height = Math.max( 1, pixelsPerLine * hunk.deleted );
+                        // might be in the middle of a hunk because the hunk is
+                        // scrolling off the top of the screen
+                        visible_lines = hunk.line0 >= leftFirstLine ? hunk.deleted : Math.max(1, hunk.last0 - leftFirstLine + 1);
+                        first_visible_line = visible_lines == 1 ? hunk.line0 : hunk.last0 - visible_lines + 1;
+                        leftRectangle.height = Math.max( 1, pixelsPerLine * visible_lines );
+                        leftRectangle.y = centerRectangle.y + ( ( first_visible_line - leftFirstLine ) * pixelsPerLine );
                     }
-                    leftRectangle.y = centerRectangle.y + ( ( i - leftFirstLine ) * pixelsPerLine );
                     gfx.setColor( color );
 
                     // draw the hunk
+                    System.out.println("+++++ leftRectangle.height = " + leftRectangle.height);
                     gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
 
                     // skip any other lines covered by this hunk
-                    i += Math.max(hunk.deleted, 1);
+                    i += visible_lines;
                 }
             }
 
@@ -248,19 +256,26 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         if (rightHunkMap != null) {
             for ( int i = rightFirstLine; i <= rightLastLine; i++ ) {
                 Diff.Change hunk = rightHunkMap.get( i );
+                int first_visible_line = 0;
+                int visible_lines = 0;
                 if ( hunk != null ) {
                     if ( hunk.inserted == 0 ) {
                         color = JDiffPlugin.overviewInvalidColor;
                         rightRectangle.height = 1;
+                        rightRectangle.y = centerRectangle.y + ( ( hunk.line1 - rightFirstLine ) * pixelsPerLine );
                     }
                     else {
                         color = hunk.deleted == 0 ? JDiffPlugin.overviewInsertedColor : JDiffPlugin.overviewChangedColor;
-                        rightRectangle.height = Math.max( 1, pixelsPerLine * hunk.inserted );
+                        // might be in the middle of a hunk because the hunk is
+                        // scrolling off the top of the screen
+                        visible_lines = hunk.line1 >= rightFirstLine ? hunk.inserted : Math.max(1, hunk.last1 - rightFirstLine + 1);
+                        first_visible_line = visible_lines == 1 ? hunk.line1 : hunk.last1 - visible_lines + 1;
+                        rightRectangle.height = Math.max( 1, pixelsPerLine * visible_lines );
+                        rightRectangle.y = centerRectangle.y + ( ( first_visible_line - rightFirstLine ) * pixelsPerLine );
                     }
-                    rightRectangle.y = centerRectangle.y + ( ( i - rightFirstLine ) * pixelsPerLine );
                     gfx.setColor( color );
                     gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
-                    i += Math.max(hunk.inserted, 1);
+                    i += visible_lines;
                 }
             }
             int caret_line = model.getRightTextArea().getCaretLine();
