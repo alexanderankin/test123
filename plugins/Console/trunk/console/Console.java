@@ -29,6 +29,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -287,7 +288,8 @@ implements EBComponent, DefaultFocusComponent
 		if(msg instanceof PropertiesChanged) propertiesChanged();
 		else if (msg instanceof DockableWindowUpdate) {
 			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
-			if (dwu.getWhat() == dwu.ACTIVATED) scrollToBottom();
+			if (dwu.getDockable().equals("console") && dwu.getWhat().equals(dwu.ACTIVATED))
+				scrollToBottom();
 		}
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
