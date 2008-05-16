@@ -51,6 +51,7 @@ import javax.swing.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -203,8 +204,11 @@ implements EBComponent, DefaultFocusComponent
 			shellCombo.setSelectedItem(name);
 		}
 		this.currentShell = shell;
-		updateAnimation();
+		scrollToBottom();
+		return shell;
+	} //}}}
 
+	public void scrollToBottom() {
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -214,9 +218,8 @@ implements EBComponent, DefaultFocusComponent
 				updateAnimation();
 			}
 		});
-		return shell;
-	} //}}}
-
+	}
+	
 	//{{{ getConsolePane() method
 	public ConsolePane getConsolePane()
 	{
@@ -281,8 +284,11 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		if(msg instanceof PropertiesChanged)
-			propertiesChanged();
+		if(msg instanceof PropertiesChanged) propertiesChanged();
+		else if (msg instanceof DockableWindowUpdate) {
+			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
+			if (dwu.getWhat() == dwu.ACTIVATED) scrollToBottom();
+		}
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
