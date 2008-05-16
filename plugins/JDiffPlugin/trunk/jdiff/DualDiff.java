@@ -846,7 +846,7 @@ public class DualDiff implements EBComponent {
             if ( hunk.line0 > firstLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                    line = hunk.line0 - 1;
+                    line = hunk.line0;// - 1;
                 }
                 else {
                     line = hunk.line0;
@@ -857,9 +857,11 @@ public class DualDiff implements EBComponent {
                 int caret_position = textArea0.getLineStartOffset( line );
                 this.textArea0.setCaretPosition( caret_position, false );
                 this.textArea0.scrollToCaret( false );
+                this.textArea0.scrollUpLine();
                 caret_position = textArea1.getLineStartOffset( hunk.line1 );
                 this.textArea1.setCaretPosition( caret_position, false );
                 this.textArea1.scrollToCaret( false );
+                this.textArea1.scrollUpLine();
 
                 if ( this.textArea0.getFirstLine() != line ) {
                     this.textArea0.getToolkit().beep();
@@ -878,7 +880,7 @@ public class DualDiff implements EBComponent {
             if ( hunk.line1 > firstLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                    line = hunk.line1 - 1;
+                    line = hunk.line1;// - 1;
                 }
                 else {
                     line = hunk.line1;
@@ -889,9 +891,11 @@ public class DualDiff implements EBComponent {
                 int caret_position = textArea1.getLineStartOffset( line );
                 this.textArea1.setCaretPosition( caret_position, false );
                 this.textArea1.scrollToCaret( false );
+                this.textArea1.scrollUpLine();
                 caret_position = textArea0.getLineStartOffset( hunk.line0 );
                 this.textArea0.setCaretPosition( caret_position, false );
                 this.textArea0.scrollToCaret( false );
+                this.textArea0.scrollUpLine();
 
                 if ( this.textArea1.getFirstLine() != line ) {
                     this.textArea1.getToolkit().beep();
@@ -911,7 +915,7 @@ public class DualDiff implements EBComponent {
                 if ( hunk.link == null || hunk.link.line0 >= firstLine ) {
                     int line = 0;
                     if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                        line = hunk.line0 - 1;
+                        line = hunk.line0;// - 1;
                     }
                     else {
                         line = hunk.line0;
@@ -922,10 +926,11 @@ public class DualDiff implements EBComponent {
                     int caret_position = textArea0.getLineStartOffset( line );
                     this.textArea0.setCaretPosition( caret_position, false );
                     this.textArea0.scrollToCaret( false );
+                    this.textArea0.scrollUpLine();
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
                     this.textArea1.setCaretPosition( caret_position, false );
                     this.textArea1.scrollToCaret( false );
-
+                    this.textArea1.scrollUpLine();
                     if ( this.textArea0.getFirstLine() != line ) {
                         this.textArea0.getToolkit().beep();
                     }
@@ -945,7 +950,7 @@ public class DualDiff implements EBComponent {
                 if ( hunk.link == null || hunk.link.line1 >= firstLine ) {
                     int line = 0;
                     if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                        line = hunk.line1 - 1;
+                        line = hunk.line1;// - 1;
                     }
                     else {
                         line = hunk.line1;
@@ -956,9 +961,11 @@ public class DualDiff implements EBComponent {
                     int caret_position = textArea1.getLineStartOffset( line );
                     this.textArea1.setCaretPosition( caret_position, false );
                     this.textArea1.scrollToCaret( false );
+                    this.textArea1.scrollUpLine();
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
                     this.textArea0.setCaretPosition( caret_position, false );
                     this.textArea0.scrollToCaret( false );
+                    this.textArea0.scrollUpLine();
 
                     if ( this.textArea1.getFirstLine() != line ) {
                         this.textArea1.getToolkit().beep();
