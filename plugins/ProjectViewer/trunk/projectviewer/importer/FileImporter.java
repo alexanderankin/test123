@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -93,7 +94,7 @@ public class FileImporter extends Importer {
 		loadImportFilterStatus(project, id);
 		id.setVisible(true);
 
-		ArrayList lst = new ArrayList();
+		List<VPTNode> lst = new ArrayList<VPTNode>();
 		VFSFile[] chosen = id.getSelectedFiles();
 		if (chosen == null || chosen.length == 0) return null;
 
@@ -115,40 +116,46 @@ public class FileImporter extends Importer {
 
 		try {
 			VFSFileFilter fnf = id.getImportFilter();
+			boolean newParent = false;
+
+			if (keepTree &&
+				chosen[0].getPath().startsWith(project.getRootPath()))
+			{
+				String parentPath = chosen[0].getVFS()
+				                             .getParentOfPath(chosen[0].getPath());
+				VPTNode parent = constructPath(project,
+											   parentPath,
+											   lst);
+				newParent = (lst.size() != 0);
+				if (newParent) {
+					root = lst.get(0);
+				}
+			}
+
 			for (VFSFile file : chosen) {
 				VPTNode node = null;
-				if (keepTree &&
-					file.getPath().startsWith(project.getRootPath()))
-				{
-					node = constructPath(project,
-										 file.getPath(),
-										 lst);
-					if (node.isFile()) {
-						registerFile((VPTFile) node);
-					} else if (id.getTraverseDirectories()) {
+
+				if (!VFSHelper.pathExists(file.getPath())) {
+					node = findDirectory(file.getPath(), root, true);
+				} else if (file.getType() == VFSFile.DIRECTORY) {
+					node = findDirectory(file.getPath(), root, true);
+					if (id.getTraverseDirectories()) {
 						addTree(node, fnf, id.getFlattenFilePaths());
 					}
-				} else {
-					if (!VFSHelper.pathExists(file.getPath())) {
-						node = findDirectory(file.getPath(), root, true);
-					} else if (file.getType() == VFSFile.DIRECTORY) {
-						node = findDirectory(file.getPath(), root, true);
-						if (id.getTraverseDirectories()) {
-							addTree(node, fnf, id.getFlattenFilePaths());
-						}
-					} else if (findDirectory(file.getPath(), root, false) == null) {
-						node = new VPTFile(file.getPath());
-						registerFile((VPTFile) node);
-						fileCount++;
-					}
+				} else if (findDirectory(file.getPath(), root, false) == null) {
+					node = new VPTFile(file.getPath());
+					registerFile((VPTFile) node);
+					fileCount++;
+				}
 
-					if (node != null && node.getParent() == null) {
-						if (where == null) {
-							lst.add(node);
-						} else {
-							where.add(node);
-							where.sortChildren();
-						}
+				if (node != null && node.getParent() == null) {
+					if (newParent) {
+						root.insert(node, root.findIndexForChild(node));
+					} else if (where == null) {
+						lst.add(node);
+					} else {
+						where.add(node);
+						where.sortChildren();
 					}
 				}
 			}

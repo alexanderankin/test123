@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.gjt.sp.util.Log;
 
@@ -57,14 +58,14 @@ public class NewFileImporter extends Importer {
 	 */
 	protected Collection internalDoImport()
 	{
-		ArrayList added;
+		List<VPTNode> added;
 		VPTNode node;
 
 		if (!path.startsWith(project.getRootPath())) {
 			return null;
 		}
 
-		added = new ArrayList();
+		added = new ArrayList<VPTNode>();
 		try {
 			node = constructPath(project, path, added);
 			registerFile((VPTFile)node);

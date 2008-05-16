@@ -22,11 +22,12 @@ package projectviewer.importer;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Stack;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
@@ -223,7 +224,7 @@ public abstract class Importer implements Runnable {
 	 */
 	protected VPTNode constructPath(VPTNode root,
 									String path,
-									ArrayList flist)
+									List<VPTNode> flist)
 		throws IOException
 	{
 		boolean isFile;
