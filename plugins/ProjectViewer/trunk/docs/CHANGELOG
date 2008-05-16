@@ -34,6 +34,14 @@ Version 3.0.0:
           config data from other plugins, but having PV do that causes
           PV to hold references to other plugins' classes, and that
           can cause ClassCastExceptions if a plugin is reloaded.
+		- PV is now fully VFS-aware. All files and directories are
+		  backed by VFS, and all importing is also done through VFS.
+		- SF Feat. Req. ##1936520: add an (extensible) node properties
+		  dialog, so users have an easy way to see information about
+		  files, directories and other nodes.
+		- Configuration data is now stored in the "plugin home"
+		  directory, so some stats are shown in the plugin manager
+		  dialog.
 
 
 ================================================================================
