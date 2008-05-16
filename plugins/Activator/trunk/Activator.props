@@ -6,7 +6,7 @@ plugin.activator.ActivatorPlugin.depend.1=jedit 04.02.99.00
 plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 0.8.2
 plugin.activator.ActivatorPlugin.activate=defer
 plugin.activator.ActivatorPlugin.docs=docs/index.html
-
+plugin.activator.ActivatorPlugin.description=A convenient interface for (un|re)?loading plugins from a dockable.
 activator.title=Activator
 activator.label=Activator
 activator.reloader.title=Reloader
