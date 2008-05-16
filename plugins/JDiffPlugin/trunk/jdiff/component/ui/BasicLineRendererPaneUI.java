@@ -84,7 +84,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
      */
     public void installComponents() {
         lineRenderer = new LineRenderer( );
-        lineRendererPane.add( lineRenderer, BorderLayout.CENTER );
+        lineRendererPane.add( new JScrollPane(lineRenderer), BorderLayout.CENTER );
     }
 
     /**
@@ -146,6 +146,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
     public class LineRenderer extends JPanel {
 
         private int leftMargin = 6;
+        private Dimension minimumSize = new Dimension( 600, 100 );
 
         public LineRenderer( ) {
             setBorder( BorderFactory.createLineBorder( Color.black ) );
@@ -155,7 +156,11 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
          * @return 600 x 100
          */
         public Dimension getPreferredSize() {
-            return new Dimension( 600, 100 );
+            return getMinimumSize();
+        }
+
+        public Dimension getMinimumSize() {
+            return minimumSize;
         }
 
         private boolean isSplit() {
@@ -211,6 +216,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + left_width, y );
             gfx.drawLine( x, y, x, y + tick_height );
             gfx.drawLine( x + left_width, y, x + left_width, y + tick_height );
+            minimumSize.width = Math.max(minimumSize.width, x + left_width + leftMargin);
 
             // draw text of left line
             Color color;
@@ -251,6 +257,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + right_width, y );
             gfx.drawLine( x, y, x, y - tick_height );
             gfx.drawLine( x + right_width, y, x + right_width, y - tick_height );
+            minimumSize.width = Math.max(minimumSize.width, x + right_width + leftMargin);
         }
     }
 }
