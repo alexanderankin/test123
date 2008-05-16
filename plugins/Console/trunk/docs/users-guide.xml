@@ -1531,9 +1531,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
   <listitem id="ver4.3.8"><para>
     <emphasis role="bold">Version 4.3.8</emphasis> Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional). <itemizedlist>
+	  <listitem><para> Scrolls to bottom whenever dockable is activated. </para></listitem>
       <listitem><para> 1928738 Fix NPEs caused by patch #1859034 - k_satoda </para></listitem>
       <listitem><para> Updated console.bsh macros for reloacted beanshell in pre12. </para> </listitem>
-	  <listitem><para> Option to append subshell extra path. </para></listitem>
+	  <listitem><para> Option to append (instead of prepend) subshell extra path. </para></listitem>
       <listitem><para> Change to PV selected node no longer causes Console to show if it is not already showing.
       </para></listitem>
   </itemizedlist> </para></listitem>
