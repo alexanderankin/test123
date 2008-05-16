@@ -44,6 +44,7 @@ import projectviewer.action.FileImportAction;
 import projectviewer.action.EditGroupAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.MoveNodeAction;
+import projectviewer.action.NodePropertiesAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OpenWithAppAction;
@@ -97,6 +98,7 @@ public class VPTContextMenu extends MouseAdapter
 		addAction(new OpenWithEncodingAction(), false);
 		addAction(new SearchAction(), false);
 		addAction(new ArchiveAction(), false);
+		addAction(new NodePropertiesAction(), false);
 
 		/* Separator for the list of external actions added to the menu. */
 		ActionSeparator sep = new ActionSeparator();

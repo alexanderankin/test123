@@ -169,6 +169,13 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_wrapper_nodepropeties">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.NodePropertiesAction(), view, false);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_wrapper_reimport">
 		<CODE>
 			projectviewer.PVActions.pvActionWrapper(

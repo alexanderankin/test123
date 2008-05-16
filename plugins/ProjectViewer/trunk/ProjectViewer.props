@@ -54,6 +54,7 @@ projectviewer_wrapper_archive.label=Archive Project
 projectviewer_wrapper_expand_all.label=Expand All Nodes
 projectviewer_wrapper_collapse_all.label=Collapse All Nodes
 projectviewer_wrapper_openwith.label=Open with External Application
+projectviewer_wrapper_nodepropeties.label=Node Properties
 projectviewer_wrapper_reimport.label=Re-import files on Project/Directory
 projectviewer_wrapper_goup.label=Go up
 
@@ -183,6 +184,9 @@ projectviewer.error.save.title=Error saving {0}
 projectviewer.error.project_str=project
 projectviewer.error.project_list_str=project list
 
+projectviewer.node_properties_dlg.title=Node Properties: {0}
+projectviewer.node_properties_dlg.close=Close
+
 projectviewer.action.rename.cannot_rename.message=Changing the physical name of this node is not supported.
 projectviewer.action.rename.cannot_rename.title=Cannot rename
 
@@ -235,6 +239,7 @@ projectviewer.action.remove_group.not_empty.title=Group not empty
 projectviewer.action.remove_project=Remove project
 projectviewer.action.remove_multiple=Remove nodes
 projectviewer.action.delete=Delete from disk (DEL)
+projectviewer.action.nodeproperties=Node Properties
 projectviewer.action.rename=Rename (F2)
 projectviewer.action.a_e_project=Add/Edit Project
 projectviewer.action.add_project=Add Project
@@ -298,6 +303,18 @@ projectviewer.action.group.enter_name=Enter group name:
 projectviewer.action.move_node=Move to...
 
 projectviewer.acrion.search.error=Cannot search in selected node or no node selected.
+#}}}
+
+#{{{ Node properties dialog
+projectviewer.action.properties.general.title=General
+projectviewer.action.properties.general.root_path=Root:
+projectviewer.action.properties.general.proj_url=Web root:
+projectviewer.action.properties.general.file_count=File count:
+projectviewer.action.properties.general.location=Location:
+projectviewer.action.properties.general.size=Size:
+projectviewer.action.properties.general.unknown=(Unknown)
+projectviewer.action.properties.general.calculate=Calculate
+projectviewer.action.properties.general.modified=Last modified:
 #}}}
 
 #{{{ Confirmation messages
