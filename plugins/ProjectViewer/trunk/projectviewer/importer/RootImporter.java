@@ -102,6 +102,7 @@ public class RootImporter extends FileImporter {
 		if (!id.isApproved()) {
 			return null;
 		}
+		fnf = id.getImportFilter();
 
 		String state = null;
 		if (viewer != null) {
