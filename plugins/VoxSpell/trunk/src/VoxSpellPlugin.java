@@ -306,12 +306,16 @@ public class VoxSpellPlugin extends EBPlugin
             return;
         int line_start = textarea.getLineStartOffset(line);
         int line_offset = caret - line_start;
-        int word_start = TextUtilities.findWordStart(text, line_offset, "'");
-        int begin_line_end_pos = (line_offset == word_start) ? line_offset + 1 : line_offset;
-        int word_end = TextUtilities.findWordEnd(text, begin_line_end_pos, "'");
-        Selection sel = new Selection.Range(word_start + line_start,
-                                            word_end + line_start);
-        textarea.setSelection(sel);
+        try {
+            int word_start = TextUtilities.findWordStart(text, line_offset, "'");
+            int begin_line_end_pos = (line_offset == word_start) ? line_offset + 1 : line_offset;
+            int word_end = TextUtilities.findWordEnd(text, begin_line_end_pos, "'");
+            Selection sel = new Selection.Range(word_start + line_start,
+                                                word_end + line_start);
+            textarea.setSelection(sel);
+        } catch (java.lang.Exception ex) {
+            ;
+        }
     }
     
     protected static String matchCase(String first, String second)
@@ -341,10 +345,16 @@ public class VoxSpellPlugin extends EBPlugin
     {
         if (suggestions == null)
             return null;
+        
+        if (word.trim().equals(""))
+            return null;
 
+        Vector<String> words = suggestions.getSuggestions(word);
+        if (words == null)
+            return null;
         SuggestionDialog wp = new SuggestionDialog(jEdit.getActiveView(), 
                                                    true, 
-                                                   suggestions.getSuggestions(word));
+                                                   words);
         wp.setVisible(true);
         
         if (wp.word == null)

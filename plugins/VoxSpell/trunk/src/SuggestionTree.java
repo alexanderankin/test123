@@ -83,7 +83,10 @@ public class SuggestionTree
             suggestions = new TreeSet<String>();
         String higher = meta;
         String lower = meta;
-        while (suggestions.size() < 40) {
+        int num_tries = 0;
+        // TODO: What's appropriate here?
+        //while (suggestions.size() < 1000) {
+        while (num_tries < 500) {
             //higher = (higher != null) ? map.higherKey(higher) : null;
             if (higher != null) {
                 SortedMap<String, TreeSet<String>> tail = map.tailMap(higher);
@@ -117,13 +120,14 @@ public class SuggestionTree
                 SortedMap<String, TreeSet<String>> head = map.headMap(lower);
                 lower = head.lastKey();
             }
-            if (lower != null) {
+            if (higher != null) {
                 TreeSet<String> add = map.get(higher);
                 if (add != null)
                     suggestions.addAll(add);
             }
             if ((lower == null) && (higher == null))
                 break;
+            ++num_tries;
         }
         return suggestions;
     }
@@ -170,6 +174,9 @@ public class SuggestionTree
                 continue;
             unique.add(s);
         }
+        
+        // Cut it down to the first 100
+        unique = new Vector<String>(unique.subList(0, 100));
         
         return unique;
     }
