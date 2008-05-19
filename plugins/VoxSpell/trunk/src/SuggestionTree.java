@@ -86,7 +86,7 @@ public class SuggestionTree
         int num_tries = 0;
         // TODO: What's appropriate here?
         //while (suggestions.size() < 1000) {
-        while (num_tries < 500) {
+        while (num_tries < 50) {
             //higher = (higher != null) ? map.higherKey(higher) : null;
             if (higher != null) {
                 SortedMap<String, TreeSet<String>> tail = map.tailMap(higher);
