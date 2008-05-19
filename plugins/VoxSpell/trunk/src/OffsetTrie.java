@@ -160,6 +160,22 @@ public class OffsetTrie implements SpellCheck
         return find(root, word);
     }
     
+    protected Node findNode(String prefix, Node node)
+    {
+        if (prefix.length() == 0)
+            return node;
+        Character cur = prefix.charAt(0);
+        Node next;
+        try {
+            next = node.getNextNode(cur);
+        } catch (java.io.IOException ex) {
+            return null;
+        }
+        if (next != null)
+            return findNode(prefix.substring(1), next);
+        return null;
+    }
+        
     protected void getWords(Vector<String> vec, 
                             Stack<Character> stack, 
                             Node node) throws java.io.IOException
@@ -170,7 +186,7 @@ public class OffsetTrie implements SpellCheck
         for (int i = 0; i < length; ++i) {
             chars[i] = stream.readChar();
         }
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; ++i) {
             if (chars[i].equals(Character.MIN_VALUE)) {
                 char[] wc = new char[stack.size()];
                 for (int j = 0; j < stack.size(); ++j) {
@@ -201,6 +217,29 @@ public class OffsetTrie implements SpellCheck
         }
         return vec;
     }
-
+    
+    public Vector<String> getWords(String prefix)
+    {
+        Vector<String> vec = new Vector<String>();
+        
+        if (prefix.length() == 0)
+            return vec;
+        
+        Stack<Character> stack = new Stack<Character>();
+        for (Character c : prefix.toCharArray())
+            stack.push(c);
+        Node node = findNode(prefix, root);
+        if (node != null) {
+            try {
+                getWords(vec, stack, node);
+            } catch (java.io.IOException ex) {
+                Log.log(Log.DEBUG, this, "exception " + ex);
+                // FIXME: this should probably not be handled here.
+                return new Vector<String>();
+            }
+        }
+        return vec;
+    }
+    
 }
 

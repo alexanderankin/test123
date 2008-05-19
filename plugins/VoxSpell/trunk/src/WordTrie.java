@@ -199,6 +199,18 @@ public class WordTrie implements SpellCheck
         return find(root, word);
     }
     
+    protected Node findNode(Node node, String word)
+    {
+        if (word.length() == 0)
+            return node;
+        
+        Character cur = word.charAt(0);
+        if (!node.contains(cur)) {
+            return null;
+        }
+        return findNode(node.get(cur).next, word.substring(1));
+    }
+    
     public void write(DataOutputStream writer, Node node) throws java.io.IOException
     {
         writer.writeShort(node.length);
@@ -327,6 +339,24 @@ public class WordTrie implements SpellCheck
         getWords(vec, stack, root);
         return vec;
     }
+    
+    public Vector<String> getWords(String prefix)
+    {
+        Vector<String> vec = new Vector<String>();
+        
+        if (prefix.length() == 0)
+            return vec;
+        
+        Stack<Character> stack = new Stack<Character>();
+        for (Character c : prefix.toCharArray())
+            stack.push(c);
+        Node node = findNode(root, prefix);
+        if (node != null) {
+            getWords(vec, stack, node);
+        }
+        return vec;
+    }
+    
 }
 
 
