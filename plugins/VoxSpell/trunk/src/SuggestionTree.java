@@ -131,6 +131,15 @@ public class SuggestionTree
         }
         return suggestions;
     }
+    
+    public Vector<String> getStartsWith(String word)
+    {
+        Vector<String> vec = new Vector<String>();
+        String prefix = word.substring(0, 1);
+        vec.addAll(offset_trie.getWords(prefix));
+        vec.addAll(word_trie.getWords(prefix));
+        return vec;
+    }
         
     public Vector<String> getSuggestions(String word)
     {
@@ -144,6 +153,7 @@ public class SuggestionTree
         permutations.add(word);
         for (String s : permutations)
             suggestions.addAll(getSoundalike(s));
+        suggestions.addAll(getStartsWith(word));
         
         final String input = word;
         
