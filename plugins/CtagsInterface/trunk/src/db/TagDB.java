@@ -21,6 +21,7 @@ import org.gjt.sp.jedit.jEdit;
 import ctags.Tag;
 
 public class TagDB {
+	private static final String DEFAULT_DB_FILE_SPEC = "<default>";
 	private Connection conn;
 	private Set<String> columns;
 	Statement st;
@@ -59,9 +60,11 @@ public class TagDB {
 		removeStaleLock();
         try {
 			Class.forName(GeneralOptionPane.getDbClass());
-			conn = DriverManager.getConnection("jdbc:" +
-					GeneralOptionPane.getDbName() + ":" +
-					getDBFilePath(), "sa", "");
+			String connectionString = GeneralOptionPane.getDbConnection();
+			conn = DriverManager.getConnection(
+				connectionString.replace(DEFAULT_DB_FILE_SPEC, getDBFilePath()),
+				GeneralOptionPane.getDbUser(),
+				GeneralOptionPane.getDbPassword());
 			st = conn.createStatement();
         } catch (final Exception e) {
 			e.printStackTrace();

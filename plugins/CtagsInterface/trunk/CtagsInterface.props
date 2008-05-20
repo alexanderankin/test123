@@ -59,7 +59,9 @@ options.CtagsInterface.ctags=ctags
 options.CtagsInterface.cmd=--fields=+anzKiS
 options.CtagsInterface.pattern=\\w+
 options.CtagsInterface.dbClass=org.hsqldb.jdbcDriver
-options.CtagsInterface.dbName=hsqldb
+options.CtagsInterface.dbConnection=jdbc:hsqldb:file:<default>
+options.CtagsInterface.dbUser=sa
+options.CtagsInterface.dbPassword=
 
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
@@ -74,7 +76,9 @@ messages.CtagsInterface.previewWrap=Use soft wrap
 messages.CtagsInterface.previewDelay=Delay before tag preview (in milliseconds):
 messages.CtagsInterface.dbTitle=Database
 messages.CtagsInterface.dbClass=JDBC driver class:
-messages.CtagsInterface.dbName=Database name:
+messages.CtagsInterface.dbConnection=Connection string:
+messages.CtagsInterface.dbUser=User:
+messages.CtagsInterface.dbPassword=Password:
 messages.CtagsInterface.actions=Actions:
 messages.CtagsInterface.actionEditorTitle=Action Editor
 messages.CtagsInterface.actionName=Action name:
