@@ -1,4 +1,6 @@
 package options;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.InputVerifier;
@@ -30,7 +32,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
 	static public final String DB_CLASS = OPTION + "dbClass";
-	static public final String DB_NAME = OPTION + "dbName";
+	static public final String DB_CONNECTION = OPTION + "dbConnection";
+	static public final String DB_USER = OPTION + "dbUser";
+	static public final String DB_PASSWORD = OPTION + "dbPassword";
 	JTextField ctags;
 	JTextField cmd;
 	JTextField pattern;
@@ -41,7 +45,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox previewWrap;
 	JTextField previewDelay;
 	JTextField dbClass;
-	JTextField dbName;
+	JTextField dbConnection;
+	JTextField dbUser;
+	JTextField dbPassword;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -96,22 +102,38 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		addComponent(previewPanel);
 
 		JPanel dbPanel = new JPanel();
-		dbPanel.setLayout(new GridLayout(0, 1));
+		dbPanel.setLayout(new GridBagLayout());
 		dbPanel.setBorder(new TitledBorder(jEdit.getProperty(
 			MESSAGE + "dbTitle")));
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.WEST;
+		c.gridx = c.gridy = 0;
 		JPanel dbClassPanel = new JPanel();
 		dbClassPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbClass")));
 		dbClass = new JTextField(jEdit.getProperty(DB_CLASS), 40);
 		dbClassPanel.add(dbClass);
-		dbPanel.add(dbClassPanel);
-		JPanel dbNamePanel = new JPanel();
-		dbNamePanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbName")));
-		dbName = new JTextField(jEdit.getProperty(DB_NAME), 40);
-		dbNamePanel.add(dbName);
-		dbPanel.add(dbNamePanel);
+		dbPanel.add(dbClassPanel, c);
+		JPanel dbConnectionPanel = new JPanel();
+		dbConnectionPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbConnection")));
+		dbConnection = new JTextField(jEdit.getProperty(DB_CONNECTION), 40);
+		dbConnectionPanel.add(dbConnection);
+		c.gridy++;
+		dbPanel.add(dbConnectionPanel, c);
+		JPanel dbUserPanel = new JPanel();
+		dbUserPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbUser")));
+		dbUser = new JTextField(jEdit.getProperty(DB_USER), 20);
+		dbUserPanel.add(dbUser);
+		c.gridy++;
+		dbPanel.add(dbUserPanel, c);
+		JPanel dbPasswordPanel = new JPanel();
+		dbPasswordPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbPassword")));
+		dbPassword = new JTextField(jEdit.getProperty(DB_PASSWORD), 20);
+		dbPasswordPanel.add(dbPassword);
+		c.gridy++;
+		dbPanel.add(dbPasswordPanel, c);
 		addComponent(dbPanel);
 	}
-
+	
 	@Override
 	public void _save() {
 		jEdit.setProperty(CTAGS, ctags.getText());
@@ -124,7 +146,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
 		jEdit.setProperty(DB_CLASS, dbClass.getText());
-		jEdit.setProperty(DB_NAME, dbName.getText());
+		jEdit.setProperty(DB_CONNECTION, dbConnection.getText());
+		jEdit.setProperty(DB_USER, dbUser.getText());
+		jEdit.setProperty(DB_PASSWORD, dbPassword.getText());
 	}
 
 	public static String getCtags() {
@@ -169,7 +193,13 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public static String getDbClass() {
 		return jEdit.getProperty(DB_CLASS);
 	}
-	public static String getDbName() {
-		return jEdit.getProperty(DB_NAME);
+	public static String getDbConnection() {
+		return jEdit.getProperty(DB_CONNECTION);
+	}
+	public static String getDbUser() {
+		return jEdit.getProperty(DB_USER);
+	}
+	public static String getDbPassword() {
+		return jEdit.getProperty(DB_PASSWORD);
 	}
 }

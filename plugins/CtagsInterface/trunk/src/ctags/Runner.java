@@ -1,5 +1,6 @@
 package ctags;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,8 +91,12 @@ public class Runner {
 	}
 	private String getTempFile(String prefix) {
 		synchronized (tempFiles) {
+			String tempDir = getTempDirectory();
+			File d = new File(tempDir);
+			if (! d.exists())
+				d.mkdirs();
 			for (int i = 0; i < 100; i++) {
-				String path = getTempDirectory() + "/" + prefix + i; 
+				String path = tempDir + "/" + prefix + i; 
 				if (tempFiles.add(path))
 					return path;
 			}
