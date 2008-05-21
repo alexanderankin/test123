@@ -119,12 +119,10 @@ public class SuggestionTree
                 // the filtering like for tailMap.
                 SortedMap<String, TreeSet<String>> head = map.headMap(lower);
                 lower = null;
-                if (head != null) {
-                    try {
-                        lower = head.lastKey();
-                    } catch (java.util.NoSuchElementException ex) {
-                        ;
-                    }
+                try {
+                    lower = head.lastKey();
+                } catch (java.util.NoSuchElementException ex) {
+                    ;
                 }
             }
             if (higher != null) {
