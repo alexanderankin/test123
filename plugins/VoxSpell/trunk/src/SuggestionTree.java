@@ -118,7 +118,14 @@ public class SuggestionTree
                 // headMap does not include lower, so don't need to do
                 // the filtering like for tailMap.
                 SortedMap<String, TreeSet<String>> head = map.headMap(lower);
-                lower = head.lastKey();
+                lower = null;
+                if (head != null) {
+                    try {
+                        lower = head.lastKey();
+                    } catch (java.util.NoSuchElementException ex) {
+                        ;
+                    }
+                }
             }
             if (higher != null) {
                 TreeSet<String> add = map.get(higher);
@@ -135,9 +142,8 @@ public class SuggestionTree
     public Vector<String> getStartsWith(String word)
     {
         Vector<String> vec = new Vector<String>();
-        String prefix = word.substring(0, 1);
-        vec.addAll(offset_trie.getWords(prefix));
-        vec.addAll(word_trie.getWords(prefix));
+        vec.addAll(offset_trie.getWords(word));
+        vec.addAll(word_trie.getWords(word));
         return vec;
     }
         

@@ -175,10 +175,21 @@ public class OffsetTrie implements SpellCheck
             return findNode(prefix.substring(1), next);
         return null;
     }
-        
+    
+    protected int bloom(String s)
+    {
+        int res = 0;
+        for (Character c : s.toCharArray()) {
+            int i = Character.getNumericValue(c);
+            res |= (1 << (i & 0x1f));
+        }
+        return res;
+    }
+    
     protected void getWords(Vector<String> vec, 
                             Stack<Character> stack, 
-                            Node node) throws java.io.IOException
+                            Node node,
+                            int filter) throws java.io.IOException
     {
         input.setPos(node.pos);
         short length = stream.readShort();
@@ -192,13 +203,15 @@ public class OffsetTrie implements SpellCheck
                 for (int j = 0; j < stack.size(); ++j) {
                     wc[j] = stack.get(j);
                 }
-                vec.add(new String(wc));
+                String s = new String(wc);
+                if (((filter ^ bloom(s)) & filter) == 0)
+                    vec.add(s);
             } else {
                 Node next;
                 stack.push(chars[i]);
                 next = node.getNextNode(chars[i]);
                 if (next != null)
-                    getWords(vec, stack, next);
+                    getWords(vec, stack, next, filter);
                 stack.pop();
             }
         }
@@ -209,7 +222,7 @@ public class OffsetTrie implements SpellCheck
         Vector<String> vec = new Vector<String>();
         Stack<Character> stack = new Stack<Character>();
         try {
-            getWords(vec, stack, root);
+            getWords(vec, stack, root, 0);
         } catch (java.io.IOException ex) {
             Log.log(Log.DEBUG, this, "exception " + ex);
             // FIXME: this should probably not be handled here.
@@ -218,6 +231,7 @@ public class OffsetTrie implements SpellCheck
         return vec;
     }
     
+    // FIXME: This is a hacked interface
     public Vector<String> getWords(String prefix)
     {
         Vector<String> vec = new Vector<String>();
@@ -226,12 +240,13 @@ public class OffsetTrie implements SpellCheck
             return vec;
         
         Stack<Character> stack = new Stack<Character>();
-        for (Character c : prefix.toCharArray())
-            stack.push(c);
-        Node node = findNode(prefix, root);
+        stack.push(prefix.charAt(0));
+        //for (Character c : prefix.substring(0, 1).toCharArray())
+        //    stack.push(c);
+        Node node = findNode(prefix.substring(0, 1), root);
         if (node != null) {
             try {
-                getWords(vec, stack, node);
+                getWords(vec, stack, node, bloom(prefix));
             } catch (java.io.IOException ex) {
                 Log.log(Log.DEBUG, this, "exception " + ex);
                 // FIXME: this should probably not be handled here.
