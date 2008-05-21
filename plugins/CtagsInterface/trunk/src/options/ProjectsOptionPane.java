@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -21,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
@@ -105,6 +107,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 					Vector<String> nameVec = pvi.getProjects();
 					String [] names = new String[nameVec.size()];
 					nameVec.toArray(names);
+					Arrays.sort(names, new MiscUtilities.StringICaseCompare());
 					String selected = (String) JOptionPane.showInputDialog(
 						ProjectsOptionPane.this, "Select project:", "Projects",
 						JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
