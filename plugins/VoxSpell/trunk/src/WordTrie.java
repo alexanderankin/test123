@@ -313,9 +313,20 @@ public class WordTrie implements SpellCheck
         } while (next.size() > 0);
     }
     
+    protected int bloom(String s)
+    {
+        int res = 0;
+        for (Character c : s.toCharArray()) {
+            int i = Character.getNumericValue(c);
+            res |= (1 << (i & 0x1f));
+        }
+        return res;
+    }
+   
     protected void getWords(Vector<String> vec, 
                             Stack<Character> stack, 
-                            Node node)
+                            Node node,
+                            int filter)
     {
         for (WordChar wc : node.chars) {
             if (wc.c.equals(Character.MIN_VALUE)) {
@@ -323,10 +334,12 @@ public class WordTrie implements SpellCheck
                 for (int i = 0; i < stack.size(); ++i) {
                     chars[i] = stack.get(i);
                 }
-                vec.add(new String(chars));
+                String s = new String(chars);
+                if (((filter ^ bloom(s)) & filter) == 0)
+                    vec.add(s);
             } else {
                 stack.push(wc.c);
-                getWords(vec, stack, wc.next);
+                getWords(vec, stack, wc.next, filter);
                 stack.pop();
             }
         }
@@ -336,10 +349,11 @@ public class WordTrie implements SpellCheck
     {
         Vector<String> vec = new Vector<String>();
         Stack<Character> stack = new Stack<Character>();
-        getWords(vec, stack, root);
+        getWords(vec, stack, root, 0);
         return vec;
     }
     
+    // FIXME: This is a hacked interface to support the bloom filter.
     public Vector<String> getWords(String prefix)
     {
         Vector<String> vec = new Vector<String>();
@@ -348,11 +362,12 @@ public class WordTrie implements SpellCheck
             return vec;
         
         Stack<Character> stack = new Stack<Character>();
-        for (Character c : prefix.toCharArray())
-            stack.push(c);
-        Node node = findNode(root, prefix);
+        stack.push(prefix.charAt(0));
+        //for (Character c : prefix.substring(0, 1).toCharArray())
+        //   stack.push(c);
+        Node node = findNode(root, prefix.substring(0, 1));
         if (node != null) {
-            getWords(vec, stack, node);
+            getWords(vec, stack, node, bloom(prefix));
         }
         return vec;
     }
