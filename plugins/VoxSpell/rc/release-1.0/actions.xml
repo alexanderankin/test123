@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="voxspellcheck.start">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.startSpelling(editPane);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.stop">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.stopSpelling(editPane);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.suggest">
+        <CODE>
+            sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+            if (sel == null) {
+                voxspellcheck.VoxSpellPlugin.selectWordAtCaret(textArea);
+                sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+            }
+            if (sel != null) {
+                word = textArea.getSelectedText(sel);
+                word = voxspellcheck.VoxSpellPlugin.getSuggestions(word);
+                if (word != null)
+                    textArea.setSelectedText(sel, word);
+            }
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.addWord">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.addWord(textArea);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.ignoreWord">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.ignoreWord(textArea);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.reset">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.reset(editPane);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="voxspellcheck.word">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.getCurrentWord(textArea);
+        </CODE>
+    </ACTION>
+</ACTIONS>
