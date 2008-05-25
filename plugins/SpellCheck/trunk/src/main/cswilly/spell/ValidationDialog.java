@@ -198,6 +198,13 @@ class ValidationDialog
       retButton.setToolTipText( toolTip );
     }
 
+    value = action.getValue( AbstractAction.NAME );
+    if( value != null )
+    {
+      String name = (String)value;
+      retButton.setName( name );
+    }
+
     return retButton;
   }
 

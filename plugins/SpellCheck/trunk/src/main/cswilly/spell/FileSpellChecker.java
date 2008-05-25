@@ -37,7 +37,7 @@ class FileSpellChecker
   private String       _aspellExeFilename;
   private String[]       _aspellArgs;
   private AspellEngine _spellEngine          = null;
-  private Validator    _spellValidator       = null;
+  private DialogValidator    _spellValidator       = null;
 
   public static
   void main( String[] args )
@@ -101,7 +101,7 @@ class FileSpellChecker
         {
           List results = _getSpellEngine().checkLine( line );
 
-          checkedLine = _getSpellValidator().validate( line, results );
+          checkedLine = applyChanges(line, _getSpellValidator().validate(0, line, results ));
           if( checkedLine == null )
             return false;
         }
@@ -161,12 +161,30 @@ class FileSpellChecker
   }
 
   private
-  Validator _getSpellValidator()
+  DialogValidator _getSpellValidator()
   {
     if( _spellValidator == null )
-      _spellValidator = new Validator();
+      _spellValidator = new DialogValidator();
 
     return _spellValidator;
   }
 
+  /**
+   * Helper method to replace the original words with the correction in the line
+   * @param	results	list of validated results : only SUGGESTIONS with 1 choice
+   */
+  public static String applyChanges(String originalLine, List<Result> results){
+	  if(results.isEmpty())return originalLine;
+	  
+	  StringBuilder buf = new StringBuilder(originalLine.length());
+	  int currentIndex = 0;
+	  for(Result result: results){
+		  if(result.getType()!=Result.SUGGESTION)continue;
+		  int originalIndex = result.getOffset();
+		  buf.append(originalLine,currentIndex,originalIndex-1);
+		  buf.append(result.getSuggestions().get(0));
+		  currentIndex = originalIndex + result.getOriginalWord().length();
+	  }
+	  return buf.toString();
+  }
 }

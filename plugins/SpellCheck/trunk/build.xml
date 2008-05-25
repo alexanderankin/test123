@@ -11,48 +11,100 @@
 <project name="SpellCheck" default="dist" basedir=".">
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
-	<property name="src.dir" value="src"/>
+	
+	<!-- where the source code lives -->
+	<property name="src.dir" value="src/main"/>
+
+	<!-- separate dir for test code (see test.compile) -->
 	<property name="src.test.dir" value="src/test"/>
 
-	<!-- my only Test Case -->
 	
 	<!-- for build-support location -->
 	<property file="../build.properties"/>
 	<!-- build support -->
 	<import file="${build.support}/plugin-build.xml" />
 
+	<!-- TODO: put this in properties -->
+	<path id="fest.class.path">
+			<pathelement location="lib/fest-swing-1.0a1.jar"/>
+			<pathelement location="lib/fest-util-0.4.jar"/>
+			<pathelement location="lib/fest-reflect-0.4.jar"/>
+			<pathelement location="lib/fest-assert-1.0a1.jar"/>
+	</path>
+	
+	<!-- TODO: make use of recursive dependencies build -->
+	<path id="plugins.class.path">
+		<pathelement location="${jedit.jars.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
+		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
+	</path>
+	
+	<!-- consists in previously defined paths -->
+	<path id="project.class.path">
+		<path refid="plugins.class.path"/>
+		<path refid="fest.class.path"/>
+	</path>
+	
+	<!-- where to put tests results -->
     <property name="build.tests"  value="${build.dir}/tests" />
 
-	<!-- can switch-off compilation of test-cases -->
+	<!-- I use a separate target to build the tests -->
 	<selector id="compileFiles">
-		<or>
-        <filename name="main/**/*.java" />
-        <filename name="test/**/*.java" />
-		</or>		
+        <filename name="**/*.java" />
     </selector>
 
+	<target name="test.compile"
+		description="Compile the plugin's test classes"
+		depends="compile">
+
+        <mkdir dir="${build.classes}" />
+        <jp.javac>
+            <src location="${src.test.dir}" />
+			<selector refid="compileFiles"/>
+        </jp.javac>
+
+    </target>
+
+	<!-- This selector controls which tests to run.
+		 The class cswilly/spell/Test is indeed not a test, so it's deactivated.
+		 Only SpellCheckPluginTest is effective, for the moment.
+	  -->
 	<selector id="junit.testcases">
-        <filename name="cswilly/**/FutureAspellTest.java" />
+		<and>
+        <!--<filename name="cswilly/**/*Test.java" />-->
+		<filename name="cswilly/**/SpellCheckPluginTest.java" />
+		<not><filename name="cswilly/spell/Test.java"/></not>
+		</and>
     </selector>
 
 	<!-- for junit tests -->
 	<property name="unit.test.target" value="test-junit"/>
+
     <!-- {{{ Target: test-junit============================ -->
-    <!-- Executes a jUnit test case defined by the plugin's
-         build file. The classpath for the test will be the
-         ${build.class} directory, the ${junit.jar} file and
-         the default.class.path and project.class.path path
-         structures.
-         -->
+	<!-- started as a copy of plugin-build.xml, but added system properties,
+	     batch-processing.
+	  -->
     <target name="test-junit"
-            description="Runs the plugin's jUnit tests.">
+            description="Runs the plugin's jUnit tests."
+			depends="test.prepare">
         <echo message="Running tests..."/>
-        <mkdir dir="${build.tests}"/>
+		
         <junit printsummary="${junit.printsummary}"
-                haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}">
+                haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}"
+				fork="yes">
+
+			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
+			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
+			<sysproperty key="test-tests.dir" path="tests"/>
+			
+			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
 
             <classpath>
                 <pathelement location="${junit.jar}" />
+				
+				<!-- for junit annotations -->
+                <pathelement location="${hamcrest.jar}" />
+				
                 <pathelement location="${build.classes}" />
                 <path refid="default.class.path" />
                 <path refid="project.class.path" />
@@ -68,11 +120,37 @@
 
     </target>
     <!-- ===============================================}}} -->
-	
 
+	<target name="test.prepare"
+		description="creates fresh jedit settings directory for tests"
+		depends="test.compile">
+        <mkdir dir="${build.tests}"/>
+		<delete dir="${build.dir}/settings"/>
+		<copy todir="${build.dir}/settings">
+			<fileset dir="tests/settings"/>
+		</copy>
+		<antcall target="build">
+			<param name="want-to-test" value="yes"/>
+		</antcall>
+		<echo message="Preparing tests"/>
+
+		<copy todir="${build.dir}/settings/jars">
+			<fileset dir="${install.dir}">
+			<filename name="${ant.project.name}.jar"/>
+			</fileset>
+			<path refid="project.class.path"/>
+			<flattenmapper/>
+		</copy>
+	</target>	
+
+	<!-- remove test classes from build directory.
+	     The property 'want-to-test' is to protect test.prepare which
+		 needs these classes !
+	  -->
 	<target name="build.prepare"
 		depends="compile"
-		description="Remove Unit-Tests from the build classes">
+		description="Remove Unit-Tests from the build classes"
+		unless="want-to-test">
 		<echo message="Removing test classes.."/>
 		<delete dir="${build.classes}">
 			<and>

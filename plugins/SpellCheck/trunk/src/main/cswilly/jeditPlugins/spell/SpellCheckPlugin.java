@@ -27,24 +27,32 @@ import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
 
 
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import java.awt.BorderLayout;
 
 import java.util.concurrent.Future;
 
+import common.gui.OkCancelButtons;
+
 public class SpellCheckPlugin
-  extends EditPlugin
+  extends EBPlugin
 {
   public static final String PLUGIN_NAME                        = "SpellCheck";
   public static final String SPELL_CHECK_ACTIONS                = "spell-check-menu";
@@ -54,7 +62,8 @@ public class SpellCheckPlugin
   public static final String ASPELL_OTHER_PARAMS_PROP			= "spell-check-aspell-other-params";
   public static final String FILTER_AUTO						= "AUTO";					
   public static final String FILTERS_PROP						= "spell-check-filter";					
-  
+  public static final String SPELLCHECK_ON_SAVE_PROP			= "spell-check-on-save";
+  public static final String BUFFER_LANGUAGE_PROP				= "spell-check-buffer-lang";
   public static enum AspellMarkupMode{
 	  NO_MARKUP_MODE("aspellNoMarkupMode"),
 	  MANUAL_MARKUP_MODE("aspellManualMarkupMode"),
@@ -74,82 +83,112 @@ public class SpellCheckPlugin
   
   public static final ArrayList defaultModes = new ArrayList( Arrays.asList( new String[] {"html", "shtml", "sgml", "xml", "xsl"} ) );
 
-  private static FileSpellChecker _fileSpellChecker = null;
+//  private static FileSpellChecker _fileSpellChecker = null;
+  private static BufferSpellChecker _bufferSpellChecker = null;
+  private static ErrorListSpellChecker _errorListSpellChecker = null;
 
   private static String aspellMainLanguage;
   private static List<String> aspellCommandLine;
 
-
+  
   /**
   * Displays the spell checker dialog box with specified lang dictionary. This method
   * is called by the spell-check-selection-with-lang action, defined in actions.xml.
   */
-  public static void showCustomLangSpellDialog(View view)
+  private static void showCustomLangSpellDialog(View view,Buffer buffer)
     throws SpellException
   {
-    String langDict = GUIUtilities.inputProperty(view, "spell-check-selection-with-lang", PLUGIN_NAME + ".last-lang");
-    if ( langDict != null )
-    {
-      setAspellMainLanguage(langDict);
-      showSpellDialog(view);
-    }
+	  String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	  setBufferLanguage(view,buffer);
+	  checkBuffer(view,buffer);
+	  buffer.setStringProperty(BUFFER_LANGUAGE_PROP,oldDict);
+  }
+  
+  private static String pickLanguage(View view,Buffer buffer)
+  {
+	 String result = null;
+	 String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
+	 if(oldDict == null)oldDict = getAspellMainLanguage();
+	 final DictionaryPicker dp = new DictionaryPicker(oldDict);
+
+	 dp.getPropertyStore().put(ASPELL_EXE_PROP,getAspellExeFilename());
+	 Action a = dp.getRefreshAction();
+	 String title = jEdit.getProperty("spell-check-pick-language.title","");
+	 
+	 EnhancedDialog dialog = new EnhancedDialog(view,title,false){
+		 public void ok(){
+			 dp.getPropertyStore().put("confirmed","true");
+			 setVisible(false);
+		 }
+		 public void cancel(){
+			 dp.cancel();
+			 setVisible(false);
+		 }
+	 };
+	 dialog.getContentPane().add(BorderLayout.CENTER,dp.asComboBox());
+	 dialog.getContentPane().add(BorderLayout.SOUTH,new OkCancelButtons(dialog));
+	 dialog.pack();
+	 dp.getRefreshAction().actionPerformed(null);
+	 dialog.setVisible(true);
+
+	 if(dp.getPropertyStore().get("confirmed")!=null){
+		 Log.log(Log.DEBUG,SpellCheckPlugin.class,"confirmed");
+		  result = dp.getPropertyStore().get(DictionaryPicker.LANG_PROP);
+	 }
+	 else
+	 {
+		 Log.log(Log.DEBUG,SpellCheckPlugin.class,"cancelled");
+	 }
+	 return result;
   }
 
 
-  /**
-  * Displays the spell checker dialog box with default lang dictionary. This method
-  * is called by the spell-check-selection action, defined in actions.xml.
-  */
-  public static void showDefaultLangSpellDialog(View view)
-    throws SpellException
+  public static
+  void checkBufferErrorList(View view, Buffer buffer)
   {
-    setAspellMainLanguage(jEdit.getProperty( ASPELL_LANG_PROP ) );
-    showSpellDialog(view);
+    ErrorListSpellChecker checker = null;
+
+	Log.log(Log.DEBUG,SpellCheckPlugin.class,"SpellCheck started for "+buffer.getName()+" ("+buffer.getPath()+")");
+
+	StatusBar status = view.getStatus();
+	status.setMessage( "Spell check in process..." );
+	
+	initCommandLine(buffer);
+
+    try
+    {
+      checker = getErrorListSpellChecker();
+
+      if ( checker == null )
+        throw new SpellException("No or invalid executable specified");
+
+	//TODO handle return
+      checker.checkBuffer( buffer );
+	  
+	  Log.log(Log.DEBUG,SpellCheckPlugin.class,"SpellCheck finished for "+buffer.getName()+" ("+buffer.getPath()+")");
+
+    }
+    catch( SpellException e )
+    {
+      Log.log(Log.ERROR, SpellCheckPlugin.class, "Error spell checking (Aspell).");
+      Log.log(Log.ERROR, SpellCheckPlugin.class, e);
+      Object[] args = { new String (e.getMessage()) };
+      GUIUtilities.error( view, "spell-check-error", args);
+    }
   }
 
-
-  /**
-  * Displays the spell checker dialog box.
-  */
-  public static void showSpellDialog(View view)
-    throws SpellException
-  {
-    StatusBar status = view.getStatus();
-    status.setMessage( "Spell check in process..." );
-
-    JEditTextArea textArea = view.getTextArea();
-    String selectedText =  textArea.getSelectedText();
-    if( selectedText == null )
-    {
-      textArea.selectAll();
-      selectedText = textArea.getText();
-    }
-
-    String checkedText = checkBuffer( view, selectedText );
-
-    if ( checkedText == null )
-    {
-      status.setMessageAndClear( "Spell check cancelled" );
-      return;
-    }
-
-    if ( !checkedText.equals( selectedText ) )
-      textArea.setSelectedText( checkedText );
-
-    status.setMessageAndClear( "Spell check terminated with no error" );
-  }
-
-
-  private static
-  String checkBuffer( View view, String buffer )
-  {
-    String checkedBuffer;
-    FileSpellChecker checker = null;
+  private static void initCommandLine(Buffer buffer){
+	 String dict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	 if(dict == null) dict = jEdit.getProperty(ASPELL_LANG_PROP,"");
+	 setAspellMainLanguage(dict);
 
     // Construct aspell command line arguments
     List aspellCommandLine = new ArrayList(4);
-
-    String mode = view.getBuffer().getMode().getName();
+	// use this option switch to prevent any encoding issue
+	// available at least since aspell 0.5.3
+	aspellCommandLine.add("--encoding=utf-8");
+    String mode = buffer.getMode().getName();
     if ( getAspellManualMarkupMode() || ( getAspellAutoMarkupMode() && isMarkupModeSelected( mode ) ) ){
 		aspellCommandLine.add("--mode="+jEdit.getProperty(FILTERS_PROP+"."+mode,"none"));
 	}
@@ -161,42 +200,40 @@ public class SpellCheckPlugin
 	  //aspellCommandLine.add("--language-tag=" + aspellMainLanguage);
 	}
 
-    if ( !aspellMainLanguage.equals("") ){
-		String aspellOtherParams = getAspellOtherParams();
-		//TODO : fix params with spaces protected with quotes
-		for(StringTokenizer st=new StringTokenizer(aspellOtherParams);st.hasMoreTokens();){
-			aspellCommandLine.add(st.nextToken());
-		}
+	String aspellOtherParams = getAspellOtherParams();
+	//TODO : fix params with spaces protected with quotes
+	for(StringTokenizer st=new StringTokenizer(aspellOtherParams);st.hasMoreTokens();){
+		aspellCommandLine.add(st.nextToken());
 	}
 
     aspellCommandLine.add("pipe");
 
     setAspellCommandLine( aspellCommandLine);
+  }
+  
+  public static
+  void checkBuffer(View view,Buffer buffer)
+  {
+	 JEditTextArea area = view.getEditPane().getTextArea();
+	 BufferSpellChecker checker = null;
 
+	 StatusBar status = view.getStatus();
+	 status.setMessage( "Spell check in process..." );
+	 
+	 initCommandLine(buffer);
+	 
     try
     {
-      BufferedReader input  = new BufferedReader( new StringReader( buffer ) );
-      StringWriter stringWriter = new StringWriter( buffer.length() );
-      BufferedWriter output = new BufferedWriter( stringWriter );
-
-      checker = _getFileSpellChecker();
+      checker = getBufferSpellChecker();
 
       if ( checker == null )
         throw new SpellException("No or invalid executable specified");
 
-      boolean checkingNotCanceled =  checker.checkFile( input, output );
+	//TODO handle return
+      checker.checkBuffer( area, buffer );
 
-      // Restore buffer correct line separator if any
-      if ( buffer.endsWith("\n") )
-        output.write( '\n' );
+	  status.setMessage( "Spell terminated with no Error..." );
 
-      input.close();
-      output.close();
-
-      if ( checkingNotCanceled )
-        checkedBuffer = stringWriter.toString();
-      else
-        checkedBuffer = null;
     }
     catch( SpellException e )
     {
@@ -204,26 +241,28 @@ public class SpellCheckPlugin
       Log.log(Log.ERROR, SpellCheckPlugin.class, e);
       Object[] args = { new String (e.getMessage()) };
       GUIUtilities.error( view, "spell-check-error", args);
-      checkedBuffer = null;
     }
-    catch( IOException e )
-    {
-      Log.log(Log.ERROR, SpellCheckPlugin.class, "Error spell checking (plugin).");
-      Log.log(Log.ERROR, SpellCheckPlugin.class, e);
-      Object[] args = { new String (e.getMessage()) };
-      GUIUtilities.error( view, "spell-check-error", args);
-      checkedBuffer = null;
-    }
-
-// ??? May this a configurable option
-//    if( checker != null )
-//      checker.stop();
-
-    return checkedBuffer;
+  }
+  
+  /**
+   * sets buffer's property SpellCheckPlugin.BUFFER_LANGUAGE_PROP
+   * according to user's choice
+   * @param	view	Currently Active view
+   * @param	buffer	Buffer whose language is to be set
+   */
+  public static void setBufferLanguage(View view, final Buffer buffer)
+  {
+	 String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
+	 String result = pickLanguage(view,buffer);
+	 if(result != null){
+		 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" is in "+result);
+		 buffer.setStringProperty(BUFFER_LANGUAGE_PROP,result);
+	 }
   }
 
   private static
-  FileSpellChecker _getFileSpellChecker()
+  BufferSpellChecker getBufferSpellChecker()
   {
     String  aspellExeFilename = getAspellExeFilename();
     String[]  aspellCommandLine = (String[])getAspellCommandLine().toArray(new String[]{});
@@ -231,20 +270,42 @@ public class SpellCheckPlugin
     if ( aspellExeFilename == null )
       return null;
 
-    if( _fileSpellChecker == null )
-      _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
+    if( _bufferSpellChecker == null )
+      _bufferSpellChecker = new BufferSpellChecker( aspellExeFilename, aspellCommandLine );
     else
-      if( !aspellExeFilename.equals( _fileSpellChecker.getAspellExeFilename() )
-       || !aspellCommandLine.equals( _fileSpellChecker.getAspellArgs() ) )
+      if( !aspellExeFilename.equals( _bufferSpellChecker.getAspellExeFilename() )
+       || !aspellCommandLine.equals( _bufferSpellChecker.getAspellArgs() ) )
       {
-        _fileSpellChecker.stop();
-        _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
+        _bufferSpellChecker.stop();
+        _bufferSpellChecker = new BufferSpellChecker( aspellExeFilename, aspellCommandLine );
       }
 
-    return _fileSpellChecker;
+    return _bufferSpellChecker;
   }
 
   private static
+  ErrorListSpellChecker getErrorListSpellChecker()
+  {
+    String  aspellExeFilename = getAspellExeFilename();
+    String[]  aspellCommandLine = (String[])getAspellCommandLine().toArray(new String[]{});
+
+    if ( aspellExeFilename == null )
+      return null;
+
+    if( _errorListSpellChecker == null )
+      _errorListSpellChecker = new ErrorListSpellChecker( aspellExeFilename, aspellCommandLine );
+    else
+      if( !aspellExeFilename.equals( _errorListSpellChecker.getAspellExeFilename() )
+       || !aspellCommandLine.equals( _errorListSpellChecker.getAspellArgs() ) )
+      {
+        _errorListSpellChecker.stop();
+        _errorListSpellChecker = new ErrorListSpellChecker( aspellExeFilename, aspellCommandLine );
+      }
+
+    return _errorListSpellChecker;
+  }
+
+  static
   String getAspellExeFilename()
   {
     String aspellExeFilename = jEdit.getProperty( ASPELL_EXE_PROP );
@@ -287,7 +348,7 @@ public class SpellCheckPlugin
 	Log.log(Log.DEBUG,SpellCheckPlugin.class,"setting command line "+newCommandLine);
   }
 
-  private static
+  public static
   String getAspellMainLanguage()
   {
     if( aspellMainLanguage == null )
@@ -335,12 +396,35 @@ public class SpellCheckPlugin
   {
 	  return new FutureListDicts(getAspellExeFilename());
   }
-
+  
   public void stop(){
-	  if(_fileSpellChecker != null){
-		  _fileSpellChecker.stop();
-		  _fileSpellChecker = null;
+	  Log.log(Log.DEBUG,this,"stopping SpellCheckPlugin");
+	  // if(_fileSpellChecker != null){
+		//   _fileSpellChecker.stop();
+		//   _fileSpellChecker = null;
+	  // }
+	  if(_errorListSpellChecker != null){
+		  _errorListSpellChecker.unload();
+		  _errorListSpellChecker = null;
+	  }
+	  if(_bufferSpellChecker!=null){
+		  _bufferSpellChecker.unload();
+		  _bufferSpellChecker = null;
 	  }
   }
+   
   
+  public void handleMessage(EBMessage message){
+	  if(!jEdit.getBooleanProperty(SPELLCHECK_ON_SAVE_PROP))return;
+	  if(message instanceof BufferUpdate){
+		  final BufferUpdate bu = (BufferUpdate)message;
+		  if(BufferUpdate.SAVED == bu.getWhat()){
+			  new Thread("SpellCheck-"+bu.getBuffer().getName()){
+				  public void run(){
+					  checkBufferErrorList(bu.getView(), bu.getBuffer());
+				  }
+			  }.start(); 
+		  }
+	  }
+  }
 }

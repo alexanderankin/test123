@@ -64,10 +64,10 @@ class AspellEngine
 	  }
 
       _aSpellReader =
-        new BufferedReader( new InputStreamReader(is) );
+        new BufferedReader( new InputStreamReader(is, "UTF-8") );
 
       _aSpellWriter =
-        new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream() ) );
+        new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream(), "UTF-8" ) );
 
       _aSpellWelcomeMsg = _aSpellReader.readLine();
 	  if(_aSpellWelcomeMsg == null){

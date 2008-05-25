@@ -93,21 +93,23 @@ public class SpellCheckOptionPane
 	/* Properties */
 	propertyStore = new PropertyStore(this);
 
-    String aspellExecutable = jEdit.getProperty( ASPELL_EXE_PROP, "" );
+    String aspellExecutable = SpellCheckPlugin.getAspellExeFilename();
 	propertyStore.put(ASPELL_EXE_PROP,aspellExecutable);
 	
-	String lang = jEdit.getProperty( ASPELL_LANG_PROP);
+	String lang = SpellCheckPlugin.getAspellMainLanguage();
 	propertyStore.put(ASPELL_LANG_PROP,lang);
 	
-	//sanitize any funny value for ASPELL_MARKUP_MODE_PROP property
 	AspellMarkupMode modeValue = AspellMarkupMode.AUTO_MARKUP_MODE;
 	try{
-		modeValue = AspellMarkupMode.fromString(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
+		modeValue = AspellMarkupMode.fromString(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP, ""));
 	}catch(IllegalArgumentException iae){}
 	propertyStore.put(ASPELL_MARKUP_MODE_PROP,modeValue.toString());
 	
 	String otherParams = jEdit.getProperty( ASPELL_OTHER_PARAMS_PROP,"" );
 	propertyStore.put(ASPELL_OTHER_PARAMS_PROP,otherParams);
+	
+	boolean spellOnSave = jEdit.getBooleanProperty( SPELLCHECK_ON_SAVE_PROP);
+	propertyStore.put(SPELLCHECK_ON_SAVE_PROP,String.valueOf(spellOnSave));
 	
     /* aspell executable */
     JLabel _aspellExeFilenameLabel = new JLabel();
@@ -115,11 +117,13 @@ public class SpellCheckOptionPane
 
     addComponent( _aspellExeFilenameLabel );
 
-	FileActionHandler fileActionHandler=new FileActionHandler();
     final JTextField _aspellExeFilenameField = new JTextField( 25 );
     _aspellExeFilenameField.setText( aspellExecutable );
-	_aspellExeFilenameField.addFocusListener(fileActionHandler);
-	_aspellExeFilenameField.addActionListener(fileActionHandler);
+	_aspellExeFilenameField.setName("AspellPath");
+
+	TextFieldHandler exeHandler = new TextFieldHandler(ASPELL_EXE_PROP);
+	_aspellExeFilenameField.addFocusListener(exeHandler);
+	_aspellExeFilenameField.addActionListener(exeHandler);
 	
 	//synchronize file chooser and text-field via the property
 	propertyStore.addPropertyChangeListener(ASPELL_EXE_PROP, new PropertyChangeListener(){
@@ -127,10 +131,11 @@ public class SpellCheckOptionPane
 				_aspellExeFilenameField.setText((String)evt.getNewValue());
 			}
 	});
-
+	/* file chooser */
     JButton _fileChooser = new JButton( jEdit.getProperty( "options.SpellCheck.fileChooser" ) );
-    _fileChooser.addActionListener( fileActionHandler );
+    _fileChooser.addActionListener(new FileActionHandler());
 	_fileChooser.setActionCommand(BROWSE);
+	_fileChooser.setName("Browse");
     JPanel _filePanel = new JPanel( new BorderLayout( 5, 0 ) );
     _filePanel.add( _aspellExeFilenameField, BorderLayout.WEST );
     _filePanel.add( _fileChooser, BorderLayout.EAST );
@@ -166,7 +171,7 @@ public class SpellCheckOptionPane
 	listingPanel.add( _aspellMainLanguageList , BorderLayout.WEST );
 	
     JButton _refreshButton = new JButton(actionRefresh);
-	
+	_refreshButton.setName("Refresh");
 	listingPanel.add( _refreshButton, BorderLayout.EAST );
 
 	addComponent(listingPanel);
@@ -217,14 +222,25 @@ public class SpellCheckOptionPane
 
     final JTextField _aspellOtherParamsField = new JTextField( 25 );
     _aspellOtherParamsField.setText( otherParams );
-	_aspellOtherParamsField.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				String otherParams = _aspellOtherParamsField.getText();
-				propertyStore.put(ASPELL_OTHER_PARAMS_PROP,otherParams);
+	TextFieldHandler otherParamsHandler = new TextFieldHandler(ASPELL_OTHER_PARAMS_PROP);
+	_aspellOtherParamsField.addActionListener(otherParamsHandler);
+	_aspellOtherParamsField.addFocusListener(otherParamsHandler);
+    addComponent( _aspellOtherParamsField );
+	
+	/* spell-check on save */
+	final JCheckBox spellOnSaveBox = new JCheckBox();
+	spellOnSaveBox.setText( jEdit.getProperty( "options.SpellCheck.spellcheckOnSave" ));
+	spellOnSaveBox.setToolTipText( jEdit.getProperty( "options.SpellCheck.spellcheckOnSave.tooltip" ));
+	spellOnSaveBox.setSelected(spellOnSave);
+	spellOnSaveBox.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				propertyStore.put(SPELLCHECK_ON_SAVE_PROP,
+					String.valueOf(ItemEvent.SELECTED == e.getStateChange()));
 			}
 	});
+	addComponent(spellOnSaveBox);
 	
-    addComponent( _aspellOtherParamsField );
+	
 	
 	/* trigger a refresh */
 	/* we run when the dialog is shown to prevent a bug when
@@ -262,6 +278,7 @@ public class SpellCheckOptionPane
 	
     jEdit.setProperty( ASPELL_MARKUP_MODE_PROP, propertyStore.get(ASPELL_MARKUP_MODE_PROP));
     jEdit.setProperty( ASPELL_OTHER_PARAMS_PROP, propertyStore.get(ASPELL_OTHER_PARAMS_PROP) );
+	jEdit.setProperty( SPELLCHECK_ON_SAVE_PROP,  propertyStore.get(SPELLCHECK_ON_SAVE_PROP) );
     model.save();
   }
 
@@ -320,34 +337,40 @@ public class SpellCheckOptionPane
     }
   }
     
-  private class FileActionHandler extends FocusAdapter implements ActionListener
+  private class TextFieldHandler extends FocusAdapter implements ActionListener{
+	  private String propName;
+	  
+	  
+	  TextFieldHandler(String propName){
+		  this.propName = propName;
+	  }
+	  
+	  public void actionPerformed( ActionEvent evt )
+	  {
+		  String value = ((JTextComponent)evt.getSource()).getText().trim();
+		  propertyStore.put(propName,value);
+	  }
+	  
+	  public void focusLost(FocusEvent e){
+		  String value = ((JTextComponent)e.getSource()).getText().trim();
+		  propertyStore.put(propName,value);
+	  }
+  }
+  
+  private class FileActionHandler implements ActionListener
   {
     public void actionPerformed( ActionEvent evt )
     {
-		if(BROWSE.equals(evt.getActionCommand())){
 			//It's better to show last one, not saved one !
-				String initialPath = propertyStore.get( ASPELL_EXE_PROP );
-				
-				String[] paths = GUIUtilities.showVFSFileDialog( null, initialPath, JFileChooser.OPEN_DIALOG, false );
-				
-				if ( paths != null ){
-					propertyStore.put(ASPELL_EXE_PROP,paths[0]);
-				}
-		}
-		else
-		{
-			String path = ((JTextComponent)evt.getSource()).getText().trim();
-			//TODO verify ?
-			propertyStore.put(ASPELL_EXE_PROP,path);
-		}
-    }
-	
-	public void focusLost(FocusEvent e){
-		String path = ((JTextComponent)e.getSource()).getText().trim();
-		//TODO verify ?
-		propertyStore.put(ASPELL_EXE_PROP,path);
-	}
-	
+			String initialPath = propertyStore.get( ASPELL_EXE_PROP );
+			
+			String[] paths = GUIUtilities.showVFSFileDialog( null, initialPath, JFileChooser.OPEN_DIALOG, false );
+			
+			if ( paths != null ){
+				propertyStore.put(ASPELL_EXE_PROP,paths[0]);
+			}
+
+    }	
   }
   
   private class AspellCapabilitiesAction extends AbstractAction implements PropertyChangeListener{
@@ -658,6 +681,8 @@ class PropertyStore extends PropertyChangeSupport{
 	}
 	
 	public void put(String name,String value){
+		if(name == null)throw new IllegalArgumentException("property name shouldn't be null");
+		if(value == null)throw new IllegalArgumentException("property value shouldn't be null");
 		if(values.containsKey(name) && values.get(name).equals(value))return;//ignore
 		firePropertyChange(name,values.get(name),value);
 		values.put(name,value);

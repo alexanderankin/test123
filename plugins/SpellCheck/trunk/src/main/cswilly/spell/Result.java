@@ -78,12 +78,25 @@ class Result
       processError( line );
   }
 
+  public Result(int offset, Type type, List<String> suggestions, String originalWord)
+  {
+	  _offset = offset;
+	  _type = type;
+	  _suggestions = suggestions;
+	  _originalWord = originalWord;
+  }
+  
   public
   int getOffset()
   {
     return _offset;
   }
 
+  public void setType(Type t){
+	  if(Result.OK == t)_suggestions = null;
+	  _type = t;
+  }
+  
   public
   Type getType()
   {
@@ -91,7 +104,7 @@ class Result
   }
 
   public
-  List getSuggestions()
+  List<String> getSuggestions()
   {
     return _suggestions;
   }
