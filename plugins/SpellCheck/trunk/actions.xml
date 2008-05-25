@@ -13,14 +13,27 @@
   <!-- Menu action for spell checking the current selection -->
   <ACTION NAME="spell-check-selection">
     <CODE>
-      cswilly.jeditPlugins.spell.SpellCheckPlugin.showDefaultLangSpellDialog(view);
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.checkBuffer(view,buffer);
+    </CODE>
+  </ACTION>
+  <!-- Menu action for printing misspelled words via ErrorList -->
+  <ACTION NAME="spell-check-errorlist">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.checkBufferErrorList(view,buffer);
     </CODE>
   </ACTION>
 
   <!-- Menu action for spell checking the current selection with a specified lang -->
   <ACTION NAME="spell-check-selection-with-lang">
     <CODE>
-      cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view);
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view,buffer);
+    </CODE>
+  </ACTION>
+  
+  <!-- Menu action for setting the language of current buffer -->
+  <ACTION NAME="spell-check-set-buffer-lang">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.setBufferLanguage(view,buffer);
     </CODE>
   </ACTION>
 </ACTIONS>

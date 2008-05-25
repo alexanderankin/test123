@@ -46,6 +46,8 @@ interface Engine
   public List checkLine( String line )
     throws SpellException;
 
+  public void stop();
+	
   // to be defined
  //public void addWord( String word );
 }

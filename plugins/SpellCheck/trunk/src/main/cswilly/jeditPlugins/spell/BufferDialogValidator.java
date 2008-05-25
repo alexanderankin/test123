@@ -20,26 +20,45 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
- package cswilly.spell;
+package cswilly.jeditPlugins.spell;
 
-//import java.io.*;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Arrays;
+
+import javax.swing.text.Position;
+
+
+import cswilly.spell.Result;
+import cswilly.spell.Validator;
+import cswilly.spell.ValidationDialog;
+
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.util.Log;
+
+
 
 /**
- * A validator of a spell check results
- *<p>
- * After a spell check engine runs, its results must be validated (normally by
- * a user). The {@link Validator} class provides this service.
+ * A validator of a spell check results, ensuring that misspelled words are visible and selected
+ * Upon prompt of the user
  */
 public
-class Validator
+class BufferDialogValidator implements Validator
 {
-  private final HashMap        _changeAllMap = new HashMap();
-  private final HashSet        _ignoreAllSet = new HashSet();
-
+  private final HashMap<String,String>        _changeAllMap = new HashMap<String,String>();
+  private final HashSet<String>        _ignoreAllSet = new HashSet<String>();
+  private TextArea area;
+  private JEditBuffer buffer;
+  private Position savedPosition;
+  
+  
   /**
    * Validate a line of words that have the <code>results</code> of a spell
    * check.
@@ -49,48 +68,52 @@ class Validator
    * @return new line with all corrected words validated
    */
   public
-  String validate( String line, List results )
+  List<Result> validate(int lineNum, String line, List<Result> results )
   {
-    String checkedLine = line;
-
+	  List<Result> checkedLine = new ArrayList<Result>(results.size());
     for( int ii=results.size()-1; ii>=0; ii-- )
     {
-      Result result = (Result)results.get( ii );
+      Result result = results.get( ii );
+	  Result newResult = null;
       if( result.getType() != result.OK )
       {
-        String replacementWord;
 
         if( _changeAllMap.containsKey( result.getOriginalWord() ) )
         {
-          replacementWord = (String)_changeAllMap.get( result.getOriginalWord() );
+          newResult = new Result(
+					result.getOffset(),
+					Result.SUGGESTION,
+					Arrays.asList(new String[]{_changeAllMap.get( result.getOriginalWord() )}),
+					result.getOriginalWord());
         }
         else if( _ignoreAllSet.contains( result.getOriginalWord() ) )
         {
-          replacementWord = result.getOriginalWord();
+          newResult = new Result(
+					result.getOffset(),
+					Result.OK,
+					null,
+					result.getOriginalWord());
         }
         else
         {
-          replacementWord = validate( result );
-          if( replacementWord == null )
-          {
-            checkedLine = null;
-            break;
-          }
+          newResult = validate(lineNum, result );
         }
 
-        if( replacementWord != null )
+        if( newResult != null )
         {
-          checkedLine =
-            replaceWord( checkedLine,
-                         result.getOriginalWord(),
-                         result.getOffset(),
-                         replacementWord );
+			if(Result.OK != newResult.getType())checkedLine.add(newResult);
         }
+		else
+		{
+            checkedLine = null;
+            break;
+		}
       }
     }
 
     return checkedLine;
   }
+  
 
   /**
    * Validates a single correction
@@ -103,13 +126,20 @@ class Validator
    *         maybe the same or different from the original word in
    *         <code>result</code>.
    */
-  public
-  String validate( Result result )
+  private
+  Result validate(int lineNum, Result result )
   {
     String replacementWord = null;
-
+	
     ValidationDialog validationDialog;
-    validationDialog = new ValidationDialog( result.getOriginalWord(),
+    
+	// ensures visible and selected
+	int offset = buffer.getLineStartOffset(lineNum)+result.getOffset()-1;
+	Selection s = new Selection.Range(offset,offset+result.getOriginalWord().length());
+	area.setSelection(s);
+	area.scrollTo(offset,false);
+	
+	validationDialog = new ValidationDialog( result.getOriginalWord(),
                                              result.getSuggestions() );
     validationDialog.show();
 
@@ -148,27 +178,40 @@ class Validator
       replacementWord = result.getOriginalWord();
     }
 
-    return replacementWord;
+	if( replacementWord != null )
+	{
+		if(replacementWord.equals(result.getOriginalWord()))
+			return new Result(
+					result.getOffset(),
+					Result.OK,
+					null,
+					result.getOriginalWord());
+		else return new Result(
+					result.getOffset(),
+					Result.SUGGESTION,
+					Arrays.asList(new String[]{replacementWord}),
+					result.getOriginalWord());
+	}
+	else
+		return null;
   }
 
-  /**
-   * Helper method to replace the original word with the correction in the line
-   */
-  protected
-  String replaceWord( String originalLine,
-                      String originalWord,
-                      int    originalIndex,
-                      String replacementWord )
+
+ 
+  public void setTextArea(TextArea ta){
+	  this.area = ta;
+	  this.buffer = ta.getBuffer();
+	  savedPosition = buffer.createPosition(ta.getCaretPosition());
+  }
+  
+  public void start()
+  {}
+  
+  public void done()
   {
-    String leftText = originalLine.substring( 0, originalIndex - 1 );
-    String rightText = originalLine.substring( originalIndex + originalWord.length() - 1 );
-
-    StringBuffer buf = new StringBuffer();
-    buf.append( leftText );
-    buf.append( replacementWord );
-    buf.append( rightText );
-
-    return buf.toString();
+	  //TODO can I save a rectangular selection and restore it in a meaningfull way ?
+	  area.setCaretPosition(savedPosition.getOffset());
+	  area.scrollToCaret(false);
   }
 
 }

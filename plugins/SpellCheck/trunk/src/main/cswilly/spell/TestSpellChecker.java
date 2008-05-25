@@ -29,7 +29,7 @@ import java.util.List;
 public
 class TestSpellChecker
 {
-  private static final Validator _validator = new Validator();
+  private static final DialogValidator _validator = new DialogValidator();
   public static
   void main( String[] args )
     throws SpellException
