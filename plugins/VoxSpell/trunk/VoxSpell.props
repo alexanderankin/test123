@@ -19,9 +19,11 @@ options.voxspellcheck.start_checking_on_activate=false
 options.voxspellcheck.start_checking_on_activate.title=Automatically start spell checking?
 
 plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
-    voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset
+    voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
+    voxspellcheck.suggest
 voxspellcheck.start.label=Start spell checking
 voxspellcheck.stop.label=Stop spell checking
 voxspellcheck.addWord.label=Add word
 voxspellcheck.ignoreWord.label=Ignore word
 voxspellcheck.reset.label=Reset ignored words
+voxspellcheck.suggest.label=Suggest a replacement word
