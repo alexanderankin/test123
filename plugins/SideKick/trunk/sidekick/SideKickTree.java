@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -35,7 +36,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.awt.Rectangle;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -74,9 +74,9 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
-import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
@@ -549,7 +549,7 @@ public class SideKickTree extends JPanel
                                                         controlClick(view,asset,path);
                                                 }
                                                 else {
-			                                EditBus.send(new BufferChanging(editPane, null));
+			                                EditBus.send(new PositionChanging(editPane));
                                                 	textArea.setCaretPosition(asset.getStart().getOffset());
                                                 }
                                                         
