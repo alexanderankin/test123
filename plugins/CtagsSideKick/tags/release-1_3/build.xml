@@ -19,6 +19,7 @@
 	<selector id="packageFiles">
 	  <or>
 	    <filename name="icons/*.png" />
+	    <filename name="index.html" />
 	  </or>
 	 </selector>
 
