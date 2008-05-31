@@ -3,6 +3,7 @@
  * Copyright (C) 1999, 2000 Jason Ginchereau
  * Copyright (C) 2000, 2001, 2002, 2003 Andre Kaplan
  * Copyright (C) 2003 Kris Kopicki
+ * Copyright (C) 2008 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,177 +24,173 @@
 package buffertabs;
 
 
-import java.awt.Component;
-import java.awt.Container;
-import java.util.Hashtable;
-import java.util.Vector;
-import javax.swing.*;
-
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.util.Log;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
- *
  * @author Jason Ginchereau
  * @author Andre Kaplan
+ * @author Matthieu Casanova
  */
-public class BufferTabsPlugin extends EBPlugin {
-    private static Hashtable tabsMap = new Hashtable();
+public class BufferTabsPlugin extends EBPlugin
+{
+	private static Map<EditPane, BufferTabs> tabsMap = new Hashtable<EditPane, BufferTabs>();
 
-    private static JPopupMenu popupMenu;
+	private static JPopupMenu popupMenu;
 
+	@Override
+	public void handleMessage(EBMessage msg)
+	{
+		if (msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate) msg;
 
-    /**
-     * This allows plugins to add their own option pane to the
-     * <code>OptionsDialog</code>.
-     */
-	 /*
-    public void createOptionPanes(OptionsDialog od) {
-         od.addOptionPane(new BufferTabsOptionPane());
-    }
-*/
-/*
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(
-            GUIUtilities.loadMenuItem("buffertabs.toggle-vis")
-        );
-    }
-*/
+			if (epu.getWhat() == EditPaneUpdate.CREATED)
+			{
+				editPaneCreated(epu.getEditPane());
+			}
+			else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
+			{
+				editPaneDestroyed(epu.getEditPane());
+			}
+		}
+		else if (msg instanceof PropertiesChanged)
+		{
+			propertiesChanged();
+		}
 
-    public void handleMessage(EBMessage msg) {
-        if (msg instanceof EditPaneUpdate) {
-            EditPaneUpdate epu = (EditPaneUpdate) msg;
+	}
 
-            if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                this.editPaneCreated(epu.getEditPane());
-            }
-            else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
-                this.editPaneDestroyed(epu.getEditPane());
-            }
-        }
-        else if (msg instanceof PropertiesChanged) {
-            this.propertiesChanged();
-        }
-
-    }
-
+	@Override
 	public void stop()
 	{
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++) {
-			EditPane[] editPanes = views[i].getEditPanes();
-			
-			for 	(int j = 0; j < editPanes.length; j++) {
-                editPaneDestroyed( editPanes[j]);
-            }
-		}
+		jEdit.visit(new JEditVisitorAdapter()
+		{
+			@Override
+			public void visit(EditPane editPane)
+			{
+				editPaneDestroyed(editPane);
+			}
+		});
 	}
-	
+
+	@Override
 	public void start()
 	{
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++) {
-			EditPane[] editPanes = views[i].getEditPanes();
-			
-			for 	(int j = 0; j < editPanes.length; j++) {
-                editPaneCreated( editPanes[j]);
-            }
+		jEdit.visit(new JEditVisitorAdapter()
+		{
+			@Override
+			public void visit(EditPane editPane)
+			{
+				editPaneCreated(editPane);
+			}
+		});
+	}
+
+	private static void editPaneCreated(EditPane editPane)
+	{
+		if (jEdit.getBooleanProperty("buffertabs.enable", false))
+		{
+			addBufferTabsToEditPane(editPane);
 		}
 	}
-	
-    private void editPaneCreated(EditPane editPane) {
-        if (jEdit.getBooleanProperty("buffertabs.enable", false)) {
-            addBufferTabsToEditPane(editPane);
-        }
-    }
 
 
-    private void editPaneDestroyed(EditPane editPane) {
-        removeBufferTabsFromEditPane(editPane);
-    }
+	private static void editPaneDestroyed(EditPane editPane)
+	{
+		removeBufferTabsFromEditPane(editPane);
+	}
 
+	private static void propertiesChanged()
+	{
+		final String location = BufferTabsOptionPane
+			.getLocationProperty("buffertabs.location", "bottom");
 
-    private void propertiesChanged() {
-         String location = BufferTabsOptionPane
-            .getLocationProperty("buffertabs.location", "bottom");
+		jEdit.visit(new JEditVisitorAdapter()
+		{
+			@Override
+			public void visit(EditPane editPane)
+			{
+				BufferTabs bt = tabsMap.get(editPane);
+				if (bt != null)
+				{
+					bt.setTabPlacement(location);
+					bt.updateTitles();
+				}
+			}
+		});
+	}
 
-        View[] views = jEdit.getViews();
-        for (int i = 0; i < views.length; i++) {
-            EditPane[] editPanes = views[i].getEditPanes();
+	public static BufferTabs getBufferTabsForEditPane(EditPane editPane)
+	{
+		return editPane != null ? tabsMap.get(editPane) : null;
+	}
 
-            for (int j = 0; j < editPanes.length; j++) {
-                BufferTabs bt = (BufferTabs) tabsMap.get(editPanes[j]);
-                if (bt != null) {
-                    bt.setTabPlacement(location);
-                    bt.updateTitles();
-                }
-            }
-        }
-    }
+	public static void toggleBufferTabsForEditPane(EditPane editPane)
+	{
+		boolean vis = !tabsMap.containsKey(editPane);
+		if (vis)
+		{
+			addBufferTabsToEditPane(editPane);
+		}
+		else
+		{
+			removeBufferTabsFromEditPane(editPane);
+		}
+	}
 
+	private static void addBufferTabsToEditPane(EditPane editPane)
+	{
+		Component ta = editPane.getTextArea();
+		Container container = ta.getParent();
 
-    public static BufferTabs getBufferTabsForEditPane(EditPane editPane) {
-        return (editPane != null) ? (BufferTabs) tabsMap.get(editPane) : null;
-    }
+		BufferTabs tabs = new BufferTabs(editPane);
+		tabs.setTabPlacement(BufferTabsOptionPane.getLocationProperty(
+			"buffertabs.location", "bottom"));
+		tabs.start();
+		container.add(tabs);
+		tabsMap.put(editPane, tabs);
+	}
 
+	private static void removeBufferTabsFromEditPane(EditPane editPane)
+	{
+		Component ta = editPane.getTextArea();
+		BufferTabs tabs = getBufferTabsForEditPane(editPane);
 
-    public static void toggleBufferTabsForEditPane(EditPane editPane) {
-        boolean vis = !(tabsMap.get(editPane) != null);
-        if (vis) {
-            addBufferTabsToEditPane(editPane);
-        } else {
-            removeBufferTabsFromEditPane(editPane);
-        }
-    }
+		if (tabs == null)
+		{
+			return;
+		}
 
+		tabs.stop();
+		Container container = tabs.getParent();
+		container.remove(tabs);
+		container.add(ta);
+		tabsMap.remove(editPane);
+		editPane.getBufferSet().removeBufferSetListener(tabs);
+		while (container != null && !(container instanceof JComponent))
+		{
+			container = container.getParent();
+		}
+		if (container != null)
+		{
+			((JComponent) container).revalidate();
+		}
+	}
 
-    private static void addBufferTabsToEditPane(EditPane editPane) {
-        Component ta = editPane.getTextArea();
-        Container container = ta.getParent();
-
-        BufferTabs tabs = new BufferTabs(editPane);
-        tabs.setTabPlacement(BufferTabsOptionPane.getLocationProperty(
-            "buffertabs.location", "bottom"));
-        tabs.start();
-        container.add(tabs);
-        tabsMap.put(editPane, tabs);
-    }
-
-
-    private static void removeBufferTabsFromEditPane(EditPane editPane) {
-        Component ta = editPane.getTextArea();
-        BufferTabs tabs = getBufferTabsForEditPane(editPane);
-
-        if (tabs == null) { return; }
-
-        tabs.stop();
-        Container container = tabs.getParent();
-        container.remove(tabs);
-        container.add(ta);
-        tabsMap.remove(editPane);
-
-        while (container != null && !(container instanceof JComponent)) {
-            container = container.getParent();
-        }
-        if (container != null) {
-            ((JComponent)container).revalidate();
-        }
-    }
-
-
-    protected static JPopupMenu getRightClickPopup() {
-    if (popupMenu == null)
-        return popupMenu = GUIUtilities.loadPopupMenu("buffertabs.popup");
-    else
-        return popupMenu;
-    }
+	protected static JPopupMenu getRightClickPopup()
+	{
+		if (popupMenu == null)
+			return popupMenu = GUIUtilities.loadPopupMenu("buffertabs.popup");
+		else
+			return popupMenu;
+	}
 }
 
