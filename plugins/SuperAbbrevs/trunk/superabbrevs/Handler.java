@@ -103,10 +103,10 @@ public class Handler extends BufferChangeAdapter {
 		TemplateCaretListener listener = TemplateCaretListener.removeCaretListener(textArea);
 		Handler handler = removeHandler(buffer);
 		
-		//remove the old templape
+		//remove the old template
 		buffer.remove(template.getOffset(),oldTemplateLength);
 		
-		//insert the new templape
+		//insert the new template
 		buffer.insert(template.getOffset(),template.toString());
 		
 		putHandler(buffer,handler);
