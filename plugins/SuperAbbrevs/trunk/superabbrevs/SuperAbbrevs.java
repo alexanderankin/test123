@@ -143,6 +143,12 @@ public class SuperAbbrevs {
 			
 			String template = getTemplateString(mode, abbrev);
 			
+			if(buffer.getBooleanProperty("noTabs")) {
+	            // we will replace tab with spaces
+	            int tabSize = buffer.getTabSize();
+	            template = template.replaceAll("\t", spaces(tabSize));
+	        }
+            
 			if(template!=null){
 				// remove the abbrevation from the buffer
 				removeAbbrev(textArea, buffer, abbrev);
@@ -159,6 +165,18 @@ public class SuperAbbrevs {
 		}
 	}
 	
+	/**
+	 * @return a string containing the number of spaces specified by the given 
+	 * size.
+	 */
+    private static String spaces(int size) {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < size; i++) {
+            buf.append(" ");
+        }
+        return buf.toString();
+    }
+    
 	/**
 	 * Method shiftTab(View view, JEditTextArea textArea, Buffer buffer)
 	 * desides what action to take for the shift tab key
