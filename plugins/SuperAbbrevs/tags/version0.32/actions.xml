@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+  <ACTION NAME="SuperAbbrevs.shiftTab">
+    <CODE>
+			SuperAbbrevsPlugin.shiftTab(view, textArea, buffer);
+		</CODE>
+  </ACTION>
+  <ACTION NAME="SuperAbbrevs.tab">
+    <CODE>
+			SuperAbbrevsPlugin.tab(view, textArea, buffer);
+		</CODE>
+  </ACTION>
+  <ACTION NAME="SuperAbbrevs.showDialog">
+    <CODE>
+			SuperAbbrevsPlugin.showDialog(view, textArea, buffer);
+		</CODE>
+  </ACTION>
+	<!--<ACTION NAME="SuperAbbrevs.displayModeAbbrevs">
+		<CODE>
+			SuperAbbrevsPlugin.displayModeAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.displayAllAbbrevs">
+		<CODE>
+			SuperAbbrevsPlugin.displayAllAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>-->
+</ACTIONS>
