@@ -1,0 +1,59 @@
+Things I've like to implement
+--------------------------------------------------------------------------------
+* import normal jedit abbrevs - should not overwrite 
+  existing superabbrevs. 
+  DONE
+
+* Maybe select the instance where the variables default 
+  value is defined, instead of selecting the first occurence. 
+  DONE.
+  
+* Make a transformation field like: ${2=firstUp(s)} where you can use arbitrarily
+  bean shell code. This should not be that hard with the new template engine.
+  DONE
+
+* Escape selection properly in templatee generation, men the indentation work 
+  correct. 
+  DONE
+  
+* Make a option tab where you can define variables to use in the templates,
+  like author and stuff.
+  DONE
+  
+* BUG: You can't put $end in front of text, like $endname.
+  DONE
+  
+* Make Shift-Tab define/edit a template if you are at the end of a word.
+  Load the abbreviation if its defined
+  DONE
+
+* Bug: If you try to define a new abbreviation by pressing shift-tab, and there 
+  are no abbreviations defined for the mode already, you will get a null 
+  pointer exception.
+  DONE
+
+--------------------------------------------------------------------------------
+
+* Make help alot better - Remember to introduce the 
+  optionpane in the help
+  
+* Make a action to open the abbrevs_functions.bsh file and
+  template_generation_functions.bsh file.
+  
+* Errorhandling when generating templates with errors
+
+* Print out abbrevs in a buffer, both for a mode and all the mode.
+  For this to make sense each abbrev should have a description.
+  
+* Make a pane for importing and exporting abbrevs, introduce a description field 
+  to each abbrev.
+
+* Merge default abbrevs with already defined abbrevs in the 
+  install process.
+  
+* Abbrevs and user variable names has to be a valid identifier.
+
+* The change abbrevs editor only shows the mode specific abbrevaition, if it is
+  not defined then show the global abbrevaition.
+
+2006/05/15 - Sune Simonsen
