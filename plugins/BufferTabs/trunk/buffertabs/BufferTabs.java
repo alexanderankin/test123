@@ -219,20 +219,12 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			changeHandler.setEnabled(false);
 			knownBuffers.remove(buffer);
 			removeTabAt(index);
-			int selectedIndex = bufferSet.indexOf(editPane.getBuffer());
 
 
 			if (getTabCount() > 0 && super.indexOfComponent(textArea) == -1)
 			{
 				setComponentAt(0, textArea);
 				textArea.setVisible(true);
-			}
-
-			if (selectedIndex >= 0)
-			{
-				setSelectedIndex(selectedIndex);
-				//CES: Ensure selected tab has correct color
-				updateHighlightAt(selectedIndex);
 			}
 
 		}
@@ -297,6 +289,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 		if (editPane.getBuffer() == buffer)
 		{
+			setSelectedIndex(index);
 			updateHighlightAt(index);
 		}
 		else
@@ -656,13 +649,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		}
 	}
 
-
 	@Override
-	public boolean isFocusTraversable()
+	public boolean isFocusable()
 	{
 		return false;
 	}
-
 
 	@Override
 	public boolean isRequestFocusEnabled()
