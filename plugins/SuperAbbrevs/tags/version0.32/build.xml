@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<!--
+     This build.xml file for building the SuperAbbrevs  plugin is based
+     upon the model file used for building the QuickNotepad plugin.
+     
+     See INSTALL.txt
+-->
+<project name="SuperAbbrevs" default="dist" basedir=".">
+
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  
+  <property name="jar.name" value="SuperAbbrevs.jar"/>
+  <property name="src.dir" value="."/>
+  <property name="build.dir" value="build"/>
+	
+  <target name="setup-mac">
+  	<copy file="build.mac.properties" tofile="build.properties"/>
+  </target>
+  
+  <target name="setup-linux">
+  	<copy file="build.linux.properties" tofile="build.properties"/>
+  </target>
+
+  <target name="setup-windows">
+  	<copy file="build.windows.properties" tofile="build.properties"/>
+  </target>
+  
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+  
+  <!-- make tags with ctags-exuberant -->
+  <target name="tags">
+		<exec executable="ctags-exuberant">
+			<arg value="-R"/>
+			<arg value="."/>
+		</exec>
+  </target>
+  
+  <!-- 
+  You need to install jflex to compile this target. But you only need to build 
+  this target if you change the lexer files.
+  -->
+	<target name="jflex">
+		<exec executable="jflex">
+			<arg value="superabbrevs/lexer/*.lex"/>
+		</exec>
+	</target>
+  
+  <target name="init">
+		<mkdir dir="${build.dir}"/>
+	</target>
+  
+	<target name="compile" depends="init">
+		<javac 
+		target="1.4"
+		source="1.4"
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			debug="on"
+			deprecation="on"
+			includeJavaRuntime="yes">
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+	
+	<target name="dist" depends="compile">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="**/*.props"/>
+				<include name="**/*.html"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.bsh"/>
+				<include name="*.bsh"/>
+				<include name="resources/*"/>
+			</fileset>
+		</jar>
+	</target>
+  
+
+	<target name="clean-docs">
+		<delete failonerror="false">
+			<fileset dir="doc" includes="*~" defaultexcludes="no"/>
+			<fileset dir="doc" includes="*.html" defaultexcludes="no"/>
+		</delete>
+	</target>
+	
+	<target name="clean" depends="clean-docs">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+		</delete>
+    <delete file="build.platform.properties"/>
+	</target>
+
+</project>
