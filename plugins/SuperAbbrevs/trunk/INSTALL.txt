@@ -1,13 +1,11 @@
 To install the plugin you need to set the correct properties 
-for the platform you are compiling on. The files to change are:
-build.mac.properties
-build.linux.properties
-build.windows.properties
+for the platform you are compiling on. 
 
-Then you have to run the setup for the platform you are compiling
-on. The targets are:
-ant setup-mac
-ant setup-linux
-ant setup-windows
+Define the following variables in the build.properties file:
+
+jedit.install.dir: A path containing the jEdit.jar file 
+install.dir: The path to the jars folder in the jedit settings directory 
+docbook.xsl: The DocBook xsl installation
+stylesheet: The stylesheet used to generate the documentation
 
 Lastly you have to run ant to compile and install the files.
