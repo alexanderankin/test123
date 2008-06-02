@@ -143,13 +143,14 @@ public class SuperAbbrevs {
 			
 			String template = getTemplateString(mode, abbrev);
 			
-			if(buffer.getBooleanProperty("noTabs")) {
-	            // we will replace tab with spaces
-	            int tabSize = buffer.getTabSize();
-	            template = template.replaceAll("\t", spaces(tabSize));
-	        }
-            
 			if(template!=null){
+				// Support for soft tabs
+				if(buffer.getBooleanProperty("noTabs")) {
+					// we will replace tab with spaces
+					int tabSize = buffer.getTabSize();
+					template = template.replaceAll("\t", spaces(tabSize));
+				}
+				
 				// remove the abbrevation from the buffer
 				removeAbbrev(textArea, buffer, abbrev);
 				
