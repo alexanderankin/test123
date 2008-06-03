@@ -633,7 +633,7 @@ public class ErrorList extends JPanel implements EBComponent,
 	private void addErrorSource(ErrorSource source)
 	{
 		ErrorSource.Error[] errors = source.getAllErrors();
-		if(errors == null)
+		if(errors == null || errors.length == 0)
 			return;
 
 		for(int j = 0; j < errors.length; j++)
