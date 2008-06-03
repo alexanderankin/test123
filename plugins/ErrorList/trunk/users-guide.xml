@@ -458,6 +458,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  <formalpara><title>Version 1.8</title> <para>requires JDK 1.5, and jEdit 4.3pre7. </para> </formalpara> 
  <itemizedlist>
  <listitem><para> display error.extraMessages in GutterIcon (Dwayne Bernard - # 1854405) </para></listitem>
+ <listitem><para> No longer displays ErrorList when adding a zero-length ErrorSource. (#1869137  - Alan Ezust) </para></listitem>
  </itemizedlist>
  </listitem>
  
