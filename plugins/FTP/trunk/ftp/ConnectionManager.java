@@ -238,6 +238,7 @@ public class ConnectionManager
 		FtpAddress address, boolean secure)
 	{
 		String host, user;
+		String password;
 
 		if(address != null)
 		{
@@ -245,6 +246,7 @@ public class ConnectionManager
 			if(host.indexOf(":") == -1)
 				host = host + ":" + FtpVFS.getDefaultPort(secure);
 			user = address.user;
+			password = address.password;
 
 			ConnectionInfo info = logins.get(host);
 
@@ -253,13 +255,13 @@ public class ConnectionManager
 			}
 		}
 		else {
-			host = user = null;
+			host = user = password = null;
 		}
 
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
-		LoginDialog dialog = new LoginDialog(comp,secure,host,user,address.password);
+		LoginDialog dialog = new LoginDialog(comp, secure, host, user, password);
 		if(!dialog.isOK())
 			return null;
 		host = dialog.getHost();
