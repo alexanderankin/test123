@@ -1,33 +1,19 @@
 <?xml version="1.0"?>
-
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-
 <ACTIONS>
-    <ACTION NAME="buffertabs.toggle-vis">
-        <CODE>
-            buffertabs.BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
-        </CODE>
-        <IS_SELECTED>
-            return (
-                buffertabs.BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
-            );
-        </IS_SELECTED>
-    </ACTION>
-	    <ACTION NAME="buffertabs.closeall-except-active">
-        <CODE>
-		buffers = jEdit.getBuffers();
-		while(buffers.length !=1)
-		{
-			if (buffers[0] != editPane.getBuffer())
-				jEdit.closeBuffer(view, buffers[0]);
-		   else 
-		   	    jEdit.closeBuffer(view, buffers[1]);
-			buffers = jEdit.getBuffers();
-		}
-	        </CODE>
-			    </ACTION>
-				    <ACTION NAME="buffertabs.toggle-docks">
-        <CODE>
+	<ACTION NAME="buffertabs.toggle-vis">
+		<CODE>
+			buffertabs.BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
+		</CODE>
+		<IS_SELECTED>
+		return (
+		buffertabs.BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
+		);
+		</IS_SELECTED>
+	</ACTION>
+
+	<ACTION NAME="buffertabs.toggle-docks">
+		<CODE>
 		dockarea = view.getDockableWindowManager().getTopDockingArea();
 		if(dockarea.getCurrent() == null)
 		{
@@ -67,25 +53,25 @@
 		view.getTextArea().requestFocus();
 
         </CODE>
-    </ACTION>
-    <ACTION NAME="buffertabs.copy-name">
-        <CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.copy-name">
+		<CODE>
              Registers.setRegister('$', editPane.getBuffer().getName());
         </CODE>
-    </ACTION>
-    <ACTION NAME="buffertabs.copy-path">
-        <CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.copy-path">
+		<CODE>
              Registers.setRegister('$', editPane.getBuffer().getPath());
         </CODE>
-    </ACTION>
-    <ACTION NAME="buffertabs.insert-name">
-        <CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.insert-name">
+		<CODE>
             textArea.setSelectedText(editPane.getBuffer().getName());
         </CODE>
-    </ACTION>
-    <ACTION NAME="buffertabs.insert-path">
-        <CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.insert-path">
+		<CODE>
             textArea.setSelectedText(editPane.getBuffer().getPath());
         </CODE>
-    </ACTION>
+	</ACTION>
 </ACTIONS>
