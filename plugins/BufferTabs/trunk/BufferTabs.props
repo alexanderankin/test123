@@ -7,7 +7,7 @@ plugin.buffertabs.BufferTabsPlugin.docs=users-guide.html
 plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.5
-plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.03.12.00
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.03.15.00
 plugin.buffertabs.BufferTabsPlugin.usePluginHome=true
 
 buffertabs.toggle-vis.label=BufferTabs
@@ -25,7 +25,7 @@ buffertabs.popup=\
 	buffertabs.toggle-docks \
     - \
 	close-all \
-    buffertabs.closeall-except-active \
+    closeall-except-active \
 	- \
     buffertabs.insert-name \
     buffertabs.insert-path \
@@ -55,7 +55,7 @@ buffertabs.color-mute=true
 buffertabs.color-variation=false
 buffertabs.color-foreground=false
 buffertabs.color-selected-foreground=false
-                                                                                                       
+
 # Option labels
 options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
