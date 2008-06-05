@@ -243,7 +243,7 @@ public class ErrorListPlugin extends EBPlugin
 		DockableWindowManager dockableWindowManager = view.getDockableWindowManager();
 		dockableWindowManager.addDockableWindow("error-list");
 	} //}}}
-
+	
 	//{{{ handleErrorSourceMessage() method
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
@@ -297,7 +297,7 @@ public class ErrorListPlugin extends EBPlugin
 			{
 				if(showOnError)
 				{
-					if(jEdit.getActiveView() != null)
+					if((jEdit.getActiveView() != null) && doErrorsExist())
 						showErrorList(jEdit.getActiveView());
 				}
 			}
@@ -369,6 +369,16 @@ public class ErrorListPlugin extends EBPlugin
 		// if we got here, no sources have errors or user disabled
 		// error overview
 		removeErrorOverview(editPane);
+	} //}}}
+	
+	//{{{ doErrorsExist() method
+	private boolean doErrorsExist()
+	{
+		ErrorSource[] errorSources = ErrorSource.getErrorSources();
+		for(int i = 0; i < errorSources.length; i++)
+			if (errorSources[i].getErrorCount() > 0)
+				return true;
+		return false;
 	} //}}}
 
 	//}}}
