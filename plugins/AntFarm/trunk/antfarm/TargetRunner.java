@@ -43,307 +43,307 @@ import console.Shell;
 public class TargetRunner extends Thread
 {
 
-	PrintStream _out = System.out;
+    PrintStream _out = System.out;
 
-	Project runner = new Project();
+    Project runner = new Project();
 
-	Target runAnt = new Target();
+    Target runAnt = new Target();
 
-	PrintStream _err = System.err;
+    PrintStream _err = System.err;
 
-	DefaultLogger _buildLogger = new DefaultLogger();
+    DefaultLogger _buildLogger = new DefaultLogger();
 
-	Throwable _error = null;
+    Throwable _error = null;
 
-	Target _target;
+    Target _target;
 
-	Project _project;
+    Project _project;
 
-	File _buildFile;
+    File _buildFile;
 
-	View _view;
+    View _view;
 
-	Output _output;
+    Output _output;
 
-	Properties _userProperties;
+    Properties _userProperties;
 
-	PrintStream _consoleOut;
+    PrintStream _consoleOut;
 
-	PrintStream _consoleErr;
+    PrintStream _consoleErr;
 
-	public TargetRunner(Target target, File buildFile, View view, Output output,
-		Properties userProperties)
-	{
-		init(target, buildFile, view, output, userProperties);
-	}
+    public TargetRunner(Target target, File buildFile, View view, Output output,
+        Properties userProperties)
+    {
+        init(target, buildFile, view, output, userProperties);
+    }
 
-	public TargetRunner(Project project, File buildFile, View view, Output output,
-		Properties userProperties)
-	{
-		Target target = (Target) project.getTargets().get(project.getDefaultTarget());
-		init(target, buildFile, view, output, userProperties);
-	}
+    public TargetRunner(Project project, File buildFile, View view, Output output,
+        Properties userProperties)
+    {
+        Target target = (Target) project.getTargets().get(project.getDefaultTarget());
+        init(target, buildFile, view, output, userProperties);
+    }
 
-	public void run()
-	{
-		AntFarmPlugin.getErrorSource().clear();
+    public void run()
+    {
+        AntFarmPlugin.getErrorSource().clear();
 
-		if (jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "save-on-execute"))
-		{
-			jEdit.saveAllBuffers(_view, false);
+        if (jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "save-on-execute"))
+        {
+            jEdit.saveAllBuffers(_view, false);
 
-			// Have our Ant run wait for any IO to finish up.
-			VFSManager.waitForRequests();
-			runAntTarget();
-		}
-		else
-		{
-			runAntTarget();
-		}
-	}
+            // Have our Ant run wait for any IO to finish up.
+            VFSManager.waitForRequests();
+            runAntTarget();
+        }
+        else
+        {
+            runAntTarget();
+        }
+    }
 
-	void resetLogging()
-	{
-		_consoleErr.flush();
-		_consoleOut.flush();
-		System.setOut(_out);
-		System.setErr(_err);
-		_project.removeBuildListener(_buildLogger);
-	}
+    void resetLogging()
+    {
+        _consoleErr.flush();
+        _consoleOut.flush();
+        System.setOut(_out);
+        System.setErr(_err);
+        _project.removeBuildListener(_buildLogger);
+    }
 
-	private void setOutputStreams()
-	{
-		System.setOut(_consoleOut);
-		System.setErr(_consoleErr);
-	}
+    private void setOutputStreams()
+    {
+        System.setOut(_consoleOut);
+        System.setErr(_consoleErr);
+    }
 
-	private void runAntTarget()
-	{
+    private void runAntTarget()
+    {
 
-		boolean useSameJvm = jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX
-			+ "use-same-jvm");
-		String antCommand = jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "command");
+        boolean useSameJvm = jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX
+            + "use-same-jvm");
+        String antCommand = jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "command");
 
-		if (!useSameJvm && antCommand == null)
-			promptForAntCommand();
+        if (!useSameJvm && antCommand == null)
+            promptForAntCommand();
 
-		useSameJvm = jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm");
+        useSameJvm = jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm");
 
-		// assume we have the console open at this point since it called
-		// us.
-		Console console = (Console) _view.getDockableWindowManager().getDockable("console");
+        // assume we have the console open at this point since it called
+        // us.
+        Console console = (Console) _view.getDockableWindowManager().getDockable("console");
 
-		if (useSameJvm)
-		{
-			setOutputStreams();
-			loadProjectProperties();
-			AntFarmPlugin.loadCustomClasspath();
+        if (useSameJvm)
+        {
+            setOutputStreams();
+            loadProjectProperties();
+            AntFarmPlugin.loadCustomClasspath();
 
-			try
-			{
-				_project.addBuildListener(_buildLogger);
+            try
+            {
+                _project.addBuildListener(_buildLogger);
 
-				fireBuildStarted();
-				_project.executeTarget(_target.getName());
-			}
-			catch (RuntimeException exc)
-			{
-				_error = exc;
-			}
-			catch (Error e)
-			{
-				_error = e;
-			}
-			finally
-			{
-				fireBuildFinished();
-				resetLogging();
-				cleanup();
-			}
-		}
-		else
-		{
-			String command = " -buildfile ";
-			command += "\"";
-			command += _buildFile.getAbsolutePath();
-			command += "\"";
-			command += " " + _target.getName();
-			runAntCommand(command);
-		}
-		cleanup();
-	}
+                fireBuildStarted();
+                _project.executeTarget(_target.getName());
+            }
+            catch (RuntimeException exc)
+            {
+                _error = exc;
+            }
+            catch (Error e)
+            {
+                _error = e;
+            }
+            finally
+            {
+                fireBuildFinished();
+                resetLogging();
+                cleanup();
+            }
+        }
+        else
+        {
+            String command = " -buildfile ";
+            command += "\"";
+            command += _buildFile.getAbsolutePath();
+            command += "\"";
+            command += " " + _target.getName();
+            runAntCommand(command);
+        }
+        cleanup();
+    }
 
-	private void cleanup()
-	{
-		System.gc();
-		_output.commandDone();
-		_view.getTextArea().requestFocus();
-	}
+    private void cleanup()
+    {
+        System.gc();
+        _output.commandDone();
+        _view.getTextArea().requestFocus();
+    }
 
-	private void loadProjectProperties()
-	{
-		// re-init the project so that system properties are re-loaded.
-		_project.init();
-		_project.setUserProperty("ant.version", Main.getAntVersion());
+    private void loadProjectProperties()
+    {
+        // re-init the project so that system properties are re-loaded.
+        _project.init();
+        _project.setUserProperty("ant.version", Main.getAntVersion());
 
-		// set user-define properties
-		Enumeration e = _userProperties.keys();
-		while (e.hasMoreElements())
-		{
-			String arg = (String) e.nextElement();
-			String value = (String) _userProperties.get(arg);
-			value = ConsolePlugin.expandSystemShellVariables(_view, value);
-			_project.setUserProperty(arg, value);
-		}
+        // set user-define properties
+        Enumeration e = _userProperties.keys();
+        while (e.hasMoreElements())
+        {
+            String arg = (String) e.nextElement();
+            String value = (String) _userProperties.get(arg);
+            value = ConsolePlugin.expandSystemShellVariables(_view, value);
+            _project.setUserProperty(arg, value);
+        }
 
-		_project.setUserProperty("ant.file", _buildFile.getAbsolutePath());
-	}
+        _project.setUserProperty("ant.file", _buildFile.getAbsolutePath());
+    }
 
-	private void init(Target target, File buildFile, View view, Output output,
-		Properties userProperties)
-	{
-		_target = target;
-		// _project = _target.getProject();
-		_buildFile = buildFile;
-		_view = view;
-		_output = output;
-		_userProperties = userProperties;
+    private void init(Target target, File buildFile, View view, Output output,
+        Properties userProperties)
+    {
+        _target = target;
+        // _project = _target.getProject();
+        _buildFile = buildFile;
+        _view = view;
+        _output = output;
+        _userProperties = userProperties;
 
-		_view.getDockableWindowManager().addDockableWindow("antfarm");
-		AntFarm antFarm = (AntFarm) _view.getDockableWindowManager().getDockable("antfarm");
-		try
-		{
-			_project = antFarm.parseBuildFile(buildFile.getAbsolutePath());
-		}
-		catch (Exception e)
-		{
-			Log.log(Log.WARNING, this, "Cannot parse build file: " + e);
-		}
+        _view.getDockableWindowManager().addDockableWindow("antfarm");
+        AntFarm antFarm = (AntFarm) _view.getDockableWindowManager().getDockable("antfarm");
+        try
+        {
+            _project = antFarm.parseBuildFile(buildFile.getAbsolutePath());
+        }
+        catch (Exception e)
+        {
+            Log.log(Log.WARNING, this, "Cannot parse build file: " + e);
+        }
 
-		_consoleErr = new AntPrintStream(System.out, _view, _output);
-		_consoleOut = new AntPrintStream(System.out, _view, _output);
+        _consoleErr = new AntPrintStream(System.out, _view, _output);
+        _consoleOut = new AntPrintStream(System.out, _view, _output);
 
-		configureBuildLogger();
+        configureBuildLogger();
 
-		// set so jikes prints emacs style errors
-		_userProperties.setProperty("build.compiler.emacs", "true");
+        // set so jikes prints emacs style errors
+        _userProperties.setProperty("build.compiler.emacs", "true");
 
-		// add in the global properties
-		addGlobalProperties();
+        // add in the global properties
+        addGlobalProperties();
 
-		// fire it up
-		this.start();
-	}
+        // fire it up
+        this.start();
+    }
 
-	private void addGlobalProperties()
-	{
-		String name = null;
-		int counter = 1;
-		while ((name = jEdit.getProperty(PropertiesOptionPane.PROPERTY + counter
-			+ PropertiesOptionPane.NAME)) != null)
-		{
+    private void addGlobalProperties()
+    {
+        String name = null;
+        int counter = 1;
+        while ((name = jEdit.getProperty(PropertiesOptionPane.PROPERTY + counter
+            + PropertiesOptionPane.NAME)) != null)
+        {
 
-			String value = jEdit.getProperty(PropertiesOptionPane.PROPERTY + counter
-				+ PropertiesOptionPane.VALUE);
-			_userProperties.setProperty(name, value);
-			counter++;
-		}
+            String value = jEdit.getProperty(PropertiesOptionPane.PROPERTY + counter
+                + PropertiesOptionPane.VALUE);
+            _userProperties.setProperty(name, value);
+            counter++;
+        }
 
-	}
+    }
 
-	private void runAntCommand(String args)
-	{
-		String command = jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "command");
-		if (command == null || command.equals(""))
-			Log.log(Log.WARNING, this,
-				"Please set the path to the Ant script you wish to use.");
+    private void runAntCommand(String args)
+    {
+        String command = jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "command");
+        if (command == null || command.equals(""))
+            Log.log(Log.WARNING, this,
+                "Please set the path to the Ant script you wish to use.");
 
-		if (command != null)
-		{
-			command = "\"" + command + "\"";
+        if (command != null)
+        {
+            command = "\"" + command + "\"";
 
-			command += AntFarmShell.getAntCommandFragment(_userProperties);
-			if (jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "output-emacs"))
-			{
-				command += " -emacs ";
-			}
-			command += args;
-			Console console = AntFarmPlugin.getConsole(_view);
-			Shell antShell = console.getShell();
+            command += AntFarmShell.getAntCommandFragment(_userProperties);
+            if (jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "output-emacs"))
+            {
+                command += " -emacs ";
+            }
+            command += args;
+            Console console = AntFarmPlugin.getConsole(_view);
+            Shell antShell = console.getShell();
 
-			Shell systemShell = ConsolePlugin.getSystemShell();
-			console.run(systemShell, _output, command);
+            Shell systemShell = ConsolePlugin.getSystemShell();
+            console.run(systemShell, _output, command);
 
-			// Bring the Ant Console to the front.
-			// AntFarmPlugin.getConsole( _view, true );
-			console.setShell(antShell);
+            // Bring the Ant Console to the front.
+            // AntFarmPlugin.getConsole( _view, true );
+            console.setShell(antShell);
 
-			// Wait for and stop system shell animation.
-			// ConsolePlugin.getSystemShell().waitFor(console);
-			// console.setShell(ConsolePlugin.getSystemShell());
-			// console.getOutput().commandDone();
-			systemShell.waitFor(console);
+            // Wait for and stop system shell animation.
+            // ConsolePlugin.getSystemShell().waitFor(console);
+            // console.setShell(ConsolePlugin.getSystemShell());
+            // console.getOutput().commandDone();
+            systemShell.waitFor(console);
 
-			console.getOutput().commandDone();
+            console.getOutput().commandDone();
 
-			// Bring the Ant Console to the front.
-			// AntFarmPlugin.getConsole( _view, true );
-			console.setShell(antShell);
-		}
-	}
+            // Bring the Ant Console to the front.
+            // AntFarmPlugin.getConsole( _view, true );
+            console.setShell(antShell);
+        }
+    }
 
-	private void configureBuildLogger()
-	{
-		_buildLogger.setEmacsMode(jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX
-			+ "output-emacs"));
-		_buildLogger.setOutputPrintStream(_consoleOut);
-		_buildLogger.setErrorPrintStream(_consoleErr);
-		_buildLogger.setMessageOutputLevel(jEdit
-			.getIntegerProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level",
-				LogLevelEnum.INFO.getValue()));
-	}
+    private void configureBuildLogger()
+    {
+        _buildLogger.setEmacsMode(jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX
+            + "output-emacs"));
+        _buildLogger.setOutputPrintStream(_consoleOut);
+        _buildLogger.setErrorPrintStream(_consoleErr);
+        _buildLogger.setMessageOutputLevel(jEdit
+            .getIntegerProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level",
+                LogLevelEnum.INFO.getValue()));
+    }
 
-	private void fireBuildStarted()
-	{
-		BuildEvent event = new BuildEvent(_project);
-		event.setMessage("Running target: " + _target, Project.MSG_INFO);
-		_buildLogger.buildStarted(event);
-		_buildLogger.messageLogged(event);
-	}
+    private void fireBuildStarted()
+    {
+        BuildEvent event = new BuildEvent(_project);
+        event.setMessage("Running target: " + _target, Project.MSG_INFO);
+        _buildLogger.buildStarted(event);
+        _buildLogger.messageLogged(event);
+    }
 
-	private void fireBuildFinished()
-	{
-		BuildEvent event = new BuildEvent(_project);
-		event.setException(_error);
-		_buildLogger.buildFinished(event);
-	}
+    private void fireBuildFinished()
+    {
+        BuildEvent event = new BuildEvent(_project);
+        event.setException(_error);
+        _buildLogger.buildFinished(event);
+    }
 
-	private String promptForAntCommand()
-	{
-		Object[] options = {
-			jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "select-path-button"),
-			jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "use-jvm-button") };
-		int yesOrNo = JOptionPane.showOptionDialog(_view, jEdit
-			.getProperty(AntFarmPlugin.OPTION_PREFIX + "prompt"), jEdit
-			.getProperty(AntFarmPlugin.OPTION_PREFIX + "prompt-dialog-title"),
-			JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-			options[0]);
+    private String promptForAntCommand()
+    {
+        Object[] options = {
+            jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "select-path-button"),
+            jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "use-jvm-button") };
+        int yesOrNo = JOptionPane.showOptionDialog(_view, jEdit
+            .getProperty(AntFarmPlugin.OPTION_PREFIX + "prompt"), jEdit
+            .getProperty(AntFarmPlugin.OPTION_PREFIX + "prompt-dialog-title"),
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+            options[0]);
 
-		if (yesOrNo == JOptionPane.YES_OPTION)
-		{
-			String scriptFilePath = AntFarmOptionPane.promptForAntScript(_view);
-			jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", scriptFilePath);
-			jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm",
-				false);
-			jEdit.propertiesChanged();
-			return scriptFilePath;
-		}
-		else if (yesOrNo == JOptionPane.NO_OPTION)
-		{
-			jEdit.setBooleanProperty(
-				AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true);
-			jEdit.propertiesChanged();
-		}
-		return null;
-	}
+        if (yesOrNo == JOptionPane.YES_OPTION)
+        {
+            String scriptFilePath = AntFarmOptionPane.promptForAntScript(_view);
+            jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", scriptFilePath);
+            jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm",
+                false);
+            jEdit.propertiesChanged();
+            return scriptFilePath;
+        }
+        else if (yesOrNo == JOptionPane.NO_OPTION)
+        {
+            jEdit.setBooleanProperty(
+                AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true);
+            jEdit.propertiesChanged();
+        }
+        return null;
+    }
 }

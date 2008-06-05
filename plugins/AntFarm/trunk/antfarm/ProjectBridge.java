@@ -32,178 +32,108 @@ import projectviewer.vpt.*;
 
 /**
  * Bridge AntFarm to ProjectViewer.
- * 
+ *
  * @author steinbeck
  * @created 27. August 2001
  * @version $Id$
  */
-public class ProjectBridge implements PluginBridge, ProjectViewerListener
+public class ProjectBridge implements ProjectViewerListener
 {
 
-	private AntFarmPlugin plugin;
+    public ProjectBridge()
+    {
+    }
 
-	private View view;
+    public void nodeMoved(ProjectViewerEvent evt)
+    {
+    }
 
-	/**
-	 * Enable the bridge.
-	 * 
-	 * @param srcPlugin
-	 *                The source plugin
-	 * @param tgtPlugin
-	 *                The target plugin
-	 * @param aView
-	 *                A view to work on
-	 * @return True if the ProjectViewer plugin is visible
-	 */
-	public boolean enable(EditPlugin srcPlugin, EditPlugin tgtPlugin, View aView)
-	{
-		view = aView;
-		if (!isProjectViewerVisible())
-		{
-			return false;
-		}
-		plugin = (AntFarmPlugin) srcPlugin;
+    public void nodeSelected(ProjectViewerEvent evt)
+    {
+    }
 
-		ProjectViewer projectViewer = (ProjectViewer) getWindow(ProjectPlugin.NAME);
-		projectViewer.addProjectViewerListener(this, aView);
-		return true;
-	}
+    public void groupActivated(ProjectViewerEvent evt)
+    {
+    }
 
-	/**
-	 * 
-	 * @param proj
-	 *                The projectviewer project
-	 * @return the build.xml file located in the root of the the project.
-	 */
-	public static File getBuildFile(VPTProject proj)
-	{
-		return new File(proj.getRootPath(), "build.xml");
-	}
+    public void groupRemoved(ProjectViewerEvent evt)
+    {
+    }
 
-	/**
-	 * Receive notification that the project is loaded.
-	 * 
-	 * @param evt
-	 *                A ProjectViewerEvent to evaluate
-	 */
-	public void projectLoaded(ProjectViewerEvent evt)
-	{
-		Log.log(Log.DEBUG, this, "Project Loaded: " + evt.getProject());
-		if (!plugin.useProjectBridge())
-			return;
+    public void groupAdded(ProjectViewerEvent evt)
+    {
+    }
 
-		// Get the project from the event
-		VPTProject project = evt.getProject();
+    public void projectRemoved(ProjectViewerEvent evt)
+    {
+    }
 
-		// Now the build file
-		File buildFile = getBuildFile(project);
+    public void projectAdded(ProjectViewerEvent evt)
+    {
+    }
 
-		if (buildFile != null)
-		{
-			getAntFarm().addAntBuildFile(buildFile.getAbsolutePath());
-			addWindow(ProjectPlugin.NAME);
-		}
-	}
+    public void projectLoaded(ProjectViewerEvent evt)
+    {
+        Log.log(Log.DEBUG, this, "Project Loaded: " + evt.getProject());
+        if (!AntFarmPlugin.useProjectBridge())
+            return;
 
-	/** Notifies the creation of a project. */
+        // Get the project from the event
+        VPTProject project = evt.getProject();
 
-	public void projectAdded(ProjectViewerEvent evt)
-	{
-	}
+        // Now the build file
+        File buildFile = getBuildFile(project);
 
-	/** Notifies the removal of a project. */
+        if (buildFile != null)
+        {
+            AntFarmPlugin.getAntFarm(jEdit.getActiveView()).addAntBuildFile(buildFile.getAbsolutePath());
+            addWindow(ProjectPlugin.NAME);
 
-	public void projectRemoved(ProjectViewerEvent evt)
-	{
-	}
+            //check if the main project build file is set
+            //if not, set it to this file
+            String cbf = project.getProperty(AntFarmPlugin.OPTION_PREFIX + "pv.projectAntScript");
+            if ((cbf == null) || (cbf.equals("")))
+            {
+                project.setProperty(AntFarmPlugin.OPTION_PREFIX + "pv.projectAntScript", buildFile);
+                Log.log(Log.DEBUG, this, "Project Build File Set: " + buildFile);
+            }
 
-	/**
-	 * A shortcut to
-	 * <code>view.getDockableWindowManager().getDockableWindow(String)</code> .
-	 * 
-	 * @param name
-	 *                The name of the window to be returned
-	 * @return A dockable window with the given name
-	 */
-	protected JComponent getWindow(String name)
-	{
-		return view.getDockableWindowManager().getDockableWindow(name);
-	}
+        }
+    }
 
-	/**
-	 * A shortcut to
-	 * <code>view.getDockableWindowManager().isDockableWindowVisible(String)</code> .
-	 * 
-	 * @param name
-	 *                The name of the window which is checked to be visible
-	 * @return true, if the window is visible
-	 */
-	protected boolean isWindowVisible(String name)
-	{
-		return view.getDockableWindowManager().isDockableWindowVisible(ProjectPlugin.NAME);
-	}
+    /**
+     *
+     * @param proj
+     *                The projectviewer project
+     * @return the build.xml file located in the root of the the project.
+     */
+    private File getBuildFile(VPTProject proj)
+    {
+        return new File(proj.getRootPath(), "build.xml");
+    }
 
-	/**
-	 * A shortcut to
-	 * <code>view.getDockableWindowManager().addDockableWindow(String)</code> .
-	 * 
-	 * @param name
-	 *                The name of the window to be added
-	 */
-	protected void addWindow(String name)
-	{
-		view.getDockableWindowManager().addDockableWindow(name);
-	}
+    /**
+     * A shortcut to
+     * <code>view.getDockableWindowManager().getDockableWindow(String)</code> .
+     *
+     * @param name
+     *                The name of the window to be returned
+     * @return A dockable window with the given name
+     */
+    private JComponent getWindow(String name)
+    {
+        return jEdit.getActiveView().getDockableWindowManager().getDockableWindow(name);
+    }
 
-	/**
-	 * Returns the instance of {@link AntFarm} for the given view.
-	 * 
-	 * @return The AntFarm object
-	 */
-	private AntFarm getAntFarm()
-	{
-		addWindow(AntFarmPlugin.NAME);
-		return (AntFarm) getWindow(AntFarmPlugin.NAME);
-	}
-
-	/**
-	 * Returns <code>true</code> if the project viewer window is opened.
-	 * 
-	 * @return True, if the ProjectViewer is visible
-	 */
-	private boolean isProjectViewerVisible()
-	{
-		return isWindowVisible(ProjectPlugin.NAME);
-	}
-
-	public void nodeSelected(ProjectViewerEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void groupAdded(ProjectViewerEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void groupRemoved(ProjectViewerEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void groupActivated(ProjectViewerEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void nodeMoved(ProjectViewerEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
+    /**
+     * A shortcut to
+     * <code>view.getDockableWindowManager().addDockableWindow(String)</code> .
+     *
+     * @param name
+     *                The name of the window to be added
+     */
+    private void addWindow(String name)
+    {
+        jEdit.getActiveView().getDockableWindowManager().addDockableWindow(name);
+    }
 }
