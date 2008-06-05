@@ -31,18 +31,15 @@
  </legalnotice>
 </bookinfo>
 
-<chapter id="browser"><title>The structure browser window</title>
+<chapter id="browser"><title>The SideKick dockable</title>
 
  <para>
-  The SideKick plugin provides a dockable window in which other plugins can
+  The SideKick plugin provides a dockable in which other plugins can
   display buffer structure.
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Structure
-  Browser</guimenuitem> displays the current buffer's structure in a
-  dockable window. This window is floating by
-  default, but it can be docked into the view 2 ways.
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>SideKick</guimenuitem> displays the current buffer's structure in a dockable window. This window is floating by default, but it can be docked into the view 2 ways.
   </para>
   <orderedlist>
   <listitem><para> Choosing a docking area from the docking menu (a little arrow in the upper left corner of each floating dockable)</para></listitem>
@@ -52,6 +49,7 @@
 
   <para> On the top of the window, you will see a combobox which lists all installed SideKick parsers. You can switch to another parser temporarily for a buffer by selecting it from the combo box. </para>
 
+  
 
  <para>
   The SideKick plugin can automatically parse your buffer depending on various events, such as: Buffer Switch, Buffer Save, or on the fly (after it is idle for a period of time). The last option is rarely used since it can eat up CPU time, so it is disabled by default. </para>
@@ -61,20 +59,20 @@
  </para>
 
 
-  <para> You can also manually parse a buffer by clicking on the "reload" button in the Sidekick Structure browser, or through a keyboard shortcut, if you bind Sidekick's "parse buffer" action to a keystroke. <footnote><para>
+  <para> You can also manually parse a buffer by clicking on the "Parse" button in the Sidekick dockable, or through a keyboard shortcut, if you bind Sidekick's "parse buffer" action to a keystroke. <footnote><para>
   global options - jedit - Shortcuts - Plugin: Sidekick (combo) - Parse Buffer</para></footnote> </para>
 
  <para>
   The current buffer can be parsed at any other time by clicking the parse
-  button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
+  button in the <guimenuitem>Sidekick</guimenuitem> window, or by
   invoking the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
   Buffer</guimenuitem> command.
  </para>
 
- <tip> <title> Reload button menu </title>
+ <tip> <title> Parse button menu </title>
  <para> A popup menu is available in JDK 1.5 which
- appears when you right-click the "reload" button.
+ appears when you right-click the "Parse" button.
  From there, you can set some auto-parse options
  without going to the plugin options. </para></tip>
 
@@ -105,7 +103,7 @@
  </para>
 
  <para>
-  If the structure browser window is docked into the current view, hovering the mouse
+  If SideKick is docked into the current view, hovering the mouse
   over a node will display its attributes in the status bar.
  </para>
 
@@ -503,7 +501,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
   <listitem>  <para> SideKick now auto-expands the proper depth of the tree, and properly follows the textarea's caret as the selected node in the sidekick. (Dale Anson) </para> </listitem>
 
-  <listitem> <para> A new context menu exists in Structure Browser permitting the user to set and view markers. (Martin Raspe) </para> </listitem>
+  <listitem> <para> A new context menu exists in SideKick permitting the user to set and view markers. (Martin Raspe) </para> </listitem>
 
   </itemizedlist> </listitem>
 
