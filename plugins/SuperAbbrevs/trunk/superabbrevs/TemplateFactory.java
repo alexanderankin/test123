@@ -2,7 +2,7 @@ package superabbrevs;
 
 import java.io.*;
 
-import org.gjt.sp.jedit.bsh.*;
+import bsh.*;
 
 import superabbrevs.lexer.*;
 import superabbrevs.template.Template;
