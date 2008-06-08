@@ -27,6 +27,7 @@ import java.util.Collection;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.util.Log;
@@ -82,7 +83,8 @@ public class ReImporter extends RootImporter {
 				// check whether the node is under the root (new or old)
 				if (!path.startsWith(project.getRootPath())) {
 					if (node.isFile()) {
-						if (!((VPTFile)node).getFile().isReadable()) {
+						VFSFile file = ((VPTFile)node).getFile();
+						if (file == null || !file.isReadable()) {
 							unregisterFile((VPTFile)node);
 							project.remove(i--);
 						}
@@ -128,7 +130,8 @@ public class ReImporter extends RootImporter {
 				for (int i = 0; i < dir.getChildCount(); i++) {
 					VPTNode node = (VPTNode) dir.getChildAt(i);
 					if (node.isFile()) {
-						if (!((VPTFile)node).getFile().isReadable()) {
+						VFSFile file = ((VPTFile)node).getFile();
+						if (file == null || !file.isReadable()) {
 							unregisterFile((VPTFile)node);
 							dir.remove(i--);
 						}

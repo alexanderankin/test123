@@ -21,6 +21,7 @@ package projectviewer.importer;
 //{{{ Imports
 import java.awt.Dialog;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -126,6 +127,9 @@ public class FileImporter extends Importer {
 				VPTNode parent = constructPath(project,
 											   parentPath,
 											   lst);
+				if (parent == null) {
+					throw new FileNotFoundException(parentPath);
+				}
 				newParent = (lst.size() != 0);
 				if (newParent) {
 					where = root = lst.get(0);
@@ -187,6 +191,10 @@ public class FileImporter extends Importer {
 
 		view = jEdit.getActiveView();
 		root = VFSHelper.getFile(where.getNodePath());
+		if (root == null) {
+			return;
+		}
+
 		session = VFSHelper.createVFSSession(root.getVFS(), root.getPath(), view);
 
 		try {
@@ -208,7 +216,7 @@ public class FileImporter extends Importer {
 				continue;
 			}
 			node = constructPath(where, url, null);
-			if (node.isFile()) {
+			if (node != null && node.isFile()) {
 				registerFile((VPTFile)node);
 			}
 		}

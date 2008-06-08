@@ -68,8 +68,10 @@ public class NewFileImporter extends Importer {
 		added = new ArrayList<VPTNode>();
 		try {
 			node = constructPath(project, path, added);
-			registerFile((VPTFile)node);
-			postAction = new ShowNode(node);
+			if (node != null) {
+				registerFile((VPTFile)node);
+				postAction = new ShowNode(node);
+			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
