@@ -128,7 +128,9 @@ public class FileImporter extends Importer {
 											   lst);
 				newParent = (lst.size() != 0);
 				if (newParent) {
-					root = lst.get(0);
+					where = root = lst.get(0);
+				} else {
+					selected = parent;
 				}
 			}
 
@@ -149,13 +151,10 @@ public class FileImporter extends Importer {
 				}
 
 				if (node != null && node.getParent() == null) {
-					if (newParent) {
-						root.insert(node, root.findIndexForChild(node));
-					} else if (where == null) {
+					if (where == null) {
 						lst.add(node);
 					} else {
-						where.add(node);
-						where.sortChildren();
+						where.insert(node, where.findIndexForChild(node));
 					}
 				}
 			}
