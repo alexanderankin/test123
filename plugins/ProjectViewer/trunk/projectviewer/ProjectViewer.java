@@ -92,6 +92,7 @@ import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.ProjectTreeModel;
 import projectviewer.vpt.ProjectTreePanel;
 
 import projectviewer.action.Action;
@@ -721,6 +722,19 @@ public final class ProjectViewer extends JPanel
 			return;
 
 		waitForLoadLock();
+
+		/*
+		 * XXX: the locking when loading a project in an I/O thread is not
+		 * enough. Since the AWT thread might be waiting for the lock to be
+		 * released, the task has to release the lock before updating the
+		 * tree (see ProjectLoader::run() below). If the AWT thread is, for
+		 * any reason, running this method, it will cause a ClassCastException
+		 * because the original tree model for the tree hasn't been restored
+		 * yet. So add this ugly check here.
+		 */
+		if (!(getCurrentTree().getModel() instanceof ProjectTreeModel)) {
+			return;
+		}
 
 		if (!n.isGroup() && !n.isProject()) {
 			throw new IllegalArgumentException("PV can only use Projects and Groups as root.");
