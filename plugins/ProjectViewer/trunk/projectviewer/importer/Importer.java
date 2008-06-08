@@ -231,6 +231,7 @@ public abstract class Importer implements Runnable {
 		Stack<String> dirs;
 		String rootPath;
 		VFS vfs;
+		VFSFile file;
 
 		assert path.startsWith(root.getNodePath()) : "Path not under root!";
 
@@ -241,7 +242,12 @@ public abstract class Importer implements Runnable {
 		dirs = new Stack<String>();
 		vfs = VFSManager.getVFSForPath(path);
 		rootPath = root.getNodePath();
-		isFile = (VFSHelper.getFile(path).getType() == VFSFile.FILE);
+
+		file = VFSHelper.getFile(path);
+		if (file == null) {
+			return null;
+		}
+		isFile = (file.getType() == VFSFile.FILE);
 
 		while (!path.equals(rootPath)) {
 			dirs.push(path);
