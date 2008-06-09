@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.search.SearchDialog;
 import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
@@ -180,6 +181,7 @@ public class SearchAction extends Action {
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
+					VFSFile f;
 					if (pFilter != null &&
 						!pFilter.matcher(n.getNodePath()).matches())
 					{
@@ -187,7 +189,8 @@ public class SearchAction extends Action {
 						continue;
 					}
 
-					if (!((VPTFile)n).getFile().isReadable()) {
+					f = ((VPTFile)n).getFile();
+					if (f == null || !f.isReadable()) {
 						continue;
 					}
 

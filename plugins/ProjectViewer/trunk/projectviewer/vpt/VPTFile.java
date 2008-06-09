@@ -84,7 +84,12 @@ public class VPTFile extends VPTNode
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite()
 	{
-		return getFile().isWriteable();
+		try {
+			VFSFile f = VFSHelper.getFile(url);
+			return (f != null && f.isWriteable());
+		} catch (IOException ioe) {
+			return false;
+		}
 	}
 
 
