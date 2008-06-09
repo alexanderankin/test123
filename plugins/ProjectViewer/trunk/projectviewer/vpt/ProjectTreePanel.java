@@ -31,6 +31,8 @@ import java.awt.dnd.DragGestureListener;
 
 import java.awt.event.KeyEvent;
 
+import java.io.File;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +48,8 @@ import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectPlugin;
@@ -581,8 +585,12 @@ public class ProjectTreePanel extends JPanel
             if (path != null) {
                 VPTNode n = (VPTNode) path.getLastPathComponent();
                 if (n.isFile()) {
-                    dge.startDrag(DragSource.DefaultCopyDrop,
-                                  new FileListTransferable((VPTFile)n));
+                    VFSFile file = ((VPTFile)n).getFile();
+                    if (file != null && file.getVFS() == VFSManager.getFileVFS()) {
+                        File f = new File(((VPTFile)n).getURL());
+                        dge.startDrag(DragSource.DefaultCopyDrop,
+                                      new FileListTransferable(f));
+                    }
                 }
             }
         }
@@ -596,9 +604,9 @@ public class ProjectTreePanel extends JPanel
         implements Transferable
     {
 
-        public FileListTransferable(VPTFile file)
+        public FileListTransferable(File file)
         {
-            super.add(file.getFile());
+            super.add(file);
         }
 
 

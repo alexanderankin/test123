@@ -25,6 +25,7 @@ import javax.swing.Icon;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.VFSHelper;
@@ -81,7 +82,8 @@ public class VPTDirectory extends VPTNode {
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
 		try {
-			return VFSHelper.getFile(url).isWriteable();
+			VFSFile f = VFSHelper.getFile(url);
+			return (f != null && f.isWriteable());
 		} catch (IOException ioe) {
 			return false;
 		}
