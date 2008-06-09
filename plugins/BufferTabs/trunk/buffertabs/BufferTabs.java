@@ -717,46 +717,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 				View view = editPane.getView();
 
-				// Make sure popup will fit in the view
-				Dimension viewSize = view.getSize();
-				Point viewLocation = view.getLocationOnScreen();
-				// We don't display popup on view borders
-				Insets viewInsets = view.getInsets();
-
-				Point tabsLocation = getLocationOnScreen();
-
-				Dimension popupSize = popupMenu.getSize();
-				if (popupSize.height == 0)
-				{
-					// If popup has not yet been displayed its size is unknown
-					// and getSize() will return 0. We show the popup offscreen
-					// and then re-get the size.
-					popupMenu.show(BufferTabs.this, Integer.MIN_VALUE, Integer.MIN_VALUE);
-					popupMenu.setVisible(false);
-					popupSize = popupMenu.getSize();
-				}
-
-				// Adjusting x: if popup right bound lies outside the View,
-				// display it entirely at the left of the cursor
-				if ((tabsLocation.x + x + popupSize.width) >
-				    (viewLocation.x + viewSize.width - viewInsets.right)
-					)
-				{
-					x -= popupSize.width;
-				}
-
-				// Adjusting y: if popup bottom bound lies outside the View,
-				// display it as low as possible
-				if ((tabsLocation.y + y + popupSize.height) >
-				    (viewLocation.y + viewSize.height - viewInsets.bottom)
-					)
-				{
-					y = (viewLocation.y + viewSize.height - viewInsets.bottom)
-					    - (tabsLocation.y + popupSize.height);
-				}
-
 				// Display it!
-				popupMenu.show(BufferTabs.this, x, y);
+				popupMenu.show(e.getComponent(), x, y);
 			}
 			else
 			{
