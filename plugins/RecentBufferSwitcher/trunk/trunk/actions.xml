@@ -1,8 +1,0 @@
-<!-- Action definition file for RecentBufferSwitcher plugin -->
-<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-<ACTIONS>
-	<ACTION NAME="recentbufferswitcher">
-		<CODE>recentbuffer.RecentBufferSwitcherPlugin.openBufferSwitcher(view);</CODE>
-	</ACTION>
-</ACTIONS>
-
