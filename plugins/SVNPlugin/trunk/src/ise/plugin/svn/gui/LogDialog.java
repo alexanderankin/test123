@@ -159,7 +159,7 @@ public class LogDialog extends JDialog {
 
         final JSpinner max_logs = new JSpinner();
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
-        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 100 ) );
+        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 1000 ) );
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty("ips.Stop_on_copy", "Stop on copy") );
         final JCheckBox showPaths = new JCheckBox( jEdit.getProperty("ips.Show_paths", "Show paths") );

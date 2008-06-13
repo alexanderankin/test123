@@ -36,7 +36,7 @@ public class LogData extends CheckoutData {
 
     private transient SVNRevision startRevision = SVNRevision.create( 0L );
     private transient SVNRevision endRevision = SVNRevision.HEAD;
-    private int maxLogs = 100;
+    private int maxLogs = 1000;
     private boolean stopOnCopy = true;
     private boolean showPaths = false;
 
