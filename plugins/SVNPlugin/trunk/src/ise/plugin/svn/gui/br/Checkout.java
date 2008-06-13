@@ -50,12 +50,28 @@ public class Checkout extends BRAction {
         String url = null;
         for ( TreePath path : paths ) {
             if ( path != null ) {
+                // combine the tree path parts into a string.  A tree path has
+                // it's parts separated by / already.  The initial path may or
+                // may not have a trailing /, remove it if it is there.
                 Object[] parts = path.getPath();
                 StringBuilder sb = new StringBuilder();
-                sb.append( parts[ 0 ] );
-                for ( int i = 1; i < parts.length; i++ ) {
-                    sb.append( "/" ).append( parts[ i ].toString() );
+                String part = parts[0].toString();
+                if (part.endsWith("/")) {
+                    part = part.substring(0, part.length() - 1);
                 }
+                sb.append( part );
+
+                // append the remaining tree path parts, inserting / if necessary
+                // to separate the parts
+                for ( int i = 1; i < parts.length; i++ ) {
+                    part = parts[i].toString();
+                    if (!part.startsWith("/")) {
+                        sb.append("/");
+                    }
+                    sb.append( parts[ i ].toString() );
+                }
+
+                // url is complete, done with loop
                 url = sb.toString();
                 break;
             }
