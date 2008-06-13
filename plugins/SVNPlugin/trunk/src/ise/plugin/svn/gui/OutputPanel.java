@@ -35,6 +35,7 @@ import javax.swing.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Wraps a tabbed pane to show output.  There is always a 'console' tab that
@@ -66,8 +67,8 @@ public class OutputPanel extends JPanel {
         logger.addHandler( handler );
 
         tabs = new CloseableTabbedPane();
-        //Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
-        //tabs.setCloseIcons(close_icon, null, null);
+        Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
+        tabs.setCloseIcons(close_icon, close_icon, close_icon);
         tabs.addTab( "SVN Console", getConsolePanel() );
         add( tabs );
 
