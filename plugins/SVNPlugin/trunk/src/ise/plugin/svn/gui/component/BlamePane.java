@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.jEdit;
 
@@ -50,7 +51,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
         this( null );
     }
 
-    public BlamePane(BlameModel model) {
+    public BlamePane( BlameModel model ) {
         this.model = model;
         updateUI();
         EditBus.addToBus( this );
@@ -110,24 +111,40 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
         updateUI();
     }
 
+    /**
+     * @return the model
+     */
     public BlameModel getModel() {
         return model;
     }
 
+    /**
+     * A panel with a button to close out this blame pane.
+     */
     public JPanel getCloser( final View view ) {
         final JPanel panel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 16, 0 ) );
-        JButton button = new JButton( jEdit.getProperty("ips.Close_blame", "Close blame"), GUIUtilities.loadIcon( "10x10/actions/close.png" ) );
+        JButton button = new JButton( jEdit.getProperty( "ips.Close_blame", "Close blame" ), GUIUtilities.loadIcon( "10x10/actions/close.png" ) );
         button.setBorder( null );
         panel.add( button );
         button.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    getUI().uninstallUI( BlamePane.this );
-                    view.getEditPane().getTextArea().removeTopComponent( panel );
-                    view.getEditPane().getTextArea().removeLeftOfScrollBar( BlamePane.this );
-                    model.getTextArea().removeCaretListener( BlamePane.this );
-                    view.invalidate();
-                    view.validate();
+                    Runnable runner = new Runnable(){
+                        public void run() {
+                            // clean up the text area by removing the closer and blame pane,
+                            // remove the stored props from the buffer, refresh the view.
+                            getUI().uninstallUI( BlamePane.this );
+                            JEditTextArea textarea = view.getEditPane().getTextArea();
+                            textarea.removeCaretListener( BlamePane.this );
+                            textarea.removeTopComponent( panel );
+                            textarea.removeLeftOfScrollBar( BlamePane.this );
+                            textarea.getBuffer().unsetProperty( "_old_blame_" );
+                            textarea.getBuffer().unsetProperty( "_old_closer_" );
+                            view.invalidate();
+                            view.validate();
+                        }
+                    };
+                    SwingUtilities.invokeLater(runner);
                 }
             }
         );
@@ -141,6 +158,9 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
                 // remove the blame components from the text area
                 JEditTextArea textArea = epu.getEditPane().getTextArea();
                 JEditBuffer buffer = textArea.getBuffer();
+                if ( epu instanceof BufferChanging && buffer.equals( ( ( BufferChanging ) epu ).getBuffer() ) ) {
+                    return ;     // same buffer, nothing to do
+                }
                 Object old_blame = buffer.getProperty( "_old_blame_" );
                 if ( old_blame != null ) {
                     textArea.removeLeftOfScrollBar( ( JComponent ) old_blame );

@@ -41,6 +41,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
@@ -109,10 +110,10 @@ public class BlameAction extends SVNAction {
                 handler.flush();
             }
 
-            class Runner extends SwingWorker < ArrayList<String> , Object > {
+            class Runner extends SwingWorker < BlameModel , Object > {
 
                 @Override
-                public ArrayList<String> doInBackground() {
+                public BlameModel doInBackground() {
                     try {
                         Blame blame = new Blame();
                         return blame.getBlame( data );
@@ -130,8 +131,7 @@ public class BlameAction extends SVNAction {
                 protected void done() {
                     try {
                         logger.log( Level.INFO, jEdit.getProperty("ips.Formatting_annotation_info_...", "Formatting annotation info ...") );
-                        BlameModel model = new BlameModel();
-                        model.setBlame( get() );
+                        BlameModel model = get();
                         model.setTextArea( getView().getEditPane().getTextArea() );
                         BlamePane pane = new BlamePane(model);
                         JEditTextArea textArea = getView().getEditPane().getTextArea();
@@ -151,6 +151,9 @@ public class BlameAction extends SVNAction {
                         getView().invalidate();
                         getView().validate();
                         logger.log( Level.INFO, jEdit.getProperty("ips.Done.", "Done.") );
+                        if (model.outOfDate()) {
+                            JOptionPane.showMessageDialog(getView(), "File has local modifications, blame may not be correct.", "Warning: Local Modifications", JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                     catch ( Exception e ) {
                         // ignored
