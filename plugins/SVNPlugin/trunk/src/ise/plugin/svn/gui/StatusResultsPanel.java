@@ -218,7 +218,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( String ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject() );
+                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
                             }
                         }
                         UpdateAction action = new UpdateAction( view, paths, username, password );

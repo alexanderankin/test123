@@ -102,7 +102,7 @@ public class BrowseRepositoryAction extends SVNAction {
                     DefaultTreeModel model = ( DefaultTreeModel ) tree.getModel();
                     model.nodeStructureChanged( node );
                     TreePath path = new TreePath( node.getPath() );
-                    tree.invalidate();
+                    tree.revalidate();
                     tree.repaint();
                     tree.expandPath( path );
                 }

@@ -37,13 +37,14 @@ import org.tmatesoft.svn.core.wc.ISVNAnnotateHandler;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
+import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.SVNException;
-
+import org.tmatesoft.svn.core.wc.SVNStatus;
 import ise.plugin.svn.data.LogData;
-
+import ise.plugin.svn.gui.component.BlameModel;
 
 public class Blame {
 
@@ -53,7 +54,7 @@ public class Blame {
     /**
      * @return a list of revision and author, one entry per line of the file.
      */
-    public ArrayList<String> getBlame( LogData data ) throws CommandInitializationException, SVNException {
+    public BlameModel getBlame( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 
         // validate data values
@@ -96,37 +97,45 @@ public class Blame {
                     }
                 };
 
+        BlameModel model = new BlameModel();
         if ( data.pathsAreURLs() ) {
             SVNURL svnurl = SVNURL.parseURIDecoded( path );
             client.doAnnotate( svnurl, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
         }
         else {
+            // collect the "blame" lines
             client.doAnnotate( file, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
+            SVNStatusClient status_client = clientManager.getStatusClient();
+
+            // check if the local file has been modified and set out of date if it has
+            SVNStatus status = status_client.doStatus( file, true );
+            model.setOutOfDate( SVNStatusType.STATUS_MODIFIED.equals( status.getContentsStatus() ) );
         }
+        model.setBlame( results );
 
         out.flush();
         out.close();
 
-        return results;
+        return model;
     }
-    public static void main (String[] args) {
+    public static void main ( String[] args ) {
         // for testing
         LogData data = new LogData();
-        data.setUsername("danson");
-        data.setPassword("");
+        data.setUsername( "danson" );
+        data.setPassword( "" );
         List<String> paths = new ArrayList<String>();
-        paths.add("/home/danson/tmp/anothertest/test3/test/BigIntModTest2.java");
-        data.setPaths(paths);
-        data.setOut(new ise.plugin.svn.io.ConsolePrintStream(new ise.plugin.svn.io.LogOutputStream(null)));
+        paths.add( "/home/danson/tmp/anothertest/test3/test/BigIntModTest2.java" );
+        data.setPaths( paths );
+        data.setOut( new ise.plugin.svn.io.ConsolePrintStream( new ise.plugin.svn.io.LogOutputStream( null ) ) );
         Blame blame = new Blame();
         try {
             org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory.setup();
             org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
             org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
-            ArrayList<String> results = blame.getBlame(data);
-            System.out.println(results);
+            BlameModel results = blame.getBlame( data );
+            System.out.println( results );
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
     }

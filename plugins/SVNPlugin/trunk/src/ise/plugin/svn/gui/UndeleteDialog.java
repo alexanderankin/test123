@@ -45,7 +45,6 @@ import ise.plugin.svn.data.SVNData;
  */
 public class UndeleteDialog extends JDialog {
     // instance fields
-    private View view = null;
     private List<String> paths = null;
 
     private boolean canceled = false;
@@ -57,7 +56,6 @@ public class UndeleteDialog extends JDialog {
         if ( paths == null ) {
             throw new IllegalArgumentException( "paths may not be null" );
         }
-        this.view = view;
         this.paths = paths;
         _init();
     }
@@ -66,6 +64,7 @@ public class UndeleteDialog extends JDialog {
     protected void _init() {
 
         undeleteData = new SVNData();
+        undeleteData.setPaths(paths);
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );

@@ -161,6 +161,7 @@ public class CheckoutDialog extends JDialog {
         // local destination directory
         JLabel path_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "path.label" ) );
         path = new HistoryTextField(PATH);
+        // TODO: can I do some munging here to get the project name out of the url?
         path.setText( PVHelper.getProjectRoot(view));
         path.setColumns( 30 );
         JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse", "Browse") );

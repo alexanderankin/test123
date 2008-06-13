@@ -21,10 +21,29 @@ package ise.plugin.svn.gui.component;
 import java.util.List;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+/**
+ * Simple data model to transport necessary data for the SVN "blame" command.
+ * TODO: Should this go in the 'data' package?
+ */
 public class BlameModel {
 
+    /**
+     * Blame is actually attached to a Buffer, but is displayed in a JEditTextArea,
+     * so need a reference to the text area.
+     */
     private JEditTextArea textArea = null;
+
+    /**
+     * The lines of blame returned from the SVN "blame" command.  There is one
+     * entry in the list per line in the file.
+     */
     private List<String> blame = null;
+
+    /**
+     * My "blame" command will check if the local working file has been modified,
+     * if it has, this field will be set to true;
+     */
+    private boolean outOfDate = false;
 
     public BlameModel() {
 
@@ -49,5 +68,13 @@ public class BlameModel {
 
     public List<String> getBlame() {
         return blame;
+    }
+
+    public void setOutOfDate(boolean b) {
+        outOfDate = b;
+    }
+
+    public boolean outOfDate() {
+        return outOfDate;
     }
 }

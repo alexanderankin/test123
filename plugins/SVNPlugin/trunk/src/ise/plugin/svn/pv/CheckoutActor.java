@@ -28,14 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import projectviewer.config.ProjectOptions;
-import projectviewer.vpt.VPTNode;
 import ise.plugin.svn.action.CheckoutAction;
-import ise.plugin.svn.gui.CheckoutDialog;
-import ise.plugin.svn.gui.OutputPanel;
-import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;

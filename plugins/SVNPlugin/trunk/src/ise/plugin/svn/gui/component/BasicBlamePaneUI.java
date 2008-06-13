@@ -25,11 +25,15 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
 
+/**
+ * UI for the BlamePane to be displayed left of the right scroll bar of the
+ * main text area.
+ */
 public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, MouseListener {
 
     private BlamePane blamePane;
     private BlameRendererPane blameRendererPane;
-    private int pixelsPerLine = 12;
+    private int pixelsPerLine = 12;     // default, this will be calculated later
 
     public static ComponentUI createUI( JComponent c ) {
         return new BasicBlamePaneUI();
@@ -49,8 +53,6 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
         uninstallListeners();
         uninstallComponents();
         uninstallDefaults();
-
-        //blamePane = null;
     }
 
     public void installDefaults() {}
@@ -69,7 +71,6 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
 
     public void uninstallComponents() {
         blamePane.remove( blameRendererPane );
-        //blamePane = null;
     }
 
     public void uninstallListeners() {
@@ -84,6 +85,11 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
         blameRendererPane.repaint();
     }
 
+    /**
+     * On mouse click on the BlamePane, move the cursor in the text area to the
+     * corresponding line.  This makes line highlight (if turned on) line up
+     * nicely with the appropriate line in the BlamePane.
+     */
     public void mouseClicked( MouseEvent e ) {
         BlameModel model = blamePane.getModel();
         if ( model == null ) {
@@ -92,41 +98,39 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
         int line_number = ( e.getY() / pixelsPerLine ) + model.getTextArea().getFirstPhysicalLine();
         model.getTextArea().setCaretPosition( model.getTextArea().getLineStartOffset( line_number ), false );
     }
+
     public void mouseEntered( MouseEvent e ) {}
     public void mouseExited( MouseEvent e ) {}
     public void mousePressed( MouseEvent e ) {}
     public void mouseReleased( MouseEvent e ) {}
 
     public class BlameRendererPane extends JPanel {
-
         public BlameRendererPane( ) {
+            // need a model and some blame
             BlameModel model = blamePane.getModel();
-            if (model == null) {
-                throw new IllegalArgumentException("blame model is null");
+            if ( model == null ) {
+                throw new IllegalArgumentException( "blame model is null" );
             }
-            if (model.getBlame() == null) {
-                throw new IllegalArgumentException("no blame found in model");
+            if ( model.getBlame() == null ) {
+                throw new IllegalArgumentException( "no blame found in model" );
+            }
+
+            // calculate the proper width by finding the widest line of the blame
+            int max_width = 0;
+            FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
+            for ( String line : model.getBlame() ) {
+                int width = fm.stringWidth( line );
+                max_width = width > max_width ? width : max_width;
             }
             Dimension dim = getPreferredSize();
-            if ( model == null ) {
-                dim.width = 60;
-                setPreferredSize( dim );
-            }
-            else {
-                int max_width = 0;
-                FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
-                for ( String line : model.getBlame() ) {
-                    int width = fm.stringWidth( line );
-                    max_width = width > max_width ? width : max_width;
-                }
-                dim.width = max_width + 3;
-                setPreferredSize( dim );
-            }
+            dim.width = max_width + 3;  // 3 extra pixels just to give some separation from the text area
+            setPreferredSize( dim );
         }
 
         public void paintComponent( Graphics gfx ) {
             super.paintComponent( gfx );
 
+            // paint the background
             Rectangle size = getBounds();
             gfx.setColor( getBackground() );
             gfx.fillRect( 0, 0, size.width, size.height );
@@ -138,9 +142,10 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             int lastLine = model.getTextArea().getLastPhysicalLine();
             gfx.setColor( Color.BLACK );
             java.util.List<String> blame = model.getBlame();
+            int descent = gfx.getFontMetrics().getDescent();
             for ( int i = firstLine; i <= lastLine; i++ ) {
                 if ( i >= 0 && i < blame.size() ) {
-                    gfx.drawString( blame.get( i ), 3, ( i - firstLine + 1 ) * pixelsPerLine );
+                    gfx.drawString( blame.get( i ), 3, ( ( i - firstLine + 1 ) * pixelsPerLine ) - descent );
                 }
             }
         }
