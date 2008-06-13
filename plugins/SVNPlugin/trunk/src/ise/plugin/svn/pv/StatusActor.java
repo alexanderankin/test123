@@ -62,7 +62,10 @@ public class StatusActor extends NodeActor {
             }
             cd.setPaths( paths );
             if ( has_directory ) {
-                int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see status for subdirectories and files?", "Show Child Status?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                int answer = JOptionPane.showConfirmDialog( view, "One or more of the items selected is a directory.\nWould you like to see status for subdirectories and files?", "Show Child Status?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+                if ( JOptionPane.CANCEL_OPTION == answer) {
+                    return;
+                }
                 cd.setRecursive( JOptionPane.YES_OPTION == answer );
             }
             if ( username != null && password != null ) {
