@@ -5,11 +5,9 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -20,8 +18,6 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.event.EventListenerList;
 
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import javax.swing.plaf.metal.MetalTabbedPaneUI;
 
 /**
  * A JTabbedPane which has a close ('X') icon on each tab.
@@ -53,7 +49,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     /**
      * The closeicon when the mouse is over.
      */
-    private Icon hooverCloseIcon = null;
+    private Icon hoverCloseIcon = null;
 
     /**
      * The closeicon when the mouse is pressed.
@@ -65,25 +61,14 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      */
     public CloseableTabbedPane() {
         super();
-        init( SwingUtilities.LEFT );
+        init();
     }
 
-    /**
-     * Creates a new instance of <code>CloseableTabbedPane</code>
-     * @param horizontalTextPosition the horizontal position of the text (e.g.
-     * SwingUtilities.TRAILING or SwingUtilities.LEFT)
-     */
-    public CloseableTabbedPane( int horizontalTextPosition ) {
-        super();
-        init( horizontalTextPosition );
-    }
 
     /**
      * Initializes the <code>CloseableTabbedPane</code>
-     * @param horizontalTextPosition the horizontal position of the text (e.g.
-     * SwingUtilities.TRAILING or SwingUtilities.LEFT)
      */
-    private void init( int horizontalTextPosition ) {
+    private void init() {
         listenerList = new EventListenerList();
         addMouseListener( this );
         addMouseMotionListener( this );
@@ -92,12 +77,12 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     /**
      * Allows setting own closeicons.
      * @param normal the normal closeicon
-     * @param hoover the closeicon when the mouse is over
+     * @param hover the closeicon when the mouse is over
      * @param pressed the closeicon when the mouse is pressed
      */
-    public void setCloseIcons( Icon normal, Icon hoover, Icon pressed ) {
+    public void setCloseIcons( Icon normal, Icon hover, Icon pressed ) {
         normalCloseIcon = normal;
-        hooverCloseIcon = hoover;
+        hoverCloseIcon = hover;
         pressedCloseIcon = pressed;
     }
 
@@ -367,8 +352,10 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          */
         public CloseTabIcon( Icon fileIcon ) {
             this.fileIcon = fileIcon;
-            width = 16;
-            height = 16;
+            // changed default width and height from 16 to 12 since I'm using
+            // jEdit's 10x10 close icon for the SVN Plugin.
+            width = fileIcon == null ? 10 : fileIcon.getIconWidth();
+            height = fileIcon == null ? 10 : fileIcon.getIconHeight();
         }
 
         /**
@@ -397,16 +384,18 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
             if ( doPaintCloseIcon ) {
                 x_pos = x;
                 y_pos = y;
+                int x_p = x - 6;    // subtracting 6 due to using 10x10 default size for icon
                 int y_p = y + 1;
 
+                //
                 if ( normalCloseIcon != null && !mouseover ) {
-                    normalCloseIcon.paintIcon( c, g, x, y_p );
+                    normalCloseIcon.paintIcon( c, g, x_p, y_p );
                 }
-                else if ( hooverCloseIcon != null && mouseover && !mousepressed ) {
-                    hooverCloseIcon.paintIcon( c, g, x, y_p );
+                else if ( hoverCloseIcon != null && mouseover && !mousepressed ) {
+                    hoverCloseIcon.paintIcon( c, g, x_p, y_p );
                 }
                 else if ( pressedCloseIcon != null && mousepressed ) {
-                    pressedCloseIcon.paintIcon( c, g, x, y_p );
+                    pressedCloseIcon.paintIcon( c, g, x_p, y_p );
                 }
                 else {
                     y_p++;
@@ -444,7 +433,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * @return an int specifying the fixed width of the icon.
          */
         public int getIconWidth() {
-            return width + ( fileIcon != null ? fileIcon.getIconWidth() : 0 );
+            return width;// + ( fileIcon != null ? fileIcon.getIconWidth() : 0 );
         }
 
         /**
