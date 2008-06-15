@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package jdiff.component;
 
 // imports
-import java.awt.FlowLayout;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -42,14 +41,9 @@ import ise.java.awt.KappaLayout;
 
 public class PatchSelectionDialog extends JDialog {
 
-    public static final int UNIFIED = 1;
-    public static final int NORMAL = 2;
-
     // instance fields
     private View view = null;
     private JTextField path = null;
-    private JRadioButton normal_rb = new JRadioButton("Normal");
-    private JRadioButton unified_rb = new JRadioButton("Unified");
 
     private boolean canceled = false;
 
@@ -77,15 +71,6 @@ public class PatchSelectionDialog extends JDialog {
                     }
                 }
                                     );
-
-        // select patch type
-        unified_rb.setSelected(true);
-        JPanel patch_panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        patch_panel.add(normal_rb);
-        patch_panel.add(unified_rb);
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(normal_rb);
-        bg.add(unified_rb);
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -123,9 +108,6 @@ public class PatchSelectionDialog extends JDialog {
         panel.add( "0, 0, 3, 1, W,  , 3", path_label );
         panel.add( "0, 1, 2, 1, 0, w, 3", path );
         panel.add( "2, 1, 1, 1, 0, w, 3", browse_btn );
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-        panel.add( "0, 3, 1, 1, W,  , 3", new JLabel("Patch type:"));
-        panel.add( "0, 4, 3, 1, W, w, 3", patch_panel );
         panel.add( "0, 5, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
         panel.add( "0, 6, 3, 1, E,  , 0", btn_panel );
 
@@ -139,9 +121,5 @@ public class PatchSelectionDialog extends JDialog {
             return null;
         }
         return path.getText();
-    }
-
-    public int getPatchType() {
-        return unified_rb.isSelected() ? UNIFIED : NORMAL;
     }
 }
