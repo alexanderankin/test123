@@ -46,6 +46,7 @@ import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
 import jdiff.util.DiffNormalOutput;
 import jdiff.util.patch.Patch;
+import jdiff.util.patch.PatchUtils;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -795,12 +796,12 @@ public class DualDiff implements EBComponent {
             }
 
             // load the patch file
-            FileReader reader = new FileReader( patch_file );
+            Reader reader = new BufferedReader(new FileReader( patch_file ));
             StringWriter writer = new StringWriter();
-            copyToWriter( reader, writer );
+            PatchUtils.copyToWriter( reader, writer );
             String patch = writer.toString();
             if ( patch == null || patch.length() == 0 ) {
-                // say something?
+                JOptionPane.showMessageDialog(view, "Invalid patch file, file has no content.", "Error", JOptionPane.ERROR_MESSAGE);
                 return ;
             }
 
@@ -808,35 +809,16 @@ public class DualDiff implements EBComponent {
             Buffer buffer = view.getEditPane().getBuffer();
             String bufferText = buffer.getText( 0, buffer.getLength() );
 
-            String results = "";
-            int patch_type = dialog.getPatchType();
-            switch ( patch_type ) {
-                case PatchSelectionDialog.NORMAL:
-                    results = Patch.patchNormal( patch, bufferText );
-                    break;
-                default:
-                    results = Patch.patchUnified( patch, bufferText );
-                    break;
-            }
+            // apply the patch
+            String results = Patch.patch(patch, bufferText);
+
+            // show the results as a new file so the user can check it against
+            // the original before saving it
             jEdit.newFile( view ).insert( 0, results );
         }
         catch ( Exception e ) {
-            // say something?
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public static void copyToWriter( Reader from, Writer to ) throws Exception {
-        char[] buffer = new char[ 8192 ];
-        int chars_read;
-        while ( true ) {
-            chars_read = from.read( buffer );
-            if ( chars_read == -1 )
-                break;
-            to.write( buffer, 0, chars_read );
-        }
-        to.flush();
-        from.close();
     }
 
     private void nextDiff0() {
@@ -912,7 +894,7 @@ public class DualDiff implements EBComponent {
         int firstLine = this.textArea0.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line0 < firstLine ) {
-                if ( hunk.link == null || hunk.link.line0 >= firstLine ) {
+                if ( hunk.link == null || hunk.link.line0 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
                         line = hunk.line0;// - 1;
@@ -947,7 +929,7 @@ public class DualDiff implements EBComponent {
         int firstLine = this.textArea1.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line1 < firstLine ) {
-                if ( hunk.link == null || hunk.link.line1 >= firstLine ) {
+                if ( hunk.link == null || hunk.link.line1 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
                         line = hunk.line1;// - 1;
@@ -1069,7 +1051,7 @@ public class DualDiff implements EBComponent {
         public void focusGained( FocusEvent e ) {
             Log.log( Log.DEBUG, this, "**** focusGained " + e );
             if ( jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {
+                if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {  // NOPMD ifs on separate lines for readability
                     view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
                 }
             }
