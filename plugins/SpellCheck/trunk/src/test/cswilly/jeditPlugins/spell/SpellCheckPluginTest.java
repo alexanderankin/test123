@@ -186,7 +186,7 @@ public class SpellCheckPluginTest
 		assertEquals("fr",buff.getProperty(SpellCheckPlugin.BUFFER_LANGUAGE_PROP));
 		spellDialog.list().selectItem("liberté");
 		spellDialog.button("Change").click();
-		try{spellThread.join(5000);}catch(InterruptedException ie){}
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let dictionaries be loaded
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.list().selectItem("conçues");
 		spellDialog.button("Change").click();
@@ -330,5 +330,63 @@ public class SpellCheckPluginTest
 		assertEquals("The quick brown foxe",buffer2.getText(0,buffer2.getLength()));
 
 		assertEquals("The wiek comes to an end",buffer1.getText(0,buffer1.getLength()));
+	}
+	
+	@Test
+	public void testMarkupModes(){
+		String exePath = System.getProperty(ENV_ASPELL_EXE);
+		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
+
+		String testDir = System.getProperty(ENV_TESTS_DIR);
+		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testDir!=null);
+
+		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+
+		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		try{Thread.sleep(5000);}catch(InterruptedException ie){}
+		view.unsplit();
+		jEdit.openFile(view,testDir+"/latex-file.tex");
+		final Buffer buff = view.getBuffer();
+
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+
+		//with "none" filter
+		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,
+			SpellCheckPlugin.AspellMarkupMode.NO_MARKUP_MODE.toString());
+		
+		Thread spellThread = new Thread(){
+			public void run(){
+				SpellCheckPlugin.checkBuffer(view,buff);
+			}
+		};
+		spellThread.start();
+		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		spellDialog.textBox("originalWord").requireText("twoside");
+		spellDialog.button("Cancel").click();
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
+		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+		
+		
+		//with manual markup mode
+		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,
+			SpellCheckPlugin.AspellMarkupMode.MANUAL_MARKUP_MODE.toString());
+		assertEquals("tex",
+					jEdit.getProperty(SpellCheckPlugin.FILTERS_PROP+".latex"));
+
+		spellThread = new Thread(){
+			public void run(){
+				SpellCheckPlugin.checkBuffer(view,buff);
+			}
+		};
+		spellThread.start();
+		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
+		spellDialog.textBox("originalWord").requireText("mispelled");
+		spellDialog.button("Cancel").click();
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
 	}
 }
