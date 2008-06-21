@@ -371,6 +371,7 @@ class ValidationDialog
     private AboutAction()
     {
       super( "About..." );
+	  putValue(Action.SHORT_DESCRIPTION,"Brings up the About Dialog.");
     }
 
     public
@@ -396,6 +397,7 @@ class ValidationDialog
       super( "Add" );
       putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_A) );
       putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_A) );
+	  putValue(Action.SHORT_DESCRIPTION,"Add the suspect word (not the 'Change to') to the dictionary.");
     }
 
     public
@@ -413,6 +415,7 @@ class ValidationDialog
     private CancelAction()
     {
       super( "Cancel" );
+	  putValue(Action.SHORT_DESCRIPTION,"Cancel whole spell-checking session.");
     }
 
     public
@@ -432,7 +435,7 @@ class ValidationDialog
       super( "Change" );
       putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_C) );
       putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_C) );
-      putValue( SHORT_DESCRIPTION, "Replaces the word not in the Not in Dictionary text field with the word in the Change to text field." );
+      putValue( SHORT_DESCRIPTION, "Replaces the current word with the word in the Change to text field." );
     }
 
     public
@@ -452,6 +455,7 @@ class ValidationDialog
       super( "Change All" );
       putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_L) );
       putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_L) );
+      putValue( SHORT_DESCRIPTION, "Replaces all occurences of the current word with the word in the Change to text field." );
     }
 
     public
@@ -471,6 +475,7 @@ class ValidationDialog
       super( "Ignore" );
       putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_I) );
       putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_I) );
+      putValue( SHORT_DESCRIPTION, "Ignore this instance of the current word (will not be changed)." );
     }
 
     public
@@ -488,11 +493,9 @@ class ValidationDialog
     private IgnoreAllAction()
     {
       super( "Ignore All" );
-//      putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_G) );
-//      putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_G) );
       putValue( MNEMONIC_KEY, new Integer(KeyEvent.VK_G) );
       putValue( ACCELERATOR_KEY, new Integer(KeyEvent.VK_G) );
-
+      putValue( SHORT_DESCRIPTION, "Ignore all instances of the current word." );
     }
 
     public

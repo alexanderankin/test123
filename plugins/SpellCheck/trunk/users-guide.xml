@@ -168,29 +168,26 @@ available for Windows and various Unix platforms.
     option dialog, section <code>SpellCheck</code>, there are some options to set.
     </para>
 
-    <glosslist>
-      <glossentry>
-  <glossterm>Aspell executable filename</glossterm>
-      <glossdef>
-       <para>It is important to set the <code>Aspell executable filename</code> to where you have
+ 
+   <section id="executable-option"><title>Aspell executable filename</title>
+
+   <para>It is important to set the <code>Aspell executable filename</code> to where you have
     installed aspell. If you didn't install it manually, try to leave it to "aspell".</para>
     <para>Here are some potential locations:</para>
       <itemizedlist>
-      <listitem><para>On <emphasis>Windows</emphasis> it's in TODO</para></listitem>
+      <listitem><para>On <emphasis>Windows</emphasis> it's in <code>c:\Program Files\Aspell\bin</code></para></listitem>
       <listitem><para>On <emphasis>Mac OS X</emphasis> it's in <code>/opt/local/bin</code></para></listitem>
       <listitem><para>On <emphasis>Linux</emphasis> it's in <code>/usr/local/bin</code></para></listitem>
       </itemizedlist>
-      </glossdef>
-     </glossentry>
-     <glossentry>
-     <glossterm>Lang dictionary to use</glossterm>
-    <glossdef><para>You can choose in the dictionary list which dictionary to use for spell-checking.
+ 
+    </section>
+    <section id="language-option"><title>Lang dictionary to use</title>
+    <para>You can choose in the dictionary list which dictionary to use for spell-checking.
     (the list is taken from aspell output, so Aspell executable path must be correctly set for that).</para>
-    </glossdef>
-    </glossentry>
-    <glossentry>
-    <glossterm>Markup Mode</glossterm>
-    <glossdef>
+    
+    </section>
+    <section id="markup-modes"><title>Markup Mode</title>
+    
     <para>Aspell is able to deal automatically with certain kinds of documents,
     via <emphasis>Filter Modes</emphasis>. Here is an extract of what <code>aspell --help</code>
     says on my computer:</para>
@@ -216,17 +213,42 @@ available for Windows and various Unix platforms.
   <para>You can choose to
   <itemizedlist>
   <listitem><para><emphasis>Disable Markup mode</emphasis>:
-  SpellCheck plugin will not tell Aspell which filter mode to use</para></listitem>
-  <listitem><para><emphasis>Enable Markup mode</emphasis>:
-  SpellCheck plugin will tell Aspell which mode to use</para></listitem>
-  <listitem><para><emphasis>Automatic Markup mode</emphasis>:
-  SpellCheck plugin will tell Aspell which mode to use <emphasis>ONLY for selected modes</emphasis></para></listitem>
+  it will tell Aspell not to use any filter.
+  As a result, your buffer will be analysed as plain text</para></listitem>
+  <listitem><para>use <emphasis>Automatic Markup mode</emphasis>:
+  it will let Aspell choose which mode to use automatically</para></listitem>
+  <listitem><para>use <emphasis>Manual Markup mode</emphasis>:
+  it will tell Aspell which mode to use, according to your choices
+  in the table bellow</para></listitem>
   </itemizedlist>
   </para>
+  <para>If you choose the <emphasis>Manual Markup Mode</emphasis>,
+  you will have to configure which aspell filter to use for each mode.
+  Leave it to <emphasis>AUTO</emphasis> to let aspell choose.
+  Use the filter named <emphasis>none</emphasis> to disable context-filtering at all.
+  </para>
   
-  </glossdef>
-  </glossentry>
-  </glosslist>
+  </section>
+  <section id="additional-parameters"><title>Additional parameters</title>
+  <para>If you are familiar with Aspell from the command line and want to
+  pass additional parameters, feel free to enter these parameters here.
+  They will be directly passed to aspell.
+  This way, you can use a personal dictionary, for instance...
+  </para>
+  <para>Note however that the parameters are
+  currently not allowed to contain white space.
+  </para>
+  </section>
+
+  <section id="spell-check-on-save"><title>Spell-check on save</title>
+  <para>This experimental feature takes advantage of the <code>Error List</code>
+   plugin to report every misspelled word as a warning. Spell-checking is performed each time
+   you save a file.</para>
+   <para>As you will soon discover, this can turn very annoying, because it's quickly
+   sluggish. So : beware !
+   </para>
+  
+  </section>
  </chapter>
 
  <chapter id="usage">
@@ -243,10 +265,6 @@ available for Windows and various Unix platforms.
     for default lang dictionary or
     <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Spell check selection with lang...</guimenuitem>
     to use an alternate lang dictionary.</para>
-    </listitem>
-    <listitem>
-     <para>The Aspell sub-process will start. (On Windows for JDK older than 1.4.0 a DOS
-    console is displayed and may hide the Spell Check validation dialog).</para>
     </listitem>
     <listitem>
      <para>You will be prompted with a MS-Office-like spell check dialog box for each
@@ -269,7 +287,7 @@ available for Windows and various Unix platforms.
       </glossdef>
      </glossentry>
      <glossentry>
-      <glossterm>Cancel HystoryTextField</glossterm>
+      <glossterm>Cancel</glossterm>
       <glossdef>
        <para>Closes the dialog box without making any changes you have made.</para>
       </glossdef>
@@ -277,7 +295,7 @@ available for Windows and various Unix platforms.
      <glossentry>
       <glossterm>Change</glossterm>
       <glossdef>
-       <para>Replaces the word not in the <code> Not in Dictionary</code> text field with the word in the
+       <para>Replaces the word in the <code> Not in Dictionary</code> text field with the word in the
     <code> Change to</code>  text field. If the <code> Change to</code> text field is empty,
     the button name changes to <code>Delete</code>. To remove the selected word from the item, click
     <code>Delete</code>.</para>
@@ -296,13 +314,13 @@ available for Windows and various Unix platforms.
      <glossentry>
       <glossterm>Ignore</glossterm>
       <glossdef>
-       <para>Leaves the word not in the <code> Not in Dictionary</code> text field unchanged.</para>
+       <para>Leaves the word in the <code> Not in Dictionary</code> text field unchanged.</para>
       </glossdef>
      </glossentry>
      <glossentry>
       <glossterm>Ignore All</glossterm>
       <glossdef>
-       <para>Leaves all instances of the word not in the <code> Not in Dictionary</code>
+       <para>Leaves all instances of the word in the <code> Not in Dictionary</code>
     text field unchanged.</para>
       </glossdef>
      </glossentry>
@@ -348,25 +366,8 @@ available from jedit repository. The documentation is generated using docbook xs
 <title>Current Bugs</title>
 <itemizedlist>
   <listitem>
-  <para>
-  The Aspell sub-process creates a visible console window on Windows
-  95/98/NT/2000.
-  The console window is a long-standing Java
-  <ulink url="http://developer.java.sun.com/developer/bugParade/bugs/4244515.html">bug</ulink>..
-  Sun encountered problems under Windows 95 and 98 when the JVM ran system calls in a
-  hidden window, which are still there under Windows NT/2000.
-  </para>
-  <para>
-  If you kill the visible console window, when you next spell check you will get
-  an error. If you spell check again, it should work as the sub-process is
-  recreated.
-  </para>
-  <para>Fixed with JDK 1.4.</para>
-  </listitem>
-  <listitem>
-  <para>
-  Freeze
-  ******* TODO ********
+  <para>It has happened once that jEdit froze while <xref linkend="spell-check-on-save"/>
+  was active. If you encounter such behaviour again, please send a bug report.
   </para>
   </listitem>
 </itemizedlist>
@@ -376,19 +377,33 @@ available from jedit repository. The documentation is generated using docbook xs
   <listitem><para>Add words to an user dictionary</para></listitem>
   <listitem><para>Allow the user to reset Ignore All and Change All options (currently these
     are result only if jEdit is restarted)</para></listitem>
-  <listitem><para>Undo a change</para></listitem>
+  <listitem><para>Undo a change : for now, one can only cancel the whole
+  spell-checking but not undo the last action.</para></listitem>
   <listitem><para>Allow the user access all of Aspell options</para></listitem>
-  <listitem><para>Complete tool tips on the Validation dialog</para></listitem>
-  <listitem><para>Use the EditBus to report spelling errors (so they can be underlined like
-    Word does)</para></listitem>
-  <listitem><para>Highlight the context of the word being corrected</para></listitem>
-  <listitem><para>Use the output of <code>aspell dump modes</code> in Option pane</para></listitem>
+  <listitem><para>Highlight the context of the word being corrected.
+  This is partially fixed in R005. It doesn't scroll to show the word yet,
+  because of bug #1990960 in jEdit.</para></listitem>
+  <listitem><para>Use the output of <code>aspell dump modes</code> in Option pane:
+  it would be nice to output in some way the description of the modes from Aspell.</para></listitem>
+<listitem><para>Try to use VoxSpell plugin in some way (as another engine ?).</para></listitem>
 </itemizedlist>
 </chapter>
 
 <chapter id="changelog"><title>Change Log</title>
 
 <itemizedlist>
+<listitem><para>Release 005 (June, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E.Le Lay</ulink></para>
+  <itemizedlist>
+    <listitem><para>Fix: bug [787498] : 	SpellCheck freeze. Now SpellCheck shouldn't
+      freeze the editor any more. (If it does, please report !)</para></listitem>
+    <listitem><para>Fix: the currently spell-checked word is highlighted</para></listitem>
+    <listitem><para>Updated for jEdit 4.3 API (dynamic loading, local data)</para></listitem>
+    <listitem><para>Add the ability to define the language for each buffer.</para></listitem>
+    <listitem><para>Really use mode-filters (fix for bug  [898733] SpellCheck does not discard markup).</para></listitem>
+    <listitem><para>Add the ability to report misspellings as warnings in ErrorList</para></listitem>
+    </itemizedlist>
+</listitem>
+
 <listitem><para>Release 004 (Jul 25, 2002) - <ulink url="mailto:lio-sand@ifrance.com">L.Fiol</ulink></para>
   <itemizedlist>
     <listitem><para>Fix: the current buffer is no more changed when there were no spell
