@@ -47,6 +47,7 @@ import java.util.regex.Matcher;
  * @version $Revision$
  */
 public class FutureListModes extends FutureAspell<Map<String,String>>{
+	private static final String[] DEFAULT_MODES = new String[]{"none","url","email","sgml","tex"};
 	
 	public FutureListModes(String aspellExeFilename){
 		super(Arrays.asList(new String[]{aspellExeFilename,"dump","modes"}),new MyProcessor());
@@ -66,8 +67,18 @@ public class FutureListModes extends FutureAspell<Map<String,String>>{
 		
 		public void accumulate(String line) throws SpellException{
 			Matcher m = pattern.matcher(line);
-			if(!m.matches())
-				throw new SpellException("Suspect mode ("+line+")");
+			if(!m.matches()){
+				// silently fall back to defaults, since windows port of Aspell
+				// doesn't support 'dump modes' command
+				if("Error: Unknown Action: dump modes".equals(line)){
+						Log.log(Log.DEBUG,FutureListModes.class,
+							"Aspell doesn't use 'aspell dump modes' => using fallback");
+						for(int i=0;i<DEFAULT_MODES.length;i++)
+							modes.put(DEFAULT_MODES[i],"");
+						return;
+				}
+				else throw new SpellException("Suspect mode ("+line+")");
+			}
 			Log.log(Log.DEBUG,FutureListModes.class, "mode:"+line);
 			modes.put(m.group(1),m.group(2));
 		}
