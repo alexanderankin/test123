@@ -71,8 +71,12 @@
 	  -->
 	<selector id="junit.testcases">
 		<and>
-        <!--<filename name="cswilly/**/*Test.java" />-->
-		<filename name="cswilly/**/SpellCheckPluginTest.java" />
+		<!--<or>-->
+        <filename name="cswilly/**/*Test.java" />
+		<!--<filename name="**/SpellCheckOptionPaneTest.java" />-->
+		<!--<filename name="**/SpellCheckPluginTest.java" />-->
+		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
+		<!--</or>-->
 		<not><filename name="cswilly/spell/Test.java"/></not>
 		</and>
     </selector>
@@ -152,12 +156,12 @@
 		description="Remove Unit-Tests from the build classes"
 		unless="want-to-test">
 		<echo message="Removing test classes.."/>
-		<delete dir="${build.classes}">
+<!--		<delete dir="${build.classes}">
 			<and>
 			<filename name="**/*Test*.class"/>
 			<not><filename name="cswilly/spell/Test.class"/></not>
 			</and>
 		</delete>
-	</target>
+-->	</target>
 </project>
 

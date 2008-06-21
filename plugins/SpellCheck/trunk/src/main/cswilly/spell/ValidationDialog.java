@@ -62,10 +62,10 @@ public
 class ValidationDialog
   extends JDialog
 {
+  private		JTextField _originalWordTextField;
   private       JTextField  _changeToTextField;
-  private final String      _originalWord;
-  private final List        _suggestions;
   private       JList       _suggestionsJList;
+  private		DefaultListModel	_suggestionsModel;
   private       UserAction  _userAction         = CANCEL;
   private       String      _title              = "Spell Check, Release R004";
   // ??? bad to have release hardocoded here. Fix later...right.
@@ -80,28 +80,31 @@ class ValidationDialog
 
 
 
+  public ValidationDialog( Frame owner)
+  {
+    super( owner );
+	_init();
+  }
+  
   public ValidationDialog( Frame owner, String  originalWord, List suggestions )
   {
     super( owner );
-    _originalWord = originalWord;
-    _suggestions  = suggestions;
     _init();
+    refresh(originalWord,suggestions);
   }
 
   public ValidationDialog( Dialog owner, String  originalWord, List suggestions )
   {
     super( owner );
-    _originalWord = originalWord;
-    _suggestions  = suggestions;
     _init();
+    refresh(originalWord,suggestions);
   }
 
   public ValidationDialog( String  originalWord, List suggestions )
   {
     super();
-    _originalWord = originalWord;
-    _suggestions  = suggestions;
     _init();
+    refresh(originalWord,suggestions);
   }
 
   public
@@ -118,6 +121,11 @@ class ValidationDialog
     return _userAction;
   }
 
+  public UserAction getUserAction(String originalWord, List<String>suggestions){
+	  refresh(originalWord,suggestions);
+	  setVisible(true);
+	  return _userAction;
+  }
   /**
    * Returns the replacement word selected by the user
    *<p>
@@ -233,29 +241,28 @@ class ValidationDialog
     //-- Text Fields
     //--
     _changeToTextField = new JTextField();
+	_changeToTextField.setName("changeTo");
     _changeToTextField.setMinimumSize( new Dimension( 200, _changeToTextField.getPreferredSize().height ) );
     _changeToTextField.setMaximumSize( new Dimension( Integer.MAX_VALUE, _changeToTextField.getPreferredSize().height ) );
 
     Dimension textFieldDim =
       new Dimension( Integer.MAX_VALUE, _changeToTextField.getPreferredSize().height );
-    JTextField originalWordTextField = new JTextField( _originalWord );
-    originalWordTextField.setMinimumSize( new Dimension( 200, originalWordTextField.getPreferredSize().height ) );
-    originalWordTextField.setMaximumSize( new Dimension( Integer.MAX_VALUE, originalWordTextField.getPreferredSize().height ) );
-    originalWordTextField.setEditable(false);
+    _originalWordTextField = new JTextField( "ORIGINAL" );
+	_originalWordTextField.setName("originalWord");
+    _originalWordTextField.setMinimumSize( new Dimension( 200, _originalWordTextField.getPreferredSize().height ) );
+    _originalWordTextField.setMaximumSize( new Dimension( Integer.MAX_VALUE, _originalWordTextField.getPreferredSize().height ) );
+    _originalWordTextField.setEditable(false);
 
     //--
     //-- Other components
     //--
-    if ( _suggestions.isEmpty() )
-    {
-      _suggestionsJList = new JList( new String[] {"(no suggestion)"} );
-      _suggestionsJList.setForeground( Color.lightGray );
-    }
-    else
-    {
-      _suggestionsJList = new JList( _suggestions.toArray() );
-    }
-    _suggestionsJList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+	
+	_suggestionsModel = new DefaultListModel();
+	_suggestionsModel.addElement("(no suggestion)");
+	_suggestionsJList = new JList(_suggestionsModel);
+	_suggestionsJList.setForeground( Color.lightGray );
+    
+	_suggestionsJList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
     _suggestionsJList.addListSelectionListener( new MyListSelectionListener() );
     _suggestionsJList.setMinimumSize( new Dimension( 200, 300 ) );
     _suggestionsJList.setMaximumSize( new Dimension( Integer.MAX_VALUE, Integer.MAX_VALUE ) );
@@ -275,7 +282,7 @@ class ValidationDialog
     JLabel jLabel;
 
     jLabel = new JLabel( "Not in Dictionary:" );
-    _addRow( mainBox, jLabel, originalWordTextField );
+    _addRow( mainBox, jLabel, _originalWordTextField );
 
     jLabel = new JLabel( "Change to:" );
     _addRow( mainBox, jLabel, _changeToTextField );
@@ -307,20 +314,33 @@ class ValidationDialog
     if( _location != null )
     setLocation( _location );
     pack();
-    if ( !_suggestions.isEmpty() )
-    {
-      _suggestionsJList.setSelectedIndex( 0 );
-      _suggestionsJList.grabFocus();
-    }
-    else
-    {
-      _changeToTextField.grabFocus();
-    }
 
     //setSize( 750, getPreferredSize().height );
   }
 
 
+  private void refresh(String originalWord, List suggestions){
+	  _originalWordTextField.setText(originalWord);
+      while(_suggestionsModel.getSize()!=0)_suggestionsModel.remove(0);
+    
+	  if (suggestions.isEmpty() )
+	  {
+		  _suggestionsModel.addElement("(no suggestion)");
+		  _suggestionsJList.setForeground( Color.lightGray );
+		  _changeToTextField.setText(originalWord);
+		  _changeToTextField.grabFocus();
+	  }
+	  else
+	  {
+		  for(int i=0;i<suggestions.size();i++)
+			  _suggestionsModel.addElement(suggestions.get(i) );
+		  _suggestionsJList.setSelectedIndex( 0 );
+		  _changeToTextField.setText(suggestions.get(0).toString());
+		  _suggestionsJList.setForeground( null );
+		  _suggestionsJList.grabFocus();
+	  }
+  }
+  
   /**
    * Models a enum of UserActions
    */
@@ -382,7 +402,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = ADD;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -398,7 +419,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = CANCEL;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -417,7 +439,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = CHANGE;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -435,7 +458,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = CHANGE_ALL;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -453,7 +477,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = IGNORE;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -474,7 +499,8 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = IGNORE_ALL;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -485,7 +511,8 @@ class ValidationDialog
     actionPerformed(ActionEvent actionEvent)
     {
       _userAction = CANCEL;
-      dispose();
+     //dispose();
+		setVisible(false);
     }
   }
 
@@ -496,10 +523,10 @@ class ValidationDialog
     public void
     valueChanged( ListSelectionEvent e )
     {
-      int selectedIndex = _suggestionsJList.getSelectedIndex();
-      if( !_suggestions.isEmpty() && selectedIndex >= 0 )
+	  Object selectedValue = _suggestionsJList.getSelectedValue();
+      if( selectedValue !=null )
       {
-        _changeToTextField.setText( (String)_suggestions.get( selectedIndex ) );
+        _changeToTextField.setText( (String)selectedValue );
       }
       else
       {

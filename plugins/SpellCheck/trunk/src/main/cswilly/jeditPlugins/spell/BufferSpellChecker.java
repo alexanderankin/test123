@@ -68,14 +68,15 @@ public class BufferSpellChecker{
 	{
 		spellValidator.start();
 		spellValidator.setTextArea(area);
-		Selection[] selections = area.getSelection();
 		if(area.getSelectionCount() == 0){
-			selections = new Selection[1];
-			selections[0] = new Selection.Range(0,input.getLength());
+			area.setSelection(new Selection.Range(0,input.getLength()));
 		}
+		Selection[] selections = area.getSelection();
 		input.beginCompoundEdit();
 		//input.writeLock();
 		boolean confirm = false;
+		//to prevent false undo when the user cancelled before any change was made
+		boolean changed = false;
 		try
 		{
 			for(int iSelection = 0; iSelection<selections.length;iSelection++){
@@ -93,7 +94,6 @@ public class BufferSpellChecker{
 						List<Result> results = _getSpellEngine().checkLine( line );
 						int startSelLine = sel.getStart(input,i);
 						int endSelLine = sel.getEnd(input,i);
-						int delta = 0;
 						int lineOffset = input.getLineStartOffset(i);
 
 						//filter away results out of the selection
@@ -111,14 +111,15 @@ public class BufferSpellChecker{
 						List<Result> checkedLine = spellValidator.validate( i, line, results );
 						if( checkedLine != null ){
 							confirm = true;
+							System.out.println("RESULTS : "+checkedLine);
 							for(Result result : checkedLine){
 								if(Result.SUGGESTION == result.getType()){
-									int originalIndex = lineOffset+result.getOffset()-1+delta;//offset starts at 1 for aspell
+									int originalIndex = lineOffset+result.getOffset()-1;//offset starts at 1 for aspell
 									String newWord = result.getSuggestions().get(0);
-									Log.log(Log.DEBUG,this,"o="+originalIndex+",d="+delta+",n="+newWord);
+									Log.log(Log.DEBUG,this,"o="+originalIndex+",n="+newWord);
+									changed = true;
 									input.remove(originalIndex,result.getOriginalWord().length());
 									input.insert(originalIndex,newWord);
-									delta += newWord.length()-result.getOriginalWord().length();
 								}
 							}
 						}else{
@@ -146,7 +147,7 @@ public class BufferSpellChecker{
 				//if cancelled, must undo !
 			}
 		}
-		if(!confirm)
+		if(!confirm && changed)
 		{
 			Log.log(Log.DEBUG,this,"cancelled spell-check");
 			input.undo(area);

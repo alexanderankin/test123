@@ -27,19 +27,17 @@ import java.util.concurrent.*;
 import java.util.*;
 
 import junit.framework.TestCase;
+//annotations
+import org.junit.*;
+import org.junit.Test;
+
 
 public class FutureListDictsTest extends TestCase{
 	private static final String SINK = System.getProperty("user.dir")+File.separator+"tests/sink.sh";
 	private static final String OK = System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
 	
-	protected void setUp(){
-		System.out.println("Setting up FutureListDictsTest");
-	}
 	
-	protected void tearDown(){
-		System.out.println("Tearing down FutureListDictsTest");
-	}
-	
+	@Test
 	public void testTimeout(){
 		FutureListDicts ft = new FutureListDicts(SINK);
 		try{
@@ -59,7 +57,8 @@ public class FutureListDictsTest extends TestCase{
 			ft.cancel(true);
 		}
 	}
-	
+
+	@Test
 	public void testCancel(){
 		final FutureListDicts ft = new FutureListDicts(SINK);
 		new Thread(){
@@ -86,6 +85,7 @@ public class FutureListDictsTest extends TestCase{
 		ft.cancel(true);
 	}
 
+	@Test
 	public void testOK(){
 		final FutureListDicts ft = new FutureListDicts(OK);
 		new Thread(){

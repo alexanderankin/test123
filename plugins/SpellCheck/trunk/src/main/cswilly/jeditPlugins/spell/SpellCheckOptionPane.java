@@ -155,8 +155,10 @@ public class SpellCheckOptionPane
 
 	MutableComboBoxModel model = new DefaultComboBoxModel();
 	MutableComboBoxModel model2 = new DefaultComboBoxModel();
+	
 	final AspellCapabilitiesAction actionRefresh = new AspellCapabilitiesAction(model,model2);
 	propertyStore.addPropertyChangeListener(ASPELL_EXE_PROP,actionRefresh);
+
 
 	final JComboBox _aspellMainLanguageList = new JComboBox( model );
 	_aspellMainLanguageList.setEditable( true );	
@@ -170,7 +172,7 @@ public class SpellCheckOptionPane
 	});
 	
 	listingPanel.add( _aspellMainLanguageList , BorderLayout.WEST );
-	
+
     JButton _refreshButton = new JButton(actionRefresh);
 	_refreshButton.setName("Refresh");
 	listingPanel.add( _refreshButton, BorderLayout.EAST );
@@ -194,6 +196,7 @@ public class SpellCheckOptionPane
 	
 	for(final SpellCheckPlugin.AspellMarkupMode mode : SpellCheckPlugin.AspellMarkupMode.values()){
 		JRadioButton _aspellMarkupMode = new JRadioButton();
+		_aspellMarkupMode.setName( mode.toString());
 		_aspellMarkupMode.setText( jEdit.getProperty( "options.SpellCheck."+mode.toString() ) );
 		_aspellMarkupMode.setToolTipText( jEdit.getProperty( "options.SpellCheck."+mode.toString()+".tooltip" ) );
 		_aspellMarkupMode.setSelected( mode == modeValue);
@@ -222,7 +225,8 @@ public class SpellCheckOptionPane
     addComponent( _aspellOtherParamsLabel );
 
     final JTextField _aspellOtherParamsField = new JTextField( 25 );
-    _aspellOtherParamsField.setText( otherParams );
+	_aspellOtherParamsField.setName("AdditionalParameters");
+	_aspellOtherParamsField.setText( otherParams );
 	TextFieldHandler otherParamsHandler = new TextFieldHandler(ASPELL_OTHER_PARAMS_PROP);
 	_aspellOtherParamsField.addActionListener(otherParamsHandler);
 	_aspellOtherParamsField.addFocusListener(otherParamsHandler);
@@ -230,6 +234,7 @@ public class SpellCheckOptionPane
 	
 	/* spell-check on save */
 	final JCheckBox spellOnSaveBox = new JCheckBox();
+	spellOnSaveBox.setName("SpellCheckOnSave");
 	spellOnSaveBox.setText( jEdit.getProperty( "options.SpellCheck.spellcheckOnSave" ));
 	spellOnSaveBox.setToolTipText( jEdit.getProperty( "options.SpellCheck.spellcheckOnSave.tooltip" ));
 	spellOnSaveBox.setSelected(spellOnSave);
@@ -290,6 +295,7 @@ public class SpellCheckOptionPane
   {
     model = new ModeTableModel();
     JTable table = new JTable(model);
+	table.setName("filtersTable");
     table.getTableHeader().setReorderingAllowed(false);
     table.setColumnSelectionAllowed(false);
     table.setRowSelectionAllowed(false);
@@ -297,13 +303,12 @@ public class SpellCheckOptionPane
 
 	for(String filter: model.getUsedFilters())comboModel.addElement(filter);
 	final JComboBox comboBox = new JComboBox(comboModel);
-
+	comboBox.setName("filtersCombo");
     table.setRowHeight(comboBox.getPreferredSize().height);
     table.getColumnModel().getColumn(0).setPreferredWidth(200);
     TableColumn column = table.getColumnModel().getColumn(1);
 
     column.setCellEditor(new DefaultCellEditor(comboBox));
-    column.setCellRenderer(new CheckBoxCellRenderer(new JComboBox(comboModel)));
     column.setPreferredWidth(comboBox.getPreferredSize().width);
 
     Dimension d = table.getPreferredSize();
@@ -314,29 +319,6 @@ public class SpellCheckOptionPane
     return scroller;
   }
 
-	
-  class CheckBoxCellRenderer
-    implements TableCellRenderer
-  {
-	  private JComboBox box;
-    CheckBoxCellRenderer(JComboBox b)
-    {
-      box = b;
-    }
-
-    public Component getTableCellRendererComponent(JTable table,
-      Object value, boolean isSelected, boolean hasFocus,
-      int row, int column)
-    {
-      /*Boolean val = (Boolean) value;
-      setSelected(val.booleanValue());*/
-      // Entry val = (Entry)value;
-      // setSelected(val.isSelected.booleanValue());
-      // setText(val.name);
-	  box.setSelectedItem(value);
-      return box;
-    }
-  }
     
   private class TextFieldHandler extends FocusAdapter implements ActionListener{
 	  private String propName;
@@ -377,23 +359,21 @@ public class SpellCheckOptionPane
   private class AspellCapabilitiesAction extends AbstractAction implements PropertyChangeListener{
 	  private MutableComboBoxModel modelDicts;
 	  private MutableComboBoxModel modelFilters;
+	  
 	  private Future<Vector<String>> futureDicts;
 	  private Future<Map<String,String>> futureModes;
 	  
-	  public AspellCapabilitiesAction(MutableComboBoxModel mD,MutableComboBoxModel mF){
+	  AspellCapabilitiesAction(MutableComboBoxModel modelDicts, MutableComboBoxModel modelFilters){
 		  super(jEdit.getProperty(REFRESH_BUTTON_START));
-		  modelDicts=mD;
-		  modelFilters=mF;
-		  futureDicts = null;
-		  futureModes = null;
+		  this.modelDicts=modelDicts;
+		  this.modelFilters=modelFilters;
 		  setEnabled(false);
 	  }
 
 	public void actionPerformed( ActionEvent evt )
     {
 		if(futureDicts == null && futureModes==null){
-			refreshList(modelDicts);
-			refreshFilters(modelFilters);
+			refreshList();
 		}else{
 			setEnabled(false);//disable while threads cleanup
 			if(futureDicts!=null)futureDicts.cancel(true);
@@ -404,9 +384,11 @@ public class SpellCheckOptionPane
 	}
 
 	public void propertyChange(PropertyChangeEvent e){
-		//when Aspell Exe Path changes
-		if(futureDicts==null && futureModes==null&& !isEnabled()){
-			setEnabled(true);
+		if(ASPELL_EXE_PROP.equals(e.getPropertyName())){
+			//when Aspell Exe Path changes
+			if(!isEnabled()){
+				setEnabled(true);
+			}
 		}
 	}
 	
@@ -417,29 +399,38 @@ public class SpellCheckOptionPane
 	 * and to flag that some work is done (while it's not null).
 	 * The aspell executable used is the one currently configured, even if not applied yet.
 	**/
-	private void refreshList(final MutableComboBoxModel model){
+	private void refreshList(){
 		new Thread(){
 			public void run(){
 			putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_STOP));
 			String listing = jEdit.getProperty( LISTING_DICTS, "" );
-			model.addElement(listing);
-			model.setSelectedItem(listing);
+			modelDicts.addElement(listing);
+			modelDicts.setSelectedItem(listing);
 			final Vector<String> dicts = new Vector<String>();
+			final Map<String,String> filters = new HashMap<String,String>();
 			
-			setEnabled(true);
 			
+			FutureListModes ftModes = new FutureListModes(propertyStore.get(ASPELL_EXE_PROP));
 			FutureListDicts ft = new FutureListDicts(propertyStore.get(ASPELL_EXE_PROP));
+			futureModes = ftModes;
 			//have a stable state, but give a reference to the outside, so it is able to cancel.
 			futureDicts = ft;
+
+		
+			setEnabled(true);
+			
+
 			try
 			{
 				dicts.addAll(ft.get(10,TimeUnit.SECONDS));
+				filters.putAll(ftModes.get(10,TimeUnit.SECONDS));
 			}
 			catch(InterruptedException ie){
 				Log.log(Log.ERROR,SpellCheckOptionPane.this,ie);
 				GUIUtilities.error(SpellCheckOptionPane.this,
 					"ioerror",new String[] { "Interrupted while listing dictionaries" });
 				ft.cancel(true);
+				ftModes.cancel(true);
 			}
 			catch(CancellationException ce){
 				Log.log(Log.DEBUG,SpellCheckOptionPane.this,"Cancel Button worked");
@@ -449,111 +440,61 @@ public class SpellCheckOptionPane
 				GUIUtilities.error(SpellCheckOptionPane.this,
 					"ioerror",new String[] { jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}) });
 				ft.cancel(true);
+				ftModes.cancel(true);
 			}
 			catch(TimeoutException te){
 				Log.log(Log.ERROR,SpellCheckOptionPane.this,te);
 				GUIUtilities.error(SpellCheckOptionPane.this,
 					"ioerror",new String[] { jEdit.getProperty("list-dict-timeout-error.message") });
 				ft.cancel(true);
+				ftModes.cancel(true);
 			}
 
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					if(!dicts.isEmpty())
-						Log.log(Log.DEBUG,SpellCheckOptionPane.this,"finished refreshList ("+dicts.size()+" dictionaries found)");
-					else
-						Log.log(Log.ERROR,SpellCheckOptionPane.this,"no dictionary found)");
-					while(model.getSize()!=0)model.removeElementAt(0);//remove listing...
-					for(int i=0;i<dicts.size();i++)model.addElement(dicts.get(i));
-					if(dicts.isEmpty()){
-						String nothing = jEdit.getProperty( NO_DICTIONARY, "" );
-						model.addElement(nothing);
-						model.setSelectedItem(nothing);
-					}else{
-						String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
-						if(dicts.contains(dict))model.setSelectedItem(dict);
-					}
-		
-					if(futureModes==null){
-						putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_START));
-						setEnabled(true);
-					}
-					//we are done!
-					futureDicts = null;
-				}
-			});
-		}}.start();
+			if(!dicts.isEmpty())
+				Log.log(Log.DEBUG,SpellCheckOptionPane.this,"finished refreshList ("+dicts.size()+" dictionaries found)");
+			else
+				Log.log(Log.ERROR,SpellCheckOptionPane.this,"no dictionary found)");
+			if(!filters.isEmpty())
+				Log.log(Log.DEBUG,SpellCheckOptionPane.this,"finished refreshList ("+filters.size()+" filters found)");
+			else
+				Log.log(Log.ERROR,SpellCheckOptionPane.this,"no filter found)");
+
+			putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_START));
+			setEnabled(true);
+			futureModes = null;
+			futureDicts = null;
+			updateModels(dicts,filters);
+			}
+		}.start();
 	}
 	
-	/**
-	 * executes a FutureListModes in a new Thread.
-	 * finally, update the combo model to contain all found modes
-	 * the futureModes variable serves both to cancel in response to user action on Stop! button
-	 * and to flag that some work is done (while it's not null).
-	 * The aspell executable used is the one currently configured, even if not applied yet.
-	**/
-	private void refreshFilters(final MutableComboBoxModel model){
-		new Thread(){
-			public void run(){
-			
-			final Map<String,String> dicts = new HashMap<String,String>();
-			
-			putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_STOP));
-			setEnabled(true);
-			
-			FutureListModes ftModes = new FutureListModes(propertyStore.get(ASPELL_EXE_PROP));
-			futureModes = ftModes;
-			try
-			{
-				dicts.putAll(ftModes.get(10,TimeUnit.SECONDS));
-			}
-			catch(InterruptedException ie){
-				Log.log(Log.ERROR,SpellCheckOptionPane.this,ie);
-				GUIUtilities.error(SpellCheckOptionPane.this,
-					"ioerror",new String[] { "Interrupted while listing modes" });
-				ftModes.cancel(true);
-			}
-			catch(CancellationException ce){
-				Log.log(Log.DEBUG,SpellCheckOptionPane.this,"Cancel Button worked");
-			}
-			catch(ExecutionException ee){
-				Log.log(Log.ERROR,SpellCheckOptionPane.this,ee);
-				GUIUtilities.error(SpellCheckOptionPane.this,
-					"ioerror",new String[] { jEdit.getProperty("list-modes-error.message",new Object[]{ee.getCause().getMessage()}) });
-				ftModes.cancel(true);
-			}
-			catch(TimeoutException te){
-				Log.log(Log.ERROR,this,te);
-				GUIUtilities.error(SpellCheckOptionPane.this,
-					"ioerror",new String[] { jEdit.getProperty("list-modes-timeout-error.message") });
-				ftModes.cancel(true);
-			}
-			
+	
+	private void updateModels(final java.util.List<String> dicts, final Map<String,String> modes){
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
 					if(!dicts.isEmpty())
 					{
-						Log.log(Log.DEBUG,this,"finished refreshModes ("+dicts.size()+" filter modes found)");
-						while(model.getSize()!=0)model.removeElementAt(0);//remove old modes
-						for(String mode: dicts.keySet())model.addElement(mode);
-						model.addElement(SpellCheckPlugin.FILTER_AUTO);
+						while(modelFilters.getSize()!=0)modelFilters.removeElementAt(0);//remove old modes
+						for(String mode: modes.keySet())modelFilters.addElement(mode);
+						modelFilters.addElement(SpellCheckPlugin.FILTER_AUTO);
 					}
-					else
-						Log.log(Log.ERROR,this,"no filter mode found)");
 
-					if(futureDicts==null){
-						putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_START));
-						setEnabled(true);
+					while(modelDicts.getSize()!=0)modelDicts.removeElementAt(0);//remove listing...
+					for(int i=0;i<dicts.size();i++)modelDicts.addElement(dicts.get(i));
+					if(dicts.isEmpty()){
+						String nothing = jEdit.getProperty( NO_DICTIONARY, "" );
+						modelDicts.addElement(nothing);
+						modelDicts.setSelectedItem(nothing);
+					}else{
+						String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
+						if(dicts.contains(dict))modelDicts.setSelectedItem(dict);
 					}
-					futureModes = null;
+		
 				}
 			});
-		}}.start();
-	}
+		}
   }
 
 }
