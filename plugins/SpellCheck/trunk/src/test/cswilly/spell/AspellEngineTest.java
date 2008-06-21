@@ -27,6 +27,9 @@ import java.util.concurrent.*;
 import java.util.*;
 
 import junit.framework.TestCase;
+//annotations
+import org.junit.*;
+import org.junit.Test;
 
 public class AspellEngineTest extends TestCase{
 	private static final String SINK = System.getProperty("user.dir")+File.separator+"tests/sink.sh";
@@ -36,14 +39,18 @@ public class AspellEngineTest extends TestCase{
 	private static final String DOES_NOT_EXIST = System.getProperty("user.dir")+File.separator+"tests/NOT_THERE";
 	
 	private Throwable throwable;
+
+	@Before
 	protected void setUp(){
 		throwable=null;
 	}
-	
+
+	@After
 	protected void tearDown(){
 		throwable=null;
 	}
 
+	@Test
 	public void testCreationDoesNotExist(){
 		try{
 			Thread t = new Thread(){
@@ -73,6 +80,7 @@ public class AspellEngineTest extends TestCase{
 		}
 	}
 	
+	@Test
 	public void testCreationSink(){
 		try{
 			Thread t = new Thread(){
@@ -102,6 +110,7 @@ public class AspellEngineTest extends TestCase{
 		}
 	}
 
+	@Test
 	public void testCreationWelcome(){
 		try{
 			Thread t = new Thread(){
@@ -132,6 +141,7 @@ public class AspellEngineTest extends TestCase{
 		}
 	}
 	
+	@Test
 	public void testSpellCheckOK(){
 		final List<Result> correct_results = Arrays.asList(new Result[]{
 				new Result("*"),new Result("*"),new Result("*"),
@@ -167,6 +177,7 @@ public class AspellEngineTest extends TestCase{
 		}
 	}
 
+	@Test
 	public void testSpellCheckSink(){
 		try{
 			final AspellEngine ae = new AspellEngine(WELCOME_THEN_SINK,new String[]{"pipe","--lang='en'"});

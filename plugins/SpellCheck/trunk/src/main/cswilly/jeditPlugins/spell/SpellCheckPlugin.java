@@ -40,16 +40,15 @@ import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 
 import java.util.concurrent.Future;
-
-import common.gui.OkCancelButtons;
 
 public class SpellCheckPlugin
   extends EBPlugin
@@ -95,7 +94,7 @@ public class SpellCheckPlugin
   * Displays the spell checker dialog box with specified lang dictionary. This method
   * is called by the spell-check-selection-with-lang action, defined in actions.xml.
   */
-  private static void showCustomLangSpellDialog(View view,Buffer buffer)
+  public static void showCustomLangSpellDialog(View view,Buffer buffer)
     throws SpellException
   {
 	  String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
@@ -106,41 +105,29 @@ public class SpellCheckPlugin
   
   private static String pickLanguage(View view,Buffer buffer)
   {
-	 String result = null;
-	 String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
-	 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
-	 if(oldDict == null)oldDict = getAspellMainLanguage();
-	 final DictionaryPicker dp = new DictionaryPicker(oldDict);
-
-	 dp.getPropertyStore().put(ASPELL_EXE_PROP,getAspellExeFilename());
-	 Action a = dp.getRefreshAction();
-	 String title = jEdit.getProperty("spell-check-pick-language.title","");
-	 
-	 EnhancedDialog dialog = new EnhancedDialog(view,title,false){
-		 public void ok(){
-			 dp.getPropertyStore().put("confirmed","true");
-			 setVisible(false);
-		 }
-		 public void cancel(){
-			 dp.cancel();
-			 setVisible(false);
-		 }
-	 };
-	 dialog.getContentPane().add(BorderLayout.CENTER,dp.asComboBox());
-	 dialog.getContentPane().add(BorderLayout.SOUTH,new OkCancelButtons(dialog));
-	 dialog.pack();
-	 dp.getRefreshAction().actionPerformed(null);
-	 dialog.setVisible(true);
-
-	 if(dp.getPropertyStore().get("confirmed")!=null){
-		 Log.log(Log.DEBUG,SpellCheckPlugin.class,"confirmed");
+	  String result = null;
+	  String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	  Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
+	  if(oldDict == null)oldDict = getAspellMainLanguage();
+	  final DictionaryPicker dp = new DictionaryPicker(oldDict);
+	  
+	  dp.getPropertyStore().put(ASPELL_EXE_PROP,getAspellExeFilename());
+	  
+	  
+	  JDialog dialog = dp.asDialog(view);
+	  dp.getRefreshAction().actionPerformed(null);
+	  dialog.setVisible(true);
+	  
+	  if(dp.getPropertyStore().get(DictionaryPicker.CONFIRMED_PROP)!=null)
+	  {
+		  Log.log(Log.DEBUG,SpellCheckPlugin.class,"confirmed");
 		  result = dp.getPropertyStore().get(DictionaryPicker.LANG_PROP);
-	 }
-	 else
-	 {
-		 Log.log(Log.DEBUG,SpellCheckPlugin.class,"cancelled");
-	 }
-	 return result;
+	  }
+	  else
+	  {
+		  Log.log(Log.DEBUG,SpellCheckPlugin.class,"cancelled");
+	  }
+	  return result;
   }
 
 
@@ -215,6 +202,8 @@ public class SpellCheckPlugin
   void checkBuffer(View view,Buffer buffer)
   {
 	 JEditTextArea area = view.getEditPane().getTextArea();
+	 if(area.getBuffer()!=buffer)
+	 	throw new IllegalArgumentException("The buffer must correspond to the first area");
 	 BufferSpellChecker checker = null;
 
 	 StatusBar status = view.getStatus();

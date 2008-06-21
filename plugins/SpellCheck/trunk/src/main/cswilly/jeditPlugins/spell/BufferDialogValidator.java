@@ -40,6 +40,7 @@ import cswilly.spell.ValidationDialog;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
@@ -57,7 +58,8 @@ class BufferDialogValidator implements Validator
   private TextArea area;
   private JEditBuffer buffer;
   private Position savedPosition;
-  
+  private ValidationDialog validationDialog;
+
   
   /**
    * Validate a line of words that have the <code>results</code> of a spell
@@ -131,19 +133,20 @@ class BufferDialogValidator implements Validator
   {
     String replacementWord = null;
 	
-    ValidationDialog validationDialog;
     
 	// ensures visible and selected
 	int offset = buffer.getLineStartOffset(lineNum)+result.getOffset()-1;
 	Selection s = new Selection.Range(offset,offset+result.getOriginalWord().length());
 	area.setSelection(s);
-	area.scrollTo(offset,false);
-	
-	validationDialog = new ValidationDialog( result.getOriginalWord(),
-                                             result.getSuggestions() );
-    validationDialog.show();
+	/* Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
+	area.scrollTo(lineNum,result.getOffset()-1,false);
+	*/
+	//validationDialog = new ValidationDialog( result.getOriginalWord(),
+    //                                         result.getSuggestions() );
+    //validationDialog.show();
 
-    ValidationDialog.UserAction userAction = validationDialog.getUserAction();
+    ValidationDialog.UserAction userAction =
+		validationDialog.getUserAction(result.getOriginalWord(),result.getSuggestions());
     if( userAction == validationDialog.CANCEL )
     {
       replacementWord = null;
@@ -202,6 +205,7 @@ class BufferDialogValidator implements Validator
 	  this.area = ta;
 	  this.buffer = ta.getBuffer();
 	  savedPosition = buffer.createPosition(ta.getCaretPosition());
+	  validationDialog = new ValidationDialog(((JEditTextArea)area).getView());
   }
   
   public void start()
@@ -209,9 +213,12 @@ class BufferDialogValidator implements Validator
   
   public void done()
   {
-	  //TODO can I save a rectangular selection and restore it in a meaningfull way ?
+	  //TODO can I save a rectangular selection and restore it in a meaningful way ?
 	  area.setCaretPosition(savedPosition.getOffset());
+	  /*
+	  Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
 	  area.scrollToCaret(false);
+	*/
   }
 
 }

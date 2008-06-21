@@ -77,9 +77,9 @@ spell-check-pick-language.title=Buffer's language
 
 
 #mode-filter mappings
-spell-check-filter.xml=html
-spell-check-filter.html=html
-spell-check-filter.sgml=html
+spell-check-filter.xml=sgml
+spell-check-filter.html=sgml
+spell-check-filter.sgml=sgml
 spell-check-filter.tex=tex
 spell-check-filter.latex=tex
 spell-check-filter.xml=sgml

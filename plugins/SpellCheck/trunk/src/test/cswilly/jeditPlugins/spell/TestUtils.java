@@ -25,6 +25,9 @@ package cswilly.jeditPlugins.spell;
 
 //{{{ Imports
 
+import java.io.*;
+import java.awt.Dialog;
+import java.awt.Component;
 
 //{{{ 	jEdit
 import org.gjt.sp.jedit.*;
@@ -50,28 +53,48 @@ import org.fest.swing.finder.WindowFinder;
 public class TestUtils{
 
 	public static final String ENV_JEDIT_SETTINGS = "test-jedit.settings";
+	
+	//common environment variables
+	public static final String ENV_ASPELL_EXE	  = "test-jedit.aspell-exe";
+	public static final String ENV_TESTS_DIR	  = "test-tests.dir";
+
 	private static FrameFixture jeditFrame;
 	private static RobotFixture robot;
 
+	private static boolean injEdit = false;
 	public static void setUpjEdit(){
 		System.out.println("Setting jedit up");
-		robot = RobotFixture.robotWithNewAwtHierarchy();
-		String settings = System.getProperty(ENV_JEDIT_SETTINGS);
-		assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
 		
-		final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
-		Thread runJeditThread = new Thread(){
-			public void run(){
-				jEdit.main(args);
+		// try{
+		// robot = RobotFixture.robotWithCurrentAwtHierarchy();
+		// // try{
+		// robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
+		// }catch(FileNotFoundException fnfe){}
+		// //jeditFrame = new FrameFixture(robot, jEdit.getActiveView());//DOESN'T WORK : WindowFinder.findFrame(View.class).using(robot);
+		//jeditFrame = new FrameFixture(robot,jEdit.newView(jeditFrame.targetCastedTo(View.class)));
+		// injEdit=true;
+		// }catch(RuntimeException re){
+		// 	System.out.println(re.toString());
+			injEdit = false;
+		 	robot = RobotFixture.robotWithNewAwtHierarchy();
+			String settings = System.getProperty(ENV_JEDIT_SETTINGS);
+			assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
+			
+			final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
+			Thread runJeditThread = new Thread(){
+				public void run(){
+					jEdit.main(args);
+				}
+			};
+			runJeditThread.start();
+			jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
+			try{
+				Class c = Class.forName(SpellCheckPlugin.class.getName());
+			}catch(ClassNotFoundException cnfe){
+				fail("Couldn't find plugin's class");
 			}
-		};
-		runJeditThread.start();
-		jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
-		try{
-			Class c = Class.forName(SpellCheckPlugin.class.getName());
-		}catch(ClassNotFoundException cnfe){
-			fail("Couldn't find plugin's class");
-		}
+		//}
+		System.out.println("Setup done");
 	}
 
 	public static Robot robot(){
@@ -83,6 +106,20 @@ public class TestUtils{
 	}
 	
 	public static  void tearDownjEdit(){
-		robot.cleanUp();
+		if(injEdit){
+			//jeditFrame.cleanUp();
+			robot.releaseMouseButtons();
+			ScreenLock.instance().release(robot);
+			System.out.println("tearDown done in jEdit");
+		}else{
+			robot.cleanUp();
+		}
+		robot = null;
+		jeditFrame = null;
+
+	}
+	
+	public static DialogFixture findDialogByTitle(String title){
+			return new DialogFixture(robot(), (Dialog)robot().finder().find(new FirstDialogMatcher(title)));
 	}
 }

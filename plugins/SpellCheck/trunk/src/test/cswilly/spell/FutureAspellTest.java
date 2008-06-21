@@ -27,17 +27,16 @@ import java.util.concurrent.*;
 import java.util.*;
 
 import junit.framework.TestCase;
+//annotations
+import org.junit.*;
+import org.junit.Test;
+
 
 public class FutureAspellTest extends TestCase{
 	private static final String SINK = System.getProperty("user.dir")+File.separator+"tests/sink.sh";
 	private static final String OK = System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
 	
-	protected void setUp(){
-	}
-	
-	protected void tearDown(){
-	}
-	
+	@Test
 	public void testTimeout(){
 		FutureAspell<Object> ft = new MockAspell(SINK,new MockAspell.MockProcessor(null));
 		try{
@@ -58,6 +57,7 @@ public class FutureAspellTest extends TestCase{
 		}
 	}
 	
+	@Test
 	public void testCancel(){
 		final FutureAspell<Object> ft = new MockAspell(SINK,new MockAspell.MockProcessor(null));
 		Thread t=new Thread(){
@@ -95,6 +95,7 @@ public class FutureAspellTest extends TestCase{
 
 	}
 	
+	@Test
 	public void testOK(){
 		final Object expected=new Object();
 		final MockAspell.MockProcessor processor = new MockAspell.MockProcessor(expected);
@@ -132,6 +133,8 @@ public class FutureAspellTest extends TestCase{
 		}
 	}
 	
+	
+	@Test
 	public void testException(){
 		Object expected=new Object();
 		final FutureAspell<Object> ft = new MockAspell(OK,new MockAspell.MockExceptionProcessor());

@@ -47,6 +47,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 
+//for asDialog()
+import org.gjt.sp.jedit.gui.EnhancedDialog;
+import java.beans.*;
+import common.gui.OkCancelButtons;
+
+
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
 
@@ -65,6 +71,8 @@ public class DictionaryPicker{
 
 	private static final String INITIAL_LANG_PROP = "dict-picker-initial-lang";
 	public static final String LANG_PROP = "dict-picker-lang";
+	public static final String ERROR_PROP = "dict-picker-error";
+	public static final String CONFIRMED_PROP = "dict-picker-confirmed";
 
 	private MutableComboBoxModel modelDicts;
 	private Future<Vector<String>> futureDicts;
@@ -92,6 +100,41 @@ public class DictionaryPicker{
 				}
 		});
 		return _aspellMainLanguageList;
+	}
+	
+	public JDialog asDialog(Frame view){
+	 String title = jEdit.getProperty("spell-check-pick-language.title","");
+		
+		EnhancedDialog dialog = new EnhancedDialog(view,title,true){
+			public void ok(){
+				DictionaryPicker.this.getPropertyStore().put(CONFIRMED_PROP,"true");
+				setVisible(false);
+			}
+			public void cancel(){
+				DictionaryPicker.this.cancel();
+				setVisible(false);
+			}
+		};
+		final JTextArea errorReport = new JTextArea(4,40);
+		errorReport.setName("error-report");
+		errorReport.setEditable(false);
+		errorReport.setForeground(Color.RED);
+		JScrollPane sp = new JScrollPane(errorReport);
+		dialog.getContentPane().add(BorderLayout.NORTH,asComboBox());
+		dialog.getContentPane().add(BorderLayout.CENTER,sp);
+		dialog.getContentPane().add(BorderLayout.SOUTH,new OkCancelButtons(dialog));
+		
+		getPropertyStore().addPropertyChangeListener(new PropertyChangeListener(){
+				public void propertyChange(final PropertyChangeEvent pe){
+					if(ERROR_PROP.equals(pe.getPropertyName()) && pe.getNewValue()!=null)
+					SwingUtilities.invokeLater(new Runnable(){
+							public void run(){errorReport.setText(pe.getNewValue().toString());}
+					});
+				}
+		});
+		
+		dialog.pack();
+		return dialog;
 	}
 	
 	public PropertyStore getPropertyStore(){
@@ -156,24 +199,28 @@ public class DictionaryPicker{
 				}
 				catch(InterruptedException ie){
 					Log.log(Log.ERROR,DictionaryPicker.this,ie);
-					GUIUtilities.error(null,
-						"ioerror",new String[] { "Interrupted while listing dictionaries" });
+					// GUIUtilities.error(null,
+					// 	"ioerror",new String[] { "Interrupted while listing dictionaries" });
 					ft.cancel(true);
+					propertyStore.put(ERROR_PROP,"Interrupted while listing dictionaries");
 				}
 				catch(CancellationException ce){
-					Log.log(Log.DEBUG,DictionaryPicker.this,"Cancel Button worked");
+					Log.log(Log.DEBUG,DictionaryPicker.this,"Cancel Action worked");
 				}
 				catch(ExecutionException ee){
 					Log.log(Log.ERROR,DictionaryPicker.this,ee);
-					GUIUtilities.error(null,
-						"ioerror",new String[] { jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}) });
+					// GUIUtilities.error(null,
+					// 	"ioerror",new String[] { jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}) });
 					ft.cancel(true);
+					propertyStore.put(ERROR_PROP,jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}));
+
 				}
 				catch(TimeoutException te){
 					Log.log(Log.ERROR,DictionaryPicker.this,te);
-					GUIUtilities.error(null,
-						"ioerror",new String[] { jEdit.getProperty("list-dict-timeout-error.message") });
+					// GUIUtilities.error(null,
+					// 	"ioerror",new String[] { jEdit.getProperty("list-dict-timeout-error.message") });
 					ft.cancel(true);
+					propertyStore.put(ERROR_PROP,jEdit.getProperty("list-dict-timeout-error.message"));
 				}
 				
 				SwingUtilities.invokeLater(new Runnable()
