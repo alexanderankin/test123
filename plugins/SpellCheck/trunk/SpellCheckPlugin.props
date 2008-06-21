@@ -2,7 +2,7 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004-bug
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R005
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
@@ -50,7 +50,7 @@ spell-check-menu.label=Spell Check
 
 spell-check-selection.label=Spell check selection...
 spell-check-selection-with-lang.label=Spell check selection with lang...
-spell-check-errorlist.label=Spell check and ErrorList
+spell-check-errorlist.label=Highlight misspelled words
 spell-check-set-buffer-lang.label=Set Buffer's language...
 
 ### Messages

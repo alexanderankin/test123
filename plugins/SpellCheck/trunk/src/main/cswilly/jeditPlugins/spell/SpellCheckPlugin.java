@@ -176,10 +176,17 @@ public class SpellCheckPlugin
 	// available at least since aspell 0.5.3
 	aspellCommandLine.add("--encoding=utf-8");
     String mode = buffer.getMode().getName();
-    if ( getAspellManualMarkupMode() || ( getAspellAutoMarkupMode() && isMarkupModeSelected( mode ) ) ){
-		aspellCommandLine.add("--mode="+jEdit.getProperty(FILTERS_PROP+"."+mode,"none"));
+	AspellMarkupMode markup = getAspellMarkupMode();
+	if( AspellMarkupMode.NO_MARKUP_MODE == markup)
+			aspellCommandLine.add("--mode=none");
+	else if( AspellMarkupMode.MANUAL_MARKUP_MODE == markup ){
+		String m = jEdit.getProperty(FILTERS_PROP+"."+mode);
+		if(m!=null)
+			aspellCommandLine.add("--mode="+m);
 	}
+	//else : AUTO : do nothing
 
+	
     String aspellMainLanguage = getAspellMainLanguage();
     if ( !aspellMainLanguage.equals("") ){
       aspellCommandLine.add("--lang=" + aspellMainLanguage);
@@ -359,25 +366,13 @@ public class SpellCheckPlugin
   }
 
   private static
-  boolean getAspellManualMarkupMode()
+  AspellMarkupMode getAspellMarkupMode()
   {
-    return AspellMarkupMode.MANUAL_MARKUP_MODE.toString().equals(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
-  }
-
-  private static
-  boolean getAspellAutoMarkupMode()
-  {
-    return AspellMarkupMode.AUTO_MARKUP_MODE.toString().equals(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
-  }
-
-  private static
-  boolean isMarkupModeSelected ( String editMode )
-  {
-    boolean defaultVal;
-    if ( defaultModes.contains( editMode ) )
-      return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", true);
-    else
-      return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", false);
+	  try{
+		  return AspellMarkupMode.fromString(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
+	  }catch(IllegalArgumentException iae){
+		  return AspellMarkupMode.AUTO_MARKUP_MODE;
+	  }
   }
 
   public static
