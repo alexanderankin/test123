@@ -7,7 +7,7 @@
 <!--      and the SpellCheck.jar file.                                -->
 <!-- Note that this build file uses ../build-support,                 -->
 <!-- available from jedit source repository                           -->
-
+<!-- $Id$ - $Revision                                                 -->
 <project name="SpellCheck" default="dist" basedir=".">
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
