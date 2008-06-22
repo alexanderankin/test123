@@ -8,13 +8,13 @@ plugin.textobjects.TextObjectsPlugin.depend.1=jdk 1.5
 plugin.textobjects.TextObjectsPlugin.description=Plugin to select text objects (words, sentences, paragraphs, code blocks, quoted text, and comments).
 plugin.textobjects.TextObjectsPlugin.longdescription=description.html
 
-#plugin.textobjects.TextObjectsPlugin.menu=select-in-word - select-a-word - \
-#    select-a-brace - select-in-brace - select-a-bracket - select-in-bracket - \
-#    select-a-paren - select-in-paren - select-a-angle - select-in-angle - \
-#    select-a-quote - select-in-quote - select-a-tick - select-in-tick - \
-#    select-a-back-tick - select-in-back-tick - select-a-paragraph - \
-#    select-in-paragraph - select-a-comment - select-in-comment - \
-#    select-a-sentence - select-in-sentence -
+plugin.textobjects.TextObjectsPlugin.menu=textobjects.select-a-word - textobjects.select-in-word - \
+    textobjects.select-a-brace - textobjects.select-in-brace - textobjects.select-a-bracket - textobjects.select-in-bracket - \
+    textobjects.select-a-paren - textobjects.select-in-paren - textobjects.select-a-angle - textobjects.select-in-angle - \
+    textobjects.select-a-quote - textobjects.select-in-quote - textobjects.select-a-tick - textobjects.select-in-tick - \
+    textobjects.select-a-back-tick - textobjects.select-in-back-tick - textobjects.select-a-paragraph - \
+    textobjects.select-in-paragraph - textobjects.select-a-comment - textobjects.select-in-comment - \
+    textobjects.select-a-sentence - textobjects.select-in-sentence -
 
 textobjects.start-input-mode.label=Start TextObjects input mode
 
