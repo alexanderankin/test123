@@ -493,7 +493,7 @@ public final class ProjectViewer extends JPanel
 				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
 					noTitleUpdate = false;
 					setChangingBuffers(false);
-					isClosingProject = true;
+					isClosingProject = false;
 					return;
 				}
 			}
@@ -531,7 +531,7 @@ public final class ProjectViewer extends JPanel
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
 		}
-		isClosingProject = true;
+		isClosingProject = false;
 		noTitleUpdate = false;
 		setChangingBuffers(false);
 	} //}}}
