@@ -185,6 +185,15 @@ public abstract class Importer implements Runnable {
 	 */
 	protected abstract Collection internalDoImport(); //}}}
 
+	/**
+	 *	This is called after {@link #internalDoImport()} is invoked, so
+	 *	implementations can clean up any internal state. Default implementation
+	 *	does nothing.
+	 */
+	protected void cleanup() {
+
+	}
+
 	//{{{ #findDirectory(String, VPTNode, boolean) : VPTNode
 	/**
 	 *	Looks, in the children list for the given parent, for a directory with
@@ -352,6 +361,7 @@ public abstract class Importer implements Runnable {
 		setViewerEnabled(false);
 		try {
 			final Collection c = internalDoImport();
+			cleanup();
 			if (c != null && c.size() > 0) {
 				PVActions.swingInvoke(new Runnable() {
 					public void run() {

@@ -76,5 +76,14 @@ public abstract class ImporterFileFilter implements VFSFileFilter {
 		return false;
 	}
 
+	/**
+	 * Called by project viewer after the filter is used for importing.
+	 * Filters that cache data should override this method and clean up
+	 * any caches so that future imports are unaffected by the state.
+	 */
+	protected void done() {
+
+	}
+
 }
 

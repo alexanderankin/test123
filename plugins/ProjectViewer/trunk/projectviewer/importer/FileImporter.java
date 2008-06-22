@@ -116,9 +116,9 @@ public class FileImporter extends Importer {
 
 
 		try {
-			VFSFileFilter fnf = id.getImportFilter();
 			boolean newParent = false;
 
+			fnf = id.getImportFilter();
 			if (keepTree &&
 				chosen[0].getPath().startsWith(project.getRootPath()))
 			{
@@ -250,5 +250,10 @@ public class FileImporter extends Importer {
 		}
 	} //}}}
 
-}
+	protected void cleanup() {
+		if (fnf instanceof ImporterFileFilter) {
+			((ImporterFileFilter)fnf).done();
+		}
+	}
 
+}
