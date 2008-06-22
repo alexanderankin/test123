@@ -58,7 +58,7 @@ public class P4SyncAction extends AsyncP4Action {
 
     public void prepareForNode(VPTNode node) {
         getMenuItem().setVisible(node != null
-            && (node.isFile() || node.isDirectory()));
+            && (node.isFile() || node.isDirectory() || node.isProject()));
     }
 
     protected String getCommand() {

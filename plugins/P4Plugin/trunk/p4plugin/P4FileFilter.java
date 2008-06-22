@@ -87,8 +87,9 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
             return false;
         }
 
-        if (clientInfo != null && !clientInfo.isSuccess())
+        if (clientInfo != null && !clientInfo.isSuccess()) {
             return false;
+        }
 
         String name = f.getName();
         String parent = f.getVFS().getParentOfPath(f.getPath());
@@ -234,6 +235,16 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
             }
         }
         return true;
+    }
+
+    public void done() {
+        if (entries != null) {
+            entries.clear();
+        }
+        if (views != null) {
+            views.clear();
+        }
+        clientInfo = null;
     }
 
 }
