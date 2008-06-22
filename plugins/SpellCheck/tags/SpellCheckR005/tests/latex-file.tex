@@ -1,0 +1,30 @@
+\documentclass[a4paper,10pt,twoside]{article}
+\pagestyle{headings}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+\usepackage[colorlinks,hyperfigures,backref,bookmarks,draft=false]{hyperref}
+\usepackage{pgf}
+\usepackage{subfigure}  % use for side-by-side figures
+
+
+\title{A sample latex document}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Aspell has the ability to ignore some parts of a text file when spell-checking.
+For instance, in this \latex{} document, the \emph{page style} commands won't
+get a warning, whereas the plain occurrence would (hence the space).
+Here is a mispelled word...
+\end{abstract}
+
+\section{Supported languages}
+Aspell 0.60 can handle 
+\begin{itemize}
+\item c++ and the like (java, c, \dots) : it will only check comments (between {\ttfamily /**/})
+	  and string literals.
+\item to be continued...
+\end{itemize}
+\end{document}

@@ -1,0 +1,92 @@
+# $Id$
+### Properties used by jEdit
+
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R005
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.description=The SpellCheck Plugin performs spell checking of text in a jEdit buffer.\
+	You will need to install Aspell to use this plugin.
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.longdescription=description.html
+### These tell jEdit what JDK and jEdit version we require
+
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.11.00
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.5
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
+
+### Option panel labels
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.option-pane=SpellCheck
+options.SpellCheck.code=new cswilly.jeditPlugins.spell.SpellCheckOptionPane(); 
+
+options.SpellCheck.label=Spell Check
+options.SpellCheck.fileChooser=Choose
+options.SpellCheck.aspellExe=Aspell executable filename:
+options.SpellCheck.aspellLang=Lang dictionary to use (leave it empty for default dictionary):
+options.SpellCheck.aspellMarkupMode=Markup mode:
+options.SpellCheck.aspellNoMarkupMode=Disable markup mode
+options.SpellCheck.aspellNoMarkupMode.tooltip=Tells Aspell to disable mode filters, for all edit modes (filter name 'none').
+options.SpellCheck.aspellManualMarkupMode=Enable markup mode (according to following table)
+options.SpellCheck.aspellManualMarkupMode.tooltip=Tells Aspell which mode filter to use.
+options.SpellCheck.aspellAutoMarkupMode=Automatic markup mode (for all edit modes)
+options.SpellCheck.aspellAutoMarkupMode.tooltip=Let Aspell decide which mode filter to use (filter name 'AUTO').
+options.SpellCheck.aspellAutoMarkupMode.name=Edit modes
+options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
+options.SpellCheck.aspellOtherParams=Additional parameters:
+options.SpellCheck.refresh-langs=Refresh list...
+options.SpellCheck.stop-refresh-langs=Stop!
+options.SpellCheck.no-dictionary=<No Dictionary Found>
+options.SpellCheck.spellcheckOnSave=Spell-check on save
+options.SpellCheck.spellcheckOnSave.tooltip=Report spelling errors via ErrorList : experimental and slugish ;)
+### Menu item labels
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
+    spell-check-selection \
+    spell-check-selection-with-lang \
+	spell-check-errorlist \
+	spell-check-set-buffer-lang
+
+spell-check-menu.label=Spell Check
+
+spell-check-selection.label=Spell check selection...
+spell-check-selection-with-lang.label=Spell check selection with lang...
+spell-check-errorlist.label=Highlight misspelled words
+spell-check-set-buffer-lang.label=Set Buffer's language...
+
+### Messages
+spell-check-selection-with-lang.title=Spell check selection with lang...
+spell-check-selection-with-lang.message=Enter an alternative lang dictionary:
+
+spell-check-noAspellExe.title=Unable to locate the aspell executable...
+spell-check-noAspellExe.message=The spell check engine is unable to locate your aspell executable.\nPlease tell it which one to use.
+
+spell-check-error.title=Error spell checking (Aspell).
+spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}
+
+list-dict-error.message = Dictionary listing aborted with message:\n{0}
+list-dict-timeout-error.message=Aspell Execution took more than 10 seconds.\nIt's very likely that you have a problem with the executable.\nConsulting the Help Section for SpellCheck might help.
+
+list-modes-error.message = Mode filters listing aborted with message:\n{0}
+list-modes-timeout-error.message=Aspell Execution took more than 10 seconds.\nIt's very likely that you have a problem with the executable.\nConsulting the Help Section for SpellCheck might help.
+
+
+spell-check.workthread-status=listing dictionaries
+spell-check.listing-dicts.combo-item=listing...
+
+spell-check-pick-language.title=Buffer's language
+
+
+#mode-filter mappings
+spell-check-filter.xml=sgml
+spell-check-filter.html=sgml
+spell-check-filter.sgml=sgml
+spell-check-filter.tex=tex
+spell-check-filter.latex=tex
+spell-check-filter.xml=sgml
+spell-check-filter.java=ccpp
+spell-check-filter.c=ccpp
+spell-check-filter.c++=ccpp
+
+# deactivate spell-check on save by default
+spell-check-on-save=false
