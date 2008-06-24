@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+
+    <ACTION NAME="textobjects.start-input-mode">
+        <CODE>
+            textobjects.TextObjectsPlugin.start_keyboard_handler(view);
+        </CODE>
+    </ACTION>
+
+	<ACTION NAME="textobjects.select-a-word">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), true));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-word">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), false));
+		</CODE>
+    </ACTION>
+    
+    <ACTION NAME="textobjects.select-a-brace">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), true, "{}"));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-brace">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), false, "{}"));
+		</CODE>
+    </ACTION>
+    <ACTION NAME="textobjects.select-a-bracket">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), true, "[]"));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-bracket">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), false, "[]"));
+		</CODE>
+    </ACTION>
+    <ACTION NAME="textobjects.select-a-paren">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), true, "()"));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-paren">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), false, "()"));
+		</CODE>
+    </ACTION>
+
+    <ACTION NAME="textobjects.select-a-quote">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), true, '"'));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-quote">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), false, '"'));
+		</CODE>
+    </ACTION>
+    <ACTION NAME="textobjects.select-a-tick">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), true, '\''));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-tick">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), false, '\''));
+		</CODE>
+    </ACTION>
+    <ACTION NAME="textobjects.select-a-back-tick">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), true, '`'));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-back-tick">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.quote(textArea, textArea.getCaretPosition(), false, '`'));
+		</CODE>
+    </ACTION>
+
+    <ACTION NAME="textobjects.select-a-paragraph">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.paragraph(textArea, textArea.getCaretPosition(), true));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-paragraph">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.paragraph(textArea, textArea.getCaretPosition(), false));
+		</CODE>
+    </ACTION>
+
+    <ACTION NAME="textobjects.select-a-angle">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), true, "&lt;&gt;"));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-angle">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.block(textArea, textArea.getCaretPosition(), false, "&lt;&gt;"));
+		</CODE>
+    </ACTION>
+    
+    <ACTION NAME="textobjects.select-a-comment">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.comment(textArea, textArea.getCaretPosition(), true));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-comment">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.comment(textArea, textArea.getCaretPosition(), false));
+		</CODE>
+    </ACTION>
+    
+    <ACTION NAME="textobjects.select-a-sentence">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.sentence(textArea, textArea.getCaretPosition(), true));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-sentence">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.sentence(textArea, textArea.getCaretPosition(), false));
+		</CODE>
+    </ACTION>
+    
+    
+    <!-- WORK IN PROGRESS Movement 
+    <ACTION NAME="textobjects.forward-word">
+        <CODE>
+            ta = view.getTextArea();
+            sel = textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), false);
+            if (sel.getStart() == sel.getEnd())
+                ta.setCaretPosition(sel.getEnd() + 1);
+            else
+                ta.setCaretPosition(sel.getEnd());
+            sel = textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), false);
+            ta.setCaretPosition(sel.getStart());
+        </CODE>
+    </ACTION>
+    <ACTION NAME="textobjects.back-word">
+        <CODE>
+            ta = view.getTextArea();
+            sel = textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), false);
+            ta.setCaretPosition(sel.getStart() - 1);
+            sel = textobjects.TextObjectsPlugin.word(textArea, textArea.getCaretPosition(), false);
+            ta.setCaretPosition(sel.getStart());
+        </CODE>
+    </ACTION>
+    -->
+
+</ACTIONS>
