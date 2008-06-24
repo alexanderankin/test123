@@ -50,6 +50,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.BrowserListener;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
@@ -85,7 +86,10 @@ import projectviewer.vpt.VPTProject;
  *	@since		PV 2.1.1
  */
 public class ImportDialog extends EnhancedDialog
-						  implements ActionListener, ItemListener {
+						  implements BrowserListener,
+						  			 ActionListener,
+									 ItemListener
+{
 
 	private static final String FILE_FILTER_KEY	= "projectviewer.import.filefilter";
 	private static final String DIR_FILTER_KEY	= "projectviewer.import.filefilter";
@@ -314,6 +318,21 @@ public class ImportDialog extends EnhancedDialog
 		filters.setSelectedIndex(idx);
 	} //}}}
 
+
+	public void filesActivated(VFSBrowser browser,
+							   VFSFile[] files)
+	{
+		ok();
+	}
+
+
+	public void filesSelected(VFSBrowser browser,
+							  VFSFile[] files)
+	{
+		/* no-op */
+	}
+
+
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
 		if (ae != null && JFileChooser.APPROVE_SELECTION.equals(ae.getActionCommand())) {
@@ -394,7 +413,8 @@ public class ImportDialog extends EnhancedDialog
 			}
 
 			chooser = new VFSBrowser(jEdit.getActiveView(), initPath,
-									 VFSBrowser.BROWSER,true,null);
+									 VFSBrowser.OPEN_DIALOG,true,null);
+			chooser.addBrowserListener(this);
 
 			VFSFileFilter npff = new NonProjectFileFilter(project);
 			chooser.addVFSFileFilter(npff);
