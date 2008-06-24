@@ -36,7 +36,8 @@ public final class FoldConfig {
 	private Pattern pattern;
 	private Matcher matcher;
 
-	FoldConfig() {}
+	FoldConfig() {
+	}
 
 	public String getName() {
 		return name;
@@ -48,7 +49,7 @@ public final class FoldConfig {
 		this.name=name.trim();
 	}
 
-	boolean matches(Segment segment) {
+	synchronized boolean matches(Segment segment) {
 		if(matcher==null) {
 			if(pattern==null)
 				return true;
@@ -56,8 +57,8 @@ public final class FoldConfig {
 				matcher=pattern.matcher(segment);
 				//Log.log(Log.NOTICE, this, "matcher setted");
 			}
-		} else
-			matcher.reset();
+		}	else
+			matcher.reset(segment);
 		return matcher.matches();
 	}
 
@@ -66,7 +67,7 @@ public final class FoldConfig {
 		if(regex!=null) {
 			regex=regex.trim();
 			this.pattern=Pattern.compile(regex);
-		} else
+		}	else
 			this.pattern=null;
 		this.regex=regex;
 		matcher=null;
