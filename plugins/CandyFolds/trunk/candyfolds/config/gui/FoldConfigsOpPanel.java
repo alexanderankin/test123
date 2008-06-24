@@ -29,12 +29,17 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import candyfolds.config.FoldConfig;
 import candyfolds.config.ModeConfig;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 class FoldConfigsOpPanel {
 	final JToolBar panel=new JToolBar();
 	private final FoldConfigsTable foldConfigsTable;
 	final Action[] actions=new Action[]{
-		 new AbstractAction("Add") {
+	      new AbstractAction("Add", GUIUtilities.loadIcon("Plus.png")) {
+		      {
+			      putValue(Action.SHORT_DESCRIPTION, jEdit.getProperty("common.add"));
+		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
 			      if(getModeConfig()!=null) {
@@ -43,7 +48,10 @@ class FoldConfigsOpPanel {
 			      }
 		      }
 	      },
-	      new AbstractAction("Remove") {
+	      new AbstractAction("Remove", GUIUtilities.loadIcon("Minus.png")) {
+					{
+			      putValue(Action.SHORT_DESCRIPTION, jEdit.getProperty("common.remove"));
+		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
 			      int row=foldConfigsTable.getSelectedIndex();
@@ -55,7 +63,10 @@ class FoldConfigsOpPanel {
 			      }
 		      }
 	      },
-	      new AbstractAction("Move Up") {
+	      new AbstractAction("Move Up", GUIUtilities.loadIcon("ArrowU.png")) {
+					{
+			      putValue(Action.SHORT_DESCRIPTION, jEdit.getProperty("common.moveUp"));
+		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
 			      int row=foldConfigsTable.getSelectedIndex();
@@ -69,7 +80,10 @@ class FoldConfigsOpPanel {
 			      }
 		      }
 	      },
-	      new AbstractAction("Move Down") {
+	      new AbstractAction("Move Down", GUIUtilities.loadIcon("ArrowD.png")) {
+					{
+			      putValue(Action.SHORT_DESCRIPTION, jEdit.getProperty("common.moveDown"));
+		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
 			      int row=foldConfigsTable.getSelectedIndex();
@@ -92,8 +106,10 @@ class FoldConfigsOpPanel {
 		panel.setBorderPainted(false);
 		panel.setFloatable(false);
 
-		for(int i=0; i<actions.length; i++)
-			panel.add(actions[i]);
+		for(int i=0; i<actions.length; i++){
+			JButton b=panel.add(actions[i]);
+			b.setText(null);
+		}
 	}
 
 	FoldConfigsOpPanel(FoldConfigsTable foldConfigsTable) {
@@ -108,7 +124,4 @@ class FoldConfigsOpPanel {
 		for(int i=actions.length; --i>=0;)
 			actions[i].setEnabled(enabled);
 	}
-
-
-
 }
