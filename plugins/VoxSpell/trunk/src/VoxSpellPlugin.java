@@ -219,14 +219,14 @@ public class VoxSpellPlugin extends EBPlugin
         try {
             input = new FileInputStream(user_dict);
         } catch (java.io.FileNotFoundException ex) {
-            System.out.println("IOException " + ex);
+            Log.log(Log.ERROR, ex, "IOException " + ex);
             return;
         }
         
         try {
             user_checker.read(new DataInputStream(input));
         } catch (java.io.IOException ex) {
-            System.out.println(ex);
+            Log.log(Log.ERROR, ex, ex);
             return;
         }
         
@@ -280,7 +280,7 @@ public class VoxSpellPlugin extends EBPlugin
             try {
                 loadDict(getPluginJAR());
             } catch (java.io.IOException ex) {
-                Log.log(Log.DEBUG, this, "Could not load dictionary: " + ex);
+                Log.log(Log.ERROR, this, "Could not load dictionary: " + ex);
                 return;
             }
             this.suggestions = new SuggestionTree(this.checker);
@@ -399,7 +399,7 @@ public class VoxSpellPlugin extends EBPlugin
         try {
             output = new FileOutputStream(user_dict);
         } catch (java.io.FileNotFoundException ex) {
-            System.out.println("FileNotFoundException " + ex);
+            Log.log(Log.ERROR, ex, "FileNotFoundException " + ex);
             return;
         }
            
@@ -408,7 +408,7 @@ public class VoxSpellPlugin extends EBPlugin
             output.flush();
             output.close();
         } catch (java.io.IOException ex) {
-            System.out.println("EncodingException " + ex);
+            Log.log(Log.ERROR, ex, "EncodingException " + ex);
         }
     }
     
