@@ -445,7 +445,7 @@ public class WordTrie implements SpellCheck
                 node.remove(wc.c);
         }
         
-        return false;
+        return true;
     }
     
 }
