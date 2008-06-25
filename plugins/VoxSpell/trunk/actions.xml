@@ -37,6 +37,11 @@
             voxspellcheck.VoxSpellPlugin.ignoreWord(textArea);
         </CODE>
     </ACTION>
+    <ACTION NAME="voxspellcheck.resetWord">
+        <CODE>
+            voxspellcheck.VoxSpellPlugin.resetWord(textArea);
+        </CODE>
+    </ACTION>
     <ACTION NAME="voxspellcheck.reset">
         <CODE>
             voxspellcheck.VoxSpellPlugin.reset(editPane);

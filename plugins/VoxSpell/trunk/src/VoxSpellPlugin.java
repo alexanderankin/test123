@@ -445,6 +445,27 @@ public class VoxSpellPlugin extends EBPlugin
         }
     }
     
+    public static void resetWord(String word, TextArea textarea)
+    {
+        ignore_checker.removeWord(word.trim());
+        user_checker.removeWord(word.trim());
+        textarea.repaint();
+    }
+    
+    public static void resetWord(TextArea textarea)
+    {
+        Selection sel = textarea.getSelectionAtOffset(textarea.getCaretPosition());
+        if (sel == null)
+            selectWordAtCaret(textarea);
+        String word = textarea.getSelectedText();
+        if (word == null)
+            return;
+        word = word.trim();
+        if ((word != null) && (word.length() > 0)) {
+            resetWord(word, textarea);
+        }
+    }
+    
     public static void reset(EditPane editpane)
     {
         ignore_checker = new WordTrie();
