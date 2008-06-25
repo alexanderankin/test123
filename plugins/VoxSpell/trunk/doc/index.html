@@ -31,6 +31,11 @@
         voxspellcheck.addWord action. The user dictionary is stored in the jEdit
         settings directory and is named "user_dict".</p>
         
+        <p>Words that have been ignored or added to the user dictionary can be
+        removed by the voxspellcheck.resetWord action. resetWord will attempt to
+        remove the word from both the ignore list and the user dictionary. It is
+        not possible to remove a word from the main dictionary at this time.</p>
+        
         <p>Suggestions for misspelled words can be activated by the
         voxspellcheck.suggest action.</p>
         
