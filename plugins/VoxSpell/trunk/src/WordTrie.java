@@ -133,6 +133,28 @@ public class WordTrie implements SpellCheck
             return null;
         }
         
+        public boolean remove(Character c)
+        {
+            if (!contains(c))
+                return false;
+            
+            --length;
+            WordChar[] new_chars = new WordChar[length];
+            int i = 0;
+            for (WordChar wc : chars) {
+                if (wc.equals(c))
+                    continue;
+                new_chars[i++] = wc;
+            }
+            chars = new_chars;
+            return true;
+        }
+        
+        public int length()
+        {
+            return chars.length;
+        }
+        
         public String toString()
         {
             StringBuffer buf = new StringBuffer();
@@ -215,6 +237,8 @@ public class WordTrie implements SpellCheck
         return find(root, word);
     }
     
+    // Returns the node.next of the last character of word; or null if any
+    // character in word isn't found.
     protected Node findNode(Node node, String word)
     {
         if (word.length() == 0)
@@ -386,6 +410,42 @@ public class WordTrie implements SpellCheck
             getWords(vec, stack, node, bloom(prefix));
         }
         return vec;
+    }
+    
+    public boolean removeWord(String word)
+    {
+        if (!find(word))
+            return false;
+        
+        // First remove MIN_VALUE WordChar from final node. Then
+        // loop through removing WordChar's from nodes if the next
+        // pointer points to a node with no WordChars.
+        
+        // findNode will return the node with MIN_VALUE in it for word.
+        Node node = findNode(root, word);
+        node.remove(Character.MIN_VALUE);
+        
+        Stack<Node> stack = new Stack<Node>();
+        // word has to have at least 1 letter, so push root. findNode always
+        // returns node.next of the last character, so root can never be
+        // returned.
+        stack.push(root);
+        // Unconventional loop: i is the last param to substring, so 1 past the
+        // char we want. The last iteration of i will return the node of the
+        // last letter in word, even though substring doesn't contain the last
+        // letter. FIXME: fix findNode.
+        for (int i = 1; i < word.length(); ++i)
+            stack.push(findNode(root, word.substring(0, i)));
+        
+        int i = word.length() - 1;
+        while (!stack.empty()) {
+            node = stack.pop();
+            WordChar wc = node.get(word.charAt(i--));
+            if ((wc.next != null) && (wc.next.length() == 0))
+                node.remove(wc.c);
+        }
+        
+        return false;
     }
     
 }
