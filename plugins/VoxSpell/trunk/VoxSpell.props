@@ -1,7 +1,7 @@
 plugin.voxspellcheck.VoxSpellPlugin.activate=startup
 plugin.voxspellcheck.VoxSpellPlugin.name=VoxSpell
 plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
-plugin.voxspellcheck.VoxSpellPlugin.version=0.0.1
+plugin.voxspellcheck.VoxSpellPlugin.version=1.0.0
 plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.05.00
 plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
 plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
