@@ -1,0 +1,330 @@
+<html>
+<body>
+<h1>Calculator</h1>
+Author: Dale Anson<br>
+Version: @@build.num@@
+<p>
+<h2>Introduction</h2>
+This plugin provides an RPN calculator. It has these features:
+<p>
+<ul>
+<li>4 register stack
+<li>Integer base 2, 8, 10, 16, and base 10 float operation
+<li>BigDecimal, Float, BigInteger, and Integer <a href="#operational_modes">modes</a>
+<li>Access to all math functions in java.lang.Math
+<li>Can use java.lang.StrictMath if needed
+<li>Standard plus, minus, multiply, divide, and mod operations
+<li>Boolean and, or, xor, and not operations
+<li>Stack manipulation controls
+<li>Programmable (recordable) <a href="#functions">functions</a>
+<li>Hundreds of constant <a href="#constants">values</a>
+</ul>
+<p>
+<h2>Usage</h2>
+If you haven't used an RPN calculator before, you're in for a pleasant surprise. It's actually a much faster and more accurate way of doing math on a calculator. Following is a brief introduction:
+<p>
+This calculator is more or less modeled after the HP-35 that I paid several hundred dollars for in the mid-1970's. Like the HP-35, this calculator uses a 4 register stack, allows 'rolling' of the stack in either direction, and swapping of the X and Y registers. The registers are named X, Y, Z, and T (T for Top). When you enter your first number, it will be in the X register. Math is done backwards, that is, you put in the numbers first, then do the operation. Let's go through the steps to add 4 and 5:
+<p>
+<ol>
+<li>Click the 4. It will appear in the X register.
+<li>Click the 'Enter' button. This will copy the 4 to the Y register, and highlight the 4 in the X register.
+<li>Click the 5. This will erase the 4 in the X register and replace it with the 5.
+<li>Click the '+' button. Both the 4 and 5 will be erased and a 9 will be in the X register.
+</ol>
+<p>
+Let's go through a slightly more difficult example. Find the area of a circle with radius 12:
+<p>
+<ol>
+<li>Click 1 then 2 to make 12 appear in the X register.
+<li>Click the 'Enter' button. This will copy the 12 to the Y register, and highlight the 12 in the X register.
+<li>Click the 'x' (multiplication) button. Since 12 was in both the X and Y register, 12 squared will be placed into the X register.
+<li>Click the 'Enter' button to move the 144 to the Y register.
+<li>Click the &#960; (pi) button.
+<li>Click the 'x' (multiplication) button. The area of the circle is now in the X register.
+</ol>
+One of the benefits of an RPN calculator versus an algebraic calculator is that you will use no more keystrokes, and will likely use quite a few less. For the above examples, to calculate 4 + 5, you'd use these keystrokes:<br>
+4<br>
+Enter<br>
+5<br>
++<br>
+<p>
+For an algebraic calculator, you'd use these:<br>
+4<br>
++<br>
+5<br> 
+=<br>
+<p>
+So you'd use the same number of keystrokes either way. For the second example, you'd use:<br>
+12<br>
+Enter<br>
+*<br>
+Enter<br>
+&#960;<br>
+*<br>
+
+for a total of 7 keystrokes (the 12 counts as two) and on an algebraic calculator:<br>
+12<br>
+x<br>
+12<br>
+*<br>
+&#960;<br>
+=<br>
+for a total of 8.<br>
+<p>
+<a name="operational_modes">
+<h2>Operational Modes</h2>
+</a>
+The calculator supports BigDecimal, Float, BigInteger, and Integer modes. BigDecimal and Float work with base 10 floating point and integer numbers, BigInteger and Integer modes work with base 16, 10, 8, and base 2 integer numbers. The default mode is Float with base 10 numbers.
+<p>
+Float mode is the standard mode and is the mode that is commonly found on most calculators.
+<p>
+Integer mode is common on calculators for programmers, and allows standard boolean and mod operations as well as the regular math operations. This mode also can convert numbers between the different bases. 
+<p>
+BigDecimal and BigInteger modes allow arbitrarily large numbers to be used. Using these modes can take quite a bit of processing power and can make your computer appear to hang. These modes can let you calculate things like 999<sup>999</sup> =<br>
+368063488259223267894700840060521865838338232037353204655959621437025609<br>
+300472231530103873614505175218691345257589896391130393189447969771645832<br>
+382192366076536631132001776175977932178658703660778465765811830827876982<br>
+014124022948671975678131724958064427949902810498973271030787716781467419<br>
+524180040734398996952930832508934116945966120176735120823151959779536852<br>
+290090377452502236990839453416790640456116471139751546750048602189291028<br>
+640970574762600185950226138244530187489211615864021135312077912018844630<br>
+780307462205252807737757672094320692373101032517459518497524015120165166<br>
+724189816766397247824175394802028228160027100623998873667435799073054618<br>
+906855460488351426611310634023489044291860510352301912426608488807462312<br>
+126590206830413782664554260411266378866626653755763627796569082931785645<br>
+600816236891168141774993267488171702172191072731069216881668294625679492<br>
+696148976999868715671440874206427212056717373099639711168901197440416590<br>
+226524192782842896415414611688187391232048327738965820265934093108172054<br>
+875188246591760877131657895633586576611857277011782497943522945011248430<br>
+439201297015119468730712364007639373910811953430309476832453230123996750<br>
+235710787086641070310288725389595138936784715274150426495416196669832679<br>
+980253436807864187160054589045664027158817958549374490512399055448819148<br>
+487049363674611664609890030088549591992466360050042566270348330911795487<br>
+647045949301286614658650071299695652245266080672989921799342509291635330<br>
+827874264789587306974472327718704306352445925996155619153783913237212716<br>
+010410294999877569745287353422903443387562746452522860420416689019732913<br>
+798073773281533570910205207767157128174184873357050830752777900041943256<br>
+738499067821488421053870869022738698816059810579221002560882999884763252<br>
+161747566893835178558961142349304466506402373556318707175710866983035313<br>
+122068321102457824112014969387225476259342872866363550383840720010832906<br>
+695360553556647545295849966279980830561242960013654529514995113584909050<br>
+813015198928283202189194615501403435553060147713139766323195743324848047<br>
+347575473228198492343231496580885057330510949058490527738662697480293583<br>
+612233134502078182014347192522391449087738579081585795613547198599661273<br>
+567662441490401862839817822686573112998663038868314974259766039340894024<br>
+308383451039874674061160538242392803580758232755749310843694194787991556<br>
+647907091849600704712003371103926967137408125713631396699343733288014254<br>
+084819379380555174777020843568689927348949484201042595271932630685747613<br>
+835385434424807024615161848223715989797178155169951121052285149157137697<br>
+718850449708843330475301440373094611119631361702936342263219382793996895<br>
+988331701890693689862459020775599439506870005130750427949747071390095256<br>
+759203426671803377068109744629909769176319526837824364926844730545524646<br>
+494321826241925107158040561607706364484910978348669388142016838792902926<br>
+158979355432483611517588605967745393958061959024834251565197963477521095<br>
+821435651996730128376734574843289089682710350244222290017891280419782767<br>
+803785277960834729869249991658417000499998999<br>
+<p>
+or 123! (factorial of 123) =<br>
+<p>
+121463043670253296757662432418812958554542170884833823153289181618292358<br>
+923621676688311569606126402021707358352212940477825910915704116514721860<br>
+29519906261646730733907419814952960000000000000000000000000000<br>
+<p>
+which are not the kind of things you can usually do with a calculator. Most calculators will give you an 'overflow' error or 'infinity' or even '0' as the answer to these. Not all functions are available in these modes, and those functions that aren't available really don't make sense in these modes anyway (I can't think of any reason to calculate the sine of 123!).
+<p>
+For example, you can calculate the volume (V) and surface area (S) of the earth in cubic inches:<br>
+S = 4 Pi r<sup>2</sup>  = Pi d<sup>2</sup><br>
+V = (4 Pi/3)r<sup>3</sup> = (Pi/6)d<sup>3</sup><br>
+diameter of Earth is  7,926.41 miles = 502217337.60 inches<br>
+Surface Area = 792379580822696720.58 square inches<br>
+Volume = 66324460574896460777635018.14 cubic inches<br>
+Using a regular calculator would give a volume like 6.632446057E25, which, while correct, does not give a lot of accuracy.
+<p>
+<a name="constants">
+<h2>Constant Values</h2>
+</a>
+This calculator provides several hundred built-in constants for your use. The list of constants and their values are from 'Fundamental Physical Constants' from the National Institute of Standards and Technology:
+<p>
+
+<table border="1">
+<tr><td><pre>
+             Fundamental Physical Constants --- Complete Listing
+
+
+  From:  http://physics.nist.gov/constants
+
+Source: Peter J. Mohr and Barry N. Taylor, CODATA Recommended Values of the 
+        Fundamental Physical Constants: 2002,
+        To be published.
+</pre></td></tr>
+</table>
+<p>
+You can access the constants via the 'Constants' menu, then follow the 'Constants...' menu item to see a list of all available constants. You can use them directly, add some to the 'Constants' menu for quicker access to those you use regularly, or make new constants that you might need.
+
+<p>
+<a name="functions">
+<h2>Programmable (Recordable) Functions</h2>
+</a>
+<p>
+While the calculator provides a number of built-in functions, you can record or create your own as you might need.
+<p>
+To record a function, click the "Function" menu, then "Record". The calculator will work as normal, with the addition that the X, Y, Z, and T beside the stack registers are now active. I tend to work best with an example, so here is how you would create a function to calculate the area of a circle given the radius. The formula is &#960;r<sup>2</sup>.
+<p>
+<ol>
+<li> Click the "Function" menu, then "Record".<br>
+<li> Click a number, 0 through 9, it doesn't matter which one. This is the radius to be used in the formula.<br>
+<li> Click the "X" button beside the X register. This means that the number you entered in the X register won't be recorded, instead, any number in the X register will be used in your function.<br>
+<li> Click the "Enter" button. Now your number is in both the X and Y registers.<br>
+<li> Click the "x" (multiplication) button. This squares the radius.<br>
+<li> Click the "Enter" button.<br>
+<li> Click the "&#960;" button.<br>
+<li> Click the "x" (multiplication) button. This completes the formula.<br>
+<li> Click the "Function" menu, then "Stop recording".<br>
+<li> Follow the prompts to save your function. The name for the function will appear in the function menu, and the description will be the tool tip for the function. Both the name and the description can contain html to make your menu item look nice. For this function, you might use "&lt;html&gt;&amp;#960;r&lt;sup&gt;2&lt;/sup&gt;" as the name for the function, which would then appear on the Function menu as &#960;r<sup>2</sup>. Be sure to put the &lt;html&gt; at the start of the name or the html code will be displayed.
+</ol>
+<p>
+When recording your functions, nearly all of the calculator buttons can be used, including the Clear, All Clear, Roll Up, Roll Down, Swap X and Y, and Last X buttons. You can also use any function that you already have recorded. In this next example, you use the function created in the previous example to record a function to calculate the volume of a cylinder. The formula is &#960;r<sup>2</sup>h. Since this formula takes two variables, r and h, we'll set up the recording a bit differently than before.
+<p>
+<ol>
+<li> Click a number, it doesn't matter which one. This will be the height of the cylinder. Click the "Enter" button to move it to the Y register.<br>
+<li> Click another number, this will be the radius of the cylinder.<br>
+<li> Click the "Function" menu, then "Record".<br>
+<li> Click the "X" button beside the X register. This means that the number you entered in the X register won't be recorded, instead, any number in the X register will be used in your function. This step really isn't necessary, since we put the radius in before we started recording.<br>
+<li> Click the "Function" menu, then click the "&#960;r<sup>2</sup>" function that you recorded in the previous example.<br>
+<li> Click the "x" (multiplication) button.<br>
+<li> Click the "Function" menu, then "Stop recording".<br>
+<li> Follow the prompts to save your function. In the description, you might enter something like "Volume of a cylinder, X is radius, Y is height".
+</ol>
+<p>
+Once you've saved a function, you can delete it or edit it by choosing the "Edit Function..." menu item. The editor window lets you make changes to the name and description (you can even preview how your menu item will look if you use html mark up as in the above examples) and you can edit the function steps directly. Below are the function steps for the &#960;r<sup>2</sup> function recorded in the example above:
+<p>
+x<br>
+enter<br>
+*<br>
+enter<br>
+pi<br>
+*<br>
+<p>
+The recorded function is pretty much just a step-by-step listing of the keys as you pressed them during the recording process. One added benefit of editing by hand is that you can add comments to your function to help explain what it is doing. Comment lines start with a #.
+<p>
+The table below shows the name of the built-in functions to use (these are what are recorded) and the corresponding calculator button (this is the key you clicked).
+<p>
+
+<table border="1">
+<thead><tr>
+<th colspan="3">These functions take no parameters</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr></thead>
+<tr><td>random</td><td>random</td><td>Generate a random number between 0 and 1</td></tr>
+</table
+<p>
+<table border="1">
+<thead><tr><th colspan="3">These functions take one parameter</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tr><td>exp</td><td>e<sup>x</sup></td><td>e (the base of the natural logrithm) raised to the x power.</td></tr>
+<tr><td>acos</td><td>acos</td><td>The arc cosine of x</td></tr>
+<tr><td>asin</td><td>asin</td><td>The arc sine of x</td></tr>
+<tr><td>atan</td><td>atan</td><td>The arc tangent of x</td></tr>
+<tr><td>log</td><td>ln</td><td>The natural logrithm of x</td></tr>
+<tr><td>cos</td><td>cos</td><td>The cosine of x</td></tr>
+<tr><td>sin</td><td>sin</td><td>The sine of x</td></tr>
+<tr><td>tan</td><td>tan</td><td>The tangent of x</td></tr>
+<tr><td>ceil</td><td>ceil</td><td>The smallest value that is not less than x and is an integer</td></tr>
+<tr><td>floor</td><td>floor</td><td>The largest value that is not greater than x and is an integer</td></tr>
+<tr><td>rint</td><td>rint</td><td>The integer value that is closest to x</td></tr>
+<tr><td>round</td><td>round</td>The integer value that is closest to x</td></tr>
+<tr><td>sqrt</td><td>&#8730;</td><td>The square root of x</tr>
+<tr><td>toDegrees</td><td>deg</td><td>Converts the value in x from radians to degrees</td></tr>
+<tr><td>toRadians</td><td>rad</td><td>Converts the value in x from degrees to radians</td></tr>
+<tr><td>factorial</td><td>x!</td><td>The factorial of x</tr>
+</table>
+<p>
+<table border="1">
+<thead><tr><th colspan="3">These functions take two parameters</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tr><td>atan2</td><td>atan2</td><td>Converts rectangular coordinates (x, y) into polar coordinates (r, theta)</td></tr>
+<tr><td>max</td><td>max</td><td>The larger of x and y</td></tr>
+<tr><td>min</td><td>min</td><td>The smaller of x and y</td></tr>
+<tr><td>pow</td><td>y<sup>x</sup></td><td>y raised to the x power</tr>
+</table>
+<p>
+<table border="1">
+<thead><tr><th colspan="3">These are the stack control commands</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tr><td>clr</td><td>C</td><td>Clear the x register</td></tr>
+<tr><td>ac</td><td>AC</td><td>Clear all the registers</td></tr>
+<tr><td>ru</td><td>R&#8593;</td><td>Roll the registers up</td></tr>
+<tr><td>rd</td><td>R&#8595;</td><td>Roll the registers down</td></tr>
+<tr><td>xy</td><td>X&#8596;Y</td><td>Swap the x and y registers</td></tr>
+<tr><td>lstx</td><td>LstX</td><td>Recall the last x value and put it in the x register</td></tr>
+</table>
+<p>
+<table border="1">
+<thead><tr><th colspan="3">These are the operators</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tr><td>+</td><td>+</td><td>Add x and y</td></tr>
+<tr><td>-</td><td>-</td><td>Subtract x from y</td></tr>
+<tr><td>*</td><td>x</td><td>Multiply x and y</td></tr>
+<tr><td>/</td><td>&#247;</td><td>Divide y by x</td></tr>
+<tr><td>\</td><td>\</td><td>y mod x</td></tr>
+<tr><td>and</td><td>&amp;</td><td>y and x</td></tr>
+<tr><td>or</td><td>|</td><td>y or x</td></tr>
+<tr><td>xor</td><td>^</td><td>y xor x</td></tr>
+<tr><td>not</td><td>~</td><td>y not x</td></tr>
+<tr><td>chs</td><td>&#177;</td><td>Change the sign of the x register</td></tr>
+</table>
+<p>
+<table border="1">
+<thead><tr><th colspan="3">These are the register labels</th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr></thead>
+<tr><td>x</td><td>X</td><td>For recording, represents the x register</td></tr>
+<tr><td>y</td><td>Y</td><td>For recording, represents the y register</td></tr>
+<tr><td>z</td><td>Z</td><td>For recording, represents the z register</td></tr>
+<tr><td>t</td><td>T</td><td>For recording, represents the t register</td></tr>
+</table>
+<p>
+<table border="1">
+<thead><tr><th colspan="3">&#960;&nbsp;and <i>e</i></th></tr>
+<tr>
+<th align="left">Function</th>
+<th align="left">Button</th>
+<th align="left">Description</th>
+</tr></thead>
+<tr><td>pi</td><td>&#960;</td><td>pi, the ratio of the circumference of a circle to its diameter</td></tr>
+<tr><td>euler</td><td><i>e</i></td><td>Euler's e, the base of the natural logrithm.</td></tr>
+</table>
+
+<p>
+<h3>Managing Functions</h3>
+<p>
+You can manage your functions by using the "Function" menu, then selecting the "Functions..." menu item. From here, you can see all available functions, add or remove functions from from the Functions menu, edit functions, and delete functions. 
+</body>
+<!-- $Id$ -->
+</html>

@@ -1,0 +1,3262 @@
+<name>
+c, the speed of light in a vacuum
+</name>
+<description>
+<html>Constant: c, the speed of light in a vacuum<br>Value: 299792458<br>Uncertainty: (exact)<br>Units: m/sec
+</description>
+<constant>
+299792458
+
+</constant>
+<name>
+F to C
+</name>
+<description>
+Convert Fahrenheit to Celcius
+</description>
+<function>
+x
+enter
+3
+2
+-
+enter
+5
+enter
+9
+/
+*
+
+</function>
+<name>
+magn. constant
+</name>
+<description>
+<html>Constant: magn. constant<br>Value: 12.566370614E-7<br>Uncertainty: (exact)<br>Units: N A<sup>-2</sup>
+</description>
+<constant>
+12.566370614E-7
+
+</constant>
+<name>
+electric constant
+</name>
+<description>
+<html>Constant: electric constant<br>Value: 8.854187817E-12<br>Uncertainty: (exact)<br>Units: F m<sup>-1</sup>
+</description>
+<constant>
+8.854187817E-12
+
+</constant>
+<name>
+characteristic impedance of vacuum
+</name>
+<description>
+<html>Constant: characteristic impedance of vacuum<br>Value: 376.730313461<br>Uncertainty: (exact)<br>Units: Ohm
+</description>
+<constant>
+376.730313461
+
+</constant>
+<name>
+Invert stack
+</name>
+<description>
+Inverts the register stack
+</description>
+<function>
+xy
+ru
+ru
+xy
+
+</function>
+<name>
+Newtonian constant of gravitation
+</name>
+<description>
+<html>Constant: Newtonian constant of gravitation<br>Value: 6.6742E-11<br>Uncertainty: 0.0010e-11<br>Units: m<sup>3</sup> kg<sup>-1</sup> s<sup>-2</sup>
+</description>
+<constant>
+6.6742E-11
+
+</constant>
+<name>
+Newtonian constant of gravitation over h-bar c
+</name>
+<description>
+<html>Constant: Newtonian constant of gravitation over h-bar c<br>Value: 6.7087E-39<br>Uncertainty: 0.0010e-39<br>Units: (GeV/c<sup>2</sup>)<sup>-2</sup>
+</description>
+<constant>
+6.7087E-39
+
+</constant>
+<name>
+Planck constant
+</name>
+<description>
+<html>Constant: Planck constant<br>Value: 6.6260693E-34<br>Uncertainty: 0.0000011e-34<br>Units: J s
+</description>
+<constant>
+6.6260693E-34
+
+</constant>
+<name>
+Planck constant in eV s
+</name>
+<description>
+<html>Constant: Planck constant in eV s<br>Value: 4.13566743E-15<br>Uncertainty: 0.00000035e-15<br>Units: eV s
+</description>
+<constant>
+4.13566743E-15
+
+</constant>
+<name>
+Planck constant over 2 pi times c in MeV fm
+</name>
+<description>
+<html>Constant: Planck constant over 2 pi times c in MeV fm<br>Value: 197.326968<br>Uncertainty: 0.000017<br>Units: MeV fm
+</description>
+<constant>
+197.326968
+
+</constant>
+<name>
+Planck constant over 2 pi
+</name>
+<description>
+<html>Constant: Planck constant over 2 pi<br>Value: 1.05457168E-34<br>Uncertainty: 0.00000018e-34<br>Units: J s
+</description>
+<constant>
+1.05457168E-34
+
+</constant>
+<name>
+Planck constant over 2 pi in eV s
+</name>
+<description>
+<html>Constant: Planck constant over 2 pi in eV s<br>Value: 6.58211915E-16<br>Uncertainty: 0.00000056e-16<br>Units: eV s
+</description>
+<constant>
+6.58211915E-16
+
+</constant>
+<name>
+Planck mass
+</name>
+<description>
+<html>Constant: Planck mass<br>Value: 2.17645E-8<br>Uncertainty: 0.00016e-8<br>Units: kg
+</description>
+<constant>
+2.17645E-8
+
+</constant>
+<name>
+Planck temperature
+</name>
+<description>
+<html>Constant: Planck temperature<br>Value: 1.41679E32<br>Uncertainty: 0.00011e32<br>Units: K
+</description>
+<constant>
+1.41679E32
+
+</constant>
+<name>
+Planck length
+</name>
+<description>
+<html>Constant: Planck length<br>Value: 1.61624E-35<br>Uncertainty: 0.00012e-35<br>Units: m
+</description>
+<constant>
+1.61624E-35
+
+</constant>
+<name>
+Planck time
+</name>
+<description>
+<html>Constant: Planck time<br>Value: 5.39121E-44<br>Uncertainty: 0.00040e-44<br>Units: s
+</description>
+<constant>
+5.39121E-44
+
+</constant>
+<name>
+elementary charge
+</name>
+<description>
+<html>Constant: elementary charge<br>Value: 1.60217653E-19<br>Uncertainty: 0.00000014e-19<br>Units: C
+</description>
+<constant>
+1.60217653E-19
+
+</constant>
+<name>
+elementary charge over h
+</name>
+<description>
+<html>Constant: elementary charge over h<br>Value: 2.41798940E14<br>Uncertainty: 0.00000021e14<br>Units: A J<sup>-1</sup>
+</description>
+<constant>
+2.41798940E14
+
+</constant>
+<name>
+<html>&#960;r<sup>2</sup>
+</name>
+<description>
+Calculates the area of a circle, put radius in X
+</description>
+<function>
+enter
+*
+enter
+pi
+*
+
+</function>
+<name>
+magn. flux quantum
+</name>
+<description>
+<html>Constant: magn. flux quantum<br>Value: 2.06783372E-15<br>Uncertainty: 0.00000018e-15<br>Units: Wb
+</description>
+<constant>
+2.06783372E-15
+
+</constant>
+<name>
+conductance quantum
+</name>
+<description>
+<html>Constant: conductance quantum<br>Value: 7.748091733E-5<br>Uncertainty: 0.000000026e-5<br>Units: S
+</description>
+<constant>
+7.748091733E-5
+
+</constant>
+<name>
+inverse of conductance quantum
+</name>
+<description>
+<html>Constant: inverse of conductance quantum<br>Value: 12906.403725<br>Uncertainty: 0.000043<br>Units: Ohm
+</description>
+<constant>
+12906.403725
+
+</constant>
+<name>
+Josephson constant
+</name>
+<description>
+<html>Constant: Josephson constant<br>Value: 483597.879E9<br>Uncertainty: 0.041e9<br>Units: Hz V<sup>-1</sup>
+</description>
+<constant>
+483597.879E9
+
+</constant>
+<name>
+<html>&#960;r<sup>2</sup>h
+</name>
+<description>
+Volume of a cylinder, X is radius, Y is height
+</description>
+<function>
+x
+x
+enter
+*
+enter
+pi
+*
+*
+
+</function>
+<name>
+von Klitzing constant
+</name>
+<description>
+<html>Constant: von Klitzing constant<br>Value: 25812.807449<br>Uncertainty: 0.000086<br>Units: Ohm
+</description>
+<constant>
+25812.807449
+
+</constant>
+<name>
+Bohr magneton
+</name>
+<description>
+<html>Constant: Bohr magneton<br>Value: 927.400949E-26<br>Uncertainty: 0.000080e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+927.400949E-26
+
+</constant>
+<name>
+2 + 2
+</name>
+<description>
+2 + 2 = 4
+</description>
+<function>
+clr
+2
+enter
++
+
+
+
+
+</function>
+<name>
+<html>cube root of x
+</name>
+<description>
+Cube root of X
+</description>
+<function>
+x
+enter
+1
+enter
+3
+/
+pow
+
+</function>
+<name>
+Miles to Inches
+</name>
+<description>
+Miles to Inches
+</description>
+<function>
+x
+enter
+5
+2
+8
+0
+*
+enter
+1
+2
+*
+
+</function>
+<name>
+Area of sphere
+</name>
+<description>
+Area of sphere, start with diameter in X
+</description>
+<function>
+x
+enter
+3
+pow
+enter
+
+# multipy by 4/3 pi
+4
+*
+enter
+pi
+*
+enter
+3
+*
+
+</function>
+<name>
+sec(x)
+</name>
+<description>
+Secant of X = 1/cos(x)
+</description>
+<function>
+cos
+1
+/
+
+</function>
+<name>
+Bohr magneton in eV/T
+</name>
+<description>
+<html>Constant: Bohr magneton in eV/T<br>Value: 5.788381804E-5<br>Uncertainty: 0.000000039e-5<br>Units: eV T<sup>-1</sup>
+</description>
+<constant>
+5.788381804E-5
+
+</constant>
+<name>
+Bohr magneton in Hz/T
+</name>
+<description>
+<html>Constant: Bohr magneton in Hz/T<br>Value: 13.9962458E9<br>Uncertainty: 0.0000012e9<br>Units: Hz T<sup>-1</sup>
+</description>
+<constant>
+13.9962458E9
+
+</constant>
+<name>
+Bohr magneton in inverse meters per tesla
+</name>
+<description>
+<html>Constant: Bohr magneton in inverse meters per tesla<br>Value: 46.6864507<br>Uncertainty: 0.0000040<br>Units: m<sup>-1 T<sup>-1</sup>
+</description>
+<constant>
+46.6864507
+
+</constant>
+<name>
+Bohr magneton in K/T
+</name>
+<description>
+<html>Constant: Bohr magneton in K/T<br>Value: 0.6717131<br>Uncertainty: 0.0000012<br>Units: K T<sup>-1</sup>
+</description>
+<constant>
+0.6717131
+
+</constant>
+<name>
+nuclear magneton
+</name>
+<description>
+<html>Constant: nuclear magneton<br>Value: 5.05078343E-27<br>Uncertainty: 0.00000043e-27<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+5.05078343E-27
+
+</constant>
+<name>
+nuclear magneton in eV/T
+</name>
+<description>
+<html>Constant: nuclear magneton in eV/T<br>Value: 3.152451259E-8<br>Uncertainty: 0.000000021e-8<br>Units: eV T<sup>-1</sup>
+</description>
+<constant>
+3.152451259E-8
+
+</constant>
+<name>
+nuclear magneton in MHz/T
+</name>
+<description>
+<html>Constant: nuclear magneton in MHz/T<br>Value: 7.62259371<br>Uncertainty: 0.00000065<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+7.62259371
+
+</constant>
+<name>
+nuclear magneton in inverse meters per tesla
+</name>
+<description>
+<html>Constant: nuclear magneton in inverse meters per tesla<br>Value: 2.54262358E-2<br>Uncertainty: 0.00000022e-2<br>Units: m<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+2.54262358E-2
+
+</constant>
+<name>
+nuclear magneton in K/T
+</name>
+<description>
+<html>Constant: nuclear magneton in K/T<br>Value: 3.6582637E-4<br>Uncertainty: 0.0000064e-4<br>Units: K T<sup>-1</sup>
+</description>
+<constant>
+3.6582637E-4
+
+</constant>
+<name>
+fine-structure constant
+</name>
+<description>
+<html>Constant: fine-structure constant<br>Value: 7.297352568E-3<br>Uncertainty: 0.000000024e-3<br>Units: 
+</description>
+<constant>
+7.297352568E-3
+
+</constant>
+<name>
+inverse fine-structure constant
+</name>
+<description>
+<html>Constant: inverse fine-structure constant<br>Value: 137.03599911<br>Uncertainty: 0.00000046<br>Units: 
+</description>
+<constant>
+137.03599911
+
+</constant>
+<name>
+Rydberg constant
+</name>
+<description>
+<html>Constant: Rydberg constant<br>Value: 10973731.568525<br>Uncertainty: 0.000073<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+10973731.568525
+
+</constant>
+<name>
+Rydberg constant times c in Hz
+</name>
+<description>
+<html>Constant: Rydberg constant times c in Hz<br>Value: 3.289841960360E15<br>Uncertainty: 0.000000000022e15<br>Units: Hz
+</description>
+<constant>
+3.289841960360E15
+
+</constant>
+<name>
+Rydberg constant times hc in J
+</name>
+<description>
+<html>Constant: Rydberg constant times hc in J<br>Value: 2.17987209E-18<br>Uncertainty: 0.00000037e-18<br>Units: J
+</description>
+<constant>
+2.17987209E-18
+
+</constant>
+<name>
+Rydberg constant times hc in eV
+</name>
+<description>
+<html>Constant: Rydberg constant times hc in eV<br>Value: 13.6056923<br>Uncertainty: 0.0000012<br>Units: eV
+</description>
+<constant>
+13.6056923
+
+</constant>
+<name>
+Bohr radius
+</name>
+<description>
+<html>Constant: Bohr radius<br>Value: 0.5291772108E-10<br>Uncertainty: 0.0000000018e-10<br>Units: m
+</description>
+<constant>
+0.5291772108E-10
+
+</constant>
+<name>
+Hartree energy
+</name>
+<description>
+<html>Constant: Hartree energy<br>Value: 4.35974417E-18<br>Uncertainty: 0.00000075e-18<br>Units: J
+</description>
+<constant>
+4.35974417E-18
+
+</constant>
+<name>
+Hartree energy in eV
+</name>
+<description>
+<html>Constant: Hartree energy in eV<br>Value: 27.2113845<br>Uncertainty: 0.0000023<br>Units: eV
+</description>
+<constant>
+27.2113845
+
+</constant>
+<name>
+quantum of circulation
+</name>
+<description>
+<html>Constant: quantum of circulation<br>Value: 3.636947550E-4<br>Uncertainty: 0.000000024e-4<br>Units: m<sup>2</sup> s<sup>-1</sup>
+</description>
+<constant>
+3.636947550E-4
+
+</constant>
+<name>
+quantum of circulation times 2
+</name>
+<description>
+<html>Constant: quantum of circulation times 2<br>Value: 7.273895101E-4<br>Uncertainty: 0.000000048e-4<br>Units: m<sup>2</sup> s<sup>-1</sup>
+</description>
+<constant>
+7.273895101E-4
+
+</constant>
+<name>
+Fermi coupling constant
+</name>
+<description>
+<html>Constant: Fermi coupling constant<br>Value: 1.16639E-5<br>Uncertainty: 0.00001e-5<br>Units: GeV<sup>-2</sup>
+</description>
+<constant>
+1.16639E-5
+
+</constant>
+<name>
+weak mixing angle
+</name>
+<description>
+<html>Constant: weak mixing angle<br>Value: 0.22215<br>Uncertainty: 0.00076<br>Units: 
+</description>
+<constant>
+0.22215
+
+</constant>
+<name>
+electron mass
+</name>
+<description>
+<html>Constant: electron mass<br>Value: 9.1093826E-31<br>Uncertainty: 0.0000016e-31<br>Units: kg
+</description>
+<constant>
+9.1093826E-31
+
+</constant>
+<name>
+electron mass in u
+</name>
+<description>
+<html>Constant: electron mass in u<br>Value: 5.4857990945E-4<br>Uncertainty: 0.0000000024e-4<br>Units: u
+</description>
+<constant>
+5.4857990945E-4
+
+</constant>
+<name>
+electron mass energy equivalent
+</name>
+<description>
+<html>Constant: electron mass energy equivalent<br>Value: 8.1871047E-14<br>Uncertainty: 0.0000014e-14<br>Units: J
+</description>
+<constant>
+8.1871047E-14
+
+</constant>
+<name>
+electron mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: electron mass energy equivalent in MeV<br>Value: 0.510998918<br>Uncertainty: 0.000000044<br>Units: MeV
+</description>
+<constant>
+0.510998918
+
+</constant>
+<name>
+electron-muon mass ratio
+</name>
+<description>
+<html>Constant: electron-muon mass ratio<br>Value: 4.83633167E-3<br>Uncertainty: 0.00000013e-3<br>Units: 
+</description>
+<constant>
+4.83633167E-3
+
+</constant>
+<name>
+electron-tau mass ratio
+</name>
+<description>
+<html>Constant: electron-tau mass ratio<br>Value: 2.87564E-4<br>Uncertainty: 0.00047e-4<br>Units: 
+</description>
+<constant>
+2.87564E-4
+
+</constant>
+<name>
+electron-proton mass ratio
+</name>
+<description>
+<html>Constant: electron-proton mass ratio<br>Value: 5.4461702173E-4<br>Uncertainty: 0.0000000025e-4<br>Units: 
+</description>
+<constant>
+5.4461702173E-4
+
+</constant>
+<name>
+electron-neutron mass ratio
+</name>
+<description>
+<html>Constant: electron-neutron mass ratio<br>Value: 5.4386734481E-4<br>Uncertainty: 0.0000000038e-4<br>Units: 
+</description>
+<constant>
+5.4386734481E-4
+
+</constant>
+<name>
+electron-deuteron mass ratio
+</name>
+<description>
+<html>Constant: electron-deuteron mass ratio<br>Value: 2.7244371095E-4<br>Uncertainty: 0.0000000013e-4<br>Units: 
+</description>
+<constant>
+2.7244371095E-4
+
+</constant>
+<name>
+electron to alpha particle mass ratio
+</name>
+<description>
+<html>Constant: electron to alpha particle mass ratio<br>Value: 1.37093355575E-4<br>Uncertainty: 0.00000000061e-4<br>Units: 
+</description>
+<constant>
+1.37093355575E-4
+
+</constant>
+<name>
+electron charge to mass quotient
+</name>
+<description>
+<html>Constant: electron charge to mass quotient<br>Value: -1.75882012E11<br>Uncertainty: 0.00000015e11<br>Units: C kg<sup>-1</sup>
+</description>
+<constant>
+-1.75882012E11
+
+</constant>
+<name>
+electron molar mass
+</name>
+<description>
+<html>Constant: electron molar mass<br>Value: 5.4857990945E-7<br>Uncertainty: 0.0000000024e-7<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+5.4857990945E-7
+
+</constant>
+<name>
+Compton wavelength
+</name>
+<description>
+<html>Constant: Compton wavelength<br>Value: 2.426310238E-12<br>Uncertainty: 0.000000016e-12<br>Units: m
+</description>
+<constant>
+2.426310238E-12
+
+</constant>
+<name>
+Compton wavelength over 2 pi
+</name>
+<description>
+<html>Constant: Compton wavelength over 2 pi<br>Value: 386.1592678E-15<br>Uncertainty: 0.0000026e-15<br>Units: m
+</description>
+<constant>
+386.1592678E-15
+
+</constant>
+<name>
+classical electron radius
+</name>
+<description>
+<html>Constant: classical electron radius<br>Value: 2.817940325E-15<br>Uncertainty: 0.000000028e-15<br>Units: m
+</description>
+<constant>
+2.817940325E-15
+
+</constant>
+<name>
+Thomson cross section
+</name>
+<description>
+<html>Constant: Thomson cross section<br>Value: 0.665245873E-28<br>Uncertainty: 0.000000013e-28<br>Units: m<sup>2</sup>
+</description>
+<constant>
+0.665245873E-28
+
+</constant>
+<name>
+electron magn. moment
+</name>
+<description>
+<html>Constant: electron magn. moment<br>Value: -928.476412E-26<br>Uncertainty: 0.000080e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+-928.476412E-26
+
+</constant>
+<name>
+electron magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: electron magn. moment to Bohr magneton ratio<br>Value: -1.0011596521859<br>Uncertainty: 0.0000000000038<br>Units: 
+</description>
+<constant>
+-1.0011596521859
+
+</constant>
+<name>
+electron magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: electron magn. moment to nuclear magneton ratio<br>Value: -1838.28197107<br>Uncertainty: 0.00000085<br>Units: 
+</description>
+<constant>
+-1838.28197107
+
+</constant>
+<name>
+electron magn. moment anomaly
+</name>
+<description>
+<html>Constant: electron magn. moment anomaly<br>Value: 1.1596521859E-3<br>Uncertainty: 0.0000000038e-3<br>Units: 
+</description>
+<constant>
+1.1596521859E-3
+
+</constant>
+<name>
+electron g factor
+</name>
+<description>
+<html>Constant: electron g factor<br>Value: -2.0023193043718<br>Uncertainty: 0.0000000000075<br>Units: 
+</description>
+<constant>
+-2.0023193043718
+
+</constant>
+<name>
+electron-muon magn. moment ratio
+</name>
+<description>
+<html>Constant: electron-muon magn. moment ratio<br>Value: 206.7669894<br>Uncertainty: 0.0000054<br>Units: 
+</description>
+<constant>
+206.7669894
+
+</constant>
+<name>
+electron-proton magn. moment ratio
+</name>
+<description>
+<html>Constant: electron-proton magn. moment ratio<br>Value: -658.2106862<br>Uncertainty: 0.0000066<br>Units: 
+</description>
+<constant>
+-658.2106862
+
+</constant>
+<name>
+electron to shielded proton magn. moment ratio
+</name>
+<description>
+<html>Constant: electron to shielded proton magn. moment ratio<br>Value: -658.2275956<br>Uncertainty: 0.0000071<br>Units: 
+</description>
+<constant>
+-658.2275956
+
+</constant>
+<name>
+electron-neutron magn. moment ratio
+</name>
+<description>
+<html>Constant: electron-neutron magn. moment ratio<br>Value: 960.92050<br>Uncertainty: 0.00023<br>Units: 
+</description>
+<constant>
+960.92050
+
+</constant>
+<name>
+electron-deuteron magn. moment ratio
+</name>
+<description>
+<html>Constant: electron-deuteron magn. moment ratio<br>Value: -2143.923493<br>Uncertainty: 0.000023<br>Units: 
+</description>
+<constant>
+-2143.923493
+
+</constant>
+<name>
+electron to shielded helion magn. moment ratio
+</name>
+<description>
+<html>Constant: electron to shielded helion magn. moment ratio<br>Value: 864.058255<br>Uncertainty: 0.000010<br>Units: 
+</description>
+<constant>
+864.058255
+
+</constant>
+<name>
+electron gyromagn. ratio
+</name>
+<description>
+<html>Constant: electron gyromagn. ratio<br>Value: 1.76085974E11<br>Uncertainty: 0.00000015e11<br>Units: s<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+1.76085974E11
+
+</constant>
+<name>
+electron gyromagn. ratio over 2 pi
+</name>
+<description>
+<html>Constant: electron gyromagn. ratio over 2 pi<br>Value: 28024.9532<br>Uncertainty: 0.0024<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+28024.9532
+
+</constant>
+<name>
+muon mass
+</name>
+<description>
+<html>Constant: muon mass<br>Value: 1.88353140E-28<br>Uncertainty: 0.00000033e-28<br>Units: kg
+</description>
+<constant>
+1.88353140E-28
+
+</constant>
+<name>
+muon mass in u
+</name>
+<description>
+<html>Constant: muon mass in u<br>Value: 0.1134289264<br>Uncertainty: 0.0000000030<br>Units: u
+</description>
+<constant>
+0.1134289264
+
+</constant>
+<name>
+muon mass energy equivalent
+</name>
+<description>
+<html>Constant: muon mass energy equivalent<br>Value: 1.69283360E-11<br>Uncertainty: 0.00000029e-11<br>Units: J
+</description>
+<constant>
+1.69283360E-11
+
+</constant>
+<name>
+muon mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: muon mass energy equivalent in MeV<br>Value: 105.6583692<br>Uncertainty: 0.0000094<br>Units: MeV
+</description>
+<constant>
+105.6583692
+
+</constant>
+<name>
+muon-electron mass ratio
+</name>
+<description>
+<html>Constant: muon-electron mass ratio<br>Value: 206.7682838<br>Uncertainty: 0.0000054<br>Units: 
+</description>
+<constant>
+206.7682838
+
+</constant>
+<name>
+muon-tau mass ratio
+</name>
+<description>
+<html>Constant: muon-tau mass ratio<br>Value: 5.94592E-2<br>Uncertainty: 0.00097e-2<br>Units: 
+</description>
+<constant>
+5.94592E-2
+
+</constant>
+<name>
+muon-proton mass ratio
+</name>
+<description>
+<html>Constant: muon-proton mass ratio<br>Value: 0.1126095269<br>Uncertainty: 0.0000000029<br>Units: 
+</description>
+<constant>
+0.1126095269
+
+</constant>
+<name>
+muon-neutron mass ratio
+</name>
+<description>
+<html>Constant: muon-neutron mass ratio<br>Value: 0.1124545175<br>Uncertainty: 0.0000000029<br>Units: 
+</description>
+<constant>
+0.1124545175
+
+</constant>
+<name>
+muon molar mass
+</name>
+<description>
+<html>Constant: muon molar mass<br>Value: 0.1134289264E-3<br>Uncertainty: 0.0000000030e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+0.1134289264E-3
+
+</constant>
+<name>
+muon Compton wavelength
+</name>
+<description>
+<html>Constant: muon Compton wavelength<br>Value: 11.73444105E-15<br>Uncertainty: 0.00000030e-15<br>Units: m
+</description>
+<constant>
+11.73444105E-15
+
+</constant>
+<name>
+muon Compton wavelength over 2 pi
+</name>
+<description>
+<html>Constant: muon Compton wavelength over 2 pi<br>Value: 1.867594298E-15<br>Uncertainty: 0.000000047e-15<br>Units: m
+</description>
+<constant>
+1.867594298E-15
+
+</constant>
+<name>
+muon magn. moment
+</name>
+<description>
+<html>Constant: muon magn. moment<br>Value: -4.49044799E-26<br>Uncertainty: 0.00000040e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+-4.49044799E-26
+
+</constant>
+<name>
+muon magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: muon magn. moment to Bohr magneton ratio<br>Value: -4.84197045E-3<br>Uncertainty: 0.00000013e-3<br>Units: 
+</description>
+<constant>
+-4.84197045E-3
+
+</constant>
+<name>
+muon magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: muon magn. moment to nuclear magneton ratio<br>Value: -8.89059698<br>Uncertainty: 0.00000023<br>Units: 
+</description>
+<constant>
+-8.89059698
+
+</constant>
+<name>
+muon magn. moment anomaly
+</name>
+<description>
+<html>Constant: muon magn. moment anomaly<br>Value: 1.16591981E-3<br>Uncertainty: 0.00000062e-3<br>Units: 
+</description>
+<constant>
+1.16591981E-3
+
+</constant>
+<name>
+muon g factor
+</name>
+<description>
+<html>Constant: muon g factor<br>Value: -2.0023318396<br>Uncertainty: 0.0000000012<br>Units: 
+</description>
+<constant>
+-2.0023318396
+
+</constant>
+<name>
+muon-proton magn. moment ratio
+</name>
+<description>
+<html>Constant: muon-proton magn. moment ratio<br>Value: -3.183345118<br>Uncertainty: 0.000000089<br>Units: 
+</description>
+<constant>
+-3.183345118
+
+</constant>
+<name>
+tau mass
+</name>
+<description>
+<html>Constant: tau mass<br>Value: 3.16777E-27<br>Uncertainty: 0.00052e-27<br>Units: kg
+</description>
+<constant>
+3.16777E-27
+
+</constant>
+<name>
+tau mass in u
+</name>
+<description>
+<html>Constant: tau mass in u<br>Value: 1.90768<br>Uncertainty: 0.00031<br>Units: u
+</description>
+<constant>
+1.90768
+
+</constant>
+<name>
+tau mass energy equivalent
+</name>
+<description>
+<html>Constant: tau mass energy equivalent<br>Value: 2.84705E-10<br>Uncertainty: 0.00046e-10<br>Units: J
+</description>
+<constant>
+2.84705E-10
+
+</constant>
+<name>
+tau mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: tau mass energy equivalent in MeV<br>Value: 1776.99<br>Uncertainty: 0.29<br>Units: MeV
+</description>
+<constant>
+1776.99
+
+</constant>
+<name>
+tau-electron mass ratio
+</name>
+<description>
+<html>Constant: tau-electron mass ratio<br>Value: 3477.48<br>Uncertainty: 0.57<br>Units: 
+</description>
+<constant>
+3477.48
+
+</constant>
+<name>
+tau-muon mass ratio
+</name>
+<description>
+<html>Constant: tau-muon mass ratio<br>Value: 16.8183<br>Uncertainty: 0.0027<br>Units: 
+</description>
+<constant>
+16.8183
+
+</constant>
+<name>
+tau-proton mass ratio
+</name>
+<description>
+<html>Constant: tau-proton mass ratio<br>Value: 1.89390<br>Uncertainty: 0.00031<br>Units: 
+</description>
+<constant>
+1.89390
+
+</constant>
+<name>
+tau-neutron mass ratio
+</name>
+<description>
+<html>Constant: tau-neutron mass ratio<br>Value: 1.89129<br>Uncertainty: 0.00031<br>Units: 
+</description>
+<constant>
+1.89129
+
+</constant>
+<name>
+tau molar mass
+</name>
+<description>
+<html>Constant: tau molar mass<br>Value: 1.90768E-3<br>Uncertainty: 0.00031e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+1.90768E-3
+
+</constant>
+<name>
+tau Compton wavelength
+</name>
+<description>
+<html>Constant: tau Compton wavelength<br>Value: 0.69772E-15<br>Uncertainty: 0.00011e-15<br>Units: m
+</description>
+<constant>
+0.69772E-15
+
+</constant>
+<name>
+tau Compton wavelength over 2 pi
+</name>
+<description>
+<html>Constant: tau Compton wavelength over 2 pi<br>Value: 0.111046E-15<br>Uncertainty: 0.000018e-15<br>Units: m
+</description>
+<constant>
+0.111046E-15
+
+</constant>
+<name>
+proton mass
+</name>
+<description>
+<html>Constant: proton mass<br>Value: 1.67262171E-27<br>Uncertainty: 0.00000029e-27<br>Units: kg
+</description>
+<constant>
+1.67262171E-27
+
+</constant>
+<name>
+proton mass in u
+</name>
+<description>
+<html>Constant: proton mass in u<br>Value: 1.00727646688<br>Uncertainty: 0.00000000013<br>Units: u
+</description>
+<constant>
+1.00727646688
+
+</constant>
+<name>
+proton mass energy equivalent
+</name>
+<description>
+<html>Constant: proton mass energy equivalent<br>Value: 1.50327743E-10<br>Uncertainty: 0.00000026e-10<br>Units: J
+</description>
+<constant>
+1.50327743E-10
+
+</constant>
+<name>
+proton mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: proton mass energy equivalent in MeV<br>Value: 938.272029<br>Uncertainty: 0.000080<br>Units: MeV
+</description>
+<constant>
+938.272029
+
+</constant>
+<name>
+proton-electron mass ratio
+</name>
+<description>
+<html>Constant: proton-electron mass ratio<br>Value: 1836.15267261<br>Uncertainty: 0.00000085<br>Units: 
+</description>
+<constant>
+1836.15267261
+
+</constant>
+<name>
+proton-muon mass ratio
+</name>
+<description>
+<html>Constant: proton-muon mass ratio<br>Value: 8.88024333<br>Uncertainty: 0.00000023<br>Units: 
+</description>
+<constant>
+8.88024333
+
+</constant>
+<name>
+proton-tau mass ratio
+</name>
+<description>
+<html>Constant: proton-tau mass ratio<br>Value: 0.528012<br>Uncertainty: 0.000086<br>Units: 
+</description>
+<constant>
+0.528012
+
+</constant>
+<name>
+proton-neutron mass ratio
+</name>
+<description>
+<html>Constant: proton-neutron mass ratio<br>Value: 0.99862347872<br>Uncertainty: 0.00000000058<br>Units: 
+</description>
+<constant>
+0.99862347872
+
+</constant>
+<name>
+proton charge to mass quotient
+</name>
+<description>
+<html>Constant: proton charge to mass quotient<br>Value: 9.57883376E7<br>Uncertainty: 0.00000082e7<br>Units: C kg<sup>-1</sup>
+</description>
+<constant>
+9.57883376E7
+
+</constant>
+<name>
+proton molar mass
+</name>
+<description>
+<html>Constant: proton molar mass<br>Value: 1.00727646688E-3<br>Uncertainty: 0.00000000013e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+1.00727646688E-3
+
+</constant>
+<name>
+proton Compton wavelength
+</name>
+<description>
+<html>Constant: proton Compton wavelength<br>Value: 1.3214098555E-15<br>Uncertainty: 0.0000000088e-15<br>Units: m
+</description>
+<constant>
+1.3214098555E-15
+
+</constant>
+<name>
+proton Compton wavelength over 2 pi
+</name>
+<description>
+<html>Constant: proton Compton wavelength over 2 pi<br>Value: 0.2103089104E-15<br>Uncertainty: 0.0000000014e-15<br>Units: m
+</description>
+<constant>
+0.2103089104E-15
+
+</constant>
+<name>
+proton magn. moment
+</name>
+<description>
+<html>Constant: proton magn. moment<br>Value: 1.41060671E-26<br>Uncertainty: 0.00000012e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+1.41060671E-26
+
+</constant>
+<name>
+proton magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: proton magn. moment to Bohr magneton ratio<br>Value: 1.521032206E-3<br>Uncertainty: 0.000000015e-3<br>Units: 
+</description>
+<constant>
+1.521032206E-3
+
+</constant>
+<name>
+proton magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: proton magn. moment to nuclear magneton ratio<br>Value: 2.792847351<br>Uncertainty: 0.000000028<br>Units: 
+</description>
+<constant>
+2.792847351
+
+</constant>
+<name>
+proton g factor
+</name>
+<description>
+<html>Constant: proton g factor<br>Value: 5.585694701<br>Uncertainty: 0.000000056<br>Units: 
+</description>
+<constant>
+5.585694701
+
+</constant>
+<name>
+proton-neutron magn. moment ratio
+</name>
+<description>
+<html>Constant: proton-neutron magn. moment ratio<br>Value: -1.45989805<br>Uncertainty: 0.00000034<br>Units: 
+</description>
+<constant>
+-1.45989805
+
+</constant>
+<name>
+shielded proton magn. moment
+</name>
+<description>
+<html>Constant: shielded proton magn. moment<br>Value: 1.41057047E-26<br>Uncertainty: 0.00000012e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+1.41057047E-26
+
+</constant>
+<name>
+shielded proton magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: shielded proton magn. moment to Bohr magneton ratio<br>Value: 1.520993132E-3<br>Uncertainty: 0.000000016e-3<br>Units: 
+</description>
+<constant>
+1.520993132E-3
+
+</constant>
+<name>
+shielded proton magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: shielded proton magn. moment to nuclear magneton ratio<br>Value: 2.792775604<br>Uncertainty: 0.000000030<br>Units: 
+</description>
+<constant>
+2.792775604
+
+</constant>
+<name>
+proton magn. shielding correction
+</name>
+<description>
+<html>Constant: proton magn. shielding correction<br>Value: 25.689E-6<br>Uncertainty: 0.015e-6<br>Units: 
+</description>
+<constant>
+25.689E-6
+
+</constant>
+<name>
+proton gyromagn. ratio
+</name>
+<description>
+<html>Constant: proton gyromagn. ratio<br>Value: 2.67522205E8<br>Uncertainty: 0.00000023e8<br>Units: s<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+2.67522205E8
+
+</constant>
+<name>
+proton gyromagn. ratio over 2 pi
+</name>
+<description>
+<html>Constant: proton gyromagn. ratio over 2 pi<br>Value: 42.5774813<br>Uncertainty: 0.0000037<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+42.5774813
+
+</constant>
+<name>
+shielded proton gyromagn. ratio
+</name>
+<description>
+<html>Constant: shielded proton gyromagn. ratio<br>Value: 2.67515333E8<br>Uncertainty: 0.00000023e8<br>Units: s<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+2.67515333E8
+
+</constant>
+<name>
+shielded proton gyromagn. ratio over 2 pi
+</name>
+<description>
+<html>Constant: shielded proton gyromagn. ratio over 2 pi<br>Value: 42.5763875<br>Uncertainty: 0.0000037<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+42.5763875
+
+</constant>
+<name>
+proton rms charge radius
+</name>
+<description>
+<html>Constant: proton rms charge radius<br>Value: 0.8750E-15<br>Uncertainty: 0.0068e-15<br>Units: m
+</description>
+<constant>
+0.8750E-15
+
+</constant>
+<name>
+neutron mass
+</name>
+<description>
+<html>Constant: neutron mass<br>Value: 1.67492728E-27<br>Uncertainty: 0.00000029e-27<br>Units: kg
+</description>
+<constant>
+1.67492728E-27
+
+</constant>
+<name>
+neutron mass in u
+</name>
+<description>
+<html>Constant: neutron mass in u<br>Value: 1.00866491560<br>Uncertainty: 0.00000000055<br>Units: u
+</description>
+<constant>
+1.00866491560
+
+</constant>
+<name>
+neutron mass energy equivalent
+</name>
+<description>
+<html>Constant: neutron mass energy equivalent<br>Value: 1.50534957E-10<br>Uncertainty: 0.00000026e-10<br>Units: J
+</description>
+<constant>
+1.50534957E-10
+
+</constant>
+<name>
+neutron mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: neutron mass energy equivalent in MeV<br>Value: 939.565360<br>Uncertainty: 0.000081<br>Units: MeV
+</description>
+<constant>
+939.565360
+
+</constant>
+<name>
+neutron-electron mass ratio
+</name>
+<description>
+<html>Constant: neutron-electron mass ratio<br>Value: 1838.6836598<br>Uncertainty: 0.0000013<br>Units: 
+</description>
+<constant>
+1838.6836598
+
+</constant>
+<name>
+neutron-muon mass ratio
+</name>
+<description>
+<html>Constant: neutron-muon mass ratio<br>Value: 8.89248402<br>Uncertainty: 0.00000023<br>Units: 
+</description>
+<constant>
+8.89248402
+
+</constant>
+<name>
+neutron-tau mass ratio
+</name>
+<description>
+<html>Constant: neutron-tau mass ratio<br>Value: 0.528740<br>Uncertainty: 0.000086<br>Units: 
+</description>
+<constant>
+0.528740
+
+</constant>
+<name>
+neutron-proton mass ratio
+</name>
+<description>
+<html>Constant: neutron-proton mass ratio<br>Value: 1.00137841870<br>Uncertainty: 0.00000000058<br>Units: 
+</description>
+<constant>
+1.00137841870
+
+</constant>
+<name>
+neutron molar mass
+</name>
+<description>
+<html>Constant: neutron molar mass<br>Value: 1.00866491560E-3<br>Uncertainty: 0.00000000055e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+1.00866491560E-3
+
+</constant>
+<name>
+neutron Compton wavelength
+</name>
+<description>
+<html>Constant: neutron Compton wavelength<br>Value: 1.3195909067E-15<br>Uncertainty: 0.0000000088e-15<br>Units: m
+</description>
+<constant>
+1.3195909067E-15
+
+</constant>
+<name>
+neutron Compton wavelength over 2 pi
+</name>
+<description>
+<html>Constant: neutron Compton wavelength over 2 pi<br>Value: 0.2100194157E-15<br>Uncertainty: 0.0000000014e-15<br>Units: m
+</description>
+<constant>
+0.2100194157E-15
+
+</constant>
+<name>
+neutron magn. moment
+</name>
+<description>
+<html>Constant: neutron magn. moment<br>Value: -0.96623645E-26<br>Uncertainty: 0.00000024e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+-0.96623645E-26
+
+</constant>
+<name>
+neutron magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: neutron magn. moment to Bohr magneton ratio<br>Value: -1.04187563E-3<br>Uncertainty: 0.00000025e-3<br>Units: 
+</description>
+<constant>
+-1.04187563E-3
+
+</constant>
+<name>
+neutron magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: neutron magn. moment to nuclear magneton ratio<br>Value: -1.91304273<br>Uncertainty: 0.00000045<br>Units: 
+</description>
+<constant>
+-1.91304273
+
+</constant>
+<name>
+neutron g factor
+</name>
+<description>
+<html>Constant: neutron g factor<br>Value: -3.82608546<br>Uncertainty: 0.00000090<br>Units: 
+</description>
+<constant>
+-3.82608546
+
+</constant>
+<name>
+neutron-electron magn. moment ratio
+</name>
+<description>
+<html>Constant: neutron-electron magn. moment ratio<br>Value: 1.04066882E-3<br>Uncertainty: 0.00000025e-3<br>Units: 
+</description>
+<constant>
+1.04066882E-3
+
+</constant>
+<name>
+neutron-proton magn. moment ratio
+</name>
+<description>
+<html>Constant: neutron-proton magn. moment ratio<br>Value: -0.68497934<br>Uncertainty: 0.00000016<br>Units: 
+</description>
+<constant>
+-0.68497934
+
+</constant>
+<name>
+neutron to shielded proton magn. moment ratio
+</name>
+<description>
+<html>Constant: neutron to shielded proton magn. moment ratio<br>Value: -0.68499694<br>Uncertainty: 0.00000016<br>Units: 
+</description>
+<constant>
+-0.68499694
+
+</constant>
+<name>
+neutron gyromagn. ratio
+</name>
+<description>
+<html>Constant: neutron gyromagn. ratio<br>Value: 1.83247183E8<br>Uncertainty: 0.00000046e8<br>Units: s<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+1.83247183E8
+
+</constant>
+<name>
+neutron gyromagn. ratio over 2 pi
+</name>
+<description>
+<html>Constant: neutron gyromagn. ratio over 2 pi<br>Value: 29.1646950<br>Uncertainty: 0.0000073<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+29.1646950
+
+</constant>
+<name>
+deuteron mass
+</name>
+<description>
+<html>Constant: deuteron mass<br>Value: 3.34358335E-27<br>Uncertainty: 0.00000057e-27<br>Units: kg
+</description>
+<constant>
+3.34358335E-27
+
+</constant>
+<name>
+deuteron mass in u
+</name>
+<description>
+<html>Constant: deuteron mass in u<br>Value: 2.01355321270<br>Uncertainty: 0.00000000035<br>Units: u
+</description>
+<constant>
+2.01355321270
+
+</constant>
+<name>
+deuteron mass energy equivalent
+</name>
+<description>
+<html>Constant: deuteron mass energy equivalent<br>Value: 3.00506285E-10<br>Uncertainty: 0.00000051e-10<br>Units: J
+</description>
+<constant>
+3.00506285E-10
+
+</constant>
+<name>
+deuteron mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: deuteron mass energy equivalent in MeV<br>Value: 1875.61282<br>Uncertainty: 0.00016<br>Units: MeV
+</description>
+<constant>
+1875.61282
+
+</constant>
+<name>
+deuteron-electron mass ratio
+</name>
+<description>
+<html>Constant: deuteron-electron mass ratio<br>Value: 3670.4829652<br>Uncertainty: 0.0000018<br>Units: 
+</description>
+<constant>
+3670.4829652
+
+</constant>
+<name>
+deuteron-proton mass ratio
+</name>
+<description>
+<html>Constant: deuteron-proton mass ratio<br>Value: 1.99900750082<br>Uncertainty: 0.00000000041<br>Units: 
+</description>
+<constant>
+1.99900750082
+
+</constant>
+<name>
+deuteron molar mass
+</name>
+<description>
+<html>Constant: deuteron molar mass<br>Value: 2.01355321270E-3<br>Uncertainty: 0.00000000035e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+2.01355321270E-3
+
+</constant>
+<name>
+deuteron magn. moment
+</name>
+<description>
+<html>Constant: deuteron magn. moment<br>Value: 0.433073482E-26<br>Uncertainty: 0.000000038e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+0.433073482E-26
+
+</constant>
+<name>
+deuteron magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: deuteron magn. moment to Bohr magneton ratio<br>Value: 0.4669754567E-3<br>Uncertainty: 0.0000000050e-3<br>Units: 
+</description>
+<constant>
+0.4669754567E-3
+
+</constant>
+<name>
+deuteron magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: deuteron magn. moment to nuclear magneton ratio<br>Value: 0.8574382329<br>Uncertainty: 0.0000000092<br>Units: 
+</description>
+<constant>
+0.8574382329
+
+</constant>
+<name>
+deuteron-electron magn. moment ratio
+</name>
+<description>
+<html>Constant: deuteron-electron magn. moment ratio<br>Value: -4.664345548E-4<br>Uncertainty: 0.000000050e-4<br>Units: 
+</description>
+<constant>
+-4.664345548E-4
+
+</constant>
+<name>
+deuteron-proton magn. moment ratio
+</name>
+<description>
+<html>Constant: deuteron-proton magn. moment ratio<br>Value: 0.3070122084<br>Uncertainty: 0.0000000045<br>Units: 
+</description>
+<constant>
+0.3070122084
+
+</constant>
+<name>
+deuteron-neutron magn. moment ratio
+</name>
+<description>
+<html>Constant: deuteron-neutron magn. moment ratio<br>Value: -0.44820652<br>Uncertainty: 0.00000011<br>Units: 
+</description>
+<constant>
+-0.44820652
+
+</constant>
+<name>
+deuteron rms charge radius
+</name>
+<description>
+<html>Constant: deuteron rms charge radius<br>Value: 2.1394E-15<br>Uncertainty: 0.0028e-15<br>Units: m
+</description>
+<constant>
+2.1394E-15
+
+</constant>
+<name>
+helion mass
+</name>
+<description>
+<html>Constant: helion mass<br>Value: 5.00641214E-27<br>Uncertainty: 0.00000086e-27<br>Units: kg
+</description>
+<constant>
+5.00641214E-27
+
+</constant>
+<name>
+helion mass in u
+</name>
+<description>
+<html>Constant: helion mass in u<br>Value: 3.0149322434<br>Uncertainty: 0.0000000058<br>Units: u
+</description>
+<constant>
+3.0149322434
+
+</constant>
+<name>
+helion mass energy equivalent
+</name>
+<description>
+<html>Constant: helion mass energy equivalent<br>Value: 4.49953884E-10<br>Uncertainty: 0.00000077e-10<br>Units: J
+</description>
+<constant>
+4.49953884E-10
+
+</constant>
+<name>
+helion mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: helion mass energy equivalent in MeV<br>Value: 2808.39142<br>Uncertainty: 0.00024<br>Units: MeV
+</description>
+<constant>
+2808.39142
+
+</constant>
+<name>
+helion-electron mass ratio
+</name>
+<description>
+<html>Constant: helion-electron mass ratio<br>Value: 5495.885269<br>Uncertainty: 0.000011<br>Units: 
+</description>
+<constant>
+5495.885269
+
+</constant>
+<name>
+helion-proton mass ratio
+</name>
+<description>
+<html>Constant: helion-proton mass ratio<br>Value: 2.9931526671<br>Uncertainty: 0.0000000058<br>Units: 
+</description>
+<constant>
+2.9931526671
+
+</constant>
+<name>
+helion molar mass
+</name>
+<description>
+<html>Constant: helion molar mass<br>Value: 3.0149322434E-3<br>Uncertainty: 0.0000000058e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+3.0149322434E-3
+
+</constant>
+<name>
+shielded helion magn. moment
+</name>
+<description>
+<html>Constant: shielded helion magn. moment<br>Value: -1.074553024E-26<br>Uncertainty: 0.000000093e-26<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+-1.074553024E-26
+
+</constant>
+<name>
+shielded helion magn. moment to Bohr magneton ratio
+</name>
+<description>
+<html>Constant: shielded helion magn. moment to Bohr magneton ratio<br>Value: -1.158671474E-3<br>Uncertainty: 0.000000014e-3<br>Units: 
+</description>
+<constant>
+-1.158671474E-3
+
+</constant>
+<name>
+shielded helion magn. moment to nuclear magneton ratio
+</name>
+<description>
+<html>Constant: shielded helion magn. moment to nuclear magneton ratio<br>Value: -2.127497723<br>Uncertainty: 0.000000025<br>Units: 
+</description>
+<constant>
+-2.127497723
+
+</constant>
+<name>
+shielded helion to proton magn. moment ratio
+</name>
+<description>
+<html>Constant: shielded helion to proton magn. moment ratio<br>Value: -0.761766562<br>Uncertainty: 0.000000012<br>Units: 
+</description>
+<constant>
+-0.761766562
+
+</constant>
+<name>
+shielded helion to shielded proton magn. moment ratio
+</name>
+<description>
+<html>Constant: shielded helion to shielded proton magn. moment ratio<br>Value: -0.7617861313<br>Uncertainty: 0.0000000033<br>Units: 
+</description>
+<constant>
+-0.7617861313
+
+</constant>
+<name>
+shielded helion gyromagn. ratio
+</name>
+<description>
+<html>Constant: shielded helion gyromagn. ratio<br>Value: 2.03789470E8<br>Uncertainty: 0.00000018e8<br>Units: s<sup>-1</sup> T<sup>-1</sup>
+</description>
+<constant>
+2.03789470E8
+
+</constant>
+<name>
+shielded helion gyromagn. ratio over 2 pi
+</name>
+<description>
+<html>Constant: shielded helion gyromagn. ratio over 2 pi<br>Value: 32.4341015<br>Uncertainty: 0.0000028<br>Units: MHz T<sup>-1</sup>
+</description>
+<constant>
+32.4341015
+
+</constant>
+<name>
+alpha particle mass
+</name>
+<description>
+<html>Constant: alpha particle mass<br>Value: 6.6446565E-27<br>Uncertainty: 0.0000011e-27<br>Units: kg
+</description>
+<constant>
+6.6446565E-27
+
+</constant>
+<name>
+alpha particle mass in u
+</name>
+<description>
+<html>Constant: alpha particle mass in u<br>Value: 4.001506179149<br>Uncertainty: 0.000000000056<br>Units: u
+</description>
+<constant>
+4.001506179149
+
+</constant>
+<name>
+alpha particle mass energy equivalent
+</name>
+<description>
+<html>Constant: alpha particle mass energy equivalent<br>Value: 5.9719194E-10<br>Uncertainty: 0.0000010e-10<br>Units: J
+</description>
+<constant>
+5.9719194E-10
+
+</constant>
+<name>
+alpha particle mass energy equivalent in MeV
+</name>
+<description>
+<html>Constant: alpha particle mass energy equivalent in MeV<br>Value: 3727.37917<br>Uncertainty: 0.00032<br>Units: MeV
+</description>
+<constant>
+3727.37917
+
+</constant>
+<name>
+alpha particle-electron mass ratio
+</name>
+<description>
+<html>Constant: alpha particle-electron mass ratio<br>Value: 7294.2995363<br>Uncertainty: 0.0000032<br>Units: 
+</description>
+<constant>
+7294.2995363
+
+</constant>
+<name>
+alpha particle-proton mass ratio
+</name>
+<description>
+<html>Constant: alpha particle-proton mass ratio<br>Value: 3.97259968907<br>Uncertainty: 0.00000000052<br>Units: 
+</description>
+<constant>
+3.97259968907
+
+</constant>
+<name>
+alpha particle molar mass
+</name>
+<description>
+<html>Constant: alpha particle molar mass<br>Value: 4.001506179149E-3<br>Uncertainty: 0.000000000056e-3<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+4.001506179149E-3
+
+</constant>
+<name>
+Avogadro constant
+</name>
+<description>
+<html>Constant: Avogadro constant<br>Value: 6.0221415E23<br>Uncertainty: 0.0000010e23<br>Units: mol<sup>-1</sup>
+</description>
+<constant>
+6.0221415E23
+
+</constant>
+<name>
+atomic mass constant
+</name>
+<description>
+<html>Constant: atomic mass constant<br>Value: 1.66053886E-27<br>Uncertainty: 0.00000028e-27<br>Units: kg
+</description>
+<constant>
+1.66053886E-27
+
+</constant>
+<name>
+atomic mass constant energy equivalent
+</name>
+<description>
+<html>Constant: atomic mass constant energy equivalent<br>Value: 1.49241790E-10<br>Uncertainty: 0.00000026e-10<br>Units: J
+</description>
+<constant>
+1.49241790E-10
+
+</constant>
+<name>
+atomic mass constant energy equivalent in MeV
+</name>
+<description>
+<html>Constant: atomic mass constant energy equivalent in MeV<br>Value: 931.494043<br>Uncertainty: 0.000080<br>Units: MeV
+</description>
+<constant>
+931.494043
+
+</constant>
+<name>
+Faraday constant
+</name>
+<description>
+<html>Constant: Faraday constant<br>Value: 96485.3383<br>Uncertainty: 0.0083<br>Units: C mol<sup>-1</sup>
+</description>
+<constant>
+96485.3383
+
+</constant>
+<name>
+Faraday constant for conventional electric current
+</name>
+<description>
+<html>Constant: Faraday constant for conventional electric current<br>Value: 96485.336<br>Uncertainty: 0.016<br>Units: C_90 mol<sup>-1</sup>
+</description>
+<constant>
+96485.336
+
+</constant>
+<name>
+molar Planck constant
+</name>
+<description>
+<html>Constant: molar Planck constant<br>Value: 3.990312716E-10<br>Uncertainty: 0.000000027e-10<br>Units: J s mol<sup>-1</sup>
+</description>
+<constant>
+3.990312716E-10
+
+</constant>
+<name>
+molar Planck constant times c
+</name>
+<description>
+<html>Constant: molar Planck constant times c<br>Value: 0.11962656572<br>Uncertainty: 0.00000000080<br>Units: J m mol<sup>-1</sup>
+</description>
+<constant>
+0.11962656572
+
+</constant>
+<name>
+molar gas constant
+</name>
+<description>
+<html>Constant: molar gas constant<br>Value: 8.314472<br>Uncertainty: 0.000015<br>Units: J mol<sup>-1</sup> K<sup>-1</sup>
+</description>
+<constant>
+8.314472
+
+</constant>
+<name>
+Boltzmann constant
+</name>
+<description>
+<html>Constant: Boltzmann constant<br>Value: 1.3806505E-23<br>Uncertainty: 0.0000024e-23<br>Units: J K<sup>-1</sup>
+</description>
+<constant>
+1.3806505E-23
+
+</constant>
+<name>
+Boltzmann constant in eV/K
+</name>
+<description>
+<html>Constant: Boltzmann constant in eV/K<br>Value: 8.617343E-5<br>Uncertainty: 0.000015e-5<br>Units: eV K<sup>-1</sup>
+</description>
+<constant>
+8.617343E-5
+
+</constant>
+<name>
+Boltzmann constant in Hz/K
+</name>
+<description>
+<html>Constant: Boltzmann constant in Hz/K<br>Value: 2.0836644E10<br>Uncertainty: 0.0000036e10<br>Units: Hz K<sup>-1</sup>
+</description>
+<constant>
+2.0836644E10
+
+</constant>
+<name>
+Boltzmann constant in inverse meters per kelvin
+</name>
+<description>
+<html>Constant: Boltzmann constant in inverse meters per kelvin<br>Value: 69.50356<br>Uncertainty: 0.00012<br>Units: m<sup>-1</sup> K<sup>-1</sup>
+</description>
+<constant>
+69.50356
+
+</constant>
+<name>
+molar volume of ideal gas (273.15 K, 101.325 kPa)
+</name>
+<description>
+<html>Constant: molar volume of ideal gas (273.15 K, 101.325 kPa)<br>Value: 22.413996E-3<br>Uncertainty: 0.000039e-3<br>Units: m<sup>3</sup> mol<sup>-1</sup>
+</description>
+<constant>
+22.413996E-3
+
+</constant>
+<name>
+Loschmidt constant (273.15 K, 101.325 kPa)
+</name>
+<description>
+<html>Constant: Loschmidt constant (273.15 K, 101.325 kPa)<br>Value: 2.6867773E25<br>Uncertainty: 0.0000047e25<br>Units: m<sup>-3</sup>
+</description>
+<constant>
+2.6867773E25
+
+</constant>
+<name>
+molar volume of ideal gas (273.15 K, 100 kPa)
+</name>
+<description>
+<html>Constant: molar volume of ideal gas (273.15 K, 100 kPa)<br>Value: 22.710981E-3<br>Uncertainty: 0.000040e-3<br>Units: m<sup>3</sup> mol<sup>-1</sup>
+</description>
+<constant>
+22.710981E-3
+
+</constant>
+<name>
+Sackur-Tetrode constant (1 K, 100 kPa)
+</name>
+<description>
+<html>Constant: Sackur-Tetrode constant (1 K, 100 kPa)<br>Value: -1.1517047<br>Uncertainty: 0.0000044<br>Units: 
+</description>
+<constant>
+-1.1517047
+
+</constant>
+<name>
+Sackur-Tetrode constant (1 K, 101.325 kPa)
+</name>
+<description>
+<html>Constant: Sackur-Tetrode constant (1 K, 101.325 kPa)<br>Value: -1.1648677<br>Uncertainty: 0.0000044<br>Units: 
+</description>
+<constant>
+-1.1648677
+
+</constant>
+<name>
+Stefan-Boltzmann constant
+</name>
+<description>
+<html>Constant: Stefan-Boltzmann constant<br>Value: 5.670400E-8<br>Uncertainty: 0.000040e-8<br>Units: W m<sup>-2</sup> K<sup>-4</sup>
+</description>
+<constant>
+5.670400E-8
+
+</constant>
+<name>
+first radiation constant
+</name>
+<description>
+<html>Constant: first radiation constant<br>Value: 3.74177138E-16<br>Uncertainty: 0.00000064e-16<br>Units: W m<sup>2</sup>
+</description>
+<constant>
+3.74177138E-16
+
+</constant>
+<name>
+first radiation constant for spectral radiance
+</name>
+<description>
+<html>Constant: first radiation constant for spectral radiance<br>Value: 1.19104282E-16<br>Uncertainty: 0.00000020e-16<br>Units: W m<sup>2</sup> sr<sup>-1</sup>
+</description>
+<constant>
+1.19104282E-16
+
+</constant>
+<name>
+second radiation constant
+</name>
+<description>
+<html>Constant: second radiation constant<br>Value: 1.4387752E-2<br>Uncertainty: 0.0000025e-2<br>Units: m K
+</description>
+<constant>
+1.4387752E-2
+
+</constant>
+<name>
+Wien displacement law constant
+</name>
+<description>
+<html>Constant: Wien displacement law constant<br>Value: 2.8977685E-3<br>Uncertainty: 0.0000051e-3<br>Units: m K
+</description>
+<constant>
+2.8977685E-3
+
+</constant>
+<name>
+molar mass of carbon-12
+</name>
+<description>
+<html>Constant: molar mass of carbon-12<br>Value: 12E-3<br>Uncertainty: (exact)<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+12E-3
+
+</constant>
+<name>
+molar mass constant
+</name>
+<description>
+<html>Constant: molar mass constant<br>Value: 1E-3<br>Uncertainty: (exact)<br>Units: kg mol<sup>-1</sup>
+</description>
+<constant>
+1E-3
+
+</constant>
+<name>
+conventional value of Josephson constant
+</name>
+<description>
+<html>Constant: conventional value of Josephson constant<br>Value: 483597.9E9<br>Uncertainty: (exact)<br>Units: Hz V<sup>-1</sup>
+</description>
+<constant>
+483597.9E9
+
+</constant>
+<name>
+conventional value of von Klitzing constant
+</name>
+<description>
+<html>Constant: conventional value of von Klitzing constant<br>Value: 25812.807<br>Uncertainty: (exact)<br>Units: Ohm
+</description>
+<constant>
+25812.807
+
+</constant>
+<name>
+standard atmosphere
+</name>
+<description>
+<html>Constant: standard atmosphere<br>Value: 101325<br>Uncertainty: (exact)<br>Units: Pa
+</description>
+<constant>
+101325
+
+</constant>
+<name>
+standard acceleration of gravity
+</name>
+<description>
+<html>Constant: standard acceleration of gravity<br>Value: 9.80665<br>Uncertainty: (exact)<br>Units: m s<sup>-2</sup>
+</description>
+<constant>
+9.80665
+
+</constant>
+<name>
+Cu x unit
+</name>
+<description>
+<html>Constant: Cu x unit<br>Value: 1.00207710E-13<br>Uncertainty: 0.00000029e-13<br>Units: m
+</description>
+<constant>
+1.00207710E-13
+
+</constant>
+<name>
+Mo x unit
+</name>
+<description>
+<html>Constant: Mo x unit<br>Value: 1.00209966E-13<br>Uncertainty: 0.00000053e-13<br>Units: m
+</description>
+<constant>
+1.00209966E-13
+
+</constant>
+<name>
+Angstrom star
+</name>
+<description>
+<html>Constant: Angstrom star<br>Value: 1.00001509E-10<br>Uncertainty: 0.00000090e-10<br>Units: m
+</description>
+<constant>
+1.00001509E-10
+
+</constant>
+<name>
+lattice parameter of silicon
+</name>
+<description>
+<html>Constant: lattice parameter of silicon<br>Value: 543.102122E-12<br>Uncertainty: 0.000020e-12<br>Units: m
+</description>
+<constant>
+543.102122E-12
+
+</constant>
+<name>
+{220} lattice spacing of silicon
+</name>
+<description>
+<html>Constant: {220} lattice spacing of silicon<br>Value: 192.0155965E-12<br>Uncertainty: 0.0000070e-12<br>Units: m
+</description>
+<constant>
+192.0155965E-12
+
+</constant>
+<name>
+molar volume of silicon
+</name>
+<description>
+<html>Constant: molar volume of silicon<br>Value: 12.0588382E-6<br>Uncertainty: 0.0000024e-6<br>Units: m<sup>3</sup> mol<sup>-1</sup>
+</description>
+<constant>
+12.0588382E-6
+
+</constant>
+<name>
+electron volt
+</name>
+<description>
+<html>Constant: electron volt<br>Value: 1.60217653E-19<br>Uncertainty: 0.00000014e-19<br>Units: J
+</description>
+<constant>
+1.60217653E-19
+
+</constant>
+<name>
+unified atomic mass unit
+</name>
+<description>
+<html>Constant: unified atomic mass unit<br>Value: 1.66053886E-27<br>Uncertainty: 0.00000028e-27<br>Units: kg
+</description>
+<constant>
+1.66053886E-27
+
+</constant>
+<name>
+natural unit of velocity
+</name>
+<description>
+<html>Constant: natural unit of velocity<br>Value: 299792458<br>Uncertainty: (exact)<br>Units: m s<sup>-1</sup>
+</description>
+<constant>
+299792458
+
+</constant>
+<name>
+natural unit of action
+</name>
+<description>
+<html>Constant: natural unit of action<br>Value: 1.05457168E-34<br>Uncertainty: 0.00000018e-34<br>Units: J s
+</description>
+<constant>
+1.05457168E-34
+
+</constant>
+<name>
+natural unit of action in eV s
+</name>
+<description>
+<html>Constant: natural unit of action in eV s<br>Value: 6.58211915E-16<br>Uncertainty: 0.00000056e-16<br>Units: eV s
+</description>
+<constant>
+6.58211915E-16
+
+</constant>
+<name>
+natural unit of mass
+</name>
+<description>
+<html>Constant: natural unit of mass<br>Value: 9.1093826E-31<br>Uncertainty: 0.0000016e-31<br>Units: kg
+</description>
+<constant>
+9.1093826E-31
+
+</constant>
+<name>
+natural unit of energy
+</name>
+<description>
+<html>Constant: natural unit of energy<br>Value: 8.1871047E-14<br>Uncertainty: 0.0000014e-14<br>Units: J
+</description>
+<constant>
+8.1871047E-14
+
+</constant>
+<name>
+natural unit of energy in MeV
+</name>
+<description>
+<html>Constant: natural unit of energy in MeV<br>Value: 0.510998918<br>Uncertainty: 0.000000044<br>Units: MeV
+</description>
+<constant>
+0.510998918
+
+</constant>
+<name>
+natural unit of momentum
+</name>
+<description>
+<html>Constant: natural unit of momentum<br>Value: 2.73092419E-22<br>Uncertainty: 0.00000047e-22<br>Units: kg m s<sup>-1</sup>
+</description>
+<constant>
+2.73092419E-22
+
+</constant>
+<name>
+natural unit of momentum in MeV/c
+</name>
+<description>
+<html>Constant: natural unit of momentum in MeV/c<br>Value: 0.510998918<br>Uncertainty: 0.000000044<br>Units: MeV/c
+</description>
+<constant>
+0.510998918
+
+</constant>
+<name>
+natural unit of length
+</name>
+<description>
+<html>Constant: natural unit of length<br>Value: 386.1592678E-15<br>Uncertainty: 0.0000026e-15<br>Units: m
+</description>
+<constant>
+386.1592678E-15
+
+</constant>
+<name>
+natural unit of time
+</name>
+<description>
+<html>Constant: natural unit of time<br>Value: 1.2880886677E-21<br>Uncertainty: 0.0000000086e-21<br>Units: s
+</description>
+<constant>
+1.2880886677E-21
+
+</constant>
+<name>
+atomic unit of charge
+</name>
+<description>
+<html>Constant: atomic unit of charge<br>Value: 1.60217653E-19<br>Uncertainty: 0.00000014e-19<br>Units: C
+</description>
+<constant>
+1.60217653E-19
+
+</constant>
+<name>
+atomic unit of mass
+</name>
+<description>
+<html>Constant: atomic unit of mass<br>Value: 9.1093826E-31<br>Uncertainty: 0.0000016e-31<br>Units: kg
+</description>
+<constant>
+9.1093826E-31
+
+</constant>
+<name>
+atomic unit of action
+</name>
+<description>
+<html>Constant: atomic unit of action<br>Value: 1.05457168E-34<br>Uncertainty: 0.00000018e-34<br>Units: J s
+</description>
+<constant>
+1.05457168E-34
+
+</constant>
+<name>
+atomic unit of length
+</name>
+<description>
+<html>Constant: atomic unit of length<br>Value: 0.5291772108E-10<br>Uncertainty: 0.0000000018e-10<br>Units: m
+</description>
+<constant>
+0.5291772108E-10
+
+</constant>
+<name>
+atomic unit of energy
+</name>
+<description>
+<html>Constant: atomic unit of energy<br>Value: 4.35974417E-18<br>Uncertainty: 0.00000075e-18<br>Units: J
+</description>
+<constant>
+4.35974417E-18
+
+</constant>
+<name>
+atomic unit of time
+</name>
+<description>
+<html>Constant: atomic unit of time<br>Value: 2.418884326505E-17<br>Uncertainty: 0.000000000016e-17<br>Units: s
+</description>
+<constant>
+2.418884326505E-17
+
+</constant>
+<name>
+atomic unit of force
+</name>
+<description>
+<html>Constant: atomic unit of force<br>Value: 8.2387225E-8<br>Uncertainty: 0.0000014e-8<br>Units: N
+</description>
+<constant>
+8.2387225E-8
+
+</constant>
+<name>
+atomic unit of velocity
+</name>
+<description>
+<html>Constant: atomic unit of velocity<br>Value: 2.1876912633E6<br>Uncertainty: 0.0000000073e6<br>Units: m s<sup>-1</sup>
+</description>
+<constant>
+2.1876912633E6
+
+</constant>
+<name>
+atomic unit of momentum
+</name>
+<description>
+<html>Constant: atomic unit of momentum<br>Value: 1.99285166E-24<br>Uncertainty: 0.00000034e-24<br>Units: kg m s<sup>-1</sup>
+</description>
+<constant>
+1.99285166E-24
+
+</constant>
+<name>
+atomic unit of current
+</name>
+<description>
+<html>Constant: atomic unit of current<br>Value: 6.62361782E-3<br>Uncertainty: 0.00000057e-3<br>Units: A
+</description>
+<constant>
+6.62361782E-3
+
+</constant>
+<name>
+atomic unit of charge density
+</name>
+<description>
+<html>Constant: atomic unit of charge density<br>Value: 1.081202317E12<br>Uncertainty: 0.000000093e12<br>Units: C m<sup>-3</sup>
+</description>
+<constant>
+1.081202317E12
+
+</constant>
+<name>
+atomic unit of electric potential
+</name>
+<description>
+<html>Constant: atomic unit of electric potential<br>Value: 27.2113845<br>Uncertainty: 0.0000023<br>Units: V
+</description>
+<constant>
+27.2113845
+
+</constant>
+<name>
+atomic unit of electric field
+</name>
+<description>
+<html>Constant: atomic unit of electric field<br>Value: 5.14220642E11<br>Uncertainty: 0.00000044e11<br>Units: V m<sup>-1</sup>
+</description>
+<constant>
+5.14220642E11
+
+</constant>
+<name>
+atomic unit of electric field gradient
+</name>
+<description>
+<html>Constant: atomic unit of electric field gradient<br>Value: 9.71736182E21<br>Uncertainty: 0.00000083e21<br>Units: V m<sup>-2</sup>
+</description>
+<constant>
+9.71736182E21
+
+</constant>
+<name>
+atomic unit of electric dipole moment
+</name>
+<description>
+<html>Constant: atomic unit of electric dipole moment<br>Value: 8.47835309E-30<br>Uncertainty: 0.00000073e-30<br>Units: C m
+</description>
+<constant>
+8.47835309E-30
+
+</constant>
+<name>
+atomic unit of electric quadrupole moment
+</name>
+<description>
+<html>Constant: atomic unit of electric quadrupole moment<br>Value: 4.48655124E-40<br>Uncertainty: 0.00000039e-40<br>Units: C m<sup>2</sup>
+</description>
+<constant>
+4.48655124E-40
+
+</constant>
+<name>
+atomic unit of electric polarizablity
+</name>
+<description>
+<html>Constant: atomic unit of electric polarizablity<br>Value: 1.648777274E-41<br>Uncertainty: 0.000000016e-41<br>Units: C<sup>2</sup> m<sup>2</sup> J<sup>-1</sup>
+</description>
+<constant>
+1.648777274E-41
+
+</constant>
+<name>
+atomic unit of 1st hyperpolarizablity
+</name>
+<description>
+<html>Constant: atomic unit of 1st hyperpolarizablity<br>Value: 3.20636151E-53<br>Uncertainty: 0.00000028e-53<br>Units: C<sup>3</sup> m<sup>3</sup> J<sup>-2</sup>
+</description>
+<constant>
+3.20636151E-53
+
+</constant>
+<name>
+atomic unit of 2nd hyperpolarizablity
+</name>
+<description>
+<html>Constant: atomic unit of 2nd hyperpolarizablity<br>Value: 6.2353808E-65<br>Uncertainty: 0.0000011e-65<br>Units: C<sup>4</sup> m<sup>4</sup> J<sup>-3</sup>
+</description>
+<constant>
+6.2353808E-65
+
+</constant>
+<name>
+atomic unit of magn. flux density
+</name>
+<description>
+<html>Constant: atomic unit of magn. flux density<br>Value: 2.35051742E5<br>Uncertainty: 0.00000020e5<br>Units: T
+</description>
+<constant>
+2.35051742E5
+
+</constant>
+<name>
+atomic unit of magn. dipole moment
+</name>
+<description>
+<html>Constant: atomic unit of magn. dipole moment<br>Value: 1.85480190E-23<br>Uncertainty: 0.00000016e-23<br>Units: J T<sup>-1</sup>
+</description>
+<constant>
+1.85480190E-23
+
+</constant>
+<name>
+atomic unit of magnetizability
+</name>
+<description>
+<html>Constant: atomic unit of magnetizability<br>Value: 7.89103660E-29<br>Uncertainty: 0.00000013e-29<br>Units: J T<sup>-2</sup>
+</description>
+<constant>
+7.89103660E-29
+
+</constant>
+<name>
+atomic unit of permittivity
+</name>
+<description>
+<html>Constant: atomic unit of permittivity<br>Value: 1.112650056E-10<br>Uncertainty: (exact)<br>Units: F m<sup>-1</sup>
+</description>
+<constant>
+1.112650056E-10
+
+</constant>
+<name>
+joule-kilogram relationship
+</name>
+<description>
+<html>Constant: joule-kilogram relationship<br>Value: 1.112650056E-17<br>Uncertainty: (exact)<br>Units: kg
+</description>
+<constant>
+1.112650056E-17
+
+</constant>
+<name>
+joule-inverse meter relationship
+</name>
+<description>
+<html>Constant: joule-inverse meter relationship<br>Value: 5.03411720E24<br>Uncertainty: 0.00000086e24<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+5.03411720E24
+
+</constant>
+<name>
+joule-hertz relationship
+</name>
+<description>
+<html>Constant: joule-hertz relationship<br>Value: 1.50919037E33<br>Uncertainty: 0.00000026e33<br>Units: Hz
+</description>
+<constant>
+1.50919037E33
+
+</constant>
+<name>
+joule-kelvin relationship
+</name>
+<description>
+<html>Constant: joule-kelvin relationship<br>Value: 7.242963E22<br>Uncertainty: 0.000013e22<br>Units: K
+</description>
+<constant>
+7.242963E22
+
+</constant>
+<name>
+joule-electron volt relationship
+</name>
+<description>
+<html>Constant: joule-electron volt relationship<br>Value: 6.24150947E18<br>Uncertainty: 0.00000053e18<br>Units: eV
+</description>
+<constant>
+6.24150947E18
+
+</constant>
+<name>
+joule-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: joule-atomic mass unit relationship<br>Value: 6.7005361E9<br>Uncertainty: 0.0000011e9<br>Units: u
+</description>
+<constant>
+6.7005361E9
+
+</constant>
+<name>
+joule-hartree relationship
+</name>
+<description>
+<html>Constant: joule-hartree relationship<br>Value: 2.29371257E17<br>Uncertainty: 0.00000039e17<br>Units: E_h
+</description>
+<constant>
+2.29371257E17
+
+</constant>
+<name>
+kilogram-joule relationship
+</name>
+<description>
+<html>Constant: kilogram-joule relationship<br>Value: 8.987551787E16<br>Uncertainty: (exact)<br>Units: J
+</description>
+<constant>
+8.987551787E16
+
+</constant>
+<name>
+kilogram-inverse meter relationship
+</name>
+<description>
+<html>Constant: kilogram-inverse meter relationship<br>Value: 4.52443891E41<br>Uncertainty: 0.00000077e41<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+4.52443891E41
+
+</constant>
+<name>
+kilogram-hertz relationship
+</name>
+<description>
+<html>Constant: kilogram-hertz relationship<br>Value: 1.35639266E50<br>Uncertainty: 0.00000023e50<br>Units: Hz
+</description>
+<constant>
+1.35639266E50
+
+</constant>
+<name>
+kilogram-kelvin relationship
+</name>
+<description>
+<html>Constant: kilogram-kelvin relationship<br>Value: 6.509650E39<br>Uncertainty: 0.000011e39<br>Units: K
+</description>
+<constant>
+6.509650E39
+
+</constant>
+<name>
+kilogram-electron volt relationship
+</name>
+<description>
+<html>Constant: kilogram-electron volt relationship<br>Value: 5.60958896E35<br>Uncertainty: 0.00000048e35<br>Units: eV
+</description>
+<constant>
+5.60958896E35
+
+</constant>
+<name>
+kilogram-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: kilogram-atomic mass unit relationship<br>Value: 6.0221415E26<br>Uncertainty: 0.0000010e26<br>Units: u
+</description>
+<constant>
+6.0221415E26
+
+</constant>
+<name>
+kilogram-hartree relationship
+</name>
+<description>
+<html>Constant: kilogram-hartree relationship<br>Value: 2.06148605E34<br>Uncertainty: 0.00000035e34<br>Units: E_h
+</description>
+<constant>
+2.06148605E34
+
+</constant>
+<name>
+inverse meter-joule relationship
+</name>
+<description>
+<html>Constant: inverse meter-joule relationship<br>Value: 1.98644561E-25<br>Uncertainty: 0.00000034e-25<br>Units: J
+</description>
+<constant>
+1.98644561E-25
+
+</constant>
+<name>
+inverse meter-kilogram relationship
+</name>
+<description>
+<html>Constant: inverse meter-kilogram relationship<br>Value: 2.21021881E-42<br>Uncertainty: 0.00000038e-42<br>Units: kg
+</description>
+<constant>
+2.21021881E-42
+
+</constant>
+<name>
+inverse meter-hertz relationship
+</name>
+<description>
+<html>Constant: inverse meter-hertz relationship<br>Value: 299792458<br>Uncertainty: (exact)<br>Units: Hz
+</description>
+<constant>
+299792458
+
+</constant>
+<name>
+inverse meter-kelvin relationship
+</name>
+<description>
+<html>Constant: inverse meter-kelvin relationship<br>Value: 1.4387752E-2<br>Uncertainty: 0.0000025e-2<br>Units: K
+</description>
+<constant>
+1.4387752E-2
+
+</constant>
+<name>
+inverse meter-electron volt relationship
+</name>
+<description>
+<html>Constant: inverse meter-electron volt relationship<br>Value: 1.23984191E-6<br>Uncertainty: 0.00000011e-6<br>Units: eV
+</description>
+<constant>
+1.23984191E-6
+
+</constant>
+<name>
+inverse meter-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: inverse meter-atomic mass unit relationship<br>Value: 1.3310250506E-15<br>Uncertainty: 0.0000000089e-15<br>Units: u
+</description>
+<constant>
+1.3310250506E-15
+
+</constant>
+<name>
+inverse meter-hartree relationship
+</name>
+<description>
+<html>Constant: inverse meter-hartree relationship<br>Value: 4.556335252760E-8<br>Uncertainty: 0.000000000030e-8<br>Units: E_h
+</description>
+<constant>
+4.556335252760E-8
+
+</constant>
+<name>
+hertz-joule relationship
+</name>
+<description>
+<html>Constant: hertz-joule relationship<br>Value: 6.6260693E-34<br>Uncertainty: 0.0000011e-34<br>Units: J
+</description>
+<constant>
+6.6260693E-34
+
+</constant>
+<name>
+hertz-kilogram relationship
+</name>
+<description>
+<html>Constant: hertz-kilogram relationship<br>Value: 7.3724964E-51<br>Uncertainty: 0.0000013e-51<br>Units: kg
+</description>
+<constant>
+7.3724964E-51
+
+</constant>
+<name>
+hertz-inverse meter relationship
+</name>
+<description>
+<html>Constant: hertz-inverse meter relationship<br>Value: 3.335640951E-9<br>Uncertainty: (exact)<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+3.335640951E-9
+
+</constant>
+<name>
+hertz-kelvin relationship
+</name>
+<description>
+<html>Constant: hertz-kelvin relationship<br>Value: 4.7992374E-11<br>Uncertainty: 0.0000084e-11<br>Units: K
+</description>
+<constant>
+4.7992374E-11
+
+</constant>
+<name>
+hertz-electron volt relationship
+</name>
+<description>
+<html>Constant: hertz-electron volt relationship<br>Value: 4.13566743E-15<br>Uncertainty: 0.00000035e-15<br>Units: eV
+</description>
+<constant>
+4.13566743E-15
+
+</constant>
+<name>
+hertz-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: hertz-atomic mass unit relationship<br>Value: 4.439821667E-24<br>Uncertainty: 0.000000030e-24<br>Units: u
+</description>
+<constant>
+4.439821667E-24
+
+</constant>
+<name>
+hertz-hartree relationship
+</name>
+<description>
+<html>Constant: hertz-hartree relationship<br>Value: 1.519829846006E-16<br>Uncertainty: 0.000000000010e-16<br>Units: E_h
+</description>
+<constant>
+1.519829846006E-16
+
+</constant>
+<name>
+kelvin-joule relationship
+</name>
+<description>
+<html>Constant: kelvin-joule relationship<br>Value: 1.3806505E-23<br>Uncertainty: 0.0000024e-23<br>Units: J
+</description>
+<constant>
+1.3806505E-23
+
+</constant>
+<name>
+kelvin-kilogram relationship
+</name>
+<description>
+<html>Constant: kelvin-kilogram relationship<br>Value: 1.5361808E-40<br>Uncertainty: 0.0000027e-40<br>Units: kg
+</description>
+<constant>
+1.5361808E-40
+
+</constant>
+<name>
+kelvin-inverse meter relationship
+</name>
+<description>
+<html>Constant: kelvin-inverse meter relationship<br>Value: 69.50356<br>Uncertainty: 0.00012<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+69.50356
+
+</constant>
+<name>
+kelvin-hertz relationship
+</name>
+<description>
+<html>Constant: kelvin-hertz relationship<br>Value: 2.0836644E10<br>Uncertainty: 0.0000036e10<br>Units: Hz
+</description>
+<constant>
+2.0836644E10
+
+</constant>
+<name>
+kelvin-electron volt relationship
+</name>
+<description>
+<html>Constant: kelvin-electron volt relationship<br>Value: 8.617343E-5<br>Uncertainty: 0.000015e-5<br>Units: eV
+</description>
+<constant>
+8.617343E-5
+
+</constant>
+<name>
+kelvin-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: kelvin-atomic mass unit relationship<br>Value: 9.251098E-14<br>Uncertainty: 0.000016e-14<br>Units: u
+</description>
+<constant>
+9.251098E-14
+
+</constant>
+<name>
+kelvin-hartree relationship
+</name>
+<description>
+<html>Constant: kelvin-hartree relationship<br>Value: 3.1668153E-6<br>Uncertainty: 0.0000055e-6<br>Units: E_h
+</description>
+<constant>
+3.1668153E-6
+
+</constant>
+<name>
+electron volt-joule relationship
+</name>
+<description>
+<html>Constant: electron volt-joule relationship<br>Value: 1.60217653E-19<br>Uncertainty: 0.00000014e-19<br>Units: J
+</description>
+<constant>
+1.60217653E-19
+
+</constant>
+<name>
+electron volt-kilogram relationship
+</name>
+<description>
+<html>Constant: electron volt-kilogram relationship<br>Value: 1.78266181E-36<br>Uncertainty: 0.00000015e-36<br>Units: kg
+</description>
+<constant>
+1.78266181E-36
+
+</constant>
+<name>
+electron volt-inverse meter relationship
+</name>
+<description>
+<html>Constant: electron volt-inverse meter relationship<br>Value: 8.06554445E5<br>Uncertainty: 0.00000069e5<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+8.06554445E5
+
+</constant>
+<name>
+electron volt-hertz relationship
+</name>
+<description>
+<html>Constant: electron volt-hertz relationship<br>Value: 2.41798940E14<br>Uncertainty: 0.00000021e14<br>Units: Hz
+</description>
+<constant>
+2.41798940E14
+
+</constant>
+<name>
+electron volt-kelvin relationship
+</name>
+<description>
+<html>Constant: electron volt-kelvin relationship<br>Value: 1.1604505E4<br>Uncertainty: 0.0000020e4<br>Units: K
+</description>
+<constant>
+1.1604505E4
+
+</constant>
+<name>
+electron volt-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: electron volt-atomic mass unit relationship<br>Value: 1.073544171E-9<br>Uncertainty: 0.000000092e-9<br>Units: u
+</description>
+<constant>
+1.073544171E-9
+
+</constant>
+<name>
+electron volt-hartree relationship
+</name>
+<description>
+<html>Constant: electron volt-hartree relationship<br>Value: 3.67493245E-2<br>Uncertainty: 0.00000031e-2<br>Units: E_h
+</description>
+<constant>
+3.67493245E-2
+
+</constant>
+<name>
+atomic mass unit-joule relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-joule relationship<br>Value: 1.49241790E-10<br>Uncertainty: 0.00000026e-10<br>Units: J
+</description>
+<constant>
+1.49241790E-10
+
+</constant>
+<name>
+atomic mass unit-kilogram relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-kilogram relationship<br>Value: 1.66053886E-27<br>Uncertainty: 0.00000028e-27<br>Units: kg
+</description>
+<constant>
+1.66053886E-27
+
+</constant>
+<name>
+atomic mass unit-inverse meter relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-inverse meter relationship<br>Value: 7.513006608E14<br>Uncertainty: 0.000000050e14<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+7.513006608E14
+
+</constant>
+<name>
+atomic mass unit-hertz relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-hertz relationship<br>Value: 2.252342718E23<br>Uncertainty: 0.000000015e23<br>Units: Hz
+</description>
+<constant>
+2.252342718E23
+
+</constant>
+<name>
+atomic mass unit-kelvin relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-kelvin relationship<br>Value: 1.0809527E13<br>Uncertainty: 0.0000019e13<br>Units: K
+</description>
+<constant>
+1.0809527E13
+
+</constant>
+<name>
+atomic mass unit-electron volt relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-electron volt relationship<br>Value: 931.494043E6<br>Uncertainty: 0.000080e6<br>Units: eV
+</description>
+<constant>
+931.494043E6
+
+</constant>
+<name>
+atomic mass unit-hartree relationship
+</name>
+<description>
+<html>Constant: atomic mass unit-hartree relationship<br>Value: 3.423177686E7<br>Uncertainty: 0.000000023e7<br>Units: E_h
+</description>
+<constant>
+3.423177686E7
+
+</constant>
+<name>
+hartree-joule relationship
+</name>
+<description>
+<html>Constant: hartree-joule relationship<br>Value: 4.35974417E-18<br>Uncertainty: 0.00000075e-18<br>Units: J
+</description>
+<constant>
+4.35974417E-18
+
+</constant>
+<name>
+hartree-kilogram relationship
+</name>
+<description>
+<html>Constant: hartree-kilogram relationship<br>Value: 4.85086960E-35<br>Uncertainty: 0.00000083e-35<br>Units: kg
+</description>
+<constant>
+4.85086960E-35
+
+</constant>
+<name>
+hartree-inverse meter relationship
+</name>
+<description>
+<html>Constant: hartree-inverse meter relationship<br>Value: 2.194746313705E7<br>Uncertainty: 0.000000000015e7<br>Units: m<sup>-1</sup>
+</description>
+<constant>
+2.194746313705E7
+
+</constant>
+<name>
+hartree-hertz relationship
+</name>
+<description>
+<html>Constant: hartree-hertz relationship<br>Value: 6.579683920721E15<br>Uncertainty: 0.000000000044e15<br>Units: Hz
+</description>
+<constant>
+6.579683920721E15
+
+</constant>
+<name>
+hartree-kelvin relationship
+</name>
+<description>
+<html>Constant: hartree-kelvin relationship<br>Value: 3.1577465E5<br>Uncertainty: 0.0000055e5<br>Units: K
+</description>
+<constant>
+3.1577465E5
+
+</constant>
+<name>
+hartree-electron volt relationship
+</name>
+<description>
+<html>Constant: hartree-electron volt relationship<br>Value: 27.2113845<br>Uncertainty: 0.0000023<br>Units: eV
+</description>
+<constant>
+27.2113845
+
+</constant>
+<name>
+hartree-atomic mass unit relationship
+</name>
+<description>
+<html>Constant: hartree-atomic mass unit relationship<br>Value: 2.921262323E-8<br>Uncertainty: 0.000000019e-8<br>Units: u
+</description>
+<constant>
+2.921262323E-8
+
+</constant>
+<name>
+C to F
+</name>
+<description>
+Convert Celcius to Fahrenheit
+</description>
+<function>
+x
+enter
+9
+enter
+5
+/
+*
+enter
+3
+2
++
+
+</function>
