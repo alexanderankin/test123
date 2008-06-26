@@ -340,6 +340,8 @@ ips.Just_a_moment,_attempting_to_fetch_current_SVN_info...=Just a moment, attemp
 ips.Delete_these_files>=Delete these files:
 ips.File=File
 ips.Enter_comment_for_delete>=Enter comment for delete:
+ips.This_WILL_delete_files_from_the_repository.=This WILL delete files from the repository.
+ips.Confirm_Delete=Confirm Delete
 
 # for Remote Diff dialog
 ips.Diff_Revision>=Diff Revision:

@@ -125,6 +125,7 @@ public class DeleteAction extends SVNAction {
                 if ( data == null ) {
                     return ;     // null data signals user canceled
                 }
+                JOptionPane.showConfirmDialog(getView(), jEdit.getProperty("ips.This_WILL_delete_files_from_the_repository.", "This WILL delete files from the repository."), jEdit.getProperty("ips.Confirm_Delete", "Confirm Delete"), JOptionPane.WARNING_MESSAGE);
             }
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
