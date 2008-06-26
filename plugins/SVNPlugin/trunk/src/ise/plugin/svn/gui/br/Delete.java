@@ -28,16 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui.br;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import org.gjt.sp.jedit.View;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.gui.*;
 import ise.plugin.svn.data.*;
-import ise.plugin.svn.library.GUIUtils;
 import java.util.*;
 
 
@@ -53,7 +48,8 @@ public class Delete extends BRAction {
             if ( path != null ) {
                 Object[] parts = path.getPath();
                 StringBuilder sb = new StringBuilder();
-                sb.append( parts[ 0 ] );
+                String branch = parts[0].toString();
+                sb.append( branch.endsWith("/") ? branch.substring(0, branch.length() - 1) : branch);
                 for ( int i = 1; i < parts.length; i++ ) {
                     sb.append( "/" ).append( parts[ i ].toString() );
                 }
