@@ -93,7 +93,7 @@ public class LogResultsPanel extends JPanel {
         Set < Map.Entry < String, List < SVNLogEntry >>> set = results.entrySet();
         for ( Map.Entry < String, List < SVNLogEntry >> me : set ) {
             String path = ( String ) me.getKey();
-            JLabel label = new JLabel( jEdit.getProperty("ips.Path>", "Path:") + " " + path );
+            JLabel label = new JLabel( jEdit.getProperty( "ips.Path>", "Path:" ) + " " + path );
 
             // sort the entries
             List<SVNLogEntry> entries = me.getValue();
@@ -109,7 +109,7 @@ public class LogResultsPanel extends JPanel {
             for ( int i = 0; it.hasNext(); i++ ) {
                 SVNLogEntry entry = ( SVNLogEntry ) it.next();
                 String revision = String.valueOf( entry.getRevision() );
-                String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty("ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z"), Locale.getDefault() ).format( entry.getDate() ) : "---";
+                String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty( "ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z" ), Locale.getDefault() ).format( entry.getDate() ) : "---";
                 String author = entry.getAuthor();
                 String comment = entry.getMessage();
                 data[ i ][ 0 ] = revision;
@@ -131,16 +131,21 @@ public class LogResultsPanel extends JPanel {
                             // type is one of A (added), M (modified), D (deleted), or R (replaced)
                             // show this along with the path
                             char type = lep.getType();
-                            associated_files.append( type ).append( " " );
+                            associated_files.append( type ).append( " " ).append(cp);
+                            associated_files.append( ( lep.getCopyPath() != null ) ? " (from "
+                                + lep.getCopyPath() + " revision "
+                                + lep.getCopyRevision() + ")" : "" ).append(ls);
                         }
-                        associated_files.append( cp ).append( ls );
+                        else {
+                            associated_files.append(cp).append(ls);
+                        }
                     }
                     data[ i ][ 4 ] = associated_files.toString();
                 }
             }
             String[] col_names = showPaths ?
-                    new String[] {jEdit.getProperty("ips.Revision", "Revision"), jEdit.getProperty("ips.Date", "Date"), jEdit.getProperty("ips.Author", "Author"), jEdit.getProperty("ips.Comment", "Comment"), jEdit.getProperty("ips.Paths", "Paths")} :
-                    new String[] {jEdit.getProperty("ips.Revision", "Revision"), jEdit.getProperty("ips.Date", "Date"), jEdit.getProperty("ips.Author", "Author"), jEdit.getProperty("ips.Comment", "Comment")};
+                    new String[] {jEdit.getProperty( "ips.Revision", "Revision" ), jEdit.getProperty( "ips.Date", "Date" ), jEdit.getProperty( "ips.Author", "Author" ), jEdit.getProperty( "ips.Comment", "Comment" ), jEdit.getProperty( "ips.Paths", "Paths" ) } :
+                    new String[] {jEdit.getProperty( "ips.Revision", "Revision" ), jEdit.getProperty( "ips.Date", "Date" ), jEdit.getProperty( "ips.Author", "Author" ), jEdit.getProperty( "ips.Comment", "Comment" ) };
             final LogTable table = new LogTable( data, col_names );
             table.setPath( path );
             table.addMouseListener( new TableMouseListener( table ) );
@@ -307,7 +312,7 @@ public class LogResultsPanel extends JPanel {
                 }
             }
             if ( !deleted_files.isEmpty() ) {
-                JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Undelete", "Undelete") );
+                JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Undelete", "Undelete" ) );
                 popup.add( mi );
                 mi.addActionListener( new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -362,7 +367,7 @@ public class LogResultsPanel extends JPanel {
         }
         if ( rows.length == 2 ) {
             final String path = table.getPath();
-            JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Diff", "Diff") );
+            JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Diff", "Diff" ) );
             popup.add( mi );
             mi.addActionListener( new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
@@ -376,7 +381,7 @@ public class LogResultsPanel extends JPanel {
                                 );
         }
         //popup.addSeparator();
-        JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Zoom", "Zoom") );
+        JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Zoom", "Zoom" ) );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         TableCellViewer viewer = new TableCellViewer( table );
