@@ -115,15 +115,18 @@ public class CommentContinuator extends BufferAdapter
                 prefix = commentStart.replaceAll(".", " ") + " ";
         } else {
             String nextLine = buffer.getLineText(line + 1);
-            prefix = get_prefix(nextLine) + " ";
-            // prefix already has 1 appended space, so subtract that from extra.
+            prefix = get_prefix(nextLine);
+            // If prefix is non-empty, add a space after the prefix. Otherwise,
+            // extra will take care of the necessary indent.
+            if (prefix.length() > 0)
+                prefix += " ";
             int extra = StandardUtilities.getLeadingWhiteSpace(nextLine) -
-                        StandardUtilities.getLeadingWhiteSpace(text) - 1;
+                        StandardUtilities.getLeadingWhiteSpace(text);
             if (extra > 0) {
                 char[] spaces = new char[extra];
                 for (int i = 0; i < extra; ++i)
                     spaces[i] = ' ';
-                prefix += new String(spaces);
+                prefix = new String(spaces) + prefix;
             }
         }
         // Need a leading prefix because formatParagraph skips existing
@@ -168,48 +171,50 @@ public class CommentContinuator extends BufferAdapter
         ta.setCaretPosition(pos);
     }
 
-	protected static void formatParagraph(String text, int maxLineLength,
+    protected static void formatParagraph(String text, int maxLineLength,
                                           int tabSize, StringBuilder buf,
                                           String leadingPrefix, String prefix)
     {
         // align everything to paragraph's leading indent
-		int leadingWhitespaceCount = StandardUtilities.getLeadingWhiteSpace(text);
-		String leadingWhitespace = text.substring(0,leadingWhitespaceCount);
-		int leadingWhitespaceWidth = StandardUtilities.getLeadingWhiteSpaceWidth(text,tabSize);
-        int prefixWidth = prefix.length();
-        int leadingWidth = leadingWhitespaceWidth + prefixWidth;
+        int leadingWhitespaceCount = StandardUtilities.getLeadingWhiteSpace(text);
+        String leadingWhitespace = text.substring(0,leadingWhitespaceCount);
+        int leadingWhitespaceWidth = StandardUtilities.getLeadingWhiteSpaceWidth(text,tabSize);
+        int leadingFirstLineWidth = leadingWhitespaceWidth + leadingPrefix.length();
+        int leadingWidth = leadingWhitespaceWidth + prefix.length();
 
-		buf.append(leadingWhitespace);
+        buf.append(leadingWhitespace);
         buf.append(leadingPrefix);
         
         String trimmed_prefix = prefix.trim();
         
-		int lineLength = leadingWhitespaceWidth + leadingPrefix.length();
-		StringTokenizer st = new StringTokenizer(text);
-		while(st.hasMoreTokens())
-		{
-			String word = st.nextToken();
+        int lineLength = leadingWhitespaceWidth + leadingPrefix.length();
+        StringTokenizer st = new StringTokenizer(text);
+        while(st.hasMoreTokens())
+        {
+            String word = st.nextToken();
             if (word.equals(trimmed_prefix))
                 continue;
-			if(lineLength == leadingWidth)
-			{
+            
+            if ((lineLength == leadingWidth) ||
+                (lineLength == leadingFirstLineWidth))
+            {
                 // Do nothing
-			}
-			else if(lineLength + word.length() + 1 > maxLineLength)
-			{
-				buf.append('\n');
-				buf.append(leadingWhitespace);
+            }
+            else if(lineLength + word.length() + 1 > maxLineLength)
+            {
+                buf.append('\n');
+                buf.append(leadingWhitespace);
                 buf.append(prefix);
-				lineLength = leadingWidth;
-			}
-			else
-			{
-				buf.append(' ');
-				lineLength++;
-			}
-			buf.append(word);
-			lineLength += word.length();
-		}
+                lineLength = leadingWidth;
+            }
+            else
+            {
+                buf.append(' ');
+                lineLength++;
+            }
+            buf.append(word);
+            lineLength += word.length();
+        }
     }
 
     public void contentInserted(JEditBuffer buffer, int startLine, int offset,
@@ -241,7 +246,7 @@ public class CommentContinuator extends BufferAdapter
                 if ((commentEnd != null) && text.endsWith(commentEnd))
                     return;
                 
-                // Find the start of this lines comment char
+                // Find the start of this line's comment char
                 int pos = 0;
                 if (!text.trim().equals("")) {
                     while ((pos < (lineEnd - lineStart)) && 
@@ -264,8 +269,7 @@ public class CommentContinuator extends BufferAdapter
                     // Only append leading space after the first line of the
                     // comment, after that idealIndentForLine takes care of
                     // things.
-                    boolean first_line = text.substring(pos).startsWith(commentStart);
-                    if (first_line) {
+                    if (text.substring(pos).startsWith(commentStart)) {
                         for (int i = 0; i < (commentStart.length() - 1); ++i) {
                             sb.append(' ');
                         }
@@ -275,15 +279,10 @@ public class CommentContinuator extends BufferAdapter
                     } else {
                         sb.append(get_prefix(buffer.getLineText(startLine)));
                     }
-                    // Hack for c style comments
-                    /*
-                    if (commentStart.equals("/*")) {
-                        sb.append('*');
-                    } else if (first_line) {
-                        sb.append(' ');
-                        sb.append(' ');
-                    }
-                    */
+                    
+                    // We schedule this for after indent runs, otherwise any of
+                    // the leading whitespace gets removed by, or incorporated
+                    // into, the indent.
                     final int nextLine = startLine + 1;
                     final JEditBuffer fb = buffer;
                     final String fs = sb.toString();
@@ -294,7 +293,7 @@ public class CommentContinuator extends BufferAdapter
                             int indent = fb.getIdealIndentForLine(nextLine);
                             String text = fb.getLineText(nextLine);
                             
-                            // Automatically inserts a space for us on wrap
+                            // May automatically insert a space for us on wrap
                             String extra_insert = "";
                             if (!fs.trim().equals("")) {
                                 if (indent >= text.length()) {
