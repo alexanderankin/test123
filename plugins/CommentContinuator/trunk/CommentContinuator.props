@@ -1,0 +1,13 @@
+plugin.commentcontinuator.CommentContinuatorPlugin.activate=startup
+plugin.commentcontinuator.CommentContinuatorPlugin.name=CommentContinuator
+plugin.commentcontinuator.CommentContinuatorPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
+plugin.commentcontinuator.CommentContinuatorPlugin.version=0.0.0
+plugin.commentcontinuator.CommentContinuatorPlugin.depend.0=jedit 04.03.05.00
+plugin.commentcontinuator.CommentContinuatorPlugin.depend.1=jdk 1.5
+plugin.commentcontinuator.CommentContinuatorPlugin.description=Automatically continues comments as they are written
+plugin.commentcontinuator.CommentContinuatorPlugin.longdescription=description.html
+plugin.commentcontinuator.CommentContinuatorPlugin.docs=doc/index.html
+plugin.commentcontinuator.CommentContinuatorPlugin.option-pane=commentcontinuator
+
+plugin.commentcontinuator.CommentContinuatorPlugin.menu=commentcontinuator.format
+commentcontinuator.format.label=Format Comment
