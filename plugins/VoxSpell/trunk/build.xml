@@ -35,7 +35,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			debug="yes"
-			includes="src/**"
+			includes="**/*.java"
 			includeJavaRuntime="yes"
 			target="1.5"
 			source="1.5" >
