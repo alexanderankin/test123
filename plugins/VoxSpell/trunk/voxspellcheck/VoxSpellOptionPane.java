@@ -22,7 +22,6 @@ package voxspellcheck;
 import javax.swing.*;
 import java.awt.BorderLayout;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
@@ -39,22 +38,14 @@ public class VoxSpellOptionPane extends AbstractOptionPane
     
     public void _init()
     {
-        JPanel p;
         String s;
-        
-        p = new JPanel(new BorderLayout());
         s = jEdit.getProperty("options.voxspellcheck.all_text_modes");
-        all_text_modes = new JTextField(s, 80);
-        p.add(new JLabel("All text modes: "), BorderLayout.WEST);
-        p.add(all_text_modes, BorderLayout.CENTER);
-        addComponent(p);
+        all_text_modes = new JTextField(s);
+        addComponent(new JLabel("All text modes: "), all_text_modes);
         
-        p = new JPanel(new BorderLayout());
         s = jEdit.getProperty("options.voxspellcheck.non_markup_modes");
-        non_markup_modes = new JTextField(s, 80);
-        p.add(new JLabel("Non-markup modes: "), BorderLayout.WEST);
-        p.add(non_markup_modes, BorderLayout.CENTER);
-        addComponent(p);
+        non_markup_modes = new JTextField(s);
+        addComponent(new JLabel("Non-markup modes: "), non_markup_modes);
         
         s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
         boolean b = s.equals("true");
