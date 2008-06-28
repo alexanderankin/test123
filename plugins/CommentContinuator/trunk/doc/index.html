@@ -1,0 +1,44 @@
+
+<html>
+
+<head>
+    <title>CommentContinuator</title>
+</head>
+<body>
+
+    <h2>CommentContinuator</h2>
+
+    <p>The CommentContinuator plugin extends comments as you type them. Hitting
+    enter in a comment extends the comment to the next line. If word wrap is
+    enabled, when a wrap occurs the comment is automatically continued on the
+    next line. The prefix character(s) of a block comment (the prefix characters
+    after the first line) are extended also. For example, given the following
+    beginning of a comment:
+    
+        <pre>
+             /* a comment
+        </pre>
+        Hitting enter moves the caret below the letter 'a'. To start a prefix
+        character, hit backspace twice and type '*'. From then on, when the
+        comment is extended, that prefix is copied too.
+        <pre>
+             /* a comment
+              * continued
+              * to more lines. */
+        </pre>
+        The prefix can be any number of characters, as long as they are not
+        letters or numbers.
+    </p>
+    
+    <p>If a comment is automatically continued when you're done entering your
+    comment, simply delete the line comment prefix, or close the block comment,
+    and continue with normal text entry. CommentContinuator only works inside an
+    existing comment.</p>
+    
+    <p>In addition to comment continuation, CommentContinuator includes a
+    specialized format paragraph action that knows how to re-wrap most comments,
+    or other text with a prefix.</p>
+    
+</body>
+
+</html>

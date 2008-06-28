@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="commentcontinuator.format">
+        <CODE>
+            commentcontinuator.CommentContinuator.format(textArea);
+        </CODE>
+    </ACTION>
+</ACTIONS>
