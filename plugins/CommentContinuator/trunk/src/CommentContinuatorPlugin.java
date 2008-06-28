@@ -30,6 +30,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 public class CommentContinuatorPlugin extends EBPlugin
 {
@@ -49,11 +50,12 @@ public class CommentContinuatorPlugin extends EBPlugin
             if ((epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) ||
                 (epu.getWhat() == EditPaneUpdate.CREATED))
             {
-                if (buffer != null)
-                    buffer.addBufferListener(continuator);
-            } else {
-                if (buffer != null)
-                    buffer.removeBufferListener(continuator);
+                if (buffer != null) {
+                    if (!buffer.getBooleanProperty("commentcontinuator.enabled")) {
+                        buffer.setBooleanProperty("commentcontinuator.enabled", true);
+                        buffer.addBufferListener(continuator);
+                    }
+                }
             }
         }
     }
@@ -63,14 +65,18 @@ public class CommentContinuatorPlugin extends EBPlugin
         // Enumerate edit panes and add listener
         continuator = new CommentContinuator();
         for (View v : jEdit.getViews()) {
-            v.getEditPane().getBuffer().addBufferListener(continuator);
+            JEditBuffer buffer = v.getEditPane().getBuffer();
+            buffer.setBooleanProperty("commentcontinuator.enabled", true);
+            buffer.addBufferListener(continuator);
         }
     }
     
     public void stop()
     {
         for (View v : jEdit.getViews()) {
-            v.getEditPane().getBuffer().removeBufferListener(continuator);
+            JEditBuffer buffer = v.getEditPane().getBuffer();
+            buffer.setBooleanProperty("commentcontinuator.enabled", false);
+            buffer.removeBufferListener(continuator);
         }
     }
 }
