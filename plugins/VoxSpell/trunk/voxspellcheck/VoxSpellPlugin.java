@@ -72,7 +72,7 @@ public class VoxSpellPlugin extends EBPlugin
     private static SuggestionTree suggestions = null;
     private static String prop_key = "VoxSpellExtension";
     
-    private static VoxSpellPainter getPainter(EditPane ep)
+    public static VoxSpellPainter getVoxSpellPainter(EditPane ep)
     {
         try {
             return (VoxSpellPainter)ep.getClientProperty(prop_key);
@@ -117,13 +117,13 @@ public class VoxSpellPlugin extends EBPlugin
             return;
         }
         
-        painter = getPainter(edit_pane);
+        painter = getVoxSpellPainter(edit_pane);
         if (painter == null) {
             String s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
             if (s.equals("true")) {
                 startSpelling(edit_pane);
             }
-            painter = getPainter(edit_pane);
+            painter = getVoxSpellPainter(edit_pane);
         } 
         if (painter != null) {
             Mode mode = buffer.getMode();
@@ -261,7 +261,7 @@ public class VoxSpellPlugin extends EBPlugin
     
     public static void stopSpelling(EditPane editpane)
     {
-        VoxSpellPainter p = getPainter(editpane);
+        VoxSpellPainter p = getVoxSpellPainter(editpane);
         if (p != null) {
             TextAreaPainter cur_painter = editpane.getTextArea().getPainter();
             cur_painter.removeExtension(p);
@@ -469,7 +469,7 @@ public class VoxSpellPlugin extends EBPlugin
     public static void reset(EditPane editpane)
     {
         ignore_checker = new WordTrie();
-        VoxSpellPainter p = getPainter(editpane);
+        VoxSpellPainter p = getVoxSpellPainter(editpane);
         if (p != null)
             p.setIgnoreChecker(ignore_checker);
         editpane.getTextArea().repaint();

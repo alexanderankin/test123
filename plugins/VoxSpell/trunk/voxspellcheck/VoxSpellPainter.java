@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package voxspellcheck;
 
 import java.util.Vector;
+import java.util.Enumeration;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.textarea.TextArea;
@@ -32,6 +33,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import java.awt.geom.*;
 import java.awt.Rectangle;
@@ -153,6 +155,88 @@ public class VoxSpellPainter extends TextAreaExtension
         setMode("text");
     }
     
+    protected boolean check(String word, int line_offset, 
+                            DefaultTokenHandler tokenHandler)
+    {
+        String trim_word = word.trim();
+        String low_word = trim_word.toLowerCase();
+        
+        if (trim_word.length() == 0)
+            return true;
+        if (low_word.length() == 1)
+            return true;
+        if (trim_word.endsWith("'") && trim_word.length() == 2)
+            return true;
+        Character c = trim_word.charAt(0);
+        if (!Character.isLetter(c))
+            return true;
+        
+        Token token;
+        try {
+            // FIXME: why am I getting null tokens (ArrayIndexOutOfBoundsException)?
+            token = TextUtilities.getTokenAtOffset(tokenHandler.getTokens(), line_offset);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return true;
+        }
+        switch (markup_mode) {
+        case COMMENT_OR_LITERAL:
+            if ((token.id < Token.COMMENT1 || token.id > Token.COMMENT4) &&
+                (token.id < Token.LITERAL1 || token.id > Token.LITERAL4))
+            {
+                return true;
+            }
+            break;
+        case NON_MARKUP:
+            if (token.id != Token.NULL) {
+                return true;
+            }
+            break;
+        }
+        
+        return checker.find(low_word) ||
+               checker.find(trim_word) ||
+               user_checker.find(low_word) ||
+               user_checker.find(trim_word) ||
+               ignore_checker.find(low_word) ||
+               ignore_checker.find(trim_word);
+    }
+    
+    public boolean check(JEditTextArea ta)
+    {
+        int pos;
+        int line;
+        int start;
+        int end;
+        try {
+            pos = ta.getCaretPosition();
+            line = ta.getLineOfOffset(pos);
+            start = ta.getLineStartOffset(line);
+            end = ta.getLineEndOffset(line);
+        } catch (java.lang.NullPointerException ex) {
+            // Getting NPE's on splits
+            return true;
+        }
+        
+        JEditBuffer buffer = ta.getBuffer();
+        DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+        buffer.markTokens(line, tokenHandler);
+        
+        Vector<String> words = getWords(ta, start, end);
+        Enumeration<String> iter = words.elements();
+        int char_count = 0;
+        String word = null;
+        while (iter.hasMoreElements()) {
+            word = iter.nextElement();
+            if ((start + char_count + word.length()) >= pos)
+                break;
+            char_count += word.length();
+        }
+        if (word == null)
+            return true;
+        Log.log(Log.DEBUG, this, "Checking " + word);
+        return check(word, char_count, tokenHandler);
+    }
+    
     public void paintValidLine(java.awt.Graphics2D gfx, int screenLine, 
                                int physicalLine, int start, int end, int y)
     {
@@ -178,50 +262,9 @@ public class VoxSpellPainter extends TextAreaExtension
         int char_count = 0;
         for (String word : words) {
             skip: {
-                String trim_word = word.trim();
-                String low_word = trim_word.toLowerCase();
-                
-                if (trim_word.length() == 0)
-                    break skip;
-                if (low_word.length() == 1)
-                    break skip;
-                if (trim_word.endsWith("'") && trim_word.length() == 2)
-                    break skip;
-                Character c = trim_word.charAt(0);
-                if (!Character.isLetter(c))
-                    break skip;
-                
-                Token token;
-                try {
-                    // FIXME: why am I getting null tokens (ArrayIndexOutOfBoundsException)?
-                    token = TextUtilities.getTokenAtOffset(tokenHandler.getTokens(), 
-                                                           start + char_count - start);
-                } catch (ArrayIndexOutOfBoundsException ex) {
+                if (check(word, char_count, tokenHandler)) {
                     break skip;
                 }
-                switch (markup_mode) {
-                case COMMENT_OR_LITERAL:
-                    if ((token.id < Token.COMMENT1 || token.id > Token.COMMENT4) &&
-                        (token.id < Token.LITERAL1 || token.id > Token.LITERAL4))
-                    {
-                        break skip;
-                    }
-                    break;
-                case NON_MARKUP:
-                    if (token.id != Token.NULL) {
-                        break skip;
-                    }
-                    break;
-                }
-
-                boolean correct = checker.find(low_word) || 
-                                  checker.find(trim_word) || 
-                                  user_checker.find(low_word) || 
-                                  user_checker.find(trim_word) ||
-                                  ignore_checker.find(low_word) ||
-                                  ignore_checker.find(trim_word);
-                if (correct)
-                    break skip;
     
                 int x = textarea.offsetToXY(start + char_count).x;
                 Point p;
