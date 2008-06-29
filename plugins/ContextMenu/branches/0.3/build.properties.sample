@@ -1,0 +1,28 @@
+# :mode=properties:
+# $Id$
+
+# jEdit install directory
+jedit.install.dir=/usr/local/share/jedit/4.3pre6
+
+# User settings directory
+jedit.user.home=${user.home}/.jedit
+
+# Top-level of the plugins source tree
+plugins.srcdir=${user.home}/.jedit/jars
+
+# Where to place the built jar files
+install.dir=${user.home}/.jedit/jars
+
+# Where to find the DocBook XML catalog file
+docbook.catalog=/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbook.cat
+
+# Where to find the DocBook XML DTD
+docbookx.dtd=/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd
+
+# Where to find the DocBook stylesheet
+docbook.xsl=/usr/share/apps/ksgmltools2/docbook/xsl
+
+# The name of the xsl stylesheet (without the path info)
+docbook.xsl.sheet=html/docbook.xsl
+
+
