@@ -322,7 +322,11 @@ public class ImportDialog extends EnhancedDialog
 	public void filesActivated(VFSBrowser browser,
 							   VFSFile[] files)
 	{
-		ok();
+		if (files.length == 1 && files[0].getType() == VFSFile.DIRECTORY) {
+			browser.setDirectory(files[0].getPath());
+		} else {
+			ok();
+		}
 	}
 
 
