@@ -88,7 +88,7 @@ public class SVNAction extends projectviewer.action.Action {
         }
     }
 
-    // this will be displayed in the PV context menu
+    // this won't be displayed in the PV context menu
     public String getText() {
         return "Subversion";
     }
@@ -124,7 +124,7 @@ public class SVNAction extends projectviewer.action.Action {
                     }
                 }
             }
-            catch ( ClassCastException e ) {
+            catch ( ClassCastException e ) {    // NOPMD
                 // ignored, move on
             }
         }
