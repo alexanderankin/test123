@@ -2,9 +2,9 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <!-- $Id$ -->
 <ACTIONS>
-	<ACTION NAME="contextmenu.open-popup-menu">
+	<!-- <ACTION NAME="contextmenu.open-popup-menu">
 		<CODE>contextmenu.ContextMenuPlugin.openPopupMenu();</CODE>
-	</ACTION>
+	</ACTION> -->
 	<ACTION NAME="contextmenu.customize">
 		<CODE>contextmenu.ContextMenuPlugin.openPluginOptionsDialog();</CODE>
 	</ACTION>
