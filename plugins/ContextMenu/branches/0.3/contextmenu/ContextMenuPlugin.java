@@ -243,26 +243,6 @@ public class ContextMenuPlugin extends EBPlugin {
 		new PluginOptions(jEdit.getActiveView(), "contextmenu-modes");
 	} //}}}
 
-	//{{{ openPopupMenu()
-	// Based on: Open_Context_Menu.bsh Copyright (C) 2003 Nitsan Vardi
-	/* public static void openPopupMenu() {
-		View view = jEdit.getActiveView();
-		JEditTextArea textArea = view.getTextArea();
-		if (textArea.hasFocus()) {
-			int caretOffset = textArea.getCaretPosition();
-			Point caretPos = textArea.offsetToXY(caretOffset);
-			if (caretPos != null) {
-				TextAreaPainter painter = textArea.getPainter();
-				int charHeight = painter.getFontMetrics().getHeight();
-				String mode = getMode(view);
-				GUIUtilities.showPopupMenu(getPopupForMode(mode),
-					painter,
-					caretPos.x,
-					caretPos.y + charHeight);
-			}
-		}
-	} */ //}}}
-
 	//{{{ getCustomizeModeItem()
 	public static JMenuItem getCustomizeModeItem(String text) {
 		JMenuItem customize = new JMenuItem(text);
