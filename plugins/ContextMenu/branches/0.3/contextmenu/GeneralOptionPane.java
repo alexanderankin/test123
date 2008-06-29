@@ -32,7 +32,7 @@ import org.gjt.sp.jedit.jEdit;
 
 public class GeneralOptionPane extends AbstractOptionPane {
 
-	private JCheckBox showInMenuBar, showInContextMenu, showSeparators;
+	private JCheckBox showInMenuBar, showInContextMenu;
 
 	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane() {
@@ -50,16 +50,12 @@ public class GeneralOptionPane extends AbstractOptionPane {
 											jEdit.getBooleanProperty("contextmenu.in-popup"));
 		add(showInContextMenu);
 
-		showSeparators = new JCheckBox(jEdit.getProperty("contextmenu.separators-in-popup.label"),
-											jEdit.getBooleanProperty("contextmenu.separators-in-popup"));
-		add(showSeparators);
 	} //}}}
 
 	//{{{ _save()
 	protected void _save() {
 		jEdit.setBooleanProperty("contextmenu.in-menubar", showInMenuBar.isSelected());
 		jEdit.setBooleanProperty("contextmenu.in-popup", showInContextMenu.isSelected());
-		jEdit.setBooleanProperty("contextmenu.separators-in-popup", showSeparators.isSelected());
 	} //}}}
 
 }

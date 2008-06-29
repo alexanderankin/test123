@@ -77,10 +77,10 @@
 		<title>Change log</title>
 		<itemizedlist>
 			<listitem>
-				<para>Version 0.2, Requires jEdit 4.3pre6 and Java 1.5</para>
+				<para>Version 0.3, Requires jEdit 4.3pre15 and Java 1.5</para>
 				<itemizedlist>
 					<listitem>
-						<para>Separators in text area's context menu (bug #1731851).</para>
+						<para>Using the new DynamicContextMenuService API for creating pop-up menu</para>
 					</listitem>
 				</itemizedlist>
 			</listitem>
