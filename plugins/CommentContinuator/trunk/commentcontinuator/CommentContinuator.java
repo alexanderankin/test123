@@ -47,7 +47,7 @@ public class CommentContinuator extends BufferAdapter
         int line = buffer.getLineOfOffset(pos);
         buffer.markTokens(line, tokenHandler);
         int offset = pos - buffer.getLineStartOffset(line);
-        while (offset >= text.length())
+        while ((offset >= text.length()) && (offset > 0))
             --offset;
         Token token = TextUtilities.getTokenAtOffset(tokenHandler.getTokens(), offset);
         if (token.id >= Token.COMMENT1 && token.id <= Token.COMMENT4) {
@@ -178,7 +178,7 @@ public class CommentContinuator extends BufferAdapter
         // align everything to paragraph's leading indent
         int leadingWhitespaceCount = StandardUtilities.getLeadingWhiteSpace(text);
         String leadingWhitespace = text.substring(0,leadingWhitespaceCount);
-        int leadingWhitespaceWidth = StandardUtilities.getLeadingWhiteSpaceWidth(text,tabSize);
+        int leadingWhitespaceWidth = StandardUtilities.getLeadingWhiteSpaceWidth(text, tabSize);
         int leadingFirstLineWidth = leadingWhitespaceWidth + leadingPrefix.length();
         int leadingWidth = leadingWhitespaceWidth + prefix.length();
 
@@ -291,21 +291,27 @@ public class CommentContinuator extends BufferAdapter
                     final String fs = sb.toString();
                     final Runnable task = new Runnable() {
                         public void run() {
+                            // The assumption is that this runs after indent, so
+                            // we can count the leading whitespace. This gives
+                            // the right number when tabs are used.
                             int start = fb.getLineStartOffset(nextLine);
                             int end = fb.getLineEndOffset(nextLine);
-                            int indent = fb.getIdealIndentForLine(nextLine);
+                            //int indent = fb.getIdealIndentForLine(nextLine);
                             String text = fb.getLineText(nextLine);
+                            int leading = StandardUtilities.getLeadingWhiteSpace(text);
                             
                             // May automatically insert a space for us on wrap
                             String extra_insert = "";
                             if (!fs.trim().equals("")) {
-                                if (indent >= text.length()) {
+                                // If leading is equal to length, then there is
+                                // no other text on the line.
+                                if (leading >= text.length()) {
                                     extra_insert = " ";
-                                } else if (text.charAt(indent) != ' ') {
+                                } else  if (text.charAt(leading) != ' ') {
                                     extra_insert = " ";
                                 }
                             }
-                            fb.insert(start + indent, fs + extra_insert);
+                            fb.insert(start + leading, fs + extra_insert);
                         }
                     };
                     EventQueue.invokeLater(task);
