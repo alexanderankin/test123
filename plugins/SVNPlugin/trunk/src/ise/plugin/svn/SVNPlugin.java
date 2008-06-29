@@ -31,13 +31,9 @@ import java.util.*;
 
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.jedit.options.GlobalOptions;
 import ise.plugin.svn.gui.OutputPanel;
-import ise.plugin.svn.gui.TextAreaContextMenu;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -45,7 +41,6 @@ public class SVNPlugin extends EBPlugin {
 
     public final static String NAME = "subversion";
     private static HashMap<View, OutputPanel> panelMap = null;
-    private static HashMap<View, TextAreaContextMenu> menuMap = null;
 
     public static OutputPanel getOutputPanel( View view ) {
         if ( panelMap == null ) {
@@ -60,7 +55,6 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void handleMessage( EBMessage message ) {
-        addContextMenu( jEdit.getActiveView() );
         if ( message instanceof ViewUpdate ) {
             ViewUpdate vu = ( ViewUpdate ) message;
             if ( ViewUpdate.CLOSED == vu.getWhat() && panelMap != null ) {
@@ -74,56 +68,8 @@ public class SVNPlugin extends EBPlugin {
             panelMap.clear();
             panelMap = null;
         }
-
-        for ( View view : jEdit.getViews() ) {
-            removeContextMenu( view );
-        }
     }
 
     public void start() {
-    }
-
-    private static TextAreaContextMenu createContextMenu( View view ) {
-        if ( menuMap == null ) {
-            menuMap = new HashMap<View, TextAreaContextMenu>();
-        }
-        TextAreaContextMenu menu = menuMap.get( view );
-        if ( menu == null ) {
-            menu = new TextAreaContextMenu( view );
-            menuMap.put( view, menu );
-        }
-        return menu;
-    }
-
-    private static void addContextMenu( View view ) {
-        if ( view == null ) {
-            return ;
-        }
-        removeContextMenu( view );
-        TextAreaContextMenu context_menu = createContextMenu( view );
-        JPopupMenu menu = view.getTextArea().getRightClickPopup();
-        if ( !context_menu.equals( menu.getComponent( 0 ) ) ) {
-            menu.insert( new JPopupMenu.Separator(), 0 );
-            menu.insert( context_menu, 0 );
-        }
-    }
-
-    private static void removeContextMenu( final View view ) {
-        if ( view == null ) {
-            return ;
-        }
-        JPopupMenu popup = GUIUtilities.loadPopupMenu( "view.context" );
-        JMenuItem customize = new JMenuItem( jEdit.getProperty( "view.context.customize" ) );
-        customize.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent evt ) {
-                        new GlobalOptions( view, "context" );
-                    }
-                }
-                                   );
-        popup.addSeparator();
-        popup.add( customize );
-        if ( view.getTextArea() != null ) {
-            view.getTextArea().setRightClickPopup( popup );
-        }
     }
 }
