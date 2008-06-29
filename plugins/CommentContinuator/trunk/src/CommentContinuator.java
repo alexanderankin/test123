@@ -163,10 +163,10 @@ public class CommentContinuator extends BufferAdapter
         int tabSize = buffer.getTabSize();
         StringBuilder buf = new StringBuilder();
 
+        String prefix = get_prefix(ta.getLineText(line)) + " ";
         formatParagraph(ta.getText(sel.getStart(), sel.getEnd() - sel.getStart()),
                         maxLineLength, tabSize, buf,
-                        get_prefix(ta.getLineText(line)) + " ", 
-                        get_prefix(ta.getLineText(line)) + " ");
+                        prefix, prefix);
         ta.setSelectedText(sel, buf.toString());
         ta.setCaretPosition(pos);
     }
@@ -265,6 +265,9 @@ public class CommentContinuator extends BufferAdapter
                     buffer.insert(lineEnd, lineComment + extra_insert);
                     return;
                 } else {
+                    // Make sure to handle weird modes too.
+                    if (commentStart == null)
+                        return;
                     StringBuffer sb = new StringBuffer();
                     // Only append leading space after the first line of the
                     // comment, after that idealIndentForLine takes care of
