@@ -40,5 +40,5 @@ plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.open-popup-menu \
                                           contextmenu.customize
 
 
-contextmenu.customize-mode=Customize this menu (mode-specific)...
+contextmenu.customize-mode=Customize This Menu (mode-specific)...
 
