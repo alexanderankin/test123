@@ -37,7 +37,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			debug="yes"
-			includes="src/**"
+			includes="textobjects/**"
 			includeJavaRuntime="yes"
 			target="1.5"
 			source="1.5"
