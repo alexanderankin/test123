@@ -63,11 +63,11 @@ import common.gui.OkCancelButtons;
 import projectviewer.importer.CVSEntriesFilter;
 import projectviewer.importer.GlobFilter;
 import projectviewer.importer.ImporterFileFilter;
+import projectviewer.importer.ImportUtils;
 import projectviewer.importer.NonProjectFileFilter;
 
 import projectviewer.PVActions;
 import projectviewer.VFSHelper;
-import projectviewer.config.ExtensionManager;
 
 import projectviewer.vpt.VPTDirectory;
 import projectviewer.vpt.VPTNode;
@@ -109,7 +109,7 @@ public class ImportDialog extends EnhancedDialog
 	private HistoryTextField fGlob;
 	private JTextField newNodeName;
 
-	private List<VFSFileFilter> ffilters;
+	private List<ImporterFileFilter> ffilters;
 	private VPTProject project;
 	private VPTNode selected;
 	//}}}
@@ -135,8 +135,6 @@ public class ImportDialog extends EnhancedDialog
 		this.project		= proj;
 		this.selected		= selected;
 		getContentPane().setLayout(new BorderLayout());
-
-		List fileFilters = getFileFilters();
 
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -299,23 +297,25 @@ public class ImportDialog extends EnhancedDialog
 		return keepTree.isSelected();
 	}
 
+	public void setImportFilter(ImporterFileFilter filter)
+	{
+		filters.setSelectedItem(filter);
+	}
+
+	public void setCustomFilter(GlobFilter custom)
+	{
+		filters.setSelectedIndex(filters.getItemCount() - 1);
+		dGlob.setText(custom.getDirectoryGlobs());
+		fGlob.setText(custom.getFileGlobs());
+	}
+
 	//{{{ +getImportFilter() : VFSFileFilter
-	public VFSFileFilter getImportFilter() {
+	public ImporterFileFilter getImportFilter() {
 		if (filters.getSelectedItem() instanceof ImporterFileFilter) {
-			return (VFSFileFilter) filters.getSelectedItem();
+			return (ImporterFileFilter) filters.getSelectedItem();
 		} else {
 			return new GlobFilter(fGlob.getText(), dGlob.getText());
 		}
-	} //}}}
-
-	//{{{ +getImportFilterIndex() : int
-	public int getImportFilterIndex() {
-		return filters.getSelectedIndex();
-	} //}}}
-
-	//{{{ +setImportFilterIndex(int) : void
-	public void setImportFilterIndex(int idx) {
-		filters.setSelectedIndex(idx);
 	} //}}}
 
 
@@ -444,29 +444,19 @@ public class ImportDialog extends EnhancedDialog
 		return isApproved;
 	} //}}}
 
-	//{{{ -getFileFilters() : List
+
 	/**
 	 *	Instantiate the default file filters from Project Viewer and checks
 	 *	all the other plugins looking for any custom filters they provide.
 	 **/
-	private List getFileFilters() {
+	public List<ImporterFileFilter> getFileFilters()
+	{
 		if (ffilters == null) {
-			ffilters = new ArrayList<VFSFileFilter>();
-			ffilters.add(GlobFilter.getImportSettingsFilter());
-			ffilters.add(new CVSEntriesFilter());
-
-			List<Object> exts = ExtensionManager.getInstance()
-												.loadExtensions(ImporterFileFilter.class);
-
-			if (exts != null && exts.size() > 0) {
-				for (Object o : exts) {
-					ffilters.add((VFSFileFilter) o);
-				}
-			}
+			ffilters = ImportUtils.getFilters();
 		}
-
 		return this.ffilters;
-	} //}}}
+	}
+
 
 	//{{{ -class _AllFilesFilter_
 	/** Dumb file filter that accepts everything. */

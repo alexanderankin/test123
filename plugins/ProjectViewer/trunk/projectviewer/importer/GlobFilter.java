@@ -43,7 +43,7 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  *	@since		PV 2.1.1
  */
-public class GlobFilter extends ImporterFileFilter {
+public final class GlobFilter extends ImporterFileFilter {
 
 	//{{{ +_getImportSettingsFilter()_ : GlobFilter
 	/**
@@ -56,10 +56,13 @@ public class GlobFilter extends ImporterFileFilter {
 			jEdit.getProperty("projectviewer.import.filter.settings.desc"),
 			jEdit.getProperty("projectviewer.import.filter.settings.rdesc"),
 			config.getImportGlobs(),
-			config.getExcludeDirs());
+			config.getExcludeDirs(),
+			false);
 	} //}}}
 
 	//{{{ Private members
+	private boolean custom;
+
 	private String description;
 	private String recurseDesc;
 	private String fileGlobs;
@@ -79,7 +82,7 @@ public class GlobFilter extends ImporterFileFilter {
 	 *	@param	dirGlobs	List of globs of directory names to ignore.
 	 */
 	public GlobFilter(String fileGlobs, String dirGlobs) {
-		this(null, null, fileGlobs, dirGlobs);
+		this(null, null, fileGlobs, dirGlobs, true);
 	} //}}}
 
 	//{{{ +GlobFilter(String, String, String, String) : <init>
@@ -88,13 +91,14 @@ public class GlobFilter extends ImporterFileFilter {
 	 *	description texts. Mainly used internally by PV for the
 	 *	{@link #getImportSettingsFilter() import settings filter}.
 	 */
-	public GlobFilter(String description, String recurseDescription,
-					  String fileGlobs, String dirGlobs)
+	private GlobFilter(String description, String recurseDescription,
+					   String fileGlobs, String dirGlobs, boolean custom)
 	{
 		this.description	= description;
 		this.recurseDesc	= recurseDescription;
 		this.fileGlobs		= fileGlobs;
 		this.dirGlobs		= dirGlobs;
+		this.custom			= custom;
 	} //}}}
 
 	//{{{ +getDescription() : String
@@ -162,6 +166,28 @@ public class GlobFilter extends ImporterFileFilter {
 	public String getRecurseDescription() {
 		return recurseDesc;
 	} //}}}
+
+	/**
+	 * Tells whether this instance is a customized filter or a "built-in" one.
+	 */
+	public boolean isCustom()
+	{
+		return custom;
+	}
+
+
+	/** Returns the "include file" globs for this filter. */
+	public String getFileGlobs()
+	{
+		return fileGlobs;
+	}
+
+
+	/** Returns the "ignore directories" globs for this filter. */
+	public String getDirectoryGlobs()
+	{
+		return dirGlobs;
+	}
 
 }
 
