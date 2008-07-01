@@ -37,6 +37,10 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
+
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.ViewerUpdate;
+
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -102,6 +106,24 @@ public class ProjectOptionsPlugin extends EBPlugin {
                     }
                 }
             );
+        } else if (msg instanceof ProjectUpdate)
+        {
+            ProjectUpdate pup = (ProjectUpdate) msg;
+            if (pup.getType() == ProjectUpdate.Type.PROPERTIES_CHANGED) {
+                setProjectOptions(pup.getProject(), true);
+            }
+        } else if (msg instanceof ViewerUpdate) {
+            ViewerUpdate vup = (ViewerUpdate) msg;
+            VPTProject proj = ProjectViewer.getActiveProject(vup.getView());
+            switch (vup.getType()) {
+            case PROJECT_LOADED:
+                setProjectOptions(proj, false);
+                break;
+
+            case GROUP_ACTIVATED:
+                setProjectOptions(null, false);
+                break;
+            }
         }
     }
 

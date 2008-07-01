@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.poptions.ProjectOptionsPlugin.name=Project Options
 plugin.poptions.ProjectOptionsPlugin.author=Marcelo Vanzin
-plugin.poptions.ProjectOptionsPlugin.version=0.1.0
+plugin.poptions.ProjectOptionsPlugin.version=0.2.0
 plugin.poptions.ProjectOptionsPlugin.docs=index.html
 plugin.poptions.ProjectOptionsPlugin.activate=defer
 plugin.poptions.ProjectOptionsPlugin.description=The Project Options plugin \
@@ -15,14 +15,12 @@ plugin.poptions.ProjectOptionsPlugin.depend.0=jedit 04.03.09.00
 plugin.poptions.ProjectOptionsPlugin.depend.1=jdk 1.5
 
 plugin.poptions.ProjectOptionsPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
-plugin.poptions.ProjectOptionsPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.1.3.5
+plugin.poptions.ProjectOptionsPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.0.0
 #}}}
 
 #{{{ PV extensions
 plugin.projectviewer.poptions.ProjectOptionsPlugin.option-group=poptions-main \
 	poptions-editing
-plugin.projectviewer.poptions.ProjectOptionsPlugin.global-pv-listeners=poptions.PVListener
-plugin.projectviewer.poptions.ProjectOptionsPlugin.prj-listeners=poptions.ProjectListener
 #}}}
 
 #{{{ Main pane
