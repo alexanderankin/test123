@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -106,8 +107,14 @@ public final class ProjectPlugin extends EBPlugin {
 	 *						resource path.
 	 *	@return		The absolute path to the resource.
 	 */
-	public static String getResourcePath(String path) {
-		return new File(CONFIG_DIR, path).getAbsolutePath();
+	public static String getResourcePath(String path)
+		throws FileNotFoundException
+	{
+		if (CONFIG_DIR != null) {
+			return new File(CONFIG_DIR, path).getAbsolutePath();
+		} else {
+			throw new FileNotFoundException("No config directory.");
+		}
 	} //}}}
 
 	//}}}
@@ -121,6 +128,13 @@ public final class ProjectPlugin extends EBPlugin {
 		 * the new location.
 		 */
 		File configDir = getPluginHome();
+		if (configDir == null) {
+			Log.log(Log.WARNING, this,
+					"ProjectViewer won't work without a settings directory. " +
+					"Use this setup at your own risk.");
+			return;
+		}
+
 		if (!configDir.isDirectory()) {
 			File oldConfig = new File(jEdit.getSettingsDirectory(),
 									  "projectviewer");
