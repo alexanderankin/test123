@@ -19,36 +19,32 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.io.File;
-
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+import java.awt.BorderLayout;
 import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import common.gui.ModalJFileChooser;
-
 import projectviewer.ProjectManager;
+import projectviewer.VFSHelper;
 
 import projectviewer.gui.GroupMenu;
+import projectviewer.gui.OptionPaneBase;
 
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTProject;
@@ -61,7 +57,9 @@ import projectviewer.vpt.VPTRoot;
  *  @author		Marcelo Vanzin
  *  @author		Matt Payne (made slight changes for urlRoot)
  */
-public class ProjectPropertiesPane extends AbstractOptionPane implements ActionListener {
+public class ProjectPropertiesPane extends OptionPaneBase
+								   implements ActionListener
+{
 
 	public final static String DEFAULT_URL = "http://";
 
@@ -93,7 +91,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	}
 
 	public ProjectPropertiesPane(VPTProject p, boolean isNew, String lookupPath) {
-		super("projectviewer.project_props");
+		super("projectviewer.project_props",
+			  "projectviewer.project.options");
 		this.project = p;
 		this.ok = true;
 		this.isNew = isNew;
@@ -132,7 +131,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 											   false);
 
 
-			chooser.setTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
+			chooser.setTitle(prop("root_dialog"));
 			chooser.setVisible(true);
 
 			if (chooser.getSelectedFiles() != null) {
@@ -173,8 +172,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (name.length() == 0) {
 			JOptionPane.showMessageDialog(
 				this,
-				jEdit.getProperty("projectviewer.project.options.no_name"),
-				jEdit.getProperty("projectviewer.project.options.error.title"),
+				prop("no_name"),
+				prop("error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
@@ -183,8 +182,8 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (isNew && ProjectManager.getInstance().hasProject(name)) {
 			JOptionPane.showMessageDialog(
 				this,
-				jEdit.getProperty("projectviewer.project.options.name_exists"),
-				jEdit.getProperty("projectviewer.project.options.error.title"),
+				prop("name_exists"),
+				prop("error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
@@ -194,16 +193,16 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (root.length() == 0) {
 			JOptionPane.showMessageDialog(
 				this,
-				jEdit.getProperty("projectviewer.project.options.no_root"),
-				jEdit.getProperty("projectviewer.project.options.error.title"),
+				prop("no_root"),
+				prop("error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
-		} else if (!(new File(root).exists())) {
+		} else if (!VFSHelper.pathExists(root)) {
 			JOptionPane.showMessageDialog(
 				this,
-				jEdit.getProperty("projectviewer.project.options.root_error"),
-				jEdit.getProperty("projectviewer.project.options.error.title"),
+				prop("root_error"),
+				prop("error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
@@ -225,116 +224,38 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	//{{{ _init() method
 	/** Load the GUI components of the dialog. */
 	protected void _init() {
-		// Builds the dialog
-
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints gc = new GridBagConstraints();
-		gc.fill = GridBagConstraints.HORIZONTAL;
-		gc.insets = new Insets(3,3,3,3);
-		setLayout(gridbag);
+		String tmp;
 
 		// Project name
-
-		JLabel label = new JLabel(jEdit.getProperty("projectviewer.project.options.name"));
-		gc.weightx = 0;
-		gc.gridx = 0;
-		gc.gridy = 0;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(label,gc);
-		add(label);
-
-		projName = new JTextField();
-		projName.setText(project.getName());
-		gc.weightx = 1;
-		gc.gridx = 1;
-		gc.gridy = 0;
-		gc.gridwidth = 2;
-		gridbag.setConstraints(projName,gc);
-		add(projName);
+		projName = new JTextField(project.getName());
+		addComponent(projName, "name");
 
 		// Project root
-		label = new JLabel(jEdit.getProperty("projectviewer.project.options.root"));
-		gc.weightx = 0;
-		gc.gridx = 0;
-		gc.gridy = 1;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(label,gc);
-		add(label);
+		JPanel rootPane = new JPanel(new BorderLayout());
 
-		projRoot = new JTextField();
-		projRoot.setText(project.getRootPath());
+		projRoot = new JTextField(project.getRootPath());
 		projRoot.setToolTipText(projRoot.getText());
-		projRoot.setPreferredSize(
-			new Dimension(50, (int)projRoot.getPreferredSize().getHeight())
-		);
+		rootPane.add(BorderLayout.CENTER, projRoot);
 
-		gc.weightx = 1;
-		gc.gridx = 1;
-		gc.gridy = 1;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(projRoot,gc);
-		add(projRoot);
-
-
-		chooseRoot = new JButton(jEdit.getProperty("projectviewer.project.options.root_choose"));
+		chooseRoot = new JButton(prop("root_choose"));
 		chooseRoot.addActionListener(this);
-		gc.weightx = 0;
-		gc.gridx = 2;
-		gc.gridy = 1;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(chooseRoot,gc);
-		add(chooseRoot);
+		rootPane.add(BorderLayout.EAST, chooseRoot);
+		addComponent(rootPane, "root");
 
 		// URL Root for web projects.  Used to launch files in web browser against webserver
-
-		label = new JLabel(jEdit.getProperty("projectviewer.project.options.url_root"));
-		gc.weightx = 0;
-		gc.gridx = 0;
-		gc.gridy = 2;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(label, gc);
-
-		add(label);
-		projURLRoot = new JTextField();
-		projURLRoot.setToolTipText(jEdit.getProperty("projectviewer.project.options.url_root.tooltip"));
-		if (project.getURL() != null) {
-			projURLRoot.setText(project.getURL());
-		} else {
-			projURLRoot.setText(DEFAULT_URL);
-		}
-
-		gc.weightx = 1;
-		gc.gridx = 1;
-		gc.gridy = 2;
-		gc.gridwidth = 2;
-		gridbag.setConstraints(projURLRoot, gc);
-		add(projURLRoot);
+		projURLRoot = new JTextField((project.getURL() != null) ? project.getURL()
+								                                : DEFAULT_URL);
+		addComponent(projURLRoot, "url_root");
 
 		// The group where the project will be attached
-		label = new JLabel(jEdit.getProperty("projectviewer.project.options.parent_group"));
-		gc.weightx = 0;
-		gc.gridx = 0;
-		gc.gridy = 3;
-		gc.gridwidth = 1;
-		gridbag.setConstraints(label, gc);
-		add(label);
-
 		VPTGroup parent = (VPTGroup) project.getParent();
 		if (parent == null) {
 			parent = VPTRoot.getInstance();
 		}
 		chooseGroup = new JButton(parent.getName());
-
-		gc.weightx = 1;
-		gc.gridx = 1;
-		gc.gridy = 3;
-		gc.gridwidth = 2;
-		gridbag.setConstraints(chooseGroup, gc);
 		chooseGroup.addActionListener(this);
-		add(chooseGroup);
 
-		// finish
-		setPreferredSize(new Dimension(300,250));
+		addComponent(chooseGroup, "parent_group");
 	} //}}}
 
 	//{{{ isOK() method
