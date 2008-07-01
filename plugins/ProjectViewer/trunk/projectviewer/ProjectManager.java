@@ -315,7 +315,11 @@ public final class ProjectManager {
 
 
 		if (e.fileName != null) {
-			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			try {
+				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			} catch (IOException ioe) {
+				return;
+			}
 			// project list changed, save "global" data.
 			saveProjectList();
 		}
@@ -330,13 +334,17 @@ public final class ProjectManager {
 		Entry e = (Entry) projects.remove(oldName);
 		projects.put(newName, e);
 		if (e.fileName != null) {
-			if (!e.isLoaded) {
-				String oldFname = e.fileName;
-				e.fileName = createFileName(newName);
-				new File(ProjectPlugin.getResourcePath("projects/" + oldFname)).renameTo(
-					new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)));
-			} else {
-				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			try {
+				if (!e.isLoaded) {
+					String oldFname = e.fileName;
+					e.fileName = createFileName(newName);
+					new File(ProjectPlugin.getResourcePath("projects/" + oldFname)).renameTo(
+						new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)));
+				} else {
+					new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+				}
+			} catch (IOException ioe) {
+				return;
 			}
 		}
 		saveProject(e.project);
@@ -532,11 +540,16 @@ public final class ProjectManager {
 			}
 		}
 
-		File f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + ".xml"));
-		int cntr = 0;
-		while (f.exists()) {
-			cntr++;
-			f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + "_" + cntr + ".xml"));
+		File f;
+		try {
+			f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + ".xml"));
+			int cntr = 0;
+			while (f.exists()) {
+				cntr++;
+				f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + "_" + cntr + ".xml"));
+			}
+		} catch (IOException ioe) {
+			return null;
 		}
 
 		return f.getName();
