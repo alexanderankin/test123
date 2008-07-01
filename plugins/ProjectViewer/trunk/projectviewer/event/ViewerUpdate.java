@@ -70,7 +70,7 @@ public final class ViewerUpdate extends EBMessage
                         VPTNode n,
                         Type type)
     {
-        super(v.getView());
+        super(v);
         this.type = type;
         this.isViewer = true;
     }
