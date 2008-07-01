@@ -124,16 +124,6 @@ public abstract class Importer implements Runnable {
 		this(node, viewer, false);
 	} //}}}
 
-	//{{{ +Importer(VPTNode) : <init>
-	public Importer(VPTNode node) {
-		this(node, null, false);
-	} //}}}
-
-	//{{{ +Importer(VPTNode, boolean) : <init>
-	public Importer(VPTNode node, boolean noThread) {
-		this(node, null, noThread);
-	} //}}}
-
 	//{{{ +doImport() : void
 	/**
 	 *	Main import method. It starts a new thread to actually do the importing,
@@ -242,7 +232,8 @@ public abstract class Importer implements Runnable {
 		VFS vfs;
 		VFSFile file;
 
-		assert path.startsWith(root.getNodePath()) : "Path not under root!";
+		assert path.startsWith(root.getNodePath()) :
+			"Path not under root: " + path + " (root = " + root.getNodePath() + ")";
 
 		if (path.endsWith(File.separator)) {
 			path = path.substring(0, path.length() - File.separator.length());
@@ -414,21 +405,33 @@ public abstract class Importer implements Runnable {
 		project.fireFilesChanged(added, removed);
 	} //}}}
 
-	//{{{ #saveImportFilterStatus(VPTProject, ImportDialog) : void
-	protected void saveImportFilterStatus(VPTProject project, ImportDialog dlg) {
-		project.setProperty("projectviewer.import.filteridx",
-						    String.valueOf(dlg.getImportFilterIndex()));
-	} //}}}
 
-	//{{{ #loadImportFilterStatus(VPTProject, ImportDialog) : void
-	protected void loadImportFilterStatus(VPTProject project, ImportDialog dlg) {
-		try {
-			int idx = Integer.parseInt(project.getProperty("projectviewer.import.filteridx"));
-			dlg.setImportFilterIndex(idx);
-		} catch (NumberFormatException nfe) {
-			project.removeProperty("projectviewer.import.filteridx");
+	protected void saveImportFilterStatus(VPTProject project,
+										  ImportDialog dlg)
+	{
+		ImportUtils.saveFilter(project,
+							   dlg.getImportFilter(),
+							   "projectviewer.import");
+	}
+
+
+	protected void loadImportFilterStatus(VPTProject project,
+										  ImportDialog dlg)
+	{
+		ImporterFileFilter filter =
+			ImportUtils.loadFilter(project,
+								   dlg.getFileFilters(),
+								   "projectviewer.import");
+		if (filter != null) {
+			if (filter instanceof GlobFilter &&
+				((GlobFilter)filter).isCustom()) {
+				dlg.setCustomFilter((GlobFilter)filter);
+			} else {
+				dlg.setImportFilter(filter);
+			}
 		}
-	} //}}}
+	}
+
 
 	//{{{ #class ShowNode
 	/** Makes sure a node is visible. */
@@ -489,4 +492,3 @@ public abstract class Importer implements Runnable {
 	} //}}}
 
 }
-

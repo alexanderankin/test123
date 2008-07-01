@@ -77,6 +77,19 @@ public abstract class ImporterFileFilter implements VFSFileFilter {
 	}
 
 	/**
+	 * This method should return a string that uniquely identifies the
+	 * filter. The string is used when persisting information related
+	 * to the filter, and later used to match the configuration to the
+	 * filter.
+	 *
+	 * The default implementation returns the class name.
+	 */
+	public String getId()
+	{
+		return getClass().getName();
+	}
+
+	/**
 	 * Called by project viewer after the filter is used for importing.
 	 * Filters that cache data should override this method and clean up
 	 * any caches so that future imports are unaffected by the state.
