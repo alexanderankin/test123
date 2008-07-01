@@ -5,7 +5,7 @@ plugin.poptions.ProjectOptionsPlugin.name=Project Options
 plugin.poptions.ProjectOptionsPlugin.author=Marcelo Vanzin
 plugin.poptions.ProjectOptionsPlugin.version=0.2.0
 plugin.poptions.ProjectOptionsPlugin.docs=index.html
-plugin.poptions.ProjectOptionsPlugin.activate=defer
+plugin.poptions.ProjectOptionsPlugin.activate=startup
 plugin.poptions.ProjectOptionsPlugin.description=The Project Options plugin \
 	provides an interface for defining standard jEdit options on a per-project \
 	basis, allowing, for example, regular edit options to change for different \
