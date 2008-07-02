@@ -318,6 +318,12 @@ public final class PVActions {
 				case '\'':
 					out.write("&apos;");
 					break;
+				case '\n':
+					out.write("&#10;");
+					break;
+				case '\r':
+					out.write("&#13;");
+					break;
 				default:
 					out.write(str.charAt(i));
 			}
