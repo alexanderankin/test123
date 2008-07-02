@@ -20,6 +20,7 @@ package projectviewer.importer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import projectviewer.config.ExtensionManager;
 import projectviewer.vpt.VPTProject;
@@ -69,32 +70,32 @@ public final class ImportUtils
 	 * Saves the configuration about the selected filter to the
 	 * project.
 	 *
-	 * @param	project		Where to save the config.
+	 * @param	p			Properties object.
 	 * @param	filter		The filter instance.
 	 * @param	propRoot	Root of the configuration property names.
 	 */
-	public static void saveFilter(VPTProject project,
+	public static void saveFilter(Properties p,
 								  ImporterFileFilter filter,
 								  String propRoot)
 	{
-		assert (project != null) : "Project is null!";
+		assert (p != null) : "No properties object!";
 		assert (filter != null) : "Filter is null!";
 		assert (propRoot != null) : "Prop root is null!";
 
-		project.setProperty(propRoot + FILTER_CFG_KEY, filter.getId());
+		p.setProperty(propRoot + FILTER_CFG_KEY, filter.getId());
 		if (filter instanceof GlobFilter && ((GlobFilter)filter).isCustom()) {
 			GlobFilter gf = (GlobFilter) filter;
 			/*
 			 * If using a custom GlobFilter, save both the filter ID and
 			 * the configuration of the filter.
 			 */
-			project.setProperty(propRoot + FILTER_CFG_FILES_GLOB,
+			p.setProperty(propRoot + FILTER_CFG_FILES_GLOB,
 								gf.getFileGlobs());
-			project.setProperty(propRoot + FILTER_CFG_DIRS_GLOB,
+			p.setProperty(propRoot + FILTER_CFG_DIRS_GLOB,
 								gf.getDirectoryGlobs());
 		} else {
-			project.removeProperty(propRoot + FILTER_CFG_FILES_GLOB);
-			project.removeProperty(propRoot + FILTER_CFG_DIRS_GLOB);
+			p.remove(propRoot + FILTER_CFG_FILES_GLOB);
+			p.remove(propRoot + FILTER_CFG_DIRS_GLOB);
 		}
 	}
 
@@ -103,25 +104,25 @@ public final class ImportUtils
 	 * Loads the filter information from the project, and tries to
 	 * identify a matching filter in the given list.
 	 *
-	 * @param	project		Where to get the config data.
+	 * @param	p			Properties object.
 	 * @param	filters		List of filters to search.
 	 * @param	propRoot	Root of the configuration property names.
 	 *
 	 * @return The filter that matches the project config, or null
 	 *         if not found.
 	 */
-	public static ImporterFileFilter loadFilter(VPTProject project,
+	public static ImporterFileFilter loadFilter(Properties p,
 												List<ImporterFileFilter> filters,
 												String propRoot)
 	{
 		ImporterFileFilter filter = null;
 
-		assert (project != null) : "Project is null!";
+		assert (p != null) : "No properties object!";
 		assert (filters != null) : "No filters provided!";
 		assert (propRoot != null) : "Prop root is null!";
 
 		/* Try the new configuration first. */
-		String filterId = project.getProperty(propRoot + FILTER_CFG_KEY);
+		String filterId = p.getProperty(propRoot + FILTER_CFG_KEY);
 		if (filterId != null) {
 			for (ImporterFileFilter f : filters) {
 				if (filterId.equals(f.getId())) {
@@ -134,8 +135,8 @@ public final class ImportUtils
 		/* Found filter. Still need to check if it's a custom glob filter. */
 		if ((filter != null && filter instanceof GlobFilter) ||
 			GlobFilter.class.getName().equals(filterId)) {
-			String fileGlobs = project.getProperty(propRoot + FILTER_CFG_FILES_GLOB);
-			String dirGlobs = project.getProperty(propRoot + FILTER_CFG_DIRS_GLOB);
+			String fileGlobs = p.getProperty(propRoot + FILTER_CFG_FILES_GLOB);
+			String dirGlobs = p.getProperty(propRoot + FILTER_CFG_DIRS_GLOB);
 
 			if (fileGlobs != null && dirGlobs != null) {
 				filter = new GlobFilter(fileGlobs, dirGlobs);
@@ -145,17 +146,32 @@ public final class ImportUtils
 		/* Try old style config if all else fails. */
 		if (filter == null) {
 			try {
-				int idx = Integer.parseInt(project.getProperty(propRoot + ".filteridx"));
+				int idx = Integer.parseInt(p.getProperty(propRoot + ".filteridx"));
 				if (idx < filters.size()) {
 					filter = filters.get(idx);
 				}
-				project.removeProperty(propRoot + ".filteridx");
+				p.remove(propRoot + ".filteridx");
 			} catch (NumberFormatException nfe) {
-				project.removeProperty(propRoot + ".filteridx");
+				p.remove(propRoot + ".filteridx");
 			}
 		}
 
 		return filter;
+	}
+
+
+	/**
+	 * Cleans the configuration related to filters from the given object.
+	 *
+	 * @param	p			Properties object.
+	 * @param	propRoot	Root of the configuration property names.
+	 */
+	public static void cleanConfig(Properties p,
+								   String propRoot)
+	{
+		p.remove(propRoot + FILTER_CFG_KEY);
+		p.remove(propRoot + FILTER_CFG_FILES_GLOB);
+		p.remove(propRoot + FILTER_CFG_DIRS_GLOB);
 	}
 
 

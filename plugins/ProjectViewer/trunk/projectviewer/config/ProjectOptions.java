@@ -199,6 +199,7 @@ public class ProjectOptions extends OptionsDialog {
 		pOptPane = new ProjectPropertiesPane(p, isNew, lookupPath);
 		addOptionPane(pOptPane);
 
+		addOptionPane(new AutoReimportPane(p));
 		addOptionPane(new ProjectFilterPane());
 
 		EditPlugin[] eplugins = jEdit.getPlugins();

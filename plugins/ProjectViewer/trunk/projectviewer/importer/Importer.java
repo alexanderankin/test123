@@ -409,7 +409,7 @@ public abstract class Importer implements Runnable {
 	protected void saveImportFilterStatus(VPTProject project,
 										  ImportDialog dlg)
 	{
-		ImportUtils.saveFilter(project,
+		ImportUtils.saveFilter(project.getProperties(),
 							   dlg.getImportFilter(),
 							   "projectviewer.import");
 	}
@@ -419,7 +419,7 @@ public abstract class Importer implements Runnable {
 										  ImportDialog dlg)
 	{
 		ImporterFileFilter filter =
-			ImportUtils.loadFilter(project,
+			ImportUtils.loadFilter(project.getProperties(),
 								   dlg.getFileFilters(),
 								   "projectviewer.import");
 		if (filter != null) {
