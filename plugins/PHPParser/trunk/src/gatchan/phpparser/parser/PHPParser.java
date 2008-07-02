@@ -1757,7 +1757,7 @@ public final class PHPParser implements PHPParserConstants {
 //{{{ Variables
 
 //{{{ field()
-/**                                          
+/**
  * One field declaration
  */
   final public VariableDeclaration field() throws ParseException {
@@ -1893,7 +1893,7 @@ public final class PHPParser implements PHPParserConstants {
   //}}}
 
 //{{{ VariableDeclaratorNoSuffix()
-/**                                          
+/**
  * a strict variable declarator : there cannot be a suffix here.
  * It will be used by fields and formal parameters
  */
@@ -6283,11 +6283,11 @@ final Token token,token1;
         Expression expr;
         Token echoToken;
         Token semicolonToken = null;
-    //{{{ echo 
+    //{{{ echo
             echoToken = jj_consume_token(ECHO);
     //}}}
     
-            //{{{ expression 
+            //{{{ expression
             expr = Expression();
          expressions.add(expr);
     label_38:
@@ -6460,58 +6460,35 @@ final Token token,token1;
 //}}}
 //{{{ LabeledStatement()
   final public LabeledStatement LabeledStatement() throws ParseException {
-  final Token label;
-  Statement statement = null;
+        Token label;
+        Statement statement = null;
     label = jj_consume_token(IDENTIFIER);
     try {
       jj_consume_token(COLON);
     } catch (ParseException e) {
-    //{{{ fireParseError
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "':' expected",
-                                          ":",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
-
+                fireParseError("':' expected", ":",e.currentToken);
     }
     try {
       statement = Statement();
     } catch (ParseException e) {
-    //{{{ fireParseError
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "statement expected",
-                                          "statement",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
-    {if (true) return new LabeledStatement(label.image,
-                                statement,
-                                label.sourceStart,
-                                e.currentToken.sourceEnd,
-                                e.currentToken.beginLine,
-                                statement.getEndLine(),
-                                e.currentToken.beginColumn,
-                                statement.getEndColumn());}
+                fireParseError("statement expected", "statement",e.currentToken);
+                {if (true) return new LabeledStatement(label.image,
+                                            statement,
+                                            label.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            label.beginLine,
+                                            e.currentToken.beginColumn,
+                                            label.endColumn);}
     }
-    {if (true) return new LabeledStatement(label.image,
-                                statement,
-                                label.sourceStart,
-                                statement.getSourceEnd(),
-                                label.beginLine,
-                                statement.getEndLine(),
-                                label.beginColumn,
-                                statement.getEndColumn());}
+                {if (true) return new LabeledStatement(label.image,
+                                            statement,
+                                            label.sourceStart,
+                                            statement.getSourceEnd(),
+                                            label.beginLine,
+                                            statement.getEndLine(),
+                                            label.beginColumn,
+                                            statement.getEndColumn());}
     throw new Error("Missing return statement in function");
   }
 
@@ -6526,37 +6503,28 @@ final Token token,token1;
  * @return a block
  */
   final public Block Block() throws ParseException {
-  final ArrayList list = new ArrayList();
-  Statement statement;
-  final Token lbrace, rbrace;
-  int pos,endLine,endColumn;
-  int start, beginLine, beginColumn;
+        List list = new ArrayList();
+        Statement statement;
+        Token lbrace;
+        Token rbrace;
+        int pos,endLine,endColumn;
+        int start, beginLine, beginColumn;
     try {
       lbrace = jj_consume_token(LBRACE);
-      pos         = lbrace.sourceEnd+1;
-      start       = lbrace.sourceStart;
-      beginLine   = lbrace.beginLine;
-      beginColumn = lbrace.beginColumn;
-      endLine     = lbrace.endLine;
-      endColumn   = lbrace.endColumn;
+                        pos         = lbrace.sourceEnd+1;
+                        start       = lbrace.sourceStart;
+                        beginLine   = lbrace.beginLine;
+                        beginColumn = lbrace.beginColumn;
+                        endLine     = lbrace.endLine;
+                        endColumn   = lbrace.endColumn;
     } catch (ParseException e) {
-    pos         = this.token.sourceEnd+1;
-    start       = pos;
-    beginLine   = this.token.endLine;
-    beginColumn = this.token.endColumn;
-    endLine     = this.token.endLine;
-    endColumn   = this.token.endColumn;
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'{' expected",
-                                          "{",
-                                          e.currentToken.image,
-                                          pos,
-                                          pos+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                pos         = this.token.sourceEnd+1;
+                start       = pos;
+                beginLine   = this.token.endLine;
+                beginColumn = this.token.endColumn;
+                endLine     = this.token.endLine;
+                endColumn   = this.token.endColumn;
+                fireParseError("'{' expected","{",e.currentToken);
     }
     label_41:
     while (true) {
@@ -6694,25 +6662,29 @@ final Token token,token1;
       case LBRACE:
       case SEMICOLON:
         statement = BlockStatement();
-      if (statement != null) {
-        list.add(statement);
-        pos         = statement.getSourceEnd()+1;
-        endLine     = statement.getEndLine();
-        endColumn   = statement.getEndColumn();
-      }
+                if (statement != null)
+                {
+                        list.add(statement);
+                        pos         = statement.getSourceEnd()+1;
+                        endLine     = statement.getEndLine();
+                        endColumn   = statement.getEndColumn();
+                }
         break;
       case PHPEND:
         statement = htmlBlock();
-      if (statement != null) {
-        list.add(statement);
-        pos       = statement.getSourceEnd()+1;
-        endLine   = statement.getEndLine();
-        endColumn = statement.getEndColumn();
-      } else {
-        pos       = this.token.sourceEnd+1;
-        endLine   = this.token.endLine;
-        endColumn = this.token.endColumn;
-      }
+                if (statement != null)
+                {
+                        list.add(statement);
+                        pos       = statement.getSourceEnd()+1;
+                        endLine   = statement.getEndLine();
+                        endColumn = statement.getEndColumn();
+                }
+                else
+                {
+                        pos       = this.token.sourceEnd+1;
+                        endLine   = this.token.endLine;
+                        endColumn = this.token.endColumn;
+                }
         break;
       default:
         jj_la1[131] = jj_gen;
@@ -6722,21 +6694,21 @@ final Token token,token1;
     }
     try {
       rbrace = jj_consume_token(RBRACE);
-      pos       = rbrace.sourceEnd+1;
-      endLine   = rbrace.endLine;
-      endColumn = rbrace.endColumn;
+                        pos       = rbrace.sourceEnd+1;
+                        endLine   = rbrace.endLine;
+                        endColumn = rbrace.endColumn;
     } catch (ParseException e) {
-    fireParseError("'}' expected", "}", e.currentToken);
+                fireParseError("'}' expected", "}", e.currentToken);
     }
-  final Statement[] statements = new Statement[list.size()];
-  list.toArray(statements);
-  {if (true) return new Block(statements,
-                   start,
-                   pos,
-                   beginLine,
-                   endLine,
-                   beginColumn,
-                   endColumn);}
+                Statement[] statements = new Statement[list.size()];
+                list.toArray(statements);
+                {if (true) return new Block(statements,
+                                 start,
+                                 pos,
+                                 beginLine,
+                                 endLine,
+                                 beginColumn,
+                                 endColumn);}
     throw new Error("Missing return statement in function");
   }
 
@@ -10052,6 +10024,12 @@ final Token token,token1;
     return false;
   }
 
+  final private boolean jj_3R_56() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(COLON)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_123() {
     if (jj_3R_138()) return true;
     return false;
@@ -10096,12 +10074,6 @@ final Token token,token1;
 
   final private boolean jj_3R_121() {
     if (jj_3R_137()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_56() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(COLON)) return true;
     return false;
   }
 
@@ -10157,11 +10129,6 @@ final Token token,token1;
     }
     }
     if (jj_3R_181()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_8() {
-    if (jj_3R_57()) return true;
     return false;
   }
 
@@ -10229,6 +10196,11 @@ final Token token,token1;
   final private boolean jj_3R_67() {
     if (jj_scan_token(BANG)) return true;
     if (jj_3R_52()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_8() {
+    if (jj_3R_57()) return true;
     return false;
   }
 
@@ -10622,12 +10594,6 @@ final Token token,token1;
     return false;
   }
 
-  final private boolean jj_3R_72() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_66()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_170() {
     if (jj_3R_173()) return true;
     Token xsp;
@@ -10640,16 +10606,6 @@ final Token token,token1;
 
   final private boolean jj_3R_166() {
     if (jj_3R_171()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_57() {
-    if (jj_3R_66()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_72()) { jj_scanpos = xsp; break; }
-    }
     return false;
   }
 
@@ -10673,9 +10629,25 @@ final Token token,token1;
     return false;
   }
 
+  final private boolean jj_3R_72() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_143() {
     if (jj_scan_token(ARRAYASSIGN)) return true;
     if (jj_3R_66()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_57() {
+    if (jj_3R_66()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_72()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
