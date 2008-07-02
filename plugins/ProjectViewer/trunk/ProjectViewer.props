@@ -350,3 +350,18 @@ projectviewer.groupmenu.create_project=New project here
 projectviewer.groupmenu.create_group=New group here
 #}}}
 
+#{{{ Auto-reimport options
+options.projectviewer.auto_reimport_props.label=Auto Reimport
+
+projectviewer.project.auto_reimport.enable=Enable automatic re-import
+projectviewer.project.auto_reimport.period=Period (minutes):
+projectviewer.project.auto_reimport.period.tooltip=How often (in minutes) to re-scan the project (0 = never).
+projectviewer.project.auto_reimport.current_dirs=Only re-scan current directories.
+projectviewer.project.auto_reimport.current_dirs.tooltip=Do not add any new directories to the project, just new files in existing directories.
+projectviewer.project.auto_reimport.filter=Filter:
+projectviewer.project.auto_reimport.file_glob=Files to import:
+projectviewer.project.auto_reimport.file_glob.tooltip=Use standard globs to define filters; prepend with ! to not import files that match the glob.
+projectviewer.project.auto_reimport.dir_glob=Directories to ignore:
+projectviewer.project.auto_reimport.period_error=Invalid value for re-import period.
+#}}}
+
