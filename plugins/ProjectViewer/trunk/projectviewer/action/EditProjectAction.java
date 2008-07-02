@@ -159,6 +159,7 @@ public class EditProjectAction extends Action {
 					}
 					ipi.doImport();
 				}
+				ProjectManager.getInstance().saveProject(proj);
 				proj.firePropertiesChanged();
 
 				boolean notify = true;
