@@ -406,10 +406,10 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		if (bufferSet != this.bufferSet)
 		{
 			changeHandler.setEnabled(false);
-			if (this.bufferSet != null)
+			BufferSet oldBufferSet = this.bufferSet;
+			if (oldBufferSet != null)
 			{
 				knownBuffers.clear();
-				this.bufferSet.removeBufferSetListener(this);
 				for (int i = getTabCount();i>0;i--)
 				{
 					removeTabAt(0);
@@ -418,6 +418,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			this.bufferSet = bufferSet;
 			changeHandler.setEnabled(true);
 			bufferSet.getAllBuffers(this);
+			if (oldBufferSet != null)
+				oldBufferSet.removeBufferSetListener(this);
 			bufferSet.addBufferSetListener(this);
 		}
 	}
@@ -446,7 +448,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		public synchronized void stateChanged(ChangeEvent e)
 		{
 			int index = getSelectedIndex();
-			if (index >= 0 && isEnabled())
+			if (index >= 0 && isEnabled() && bufferSet.size() > index)
 			{
 				Buffer buffer = bufferSet.getBuffer(index);
 				if (buffer != null)
