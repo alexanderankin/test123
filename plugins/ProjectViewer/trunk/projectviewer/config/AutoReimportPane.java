@@ -121,11 +121,11 @@ class AutoReimportPane extends OptionPaneBase
 
 	/** Saves the configuration to the project. */
 	protected void _save() {
-		long pval = 0;
+		int pval = 0;
 
 		if (enable.isSelected()) {
 			try {
-				pval = Long.parseLong(period.getText());
+				pval = Integer.parseInt(period.getText());
 			} catch (NumberFormatException nfe) {
 				Log.log(Log.WARNING, this,
 						"Invalid auto import period: " + period.getText());
