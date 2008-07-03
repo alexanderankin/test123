@@ -18,10 +18,13 @@
  */
 package projectviewer.importer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.util.List;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import javax.swing.Timer;
 
 import org.gjt.sp.util.PropertiesBean;
 
@@ -35,7 +38,7 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  *	@since		PV 3.0.0
  */
-public class AutoReimporter extends TimerTask
+public class AutoReimporter implements ActionListener
 {
 
 	/* Config keys. */
@@ -50,25 +53,21 @@ public class AutoReimporter extends TimerTask
 	 * timer task and register it with the given timer.
 	 *
 	 * @param	p		The affected project.
-	 * @param	timer	Where to add the task.
 	 *
-	 * @return The auto-reimport task (null if not created).
+	 * @return The timer object that manages the task.
 	 */
-	public static AutoReimporter create(VPTProject p,
-										Timer timer)
+	public static Timer create(VPTProject p)
 	{
 		assert (p != null) : "No project provided.";
-		assert (timer != null) : "No timer provided.";
 
 		Options o = new Options();
 		o.load(p.getProperties());
 
 		if (o.getPeriod() > 0) {
 			AutoReimporter ar = new AutoReimporter(p, o);
-			timer.schedule(ar,
-						   o.getPeriod() * 1000 * 60,
-						   o.getPeriod() * 1000 * 60);
-			return ar;
+			Timer t = new Timer(o.getPeriod() * 1000 * 60, ar);
+			t.start();
+			return t;
 		}
 
 		return null;
@@ -76,7 +75,7 @@ public class AutoReimporter extends TimerTask
 
 
 	/** Performs the re-import of the project's files. */
-	public void run()
+	public void actionPerformed(ActionEvent ae)
 	{
 		System.err.println("AutoReimporter.run(): not implemented!");
 	}
@@ -107,14 +106,14 @@ public class AutoReimporter extends TimerTask
 
 
 		/** Set the periodicity of the auto-reimport, in minutes. */
-		public void setPeriod(long p)
+		public void setPeriod(int p)
 		{
 			this.period = p;
 		}
 
 
 		/** Returns the periodicity of reimports, in minutes. */
-		public long getPeriod()
+		public int getPeriod()
 		{
 			return period;
 		}
@@ -215,7 +214,7 @@ public class AutoReimporter extends TimerTask
 
 
 		/* Fields. */
-		private long period;
+		private int period;
 		private boolean currentDirsOnly;
 		private ImporterFileFilter filter;
 

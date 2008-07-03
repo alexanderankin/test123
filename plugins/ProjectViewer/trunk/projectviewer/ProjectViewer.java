@@ -52,6 +52,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 
 import javax.swing.tree.TreePath;
@@ -82,6 +83,7 @@ import common.threads.WorkerThreadPool;
 import errorlist.ErrorSource;
 import errorlist.ErrorSourceUpdate;
 
+import projectviewer.event.ProjectUpdate;
 import projectviewer.event.StructureUpdate;
 import projectviewer.event.ViewerUpdate;
 
@@ -103,6 +105,7 @@ import projectviewer.action.FileImportAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.importer.AutoReimporter;
 import projectviewer.importer.NewFileImporter;
 //}}}
 
@@ -400,6 +403,7 @@ public final class ProjectViewer extends JPanel
 
 	private VPTNode					treeRoot;
 	private ConfigChangeListener	ccl;
+	private Timer					reimporter;
 
 	private boolean					isChangingBuffers;
 	private boolean					isClosingProject;
@@ -534,6 +538,12 @@ public final class ProjectViewer extends JPanel
 		isClosingProject = false;
 		noTitleUpdate = false;
 		setChangingBuffers(false);
+
+		// Stop the auto-reimporter.
+		if (reimporter != null) {
+			reimporter.stop();
+			reimporter = null;
+		}
 	} //}}}
 
 	//{{{ -openProject(VPTProject) : void
@@ -563,6 +573,9 @@ public final class ProjectViewer extends JPanel
 			);
 		}
 		setChangingBuffers(false);
+
+		// setup the reimport timer.
+		reimporter = AutoReimporter.create(p);
 	} //}}}
 
 	//{{{ -unloadInactiveProjects(VPTNode) : void
@@ -849,6 +862,8 @@ public final class ProjectViewer extends JPanel
 			handleDynamicMenuChanged((DynamicMenuChanged)msg);
 		} else if (msg instanceof EditPaneUpdate) {
 			handleEditPaneUpdate((EditPaneUpdate)msg);
+		} else if (msg instanceof ProjectUpdate) {
+			handleProjectUpdate((ProjectUpdate)msg);
 		} else if (treeRoot != null && msg instanceof EditorExitRequested) {
 			if (jEdit.getActiveView() != view) {
 				config.setLastNode(treeRoot);
@@ -1013,6 +1028,22 @@ public final class ProjectViewer extends JPanel
 			modifyViewTitle(view, treeRoot);
 		}
 	} //}}}
+
+
+	/** Resets the auto-reimporter task. */
+	private void handleProjectUpdate(ProjectUpdate msg)
+	{
+		if (msg.getProject() == treeRoot) {
+			switch (msg.getType()) {
+			case PROPERTIES_CHANGED:
+				if (reimporter != null) {
+					reimporter.stop();
+				}
+				reimporter = AutoReimporter.create(msg.getProject());
+				break;
+			}
+		}
+	}
 
 	//}}}
 
