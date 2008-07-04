@@ -465,9 +465,9 @@ public class TextObjectsPlugin extends EditPlugin
         failed.put("offset", -1);
         failed.put("length", -1);
         
-        ArrayList<Vector<Predicate>> fifos = new ArrayList();
+        ArrayList<Vector<Predicate>> fifos = new ArrayList<Vector<Predicate>>();
         for (Vector<Predicate> source : fifos_) {
-            Vector<Predicate> dest = new Vector(source.size());
+            Vector<Predicate> dest = new Vector<Predicate>(source.size());
             fifos.add(dest);
             for (Predicate p : source)
                 dest.add(p.clone());
@@ -485,7 +485,7 @@ public class TextObjectsPlugin extends EditPlugin
             
             // Init per try arrays;
             ArrayList<Vector> missed = new ArrayList<Vector>(fifos.size());
-            ArrayList<Vector> matches = new ArrayList<Vector>(fifos.size());
+            ArrayList<Vector<Predicate>> matches = new ArrayList<Vector<Predicate>>(fifos.size());
             int[] match_lens = new int[fifos.size()];
             for (int i = 0; i < fifos.size(); i++) {
                 matches.add(new Vector<Predicate>());
@@ -587,7 +587,7 @@ public class TextObjectsPlugin extends EditPlugin
     private static<T> ArrayList<T> make_array(T... args)
     {
         // FIXME: Can I return args?
-        ArrayList<T> array = new ArrayList(args.length);
+        ArrayList<T> array = new ArrayList<T>(args.length);
         for (T t : args) {
             array.add(t);
         }
@@ -639,7 +639,7 @@ public class TextObjectsPlugin extends EditPlugin
         } else if (word.match(text.charAt(pos))) {
             res = pair_last(text, pos, word, word);
         } else {
-            ArrayList nws_functors = make_array(whitespace, word);
+            ArrayList<Predicate> nws_functors = make_array(whitespace, word);
             Predicate nws = new Functors.Not(new Functors.Or(nws_functors));
             res = pair_last(text, pos, nws, nws);
         }
@@ -795,8 +795,8 @@ public class TextObjectsPlugin extends EditPlugin
                                   boolean do_forward)
     {
         int orig_pos = pos;
-        ArrayList match_functors = make_array(new Functors.Newline(),
-                                              new Functors.InString(quote.toString()));
+        ArrayList<Predicate> match_functors = make_array(new Functors.Newline(),
+                                                         new Functors.InString(quote.toString()));
         Predicate either = new Functors.Or(match_functors);
         int offset_sign = do_forward ? 1 : -1;
         
@@ -902,7 +902,7 @@ public class TextObjectsPlugin extends EditPlugin
         newline.length = 1;
         // Must reset sp_or_nl so that the new length takes effect.
         sp_or_nl = new Functors.Or(make_array(newline, space));
-        Vector<Predicate> blank = new Vector();
+        Vector<Predicate> blank = new Vector<Predicate>();
         ArrayList<Vector<Predicate>> list = new ArrayList<Vector<Predicate>>();
         list.add(blank);
         blank.add(newline);
@@ -1042,13 +1042,13 @@ public class TextObjectsPlugin extends EditPlugin
         ArrayList<Vector<Predicate>> list = new ArrayList<Vector<Predicate>>();
         
         // Unquoted sentence ending
-        Vector<Predicate> vec = new Vector();
+        Vector<Predicate> vec = new Vector<Predicate>();
         vec.add(punct);
         vec.add(sen_end);
         list.add(vec);
         
         // Quoted sentence ending
-        Vector<Predicate> vec_q = new Vector();
+        Vector<Predicate> vec_q = new Vector<Predicate>();
         vec_q.add(punct);
         vec_q.add(quote);
         vec_q.add(sen_end);
