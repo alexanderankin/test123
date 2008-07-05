@@ -350,13 +350,19 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
  <itemizedlist>
 
-<listitem>
-<para>
- <emphasis role="bold">Version 0.7.5</emphasis> requires JDK 1.5, jEdit 4.3pre11 and ErrorListPlugin 1.4.</para>
+<listitem> <para>
+ <emphasis role="bold">Version 0.7.6</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
  <itemizedlist>
- 
+ <listitem><para> 
+   Filtering capability in tree view (Matthew Gilbert, #1902558)
+ </para></listitem>
+ </itemizedlist>
+ </listitem>
+
+ <listitem> 
+ <para> <emphasis role="bold">Version 0.7.5</emphasis> requires JDK 1.5, jEdit 4.3pre11 and ErrorListPlugin 1.4.</para>
+ <itemizedlist>
  <listitem><para> Uses refactored CompletionPopup class in 4.3pre11. Checks the edit mode at the caret position for valid completions. When multiple completions are possible, Sidekick no longer selects the first item automatically when a space is typed.  (1752044 - Kazutoshi Satoda). </para> </listitem>
- 
  <listitem><para>Fixed "sidekick fold starts in the previous line when the corresponding folding node starts at the beginning of the line ( 1767390 - Matthieu Casanova ) </para></listitem>
  
  <listitem><para>Fixed a minor memory leak when Sidekick is unloaded ( Matthieu Casanova ) </para> </listitem>
