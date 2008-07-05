@@ -36,6 +36,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Stack;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -50,6 +51,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.Timer;
+import javax.swing.JLabel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -119,6 +121,11 @@ public class SideKickTree extends JPanel
 	private int autoExpandTree = 0;
 	private JPanel toolBox;
 	private JPanel parserPanel = null;
+	
+	private JLabel searchPre;
+	private JLabel searchPost;
+	private JLabel search;
+	private String searchString;
         //}}}
 
         //{{{ SideKickTree constructor
@@ -166,10 +173,19 @@ public class SideKickTree extends JPanel
                 onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
                 followCaret.addActionListener(ah);
+                searchPre = new JLabel("Filter: \"");
+                searchPost = new JLabel("\"");
+                search = new JLabel();
+                search.setOpaque(true);
+                search.setBackground(jEdit.getColorProperty("view.bgColor"));
+                search.setForeground(jEdit.getColorProperty("view.fgColor"));
+                searchString = new String();
                 
                 buttonBox.add(parseBtn);
                 buttonBox.add(propsBtn);
-                
+                buttonBox.add(searchPre);
+                buttonBox.add(search);
+                buttonBox.add(searchPost);
                 
                 buttonBox.add(Box.createGlue());
                 
@@ -186,8 +202,8 @@ public class SideKickTree extends JPanel
                 topPanel.add(BorderLayout.NORTH,toolBox);
 
                 // create a faux model that will do until a real one arrives
-                DefaultTreeModel emptyModel = new DefaultTreeModel(
-                        new DefaultMutableTreeNode(null));
+                TreeModel emptyModel = new DefaultTreeModel(new DefaultMutableTreeNode(null));
+                emptyModel = new FilteredTreeModel((DefaultTreeModel)emptyModel, true);
                 tree = buildTree(emptyModel);
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 tree.addKeyListener(new KeyHandler());
@@ -290,6 +306,49 @@ public class SideKickTree extends JPanel
 		status.setText(msg);	
 	}// }}}
 	
+        //{{{ addData method
+        protected void addData(Object obj, Stack<String> keys)
+        {
+                if (obj instanceof DefaultMutableTreeNode) {
+                        DefaultMutableTreeNode node = (DefaultMutableTreeNode)obj;
+                        String cur_key = "";
+                        FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+                        try {
+                                Asset a = (Asset)node.getUserObject();
+                                if (a != null)
+                                        cur_key = a.getName();
+                        } catch (ClassCastException ex) {
+                                // FIXME: May fail with null
+                                if (node.toString() != null)
+                                        cur_key = node.toString();
+                        }
+                        keys.push(cur_key);
+                        if (model.isLeaf(node)) {
+                                for (String key : keys) {
+                                        model.addSearchKey(node, key);
+                                }
+                        }
+                        
+                        Enumeration<DefaultMutableTreeNode> e;
+                        for (e = node.children(); e.hasMoreElements(); ) {
+                                addData(e.nextElement(), keys);
+                        }
+                        
+                        keys.pop();
+                } else {
+                        Log.log(Log.DEBUG, this, "addData called on a node that isn't a treenode!!!!!!!!!");
+                }
+        } //}}}
+                                
+        //{{{ updateSearchData() method
+        protected void updateSearchData()
+        {
+                DefaultMutableTreeNode root;
+                FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+                root = (DefaultMutableTreeNode)model.getRoot();
+                addData(root, new Stack<String>());
+        } //}}}
+        
         //{{{ update() method
         protected void update()
         {
@@ -310,14 +369,15 @@ public class SideKickTree extends JPanel
                         root.insert(new DefaultMutableTreeNode(
                                 jEdit.getProperty("sidekick-tree.not-parsed")),0);
 
-                        tree.setModel(new DefaultTreeModel(root));
+                        tree.setModel(new FilteredTreeModel(new DefaultTreeModel(root), true));
                 }
                 else
                 {
-                        tree.setModel(data.tree);
+                        tree.setModel(new FilteredTreeModel(data.tree, true));
                         if(SideKick.isFollowCaret())
                                 expandTreeAt(view.getTextArea().getCaretPosition());
                 }
+		updateSearchData();
 		
 		if (autoExpandTree == -1)
 			expandAll(true);
@@ -330,6 +390,9 @@ public class SideKickTree extends JPanel
 				    tree.expandRow( j );
 			}
 		}
+		
+		if (searchString.length() != 0)
+			updateFilter();
         } //}}}
 	
         //{{{ expandAll() methods
@@ -363,7 +426,7 @@ public class SideKickTree extends JPanel
         }//}}}
 
         //{{{ buildTree() method
-        protected JTree buildTree(DefaultTreeModel model)
+        protected JTree buildTree(TreeModel model)
         {
                 return new CustomTree(model);
         }//}}}
@@ -416,7 +479,7 @@ public class SideKickTree extends JPanel
 	} // }}}
         
 	//{{{ reloadParserCombo() method
-	void reloadParserCombo() 
+	void reloadParserCombo()
 	{
                 parserCombo.setModel(new DefaultComboBoxModel(parserList().toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
@@ -468,6 +531,13 @@ public class SideKickTree extends JPanel
                 {
                         public void actionPerformed(ActionEvent evt)
                         {
+                                // If the filter is *not* persistent, then clear
+                                // it when the tree is expanded for the current
+                                // caret position.
+                                if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
+                                        searchString = "";
+                                        updateFilter(false);
+                                }
                                 TextArea textArea = view.getTextArea();
                                 int caret = textArea.getCaretPosition();
                                 Selection s = textArea.getSelectionAtOffset(caret);
@@ -690,6 +760,37 @@ public class SideKickTree extends JPanel
 			
                 }
         } //}}}
+	
+        public void updateFilter(boolean with_delay)
+        {
+                search.setText(searchString);
+                FilteredTreeModel ftm = (FilteredTreeModel)tree.getModel();
+                if (searchString.length() == 0) {
+                        ftm.clearFilter();
+                        ftm.reset();
+                        if (with_delay) {
+                                expandAll(false);
+                                expandTreeWithDelay();
+                        }
+                } else {
+                        ftm.filterByText(searchString); 
+                        expandAll(true);
+                }
+        }
+        public void updateFilter()
+        {
+                updateFilter(true);
+        }
+
+        public void setSearchFilter(String text)
+        {
+                this.searchString = text;
+                updateFilter();
+        }
+        public String getSearchFilter()
+        {
+                return searchString;
+        }
 
         //{{{ KeyHandler class
         class KeyHandler extends KeyAdapter
@@ -700,39 +801,136 @@ public class SideKickTree extends JPanel
                                 caretTimer.stop();
 
                         
-                        if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                        	view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
-                        	evt.consume();
-                        }
-                        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
-                        {
-                                evt.consume();
-
-                                TreePath path = tree.getSelectionPath();
-
-                                if(path != null)
-                                {
-                                        Object value = ((DefaultMutableTreeNode)path
-                                                .getLastPathComponent()).getUserObject();
-
-                                        if(value instanceof IAsset)
-                                        {
-                                                IAsset asset = (IAsset)value;
-
-                                                JEditTextArea textArea = view.getTextArea();
-
-                                                if(evt.isShiftDown())
-                                                {
-                                                        textArea.setCaretPosition(asset.getEnd().getOffset());
-                                                        textArea.addToSelection(
-                                                                new Selection.Range(
-                                                                        asset.getStart().getOffset(),
-                                                                        asset.getEnd().getOffset()));
-                                                }
-                                                else
-                                                        textArea.setCaretPosition(asset.getStart().getOffset());
+                        switch (evt.getKeyCode()) {
+                                case KeyEvent.VK_ESCAPE:
+                                        evt.consume();
+                                        if (searchString.length() == 0) {
+                                                view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
+                                        } else {
+                                                searchString = "";
+                                                updateFilter();
                                         }
+                                        break;
+                                case KeyEvent.VK_ENTER:
+                                        evt.consume();
+        
+                                        TreePath path = tree.getSelectionPath();
+        
+                                        if(path != null)
+                                        {
+                                                Object value = ((DefaultMutableTreeNode)path
+                                                        .getLastPathComponent()).getUserObject();
+        
+                                                if(value instanceof IAsset)
+                                                {
+                                                        IAsset asset = (IAsset)value;
+        
+                                                        JEditTextArea textArea = view.getTextArea();
+        
+                                                        if(evt.isShiftDown()) {
+                                                                textArea.setCaretPosition(asset.getEnd().getOffset());
+                                                                textArea.addToSelection(
+                                                                        new Selection.Range(
+                                                                                asset.getStart().getOffset(),
+                                                                                asset.getEnd().getOffset()));
+                                                        } else {
+                                                                if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
+                                                                        searchString = "";
+                                                                        updateFilter();
+                                                                }
+                                                                textArea.setCaretPosition(asset.getStart().getOffset());
+                                                                textArea.requestFocus();
+                                                        }
+                                                }
+                                        }
+                                        break;
+                                case KeyEvent.VK_BACK_SPACE:
+                                        evt.consume();
+                                        if (searchString.length() <= 1) {
+                                                searchString = "";
+                                        } else {
+                                                searchString = searchString.substring(0, searchString.length() - 1);
+                                        }
+                                        updateFilter();
+                                        break;
+                                case KeyEvent.VK_DOWN:
+                                {
+                                        evt.consume();
+                                        DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+                                        FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+                                        if (node == null) {
+                                                node = (DefaultMutableTreeNode)model.getRoot();
+				        }
+					if (model.isLeaf(node)) {
+						node = node.getNextLeaf();
+					} else {
+						Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
+						node = e.nextElement();
+					}
+                                        if (node != null) {
+						while ((node != null) && (!model.isVisible(node))) {
+                                                        node = node.getNextLeaf();
+                                                }
+                                                if (node != null) {
+                                                        TreePath p = new TreePath(node.getPath());
+                                                        tree.setSelectionPath(p);
+                                                        //tree.scrollRowToVisible(tree.getRowForPath(p));
+                                                        Rectangle r = tree.getPathBounds(p);
+                                                        if (r != null) {
+                                                                r.width = 1;
+                                                                tree.scrollRectToVisible(r);
+                                                        }
+                                                }
+                                        }
+                                        break;
                                 }
+                                case KeyEvent.VK_UP:
+                                {
+                                        evt.consume();
+                                        DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+                                        FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+                                        if (node == null) {
+                                                node = (DefaultMutableTreeNode)model.getRoot();
+                                        }
+				        // If the node isn't a leaf, use depthFirstEnumeration to find the next
+				        // leaf (which moves us forward), then get the previous (to get the previous
+				        // node from where we started).
+				        if (!model.isLeaf(node)) {
+						Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
+						node = e.nextElement();
+					}
+					node = node.getPreviousLeaf();
+                                        if (node != null) {
+                                                while ((node != null) && (!model.isVisible(node))) {
+                                                        node = node.getPreviousLeaf();
+                                                }
+                                                if (node != null) {
+                                                        TreePath p = new TreePath(node.getPath());
+                                                        tree.setSelectionPath(p);
+                                                        Rectangle r = tree.getPathBounds(p);
+                                                        if (r != null) {
+                                                                r.width = 1;
+                                                                tree.scrollRectToVisible(r);
+                                                        }
+                                                }
+                                        }
+                                        break;
+                                }
+                                default:
+                                        break;
+                        }
+                }
+                
+                public void keyTyped(KeyEvent evt)
+                {
+                        Character c = evt.getKeyChar();
+                        // TODO: What is the correct combo here to filter 
+                        // non-identifier characters?
+                        if (Character.isLetterOrDigit(c) ||
+                            (" _!@$%^&*()_+-=[]{};':\",.<>/?\\|".indexOf(c) != -1))
+                        {
+                                searchString += c;
+                                updateFilter();
                         }
                 }
         } //}}}

@@ -120,3 +120,6 @@ sidekick.parsing-complete={0} parsing complete, {1} error(s)
 
 # Completion Popup
 sidekick-complete.none=No completions
+# Filter
+options.sidekick.persistentFilter.label=Filter persists after tree selection
+options.sidekick.persistentFilter=true
