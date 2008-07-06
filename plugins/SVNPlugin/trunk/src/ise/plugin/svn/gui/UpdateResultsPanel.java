@@ -50,7 +50,6 @@ public class UpdateResultsPanel extends JPanel {
 
     private View view = null;
     private UpdateData data = null;
-    private JPopupMenu popupMenu = null;
 
     public UpdateResultsPanel( View view, UpdateData results ) {
         this( view, results, false );
@@ -167,6 +166,15 @@ public class UpdateResultsPanel extends JPanel {
                     table.setColumnSelectionInterval( col, col );
                 }
                 GUIUtils.showPopupMenu( createPopupMenu( table ), UpdateResultsPanel.this, me.getX(), me.getY() );
+            }
+            else if ( me.getClickCount() == 2 ) {
+                // for double-click on a text file, open the file in jEdit
+                int row = table.rowAtPoint( me.getPoint() );
+                String path = ( String ) table.getValueAt( row, 0 );
+                if ( path == null || path.length() == 0 ) {
+                    return ;
+                }
+                jEdit.openFile( view, path );
             }
         }
     }
