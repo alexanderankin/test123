@@ -1,5 +1,6 @@
 package ise.plugin.svn;
 
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.gui.DynamicContextMenuService;
@@ -22,13 +23,13 @@ public class ContextMenuService extends DynamicContextMenuService {
     private HashMap<View, TextAreaContextMenu> menus = new HashMap<View, TextAreaContextMenu>();
 
     // context menu is per View
-    public JMenuItem createMenu( JEditTextArea textArea ) {
+    public JMenuItem[] createMenu(JEditTextArea textArea, MouseEvent mouseEvent) {
         View view = textArea.getView();
         TextAreaContextMenu menu = menus.get(view);
         if (menu == null) {
             menu = textArea == null ? new TextAreaContextMenu(jEdit.getFirstView()) : new TextAreaContextMenu(view);
             menus.put(view, menu);
         }
-        return menu;
+        return new JMenuItem[]{menu};
     }
 }
