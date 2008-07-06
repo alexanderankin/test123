@@ -35,6 +35,8 @@ public class ListIconProvider extends ListObjectProcessor implements
 		}
 		if (icons.size() == 0)
 			return null;
+		if (icons.size() == 1)
+			return icons.get(0);
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = image.createGraphics();
 		int x = 0;
