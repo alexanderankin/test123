@@ -172,15 +172,15 @@ public class Parser extends SideKickParser {
 				String fields[] = line.split("\t");
 				if (fields.length < 3)
 					continue;
-				info.put("k_tag", fields[0]);
-				info.put("k_pat", fields[2]);
+				info.put("k_tag".intern(), fields[0].intern());
+				info.put("k_pat".intern(), fields[2].intern());
 				// extensions
 				for (int i = 3; i < fields.length; i++)
 				{
 					String pair[] = fields[i].split(":", 2);
 					if (pair.length != 2)
 						continue;
-					info.put(pair[0], pair[1]);
+					info.put(pair[0].intern(), pair[1].intern());
 				}
 				Tag curTag = new Tag(buffer, info);
 				if (prevTag != null)
