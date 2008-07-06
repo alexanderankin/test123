@@ -2,9 +2,6 @@ package ise.plugin.nav;
 
 import org.gjt.sp.jedit.Buffer;
 
-// need next line for jEdit 4.3
-//import org.gjt.sp.jedit.buffer.JEditBuffer;
-
 
 /**
  * This object is used to mark caret positions in jEdit buffers
@@ -12,30 +9,25 @@ import org.gjt.sp.jedit.Buffer;
  */
 public class NavPosition {
 
-   public Buffer buffer = null;
-   //public JEditBuffer buffer = null;      // for jEdit 4.3
+   public String path = null;
    public int caret = 0;
    public int line = 0;
 
    public NavPosition(Buffer b, int c) {
-   //public NavPosition( JEditBuffer b, int c ) {   // for jEdit 4.3
       if ( b == null )
          throw new IllegalArgumentException( "buffer cannot be null" );
       if ( c < 0 )
          throw new IllegalArgumentException( "caret position cannot less than 0" );
-      buffer = b;
+      path = b.getPath();
       caret = c;
-      line = buffer.getLineOfOffset(caret);
+      line = b.getLineOfOffset(caret);
    }
 
    public boolean equals(NavPosition other) {
-       return (buffer == other.buffer && caret == other.caret);
+       return (path.equals(other.path) && caret == other.caret);
    }
 
    public String toString() {
-      String path = "";
-      Buffer b = (Buffer) buffer;
-      if ( b != null) path = b.getPath();
       return path + ":" + (line + 1);
    }
 }
