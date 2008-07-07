@@ -55,12 +55,6 @@
 					</listitem>
 					<listitem>
 						<para>
-							<emphasis>Show Separators in Popup</emphasis> -
-							if selected, separators between mode-specific items are shown in text area's context menu.
-						</para>
-					</listitem>
-					<listitem>
-						<para>
 							<emphasis>Menu label</emphasis> -
 							label for menu in menu bar. Tip:
 							Insert dollar sign ($) before letter, which you

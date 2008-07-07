@@ -24,7 +24,6 @@ contextmenu.menu-name.tooltip=Insert dolar sign ($) before letter, which you \
 								menu bar via A+letter. For example: J$ava
 contextmenu.add-dialog-title=Choose Context Menu entry
 # Action labels
-contextmenu.open-popup-menu.label=Open Popup Menu
 contextmenu.customize.label=Customize Context Menu
 
 # Option pane
@@ -36,8 +35,7 @@ options.contextmenu-modes.label=Menus
 options.contextmenu-modes.code=new contextmenu.ModesOptionPane();
 
 # Menu
-plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.open-popup-menu \
-                                          contextmenu.customize
+plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.customize
 
 
 contextmenu.customize-mode=Customize This Menu (mode-specific)...
