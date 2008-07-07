@@ -362,21 +362,24 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * status is shown in the manner of the native Subversion command  line
          * client's command "svn status"
          */
-        out.println( pathChangeType
-                + propertiesChangeType
-                + ( isLocked ? "L" : " " )
-                + ( isAddedWithHistory ? "+" : " " )
-                + ( isSwitched ? "S" : " " )
-                + lockLabel
-                + "  "
-                + remoteChangeType
-                + "  "
-                + workingRevision
-                + offsets[ 0 ]
-                + ( lastChangedRevision >= 0 ? String
-                    .valueOf( lastChangedRevision ) : "?" ) + offsets[ 1 ]
-                + ( status.getAuthor() != null ? status.getAuthor() : "?" )
-                + offsets[ 2 ] + status.getFile().getPath() );
+
+        if (out != null) {
+            out.println( pathChangeType
+                    + propertiesChangeType
+                    + ( isLocked ? "L" : " " )
+                    + ( isAddedWithHistory ? "+" : " " )
+                    + ( isSwitched ? "S" : " " )
+                    + lockLabel
+                    + "  "
+                    + remoteChangeType
+                    + "  "
+                    + workingRevision
+                    + offsets[ 0 ]
+                    + ( lastChangedRevision >= 0 ? String
+                        .valueOf( lastChangedRevision ) : "?" ) + offsets[ 1 ]
+                    + ( status.getAuthor() != null ? status.getAuthor() : "?" )
+                    + offsets[ 2 ] + status.getFile().getPath() );
+         }
     }
 
     /*
