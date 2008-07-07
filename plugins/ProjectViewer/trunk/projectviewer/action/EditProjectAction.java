@@ -89,6 +89,7 @@ public class EditProjectAction extends Action {
 		String lookupPath = null;
 
 		VPTProject proj = null;
+		VPTProject lockedProj = null;
 		String oldName = null;
 		String oldRoot = null;
 
@@ -132,9 +133,15 @@ public class EditProjectAction extends Action {
 			}
 		}
 
-		boolean add = forceNew | (proj == null);
+		boolean add = forceNew || (proj == null);
 		VPTGroup oldParent = (proj != null) ? ((VPTGroup) proj.getParent())
 											: null;
+
+		if (!add && !proj.tryLock()) {
+			viewer.setStatus(jEdit.getProperty("projectviewer.error.project_locked"));
+			return;
+		}
+		lockedProj = proj;
 		proj = ProjectOptions.run(proj, parent, lookupPath);
 
 		if (proj != null) {
@@ -142,6 +149,7 @@ public class EditProjectAction extends Action {
 				ProjectManager.getInstance().addProject(proj, parent);
 				ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
 				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
+				ipi.setLockProject(false);
 				ipi.doImport();
 			} else {
 				if (!proj.getName().equals(oldName)) {
@@ -157,6 +165,7 @@ public class EditProjectAction extends Action {
 					} else {
 						ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 					}
+					ipi.setLockProject(false);
 					ipi.doImport();
 				}
 				ProjectManager.getInstance().saveProject(proj);
@@ -182,6 +191,9 @@ public class EditProjectAction extends Action {
 			}
 		}
 
+		if (lockedProj != null) {
+			lockedProj.unlock();
+		}
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method

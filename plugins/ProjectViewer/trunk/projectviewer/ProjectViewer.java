@@ -756,7 +756,13 @@ public final class ProjectViewer extends JPanel
 		// close old project
 		if (treeRoot != null && !n.isNodeDescendant(treeRoot)) {
 			if (treeRoot.isProject()) {
-				closeProject((VPTProject) treeRoot, false);
+				VPTProject p = (VPTProject) treeRoot;
+				if (p.tryLock()) {
+					closeProject(p, false);
+					p.unlock();
+				} else {
+					setStatus(jEdit.getProperty("projectviewer.error.project_locked"));
+				}
 			} else {
 				closeGroup((VPTGroup)treeRoot, n, false);
 			}

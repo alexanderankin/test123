@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.jEdit;
@@ -61,6 +63,7 @@ public class VPTProject extends VPTNode {
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
+	private AtomicBoolean lock;
 
 	protected Map<String,VPTNode> openableNodes;
 
@@ -74,6 +77,7 @@ public class VPTProject extends VPTNode {
 		openFiles		= new ArrayList();
 		properties		= new Properties();
 		filterList		= Collections.EMPTY_LIST;
+		lock			= new AtomicBoolean(false);
 	}
 
 	//}}}
@@ -297,6 +301,37 @@ public class VPTProject extends VPTNode {
 	public List getFilterList() {
 		return filterList;
 	} //}}}
+
+
+	/**
+	 * "Locks" the project. All tasks that need to perform destructive
+	 * operations on the project (like changing settings, importing
+	 * files, etc) should first try to lock the object. If the project
+	 * is already locked, the task should fail (either retry later, or
+	 * error out).
+	 *
+	 * The lock ownership is not enforced: anyone can call
+	 * {@link #unlock()} to unlock the project (or simply ignore locks).
+	 * That's obviously not encouraged.
+	 *
+	 * @return Whether the project was successfully locked by the caller.
+	 */
+	public boolean tryLock()
+	{
+		return lock.compareAndSet(false, true);
+	}
+
+
+	/**
+	 * Unlocks the project.
+	 *
+	 * @see #tryLock()
+	 */
+	public void unlock()
+	{
+		lock.set(false);
+	}
+
 
 	//{{{ +fireFilesChanged(ArrayList, ArrayList) : void
 	/**

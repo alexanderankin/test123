@@ -43,8 +43,6 @@ public class AutoReimporter implements ActionListener
 
 	/* Config keys. */
 	private static final String AR_ROOT			= "projectviewer.auto_reimport";
-	public static final String AR_CFG_PERIOD	= AR_ROOT + ".period";
-	public static final String AR_CFG_CURR_ONLY	= AR_ROOT + ".current_dirs";
 
 
 	/**
