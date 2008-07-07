@@ -11,29 +11,26 @@ import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.command.Status;
 
+/**
+ * This class lets ProjectViewer display an "overlay" icon in the PV tree
+ * to show the status of a file like TortoiseSVN.
+ */
 public class SVNProvider implements IconComposer.VCProvider {
 
-    public final static Icon NORMAL_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/normal.png" ) );
-    public final static Icon ADDED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/added.png" ) );
-    public final static Icon CONFLICT_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/conflict.png" ) );
-    public final static Icon DELETED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/deleted.png" ) );
-    public final static Icon IGNORED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/ignored.png" ) );
-    public final static Icon LOCKED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/locked.png" ) );
-    public final static Icon MODIFIED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/modified.png" ) );
-    public final static Icon OUTOFDATE_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/outofdate.png" ) );
-    public final static Icon READONLY_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/readonly.png" ) );
-    public final static Icon UNVERSIONED_ICON =
-        new ImageIcon( SVNProvider.class.getClassLoader().getResource( "ise/plugin/svn/gui/icons/unversioned.png" ) );
+    public final static Icon NORMAL_ICON = getIcon( "ise/plugin/svn/gui/icons/normal.png" );
+    public final static Icon ADDED_ICON = getIcon( "ise/plugin/svn/gui/icons/added.png" );
+    public final static Icon CONFLICT_ICON = getIcon( "ise/plugin/svn/gui/icons/conflict.png" );
+    public final static Icon DELETED_ICON = getIcon( "ise/plugin/svn/gui/icons/deleted.png" );
+    public final static Icon IGNORED_ICON = getIcon( "ise/plugin/svn/gui/icons/ignored.png" );
+    public final static Icon LOCKED_ICON = getIcon( "ise/plugin/svn/gui/icons/locked.png" );
+    public final static Icon MODIFIED_ICON = getIcon( "ise/plugin/svn/gui/icons/modified.png" );
+    public final static Icon OUTOFDATE_ICON = getIcon( "ise/plugin/svn/gui/icons/outofdate.png" );
+    public final static Icon READONLY_ICON = getIcon( "ise/plugin/svn/gui/icons/readonly.png" );
+    public final static Icon UNVERSIONED_ICON = getIcon( "ise/plugin/svn/gui/icons/unversioned.png" );
 
+    private static Icon getIcon( String name ) {
+        return new ImageIcon( SVNProvider.class.getClassLoader().getResource( name ) );
+    }
 
     public int getFileState( File f, String path ) {
         //return IconComposer.VC_STATE_NONE;
