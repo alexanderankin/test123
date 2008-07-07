@@ -36,6 +36,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -83,6 +84,7 @@ public abstract class Importer implements Runnable {
 	protected VPTNode		selected;
 	protected VPTProject	project;
 	private boolean			noThread;
+	private boolean			lockProject;
 
 	/** The list of added files, if any, for event firing purposes. */
 	protected ArrayList		added;
@@ -117,6 +119,7 @@ public abstract class Importer implements Runnable {
 		this.viewer = viewer;
 		this.noThread = noThread;
 		this.postAction = null;
+		this.lockProject = true;
 	} //}}}
 
 	//{{{ +Importer(VPTNode, ProjectViewer) : <init>
@@ -130,7 +133,12 @@ public abstract class Importer implements Runnable {
 	 *	so that the UI is not blocked during the process, which can take some
 	 *	time for large numbers of files.
 	 */
-	public void doImport() {
+	public final void doImport() {
+		if (lockProject && !project.tryLock()) {
+			setViewStatus("projectviewer.error.project_locked");
+			return;
+		}
+
 		if (noThread) {
 			setViewerEnabled(false);
 			run();
@@ -139,6 +147,23 @@ public abstract class Importer implements Runnable {
 			WorkerThreadPool.getSharedInstance().addRequest(this);
 		}
 	} //}}}
+
+
+	/**
+	 * Tells the importer whether to lock the project while doing the
+	 * import. If not locking, the caller is responsible for locking
+	 * the project so other tasks are notified that the project is
+	 * being modified.
+	 *
+	 * @param	lock	Whether to lock the project before importing.
+	 *
+	 * @since	PV 3.0.0
+	 */
+	public void setLockProject(boolean lock)
+	{
+		this.lockProject = lock;
+	}
+
 
 	//{{{ #importNode(VPTNode, VPTNode) : void
 	/**
@@ -179,6 +204,8 @@ public abstract class Importer implements Runnable {
 	 *	This is called after {@link #internalDoImport()} is invoked, so
 	 *	implementations can clean up any internal state. Default implementation
 	 *	does nothing.
+	 *
+	 *	@since	PV 3.0.0
 	 */
 	protected void cleanup() {
 
@@ -232,8 +259,12 @@ public abstract class Importer implements Runnable {
 		VFS vfs;
 		VFSFile file;
 
-		assert path.startsWith(root.getNodePath()) :
-			"Path not under root: " + path + " (root = " + root.getNodePath() + ")";
+		if (!path.startsWith(root.getNodePath())) {
+			Log.log(Log.ERROR, this,
+					"Path not under root: " + path +
+					" (root = " + root.getNodePath() + ")");
+			return null;
+		}
 
 		if (path.endsWith(File.separator)) {
 			path = path.substring(0, path.length() - File.separator.length());
@@ -252,14 +283,15 @@ public abstract class Importer implements Runnable {
 		while (!path.equals(rootPath)) {
 			dirs.push(path);
 			path = vfs.getParentOfPath(path);
+
 			/*
 			 * VFS.getParentOfPath() returns paths with a trailing slash...
 			 * BTW, it's interesting that it uses "File.separatorChar"
 			 * when all this is supposed to be URL-based.
 			 */
-			 if (path.endsWith(File.separator)) {
-				 path = path.substring(0, path.length() - File.separator.length());
-			 }
+			if (path.endsWith(File.separator)) {
+				path = path.substring(0, path.length() - File.separator.length());
+			}
 		}
 
 		while (!dirs.isEmpty()) {
@@ -332,48 +364,45 @@ public abstract class Importer implements Runnable {
 	//{{{ #setViewerEnabled(boolean) : void
 	protected void setViewerEnabled(final boolean flag) {
 		if (viewer != null) {
-			final ProjectViewer fviewer = viewer;
 			PVActions.swingInvoke(
 				new Runnable() {
-					//{{{ +run() : void
 					public void run() {
-						if (!flag)
-							viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
-						fviewer.setEnabled(flag);
-					} //}}}
+						if (!flag) {
+							setViewStatus("projectviewer.import.wait_msg");
+						}
+						viewer.setEnabled(flag);
+					}
 				}
 			);
 		}
 	} //}}}
 
 	//{{{ +run() : void
-	public void run() {
+	public final void run() {
 		boolean error = false;
 		setViewerEnabled(false);
 		try {
 			final Collection c = internalDoImport();
 			cleanup();
-			if (c != null && c.size() > 0) {
-				PVActions.swingInvoke(new Runnable() {
+			PVActions.swingInvoke(
+				new Runnable() {
 					public void run() {
-						for (Iterator i = c.iterator(); i.hasNext(); ) {
-							VPTNode n = (VPTNode) i.next();
-							importNode(n);
-						}
-						ProjectViewer.nodeStructureChangedFlat(project);
-						fireProjectEvent();
-					}
-				});
-			} else if (fireEvent) {
-				if ((added != null && added.size() > 0) ||
-						(removed != null && removed.size() > 0)) {
-					PVActions.swingInvoke(new Runnable() {
-						public void run() {
+						if (c != null && c.size() > 0) {
+							for (Iterator i = c.iterator(); i.hasNext(); ) {
+								VPTNode n = (VPTNode) i.next();
+								importNode(n);
+							}
+							ProjectViewer.nodeStructureChangedFlat(project);
 							fireProjectEvent();
+						} else if (fireEvent) {
+							if ((added != null && added.size() > 0) ||
+								(removed != null && removed.size() > 0)) {
+								fireProjectEvent();
+							}
 						}
-					});
+					}
 				}
-			}
+			);
 			ProjectManager.getInstance().saveProject(project);
 		} catch (RuntimeException e) {
 			error = true;
@@ -381,6 +410,9 @@ public abstract class Importer implements Runnable {
 		} finally {
 			if (postAction == null || error)
 				setViewerEnabled(true);
+			if (lockProject) {
+				project.unlock();
+			}
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(new PostActionWrapper());
@@ -430,6 +462,28 @@ public abstract class Importer implements Runnable {
 				dlg.setImportFilter(filter);
 			}
 		}
+	}
+
+
+	/**
+	 * Sets a message in the view's status bar.
+	 *
+	 * @param	msgKey	jEdit property key, or message to be displayed.
+	 *
+	 * @since	PV 3.0.0
+	 */
+	protected void setViewStatus(final String msgKey)
+	{
+		PVActions.swingInvoke(
+			new Runnable() {
+				public void run() {
+					String msg = jEdit.getProperty(msgKey, msgKey);
+					View v = (viewer != null) ? viewer.getView()
+											  : jEdit.getActiveView();
+					v.getStatus().setMessageAndClear(msg);
+				}
+			}
+		);
 	}
 
 

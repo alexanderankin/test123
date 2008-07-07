@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import java.awt.event.ActionEvent;
 
@@ -78,7 +79,7 @@ public class NodeRemoverAction extends Action {
 
 	//{{{ Instance variables
 	private Map<VPTProject, List<VPTFile>> removedFiles;
-	private HashSet changed;
+	private Set<VPTNode> changed;
 	private boolean delete;
 	//}}}
 
@@ -92,8 +93,11 @@ public class NodeRemoverAction extends Action {
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Try to remove nodes from the project, asking when necessary. */
 	public void actionPerformed(ActionEvent e) {
+		int idx = 0;
 		JTree tree = viewer.getCurrentTree();
-		changed = new HashSet();
+		List<VPTProject> projects = new ArrayList<VPTProject>();
+		List<VPTNode> nodes = new ArrayList<VPTNode>();
+		changed = new HashSet<VPTNode>();
 
         switch (tree.getSelectionCount()) {
             case 0:
@@ -102,39 +106,67 @@ public class NodeRemoverAction extends Action {
 
             case 1: {
                 // Single selection!
-                remove((VPTNode)tree.getLastSelectedPathComponent(), true);
+				nodes.add((VPTNode)tree.getLastSelectedPathComponent());
                 break;
             }
 
-            default: {
+            default:
+                // Any other thing == multiple selection
                 if (confirmAction(MULTI)) {
-                    // Any other thing == multiple selection
-                    ArrayList sel = getSelectedArtifacts(tree.getSelectionPaths());
-                    for (Iterator i = sel.iterator(); i.hasNext(); ) {
-                        remove((VPTNode) i.next(), false);
-                    }
+					getSelectedArtifacts(tree.getSelectionPaths(), nodes);
                 }
-            }
         }
 
-		ArrayList projects = new ArrayList();
-		for (Iterator i = changed.iterator(); i.hasNext(); ) {
-			VPTNode next = (VPTNode) i.next();
-			if (next.isRoot()) {
-				ProjectViewer.nodeStructureChangedFlat(next);
-			} else {
-				VPTProject p = VPTNode.findProjectFor(next);
+		// Find all projets related to the nodes being removed.
+		for (VPTNode n : nodes) {
+			if (!n.isGroup()) {
+				VPTProject p = VPTNode.findProjectFor(n);
 				if (!projects.contains(p)) {
-					ProjectViewer.nodeStructureChangedFlat(p);
 					projects.add(p);
 				}
 			}
 		}
 
-		if (removedFiles != null)
-		for (VPTProject p : removedFiles.keySet()) {
-			List<VPTFile> lst = (List<VPTFile>) removedFiles.get(p);
-			p.fireFilesChanged(null, lst);
+		try {
+			// First, make sure we have the locks for all project
+			// being modified.
+			for (idx = 0; idx < projects.size(); idx++) {
+				if (!projects.get(idx).tryLock()) {
+					throw new IllegalStateException();
+				}
+			}
+
+			// Remove the nodes.
+			for (VPTNode n : nodes) {
+				remove(n, nodes.size() == 1);
+			}
+
+			// Notify changes.
+			List<VPTProject> notified = new ArrayList<VPTProject>();
+			for (VPTNode n : changed) {
+				if (n.isGroup()) {
+					ProjectViewer.nodeStructureChangedFlat(n);
+				} else {
+					VPTProject p = VPTNode.findProjectFor(n);
+					if (!notified.contains(p)) {
+						ProjectViewer.nodeStructureChangedFlat(p);
+						notified.add(p);
+					}
+				}
+			}
+
+			if (removedFiles != null)
+			for (VPTProject p : removedFiles.keySet()) {
+				List<VPTFile> lst = removedFiles.get(p);
+				p.fireFilesChanged(null, lst);
+			}
+		} catch (IllegalStateException ise) {
+			viewer.setStatus(jEdit.getProperty("projectviewer.error.project_locked"));
+		} finally {
+			// Unlock the projects that were locked.
+			for (; idx > 0; idx--) {
+				projects.get(idx - 1).unlock();
+			}
 		}
 
 		// cleanup
@@ -199,15 +231,16 @@ public class NodeRemoverAction extends Action {
 		}
 	} //}}}
 
-    //{{{ -getSelectedArtifacts(TreePath[]) : ArrayList
+
     /**
      *  Receives a collection of TreePath objects and returns the underlying
      *  objects selected, removing a child when its parent has also been
      *  selected.
      */
-    private ArrayList getSelectedArtifacts(TreePath[] paths) {
+    private void getSelectedArtifacts(TreePath[] paths,
+									  List<VPTNode> nodes)
+	{
         TreePath last = null;
-        ArrayList objs = new ArrayList();
 
         for (int i = 0; i < paths.length; i++) {
             if (last != null && !last.isDescendant(paths[i])) {
@@ -216,12 +249,11 @@ public class NodeRemoverAction extends Action {
 
             if (last == null) {
                 last = paths[i];
-                objs.add(paths[i].getLastPathComponent());
+                nodes.add((VPTNode) paths[i].getLastPathComponent());
             }
         }
+    }
 
-        return objs;
-    } //}}}
 
 	//{{{ -confirmAction(int) : boolean
      /**

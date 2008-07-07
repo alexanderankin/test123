@@ -183,6 +183,7 @@ projectviewer.error.save.message=Error saving {0}; check your user directory.\nO
 projectviewer.error.save.title=Error saving {0}
 projectviewer.error.project_str=project
 projectviewer.error.project_list_str=project list
+projectviewer.error.project_locked=Project is currently locked; try action later.
 
 projectviewer.node_properties_dlg.title=Node Properties: {0}
 projectviewer.node_properties_dlg.close=Close
