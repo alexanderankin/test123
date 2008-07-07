@@ -30,29 +30,12 @@ package ise.plugin.svn.command;
 
 import java.io.*;
 import java.util.*;
-import java.text.BreakIterator;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
-import org.tmatesoft.svn.cli.SVNArgument;
-import org.tmatesoft.svn.cli.SVNCommand;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNLock;
-import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
-import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
-import org.tmatesoft.svn.core.wc.ISVNInfoHandler;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNInfo;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLInfoHandler;
-import org.tmatesoft.svn.core.wc.xml.SVNXMLSerializer;
-import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 
 import ise.plugin.svn.data.SVNData;
@@ -68,7 +51,7 @@ public class Status {
             return null;     // nothing to do
         }
         if ( cd.getOut() == null ) {
-            throw new CommandInitializationException( "Invalid output stream." );
+            //throw new CommandInitializationException( "Invalid output stream." );
         }
         if ( cd.getErr() == null ) {
             cd.setErr( cd.getOut() );
@@ -86,20 +69,30 @@ public class Status {
         SVNStatusClient client = clientManager.getStatusClient();
 
         // set an event handler so that messages go to the streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        if (cd.getOut() != null) {
+            client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
+        }
 
         // actually fetch the info
-
-        StatusHandler handler = new StatusHandler(cd.getOut(), true);
+        StatusHandler handler = new StatusHandler( cd.getOut(), true );
         long revision = -1;
         for ( String path : paths ) {
             File localPath = new File( path );
             // doStatus(path, recursive, remote, reportAll, includeIgnored, handler)
             // TODO: pass in recursive and remote for sure, maybe the others?
-            revision = client.doStatus( localPath, cd.getRecursive(), cd.getRemote(), false, false, handler );
+            try {
+                revision = client.doStatus( localPath, cd.getRecursive(), cd.getRemote(), false, false, handler );
+            }
+            catch ( Exception e ) {
+                if ( cd.getRemote() ) {
+                    // if disconnected, an error will be thrown if remote is true,
+                    // so set remote to false and try again
+                    revision = client.doStatus( localPath, cd.getRecursive(), false, false, false, handler );
+                }
+            }
         }
         StatusData status_data = handler.getResults();
-        status_data.setRevision(revision);
+        status_data.setRevision( revision );
         return status_data;
     }
 }

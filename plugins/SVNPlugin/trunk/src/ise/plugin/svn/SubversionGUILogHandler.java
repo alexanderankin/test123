@@ -74,6 +74,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      * Green
      */
     private Color GREEN = new Color( 0, 153, 51 );
+
+    private Color foreground = Color.BLACK;
     /**
      * Current font
      */
@@ -93,16 +95,22 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      */
     public SubversionGUILogHandler( boolean use_frame ) {
         _content_pane = new JPanel( new BorderLayout() );
-        _content_pane.putClientProperty("isCloseable", Boolean.FALSE);
+        _content_pane.putClientProperty( "isCloseable", Boolean.FALSE );
 
         _text = new JTextPane();
         try {
-            _text.setBackground(jEdit.getColorProperty("view.bgColor"));
-            _text.setForeground(jEdit.getColorProperty("view.fgColor"));
+            _text.setBackground( jEdit.getColorProperty( "view.bgColor" ) );
+            foreground = jEdit.getColorProperty( "view.fgColor" );
+            _text.setForeground( foreground );
         }
-        catch(Exception e) {
-            _text.setBackground(Color.WHITE);
-            _text.setForeground(Color.BLACK);
+        catch ( Exception e ) {
+            _text.setBackground( Color.WHITE );
+            _text.setForeground( Color.BLACK );
+            foreground = Color.BLACK;
+        }
+        if (_font == null) {
+            _font = jEdit.getFirstView().getEditPane().getTextArea().getPainter().getFont();
+            _text.setFont(_font);
         }
         _text.setCaretPosition( 0 );
         _content_pane.add( new JScrollPane( _text ), BorderLayout.CENTER );
@@ -239,7 +247,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             try {
                 _text.getDocument().insertString( index, getFormatter().getHead( SubversionGUILogHandler.this ), null );
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 //Log.log( e );
             }
         }
@@ -288,10 +296,10 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
                     StyleConstants.setForeground( set, Color.RED );
                 }
                 else if ( lr.getLevel().equals( Level.INFO ) ) {
-                    StyleConstants.setForeground( set, Color.BLUE );
+                    StyleConstants.setForeground( set, foreground );
                 }
                 else {
-                    StyleConstants.setForeground( set, Color.BLACK );
+                    StyleConstants.setForeground( set, foreground );
                 }
                 _text.getDocument().insertString( index, msg, set );
                 if ( _tail )
@@ -299,7 +307,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
                 else
                     _text.setCaretPosition( caret_position );
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 //Log.log( e );
             }
             /*
@@ -308,7 +316,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             );
             */
         }
-        catch ( Exception ignored ) {
+        catch ( Exception ignored ) {   // NOPMD
             // ignored
             //Log.log( ignored );
         }
@@ -327,12 +335,13 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
                 }
                                  );
         RolloverButton clear_btn = new RolloverButton( GUIUtilities.loadIcon( "Clear.png" ) );
-        clear_btn.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ae) {
-                    _text.selectAll();
-                    _text.replaceSelection("");
+        clear_btn.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        _text.selectAll();
+                        _text.replaceSelection( "" );
+                    }
                 }
-        });
+                                   );
         panel.add( tail_cb );
         panel.add( clear_btn );
         return panel;
