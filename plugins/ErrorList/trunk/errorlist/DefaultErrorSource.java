@@ -586,7 +586,9 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 	//{{{ ErrorListForPath class
 	/**
-	 * A list of errors sorted by line number.
+	 * A list of errors sorted by line number,
+	 * then start and end offsets in the line,
+	 * and finally by message.
 	 */
 	protected static class ErrorListForPath extends TreeSet<Error>
 	{
@@ -602,7 +604,9 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		//{{{ class ErrorComparator
 		/**
-		 * Comparator based on line number.
+		 * Comparator based on line number,
+		 * then start and end offsets in the line,
+		 * and finally by message.
 		 */
 		private static class ErrorComparator implements Comparator<Error>
 		{
@@ -617,6 +621,18 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 				// errors at same line. Make sure that
 				// class LineKey implements the corresponding
 				// methods.
+
+				//first one first
+				int o1 = e1.getStartOffset();
+				int o2 = e2.getStartOffset();
+				if (o1 < o2) return -1;
+				else if (o1 > o2) return 1;
+
+				//smaller one first
+				o1 = e1.getEndOffset();
+				o2 = e2.getEndOffset();
+				if (o1 < o2) return -1;
+				else if (o1 > o2) return 1;
 
 				String message1 = e1.getErrorMessage();
 				String message2 = e2.getErrorMessage();

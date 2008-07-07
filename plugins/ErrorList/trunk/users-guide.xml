@@ -459,6 +459,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  <itemizedlist>
  <listitem><para> display error.extraMessages in GutterIcon (Dwayne Bernard - # 1854405) </para></listitem>
  <listitem><para> No longer displays ErrorList when adding a zero-length ErrorSource. (#1869137  - Alan Ezust) </para></listitem>
+ <listitem><para> Enable multiple errors at different offsets in a same line. (Patch #2011885 - kerik) </para></listitem>
  </itemizedlist>
  </listitem>
  
