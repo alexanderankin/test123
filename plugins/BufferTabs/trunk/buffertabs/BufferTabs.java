@@ -155,7 +155,10 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED)
 			{
 				int index = bufferSet.indexOf(buffer);
-				updateTitleAt(index);
+				if (index >= 0  && index < getTabCount())
+				{
+					updateTitleAt(index);
+				}
 			}
 			else if (bu.getWhat() == BufferUpdate.LOADED)
 			{
@@ -170,7 +173,10 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			{
 				Buffer buff = bu.getBuffer();
 				int index = bufferSet.indexOf(buff);
-				setToolTipTextAt(index, buff.getPath());
+				if (index >= 0  && index < getTabCount())
+				{
+					setToolTipTextAt(index, buff.getPath());
+				}
 			}
 		}
 		else if (message instanceof EditPaneUpdate)
