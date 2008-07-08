@@ -21,6 +21,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
@@ -390,11 +391,24 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		VFSManager.getIOThreadPool().addWorkRequest(run, inAWT);
 	}
 
+	private static StatusBar getStatusBar()
+	{
+		View v = jEdit.getActiveView();
+		if (v == null)
+			return null;
+		return v.getStatus();
+	}
 	private static void setStatusMessage(String msg) {
-		jEdit.getActiveView().getStatus().setMessage(msg);
+		StatusBar s = getStatusBar();
+		if (s == null)
+			return;
+		s.setMessage(msg);
 	}
 	private static void removeStatusMessage() {
-		jEdit.getActiveView().getStatus().setMessage("");
+		StatusBar s = getStatusBar();
+		if (s == null)
+			return;
+		s.setMessage("");
 	}
 	
 	private static void parseTagFile(String tagFile, TagHandler handler) {
