@@ -7,13 +7,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.HashMap;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class CtagsSideKickTreeNode
 {
-	private Vector<CtagsSideKickTreeNode> children =
-		new Vector<CtagsSideKickTreeNode>();
+	private UniqueSequence children = null;
 	private Object object = null;
 	void setUserObject(Object obj)
 	{
@@ -21,6 +21,10 @@ public class CtagsSideKickTreeNode
 	}
 	public void addChildCounts()
 	{
+		if (children == null)
+		{
+			return;
+		}
 		Enumeration children = this.children.elements();
 		while (children.hasMoreElements())
 		{
@@ -38,28 +42,37 @@ public class CtagsSideKickTreeNode
 	{
 		return object;
 	}		
-	CtagsSideKickTreeNode add(Object obj)
+	CtagsSideKickTreeNode putChild(Object obj)
 	{
-		CtagsSideKickTreeNode node = new CtagsSideKickTreeNode();
-		node.setUserObject(obj);
-		children.add(node);
+		if (children == null)
+		{
+			children = new UniqueSequence();
+		}
+		String key =
+			(obj instanceof Tag)
+				? ((Tag)obj).getShortString()
+				: obj.toString();
+		CtagsSideKickTreeNode node = children.get(key);
+		if (node == null)
+		{
+			node = new CtagsSideKickTreeNode();
+			node.setUserObject(obj);
+			children.put(key, node);
+		}
+		else
+		{
+			// Let real tags take over String placeholders
+			if ((node.getUserObject() instanceof String) &&
+				(!(obj instanceof String)))
+			{
+				node.setUserObject(obj);
+			}
+		}
 		return node;
 	}
 	public boolean hasChildren()
 	{
-		return (children.size() > 0);
-	}
-	Object findChild(Object obj)
-	{
-		Enumeration children = this.children.elements();
-		while (children.hasMoreElements())
-		{
-			CtagsSideKickTreeNode child =
-				(CtagsSideKickTreeNode) children.nextElement();
-			if (child.getUserObject().equals(obj))
-				return child;
-		}
-		return null;			
+		return (children != null && children.size() > 0);
 	}
 	void addToTree(DefaultMutableTreeNode root)
 	{
@@ -67,6 +80,10 @@ public class CtagsSideKickTreeNode
 	}
 	void addChildrenToTree(DefaultMutableTreeNode node)
 	{
+		if (children == null)
+		{
+			return;
+		}
 		Enumeration children = this.children.elements();
 		while (children.hasMoreElements())
 		{
@@ -80,7 +97,11 @@ public class CtagsSideKickTreeNode
 	}
 	void sort(Comparator<CtagsSideKickTreeNode> sorter)
 	{
-		Collections.sort(children, sorter);
+		if (children == null)
+		{
+			return;
+		}
+		children.sort(sorter);
 		Enumeration children = this.children.elements();
 		while (children.hasMoreElements())
 		{
@@ -88,5 +109,44 @@ public class CtagsSideKickTreeNode
 				(CtagsSideKickTreeNode) children.nextElement();
 			child.sort(sorter);
 		}			
+	}
+
+	/**
+	 * Container which keeps nodes in both ordered(sortable) and
+	 * efficiently identified.
+	 */
+	private static class UniqueSequence
+	{
+		private Vector<CtagsSideKickTreeNode> ordered =
+			new Vector<CtagsSideKickTreeNode>();
+		private HashMap<String, CtagsSideKickTreeNode> identified =
+			new HashMap<String, CtagsSideKickTreeNode>();
+
+		public int size()
+		{
+			assert(ordered.size() == identified.size());
+			return ordered.size();
+		}
+
+		public Enumeration elements()
+		{
+			return ordered.elements();
+		}
+
+		public CtagsSideKickTreeNode get(String key)
+		{
+			return identified.get(key);
+		}
+
+		public void put(String key, CtagsSideKickTreeNode node)
+		{
+			ordered.add(node);
+			identified.put(key, node);
+		}
+
+		public void sort(Comparator<CtagsSideKickTreeNode> sorter)
+		{
+			Collections.sort(ordered, sorter);
+		}
 	}
 }
