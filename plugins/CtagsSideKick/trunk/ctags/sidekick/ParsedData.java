@@ -73,7 +73,7 @@ public class ParsedData extends SideKickParsedData
 			tag.setIcon(iconProvider.getIcon(tag));
 		if (mapper == null)
 		{
-			tree.add(tag);
+			tree.putChild(tag);
 			return;
 		}
 		Vector<Object> path = mapper.getPath(tag);
@@ -81,23 +81,7 @@ public class ParsedData extends SideKickParsedData
 		CtagsSideKickTreeNode node = tree; 
 		for (int i = 0; i < path.size(); i++)
 		{
-			Object obj = path.get(i);
-			CtagsSideKickTreeNode child =
-				(CtagsSideKickTreeNode) node.findChild(obj);
-			if (child == null)
-			{
-				child = node.add(obj);
-			}
-			else
-			{
-				// Let real tags take over String placeholders
-				if ((child.getUserObject() instanceof String) &&
-					(!(obj instanceof String)))
-				{
-					child.setUserObject(obj);
-				}
-			}
-			node = child;
+			node = node.putChild(path.get(i));
 		}
 	}
 	public void done()
