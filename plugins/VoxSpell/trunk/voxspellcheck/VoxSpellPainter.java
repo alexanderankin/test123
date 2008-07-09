@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
+import java.lang.StringBuffer;
+
 import java.util.Vector;
 import java.util.Enumeration;
 
@@ -156,7 +158,8 @@ public class VoxSpellPainter extends TextAreaExtension
     }
     
     protected boolean check(String word, int line_offset, 
-                            DefaultTokenHandler tokenHandler)
+                            DefaultTokenHandler tokenHandler,
+                            boolean user_only)
     {
         String trim_word = word.trim();
         String low_word = trim_word.toLowerCase();
@@ -171,26 +174,36 @@ public class VoxSpellPainter extends TextAreaExtension
         if (!Character.isLetter(c))
             return true;
         
-        Token token;
-        try {
-            // FIXME: why am I getting null tokens (ArrayIndexOutOfBoundsException)?
-            token = TextUtilities.getTokenAtOffset(tokenHandler.getTokens(), line_offset);
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            return true;
+        // FIXME: Hack!
+        if (!user_only) {
+            Token token;
+            try {
+                // FIXME: why am I getting null tokens (ArrayIndexOutOfBoundsException)?
+                token = TextUtilities.getTokenAtOffset(tokenHandler.getTokens(), line_offset);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                return true;
+            }
+            switch (markup_mode) {
+            case COMMENT_OR_LITERAL:
+                if ((token.id < Token.COMMENT1 || token.id > Token.COMMENT4) &&
+                    (token.id < Token.LITERAL1 || token.id > Token.LITERAL4))
+                {
+                    return true;
+                }
+                break;
+            case NON_MARKUP:
+                if (token.id != Token.NULL) {
+                    return true;
+                }
+                break;
+            }
         }
-        switch (markup_mode) {
-        case COMMENT_OR_LITERAL:
-            if ((token.id < Token.COMMENT1 || token.id > Token.COMMENT4) &&
-                (token.id < Token.LITERAL1 || token.id > Token.LITERAL4))
-            {
-                return true;
-            }
-            break;
-        case NON_MARKUP:
-            if (token.id != Token.NULL) {
-                return true;
-            }
-            break;
+        
+        if (user_only) {
+            return user_checker.find(low_word) ||
+                   user_checker.find(trim_word) ||
+                   ignore_checker.find(low_word) ||
+                   ignore_checker.find(trim_word);
         }
         
         return checker.find(low_word) ||
@@ -201,14 +214,19 @@ public class VoxSpellPainter extends TextAreaExtension
                ignore_checker.find(trim_word);
     }
     
-    public boolean check(JEditTextArea ta)
+    public boolean check(String word, int line_offset,
+                         DefaultTokenHandler tokenHandler)
     {
-        int pos;
+        return check(word, line_offset, tokenHandler, false);
+    }
+    
+    public boolean check(JEditTextArea ta, int pos, StringBuffer word_checked,
+                         boolean user_only)
+    {
         int line;
         int start;
         int end;
         try {
-            pos = ta.getCaretPosition();
             line = ta.getLineOfOffset(pos);
             start = ta.getLineStartOffset(line);
             end = ta.getLineEndOffset(line);
@@ -233,8 +251,13 @@ public class VoxSpellPainter extends TextAreaExtension
         }
         if (word == null)
             return true;
-        Log.log(Log.DEBUG, this, "Checking " + word);
-        return check(word, char_count, tokenHandler);
+        word_checked.replace(0, word_checked.length(), word);
+        return check(word, char_count, tokenHandler, user_only);
+    }
+    
+    public boolean check(JEditTextArea ta, int pos, StringBuffer word_checked)
+    {
+        return check(ta, pos, word_checked, false);
     }
     
     public void paintValidLine(java.awt.Graphics2D gfx, int screenLine, 

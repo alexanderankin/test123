@@ -379,18 +379,8 @@ public class VoxSpellPlugin extends EBPlugin
         return matchCase(word, wp.word);
     }
     
-    public static void addWord(String word, TextArea textarea)
+    protected static void writeUserDict()
     {
-        word = word.trim();
-        if (user_checker == null)
-            return;
-        user_checker.addWord(word);
-        textarea.repaint();
-        
-        if (word.length() > 0)
-            suggestions.addWord(word);
-        
-        /* Finally, write the updated user_dict */
         File user_dict = getUserDictFile();
         if (user_dict == null)
             return;
@@ -410,6 +400,20 @@ public class VoxSpellPlugin extends EBPlugin
         } catch (java.io.IOException ex) {
             Log.log(Log.ERROR, ex, "EncodingException " + ex);
         }
+    }
+    
+    public static void addWord(String word, TextArea textarea)
+    {
+        word = word.trim();
+        if (user_checker == null)
+            return;
+        user_checker.addWord(word);
+        textarea.repaint();
+        
+        if (word.length() > 0)
+            suggestions.addWord(word);
+        
+        writeUserDict();
     }
     
     public static void addWord(TextArea textarea)
@@ -450,6 +454,7 @@ public class VoxSpellPlugin extends EBPlugin
         ignore_checker.removeWord(word.trim());
         user_checker.removeWord(word.trim());
         textarea.repaint();
+        writeUserDict();
     }
     
     public static void resetWord(TextArea textarea)
