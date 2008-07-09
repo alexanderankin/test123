@@ -135,13 +135,13 @@ so that SshConsole knows where to send your commands. </p>
 
 <h2> Future Ideas </h2>
 
-<p> These are things I'd like to have in this plugin at some point. Volunteers?
-</p>
+<p> These are things I'd like to have in this plugin at some point, but I don't
+feel like doing them myself. Any volunteers? </p>
 
 <ul>
 
-<li> Interpret or ignore vt10x escape codes for color changes - use <a
-href="http://www.jcraft.com/jcterm/">jcterm</a> or set the termainal to "dumb"?
+<li> Interpret or ignore vt10x escape codes for color changes - 
+     can we re-use code from <a href="http://www.jcraft.com/jcterm/">jcterm</a>? 
 </li>
 
 <li> Check the FSB to determine if a "cd" is given a valid directory, and don't
@@ -159,14 +159,23 @@ too? </li>
 </ul>
 
 <p> Enjoy! This is free software, released under the GPL V2. Feel free to
-contribute to it (or other plugins) too, by joining the
+contribute to it (or other plugins) too. Start by joining the
 <tt>jedit-devel@lists.sourceforge.net</tt> mailing list and submitting patches
-or suggestions. </p>
+or suggestions. 
+</p>
 
 <hr />
 <h2> History </h2>
 
 <ul>
+
+<li> <b>Version 1.0.1</b> - 
+Requires JDK 1.5, jEdit 4.3pre12,
+ErrorList 1.7, FTP plugin 0.9.2, Console plugin 4.3.5. 
+  <ul>
+    <li> sets TERM="dumb". </li>
+  </ul>
+</li>
 
 <li> <b>Version 1.0</b> (initial release) - Requires JDK 1.5, jEdit 4.3pre12,
 ErrorList 1.7, FTP plugin 0.9.2, Console plugin 4.3.5. </li>
