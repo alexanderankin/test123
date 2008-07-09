@@ -52,4 +52,13 @@
             voxspellcheck.VoxSpellPlugin.getCurrentWord(textArea);
         </CODE>
     </ACTION>
+    <ACTION NAME="voxspellcheck.toggle">
+        <CODE>
+            voxspellcheck.VoxSpellPainter painter = voxspellcheck.VoxSpellPlugin.getVoxSpellPainter(editPane);
+            if (painter == null)
+                voxspellcheck.VoxSpellPlugin.startSpelling(editPane);
+            else
+                voxspellcheck.VoxSpellPlugin.stopSpelling(editPane);
+        </CODE>
+    </ACTION>
 </ACTIONS>
