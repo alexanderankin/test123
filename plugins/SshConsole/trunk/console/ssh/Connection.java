@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -60,8 +61,9 @@ public class Connection implements UserInfo {
 			// Timeout hardcoded to 60seconds
 			session.connect(60000);
 			channel=session.openChannel("shell");
-			
-			((ChannelShell)channel).setAgentForwarding(true);
+			ChannelShell channelShell = (ChannelShell) channel;
+			channelShell.setAgentForwarding(true);
+			channelShell.setPtyType("dumb");
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
 			PipedOutputStream pos = new PipedOutputStream();
