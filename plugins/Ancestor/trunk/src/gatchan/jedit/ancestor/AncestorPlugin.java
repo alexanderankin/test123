@@ -36,6 +36,7 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
 	//{{{ start() method
+	@Override
 	public void start()
 	{
 		View[] views = jEdit.getViews();
@@ -49,6 +50,8 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 	//{{{ addAncestorToolBar() method
 	private void addAncestorToolBar(View view)
 	{
+		if (viewAncestorToolBar.containsKey(view))
+			return;
 		AncestorToolBar ancestorToolBar = new AncestorToolBar(view);
 		EditPane editPane = view.getEditPane();
 		ancestorToolBar.setBuffer(editPane.getBuffer());
@@ -95,12 +98,16 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 				EditPane editPane = editPaneUpdate.getEditPane();
 				View view = editPane.getView();
 				AncestorToolBar bar = viewAncestorToolBar.get(view);
+				if (bar == null)
+					addAncestorToolBar(view);
+				bar = viewAncestorToolBar.get(view);
 				bar.setBuffer(editPane.getBuffer());
 			}
 		}
 	} //}}}
 
 	//{{{ stop() method
+	@Override
 	public void stop()
 	{
 		EditBus.removeFromBus(this);
