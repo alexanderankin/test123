@@ -36,17 +36,24 @@ import db.TagDB;
 @SuppressWarnings("serial")
 public class QuickSearchTagDialog extends JDialog {
 
+	enum Mode {
+		SUBSTRING,
+		PREFIX
+	};
+	Mode mode;
 	JTextField name;
 	JList tags;
 	DefaultListModel model;
 	View view;
 	Vector<QuickSearchTag> tagNames;
+	Query baseQuery;
 	/** This window will contains the scroll with the items. */
 	private final JWindow window = new JWindow(this);
 	
-	public QuickSearchTagDialog(View view) {
+	public QuickSearchTagDialog(View view, Mode mode) {
 		super(view, "Search tag", false);
 		this.view = view;
+		this.mode = mode;
 		JPanel p = new JPanel();
 		p.add(new JLabel("Type part of the tag name:"));
 		name = new JTextField(30);
@@ -101,8 +108,14 @@ public class QuickSearchTagDialog extends JDialog {
 				}
 			}
 		});
+		prepareData();
+		pack();
+		setLocationRelativeTo(view);
+		setVisible(true);
+	}
+
+	private void prepareData() {
 		TagDB db = CtagsInterfacePlugin.getDB();
-		ResultSet rs;
 		Query q = new Query();
 		q.setColumns(new Object [] {TagDB.TAGS_TABLE + ".*", TagDB.FILES_NAME});
 		q.setTables(new Object [] {TagDB.TAGS_TABLE, TagDB.FILES_TABLE});
@@ -123,18 +136,22 @@ public class QuickSearchTagDialog extends JDialog {
 				q.addCondition("EXISTS (" + projectQuery.toString() + ")");
 			}
 		}
-		try {
-			tagNames = new Vector<QuickSearchTag>();
-			rs = db.query(q);
-			while (rs.next())
-				tagNames.add(new QuickSearchTag(rs));
-			rs.close();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+		switch (mode) {
+		case SUBSTRING:
+			try {
+				tagNames = new Vector<QuickSearchTag>();
+				ResultSet rs = db.query(q);
+				while (rs.next())
+					tagNames.add(new QuickSearchTag(rs));
+				rs.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case PREFIX:
+			baseQuery = q;
+			break;
 		}
-		pack();
-		setLocationRelativeTo(view);
-		setVisible(true);
 	}
 
 	protected void jumpToSelected() {
@@ -145,11 +162,30 @@ public class QuickSearchTagDialog extends JDialog {
 
 	protected void setFilter() {
 		model.removeAllElements();
-		String substr = name.getText();
-		for (int i = 0; i < tagNames.size(); i++) {
-			QuickSearchTag t = tagNames.get(i);
-			if (t.name.contains(substr))
-				model.addElement(t);
+		String input = name.getText();
+		switch (mode) {
+		case SUBSTRING:
+			for (int i = 0; i < tagNames.size(); i++) {
+				QuickSearchTag t = tagNames.get(i);
+				if (t.name.contains(input))
+					model.addElement(t);
+			}
+			break;
+		case PREFIX:
+			TagDB db = CtagsInterfacePlugin.getDB();
+			Vector<Object> conditions = baseQuery.getConditions();
+			conditions.add(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
+				" LIKE " + db.quote(input + "%"));
+			baseQuery.setConditions(conditions);
+			try {
+				ResultSet rs = db.query(baseQuery);
+				while (rs.next())
+					model.addElement(new QuickSearchTag(rs));
+				rs.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			break;
 		}
 		if (model.isEmpty())
 		{

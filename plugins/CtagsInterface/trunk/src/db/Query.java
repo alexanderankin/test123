@@ -60,6 +60,10 @@ public class Query {
 		this.conditions = conditions;
 	}
 	
+	public Vector<Object> getConditions() {
+		return conditions;
+	}
+	
 	public void addColumn(Object column) {
 		columns.add(column);
 	}

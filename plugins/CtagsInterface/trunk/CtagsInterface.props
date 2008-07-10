@@ -19,13 +19,15 @@ ctags-interface-add-file.label=Add tag file...
 ctags-interface-print-tags.label=Print tags
 ctags-interface-print-tags-containing.label=Print tags with substring...
 ctags-interface-jump-to-tag.label=Jump to tag
-ctags-interface-search-tag.label=Search for a tag with substring...
+ctags-interface-search-tag-by-substring.label=Search for a tag with substring...
+ctags-interface-search-tag-by-prefix.label=Search for a tag with prefix...
 ctags-interface-tag-all-projects.label=Tag all projects
 
 # menu items
 plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-jump-to-tag \
-	ctags-interface-search-tag \
+	ctags-interface-search-tag-by-prefix \
+	ctags-interface-search-tag-by-substring \
 	ctags-interface-preview \
 	- \
 	ctags-interface-tag-all-projects

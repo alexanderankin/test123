@@ -21,9 +21,14 @@
 			ctags.CtagsInterfacePlugin.jumpToTag(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="ctags-interface-search-tag" NO_REPEAT="TRUE">
+	<ACTION NAME="ctags-interface-search-tag-by-substring" NO_REPEAT="TRUE">
 		<CODE>
-			ctags.CtagsInterfacePlugin.searchTag(view);
+			ctags.CtagsInterfacePlugin.searchTagBySubstring(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="ctags-interface-search-tag-by-prefix" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.searchTagByPrefix(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="ctags-interface-tag-all-projects" NO_REPEAT="TRUE">
