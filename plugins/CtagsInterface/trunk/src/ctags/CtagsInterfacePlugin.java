@@ -199,9 +199,15 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Action: Search for a tag containing a substring
-	public static void searchTag(final View view)
+	public static void searchTagBySubstring(final View view)
 	{
-		new QuickSearchTagDialog(view);
+		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.SUBSTRING);
+	}
+	
+	// Action: Search for a tag by prefix
+	public static void searchTagByPrefix(final View view)
+	{
+		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX);
 	}
 	
 	public static Vector<Tag> queryScopedTag(View view, String tag) {

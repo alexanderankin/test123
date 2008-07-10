@@ -252,7 +252,7 @@ public class TagDB {
 			ORIGINS_NAME + "=" + quote(name));
 	}
 	
-	private String field(String table, String column) {
+	public String field(String table, String column) {
 		return table + "." + column;
 	}
 
