@@ -163,29 +163,34 @@ public class QuickSearchTagDialog extends JDialog {
 	protected void setFilter() {
 		model.removeAllElements();
 		String input = name.getText();
-		switch (mode) {
-		case SUBSTRING:
-			for (int i = 0; i < tagNames.size(); i++) {
-				QuickSearchTag t = tagNames.get(i);
-				if (t.name.contains(input))
-					model.addElement(t);
+		if (! input.isEmpty()) {
+			switch (mode) {
+			case SUBSTRING:
+				for (int i = 0; i < tagNames.size(); i++) {
+					QuickSearchTag t = tagNames.get(i);
+					if (t.name.contains(input))
+						model.addElement(t);
+				}
+				break;
+			case PREFIX:
+				TagDB db = CtagsInterfacePlugin.getDB();
+				Vector<Object> conditions = baseQuery.getConditions();
+				Object prefixCondition = db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
+					" LIKE " + db.quote(input + "%"); 
+				conditions.add(prefixCondition);
+				baseQuery.setConditions(conditions);
+				try {
+					ResultSet rs = db.query(baseQuery);
+					while (rs.next())
+						model.addElement(new QuickSearchTag(rs));
+					rs.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				conditions.remove(prefixCondition);
+				baseQuery.setConditions(conditions);
+				break;
 			}
-			break;
-		case PREFIX:
-			TagDB db = CtagsInterfacePlugin.getDB();
-			Vector<Object> conditions = baseQuery.getConditions();
-			conditions.add(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
-				" LIKE " + db.quote(input + "%"));
-			baseQuery.setConditions(conditions);
-			try {
-				ResultSet rs = db.query(baseQuery);
-				while (rs.next())
-					model.addElement(new QuickSearchTag(rs));
-				rs.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			break;
 		}
 		if (model.isEmpty())
 		{
