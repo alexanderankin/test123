@@ -243,6 +243,8 @@ public class QuickSearchTagDialog extends JDialog {
 				e.printStackTrace();
 			}
 			desc = text.toString();
+			if (isValid())
+				desc = desc + "   [" + file + ":" + line + "]";
 		}
 		public boolean isValid() {
 			return (desc.length() > 0 && file != null && line >= 0);
