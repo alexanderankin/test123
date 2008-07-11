@@ -25,9 +25,15 @@ public class VoxSpellMenuService extends DynamicContextMenuService
         if (painter == null)
             return null;
         
+        int pos;
+        if (evt == null) {
+            pos = ta.getCaretPosition();
+        } else {
+            pos = ta.xyToOffset(evt.getX(), evt.getY());
+        }
+        
         StringBuffer word = new StringBuffer();
         JMenuItem[] items = null;
-        int pos = ta.xyToOffset(evt.getX(), evt.getY());
         if (painter.check(ta, pos, word)) {
             // Check to see if it was ignored or added to the user dictionary.
             // If it was then add the ability to reset.
