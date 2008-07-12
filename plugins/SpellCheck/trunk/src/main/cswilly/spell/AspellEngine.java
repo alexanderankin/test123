@@ -24,6 +24,7 @@ package cswilly.spell;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Models a spelling checker
@@ -75,6 +76,9 @@ class AspellEngine
 	  }else if(_aSpellWelcomeMsg.startsWith("Error:")){
 			  throw new SpellException("Aspell responded : "+_aSpellWelcomeMsg);
 	  }
+	  
+	  //turn on 'terse' mode : aspell won't report correct words.
+	  _aSpellWriter.write("!\n");
     }
     catch( IOException e )
     {
@@ -150,14 +154,14 @@ class AspellEngine
   }
   
   private String readLine() throws SpellException,IOException{
-	  final String[] a_res = new String[1];
-	  final IOException[] a_ioe = new IOException[1];
+	  final AtomicReference<String> a_res = new AtomicReference<String>(null);
+	  final AtomicReference<IOException> a_ioe = new AtomicReference<IOException>(null);
 	  Thread t = new Thread(){
 		  public void run(){
 			  try{
-				  a_res[0] = _aSpellReader.readLine();
+				  a_res.set(_aSpellReader.readLine());
 			  }catch(IOException ioe){
-				  a_ioe[0] = ioe;
+				  a_ioe.set(ioe);
 			  }
 		  }
 	  };
@@ -171,7 +175,7 @@ class AspellEngine
 	  {
 		  throw new SpellException("Timeout waiting for Aspell Process");
 	  }
-	  if(a_ioe[0] != null) throw a_ioe[0];
-	  return a_res[0];
+	  if(a_ioe.get() != null) throw a_ioe.get();
+	  return a_res.get();
   }
 }

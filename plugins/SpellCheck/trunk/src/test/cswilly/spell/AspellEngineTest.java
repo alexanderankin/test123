@@ -26,12 +26,12 @@ import java.io.File;
 import java.util.concurrent.*;
 import java.util.*;
 
-import junit.framework.TestCase;
 //annotations
 import org.junit.*;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class AspellEngineTest extends TestCase{
+
+public class AspellEngineTest{
 	private static final String SINK = System.getProperty("user.dir")+File.separator+"tests/sink.sh";
 	private static final String WELCOME_THEN_SINK = System.getProperty("user.dir")+File.separator+"tests/welcome_then_sink.sh";
 	private static final String ASPELL = "/opt/local/bin/aspell";//System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
@@ -41,12 +41,12 @@ public class AspellEngineTest extends TestCase{
 	private Throwable throwable;
 
 	@Before
-	protected void setUp(){
+	public void setUp(){
 		throwable=null;
 	}
 
 	@After
-	protected void tearDown(){
+	public void tearDown(){
 		throwable=null;
 	}
 

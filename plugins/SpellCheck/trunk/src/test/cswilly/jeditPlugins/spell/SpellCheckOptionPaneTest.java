@@ -98,7 +98,7 @@ public class SpellCheckOptionPaneTest
 	
 	@Test
 	public void testExePath(){
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 
 		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
 		
@@ -149,13 +149,13 @@ public class SpellCheckOptionPaneTest
 
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
 		
-		assertEquals(testsDir+"/spellcheck_ok.sh",jEdit.getProperty(SpellCheckPlugin.ASPELL_EXE_PROP));
+		assertEquals(testsDir+"/spellcheck_ok.sh",jEdit.getProperty(AspellEngineManager.ASPELL_EXE_PROP));
 	}
 	
 	@Test
 	public void testModes(){
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
 		
 		
 		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
@@ -170,27 +170,27 @@ public class SpellCheckOptionPaneTest
 		});
 		
 		/* buttons in place */
-		for(SpellCheckPlugin.AspellMarkupMode mode: SpellCheckPlugin.AspellMarkupMode.values()){
+		for(AspellEngineManager.AspellMarkupMode mode: AspellEngineManager.AspellMarkupMode.values()){
 			pane.radioButton(mode.toString()).requireVisible();
 			assertTrue(pane.radioButton(mode.toString()).text().length()>0);
 		}
-		pane.radioButton(SpellCheckPlugin.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireSelected();
+		pane.radioButton(AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireSelected();
 		
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		
 		/* buttons effective */
-		pane.radioButton(SpellCheckPlugin.AspellMarkupMode.NO_MARKUP_MODE.toString()).click();
-		pane.radioButton(SpellCheckPlugin.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireNotSelected();
+		pane.radioButton(AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString()).click();
+		pane.radioButton(AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireNotSelected();
 		
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
 		
-		assertEquals(SpellCheckPlugin.AspellMarkupMode.NO_MARKUP_MODE.toString(),
-			jEdit.getProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP));
+		assertEquals(AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString(),
+			jEdit.getProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP));
 	}
 
 	@Test public void testFilters(){
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
 
 		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
 		
@@ -249,15 +249,15 @@ public class SpellCheckOptionPaneTest
 		
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
 		
-		assertEquals("sgml",jEdit.getProperty(SpellCheckPlugin.FILTERS_PROP+"."+firstMode));
+		assertEquals("sgml",jEdit.getProperty(AspellEngineManager.FILTERS_PROP+"."+firstMode));
 		
 	}
 	
 	@Test
 	public void testAdditional()
 	{
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
 
 		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
 		
@@ -277,9 +277,9 @@ public class SpellCheckOptionPaneTest
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
 
 		//effective?
-		assertEquals("TEST this", jEdit.getProperty(SpellCheckPlugin.ASPELL_OTHER_PARAMS_PROP));
+		assertEquals("TEST this", jEdit.getProperty(AspellEngineManager.ASPELL_OTHER_PARAMS_PROP));
 		assertTrue(jEdit.getBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP));
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_OTHER_PARAMS_PROP,"");
+		jEdit.setProperty(AspellEngineManager.ASPELL_OTHER_PARAMS_PROP,"");
 		jEdit.setBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP,false);
 		//this was funny : unsetProperty() called, assertEquals(null) succeeds, but
 		//property is still saved

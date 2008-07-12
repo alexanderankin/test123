@@ -53,10 +53,10 @@ class DialogValidator implements Validator
    * @return new line with all corrected words validated
    */
   public
-  List<Result> validate(int lineNum, String line, List<Result> results )
+  boolean validate(int lineNum, String line, List<Result> results )
   {
-	  List<Result> checkedLine = new ArrayList<Result>(results.size());
-    for( int ii=results.size()-1; ii>=0; ii-- )
+	  boolean cancelled = false;
+    for( int ii=results.size()-1; !cancelled && ii>=0; ii-- )
     {
       Result result = results.get( ii );
 	  Result newResult = null;
@@ -86,17 +86,16 @@ class DialogValidator implements Validator
 
         if( newResult != null )
         {
-			if(Result.OK != newResult.getType())checkedLine.add(newResult);
+			if(Result.OK != newResult.getType())results.set(ii,newResult);
         }
 		else
 		{
-            checkedLine = null;
-            break;
+            cancelled = true;
 		}
       }
     }
 
-    return checkedLine;
+    return !cancelled;
   }
   
 

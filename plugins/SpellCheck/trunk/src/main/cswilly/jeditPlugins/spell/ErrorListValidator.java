@@ -56,15 +56,14 @@ class ErrorListValidator extends DefaultErrorSource implements Validator
 	* @return new List of results, with choices made.
 	*/
 	public
-	List<Result> validate(int lineNum, String line, List<Result> results ){
-		//Log.log(Log.DEBUG,this,lineNum+":"+line+"("+results+")");
+	boolean validate(int lineNum, String line, List<Result> results ){
 		for(Result result : results){
 			if(result.getType()==Result.OK)continue;
 			if(result.getType()==Result.ERROR){
 				addError(new DefaultError(this,
 					ErrorSource.ERROR,path,lineNum,0,0,
 					"There was an error with aspell !"));
-				return null;
+				return false;
 			}
 			int startOffset = result.getOffset()-1;
 			int endOffset = startOffset+result.getOriginalWord().length();
@@ -89,16 +88,20 @@ class ErrorListValidator extends DefaultErrorSource implements Validator
 			// }
 			addError(error);
 		}
-		return results;//we don't modify anything
+		results.clear();
+		return true;//we don't modify anything
 	}
 	
 	public void setPath(String path){
 		this.path = path;
 	}
 	public void start(){
+		ErrorSource.unregisterErrorSource(this);
 		removeFileErrors(path);
 	}
 
-	public void done(){}
+	public void done(){
+		ErrorSource.registerErrorSource(this);
+	}
 	
 }

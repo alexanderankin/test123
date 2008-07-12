@@ -36,4 +36,10 @@
       cswilly.jeditPlugins.spell.SpellCheckPlugin.setBufferLanguage(view,buffer);
     </CODE>
   </ACTION>
+  <!-- Menu action for setting the language of current buffer -->
+  <ACTION NAME="spell-check-clear-ignore-all">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.clearIgnoreAll(view,buffer);
+    </CODE>
+  </ACTION>
 </ACTIONS>

@@ -100,9 +100,9 @@ class FileSpellChecker
         else
         {
           List results = _getSpellEngine().checkLine( line );
-
-          checkedLine = applyChanges(line, _getSpellValidator().validate(0, line, results ));
-          if( checkedLine == null )
+		  boolean cancel = _getSpellValidator().validate(0, line, results );
+		  if(!cancel) checkedLine = applyChanges(line, results);
+          else
             return false;
         }
 

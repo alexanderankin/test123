@@ -95,14 +95,12 @@ public class DictionaryPickerTest
 	public void testSelect(){
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 
 		
-		final DictionaryPicker dp = new DictionaryPicker("en");
+		final DictionaryPicker dp = new DictionaryPicker(new AspellEngineManager(),"en");
 		
-		dp.getPropertyStore().put(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-
 		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
 		
 		Thread pickThread = new Thread(){
@@ -132,13 +130,12 @@ public class DictionaryPickerTest
 		String exePath = System.getProperty(ENV_TESTS_DIR);
 		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",exePath!=null);
 		exePath+="/welcome_then_sink.sh";
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 
 		
-		final DictionaryPicker dp = new DictionaryPicker("en");
+		final DictionaryPicker dp = new DictionaryPicker(new AspellEngineManager(),"en");
 		
-		dp.getPropertyStore().put(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
 
 		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
 		
@@ -166,6 +163,77 @@ public class DictionaryPickerTest
 		assertTrue("didn't get an exception", error.get()!=null);
 		assertEquals(error.get(),langDialog.textBox("error-report").text());
 		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"Cancel")).click();
+
+	}
+	@Test
+	public void testRefresh(){
+		String exePath = System.getProperty(ENV_TESTS_DIR);
+		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",exePath!=null);
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath+"/sink.sh");
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
+
+		
+		final DictionaryPicker dp = new DictionaryPicker(new AspellEngineManager(),"en");
+				
+		final Object lock = new Object();
+		dp.getPropertyStore().addPropertyChangeListener(new PropertyChangeListener(){
+				public void propertyChange(PropertyChangeEvent pe){
+					if(DictionaryPicker.ERROR_PROP.equals(pe.getPropertyName()) && pe.getNewValue()!=null)
+						synchronized(lock){
+							lock.notify();
+						}
+				}
+		});
+
+		Thread pickThread = new Thread(){
+			public void run(){
+				synchronized(lock){
+					dp.getRefreshAction().actionPerformed(null);
+					try{
+					lock.wait();
+					}catch(InterruptedException ie){}
+				}
+			}
+		};
+		
+		pickThread.start();
+						
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let sink be launched
+		
+		assertTrue("sink should be blocking",pickThread.isAlive());
+		
+		dp.cancel();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let sink be killed
+		
+		assertTrue("sink should be killed",!pickThread.isAlive());
+
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath+"/list-dicts.sh");
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+
+
+		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
+		
+		pickThread = new Thread(){
+			public void run(){
+				dp.getRefreshAction().actionPerformed(null);
+				dialog.setVisible(true);
+			}
+		};
+		
+		pickThread.start();
+		
+		DialogFixture langDialog = WindowFinder.findDialog(EnhancedDialog.class).withTimeout(5000).using(TestUtils.robot());
+		try{Thread.sleep(5000);}catch(InterruptedException ie){}//let dictionaries be loaded
+		
+		
+		langDialog.comboBox().selectItem("fr");
+		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+
+		try{pickThread.join(5000);}catch(InterruptedException ie){}
+		if(pickThread.isAlive())fail("Didn't terminate");
+		assertTrue("confirm didn't work",dp.getPropertyStore().get(DictionaryPicker.CONFIRMED_PROP)!=null);
+		assertEquals("fr",dp.getPropertyStore().get(DictionaryPicker.LANG_PROP));
+		assertEquals(null,dp.getPropertyStore().get(DictionaryPicker.ERROR_PROP));
 
 	}
 }

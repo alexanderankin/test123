@@ -45,17 +45,12 @@ import java.util.Collections;
  * 
  */
 public class BufferSpellChecker{
-  private String _aspellExeFilename;
-  private String[] _aspellArgs;
   private Engine  _spellEngine = null;
-  private BufferDialogValidator spellValidator = null;
   
 
-  public BufferSpellChecker( String aspellExeFilename, String[] aspellArgs)
+  public BufferSpellChecker( Engine engine )
   {
-    _aspellExeFilename = aspellExeFilename;
-    _aspellArgs = aspellArgs;
-	  spellValidator = new BufferDialogValidator();
+    _spellEngine = engine;
   }
 
   /**
@@ -63,22 +58,24 @@ public class BufferSpellChecker{
    * interupted the checking.
    */
   public
-  boolean checkBuffer(TextArea area, Buffer input )
+  boolean checkBuffer(TextArea area, Buffer input, Validator spellValidator)
     throws SpellException
 	{
+		Engine engine = getSpellEngine();
+		if(getSpellEngine()==null)throw new SpellException("No engine configured");
+
 		spellValidator.start();
-		spellValidator.setTextArea(area);
 		if(area.getSelectionCount() == 0){
 			area.setSelection(new Selection.Range(0,input.getLength()));
 		}
 		Selection[] selections = area.getSelection();
-		input.beginCompoundEdit();
-		//input.writeLock();
+
 		boolean confirm = false;
 		//to prevent false undo when the user cancelled before any change was made
 		boolean changed = false;
 		try
 		{
+			input.beginCompoundEdit();
 			for(int iSelection = 0; iSelection<selections.length;iSelection++){
 				Selection sel = selections[iSelection];
 				for(int i=sel.getStartLine();i<=sel.getEndLine(); i++ )
@@ -91,7 +88,7 @@ public class BufferSpellChecker{
 					}
 					else
 					{
-						List<Result> results = _getSpellEngine().checkLine( line );
+						List<Result> results = engine.checkLine( line );
 						int startSelLine = sel.getStart(input,i);
 						int endSelLine = sel.getEnd(input,i);
 						int lineOffset = input.getLineStartOffset(i);
@@ -108,11 +105,10 @@ public class BufferSpellChecker{
 							}
 						}
 						//validate the rest
-						List<Result> checkedLine = spellValidator.validate( i, line, results );
-						if( checkedLine != null ){
-							confirm = true;
-							System.out.println("RESULTS : "+checkedLine);
-							for(Result result : checkedLine){
+						confirm = spellValidator.validate( i, line, results );
+						if( confirm ){
+							System.out.println("RESULTS : "+results);
+							for(Result result : results){
 								if(Result.SUGGESTION == result.getType()){
 									int originalIndex = lineOffset+result.getOffset()-1;//offset starts at 1 for aspell
 									String newWord = result.getSuggestions().get(0);
@@ -156,17 +152,6 @@ public class BufferSpellChecker{
 		return confirm;
 	}
 
-  public
-  String getAspellExeFilename()
-  {
-    return _aspellExeFilename;
-  }
-
-  public
-  String[] getAspellArgs()
-  {
-    return _aspellArgs;
-  }
 
   public
   void stop()
@@ -178,20 +163,14 @@ public class BufferSpellChecker{
     }
   }
 
-  public void unload(){
-	  stop();
-  }
-  private
-  Engine _getSpellEngine()
-    throws SpellException
-  {
-	  if( _spellEngine == null ){
-		  String logStr = "command line is:"+_aspellExeFilename;
-		  for(int i=0;i<_aspellArgs.length;i++)logStr+=" "+_aspellArgs[i];
-		  Log.log(Log.DEBUG,this,logStr);
-      _spellEngine = new AspellEngine(_aspellExeFilename,_aspellArgs);
-	  }
-    return _spellEngine;
-  }
 
+  public Engine getSpellEngine()
+  {
+	return _spellEngine;
+  }
+	
+  public void setSpellEngine(Engine engine)
+  {
+	_spellEngine = engine;
+  }
 }

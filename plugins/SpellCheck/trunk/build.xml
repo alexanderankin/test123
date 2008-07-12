@@ -10,7 +10,6 @@
 <!-- $Id$ - $Revision                                                 -->
 <project name="SpellCheck" default="dist" basedir=".">
 
-	<property name="user-doc.xml" location= "users-guide.xml"/>
 	
 	<!-- where the source code lives -->
 	<property name="src.dir" value="src/main"/>
@@ -18,7 +17,9 @@
 	<!-- separate dir for test code (see test.compile) -->
 	<property name="src.test.dir" value="src/test"/>
 
-	
+	<!-- separate dir for images -->
+	<property name="resources.dir" value="resources"/>
+
 	<!-- for build-support location -->
 	<property file="../build.properties"/>
 	<!-- build support -->
@@ -34,7 +35,7 @@
 	
 	<!-- TODO: make use of recursive dependencies build -->
 	<path id="plugins.class.path">
-		<pathelement location="${jedit.jars.dir}/ErrorList.jar"/>
+		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
 		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
 	</path>
@@ -71,12 +72,13 @@
 	  -->
 	<selector id="junit.testcases">
 		<and>
-		<!--<or>-->
-        <filename name="cswilly/**/*Test.java" />
-		<!--<filename name="**/SpellCheckOptionPaneTest.java" />-->
+		<or>
+        <!--<filename name="cswilly/**/*Test.java" />-->
+		<filename name="**/DictionaryPickerTest.java" />
+		<!--<filename name="**/ErrorListSpellCheckerTest.java" />-->
 		<!--<filename name="**/SpellCheckPluginTest.java" />-->
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
-		<!--</or>-->
+		</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>
 		</and>
     </selector>
@@ -140,7 +142,7 @@
 
 		<copy todir="${build.dir}/settings/jars">
 			<fileset dir="${install.dir}">
-			<filename name="${ant.project.name}.jar"/>
+			<filename name="*.jar"/>
 			</fileset>
 			<path refid="project.class.path"/>
 			<flattenmapper/>
@@ -151,7 +153,7 @@
 	     The property 'want-to-test' is to protect test.prepare which
 		 needs these classes !
 	  -->
-	<target name="build.prepare"
+	<target name="build.remove-tests"
 		depends="compile"
 		description="Remove Unit-Tests from the build classes"
 		unless="want-to-test">
@@ -162,6 +164,16 @@
 			<not><filename name="cswilly/spell/Test.class"/></not>
 			</and>
 		</delete>
+	</target>
+	
+	<target name="build.prepare"
+		depends="build.remove-tests">
+        <mkdir dir="${build.extras}" />
+		<copy todir="${build.extras}">
+			<fileset dir="${resources.dir}">
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
 	</target>
 </project>
 

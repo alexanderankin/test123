@@ -28,6 +28,8 @@ package cswilly.jeditPlugins.spell;
 import java.io.*;
 import java.awt.Dialog;
 import java.awt.Component;
+import javax.swing.SwingUtilities;
+import javax.swing.JButton;
 
 //{{{ 	jEdit
 import org.gjt.sp.jedit.*;
@@ -121,5 +123,16 @@ public class TestUtils{
 	
 	public static DialogFixture findDialogByTitle(String title){
 			return new DialogFixture(robot(), (Dialog)robot().finder().find(new FirstDialogMatcher(title)));
+	}
+	
+	public static void close(final View view, final Buffer buffer){
+		SwingUtilities.invokeLater(
+		new Runnable(){
+			public void run(){
+			jEdit.closeBuffer(view,buffer);
+			}
+		});
+		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		TestUtils.findDialogByTitle("File Not Saved").button(AbstractButtonTextMatcher.withText(JButton.class,"Non")).click();
 	}
 }
