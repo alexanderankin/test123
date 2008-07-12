@@ -23,16 +23,31 @@
 package cswilly.spell;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
- * A validator of a spell check results
- *<p>
- * After a spell check engine runs, its results must be validated (normally by
- * a user). The {@link Validator} class provides this service.
+ * A validator implementation which encapsulate a list of validators
+ *
  */ 
-public
-interface Validator
+public class ChainingValidator implements Validator
 {
+	private Validator mine;
+	private Validator next;
+	
+	public ChainingValidator(Validator mine, Validator next){
+		this.mine = mine;
+		this.next = next;
+	}
+  	
+	public Validator getMyValidator(){
+		return mine;
+	}
+	
+	public Validator getNextValidator(){
+		return next;
+	}
+	
   /**
    * Validate a line of words that have the <code>results</code> of a spell
    * check.
@@ -40,19 +55,28 @@ interface Validator
    * @param	lineNum	index of the line in the text/buffer/file whatever
    * @param line String with a line of words that are to be corrected
    * @param results List of {@link Result} of a spell check
-   * @return true if confirmed (false to cancel)
+   * @return valid (false to cancel)
    */
-  public
-  boolean validate( int lineNum, String line, List<Result> results );
+  public boolean validate( int lineNum, String line, List<Result> results ){
+	  boolean valid = true;
+	  valid=mine.validate(lineNum, line, results);
+	  if(valid)valid = next.validate(lineNum, line, results);
+	  return valid;
+  }
   
   /**
    * Call this upon new spell-checking
    */
-  public void start();
+   public void start(){
+	   mine.start();
+	   next.start();
+   }
+
   /**
    * Call this at the end of spell-checking
-   * @return	a list of pending replacements
    */
-  public void done();
-  
+   public void done(){
+	   mine.done();
+	   next.done();
+   }
 }

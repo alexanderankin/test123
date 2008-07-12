@@ -26,6 +26,8 @@ import cswilly.spell.SpellException;
 import cswilly.spell.AspellEngine;
 import cswilly.spell.Engine;
 import cswilly.spell.Result;
+import cswilly.spell.Validator;
+import cswilly.spell.ChainingValidator;
 
 
 import org.gjt.sp.jedit.jEdit;
@@ -37,17 +39,14 @@ import errorlist.ErrorSource;
 import java.util.List;
 
 public class ErrorListSpellChecker{
-	private String _aspellExeFilename;
-	private String[] _aspellArgs;
 	private Engine  _spellEngine = null;
 	private ErrorListValidator spellValidator = null;
+	private Validator validator = null;
 	
-	
-	public ErrorListSpellChecker( String aspellExeFilename, String[] aspellArgs)
+	public ErrorListSpellChecker()
 	{
-		_aspellExeFilename = aspellExeFilename;
-		_aspellArgs = aspellArgs;
 		spellValidator = new ErrorListValidator("SpellCheckPlugin");
+		validator = spellValidator;
 	}
 	
 	/**
@@ -58,19 +57,22 @@ public class ErrorListSpellChecker{
 	boolean checkBuffer( Buffer input )
     throws SpellException
 	{
-		spellValidator.start();
-		ErrorSource.unregisterErrorSource(spellValidator);
+		Engine engine = getSpellEngine();
+		if(getSpellEngine()==null)throw new SpellException("No engine configured");
+
 		spellValidator.setPath(input.getPath());
-		input.readLock();
+		validator.start();
+
+		boolean cancel = false;
 		try
 		{
-			for(int i=0;i<input.getLineCount(); i++ )
+			//put it in the try block to be sure to compensate in finally
+			input.readLock();
+			for(int i=0;!cancel && i<input.getLineCount(); i++ )
 			{
 				String line = input.getLineText(i);
-				List<Result> results = _getSpellEngine().checkLine( line );
-				
-				List<Result> checkedLine = spellValidator.validate(i, line, results );
-				if( checkedLine == null ) return false;
+				List<Result> results = engine.checkLine( line );
+				cancel = !validator.validate(i, line, results );
 			}
 		}
 		catch( Exception e )
@@ -82,7 +84,8 @@ public class ErrorListSpellChecker{
 				throw new SpellException( "Error communicating with the aspell subprocess", e );
 		}
 		finally{
-			spellValidator.done();
+			validator.done();
+			validator = spellValidator;
 			input.readUnlock();
 			if(spellValidator.getErrorCount()==0){
 				Log.log(Log.DEBUG,this,"No misspelled word for "+input.getName());
@@ -91,23 +94,10 @@ public class ErrorListSpellChecker{
 			else
 			{	
 				Log.log(Log.DEBUG,this,spellValidator.getErrorCount()+" mispelled words for "+input.getName());
-				ErrorSource.registerErrorSource(spellValidator);
 			}
 		}
 		
-		return true;
-	}
-	
-	public
-	String getAspellExeFilename()
-	{
-		return _aspellExeFilename;
-	}
-	
-	public
-	String[] getAspellArgs()
-	{
-		return _aspellArgs;
+		return !cancel;
 	}
 	
 	public
@@ -122,18 +112,22 @@ public class ErrorListSpellChecker{
 	
 	public void unload(){
 		Log.log(Log.DEBUG,this,"unloading errorsource");
-		stop();
 		ErrorSource.unregisterErrorSource(spellValidator);
-		
 	}
-	private
-	Engine _getSpellEngine()
-    throws SpellException
+	
+	public
+	Engine getSpellEngine()
 	{
-		if( _spellEngine == null ){
-			_spellEngine = new AspellEngine(_aspellExeFilename,_aspellArgs);
-		}
 		return _spellEngine;
 	}
 	
+	public
+	void setSpellEngine(Engine engine)
+	{
+		_spellEngine = engine;
+	}
+	
+	public void setValidator(Validator v){
+		validator = new ChainingValidator(v,spellValidator);
+	}
 }

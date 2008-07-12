@@ -35,6 +35,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.net.URL;
 
 /**
  * Dialog to the user to determine what to do about a misspelled word.
@@ -62,12 +63,19 @@ public
 class ValidationDialog
   extends JDialog
 {
+  private static final ImageIcon ignoredIcon;
+  static{
+	  URL url = ValidationDialog.class.getClassLoader().getResource("cswilly/spell/ignored-words.png");
+	  if(url !=null)ignoredIcon = new ImageIcon(url);
+	  else ignoredIcon = null;
+  }
   private		JTextField _originalWordTextField;
   private       JTextField  _changeToTextField;
   private       JList       _suggestionsJList;
   private		DefaultListModel	_suggestionsModel;
   private       UserAction  _userAction         = CANCEL;
   private       String      _title              = "Spell Check, Release R004";
+  private		JLabel		_ignoredWordsLabel;
   // ??? bad to have release hardocoded here. Fix later...right.
   private       static Point       _location           = new Point( 100, 100 );
 
@@ -90,21 +98,21 @@ class ValidationDialog
   {
     super( owner );
     _init();
-    refresh(originalWord,suggestions);
+    refresh(originalWord,suggestions,false);
   }
 
   public ValidationDialog( Dialog owner, String  originalWord, List suggestions )
   {
     super( owner );
     _init();
-    refresh(originalWord,suggestions);
+    refresh(originalWord,suggestions,false);
   }
 
   public ValidationDialog( String  originalWord, List suggestions )
   {
     super();
     _init();
-    refresh(originalWord,suggestions);
+    refresh(originalWord,suggestions,false);
   }
 
   public
@@ -121,8 +129,8 @@ class ValidationDialog
     return _userAction;
   }
 
-  public UserAction getUserAction(String originalWord, List<String>suggestions){
-	  refresh(originalWord,suggestions);
+  public UserAction getUserAction(String originalWord, List<String>suggestions,boolean ignoredWords){
+	  refresh(originalWord,suggestions,ignoredWords);
 	  setVisible(true);
 	  return _userAction;
   }
@@ -230,7 +238,6 @@ class ValidationDialog
     //--
     JButton aboutButton       = _configButton( new AboutAction() );
     JButton addButton       = _configButton( new AddAction() );
-    addButton.setEnabled( false );
     JButton cancelButton    = _configButton( new CancelAction() );
     JButton changeButton    = _configButton( new ChangeAction() );
     JButton changeAllButton = _configButton( new ChangeAllAction() );
@@ -311,6 +318,15 @@ class ValidationDialog
 
     _addRow( mainBox, jLabel, hBox );
 
+	//---- message about ignored words
+	hBox = Box.createHorizontalBox();
+	_ignoredWordsLabel = new JLabel("<HTML><I>There are ignored words (to clear them, use the Spell Check menu)</I></HTML>",ignoredIcon,SwingConstants.LEADING);
+	hBox.add(Box.createHorizontalGlue() );
+	hBox.add(_ignoredWordsLabel);
+	hBox.add(Box.createHorizontalGlue() );
+	mainBox.add(Box.createVerticalGlue());
+	mainBox.add(hBox);
+	
     if( _location != null )
     setLocation( _location );
     pack();
@@ -319,10 +335,16 @@ class ValidationDialog
   }
 
 
-  private void refresh(String originalWord, List suggestions){
+  private void refresh(String originalWord, List suggestions,boolean ignoredWords){
 	  _originalWordTextField.setText(originalWord);
       while(_suggestionsModel.getSize()!=0)_suggestionsModel.remove(0);
-    
+	  
+	  if(ignoredWords){
+		  _ignoredWordsLabel.setVisible(true);
+	  }else{
+		  _ignoredWordsLabel.setVisible(false);
+	  }
+	  
 	  if (suggestions.isEmpty() )
 	  {
 		  _suggestionsModel.addElement("(no suggestion)");

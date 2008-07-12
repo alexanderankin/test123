@@ -35,6 +35,7 @@ import javax.swing.text.Position;
 import cswilly.spell.Result;
 import cswilly.spell.Validator;
 import cswilly.spell.ValidationDialog;
+import cswilly.spell.WordListValidator;
 
 
 import org.gjt.sp.jedit.jEdit;
@@ -54,12 +55,13 @@ public
 class BufferDialogValidator implements Validator
 {
   private final HashMap<String,String>        _changeAllMap = new HashMap<String,String>();
-  private final HashSet<String>        _ignoreAllSet = new HashSet<String>();
+  private WordListValidator        ignoreAll = null;
   private TextArea area;
   private JEditBuffer buffer;
   private Position savedPosition;
   private ValidationDialog validationDialog;
-
+  private WordListValidator userDict;
+  
   
   /**
    * Validate a line of words that have the <code>results</code> of a spell
@@ -70,10 +72,12 @@ class BufferDialogValidator implements Validator
    * @return new line with all corrected words validated
    */
   public
-  List<Result> validate(int lineNum, String line, List<Result> results )
+  boolean validate(int lineNum, String line, List<Result> results )
   {
-	  List<Result> checkedLine = new ArrayList<Result>(results.size());
-    for( int ii=results.size()-1; ii>=0; ii-- )
+	  //List<Result> checkedLine = new ArrayList<Result>(results.size());
+	  if(userDict!=null)userDict.validate(lineNum,line,results);
+	  if(ignoreAll!=null)ignoreAll.validate(lineNum,line,results);
+    for( int ii=results.size()-1; ii>=0;ii--)
     {
       Result result = results.get( ii );
 	  Result newResult = null;
@@ -88,14 +92,6 @@ class BufferDialogValidator implements Validator
 					Arrays.asList(new String[]{_changeAllMap.get( result.getOriginalWord() )}),
 					result.getOriginalWord());
         }
-        else if( _ignoreAllSet.contains( result.getOriginalWord() ) )
-        {
-          newResult = new Result(
-					result.getOffset(),
-					Result.OK,
-					null,
-					result.getOriginalWord());
-        }
         else
         {
           newResult = validate(lineNum, result );
@@ -103,17 +99,21 @@ class BufferDialogValidator implements Validator
 
         if( newResult != null )
         {
-			if(Result.OK != newResult.getType())checkedLine.add(newResult);
+			if(Result.OK != newResult.getType()){
+				results.set(ii,newResult);
+			}
+			else results.remove(ii);
         }
 		else
 		{
-            checkedLine = null;
-            break;
+            return false;
 		}
-      }
+      }else{
+		  results.remove(ii); 
+	  }
     }
 
-    return checkedLine;
+    return true;
   }
   
 
@@ -141,12 +141,11 @@ class BufferDialogValidator implements Validator
 	/* Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
 	area.scrollTo(lineNum,result.getOffset()-1,false);
 	*/
-	//validationDialog = new ValidationDialog( result.getOriginalWord(),
-    //                                         result.getSuggestions() );
-    //validationDialog.show();
 
     ValidationDialog.UserAction userAction =
-		validationDialog.getUserAction(result.getOriginalWord(),result.getSuggestions());
+		validationDialog.getUserAction(result.getOriginalWord(),
+				result.getSuggestions(),
+				ignoreAll!=null && ignoreAll.getAllWords().size()>0);
     if( userAction == validationDialog.CANCEL )
     {
       replacementWord = null;
@@ -168,17 +167,18 @@ class BufferDialogValidator implements Validator
     }
     else if( userAction == validationDialog.IGNORE_ALL )
     {
-      if( _ignoreAllSet.contains( result.getOriginalWord() ) )
-      {
-        System.err.println( "Validator error: Ignore all twice same word: " +
-                            result.getOriginalWord() );
-      }
-      _ignoreAllSet.add( result.getOriginalWord() );
-      replacementWord = result.getOriginalWord();
+		replacementWord = result.getOriginalWord();
+		if(ignoreAll!=null)ignoreAll.addWord(replacementWord);
+		//todo : if twice the same word in the line, won't be ignored
     }
     else if( userAction == validationDialog.IGNORE )
     {
       replacementWord = result.getOriginalWord();
+    }
+    else if( userAction == validationDialog.ADD )
+    {
+      replacementWord = result.getOriginalWord();
+	  if(userDict!=null)userDict.addWord(replacementWord);
     }
 
 	if( replacementWord != null )
@@ -207,7 +207,15 @@ class BufferDialogValidator implements Validator
 	  savedPosition = buffer.createPosition(ta.getCaretPosition());
 	  validationDialog = new ValidationDialog(((JEditTextArea)area).getView());
   }
+
+  public void setUserDictionary(WordListValidator valid){
+	 userDict = valid;
+  }
   
+  public void setIgnoreAll(WordListValidator ignoreAll){
+	 this.ignoreAll = ignoreAll;
+  }
+
   public void start()
   {}
   
@@ -219,6 +227,8 @@ class BufferDialogValidator implements Validator
 	  Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
 	  area.scrollToCaret(false);
 	*/
+	  userDict=null;
+	  ignoreAll=null;
   }
 
 }

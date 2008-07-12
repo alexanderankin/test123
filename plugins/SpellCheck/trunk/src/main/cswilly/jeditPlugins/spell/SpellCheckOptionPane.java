@@ -67,6 +67,7 @@ import cswilly.spell.FutureListDicts;
 import cswilly.spell.FutureListModes;
 
 import static cswilly.jeditPlugins.spell.SpellCheckPlugin.*;
+import static cswilly.jeditPlugins.spell.AspellEngineManager.*;
 
 public class SpellCheckOptionPane
   extends AbstractOptionPane
@@ -94,11 +95,11 @@ public class SpellCheckOptionPane
 	/* Properties */
 	propertyStore = new PropertyStore(this);
 
-    String aspellExecutable = SpellCheckPlugin.getAspellExeFilename();
+    String aspellExecutable = AspellEngineManager.getAspellExeFilename();
 	propertyStore.put(ASPELL_EXE_PROP,aspellExecutable);
 	
-	String lang = SpellCheckPlugin.getAspellMainLanguage();
-	propertyStore.put(ASPELL_LANG_PROP,lang);
+	String lang = SpellCheckPlugin.getMainLanguage();
+	propertyStore.put(MAIN_LANGUAGE_PROP,lang);
 	
 	AspellMarkupMode modeValue = AspellMarkupMode.AUTO_MARKUP_MODE;
 	try{
@@ -166,7 +167,7 @@ public class SpellCheckOptionPane
 			public void actionPerformed(ActionEvent e){
 				String dict = (String)_aspellMainLanguageList.getSelectedItem();
 				if(dict==null)return;
-				propertyStore.put(ASPELL_LANG_PROP,dict);
+				propertyStore.put(MAIN_LANGUAGE_PROP,dict);
 				Log.log(Log.DEBUG,SpellCheckOptionPane.this,"changed : "+dict);
 			}
 	});
@@ -194,7 +195,7 @@ public class SpellCheckOptionPane
 	positions.put(AspellMarkupMode.AUTO_MARKUP_MODE,BorderLayout.CENTER);
 	positions.put(AspellMarkupMode.MANUAL_MARKUP_MODE,BorderLayout.SOUTH);
 	
-	for(final SpellCheckPlugin.AspellMarkupMode mode : SpellCheckPlugin.AspellMarkupMode.values()){
+	for(final AspellMarkupMode mode : AspellMarkupMode.values()){
 		JRadioButton _aspellMarkupMode = new JRadioButton();
 		_aspellMarkupMode.setName( mode.toString());
 		_aspellMarkupMode.setText( jEdit.getProperty( "options.SpellCheck."+mode.toString() ) );
@@ -278,9 +279,9 @@ public class SpellCheckOptionPane
   {
     jEdit.setProperty( ASPELL_EXE_PROP, propertyStore.get(ASPELL_EXE_PROP) );
 
-	String lang = propertyStore.get(ASPELL_LANG_PROP);
+	String lang = propertyStore.get(MAIN_LANGUAGE_PROP);
 	if(jEdit.getProperty(NO_DICTIONARY).equals(lang))lang="";
-		jEdit.setProperty( ASPELL_LANG_PROP, lang);
+		jEdit.setProperty( MAIN_LANGUAGE_PROP, lang);
 	
     jEdit.setProperty( ASPELL_MARKUP_MODE_PROP, propertyStore.get(ASPELL_MARKUP_MODE_PROP));
     jEdit.setProperty( ASPELL_OTHER_PARAMS_PROP, propertyStore.get(ASPELL_OTHER_PARAMS_PROP) );
@@ -478,7 +479,7 @@ public class SpellCheckOptionPane
 					{
 						while(modelFilters.getSize()!=0)modelFilters.removeElementAt(0);//remove old modes
 						for(String mode: modes.keySet())modelFilters.addElement(mode);
-						modelFilters.addElement(SpellCheckPlugin.FILTER_AUTO);
+						modelFilters.addElement(FILTER_AUTO);
 					}
 
 					while(modelDicts.getSize()!=0)modelDicts.removeElementAt(0);//remove listing...
@@ -488,7 +489,7 @@ public class SpellCheckOptionPane
 						modelDicts.addElement(nothing);
 						modelDicts.setSelectedItem(nothing);
 					}else{
-						String dict = jEdit.getProperty(SpellCheckPlugin.ASPELL_LANG_PROP);
+						String dict = jEdit.getProperty(MAIN_LANGUAGE_PROP);
 						if(dicts.contains(dict))modelDicts.setSelectedItem(dict);
 					}
 		
@@ -602,15 +603,15 @@ class Entry
   Entry( String name )
   {
     this.name = name;
-    filter = jEdit.getProperty(SpellCheckPlugin.FILTERS_PROP+"."+name,SpellCheckPlugin.FILTER_AUTO);
+    filter = jEdit.getProperty(FILTERS_PROP+"."+name,FILTER_AUTO);
   }
 
   void save()
   {
-	  if(!SpellCheckPlugin.FILTER_AUTO.equals(filter))
-      jEdit.setProperty(SpellCheckPlugin.FILTERS_PROP+"."+name, filter);
+	  if(!FILTER_AUTO.equals(filter))
+      jEdit.setProperty(FILTERS_PROP+"."+name, filter);
     else
-      jEdit.unsetProperty(SpellCheckPlugin.FILTERS_PROP+"."+name);
+      jEdit.unsetProperty(FILTERS_PROP+"."+name);
   }
   
 }
@@ -624,10 +625,16 @@ class PropertyStore extends PropertyChangeSupport{
 	
 	public void put(String name,String value){
 		if(name == null)throw new IllegalArgumentException("property name shouldn't be null");
-		if(value == null)throw new IllegalArgumentException("property value shouldn't be null");
-		if(values.containsKey(name) && values.get(name).equals(value))return;//ignore
-		firePropertyChange(name,values.get(name),value);
+		
+		String oldValue = values.get(name);
+		
+		/* ignore same value */
+		if(oldValue == null){
+				if(value == null)return;
+		}else if(oldValue.equals(value))return;
+		
 		values.put(name,value);
+		firePropertyChange(name,oldValue,value);
 	}
 	
 	public String get(String name){

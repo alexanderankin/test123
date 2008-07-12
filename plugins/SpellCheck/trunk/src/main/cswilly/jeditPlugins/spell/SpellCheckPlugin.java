@@ -22,11 +22,15 @@
 
 package cswilly.jeditPlugins.spell;
 
-import cswilly.spell.FileSpellChecker;
+import cswilly.spell.Engine;
+import cswilly.spell.Validator;
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
+import cswilly.spell.WordListValidator;
+import cswilly.spell.ChainingValidator;
 
 
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -55,40 +59,17 @@ public class SpellCheckPlugin
 {
   public static final String PLUGIN_NAME                        = "SpellCheck";
   public static final String SPELL_CHECK_ACTIONS                = "spell-check-menu";
-  public static final String ASPELL_EXE_PROP                    = "spell-check-aspell-exe";
-  public static final String ASPELL_MARKUP_MODE_PROP            = "spell-check-aspell-markup-mode";
-  public static final String ASPELL_LANG_PROP                   = "spell-check-aspell-lang";
-  public static final String ASPELL_OTHER_PARAMS_PROP			= "spell-check-aspell-other-params";
-  public static final String FILTER_AUTO						= "AUTO";					
-  public static final String FILTERS_PROP						= "spell-check-filter";					
   public static final String SPELLCHECK_ON_SAVE_PROP			= "spell-check-on-save";
   public static final String BUFFER_LANGUAGE_PROP				= "spell-check-buffer-lang";
-  public static enum AspellMarkupMode{
-	  NO_MARKUP_MODE("aspellNoMarkupMode"),
-	  MANUAL_MARKUP_MODE("aspellManualMarkupMode"),
-	  AUTO_MARKUP_MODE("aspellAutoMarkupMode");
-	  
-	  AspellMarkupMode(String v){ this.value = v; }
-	  
-	  private final String value;
-	  public String toString(){ return value; }
-	  public static AspellMarkupMode fromString(String s){
-		  for(AspellMarkupMode mode : AspellMarkupMode.values()){
-			  if(mode.value.equals(s))return mode;
-		  }
-		  throw new IllegalArgumentException("Invalid mode name :"+s);
-	  }
-  }
+  public static final String MAIN_LANGUAGE_PROP					= "spell-check-main-lang";
+  public static final String BUFFER_IGNORE_ALL_LIST_PROP		= "spell-check-ignore-all-list";
   
-  public static final ArrayList defaultModes = new ArrayList( Arrays.asList( new String[] {"html", "shtml", "sgml", "xml", "xsl"} ) );
-
-//  private static FileSpellChecker _fileSpellChecker = null;
-  private static BufferSpellChecker _bufferSpellChecker = null;
+  //no problem : lightweight
+  private static AspellEngineManager _engineManager = new AspellEngineManager();
   private static ErrorListSpellChecker _errorListSpellChecker = null;
 
-  private static String aspellMainLanguage;
-  private static List<String> aspellCommandLine;
-
+  private static Map<String,WordListValidator> userDicts = new HashMap<String,WordListValidator>();
+  private static Map<Buffer,WordListValidator> ignoreAlls = new HashMap<Buffer,WordListValidator>();
   
   /**
   * Displays the spell checker dialog box with specified lang dictionary. This method
@@ -108,11 +89,8 @@ public class SpellCheckPlugin
 	  String result = null;
 	  String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
 	  Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
-	  if(oldDict == null)oldDict = getAspellMainLanguage();
-	  final DictionaryPicker dp = new DictionaryPicker(oldDict);
-	  
-	  dp.getPropertyStore().put(ASPELL_EXE_PROP,getAspellExeFilename());
-	  
+	  if(oldDict == null)oldDict = getMainLanguage();
+	  final DictionaryPicker dp = new DictionaryPicker(getEngineManager(),oldDict);
 	  
 	  JDialog dialog = dp.asDialog(view);
 	  dp.getRefreshAction().actionPerformed(null);
@@ -134,22 +112,21 @@ public class SpellCheckPlugin
   public static
   void checkBufferErrorList(View view, Buffer buffer)
   {
-    ErrorListSpellChecker checker = null;
-
+    ErrorListSpellChecker checker = getErrorListSpellChecker();
+	Validator userDict = getUserDictionaryForLang(view,getBufferLanguage(buffer));
+	Validator ignoreAll = getIgnoreAll(buffer);
+	
+	ChainingValidator valid = new ChainingValidator(userDict,ignoreAll);
+	checker.setValidator(valid);
 	Log.log(Log.DEBUG,SpellCheckPlugin.class,"SpellCheck started for "+buffer.getName()+" ("+buffer.getPath()+")");
 
 	StatusBar status = view.getStatus();
 	status.setMessage( "Spell check in process..." );
 	
-	initCommandLine(buffer);
-
     try
     {
-      checker = getErrorListSpellChecker();
 
-      if ( checker == null )
-        throw new SpellException("No or invalid executable specified");
-
+		checker.setSpellEngine(getEngine(buffer));
 	//TODO handle return
       checker.checkBuffer( buffer );
 	  
@@ -165,45 +142,6 @@ public class SpellCheckPlugin
     }
   }
 
-  private static void initCommandLine(Buffer buffer){
-	 String dict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
-	 if(dict == null) dict = jEdit.getProperty(ASPELL_LANG_PROP,"");
-	 setAspellMainLanguage(dict);
-
-    // Construct aspell command line arguments
-    List aspellCommandLine = new ArrayList(4);
-	// use this option switch to prevent any encoding issue
-	// available at least since aspell 0.5.3
-	aspellCommandLine.add("--encoding=utf-8");
-    String mode = buffer.getMode().getName();
-	AspellMarkupMode markup = getAspellMarkupMode();
-	if( AspellMarkupMode.NO_MARKUP_MODE == markup)
-			aspellCommandLine.add("--mode=none");
-	else if( AspellMarkupMode.MANUAL_MARKUP_MODE == markup ){
-		String m = jEdit.getProperty(FILTERS_PROP+"."+mode);
-		if(m!=null)
-			aspellCommandLine.add("--mode="+m);
-	}
-	//else : AUTO : do nothing
-
-	
-    String aspellMainLanguage = getAspellMainLanguage();
-    if ( !aspellMainLanguage.equals("") ){
-      aspellCommandLine.add("--lang=" + aspellMainLanguage);
-	  //can't find this option:
-	  //aspellCommandLine.add("--language-tag=" + aspellMainLanguage);
-	}
-
-	String aspellOtherParams = getAspellOtherParams();
-	//TODO : fix params with spaces protected with quotes
-	for(StringTokenizer st=new StringTokenizer(aspellOtherParams);st.hasMoreTokens();){
-		aspellCommandLine.add(st.nextToken());
-	}
-
-    aspellCommandLine.add("pipe");
-
-    setAspellCommandLine( aspellCommandLine);
-  }
   
   public static
   void checkBuffer(View view,Buffer buffer)
@@ -211,22 +149,20 @@ public class SpellCheckPlugin
 	 JEditTextArea area = view.getEditPane().getTextArea();
 	 if(area.getBuffer()!=buffer)
 	 	throw new IllegalArgumentException("The buffer must correspond to the first area");
-	 BufferSpellChecker checker = null;
 
+	
 	 StatusBar status = view.getStatus();
 	 status.setMessage( "Spell check in process..." );
 	 
-	 initCommandLine(buffer);
+	
 	 
     try
     {
-      checker = getBufferSpellChecker();
-
-      if ( checker == null )
-        throw new SpellException("No or invalid executable specified");
-
-	//TODO handle return
-      checker.checkBuffer( area, buffer );
+		Engine engine = getEngine(buffer);
+		BufferSpellChecker checker = new BufferSpellChecker(engine);
+		Validator validator =  getDialogValidator(view,buffer);
+		//TODO handle return
+		checker.checkBuffer( area, buffer,validator);
 
 	  status.setMessage( "Spell terminated with no Error..." );
 
@@ -238,6 +174,12 @@ public class SpellCheckPlugin
       Object[] args = { new String (e.getMessage()) };
       GUIUtilities.error( view, "spell-check-error", args);
     }
+  }
+ 
+
+  private static Engine getEngine(Buffer buffer) throws SpellException{
+	  if(buffer == null)throw new IllegalArgumentException("buffer can't be null");
+	return getEngineManager().getEngine(buffer.getMode().getName(),getBufferLanguage(buffer));
   }
   
   /**
@@ -257,143 +199,57 @@ public class SpellCheckPlugin
 	 }
   }
 
-  private static
-  BufferSpellChecker getBufferSpellChecker()
+  /**
+   * sets buffer's property SpellCheckPlugin.BUFFER_LANGUAGE_PROP
+   * according to user's choice
+   * @param	view	Currently Active view
+   * @param	buffer	Buffer whose language is to be set
+   */
+  public static String getBufferLanguage(Buffer buffer)
   {
-    String  aspellExeFilename = getAspellExeFilename();
-    String[]  aspellCommandLine = (String[])getAspellCommandLine().toArray(new String[]{});
-
-    if ( aspellExeFilename == null )
-      return null;
-
-    if( _bufferSpellChecker == null )
-      _bufferSpellChecker = new BufferSpellChecker( aspellExeFilename, aspellCommandLine );
-    else
-      if( !aspellExeFilename.equals( _bufferSpellChecker.getAspellExeFilename() )
-       || !aspellCommandLine.equals( _bufferSpellChecker.getAspellArgs() ) )
-      {
-        _bufferSpellChecker.stop();
-        _bufferSpellChecker = new BufferSpellChecker( aspellExeFilename, aspellCommandLine );
-      }
-
-    return _bufferSpellChecker;
+	  String lang = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
+	  if(lang == null)lang = getMainLanguage();
+	  return lang;
   }
 
+  public static String getMainLanguage()
+  {
+	 return jEdit.getProperty(MAIN_LANGUAGE_PROP,"");
+  }
+
+  
+  //must keep the ErrorListSpellChecker as it's an ErrorSource
   private static
   ErrorListSpellChecker getErrorListSpellChecker()
   {
-    String  aspellExeFilename = getAspellExeFilename();
-    String[]  aspellCommandLine = (String[])getAspellCommandLine().toArray(new String[]{});
-
-    if ( aspellExeFilename == null )
-      return null;
-
     if( _errorListSpellChecker == null )
-      _errorListSpellChecker = new ErrorListSpellChecker( aspellExeFilename, aspellCommandLine );
-    else
-      if( !aspellExeFilename.equals( _errorListSpellChecker.getAspellExeFilename() )
-       || !aspellCommandLine.equals( _errorListSpellChecker.getAspellArgs() ) )
-      {
-        _errorListSpellChecker.stop();
-        _errorListSpellChecker = new ErrorListSpellChecker( aspellExeFilename, aspellCommandLine );
-      }
-
+      _errorListSpellChecker = new ErrorListSpellChecker();
     return _errorListSpellChecker;
   }
 
-  static
-  String getAspellExeFilename()
-  {
-    String aspellExeFilename = jEdit.getProperty( ASPELL_EXE_PROP );
-
-    if( aspellExeFilename == null || aspellExeFilename.equals("") )
-    {
-      if ( OperatingSystem.isUnix() )
-        aspellExeFilename = "aspell";
-      else
-      {
-        GUIUtilities.message(null, "spell-check-noAspellExe", null);
-        String[] paths = GUIUtilities.showVFSFileDialog( null, null, JFileChooser.OPEN_DIALOG, false );
-
-        if (paths != null)
-          aspellExeFilename = paths[0];
-        else
-        {
-          return null;
-        }
-      }
-      jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, aspellExeFilename );
-    }
-
-    return aspellExeFilename;
+  private static Validator getDialogValidator(View view, Buffer buffer){
+	  BufferDialogValidator validator = new BufferDialogValidator();
+	  validator.setTextArea(view.getEditPane().getTextArea());
+	  String lang = getBufferLanguage(buffer);
+	  validator.setUserDictionary(getUserDictionaryForLang(view, lang));
+	  validator.setIgnoreAll(getIgnoreAll(buffer));
+	  return validator;
   }
-
-  private static
-  List<String> getAspellCommandLine()
-  {
-    if( aspellCommandLine == null )
-      aspellCommandLine = new ArrayList<String>();
-
-    return aspellCommandLine;
-  }
-
-  private static
-  void setAspellCommandLine(List<String> newCommandLine)
-  {
-    aspellCommandLine = newCommandLine;
-	Log.log(Log.DEBUG,SpellCheckPlugin.class,"setting command line "+newCommandLine);
-  }
-
-  public static
-  String getAspellMainLanguage()
-  {
-    if( aspellMainLanguage == null )
-      aspellMainLanguage = "";
-
-    return aspellMainLanguage;
-  }
-
-  private static
-  void setAspellMainLanguage(String newLanguage)
-  {
-    aspellMainLanguage = newLanguage;
-  }
-
-  private static
-  String getAspellOtherParams()
-  {
-    return jEdit.getProperty( ASPELL_OTHER_PARAMS_PROP, "");
-  }
-
-  private static
-  AspellMarkupMode getAspellMarkupMode()
-  {
-	  try{
-		  return AspellMarkupMode.fromString(jEdit.getProperty( ASPELL_MARKUP_MODE_PROP));
-	  }catch(IllegalArgumentException iae){
-		  return AspellMarkupMode.AUTO_MARKUP_MODE;
-	  }
-  }
-
-  public static
-  Future<Vector<String>> getAlternateLangDictionaries()
-  {
-	  return new FutureListDicts(getAspellExeFilename());
+  
+  private static AspellEngineManager getEngineManager(){
+	  if(_engineManager==null)_engineManager = new AspellEngineManager();
+	  return _engineManager;
   }
   
   public void stop(){
 	  Log.log(Log.DEBUG,this,"stopping SpellCheckPlugin");
-	  // if(_fileSpellChecker != null){
-		//   _fileSpellChecker.stop();
-		//   _fileSpellChecker = null;
-	  // }
 	  if(_errorListSpellChecker != null){
 		  _errorListSpellChecker.unload();
 		  _errorListSpellChecker = null;
 	  }
-	  if(_bufferSpellChecker!=null){
-		  _bufferSpellChecker.unload();
-		  _bufferSpellChecker = null;
+	  if(_engineManager!=null){
+		  getEngineManager().stop();
+		  _engineManager = null;
 	  }
   }
    
@@ -408,7 +264,80 @@ public class SpellCheckPlugin
 					  checkBufferErrorList(bu.getView(), bu.getBuffer());
 				  }
 			  }.start(); 
+		  }else if(BufferUpdate.CLOSED == bu.getWhat()){
+			  if(ignoreAlls.containsKey(bu.getBuffer()))
+				  ignoreAlls.remove(bu.getBuffer());
 		  }
+	  }
+  }
+  
+  /**
+   * @param	view	view to use for error messages
+   * @param	lang	ISO code of language
+   * @return	a dictionary for given language (empty if no words added)
+   */
+  private static WordListValidator getUserDictionaryForLang(View view,String lang){
+	  //lazy-loading...
+	  if(! userDicts.containsKey(lang)){
+		  File home = EditPlugin.getPluginHome(SpellCheckPlugin.class);
+		  assert home != null;
+		  
+		  WordListValidator dict = new WordListValidator();
+		  File userDictFile = new File(home,"user."+lang+".dict");
+		  if(userDictFile.exists()){
+			  try{
+				  dict.load(userDictFile);
+			  }catch(IOException ioe){
+				  GUIUtilities.error( view, "userdict-load-error.message", new String[]{lang,ioe.getMessage()});
+			  }
+		  }
+		  userDicts.put(lang,dict);
+	  }
+	  return userDicts.get(lang);
+  }
+  
+  private static void saveDictionaries(){
+	  File home = EditPlugin.getPluginHome(SpellCheckPlugin.class);
+	  assert home != null;
+
+	  for(String lang : userDicts.keySet()){
+		  WordListValidator dict = userDicts.get(lang);
+
+		  File userDictFile = new File(home,"user."+lang+".dict");
+
+		  if(userDictFile.exists()){
+			  try{
+				  dict.save(userDictFile);
+			  }catch(IOException ioe){
+				  GUIUtilities.error( null, "spell-check-userdict-load-error.message", new String[]{lang,ioe.getMessage()});
+			  }
+		  }
+		  userDicts.put(lang,dict);
+	  }
+  }
+  
+  private static WordListValidator getIgnoreAll(Buffer buff){
+	  if(ignoreAlls.containsKey(buff))return ignoreAlls.get(buff);
+	  String w = buff.getStringProperty(BUFFER_IGNORE_ALL_LIST_PROP);
+	  WordListValidator valid = new WordListValidator();
+	  if(w != null){
+		  String[]subst = w.split("\t");
+		  for(int i=0;i<subst.length;i++){
+			  valid.addWord(subst[i]);
+		  }
+	  }
+	  ignoreAlls.put(buff,valid);
+	  return valid;
+  }
+  
+  public static void clearIgnoreAll(View view, Buffer buffer){
+	  if(ignoreAlls.containsKey(buffer)){
+		  ignoreAlls.remove(buffer);
+		  String msg = jEdit.getProperty("spell-check-clear-ignore-all-cleared.message","");
+		  view.getStatus().setMessage(msg);
+	  }else{
+		  String msg = jEdit.getProperty("spell-check-clear-ignore-all-none.message","");
+		  view.getStatus().setMessage(msg);
 	  }
   }
 }

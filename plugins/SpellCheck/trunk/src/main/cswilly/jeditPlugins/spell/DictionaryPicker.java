@@ -54,7 +54,7 @@ import common.gui.OkCancelButtons;
 
 
 import cswilly.spell.SpellException;
-import cswilly.spell.FutureListDicts;
+import cswilly.spell.EngineManager;
 
 import static cswilly.jeditPlugins.spell.SpellCheckPlugin.*;
 
@@ -76,13 +76,14 @@ public class DictionaryPicker{
 
 	private MutableComboBoxModel modelDicts;
 	private Future<Vector<String>> futureDicts;
+	private EngineManager futureSource;
 	private Action refreshAction;
 	
 	private PropertyStore propertyStore;
 	
-	public DictionaryPicker(String initial){
+	public DictionaryPicker(EngineManager futureSource,String initial){
 		modelDicts= new DefaultComboBoxModel();
-		futureDicts = null;
+		this.futureSource = futureSource;
 		refreshAction = null;
 		propertyStore = new PropertyStore(this);
 		propertyStore.put(INITIAL_LANG_PROP,initial);
@@ -142,6 +143,7 @@ public class DictionaryPicker{
 	}
 	
 	private class RefreshAction extends AbstractAction{
+
 		RefreshAction(){
 			setEnabled(false);
 		}
@@ -150,10 +152,8 @@ public class DictionaryPicker{
 		{
 			if(futureDicts == null)
 			{
-				refreshList();
-			}
-			else
-			{
+			 	refreshList();
+			}else{
 				cancel();
 			}
 		}
@@ -184,14 +184,15 @@ public class DictionaryPicker{
 			public void run(){
 				refreshAction.putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_STOP));
 				String listing = jEdit.getProperty( LISTING_DICTS, "" );
+				propertyStore.put(ERROR_PROP,null);
 				modelDicts.addElement(listing);
 				modelDicts.setSelectedItem(listing);
 				final Vector<String> dicts = new Vector<String>();
 				
+
 				getRefreshAction().setEnabled(true);
 				
-				FutureListDicts ft = new FutureListDicts(propertyStore.get(ASPELL_EXE_PROP));
-				//have a stable state, but give a reference to the outside, so it is able to cancel.
+				Future<Vector<String>> ft = futureSource.getAlternateLangDictionaries();
 				futureDicts = ft;
 				try
 				{
@@ -199,26 +200,21 @@ public class DictionaryPicker{
 				}
 				catch(InterruptedException ie){
 					Log.log(Log.ERROR,DictionaryPicker.this,ie);
-					// GUIUtilities.error(null,
-					// 	"ioerror",new String[] { "Interrupted while listing dictionaries" });
 					ft.cancel(true);
 					propertyStore.put(ERROR_PROP,"Interrupted while listing dictionaries");
 				}
 				catch(CancellationException ce){
 					Log.log(Log.DEBUG,DictionaryPicker.this,"Cancel Action worked");
+					propertyStore.put(ERROR_PROP,jEdit.getProperty("list-dict-cancelled.message"));
 				}
 				catch(ExecutionException ee){
 					Log.log(Log.ERROR,DictionaryPicker.this,ee);
-					// GUIUtilities.error(null,
-					// 	"ioerror",new String[] { jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}) });
 					ft.cancel(true);
 					propertyStore.put(ERROR_PROP,jEdit.getProperty("list-dict-error.message",new Object[]{ee.getCause().getMessage()}));
 
 				}
 				catch(TimeoutException te){
 					Log.log(Log.ERROR,DictionaryPicker.this,te);
-					// GUIUtilities.error(null,
-					// 	"ioerror",new String[] { jEdit.getProperty("list-dict-timeout-error.message") });
 					ft.cancel(true);
 					propertyStore.put(ERROR_PROP,jEdit.getProperty("list-dict-timeout-error.message"));
 				}
@@ -227,7 +223,7 @@ public class DictionaryPicker{
 					{
 						public void run()
 						{
-							if(!dicts.isEmpty())
+				 			if(!dicts.isEmpty())
 								Log.log(Log.DEBUG,DictionaryPicker.this,"finished refreshList ("+dicts.size()+" dictionaries found)");
 							else
 								Log.log(Log.ERROR,DictionaryPicker.this,"no dictionary found)");
@@ -247,7 +243,7 @@ public class DictionaryPicker{
 							getRefreshAction().setEnabled(true);
 							//we are done!
 							futureDicts = null;
-						}
+					 	}
 					});
 		}}.start();
 	}

@@ -128,8 +128,8 @@ public class SpellCheckPluginTest
 	public void testInteractiveSpellCheck(){
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		jEdit.newFile(view);
 		final Buffer buff = view.getBuffer();
@@ -154,8 +154,8 @@ public class SpellCheckPluginTest
 	public void testShowCustomLangSpellDialog(){
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en-w_accents");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en-w_accents");
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		jEdit.newFile(view);
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let new file be created
@@ -207,8 +207,8 @@ public class SpellCheckPluginTest
 		
 		String path = testsDir+"/spellTest.txt";
 		
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		jEdit.setBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP,true);
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
@@ -340,8 +340,8 @@ public class SpellCheckPluginTest
 		String testDir = System.getProperty(ENV_TESTS_DIR);
 		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testDir!=null);
 
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_LANG_PROP,"en");
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{Thread.sleep(5000);}catch(InterruptedException ie){}
@@ -352,8 +352,8 @@ public class SpellCheckPluginTest
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}
 
 		//with "none" filter
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,
-			SpellCheckPlugin.AspellMarkupMode.NO_MARKUP_MODE.toString());
+		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,
+			AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString());
 		
 		Thread spellThread = new Thread(){
 			public void run(){
@@ -371,10 +371,10 @@ public class SpellCheckPluginTest
 		
 		
 		//with manual markup mode
-		jEdit.setProperty(SpellCheckPlugin.ASPELL_MARKUP_MODE_PROP,
-			SpellCheckPlugin.AspellMarkupMode.MANUAL_MARKUP_MODE.toString());
+		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,
+			AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString());
 		assertEquals("tex",
-					jEdit.getProperty(SpellCheckPlugin.FILTERS_PROP+".latex"));
+					jEdit.getProperty(AspellEngineManager.FILTERS_PROP+".latex"));
 
 		spellThread = new Thread(){
 			public void run(){
@@ -388,5 +388,78 @@ public class SpellCheckPluginTest
 		try{
 			spellThread.join(5000);
 		}catch(InterruptedException ie){}
+	}
+	
+	@Test
+	public void testIgnoreAll(){
+		String exePath = System.getProperty(ENV_ASPELL_EXE);
+		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
+
+		String testDir = System.getProperty(ENV_TESTS_DIR);
+		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testDir!=null);
+
+		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
+
+		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+
+		jEdit.newFile(view);
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		
+		final Buffer buffer = view.getBuffer();
+
+		buffer.insert(0,"The wiek comes to an end\nIndeed it's the end of the wiek");
+
+		final String oldText = buffer.getText(0,buffer.getLength());
+
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+
+		
+		Thread spellThread = new Thread(){
+			public void run(){
+				SpellCheckPlugin.checkBuffer(view,buffer);
+			}
+		};
+		spellThread.start();
+		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		spellDialog.textBox("originalWord").requireText("wiek");
+		spellDialog.button("Ignore All").click();
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
+		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+		
+		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
+		
+		//persistent accross invocations ?
+		spellThread = new Thread(){
+			public void run(){
+				SpellCheckPlugin.checkBuffer(view,buffer);
+			}
+		};
+		spellThread.start();
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
+		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+		
+		//test clear...
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","Spell Check","Clear Ignored Words").select();
+		
+		spellThread = new Thread(){
+			public void run(){
+				SpellCheckPlugin.checkBuffer(view,buffer);
+			}
+		};
+		spellThread.start();
+		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		spellDialog.textBox("originalWord").requireText("wiek");
+		spellDialog.button("Cancel").click();
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
+		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+		
+		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
 	}
 }

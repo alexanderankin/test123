@@ -5,7 +5,7 @@
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
-<!-- $Id$ - $Revision$ -->
+<!-- $Id: users-guide.xml 12872 2008-06-22 07:53:52Z kerik-sf $ - $Revision: 12872 $ -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
   "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 <book>
@@ -25,7 +25,7 @@
    <firstname>Eric</firstname>
    <surname>Le Lay</surname>
   </author>
-  <date>$Date$</date>
+  <date>$Date: 2008-06-22 09:53:52 +0200 (Dim 22 jui 2008) $</date>
   
 <legalnotice><title>Legal Notice</title>
   <para>

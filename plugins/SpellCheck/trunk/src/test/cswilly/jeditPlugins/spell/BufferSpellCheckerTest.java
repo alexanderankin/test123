@@ -49,6 +49,7 @@ import org.fest.swing.finder.WindowFinder;
 
 import cswilly.spell.ValidationDialog;
 import cswilly.spell.SpellException;
+import cswilly.spell.AspellEngine;
 
 
 import static cswilly.jeditPlugins.spell.TestUtils.*;
@@ -90,7 +91,13 @@ public class BufferSpellCheckerTest{
 
 	@Test
 	public void testCancel(){
-		final BufferSpellChecker check = new BufferSpellChecker( exePath, new String[]{"--lang","en","pipe"});
+		AspellEngine engine = null;
+		try{
+			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+		}catch(SpellException spe){
+			fail("shouldn't throw an exception");
+		}
+		final BufferSpellChecker check = new BufferSpellChecker(engine);
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{
@@ -113,11 +120,14 @@ public class BufferSpellCheckerTest{
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}
 		String oldText = buffer.getText(0,buffer.getLength());
 		
+		final BufferDialogValidator validator = new BufferDialogValidator();
+		validator.setTextArea(view.getTextArea());
+
 		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
 			public void run(){
 				try{
-				check.checkBuffer(view.getTextArea(),buffer);
+				check.checkBuffer(view.getTextArea(),buffer,validator);
 				}catch(SpellException spe){
 					exp.set(spe);
 				}
@@ -141,7 +151,14 @@ public class BufferSpellCheckerTest{
 	
 	@Test
 	public void testCommit(){
-		final BufferSpellChecker check = new BufferSpellChecker( exePath, new String[]{"--lang","en","pipe"});
+		AspellEngine engine = null;
+		try{
+			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+		}catch(SpellException spe){
+			fail("shouldn't throw an exception");
+		}
+
+		final BufferSpellChecker check = new BufferSpellChecker( engine);
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{
@@ -161,11 +178,13 @@ public class BufferSpellCheckerTest{
 		buffer.insert(0,"The qwick brown foxe");
 		String oldText = buffer.getText(0,buffer.getLength());
 		
+		final BufferDialogValidator validator = new BufferDialogValidator();
+		validator.setTextArea(view.getTextArea());
 		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
 			public void run(){
 				try{
-				check.checkBuffer(view.getTextArea(),buffer);
+				check.checkBuffer(view.getTextArea(),buffer,validator);
 				}catch(SpellException spe){
 					exp.set(spe);
 				}
@@ -195,7 +214,13 @@ public class BufferSpellCheckerTest{
 	
 	@Test
 	public void testScroll(){
-		final BufferSpellChecker check = new BufferSpellChecker( exePath, new String[]{"--lang","en","pipe"});
+		AspellEngine engine = null;
+		try{
+			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+		}catch(SpellException spe){
+			fail("shouldn't throw an exception");
+		}
+		final BufferSpellChecker check = new BufferSpellChecker( engine);
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{
@@ -221,11 +246,13 @@ public class BufferSpellCheckerTest{
 
 		String oldText = buffer.getText(0,buffer.getLength());
 		
+		final BufferDialogValidator validator = new BufferDialogValidator();
+		validator.setTextArea(view.getTextArea());
 		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
 			public void run(){
 				try{
-				check.checkBuffer(view.getTextArea(),buffer);
+				check.checkBuffer(view.getTextArea(),buffer,validator);
 				}catch(SpellException spe){
 					exp.set(spe);
 				}

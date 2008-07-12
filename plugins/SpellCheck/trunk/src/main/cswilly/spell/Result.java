@@ -51,7 +51,7 @@ import java.util.*;
  *   </dl>
  */
 public
-class Result
+class Result implements Cloneable
 {
   private  int     _offset;
   private  Type    _type;
@@ -142,6 +142,17 @@ class Result
     return buff.toString();
   }
 
+  public Object clone() throws CloneNotSupportedException{
+	  Result res  = (Result)super.clone();
+	  res._offset = _offset;
+	  res._originalWord = _originalWord;
+	  if(_suggestions == null) res._suggestions = null;
+	  else{
+		  res._suggestions = new ArrayList<String>(_suggestions);
+	  }
+	  res._type = _type;
+	  return res;
+  }
   private
   void processError( String line )
   {
