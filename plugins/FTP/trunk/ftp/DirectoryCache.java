@@ -149,7 +149,7 @@ public class DirectoryCache
 
 		synchronized(lock)
 		{
-			Enumeration e = urlToCacheFileHash.keys();
+			Enumeration<String> e = urlToCacheFileHash.keys();
 			while(e.hasMoreElements())
 			{
 				String path = (String)e.nextElement();
@@ -172,7 +172,7 @@ public class DirectoryCache
 	{
 		synchronized(lock)
 		{
-			Enumeration files = urlToCacheFileHash.elements();
+			Enumeration<String> files = urlToCacheFileHash.elements();
 			while(files.hasMoreElements())
 			{
 				String path = (String)files.nextElement();

@@ -43,7 +43,7 @@ public class SFtpConnection extends Connection implements UserInfo
 			if (ConnectionManager.client == null)  {
 				ConnectionManager.client = new JSch();
 			}
-			ConnectionManager.client.setLogger(new SftpLogger());
+			JSch.setLogger(new SftpLogger());
 			String settingsDirectory = jEdit.getSettingsDirectory();
 			if(settingsDirectory != null)
 			{
@@ -109,7 +109,7 @@ public class SFtpConnection extends Connection implements UserInfo
 		
 		try
 		{
-			Vector vv = sftp.ls(path);
+			Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vv = sftp.ls(path);
 			if(vv!=null) {
 				for(int ii=0; ii<vv.size(); ii++){
 					Object obj=vv.elementAt(ii);
@@ -123,7 +123,7 @@ public class SFtpConnection extends Connection implements UserInfo
 		} catch (SftpException e) {
 			return null;
 		}
-		FtpVFS.FtpDirectoryEntry[] result = (FtpVFS.FtpDirectoryEntry[]) listing.toArray(
+		FtpVFS.FtpDirectoryEntry[] result = listing.toArray(
 			new FtpVFS.FtpDirectoryEntry[listing.size()]);
 		return result;
 	}
