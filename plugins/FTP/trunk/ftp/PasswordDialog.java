@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.VariableGridLayout;
 
+@SuppressWarnings("serial")
 public class PasswordDialog extends EnhancedDialog implements ActionListener
 {
 	public PasswordDialog(JFrame comp, String title, String message)

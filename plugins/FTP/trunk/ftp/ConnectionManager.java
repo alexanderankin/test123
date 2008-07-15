@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2002, 2003, 2007 Slava Pestov, Nicholas O'Leary
+ * Copyright (C) 2002, 2003, 2007 Slava Pestov, Nicholas O'Leary, Vadim Voituk
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,7 @@ public class ConnectionManager
 	} //}}}
 	
 	//{{{ loadPasswords() method
+	@SuppressWarnings("unchecked")
 	protected static void loadPasswords()
 	{
 		if (passwordFile == null)
@@ -126,7 +127,7 @@ public class ConnectionManager
 						)
 					)
 				);
-			passwords = (HashMap)ois.readObject();
+			passwords = (HashMap<String, String>)ois.readObject();
 		}
 		catch(Exception e)
 		{
@@ -224,7 +225,7 @@ public class ConnectionManager
 		{
 			for(int i = 0; i < connections.size(); i++)
 			{
-				Connection _connect = (Connection)connections.get(i);
+				Connection _connect = connections.get(i);
 				if(!_connect.inUse()) 				{
 					closeConnection(_connect);
 					i--;
@@ -303,7 +304,7 @@ public class ConnectionManager
 		Connection connect = null;
 		synchronized(lock) {
 			for(int i = 0; i < connections.size(); i++) {
-				Connection _connect = (Connection)connections.get(i);
+				Connection _connect = connections.get(i);
 				if(!_connect.info.equals(info) || _connect.inUse()) continue;
 				
 				connect = _connect;
