@@ -67,20 +67,18 @@
     </target>
 
 	<!-- This selector controls which tests to run.
-		 The class cswilly/spell/Test is indeed not a test, so it's deactivated.
-		 Only SpellCheckPluginTest is effective, for the moment.
 	  -->
 	<selector id="junit.testcases">
-		<and>
-		<or>
-        <!--<filename name="cswilly/**/*Test.java" />-->
-		<filename name="**/DictionaryPickerTest.java" />
-		<!--<filename name="**/ErrorListSpellCheckerTest.java" />-->
-		<!--<filename name="**/SpellCheckPluginTest.java" />-->
+		<!--<and>
+		<or>-->
+		<!--<filename name="cswilly/**/*Test.java" />-->
+		<!--<filename name="**/BufferSpellCheckerTest.java" />-->
+		<!--<filename name="**/WordListValidatorTest.java" />-->
+		<filename name="**/SpellCheckPluginTest.java" />
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
-		</or>
+		<!--</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>
-		</and>
+		</and>-->
     </selector>
 
 	<!-- for junit tests -->

@@ -99,8 +99,12 @@ class FileSpellChecker
         }
         else
         {
-          List results = _getSpellEngine().checkLine( line );
-		  boolean cancel = _getSpellValidator().validate(0, line, results );
+          List<Result> results = _getSpellEngine().checkLine( line );
+		  boolean cancel = false;
+		  for(Result res : results){
+			  cancel = _getSpellValidator().validate(0, line, res );
+			  if(cancel)break;
+		  }
 		  if(!cancel) checkedLine = applyChanges(line, results);
           else
             return false;

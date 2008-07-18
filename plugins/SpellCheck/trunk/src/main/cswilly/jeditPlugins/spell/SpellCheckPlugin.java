@@ -28,6 +28,7 @@ import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
 import cswilly.spell.WordListValidator;
 import cswilly.spell.ChainingValidator;
+import cswilly.spell.SpellCoordinator;
 
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -127,10 +128,11 @@ public class SpellCheckPlugin
     {
 
 		checker.setSpellEngine(getEngine(buffer));
-	//TODO handle return
-      checker.checkBuffer( buffer );
+		checker.setTextArea( view.getTextArea() );
+		boolean ret = checker.spellcheck();
 	  
-	  Log.log(Log.DEBUG,SpellCheckPlugin.class,"SpellCheck finished for "+buffer.getName()+" ("+buffer.getPath()+")");
+		if(!ret)Log.log(Log.DEBUG,SpellCheckPlugin.class,"ErrorList SpellCheck cancelled for "+buffer.getName()+" ("+buffer.getPath()+")");
+		else Log.log(Log.DEBUG,SpellCheckPlugin.class,"SpellCheck finished for "+buffer.getName()+" ("+buffer.getPath()+")");
 
     }
     catch( SpellException e )
@@ -146,10 +148,6 @@ public class SpellCheckPlugin
   public static
   void checkBuffer(View view,Buffer buffer)
   {
-	 JEditTextArea area = view.getEditPane().getTextArea();
-	 if(area.getBuffer()!=buffer)
-	 	throw new IllegalArgumentException("The buffer must correspond to the first area");
-
 	
 	 StatusBar status = view.getStatus();
 	 status.setMessage( "Spell check in process..." );
@@ -158,13 +156,11 @@ public class SpellCheckPlugin
 	 
     try
     {
-		Engine engine = getEngine(buffer);
-		BufferSpellChecker checker = new BufferSpellChecker(engine);
-		Validator validator =  getDialogValidator(view,buffer);
-		//TODO handle return
-		checker.checkBuffer( area, buffer,validator);
-
-	  status.setMessage( "Spell terminated with no Error..." );
+		SpellCoordinator coordinator =  getDialogValidator(view,buffer);
+		boolean ret  = coordinator.spellcheck();
+		if(ret)
+			status.setMessage( "Spellcheck terminated with no Error." );
+		else status.setMessage("Spellcheck was cancelled.");
 
     }
     catch( SpellException e )
@@ -227,12 +223,26 @@ public class SpellCheckPlugin
     return _errorListSpellChecker;
   }
 
-  private static Validator getDialogValidator(View view, Buffer buffer){
-	  BufferDialogValidator validator = new BufferDialogValidator();
-	  validator.setTextArea(view.getEditPane().getTextArea());
+  private static SpellCoordinator getDialogValidator(View view, Buffer buffer){
+	 JEditTextArea area = view.getEditPane().getTextArea();
+	 if(area.getBuffer()!=buffer)
+	 	throw new IllegalArgumentException("The buffer must correspond to the first area");
+	 
+	 BufferDialogValidator validator = new BufferDialogValidator(); 
+
+	 validator.setTextArea(area);
 	  String lang = getBufferLanguage(buffer);
 	  validator.setUserDictionary(getUserDictionaryForLang(view, lang));
 	  validator.setIgnoreAll(getIgnoreAll(buffer));
+	  try{
+		  validator.setEngine(getEngine(buffer));
+	  }catch(SpellException e){
+		  Log.log(Log.ERROR, SpellCheckPlugin.class, "Error setting engine (Aspell).");
+		  Log.log(Log.ERROR, SpellCheckPlugin.class, e);
+		  Object[] args = { new String (e.getMessage()) };
+		  GUIUtilities.error( view, "spell-check-error", args);
+		  
+	  }
 	  return validator;
   }
   

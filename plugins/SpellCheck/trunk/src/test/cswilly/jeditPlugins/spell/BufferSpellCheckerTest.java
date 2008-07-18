@@ -26,11 +26,12 @@ package cswilly.jeditPlugins.spell;
 //{{{ Imports
 
 import java.io.*;
-import java.util.concurrent.atomic.*;
+import java.util.*;
 import javax.swing.*;
 
 //{{{ 	jEdit
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 //}}}
 
@@ -50,7 +51,7 @@ import org.fest.swing.finder.WindowFinder;
 import cswilly.spell.ValidationDialog;
 import cswilly.spell.SpellException;
 import cswilly.spell.AspellEngine;
-
+import cswilly.spell.ChangeWordAction;
 
 import static cswilly.jeditPlugins.spell.TestUtils.*;
 
@@ -90,195 +91,132 @@ public class BufferSpellCheckerTest{
 	}
 
 	@Test
-	public void testCancel(){
-		AspellEngine engine = null;
+	public void testIterate(){
+		final Buffer buf = TestUtils.newFile();
+		final String text = 
+		 "* This program is free software; you can redistribute it and/or\n"
+		+"* modify it under the terms of the GNU General Public License\n"
+		+"* as published by the Free Software Foundation; either version 2\n"
+		+"\n"
+		+"* of the License, or any later version.";
+		
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
-		}catch(SpellException spe){
-			fail("shouldn't throw an exception");
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);}});
+		}catch(Exception e){}
+		String[] lines = text.split("\n");
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		source.start();
+		for(int i=0;i<lines.length;i++){
+			assertEquals(lines[i],source.getNextLine());
 		}
-		final BufferSpellChecker check = new BufferSpellChecker(engine);
-		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
-		try{
-		SwingUtilities.invokeAndWait(
-			new Runnable(){
-				public void run(){
-					jEdit.openFile(view,testsDir+"/spellTest.txt");
-				}
-			});
-		}catch(Exception e){
-			System.err.println(e);
+		for(int i=lines.length-1;i>1;i--){
+			assertEquals(lines[i],source.getPreviousLine());
 		}
-	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		assertEquals(lines[2],source.getNextLine());
 		
-		final Buffer buffer = view.getBuffer();
-		//do that so there is one change before spell-checking
-		//(to catch an undue undo ;-))
-		buffer.insert(0,"hello,\n");
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
-		String oldText = buffer.getText(0,buffer.getLength());
-		
-		final BufferDialogValidator validator = new BufferDialogValidator();
-		validator.setTextArea(view.getTextArea());
-
-		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
-		Thread spellThread = new Thread(){
-			public void run(){
-				try{
-				check.checkBuffer(view.getTextArea(),buffer,validator);
-				}catch(SpellException spe){
-					exp.set(spe);
-				}
-			}
-		};
-		spellThread.start();
-		
-		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
-		spellDialog.button("Change").click();
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
-		spellDialog.button("Cancel").click();
-		try{
-			spellThread.join(5000);
-		}catch(InterruptedException ie){}
-		
-		assertNull(exp.get());
-		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
-
-		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
+		TestUtils.close(TestUtils.view(),buf);
 	}
+
+	@Test
+	public void testEmptyApply(){
+		final Buffer buf = TestUtils.newFile();
+		final JEditTextArea area = TestUtils.view().getTextArea();
+		final String text = "This program is free software.\n\n";
+		
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);}});
+		}catch(Exception e){}
+		BufferSpellChecker source = new BufferSpellChecker(area);
+		source.start();
+		source.done();
+		
+		try{
+		source.apply(new ArrayList<ChangeWordAction>());
+		}catch(SpellException e){
+			fail("shouldn't throw "+e);
+		}
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.undo(area);}});
+		}catch(Exception e){}
+			
+		assertEquals(0,buf.getLength());
+	}
+
 	
 	@Test
-	public void testCommit(){
-		AspellEngine engine = null;
+	public void testApply(){
+		final Buffer buf = TestUtils.newFile();
+		final String text = 
+		 "* This programme is payware software; you can redistribute it and/or\n"
+		+"* modify it under the terms of the GNU General Public License\n"
+		+"* has published by the Free Software Foundation; either version 2\n"
+		+"\n"
+		+"* of the License, or any later version.";
+		
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
-		}catch(SpellException spe){
-			fail("shouldn't throw an exception");
-		}
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);}});
+		}catch(Exception e){}
 
-		final BufferSpellChecker check = new BufferSpellChecker( engine);
-		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
-		try{
-		SwingUtilities.invokeAndWait(
-			new Runnable(){
-				public void run(){
-					jEdit.newFile(view);
-				}
-			});
-		}catch(Exception e){
-			System.err.println(e);
-		}
-	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
-		
-		final Buffer buffer = view.getBuffer();
-		buffer.insert(0,"The qwick brown foxe");
-		String oldText = buffer.getText(0,buffer.getLength());
-		
-		final BufferDialogValidator validator = new BufferDialogValidator();
-		validator.setTextArea(view.getTextArea());
-		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
-		Thread spellThread = new Thread(){
-			public void run(){
-				try{
-				check.checkBuffer(view.getTextArea(),buffer,validator);
-				}catch(SpellException spe){
-					exp.set(spe);
-				}
-			}
-		};
-		spellThread.start();
-		
-		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
-		spellDialog.list().selectItem("fox");
-		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
-		spellDialog.list().selectItem("quick");
-		spellDialog.button("Change").click();
-		try{
-			spellThread.join(5000);
-		}catch(InterruptedException ie){}
-		
-		assertNull(exp.get());
-		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+		final JEditTextArea area = TestUtils.view().getTextArea();
 
-		assertEquals("The quick brown fox",buffer.getText(0,buffer.getLength()));
-		buffer.undo(view.getTextArea());
-		assertEquals("The qwick brown foxe",buffer.getText(0,buffer.getLength()));
+		BufferSpellChecker source = new BufferSpellChecker(area);
+		
+		List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
+		changes.add(new ChangeWordAction(null,0,8,"programme","program"));
+		changes.add(new ChangeWordAction(null,0,21,"payware","free"));
+		changes.add(new ChangeWordAction(null,2,3,"has","as"));
+		
+		source.start();
+		source.done();
+		try{
+		source.apply(changes);
+		}catch(SpellException e){
+			fail("shouldn't throw "+e);
+		}
+		assertEquals(
+		 "* This program is free software; you can redistribute it and/or\n"
+		+"* modify it under the terms of the GNU General Public License\n"
+		+"* as published by the Free Software Foundation; either version 2\n"
+		+"\n"
+		+"* of the License, or any later version.",
+		buf.getText(0,buf.getLength()));
+
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.undo(TestUtils.view().getTextArea());}});
+		}catch(Exception e){}
+			
+		assertEquals(text,buf.getText(0,buf.getLength()));
+		
+		TestUtils.close(TestUtils.view(),buf);
 	}
-	
-	
+
 	@Test
-	public void testScroll(){
-		AspellEngine engine = null;
+	public void testApplyNoStart(){
+		final Buffer buf = TestUtils.newFile();
+		final String text = 
+		 "* This programme is free software; you can redistribute it and/or\n";
+		
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
-		}catch(SpellException spe){
-			fail("shouldn't throw an exception");
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);}});
+		}catch(Exception e){}
+
+		final JEditTextArea area = TestUtils.view().getTextArea();
+
+		BufferSpellChecker source = new BufferSpellChecker(area);
+		
+		List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
+		changes.add(new ChangeWordAction(null,0,8,"programme","program"));
+		
+		try{
+		source.apply(changes);
+		fail("should throw an exception");
+		}catch(SpellException e){
 		}
-		final BufferSpellChecker check = new BufferSpellChecker( engine);
-		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
-		try{
-		SwingUtilities.invokeAndWait(
-			new Runnable(){
-				public void run(){
-					jEdit.newFile(view);
-				}
-			});
-		}catch(Exception e){
-			System.err.println(e);
-		}
-	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
-		
-		final Buffer buffer = view.getBuffer();
-
-		buffer.insert(0,"The qwick brown foxe\n");
-		for(int i=0;i<50;i++)
-			buffer.insert(buffer.getLength(),"some correct text\n");
-		buffer.insert(buffer.getLength(),"Wronge text\n");		
-
-
-		String oldText = buffer.getText(0,buffer.getLength());
-		
-		final BufferDialogValidator validator = new BufferDialogValidator();
-		validator.setTextArea(view.getTextArea());
-		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
-		Thread spellThread = new Thread(){
-			public void run(){
-				try{
-				check.checkBuffer(view.getTextArea(),buffer,validator);
-				}catch(SpellException spe){
-					exp.set(spe);
-				}
-			}
-		};
-		spellThread.start();
-		
-		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
-		spellDialog.list().selectItem("fox");
-		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
-		spellDialog.list().selectItem("quick");
-		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
-		spellDialog.button("Change").click();
-		try{
-			spellThread.join(5000);
-		}catch(InterruptedException ie){}
-		
-		assertNull(exp.get());
-		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
-
-		assertTrue(!oldText.equals(buffer.getText(0,buffer.getLength())));
-		buffer.undo(view.getTextArea());
-		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
 	}
 }

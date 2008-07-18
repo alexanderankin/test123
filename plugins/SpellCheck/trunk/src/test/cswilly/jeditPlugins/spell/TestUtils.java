@@ -135,4 +135,42 @@ public class TestUtils{
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		TestUtils.findDialogByTitle("File Not Saved").button(AbstractButtonTextMatcher.withText(JButton.class,"Non")).click();
 	}
+
+	public static Buffer openFile(final String filename){
+		final View view = jeditFrame().targetCastedTo(View.class);
+		try{
+		SwingUtilities.invokeAndWait(
+			new Runnable(){
+				public void run(){
+					jEdit.openFile(view,filename);
+				}
+			});
+		}catch(Exception e){
+			System.err.println(e);
+		}
+	
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		return view.getBuffer();
+	}
+
+	public static Buffer newFile(){
+		final View view = jeditFrame().targetCastedTo(View.class);
+		try{
+		SwingUtilities.invokeAndWait(
+			new Runnable(){
+				public void run(){
+					jEdit.newFile(view);
+				}
+			});
+		}catch(Exception e){
+			System.err.println(e);
+		}
+	
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		return view.getBuffer();
+	}
+	
+	public static View view(){
+		return jeditFrame().targetCastedTo(View.class);
+	}
 }

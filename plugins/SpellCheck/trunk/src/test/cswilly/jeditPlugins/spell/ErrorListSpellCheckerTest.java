@@ -116,9 +116,9 @@ public class ErrorListSpellCheckerTest{
 		eng.addResults(res);
 		
 		checker.setSpellEngine(eng);
-		
+		checker.setTextArea(view.getTextArea());
 		try{
-			assertTrue(checker.checkBuffer(buff));
+			assertTrue(checker.spellcheck());
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail(spe.toString());
@@ -179,9 +179,9 @@ public class ErrorListSpellCheckerTest{
 		valid.addWord("pwett");
 		
 		checker.setValidator(valid);
-		
+		checker.setTextArea(view.getTextArea());
 		try{
-			assertTrue(checker.checkBuffer(buff));
+			assertTrue(checker.spellcheck());
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail(spe.toString());

@@ -28,21 +28,24 @@ import cswilly.spell.Engine;
 import cswilly.spell.Result;
 import cswilly.spell.Validator;
 import cswilly.spell.ChainingValidator;
+import cswilly.spell.SpellCoordinator;
 
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 import errorlist.ErrorSource;
 
 import java.util.List;
 
-public class ErrorListSpellChecker{
+public class ErrorListSpellChecker implements SpellCoordinator{
 	private Engine  _spellEngine = null;
 	private ErrorListValidator spellValidator = null;
 	private Validator validator = null;
-	
+	private TextArea area = null;
+
 	public ErrorListSpellChecker()
 	{
 		spellValidator = new ErrorListValidator("SpellCheckPlugin");
@@ -54,25 +57,30 @@ public class ErrorListSpellChecker{
 	* interupted the checking.
 	*/
 	public
-	boolean checkBuffer( Buffer input )
+	boolean spellcheck()
     throws SpellException
 	{
 		Engine engine = getSpellEngine();
-		if(getSpellEngine()==null)throw new SpellException("No engine configured");
-
-		spellValidator.setPath(input.getPath());
-		validator.start();
-
-		boolean cancel = false;
+		if(engine==null)throw new SpellException("No engine configured");
+		if(area==null)throw new SpellException("No textarea configured");
+		Buffer buffer = (Buffer)area.getBuffer();
+		spellValidator.setPath(buffer.getPath());
+		BufferSpellChecker source = new BufferSpellChecker(area);
+		
+		boolean confirm = true;
 		try
 		{
-			//put it in the try block to be sure to compensate in finally
-			input.readLock();
-			for(int i=0;!cancel && i<input.getLineCount(); i++ )
+			source.start();
+			validator.start();
+			String line = source.getNextLine();
+			for(int i=0;confirm && line!=null; i++,line=source.getNextLine() )
 			{
-				String line = input.getLineText(i);
 				List<Result> results = engine.checkLine( line );
-				cancel = !validator.validate(i, line, results );
+				for(Result r:results)
+				{
+					confirm = validator.validate(i, line, r );
+					if(!confirm)break;
+				}
 			}
 		}
 		catch( Exception e )
@@ -86,21 +94,21 @@ public class ErrorListSpellChecker{
 		finally{
 			validator.done();
 			validator = spellValidator;
-			input.readUnlock();
+			source.done();
 			if(spellValidator.getErrorCount()==0){
-				Log.log(Log.DEBUG,this,"No misspelled word for "+input.getName());
+				Log.log(Log.DEBUG,this,"No misspelled word for "+buffer.getName());
 				jEdit.getActiveView().getStatus().setMessage( "Spell check found no Error" );
 			}
 			else
 			{	
-				Log.log(Log.DEBUG,this,spellValidator.getErrorCount()+" mispelled words for "+input.getName());
+				Log.log(Log.DEBUG,this,spellValidator.getErrorCount()+" mispelled words for "+buffer.getName());
 			}
 		}
 		
-		return !cancel;
+		return confirm;
 	}
 	
-	public
+	private
 	void stop()
 	{
 		if( _spellEngine != null )
@@ -129,5 +137,9 @@ public class ErrorListSpellChecker{
 	
 	public void setValidator(Validator v){
 		validator = new ChainingValidator(v,spellValidator);
+	}
+	
+	public void setTextArea(TextArea area){
+		this.area = area;
 	}
 }

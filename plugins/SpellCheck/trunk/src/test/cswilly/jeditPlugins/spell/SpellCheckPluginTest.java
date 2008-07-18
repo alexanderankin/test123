@@ -184,11 +184,11 @@ public class SpellCheckPluginTest
 
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let dictionaries be loaded
 		assertEquals("fr",buff.getProperty(SpellCheckPlugin.BUFFER_LANGUAGE_PROP));
-		spellDialog.list().selectItem("liberté");
+		spellDialog.list().selectItem("conçues");
 		spellDialog.button("Change").click();
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let dictionaries be loaded
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
-		spellDialog.list().selectItem("conçues");
+		spellDialog.list().selectItem("liberté");
 		spellDialog.button("Change").click();
 		try{spellThread.join(5000);}catch(InterruptedException ie){}
 		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
@@ -323,11 +323,14 @@ public class SpellCheckPluginTest
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}
 		spellDialog.list().selectItem("quick");
 		spellDialog.button("Change").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		spellDialog.list().selectItem("fox");
+		spellDialog.button("Change").click();
 		try{
 			spellThread.join(5000);
 		}catch(InterruptedException ie){}
 		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
-		assertEquals("The quick brown foxe",buffer2.getText(0,buffer2.getLength()));
+		assertEquals("The quick brown fox",buffer2.getText(0,buffer2.getLength()));
 
 		assertEquals("The wiek comes to an end",buffer1.getText(0,buffer1.getLength()));
 	}
@@ -362,7 +365,7 @@ public class SpellCheckPluginTest
 		};
 		spellThread.start();
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
-		spellDialog.textBox("originalWord").requireText("twoside");
+		spellDialog.textBox("originalWord").requireText("documentclass");
 		spellDialog.button("Cancel").click();
 		try{
 			spellThread.join(5000);

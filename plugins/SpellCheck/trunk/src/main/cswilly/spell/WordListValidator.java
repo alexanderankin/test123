@@ -66,28 +66,24 @@ public class WordListValidator implements Validator
 	}
 	
   /**
-   * Validate a line of words that have the <code>results</code> of a spell
+   * Validate a result  of a spell
    * check.
    *<p>
    * @param	lineNum	index of the line in the text/buffer/file whatever
    * @param line String with a line of words that are to be corrected
-   * @param results List of {@link Result} of a spell check
+   * @param r result of a spell check
    * @return confirmed (allways true except when error token)
    */
   public
-  final boolean validate( int lineNum, String line, List<Result> results ){
-	  for(Iterator<Result> it = results.iterator();it.hasNext();){
-		  Result r = it.next();
-		  if(r.getType() == Result.OK){
-			  it.remove();
-		  }else if(r.getType() == Result.ERROR){
-			  return false;
-		  }else{
-			  if(words.contains(r.getOriginalWord())){
-				  //the word is in the word list
-				  Log.log(Log.DEBUG,this,"the word "+r.getOriginalWord()+" is in the word list");
-				  it.remove();
-			  }
+  final boolean validate( int lineNum, String line, Result r ){
+	  if(r.getType() == Result.OK)return true;
+	  else if(r.getType() == Result.ERROR){
+		  return false;
+	  }else{
+		  if(words.contains(r.getOriginalWord())){
+			  //the word is in the word list
+			  Log.log(Log.DEBUG,this,"the word "+r.getOriginalWord()+" is in the word list");
+			  r.setType(Result.OK);
 		  }
 	  }
 	  return true;
