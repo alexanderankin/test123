@@ -57,10 +57,10 @@ public class ChainingValidator implements Validator
    * @param results List of {@link Result} of a spell check
    * @return valid (false to cancel)
    */
-  public boolean validate( int lineNum, String line, List<Result> results ){
+  public boolean validate( int lineNum, String line, Result result ){
 	  boolean valid = true;
-	  valid=mine.validate(lineNum, line, results);
-	  if(valid)valid = next.validate(lineNum, line, results);
+	  valid=mine.validate(lineNum, line, result);
+	  if(valid && Result.OK != result.getType())valid = next.validate(lineNum, line, result);
 	  return valid;
   }
   

@@ -39,11 +39,11 @@ interface Validator
    *<p>
    * @param	lineNum	index of the line in the text/buffer/file whatever
    * @param line String with a line of words that are to be corrected
-   * @param results List of {@link Result} of a spell check
-   * @return true if confirmed (false to cancel)
+   * @param result result to validate
+   * @return	confirm
    */
   public
-  boolean validate( int lineNum, String line, List<Result> results );
+  boolean validate( int lineNum, String line, Result result );
   
   /**
    * Call this upon new spell-checking

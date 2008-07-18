@@ -95,22 +95,23 @@ public class AspellEngineManagerTest{
 		Engine e = null;
 		try{
 			e = manager.getEngine("sgml","en");
+			System.err.println("testGetEngine got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
 		}
 		assertTrue("getEngine() returned null",e!=null);
 	}
-	
+
 	@Test
 	public void testModeParam(){
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("text","");
+			e = manager.getEngine("text","en");
+			System.err.println("testMode text got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -126,7 +127,8 @@ public class AspellEngineManagerTest{
 		assertEquals(2,l.size());
 
 		try{
-			e = manager.getEngine("xml","");
+			e = manager.getEngine("xml","en");
+			System.err.println("xml: got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -144,11 +146,11 @@ public class AspellEngineManagerTest{
 	public void testLanguageParam(){
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("text","");
+			e = manager.getEngine("text","en");
+			System.err.println("lang got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -166,6 +168,7 @@ public class AspellEngineManagerTest{
 
 		try{
 			e = manager.getEngine("text","fr");
+			System.err.println("fr got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -183,11 +186,10 @@ public class AspellEngineManagerTest{
 	public void testModeChange(){
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString());
-		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("","");
+			e = manager.getEngine("","en");
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -199,7 +201,7 @@ public class AspellEngineManagerTest{
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString());
 		Engine e2 = null;
 		try{
-			e2 = manager.getEngine("","");
+			e2 = manager.getEngine("","en");
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -212,11 +214,10 @@ public class AspellEngineManagerTest{
 	public void testStop(){
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("","");
+			e = manager.getEngine("","en");
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -226,7 +227,7 @@ public class AspellEngineManagerTest{
 		
 		Engine e2 = null;
 		try{
-			e2 = manager.getEngine("","");
+			e2 = manager.getEngine("","en");
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());

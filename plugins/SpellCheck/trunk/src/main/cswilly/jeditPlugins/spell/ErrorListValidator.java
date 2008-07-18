@@ -56,39 +56,37 @@ class ErrorListValidator extends DefaultErrorSource implements Validator
 	* @return new List of results, with choices made.
 	*/
 	public
-	boolean validate(int lineNum, String line, List<Result> results ){
-		for(Result result : results){
-			if(result.getType()==Result.OK)continue;
-			if(result.getType()==Result.ERROR){
-				addError(new DefaultError(this,
-					ErrorSource.ERROR,path,lineNum,0,0,
-					"There was an error with aspell !"));
-				return false;
-			}
-			int startOffset = result.getOffset()-1;
-			int endOffset = startOffset+result.getOriginalWord().length();
-			String errorMessage = "Misspelled word: "+result.getOriginalWord();
-			if(result.getType()!=Result.NONE){
-				List<String> suggestions = result.getSuggestions();
-				errorMessage+= " (is it '"+suggestions.get(0);
-				for(int i=1;i<suggestions.size()&&i<4;i++){
-					errorMessage+="' or '"+suggestions.get(i);
-				}
-				errorMessage+="' ?)";
-			}
-			DefaultError error = new DefaultError(this,
-				ErrorSource.WARNING,path,lineNum,startOffset,endOffset,
-				errorMessage);
-			// if(result.getType()==Result.NONE){
-			// 	error.addExtraMessage("No suggestion.");
-			// }else{
-			// 	for(String suggestion:result.getSuggestions()){
-			// 		error.addExtraMessage(suggestion);
-			// 	}
-			// }
-			addError(error);
+	boolean validate(int lineNum, String line, Result result ){
+		if(result.getType()==Result.OK)return true;
+		if(result.getType()==Result.ERROR){
+			addError(new DefaultError(this,
+				ErrorSource.ERROR,path,lineNum,0,0,
+				"There was an error with aspell !"));
+			return false;
 		}
-		results.clear();
+		int startOffset = result.getOffset()-1;
+		int endOffset = startOffset+result.getOriginalWord().length();
+		String errorMessage = "Misspelled word: "+result.getOriginalWord();
+		if(result.getType()!=Result.NONE){
+			List<String> suggestions = result.getSuggestions();
+			errorMessage+= " (is it '"+suggestions.get(0);
+			for(int i=1;i<suggestions.size()&&i<4;i++){
+				errorMessage+="' or '"+suggestions.get(i);
+			}
+			errorMessage+="' ?)";
+		}
+		DefaultError error = new DefaultError(this,
+			ErrorSource.WARNING,path,lineNum,startOffset,endOffset,
+			errorMessage);
+		// if(result.getType()==Result.NONE){
+		// 	error.addExtraMessage("No suggestion.");
+		// }else{
+		// 	for(String suggestion:result.getSuggestions()){
+		// 		error.addExtraMessage(suggestion);
+		// 	}
+		// }
+		addError(error);
+		result.setType(Result.OK);
 		return true;//we don't modify anything
 	}
 	

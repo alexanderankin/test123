@@ -109,8 +109,9 @@ public class ErrorListValidatorTest{
 		expectedErrors[1] = new DefaultErrorSource.DefaultError(valid, ErrorSource.WARNING, path,0, 10, 10+5, "");
 		expectedErrors[2] = new DefaultErrorSource.DefaultError(valid, ErrorSource.WARNING, path,0, 16, 16+4, "");
 
-
-		assertTrue(valid.validate(0,"The quick brown foxe",res));
+		for(Result r:res){
+			assertTrue(valid.validate(0,"The quick brown foxe",r));
+		}
 		valid.done();
 		
 		

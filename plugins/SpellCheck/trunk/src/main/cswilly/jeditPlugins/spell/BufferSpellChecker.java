@@ -28,10 +28,13 @@ import cswilly.spell.AspellEngine;
 import cswilly.spell.Engine;
 import cswilly.spell.Result;
 import cswilly.spell.Validator;
+import cswilly.spell.SpellSource;
+import cswilly.spell.SpellEffector;
+import cswilly.spell.ChangeWordAction;
 
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
@@ -40,137 +43,125 @@ import java.util.List;
 import java.util.Collections;
 
 /**
- * Performs spell-checking on a jEdit Buffer : takes advantage of compound edit.
+ * Performs spell-checking on a jEdit Buffer.
+ * Read lock during spell-checking, then compound edit to apply modifications
  * @see	BufferDialogValidator	used to highlight the word currently checked, and scroll to it.
  * 
  */
-public class BufferSpellChecker{
-  private Engine  _spellEngine = null;
+public class BufferSpellChecker implements SpellSource, SpellEffector{
   
-
-  public BufferSpellChecker( Engine engine )
+	private TextArea area;
+	private JEditBuffer input;
+	
+	//state
+	private Selection[] selections;
+	private int iSelection;
+	private int iLine;
+	
+  public BufferSpellChecker( TextArea area )
   {
-    _spellEngine = engine;
+	  this.area = area;
   }
 
+  
   /**
    * @return <i>true</i> if file completely checked and <i>false</i> if the user
    * interupted the checking.
    */
   public
-  boolean checkBuffer(TextArea area, Buffer input, Validator spellValidator)
-    throws SpellException
+  void start()
 	{
-		Engine engine = getSpellEngine();
-		if(getSpellEngine()==null)throw new SpellException("No engine configured");
+		input = area.getBuffer();
 
-		spellValidator.start();
 		if(area.getSelectionCount() == 0){
 			area.setSelection(new Selection.Range(0,input.getLength()));
 		}
-		Selection[] selections = area.getSelection();
+		
+		selections = area.getSelection();
 
-		boolean confirm = false;
-		//to prevent false undo when the user cancelled before any change was made
-		boolean changed = false;
+		input.readLock();
+		
+		assert(selections.length>0);
+		
+		iSelection = 0;
+		iLine = selections[0].getStartLine();
+	}
+	
+	public String getNextLine(){
+		if(iSelection>=selections.length)return null;
+		
+		Selection sel = selections[iSelection];
+		if(iLine>sel.getEndLine())
+		{
+			iSelection++;
+			if(iSelection>=selections.length)return null;
+			sel = selections[iSelection];
+			iLine = sel.getStartLine();
+		}
+
+		String line = input.getLineText(iLine);
+
+		iLine++;
+		return line;
+	}
+	
+	public String getPreviousLine(){
+		
+		Selection sel=null;
+		if(iSelection>selections.length
+			|| iLine<=selections[iSelection].getStartLine())
+		{
+			iSelection--;
+			sel = selections[iSelection];
+			iLine = sel.getEndLine()+1;
+		}
+
+		iLine--;
+		String line = input.getLineText(iLine);
+
+		return line;		
+	}
+	
+	public void done(){
+		selections = null;
+		iSelection = -1;
+		iLine = -1;
+		if(input!=null)input.readUnlock();
+	}
+
+  /**
+   * apply all changes in a compoundEdit
+   * @param	results	list of Changes to apply
+   */
+  public
+  void apply(List<ChangeWordAction> results)
+    throws SpellException
+	{
+		if(results.isEmpty())return;
+		if(input == null)throw new SpellException("input buffer is null");
 		try
 		{
 			input.beginCompoundEdit();
-			for(int iSelection = 0; iSelection<selections.length;iSelection++){
-				Selection sel = selections[iSelection];
-				for(int i=sel.getStartLine();i<=sel.getEndLine(); i++ )
-				{
-					String line = input.getLineText(i);
-					if( line.trim().equals( "" ) )
-					{
-						List<Result> results = Collections.emptyList();
-						spellValidator.validate(i, line, results);
-					}
-					else
-					{
-						List<Result> results = engine.checkLine( line );
-						int startSelLine = sel.getStart(input,i);
-						int endSelLine = sel.getEnd(input,i);
-						int lineOffset = input.getLineStartOffset(i);
-
-						//filter away results out of the selection
-						for(Result result : results){
-							if(Result.SUGGESTION == result.getType()){
-								int originalIndex = lineOffset+result.getOffset()-1;//offset starts at 1 for aspell
-								if(originalIndex<startSelLine || originalIndex+result.getOriginalWord().length()>endSelLine)
-								{
-									Log.log(Log.DEBUG,this,"ignore :"+originalIndex+","+(originalIndex+result.getOriginalWord().length())+"->"+startSelLine+","+endSelLine+" "+result);
-									result.setType(Result.OK);
-								}
-							}
-						}
-						//validate the rest
-						confirm = spellValidator.validate( i, line, results );
-						if( confirm ){
-							System.out.println("RESULTS : "+results);
-							for(Result result : results){
-								if(Result.SUGGESTION == result.getType()){
-									int originalIndex = lineOffset+result.getOffset()-1;//offset starts at 1 for aspell
-									String newWord = result.getSuggestions().get(0);
-									Log.log(Log.DEBUG,this,"o="+originalIndex+",n="+newWord);
-									changed = true;
-									input.remove(originalIndex,result.getOriginalWord().length());
-									input.insert(originalIndex,newWord);
-								}
-							}
-						}else{
-							confirm=false;
-							break;
-						}
-					}
-				}
+			for(int i=results.size()-1;i>=0;i--){
+				ChangeWordAction res=results.get(i);
+				int lineOffset = input.getLineStartOffset(res.line);
+				int originalIndex = lineOffset+res.offset-1;//offset starts at 1 for aspell
+				String newWord = res.newWord;
+				Log.log(Log.DEBUG,this,"o="+originalIndex+",n="+newWord);
+				input.remove(originalIndex,res.originalWord.length());
+				input.insert(originalIndex,newWord);
 			}
 		}
 		catch( Exception e )
 		{
-			stop();
 			if( e instanceof SpellException )
 				throw (SpellException)e;
 			else
-				throw new SpellException( "Error communicating with the aspell subprocess", e );
+				throw new SpellException( "Error applying changes", e );
 		}
 		finally{
-			try{
-				spellValidator.done();
-			}finally{
 				input.endCompoundEdit();
-				//input.writeUnlock();
-				//if cancelled, must undo !
-			}
+				input=null;
 		}
-		if(!confirm && changed)
-		{
-			Log.log(Log.DEBUG,this,"cancelled spell-check");
-			input.undo(area);
-		}
-		
-		return confirm;
 	}
-
-
-  public
-  void stop()
-  {
-    if( _spellEngine != null )
-    {
-      _spellEngine.stop();
-      _spellEngine = null;
-    }
-  }
-
-
-  public Engine getSpellEngine()
-  {
-	return _spellEngine;
-  }
-	
-  public void setSpellEngine(Engine engine)
-  {
-	_spellEngine = engine;
-  }
 }

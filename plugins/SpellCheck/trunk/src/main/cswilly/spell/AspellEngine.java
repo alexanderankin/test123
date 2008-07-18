@@ -39,12 +39,15 @@ class AspellEngine
   BufferedWriter _aSpellWriter;
   String         _aSpellWelcomeMsg;
   Process        _aSpellProcess;
+  private List<String> args;
+  
   public AspellEngine( String aspell, String[] aSpellArgs)
     throws SpellException
   {
       List l = new ArrayList(aSpellArgs.length+1);
 	  l.add(aspell);
 	  l.addAll(Arrays.asList(aSpellArgs));
+	  args = l;
     try
     {
 	  ProcessBuilder pb = new ProcessBuilder(l);
@@ -53,7 +56,7 @@ class AspellEngine
       _aSpellProcess = pb.start();
 
 	  InputStream is = _aSpellProcess.getInputStream();
-	  for(int i=0;is.available()==0 && i<5;i++){
+	  for(int i=0;is.available()==0 && i<10;i++){
 		  try{
 			  Thread.sleep(500);
 		  }catch(InterruptedException ie){
@@ -167,7 +170,7 @@ class AspellEngine
 	  };
 	  t.start();
 	  try{
-	  t.join(2000);//2 seconds !
+	  t.join(4000);//4 seconds !
 	  }catch(InterruptedException ie){
 		  throw new SpellException("Interrupted while waiting for Aspell Process");
 	  }
@@ -177,5 +180,9 @@ class AspellEngine
 	  }
 	  if(a_ioe.get() != null) throw a_ioe.get();
 	  return a_res.get();
+  }
+  
+  public String toString(){
+	  return "AspellEngine with "+args;
   }
 }
