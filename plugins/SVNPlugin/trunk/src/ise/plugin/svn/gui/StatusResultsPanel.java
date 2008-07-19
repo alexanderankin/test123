@@ -29,6 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -54,6 +56,10 @@ public class StatusResultsPanel extends JPanel {
     private JTree tree = null;
 
     private boolean hasConflicts = false;
+
+    private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
+    private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
+
 
     public StatusResultsPanel( StatusData results, View view, String username, String password ) {
         super( new BorderLayout() );
@@ -124,6 +130,7 @@ public class StatusResultsPanel extends JPanel {
         if ( added ) {
             tree = new JTree( root );
             tree.setRootVisible( false );
+            tree.setCellRenderer(new CellRenderer());
             for ( int i = 0; i < tree.getRowCount(); i++ ) {
                 tree.expandRow( i );
             }
@@ -406,4 +413,25 @@ public class StatusResultsPanel extends JPanel {
 
         return pm;
     }
+
+    class CellRenderer extends DefaultTreeCellRenderer {
+        public Component getTreeCellRendererComponent(
+            JTree tree,
+            Object value,
+            boolean sel,
+            boolean expanded,
+            boolean leaf,
+            int row,
+            boolean hasFocus ) {
+
+            Component r = super.getTreeCellRendererComponent(
+                        tree, value, sel,
+                        expanded, leaf, row,
+                        hasFocus );
+
+            r.setBackground( sel ? StatusResultsPanel.selection : StatusResultsPanel.background );
+            return r;
+        }
+    }
+
 }

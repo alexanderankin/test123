@@ -32,8 +32,24 @@ public class SVNProvider implements IconComposer.VCProvider {
         return new ImageIcon( SVNProvider.class.getClassLoader().getResource( name ) );
     }
 
+    // <String for path, CacheItem for last time path status was pulled from SVN and state at that time>
+    private static HashMap<String, CacheItem> cache = new HashMap<String, CacheItem>();
+
+    class CacheItem {
+        int state;
+        long lastUpdate = System.currentTimeMillis();
+        public CacheItem( int state ) {
+            this.state = state;
+        }
+    }
+    private long refreshTime = 60 * 1000;   // one minute
+
     public int getFileState( File f, String path ) {
         //return IconComposer.VC_STATE_NONE;
+        CacheItem item = cache.get( path );
+        if ( item != null && item.lastUpdate > System.currentTimeMillis() - refreshTime ) {
+            return item.state;
+        }
         SVNData data = new SVNData();
         List<String> paths = new ArrayList<String>();
         paths.add( path );
@@ -51,36 +67,47 @@ public class SVNProvider implements IconComposer.VCProvider {
         }
         catch ( Exception e ) {
             e.printStackTrace();
+            status = null;
         }
         if ( status == null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_NONE ) );
             return IconComposer.VC_STATE_NONE;
         }
 
         if ( status.getAdded() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_ADD ) );
             return IconComposer.VC_STATE_LOCAL_ADD;
         }
         else if ( status.getConflicted() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_CONFLICT ) );
             return IconComposer.VC_STATE_CONFLICT;
         }
         else if ( status.getDeleted() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_DELETED ) );
             return IconComposer.VC_STATE_DELETED;
         }
         else if ( status.getLocked() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCKED ) );
             return IconComposer.VC_STATE_LOCKED;
         }
         else if ( status.getMissing() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_RM ) );
             return IconComposer.VC_STATE_LOCAL_RM;
         }
         else if ( status.getModified() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_MOD ) );
             return IconComposer.VC_STATE_LOCAL_MOD;
         }
         else if ( status.getOutOfDate() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_NEED_UPDATE ) );
             return IconComposer.VC_STATE_NEED_UPDATE;
         }
         else if ( status.getUnversioned() != null ) {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_UNVERSIONED ) );
             return IconComposer.VC_STATE_UNVERSIONED;
         }
         else {
+            cache.put( path, new CacheItem( IconComposer.VC_STATE_NORMAL ) );
             return IconComposer.VC_STATE_NORMAL;
         }
     }

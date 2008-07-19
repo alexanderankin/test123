@@ -71,10 +71,11 @@ public class SVNPlugin extends EBPlugin {
             panelMap.clear();
             panelMap = null;
         }
-        IconComposer.setVersionControlProvider( null );
+        //IconComposer.setVersionControlProvider( null );
     }
 
     public void start() {
-        IconComposer.setVersionControlProvider( new SVNProvider() );
+        // this needs work, it is very slow for large projects
+        //IconComposer.setVersionControlProvider( new SVNProvider() );
     }
 }

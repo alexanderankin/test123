@@ -69,6 +69,11 @@ public class LogResultsPanel extends JPanel {
     private String username = null;
     private String password = null;
 
+    private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
+    private static Color foreground = jEdit.getColorProperty("view.fgColor", Color.BLACK);
+    private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
+
+
     /**
      * @param map with path/file name as key, a list of associated log entries as the value
      * @param showPaths whether or not path information for other files associated with each
@@ -84,6 +89,7 @@ public class LogResultsPanel extends JPanel {
         this.username = username;
         this.password = password;
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
+
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
         con.s = "w";
@@ -205,6 +211,8 @@ public class LogResultsPanel extends JPanel {
 
         public LogTable( String[][] rowData, String[] columnNames ) {
             super( rowData, columnNames );
+            setBackground(LogResultsPanel.background);
+            setForeground(LogResultsPanel.foreground);
         }
 
         public void setPath( String path ) {
@@ -222,7 +230,7 @@ public class LogResultsPanel extends JPanel {
     public static class TextCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
-            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
             return this;
         }
     }
@@ -234,7 +242,7 @@ public class LogResultsPanel extends JPanel {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
             //setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
-            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
             return this;
         }
     }
@@ -245,7 +253,7 @@ public class LogResultsPanel extends JPanel {
     public static class CommentCellRenderer extends JTextPane implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
-            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
             return this;
         }
     }

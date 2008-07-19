@@ -42,6 +42,7 @@ import ise.java.awt.KappaLayout;
  */
 public class SubversionOptions implements OptionPane {
    private JPanel panel = null;
+   private JCheckBox useTsvnTemplate = null;
 
    public SubversionOptions( ) {
    }
@@ -52,20 +53,18 @@ public class SubversionOptions implements OptionPane {
       panel = new JPanel( new KappaLayout() );
 
 
-      final JCheckBox use_tsvn_template = new JCheckBox("Use tsvn:logtemplate property for commit template");
-      use_tsvn_template.setSelected(jEdit.getBooleanProperty("ise.plugin.svn.useTsvnTemplate", false));
+      useTsvnTemplate = new JCheckBox("Use tsvn:logtemplate property for commit template");
+      useTsvnTemplate.setSelected(jEdit.getBooleanProperty("ise.plugin.svn.useTsvnTemplate", false));
 
-      panel.add( use_tsvn_template, "0, 0, 1, 1, 0, wh, 5" );
+      panel.add( useTsvnTemplate, "0, 0, 1, 1, 0, wh, 5" );
 
-      use_tsvn_template.addActionListener( new ActionListener() {
-               public void actionPerformed( ActionEvent ae ) {
-                   jEdit.setBooleanProperty("ise.plugin.svn.useTsvnTemplate", use_tsvn_template.isSelected());
-               }
-            }
-                                  );
    }
 
-   public void save() {}
+   public void save() {
+       if (useTsvnTemplate != null) {
+           jEdit.setBooleanProperty("ise.plugin.svn.useTsvnTemplate", useTsvnTemplate.isSelected());
+       }
+   }
 
    public Component getComponent() {
       if ( panel == null )

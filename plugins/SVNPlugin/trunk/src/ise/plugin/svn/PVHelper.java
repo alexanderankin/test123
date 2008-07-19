@@ -79,7 +79,8 @@ public class PVHelper {
     }
 
     /**
-     * @return the name of the root of the active project, if any, in the given view.
+     * @param view the view showing a ProjectViewer
+     * @return the path to the root of the active project, if any, in the given view.
      * Returns an empty string if there is no active project in the view.
      */
     public static String getProjectRoot( View view ) {
@@ -87,6 +88,12 @@ public class PVHelper {
         return project == null ? "" : project.getRootPath();
     }
 
+    /**
+     * @param filename the name of a file possibly contained in a ProjectViewer project.
+     * @return the path to the root of the active project, if any, in the given view.
+     * Returns an empty string if there is no active project in the view or if no
+     * project contains the file.
+     */
     public static String getProjectRoot( String filename ) {
         VPTProject project = getProjectNameForFile( filename );
         return project == null ? "" : project.getRootPath();
