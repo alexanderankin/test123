@@ -340,10 +340,12 @@ public class BufferDialogValidatorTest{
 		}catch(SpellException spe){
 			fail("shouldn't throw an exception");
 		}
+		WordListValidator userDict = new WordListValidator();
 		
 		final BufferDialogValidator valid = new BufferDialogValidator();
 		valid.setEngine(engine);
-				
+		valid.setUserDictionary(userDict);
+		
 		final Buffer buffer = TestUtils.openFile(testsDir+"/spellTest.txt");
 		//do that so there is one change before spell-checking
 		//(to catch an undue undo ;-))
@@ -366,8 +368,11 @@ public class BufferDialogValidatorTest{
 		spellThread.start();
 		
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		spellDialog.button("Add").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
 		spellDialog.button("Change").click();
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		//spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.button("Cancel").click();
 		try{
 			spellThread.join(5000);
@@ -377,6 +382,7 @@ public class BufferDialogValidatorTest{
 		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
 
 		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
+		assertEquals(0,userDict.getAllWords().size());
 	}
 	
 	@Test
@@ -510,5 +516,72 @@ public class BufferDialogValidatorTest{
 		assertTrue(!oldText.equals(buffer.getText(0,buffer.getLength())));
 		buffer.undo(view.getTextArea());
 		assertEquals(oldText,buffer.getText(0,buffer.getLength()));
+	}
+	
+	@Test
+	public void testPrevious(){
+		final Buffer buf = TestUtils.newFile();
+		final String text = 
+			 "/*\n"
+			+"* $Revision$\n"
+			+"* $Date$\n"
+			+"* $Author$";
+		
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);}});
+		}catch(Exception e){}
+
+		AspellEngine engine = null;
+		try{
+			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+		}catch(SpellException spe){
+			fail("shouldn't throw an exception");
+		}
+		final BufferDialogValidator valid = new BufferDialogValidator();
+		valid.setEngine(engine);
+		valid.setUserDictionary(new WordListValidator());
+		valid.setTextArea(TestUtils.view().getTextArea());
+		valid.setIgnoreAll(new WordListValidator());
+		
+		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
+		Thread spellThread = new Thread(){
+			public void run(){
+				try{
+				valid.spellcheck();
+				}catch(SpellException spe){
+					exp.set(spe);
+				}
+			}
+		};
+		spellThread.start();
+		
+		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		spellDialog.textBox("originalWord").requireText("Ven");
+		spellDialog.button("Change").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		spellDialog.textBox("originalWord").requireText("jul");
+		spellDialog.button("Add").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		spellDialog.textBox("originalWord").requireText("kerik");
+		spellDialog.button("Previous").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		spellDialog.textBox("originalWord").requireText("jul");
+		spellDialog.button("Change").click();
+		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		spellDialog.textBox("originalWord").requireText("kerik");
+		spellDialog.button("Ignore").click();
+
+
+		try{
+			spellThread.join(5000);
+		}catch(InterruptedException ie){}
+		
+		assertNull(exp.get());
+		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
+
+		assertTrue(!text.equals(buf.getText(0,buf.getLength())));
+		buf.undo(TestUtils.view().getTextArea());
+		assertEquals(text,buf.getText(0,buf.getLength()));
 	}
 }
