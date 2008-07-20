@@ -10,8 +10,8 @@ EditorScheme Plugin
 Summary
 =======
 
-EditorScheme lets one easily switch between predefined color & style 
-combinations for jEdit's TextArea and a number of jEdit's Plugins. 
+EditorScheme lets one easily switch between predefined color & style
+combinations for jEdit's TextArea and a number of jEdit's Plugins.
 
 EditorScheme support setting colors & styles for the following
 plugins:
@@ -25,26 +25,26 @@ plugins:
 Usage
 =====
 
-EditorScheme lets you can create new schemes, switch between 
+EditorScheme lets you can create new schemes, switch between
 existing schemes, and update existing schemes.
 
 Creating Schemes
 ----------------
 
-To create a new scheme, select  `Plugins` ->  
-`Editor Scheme Selector`. Press  `New`  to create a scheme based 
-on the current settings. The scheme file will be saved in the 
+To create a new scheme, select  `Plugins` ->
+`Editor Scheme Selector`. Press  `New`  to create a scheme based
+on the current settings. The scheme file will be saved in the
 schemes directory in your jEdit settings directory.
 
 Switching Schemes
 -----------------
 
 To switch schemes, select  `Plugins` ->  `Editor Scheme Selector`.
-On the left, is a a list of available schemes, and on the right 
-you can select which sets of properties to set when applying a 
+On the left, is a a list of available schemes, and on the right
+you can select which sets of properties to set when applying a
 scheme. Select the scheme in the list box to apply it.
 
-To revert to the settings you had when you first opened the dialog, 
+To revert to the settings you had when you first opened the dialog,
 select ``(Initial Settings)``.
 
 Updating Schemes
@@ -61,15 +61,15 @@ and select `Update`.
 .. |READ_ONLY|  image:: icons/readonly.gif
 .. |NORMAL|     image:: icons/normal.gif
 
-``(Initial Settings)`` are the settings from when you opened the 
-`Editor Scheme Selector` dialog, and will not change as you 
+``(Initial Settings)`` are the settings from when you opened the
+`Editor Scheme Selector` dialog, and will not change as you
 switch between schemes in the dialog.
 
 Submitting Schemes
 ==================
 
-To submit schemes for inclusion with EditorScheme, please send them 
-to Ollie Rutherfurd at <oliver@jedit.org>. It would be really nice 
+To submit schemes for inclusion with EditorScheme, please send them
+to Ollie Rutherfurd at <oliver@jedit.org>. It would be really nice
 to have schemes from different jEdit users.
 
 Requirements
@@ -83,7 +83,7 @@ EditorScheme requires:
 License
 =======
 
-The source code is distributed under the GPL. Please see 
+The source code is distributed under the GPL. Please see
 http://www.fsf.org/copyleft/gpl.html.
 
 Feedback
@@ -102,6 +102,10 @@ You may also e-mail:
 Change log
 ==========
 
+* Version 1.1, Requires jEdit 4.2pre2
+
+  - Added `danson` and `zenburn` schemes, submitted by Dale Anson.
+
 * Version 1.0, Requires jEdit 4.2pre2
 
   - Added `DarkBrine` scheme, submitted by Matt Gilbert.
@@ -109,8 +113,8 @@ Change log
 * Version 0.5, Requires jEdit 4.2pre2
 
   - Updated for jEdit 4.2pre2 deferred loading API.
-  - Added support for new token types introduced in 4.2pre1: 
-    ``COMMENT3``, ``COMMENT4``, ``LITERAL3``, ``LITERAL4``, and 
+  - Added support for new token types introduced in 4.2pre1:
+    ``COMMENT3``, ``COMMENT4``, ``LITERAL3``, ``LITERAL4``, and
     ``KEYWORD4``.
   - Added ``view.status.background``, ``view.status.foreground``,
     ``view.status.memory.foreground``,
@@ -124,10 +128,10 @@ Change log
 
 * Version 0.4.2, Requires jEdit 3.2
 
-  - Added support for ``foldLine`` property and updated 
+  - Added support for ``foldLine`` property and updated
     existing schemes.
-  - Fixed bug that prevented one from creating new schemes 
-    until the `EditorScheme Selector` dialog has been displayed 
+  - Fixed bug that prevented one from creating new schemes
+    until the `EditorScheme Selector` dialog has been displayed
     at least once.
   - Added "ColdFusion", submitted by Joshua Miller.
   - Added "Erich's Scheme", a scheme submitted by Erich Schifferl.
@@ -136,9 +140,9 @@ Change log
 
 * Version 0.4.1, Requires jEdit 3.2
 
-  - Removed `New Scheme` action. Creating schemes can now be 
+  - Removed `New Scheme` action. Creating schemes can now be
     done in the `EditorScheme Selector` dialog.
-  - Modified `Update` behavior in `EditorScheme Selector`, 
+  - Modified `Update` behavior in `EditorScheme Selector`,
     to use the current settings instead of ``(Initial Settings)``.
   - `EditorScheme Selector` dialog bugfixes.
 

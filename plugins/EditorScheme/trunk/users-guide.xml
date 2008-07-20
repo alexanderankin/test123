@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE article 
+<!DOCTYPE article
         PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
         "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <article>
@@ -12,7 +12,7 @@
 <!-- $Id: users-guide.xml,v 1.14 2005/04/11 14:41:08 orutherfurd Exp $ -->
 <section id="summary">
 <title>Summary</title>
-<para>EditorScheme lets one easily switch between predefined color &amp; style 
+<para>EditorScheme lets one easily switch between predefined color &amp; style
 combinations for jEdit's TextArea and a number of jEdit's Plugins.</para><para>EditorScheme support setting colors &amp; styles for the following
 plugins:</para><itemizedlist>
 <listitem>
@@ -29,19 +29,19 @@ plugins:</para><itemizedlist>
 </section>
 <section id="usage">
 <title>Usage</title>
-<para>EditorScheme lets you can create new schemes, switch between 
+<para>EditorScheme lets you can create new schemes, switch between
 existing schemes, and update existing schemes.</para><section id="creating-schemes">
 <title>Creating Schemes</title>
-<para>To create a new scheme, select  <citetitle>Plugins</citetitle> -&gt;  
-<citetitle>Editor Scheme Selector</citetitle>. Press  <citetitle>New</citetitle>  to create a scheme based 
-on the current settings. The scheme file will be saved in the 
+<para>To create a new scheme, select  <citetitle>Plugins</citetitle> -&gt;
+<citetitle>Editor Scheme Selector</citetitle>. Press  <citetitle>New</citetitle>  to create a scheme based
+on the current settings. The scheme file will be saved in the
 schemes directory in your jEdit settings directory.</para></section>
 <section id="switching-schemes">
 <title>Switching Schemes</title>
 <para>To switch schemes, select  <citetitle>Plugins</citetitle> -&gt;  <citetitle>Editor Scheme Selector</citetitle>.
-On the left, is a a list of available schemes, and on the right 
-you can select which sets of properties to set when applying a 
-scheme. Select the scheme in the list box to apply it.</para><para>To revert to the settings you had when you first opened the dialog, 
+On the left, is a a list of available schemes, and on the right
+you can select which sets of properties to set when applying a
+scheme. Select the scheme in the list box to apply it.</para><para>To revert to the settings you had when you first opened the dialog,
 select <literal>(Initial Settings)</literal>.</para></section>
 <section id="updating-schemes">
 <title>Updating Schemes</title>
@@ -55,14 +55,14 @@ provided with EditorScheme are read-only. Schemes with a diamond
 icon (<inlinemediaobject><imageobject><imagedata fileref="icons/normal.gif" />
 </imageobject><textobject><phrase>NORMAL</phrase></textobject>
 </inlinemediaobject>) can be updated. Choose the scheme you wish to update
-and select <citetitle>Update</citetitle>.</para><para><literal>(Initial Settings)</literal> are the settings from when you opened the 
-<citetitle>Editor Scheme Selector</citetitle> dialog, and will not change as you 
+and select <citetitle>Update</citetitle>.</para><para><literal>(Initial Settings)</literal> are the settings from when you opened the
+<citetitle>Editor Scheme Selector</citetitle> dialog, and will not change as you
 switch between schemes in the dialog.</para></section>
 </section>
 <section id="submitting-schemes">
 <title>Submitting Schemes</title>
-<para>To submit schemes for inclusion with EditorScheme, please send them 
-to Ollie Rutherfurd at &lt;<ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink>&gt;. It would be really nice 
+<para>To submit schemes for inclusion with EditorScheme, please send them
+to Ollie Rutherfurd at &lt;<ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink>&gt;. It would be really nice
 to have schemes from different jEdit users.</para></section>
 <section id="requirements">
 <title>Requirements</title>
@@ -75,7 +75,7 @@ to have schemes from different jEdit users.</para></section>
 </section>
 <section id="license">
 <title>License</title>
-<para>The source code is distributed under the GPL. Please see 
+<para>The source code is distributed under the GPL. Please see
 <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>.</para></section>
 <section id="feedback">
 <title>Feedback</title>
@@ -94,6 +94,12 @@ the Sourceforge Bug Tracker at
 <title>Change log</title>
 <itemizedlist>
 <listitem>
+<para>Version 1.1, Requires jEdit 4.2pre2</para><itemizedlist>
+<listitem>
+<para>Added <citetitle>danson</citetitle> and <citetitle>zenburn</citetitle> schemes, submitted by Dale Anson.</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
 <para>Version 1.0, Requires jEdit 4.2pre2</para><itemizedlist>
 <listitem>
 <para>Added <citetitle>DarkBrine</citetitle> scheme, submitted by Matt Gilbert.</para></listitem>
@@ -104,8 +110,8 @@ the Sourceforge Bug Tracker at
 <listitem>
 <para>Updated for jEdit 4.2pre2 deferred loading API.</para></listitem>
 <listitem>
-<para>Added support for new token types introduced in 4.2pre1: 
-<literal>COMMENT3</literal>, <literal>COMMENT4</literal>, <literal>LITERAL3</literal>, <literal>LITERAL4</literal>, and 
+<para>Added support for new token types introduced in 4.2pre1:
+<literal>COMMENT3</literal>, <literal>COMMENT4</literal>, <literal>LITERAL3</literal>, <literal>LITERAL4</literal>, and
 <literal>KEYWORD4</literal>.</para></listitem>
 <listitem>
 <para>Added <literal>view.status.background</literal>, <literal>view.status.foreground</literal>,
@@ -127,11 +133,11 @@ of <citetitle>Editor Scheme</citetitle>.</para></listitem>
 <listitem>
 <para>Version 0.4.2, Requires jEdit 3.2</para><itemizedlist>
 <listitem>
-<para>Added support for <literal>foldLine</literal> property and updated 
+<para>Added support for <literal>foldLine</literal> property and updated
 existing schemes.</para></listitem>
 <listitem>
-<para>Fixed bug that prevented one from creating new schemes 
-until the <citetitle>EditorScheme Selector</citetitle> dialog has been displayed 
+<para>Fixed bug that prevented one from creating new schemes
+until the <citetitle>EditorScheme Selector</citetitle> dialog has been displayed
 at least once.</para></listitem>
 <listitem>
 <para>Added &quot;ColdFusion&quot;, submitted by Joshua Miller.</para></listitem>
@@ -146,10 +152,10 @@ at least once.</para></listitem>
 <listitem>
 <para>Version 0.4.1, Requires jEdit 3.2</para><itemizedlist>
 <listitem>
-<para>Removed <citetitle>New Scheme</citetitle> action. Creating schemes can now be 
+<para>Removed <citetitle>New Scheme</citetitle> action. Creating schemes can now be
 done in the <citetitle>EditorScheme Selector</citetitle> dialog.</para></listitem>
 <listitem>
-<para>Modified <citetitle>Update</citetitle> behavior in <citetitle>EditorScheme Selector</citetitle>, 
+<para>Modified <citetitle>Update</citetitle> behavior in <citetitle>EditorScheme Selector</citetitle>,
 to use the current settings instead of <literal>(Initial Settings)</literal>.</para></listitem>
 <listitem>
 <para><citetitle>EditorScheme Selector</citetitle> dialog bugfixes.</para></listitem>
