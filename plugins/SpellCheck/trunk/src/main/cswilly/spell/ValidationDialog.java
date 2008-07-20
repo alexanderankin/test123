@@ -76,6 +76,7 @@ class ValidationDialog
   private       UserAction  _userAction         = CANCEL;
   private       String      _title              = "Spell Check, Release R004";
   private		JLabel		_ignoredWordsLabel;
+  private	    AbstractAction		_previousAction;
   // ??? bad to have release hardocoded here. Fix later...right.
   private       static Point       _location           = new Point( 100, 100 );
 
@@ -85,6 +86,7 @@ class ValidationDialog
   public static final UserAction CHANGE_ALL = new UserAction( "Change All" );
   public static final UserAction IGNORE     = new UserAction( "Ignore" );
   public static final UserAction IGNORE_ALL = new UserAction( "Ignore All" );
+  public static final UserAction PREVIOUS = new UserAction( "Previous" );
 
 
 
@@ -98,21 +100,21 @@ class ValidationDialog
   {
     super( owner );
     _init();
-    refresh(originalWord,suggestions,false);
+    refresh(originalWord,suggestions,false,false);
   }
 
   public ValidationDialog( Dialog owner, String  originalWord, List suggestions )
   {
     super( owner );
     _init();
-    refresh(originalWord,suggestions,false);
+    refresh(originalWord,suggestions,false,false);
   }
 
   public ValidationDialog( String  originalWord, List suggestions )
   {
     super();
     _init();
-    refresh(originalWord,suggestions,false);
+    refresh(originalWord,suggestions,false,false);
   }
 
   public
@@ -129,8 +131,8 @@ class ValidationDialog
     return _userAction;
   }
 
-  public UserAction getUserAction(String originalWord, List<String>suggestions,boolean ignoredWords){
-	  refresh(originalWord,suggestions,ignoredWords);
+  public UserAction getUserAction(String originalWord, List<String>suggestions,boolean ignoredWords,boolean previousAvailable){
+	  refresh(originalWord,suggestions,ignoredWords,previousAvailable);
 	  setVisible(true);
 	  return _userAction;
   }
@@ -232,8 +234,12 @@ class ValidationDialog
   {
     setModal( true );
     setTitle( _title );
-
-    //--
+	// addWindowListener(new WindowAdapter(){
+	// 		public void windowClosing(){
+	// 			if(_userAction==null)_userAction=CANCEL;
+	// 		}
+	// });
+    // //--
     //-- Buttons
     //--
     JButton aboutButton       = _configButton( new AboutAction() );
@@ -243,6 +249,8 @@ class ValidationDialog
     JButton changeAllButton = _configButton( new ChangeAllAction() );
     JButton ignoreButton    = _configButton( new IgnoreAction() );
     JButton ignoreAllButton = _configButton( new IgnoreAllAction() );
+	_previousAction = new PreviousAction();
+    JButton previousButton = _configButton( _previousAction );
 
     //--
     //-- Text Fields
@@ -313,6 +321,7 @@ class ValidationDialog
     buttonPanel.add( addButton );
     buttonPanel.add( cancelButton );
     buttonPanel.add( aboutButton );
+    buttonPanel.add( previousButton );
     hBox.add( buttonPanel );
     hBox.add( Box.createHorizontalGlue() );
 
@@ -335,7 +344,7 @@ class ValidationDialog
   }
 
 
-  private void refresh(String originalWord, List suggestions,boolean ignoredWords){
+  private void refresh(String originalWord, List suggestions,boolean ignoredWords, boolean hasPrevious){
 	  _originalWordTextField.setText(originalWord);
       while(_suggestionsModel.getSize()!=0)_suggestionsModel.remove(0);
 	  
@@ -344,8 +353,13 @@ class ValidationDialog
 	  }else{
 		  _ignoredWordsLabel.setVisible(false);
 	  }
-	  
-	  if (suggestions.isEmpty() )
+
+	  if(hasPrevious){
+		  _previousAction.setEnabled(true);
+	  }else{
+		  _previousAction.setEnabled(false);
+	  }
+	  if (suggestions == null || suggestions.isEmpty() )
 	  {
 		  _suggestionsModel.addElement("(no suggestion)");
 		  _suggestionsJList.setForeground( Color.lightGray );
@@ -361,6 +375,7 @@ class ValidationDialog
 		  _suggestionsJList.setForeground( null );
 		  _suggestionsJList.grabFocus();
 	  }
+	  _userAction=CANCEL;
   }
   
   /**
@@ -426,6 +441,24 @@ class ValidationDialog
     void actionPerformed( ActionEvent event )
     {
       _userAction = ADD;
+     //dispose();
+		setVisible(false);
+    }
+  }
+
+  private class PreviousAction
+    extends AbstractAction
+  {
+    private PreviousAction()
+    {
+      super( "Previous" );
+	  putValue(Action.SHORT_DESCRIPTION,"Go back to previous word.");
+    }
+
+    public
+    void actionPerformed( ActionEvent event )
+    {
+      _userAction = PREVIOUS;
      //dispose();
 		setVisible(false);
     }
@@ -523,7 +556,7 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = IGNORE_ALL;
+     // _userAction = IGNORE_ALL;
      //dispose();
 		setVisible(false);
     }

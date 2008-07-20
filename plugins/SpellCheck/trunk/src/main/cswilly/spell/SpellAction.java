@@ -32,4 +32,5 @@ public abstract class SpellAction
 	{
 		this.source = source;
 	}
+	public abstract void undo();
 }

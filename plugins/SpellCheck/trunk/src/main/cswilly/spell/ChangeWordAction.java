@@ -41,5 +41,7 @@ public class ChangeWordAction extends SpellAction{
 		this.originalWord = originalWord;
 		this.newWord = newWord;
 	}
+	
+	public void undo(){}
 
 }

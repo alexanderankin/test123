@@ -71,10 +71,10 @@
 	<selector id="junit.testcases">
 		<!--<and>
 		<or>-->
-		<!--<filename name="cswilly/**/*Test.java" />-->
+		<filename name="cswilly/**/*Test.java" />
 		<!--<filename name="**/BufferSpellCheckerTest.java" />-->
 		<!--<filename name="**/WordListValidatorTest.java" />-->
-		<filename name="**/SpellCheckPluginTest.java" />
+		<!--<filename name="**/ValidationDialogTest.java" />-->
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
 		<!--</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>

@@ -112,10 +112,15 @@ class BufferDialogValidator implements SpellCoordinator
     ValidationDialog.UserAction userAction =
 		validationDialog.getUserAction(result.getOriginalWord(),
 				result.getSuggestions(),
-				ignoreAll!=null && ignoreAll.getAllWords().size()>0);
+				ignoreAll!=null && ignoreAll.getAllWords().size()>0,
+				history.size()>0);
     if( userAction == validationDialog.CANCEL )
     {
       action = new  CancelAction(null);
+    }
+    else if( userAction == validationDialog.PREVIOUS )
+    {
+      action = new  PreviousAction(null);
     }
     else if( userAction == validationDialog.CHANGE_ALL )
     {
@@ -202,19 +207,41 @@ class BufferDialogValidator implements SpellCoordinator
 			
 			List<Result> results = engine.checkLine( line );
 			
-			for(Result result : results){
+			for(int i=0;i<results.size();){
+				Result result = results.get(i);
 				SpellAction res = this.validate(iLine,line,result);
 				
 				if(res instanceof CancelAction){
 					confirm = false;
 					break;
+				}else if(res instanceof PreviousAction){
+					if(!history.isEmpty()){
+						undo();
+						if(i==0){
+							do{
+							assert(iLine>1);//history is not empty so there must be a line before
+							iLine--;
+							
+							//source.getPreviousLine();
+							line = source.getPreviousLine();
+							results = engine.checkLine(line);
+							i = results.size()-1;
+							}while(results.size()==0);
+						}
+						else{
+							results = engine.checkLine(line);
+							i--;
+						}
+					}
 				}
-				else history.add(res);
+				else{
+					history.add(res);
+					i++;
+				}
 			}
 		}
 
 		source.done();
-		done();
 		if(confirm)
 		{
 			List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
@@ -223,6 +250,13 @@ class BufferDialogValidator implements SpellCoordinator
 			}
 			if(!changes.isEmpty())source.apply(changes);
 		}
+		else{
+			for(SpellAction act:history){
+				act.undo();
+			}
+		}
+		done();
+
 		return confirm;
 	}
 
@@ -241,10 +275,24 @@ class BufferDialogValidator implements SpellCoordinator
 	  ignoreAll=null;
   }
   
+  private void undo()
+  {
+	  SpellAction last = history.remove(history.size()-1);
+	  last.undo();
+  }
+  
+  private class PreviousAction extends SpellAction{
+	  PreviousAction(Validator source){
+		  super(source);
+	  }
+	  public void undo(){}
+  }
+
   private class CancelAction extends SpellAction{
 	  CancelAction(Validator source){
 		  super(source);
 	  }
+	  public void undo(){}
   }
   
   private class ChangeAllAction extends ChangeWordAction{
@@ -256,6 +304,9 @@ class BufferDialogValidator implements SpellCoordinator
 	  {
 		  super(source,line,offset,originalWord,newWord);
 	  }
+	  public void undo(){
+		  _changeAllMap.remove(originalWord);
+	  }
   }
 
   private class IgnoreAllAction extends SpellAction{
@@ -264,6 +315,10 @@ class BufferDialogValidator implements SpellCoordinator
 	  {
 		  super(source);
 		  this.word = word;
+	  }
+	  
+	  public void undo(){
+		  ignoreAll.removeWord(word);
 	  }
   }
   
@@ -274,9 +329,13 @@ class BufferDialogValidator implements SpellCoordinator
 		  super(source);
 		  this.word = word;
 	  }
+	  public void undo(){
+		  userDict.removeWord(word);
+	  }
   }
 
   private class NopAction extends SpellAction{
 	  NopAction(Validator source){super(source);}
+	  public void undo(){}
   }
 }

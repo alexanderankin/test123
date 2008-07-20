@@ -57,6 +57,7 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	private Selection[] selections;
 	private int iSelection;
 	private int iLine;
+	private boolean lastWasNext;
 	
   public BufferSpellChecker( TextArea area )
   {
@@ -85,9 +86,13 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		
 		iSelection = 0;
 		iLine = selections[0].getStartLine();
+		lastWasNext=true;
 	}
 	
 	public String getNextLine(){
+		if(!lastWasNext)iLine++;
+		lastWasNext=true;
+
 		if(iSelection>=selections.length)return null;
 		
 		Selection sel = selections[iSelection];
@@ -106,6 +111,8 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	}
 	
 	public String getPreviousLine(){
+		if(lastWasNext)iLine--;
+		lastWasNext=false;
 		
 		Selection sel=null;
 		if(iSelection>selections.length
@@ -119,7 +126,7 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		iLine--;
 		String line = input.getLineText(iLine);
 
-		return line;		
+		return line;
 	}
 	
 	public void done(){

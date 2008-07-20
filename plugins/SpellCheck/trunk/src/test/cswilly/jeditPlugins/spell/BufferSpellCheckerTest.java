@@ -107,13 +107,28 @@ public class BufferSpellCheckerTest{
 		String[] lines = text.split("\n");
 		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
 		source.start();
-		for(int i=0;i<lines.length;i++){
-			assertEquals(lines[i],source.getNextLine());
-		}
-		for(int i=lines.length-1;i>1;i--){
-			assertEquals(lines[i],source.getPreviousLine());
-		}
-		assertEquals(lines[2],source.getNextLine());
+		
+		assertEquals( "* This program is free software; you can redistribute it and/or",
+			source.getNextLine());
+		assertEquals( "* modify it under the terms of the GNU General Public License",
+			source.getNextLine());
+		assertEquals( "* as published by the Free Software Foundation; either version 2",
+			source.getNextLine());
+		assertEquals( "",
+			source.getNextLine());
+		assertEquals( "* of the License, or any later version.",
+			source.getNextLine());
+
+		assertEquals( "",
+			source.getPreviousLine());
+		assertEquals( "* as published by the Free Software Foundation; either version 2",
+			source.getPreviousLine());
+		assertEquals( "* modify it under the terms of the GNU General Public License",
+			source.getPreviousLine());
+		assertEquals( "* as published by the Free Software Foundation; either version 2",
+			source.getNextLine());
+		assertEquals( "* modify it under the terms of the GNU General Public License",
+			source.getPreviousLine());
 		
 		TestUtils.close(TestUtils.view(),buf);
 	}
