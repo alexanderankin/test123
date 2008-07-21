@@ -36,6 +36,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+
+import ise.plugin.svn.gui.StopPanel;
 import ise.plugin.svn.library.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
@@ -66,6 +68,9 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     private boolean _tail = true;
 
     private JPanel _content_pane;
+
+    private StopPanel stopPanel = null;
+
     /**
      * Optional frame
      */
@@ -114,7 +119,10 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         }
         _text.setCaretPosition( 0 );
         _content_pane.add( new JScrollPane( _text ), BorderLayout.CENTER );
-        _content_pane.add( getControlPanel(), BorderLayout.SOUTH );
+        JPanel bottom_panel = new JPanel(new BorderLayout());
+        bottom_panel.add( getControlPanel(), BorderLayout.EAST);
+        bottom_panel.add( getStopPanel(), BorderLayout.WEST);
+        _content_pane.add( bottom_panel, BorderLayout.SOUTH );
 
         if ( use_frame ) {
             _frame = new JFrame( "Subversion Logger" );
@@ -320,6 +328,13 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             // ignored
             //Log.log( ignored );
         }
+    }
+
+    public StopPanel getStopPanel() {
+        if (stopPanel == null) {
+            stopPanel = new StopPanel();
+        }
+        return stopPanel;
     }
 
     private JPanel getControlPanel() {

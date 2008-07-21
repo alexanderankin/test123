@@ -32,8 +32,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.logging.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.swingworker.SwingWorker;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
@@ -56,6 +58,7 @@ public class OutputPanel extends JPanel {
     // via the handler
     private transient Logger logger = null;
     private SubversionGUILogHandler handler = new SubversionGUILogHandler();
+
 
     public OutputPanel() {
         super( new BorderLayout() );
@@ -129,15 +132,28 @@ public class OutputPanel extends JPanel {
         return logger;
     }
 
-    public void showConsole( ) {
+    public void showConsole() {
         tabs.setSelectedIndex( 0 );
     }
 
+    /**
+     * Automatically adds scroll bars to the given panel.
+     * @param name the name for the tab
+     * @param panel the panel to display in the tab.  Scrollbars will
+     * automatically be added to the panel.
+     */
     public void addTab( String name, JPanel panel ) {
         JScrollPane scroller = new JScrollPane( panel );
         JScrollBar bar = scroller.getVerticalScrollBar();
         bar.setUnitIncrement( 15 );
         final Component c = tabs.add( name, scroller );
         tabs.setSelectedComponent( c );
+    }
+
+    public void addWorker(String name, SwingWorker worker) {
+        if (worker == null) {
+            return;
+        }
+        handler.getStopPanel().addWorker(name, worker);
     }
 }

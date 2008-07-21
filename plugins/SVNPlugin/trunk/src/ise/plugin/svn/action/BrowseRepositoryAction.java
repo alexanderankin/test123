@@ -52,7 +52,7 @@ public class BrowseRepositoryAction extends SVNAction {
     private CheckoutData data = null;
 
     public BrowseRepositoryAction( View view, JTree tree, DirTreeNode node, CheckoutData data ) {
-        super( view, jEdit.getProperty("ips.Browse_Repository", "Browse Repository") );
+        super( view, jEdit.getProperty( "ips.Browse_Repository", "Browse Repository" ) );
         this.tree = tree;
         this.node = node;
         this.data = data;
@@ -68,7 +68,7 @@ public class BrowseRepositoryAction extends SVNAction {
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
-        logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_repository_info_for", "Fetching repository info for") + "\n" + data.getURL() + "..." );
+        logger.log( Level.INFO, jEdit.getProperty( "ips.Fetching_repository_info_for", "Fetching repository info for" ) + "\n" + data.getURL() + "..." );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -93,6 +93,19 @@ public class BrowseRepositoryAction extends SVNAction {
             }
 
             @Override
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Browse Repository' action." );
+                    data.getOut().close();
+                }
+                else {
+                    data.getOut().printError( "Unable to stop 'Browse Repository' action." );
+                }
+                return cancelled;
+            }
+
+            @Override
             protected void done() {
                 try {
                     List<DirTreeNode> children = get();
@@ -106,7 +119,7 @@ public class BrowseRepositoryAction extends SVNAction {
                     tree.repaint();
                     tree.expandPath( path );
                 }
-                catch ( Exception e ) {
+                catch ( Exception e ) {     // NOPMD
                     // ignored
                 }
                 finally {
@@ -115,6 +128,8 @@ public class BrowseRepositoryAction extends SVNAction {
                 }
             }
         }
-        ( new Runner() ).execute();
+        Runner runner = new Runner();
+        panel.addWorker( "Browse Repository", runner );
+        runner.execute();
     }
 }

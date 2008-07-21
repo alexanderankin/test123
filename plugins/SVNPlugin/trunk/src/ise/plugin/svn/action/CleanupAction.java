@@ -53,12 +53,12 @@ public class CleanupAction extends SVNAction {
      * @param password the password for the username
      */
     public CleanupAction( View view, List<String> paths, String username, String password ) {
-        super(view, jEdit.getProperty("ips.Cleanup", "Cleanup"));
+        super( view, jEdit.getProperty( "ips.Cleanup", "Cleanup" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -68,7 +68,7 @@ public class CleanupAction extends SVNAction {
             data.setPaths( paths );
 
             if ( data.getUsername() == null ) {
-                verifyLogin(paths.get(0));
+                verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -86,7 +86,7 @@ public class CleanupAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Cleaning_up_...", "Cleaning up ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Cleaning_up_...", "Cleaning up ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -109,6 +109,19 @@ public class CleanupAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Cleanup' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Cleanup' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         data.getOut().print( get() );
@@ -118,8 +131,9 @@ public class CleanupAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Cleanup", runner );
+            runner.execute();
         }
     }
 }

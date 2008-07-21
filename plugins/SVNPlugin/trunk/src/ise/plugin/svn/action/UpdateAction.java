@@ -64,7 +64,7 @@ public class UpdateAction extends SVNAction {
      * @param password the password for the username
      */
     public UpdateAction( View view, List<String> paths, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Update", "Update") );
+        super( view, jEdit.getProperty( "ips.Update", "Update" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -114,7 +114,7 @@ public class UpdateAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Updating_...", "Updating ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Updating_...", "Updating ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -137,25 +137,38 @@ public class UpdateAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Update' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Update' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         UpdateData data = get();
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );
-                        panel.addTab( jEdit.getProperty("ips.Update", "Update"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Update", "Update" ), results_panel );
                         for ( String path : data.getPaths() ) {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload( getView() );
                             }
                         }
-                        if (data.getConflictedFiles() != null) {
+                        if ( data.getConflictedFiles() != null ) {
                             StringBuffer sb = new StringBuffer();
-                            for ( String path : data.getConflictedFiles()) {
-                                sb.append(path).append("\n");
+                            for ( String path : data.getConflictedFiles() ) {
+                                sb.append( path ).append( "\n" );
                             }
                             String filelist = sb.toString();
-                            if (filelist.length() > 0) {
-                                JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.One_or_more_files_have_conflicts>", "One or more files have conflicts:") + "\n\n" + filelist, jEdit.getProperty("ips.Conflicts", "Conflicts"), JOptionPane.WARNING_MESSAGE);
+                            if ( filelist.length() > 0 ) {
+                                JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.One_or_more_files_have_conflicts>", "One or more files have conflicts:" ) + "\n\n" + filelist, jEdit.getProperty( "ips.Conflicts", "Conflicts" ), JOptionPane.WARNING_MESSAGE );
                             }
                         }
                     }
@@ -164,8 +177,9 @@ public class UpdateAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Update", runner );
+            runner.execute();
         }
     }
 

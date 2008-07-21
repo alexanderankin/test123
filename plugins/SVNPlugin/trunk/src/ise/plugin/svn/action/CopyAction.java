@@ -75,7 +75,7 @@ public class CopyAction extends SVNAction {
      * @param data CopyData object containing the info for a copy of some sort
      */
     public CopyAction( View view, CopyData data ) {
-        super(view, "Copy");
+        super( view, "Copy" );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -91,7 +91,7 @@ public class CopyAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            String log_msg = title.equals("Tag") ? "Tagging" : title + "ing";
+            String log_msg = title.equals( "Tag" ) ? "Tagging" : title + "ing";
             logger.log( Level.INFO, log_msg );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
@@ -154,7 +154,7 @@ public class CopyAction extends SVNAction {
                                     else {
                                         destination = data.getDestinationURL().toString();
                                     }
-                                    cd.setDestinationURL( SVNURL.parseURIDecoded(destination) );
+                                    cd.setDestinationURL( SVNURL.parseURIDecoded( destination ) );
                                 }
                                 cd.setOut( data.getOut() );
                                 cd.setMessage( data.getMessage() );
@@ -223,11 +223,24 @@ public class CopyAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Copy' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Copy' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( jEdit.getProperty("ips.Copy_Error", "Copy Error"), error_panel );
+                            panel.addTab( jEdit.getProperty( "ips.Copy_Error", "Copy Error" ), error_panel );
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();
@@ -281,8 +294,9 @@ public class CopyAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Copy", runner );
+            runner.execute();
         }
     }
 }

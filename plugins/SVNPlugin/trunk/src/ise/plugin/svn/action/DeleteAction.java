@@ -65,11 +65,11 @@ public class DeleteAction extends SVNAction {
      * @param password the password for the username
      */
     public DeleteAction( View view, List<String> paths, String username, String password ) {
-        super(view, jEdit.getProperty("ips.Delete", "Delete"));
+        super( view, jEdit.getProperty( "ips.Delete", "Delete" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
 
         data = new DeleteData();
         data.setPaths( paths );
@@ -78,7 +78,7 @@ public class DeleteAction extends SVNAction {
     }
 
     public DeleteAction( View view, DeleteData data ) {
-        super(view, jEdit.getProperty("ips.Delete", "Delete"));
+        super( view, jEdit.getProperty( "ips.Delete", "Delete" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -91,7 +91,7 @@ public class DeleteAction extends SVNAction {
 
 
             if ( data.getUsername() == null ) {
-                verifyLogin(data.getPaths().get(0));
+                verifyLogin( data.getPaths().get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -125,14 +125,14 @@ public class DeleteAction extends SVNAction {
                 if ( data == null ) {
                     return ;     // null data signals user canceled
                 }
-                JOptionPane.showConfirmDialog(getView(), jEdit.getProperty("ips.This_WILL_delete_files_from_the_repository.", "This WILL delete files from the repository."), jEdit.getProperty("ips.Confirm_Delete", "Confirm Delete"), JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showConfirmDialog( getView(), jEdit.getProperty( "ips.This_WILL_delete_files_from_the_repository.", "This WILL delete files from the repository." ), jEdit.getProperty( "ips.Confirm_Delete", "Confirm Delete" ), JOptionPane.WARNING_MESSAGE );
             }
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Deleting_...", "Deleting ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Deleting_...", "Deleting ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -155,19 +155,33 @@ public class DeleteAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Delete' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Delete' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         AddResults results = ( AddResults ) get();
                         JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, getView(), getUsername(), getPassword() );
-                        panel.addTab( jEdit.getProperty("ips.Delete", "Delete"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Delete", "Delete" ), results_panel );
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Delete", runner );
+            runner.execute();
         }
     }
 

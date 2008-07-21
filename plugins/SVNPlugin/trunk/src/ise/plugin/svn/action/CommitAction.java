@@ -64,7 +64,7 @@ public class CommitAction extends SVNAction {
      * @param password the password for the username
      */
     public CommitAction( View view, TreeMap<String, String> paths, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Commit", "Commit") );
+        super( view, jEdit.getProperty( "ips.Commit", "Commit" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -84,7 +84,7 @@ public class CommitAction extends SVNAction {
             }
 
             if ( getUsername() == null ) {
-                verifyLogin( (String)paths.firstKey() );
+                verifyLogin( ( String ) paths.firstKey() );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -98,7 +98,7 @@ public class CommitAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Committing_...", "Committing ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Committing_...", "Committing ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -121,17 +121,32 @@ public class CommitAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Commit' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Commit' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
-                        panel.addTab( jEdit.getProperty("ips.Commit", "Commit"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Commit", "Commit" ), results_panel );
                     }
-                    catch ( Exception e ) {
+                    catch ( Exception e ) {     // NOPMD
                         // ignored
                     }
                 }
             }
-            ( new Runner() ).execute();
+            Runner runner = new Runner();
+            panel.addWorker( "Commit", runner );
+            runner.execute();
         }
     }
 }

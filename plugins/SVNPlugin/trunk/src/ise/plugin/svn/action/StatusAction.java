@@ -56,7 +56,7 @@ public class StatusAction extends SVNAction {
     private SVNData data = null;
 
     public StatusAction( View view, List<String> paths, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Status", "Status") );
+        super( view, jEdit.getProperty( "ips.Status", "Status" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         setUsername( username );
@@ -69,7 +69,7 @@ public class StatusAction extends SVNAction {
     }
 
     public StatusAction( View view, SVNData data ) {
-        super( view, jEdit.getProperty("ips.Status", "Status") );
+        super( view, jEdit.getProperty( "ips.Status", "Status" ) );
         this.data = data;
     }
 
@@ -94,7 +94,7 @@ public class StatusAction extends SVNAction {
         final OutputPanel output_panel = SVNPlugin.getOutputPanel( getView() );
         output_panel.showConsole();
         Logger logger = output_panel.getLogger();
-        logger.log( Level.INFO, jEdit.getProperty("ips.Gathering_status_...", "Gathering status ...") );
+        logger.log( Level.INFO, jEdit.getProperty( "ips.Gathering_status_...", "Gathering status ..." ) );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -118,10 +118,23 @@ public class StatusAction extends SVNAction {
             }
 
             @Override
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Status' action." );
+                    data.getOut().close();
+                }
+                else {
+                    data.getOut().printError( "Unable to stop 'Status' action." );
+                }
+                return cancelled;
+            }
+
+            @Override
             protected void done() {
                 try {
                     JPanel panel = new StatusResultsPanel( get(), getView(), getUsername(), getPassword() );
-                    output_panel.addTab( jEdit.getProperty("ips.Status", "Status"), panel );
+                    output_panel.addTab( jEdit.getProperty( "ips.Status", "Status" ), panel );
                 }
                 catch ( Exception e ) {
                     System.err.println( e.getMessage() );
@@ -129,8 +142,9 @@ public class StatusAction extends SVNAction {
                 }
             }
         }
-        ( new Runner() ).execute();
-
+        Runner runner = new Runner();
+        output_panel.addWorker( "Status", runner );
+        runner.execute();
     }
 
 }
