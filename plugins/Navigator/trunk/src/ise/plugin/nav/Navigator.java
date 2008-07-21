@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 /**
  * NavigatorPlugin for keeping track of where we were.
@@ -253,11 +254,14 @@ public class Navigator implements ActionListener
         String path = np.path;
         int caret = np.caret;
 
-        if (path.equals(editPane.getBuffer().getPath()))
+        if (path.equals(editPane.getBuffer().getPath())) try
         {
             // nav in current buffer, just set cursor position
             editPane.getTextArea().setCaretPosition(caret, true);
             return;
+        }
+        catch (Exception e) {
+        	Log.log(Log.WARNING, this, "Unable to set caret position", e);
         }
 
         // Stop listening to EditBus events while we are changing
@@ -273,7 +277,13 @@ public class Navigator implements ActionListener
                 // found it
                 editPane.getView().goToBuffer(buffers[i]);
                 EditBus.send(new PositionChanging(editPane));
-                editPane.getTextArea().setCaretPosition(caret, true);
+                try {
+                	editPane.getTextArea().setCaretPosition(caret, true);
+                }
+                catch (Exception e) {
+                	Log.log (Log.WARNING, this, "Unable to set caret position", e);
+                }
+                
                 ignoreUpdates = false;
                 return;
             }
