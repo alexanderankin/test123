@@ -64,42 +64,42 @@ public class LogAction extends SVNAction {
      * @param password the password for the username
      */
     public LogAction( View view, List<String> paths, String username, String password ) {
-        super(view, jEdit.getProperty("ips.Log", "Log"));
+        super( view, jEdit.getProperty( "ips.Log", "Log" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
     }
 
-    public LogAction(View view, LogData data) {
-        super(view, jEdit.getProperty("ips.Log", "Log"));
+    public LogAction( View view, LogData data ) {
+        super( view, jEdit.getProperty( "ips.Log", "Log" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = data.getPaths();
         this.pathsAreUrls = data.pathsAreURLs();
-        setUsername(data.getUsername());
-        setPassword(data.getPassword());
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
     }
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
             data = new LogData();
             data.setPaths( paths );
-            data.setPathsAreURLs(pathsAreUrls);
+            data.setPathsAreURLs( pathsAreUrls );
 
-            LogDialog dialog = new LogDialog(getView(), data);
+            LogDialog dialog = new LogDialog( getView(), data );
             GUIUtils.center( getView(), dialog );
-            dialog.setVisible(true);
+            dialog.setVisible( true );
             data = dialog.getData();
-            if (data == null) {
-                return;     // null data signals user canceled
+            if ( data == null ) {
+                return ;     // null data signals user canceled
             }
 
             if ( getUsername() == null ) {
-                verifyLogin(paths.get(0));
+                verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -113,7 +113,7 @@ public class LogAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_log_...", "Fetching log ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Fetching_log_...", "Fetching log ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -137,10 +137,23 @@ public class LogAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Log' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Log' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
-                        panel.addTab( jEdit.getProperty("ips.Log", "Log"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored
@@ -148,8 +161,9 @@ public class LogAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Log", runner );
+            runner.execute();
         }
     }
 }

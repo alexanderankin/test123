@@ -66,7 +66,7 @@ public class SwitchAction extends SVNAction {
      * @param password the password for the username
      */
     public SwitchAction( View view, UpdateData data ) {
-        super( view, jEdit.getProperty("ips.Switch", "Switch") );
+        super( view, jEdit.getProperty( "ips.Switch", "Switch" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -105,7 +105,7 @@ public class SwitchAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Switching_...", "Switching ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Switching_...", "Switching ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -128,11 +128,24 @@ public class SwitchAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Switch' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Switch' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         UpdateData data = get();
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );
-                        panel.addTab( jEdit.getProperty("ips.Switch", "Switch"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Switch", "Switch" ), results_panel );
 
                         // reload affected buffers
                         for ( String path : data.getPaths() ) {
@@ -153,8 +166,9 @@ public class SwitchAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Switch", runner );
+            runner.execute();
         }
     }
 

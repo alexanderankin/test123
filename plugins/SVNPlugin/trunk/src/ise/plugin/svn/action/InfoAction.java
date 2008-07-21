@@ -62,24 +62,24 @@ public class InfoAction extends SVNAction {
      * @param password the password for the username
      */
     public InfoAction( View view, List<String> paths, String username, String password ) {
-        super(view, jEdit.getProperty("ips.Info", "Info"));
+        super( view, jEdit.getProperty( "ips.Info", "Info" ) );
         this.paths = paths;
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
     }
 
     public InfoAction( View view, SVNData data ) {
-        super(view, jEdit.getProperty("ips.Info", "Info"));
+        super( view, jEdit.getProperty( "ips.Info", "Info" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = data.getPaths();
         this.pathsAreUrls = data.pathsAreURLs();
-        setUsername(data.getUsername());
-        setPassword(data.getPassword());
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -90,7 +90,7 @@ public class InfoAction extends SVNAction {
 
 
             if ( data.getUsername() == null ) {
-                verifyLogin(paths.get(0));
+                verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -108,7 +108,7 @@ public class InfoAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_info...", "Fetching info...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Fetching_info...", "Fetching info..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -133,25 +133,38 @@ public class InfoAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Info' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Info' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( jEdit.getProperty("ips.Info_Error", "Info Error"), error_panel );
+                            panel.addTab( jEdit.getProperty( "ips.Info_Error", "Info Error" ), error_panel );
                             return ;
                         }
                         JPanel info_panel = new SVNInfoPanel( get() );
-                        //panel.setResultsPanel( info_panel );
-                        //panel.showTab( OutputPanel.RESULTS );
-                        panel.addTab( jEdit.getProperty("ips.Info", "Info"), info_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Info", "Info" ), info_panel );
 
                     }
-                    catch ( Exception e ) {
+                    catch ( Exception e ) {     // NOPMD
                         // ignored
                     }
                 }
             }
-            ( new Runner() ).execute();
+            Runner runner = new Runner();
+            panel.addWorker( "Info", runner );
+            runner.execute();
         }
     }
 

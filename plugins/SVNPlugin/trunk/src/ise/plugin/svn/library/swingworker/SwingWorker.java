@@ -522,7 +522,7 @@ public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
     /**
      * {@inheritDoc}
      */
-    public final boolean cancel(boolean mayInterruptIfRunning) {
+    public /*final*/ boolean cancel(boolean mayInterruptIfRunning) {
         return future.cancel(mayInterruptIfRunning);
     }
 

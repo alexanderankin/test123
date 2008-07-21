@@ -59,7 +59,7 @@ public class RemoteDiffAction extends SVNAction {
     private Logger logger = null;
 
     public RemoteDiffAction( View view, DiffData data ) {
-        super( view, jEdit.getProperty("ips.Remote_Diff", "Remote Diff") );
+        super( view, jEdit.getProperty( "ips.Remote_Diff", "Remote Diff" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -95,8 +95,8 @@ public class RemoteDiffAction extends SVNAction {
             data.setPassword( getPassword() );
         }
         else {
-            setUsername(data.getUsername());
-            setPassword(data.getPassword());
+            setUsername( data.getUsername() );
+            setPassword( data.getPassword() );
         }
 
         // set up the console output
@@ -108,7 +108,7 @@ public class RemoteDiffAction extends SVNAction {
         panel.showConsole( );
 
         logger = panel.getLogger();
-        log( jEdit.getProperty("ips.Preparing_to_diff...", "Preparing to diff...") );
+        log( jEdit.getProperty( "ips.Preparing_to_diff...", "Preparing to diff..." ) );
 
         class Runner extends SwingWorker < File[], Object > {
 
@@ -154,22 +154,35 @@ public class RemoteDiffAction extends SVNAction {
             }
 
             @Override
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Diff' action." );
+                    data.getOut().close();
+                }
+                else {
+                    data.getOut().printError( "Unable to stop 'Diff' action." );
+                }
+                return cancelled;
+            }
+
+            @Override
             protected void done() {
                 try {
                     File[] files = get();
                     if ( files == null ) {
-                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
                     final File remote1 = files[ 0 ];
                     final File remote2 = files[ 1 ];
 
                     if ( remote1 == null || remote2 == null ) {
-                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
                     if ( remote1.isDirectory() || remote2.isDirectory() ) {
-                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty("ips.Unable_to_compare_directories.", "Unable to compare directories."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_compare_directories.", "Unable to compare directories." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
 
@@ -202,6 +215,8 @@ public class RemoteDiffAction extends SVNAction {
                 }
             }
         }
-        ( new Runner() ).execute();
+        Runner runner = new Runner();
+        panel.addWorker( "Diff", runner );
+        runner.execute();
     }
 }

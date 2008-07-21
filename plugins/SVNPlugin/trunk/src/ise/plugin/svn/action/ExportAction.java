@@ -64,7 +64,7 @@ public class ExportAction extends SVNAction {
      * @param sourceFile what to export
      */
     public ExportAction( View view, List<File> sourceFiles, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Export", "Export") );
+        super( view, jEdit.getProperty( "ips.Export", "Export" ) );
         if ( sourceFiles == null )
             throw new IllegalArgumentException( "sourceFile may not be null" );
         setUsername( username );
@@ -79,7 +79,7 @@ public class ExportAction extends SVNAction {
      * @param sourceUrl what to export
      */
     public ExportAction( View view, String username, String password, List<String> sourceUrls ) {
-        super( view, jEdit.getProperty("ips.Export", "Export") );
+        super( view, jEdit.getProperty( "ips.Export", "Export" ) );
         if ( sourceUrls == null )
             throw new IllegalArgumentException( "sourceUrl may not be null" );
         try {
@@ -152,11 +152,24 @@ public class ExportAction extends SVNAction {
             }
 
             @Override
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Export' action." );
+                    data.getOut().close();
+                }
+                else {
+                    data.getOut().printError( "Unable to stop 'Export' action." );
+                }
+                return cancelled;
+            }
+
+            @Override
             protected void done() {
                 try {
                     UpdateData data = get();
                     JPanel results_panel = new UpdateResultsPanel( getView(), data, true );
-                    panel.addTab( jEdit.getProperty("ips.Export", "Export"), results_panel );
+                    panel.addTab( jEdit.getProperty( "ips.Export", "Export" ), results_panel );
                     for ( String path : data.getPaths() ) {
                         Buffer buffer = jEdit.getBuffer( path );
                         if ( buffer != null ) {
@@ -169,7 +182,8 @@ public class ExportAction extends SVNAction {
                 }
             }
         }
-        ( new Runner() ).execute();
-
+        Runner runner = new Runner();
+        panel.addWorker( "Export", runner );
+        runner.execute();
     }
 }

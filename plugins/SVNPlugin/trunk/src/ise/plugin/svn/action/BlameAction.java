@@ -64,7 +64,7 @@ public class BlameAction extends SVNAction {
      * @param password the password for the username
      */
     public BlameAction( View view, List<String> paths, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Blame", "Blame") );
+        super( view, jEdit.getProperty( "ips.Blame", "Blame" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -73,7 +73,7 @@ public class BlameAction extends SVNAction {
     }
 
     public BlameAction( View view, LogData data ) {
-        super( view, jEdit.getProperty("ips.Blame", "Blame") );
+        super( view, jEdit.getProperty( "ips.Blame", "Blame" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         if ( data.getPaths() == null )
@@ -105,7 +105,7 @@ public class BlameAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Fetching_annotation_info_...", "Fetching annotation info ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Fetching_annotation_info_...", "Fetching annotation info ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -128,12 +128,25 @@ public class BlameAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Blame' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Blame' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
-                        logger.log( Level.INFO, jEdit.getProperty("ips.Formatting_annotation_info_...", "Formatting annotation info ...") );
+                        logger.log( Level.INFO, jEdit.getProperty( "ips.Formatting_annotation_info_...", "Formatting annotation info ..." ) );
                         BlameModel model = get();
                         model.setTextArea( getView().getEditPane().getTextArea() );
-                        BlamePane pane = new BlamePane(model);
+                        BlamePane pane = new BlamePane( model );
                         JEditTextArea textArea = getView().getEditPane().getTextArea();
                         JEditBuffer buffer = textArea.getBuffer();
                         Object old_blame = buffer.getProperty( "_old_blame_" );
@@ -150,9 +163,9 @@ public class BlameAction extends SVNAction {
                         buffer.setProperty( "_old_closer_", closer );
                         getView().invalidate();
                         getView().validate();
-                        logger.log( Level.INFO, jEdit.getProperty("ips.Done.", "Done.") );
-                        if (model.outOfDate()) {
-                            JOptionPane.showMessageDialog(getView(), "File has local modifications, blame may not be correct.", "Warning: Local Modifications", JOptionPane.WARNING_MESSAGE);
+                        logger.log( Level.INFO, jEdit.getProperty( "ips.Done.", "Done." ) );
+                        if ( model.outOfDate() ) {
+                            JOptionPane.showMessageDialog( getView(), "File has local modifications, blame may not be correct.", "Warning: Local Modifications", JOptionPane.WARNING_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {
@@ -161,8 +174,9 @@ public class BlameAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Blame", runner );
+            runner.execute();
         }
     }
 }

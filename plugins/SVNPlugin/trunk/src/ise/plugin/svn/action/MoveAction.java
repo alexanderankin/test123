@@ -74,7 +74,7 @@ public class MoveAction extends SVNAction {
      * @param data CopyData object containing the info for a copy of some sort
      */
     public MoveAction( View view, CopyData data ) {
-        super(view, jEdit.getProperty("ips.Move", "Move"));
+        super( view, jEdit.getProperty( "ips.Move", "Move" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
@@ -103,7 +103,7 @@ public class MoveAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Moving_...", "Moving ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Moving_...", "Moving ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -129,7 +129,7 @@ public class MoveAction extends SVNAction {
                                 CopyData cd = new CopyData();
                                 cd.setSourceFile( file );
                                 cd.setRevision( data.getRevision() );
-                                cd.setIsMove(true);
+                                cd.setIsMove( true );
                                 String destination = "";
                                 if ( data.getDestinationFile() != null ) {
                                     // working copy -> working copy
@@ -167,13 +167,13 @@ public class MoveAction extends SVNAction {
                                 String destination = "";
                                 cd.setSourceURL( url );
                                 cd.setRevision( data.getRevision() );
-                                cd.setIsMove(true);
+                                cd.setIsMove( true );
                                 if ( data.getDestinationURL() != null ) {
                                     // repository -> repository
                                     where2where = U2U;
-                                    String segment = url.toString().substring(url.toString().lastIndexOf("/"));
+                                    String segment = url.toString().substring( url.toString().lastIndexOf( "/" ) );
                                     destination = data.getDestinationURL().toString() + segment;
-                                    cd.setDestinationURL( data.getDestinationURL().appendPath(segment, true) );
+                                    cd.setDestinationURL( data.getDestinationURL().appendPath( segment, true ) );
                                 }
                                 cd.setOut( data.getOut() );
                                 Copy copy = new Copy();
@@ -196,11 +196,24 @@ public class MoveAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Move' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Move' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );
-                            panel.addTab( jEdit.getProperty("ips.Move_Error", "Move Error"), error_panel );
+                            panel.addTab( jEdit.getProperty( "ips.Move_Error", "Move Error" ), error_panel );
                             return ;
                         }
                         TreeMap<String, SVNCommitInfo> results = get();
@@ -214,7 +227,7 @@ public class MoveAction extends SVNAction {
                                         ar.addPath( path );
                                     }
                                     JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                                    panel.addTab( jEdit.getProperty("ips.Move", "Move"), results_panel );
+                                    panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
 
                                     // open the file(s) and signal ProjectViewer to possibly add the file
                                     for ( String path : results.keySet() ) {
@@ -231,7 +244,7 @@ public class MoveAction extends SVNAction {
                                     // these cases result in an immediate commit, so
                                     // the SVNCommitInfo objects in the map are valid
                                     JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), true );
-                                    panel.addTab( jEdit.getProperty("ips.Move", "Move"), results_panel );
+                                    panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
                                 }
                                 break;
                             default:
@@ -252,8 +265,9 @@ public class MoveAction extends SVNAction {
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Move", runner );
+            runner.execute();
         }
     }
 }

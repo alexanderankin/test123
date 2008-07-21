@@ -66,12 +66,12 @@ public class MkDirAction extends SVNAction {
      * @param password the password for the username
      */
     public MkDirAction( View view, List<String> paths, String username, String password, String defaultDestination ) {
-        super(view, jEdit.getProperty("ips.Make_Dir", "Make Dir"));
+        super( view, jEdit.getProperty( "ips.Make_Dir", "Make Dir" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
-        setUsername(username);
-        setPassword(password);
+        setUsername( username );
+        setPassword( password );
         this.defaultDestination = defaultDestination;
     }
 
@@ -87,7 +87,7 @@ public class MkDirAction extends SVNAction {
             }
 
             if ( data.getUsername() == null ) {
-                verifyLogin(paths.get(0));
+                verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
                 }
@@ -101,7 +101,7 @@ public class MkDirAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Creating_directory...", "Creating directory...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Creating_directory...", "Creating directory..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -124,18 +124,32 @@ public class MkDirAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'mkdir' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'mkdir' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
-                        panel.addTab(jEdit.getProperty("ips.mkdir", "mkdir"), results_panel);
+                        panel.addTab( jEdit.getProperty( "ips.mkdir", "mkdir" ), results_panel );
                     }
-                    catch ( Exception e ) {
+                    catch ( Exception e ) {     // NOPMD
                         // ignored
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "MkDir", runner );
+            runner.execute();
         }
     }
 }

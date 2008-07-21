@@ -32,8 +32,7 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-
-import ise.plugin.svn.library.GUIUtils;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * A JTable that lays out the rows based on the best height for the individual
@@ -42,6 +41,8 @@ import ise.plugin.svn.library.GUIUtils;
 public class BestRowTable extends JTable {
 
     private int bestHeight = 0;
+    private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
+    private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
 
     public BestRowTable() {
         super();
@@ -144,7 +145,7 @@ public class BestRowTable extends JTable {
     public static class ValueCellRenderer extends JTextPane implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
-            setBackground( isSelected ? Color.LIGHT_GRAY : Color.WHITE );
+            setBackground( isSelected ? selection : background );
             return this;
         }
     }

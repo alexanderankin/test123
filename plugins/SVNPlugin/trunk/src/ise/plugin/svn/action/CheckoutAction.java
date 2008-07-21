@@ -57,17 +57,17 @@ import org.gjt.sp.jedit.jEdit;
 
 public class CheckoutAction extends SVNAction implements PropertyChangeListener {
 
-    private CheckoutData cd = null;
+    private CheckoutData data = null;
 
     /**
      * @param view the View in which to display results
      * @param data information necessary to do a checkout
      */
     public CheckoutAction( View view, CheckoutData data ) {
-        super(view, jEdit.getProperty("ips.Checkout", "Checkout"));
+        super( view, jEdit.getProperty( "ips.Checkout", "Checkout" ) );
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
-        this.cd = data;
+        this.data = data;
     }
 
     public void propertyChange( PropertyChangeEvent pce ) {
@@ -78,21 +78,21 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        CheckoutDialog dialog = new CheckoutDialog( getView(), cd.getURL() );
+        CheckoutDialog dialog = new CheckoutDialog( getView(), data.getURL() );
         GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
-        cd = dialog.getValues();
-        if ( cd == null ) {
+        data = dialog.getValues();
+        if ( data == null ) {
             return ;        // user canceled
         }
 
-        cd.setOut( new ConsolePrintStream( getView() ) );
+        data.setOut( new ConsolePrintStream( getView() ) );
 
         getView().getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
-        logger.log( Level.INFO, jEdit.getProperty("ips.Check_out_...", "Check out ...") );
+        logger.log( Level.INFO, jEdit.getProperty( "ips.Check_out_...", "Check out ..." ) );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -103,15 +103,28 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
             public Long doInBackground() {
                 try {
                     Checkout checkout = new Checkout();
-                    return checkout.doCheckout( cd );
+                    return checkout.doCheckout( data );
                 }
                 catch ( Exception e ) {
-                    cd.getOut().printError( e.getMessage() );
+                    data.getOut().printError( e.getMessage() );
                 }
                 finally {
-                    cd.getOut().close();
+                    data.getOut().close();
                 }
                 return null;
+            }
+
+            @Override
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Checkout' action." );
+                    data.getOut().close();
+                }
+                else {
+                    data.getOut().printError( "Unable to stop 'Checkout' action." );
+                }
+                return cancelled;
             }
 
             @Override
@@ -119,27 +132,28 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                 try {
                     Long revision = get();
                     if ( revision == null ) {
-                        throw new Exception( jEdit.getProperty("ips.Checkout_failed.", "Checkout failed.") );
+                        throw new Exception( jEdit.getProperty( "ips.Checkout_failed.", "Checkout failed." ) );
                     }
-                    cd.getOut().print( jEdit.getProperty("ips.Checkout_completed,_revision", "Checkout completed, revision") + " " + revision );
+                    data.getOut().print( jEdit.getProperty( "ips.Checkout_completed,_revision", "Checkout completed, revision" ) + " " + revision );
                     firePropertyChange( "done", "false", revision.toString() );
                 }
                 catch ( Exception e ) {
-                    cd.getOut().printError( e.getMessage() );
+                    data.getOut().printError( e.getMessage() );
                 }
             }
 
         }
         Runner runner = new Runner();
         runner.addPropertyChangeListener( this );
+        panel.addWorker( "Log", runner );
         runner.execute();
     }
 
     private void createProject( String revision ) {
         int make_project = JOptionPane.showConfirmDialog( getView(),
-                jEdit.getProperty("ips.Checkout_complete_at_revision", "Checkout complete at revision") + " " + revision + ".\n" +
-                jEdit.getProperty("ips.Would_you_like_to_create_a_project_from_these_files?", "Would you like to create a project from these files?"),
-                jEdit.getProperty("ips.Create_Project?", "Create Project?"),
+                jEdit.getProperty( "ips.Checkout_complete_at_revision", "Checkout complete at revision" ) + " " + revision + ".\n" +
+                jEdit.getProperty( "ips.Would_you_like_to_create_a_project_from_these_files?", "Would you like to create a project from these files?" ),
+                jEdit.getProperty( "ips.Create_Project?", "Create Project?" ),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE );
         if ( make_project != JOptionPane.YES_OPTION ) {
@@ -149,7 +163,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         // use the directory name that the user entered for the location of the
         // checkout as the default project name.  The UI will let the user
         // change it if they want.
-        String path = cd.getPaths().get(0);
+        String path = data.getPaths().get( 0 );
         int index = path.lastIndexOf( "/" );
         index = index == -1 ? 0 : index + 1;
         String project_name = path.substring( index );
@@ -189,7 +203,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                                     // get the group. If the user picked one, it will be
                                     // a project property, otherwise, default to the root project group
                                     VPTGroup group = ( VPTGroup ) project.getObjectProperty( "projectviewer.new-parent" );
-                                    if (group == null) {
+                                    if ( group == null ) {
                                         group = VPTRoot.getInstance();
                                     }
                                     pm.addProject( project, group );
@@ -199,12 +213,12 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                                     // event queue for handling.  If Importer.doImport is called here,
                                     // there will be a deadlock.
                                     RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( getView() ), true );
-                                    SwingUtilities.invokeLater(importer);
+                                    SwingUtilities.invokeLater( importer );
 
                                     /// TODO: I wonder about this -- if the import happens later
                                     // (because of the invokeLater), will the save happen correctly?
                                     pm.save();
-                                    saveProjectSVNInfo(project.getName());
+                                    saveProjectSVNInfo( project.getName() );
 
                                     // set ProjectViewer to show the new node
                                     ProjectViewer.setActiveNode( getView(), project );
@@ -240,14 +254,14 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         dialog.setVisible( true );
     }
 
-    private void saveProjectSVNInfo(String projectName) {
-        if (projectName == null || projectName.length() == 0) {
-            return;
+    private void saveProjectSVNInfo( String projectName ) {
+        if ( projectName == null || projectName.length() == 0 ) {
+            return ;
         }
 
         jEdit.setProperty(
             PVHelper.PREFIX + projectName + ".url",
-            ( cd.getURL() == null ? "" : cd.getURL() )
+            ( data.getURL() == null ? "" : data.getURL() )
         );
 
         jEdit.setProperty(

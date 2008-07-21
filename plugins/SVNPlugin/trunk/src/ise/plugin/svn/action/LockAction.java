@@ -68,7 +68,7 @@ public class LockAction extends SVNAction {
      * @param remote true if attempting to lock a remote repository file
      */
     public LockAction( View view, List<String> paths, String username, String password, boolean remote ) {
-        super( view, jEdit.getProperty("ips.Lock", "Lock") );
+        super( view, jEdit.getProperty( "ips.Lock", "Lock" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -102,7 +102,7 @@ public class LockAction extends SVNAction {
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
             final Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Locking_...", "Locking ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Locking_...", "Locking ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -125,18 +125,32 @@ public class LockAction extends SVNAction {
                 }
 
                 @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Lock' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Lock' action." );
+                    }
+                    return cancelled;
+                }
+
+                @Override
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.LOCK, getView(), getUsername(), getPassword() );
-                        panel.addTab( jEdit.getProperty("ips.Locked", "Locked"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Locked", "Locked" ), results_panel );
                     }
-                    catch ( Exception e ) {
+                    catch ( Exception e ) {     // NOPMD
                         // ignored
                     }
                 }
             }
-            ( new Runner() ).execute();
-
+            Runner runner = new Runner();
+            panel.addWorker( "Lock", runner );
+            runner.execute();
         }
     }
 }

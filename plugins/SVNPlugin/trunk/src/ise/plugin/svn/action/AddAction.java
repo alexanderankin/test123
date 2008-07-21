@@ -63,7 +63,7 @@ public class AddAction extends SVNAction {
      * @param password the password for the username
      */
     public AddAction( View view, List<String> paths, String username, String password ) {
-        super( view, jEdit.getProperty("ips.Add", "Add") );
+        super( view, jEdit.getProperty( "ips.Add", "Add" ) );
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
@@ -76,8 +76,8 @@ public class AddAction extends SVNAction {
             dialog = new AddDialog( getView(), paths, false );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
-            final SVNData cd = dialog.getSVNData();
-            if ( cd == null ) {
+            final SVNData data = dialog.getSVNData();
+            if ( data == null ) {
                 return ;     // null means user canceled
             }
 
@@ -88,15 +88,15 @@ public class AddAction extends SVNAction {
                 }
             }
 
-            cd.setUsername( getUsername() );
-            cd.setPassword( getPassword() );
-            cd.setOut( new ConsolePrintStream( getView() ) );
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+            data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole( );
             Logger logger = panel.getLogger();
-            logger.log( Level.INFO, jEdit.getProperty("ips.Preparing_to_add_...", "Preparing to add ...") );
+            logger.log( Level.INFO, jEdit.getProperty( "ips.Preparing_to_add_...", "Preparing to add ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
             }
@@ -107,29 +107,44 @@ public class AddAction extends SVNAction {
                 public AddResults doInBackground() {
                     try {
                         Add add = new Add( );
-                        return add.add( cd );
+                        return add.add( data );
                     }
                     catch ( Exception e ) {
-                        cd.getOut().printError( e.getMessage() );
+                        data.getOut().printError( e.getMessage() );
                     }
                     finally {
-                        cd.getOut().close();
+                        data.getOut().close();
                     }
                     return null;
+                }
+
+                @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    boolean cancelled = super.cancel( mayInterruptIfRunning );
+                    if ( cancelled ) {
+                        data.getOut().printError( "Stopped 'Add' action." );
+                        data.getOut().close();
+                    }
+                    else {
+                        data.getOut().printError( "Unable to stop 'Add' action." );
+                    }
+                    return cancelled;
                 }
 
                 @Override
                 protected void done() {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                        panel.addTab( jEdit.getProperty("ips.Add", "Add"), results_panel );
+                        panel.addTab( jEdit.getProperty( "ips.Add", "Add" ), results_panel );
                     }
                     catch ( Exception e ) {
                         System.err.println( e.getMessage() );
                     }
                 }
             }
-            ( new Runner() ).execute();
+            Runner runner = new Runner();
+            panel.addWorker( "Add", runner );
+            runner.execute();
         }
     }
 }
