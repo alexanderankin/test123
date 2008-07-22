@@ -110,6 +110,11 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		return line;
 	}
 	
+	public int getLineNumber(){
+		if(lastWasNext)return iLine-1;
+		else return iLine;
+	}
+	
 	public String getPreviousLine(){
 		if(lastWasNext)iLine--;
 		lastWasNext=false;

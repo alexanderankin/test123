@@ -32,7 +32,7 @@ import javax.swing.*;
 //{{{ 	jEdit
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-
+import org.gjt.sp.jedit.textarea.Selection;
 //}}}
 
 //{{{	junit
@@ -110,25 +110,43 @@ public class BufferSpellCheckerTest{
 		
 		assertEquals( "* This program is free software; you can redistribute it and/or",
 			source.getNextLine());
+		assertEquals(0,source.getLineNumber());
+
 		assertEquals( "* modify it under the terms of the GNU General Public License",
 			source.getNextLine());
+		assertEquals(1,source.getLineNumber());
+
 		assertEquals( "* as published by the Free Software Foundation; either version 2",
 			source.getNextLine());
+		assertEquals(2,source.getLineNumber());
+
 		assertEquals( "",
 			source.getNextLine());
+		assertEquals(3,source.getLineNumber());
+
 		assertEquals( "* of the License, or any later version.",
 			source.getNextLine());
+		assertEquals(4,source.getLineNumber());
 
 		assertEquals( "",
 			source.getPreviousLine());
+		assertEquals(3,source.getLineNumber());
+
 		assertEquals( "* as published by the Free Software Foundation; either version 2",
 			source.getPreviousLine());
+		assertEquals(2,source.getLineNumber());
+		
 		assertEquals( "* modify it under the terms of the GNU General Public License",
 			source.getPreviousLine());
+		assertEquals(1,source.getLineNumber());
+
 		assertEquals( "* as published by the Free Software Foundation; either version 2",
 			source.getNextLine());
+		assertEquals(2,source.getLineNumber());
+		
 		assertEquals( "* modify it under the terms of the GNU General Public License",
 			source.getPreviousLine());
+		assertEquals(1,source.getLineNumber());
 		
 		TestUtils.close(TestUtils.view(),buf);
 	}
@@ -233,5 +251,44 @@ public class BufferSpellCheckerTest{
 		fail("should throw an exception");
 		}catch(SpellException e){
 		}
+	}
+	
+	@Test
+	public void testSelection(){
+		final Buffer buf = TestUtils.newFile();
+		final String text = 
+		 "* This program is free software; you can redistribute it and/or\n"
+		+"* modify it under the terms of the GNU General Public License\n"
+		+"* as published by the Free Software Foundation; either version 2\n"
+		+"\n"
+		+"* of the License, or any later version.";
+		
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				buf.insert(0,text);
+			}});
+		}catch(Exception e){}
+		try{
+		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
+				TestUtils.view().getTextArea().setSelection(new Selection.Range(135,230));
+			}});
+		}catch(Exception e){}
+		try{Thread.sleep(10000);}catch(Exception e){}
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		source.start();
+		
+		assertEquals( "* as published by the Free Software Foundation; either version 2",
+			source.getNextLine());
+
+		assertEquals( "",
+			source.getNextLine());
+
+		assertEquals( "* of the License, or any later version.",
+			source.getNextLine());
+
+		assertEquals( null,
+			source.getNextLine());
+		
+		TestUtils.close(TestUtils.view(),buf);
 	}
 }

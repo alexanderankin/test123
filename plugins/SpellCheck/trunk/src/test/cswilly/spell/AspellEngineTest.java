@@ -37,6 +37,7 @@ public class AspellEngineTest{
 	private static final String ASPELL = "/opt/local/bin/aspell";//System.getProperty("user.dir")+File.separator+"tests/list-dicts.sh";
 	private static final String SPELLCHECK_OK = System.getProperty("user.dir")+File.separator+"tests/spellcheck_ok.sh";
 	private static final String DOES_NOT_EXIST = System.getProperty("user.dir")+File.separator+"tests/NOT_THERE";
+	private static final String SPELLCHECK_WIN = System.getProperty("user.dir")+File.separator+"tests/spellcheck_win.sh";
 	
 	private Throwable throwable;
 
@@ -173,6 +174,45 @@ public class AspellEngineTest{
 		}catch(Error e){
 			throw e;
 		}catch(Throwable t){
+			fail("Should not throw : "+t);
+		}
+	}
+
+	@Test
+	public void testSpellCheckWin(){
+		final List<Result> correct_results = Arrays.asList(new Result[]{
+				new Result("*"),
+				new Result("& Qwick 6 4: Wick, Quick, Vick, Kick, Quack, Quirk"),
+				new Result("*"),
+				new Result("& Foox 6 16: Fox, Foo, Food, Fool, Foot, Foxy")
+			});
+		try{
+			final AspellEngine ae = new AspellEngine(SPELLCHECK_WIN,new String[]{"pipe","--lang='en'"});
+			Thread t = new Thread(){
+				public void run(){
+					try{
+						List<Result> results = ae.checkLine("The Qwick Brown Foox");
+						assertEquals(correct_results,results);
+					}catch(Throwable t){
+						throwable=t;
+					}
+				}
+			};
+			t.start();
+			try{
+				t.join(2000);
+			}catch(InterruptedException ie){
+				fail("should not be interrupted");
+			}
+			if(t.isAlive())fail("checkLine() should not take too long");
+			if(throwable != null)throw throwable;
+		}catch(SpellException spe){
+			spe.printStackTrace();
+			fail("should not throw an exception:"+spe); 
+		}catch(Error e){
+			throw e;
+		}catch(Throwable t){
+			t.printStackTrace(System.err);
 			fail("Should not throw : "+t);
 		}
 	}
