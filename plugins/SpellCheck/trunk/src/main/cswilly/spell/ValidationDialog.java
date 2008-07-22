@@ -556,7 +556,7 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-     // _userAction = IGNORE_ALL;
+		_userAction = IGNORE_ALL;
      //dispose();
 		setVisible(false);
     }
@@ -568,7 +568,7 @@ class ValidationDialog
     public void
     actionPerformed(ActionEvent actionEvent)
     {
-      _userAction = CANCEL;
+      //_userAction = CANCEL;
      //dispose();
 		setVisible(false);
     }

@@ -201,10 +201,12 @@ class BufferDialogValidator implements SpellCoordinator
 		if(userDict!=null)userDict.start();
 		
 		int iLine = 0;
-		for(String line = source.getNextLine();confirm && line!=null;line = source.getNextLine(),iLine++)
+		for(String line = source.getNextLine();confirm && line!=null;line = source.getNextLine())
 		{
 			if( line.trim().equals( "" ) )continue;
-			
+
+			iLine=source.getLineNumber();
+
 			List<Result> results = engine.checkLine( line );
 			
 			for(int i=0;i<results.size();){
@@ -219,13 +221,11 @@ class BufferDialogValidator implements SpellCoordinator
 						undo();
 						if(i==0){
 							do{
-							assert(iLine>1);//history is not empty so there must be a line before
-							iLine--;
-							
-							//source.getPreviousLine();
-							line = source.getPreviousLine();
-							results = engine.checkLine(line);
-							i = results.size()-1;
+								assert(iLine>1);//history is not empty so there must be a line before
+								line = source.getPreviousLine();
+								iLine = source.getLineNumber();
+								results = engine.checkLine(line);
+								i = results.size()-1;
 							}while(results.size()==0);
 						}
 						else{

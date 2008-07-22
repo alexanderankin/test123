@@ -45,6 +45,13 @@ public interface SpellSource{
 	 */
 	public String getPreviousLine();
 	
+	
+	/**
+	 * retrieve last line number
+	 * @return	line number, starting at 0
+	 */
+	public int getLineNumber();
+
 	/**
 	 * end of iteration
 	 */

@@ -86,6 +86,10 @@ class Result implements Cloneable
 	  _originalWord = originalWord;
   }
   
+  public void setOffset(int offset){
+	  _offset = offset;
+  }
+  
   public
   int getOffset()
   {
