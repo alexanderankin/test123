@@ -145,7 +145,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         }
         Runner runner = new Runner();
         runner.addPropertyChangeListener( this );
-        panel.addWorker( "Log", runner );
+        panel.addWorker( "Checkout", runner );
         runner.execute();
     }
 
