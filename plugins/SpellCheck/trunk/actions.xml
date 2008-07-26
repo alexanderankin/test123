@@ -42,4 +42,10 @@
       cswilly.jeditPlugins.spell.SpellCheckPlugin.clearIgnoreAll(view,buffer);
     </CODE>
   </ACTION>
+  <!-- Menu action for persisting the dictionaries -->
+  <ACTION NAME="spell-check-save-dicts">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.saveDictionaries(view);
+    </CODE>
+  </ACTION>
 </ACTIONS>

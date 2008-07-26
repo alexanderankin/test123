@@ -146,7 +146,7 @@ public class AspellEngineTest{
 	public void testSpellCheckOK(){
 		final List<Result> correct_results = Arrays.asList(new Result[]{
 				new Result("*"),new Result("*"),new Result("*"),
-				new Result("& Foox 40 16: Fox, Fix, Foxy, Pox, Fax, Fonz, Foods, Fools, Foots, Fops, Cox, Box, Fog, Lox, Fogs, Foss, Coax, Coos, Flax, Flex, Flux, Foes, Fogy, Fork, Fons, Knox, Fobs, Hoax, Roux, Goo's, Fop's, Fox's, Fog's, Food's, Fool's, Foot's, Koo's, Foe's, Flo's, Fob's")
+				new Result("& Foox 40 17: Fox, Fix, Foxy, Pox, Fax, Fonz, Foods, Fools, Foots, Fops, Cox, Box, Fog, Lox, Fogs, Foss, Coax, Coos, Flax, Flex, Flux, Foes, Fogy, Fork, Fons, Knox, Fobs, Hoax, Roux, Goo's, Fop's, Fox's, Fog's, Food's, Fool's, Foot's, Koo's, Foe's, Flo's, Fob's")
 			});
 		try{
 			final AspellEngine ae = new AspellEngine(SPELLCHECK_OK,new String[]{"pipe","--lang='en'"});
@@ -182,9 +182,9 @@ public class AspellEngineTest{
 	public void testSpellCheckWin(){
 		final List<Result> correct_results = Arrays.asList(new Result[]{
 				new Result("*"),
-				new Result("& Qwick 6 4: Wick, Quick, Vick, Kick, Quack, Quirk"),
+				new Result("& Qwick 6 5: Wick, Quick, Vick, Kick, Quack, Quirk"),
 				new Result("*"),
-				new Result("& Foox 6 16: Fox, Foo, Food, Fool, Foot, Foxy")
+				new Result("& Foox 6 17: Fox, Foo, Food, Fool, Foot, Foxy")
 			});
 		try{
 			final AspellEngine ae = new AspellEngine(SPELLCHECK_WIN,new String[]{"pipe","--lang='en'"});

@@ -72,7 +72,7 @@
 		<!--<and>
 		<or>-->
 		<!--<filename name="cswilly/**/*Test.java" />-->
-		<filename name="**/AspellEngineTest.java" />
+		<filename name="**/WordListValidatorTest.java" />
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
 		<!--</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>

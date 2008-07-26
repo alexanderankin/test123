@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Pattern;
 
 import java.io.Reader;
 import java.io.BufferedReader;
@@ -42,27 +44,39 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * A validator implementation with chain of responsability pattern
+ * A word-list based validator.
+ * can be load and saved.
  *
  */ 
 public class WordListValidator implements Validator
 {
 	private TreeSet<String> words;
-	
+
+	private boolean dirty;
+
 	public WordListValidator(){
 		words = new TreeSet<String>();
 	}
 
 	public void addWord(String word){
-		words.add(word);
+		if(!words.contains(word)){
+			words.add(word);
+			dirty = true;
+		}
 	}
 	
 	public void removeWord(String word){
-		if(words.contains(word))words.remove(word);
+		if(words.contains(word)){
+			words.remove(word);
+			dirty = true;
+		}
 	}
 	
+	/**
+	 * @return an immutable collection, so don't try to edit...
+	 */
 	public Collection<String> getAllWords(){
-		return words;
+		return Collections.unmodifiableCollection(words);
 	}
 	
   /**
@@ -93,22 +107,40 @@ public class WordListValidator implements Validator
 
    public final void done(){}
    
+   
+   public boolean isDirty(){
+	   return dirty;
+   }
+   
+   
    public void load(File f) throws IOException{
 	   words.clear();
 	   if(!f.exists())throw new IOException("file "+f.getPath()+" doesn't exist");
 	   BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f),"UTF-8"));
+	   Pattern empty = Pattern.compile("^\\s*$");
+	   Pattern comment = Pattern.compile("^\\s*#.*$");
 	   for(String line = reader.readLine();line!=null;line = reader.readLine()){
-		   //skip empty line
-		   if(!line.matches("^\\s*$"))addWord(line.trim());
+		   //skip comments and empty lines
+		   if(!empty.matcher(line).matches()
+			   && !comment.matcher(line).matches())
+		   			addWord(line.trim());
 	   }
+	   dirty = false;
    }
-   
+   /**
+    * save the dictionary in given file
+	* @param	f	file to write to. It will be silently overwritten.
+	* @throws	IOException	if something occurs. One can call save again without loss of data.
+    */
    public void save(File f) throws IOException{
-	   if(!f.exists())throw new IOException("file "+f.getPath()+" doesn't exist");
+	   if(!isDirty() && f.exists())return;//to recreate a file if necessary
+	   //if(!f.exists())throw new IOException("file "+f.getPath()+" doesn't exist");
 	   Writer writer = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
 	   for(String word: words){
 		  writer.write(word+"\n");
 	   }
-   }
-   
+	   writer.flush();
+	   writer.close();
+	   dirty = false;
+   }   
 }
