@@ -1,6 +1,7 @@
 plugin.qt4jedit.Qt4jEditPlugin.activate=startup
 plugin.qt4jedit.Qt4jEditPlugin.name=Qt4jEdit
 plugin.qt4jedit.Qt4jEditPlugin.version=0.1
+plugin.qt4jedit.Qt4jEditPlugin.docs=index.html
 
 plugin.qt4jedit.Qt4jEditPlugin.description=Provides an Assistant remote control for showing docs about the thing under the cursor.
 plugin.qt4jedit.Qt4jEditPlugin.author=Alan Ezust
