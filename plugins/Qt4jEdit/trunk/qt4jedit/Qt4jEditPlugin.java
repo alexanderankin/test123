@@ -79,7 +79,15 @@ public class Qt4jEditPlugin extends EditPlugin {
 			os.flush();
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, this, "activateIdentifier", ioe);
+			startAssistant();
+			os = assistantProcess.getOutputStream();
+			try {
+				os.write(bar);
+				os.flush();
+			}
+			catch (IOException ioee) {
+				Log.log(Log.ERROR, this, "sendToAssistant", ioee);				
+			}
 		}
 	}
 	
