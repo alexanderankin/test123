@@ -261,6 +261,7 @@ public class SpellCheckPlugin
 		  getEngineManager().stop();
 		  _engineManager = null;
 	  }
+	  saveDictionaries(null);
   }
    
   
@@ -298,7 +299,7 @@ public class SpellCheckPlugin
 			  try{
 				  dict.load(userDictFile);
 			  }catch(IOException ioe){
-				  GUIUtilities.error( view, "userdict-load-error.message", new String[]{lang,ioe.getMessage()});
+				  GUIUtilities.error( view, "spell-check-userdict-load-error.message", new String[]{lang,ioe.getMessage()});
 			  }
 		  }
 		  userDicts.put(lang,dict);
@@ -306,23 +307,30 @@ public class SpellCheckPlugin
 	  return userDicts.get(lang);
   }
   
-  private static void saveDictionaries(){
+  public static void saveDictionaries(View view){
 	  File home = EditPlugin.getPluginHome(SpellCheckPlugin.class);
 	  assert home != null;
-
+	  if(!home.exists()){
+		  Log.log(Log.DEBUG,SpellCheckPlugin.class, "creating settings directory");
+		  try{
+			  boolean created = home.mkdirs();
+			  if(!created)
+			  	GUIUtilities.error( view, "spell-check-plugin-home-error.message", new String[]{"mkdirs failed"});
+		  }catch(SecurityException se){
+		  	GUIUtilities.error( view, "spell-check-plugin-home-error.message", new String[]{se.getMessage()});
+		  }
+	  }
 	  for(String lang : userDicts.keySet()){
 		  WordListValidator dict = userDicts.get(lang);
 
 		  File userDictFile = new File(home,"user."+lang+".dict");
 
-		  if(userDictFile.exists()){
-			  try{
-				  dict.save(userDictFile);
-			  }catch(IOException ioe){
-				  GUIUtilities.error( null, "spell-check-userdict-load-error.message", new String[]{lang,ioe.getMessage()});
-			  }
+		  try{
+			  dict.save(userDictFile);
+		  }catch(IOException ioe){
+			  ioe.printStackTrace(System.err);
+			  GUIUtilities.error( view, "spell-check-userdict-save-error.message", new String[]{lang,ioe.getMessage()});
 		  }
-		  userDicts.put(lang,dict);
 	  }
   }
   

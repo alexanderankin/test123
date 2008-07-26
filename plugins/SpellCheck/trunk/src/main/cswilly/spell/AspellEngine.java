@@ -129,10 +129,12 @@ class AspellEngine
 		  /* correct a bug with aspell 0.50 reporting offsets as bytes
 		     counts even in utf-8
 		   */
-		  int oo = result.getOffset()+result.getOriginalWord().length();
-		  if(oo>line.length())oo=line.length();
-		  int o = line.substring(0,oo).lastIndexOf(result.getOriginalWord());
-		  result.setOffset(o);
+		  if(result.getType()!=Result.OK){
+			  int oo = result.getOffset()+result.getOriginalWord().length();
+			  if(oo>line.length())oo=line.length();
+			  int o = line.substring(0,oo).lastIndexOf(result.getOriginalWord());
+			  result.setOffset(o+1);//aspell allways starts at 1
+		  }
           results.add( result );
 
           response = readLine();
