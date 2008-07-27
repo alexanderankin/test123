@@ -35,7 +35,7 @@ public class SideKickCompletionPopup extends CompletionPopup
 
 	//{{{ SideKickCompletionPopup constructor
 	public SideKickCompletionPopup(View view, SideKickParser parser,
-		int caret, SideKickCompletion complete)
+		int caret, SideKickCompletion complete, boolean active)
 	{
 		super(view, getLocation(view.getTextArea(), caret, complete));
 
@@ -43,7 +43,14 @@ public class SideKickCompletionPopup extends CompletionPopup
 		this.parser = parser;
 		this.complete = complete;
 
-		reset(new Candidates(), false);
+		reset(new Candidates(), active);
+	}
+
+	/// This constructor makes an inactive popup as in SideKick 0.7.5.
+	public SideKickCompletionPopup(View view, SideKickParser parser,
+		int caret, SideKickCompletion complete)
+	{
+		this(view, parser, caret, complete, false);
 	} //}}}
 
 	//{{{ keyPressed() method

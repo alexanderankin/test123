@@ -152,6 +152,7 @@ public class SideKickActions
                 if(popup != null)
                         return;
 
+                boolean active = (mode == COMPLETE_COMMAND);
                 popup = new SideKickCompletionPopup(view,parser,
                         textArea.getCaretPosition(), complete)
                 {
