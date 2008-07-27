@@ -154,7 +154,7 @@ public class SideKickActions
 
 		boolean active = (mode == COMPLETE_COMMAND);
 		popup = new SideKickCompletionPopup(view,parser,
-			textArea.getCaretPosition(), complete)
+			textArea.getCaretPosition(), complete, active)
 		{
 			/** forget reference to this popup when it is disposed */
 			public void dispose()
