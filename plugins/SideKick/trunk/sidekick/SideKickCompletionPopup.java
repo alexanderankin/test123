@@ -158,11 +158,11 @@ public class SideKickCompletionPopup extends CompletionPopup
 		if(selected == -1)
 		{
 			view.getTextArea().userInput(ch);
-			updateCompletion();
+			updateCompletion(false);
 		}
 		else if(complete.handleKeystroke(selected, ch))
 		{
-			updateCompletion();
+			updateCompletion(true);
 		}
 		else {
 			dispose();
@@ -170,7 +170,7 @@ public class SideKickCompletionPopup extends CompletionPopup
 	} //}}}
 
 	//{{{ updateCompletion() method
-	private void updateCompletion()
+	private void updateCompletion(boolean active)
 	{
 		SideKickCompletion newComplete = complete;
 		EditPane editPane = view.getEditPane();
@@ -188,7 +188,7 @@ public class SideKickCompletionPopup extends CompletionPopup
 		{
 			complete = newComplete;
 			setLocation(getLocation(textArea, caret, complete));
-			reset(new Candidates(), false);
+			reset(new Candidates(), active);
 		}
 	} //}}}
 
