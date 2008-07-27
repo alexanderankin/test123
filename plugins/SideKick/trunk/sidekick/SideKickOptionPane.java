@@ -156,6 +156,11 @@ public class SideKickOptionPane extends AbstractOptionPane
 		codeCompletionsPanel.add(completeDelay = new JSlider(0,1500,completeDelayValue), BorderLayout.SOUTH);
 		addComponent(codeCompletionsPanel);
 
+		autoCompletePopupGetFocus = new JCheckBox(
+			jEdit.getProperty("options.sidekick.auto-complete-popup-get-focus"),
+			jEdit.getBooleanProperty("sidekick.auto-complete-popup-get-focus"));
+		addComponent(autoCompletePopupGetFocus);
+
 		labelTable = new Hashtable();
 		for(int i = 0; i <= 1500; i += 250)
 		{
@@ -204,6 +209,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 			completeDelayToggle.isSelected());
 		jEdit.setIntegerProperty("sidekick.complete-delay",
 			completeDelay.getValue());
+		jEdit.setBooleanProperty("sidekick.auto-complete-popup-get-focus",
+			autoCompletePopupGetFocus.isSelected());
 		jEdit.setProperty("sidekick.complete-popup.accept-characters",acceptChars.getText());
 		jEdit.setProperty("sidekick.complete-popup.insert-characters",insertChars.getText());
 	} //}}}
@@ -219,6 +226,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox completeInstantToggle;
 	private JCheckBox completeDelayToggle;
 	private JSlider completeDelay;
+	private JCheckBox autoCompletePopupGetFocus;
 	private JCheckBox showToolTips;
 	private JCheckBox showStatusWindow;
 	private JTextField acceptChars;

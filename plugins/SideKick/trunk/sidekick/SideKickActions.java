@@ -37,6 +37,7 @@ public class SideKickActions
 	//{{{ Private members
 	private static boolean completeDelay;
 	private static boolean completeInstant;
+	private static boolean autoCompletePopupGetFocus;
 	private static int delay;
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
@@ -152,7 +153,8 @@ public class SideKickActions
 		if(popup != null)
 			return;
 
-		boolean active = (mode == COMPLETE_COMMAND);
+		boolean active = (mode == COMPLETE_COMMAND)
+			|| autoCompletePopupGetFocus;
 		popup = new SideKickCompletionPopup(view,parser,
 			textArea.getCaretPosition(), complete, active)
 		{
@@ -350,6 +352,7 @@ public class SideKickActions
 	{
 		completeDelay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle");
 		completeInstant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle");
+		autoCompletePopupGetFocus = jEdit.getBooleanProperty("sidekick.auto-complete-popup-get-focus");
 		acceptChars = MiscUtilities.escapesToChars(jEdit.getProperty("sidekick.complete-popup.accept-characters"));
 		insertChars = MiscUtilities.escapesToChars(jEdit.getProperty("sidekick.complete-popup.insert-characters"));
 		delay = jEdit.getIntegerProperty("sidekick.complete-delay",500);
