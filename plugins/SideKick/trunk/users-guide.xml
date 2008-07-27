@@ -357,7 +357,10 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
    Filtering capability in tree view (Matthew Gilbert, #1902558)
  </para></listitem>
  <listitem><para> 
-   Fixed a bug; typing over an active completion popup inactivated the popup. (Kazutoshi Satoda)
+   Fixed a minor bug; typing over an active completion popup inactivated the popup. (Kazutoshi Satoda)
+ </para></listitem>
+ <listitem><para> 
+   Completion popup for explicit completion is now active as same as builtin completion. (Kazutoshi Satoda)
  </para></listitem>
  </itemizedlist>
  </listitem>
