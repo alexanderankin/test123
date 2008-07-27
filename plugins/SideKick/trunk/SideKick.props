@@ -70,6 +70,7 @@ options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
 options.sidekick.complete-instant.toggle=Immediately complete if possible
 options.sidekick.complete-delay.toggle=Show completion popups where possible
+options.sidekick.auto-complete-popup-get-focus=Automatic completion popups get focus
 options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
 options.sidekick.complete-popup.accept-characters=Accept characters for completion popup
 options.sidekick.complete-popup.insert-characters=Accept characters to insert after completion
@@ -97,6 +98,9 @@ sidekick-tree.follows-caret=true
 # Enable completion
 sidekick.complete-delay.toggle=true
 sidekick.complete-instant.toggle=true
+
+# Initial focus of automatic completion popup
+sidekick.auto-complete-popup-get-focus=false
 
 # Delay after complete trigger before showing completion popup
 sidekick.complete-delay=500
