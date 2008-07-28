@@ -70,81 +70,44 @@ import db.TagDB;
 @SuppressWarnings("serial")
 public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private static final String KIND_EXTENSION = "kind";
-
 	private static final String MSG_NO_HIERARCHY = "class-browser.msg.no-hierarchy";
-
 	private static final String MSG_TITLE = "class-browser.msg.title";
-
 	private static final String MSG_NO_SELECTED_CLASS = "class-browser.msg.no-selected-class";
-
 	private static final String CLASS_BROWSER_CLASS_HIERARCHY = "class-browser-class-hierarchy";
-
 	private static final String INHERITS_EXTENSION = "inherits";
-
 	private static final String SIGNATURE_EXTENSION = "signature";
-
 	private static final String ACCESS_EXTENSION = "access";
 
-	private View view;
-
-	private JTree tree;
-
-	private JList members;
-
-	private JSplitPane splitPane;
-
-	private Font mainClassFont;
-
-	private Font normalFont;
-
-	private JPanel topPanel;
-
-	private JToolBar hierarchyToolbar;
-
-	private JToggleButton completeHierButton;
-
-	private JToggleButton superTypeHierButton;
-
-	private JToggleButton subTypeHierButton;
-
-	private JToolBar memberToolbar;
-
-	private JToggleButton selfMembersButton;
-
-	private JToggleButton derivedMembersButton;
-
-	private JToggleButton hideVariablesButton;
-
-	private JToggleButton hideStaticButton;
-
-	private JToggleButton hideNonPublicButton;
-
-	DefaultMutableTreeNode completeRoot;
-
-	DefaultMutableTreeNode superTypeRoot;
-
-	DefaultMutableTreeNode subTypeRoot;
-
-	Object mainClassObject = null;
-
 	private static ClassHierarchy instance;
-
-	private Vector<String> derivedClasses = new Vector<String>();
-
+	
+	private View view;
+	private JTree tree;
+	private JList members;
+	private JSplitPane splitPane;
+	private Font mainClassFont;
+	private Font normalFont;
+	private JPanel topPanel;
+	private JToolBar hierarchyToolbar;
+	private JToggleButton completeHierButton;
+	private JToggleButton superTypeHierButton;
+	private JToggleButton subTypeHierButton;
+	private JToolBar memberToolbar;
+	private JToggleButton selfMembersButton;
+	private JToggleButton derivedMembersButton;
+	private JToggleButton hideVariablesButton;
+	private JToggleButton hideStaticButton;
+	private JToggleButton hideNonPublicButton;
+	DefaultMutableTreeNode completeRoot;
+	DefaultMutableTreeNode superTypeRoot;
+	DefaultMutableTreeNode subTypeRoot;
+	Object mainClassObject = null;
 	private Hashtable<String, Vector<Object>> membersHash = new Hashtable<String, Vector<Object>>();
-
 	private Hashtable<String, Vector<Object>> derivedMembersHash = new Hashtable<String, Vector<Object>>();
-
 	private DefaultTreeModel emptyHierarchy = new DefaultTreeModel(null);
-
 	NonFieldMemberFilter nonFieldFilter = new NonFieldMemberFilter();
-
 	NonStaticMemberFilter nonStaticFilter = new NonStaticMemberFilter();
-
 	PublicMemberFilter publicFilter = new PublicMemberFilter();
-
 	private int rootLevel = 0;
-
 	private Vector<Object> emptyMembers = new Vector<Object>();
 
 	public ClassHierarchy(View view) {
@@ -187,9 +150,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		return "('class','struct','union','interface')";
 	}
 	private Tag findClass(String clazz) {
-		Query q = CtagsInterfacePlugin.getTagNameQuery(clazz);
+		Query q = CtagsInterfacePlugin.getScopedTagNameQuery(view, clazz);
 		q.addCondition(columnName(KIND_EXTENSION) + " IN " + getClassKindList());
-		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if (tags.isEmpty())
 			return null;
 		return tags.firstElement();
@@ -233,7 +196,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			name = ((Tag) obj).getName();
 		else
 			name = (String) obj;
-		Query q = CtagsInterfacePlugin.getBasicTagQuery();
+		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
 		String inheritsCol = columnName(INHERITS_EXTENSION);
 		String [] expressions = new String [] {
 			inheritsCol + "='" + name + "'",
@@ -427,7 +390,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		while (it.hasNext())
 			classStr.append("'" + it.next() + "',");
 		classStr.replace(classStr.length() - 1, classStr.length(), ")");
-		Query q = CtagsInterfacePlugin.getBasicTagQuery();
+		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
 		String [] scopes = "class struct union enum interface namespace".split(" ");
 		StringBuffer sb = new StringBuffer();
 		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
@@ -557,7 +520,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		hierarchyToolbar.add(subTypeHierButton);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void buildMemberToolbar() {
 		memberToolbar = new JToolBar();
 		memberToolbar.setFloatable(false);
@@ -578,12 +540,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		// The "hide" buttons
 		Insets margin = new Insets(0, 0, 0, 0);
 		hideVariablesButton = new JToggleButton("F");
+		hideVariablesButton.setToolTipText("Hide data members");
 		hideVariablesButton.setMargin(margin);
 		hideVariablesButton.addActionListener(l);
 		hideStaticButton = new JToggleButton("S");
+		hideStaticButton.setToolTipText("Hide static members");
 		hideStaticButton.setMargin(margin);
 		hideStaticButton.addActionListener(l);
 		hideNonPublicButton = new JToggleButton("NP");
+		hideNonPublicButton.setToolTipText("Hide non-public members");
 		hideNonPublicButton.setMargin(margin);
 		hideNonPublicButton.addActionListener(l);
 		JPanel hidePanel = new JPanel();
@@ -749,7 +714,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * MemberCellRenderer
 	 **************************************************************************/
-	@SuppressWarnings("serial")
 	class MemberCellRenderer extends DefaultListCellRenderer {
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
@@ -774,7 +738,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	/***************************************************************************
 	 * ScopeCellRenderer
 	 **************************************************************************/
-	@SuppressWarnings("serial")
 	class HierarchyCellRenderer extends DefaultTreeCellRenderer {
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean isSelected, boolean expanded, boolean leaf, int row,

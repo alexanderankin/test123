@@ -20,10 +20,13 @@ package browser;
 
 import org.gjt.sp.jedit.EditPlugin;
 
+import ctags.CtagsInterfacePlugin;
+
 public class ClassBrowserPlugin extends EditPlugin
 {
 	public void start()
 	{
+		CtagsInterfacePlugin.createIndexOnExtension("InheritanceIndex", "inherits");
 	}
 
 	public void stop()
