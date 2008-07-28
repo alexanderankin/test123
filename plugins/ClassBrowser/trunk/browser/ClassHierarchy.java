@@ -632,7 +632,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			String kind = t.getKind();
 			if (kind == null)
 				return false;
-			return (kind.equals("variable") || kind.equals("member"));
+			return (! (kind.equals("variable") || kind.equals("member")));
 		}
 	}
 
@@ -646,7 +646,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			if (! (o instanceof Tag))
 				return true;
 			Tag t = (Tag) o;
-			return (t.getExtension(FILE_EXTENSION) != null);
+			return (t.getExtension(FILE_EXTENSION) == null);
 		}
 	}
 
