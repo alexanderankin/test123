@@ -180,6 +180,20 @@ public class TagDB {
 		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
 		return q;
 	}
+	// Makes the given tagQuery be scoped to the given project
+	public void makeProjectScopedQuery(Query tagQuery, String project) {
+		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE,
+			ORIGINS_NAME + "=" + quote(project));
+		projectQuery.addCondition(ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN));
+		Query projectFilesQuery = new Query();
+		projectFilesQuery.setColumn(MAP_FILE_ID);
+		projectFilesQuery.setTable(MAP_TABLE);
+		projectFilesQuery.addCondition(field(MAP_TABLE, MAP_FILE_ID) + "=" +
+			field(FILES_TABLE, FILES_ID));
+		projectFilesQuery.addCondition(field(MAP_TABLE, MAP_ORIGIN_ID) + "=(" +
+			projectQuery.toString() + ")");
+		tagQuery.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
+	}
 	// Returns a query for a tag name in a specified project
 	private Query getTagInProjectQuery(String tag, String project) {
 		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, ORIGINS_NAME + "=" +
@@ -432,6 +446,13 @@ public class TagDB {
 			lock.delete();
 	}
 
+	// Create an index on a tag extension field
+	public void createIndex(String index, String extension)
+	throws SQLException {
+		createIndex(index, TAGS_TABLE, extension2column(extension));
+	}
+	
+	// Create an index on a table column
 	public void createIndex(String index, String table, String column)
 	throws SQLException {
 		update("CREATE INDEX " + index + " ON " + table + "(" + column + ")");

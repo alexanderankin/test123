@@ -145,6 +145,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
     }
     
+	private static String getScopeName(View view) {
+		boolean projectScope = (pvi != null &&
+				(ProjectsOptionPane.getSearchActiveProjectOnly() ||
+				 ProjectsOptionPane.getSearchActiveProjectFirst()));
+		return projectScope ? pvi.getActiveProject(view) : null;
+	}
+	
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
     static private void addTempTagFile(String tagFile) {
@@ -553,10 +560,31 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static Query getBasicTagQuery() {
 		return db.getBasicTagQuery();
 	}
+	public static Query getBasicScopedTagQuery(View view) {
+		Query q = getBasicTagQuery();
+		String project = getScopeName(view);
+		if (project != null)
+			db.makeProjectScopedQuery(q, project); 
+		return q;
+	}
 	public static Query getTagNameQuery(String tag) {
 		return db.getTagNameQuery(tag);
 	}
+	public static Query getScopedTagNameQuery(View view, String tag) {
+		Query q = db.getTagNameQuery(tag);
+		String project = getScopeName(view);
+		if (project != null)
+			db.makeProjectScopedQuery(q, project); 
+		return q;
+	}
 	public static HashSet<String> getTagColumns() {
 		return db.getColumns();
+	}
+	public static void createIndexOnExtension(String indexName, String extension) {
+		try {
+			db.createIndex(indexName, extension);
+		} catch (SQLException e) {
+			// Already exists...?
+		}
 	}
 }
