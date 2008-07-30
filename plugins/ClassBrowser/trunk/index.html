@@ -15,11 +15,11 @@ Written by Shlomy Reinstein, January 2007.
 <a name="introduction">
 <h2>Introduction</h2>
 </a>
-The ClassBrowser plugin provides a dockable window presenting the hierarchy of a selected class, along with its members (including inherited members, if requested). You can jump to each element (class/member) in the hierarchy by double-clicking it. The hierarchy is generated using information from Ctags tag files.
+The ClassBrowser plugin provides a dockable window presenting the hierarchy of a selected class, along with its members (including inherited members, if requested). You can jump to each element (class/member) in the hierarchy by double-clicking it. The hierarchy is generated using information provided by the Ctags tool.
 <a name="description">
 <h2>Description</h2>
 </a>
-The dockable window of this plugin contains a split pane, presenting the class hierarchy in the upper part and the members of the currently-selected class (within the hierarchy) in the lower part. Double-clicking a member or a class jumps to the definition of that class or member.
+The dockable window of ClassBrowser contains a split pane, presenting the class hierarchy in the upper part and the members of the currently-selected class (within the hierarchy) in the lower part. Double-clicking a member or a class jumps to the definition of that class or member.
 <h3>The class hierarchy pane</h3>
 The class hierarchy is presented as a tree. Three separate hierarchies can be displayed:
 <ul>
@@ -43,21 +43,20 @@ You can toggle between the views using buttons above the members pane. In additi
 <a name="requirements">
 <h2>Requirements</h2>
 </a>
+<h3>CtagsInterface plugin</h3>
+ClassBrowser uses the CtagsInterface plugin to provide it with the tag information. It also uses CtagsInterface to jump to selected tags (classes/members). Hence, you must have CtagsInterface installed and configured properly.
 <h3>Ctags invocation</h3>
-To make the best use of this plugin, specify the following options to Ctags when you generate the tag files: <code>--fields=+anzKiS</code> <br>
+To make the best use of ClassBrowser, configure the CtagsInterface plugin to provide the following options to Ctags: <code>--fields=+anzKiS</code> <br>
 These options tell Ctags to generate inheritance information, function/method signatures, access of class members (public/private/...), and provide complete names for tag kinds.
-<h3>Tags plugin</h3>
-This plugin uses the Tags plugin to provide it with the list of tag files and also to jump to selected tags (classes/members). Hence, you must have Tags installed and configured with the list of tag files.
 <a name="usage">
 <h2>Usage</h2>
 </a>
-To use this plugin, do one of the following:
+To use ClassBrowser, do one of the following:
 <ul>
   <li> Select the name of a class in a jEdit buffer, and invoke "Plugins -> Class Browser -> Show Class Hierarchy"
   <li> Invoke "Plugins -> Class Browser -> Show Class Hierarchy .." and enter the name of the class in the input dialog that opens.
 </ul>
-Wait a little bit, and you will get the hierarchy in a "Class Hierarchy Browser" dockable. 
-The first time you invoke it in any jEdit session, it might take a little while because it prepares some internal index to make the queries a little bit faster, so it reads all the tag files (this may be fixed in future versions).
+Generating the hierarchy may take a while, depending on the sizes of the hierarchy and the tag database. Wait patiently, and you will get the hierarchy in a "Class Hierarchy Browser" dockable. 
 <a name="notes">
 <h2>Notes</h2>
 </a>
