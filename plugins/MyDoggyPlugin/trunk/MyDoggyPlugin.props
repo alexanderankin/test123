@@ -14,9 +14,6 @@ plugin.myDoggy.Plugin.version=0.1
 plugin.myDoggy.Plugin.depend.0=jdk 1.5
 plugin.myDoggy.Plugin.depend.1=jedit 04.03.12.00
 
-# Options
-plugin.myDoggy.Plugin.option-group=CtagsSideKick-general CtagsSideKick-tree-style
-
 # docs
 plugin.myDoggy.Plugin.docs=index.html
 

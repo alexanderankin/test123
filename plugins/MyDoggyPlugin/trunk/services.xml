@@ -4,6 +4,6 @@
 
 <SERVICES>
         <SERVICE CLASS="org.gjt.sp.jedit.gui.DockingFrameworkProvider" NAME="MyDoggy">
-        	new myDoggy.Provider
+        	new myDoggy.Provider()
         </SERVICE>
 </SERVICES>

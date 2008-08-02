@@ -25,9 +25,9 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${install.dir}/ErrorList.jar"/>
-		<pathelement location="${install.dir}/SideKick.jar"/>
-		<pathelement location="${install.dir}/CommonControls.jar"/>
+		<pathelement location="${install.dir}/mydoggy-api-1.4.2.jar"/>
+		<pathelement location="${install.dir}/mydoggy-plaf-1.4.2.jar"/>
+		<pathelement location="${install.dir}/mydoggy-res-1.4.2.jar"/>
 	</path>
 
 </project>
