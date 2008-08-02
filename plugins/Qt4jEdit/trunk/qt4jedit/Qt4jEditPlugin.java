@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
@@ -25,7 +26,7 @@ public class Qt4jEditPlugin extends EditPlugin {
 	public void start() {
 		sm_instance = this;
 		StringList sl = new StringList();
-		sl.add("assistant");
+		sl.add(jEdit.getProperty("qt4jedit.path-to-assistant", "assistant"));
 		sl.add("-enableRemoteControl");
 		builder = new ProcessBuilder();
 		builder.command(sl);
