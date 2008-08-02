@@ -19,7 +19,7 @@ import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	private MyDoggyToolWindowManager wm = null;
-	private Content mainWindow = null;
+	private JPanel main = null;
 	
 	public MyDoggyWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -27,6 +27,9 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 		super(view, instance, config);
 		setLayout(new BorderLayout());
 		wm = new MyDoggyToolWindowManager();
+		main = new JPanel();
+		main.setLayout(new BorderLayout());
+		wm.getContentManager().addContent("main", "main", null, main);
 		add(wm, BorderLayout.CENTER);
 	}
 
@@ -106,7 +109,6 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 		ToolWindow tw = wm.registerToolWindow(
 			name, getDockableTitle(name), null, window, position2anchor(position));
 		tw.setActive(true);
-		add(wm, BorderLayout.CENTER);
 	}
 
 	private ToolWindowAnchor position2anchor(String position) {
@@ -130,13 +132,9 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 	}
 
 	@Override
-	public void removeContent(JComponent c) {
-		wm.getContentManager().removeContent(mainWindow);
-	}
-
-	@Override
-	public void addContent(java.awt.Component c) {
-		mainWindow = wm.getContentManager().addContent("main", "main", null, c);
+	public void setContent(java.awt.Component c) {
+		main.add(c, BorderLayout.CENTER);
+		main.revalidate();
 	}
 
 }
