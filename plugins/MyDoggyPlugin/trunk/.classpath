@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jEdit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MyDoggy"/>
+	<classpathentry kind="lib" path="D:/MyDoggy/lib/TableLayout-20050920.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
