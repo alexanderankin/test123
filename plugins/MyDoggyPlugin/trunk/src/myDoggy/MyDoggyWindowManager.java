@@ -10,6 +10,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManagerBase;
+import org.noos.xing.mydoggy.Content;
+import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 
@@ -17,6 +19,7 @@ import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	private MyDoggyToolWindowManager wm = null;
+	private Content mainWindow = null;
 	
 	public MyDoggyWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -53,18 +56,6 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	@Override
 	public JComponent floatDockableWindow(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JComponent getDockable(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDockableTitle(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -112,7 +103,10 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 			window = createDockable(name);
 		if (window == null)
 			return;
-		wm.registerToolWindow(name, getDockableTitle(name), null, window, position2anchor(position));
+		ToolWindow tw = wm.registerToolWindow(
+			name, getDockableTitle(name), null, window, position2anchor(position));
+		tw.setActive(true);
+		add(wm, BorderLayout.CENTER);
 	}
 
 	private ToolWindowAnchor position2anchor(String position) {
@@ -133,6 +127,16 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 	@Override
 	public void setTopToolbars(JPanel toolbars) {
 		add(toolbars, BorderLayout.NORTH);
+	}
+
+	@Override
+	public void removeContent(JComponent c) {
+		wm.getContentManager().removeContent(mainWindow);
+	}
+
+	@Override
+	public void addContent(java.awt.Component c) {
+		mainWindow = wm.getContentManager().addContent("main", "main", null, c);
 	}
 
 }
