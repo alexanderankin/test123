@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyListener;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
@@ -70,8 +71,7 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config) {
-		// TODO Auto-generated method stub
-		return null;
+		return new MyDoggyDockingLayout();
 	}
 
 	@Override
@@ -123,6 +123,16 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 		if (position.equals(DockableWindowManagerBase.RIGHT))
 			return ToolWindowAnchor.RIGHT;
 		return ToolWindowAnchor.TOP;
+	}
+
+	@Override
+	public void setBottomToolbars(JPanel toolbars) {
+		add(toolbars, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void setTopToolbars(JPanel toolbars) {
+		add(toolbars, BorderLayout.NORTH);
 	}
 
 }

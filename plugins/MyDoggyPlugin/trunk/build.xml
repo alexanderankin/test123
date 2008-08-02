@@ -32,6 +32,11 @@
 	
 	<target name="build.prepare" >
 	 	<mkdir dir="${build.dir}" />
+		<copy file="MyDoggy/filters-2.0.235.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/multiplegradientpaint-1.0.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/swing-layout-1.0.3.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/swing-worker-1.1.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/swingx-0.9.1.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/mydoggy-api-1.4.2.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/mydoggy-plaf-1.4.2.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/mydoggy-res-1.4.2.jar" todir="${install.dir}" />
