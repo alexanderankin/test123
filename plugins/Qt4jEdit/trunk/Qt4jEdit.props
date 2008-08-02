@@ -19,6 +19,6 @@ assistant-set-url.label=Open selected URL in assistant
 plugin.qt4jedit.Qt4jEditPlugin.option-pane=qt4jedit
 
 options.qt4jedit.label=Qt4jEdit
-
+options.qt4jedit.code=new qt4jedit.Qt4jEditOptions();
 options.qt4jedit.path-to-assistant=Path to assistant:
 
