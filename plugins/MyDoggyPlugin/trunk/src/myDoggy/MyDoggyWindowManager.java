@@ -10,7 +10,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManagerBase;
-import org.noos.xing.mydoggy.Content;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
@@ -19,7 +18,6 @@ import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	private MyDoggyToolWindowManager wm = null;
-	private JPanel main = null;
 	
 	public MyDoggyWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -27,9 +25,6 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 		super(view, instance, config);
 		setLayout(new BorderLayout());
 		wm = new MyDoggyToolWindowManager();
-		main = new JPanel();
-		main.setLayout(new BorderLayout());
-		wm.getContentManager().addContent("main", "main", null, main);
 		add(wm, BorderLayout.CENTER);
 	}
 
@@ -132,9 +127,8 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 	}
 
 	@Override
-	public void setContent(java.awt.Component c) {
-		main.add(c, BorderLayout.CENTER);
-		main.revalidate();
+	public void setMainPanel(JPanel panel) {
+		wm.getContentManager().addContent("main", "main", null, panel);
 	}
 
 }
