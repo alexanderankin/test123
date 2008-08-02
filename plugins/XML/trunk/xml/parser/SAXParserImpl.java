@@ -46,6 +46,8 @@ import org.apache.xerces.xni.grammars.XSGrammar;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
@@ -246,12 +248,17 @@ public class SAXParserImpl extends XmlParser
 				XSAttributeDeclaration decl = attr.getAttrDeclaration();
 				String attrName = decl.getName();
 				String value = decl.getConstraintValue();
-				// TODO: possible values
-				String type = decl.getTypeDefinition().getName();
+				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
+				String type = typeDef.getName();
+				StringList valueStringList = typeDef.getLexicalEnumeration();
+				ArrayList values = new ArrayList();
+				for (int j = 0; j < valueStringList.getLength(); j++) {
+				    values.add(valueStringList.item(j));
+				}
 				if(type == null)
 					type = "CDATA";
 				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
-					attrName,value,null,type,required));
+					attrName,value,values,type,required));
 			}
 		}
 	} //}}}
