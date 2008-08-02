@@ -29,5 +29,13 @@
 		<pathelement location="${install.dir}/mydoggy-plaf-1.4.2.jar"/>
 		<pathelement location="${install.dir}/mydoggy-res-1.4.2.jar"/>
 	</path>
+	
+	<target name="build.prepare" >
+	 	<mkdir dir="${build.dir}" />
+		<copy file="MyDoggy/mydoggy-api-1.4.2.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/mydoggy-plaf-1.4.2.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/mydoggy-res-1.4.2.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/TableLayout-20050920.jar" todir="${install.dir}" />
+	</target>
 
 </project>
