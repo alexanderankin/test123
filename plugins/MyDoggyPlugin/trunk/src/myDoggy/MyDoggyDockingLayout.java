@@ -3,7 +3,7 @@ package myDoggy;
 import java.io.IOException;
 
 import org.gjt.sp.jedit.SettingsXML.Saver;
-import org.gjt.sp.jedit.gui.DockableWindowManagerBase.DockingLayout;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingLayout;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class MyDoggyDockingLayout extends DockingLayout {
