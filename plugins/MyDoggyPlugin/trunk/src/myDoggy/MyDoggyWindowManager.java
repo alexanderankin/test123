@@ -9,13 +9,13 @@ import javax.swing.JPanel;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
-import org.gjt.sp.jedit.gui.DockableWindowManagerBase;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 
 @SuppressWarnings("serial")
-public class MyDoggyWindowManager extends DockableWindowManagerBase {
+public class MyDoggyWindowManager extends DockableWindowManager {
 
 	private MyDoggyToolWindowManager wm = null;
 	
@@ -114,11 +114,11 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 	}
 
 	private ToolWindowAnchor position2anchor(String position) {
-		if (position.equals(DockableWindowManagerBase.LEFT))
+		if (position.equals(DockableWindowManager.LEFT))
 			return ToolWindowAnchor.LEFT;
-		if (position.equals(DockableWindowManagerBase.BOTTOM))
+		if (position.equals(DockableWindowManager.BOTTOM))
 			return ToolWindowAnchor.BOTTOM;
-		if (position.equals(DockableWindowManagerBase.RIGHT))
+		if (position.equals(DockableWindowManager.RIGHT))
 			return ToolWindowAnchor.RIGHT;
 		return ToolWindowAnchor.TOP;
 	}
