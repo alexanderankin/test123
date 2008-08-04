@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="RecentBufferSwitcher" default="dist" basedir=".">
+<project name="RecentBufferSwitcher" default="build" basedir=".">
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
