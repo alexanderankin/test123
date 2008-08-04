@@ -2,11 +2,16 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -27,6 +32,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		setLayout(new BorderLayout());
 		wm = new MyDoggyToolWindowManager();
 		add(wm, BorderLayout.CENTER);
+		PerspectiveManager.setPerspectiveDirty(true);
 	}
 
 	@Override
@@ -68,7 +74,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config) {
-		return new MyDoggyDockingLayout();
+		MyDoggyDockingLayout layout = new MyDoggyDockingLayout();
+		layout.setWindowManager(wm);
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++)
+			if (views[i] == view)
+				layout.setIndex(i);
+		return layout;
 	}
 
 	private ToolWindow getToolWindow(String dockableName) {
@@ -106,8 +118,22 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		// For now, just use the docking positions specified by jEdit properties
-		super.setDockingLayout(null);
+		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
+		if (filename == null) {
+			// No saved layout - just use the docking positions specified by jEdit properties
+			super.setDockingLayout(null);
+			return;
+		}
+		FileInputStream inputStream;
+		try {
+			inputStream = new FileInputStream(filename);
+			wm.getPersistenceDelegate().apply(inputStream);
+			inputStream.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
