@@ -1,14 +1,19 @@
 <?xml version="1.0"?>
 
-<project name="RecentBufferSwitcher" default="dist" basedir=".">
+<project name="RecentBufferSwitcher" default="build" basedir=".">
 
 	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="user-doc.xml" location = "users-guide.xml"/>
+    
     <property name="build.dir" value="build"/>
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="jar.name"  value="RecentBufferSwitcher.jar"/>
 	<property name="docbook.xsl"  value="/usr/share/sgml/docbook/xsl-stylesheets-1.65.1-2"/>
     <property name="docs-proc.target" value="xsltproc" />
 	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+    <property name="build.support" value="../../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
 
 
 	<path id="project.class.path">
@@ -16,76 +21,4 @@
 		<pathelement location="."/>
 	</path>
 
-  <target name="clean">
-    <delete dir="${build.dir}"/>
-  </target>
-
-	<target name="init">
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
-			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;/xsl:stylesheet&gt;"/>
-	</target>
-
-
-	<target name="compile">
-        <mkdir dir="${build.dir}" />
-		<javac
-			srcdir="."
-            destdir="${build.dir}"
-			deprecation="on"
-			includeJavaRuntime="yes">
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
-
-
-	<target name="dist" depends="compile,docs">
-		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
-	      <fileset dir="${build.dir}"/>
-          <fileset dir=".">
-				<!-- <include name="**/*.class"/> -->
-				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.gif"/>
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
-			</fileset>
-		</jar>
-	</target>
-
-    <target name="docs" depends="init">
-        <antcall target="docs-${docs-proc.target}" />
-    </target>
-    
-<!-- Generate docs with Java 1.4 built in xml xslt -->
-  <target name="docs-xalan" depends="init">
-    <property name="dtd.location" value="http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"/>
-    <!-- <echoproperties/> -->
-    <xslt style="users-guide.xsl"
-            in="users-guide.xml"
-            out="index.html">
-      <xmlcatalog>
-      <dtd  publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
-            location="${dtd.location}"/>
-      </xmlcatalog>
-    </xslt>
-  </target>    
-    
-	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc" depends="init">
-		<exec executable="xsltproc">
-			<arg value="--catalogs"/>
-			<arg value="users-guide.xsl"/>
-			<arg value="users-guide.xml"/>
-		</exec>
-	</target>
 </project>
