@@ -29,6 +29,13 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 	}
 
 	@Override
+	protected void dockableMoved(String name, String from, String to) {
+		super.dockableMoved(name, from, to);
+		showDockableWindow(name);
+	}
+
+
+	@Override
 	public void adjust(View view, ViewConfig config) {
 		// TODO Auto-generated method stub
 
@@ -89,8 +96,8 @@ public class MyDoggyWindowManager extends DockableWindowManagerBase {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		// TODO Auto-generated method stub
-
+		// For now, just use the docking positions specified by jEdit properties
+		super.setDockingLayout(null);
 	}
 
 	@Override
