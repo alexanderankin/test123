@@ -71,10 +71,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return new MyDoggyDockingLayout();
 	}
 
+	private ToolWindow getToolWindow(String dockableName) {
+		String title = getDockableTitle(dockableName);
+		return wm.getToolWindow(title);
+	}
+	
 	@Override
 	public void hideDockableWindow(String name) {
-		// TODO Auto-generated method stub
-
+		ToolWindow tw = getToolWindow(name);
+		if (tw == null)
+			return;
+		tw.setVisible(false);
 	}
 
 	@Override
@@ -85,8 +92,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public boolean isDockableWindowVisible(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		ToolWindow tw = getToolWindow(name);
+		if (tw == null)
+			return false;
+		return (tw.isVisible());
 	}
 
 	@Override
@@ -103,12 +112,12 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void showDockableWindow(String name) {
-		String title = getDockableTitle(name);
-		ToolWindow tw = wm.getToolWindow(title);
+		ToolWindow tw = getToolWindow(name);
 		if (tw != null) {
 			tw.setActive(true);
 			return;
 		}
+		String title = getDockableTitle(name);
 		JComponent window = getDockable(name);
 		String position = getDockablePosition(name); 
 		if (window == null)
