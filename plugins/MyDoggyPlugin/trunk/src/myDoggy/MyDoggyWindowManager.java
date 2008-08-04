@@ -132,16 +132,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public void setBottomToolbars(JPanel toolbars) {
-		add(toolbars, BorderLayout.SOUTH);
-	}
-
-	@Override
-	public void setTopToolbars(JPanel toolbars) {
-		add(toolbars, BorderLayout.NORTH);
-	}
-
-	@Override
 	public void setMainPanel(JPanel panel) {
 		wm.getContentManager().addContent("main", "main", null, panel);
 	}
