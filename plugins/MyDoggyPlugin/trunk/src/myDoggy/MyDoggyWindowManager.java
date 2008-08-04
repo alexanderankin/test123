@@ -102,13 +102,18 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void showDockableWindow(String name) {
+		ToolWindow tw = wm.getToolWindow(name);
+		if (tw != null) {
+			tw.setActive(true);
+			return;
+		}
 		JComponent window = getDockable(name);
 		String position = getDockablePosition(name); 
 		if (window == null)
 			window = createDockable(name);
 		if (window == null)
 			return;
-		ToolWindow tw = wm.registerToolWindow(
+		tw = wm.registerToolWindow(
 			name, getDockableTitle(name), null, window, position2anchor(position));
 		tw.setActive(true);
 	}
