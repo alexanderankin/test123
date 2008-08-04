@@ -12,6 +12,7 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
+import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 
 @SuppressWarnings("serial")
@@ -102,7 +103,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void showDockableWindow(String name) {
-		ToolWindow tw = wm.getToolWindow(name);
+		String title = getDockableTitle(name);
+		ToolWindow tw = wm.getToolWindow(title);
 		if (tw != null) {
 			tw.setActive(true);
 			return;
@@ -114,7 +116,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (window == null)
 			return;
 		tw = wm.registerToolWindow(
-			name, getDockableTitle(name), null, window, position2anchor(position));
+			title, null, null, window, position2anchor(position));
+		tw.setType(ToolWindowType.DOCKED);
 		tw.setActive(true);
 	}
 
