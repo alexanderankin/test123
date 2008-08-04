@@ -15,9 +15,13 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.noos.xing.mydoggy.Content;
+import org.noos.xing.mydoggy.PersistenceDelegateCallback;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
+import org.noos.xing.mydoggy.ToolWindowManager;
 import org.noos.xing.mydoggy.ToolWindowType;
+import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 
 @SuppressWarnings("serial")
@@ -84,8 +88,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	private ToolWindow getToolWindow(String dockableName) {
-		String title = getDockableTitle(dockableName);
-		return wm.getToolWindow(title);
+		return wm.getToolWindow(dockableName);
 	}
 	
 	@Override
@@ -118,7 +121,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		String filename = null;//((MyDoggyDockingLayout)docking).getPersistenceFilename();
+		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
 		if (filename == null)
 		{
 			// No saved layout - just use the docking positions specified by jEdit properties
@@ -128,7 +131,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		FileInputStream inputStream;
 		try {
 			inputStream = new FileInputStream(filename);
-			wm.getPersistenceDelegate().apply(inputStream);
+			PersistenceDelegateCallback callback = new PersistenceCallback();
+			wm.getPersistenceDelegate().merge(inputStream, MergePolicy.RESET, callback);
 			inputStream.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -137,6 +141,30 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		}
 	}
 
+	public class PersistenceCallback implements PersistenceDelegateCallback {
+		public Content contentNotFound(ToolWindowManager toolWindowManager,
+				String contentId) {
+			return null;
+		}
+		public ToolWindow toolwindowNotFound(
+				ToolWindowManager toolWindowManager, String toolWindowId) {
+			return createToolWindow(toolWindowId);
+		}
+	}
+	
+	private ToolWindow createToolWindow(String name) {
+		String title = getDockableTitle(name);
+		JComponent window = getDockable(name);
+		String position = getDockablePosition(name); 
+		if (window == null)
+			window = createDockable(name);
+		if (window == null)
+			return null;
+		ToolWindow tw = wm.registerToolWindow(
+			name, title, null, window, position2anchor(position));
+		return tw;
+	}
+	
 	@Override
 	public void showDockableWindow(String name) {
 		ToolWindow tw = getToolWindow(name);
@@ -144,15 +172,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			tw.setActive(true);
 			return;
 		}
-		String title = getDockableTitle(name);
-		JComponent window = getDockable(name);
-		String position = getDockablePosition(name); 
-		if (window == null)
-			window = createDockable(name);
-		if (window == null)
-			return;
-		tw = wm.registerToolWindow(
-			title, null, null, window, position2anchor(position));
+		tw = createToolWindow(name);
 		tw.setType(ToolWindowType.DOCKED);
 		tw.setActive(true);
 	}
