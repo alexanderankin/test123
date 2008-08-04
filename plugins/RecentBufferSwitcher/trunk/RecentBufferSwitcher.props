@@ -16,7 +16,7 @@ plugin.recentbuffer.RecentBufferSwitcherPlugin.docs=index.html
 
 # we only have one dependency, jEdit 4.2, since we use the new plugin API
 plugin.recentbuffer.RecentBufferSwitcherPlugin.depend.0=jedit 04.03.13.00
-plugin.recentbuffer.RecentBufferSwitcherPlugin.depend.1=java 1.5
+plugin.recentbuffer.RecentBufferSwitcherPlugin.depend.1=jdk 1.5
 
 # plugin menu
 plugin.recentbuffer.RecentBufferSwitcherPlugin.menu=recentbufferswitcher
