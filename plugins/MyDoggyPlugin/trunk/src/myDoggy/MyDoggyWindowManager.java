@@ -118,8 +118,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
-		if (filename == null) {
+		String filename = null;//((MyDoggyDockingLayout)docking).getPersistenceFilename();
+		if (filename == null)
+		{
 			// No saved layout - just use the docking positions specified by jEdit properties
 			super.setDockingLayout(null);
 			return;
