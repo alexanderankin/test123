@@ -2,6 +2,7 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +42,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	protected void dockableMoved(String name, String from, String to) {
-		super.dockableMoved(name, from, to);
 		showDockableWindow(name);
 	}
 
@@ -87,8 +87,12 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return layout;
 	}
 
+	private String getToolWindowID(String dockableName) {
+		return dockableName;
+	}
+	
 	private ToolWindow getToolWindow(String dockableName) {
-		return wm.getToolWindow(dockableName);
+		return wm.getToolWindow(getToolWindowID(dockableName));
 	}
 	
 	@Override
@@ -121,24 +125,27 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
-		if (filename == null)
-		{
-			// No saved layout - just use the docking positions specified by jEdit properties
-			super.setDockingLayout(null);
-			return;
+		String filename = null;//((MyDoggyDockingLayout)docking).getPersistenceFilename()
+		if (filename != null) {
+			java.io.File f = new File(filename);
+			if (f.exists()) {
+				FileInputStream inputStream;
+				try {
+					inputStream = new FileInputStream(filename);
+					PersistenceDelegateCallback callback = new PersistenceCallback();
+					wm.getPersistenceDelegate().merge(inputStream, MergePolicy.RESET, callback);
+					inputStream.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return;
+			}
 		}
-		FileInputStream inputStream;
-		try {
-			inputStream = new FileInputStream(filename);
-			PersistenceDelegateCallback callback = new PersistenceCallback();
-			wm.getPersistenceDelegate().merge(inputStream, MergePolicy.RESET, callback);
-			inputStream.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// No saved layout - just use the docking positions specified by jEdit properties
+		super.setDockingLayout(null);
+		return;
 	}
 
 	public class PersistenceCallback implements PersistenceDelegateCallback {
@@ -160,8 +167,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			window = createDockable(name);
 		if (window == null)
 			return null;
+		String id = getToolWindowID(name);
 		ToolWindow tw = wm.registerToolWindow(
-			name, title, null, window, position2anchor(position));
+			id, title, null, window, position2anchor(position));
+		tw.setRepresentativeAnchorButtonTitle(title);
 		return tw;
 	}
 	
