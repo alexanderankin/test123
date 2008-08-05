@@ -168,8 +168,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (window == null)
 			return null;
 		String id = getToolWindowID(name);
-		ToolWindow tw = wm.registerToolWindow(
-			id, title, null, window, position2anchor(position));
+		ToolWindowAnchor anchor = position2anchor(position);
+		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		tw.setRepresentativeAnchorButtonTitle(title);
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		return tw;
