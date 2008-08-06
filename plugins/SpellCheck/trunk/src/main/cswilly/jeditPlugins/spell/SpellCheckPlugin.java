@@ -239,8 +239,8 @@ public class SpellCheckPlugin
 	  validator.setUserDictionary(getUserDictionaryForLang(view, lang));
 	  validator.setIgnoreAll(getIgnoreAll(buffer));
 	  try{
-		  validator.setEngine(getEngine(buffer,true));
-		  validator.setEngineForSuggest(getEngineManager().getEngine("text",getBufferLanguage(buffer),true));
+		  validator.setEngine(getEngine(buffer,false));
+		  validator.setEngineForSuggest(getEngineManager().getEngine("text",getBufferLanguage(buffer),false));
 	  }catch(SpellException e){
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, "Error setting engine (Aspell).");
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, e);
