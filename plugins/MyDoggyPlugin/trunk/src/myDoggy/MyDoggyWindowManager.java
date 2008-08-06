@@ -59,12 +59,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public KeyListener closeListener(String dockableName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public JComponent floatDockableWindow(String name) {
 		// TODO Auto-generated method stub
 		return null;
