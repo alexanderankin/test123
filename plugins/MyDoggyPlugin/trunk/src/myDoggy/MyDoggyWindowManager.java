@@ -98,7 +98,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 	
 	@Override
-	public void hideDockableWindow(String name) {
+	public void hideDockableWindow(String name)
+	{
 		ToolWindow tw = getToolWindow(name);
 		if (tw == null)
 			return;
@@ -106,9 +107,12 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public boolean isDockableWindowDocked(String name) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isDockableWindowDocked(String name)
+	{
+		ToolWindow tw = getToolWindow(name);
+		if (tw == null)
+			return false;
+		return (tw.getType() == ToolWindowType.DOCKED);
 	}
 
 	@Override
