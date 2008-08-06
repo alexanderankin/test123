@@ -48,15 +48,14 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void closeCurrentArea() {
-		// TODO Auto-generated method stub
-
+		Object activeWindowId = wm.getActiveToolWindowId();
+		if (activeWindowId == null)
+			return;
+		ToolWindow tw = wm.getToolWindow(activeWindowId);
+		if (tw == null)
+			return;
+		tw.setVisible(false);
 	}
 
 	@Override
@@ -116,24 +115,34 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return (tw.isVisible());
 	}
 
+	private void loadMyDoggyLayout(String filename) {
+		FileInputStream inputStream;
+		try {
+			inputStream = new FileInputStream(filename);
+			PersistenceDelegateCallback callback = new PersistenceCallback();
+			wm.getPersistenceDelegate().merge(inputStream, MergePolicy.RESET, callback);
+			inputStream.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
-	public void setDockingLayout(DockingLayout docking) {
-		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
-		if (filename != null) {
-			java.io.File f = new File(filename);
-			if (f.exists()) {
-				FileInputStream inputStream;
-				try {
-					inputStream = new FileInputStream(filename);
-					PersistenceDelegateCallback callback = new PersistenceCallback();
-					wm.getPersistenceDelegate().merge(inputStream, MergePolicy.RESET, callback);
-					inputStream.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+	public void setDockingLayout(DockingLayout docking)
+	{
+		// 'docking' is null if jEdit was started without a perspective file
+		if (docking != null)
+		{
+			MyDoggyDockingLayout layout = (MyDoggyDockingLayout) docking;
+			String filename = layout.getPersistenceFilename();
+			if (filename != null) {
+				java.io.File f = new File(filename);
+				if (f.exists()) {
+					loadMyDoggyLayout(filename);
+					return;
 				}
-				return;
 			}
 		}
 		// No saved layout - just use the docking positions specified by jEdit properties
