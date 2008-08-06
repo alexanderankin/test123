@@ -126,7 +126,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
 		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
-		if (filename != null) {
+		//if (filename != null) {
+		if (1 == 0) {
 			java.io.File f = new File(filename);
 			if (f.exists()) {
 				FileInputStream inputStream;
