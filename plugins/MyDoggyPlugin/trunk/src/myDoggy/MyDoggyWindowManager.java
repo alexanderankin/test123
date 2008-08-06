@@ -47,7 +47,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public void closeCurrentArea() {
+	public void closeCurrentArea()
+	{
 		Object activeWindowId = wm.getActiveToolWindowId();
 		if (activeWindowId == null)
 			return;
@@ -58,7 +59,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public JComponent floatDockableWindow(String name) {
+	public JComponent floatDockableWindow(String name)
+	{
 		ToolWindow tw = wm.getToolWindow(name);
 		if (tw == null)
 			tw = createToolWindow(name);
@@ -70,7 +72,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public DockingLayout getDockingLayout(ViewConfig config) {
+	public DockingLayout getDockingLayout(ViewConfig config)
+	{
 		MyDoggyDockingLayout layout = new MyDoggyDockingLayout();
 		layout.setWindowManager(wm);
 		View[] views = jEdit.getViews();
@@ -80,11 +83,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return layout;
 	}
 
-	private String getToolWindowID(String dockableName) {
+	private String getToolWindowID(String dockableName)
+	{
 		return dockableName;
 	}
 	
-	private ToolWindow getToolWindow(String dockableName) {
+	private ToolWindow getToolWindow(String dockableName)
+	{
 		return wm.getToolWindow(getToolWindowID(dockableName));
 	}
 	
@@ -107,14 +112,16 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public boolean isDockableWindowVisible(String name) {
+	public boolean isDockableWindowVisible(String name)
+	{
 		ToolWindow tw = getToolWindow(name);
 		if (tw == null)
 			return false;
 		return (tw.isVisible());
 	}
 
-	private void loadMyDoggyLayout(String filename) {
+	private void loadMyDoggyLayout(String filename)
+	{
 		FileInputStream inputStream;
 		try {
 			inputStream = new FileInputStream(filename);
@@ -149,18 +156,22 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return;
 	}
 
-	public class PersistenceCallback implements PersistenceDelegateCallback {
+	public class PersistenceCallback implements PersistenceDelegateCallback
+	{
 		public Content contentNotFound(ToolWindowManager toolWindowManager,
-				String contentId) {
+				String contentId)
+		{
 			return null;
 		}
 		public ToolWindow toolwindowNotFound(
-				ToolWindowManager toolWindowManager, String toolWindowId) {
+				ToolWindowManager toolWindowManager, String toolWindowId)
+		{
 			return createToolWindow(toolWindowId);
 		}
 	}
 	
-	private ToolWindow createToolWindow(String name) {
+	private ToolWindow createToolWindow(String name)
+	{
 		String title = getDockableTitle(name);
 		JComponent window = getDockable(name);
 		String position = getDockablePosition(name); 
@@ -177,9 +188,11 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 	
 	@Override
-	public void showDockableWindow(String name) {
+	public void showDockableWindow(String name)
+	{
 		ToolWindow tw = getToolWindow(name);
-		if (tw != null) {
+		if (tw != null)
+		{
 			tw.setActive(true);
 			return;
 		}
@@ -188,7 +201,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		tw.setActive(true);
 	}
 
-	private ToolWindowAnchor position2anchor(String position) {
+	private ToolWindowAnchor position2anchor(String position)
+	{
 		if (position.equals(DockableWindowManager.LEFT))
 			return ToolWindowAnchor.LEFT;
 		if (position.equals(DockableWindowManager.BOTTOM))
@@ -199,7 +213,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public void setMainPanel(JPanel panel) {
+	public void setMainPanel(JPanel panel)
+	{
 		wm.getContentManager().addContent("main", "main", null, panel);
 	}
 
