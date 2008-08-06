@@ -44,7 +44,6 @@ import java.awt.event.MouseMotionListener;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-import java.util.ArrayList;
 
 /**
  * A tabbed pane that contains a text area.  The text area's buffer is
@@ -72,7 +71,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 	private final MouseMotionHandler mouseMotionHandler;
 
 	private final Set<Buffer> knownBuffers;
-	private java.util.List<Buffer> knownBuffersOrdered;
 
 	/**
 	 * Creates a new set of buffer tabs that is attached to an EditPane,
@@ -89,7 +87,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		mouseHandler = new MouseHandler();
 		mouseMotionHandler = new MouseMotionHandler();
 		knownBuffers = Collections.synchronizedSet(new HashSet<Buffer>());
-		knownBuffersOrdered = Collections.synchronizedList(new ArrayList<Buffer>());
 	}
 
 
@@ -192,23 +189,17 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 				{
 					try
 					{
-
 						Buffer buffer = editPane.getBuffer();
 						int index = bufferSet.indexOf(buffer);
 						if (!knownBuffers.contains(buffer))
 						{
 							// we don't know this buffer yet, let's add it now by simulation
 							// of a bufferAdded event
-							if (index == -1)
-								Log.log(Log.ERROR, this, new Exception());
-							else
+							if (index != -1)
 							{
-								bufferSet = null;
-								setBufferSet(editPane.getBufferSet());
 								bufferAdded(buffer, index);
 							}
 						}
-						index = knownBuffersOrdered.indexOf(buffer);
 						changeHandler.setEnabled(false);
 						updateColorAt(getSelectedIndex());
 						setSelectedIndex(index);
@@ -233,9 +224,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		{
 			changeHandler.setEnabled(false);
 			knownBuffers.remove(buffer);
-			int i = knownBuffersOrdered.indexOf(buffer);
-			knownBuffersOrdered.remove(i);
-			removeTabAt(i);
+			removeTabAt(index);
 
 
 			if (getTabCount() > 0 && super.indexOfComponent(textArea) == -1)
@@ -278,7 +267,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			getUI().uninstallUI(this);
 			changeHandler.setEnabled(false);
 			knownBuffers.add(buffer);
-			knownBuffersOrdered.add(index, buffer);
 			//ColorTabs.instance().setEnabled( false );
 
 			Component component = null;
@@ -312,7 +300,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		}
 		else
 			updateColorAt(index);
-		
+
 		//CES: Force correct color for new buffer tab
 		//this.updateColorAt(this.getSelectedIndex());
 
@@ -344,7 +332,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 	{
 		changeHandler.setEnabled(false);
 		knownBuffers.clear();
-		knownBuffersOrdered.clear();
 		for (int i = getTabCount() - 1; i >= 0; i--)
 		{
 			removeTabAt(i);
@@ -429,7 +416,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			if (oldBufferSet != null)
 			{
 				knownBuffers.clear();
-				knownBuffersOrdered.clear();
 				for (int i = getTabCount();i>0;i--)
 				{
 					removeTabAt(0);
@@ -494,7 +480,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		{
 			return;
 		}
-		if (index < 0 || bufferSet.size() <= index)
+		if (index < 0)
 		{
 			return;
 		}
