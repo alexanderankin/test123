@@ -24,6 +24,7 @@
 package cswilly.jeditPlugins.spell;
 
 import cswilly.spell.EngineManager;
+import cswilly.spell.Engine;
 import cswilly.spell.AspellEngine;
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
@@ -54,6 +55,7 @@ public class AspellEngineManager implements EngineManager
   public static final String FILTER_AUTO						= "AUTO";					
   public static final String FILTERS_PROP						= "spell-check-filter";					
 
+  
   public static enum AspellMarkupMode{
 	  NO_MARKUP_MODE("aspellNoMarkupMode"),
 	  MANUAL_MARKUP_MODE("aspellManualMarkupMode"),
@@ -72,37 +74,38 @@ public class AspellEngineManager implements EngineManager
   }
 
 
-  	private AspellEngine engine;
+  	private Map<List<String>,AspellEngine> engines;
+	
 	private String oldAspellExeFilename;
 	private List<String> oldAspellCommandLine;
 	
-	public AspellEngine getEngine(String mode,String language) throws SpellException
-  {
-	  List<String> aspellCommandLine = initCommandLine(mode,language);
-	String aspellExeFilename = getAspellExeFilename();
+	public AspellEngineManager(){
+		engines = new HashMap<List<String>,AspellEngine>();
+	}
 	
-	if(engine == null
-		|| !oldAspellExeFilename.equals(aspellExeFilename)
-		|| !oldAspellCommandLine.equals(aspellCommandLine)){
+	public Engine getEngine(String mode,String language,boolean terse) throws SpellException
+  {
+	  List<String> aspellCommandLine = initCommandLine(mode,language,terse);
+	  String aspellExeFilename = getAspellExeFilename();
+	  aspellCommandLine.add(aspellExeFilename);
+	  AspellEngine engine = engines.get(aspellCommandLine);
+	if(engine == null || engine.isStopped()){
+		aspellCommandLine.remove(aspellCommandLine.size()-1);
 		String[]aspellArgs = (String[])aspellCommandLine.toArray(new String[aspellCommandLine.size()]);
 
 		String logStr = "command line is:"+aspellExeFilename;
 		for(int i=0;i<aspellArgs.length;i++)logStr+=" "+aspellArgs[i];
 		Log.log(Log.DEBUG,this,logStr);
-
-		if(engine!=null){
-			engine.stop();
-			engine = null;
-		}
-
-		oldAspellExeFilename = aspellExeFilename;
-		oldAspellCommandLine = aspellCommandLine;
+	
 		engine = new AspellEngine(aspellExeFilename,aspellArgs);
+		
+		aspellCommandLine.add(aspellExeFilename);
+		engines.put(aspellCommandLine,engine);
 	}
 	return engine;
   }
-  
-  private List<String> initCommandLine(String mode, String language){
+    
+  private List<String> initCommandLine(String mode, String language,boolean terse){
 	 String dict = language;
 	 if(dict == null) dict = SpellCheckPlugin.getMainLanguage();
 
@@ -130,6 +133,10 @@ public class AspellEngineManager implements EngineManager
 	  //aspellCommandLine.add("--language-tag=" + aspellMainLanguage);
 	}
 
+	if( terse){
+		aspellCommandLine.add("--dont-suggest");
+	}
+	
 	String aspellOtherParams = getAspellOtherParams();
 	//TODO : fix params with spaces protected with quotes
 	for(StringTokenizer st=new StringTokenizer(aspellOtherParams);st.hasMoreTokens();){
@@ -192,11 +199,11 @@ public class AspellEngineManager implements EngineManager
   }
   
   public void stop(){
-	  if(engine!=null){
+	  for(Engine engine:engines.values()){
 		  Log.log(Log.DEBUG,this,"stopping the Aspell engine");
 		  engine.stop();
-		  engine = null;
 	  }
+	  engines.clear();
   }
    
   

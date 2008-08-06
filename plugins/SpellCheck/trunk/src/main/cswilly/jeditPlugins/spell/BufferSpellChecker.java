@@ -30,6 +30,7 @@ import cswilly.spell.Result;
 import cswilly.spell.Validator;
 import cswilly.spell.SpellSource;
 import cswilly.spell.SpellEffector;
+import cswilly.spell.Validator;
 import cswilly.spell.ChangeWordAction;
 
 
@@ -135,9 +136,6 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	}
 	
 	public void done(){
-		selections = null;
-		iSelection = -1;
-		iLine = -1;
 		if(input!=null)input.readUnlock();
 	}
 
@@ -170,10 +168,60 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 				throw (SpellException)e;
 			else
 				throw new SpellException( "Error applying changes", e );
-		}
-		finally{
+		}                 
+		finally{                       
 				input.endCompoundEdit();
-				input=null;
+				input=null;                    
+		}
+	}
+	
+	public Validator getValidator(){
+		return new BufferValidator();
+	}
+	
+	private class BufferValidator implements Validator{
+		
+		public
+		boolean validate( int lineNum, String line, Result result ){
+			if(selections==null)throw new IllegalStateException("validate not between BufferSpellChecker.start() and done()");
+			int startOffset = result.getOffset()-1;
+			int endOffset = startOffset+result.getOriginalWord().length();
+			int lineOffset = input.getLineStartOffset(lineNum)+startOffset;
+			
+			Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
+			for(int iSelection=0;iSelection<selections.length;iSelection++){
+				Log.log(Log.DEBUG,BufferValidator.class,"selection:"+selections[iSelection]
+					+selections[iSelection].getStartLine()
+					+" "
+					+ selections[iSelection].getEndLine()
+					+" "
+					+ selections[iSelection].getStart(input,lineNum)
+					+" "
+					+selections[iSelection].getEnd(input,lineNum));
+				if(selections[iSelection].getStartLine()<=lineNum
+					&& selections[iSelection].getEndLine()>=lineNum
+					&& startOffset>=selections[iSelection].getStart(input,lineNum)
+					&& endOffset<=selections[iSelection].getEnd(input,lineNum)
+				){
+				Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" in selection");
+				Selection s = new Selection.Range(lineOffset,lineOffset+result.getOriginalWord().length());
+				area.setSelection(s);
+				area.scrollTo(lineNum,startOffset,false);
+				return true;
+				}
+			}
+			
+			//out of selection
+			result.setType(Result.OK);
+			return true;
+		}
+		
+		public void start(){}
+		
+		public void done(){
+			selections = null;
+			iSelection = -1;
+			iLine = -1;
 		}
 	}
 }

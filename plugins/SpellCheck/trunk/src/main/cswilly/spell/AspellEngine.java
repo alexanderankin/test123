@@ -112,6 +112,7 @@ class AspellEngine
   public List<Result> checkLine( String line )
     throws SpellException
   {
+	  if(_aSpellProcess==null)throw new SpellException("Aspell engine is stopped");
     try
     {
       List<Result> results = new ArrayList<Result>();
@@ -163,6 +164,11 @@ class AspellEngine
   void stop()
   {
     _aSpellProcess.destroy();
+	_aSpellProcess=null;
+  }
+  
+  public boolean isStopped(){
+	  return _aSpellProcess == null;
   }
   
   private String readLine() throws SpellException,IOException{

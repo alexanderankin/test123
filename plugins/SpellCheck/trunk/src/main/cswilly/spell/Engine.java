@@ -48,6 +48,8 @@ interface Engine
 
   public void stop();
 	
+  public boolean isStopped();
+  
   // to be defined
  //public void addWord( String word );
 }

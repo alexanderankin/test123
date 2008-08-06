@@ -28,6 +28,8 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -35,6 +37,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.net.URL;
 
 /**
@@ -73,49 +77,24 @@ class ValidationDialog
   private       JTextField  _changeToTextField;
   private       JList       _suggestionsJList;
   private		DefaultListModel	_suggestionsModel;
-  private       UserAction  _userAction         = CANCEL;
   private       String      _title              = "Spell Check, Release R004";
   private		JLabel		_ignoredWordsLabel;
   private	    AbstractAction		_previousAction;
+  private	    AbstractAction		_suggestAction;
   // ??? bad to have release hardocoded here. Fix later...right.
   private       static Point       _location           = new Point( 100, 100 );
 
-  public static final UserAction ADD        = new UserAction( "Add" );
-  public static final UserAction CANCEL     = new UserAction( "Cancel" );
-  public static final UserAction CHANGE     = new UserAction( "Change" );
-  public static final UserAction CHANGE_ALL = new UserAction( "Change All" );
-  public static final UserAction IGNORE     = new UserAction( "Ignore" );
-  public static final UserAction IGNORE_ALL = new UserAction( "Ignore All" );
-  public static final UserAction PREVIOUS = new UserAction( "Previous" );
 
-
-
+  private boolean _done;
+  private Callback _callback;
+  private SpellException _exception;
+  
   public ValidationDialog( Frame owner)
   {
     super( owner );
 	_init();
   }
   
-  public ValidationDialog( Frame owner, String  originalWord, List suggestions )
-  {
-    super( owner );
-    _init();
-    refresh(originalWord,suggestions,false,false);
-  }
-
-  public ValidationDialog( Dialog owner, String  originalWord, List suggestions )
-  {
-    super( owner );
-    _init();
-    refresh(originalWord,suggestions,false,false);
-  }
-
-  public ValidationDialog( String  originalWord, List suggestions )
-  {
-    super();
-    _init();
-    refresh(originalWord,suggestions,false,false);
-  }
 
   public
   void dispose()
@@ -125,33 +104,23 @@ class ValidationDialog
     super.dispose();
   }
 
-  public
-  UserAction getUserAction()
-  {
-    return _userAction;
+  public boolean showAndGo(Result firstResult,Callback callback)throws SpellException{
+	  _callback=callback;
+	  refresh(firstResult);
+	  _done=true;
+	  setVisible(true);
+	  if(_exception!=null)throw _exception;
+	  return _done;
   }
 
-  public UserAction getUserAction(String originalWord, List<String>suggestions,boolean ignoredWords,boolean previousAvailable){
-	  refresh(originalWord,suggestions,ignoredWords,previousAvailable);
-	  setVisible(true);
-	  return _userAction;
-  }
-  /**
-   * Returns the replacement word selected by the user
-   *<p>
-   * The returned value only makes sense if the user action is either CHANGE
-   * or CHANGE_ALL. Should be ignored for any other action.
-   *<p>
-   * @return the replacement word selected by the user as a String
-   */
-  public
-  String getSelectedWord()
+
+  private String getSelectedWord()
   {
     return _changeToTextField.getText();
   }
 
   /**
-  * Overriden to register {@link CloseDialogActionListener} to be called when
+  * Overridden to register {@link CloseDialogActionListener} to be called when
   * the escape key is pressed.
    */
   protected
@@ -159,8 +128,22 @@ class ValidationDialog
   {
     KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     JRootPane rootPane = new JRootPane();
+
     ActionListener actionListener = new CloseDialogActionListener();
     rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+	// final String ESC_ACTION_KEY = "ESC_ACTION_KEY";
+    // rootPane.getActionMap().put(
+    //     ESC_ACTION_KEY,
+	// 	new CancelAction()
+    //     );
+	// rootPane.getInputMap(
+    //     JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+    // ).put(
+    //     KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+    //     ESC_ACTION_KEY
+    // );
+
     return rootPane;
   }
 
@@ -169,10 +152,9 @@ class ValidationDialog
    * Convenience method add lableled component
    */
   private
-  void _addRow( Box mainBox, JComponent labelComponent, Component component )
+  Box _createRow( JComponent labelComponent, Component component )
   {
     Box hBox = Box.createHorizontalBox();
-    mainBox.add( hBox );
 
     Dimension labelComponentDim =
       new Dimension( 100, labelComponent.getPreferredSize().height );
@@ -184,6 +166,7 @@ class ValidationDialog
     hBox.add( Box.createHorizontalGlue() );
     hBox.add( component );
     hBox.add( Box.createHorizontalGlue() );
+	return hBox;
   }
 
   /**
@@ -234,11 +217,15 @@ class ValidationDialog
   {
     setModal( true );
     setTitle( _title );
-	// addWindowListener(new WindowAdapter(){
-	// 		public void windowClosing(){
-	// 			if(_userAction==null)_userAction=CANCEL;
-	// 		}
-	// });
+	setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+	addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				if(_callback.cancel()){
+					ValidationDialog.this.setVisible(false);
+				}
+			}
+	});
     // //--
     //-- Buttons
     //--
@@ -249,16 +236,20 @@ class ValidationDialog
     JButton changeAllButton = _configButton( new ChangeAllAction() );
     JButton ignoreButton    = _configButton( new IgnoreAction() );
     JButton ignoreAllButton = _configButton( new IgnoreAllAction() );
+	_suggestAction = new SuggestAction();
+    JButton suggestButton    = _configButton( _suggestAction );
 	_previousAction = new PreviousAction();
     JButton previousButton = _configButton( _previousAction );
+    JButton doneButton    = _configButton( new DoneAction() );
 
     //--
     //-- Text Fields
     //--
     _changeToTextField = new JTextField();
 	_changeToTextField.setName("changeTo");
-    _changeToTextField.setMinimumSize( new Dimension( 200, _changeToTextField.getPreferredSize().height ) );
+    _changeToTextField.setMinimumSize( new Dimension( 100, _changeToTextField.getPreferredSize().height ) );
     _changeToTextField.setMaximumSize( new Dimension( Integer.MAX_VALUE, _changeToTextField.getPreferredSize().height ) );
+	_changeToTextField.getDocument().addDocumentListener(new SuggestListener());
 
     Dimension textFieldDim =
       new Dimension( Integer.MAX_VALUE, _changeToTextField.getPreferredSize().height );
@@ -297,10 +288,12 @@ class ValidationDialog
     JLabel jLabel;
 
     jLabel = new JLabel( "Not in Dictionary:" );
-    _addRow( mainBox, jLabel, _originalWordTextField );
+    mainBox.add(_createRow(jLabel, _originalWordTextField ));
 
     jLabel = new JLabel( "Change to:" );
-    _addRow( mainBox, jLabel, _changeToTextField );
+    hBox = _createRow( jLabel, _changeToTextField );
+	hBox.add(suggestButton);
+	mainBox.add(hBox);
 
     jLabel = new JLabel( "Suggestions:" );
     hBox = Box.createHorizontalBox();
@@ -313,19 +306,21 @@ class ValidationDialog
 
     getRootPane().setDefaultButton( ignoreButton );
     JPanel buttonPanel = new JPanel();
-    buttonPanel.setPreferredSize( new Dimension( 200, 100 ) );
+    JPanel navigPanel = new JPanel();
+    buttonPanel.setPreferredSize( new Dimension( 200, 130 ) );
     buttonPanel.add( ignoreButton );
     buttonPanel.add( ignoreAllButton );
     buttonPanel.add( changeButton );
     buttonPanel.add( changeAllButton );
     buttonPanel.add( addButton );
-    buttonPanel.add( cancelButton );
+    navigPanel.add( cancelButton );
     buttonPanel.add( aboutButton );
-    buttonPanel.add( previousButton );
+    navigPanel.add( previousButton );
+    navigPanel.add( doneButton );
     hBox.add( buttonPanel );
     hBox.add( Box.createHorizontalGlue() );
 
-    _addRow( mainBox, jLabel, hBox );
+    mainBox.add(_createRow(jLabel, hBox ));
 
 	//---- message about ignored words
 	hBox = Box.createHorizontalBox();
@@ -335,7 +330,9 @@ class ValidationDialog
 	hBox.add(Box.createHorizontalGlue() );
 	mainBox.add(Box.createVerticalGlue());
 	mainBox.add(hBox);
-	
+
+	mainBox.add(Box.createVerticalGlue());
+	mainBox.add(navigPanel);
     if( _location != null )
     setLocation( _location );
     pack();
@@ -344,59 +341,58 @@ class ValidationDialog
   }
 
 
-  private void refresh(String originalWord, List suggestions,boolean ignoredWords, boolean hasPrevious){
-	  _originalWordTextField.setText(originalWord);
-      while(_suggestionsModel.getSize()!=0)_suggestionsModel.remove(0);
+  private void refresh(Result res){
+	  if(res == null){
+		  setVisible(false);
+		  return;
+	  }
 	  
-	  if(ignoredWords){
+	  _originalWordTextField.setText(res.getOriginalWord());
+	  _changeToTextField.setText(res.getOriginalWord());
+	  
+	  if(_callback.hasIgnored()){
 		  _ignoredWordsLabel.setVisible(true);
 	  }else{
 		  _ignoredWordsLabel.setVisible(false);
 	  }
 
-	  if(hasPrevious){
+	  if(_callback.hasPrevious()){
 		  _previousAction.setEnabled(true);
 	  }else{
 		  _previousAction.setEnabled(false);
 	  }
+	  
+	  refreshList(res.getSuggestions(),true);
+	  
+  }
+  
+
+  private void refreshList(List<String> suggestions,boolean changeSelection){
+      while(_suggestionsModel.getSize()!=0)_suggestionsModel.remove(0);
+
 	  if (suggestions == null || suggestions.isEmpty() )
 	  {
 		  _suggestionsModel.addElement("(no suggestion)");
 		  _suggestionsJList.setForeground( Color.lightGray );
-		  _changeToTextField.setText(originalWord);
+		  if(changeSelection){
 		  _changeToTextField.grabFocus();
+		  }
 	  }
 	  else
 	  {
 		  for(int i=0;i<suggestions.size();i++)
 			  _suggestionsModel.addElement(suggestions.get(i) );
-		  _suggestionsJList.setSelectedIndex( 0 );
-		  _changeToTextField.setText(suggestions.get(0).toString());
+
+		  if(changeSelection){
+			  _suggestionsJList.setSelectedIndex( 0 );
+			  _changeToTextField.setText(suggestions.get(0).toString());
+			  _suggestionsJList.grabFocus();
+		  }
+
 		  _suggestionsJList.setForeground( null );
-		  _suggestionsJList.grabFocus();
 	  }
-	  _userAction=CANCEL;
+	  _suggestAction.setEnabled(false);
   }
-  
-  /**
-   * Models a enum of UserActions
-   */
-  public static class UserAction
-  {
-    private final String _name;
-
-    private UserAction( String name )
-    {
-      _name = name;
-    }
-
-    public
-    String toString()
-    {
-      return _name;
-    }
-  }
-
 
   //--
   //-- Availables Actions
@@ -426,6 +422,49 @@ class ValidationDialog
     }
   }
 
+  private class SuggestAction
+    extends AbstractAction
+  {
+    private SuggestAction()
+    {
+      super( "Suggest" );
+	  putValue(Action.SHORT_DESCRIPTION,"Verify replacement word");
+    }
+
+    public
+    void actionPerformed( ActionEvent event )
+    {
+		try{
+			Result r = _callback.suggest(getSelectedWord());
+			if(r.getType()==Result.OK){
+				refreshList(Arrays.asList(new String[]{r.getOriginalWord()}),false);
+			}else{
+				refreshList(r.getSuggestions(),false);
+			}
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
+    }
+  }
+  
+  private class DoneAction
+    extends AbstractAction
+  {
+    private DoneAction()
+    {
+      super( "Done" );
+	  putValue(Action.SHORT_DESCRIPTION,"exit current session and apply changes");
+    }
+
+    public
+    void actionPerformed( ActionEvent event )
+    {
+		_callback.done();
+		setVisible(false);
+    }
+  }
+
   private class AddAction
     extends AbstractAction
   {
@@ -440,9 +479,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = ADD;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.add());
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -458,9 +500,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = PREVIOUS;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.previous());
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -476,9 +521,10 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = CANCEL;
-     //dispose();
-		setVisible(false);
+	  if(_callback.cancel()){
+		  _done = false;
+		  setVisible(false);
+	  }
     }
   }
 
@@ -496,9 +542,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = CHANGE;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.change(getSelectedWord()));
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -516,9 +565,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = CHANGE_ALL;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.changeAll(getSelectedWord()));
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -536,9 +588,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-      _userAction = IGNORE;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.ignore());
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -556,9 +611,12 @@ class ValidationDialog
     public
     void actionPerformed( ActionEvent event )
     {
-		_userAction = IGNORE_ALL;
-     //dispose();
-		setVisible(false);
+		try{
+			refresh(_callback.ignoreAll());
+		}catch(SpellException spe){
+			_exception = spe;
+			setVisible(false);
+		}
     }
   }
 
@@ -568,10 +626,11 @@ class ValidationDialog
     public void
     actionPerformed(ActionEvent actionEvent)
     {
-      //_userAction = CANCEL;
-     //dispose();
-		setVisible(false);
-    }
+	  if(_callback.cancel()){
+		  _done = false;
+		  setVisible(false);
+	  }
+   }
   }
 
 
@@ -584,7 +643,10 @@ class ValidationDialog
 	  Object selectedValue = _suggestionsJList.getSelectedValue();
       if( selectedValue !=null )
       {
-        _changeToTextField.setText( (String)selectedValue );
+		  if(!_changeToTextField.getText().equals(selectedValue)){
+			_changeToTextField.setText( (String)selectedValue );
+			_suggestAction.setEnabled(false);
+		  }
       }
       else
       {
@@ -593,4 +655,49 @@ class ValidationDialog
     }
   }
 
+  private class SuggestListener implements DocumentListener{
+	  public void changedUpdate(DocumentEvent e){}
+	  public void insertUpdate(DocumentEvent e){
+		  enableSuggest();
+	  }
+	  public void removeUpdate(DocumentEvent e){
+		  enableSuggest();
+	  }
+	  private void enableSuggest(){
+		  String text = _changeToTextField.getText();
+		  if(text.length()==0){
+			  _suggestAction.setEnabled(false);
+			  return;
+		  }
+		  
+		  for(int i = 0; i < _suggestionsModel.getSize(); i++) {
+			  if(_suggestionsModel.getElementAt(i).equals(text)){
+				  _suggestAction.setEnabled(false);
+				  _suggestionsJList.setSelectedIndex(i);
+				  _suggestionsJList.ensureIndexIsVisible(i);
+				  return;
+			  }
+		  }
+		  _suggestAction.setEnabled(true);
+	  }
+  }
+  
+  public static interface Callback{
+	public Result add()throws SpellException;
+	
+	public Result change(String newWord)throws SpellException;
+	public Result changeAll(String newWord)throws SpellException;
+	
+	public Result ignore()throws SpellException;
+	public Result ignoreAll()throws SpellException;
+	
+	public Result suggest(String newWord)throws SpellException;
+
+	public Result previous()throws SpellException;
+	public boolean cancel();
+	public void done();
+	
+	public boolean hasPrevious();
+	public boolean hasIgnored();
+}
 }

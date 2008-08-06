@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.text.Position;
 
@@ -37,6 +38,7 @@ import cswilly.spell.Validator;
 import cswilly.spell.ValidationDialog;
 import cswilly.spell.WordListValidator;
 import cswilly.spell.SpellCoordinator;
+import cswilly.spell.SpellSource;
 import cswilly.spell.SpellAction;
 import cswilly.spell.ChangeWordAction;
 import cswilly.spell.Engine;
@@ -63,10 +65,10 @@ class BufferDialogValidator implements SpellCoordinator
   private TextArea area;
   private JEditBuffer buffer;
   private Position savedPosition;
-  private ValidationDialog validationDialog;
   private WordListValidator userDict;
   private Engine engine;  
-  private List<SpellAction> history;
+  private Engine engineForSuggest;
+  private Validator        sourceValidator = null;
 
   /**
    * Validates a single correction
@@ -82,82 +84,37 @@ class BufferDialogValidator implements SpellCoordinator
   private
   SpellAction validate(int lineNum, String line,Result result )
   {
-    SpellAction action = null;
-	String replacementWord;
+	  Log.log(Log.DEBUG,BufferDialogValidator.class,"validate("+result+")");
+	if(result.getType() == Result.OK) return new NopAction(null);
 
 	if(ignoreAll!=null)ignoreAll.validate(lineNum,line, result);
 	if(result.getType() == Result.OK) return new NopAction(null);
+	
 	if(userDict!=null)userDict.validate(lineNum, line, result);
 	if(result.getType() == Result.OK) return new NopAction(null);
 	
 	
 	if( _changeAllMap.containsKey( result.getOriginalWord() ) )
 	{
-	  action = new ChangeWordAction(null,
+	  return new ChangeWordAction(null,
 		  		lineNum,
 				result.getOffset(),
 				_changeAllMap.get( result.getOriginalWord() ),
 				result.getOriginalWord());
 	}
     
+	
+	//no automatic correction...
+	
 	// ensures visible and selected
-	int offset = buffer.getLineStartOffset(lineNum)+result.getOffset()-1;
-	Selection s = new Selection.Range(offset,offset+result.getOriginalWord().length());
-	area.setSelection(s);
-	/* Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
-	   Note : should be OK now, as I don't modify the buffer...
-	*/
-	area.scrollTo(lineNum,result.getOffset()-1,false);
+	// int offset = buffer.getLineStartOffset(lineNum)+result.getOffset()-1;
+	// Selection s = new Selection.Range(offset,offset+result.getOriginalWord().length());
+	// area.setSelection(s);
+	
+	sourceValidator.validate(lineNum,line,result);
+	if(result.getType() == Result.OK) return new NopAction(null);
 
-    ValidationDialog.UserAction userAction =
-		validationDialog.getUserAction(result.getOriginalWord(),
-				result.getSuggestions(),
-				ignoreAll!=null && ignoreAll.getAllWords().size()>0,
-				history.size()>0);
-    if( userAction == validationDialog.CANCEL )
-    {
-      action = new  CancelAction(null);
-    }
-    else if( userAction == validationDialog.PREVIOUS )
-    {
-      action = new  PreviousAction(null);
-    }
-    else if( userAction == validationDialog.CHANGE_ALL )
-    {
-      _changeAllMap.put( result.getOriginalWord(),
-                         validationDialog.getSelectedWord() );
-      action = new ChangeAllAction(null
-		  			,lineNum
-					,result.getOffset()
-					,result.getOriginalWord()
-					,validationDialog.getSelectedWord());
-    }
-    else if( userAction == validationDialog.CHANGE )
-    {
-      action = new ChangeWordAction(null
-		  			,lineNum
-					,result.getOffset()
-					,result.getOriginalWord()
-					,validationDialog.getSelectedWord());
-    }
-    else if( userAction == validationDialog.IGNORE_ALL )
-    {
-		replacementWord = result.getOriginalWord();
-		if(ignoreAll!=null)ignoreAll.addWord(replacementWord);
-		
-		action = new IgnoreAllAction(null,replacementWord);
-    }
-    else if( userAction == validationDialog.IGNORE )
-    {
-		action = new NopAction(null);
-    }
-    else if( userAction == validationDialog.ADD )
-    {
-      replacementWord = result.getOriginalWord();
-	  if(userDict!=null)userDict.addWord(replacementWord);
-	  action = new AddAction(null,replacementWord);
-    }
-	return action;
+	return null;
   }
 
 
@@ -166,7 +123,6 @@ class BufferDialogValidator implements SpellCoordinator
 	  this.area = ta;
 	  this.buffer = ta.getBuffer();
 	  savedPosition = buffer.createPosition(ta.getCaretPosition());
-	  validationDialog = new ValidationDialog(((JEditTextArea)area).getView());
   }
 
   public void setUserDictionary(WordListValidator valid){
@@ -180,6 +136,10 @@ class BufferDialogValidator implements SpellCoordinator
   public void setEngine(Engine e){
 	  engine = e;
   }
+  
+  public void setEngineForSuggest(Engine e){
+	  engineForSuggest = e;
+  }
 
   /**
    */
@@ -188,72 +148,45 @@ class BufferDialogValidator implements SpellCoordinator
     throws SpellException
 	{
 		if(engine==null)throw new SpellException("No engine configured");
+		if(engineForSuggest==null)throw new SpellException("No engine configured for suggest");
 
 		boolean confirm = true;
-		//to prevent false undo when the user cancelled before any change was made
-		boolean changed = false;
-		
-		history = new ArrayList<SpellAction>();
-		
-		BufferSpellChecker source = new BufferSpellChecker(area);
-		source.start();
-		if(ignoreAll!=null)ignoreAll.start();
-		if(userDict!=null)userDict.start();
-		
-		int iLine = 0;
-		for(String line = source.getNextLine();confirm && line!=null;line = source.getNextLine())
-		{
-			if( line.trim().equals( "" ) )continue;
-
-			iLine=source.getLineNumber();
-
-			List<Result> results = engine.checkLine( line );
-			
-			for(int i=0;i<results.size();){
-				Result result = results.get(i);
-				SpellAction res = this.validate(iLine,line,result);
 				
-				if(res instanceof CancelAction){
-					confirm = false;
-					break;
-				}else if(res instanceof PreviousAction){
-					if(!history.isEmpty()){
-						undo();
-						if(i==0){
-							do{
-								assert(iLine>1);//history is not empty so there must be a line before
-								line = source.getPreviousLine();
-								iLine = source.getLineNumber();
-								results = engine.checkLine(line);
-								i = results.size()-1;
-							}while(results.size()==0);
-						}
-						else{
-							results = engine.checkLine(line);
-							i--;
-						}
-					}
-				}
-				else{
-					history.add(res);
-					i++;
-				}
+		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferDialogValidatorCallback callback = new BufferDialogValidatorCallback(source);
+
+		source.start();
+		try{
+			
+			sourceValidator = source.getValidator();
+	
+			if(ignoreAll!=null)ignoreAll.start();
+			if(userDict!=null)userDict.start();
+			
+			
+			Result firstRes = callback.firstResult();
+	
+			if(firstRes != null){
+				ValidationDialog validationDialog = new ValidationDialog(((JEditTextArea)area).getView());
+				confirm = validationDialog.showAndGo(firstRes,callback);
 			}
+		
+		}catch(SpellException spe){
+			engine.stop();
+			engineForSuggest.stop();
+			throw spe;
+		}finally{
+			source.done();//remove the lock
 		}
 
-		source.done();
+
 		if(confirm)
 		{
-			List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
-			for(SpellAction act:history){
-				if(act instanceof ChangeWordAction) changes.add((ChangeWordAction)act);
-			}
+			List<ChangeWordAction> changes = callback.getChanges();
 			if(!changes.isEmpty())source.apply(changes);
 		}
 		else{
-			for(SpellAction act:history){
-				act.undo();
-			}
+			callback.undoAll();
 		}
 		done();
 
@@ -271,15 +204,220 @@ class BufferDialogValidator implements SpellCoordinator
 	*/
   	  if(ignoreAll!=null)ignoreAll.done();
 	  if(userDict!=null)userDict.done();
+	  sourceValidator.done();
 	  userDict=null;
 	  ignoreAll=null;
   }
   
-  private void undo()
-  {
-	  SpellAction last = history.remove(history.size()-1);
-	  last.undo();
+  private class BufferDialogValidatorCallback implements ValidationDialog.Callback{
+	  private boolean confirm;
+	  
+	  private String line;
+	  private List<Result> results;
+	  private Result result;
+	  
+	  private int iLine;
+	  private int iResults;
+	  private SpellSource source;
+	  private List<HistoryNode> history;
+	  
+	  class HistoryNode{
+		  int iLine,iResult;
+		  String line;
+		  List<Result> results;
+		  SpellAction action;
+		  HistoryNode(int iLine,int iResult,String line,List<Result> results,SpellAction act){
+			  this.iLine=iLine;
+			  this.iResult=iResult;
+			  this.line = line;
+			  this.results = results;
+			  action = act;
+		  }
+	  }
+	  
+	  BufferDialogValidatorCallback(SpellSource source){
+		  iLine = 0;
+		  iResults = 0;
+		  results = null;
+		  result = null;
+		  this.source = source;
+		  history = new ArrayList<HistoryNode>();
+	  }
+	  
+	  List<ChangeWordAction> getChanges(){  
+		  List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
+		  for(HistoryNode node:history){
+			  if(node.action instanceof ChangeWordAction) changes.add((ChangeWordAction)node.action);
+		  }
+		  return changes;
+	  }
+	 
+	  void undoAll(){
+		for(HistoryNode node:history){
+			node.action.undo();
+		}
+	  }
+	  Result firstResult()throws SpellException{
+		  results = Collections.emptyList();
+		  line = "";
+		  return nextResult();
+	  }
+	  
+	  private Result nextResult()throws SpellException{
+		  
+		  //next line...
+		  if(results!=null && iResults>=results.size()){
+			  line = "";
+			  while(line != null && line.trim().equals("")){
+				  line = source.getNextLine();
+				  iLine=source.getLineNumber();
+				  Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"got line "+line);
+			  }
+			  
+			  if(line == null){
+				  results=null;
+				  result = null;
+				  return null;
+			  } else{
+				  results = engine.checkLine( line );
+				  System.out.println("results:"+results);
+				  iResults = 0;
+			  }
+		  }
+		  
+		  //next result
+		  while(iResults<results.size()){
+			  Result res = results.get(iResults);
+			  iResults++;
+			  SpellAction action = validate(iLine,line,res);
+			  if(action == null){
+				  result = res;
+				  return res;
+			  }
+			  else{
+				  history.add(new HistoryNode(iLine,iResults,line,results,action));
+			  }
+		  }
+		  
+		  return nextResult();//new line...
+	  }
+	  
+	  public Result add()throws SpellException{
+		  if(userDict!=null){
+			  history.add(new HistoryNode(iLine,iResults,line,results,
+				  new AddAction(null,result.getOriginalWord())));
+			  userDict.addWord(result.getOriginalWord());
+		  }else{
+			  history.add(new HistoryNode(iLine,iResults,line,results,new NopAction(null)));
+		  }
+		  return nextResult();
+	  }
+	  
+	  public Result change(String newWord)throws SpellException{
+		  history.add(new HistoryNode(iLine,iResults,line,results,
+			  new ChangeWordAction(null,
+				  iLine,
+				  result.getOffset(),
+				  result.getOriginalWord(),
+				  newWord)));
+		  return nextResult();
+	  }
+	  
+	  public Result changeAll(String newWord)throws SpellException{
+		  history.add(new HistoryNode(iLine,iResults,line,results,
+			  new ChangeAllAction(null,
+				  iLine,
+				  result.getOffset(),
+				  result.getOriginalWord(),
+				  newWord)));
+		  _changeAllMap.put(result.getOriginalWord(),newWord);
+		  return nextResult();
+	  }
+	  
+	  public Result ignore()throws SpellException{
+		  history.add(new HistoryNode(iLine,iResults,line,results,new NopAction(null)));
+		  return nextResult();
+	  }
+	  
+	  public Result ignoreAll()throws SpellException{
+		  if(ignoreAll==null)history.add(new HistoryNode(iLine,iResults,line,results,new NopAction(null)));
+		  else{
+			  history.add(new HistoryNode(iLine,iResults,line,results,
+				  new IgnoreAllAction(null,result.getOriginalWord())));
+			  ignoreAll.addWord(result.getOriginalWord());
+		  }
+		  return nextResult();
+	  }
+	  
+	  public Result suggest(String newWord)throws SpellException{
+		  if(newWord==null)throw new IllegalArgumentException("word for suggest shouldn't be null");
+		  List<Result> lr = engineForSuggest.checkLine(newWord);
+		  if(lr.size()>0){
+		  Result r = lr.get(0);
+		  
+		  if(r.getType() == Result.OK) return r;
+
+		
+		  if(ignoreAll!=null)ignoreAll.validate(0,newWord,r);
+		  if(r.getType() == Result.OK) return r;
+		
+		  if(userDict!=null)userDict.validate(0, newWord, r);
+		
+		  if(result.getType() == Result.OK) return r;
+		
+		
+		if( _changeAllMap.containsKey( r.getOriginalWord() ) )
+		{
+		  r.getSuggestions().add(0,_changeAllMap.get(r.getOriginalWord()));
+		}
+		return r;
+		  }else{
+			  return new Result(0,Result.NONE,null,newWord);
+		  }
+	  }
+	  
+	  public Result previous()throws SpellException{
+		  HistoryNode node = null;
+		  while(!history.isEmpty()&&node==null){
+			  node = history.remove(history.size()-1);
+			  if(node.results.get(node.iResult-1).getType()==Result.OK){
+				  node = null;
+			  }
+		  }
+		  if(node == null){
+			  Log.log(Log.ERROR,BufferDialogValidator.class,"previous called while history is empty");
+			  return null;
+		  }else{
+			  System.out.println("results are : "+results);
+			  iLine = node.iLine;
+			  iResults = node.iResult;
+			  line = node.line;
+			  results = node.results;
+			  result = results.get(iResults-1);
+			  while(source.getLineNumber()>iLine)source.getPreviousLine();
+			  node.action.undo();
+			  validate(iLine,line,result);
+			  System.out.println("results are now : "+results);
+			  return result;
+		  }
+	  }
+	  
+	  public boolean cancel(){
+		  confirm = false;
+		  //TODO : display confirm dialog...
+		  return true;
+	  }
+	  
+	  public void done(){confirm = true;}
+	  
+	  public boolean hasPrevious(){return !history.isEmpty();}
+	  
+	  public boolean hasIgnored(){return ignoreAll!=null && !ignoreAll.getAllWords().isEmpty();}
+	  
+	  boolean isConfirmed(){return confirm;}
+	  
   }
+  
   
   private class PreviousAction extends SpellAction{
 	  PreviousAction(Validator source){
@@ -287,7 +425,7 @@ class BufferDialogValidator implements SpellCoordinator
 	  }
 	  public void undo(){}
   }
-
+  
   private class CancelAction extends SpellAction{
 	  CancelAction(Validator source){
 		  super(source);
@@ -297,10 +435,10 @@ class BufferDialogValidator implements SpellCoordinator
   
   private class ChangeAllAction extends ChangeWordAction{
 	  ChangeAllAction(Validator source
-		  	, int line
-			, int offset
-			, String originalWord
-			, String newWord)
+		  , int line
+		  , int offset
+		  , String originalWord
+		  , String newWord)
 	  {
 		  super(source,line,offset,originalWord,newWord);
 	  }
@@ -308,7 +446,7 @@ class BufferDialogValidator implements SpellCoordinator
 		  _changeAllMap.remove(originalWord);
 	  }
   }
-
+  
   private class IgnoreAllAction extends SpellAction{
 	  private String word;
 	  IgnoreAllAction(Validator source, String word)
@@ -333,7 +471,7 @@ class BufferDialogValidator implements SpellCoordinator
 		  userDict.removeWord(word);
 	  }
   }
-
+  
   private class NopAction extends SpellAction{
 	  NopAction(Validator source){super(source);}
 	  public void undo(){}

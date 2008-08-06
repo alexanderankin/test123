@@ -173,4 +173,8 @@ public class TestUtils{
 	public static View view(){
 		return jeditFrame().targetCastedTo(View.class);
 	}
+	
+	public static void replaceText(JTextComponentFixture f,String text){
+		f.select(f.text()).deleteText().enterText(text);
+	}
 }

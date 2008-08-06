@@ -44,11 +44,11 @@ public interface EngineManager extends EBComponent
 	 * 
 	 * @param	mode	jEdit mode of the buffer (the manager is responsible for finding the right context-filter)
 	 * @param	language	language identifier to use. It should be one picked from getAlternateLangDictionaries().
+	 * @param	terse	wether the engine should make suggestions or not
 	 * @return 	a started Engine, with give mode and given language
 	 */
-	public AspellEngine getEngine(String mode,String language) throws SpellException;
-	
-	
+	public Engine getEngine(String mode,String language, boolean terse) throws SpellException;
+
 	/**
 	 * Asynchronously fetch available dictionaries.
 	 * @see cswilly.

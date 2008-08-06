@@ -94,7 +94,7 @@ public class AspellEngineManagerTest{
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("sgml","en");
+			e = manager.getEngine("sgml","en",true);
 			System.err.println("testGetEngine got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
@@ -110,7 +110,7 @@ public class AspellEngineManagerTest{
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("text","en");
+			e = manager.getEngine("text","en",true);
 			System.err.println("testMode text got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
@@ -127,7 +127,7 @@ public class AspellEngineManagerTest{
 		assertEquals(2,l.size());
 
 		try{
-			e = manager.getEngine("xml","en");
+			e = manager.getEngine("xml","en",true);
 			System.err.println("xml: got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
@@ -149,7 +149,7 @@ public class AspellEngineManagerTest{
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("text","en");
+			e = manager.getEngine("text","en",true);
 			System.err.println("lang got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
@@ -167,7 +167,7 @@ public class AspellEngineManagerTest{
 		assertEquals(1,l.size());
 
 		try{
-			e = manager.getEngine("text","fr");
+			e = manager.getEngine("text","fr",true);
 			System.err.println("fr got engine:"+e);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
@@ -189,7 +189,7 @@ public class AspellEngineManagerTest{
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("","en");
+			e = manager.getEngine("","en",true);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -201,7 +201,7 @@ public class AspellEngineManagerTest{
 		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString());
 		Engine e2 = null;
 		try{
-			e2 = manager.getEngine("","en");
+			e2 = manager.getEngine("","en",true);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -217,7 +217,7 @@ public class AspellEngineManagerTest{
 		AspellEngineManager manager = new AspellEngineManager();
 		Engine e = null;
 		try{
-			e = manager.getEngine("","en");
+			e = manager.getEngine("","en",true);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
@@ -227,11 +227,11 @@ public class AspellEngineManagerTest{
 		
 		Engine e2 = null;
 		try{
-			e2 = manager.getEngine("","en");
+			e2 = manager.getEngine("","en",true);
 		}catch(SpellException spe){
 			spe.printStackTrace(System.err);
 			fail("shouldn't throw"+spe.toString());
 		}
-		assertTrue("getEngine() returned stopped enfine",e!=e2);
+		assertTrue("getEngine() returned stopped engine",e!=e2);
 	}
 }

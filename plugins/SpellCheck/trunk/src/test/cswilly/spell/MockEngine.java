@@ -28,9 +28,11 @@ import java.util.ArrayList;
 public class MockEngine implements Engine{
 	private int index;
 	private List<List<Result>> lres;
-	
+	private boolean stopped;
 	public MockEngine(){
 		lres = new ArrayList<List<Result>>();
+		index = 0;
+		stopped = true;
 	}
 	
 	public void addResults(List<Result> res){
@@ -45,6 +47,7 @@ public class MockEngine implements Engine{
 		index = 0;
 	}
 	
-	public void stop(){}
+	public void stop(){stopped=true;}
 	
+	public boolean isStopped(){return stopped;}
 }

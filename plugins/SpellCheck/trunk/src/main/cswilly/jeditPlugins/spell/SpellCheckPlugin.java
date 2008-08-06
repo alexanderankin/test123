@@ -44,6 +44,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.util.Log;
 
 import java.io.*;
@@ -51,6 +52,7 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.regex.*;
 
 
 import java.util.concurrent.Future;
@@ -64,6 +66,7 @@ public class SpellCheckPlugin
   public static final String BUFFER_LANGUAGE_PROP				= "spell-check-buffer-lang";
   public static final String MAIN_LANGUAGE_PROP					= "spell-check-main-lang";
   public static final String BUFFER_IGNORE_ALL_LIST_PROP		= "spell-check-ignore-all-list";
+  public static final Pattern pat = Pattern.compile("user\\.(.*)\\.dict");
   
   //no problem : lightweight
   private static AspellEngineManager _engineManager = new AspellEngineManager();
@@ -127,7 +130,7 @@ public class SpellCheckPlugin
     try
     {
 
-		checker.setSpellEngine(getEngine(buffer));
+		checker.setSpellEngine(getEngine(buffer,true));
 		checker.setTextArea( view.getTextArea() );
 		boolean ret = checker.spellcheck();
 	  
@@ -142,6 +145,7 @@ public class SpellCheckPlugin
       Object[] args = { new String (e.getMessage()) };
       GUIUtilities.error( view, "spell-check-error", args);
     }
+	status.setMessage( "Spell check terminated with no error" );
   }
 
   
@@ -173,9 +177,9 @@ public class SpellCheckPlugin
   }
  
 
-  private static Engine getEngine(Buffer buffer) throws SpellException{
+  private static Engine getEngine(Buffer buffer,boolean terse) throws SpellException{
 	  if(buffer == null)throw new IllegalArgumentException("buffer can't be null");
-	return getEngineManager().getEngine(buffer.getMode().getName(),getBufferLanguage(buffer));
+	return getEngineManager().getEngine(buffer.getMode().getName(),getBufferLanguage(buffer),terse);
   }
   
   /**
@@ -235,7 +239,8 @@ public class SpellCheckPlugin
 	  validator.setUserDictionary(getUserDictionaryForLang(view, lang));
 	  validator.setIgnoreAll(getIgnoreAll(buffer));
 	  try{
-		  validator.setEngine(getEngine(buffer));
+		  validator.setEngine(getEngine(buffer,true));
+		  validator.setEngineForSuggest(getEngineManager().getEngine("text",getBufferLanguage(buffer),true));
 	  }catch(SpellException e){
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, "Error setting engine (Aspell).");
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, e);
@@ -266,18 +271,48 @@ public class SpellCheckPlugin
    
   
   public void handleMessage(EBMessage message){
-	  if(!jEdit.getBooleanProperty(SPELLCHECK_ON_SAVE_PROP))return;
 	  if(message instanceof BufferUpdate){
 		  final BufferUpdate bu = (BufferUpdate)message;
 		  if(BufferUpdate.SAVED == bu.getWhat()){
-			  new Thread("SpellCheck-"+bu.getBuffer().getName()){
-				  public void run(){
-					  checkBufferErrorList(bu.getView(), bu.getBuffer());
+			  File home = getHomeDir(null);
+			  if(home.getPath().equals(bu.getBuffer().getDirectory())){
+				  Matcher m = pat.matcher(bu.getBuffer().getName());
+				  if(m.matches()){
+					  String dictName = m.group(1);
+					  WordListValidator dict = userDicts.get(dictName);
+					  if(dict!=null){
+						  if(dict.isDirty()){
+							  GUIUtilities.error(null,"spell-check-dirty-dict",new String[]{dictName});
+							  return;
+						  }else{
+							  try{
+							  dict.load(new File(bu.getBuffer().getPath()));
+							  }catch(IOException ioe){
+								  	GUIUtilities.error( null, "spell-check-userdict-load-error.message", new String[]{dictName,ioe.getMessage()});
+							  }
+						  }
+					  }
 				  }
-			  }.start(); 
+			  }if(jEdit.getBooleanProperty(SPELLCHECK_ON_SAVE_PROP)){
+				  new Thread("SpellCheck-"+bu.getBuffer().getName()){
+					  public void run(){
+						  checkBufferErrorList(bu.getView(), bu.getBuffer());
+					  }
+				  }.start(); 
+			  }
 		  }else if(BufferUpdate.CLOSED == bu.getWhat()){
 			  if(ignoreAlls.containsKey(bu.getBuffer()))
 				  ignoreAlls.remove(bu.getBuffer());
+		  }else if(BufferUpdate.LOADED == bu.getWhat()){
+				  Matcher m = pat.matcher(bu.getBuffer().getName());
+				  if(m.matches()){
+					  String dictName = m.group(1);
+					  WordListValidator dict = userDicts.get(dictName);
+					  if(dict.isDirty()){
+						  GUIUtilities.error(null,"spell-check-dirty-dict",new String[]{dictName});
+						  return;
+					  }
+				  }
 		  }
 	  }
   }
@@ -307,7 +342,7 @@ public class SpellCheckPlugin
 	  return userDicts.get(lang);
   }
   
-  public static void saveDictionaries(View view){
+  private static File getHomeDir(View view){
 	  File home = EditPlugin.getPluginHome(SpellCheckPlugin.class);
 	  assert home != null;
 	  if(!home.exists()){
@@ -320,6 +355,11 @@ public class SpellCheckPlugin
 		  	GUIUtilities.error( view, "spell-check-plugin-home-error.message", new String[]{se.getMessage()});
 		  }
 	  }
+	  return home;
+  }
+  
+  public static void saveDictionaries(View view){
+	  File home = getHomeDir(view);
 	  for(String lang : userDicts.keySet()){
 		  WordListValidator dict = userDicts.get(lang);
 
@@ -357,5 +397,11 @@ public class SpellCheckPlugin
 		  String msg = jEdit.getProperty("spell-check-clear-ignore-all-none.message","");
 		  view.getStatus().setMessage(msg);
 	  }
+  }
+  
+  public static void browseUserDicts(View view){
+	  saveDictionaries(view);
+	  File home = getHomeDir(view);
+	  VFSBrowser.browseDirectory(view,home.getPath());
   }
 }

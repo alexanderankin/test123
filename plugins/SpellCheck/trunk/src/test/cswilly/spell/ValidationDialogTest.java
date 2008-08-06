@@ -59,15 +59,14 @@ import cswilly.jeditPlugins.spell.TestUtils;
  *	- result of button-clicking
  */
 public class ValidationDialogTest{
-	
 	@BeforeClass
-	public static void setUpjEdit(){
+	public static void setUpFrame(){
 		TestUtils.setUpjEdit();
-		//TestUtils.robot().settings().delayBetweenEvents(200);
+		TestUtils.robot().settings().delayBetweenEvents(200);
 	}
 
 	@AfterClass
-	public static  void tearDownjEdit(){
+	public static void tearDownjEdit(){
 		TestUtils.tearDownjEdit();
 	}
 
@@ -80,7 +79,9 @@ public class ValidationDialogTest{
 		
 		Thread spellThread = new Thread(){
 			public void run(){
-				valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false);
+				try{
+				valid.showAndGo(resS,new MockCallback());
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -109,7 +110,9 @@ public class ValidationDialogTest{
 
 		spellThread = new Thread(){
 			public void run(){
-				valid.getUserAction(resNONE.getOriginalWord(),resNONE.getSuggestions(),false,false);
+				try{
+				valid.showAndGo(resNONE,new MockCallback());
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -136,15 +139,25 @@ public class ValidationDialogTest{
 
 		final Result resS  = new Result(5,Result.SUGGESTION,Arrays.asList(new String[]{"wick","quick","Vick"}),"qwick");
 		
+		final AtomicReference<String>change = new AtomicReference<String>(null);
 		Thread spellThread = new Thread(){
 			public void run(){
-				valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false);
+				try{
+				valid.showAndGo(resS,
+					new MockCallback(){
+						public Result change(String newWord){
+							change.set(newWord);
+							return null;
+						}
+					});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
 		
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 
+		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		spellDialog.textBox("originalWord").requireText("qwick");
 		spellDialog.textBox("changeTo").requireText("wick");
 		
@@ -160,7 +173,7 @@ public class ValidationDialogTest{
 			spellThread.join(5000);
 		}catch(InterruptedException ie){}
 		
-		assertEquals("wick",valid.getSelectedWord());
+		assertEquals("wick",change.get());
 		assertTrue("validation didn't return", !spellThread.isAlive());
 	}
 	
@@ -172,11 +185,16 @@ public class ValidationDialogTest{
 
 		final Result resS  = new Result(5,Result.SUGGESTION,Arrays.asList(new String[]{"wick","quick","Vick"}),"qwick");
 		
-		final AtomicReference<ValidationDialog.UserAction> action = new AtomicReference<ValidationDialog.UserAction>(null);
+		final AtomicReference<Boolean> action = new AtomicReference<Boolean>(null);
 		
 		Thread spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false));
+				try{
+				valid.showAndGo(resS,
+					new MockCallback(){
+						public Result change(String s){action.set(Boolean.TRUE);return null;}
+					});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -191,13 +209,18 @@ public class ValidationDialogTest{
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
 				
-		assertEquals(ValidationDialog.CHANGE,action.get());
+		assertEquals(Boolean.TRUE,action.get());
 
 		action.set(null);
 
 		spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false));
+				try{
+					valid.showAndGo(resS,
+						new MockCallback(){
+							public Result add(){action.set(Boolean.TRUE);return null;}
+						});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -212,14 +235,22 @@ public class ValidationDialogTest{
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
 				
-		assertEquals(ValidationDialog.ADD,action.get());
+		assertEquals(Boolean.TRUE,action.get());
 
 		// Test dialog closed
 		action.set(null);
 		
 		spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false));
+				try{
+					valid.showAndGo(resS,
+						new MockCallback(){
+							public boolean cancel(){
+								action.set(Boolean.TRUE);
+								return true;
+							}
+						});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -227,6 +258,12 @@ public class ValidationDialogTest{
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		
 		spellDialog.close();
+		// try{
+		// 	Thread.sleep(5000);
+		// }catch(InterruptedException ie){}
+		
+		
+		// spellDialog.close();
 		
 		try{
 			spellThread.join(5000);
@@ -234,21 +271,38 @@ public class ValidationDialogTest{
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
 				
-		assertEquals(ValidationDialog.CANCEL,action.get());
-
+		assertEquals(Boolean.TRUE,action.get());
+		System.err.println("test escape");
 		//test Escape
 		action.set(null);
 		spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false));
+				try{
+					valid.showAndGo(resS,
+						new MockCallback(){
+							private boolean firstTime=true;
+							public boolean cancel(){
+								if(firstTime){
+									firstTime = false;
+									return false;
+								}
+								action.set(Boolean.TRUE);
+								return true;
+							}
+						});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
 		
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		
-		spellDialog.pressKey(KeyEvent.VK_ESCAPE);
-		spellDialog.releaseKey(KeyEvent.VK_ESCAPE);
+		TestUtils.robot().pressAndReleaseKey(KeyEvent.VK_ESCAPE,0);
+		 try{
+			Thread.sleep(1000);
+		}catch(InterruptedException ie){}
+		
+		TestUtils.robot().pressAndReleaseKey(KeyEvent.VK_ESCAPE,0);
 		
 		try{
 			spellThread.join(5000);
@@ -256,7 +310,7 @@ public class ValidationDialogTest{
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
 				
-		assertEquals(ValidationDialog.CANCEL,action.get());
+		assertEquals(Boolean.TRUE,action.get());
 	}
 
 
@@ -265,12 +319,43 @@ public class ValidationDialogTest{
 		final ValidationDialog valid = new ValidationDialog(TestUtils.view());
 
 		final Result resS  = new Result(5,Result.SUGGESTION,Arrays.asList(new String[]{"wick","quick","Vick"}),"qwick");
+		final Result resS2  = new Result(10,Result.SUGGESTION,Arrays.asList(new String[]{"wack"}),"qwack");
 		
-		final AtomicReference<ValidationDialog.UserAction> action = new AtomicReference<ValidationDialog.UserAction>(null);
+		final AtomicReference<Boolean> action = new AtomicReference<Boolean>(null);
 		
 		Thread spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,false));
+				try{
+					valid.showAndGo(resS,
+						new MockCallback(){
+							private int i=0;
+							@Override
+							public Result change(String newWord){
+								if(i++==0){
+									action.set(Boolean.TRUE);
+									return resS2;
+								}
+								else{
+									action.set(Boolean.FALSE);
+									return null;
+								}
+							}
+							
+							public Result previous(){
+								if(i--==1){
+									action.set(Boolean.TRUE);
+									return resS;
+								}else{
+									action.set(Boolean.FALSE);
+									return null;
+								}
+							}
+							
+							public boolean hasPrevious(){
+								return i>0;
+							}
+						});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
@@ -280,35 +365,155 @@ public class ValidationDialogTest{
 		
 		spellDialog.button("Change").click();
 		
+		try{spellThread.sleep(2000);}catch(InterruptedException ie){}
+		assertEquals(Boolean.TRUE,action.get());
+		spellDialog.textBox("originalWord").requireText("qwack");
+
+		action.set(null);
+		
+		spellDialog.button("Previous").requireEnabled();
+		spellDialog.button("Previous").click();
+
+		try{spellThread.sleep(1000);}catch(InterruptedException ie){}
+		assertEquals(Boolean.TRUE,action.get());
+		spellDialog.textBox("originalWord").requireText("qwick");
+
+		spellDialog.button("Cancel").click();
+
 		try{
 			spellThread.join(5000);
 		}catch(InterruptedException ie){}
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
-				
-		assertEquals(ValidationDialog.CHANGE,action.get());
+		
+		
+	}
 
-		action.set(null);
+	@Test
+	public void testSuggest(){
+		final ValidationDialog valid = new ValidationDialog(TestUtils.view());
 
-		spellThread = new Thread(){
+		final Result resS  = new Result(5,Result.SUGGESTION,Arrays.asList(new String[]{"wick","quick","Vick"}),"qwick");
+		final Result resSuggestList  = new Result(0,Result.SUGGESTION,Arrays.asList(new String[]{"wack"}),"qwack");
+		final Result resSuggestNone  = new Result(0,Result.NONE,null,"qwock");
+		final Result resSuggestOK  = new Result(0,Result.OK,null,"quick");
+		
+		
+		Thread spellThread = new Thread(){
 			public void run(){
-				action.set(valid.getUserAction(resS.getOriginalWord(),resS.getSuggestions(),false,true));
+				try{
+					valid.showAndGo(resS,
+						new MockCallback(){
+							private int i=0;
+							@Override
+							public Result suggest(String newWord){
+								if("qwack".equals(newWord))return resSuggestList;
+								else if("qwock".equals(newWord))return resSuggestNone;
+								else if("quick".equals(newWord))return resSuggestOK;
+								else return null;
+							}
+							
+						});
+				}catch(SpellException spe){}
 			}
 		};
 		spellThread.start();
 		
-		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
+		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		
-		spellDialog.button("Previous").requireEnabled();
+		TestUtils.replaceText(spellDialog.textBox("changeTo"),"qwack");
+		spellDialog.button("Suggest").click();
+		
+		try{spellThread.sleep(2000);}catch(InterruptedException ie){}
+		spellDialog.textBox("changeTo").requireText("qwack");
+		assertEquals(1,spellDialog.list().contents().length);
+		assertEquals("wack",spellDialog.list().item(0).content());
+
+		
+		TestUtils.replaceText(spellDialog.textBox("changeTo"),"qwock");
+		spellDialog.button("Suggest").click();
+
+		try{spellThread.sleep(2000);}catch(InterruptedException ie){}
+		spellDialog.textBox("changeTo").requireText("qwock");
+		List<String> sugg = Arrays.asList(spellDialog.list().contents());
+		assertEquals(1,sugg.size());
+
+		TestUtils.replaceText(spellDialog.textBox("changeTo"),"quick");
+		spellDialog.button("Suggest").click();
+
+		try{spellThread.sleep(2000);}catch(InterruptedException ie){}
+		spellDialog.textBox("changeTo").requireText("quick");
+		sugg = Arrays.asList(spellDialog.list().contents());
+		assertEquals(1,sugg.size());
+
 		spellDialog.button("Cancel").click();
+
 		try{
 			spellThread.join(5000);
 		}catch(InterruptedException ie){}
 		
 		assertTrue("validation didn't return", !spellThread.isAlive());
-				
-		assertEquals(ValidationDialog.CANCEL,action.get());
+		
+	}
+	
+	class MockCallback implements ValidationDialog.Callback{
+		
+		public Result add()throws SpellException
+		{
+			return null;
+		}
+		
+		public Result change(String newWord)throws SpellException
+		{
+			return null;
+		}
+		
+		public Result changeAll(String newWord)throws SpellException
+		{
+			return null;
+		}
+		
+		public Result ignore()throws SpellException
+		{
+			return null;
+		}
 
-		action.set(null);
+		public Result ignoreAll()throws SpellException
+		{
+			return null;
+		}
+		
+		
+		public Result suggest(String newWord)throws SpellException
+		{
+			return null;
+		}
+		
+	
+		public Result previous()throws SpellException
+		{
+			return null;
+		}
+		
+		public boolean cancel()
+		{
+			return true;
+		}
+
+		public void done()
+		{
+		}
+
+		
+		public boolean hasPrevious()
+		{
+			return false;
+		}
+
+		public boolean hasIgnored()
+		{
+			return false;
+		}
+
 	}
 }
