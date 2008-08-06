@@ -1,7 +1,6 @@
 package myDoggy;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -60,8 +59,14 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public JComponent floatDockableWindow(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		ToolWindow tw = wm.getToolWindow(name);
+		if (tw == null)
+			tw = createToolWindow(name);
+		if (tw == null)
+			return null;
+		tw.setType(ToolWindowType.FLOATING_LIVE);
+		tw.setActive(true);
+		return (JComponent) tw.getComponent();
 	}
 
 	@Override
