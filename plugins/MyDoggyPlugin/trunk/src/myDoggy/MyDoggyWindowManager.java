@@ -47,13 +47,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		showDockableWindow(dockableName);
 	}
 
-
-	@Override
-	public void adjust(View view, ViewConfig config) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub

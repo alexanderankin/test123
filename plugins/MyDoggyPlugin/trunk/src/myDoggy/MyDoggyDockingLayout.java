@@ -45,12 +45,6 @@ public class MyDoggyDockingLayout extends DockingLayout {
 		};
 	}
 
-	@Override
-	public void move(int dx, int dy) {
-		// TODO Auto-generated method stub
-
-	}
-
 	private String getFilename() {
 		if (index == -1)
 			return "mydoggy.def";
@@ -66,12 +60,6 @@ public class MyDoggyDockingLayout extends DockingLayout {
 		FileOutputStream outputStream = new FileOutputStream(filename);
 		wm.getPersistenceDelegate().save(outputStream);
 		outputStream.close();
-	}
-
-	@Override
-	public void setPlainView(boolean plain) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
