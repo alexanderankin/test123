@@ -47,7 +47,8 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
 	spell-check-errorlist \
 	spell-check-set-buffer-lang \
 	spell-check-clear-ignore-all \
-	spell-check-save-dicts
+	spell-check-save-dicts \
+	spell-check-browse-dicts
 
 spell-check-menu.label=Spell Check
 
@@ -56,6 +57,7 @@ spell-check-selection-with-lang.label=Spell check selection with lang...
 spell-check-errorlist.label=Highlight misspelled words
 spell-check-set-buffer-lang.label=Set Buffer's language...
 spell-check-save-dicts.label=Persist Dictionaries on disk
+spell-check-browse-dicts.label=Browse user dictionaries...
 ### Messages
 spell-check-selection-with-lang.title=Spell check selection with lang...
 spell-check-selection-with-lang.message=Enter an alternative lang dictionary:
@@ -99,6 +101,8 @@ spell-check-on-save=false
 spell-check-userdict-load-error.message=Can't read the user dictionary for lang {0}!\nError is {1}
 spell-check-userdict-save-error.message=Can't save the user dictionary for lang {0}!\nError is {1}
 spell-check-plugin-home-error.message = The dictionaries can't be saved : unable to create settings directory.\nError is {0}
+spell-check-dirty-dict.message=The dictionary for language {0} has been changed.\n\
+ You should persist it to disk before editing it.
 #ignore all
 spell-check-clear-ignore-all.label=Clear Ignored Words
 spell-check-clear-ignore-all-cleared.message=Ignored words cleared.

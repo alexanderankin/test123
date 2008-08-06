@@ -523,9 +523,9 @@ public class BufferDialogValidatorTest{
 		final Buffer buf = TestUtils.newFile();
 		final String text = 
 			 "/*\n"
-			+"* $Revision$\n"
-			+"* $Date$\n"
-			+"* $Author$";
+			+"* Revision: 13069 \n"
+			+"* Date: 2008-07-20 20:32:33 +0200 (Ven 20 jul 2008) \n"
+			+"* Author: kerik-sf ";
 		
 		try{
 		SwingUtilities.invokeAndWait(new Runnable(){public void run(){

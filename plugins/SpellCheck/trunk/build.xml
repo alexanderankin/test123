@@ -51,7 +51,16 @@
 
 	<!-- I use a separate target to build the tests -->
 	<selector id="compileFiles">
+		<and>
         <filename name="**/*.java" />
+		<not>
+		<or>
+		<filename name="**/TestSpellChecker.java"/>
+		<filename name="**/DialogValidator.java"/>
+		<filename name="**/FileSpellChecker.java"/>
+		</or>
+		</not>
+		</and>
     </selector>
 
 	<target name="test.compile"
@@ -72,7 +81,7 @@
 		<!--<and>
 		<or>-->
 		<!--<filename name="cswilly/**/*Test.java" />-->
-		<filename name="**/WordListValidatorTest.java" />
+		<filename name="**/ValidationDialogTest.java" />
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
 		<!--</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>
@@ -88,7 +97,7 @@
 	  -->
     <target name="test-junit"
             description="Runs the plugin's jUnit tests."
-			depends="test.prepare">
+			depends="test.compile,test.prepare">
         <echo message="Running tests..."/>
 		
         <junit printsummary="${junit.printsummary}"
@@ -124,8 +133,8 @@
     <!-- ===============================================}}} -->
 
 	<target name="test.prepare"
-		description="creates fresh jedit settings directory for tests"
-		depends="test.compile">
+		description="creates fresh jedit settings directory for tests">
+		<!--depends="test.compile">-->
         <mkdir dir="${build.tests}"/>
 		<delete dir="${build.dir}/settings"/>
 		<copy todir="${build.dir}/settings">
@@ -170,6 +179,15 @@
 				<include name="**/*.png"/>
 			</fileset>
 		</copy>
+	</target>
+	
+	<target name="run" depends="build,test.prepare">
+		<java jar="${jedit.install.dir}/jedit.jar" fork="true">
+			<arg value="-norestore"/>
+			<arg value="-noserver"/>
+			<arg value="-nobackground"/>
+			<arg value="-settings=${build.dir}/settings"/>
+		</java>
 	</target>
 </project>
 

@@ -48,4 +48,10 @@
       cswilly.jeditPlugins.spell.SpellCheckPlugin.saveDictionaries(view);
     </CODE>
   </ACTION>
+  <!-- Menu action for browsing dictionaries -->
+  <ACTION NAME="spell-check-browse-dicts">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.browseUserDicts(view);
+    </CODE>
+  </ACTION>
 </ACTIONS>
