@@ -41,8 +41,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	protected void dockableMoved(String name, String from, String to) {
-		showDockableWindow(name);
+	protected void dockingPositionChanged(String dockableName,
+		String oldPosition, String newPosition)
+	{
+		showDockableWindow(dockableName);
 	}
 
 
@@ -125,7 +127,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setDockingLayout(DockingLayout docking) {
-		String filename = null;//((MyDoggyDockingLayout)docking).getPersistenceFilename()
+		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
 		if (filename != null) {
 			java.io.File f = new File(filename);
 			if (f.exists()) {
