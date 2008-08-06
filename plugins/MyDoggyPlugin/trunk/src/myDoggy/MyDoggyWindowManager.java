@@ -124,12 +124,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	public void setDockableTitle(String dockable, String title) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setDockingLayout(DockingLayout docking) {
 		String filename = ((MyDoggyDockingLayout)docking).getPersistenceFilename();
 		if (filename != null) {
