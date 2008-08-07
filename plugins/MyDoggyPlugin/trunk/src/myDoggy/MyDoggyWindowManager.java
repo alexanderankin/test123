@@ -158,14 +158,16 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	public class PersistenceCallback implements PersistenceDelegateCallback
 	{
+		@Override
 		public Content contentNotFound(ToolWindowManager toolWindowManager,
-				String contentId)
-		{
+				String contentId, PersistenceNode node) {
 			return null;
 		}
+
+		@Override
 		public ToolWindow toolwindowNotFound(
-				ToolWindowManager toolWindowManager, String toolWindowId)
-		{
+				ToolWindowManager toolWindowManager, String toolWindowId,
+				PersistenceNode node) {
 			return createToolWindow(toolWindowId);
 		}
 	}
