@@ -18,7 +18,6 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
-import org.noos.xing.mydoggy.DockableManagerListener;
 import org.noos.xing.mydoggy.PersistenceDelegateCallback;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
@@ -270,17 +269,48 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			this.anchor = anchor;
 		}
 		public void showMostRecent() {
+			ToolWindow current = getCurrentToolWindow();
+			if (current == null) {
+				ToolWindow[] tools = wm.getToolsByAnchor(anchor);
+				if (tools.length > 0)
+					current = tools[0];
+			}
+			if ((current != null) && (! current.isActive()))
+				current.setActive(true);
+		}
+		private ToolWindow getCurrentToolWindow() {
 			ToolWindow[] tools = wm.getToolsByAnchor(anchor);
 			for (ToolWindow tw: tools)
 				if (tw.isActive())
-					return;
+					return tw;
 			for (ToolWindow tw: tools)
-				if (tw.isVisible()) {
-					tw.setActive(true);
-					return;
-				}
-			if (tools.length > 0)
-				tools[0].setActive(true);
+				if (tw.isVisible())
+					return tw;
+			return null;
+		}
+		public String getCurrent() {
+			ToolWindow current = getCurrentToolWindow();
+			if (current == null)
+				return null;
+			return current.getId();
+		}
+		public void show(String name) {
+			ToolWindow tw;
+			if (name == null)
+			{	// Hide the visible windows in this area
+				do {
+					tw = getCurrentToolWindow();
+					if (tw != null)
+						tw.setVisible(false);
+				} while (tw != null);
+			}
+			else
+			{	// Show the window
+				showDockableWindow(name);
+				tw = getToolWindow(name);
+				if (tw != null)
+					tw.setAnchor(anchor);
+			}
 		}
 	}
 	
