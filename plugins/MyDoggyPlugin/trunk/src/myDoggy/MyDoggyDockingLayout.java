@@ -45,14 +45,20 @@ public class MyDoggyDockingLayout extends DockingLayout {
 		};
 	}
 
-	private String getFilename() {
-		if (index == -1)
-			return "mydoggy.def";
-		return jEdit.getSettingsDirectory() + File.separator + "mydoggy." + index;
+	private String getFilename(File f) {
+		String dir = jEdit.getSettingsDirectory() + File.separator + "MyDoggyPlugin";
+		File d = new File(dir);
+		if (! d.exists())
+			d.mkdir();
+		String suffix = ((index == -1) ? "def" : "" + index);
+		String name = "mydoggy-" + suffix + "-" + f.getName();
+		if (! name.toLowerCase().endsWith(".xml"))
+			name = name + ".xml";
+		return dir + File.separator + name;
 	}
 	@Override
-	public void savePerspective(Saver out, String lineSep) throws IOException {
-		String filename = getFilename();
+	public void savePerspective(File f, Saver out, String lineSep) throws IOException {
+		String filename = getFilename(f);
 		out.write("<MYDOGGY FILE=\"");
 		out.write(filename);
 		out.write("\" />");

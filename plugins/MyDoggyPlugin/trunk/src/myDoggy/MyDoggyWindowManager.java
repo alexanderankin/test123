@@ -69,7 +69,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			tw = createToolWindow(name);
 		if (tw == null)
 			return null;
-		tw.setType(ToolWindowType.FLOATING_LIVE);
+		tw.setType(ToolWindowType.FLOATING);
 		tw.setActive(true);
 		return (JComponent) tw.getComponent();
 	}
