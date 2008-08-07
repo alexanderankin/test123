@@ -220,4 +220,40 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		wm.getContentManager().addContent("main", "main", null, panel);
 	}
 
+	public class MyDoggyDockingArea implements DockingArea {
+		ToolWindowAnchor anchor;
+		public MyDoggyDockingArea(ToolWindowAnchor anchor) {
+			this.anchor = anchor;
+		}
+		public void showMostRecent() {
+			ToolWindow[] tools = wm.getToolsByAnchor(anchor);
+			for (ToolWindow tw: tools)
+				if (tw.isActive())
+					return;
+			for (ToolWindow tw: tools)
+				if (tw.isVisible()) {
+					tw.setActive(true);
+					return;
+				}
+			if (tools.length > 0)
+				tools[0].setActive(true);
+		}
+	}
+	
+	public DockingArea getBottomDockingArea() {
+		return new MyDoggyDockingArea(ToolWindowAnchor.BOTTOM);
+	}
+
+	public DockingArea getLeftDockingArea() {
+		return new MyDoggyDockingArea(ToolWindowAnchor.LEFT);
+	}
+
+	public DockingArea getRightDockingArea() {
+		return new MyDoggyDockingArea(ToolWindowAnchor.RIGHT);
+	}
+
+	public DockingArea getTopDockingArea() {
+		return new MyDoggyDockingArea(ToolWindowAnchor.TOP);
+	}
+
 }
