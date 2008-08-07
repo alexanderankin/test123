@@ -201,17 +201,24 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		{
 			this.tw = tw;
 		}
+		private ToolWindowTab getFakeTab() {
+			ToolWindowTab[] tabs = tw.getToolWindowTabs();
+			for (ToolWindowTab tab: tabs)
+				if (tab.getTitle().equals(tw.getTitle()))
+					return tab;
+			return null;
+		}
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (! tw.isVisible())
 				return;
 			removePropertyChangeListener("visible", this);
-			ToolWindowTab[] tabs = tw.getToolWindowTabs();
-			if (tabs.length == 0)
+			ToolWindowTab fakeTab = getFakeTab();
+			if (fakeTab == null)
 				return;
 			JComponent window = createDockable(tw.getId());
-			tw.addToolWindowTab(tabs[0].getTitle(), window);
-			tw.removeToolWindowTab(tabs[0]);
+			tw.addToolWindowTab(fakeTab.getTitle(), window);
+			tw.removeToolWindowTab(fakeTab);
 		}
 	}
 	
