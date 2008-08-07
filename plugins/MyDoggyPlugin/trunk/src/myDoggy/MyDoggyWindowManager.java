@@ -1,6 +1,8 @@
 package myDoggy;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,10 +18,12 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
+import org.noos.xing.mydoggy.DockableManagerListener;
 import org.noos.xing.mydoggy.PersistenceDelegateCallback;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.ToolWindowManager;
+import org.noos.xing.mydoggy.ToolWindowTab;
 import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
@@ -168,13 +172,52 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public ToolWindow toolwindowNotFound(
 				ToolWindowManager toolWindowManager, String toolWindowId,
 				PersistenceNode node) {
+			if (! node.getBoolean("visible", true))
+				return createFakeToolWindow(toolWindowId);
 			return createToolWindow(toolWindowId);
+		}
+	}
+	
+	private ToolWindow createFakeToolWindow(String name)
+	{
+		JComponent window = new JPanel();
+		if (window == null)
+			return null;
+		String title = getDockableTitle(name);
+		String position = getDockablePosition(name); 
+		String id = getToolWindowID(name);
+		ToolWindowAnchor anchor = position2anchor(position);
+		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
+		tw.setRepresentativeAnchorButtonTitle(title);
+		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
+		PropertyChangeListener listener = new VisibilityChangeListener(tw);
+		tw.addPropertyChangeListener("visible", listener);
+		return tw;
+	}
+	
+	private class VisibilityChangeListener implements PropertyChangeListener
+	{
+		ToolWindow tw;
+		public VisibilityChangeListener(ToolWindow tw)
+		{
+			this.tw = tw;
+		}
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (! tw.isVisible())
+				return;
+			removePropertyChangeListener("visible", this);
+			ToolWindowTab[] tabs = tw.getToolWindowTabs();
+			if (tabs.length == 0)
+				return;
+			JComponent window = createDockable(tw.getId());
+			tw.addToolWindowTab(tabs[0].getTitle(), window);
+			tw.removeToolWindowTab(tabs[0]);
 		}
 	}
 	
 	private ToolWindow createToolWindow(String name)
 	{
-		String title = getDockableTitle(name);
 		JComponent window = getDockable(name);
 		String position = getDockablePosition(name); 
 		if (window == null)
@@ -182,6 +225,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (window == null)
 			return null;
 		String id = getToolWindowID(name);
+		String title = getDockableTitle(name);
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		tw.setRepresentativeAnchorButtonTitle(title);
