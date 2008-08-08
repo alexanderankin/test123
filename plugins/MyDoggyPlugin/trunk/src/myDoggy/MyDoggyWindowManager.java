@@ -341,4 +341,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		wm.getToolWindowManagerDescriptor().setPushAwayMode(OptionPane.getPushAwayModeProp());
 	}
 
+	@Override
+	public void dockableTitleChanged(String dockable, String newTitle) {
+		ToolWindow tw = getToolWindow(dockable);
+		if (tw != null) {
+			tw.setTitle(newTitle);
+			tw.setRepresentativeAnchorButtonTitle(newTitle);
+		}
+	}
+
 }
