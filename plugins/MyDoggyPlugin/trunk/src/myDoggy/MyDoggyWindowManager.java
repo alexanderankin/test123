@@ -338,4 +338,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		return new MyDoggyDockingArea(ToolWindowAnchor.TOP);
 	}
 
+	@Override
+	protected void propertiesChanged() {
+		super.propertiesChanged();
+		wm.getToolWindowManagerDescriptor().setPushAwayMode(OptionPane.getPushAwayModeProp());
+	}
+
 }
