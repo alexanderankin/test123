@@ -11,6 +11,7 @@ public class OptionPane extends AbstractOptionPane {
 
 	private static final String PREFIX = "options.mydoggy.";
 	private static final String PUSH_AWAY_MODE_PROP = PREFIX + "pushAwayMode";
+	private static final String PUSH_AWAY_MODE_LABEL = PUSH_AWAY_MODE_PROP + ".label";
 	JComboBox pushAwayMode;
 	
 	public OptionPane() {
@@ -33,7 +34,7 @@ public class OptionPane extends AbstractOptionPane {
 		};
 		pushAwayMode = new JComboBox(pushAwayModes);
 		pushAwayMode.setSelectedItem(getPushAwayModeProp().toString());
-		addComponent("Push away mode:", pushAwayMode);
+		addComponent(jEdit.getProperty(PUSH_AWAY_MODE_LABEL), pushAwayMode);
 	}
 
 	@Override
