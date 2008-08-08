@@ -217,8 +217,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			if (fakeTab == null)
 				return;
 			JComponent window = createDockable(tw.getId());
-			tw.addToolWindowTab(fakeTab.getTitle(), window);
+			ToolWindowTab newTab = tw.addToolWindowTab(fakeTab.getTitle(), window);
 			tw.removeToolWindowTab(fakeTab);
+			newTab.setSelected(true);
 		}
 	}
 	
