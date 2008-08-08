@@ -19,6 +19,9 @@ plugin.myDoggy.Plugin.option-pane=mydoggy
 options.mydoggy.label=MyDoggyPlugin
 options.mydoggy.code=new myDoggy.OptionPane();
 
+# Option pane labels
+options.mydoggy.pushAwayMode.label=Push away mode:
+
 # docs
 plugin.myDoggy.Plugin.docs=index.html
 
