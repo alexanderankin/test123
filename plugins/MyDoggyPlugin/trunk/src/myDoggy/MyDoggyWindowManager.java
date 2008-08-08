@@ -161,13 +161,11 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	public class PersistenceCallback implements PersistenceDelegateCallback
 	{
-		@Override
 		public Content contentNotFound(ToolWindowManager toolWindowManager,
 				String contentId, PersistenceNode node) {
 			return null;
 		}
 
-		@Override
 		public ToolWindow toolwindowNotFound(
 				ToolWindowManager toolWindowManager, String toolWindowId,
 				PersistenceNode node) {
@@ -208,7 +206,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 					return tab;
 			return null;
 		}
-		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (! tw.isVisible())
 				return;
