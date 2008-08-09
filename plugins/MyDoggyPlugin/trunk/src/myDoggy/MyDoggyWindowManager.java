@@ -185,7 +185,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		String id = getToolWindowID(name);
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
-		tw.setRepresentativeAnchorButtonTitle(title);
+		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		PropertyChangeListener listener = new VisibilityChangeListener(tw);
 		tw.addPropertyChangeListener("visible", listener);
@@ -232,7 +232,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		String title = getDockableTitle(name);
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
-		tw.setRepresentativeAnchorButtonTitle(title);
+		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		return tw;
 	}
@@ -344,10 +344,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	@Override
 	public void dockableTitleChanged(String dockable, String newTitle) {
 		ToolWindow tw = getToolWindow(dockable);
-		if (tw != null) {
+		if (tw != null)
 			tw.setTitle(newTitle);
-			tw.setRepresentativeAnchorButtonTitle(newTitle);
-		}
 	}
 
 }
