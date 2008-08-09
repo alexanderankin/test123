@@ -2,6 +2,7 @@ plugin.snipplr.SnipplrPlugin.activate=startup
 plugin.snipplr.SnipplrPlugin.name=Snipplr
 plugin.snipplr.SnipplrPlugin.author=Ian Lewis
 plugin.snipplr.SnipplrPlugin.version=0.1
+plugin.snipplr.SnipplrPlugin.docs=users-guide.html
 
 #snipplr.SnipplrPlugin.docs=QuickNotepad.html
 # depends on jedit 4.2final

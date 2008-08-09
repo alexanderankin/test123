@@ -37,7 +37,6 @@
     </description>
     <property file="../build.properties" />
     <property file="build.properties" />
-    <property name="user-doc.xml" location = "users-guide.xml"/>
     <property name="compiler.target" value="1.5"/>
     <property name="compiler.source" value="1.5"/>
     <import file="${build.support}/plugin-build.xml" />
