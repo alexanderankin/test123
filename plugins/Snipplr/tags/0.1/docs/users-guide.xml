@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+  <title>Snipplr Plugin user's guide</title>
+  
+  <bookinfo>
+    <authorgroup>
+      <author>
+        <firstname>Ian</firstname>
+        <surname>Lewis</surname>
+      </author>
+    </authorgroup>
+    <legalnotice>
+      <title>Legal Notice</title>
+       <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1 or
+        any later version published by the Free Software Foundation; with no
+        <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+        the license can be found in the file <filename>COPYING.DOC.txt</filename>
+        included with jEdit.
+       </para>
+      
+       <para>
+        The Snipplr plugin itself is released under the GNU General Public License.
+        A copy of the GPL can be found in the jEdit online help.
+       </para>
+    </legalnotice>
+    
+  </bookinfo>
+  <chapter id="intro">
+    <title>Introduction</title>
+    
+    <para>
+    The Snipplr plugin provides a mechanism for interacting with the
+    snipplr.com web service API from within jEdit. It provides interfaces to
+    various services for creating, searching, and making use of code snippets.
+    See http://www.snipplr.com/ for more information about the Snipplr service.
+    </para>
+    
+  </chapter>
+  
+  <chapter id="use">
+    <title>How to use the Snipplr Plugin</title>
+    <para>
+    The Snipplr plugin is used mainly through a dockable used for
+    searching code snipplets on Snipplr. These snipplets can then be copied to
+    the clipboard or inserted into the current buffer directly. Adding new
+    snippets is done via the "New Snippet..." action.
+    </para>
+    
+    <sect1 id="setup">
+      <title>Setup</title>
+      <para>
+        Setting up the Snipplr plugin is very easy. You will simply need to enter
+        your Snipplr API key in the Snipplr Plugin options under 
+        Plugins->Plugin Options->Snipplr. Once your API key is set the Snipplr
+        plugin will be able to communicate with the Snipplr service.
+      </para>
+    </sect1>
+    
+    <sect1 id="new-snippet">
+      <title>Creating a new Snippet</title>
+      <para>
+        Creating a new snippet is done via the "New Snippet..." action. This
+        action can be accessed via the Plugins->Snipplr menu or set up as a 
+        shortcut or added to the right click context menu. When the new snippet
+        dialog appears you are presented with a number of fields.
+      </para>
+      <bridgehead>Title</bridgehead>
+      <para>The title is the title given to the snippet</para>
+      
+      <bridgehead>Tags</bridgehead>
+      <para>Tags is a space delimited list of tags to assign to the snippet.</para>
+      
+      <bridgehead>Language</bridgehead>
+      <para>
+      Language is the programming language of the source code snippet. The
+      Snippet plugin will do it's best to automatically match a Snipplr language
+      the current jEdit mode.
+      </para>
+      
+      <bridgehead>Source Code</bridgehead>
+      <para>This is the snippet source code itself.</para>
+      
+    </sect1>
+    
+    <sect1 id="search-snippet">
+      <title>Searching Snippets</title>
+      
+      <para>
+      Searching for code snippets is done via the Snipplr Plugin's dockable.
+      The dockable contains a search keyword field and a results list. Searches
+      are performed only on your user's snippets and favorites.
+      </para>
+      
+      <para>
+      Right clicking on a result in the search results list allows you to copy
+      the snippet's source code to the clipboard or add the source code directly
+      to the current caret position in the current buffer. Snippets can also
+      be deleted via this interface.
+      </para>
+    </sect1>
+    
+  </chapter>
+</book>
