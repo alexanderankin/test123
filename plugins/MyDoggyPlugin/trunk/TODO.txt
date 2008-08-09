@@ -1,0 +1,9 @@
+- Bug 2043623: The action to switch to a dockable should also set the keyboard
+  focus to the dockable.
+- Bug 2043578: Add an action and button in a ToolWindowBar to hide/show the entire
+  ToolWindowBar, preserving the splits (the aggregate mode).
+- Look and feel: Use jEdit style for ToolWindows and ToolWindowBars.
+- A pop up message when the docking framework is changed, saying jEdit should be
+  restarted for the new setting to take effect.
+- FastOpen plugin: With DWM, pops up floating. With MyDoggy, docked.
+- Document the plugin (user guide).
