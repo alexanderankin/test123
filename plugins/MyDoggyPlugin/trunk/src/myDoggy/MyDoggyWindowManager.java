@@ -1,6 +1,7 @@
 package myDoggy;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -15,6 +16,7 @@ import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
@@ -243,12 +245,24 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw = getToolWindow(name);
 		if (tw != null)
 		{
-			tw.setActive(true);
+			activateToolWindow(tw);
 			return;
 		}
 		tw = createToolWindow(name);
 		tw.setType(ToolWindowType.DOCKED);
+		activateToolWindow(tw);
+	}
+
+	private void activateToolWindow(ToolWindow tw)
+	{
 		tw.setActive(true);
+		JComponent c = getDockable(tw.getId());
+		if (c == null)
+			return;
+		if (c instanceof DefaultFocusComponent)
+			((DefaultFocusComponent)c).focusOnDefaultComponent();
+		else
+			c.requestFocus();
 	}
 
 	private ToolWindowAnchor position2anchor(String position)
