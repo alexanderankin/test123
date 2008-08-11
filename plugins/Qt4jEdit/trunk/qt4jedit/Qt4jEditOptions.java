@@ -39,6 +39,7 @@ public class Qt4jEditOptions extends AbstractOptionPane {
 		String newPath = pathToAssistantField.getText();
 		if (newPath != oldPath) {
 			jEdit.setProperty("qt4jedit.path-to-assistant", newPath);
+			Qt4jEditPlugin.instance().updateCommand();
 		}
 	}
 }
