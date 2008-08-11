@@ -1,5 +1,8 @@
 package qt4jedit;
 
+import java.awt.GridBagConstraints;
+
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -19,6 +22,17 @@ public class Qt4jEditOptions extends AbstractOptionPane {
 		oldPath = jEdit.getProperty("qt4jedit.path-to-assistant", "assistant");
 		pathToAssistantField = new JTextField(oldPath);
 		addComponent(jEdit.getProperty("options.qt4jedit.path-to-assistant"), pathToAssistantField);
+        
+        JTextArea info = new JTextArea();
+		info.setLineWrap(true);
+		info.setWrapStyleWord(true);
+		info.setOpaque(false);
+		String text = jEdit.getProperty("options.qt4jedit.assistant.info");
+		info.append(text);
+		info.setEditable(false);
+		 
+        addComponent(info, GridBagConstraints.BOTH);
+        
 	}
 
 	protected void _save() {

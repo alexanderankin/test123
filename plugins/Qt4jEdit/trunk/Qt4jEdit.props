@@ -22,3 +22,4 @@ options.qt4jedit.label=Qt4jEdit
 options.qt4jedit.code=new qt4jedit.Qt4jEditOptions();
 options.qt4jedit.path-to-assistant=Path to assistant:
 
+options.qt4jedit.assistant.info=You need Qt 4.4 Assistant or later to use these features.
