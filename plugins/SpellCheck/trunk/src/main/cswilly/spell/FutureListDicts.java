@@ -57,7 +57,7 @@ public class FutureListDicts extends FutureAspell<Vector<String>>{
 			// each line is a dictionnary
 			//at least 2 letters language code, then anything
 			pattern = Pattern.compile("^[a-z]{2}[-\\w]*$");
-			dicts = new Vector();
+			dicts = new Vector<String>();
 		}
 		
 		public void accumulate(String line) throws SpellException{

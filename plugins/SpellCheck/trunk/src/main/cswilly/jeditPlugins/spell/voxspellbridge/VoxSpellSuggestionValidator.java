@@ -3,7 +3,7 @@
  * $Date$
  * $Author$
  *
- * Copyright (C) 2001 C. Scott Willy
+ * Copyright (C) 2008 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,19 +20,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package cswilly.spell;
+package cswilly.jeditPlugins.spell.voxspellbridge;
 
-import java.io.*;
-import java.util.*;
+import cswilly.spell.Validator;
+import cswilly.spell.Result;
 
-/**
- * Models a spelling checking engine
- *<p>
- *
- */
-public
-interface Engine
-{
+import java.util.Vector;
+
+import voxspellcheck.SuggestionTree;
+
+
+public class VoxSpellSuggestionValidator implements Validator{
+	private SuggestionTree suggestions;
+	
+	public VoxSpellSuggestionValidator(SuggestionTree suggestions){
+		if(suggestions == null)throw new IllegalArgumentException("suggestions shouldn't be null");
+		this.suggestions = suggestions;
+	}
+	
   /**
    * Spell check a list of words
    *<p>
@@ -43,15 +48,21 @@ interface Engine
    * @param words {@link String} with list of works to be spell checked.
    * @return List of {@link Result}
    */
-  public List<Result> checkLine( String line )
-    throws SpellException;
+  public boolean validate(int lineNum, String line, Result r ){
+	  
+	  Vector<String> suggs = suggestions.getSuggestions(r.getOriginalWord());
 
-  public void stop();
-	
-  public boolean isStopped();
+	  if(!suggs.isEmpty()){
+		  r.setType(Result.SUGGESTION);
+
+		  if(r.getSuggestions()!=null)r.getSuggestions().addAll(suggs);
+		  else r.setSuggestions(suggs);
+	  }
+	  return true;
+  }
+
+
+  public void done(){}
+  public void start(){}
   
-  public boolean isContextSensitive();
-  
-  // to be defined
- //public void addWord( String word );
 }

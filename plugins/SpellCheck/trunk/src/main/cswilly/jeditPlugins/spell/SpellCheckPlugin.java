@@ -22,6 +22,7 @@
 
 package cswilly.jeditPlugins.spell;
 
+import cswilly.spell.EngineManager;
 import cswilly.spell.Engine;
 import cswilly.spell.Validator;
 import cswilly.spell.SpellException;
@@ -29,6 +30,10 @@ import cswilly.spell.FutureListDicts;
 import cswilly.spell.WordListValidator;
 import cswilly.spell.ChainingValidator;
 import cswilly.spell.SpellCoordinator;
+
+import cswilly.jeditPlugins.spell.voxspellbridge.VoxSpellEngineManager;
+
+import cswilly.jeditPlugins.spell.hunspellbridge.HunspellEngineManager;
 
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -66,10 +71,11 @@ public class SpellCheckPlugin
   public static final String BUFFER_LANGUAGE_PROP				= "spell-check-buffer-lang";
   public static final String MAIN_LANGUAGE_PROP					= "spell-check-main-lang";
   public static final String BUFFER_IGNORE_ALL_LIST_PROP		= "spell-check-ignore-all-list";
+  public static final String ENGINE_MANAGER_PROP				= "spell-check-engine";
   public static final Pattern pat = Pattern.compile("user\\.(.*)\\.dict");
   
   //no problem : lightweight
-  private static AspellEngineManager _engineManager = new AspellEngineManager();
+  private static EngineManager _engineManager;
   private static ErrorListSpellChecker _errorListSpellChecker = null;
 
   private static Map<String,WordListValidator> userDicts = new HashMap<String,WordListValidator>();
@@ -116,6 +122,8 @@ public class SpellCheckPlugin
   public static
   void checkBufferErrorList(View view, Buffer buffer)
   {
+	assert(buffer != null);
+
     ErrorListSpellChecker checker = getErrorListSpellChecker();
 	Validator userDict = getUserDictionaryForLang(view,getBufferLanguage(buffer));
 	Validator ignoreAll = getIgnoreAll(buffer);
@@ -129,8 +137,7 @@ public class SpellCheckPlugin
 	
     try
     {
-
-		checker.setSpellEngine(getEngine(buffer,true));
+		checker.setSpellEngine(getEngineManager().getEngine(buffer.getMode().getName(),getBufferLanguage(buffer),true));
 		checker.setTextArea( view.getTextArea() );
 		boolean ret = checker.spellcheck();
 	  
@@ -175,13 +182,7 @@ public class SpellCheckPlugin
       GUIUtilities.error( view, "spell-check-error", args);
     }
   }
- 
 
-  private static Engine getEngine(Buffer buffer,boolean terse) throws SpellException{
-	  if(buffer == null)throw new IllegalArgumentException("buffer can't be null");
-	return getEngineManager().getEngine(buffer.getMode().getName(),getBufferLanguage(buffer),terse);
-  }
-  
   /**
    * sets buffer's property SpellCheckPlugin.BUFFER_LANGUAGE_PROP
    * according to user's choice
@@ -191,7 +192,7 @@ public class SpellCheckPlugin
   public static void setBufferLanguage(View view, final Buffer buffer)
   {
 	 String oldDict = buffer.getStringProperty(BUFFER_LANGUAGE_PROP);
-	 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" was in "+oldDict);
+	 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+(oldDict==null?" was not set":(" was in "+oldDict)));
 	 String result = pickLanguage(view,buffer);
 	 if(result != null){
 		 Log.log(Log.DEBUG,SpellCheckPlugin.class,buffer.getName()+" is in "+result);
@@ -239,8 +240,11 @@ public class SpellCheckPlugin
 	  validator.setUserDictionary(getUserDictionaryForLang(view, lang));
 	  validator.setIgnoreAll(getIgnoreAll(buffer));
 	  try{
-		  validator.setEngine(getEngine(buffer,false));
+		  String modeName = buffer.getMode().getName();
+		  validator.setEngine(getEngineManager().getEngine(modeName,lang,false));
+		  validator.setValidator(getEngineManager().getValidator(modeName,lang));
 		  validator.setEngineForSuggest(getEngineManager().getEngine("text",getBufferLanguage(buffer),false));
+		  validator.setValidatorForSuggest(getEngineManager().getValidator("text",lang));
 	  }catch(SpellException e){
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, "Error setting engine (Aspell).");
 		  Log.log(Log.ERROR, SpellCheckPlugin.class, e);
@@ -251,8 +255,24 @@ public class SpellCheckPlugin
 	  return validator;
   }
   
-  private static AspellEngineManager getEngineManager(){
-	  if(_engineManager==null)_engineManager = new AspellEngineManager();
+  static EngineManager getEngineManager(){
+	  String engine = jEdit.getProperty(ENGINE_MANAGER_PROP,"Aspell");
+	  if("VoxSpell".equals(engine)){
+			  if(_engineManager==null || !(_engineManager instanceof VoxSpellEngineManager)){
+				  if(_engineManager!=null)_engineManager.stop();
+				  _engineManager = new VoxSpellEngineManager();
+			  }
+	  }else if("Hunspell".equals(engine)){
+			  if(_engineManager==null || !(_engineManager instanceof HunspellEngineManager)){
+				  if(_engineManager!=null)_engineManager.stop();
+				  _engineManager = new HunspellEngineManager();
+			  }
+	  }else{
+			  if(_engineManager==null || !(_engineManager instanceof AspellEngineManager)){
+				  if(_engineManager!=null)_engineManager.stop();
+				  _engineManager = new AspellEngineManager();
+			  }
+	  }
 	  return _engineManager;
   }
   
@@ -342,7 +362,7 @@ public class SpellCheckPlugin
 	  return userDicts.get(lang);
   }
   
-  private static File getHomeDir(View view){
+  public static File getHomeDir(View view){
 	  File home = EditPlugin.getPluginHome(SpellCheckPlugin.class);
 	  assert home != null;
 	  if(!home.exists()){

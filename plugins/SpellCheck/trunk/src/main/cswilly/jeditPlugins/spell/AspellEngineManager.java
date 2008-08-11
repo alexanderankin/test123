@@ -25,6 +25,7 @@ package cswilly.jeditPlugins.spell;
 
 import cswilly.spell.EngineManager;
 import cswilly.spell.Engine;
+import cswilly.spell.Validator;
 import cswilly.spell.AspellEngine;
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
@@ -87,30 +88,31 @@ public class AspellEngineManager implements EngineManager
   {
 	  List<String> aspellCommandLine = initCommandLine(mode,language,terse);
 	  String aspellExeFilename = getAspellExeFilename();
-	  aspellCommandLine.add(aspellExeFilename);
+	  aspellCommandLine.add(0,aspellExeFilename);
 	  AspellEngine engine = engines.get(aspellCommandLine);
 	if(engine == null || engine.isStopped()){
-		aspellCommandLine.remove(aspellCommandLine.size()-1);
-		String[]aspellArgs = (String[])aspellCommandLine.toArray(new String[aspellCommandLine.size()]);
 
 		String logStr = "command line is:"+aspellExeFilename;
-		for(int i=0;i<aspellArgs.length;i++)logStr+=" "+aspellArgs[i];
+		for(int i=0;i<aspellCommandLine.size();i++)logStr+=" "+aspellCommandLine.get(i);
 		Log.log(Log.DEBUG,this,logStr);
 	
-		engine = new AspellEngine(aspellExeFilename,aspellArgs);
+		engine = new AspellEngine(aspellCommandLine);
 		
-		aspellCommandLine.add(aspellExeFilename);
 		engines.put(aspellCommandLine,engine);
 	}
 	return engine;
   }
     
+  public Validator getValidator(String mode,String language){
+	  return null;
+  }
+  
   private List<String> initCommandLine(String mode, String language,boolean terse){
 	 String dict = language;
 	 if(dict == null) dict = SpellCheckPlugin.getMainLanguage();
 
     // Construct aspell command line arguments
-    List aspellCommandLine = new ArrayList(4);
+    List<String> aspellCommandLine = new ArrayList<String>(4);
 	// use this option switch to prevent any encoding issue
 	// available at least since aspell 0.5.3
 	aspellCommandLine.add("--encoding=utf-8");

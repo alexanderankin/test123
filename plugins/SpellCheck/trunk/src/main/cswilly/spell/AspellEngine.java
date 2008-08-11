@@ -41,16 +41,16 @@ class AspellEngine
   Process        _aSpellProcess;
   private List<String> args;
   
-  public AspellEngine( String aspell, String[] aSpellArgs)
+  /**
+   * @param	aspellArgs	aspell command and arguments
+   */
+  public AspellEngine( List<String> aspellArgs)
     throws SpellException
   {
-      List l = new ArrayList(aSpellArgs.length+1);
-	  l.add(aspell);
-	  l.addAll(Arrays.asList(aSpellArgs));
-	  args = l;
+	  args = aspellArgs;
     try
     {
-	  ProcessBuilder pb = new ProcessBuilder(l);
+	  ProcessBuilder pb = new ProcessBuilder(aspellArgs);
 	  //this to allow us to catch error messages from Aspell
 	  pb.redirectErrorStream(true);
       _aSpellProcess = pb.start();
@@ -85,7 +85,7 @@ class AspellEngine
     }
     catch( IOException e )
     {
-      String msg = "Cannot create aspell process.("+l+")";
+      String msg = "Cannot create aspell process.("+aspellArgs+")";
       throw new SpellException( msg, e );
     }
 	catch( SpellException e)
@@ -126,6 +126,8 @@ class AspellEngine
       while( response != null &&
         !response.equals( "" ) )
         {
+			//don't create it just to throw it away
+			if(response.charAt(0)=='*')continue;
           Result result = new Result( response );
 		  /* correct a bug with aspell 0.50 reporting offsets as bytes
 		     counts even in utf-8
@@ -195,6 +197,10 @@ class AspellEngine
 	  }
 	  if(a_ioe.get() != null) throw a_ioe.get();
 	  return a_res.get();
+  }
+  
+  public boolean isContextSensitive(){
+	  return !args.contains("--mode=none");
   }
   
   public String toString(){

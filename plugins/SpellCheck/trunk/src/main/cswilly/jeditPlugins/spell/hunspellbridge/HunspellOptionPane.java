@@ -3,7 +3,7 @@
  * $Date$
  * $Author$
  *
- * Copyright (C) 2001 C. Scott Willy
+ * Copyright (C) 2008 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,38 +20,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package cswilly.spell;
+package cswilly.jeditPlugins.spell.hunspellbridge;
 
-import java.io.*;
-import java.util.*;
 
-/**
- * Models a spelling checking engine
- *<p>
- *
- */
-public
-interface Engine
-{
-  /**
-   * Spell check a list of words
-   *<p>
-   * Spell checks the list of works in <code>words</code> and returns a list of
-   * {@link Result}s. There is one {@link Result} for each word in
-   * <code>words</code>.
-   *<p>
-   * @param words {@link String} with list of works to be spell checked.
-   * @return List of {@link Result}
-   */
-  public List<Result> checkLine( String line )
-    throws SpellException;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
-  public void stop();
+public class HunspellOptionPane extends AbstractOptionPane{
 	
-  public boolean isStopped();
-  
-  public boolean isContextSensitive();
-  
-  // to be defined
- //public void addWord( String word );
+	public HunspellOptionPane(){
+		super("SpellCheck-Hunspell-bridge");
+	}
+	
+	protected void _init(){}
+	protected void _save(){}
 }

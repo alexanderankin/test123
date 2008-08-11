@@ -38,12 +38,18 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
 		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
+		<pathelement location="${jedit.jars.dir}/Voxspell.jar"/>
+	</path>
+	
+	<path id="hunspell.class.path">
+		<pathelement location="lib/hunspell.jar"/>
 	</path>
 	
 	<!-- consists in previously defined paths -->
 	<path id="project.class.path">
 		<path refid="plugins.class.path"/>
 		<path refid="fest.class.path"/>
+		<path refid="hunspell.class.path"/>
 	</path>
 	
 	<!-- where to put tests results -->
