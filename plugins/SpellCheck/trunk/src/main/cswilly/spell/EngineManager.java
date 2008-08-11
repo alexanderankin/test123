@@ -37,6 +37,11 @@ public interface EngineManager extends EBComponent
 {
 	
 	/**
+	 * @return a user-friendly name
+	 */
+	public String getName();
+	
+	/**
 	 * It's not specified wether it should return a new one at each invocation.
 	 * As far as aspell engine is concerned, an instance can be shared accross
 	 * buffers, and this saves initialization time.
@@ -48,6 +53,8 @@ public interface EngineManager extends EBComponent
 	 * @return 	a started Engine, with give mode and given language
 	 */
 	public Engine getEngine(String mode,String language, boolean terse) throws SpellException;
+
+	public Validator getValidator(String mode, String language) throws SpellException;
 
 	/**
 	 * Asynchronously fetch available dictionaries.

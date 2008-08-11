@@ -40,6 +40,10 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.syntax.Token;
+
+
 import java.util.List;
 import java.util.Collections;
 
@@ -106,9 +110,30 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		}
 
 		String line = input.getLineText(iLine);
-
 		iLine++;
-		return line;
+		if(contextFilter())return line;
+		else return getNextLine();
+	}
+	
+	private boolean contextFilter(){
+
+		DefaultTokenHandler handler = new DefaultTokenHandler();
+		input.markTokens(iLine-1,handler);
+		
+		for(Token token = handler.getTokens();token!=null;token=token.next){
+			switch(token.id){
+				case Token.COMMENT1 :
+				case Token.COMMENT2 :
+				case Token.COMMENT3 :
+				case Token.COMMENT4 :
+				case Token.LITERAL1 :
+				case Token.LITERAL2 :
+				case Token.LITERAL3 :
+				case Token.LITERAL4 :
+					return true;
+			}
+		}
+		return false;
 	}
 	
 	public int getLineNumber(){
@@ -184,13 +209,12 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		public
 		boolean validate( int lineNum, String line, Result result ){
 			if(selections==null)throw new IllegalStateException("validate not between BufferSpellChecker.start() and done()");
-			int startOffset = result.getOffset()-1;
-			int endOffset = startOffset+result.getOriginalWord().length();
-			int lineOffset = input.getLineStartOffset(lineNum)+startOffset;
+			int lineOffset = input.getLineStartOffset(lineNum)+result.getOffset()-1;
+			int endOffset = lineOffset+result.getOriginalWord().length();
 			
-			Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
+			//Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
 			for(int iSelection=0;iSelection<selections.length;iSelection++){
-				Log.log(Log.DEBUG,BufferValidator.class,"selection:"+selections[iSelection]
+				/*Log.log(Log.DEBUG,BufferValidator.class,"selection:"+selections[iSelection]
 					+selections[iSelection].getStartLine()
 					+" "
 					+ selections[iSelection].getEndLine()
@@ -198,20 +222,22 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 					+ selections[iSelection].getStart(input,lineNum)
 					+" "
 					+selections[iSelection].getEnd(input,lineNum));
+				*/
 				if(selections[iSelection].getStartLine()<=lineNum
 					&& selections[iSelection].getEndLine()>=lineNum
-					&& startOffset>=selections[iSelection].getStart(input,lineNum)
+					&& lineOffset>=selections[iSelection].getStart(input,lineNum)
 					&& endOffset<=selections[iSelection].getEnd(input,lineNum)
 				){
-				Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" in selection");
-				Selection s = new Selection.Range(lineOffset,lineOffset+result.getOriginalWord().length());
+				//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" in selection");
+				Selection s = new Selection.Range(lineOffset,endOffset);
 				area.setSelection(s);
-				area.scrollTo(lineNum,startOffset,false);
+				area.scrollTo(lineNum,result.getOffset()-1,false);
 				return true;
 				}
 			}
 			
 			//out of selection
+			//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" not in selection");
 			result.setType(Result.OK);
 			return true;
 		}

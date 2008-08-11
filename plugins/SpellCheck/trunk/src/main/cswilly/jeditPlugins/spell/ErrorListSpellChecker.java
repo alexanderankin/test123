@@ -72,13 +72,14 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 		{
 			source.start();
 			validator.start();
-			String line = source.getNextLine();
-			for(int i=0;confirm && line!=null; i++,line=source.getNextLine() )
+			for(String line = source.getNextLine();
+				confirm && line!=null;
+				line=source.getNextLine() )
 			{
 				List<Result> results = engine.checkLine( line );
 				for(Result r:results)
 				{
-					confirm = validator.validate(i, line, r );
+					confirm = validator.validate(source.getLineNumber(), line, r );
 					if(!confirm)break;
 				}
 			}

@@ -3,7 +3,7 @@
  * $Date$
  * $Author$
  *
- * Copyright (C) 2001 C. Scott Willy
+ * Copyright (C) 2008 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@ import cswilly.spell.Result;
 import cswilly.spell.Validator;
 import cswilly.spell.ValidationDialog;
 import cswilly.spell.WordListValidator;
+import cswilly.spell.ChainingValidator;
 import cswilly.spell.SpellCoordinator;
 import cswilly.spell.SpellSource;
 import cswilly.spell.SpellAction;
@@ -66,8 +67,10 @@ class BufferDialogValidator implements SpellCoordinator
   private JEditBuffer buffer;
   private Position savedPosition;
   private WordListValidator userDict;
-  private Engine engine;  
+  private Engine engine;
   private Engine engineForSuggest;
+  private Validator engineValidator;
+  private Validator engineValidatorForSuggest;
   private Validator        sourceValidator = null;
 
   /**
@@ -84,7 +87,7 @@ class BufferDialogValidator implements SpellCoordinator
   private
   SpellAction validate(int lineNum, String line,Result result )
   {
-	  Log.log(Log.DEBUG,BufferDialogValidator.class,"validate("+result+")");
+	  //Log.log(Log.DEBUG,BufferDialogValidator.class,"validate("+result+")");
 	if(result.getType() == Result.OK) return new NopAction(null);
 
 	if(ignoreAll!=null)ignoreAll.validate(lineNum,line, result);
@@ -141,6 +144,14 @@ class BufferDialogValidator implements SpellCoordinator
 	  engineForSuggest = e;
   }
 
+  public void setValidator(Validator v){
+	  engineValidator = v;
+  }
+  
+  public void setValidatorForSuggest(Validator v){
+	 engineValidatorForSuggest = v;
+  }
+
   /**
    */
   public
@@ -151,15 +162,27 @@ class BufferDialogValidator implements SpellCoordinator
 		if(engineForSuggest==null)throw new SpellException("No engine configured for suggest");
 
 		boolean confirm = true;
-				
+
 		BufferSpellChecker source = new BufferSpellChecker(area);
 		BufferDialogValidatorCallback callback = new BufferDialogValidatorCallback(source);
 
 		source.start();
 		try{
-			
 			sourceValidator = source.getValidator();
-	
+
+			Validator addValid = null;
+
+			if(!engine.isContextSensitive())
+				addValid = new ModeSensitiveValidator(area.getBuffer());
+			if(engineValidator!=null)
+				if(addValid!=null)
+					addValid = new ChainingValidator(addValid,engineValidator);
+				else addValid = engineValidator;
+
+			if(addValid!=null)
+				sourceValidator= new ChainingValidator(sourceValidator,addValid);
+
+			sourceValidator.start();
 			if(ignoreAll!=null)ignoreAll.start();
 			if(userDict!=null)userDict.start();
 			
@@ -177,6 +200,7 @@ class BufferDialogValidator implements SpellCoordinator
 			throw spe;
 		}finally{
 			source.done();//remove the lock
+			Log.log(Log.DEBUG,BufferDialogValidator.class,"spellcheck done, lock removed");
 		}
 
 
@@ -271,7 +295,7 @@ class BufferDialogValidator implements SpellCoordinator
 			  while(line != null && line.trim().equals("")){
 				  line = source.getNextLine();
 				  iLine=source.getLineNumber();
-				  Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"got line "+line);
+				  //Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"got line "+line);
 			  }
 			  
 			  if(line == null){
@@ -280,7 +304,7 @@ class BufferDialogValidator implements SpellCoordinator
 				  return null;
 			  } else{
 				  results = engine.checkLine( line );
-				  System.out.println("results:"+results);
+				  //Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"results:"+results);
 				  iResults = 0;
 			  }
 		  }
@@ -295,7 +319,7 @@ class BufferDialogValidator implements SpellCoordinator
 				  return res;
 			  }
 			  else{
-				  history.add(new HistoryNode(iLine,iResults,line,results,action));
+				  //history.add(new HistoryNode(iLine,iResults,line,results,action));
 			  }
 		  }
 		  
@@ -353,26 +377,30 @@ class BufferDialogValidator implements SpellCoordinator
 		  if(newWord==null)throw new IllegalArgumentException("word for suggest shouldn't be null");
 		  List<Result> lr = engineForSuggest.checkLine(newWord);
 		  if(lr.size()>0){
-		  Result r = lr.get(0);
-		  
-		  if(r.getType() == Result.OK) return r;
+			  Result r = lr.get(0);
+			  
+			  if(r.getType() == Result.OK) return r;
+			  
+			  
+			  if(ignoreAll!=null)ignoreAll.validate(0,newWord,r);
+			  if(r.getType() == Result.OK) return r;
+			  
+			  if(userDict!=null)userDict.validate(0, newWord, r);
+			  
+			  if(result.getType() == Result.OK) return r;
+			  
+			  
+			  if( _changeAllMap.containsKey( r.getOriginalWord() ) )
+			  {
+				  r.getSuggestions().add(0,_changeAllMap.get(r.getOriginalWord()));
+			  }
+			  
+			  if(engineValidatorForSuggest!=null)engineValidatorForSuggest.validate(0,newWord,r);
 
-		
-		  if(ignoreAll!=null)ignoreAll.validate(0,newWord,r);
-		  if(r.getType() == Result.OK) return r;
-		
-		  if(userDict!=null)userDict.validate(0, newWord, r);
-		
-		  if(result.getType() == Result.OK) return r;
-		
-		
-		if( _changeAllMap.containsKey( r.getOriginalWord() ) )
-		{
-		  r.getSuggestions().add(0,_changeAllMap.get(r.getOriginalWord()));
-		}
-		return r;
+			  return r;
+
 		  }else{
-			  return new Result(0,Result.NONE,null,newWord);
+			  return new Result(0,Result.OK,null,newWord);
 		  }
 	  }
 	  
@@ -388,7 +416,7 @@ class BufferDialogValidator implements SpellCoordinator
 			  Log.log(Log.ERROR,BufferDialogValidator.class,"previous called while history is empty");
 			  return null;
 		  }else{
-			  System.out.println("results are : "+results);
+			  //Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"results are : "+results);
 			  iLine = node.iLine;
 			  iResults = node.iResult;
 			  line = node.line;
@@ -397,7 +425,7 @@ class BufferDialogValidator implements SpellCoordinator
 			  while(source.getLineNumber()>iLine)source.getPreviousLine();
 			  node.action.undo();
 			  validate(iLine,line,result);
-			  System.out.println("results are now : "+results);
+			  //Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"results are now : "+results);
 			  return result;
 		  }
 	  }

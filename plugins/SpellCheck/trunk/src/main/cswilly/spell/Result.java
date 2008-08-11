@@ -113,6 +113,10 @@ class Result implements Cloneable
     return _suggestions;
   }
 
+  public void setSuggestions(List<String>suggestions){
+	  _suggestions = suggestions;
+  }
+  
   public
   String getOriginalWord()
   {
@@ -162,7 +166,7 @@ class Result implements Cloneable
   {
     _offset = 0;
     _type = ERROR;
-    _suggestions = new ArrayList();
+    _suggestions = null;
     _originalWord = "";
   }
 
@@ -171,7 +175,7 @@ class Result implements Cloneable
   {
     _offset = 0;
     _type = OK;
-    _suggestions = new ArrayList();
+    _suggestions = null;
     _originalWord = "";
   }
 
@@ -197,7 +201,7 @@ class Result implements Cloneable
     st.nextToken(); // skip '#'
     _originalWord = st.nextToken();
     int count = Integer.parseInt( st.nextToken().trim() );
-    _suggestions = new ArrayList( count );
+    _suggestions = new ArrayList<String>( count );
     _offset = Integer.parseInt( st.nextToken( ":" ).trim() );
 
     st = new StringTokenizer( st.nextToken( ":" ), "," );
