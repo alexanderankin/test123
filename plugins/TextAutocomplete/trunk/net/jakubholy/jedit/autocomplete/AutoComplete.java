@@ -298,7 +298,7 @@ implements java.util.Observer
 	{
 		// Get the file with words
 		VFSFileChooserDialog fileDialog = new VFSFileChooserDialog(
-				null,
+				jEdit.getActiveView(),
 				buffer.getDirectory(),
 				VFSBrowser.OPEN_DIALOG,
 				false); // false for non-multiple selections
