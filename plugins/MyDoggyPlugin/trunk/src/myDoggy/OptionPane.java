@@ -18,6 +18,10 @@ public class OptionPane extends AbstractOptionPane {
 		super("mydoggy");
 	}
 
+	public static void setPushAwayModeProp(PushAwayMode mode)
+	{
+		jEdit.setProperty(PUSH_AWAY_MODE_PROP, mode.toString());
+	}
 	public static PushAwayMode getPushAwayModeProp() {
 		String selected = jEdit.getProperty(PUSH_AWAY_MODE_PROP,
 				PushAwayMode.HORIZONTAL.toString());

@@ -1,7 +1,6 @@
 package myDoggy;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -21,6 +20,7 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
 import org.noos.xing.mydoggy.PersistenceDelegateCallback;
+import org.noos.xing.mydoggy.PushAwayMode;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.ToolWindowManager;
@@ -360,6 +360,12 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw = getToolWindow(dockable);
 		if (tw != null)
 			tw.setTitle(newTitle);
+	}
+
+	@Override
+	protected void alternateLayoutChanged(boolean alternateLayout) {
+		OptionPane.setPushAwayModeProp(alternateLayout ?
+				PushAwayMode.VERTICAL : PushAwayMode.HORIZONTAL);
 	}
 
 }
