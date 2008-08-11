@@ -98,7 +98,16 @@
   </itemizedlist>
   </chapter>
 <appendix id="changelog">
-  <title>Change log</title> 
+  <title>Change log</title>
+  <formalpara>
+     <title>Version 1.1 </title>
+        <para> Requires JDK 1.5, jEdit 4.3pre15 
+          <itemizedlist>
+            <listitem><para> Shows only buffers belonging to the editPane's view </para></listitem>
+          </itemizedlist>
+      </para>
+   </formalpara>
+  
   <formalpara>
 	  <title>Version 0.8.3</title>
 		  <para>Requires JDK 1.5, jEdit 4.3pre12
