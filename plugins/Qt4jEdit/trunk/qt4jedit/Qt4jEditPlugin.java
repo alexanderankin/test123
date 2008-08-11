@@ -22,14 +22,18 @@ public class Qt4jEditPlugin extends EditPlugin {
 	public static  Qt4jEditPlugin instance() {
 		return sm_instance;
 	}
+
+    public void updateCommand() {
+    	StringList sl = new StringList();
+		sl.add(jEdit.getProperty("qt4jedit.path-to-assistant", "assistant"));
+		sl.add("-enableRemoteControl");
+	    builder.command(sl);
+    }
 	
 	public void start() {
 		sm_instance = this;
-		StringList sl = new StringList();
-		sl.add(jEdit.getProperty("qt4jedit.path-to-assistant", "assistant"));
-		sl.add("-enableRemoteControl");
 		builder = new ProcessBuilder();
-		builder.command(sl);
+		updateCommand();
 	}
 	
 	public void startAssistant() {

@@ -10,11 +10,11 @@ plugin.qt4jedit.Qt4jEditPlugin.depend.1=jdk 1.5
 
 plugin.qt4jedit.Qt4jEditPlugin.menu=assistant-start assistant-stop assistant-activate-identifier assistant-activate-keyword assistant-set-url
 
-assistant-start.label=Start Assistant
-assistant-stop.label=Stop Assistant
-assistant-activate-identifier.label=Activate Identifier under caret
-assistant-activate-keyword.label=Keyword search for word under caret
-assistant-set-url.label=Open selected URL in assistant
+assistant-start.label=Assistant: start
+assistant-stop.label=Assistant: stop
+assistant-activate-identifier.label=Assistant: Activate Identifier
+assistant-activate-keyword.label=Assistant: Keyword Search
+assistant-set-url.label=Assistant: Set URL
 
 plugin.qt4jedit.Qt4jEditPlugin.option-pane=qt4jedit
 
