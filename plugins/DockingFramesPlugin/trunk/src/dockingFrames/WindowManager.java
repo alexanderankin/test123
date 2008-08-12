@@ -13,17 +13,15 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import bibliothek.gui.DockController;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
-import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.gui.dock.StackDockStation;
+import bibliothek.gui.dock.station.split.SplitDockProperty;
 
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
 
 	private SplitDockStation station;
-	FlapDockStation east = new FlapDockStation();
-	FlapDockStation west = new FlapDockStation();
-	FlapDockStation south = new FlapDockStation();
-	FlapDockStation north = new FlapDockStation();
+	private StackDockStation east, west, north, south;
 
 	public WindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -31,15 +29,11 @@ public class WindowManager extends DockableWindowManager {
 		setLayout(new BorderLayout());
 		DockController controller = new DockController();
         station = new SplitDockStation();
+        north = new StackDockStation();
+        south = new StackDockStation();
+        east = new StackDockStation();
+        west = new StackDockStation();
         add(station.getComponent(), BorderLayout.CENTER);
-		add(east.getComponent(), BorderLayout.EAST);
-		add(west.getComponent(), BorderLayout.WEST);
-		add(north.getComponent(), BorderLayout.NORTH);
-		add(south.getComponent(), BorderLayout.SOUTH);
-		controller.add(east);
-		controller.add(west);
-		controller.add(north);
-		controller.add(south);
         controller.add(station);
 	}
 
@@ -119,16 +113,28 @@ public class WindowManager extends DockableWindowManager {
 			return;
 		String title = getDockableTitle(name);
 		Dockable d = new DefaultDockable(window, title);
-		FlapDockStation s; 
-		if (position.equals(DockableWindowManager.TOP))
+		StackDockStation s;
+		SplitDockProperty p;
+		if (position.equals(DockableWindowManager.TOP)) {
 			s = north;
-		else if (position.equals(DockableWindowManager.BOTTOM))
+			p = SplitDockProperty.NORTH;
+		}
+		else if (position.equals(DockableWindowManager.BOTTOM)) {
 			s = south;
-		else if (position.equals(DockableWindowManager.RIGHT))
+			p = SplitDockProperty.SOUTH;
+		}
+		else if (position.equals(DockableWindowManager.RIGHT)) {
 			s = east;
-		else
+			p = SplitDockProperty.EAST;
+		}
+		else {
 			s = west;
+			p = SplitDockProperty.WEST;
+		}
 		s.drop(d);
+		if (s.getController() == null) {
+			station.drop(s, p);
+		}
 	}
 
 }
