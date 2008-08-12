@@ -1,0 +1,25 @@
+plugin.qt4jedit.Qt4jEditPlugin.activate=startup
+plugin.qt4jedit.Qt4jEditPlugin.name=Qt4jEdit
+plugin.qt4jedit.Qt4jEditPlugin.version=0.1
+plugin.qt4jedit.Qt4jEditPlugin.docs=index.html
+
+plugin.qt4jedit.Qt4jEditPlugin.description=Provides an Assistant remote control for showing docs about the thing under the cursor.
+plugin.qt4jedit.Qt4jEditPlugin.author=Alan Ezust
+plugin.qt4jedit.Qt4jEditPlugin.depend.0=jedit 04.03.12.00
+plugin.qt4jedit.Qt4jEditPlugin.depend.1=jdk 1.5
+
+plugin.qt4jedit.Qt4jEditPlugin.menu=assistant-start assistant-stop assistant-activate-identifier assistant-activate-keyword assistant-set-url
+
+assistant-start.label=Assistant: start
+assistant-stop.label=Assistant: stop
+assistant-activate-identifier.label=Assistant: Activate Identifier
+assistant-activate-keyword.label=Assistant: Keyword Search
+assistant-set-url.label=Assistant: Set URL
+
+plugin.qt4jedit.Qt4jEditPlugin.option-pane=qt4jedit
+
+options.qt4jedit.label=Qt4jEdit
+options.qt4jedit.code=new qt4jedit.Qt4jEditOptions();
+options.qt4jedit.path-to-assistant=Path to assistant:
+
+options.qt4jedit.assistant.info=You need Qt 4.4 Assistant or later to use these features.
