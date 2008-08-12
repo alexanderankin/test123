@@ -4,7 +4,7 @@ plugin.buffertabs.BufferTabsPlugin.description=Show tabs to switch buffers
 plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert
 plugin.buffertabs.BufferTabsPlugin.version=1.1.0
 plugin.buffertabs.BufferTabsPlugin.docs=index.html
-plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
+plugin.buffertabs.BufferTabsPlugin.menu=buffertabs.toggle-vis buffertabs.toggle-docks
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.5
 plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.03.15.00
