@@ -290,14 +290,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			this.anchor = anchor;
 		}
 		public void showMostRecent() {
-			ToolWindow current = getCurrentToolWindow();
-			if (current == null) {
-				ToolWindow[] tools = wm.getToolsByAnchor(anchor);
-				if (tools.length > 0)
-					current = tools[0];
-			}
-			if ((current != null) && (! current.isActive()))
-				current.setActive(true);
+			wm.getToolWindowBar(anchor).setVisible(true);
 		}
 		private ToolWindow getCurrentToolWindow() {
 			ToolWindow[] tools = wm.getToolsByAnchor(anchor);
@@ -319,11 +312,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			ToolWindow tw;
 			if (name == null)
 			{	// Hide the visible windows in this area
-				do {
-					tw = getCurrentToolWindow();
-					if (tw != null)
-						tw.setVisible(false);
-				} while (tw != null);
+				wm.getToolWindowBar(anchor).setVisible(false);
 			}
 			else
 			{	// Show the window
@@ -332,12 +321,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				if (tw != null)
 					tw.setAnchor(anchor);
 			}
-		}
-		public boolean isVisible() {
-			return wm.getToolWindowBar(anchor).isVisible();
-		}
-		public void setVisible(boolean visible) {
-			wm.getToolWindowBar(anchor).setVisible(visible);
 		}
 	}
 	
