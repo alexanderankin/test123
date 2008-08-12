@@ -60,7 +60,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw = wm.getToolWindow(activeWindowId);
 		if (tw == null)
 			return;
-		tw.setVisible(false);
+		ToolWindowAnchor anchor = tw.getAnchor();
+		if (anchor != null)
+			wm.getToolWindowBar(anchor).setVisible(false);
 	}
 
 	@Override
@@ -330,6 +332,12 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				if (tw != null)
 					tw.setAnchor(anchor);
 			}
+		}
+		public boolean isVisible() {
+			return wm.getToolWindowBar(anchor).isVisible();
+		}
+		public void setVisible(boolean visible) {
+			wm.getToolWindowBar(anchor).setVisible(visible);
 		}
 	}
 	
