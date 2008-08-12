@@ -23,6 +23,7 @@ import org.noos.xing.mydoggy.PersistenceDelegateCallback;
 import org.noos.xing.mydoggy.PushAwayMode;
 import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
+import org.noos.xing.mydoggy.ToolWindowBar;
 import org.noos.xing.mydoggy.ToolWindowManager;
 import org.noos.xing.mydoggy.ToolWindowTab;
 import org.noos.xing.mydoggy.ToolWindowType;
@@ -257,6 +258,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 
 	private void activateToolWindow(ToolWindow tw)
 	{
+		ToolWindowAnchor anchor = tw.getAnchor();
+		if (anchor != null)
+		{
+			ToolWindowBar bar = wm.getToolWindowBar(anchor);
+			if (! bar.isVisible())
+				bar.setVisible(true);
+		}
 		tw.setActive(true);
 		JComponent c = getDockable(tw.getId());
 		if (c == null)
