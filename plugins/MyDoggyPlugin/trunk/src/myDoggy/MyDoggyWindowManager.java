@@ -1,6 +1,9 @@
 package myDoggy;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -8,8 +11,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
@@ -29,11 +34,64 @@ import org.noos.xing.mydoggy.ToolWindowTab;
 import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
+import org.noos.xing.mydoggy.plaf.ui.CustomDockableDescriptor;
+import org.noos.xing.mydoggy.plaf.ui.MyDoggyKeySpace;
 
 @SuppressWarnings("serial")
 public class MyDoggyWindowManager extends DockableWindowManager {
 
 	private MyDoggyToolWindowManager wm = null;
+	
+	private class ToggleBarDockableDescriptor extends CustomDockableDescriptor
+	{
+		public ToggleBarDockableDescriptor(MyDoggyToolWindowManager manager,
+				ToolWindowAnchor anchor)
+		{
+			super(manager, anchor);
+			ToolWindowBar bar = manager.getToolWindowBar(anchor);
+			setAvailable(bar.getToolWindows().length > 0);
+		}
+		@Override
+		public JComponent getRepresentativeAnchor(Component parent) {
+            if (representativeAnchor == null) {
+                representativeAnchor = new ToggleBarButton(manager.getToolWindowBar(anchor));
+            }
+            return representativeAnchor;
+		}
+		@Override
+		public void updateRepresentativeAnchor() {
+		}
+		
+		private class ToggleBarButton extends JButton
+		{
+			ToolWindowBar twb;
+			public ToggleBarButton(ToolWindowBar bar)
+			{
+				twb = bar;
+				if (twb == null)
+					return;
+				setIcon();
+            	addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (twb != null)
+							twb.setVisible(! twb.isVisible());
+					}
+            	});
+            	twb.addPropertyChangeListener("visible", new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent evt) {
+						System.err.println("visible changed");
+						setIcon();
+					}
+            	});
+			}
+			void setIcon()
+			{
+				if (twb.isVisible())
+					setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MINIMIZE));
+				setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_RESTORE));
+			}
+		}
+	}
 	
 	public MyDoggyWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -147,6 +205,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	public void setDockingLayout(DockingLayout docking)
 	{
 		// 'docking' is null if jEdit was started without a perspective file
+		boolean loaded = false;
 		if (docking != null)
 		{
 			MyDoggyDockingLayout layout = (MyDoggyDockingLayout) docking;
@@ -155,13 +214,16 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				java.io.File f = new File(filename);
 				if (f.exists()) {
 					loadMyDoggyLayout(filename);
-					return;
+					loaded = true;
 				}
 			}
 		}
-		// No saved layout - just use the docking positions specified by jEdit properties
-		super.setDockingLayout(null);
-		return;
+		if (! loaded) // No saved layout - just use the docking positions specified by jEdit properties
+			super.setDockingLayout(null);
+		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.TOP);
+		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.BOTTOM);
+		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.LEFT);
+		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.RIGHT);
 	}
 
 	public class PersistenceCallback implements PersistenceDelegateCallback
