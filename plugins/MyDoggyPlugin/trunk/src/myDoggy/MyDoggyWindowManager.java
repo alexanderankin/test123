@@ -48,8 +48,11 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				ToolWindowAnchor anchor)
 		{
 			super(manager, anchor);
-			ToolWindowBar bar = manager.getToolWindowBar(anchor);
-			setAvailable(bar.getToolWindows().length > 0);
+			setAvailable(true);
+		}
+		@Override
+		public boolean isAvailableCountable() {
+			return false;
 		}
 		@Override
 		public JComponent getRepresentativeAnchor(Component parent) {
@@ -87,8 +90,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			void setIcon()
 			{
 				if (twb.isVisible())
-					setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MINIMIZE));
-				setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_RESTORE));
+					setIcon(UIManager.getIcon(MyDoggyKeySpace.HIDE_TOOL_WINDOW));
+				else
+					setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE));
 			}
 		}
 	}
