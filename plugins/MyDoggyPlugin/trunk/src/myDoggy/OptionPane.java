@@ -1,5 +1,6 @@
 package myDoggy;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -12,7 +13,10 @@ public class OptionPane extends AbstractOptionPane {
 	private static final String PREFIX = "options.mydoggy.";
 	private static final String PUSH_AWAY_MODE_PROP = PREFIX + "pushAwayMode";
 	private static final String PUSH_AWAY_MODE_LABEL = PUSH_AWAY_MODE_PROP + ".label";
+	private static final String USE_ALTERNATE_LAYOUT_PROP = PREFIX + "useAlternateLayout";
+	private static final String USE_ALTERNATE_LAYOUT_LABEL = USE_ALTERNATE_LAYOUT_PROP + ".label";
 	JComboBox pushAwayMode;
+	JCheckBox useAlternateLayout;
 	
 	public OptionPane() {
 		super("mydoggy");
@@ -27,6 +31,9 @@ public class OptionPane extends AbstractOptionPane {
 				PushAwayMode.HORIZONTAL.toString());
 		return PushAwayMode.valueOf(selected);
 	}
+	public static boolean getUseAlternateLayoutProp() {
+		return jEdit.getBooleanProperty(USE_ALTERNATE_LAYOUT_PROP, true);
+	}
 	
 	@Override
 	protected void _init() {
@@ -39,11 +46,16 @@ public class OptionPane extends AbstractOptionPane {
 		pushAwayMode = new JComboBox(pushAwayModes);
 		pushAwayMode.setSelectedItem(getPushAwayModeProp().toString());
 		addComponent(jEdit.getProperty(PUSH_AWAY_MODE_LABEL), pushAwayMode);
+		useAlternateLayout = new JCheckBox(
+			jEdit.getProperty(USE_ALTERNATE_LAYOUT_LABEL),
+			getUseAlternateLayoutProp());
+		addComponent(useAlternateLayout);
 	}
 
 	@Override
 	protected void _save() {
 		jEdit.setProperty(PUSH_AWAY_MODE_PROP, (String)pushAwayMode.getSelectedItem());
+		jEdit.setBooleanProperty(USE_ALTERNATE_LAYOUT_PROP, useAlternateLayout.isSelected());
 		jEdit.propertiesChanged();
 	}
 
