@@ -5,7 +5,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.io.File;
 
-import projectviewer.vpt.IconComposer;
+/*import projectviewer.vpt.IconComposer;*/
 
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.data.SVNData;
@@ -15,7 +15,22 @@ import ise.plugin.svn.command.Status;
  * This class lets ProjectViewer display an "overlay" icon in the PV tree
  * to show the status of a file like TortoiseSVN.
  */
-public class SVNProvider implements IconComposer.VCProvider {
+public class SVNProvider /*implements IconComposer.VCProvider*/ {
+
+    // copied from ProjectViewer for interim compatibility with current PV
+    // version.  These values are set in a later version of PV, not the current
+    // release version.  These are defined in projectviewer.vpt.IconComposer.
+	public final static int VC_STATE_NONE			= 0;	// no state
+	public final static int VC_STATE_LOCAL_MOD		= 1;	// modified
+	public final static int VC_STATE_LOCAL_ADD		= 2;	// added
+	public final static int VC_STATE_LOCAL_RM		= 3;	// missing
+	public final static int VC_STATE_NEED_UPDATE	= 4;	// out of date
+	public final static int VC_STATE_CONFLICT		= 5;	// conflicted
+	public final static int VC_STATE_DELETED		= 6;	// deleted
+	public final static int VC_STATE_LOCKED			= 7;	// locked
+	public final static int VC_STATE_UNVERSIONED	= 8; 	// unversioned
+	public final static int VC_STATE_NORMAL			= 9;	// normal
+
 
     public final static Icon NORMAL_ICON = getIcon( "ise/plugin/svn/gui/icons/normal.png" );
     public final static Icon ADDED_ICON = getIcon( "ise/plugin/svn/gui/icons/added.png" );
@@ -45,7 +60,7 @@ public class SVNProvider implements IconComposer.VCProvider {
     private long refreshTime = 60 * 1000;   // one minute
 
     public int getFileState( File f, String path ) {
-        //return IconComposer.VC_STATE_NONE;
+        //return /*IconComposer.*/VC_STATE_NONE;
         CacheItem item = cache.get( path );
         if ( item != null && item.lastUpdate > System.currentTimeMillis() - refreshTime ) {
             return item.state;
@@ -70,69 +85,69 @@ public class SVNProvider implements IconComposer.VCProvider {
             status = null;
         }
         if ( status == null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_NONE ) );
-            return IconComposer.VC_STATE_NONE;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_NONE ) );
+            return /*IconComposer.*/VC_STATE_NONE;
         }
 
         if ( status.getAdded() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_ADD ) );
-            return IconComposer.VC_STATE_LOCAL_ADD;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_LOCAL_ADD ) );
+            return /*IconComposer.*/VC_STATE_LOCAL_ADD;
         }
         else if ( status.getConflicted() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_CONFLICT ) );
-            return IconComposer.VC_STATE_CONFLICT;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_CONFLICT ) );
+            return /*IconComposer.*/VC_STATE_CONFLICT;
         }
         else if ( status.getDeleted() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_DELETED ) );
-            return IconComposer.VC_STATE_DELETED;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_DELETED ) );
+            return /*IconComposer.*/VC_STATE_DELETED;
         }
         else if ( status.getLocked() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCKED ) );
-            return IconComposer.VC_STATE_LOCKED;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_LOCKED ) );
+            return /*IconComposer.*/VC_STATE_LOCKED;
         }
         else if ( status.getMissing() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_RM ) );
-            return IconComposer.VC_STATE_LOCAL_RM;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_LOCAL_RM ) );
+            return /*IconComposer.*/VC_STATE_LOCAL_RM;
         }
         else if ( status.getModified() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_LOCAL_MOD ) );
-            return IconComposer.VC_STATE_LOCAL_MOD;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_LOCAL_MOD ) );
+            return /*IconComposer.*/VC_STATE_LOCAL_MOD;
         }
         else if ( status.getOutOfDate() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_NEED_UPDATE ) );
-            return IconComposer.VC_STATE_NEED_UPDATE;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_NEED_UPDATE ) );
+            return /*IconComposer.*/VC_STATE_NEED_UPDATE;
         }
         else if ( status.getUnversioned() != null ) {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_UNVERSIONED ) );
-            return IconComposer.VC_STATE_UNVERSIONED;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_UNVERSIONED ) );
+            return /*IconComposer.*/VC_STATE_UNVERSIONED;
         }
         else {
-            cache.put( path, new CacheItem( IconComposer.VC_STATE_NORMAL ) );
-            return IconComposer.VC_STATE_NORMAL;
+            cache.put( path, new CacheItem( /*IconComposer.*/VC_STATE_NORMAL ) );
+            return /*IconComposer.*/VC_STATE_NORMAL;
         }
     }
 
     public Icon getIcon( int state ) {
         switch ( state ) {
-            case IconComposer.VC_STATE_LOCAL_MOD:
+            case /*IconComposer.*/VC_STATE_LOCAL_MOD:
                 return MODIFIED_ICON;
-            case IconComposer.VC_STATE_LOCAL_ADD:
+            case /*IconComposer.*/VC_STATE_LOCAL_ADD:
                 return ADDED_ICON;
-            case IconComposer.VC_STATE_LOCAL_RM:
+            case /*IconComposer.*/VC_STATE_LOCAL_RM:
                 return DELETED_ICON;
-            case IconComposer.VC_STATE_NEED_UPDATE:
+            case /*IconComposer.*/VC_STATE_NEED_UPDATE:
                 return OUTOFDATE_ICON;
-            case IconComposer.VC_STATE_CONFLICT:
+            case /*IconComposer.*/VC_STATE_CONFLICT:
                 return CONFLICT_ICON;
-            case IconComposer.VC_STATE_NONE:
+            case /*IconComposer.*/VC_STATE_NONE:
                 return null;
-            case IconComposer.VC_STATE_DELETED:
+            case /*IconComposer.*/VC_STATE_DELETED:
                 return DELETED_ICON;
-            case IconComposer.VC_STATE_LOCKED:
+            case /*IconComposer.*/VC_STATE_LOCKED:
                 return LOCKED_ICON;
-            case IconComposer.VC_STATE_UNVERSIONED:
+            case /*IconComposer.*/VC_STATE_UNVERSIONED:
                 return UNVERSIONED_ICON;
-            case IconComposer.VC_STATE_NORMAL:
+            case /*IconComposer.*/VC_STATE_NORMAL:
             default:
                 return NORMAL_ICON;
         }
