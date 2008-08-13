@@ -21,6 +21,7 @@ options.mydoggy.code=new myDoggy.OptionPane();
 
 # Option pane labels
 options.mydoggy.pushAwayMode.label=Push away mode:
+options.mydoggy.useAlternateLayout.label=Override push-away mode with jEdit alternate layout property
 
 # docs
 plugin.myDoggy.Plugin.docs=index.html

@@ -2,7 +2,6 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -209,7 +208,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 	
 	@Override
-	public void setDockingLayout(DockingLayout docking)
+	public void applyDockingLayout(DockingLayout docking)
 	{
 		// 'docking' is null if jEdit was started without a perspective file
 		boolean loaded = false;
@@ -226,7 +225,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			}
 		}
 		if (! loaded) // No saved layout - just use the docking positions specified by jEdit properties
-			super.setDockingLayout(null);
+			super.applyDockingLayout(null);
 		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.TOP);
 		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.BOTTOM);
 		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.LEFT);
@@ -420,7 +419,15 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	@Override
 	protected void propertiesChanged() {
 		super.propertiesChanged();
-		wm.getToolWindowManagerDescriptor().setPushAwayMode(OptionPane.getPushAwayModeProp());
+		setPushAwayMode();
+	}
+	
+	private void setPushAwayMode() {
+		if (! OptionPane.getUseAlternateLayoutProp())
+			wm.getToolWindowManagerDescriptor().setPushAwayMode(OptionPane.getPushAwayModeProp());
+		else
+			wm.getToolWindowManagerDescriptor().setPushAwayMode(getAlternateLayoutProp() ?
+					PushAwayMode.VERTICAL : PushAwayMode.HORIZONTAL);
 	}
 
 	@Override
@@ -431,9 +438,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	protected void alternateLayoutChanged(boolean alternateLayout) {
-		OptionPane.setPushAwayModeProp(alternateLayout ?
-				PushAwayMode.VERTICAL : PushAwayMode.HORIZONTAL);
+	protected void applyAlternateLayout(boolean alternateLayout) {
+		setPushAwayMode();
 	}
 
 }
