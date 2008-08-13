@@ -2,6 +2,7 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -82,17 +84,18 @@ public class MyDoggyWindowManager extends DockableWindowManager {
             	});
             	twb.addPropertyChangeListener("visible", new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent evt) {
-						System.err.println("visible changed");
 						setIcon();
 					}
             	});
 			}
 			void setIcon()
 			{
+				Icon icon;
 				if (twb.isVisible())
-					setIcon(UIManager.getIcon(MyDoggyKeySpace.HIDE_TOOL_WINDOW));
+					icon = UIManager.getIcon(MyDoggyKeySpace.HIDE_TOOL_WINDOW);
 				else
-					setIcon(UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE));
+					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE);
+				setIcon(icon);
 			}
 		}
 	}
