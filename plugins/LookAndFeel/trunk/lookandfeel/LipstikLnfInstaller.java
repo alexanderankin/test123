@@ -9,7 +9,7 @@ public class LipstikLnfInstaller extends LnfInstaller {
 
     public final static String LIPSTIK_MENU_THEME_PROP = "lipstikLF.menuBar";
     public final static String LIPSTIK_THEME_PROP = "lipstikLF.theme";
-    private static final String[] themeNames = { "KlearlooksTheme", "LightGrayTheme", "DefaultTheme" };
+    private static final String[] themeNames = { "KlearlooksTheme", "LightGrayTheme", "DefaultTheme", "ZenburnTheme" };
 
 
     public void install() throws UnsupportedLookAndFeelException {
