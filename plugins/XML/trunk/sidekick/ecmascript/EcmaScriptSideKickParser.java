@@ -27,17 +27,10 @@ package sidekick.ecmascript;
 import java.io.StringReader;
 import java.util.*;
 
-import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -52,7 +45,7 @@ import sidekick.ecmascript.parser.*;
  * @author    Dale Anson
  * @version   $Revision$
  */
-public class EcmaScriptSideKickParser extends SideKickParser {
+public class EcmaScriptSideKickParser extends SideKickParser implements PartialParser {
 
     private View currentView = null;
 
@@ -68,7 +61,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
      * a script tag in an html document), this can be set to the offset of the
      * script tag so that the node locations can be set correctly.
      */
-    public void setLineOffset( int offset ) {
+    public void setStartLine( int offset ) {
         if ( offset > 0 ) {
             lineOffset = offset;
         }
@@ -89,7 +82,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
      * @return             Description of the Returned Value
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        setLineOffset( 0 );
+        setStartLine( 0 );
         return parse( buffer, buffer.getText( 0, buffer.getLength() ), errorSource );
     }
 

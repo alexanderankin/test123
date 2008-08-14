@@ -35,7 +35,9 @@ import org.gjt.sp.jedit.jEdit;
 import errorlist.DefaultErrorSource;
 import sidekick.css.CSS2SideKickParser;
 import sidekick.ecmascript.EcmaScriptSideKickParser;
+import sidekick.javascript.JavaScriptParser;
 import sidekick.SideKickParsedData;
+import sidekick.enhanced.PartialParser;
 
 /**
  * danson: A class to build a tree of TreeNodes out of an HTML document.
@@ -137,23 +139,24 @@ public class HtmlTreeBuilder extends HtmlVisitor {
                     // if the user has selected the ecmascript parser to parse javascript,
                     // parse it in-line.  If they've selected the javascript parser, then
                     // do  nothing with in-line javascript.
-                    if ("ecmascript".equals(jEdit.getProperty("mode.javascript.sidekick.parser"))) {
+                    String parser_name = jEdit.getProperty("mode.javascript.sidekick.parser");
+                    if ("ecmascript".equals(parser_name) || "javascript".equals(parser_name)) {
                         // send the script content to the ecmascript parser.  The ecmascript parser
                         // will return a single node named "script" with 0 or more children.
                         // I don't want the top node, I do want the children. so...
                         // create the parser
-                        EcmaScriptSideKickParser scriptparser = new EcmaScriptSideKickParser();
+                        PartialParser scriptparser = "ecmascript".equals(parser_name) ? new EcmaScriptSideKickParser() : new JavaScriptParser();
                         // set the line offset to the line number of the script block so
                         // the location gets set correctly on the child nodes
-                        scriptparser.setLineOffset(bl.getStartLocation().line);
+                        scriptparser.setStartLine(bl.getStartLocation().line);
                         // actually do the parse
                         SideKickParsedData data = scriptparser.parse(buffer, text, errorSource);
                         // copy a reference to the child nodes to a list
                         List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
-                        // remove the child nodes from their current parent
                         for (int i = 0; i < data.root.getChildCount(); i++) {
                             children.add((DefaultMutableTreeNode)data.root.getChildAt(i));
                         }
+                        // remove the child nodes from their current parent
                         // add them to our current parent
                         for (DefaultMutableTreeNode child : children) {
                             data.root.remove(child);
