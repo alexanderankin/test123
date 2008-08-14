@@ -41,15 +41,15 @@ import errorlist.*;
 
 /**
  * SourceParser: parses source and builds a sidekick structure tree
- * Parsers are based on regular expressions and will therefore 
- * not able to correctly parse irregular source 
+ * Parsers are based on regular expressions and will therefore
+ * not able to correctly parse irregular source
  *
  * @author     Martin Raspe
  * @created    Oct 15, 2005
  * @modified   $Id$
  * @version    $Revision$
  */
-public class SourceParser extends SideKickParser {
+public class SourceParser extends SideKickParser implements PartialParser {
 	//{{{ Icons
 	public ImageIcon PACKAGE_ICON;
 	public ImageIcon USE_ICON;
@@ -65,7 +65,7 @@ public class SourceParser extends SideKickParser {
 	public String COMMENT;	// title for block comments
 	public String MAIN;	// title for default package
 	public String USE;	// title for import modules
-    
+
 	public String USE_KEY   = "---use---";
 	public String SUB_KEY   = "---sub---";
 	public String PKG_KEY   = "---pkg---";
@@ -79,6 +79,9 @@ public class SourceParser extends SideKickParser {
 	protected Position _start;
 	protected Position _end;
     protected int _lastLineNumber = 0;
+
+    protected int startLine = 0;
+
 	//}}}
 
 /**	 * Constructs a new SourceParser object
@@ -113,6 +116,36 @@ public class SourceParser extends SideKickParser {
 		return data;
 	}
 
+    /**
+     * Parse the contents of the given text.  This is the entry point to use when
+     * only a portion of the buffer text is to be parsed.  Note that <code>setLineOffset</code>
+     * should be called prior to calling this method, otherwise, tree node positions
+     * may be off.
+     * <p>
+     * This default implementation simply delegates to <code>parse(Buffer, DefaultErrorSource)</code>.
+     * Subclasses should override to actually parse appropriately.
+     *
+     * @param buffer       the buffer containing the text to parse
+     * @param text         the text to parse
+     * @param errorSource  where to send errors
+     * @return             the parsed buffer as a tree
+     */
+     public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
+        return parse(buffer, errorSource);
+     }
+
+    /**
+     * If called by another parser to parse part of a file (for example, to parse
+     * a script tag in an html document), this can be set to the offset of the
+     * text to be parsed so that the node locations can be set correctly.
+     *
+     * @param startLine the starting line in the buffer of the text that is to
+     * be parsed.
+     */
+     public void setStartLine(int startLine) {
+        this.startLine = startLine;
+     }
+
 	protected void parseBuffer(Buffer buffer, DefaultErrorSource errorSource) {
 		}
 
@@ -127,7 +160,7 @@ public class SourceParser extends SideKickParser {
 	}
 
 	protected ImageIcon loadIcon(String name, Class cls, String icon) {
-		String iconfile = jEdit.getProperty("sidekick.parser." + name + "." + icon); 
+		String iconfile = jEdit.getProperty("sidekick.parser." + name + "." + icon);
 		URL res = cls.getResource("/icons/" + iconfile);
 		if (res == null) return null;
 		return new ImageIcon(res);
@@ -201,9 +234,9 @@ public class SourceParser extends SideKickParser {
 			HashMap h = (HashMap) packages.get(name);
 			SourceAsset a = (SourceAsset) h.get(PKG_KEY);
 			a.setIcon(PACKAGE_ICON);
-			DefaultMutableTreeNode t = new DefaultMutableTreeNode(a); 
-			newTree(t, USE, (ArrayList) h.get(USE_KEY), USE_ICON); 
-			addList(t, (ArrayList) h.get(SUB_KEY), SUB_ICON); 
+			DefaultMutableTreeNode t = new DefaultMutableTreeNode(a);
+			newTree(t, USE, (ArrayList) h.get(USE_KEY), USE_ICON);
+			addList(t, (ArrayList) h.get(SUB_KEY), SUB_ICON);
 			data.root.add(t);
 			}
 		newTree(data.root, COMMENT, commentList, COMMENT_ICON);
@@ -211,11 +244,11 @@ public class SourceParser extends SideKickParser {
 
 	// Builds a tree from asset list "list" and adds it to tree node "n".
 	protected void newTree(DefaultMutableTreeNode n, String name, ArrayList list, ImageIcon icon) {
-		if (list.size() == 0) return; 
+		if (list.size() == 0) return;
 		SourceAsset first = (SourceAsset) list.get(0);
 		SourceAsset branch = new SourceAsset(name, first.getLineNo(), first.getStart());
 		branch.setIcon(icon);
-		DefaultMutableTreeNode t = new DefaultMutableTreeNode(branch); 
+		DefaultMutableTreeNode t = new DefaultMutableTreeNode(branch);
 		addList(t, list, null);
 		n.add(t);
 		}
@@ -230,13 +263,13 @@ public class SourceParser extends SideKickParser {
 			t.add(new DefaultMutableTreeNode(a));
 			}
 		}
-	
+
 	// match a line and return the specified group if found
 	protected String find(String line, Pattern p, int g) {
 		Matcher m = p.matcher(line);
 		return m.find() ? m.group(g) : null;
 		}
-		
+
 	// match a line and return package and subname if found
 	protected String[] find2(String line, Pattern p) {
 		String[] res = new String[2];
@@ -245,7 +278,7 @@ public class SourceParser extends SideKickParser {
 			res[0] = m.group(1);
 			res[1] = m.group(2);
 			}
-		else res = null;	
+		else res = null;
 		return res;
 		}
 
@@ -259,7 +292,7 @@ public class SourceParser extends SideKickParser {
 		}
 
 	// sort package names
-	protected class PackageComparator implements Comparator{
+	public class PackageComparator implements Comparator{
 		public int compare(Object o1, Object o2) {
 			String s1 = (String)o1;
 			String s2 = (String)o2;
@@ -273,7 +306,7 @@ public class SourceParser extends SideKickParser {
 		}
 
 	// reflects perl script structure
-	protected class PackageMap extends TreeMap {
+	public class PackageMap extends TreeMap {
 		public PackageMap() {
 			super();
 			}
