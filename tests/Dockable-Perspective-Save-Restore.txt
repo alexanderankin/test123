@@ -14,16 +14,39 @@ View 2:
     FSB: Right (Open to Path #2)
     Console: Bottom invisible
     ErrorList: Bottom showing
-
+View #3:
+    I/O Progress Monitor: top visible (activity log invisible)
+    SideKick: left visible (PV invisible)
+    FSB: Right (open to Path #3)
+    Console: Bottom visible (errorlist invisible)
+    
+Close View#3
 Ensure the splitters are far enough away from the edge that you can see a lot of stuff in each dockable area.
 
-Quit jEdit.
+File - Quit jEdit.
 
 Re-Run jEdit.
 
-Verify in each view that the same dockables are restored.
-Verify that restored dockables have vertical sliding positions are restored in each view.
-Verify the correct path is showing in each FSB.
-Verify that the preferred docked window placement is correct on both views.
-Verify the correct project is open in each PV (?)
+Sub Verify:
+    Verify in each view that the same dockables are restored.
+    Verify that restored dockables have vertical sliding positions are restored in each view.
+    Verify the correct path is showing in each FSB.
+    Verify that the preferred docked window placement is correct on both views.
+    Verify the correct project is open in each PV (?)
+
+Close View #2
+New View
+Verify
+Close View #1
+New View 
+Verify
+New View 
+Verify view #3 is restored (?)
+Close View#1
+New View
+Verify
+Close View#3
+New View
+Verify view #3 is restored
+
 
