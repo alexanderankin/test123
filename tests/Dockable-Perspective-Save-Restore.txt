@@ -1,52 +1,60 @@
-Test Plan for Dockable Perspective Save/Restore Framework.
+Query: Should the persepctive manager also remember the layout of the last closed View(s) as invisible but ready to be "popped" from the stack layout when the user does a "new view"?
 
-Create 2 views in jEdit.
-Dock the following dockables:
-View 1:
-    Activity Log: top (invisible)
-    ProjectViewer: left (open to Project #1)
-    FSB: Right (open to Path #1)
-    Console: Bottom showing 
-    ErrorList: Bottom invisible
-View 2:
-    Activity Log: top (visible)
-    ProjectViewer: left (open to Project #2)
-    FSB: Right (Open to Path #2)
-    Console: Bottom invisible
-    ErrorList: Bottom showing
-View #3:
-    I/O Progress Monitor: top visible (activity log invisible)
-    SideKick: left visible (PV invisible)
-    FSB: Right (open to Path #3)
-    Console: Bottom visible (errorlist invisible)
-    
-Close View#3
-Ensure the splitters are far enough away from the edge that you can see a lot of stuff in each dockable area.
+Query: When the user creates a new view, and that stack is empty, should it create a new view that is the same as the current view?
 
-File - Quit jEdit.
-
-Re-Run jEdit.
+Test Plan for Dockable Perspective Save/Restore Framework with 3 views.
 
 Sub Verify:
     Verify in each view that the same dockables are restored.
-    Verify that restored dockables have vertical sliding positions are restored in each view.
-    Verify the correct path is showing in each FSB.
-    Verify that the preferred docked window placement is correct on both views.
+    Verify that the geometry of each view is restored.
+    Verify the same # of split panes, position of split panes, and the same buffers are open
+    Ensure the splitters are far enough away from the edge that you can see a lot of stuff in each dockable area.
+    Verify that restored dockables have vertical sliding positions restored
+    Verify a correct path is showing in FSB.
+    Verify that the preferred docked window placement is correct on both views. (general options - view)
     Verify the correct project is open in each PV (?)
+    Verify Clicking on a dockable in a region that has no visible dockable, that it opens to a size that is non-zero (remembered from when it was last open).    
+    
+Run jEdit.
+Create View 1: EditPane 1: File #1
+    I/O Progress and Activity Log: top *invisible* (non-zero when visible)
+    ProjectViewer: left (open to Project #1)
+    FSB: Right (open to Path #1)
+    Console: Bottom showing (errorlist invisible)
+Create View 2: Split Pane Files#1, #2
+    Activity Log: top (i/o progress monitor invisible
+    ProjectViewer: left (open to Project #2)
+    FSB: Right (Open to Path #2)
+    ErrorList: Bottom showing (console invisible)
+Create View #3: EditPane File #3
+    I/O Progress Monitor: top visible (activity log invisible)
+    SideKick: left visible (PV invisible)
+    FSB: Right (open to Path #3)
+    Console, ErrorList: bottom *INVISIBLE*. (non-zero when visible)
 
+Close View#3
+File - Quit jEdit.
+Re-Run jEdit.
+Verify 2 views: #1, #2
 Close View #2
 New View
-Verify
+Verify View#1,2:
+    If fail, Verify View #1, #1
+    partialpass
 Close View #1
 New View 
-Verify
-New View 
-Verify view #3 is restored (?)
+Verify view #1,2
+Focus on View #2
+New View
+Verify View #1,#2,#3
+    if fail, Verify View #1, #2, #2
+    partialpass
 Close View#1
 New View
-Verify
+Verify #1, #2, #3
+Close View#3, #1
+New View
+Verify #1, #2, #3
 Close View#3
 New View
 Verify view #3 is restored
-
-
