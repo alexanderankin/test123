@@ -1,0 +1,34 @@
+
+Test Plan for Dockable Perspective Save/Restore Framework.
+
+Create 2 views in jEdit.
+Dock the following dockables:
+View 1:
+    ProjectViewer: left (open to Project #1)
+    Sidekick: Right
+    Console: Bottom
+    ErrorList: top
+View 2:
+    ProjectViewer: left (open to Project #2)
+    SideKick: Right
+    Console: Bottom
+    ErrorList: Top
+
+Ensure the splitters are far enough away from the edge that you can see a lot of stuff in each dockable area.
+
+Quit jEdit.
+
+Re-Run jEdit.
+
+Verify that all 4 dockables are visible and that the vertical sliding positions are restored.
+Verify that the preferred docked window placement is correct on both views.
+Verify that the correct Projects are opened in each View
+
+Change to File System Browser.
+Set FSB to different directories in each view.
+Exit and re-run jEdit.
+Verify the correct paths are restored in each FSB (?)
+
+
+
+    
