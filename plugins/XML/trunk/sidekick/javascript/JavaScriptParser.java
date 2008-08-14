@@ -22,10 +22,13 @@
 package sidekick.javascript;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 import sidekick.enhanced.SourceParser;
+import sidekick.SideKickParsedData;
 
-
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -33,8 +36,8 @@ import errorlist.*;
 
 /**
  * JavaScriptParser: parses perl source and builds a sidekick structure tree
- * Parser is based on regular expressions and will therefore 
- * not able to correctly parse very irregular perl scripts 
+ * Parser is based on regular expressions and will therefore
+ * not able to correctly parse very irregular perl scripts
  *
  * @author     Martin Raspe
  * @created    March 3, 2005
@@ -44,9 +47,9 @@ import errorlist.*;
 public class JavaScriptParser extends SourceParser {
 
 /*
-    Changes suggested by David Padgett to make the parser 
+    Changes suggested by David Padgett to make the parser
     more compatible with namespace/package emulation in JavaScript
-    
+
     my.test.namespace.MyClass = function ...
     my.test.namespace.MyClass.prototype.foobar = function ...
     my.test.namespace.MyClass.myStaticMethod = function ...
@@ -86,17 +89,38 @@ public class JavaScriptParser extends SourceParser {
 	 */
 
 	 protected void parseBuffer(Buffer buffer, DefaultErrorSource errorSource) {
+        setStartLine( 0 );
+        parseBuffer( buffer, buffer.getText( 0, buffer.getLength() ), errorSource );
+     }
+
+     public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
+         Log.log(Log.DEBUG, this, "+++++ Parsing:\n" + text);
+		data = new SideKickParsedData(buffer.getName());
+		packages = new PackageMap(new PackageComparator());
+		commentList = new ArrayList();
+        parseBuffer(buffer, text, errorSource);
+		completePackageAsset(_end, _lastLineNumber);
+		Log.log(Log.DEBUG, this, "parsing completed");
+		buildTrees();
+		Log.log(Log.DEBUG, this, "tree built");
+		return data;
+     }
+
+     protected void parseBuffer(Buffer buffer, String text, DefaultErrorSource errorSource) {
+         Log.log(Log.DEBUG, this, "+++++ startLine = " + startLine);
 		String line;
 		String name;
 		String pkgname;
 		String[] names;
 		Stack funcstack = new Stack();
 		Stack pkgstack = new Stack();
-		pkgstack.push(MAIN);
+        //if (startLine == 0) {
+            pkgstack.push(MAIN);
+        //}
 		boolean in_comment = false;
 		int buflen = buffer.getLength();
 		int _tmp;
-		for (int lineNo = 0; lineNo < buffer.getLineCount(); lineNo++) {
+		for (int lineNo = startLine; lineNo < startLine + getLineCount(text); lineNo++) {
 			_start = buffer.createPosition(buffer.getLineStartOffset(lineNo));
 			_tmp = buffer.getLineEndOffset(lineNo);
 			if (_tmp > buflen) _tmp = buflen;
@@ -105,7 +129,7 @@ public class JavaScriptParser extends SourceParser {
 			// line comment or empty line
 			if (line.indexOf(LINE_COMMENT) == 0 || line.length() == 0) continue;
 			// block comment: end
-			if (in_comment && line.indexOf("*/") != -1 ) { 
+			if (in_comment && line.indexOf("*/") != -1 ) {
 				in_comment = false;
 				completeAsset(_end);
 				}
@@ -171,7 +195,7 @@ public class JavaScriptParser extends SourceParser {
 				continue;
 				}
 			// block comment: start
-			if (! in_comment && line.indexOf("/*") != -1 ) { 
+			if (! in_comment && line.indexOf("/*") != -1 ) {
 				completeAsset(_end);
 				if (! funcstack.empty()) name = (String) funcstack.peek();
 				if (name == null)  name = (String) pkgstack.peek();
@@ -181,4 +205,24 @@ public class JavaScriptParser extends SourceParser {
 				}
 			}
 	 }
+
+    private int getLineCount( CharSequence text ) {
+        if ( text == null )
+            return 0;
+        BufferedReader br = new BufferedReader( new StringReader( text.toString() ) );
+        String line = null;
+        int count = 0;
+        try {
+            while ( true ) {
+                line = br.readLine();
+                if ( line == null )
+                    break;
+                ++count;
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 }
