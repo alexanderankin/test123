@@ -2,8 +2,8 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,8 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
@@ -67,7 +67,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public void updateRepresentativeAnchor() {
 		}
 		
-		private class ToggleBarButton extends JButton
+		private class ToggleBarButton extends JLabel
 		{
 			ToolWindowBar twb;
 			public ToggleBarButton(ToolWindowBar bar)
@@ -76,8 +76,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				if (twb == null)
 					return;
 				setIcon();
-            	addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+            	addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
 						if (twb != null)
 							twb.setVisible(! twb.isVisible());
 					}
@@ -92,7 +93,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			{
 				Icon icon;
 				if (twb.isVisible())
-					icon = UIManager.getIcon(MyDoggyKeySpace.HIDE_TOOL_WINDOW);
+					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_CLOSE);
 				else
 					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE);
 				setIcon(icon);
