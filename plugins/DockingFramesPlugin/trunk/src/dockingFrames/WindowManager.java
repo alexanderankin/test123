@@ -9,32 +9,52 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingLayout;
 
+import bibliothek.extension.gui.dock.theme.EclipseTheme;
 import bibliothek.gui.DockController;
+import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.StackDockStation;
+import bibliothek.gui.dock.station.split.SplitDockGrid;
+import bibliothek.gui.dock.station.split.SplitDockPathProperty;
 import bibliothek.gui.dock.station.split.SplitDockProperty;
 
 @SuppressWarnings("serial")
 public class WindowManager extends DockableWindowManager {
 
-	private SplitDockStation station;
+	private SplitDockStation center;
 	private StackDockStation east, west, north, south;
-
+	
 	public WindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
 		super(view, instance, config);
 		setLayout(new BorderLayout());
 		DockController controller = new DockController();
-        station = new SplitDockStation();
+		controller.setTheme(new EclipseTheme());
+        center = new SplitDockStation();
+        add(center.getComponent(), BorderLayout.CENTER);
         north = new StackDockStation();
         south = new StackDockStation();
         east = new StackDockStation();
         west = new StackDockStation();
-        add(station.getComponent(), BorderLayout.CENTER);
-        controller.add(station);
+        controller.add(center);
+        controller.add(north);
+        controller.add(south);
+        controller.add(east);
+        controller.add(west);
+        north.setTitleText("North");
+        south.setTitleText("South");
+        east.setTitleText("East");
+        west.setTitleText("West");
+	}
+
+	@Override
+	public void applyDockingLayout(DockingLayout docking) {
+		super.applyDockingLayout(docking);
+		dropDockingAreas();
 	}
 
 	@Override
@@ -99,8 +119,26 @@ public class WindowManager extends DockableWindowManager {
 
 	@Override
 	public void setMainPanel(JPanel panel) {
-		station.drop(new DefaultDockable(panel, "main"));
-		//add(panel, BorderLayout.CENTER);
+        center.drop(new DefaultDockable(panel, "main"));
+	}
+
+	private void dropDockingAreas() {
+		SplitDockPathProperty p = new SplitDockPathProperty();
+        p.add(SplitDockPathProperty.Location.TOP, 0.2);
+        if (north.getDockableCount() > 0)
+        	center.drop(north, p);
+        p = new SplitDockPathProperty();
+        p.add(SplitDockPathProperty.Location.BOTTOM, 0.2);
+        if (south.getDockableCount() > 0)
+        	center.drop(south, p);
+        p = new SplitDockPathProperty();
+        p.add(SplitDockPathProperty.Location.LEFT, 0.2);
+        if (west.getDockableCount() > 0)
+        	center.drop(west, p);
+        p = new SplitDockPathProperty();
+        p.add(SplitDockPathProperty.Location.RIGHT, 0.2);
+        if (east.getDockableCount() > 0)
+        	center.drop(east, p);
 	}
 
 	@Override
@@ -114,27 +152,15 @@ public class WindowManager extends DockableWindowManager {
 		String title = getDockableTitle(name);
 		Dockable d = new DefaultDockable(window, title);
 		StackDockStation s;
-		SplitDockProperty p;
-		if (position.equals(DockableWindowManager.TOP)) {
+		if (position.equals(DockableWindowManager.TOP))
 			s = north;
-			p = SplitDockProperty.NORTH;
-		}
-		else if (position.equals(DockableWindowManager.BOTTOM)) {
+		else if (position.equals(DockableWindowManager.BOTTOM))
 			s = south;
-			p = SplitDockProperty.SOUTH;
-		}
-		else if (position.equals(DockableWindowManager.RIGHT)) {
+		else if (position.equals(DockableWindowManager.RIGHT))
 			s = east;
-			p = SplitDockProperty.EAST;
-		}
-		else {
+		else
 			s = west;
-			p = SplitDockProperty.WEST;
-		}
 		s.drop(d);
-		if (s.getController() == null) {
-			station.drop(s, p);
-		}
 	}
 
 }
