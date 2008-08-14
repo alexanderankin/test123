@@ -50,6 +50,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		{
 			super(manager, anchor);
 			setAvailable(true);
+			setAnchor(anchor, 0);
 		}
 		@Override
 		public boolean isAvailableCountable() {
