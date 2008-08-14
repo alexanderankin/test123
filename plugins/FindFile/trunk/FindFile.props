@@ -1,7 +1,7 @@
 # FindFile Plugin properties
-# $Id: FindFile.props,v 1.4 2004-03-22 22:54:44 olearyni Exp $
+# $Id: FindFile.props,v 1.4 2004/03/22 22:54:44 olearyni Exp $
 plugin.findfile.FindFilePlugin.name=FindFile
-plugin.findfile.FindFilePlugin.author=Nicholas O'Leary
+plugin.findfile.FindFilePlugin.author=Nicholas O'Leary, Anthony Keeley
 plugin.findfile.FindFilePlugin.version=1.0
 plugin.findfile.FindFilePlugin.activate=defer
 plugin.findfile.FindFilePlugin.depend.0=jdk 1.4.0
@@ -12,7 +12,7 @@ plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
 
 plugin.findfile.FindFilePlugin.actions.newSearch.label=Search for files...
 
-options.FindFilePlugin-options.label=FindFile 
+options.FindFilePlugin-options.label=FindFile
 options.FindFilePlugin-options.code=new findfile.FindFileOptionPane();
 
 plugin.findfile.FindFilePlugin.browser-menu-item=vfs.browser.FindFile
@@ -39,8 +39,8 @@ FindFilePlugin.action-labels.copyAllResults=Copy results
 FindFilePlugin.action-labels.sortByFileName=By file name
 FindFilePlugin.action-labels.sortByPath=By path
 FindFilePlugin.action-labels.newSearch=Search for files...
-FindFilePlugin.action-labels.removeAllSearches=Remove all searches
-FindFilePlugin.action-labels.toggleMultple=Toggle multiple results
+FindFilePlugin.action-labels.removeAllSearches=Remove All Nodes
+FindFilePlugin.action-labels.toggleMultple=Toggle Multiple Results
 
 FindFilePlugin.option-pane-labels.multipleResults=Show multiple results
 FindFilePlugin.option-pane-labels.hidePath=Hide path details
@@ -56,7 +56,8 @@ FindFilePlugin.option-pane-labels.sortBy=Result sort order
 FindFilePlugin.option-pane-defaults.archiveFilter=*.{zip,tar,tgz,jar}
 
 FindFilePlugin.status-message.started=Searching...
-FindFilePlugin.status-message.finished=Done
+FindFilePlugin.status-message.finished=Done.
+FindFilePlugin.status-message.blank=
 
 FindFilePlugin.delete-confirm.title=Confirm deletion
 FindFilePlugin.delete-confirm.message=Are you sure you want to delete: {0}?
@@ -67,7 +68,7 @@ FindFilePlugin.not-implemented.message=Not implemented in this version.
 FindFilePlugin.invalid-archive-filter.title=Invalid archive filter
 FindFilePlugin.invalid-archive-filter.message={0} appears to be an invalid filter:\n\
  {1}
- 
+
 
 FindFilePlugin.failed-to-open.title=Failed to open
 FindFilePlugin.failed-to-open.message=Failed to open: {0} \

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
-<!-- $Id: build.xml,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $ -->
+<!-- $Id: build.xml,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $ -->
+<!--  2008.05.05: updates by keeleyt83 -->
 
 <!--
 
@@ -10,47 +11,39 @@
 
 -->
 
-<project name="FindFile" default="dist" basedir=".">
+<project name="FindFile" default="compile" basedir=".">
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	<property name="docs-proc.target"  value="xsltproc"/>
+	<property name="jar.name" value="findfile-dev.jar"/>
+	<property name="docs-proc.target" value="xsltproc"/>
 
-	<property name="jedit.install.dir"  value="../.."/>
+	<property name="jedit.install.dir" value="C:/Program Files/jEdit 4.3pre14"/>
 	<property name="src.dir" value="src"/>
-	<property name="install.dir"  value=".."/>
+	<property name="install.dir" value="../../.jedit/jars"/>
 	<property name="build.dir" value="build"/>
+	<property name="lib.dir" value="lib"/>
 
 	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<!--<pathelement location="${jedit.install.dir}/jedit.jar"/>-->
 		<pathelement location="${src.dir}"/>
+		<pathelement location="lib/jedit4.3pre15.jar" />
 	</path>
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
 		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
-			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;/xsl:stylesheet&gt;"/>
+		<echo file="docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true" message=" version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
 
 	<target name="compile" depends="init">
-		<javac
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			deprecation="on"
-			includeJavaRuntime="yes"
-		>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="on" deprecation="on" includeJavaRuntime="yes">
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -87,11 +80,7 @@
 
 	<!-- Generate docs with Xalan tool from xml.apache.org -->
 	<target name="docs-xalan">
-		<style
-			style="users-guide.xsl"
-			in="users-guide.xml"
-			out="users-guide.html"
-		/>
+		<style style="users-guide.xsl" in="users-guide.xml" out="users-guide.html"/>
 	</target>
 
 	<target name="clean">
