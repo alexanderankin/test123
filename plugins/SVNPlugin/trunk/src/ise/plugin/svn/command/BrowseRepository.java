@@ -94,7 +94,7 @@ public class BrowseRepository {
         List<DirTreeNode> children = null;
         try {
             /*
-             * Checks up if the specified path/to/repository part of the URL
+             * checks if the specified path/to/repository part of the URL
              * really corresponds to a directory. If doesn't the program exits.
              * SVNNodeKind is that one who says what is located at a path in a
              * revision. -1 means the latest revision.

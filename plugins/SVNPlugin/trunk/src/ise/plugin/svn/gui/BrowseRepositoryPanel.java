@@ -278,7 +278,45 @@ public class BrowseRepositoryPanel extends JPanel {
                 };
         chooser.addActionListener( al );
         if ( full ) {
-            refresh_btn.addActionListener( al );
+            ActionListener refresh_al = new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            // if there is a selected node, refresh just that node,
+                            // otherwise, refresh the entire tree
+                            RepositoryData data = chooser.getSelectedRepository();
+                            TreePath path = tree.getSelectionPath();
+                            DirTreeNode node = null;
+                            if (path != null) {
+                                node = ( DirTreeNode ) path.getLastPathComponent();
+                                node.removeAllChildren();
+                            }
+                            else {
+                                // refresh the entire tree
+                                node = new DirTreeNode( data.getURL(), false );
+                                tree.setModel( new DefaultTreeModel( node ) );
+                                BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
+                                action.actionPerformed( null );
+                                return;
+                            }
+                            data = new RepositoryData( data );
+                            String url;
+                            if ( node.isExternal() ) {
+                                url = node.getRepositoryLocation();
+                            }
+                            else {
+                                Object[] parts = path.getPath();
+                                StringBuilder sb = new StringBuilder();
+                                sb.append( parts[ 0 ] );
+                                for ( int i = 1; i < parts.length; i++ ) {
+                                    sb.append( "/" ).append( parts[ i ].toString() );
+                                }
+                                url = sb.toString();
+                            }
+                            data.setURL( url );
+                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
+                            action.actionPerformed( null );
+                        }
+                    };
+            refresh_btn.addActionListener( refresh_al );
         }
         if ( repositoryName != null ) {
             chooser.setSelectedItem( repositoryName );

@@ -206,7 +206,7 @@ ips.Remove_repository_from_browser=Remove repository from browser
 ips.Remove_repository_location=Remove repository location
 ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_files.=This only removes this repository from the browser, it does not delete any files.
 ips.Confirm_Remove=Confirm Remove
-ips.Refresh=Refresh
+ips.Refresh=Refresh tree or selected node
 ips.SVN_Browser=SVN Browser
 
 # for Checkout dialog
