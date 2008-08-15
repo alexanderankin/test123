@@ -1,8 +1,9 @@
+Test Plan for Dockable Perspective Save/Restore Framework with 3 views.
+
 Query: Should the persepctive manager also remember the layout of the last closed View(s) as invisible but ready to be "popped" from the stack layout when the user does a "new view"?
 
 Query: When the user creates a new view, and that stack is empty, should it create a new view that is the same as the current view?
 
-Test Plan for Dockable Perspective Save/Restore Framework with 3 views.
 
 Sub Verify:
     Verify in each view that the same dockables are restored.
@@ -32,29 +33,13 @@ Create View #3: EditPane File #3
     FSB: Right (open to Path #3)
     Console, ErrorList: bottom *INVISIBLE*. (non-zero when visible)
 
-Close View#3
 File - Quit jEdit.
 Re-Run jEdit.
-Verify 2 views: #1, #2
-Close View #2
+Verify 2 views: #1, #2, #3
+Close View #2, focus on View #1
 New View
-Verify View#1,2:
-    If fail, Verify View #1, #1
-    partialpass
-Close View #1
+Verify View#1,#1,#3
+Close View #3
+Focus on View #2, make changes so it is distinguishable from #1
 New View 
-Verify view #1,2
-Focus on View #2
-New View
-Verify View #1,#2,#3
-    if fail, Verify View #1, #2, #2
-    partialpass
-Close View#1
-New View
-Verify #1, #2, #3
-Close View#3, #1
-New View
-Verify #1, #2, #3
-Close View#3
-New View
-Verify view #3 is restored
+Verify view #1, #2, #2
