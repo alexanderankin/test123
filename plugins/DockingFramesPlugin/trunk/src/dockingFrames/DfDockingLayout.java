@@ -67,8 +67,7 @@ public class DfDockingLayout extends
 		out.write(filename);
 		out.write("\" />");
 		out.write(lineSep);
-		DockSituation situation = new DockSituation();
-		situation.add(wm.getDockFactory());
+		DockSituation situation = wm.getDockSituation();
 		XElement root = new XElement("layout");
 		situation.writeXML(wm.getStationMap(), root);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
