@@ -112,6 +112,12 @@ public class DfWindowManager extends DockableWindowManager {
 	}
 	
 	@Override
+	protected void dockingPositionChanged(String dockableName,
+			String oldPosition, String newPosition) {
+		showDockableWindow(dockableName);
+	}
+
+	@Override
 	public void closeCurrentArea() {
 		// TODO Auto-generated method stub
 
@@ -179,7 +185,9 @@ public class DfWindowManager extends DockableWindowManager {
 	@Override
 	public void setMainPanel(JPanel panel) {
 		mainPanel = panel;
-		center.drop(new JEditDockable("main", "main", panel));
+		JEditDockable d = new JEditDockable(MAIN, MAIN, panel);
+		center.drop(d);
+		situation.put(MAIN, d);
 	}
 
 	private void dropDockingArea(StackDockStation s,
