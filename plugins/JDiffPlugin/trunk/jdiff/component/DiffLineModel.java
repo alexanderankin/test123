@@ -26,6 +26,8 @@ import jdiff.*;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.jEdit;
+
 public class DiffLineModel {
 
     private String leftLine;
@@ -113,7 +115,7 @@ public class DiffLineModel {
         leftColors = new ArrayList<Color>();
         for ( int i = 0; i < leftLine.length(); i++ ) {
             leftCharacters.add( leftLine.charAt( i ) );
-            leftColors.add( Color.BLACK );
+            leftColors.add( jEdit.getColorProperty("view.bgColor", Color.WHITE) );
         }
 
         // arrays to associate a color per character for the right line
@@ -121,7 +123,7 @@ public class DiffLineModel {
         rightColors = new ArrayList<Color>();
         for ( int i = 0; i < rightLine.length(); i++ ) {
             rightCharacters.add( rightLine.charAt( i ) );
-            rightColors.add( Color.BLACK );
+            rightColors.add( jEdit.getColorProperty("view.bgColor", Color.WHITE) );
         }
 
         // calculate the colors per character, use the same colors the user has

@@ -32,6 +32,7 @@ import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 
@@ -166,8 +167,8 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             leftBorder = new Rectangle( leftRectangle );
             rightBorder = new Rectangle( rightRectangle );
 
-            // make the left and right rectangles white
-            gfx.setColor( Color.white );
+            // make the left and right rectangles match the view background
+            gfx.setColor( jEdit.getColorProperty("view.bgColor", Color.WHITE) );
             gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
             gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
 
@@ -561,7 +562,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         leftRectangle.height = Math.max( 1, pixelsPerLine * hunk.deleted );
                     }
                     leftRectangle.y = centerRectangle.y + ( ( i - leftFirstLine ) * pixelsPerLine );
-                    gfx.setColor( Color.BLACK );
+                    gfx.setColor( JDiffPlugin.leftCursorColor );
                     gfx.drawRect( leftRectangle.x - 3, leftRectangle.y, 1, leftRectangle.height );
                     break;
                 }
@@ -580,7 +581,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         rightRectangle.height = Math.max( 1, pixelsPerLine * hunk.inserted );
                     }
                     rightRectangle.y = centerRectangle.y + ( ( i - rightFirstLine ) * pixelsPerLine );
-                    gfx.setColor( Color.BLACK );
+                    gfx.setColor( JDiffPlugin.rightCursorColor );
                     gfx.drawRect( rightRectangle.x + rightRectangle.width + 1, rightRectangle.y, 1, rightRectangle.height );
                     break;
                 }
