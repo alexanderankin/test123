@@ -25,7 +25,7 @@ import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
-import bibliothek.gui.dock.layout.DockSituation;
+import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.SplitDockPathProperty;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
@@ -41,30 +41,39 @@ public class DfWindowManager extends DockableWindowManager {
 	private static final String MAIN = "main";
 
 	private DockController controller;
-	private Map<String, DockStation> stations, areas;
+	private SplitDockStation center;
+	private StackDockStation north, south, west, east;
+	private Map<String, DockStation> stations;
 	private Factory factory;
 	private JPanel mainPanel;
+	private PredefinedDockSituation situation;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
 		super(view, instance, config);
 		setLayout(new BorderLayout());
+		situation = new PredefinedDockSituation();
         stations = new HashMap<String, DockStation>();
-        areas = new HashMap<String, DockStation>();
 		controller = new DockController();
 		controller.setTheme(new EclipseTheme());
-        SplitDockStation center = new SplitDockStation();
-        add(center.getComponent(), BorderLayout.CENTER);
-        createStackDockStation(NORTH);
-        createStackDockStation(SOUTH);
-        createStackDockStation(EAST);
-        createStackDockStation(WEST);
-        controller.add(center);
+        center = new SplitDockStation();
         stations.put(CENTER, center);
+        add(center.getComponent(), BorderLayout.CENTER);
+        north = createStackDockStation(NORTH);
+        south = createStackDockStation(SOUTH);
+        east = createStackDockStation(EAST);
+        west = createStackDockStation(WEST);
+        controller.add(center);
+		situation.put(CENTER, center);
         factory = new Factory();
+        situation.add(factory);
         PerspectiveManager.setPerspectiveDirty(true);
 	}
 
+	public PredefinedDockSituation getDockSituation() {
+		return situation;
+	}
+	
 	public Factory getDockFactory() {
 		return factory;
 	}
@@ -74,7 +83,7 @@ public class DfWindowManager extends DockableWindowManager {
 		StackDockStation s = new StackDockStation();
 		controller.add(s);
 		s.setTitleText(title);
-		areas.put(title, s);
+		situation.put(title, s);
 		return s;
 	}
 	
@@ -87,12 +96,8 @@ public class DfWindowManager extends DockableWindowManager {
 				XElement root = null;
 				try {
 					root = XIO.readUTF(new FileInputStream(filename));
-					DockSituation situation = new DockSituation();
-					situation.add(factory);
-					remove(((SplitDockStation)stations.get(CENTER)).getComponent());
-					stations = situation.readXML(root);
-					SplitDockStation center = (SplitDockStation)stations.get(CENTER);
-					add(center.getComponent(), BorderLayout.CENTER);
+					situation.readXML(root);
+					return;
 				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				}
@@ -174,7 +179,7 @@ public class DfWindowManager extends DockableWindowManager {
 	@Override
 	public void setMainPanel(JPanel panel) {
 		mainPanel = panel;
-		stations.get(CENTER).drop(new JEditDockable("main", "main", panel));
+		center.drop(new JEditDockable("main", "main", panel));
 	}
 
 	private void dropDockingArea(StackDockStation s,
@@ -187,10 +192,10 @@ public class DfWindowManager extends DockableWindowManager {
     	stations.get(CENTER).drop(s, p);
 	}
 	private void dropDockingAreas() {
-        dropDockingArea((StackDockStation) areas.get(NORTH), SplitDockPathProperty.Location.TOP, 0.2);
-        dropDockingArea((StackDockStation) areas.get(SOUTH), SplitDockPathProperty.Location.BOTTOM, 0.2);
-        dropDockingArea((StackDockStation) areas.get(WEST), SplitDockPathProperty.Location.LEFT, 0.2);
-        dropDockingArea((StackDockStation) areas.get(EAST), SplitDockPathProperty.Location.RIGHT, 0.2);
+        dropDockingArea(north, SplitDockPathProperty.Location.TOP, 0.2);
+        dropDockingArea(south, SplitDockPathProperty.Location.BOTTOM, 0.2);
+        dropDockingArea(west, SplitDockPathProperty.Location.LEFT, 0.2);
+        dropDockingArea(east, SplitDockPathProperty.Location.RIGHT, 0.2);
 	}
 
 	@Override
@@ -198,17 +203,17 @@ public class DfWindowManager extends DockableWindowManager {
 		JEditDockable d = createDefaultDockable(name);
 		if (d == null)
 			return;
-		String s;
+		StackDockStation s;
 		String position = getDockablePosition(name); 
 		if (position.equals(DockableWindowManager.TOP))
-			s = NORTH;
+			s = north;
 		else if (position.equals(DockableWindowManager.BOTTOM))
-			s = SOUTH;
+			s = south;
 		else if (position.equals(DockableWindowManager.RIGHT))
-			s = EAST;
+			s = east;
 		else
-			s = WEST;
-		areas.get(s).drop(d);
+			s = west;
+		s.drop(d);
 	}
 
 	private JEditDockable createDefaultDockable(String name) {
