@@ -12,11 +12,11 @@ public class Provider implements IDockingFrameworkProvider {
 	public DockableWindowManager create(View view,
 			DockableWindowFactory instance, ViewConfig config)
 	{
-		return new WindowManager(view, instance, config);
+		return new DfWindowManager(view, instance, config);
 	}
 
 	public DockingLayout createDockingLayout() {
-		return new dockingFrames.DockingLayout();
+		return new DfDockingLayout();
 	}
 
 }
