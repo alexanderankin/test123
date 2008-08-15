@@ -33,6 +33,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
     private LineRendererPane lineRendererPane = null;
     private DiffLineModel model;
     private LineRenderer lineRenderer = null;
+    private Color fgColor = jEdit.getColorProperty("view.fgColor", Color.BLACK);
 
     /**
      * Required by super class.
@@ -208,7 +209,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             // draw the characters, left line above the right line
             // draw "Left" and bounding line with start and end ticks
             int x = leftMargin;
-            gfx.setColor( Color.BLACK );
+            gfx.setColor( fgColor );
             gfx.drawString( "Left", x, fm.getHeight() );
             int left_width = fm.stringWidth( leftLine );
             int tick_height = fm.getHeight() / 2;
@@ -229,7 +230,8 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
                 char c = leftChars.get( i );
                 color = leftColors.get( i );
                 gfx.setColor( color );
-                gfx.setFont( color == Color.BLACK ? font : bold );
+                gfx.fillRect(x, y0 - fm.getHeight() + fm.getDescent(), fm.charWidth(c), fm.getHeight());
+                gfx.setColor(fgColor);
                 gfx.drawString( String.valueOf( c ), x, y0 );
                 x += fm.charWidth( c );
             }
@@ -242,14 +244,15 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
                 char c = rightChars.get( i );
                 color = rightColors.get( i );
                 gfx.setColor( color );
-                gfx.setFont( color == Color.BLACK ? font : bold );
+                gfx.fillRect(x, y1 - fm.getHeight() + fm.getDescent(), fm.charWidth(c), fm.getHeight());
+                gfx.setColor(fgColor);
                 gfx.drawString( String.valueOf( c ), x, y1 );
                 x += fm.charWidth( c );
             }
 
             // draw "Right" and bounding line with start and end ticks
             x = leftMargin;
-            gfx.setColor( Color.BLACK );
+            gfx.setColor( fgColor );
             gfx.setFont( font );
             gfx.drawString( "Right", x, 6 * fm.getHeight() );
             int right_width = fm.stringWidth( rightLine );

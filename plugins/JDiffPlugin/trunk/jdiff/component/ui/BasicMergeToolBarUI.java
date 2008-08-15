@@ -221,9 +221,9 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         unsplit.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    if ( view != null ) {
-                        BasicMergeToolBarUI.this.view.unsplit();
-                    }
+                    View view = toolbar.getView();
+                    DualDiff.getDualDiffFor( view ).toggleFor( view );
+                    toolbar.repaint();
                 }
             }
         );
@@ -308,7 +308,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
                         boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
-                        diff.setEnabled( !enabled );
+                        diff.setEnabled( enabled );
                         next.setEnabled( enabled );
                         prev.setEnabled( enabled );
                         move_right.setEnabled( enabled );

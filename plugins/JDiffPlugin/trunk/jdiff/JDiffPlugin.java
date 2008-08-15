@@ -94,12 +94,8 @@ public class JDiffPlugin extends EBPlugin
             jEdit.getProperty("jdiff.overview-invalid-color", "#CCCCCC")
         );
 
-        leftCursorColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.left-cursor-color", "#000000")
-        );
-        rightCursorColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.right-cursor-color", "#000000")
-        );
+        leftCursorColor = jEdit.getColorProperty("jdiff.left-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));
+        rightCursorColor = jEdit.getColorProperty("jdiff.right-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));
 
         // Highlight colors
         highlightChangedColor = GUIUtilities.parseColor(

@@ -111,6 +111,8 @@ public class DualDiff implements EBComponent {
 
     private DiffLineOverview diffLineOverview;
 
+    private static HashMap<View, String> splitConfigs = new HashMap<View, String>();
+
     private DualDiff( View view ) {
         this( view, ignoreCaseDefault, trimWhitespaceDefault,
               ignoreAmountOfWhitespaceDefault, ignoreAllWhitespaceDefault );
@@ -487,6 +489,13 @@ public class DualDiff implements EBComponent {
         Runnable r = new Runnable() {
                     public void run() {
                         if ( DualDiff.isEnabledFor( view ) ) {
+                            System.out.println("+++++ untoggling for view");
+                            String splitConfig = splitConfigs.get(view);
+                            System.out.println("+++++ restoring split config: " + splitConfig);
+                            if (splitConfig != null) {
+                                view.setSplitConfig(null, splitConfig);
+                                splitConfigs.remove(view);
+                            }
                             DualDiff.removeFrom( view );
                             view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
                             view.unsplit();
@@ -498,6 +507,11 @@ public class DualDiff implements EBComponent {
                                 Log.log( Log.DEBUG, DualDiff.class,
                                         "Splitting: the view has to be split in two" );
                                 if ( editPanes.length > 2 ) {
+                                    String splitConfig = view.getSplitConfig();
+                                    System.out.println("+++++ splitConfig: " + splitConfig);
+                                    if (splitConfig != null) {
+                                        splitConfigs.put(view, splitConfig);
+                                    }
                                     view.unsplit();
                                 }
                                 view.splitVertically();

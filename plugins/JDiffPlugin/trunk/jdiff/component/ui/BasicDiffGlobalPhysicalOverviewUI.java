@@ -28,6 +28,7 @@ import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOverviewUI implements MouseListener {
@@ -135,7 +136,7 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
             gfx.drawRect( left.x - 1, left.y - 1, left.width + 1, left.height + 1 );
             gfx.drawRect( right.x - 1, right.y - 1, right.width + 1, right.height + 1 );
 
-            gfx.setColor( Color.white );
+            gfx.setColor( jEdit.getColorProperty("view.bgColor", Color.WHITE) );
             gfx.fillRect( left.x, left.y, left.width, left.height );
             gfx.fillRect( right.x, right.y, right.width, right.height );
 
