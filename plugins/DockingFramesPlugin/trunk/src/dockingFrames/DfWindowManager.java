@@ -17,9 +17,9 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-import bibliothek.extension.gui.dock.theme.EclipseTheme;
 import bibliothek.gui.DockController;
 import bibliothek.gui.DockStation;
+import bibliothek.gui.DockUI;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.SplitDockStation;
@@ -27,6 +27,7 @@ import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.SplitDockPathProperty;
+import bibliothek.gui.dock.themes.ThemeFactory;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
 
@@ -47,6 +48,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private Factory factory;
 	private JPanel mainPanel;
 	private PredefinedDockSituation situation;
+	private String theme;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -55,7 +57,7 @@ public class DfWindowManager extends DockableWindowManager {
 		situation = new PredefinedDockSituation();
         stations = new HashMap<String, DockStation>();
 		controller = new DockController();
-		controller.setTheme(new EclipseTheme());
+		setTheme(DfOptionPane.getThemeName());
         center = new SplitDockStation();
         stations.put(CENTER, center);
         add(center.getComponent(), BorderLayout.CENTER);
@@ -70,6 +72,16 @@ public class DfWindowManager extends DockableWindowManager {
         PerspectiveManager.setPerspectiveDirty(true);
 	}
 
+	private void setTheme(String name) {
+        ThemeFactory[] themes = DockUI.getDefaultDockUI().getThemes();
+        for (ThemeFactory t: themes) {
+        	if (t.getName().equals(name)) {
+        		controller.setTheme(t.create());
+        		theme = name;
+        		break;
+        	}
+        }
+	}
 	public PredefinedDockSituation getDockSituation() {
 		return situation;
 	}
@@ -180,6 +192,14 @@ public class DfWindowManager extends DockableWindowManager {
 	public boolean isDockableWindowVisible(String name) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	protected void propertiesChanged() {
+		super.propertiesChanged();
+		String selectedTheme = DfOptionPane.getThemeName();
+		if (! selectedTheme.equals(theme))
+			setTheme(selectedTheme);
 	}
 
 	@Override

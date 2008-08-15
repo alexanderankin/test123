@@ -14,4 +14,12 @@ plugin.dockingFrames.Plugin.version=0.1
 plugin.dockingFrames.Plugin.depend.0=jdk 1.5
 plugin.dockingFrames.Plugin.depend.1=jedit 04.03.15.00
 
+# Options
+plugin.dockingFrames.Plugin.option-pane=dockingFrames
+options.dockingFrames.label=DockingFramesPlugin
+options.dockingFrames.code=new dockingFrames.DfOptionPane();
+
+# Option pane labels
+options.dockingFrames.theme.label=Dock theme:
+
 
