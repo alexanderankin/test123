@@ -12,7 +12,7 @@ plugin.SuperAbbrevsPlugin.description= \
     all the variables with the same name will change accordingly. This concept \
     is previously know from Eclipse and TextMate.
 plugin.QuickNotepadPlugin.longdescription=doc/description.html
-plugin.SuperAbbrevsPlugin.docs=doc/index.html
+plugin.SuperAbbrevsPlugin.docs=docs/index.html
 
 superabbrevs.label=SuperAbbrevs
 
