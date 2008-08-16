@@ -148,8 +148,7 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config) {
-		DfDockingLayout layout = new DfDockingLayout();
-		layout.setWindowManager(this);
+		DfDockingLayout layout = new DfDockingLayout(this);
 		return layout;
 	}
 

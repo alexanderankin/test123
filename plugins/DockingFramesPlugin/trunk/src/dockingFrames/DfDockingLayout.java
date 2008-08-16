@@ -10,11 +10,16 @@ import bibliothek.util.xml.XElement;
 public class DfDockingLayout extends
 		org.gjt.sp.jedit.gui.DockableWindowManager.DockingLayout {
 
+	private static final String TEMP_LAYOUT_NAME = "temp";
 	private DfWindowManager wm;
 	private String layoutFilename;
 	
-	public void setWindowManager(DfWindowManager manager) {
+	public DfDockingLayout() {
+	}
+	public DfDockingLayout(DfWindowManager manager) {
 		wm = manager;
+		saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
 	}
 	public String getPersistenceFilename() {
 		return layoutFilename;
