@@ -226,6 +226,7 @@ public class PropertyEditor extends JDialog {
 
                         PropertyEditor.this.setVisible( false );
                         PropertyEditor.this.dispose();
+                        file_value.addCurrentToHistory();
                     }
                 }
                                 );

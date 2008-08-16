@@ -56,7 +56,7 @@ public class MkDirDialog extends JDialog {
     private View view = null;
     private String defaultDestination;
 
-    private JTextField path = null;
+    private HistoryTextField path = null;
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
 
@@ -79,7 +79,7 @@ public class MkDirDialog extends JDialog {
 
         // let user pick the directory to create
         JLabel path_label = new JLabel( jEdit.getProperty("ips.Create_new_directory_at_this_location>", "Create new directory at this location:") );
-        path = new HistoryTextField(PATH);
+        path = new HistoryTextField(MKDIR_PATH);
         path.setText( defaultDestination == null ? "" : defaultDestination );
         path.setColumns( 30 );
         JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
@@ -162,6 +162,7 @@ public class MkDirDialog extends JDialog {
                         MkDirDialog.this._save();
                         MkDirDialog.this.setVisible( false );
                         MkDirDialog.this.dispose();
+                        path.addCurrentToHistory();
                     }
                 }
                                 );

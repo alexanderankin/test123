@@ -118,10 +118,13 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             PVHelper.PREFIX + name + ".url",
             ( url == null ? "" : url.getText() )
         );
+        url.addCurrentToHistory();
+
         jEdit.setProperty(
             PVHelper.PREFIX + name + ".username",
             ( username == null ? "" : username.getText() )
         );
+        username.addCurrentToHistory();
 
         char[] pwd_chars = password == null ? new char[ 0 ] : password.getPassword();
         String pwd = new String( pwd_chars );

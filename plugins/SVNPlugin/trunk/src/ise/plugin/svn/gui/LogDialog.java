@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.*;
@@ -58,7 +59,8 @@ public class LogDialog extends JDialog {
     private SVNRevision startRevision = SVNRevision.create( 0L );
     private SVNRevision endRevision = SVNRevision.HEAD;
 
-    private boolean canceled = false;
+    private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
+    private static Color foreground = jEdit.getColorProperty("view.fgColor", Color.LIGHT_GRAY);
 
     public LogDialog( View view, LogData data ) {
         super( ( JFrame ) view, jEdit.getProperty("ips.Log_Settings", "Log Settings"), true );
@@ -160,6 +162,8 @@ public class LogDialog extends JDialog {
         final JSpinner max_logs = new JSpinner();
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 1000 ) );
+        max_logs.setForeground(foreground);
+        max_logs.setBackground(background);
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty("ips.Stop_on_copy", "Stop on copy") );
         final JCheckBox showPaths = new JCheckBox( jEdit.getProperty("ips.Show_paths", "Show paths") );

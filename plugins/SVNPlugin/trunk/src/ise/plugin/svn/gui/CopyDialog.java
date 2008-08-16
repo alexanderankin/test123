@@ -58,7 +58,7 @@ public class CopyDialog extends JDialog {
     private View view = null;
     private List<File> toCopy = null;
     private List<String> urlsToCopy = null;
-    private JTextField path = null;
+    private HistoryTextField path = null;
     private TableModel fileTableModel = null;
     private JTextArea comment = null;
     private PropertyComboBox commentList = null;
@@ -152,7 +152,7 @@ public class CopyDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( jEdit.getProperty("ips.To_this_location>", "To this location:") );
-        path = new HistoryTextField(PATH);
+        path = new HistoryTextField(COPY_PATH);
         path.setText( defaultLocalDestination );
         path.setColumns( 30 );
         JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
@@ -255,6 +255,7 @@ public class CopyDialog extends JDialog {
                         CopyDialog.this._save();
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
+                        path.addCurrentToHistory();
                     }
                 }
                                 );

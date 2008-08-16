@@ -86,6 +86,7 @@ public class LoginPanel extends JPanel {
     }
 
     public String getUsername() {
+        username.addCurrentToHistory();
         return username.getText();
     }
 

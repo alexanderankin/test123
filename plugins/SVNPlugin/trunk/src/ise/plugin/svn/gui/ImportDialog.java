@@ -208,6 +208,9 @@ public class ImportDialog extends JDialog {
                         canceled = false;
                         ImportDialog.this.setVisible( false );
                         ImportDialog.this.dispose();
+                        url.addCurrentToHistory();
+                        path.addCurrentToHistory();
+                        username.addCurrentToHistory();
                     }
                 }
                                 );

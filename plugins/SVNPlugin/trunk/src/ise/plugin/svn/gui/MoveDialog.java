@@ -151,7 +151,7 @@ public class MoveDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( jEdit.getProperty("ips.To_this_location>", "To this location:") );
-        path = new HistoryTextField(PATH);
+        path = new HistoryTextField(MOVE_PATH);
         path.setText( defaultLocalDestination );
         path.setColumns( 30 );
         JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
@@ -259,6 +259,7 @@ public class MoveDialog extends JDialog {
                         canceled = false;
                         MoveDialog.this.setVisible( false );
                         MoveDialog.this.dispose();
+                        path.addCurrentToHistory();
                     }
                 }
                                 );
