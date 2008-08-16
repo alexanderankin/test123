@@ -11,7 +11,7 @@ plugin.SuperAbbrevsPlugin.description= \
     the variables. If you change the content of a variable in the abbreviation, \
     all the variables with the same name will change accordingly. This concept \
     is previously know from Eclipse and TextMate.
-plugin.QuickNotepadPlugin.longdescription=doc/description.html
+plugin.QuickNotepadPlugin.longdescription=docs/description.html
 plugin.SuperAbbrevsPlugin.docs=docs/index.html
 
 superabbrevs.label=SuperAbbrevs
