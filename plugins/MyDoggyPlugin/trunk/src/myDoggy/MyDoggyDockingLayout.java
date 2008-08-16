@@ -9,20 +9,23 @@ import org.noos.xing.mydoggy.ToolWindowManager;
 
 public class MyDoggyDockingLayout extends DockingLayout {
 
+	private static final String TEMP_LAYOUT_NAME = "temp";
 	private ToolWindowManager wm = null;
 	private String layoutFilename = null;
 	
 	public MyDoggyDockingLayout() {
 	}
 	
+	public MyDoggyDockingLayout(ToolWindowManager manager) {
+		wm = manager;
+		saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+	}
+	
 	public String getLayoutFilename() {
 		return layoutFilename;
 	}
 	
-	public void setWindowManager(ToolWindowManager twm) {
-		wm = twm;
-	}
-
 	@Override
 	public boolean loadLayout(String baseName, int viewIndex) {
 		layoutFilename = getLayoutFilename(baseName, viewIndex);
