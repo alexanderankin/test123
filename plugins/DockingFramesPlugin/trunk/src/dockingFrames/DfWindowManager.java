@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -150,11 +149,7 @@ public class DfWindowManager extends DockableWindowManager {
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config) {
 		DfDockingLayout layout = new DfDockingLayout();
-		layout.setManager(this);
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-			if (views[i] == view)
-				layout.setIndex(i);
+		layout.setWindowManager(this);
 		return layout;
 	}
 
