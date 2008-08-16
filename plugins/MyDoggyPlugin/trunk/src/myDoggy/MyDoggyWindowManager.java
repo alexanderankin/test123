@@ -19,7 +19,6 @@ import javax.swing.UIManager;
 
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
@@ -150,10 +149,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	{
 		MyDoggyDockingLayout layout = new MyDoggyDockingLayout();
 		layout.setWindowManager(wm);
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-			if (views[i] == view)
-				layout.setIndex(i);
 		return layout;
 	}
 
@@ -217,7 +212,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (docking != null)
 		{
 			MyDoggyDockingLayout layout = (MyDoggyDockingLayout) docking;
-			String filename = layout.getPersistenceFilename();
+			String filename = layout.getLayoutFilename();
 			if (filename != null) {
 				java.io.File f = new File(filename);
 				if (f.exists()) {
