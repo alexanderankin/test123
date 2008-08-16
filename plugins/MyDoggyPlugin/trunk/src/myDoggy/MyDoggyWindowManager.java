@@ -147,8 +147,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config)
 	{
-		MyDoggyDockingLayout layout = new MyDoggyDockingLayout();
-		layout.setWindowManager(wm);
+		MyDoggyDockingLayout layout = new MyDoggyDockingLayout(wm);
 		return layout;
 	}
 
