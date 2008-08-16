@@ -1,0 +1,7 @@
+This plugin uses the standard build script from the build-support project.
+
+The only thing you need to do is to se the property jedit.install.dir to point 
+to the jedit installation directory and set the install.dir to point to the 
+location where the jars file should be installed. You can set these variables in 
+one of the following files: build.properties or ../build.properties.
+
