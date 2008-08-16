@@ -25,6 +25,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  * UI for the BlamePane to be displayed left of the right scroll bar of the
  * main text area.
@@ -140,7 +142,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             pixelsPerLine = model.getTextArea().getPainter().getFontMetrics().getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
             int lastLine = model.getTextArea().getLastPhysicalLine();
-            gfx.setColor( Color.BLACK );
+            gfx.setColor( jEdit.getColorProperty("view.fgColor", Color.BLACK) );
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
             for ( int i = firstLine; i <= lastLine; i++ ) {
