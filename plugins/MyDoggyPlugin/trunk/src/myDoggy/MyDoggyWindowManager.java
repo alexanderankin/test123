@@ -319,6 +319,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (tw != null)
 		{
 			activateToolWindow(tw);
+			ToolWindowAnchor anchor = position2anchor(getDockablePosition(name));
+			if (anchor != tw.getAnchor())
+				tw.setAnchor(anchor);
 			return;
 		}
 		tw = createToolWindow(name);
