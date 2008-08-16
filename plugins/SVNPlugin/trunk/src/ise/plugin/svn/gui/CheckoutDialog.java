@@ -209,6 +209,10 @@ public class CheckoutDialog extends JDialog {
                         canceled = false;
                         CheckoutDialog.this.setVisible( false );
                         CheckoutDialog.this.dispose();
+
+                        url.addCurrentToHistory();
+                        path.addCurrentToHistory();
+                        username.addCurrentToHistory();
                     }
                 }
                                 );

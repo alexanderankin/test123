@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.*;
 import java.awt.event.*;
@@ -58,6 +57,7 @@ public class TagBranchDialog extends JDialog {
     // instance fields
     private View view = null;
     private String toCopy = null;
+    private HistoryTextField sourceFile = null;
     private HistoryTextField path = null;
     private String defaultDestination = null;
     private JTextArea comment = null;
@@ -103,22 +103,21 @@ public class TagBranchDialog extends JDialog {
 
         // source for tag/branch
         JLabel to_copy_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from>", "from:") );
-        HistoryTextField source_file = new HistoryTextField( URL );
-        source_file.setText( toCopy );
-        source_file.setEditable( false );
-        source_file.setBackground( Color.WHITE );
+        sourceFile = new HistoryTextField( URL );
+        sourceFile.setText( toCopy );
+        sourceFile.setEditable( false );
 
         // revision selection panel
         final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from_this_revision>", "from this revision:"), SwingConstants.HORIZONTAL, false );
 
         JPanel source_panel = new JPanel( new LambdaLayout() );
         source_panel.add( "0, 0, 1, 1, W, w, 3", to_copy_label );
-        source_panel.add( "0, 1, 1, 1, W, w, 3", source_file );
+        source_panel.add( "0, 1, 1, 1, W, w, 3", sourceFile );
         source_panel.add( "0, 2, 1, 1, 0, w, 3", tag_revision_panel );
 
         // destination
         JLabel path_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.at_this_location>", "at this location:") );
-        path = new HistoryTextField( PATH );
+        path = new HistoryTextField( COPY_PATH );
         path.setText( defaultDestination );
         path.setColumns( 30 );
         JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
@@ -236,6 +235,9 @@ public class TagBranchDialog extends JDialog {
 
                         TagBranchDialog.this.setVisible( false );
                         TagBranchDialog.this.dispose();
+
+                        sourceFile.addCurrentToHistory();
+                        path.addCurrentToHistory();
                     }
                 }
                                 );

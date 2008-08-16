@@ -125,7 +125,7 @@ public class SwitchDialog extends JDialog {
 
         // destination
         JLabel path_label = new JLabel( jEdit.getProperty("ips.With_file(s)_from_this_location>", "With file(s) from this location:") );
-        from = new HistoryTextField( PATH );
+        from = new HistoryTextField( COPY_PATH );
         from.setText("");
         from.setColumns( 30 );
         JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
@@ -199,6 +199,7 @@ public class SwitchDialog extends JDialog {
                         canceled = false;
                         SwitchDialog.this.setVisible( false );
                         SwitchDialog.this.dispose();
+                        from.addCurrentToHistory();
                     }
                 }
                                 );

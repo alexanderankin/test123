@@ -55,7 +55,7 @@ public class ExportDialog extends JDialog {
     private View view = null;
     private ExportData data = null;
 
-    private JTextField path = null;
+    private HistoryTextField path = null;
     private JCheckBox recursive_cb = null;
     private RevisionSelectionPanel revision_panel = null;
     private RevisionSelectionPanel peg_revision_panel = null;
@@ -220,6 +220,7 @@ public class ExportDialog extends JDialog {
                         }
                         ExportDialog.this.setVisible( false );
                         ExportDialog.this.dispose();
+                        path.addCurrentToHistory();
                     }
                 }
                                 );

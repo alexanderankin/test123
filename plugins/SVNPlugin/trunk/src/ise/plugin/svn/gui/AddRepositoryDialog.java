@@ -118,6 +118,9 @@ public class AddRepositoryDialog extends JDialog {
                         canceled = false;
                         AddRepositoryDialog.this.setVisible( false );
                         AddRepositoryDialog.this.dispose();
+                        name.addCurrentToHistory();
+                        url.addCurrentToHistory();
+                        username.addCurrentToHistory();
                     }
                 }
                                 );
