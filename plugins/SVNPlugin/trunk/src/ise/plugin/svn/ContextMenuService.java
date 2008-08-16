@@ -52,10 +52,10 @@ public class ContextMenuService extends DynamicContextMenuService {
 
     // context menu is per View
     public JMenuItem[] createMenu(JEditTextArea textArea, MouseEvent mouseEvent) {
-        View view = textArea.getView();
+        View view = textArea == null ? jEdit.getFirstView() : textArea.getView();
         TextAreaContextMenu menu = menus.get(view);
         if (menu == null) {
-            menu = textArea == null ? new TextAreaContextMenu(jEdit.getFirstView()) : new TextAreaContextMenu(view);
+            menu = new TextAreaContextMenu(view);
             menus.put(view, menu);
         }
         return new JMenuItem[]{menu};
