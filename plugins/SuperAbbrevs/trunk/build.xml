@@ -42,18 +42,19 @@
 			<arg value="superabbrevs/lexer/*.lex"/>
 		</exec>
 	</target>
-  
-	<!-- Remove the files from the debug plugin from the main
-	     plugin's package. -->
+	
 	<selector id="extraFiles">
+		<and>
 			<or>
 				<filename name="actions.xml"/>
 				<filename name="**/*.props"/>
-				<filename name="**/*.html"/>
 				<filename name="**/*.gif"/>
 				<filename name="**/*.bsh"/>
-				<filename name="*.bsh"/>
 				<filename name="resources/*"/>
 			</or>
+			<not>
+				<filename name="${build.dir}/**" />
+			</not>
+		</and>
 	</selector>
 </project>
