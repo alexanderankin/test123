@@ -50,10 +50,12 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
     private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
     private JSpinner revision_number = null;
-    private JRadioButton date_rb = new JRadioButton( jEdit.getProperty("ips.Date", "Date" ) + ":" );
+    private JRadioButton date_rb = new JRadioButton( jEdit.getProperty( "ips.Date", "Date" ) + ":" );
     private JSpinner date_spinner = null;
     private JButton date_popup = null;
 
+    private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
+    private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
 
 
     public static ComponentUI createUI( JComponent c ) {
@@ -300,8 +302,8 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         SpinnerNumberModel model = new SpinnerNumberModel();
         model.setMinimum( 0 );
         revision_number = new JSpinner( model );
-        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
-        revision_number.setEnabled( false );
+        JSpinner.NumberEditor number_editor = new JSpinner.NumberEditor( revision_number, "# " );
+        revision_number.setEditor( number_editor );
         revision_number.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
                         if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
@@ -311,6 +313,10 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                     }
                 }
                                          );
+        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
+        revision_number.setForeground( foreground );
+        revision_number.setBackground( background );
+        revision_number.setEnabled( false );
         return revision_number;
     }
 
@@ -322,7 +328,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         Date earliestDate = calendar.getTime();
         SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
         date_spinner = new JSpinner( model );
-        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty("ips.DateFormat", "dd MMM yyyy HH:mm") );
+        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty( "ips.DateFormat", "dd MMM yyyy HH:mm" ) );
         date_spinner.setEditor( date_editor );
         date_spinner.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
@@ -334,6 +340,8 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 }
                                       );
         date_spinner.setPreferredSize( new Dimension( 150, date_spinner.getPreferredSize().height ) );
+        date_spinner.setForeground( foreground );
+        date_spinner.setBackground( background );
         date_spinner.setEnabled( false );
         return date_spinner;
     }
