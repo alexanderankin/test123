@@ -44,6 +44,7 @@ import jdiff.component.PatchSelectionDialog;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffOutput;
+import jdiff.util.ViewWrapper;
 import jdiff.util.DiffNormalOutput;
 import jdiff.util.patch.Patch;
 import jdiff.util.patch.PatchUtils;
@@ -104,8 +105,6 @@ public class DualDiff implements EBComponent {
     private DiffOverview diffOverview0;
 
     private DiffOverview diffOverview1;
-
-    private Box box0;
 
     private final ScrollHandler scrollHandler = new ScrollHandler();
 
@@ -493,7 +492,8 @@ public class DualDiff implements EBComponent {
                             String splitConfig = splitConfigs.get(view);
                             System.out.println("+++++ restoring split config: " + splitConfig);
                             if (splitConfig != null) {
-                                view.setSplitConfig(null, splitConfig);
+                                ViewWrapper vw = new ViewWrapper(view);
+                                vw.setSplitConfig(null, splitConfig);
                                 splitConfigs.remove(view);
                             }
                             DualDiff.removeFrom( view );
@@ -507,7 +507,8 @@ public class DualDiff implements EBComponent {
                                 Log.log( Log.DEBUG, DualDiff.class,
                                         "Splitting: the view has to be split in two" );
                                 if ( editPanes.length > 2 ) {
-                                    String splitConfig = view.getSplitConfig();
+                                    ViewWrapper vw = new ViewWrapper(view);
+                                    String splitConfig = vw.getSplitConfig();
                                     System.out.println("+++++ splitConfig: " + splitConfig);
                                     if (splitConfig != null) {
                                         splitConfigs.put(view, splitConfig);
