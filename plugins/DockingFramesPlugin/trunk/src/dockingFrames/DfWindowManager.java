@@ -27,7 +27,12 @@ import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
+import bibliothek.gui.dock.station.split.Leaf;
+import bibliothek.gui.dock.station.split.Node;
+import bibliothek.gui.dock.station.split.Root;
 import bibliothek.gui.dock.station.split.SplitDockPathProperty;
+import bibliothek.gui.dock.station.split.SplitDockProperty;
+import bibliothek.gui.dock.station.split.SplitNode;
 import bibliothek.gui.dock.themes.ThemeFactory;
 import bibliothek.gui.dock.title.DockTitle;
 import bibliothek.gui.dock.title.DockTitleVersion;
@@ -37,23 +42,22 @@ import bibliothek.util.xml.XIO;
 @SuppressWarnings("serial")
 public class DfWindowManager extends DockableWindowManager {
 
-	private static final String WEST = "West";
-	private static final String EAST = "East";
-	private static final String SOUTH = "South";
-	private static final String NORTH = "North";
+	public static enum Side {
+		LEFT, RIGHT, TOP, BOTTOM
+	}
+	
 	private static final String CENTER = "center";
 	private static final String MAIN = "main";
 
 	private DockController controller;
 	private SplitDockStation center;
-	private StackDockStation north, south, west, east;
 	private Map<String, DockStation> stations;
 	private Factory factory;
 	private Dockable mainPanel;
 	private PredefinedDockSituation situation;
 	private String theme;
 	private Map<String, Dockable> created = new HashMap<String, Dockable>();
-	
+	private Map<String, Side> sides = new HashMap<String, Side>();
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -66,10 +70,6 @@ public class DfWindowManager extends DockableWindowManager {
         center = new SplitDockStation();
         stations.put(CENTER, center);
         add(center.getComponent(), BorderLayout.CENTER);
-        north = createStackDockStation(NORTH);
-        south = createStackDockStation(SOUTH);
-        east = createStackDockStation(EAST);
-        west = createStackDockStation(WEST);
         controller.add(center);
         controller.getProperties().set(EclipseTheme.THEME_CONNECTOR,
         	new DefaultEclipseThemeConnector() {
@@ -84,6 +84,11 @@ public class DfWindowManager extends DockableWindowManager {
         factory = new Factory();
         situation.add(factory);
         PerspectiveManager.setPerspectiveDirty(true);
+
+        sides.put(TOP, Side.TOP);
+        sides.put(BOTTOM, Side.BOTTOM);
+        sides.put(RIGHT, Side.RIGHT);
+        sides.put(LEFT, Side.LEFT);
 	}
 
 	private void setTheme(String name) {
@@ -104,15 +109,6 @@ public class DfWindowManager extends DockableWindowManager {
 		return factory;
 	}
 	
-	private StackDockStation createStackDockStation(String title)
-	{
-		StackDockStation s = new StackDockStation();
-		controller.add(s);
-		s.setTitleText(title);
-		situation.put(title, s);
-		return s;
-	}
-	
 	@Override
 	public void applyDockingLayout(DockingLayout docking) {
 		if (docking != null) {
@@ -130,7 +126,6 @@ public class DfWindowManager extends DockableWindowManager {
 			}
 		}		
 		super.applyDockingLayout(docking);
-		dropDockingAreas();
 	}
 
 	public Map<String, DockStation> getStationMap() {
@@ -220,22 +215,6 @@ public class DfWindowManager extends DockableWindowManager {
 		situation.put(MAIN, mainPanel);
 	}
 
-	private void dropDockingArea(StackDockStation s,
-		SplitDockPathProperty.Location location, double size)
-	{
-        if (s.getDockableCount() == 0)
-        	return;
-		SplitDockPathProperty p = new SplitDockPathProperty();
-        p.add(location, size);
-    	stations.get(CENTER).drop(s, p);
-	}
-	private void dropDockingAreas() {
-        dropDockingArea(north, SplitDockPathProperty.Location.TOP, 0.2);
-        dropDockingArea(south, SplitDockPathProperty.Location.BOTTOM, 0.2);
-        dropDockingArea(west, SplitDockPathProperty.Location.LEFT, 0.2);
-        dropDockingArea(east, SplitDockPathProperty.Location.RIGHT, 0.2);
-	}
-
 	@Override
 	public void showDockableWindow(String name) {
 		Dockable d = created.get(name);
@@ -255,19 +234,113 @@ public class DfWindowManager extends DockableWindowManager {
 		d = createDefaultDockable(name);
 		if (d == null)
 			return;
-		StackDockStation s;
 		String position = getDockablePosition(name); 
-		if (position.equals(DockableWindowManager.TOP))
-			s = north;
-		else if (position.equals(DockableWindowManager.BOTTOM))
-			s = south;
-		else if (position.equals(DockableWindowManager.RIGHT))
-			s = east;
-		else
-			s = west;
-		s.drop(d);
+		drop(d, sides.get(position));
 	}
 
+    private void drop(Dockable dockable, Side side) {
+        Leaf leaf = find(center.getRoot(), side);
+       
+        if( leaf != null ){
+            if( !aside( leaf, side ))
+                leaf = null;
+        }
+       
+        if( leaf == null ){
+            switch( side ){
+                case BOTTOM:
+                    drop( dockable, SplitDockProperty.SOUTH );
+                    break;
+                case TOP:
+                    drop( dockable, SplitDockProperty.NORTH );
+                    break;
+                case LEFT:
+                    drop( dockable, SplitDockProperty.WEST );
+                    break;
+                case RIGHT:
+                    drop( dockable, SplitDockProperty.EAST );
+                    break;
+            }
+        }
+        else{
+            DockStation stack = leaf.getDockable().asDockStation();
+            if( stack == null ){
+                center.drop( dockable, center.getDockableProperty( leaf.getDockable() ) );
+            }
+            else{
+                stack.drop( dockable );
+            }
+        }
+    }
+   
+    private void drop(Dockable dockable, SplitDockProperty property) {
+        if(! center.drop(dockable, property))
+            center.drop(dockable);
+    }
+ 
+    // tells whether the leaf is aside the center dockable on the given side
+    private boolean aside( Leaf leaf, Side side ){
+        Leaf centerLeaf = center.getRoot().getLeaf( mainPanel );
+       
+        switch( side ){
+            case TOP:
+                return leaf.getY() + leaf.getHeight() <= centerLeaf.getY();
+            case BOTTOM:
+                return leaf.getY() >= centerLeaf.getY() + centerLeaf.getHeight();
+            case LEFT:
+                return leaf.getX() + leaf.getWidth() <= centerLeaf.getX();
+            case RIGHT:
+                return leaf.getX() >= centerLeaf.getX() + centerLeaf.getHeight();
+        }
+        return false;
+    }
+   
+    private Leaf find(SplitNode parent, Side side) {
+        if( parent instanceof Leaf ){
+            Leaf leaf = (Leaf)parent;
+            if( leaf.getDockable() != center ){
+                return leaf;
+            }
+        }
+        if( parent instanceof Node ){
+            Node node = (Node)parent;
+           
+            Leaf left = find( node.getLeft(), side );
+            Leaf right = find( node.getRight(), side );
+           
+            if( left == null )
+                return right;
+            if( right == null )
+                return left;
+           
+            switch( side ){
+                case LEFT:
+                    if( left.getX() + left.getWidth()/2 < right.getX() + right.getWidth()/2 )
+                        return left;
+                    else
+                        return right;
+                case RIGHT:
+                    if( left.getX() + left.getWidth()/2 > right.getX() + right.getWidth()/2 )
+                        return left;
+                    else
+                        return right;
+                case TOP:
+                    if( left.getY() + left.getHeight()/2 < right.getY() + right.getHeight()/2 )
+                        return left;
+                    else
+                        return right;
+                case BOTTOM:
+                    if( left.getY() + left.getHeight()/2 > right.getY() + right.getHeight()/2 )
+                        return left;
+                    else
+                        return right;
+            }
+        }
+        if( parent instanceof Root ){
+            return find( ((Root)parent).getChild(), side );
+        }
+        return null;
+    }
 	private JEditDockable createDefaultDockable(String name) {
 		JComponent window = getDockable(name);
 		if (window == null)
