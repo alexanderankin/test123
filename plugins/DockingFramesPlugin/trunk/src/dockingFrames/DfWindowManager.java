@@ -27,6 +27,8 @@ import bibliothek.gui.dock.dockable.DefaultDockableFactory;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.SplitDockPathProperty;
 import bibliothek.gui.dock.themes.ThemeFactory;
+import bibliothek.gui.dock.title.DockTitle;
+import bibliothek.gui.dock.title.DockTitleVersion;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
 
@@ -271,6 +273,11 @@ public class DfWindowManager extends DockableWindowManager {
 	private static class MainDockable extends DefaultDockable {
 		public MainDockable(JPanel panel) {
 			super(panel, (String)null);
+		}
+
+		@Override
+		public DockTitle getDockTitle(DockTitleVersion version) {
+			return null;
 		}
 	}
 	private static class JEditDockable extends DefaultDockable {
