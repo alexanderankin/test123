@@ -48,6 +48,8 @@ public class DfWindowManager extends DockableWindowManager {
 	private JPanel mainPanel;
 	private PredefinedDockSituation situation;
 	private String theme;
+	private Map<String, Dockable> created = new HashMap<String, Dockable>();
+	
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -201,7 +203,7 @@ public class DfWindowManager extends DockableWindowManager {
 	@Override
 	public void setMainPanel(JPanel panel) {
 		mainPanel = panel;
-		JEditDockable d = new JEditDockable(MAIN, MAIN, panel);
+		Dockable d = new MainDockable(panel);
 		center.drop(d);
 		situation.put(MAIN, d);
 	}
@@ -224,14 +226,19 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public void showDockableWindow(String name) {
-		JEditDockable d = created.get(name);
+		Dockable d = created.get(name);
 		if (d != null) {
-			DockStation station = d.getDockParent();
-			if (station != null)
-				station.setFrontDockable(d);
-			else
-				d.getComponent().setVisible(true);
-			return;
+			if (d.getController() != null) {
+				DockStation station = d.getDockParent();
+				if (station != null)
+					station.setFrontDockable(d);
+				else
+					d.getComponent().setVisible(true);
+				return;
+			} else {
+				// Windows has been closed
+				created.remove(d);
+			}
 		}
 		d = createDefaultDockable(name);
 		if (d == null)
@@ -249,8 +256,6 @@ public class DfWindowManager extends DockableWindowManager {
 		s.drop(d);
 	}
 
-	private Map<String, JEditDockable> created = new HashMap<String, JEditDockable>();
-	
 	private JEditDockable createDefaultDockable(String name) {
 		JComponent window = getDockable(name);
 		if (window == null)
@@ -263,6 +268,11 @@ public class DfWindowManager extends DockableWindowManager {
 		return d;
 	}
 
+	private static class MainDockable extends DefaultDockable {
+		public MainDockable(JPanel panel) {
+			super(panel, (String)null);
+		}
+	}
 	private static class JEditDockable extends DefaultDockable {
 		String name;
 		public JEditDockable(String name, String title, JComponent window) {
