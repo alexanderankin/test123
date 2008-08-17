@@ -184,8 +184,10 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public boolean isDockableWindowVisible(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		JComponent c = getDockable(name);
+		if (c == null)
+			return false;
+		return c.isVisible();
 	}
 
 	@Override
@@ -222,7 +224,16 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public void showDockableWindow(String name) {
-		JEditDockable d = createDefaultDockable(name);
+		JEditDockable d = created.get(name);
+		if (d != null) {
+			DockStation station = d.getDockParent();
+			if (station != null)
+				station.setFrontDockable(d);
+			else
+				d.getComponent().setVisible(true);
+			return;
+		}
+		d = createDefaultDockable(name);
 		if (d == null)
 			return;
 		StackDockStation s;
@@ -238,6 +249,8 @@ public class DfWindowManager extends DockableWindowManager {
 		s.drop(d);
 	}
 
+	private Map<String, JEditDockable> created = new HashMap<String, JEditDockable>();
+	
 	private JEditDockable createDefaultDockable(String name) {
 		JComponent window = getDockable(name);
 		if (window == null)
@@ -246,6 +259,7 @@ public class DfWindowManager extends DockableWindowManager {
 			return null;
 		String title = getDockableTitle(name);
 		JEditDockable d = new JEditDockable(name, title, window);
+		created.put(name, d);
 		return d;
 	}
 
