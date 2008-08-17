@@ -16,6 +16,8 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
+import bibliothek.extension.gui.dock.theme.EclipseTheme;
+import bibliothek.extension.gui.dock.theme.eclipse.DefaultEclipseThemeConnector;
 import bibliothek.gui.DockController;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.DockUI;
@@ -47,7 +49,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private StackDockStation north, south, west, east;
 	private Map<String, DockStation> stations;
 	private Factory factory;
-	private JPanel mainPanel;
+	private Dockable mainPanel;
 	private PredefinedDockSituation situation;
 	private String theme;
 	private Map<String, Dockable> created = new HashMap<String, Dockable>();
@@ -69,6 +71,15 @@ public class DfWindowManager extends DockableWindowManager {
         east = createStackDockStation(EAST);
         west = createStackDockStation(WEST);
         controller.add(center);
+        controller.getProperties().set(EclipseTheme.THEME_CONNECTOR,
+        	new DefaultEclipseThemeConnector() {
+                @Override
+                public TitleBar getTitleBarKind(Dockable dockable) {
+                    if (dockable == mainPanel)
+                        return TitleBar.NONE_BORDERED;
+                    return super.getTitleBarKind(dockable);
+                }
+            });
 		situation.put(CENTER, center);
         factory = new Factory();
         situation.add(factory);
@@ -204,10 +215,9 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public void setMainPanel(JPanel panel) {
-		mainPanel = panel;
-		Dockable d = new MainDockable(panel);
-		center.drop(d);
-		situation.put(MAIN, d);
+		mainPanel = new MainDockable(panel);
+		center.drop(mainPanel);
+		situation.put(MAIN, mainPanel);
 	}
 
 	private void dropDockingArea(StackDockStation s,
@@ -313,8 +323,6 @@ public class DfWindowManager extends DockableWindowManager {
 		public DefaultDockable layout(Object layout, Map<Integer, Dockable> children)
 		{
 			String name = (String) layout;
-			if (name.equals(MAIN))
-				return new JEditDockable(MAIN, MAIN, mainPanel);
 			return createDefaultDockable(name);
 		}
 
