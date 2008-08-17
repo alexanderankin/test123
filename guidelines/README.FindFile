@@ -2,6 +2,7 @@ SVN policy file
 
 plugin: FindFile
 author: Nicholas O'Leary <nol@nol-edge.co.uk>
+maintainer: Anthony Keeley <keeleyt83@yahoo.com>
 
-Any volunteers to take over maintenance of this plugin?
+please do not commit changes to this plugin without first consulting the author or maintainer.
 
