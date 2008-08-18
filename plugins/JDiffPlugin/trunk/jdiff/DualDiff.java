@@ -488,41 +488,35 @@ public class DualDiff implements EBComponent {
         Runnable r = new Runnable() {
                     public void run() {
                         if ( DualDiff.isEnabledFor( view ) ) {
-                            System.out.println("+++++ untoggling for view");
-                            String splitConfig = splitConfigs.get(view);
-                            System.out.println("+++++ restoring split config: " + splitConfig);
-                            if (splitConfig != null) {
-                                ViewWrapper vw = new ViewWrapper(view);
-                                vw.setSplitConfig(null, splitConfig);
-                                splitConfigs.remove(view);
+                            // possibly restore split config
+                            String splitConfig = splitConfigs.get( view );
+                            if ( splitConfig != null ) {
+                                splitConfigs.remove( view );
+                                ViewWrapper vw = new ViewWrapper( view );
+                                vw.setSplitConfig( null, splitConfig);
+                            }
+                            else {
+                                view.unsplit();
                             }
                             DualDiff.removeFrom( view );
                             view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
-                            view.unsplit();
-                            EditBus.send(new DiffMessage(view, DiffMessage.OFF));
+                            EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
+                            view.invalidate();
+                            view.repaint();
                         }
                         else {
                             EditPane[] editPanes = view.getEditPanes();
-                            if ( editPanes.length != 2 ) {
-                                Log.log( Log.DEBUG, DualDiff.class,
-                                        "Splitting: the view has to be split in two" );
-                                if ( editPanes.length > 2 ) {
-                                    ViewWrapper vw = new ViewWrapper(view);
-                                    String splitConfig = vw.getSplitConfig();
-                                    System.out.println("+++++ splitConfig: " + splitConfig);
-                                    if (splitConfig != null) {
-                                        splitConfigs.put(view, splitConfig);
-                                    }
-                                    view.unsplit();
+                            if ( editPanes.length > 1 ) {
+                                // remember split configuration so it can be restored later
+                                ViewWrapper vw = new ViewWrapper( view );
+                                String splitConfig = vw.getSplitConfig();
+                                if ( splitConfig != null ) {
+                                    splitConfigs.put( view, splitConfig );
                                 }
-                                view.splitVertically();
-
-                                // danson, make sure the divider is in the middle.  For some reason,
-                                // the left side would be much smaller than the right side, this
-                                // takes care of that.
-                                JSplitPane sp = view.getSplitPane();
-                                sp.setDividerLocation( 0.5 );
+                                view.unsplit();
                             }
+                            view.splitVertically();
+
                             DualDiff.addTo( view );
                             DockableWindowManager dwm = view.getDockableWindowManager();
                             if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) ) {
@@ -533,11 +527,18 @@ public class DualDiff implements EBComponent {
                                     dwm.showDockableWindow( "jdiff-lines" );
                                 }
                             }
-                            EditBus.send(new DiffMessage(view, DiffMessage.ON));
-                        }
 
-                        view.invalidate();
-                        view.validate();
+                            EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
+
+                            // danson, make sure the divider is in the middle.  For some reason,
+                            // the left side would be much smaller than the right side, this
+                            // takes care of that.
+                            JSplitPane sp = view.getSplitPane();
+                            sp.setDividerLocation( 0.5 );
+                            sp.invalidate();
+                            view.invalidate();
+                            view.repaint();
+                        }
                     }
                 };
         SwingUtilities.invokeLater( r );
@@ -802,7 +803,7 @@ public class DualDiff implements EBComponent {
         try {
             // let the user select the patch file and patch file type
             PatchSelectionDialog dialog = new PatchSelectionDialog( view );
-            center(view, dialog);
+            center( view, dialog );
             dialog.setVisible( true );
             String patch_file = dialog.getPatchFile();
             if ( patch_file == null || patch_file.length() == 0 ) {
@@ -811,12 +812,12 @@ public class DualDiff implements EBComponent {
             }
 
             // load the patch file
-            Reader reader = new BufferedReader(new FileReader( patch_file ));
+            Reader reader = new BufferedReader( new FileReader( patch_file ) );
             StringWriter writer = new StringWriter();
             PatchUtils.copyToWriter( reader, writer );
             String patch = writer.toString();
             if ( patch == null || patch.length() == 0 ) {
-                JOptionPane.showMessageDialog(view, "Invalid patch file, file has no content.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog( view, "Invalid patch file, file has no content.", "Error", JOptionPane.ERROR_MESSAGE );
                 return ;
             }
 
@@ -825,14 +826,14 @@ public class DualDiff implements EBComponent {
             String bufferText = buffer.getText( 0, buffer.getLength() );
 
             // apply the patch
-            String results = Patch.patch(patch, bufferText);
+            String results = Patch.patch( patch, bufferText );
 
             // show the results as a new file so the user can check it against
             // the original before saving it
             jEdit.newFile( view ).insert( 0, results );
         }
         catch ( Exception e ) {
-            JOptionPane.showMessageDialog(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog( view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
         }
     }
 
@@ -843,7 +844,7 @@ public class DualDiff implements EBComponent {
             if ( hunk.line0 > firstLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                    line = hunk.line0;// - 1;
+                    line = hunk.line0; // - 1;
                 }
                 else {
                     line = hunk.line0;
@@ -877,7 +878,7 @@ public class DualDiff implements EBComponent {
             if ( hunk.line1 > firstLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                    line = hunk.line1;// - 1;
+                    line = hunk.line1; // - 1;
                 }
                 else {
                     line = hunk.line1;
@@ -912,7 +913,7 @@ public class DualDiff implements EBComponent {
                 if ( hunk.link == null || hunk.link.line0 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                        line = hunk.line0;// - 1;
+                        line = hunk.line0; // - 1;
                     }
                     else {
                         line = hunk.line0;
@@ -947,7 +948,7 @@ public class DualDiff implements EBComponent {
                 if ( hunk.link == null || hunk.link.line1 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                        line = hunk.line1;// - 1;
+                        line = hunk.line1; // - 1;
                     }
                     else {
                         line = hunk.line1;
