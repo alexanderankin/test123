@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -25,7 +27,15 @@ import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.StackDockStation;
+import bibliothek.gui.dock.action.DefaultDockActionSource;
+import bibliothek.gui.dock.action.DockActionSource;
+import bibliothek.gui.dock.action.LocationHint;
+import bibliothek.gui.dock.action.actions.SimpleButtonAction;
+import bibliothek.gui.dock.action.actions.SimpleDockAction;
+import bibliothek.gui.dock.action.view.ActionViewConverter;
+import bibliothek.gui.dock.action.view.ViewTarget;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
+import bibliothek.gui.dock.facile.action.CloseAction;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.Leaf;
 import bibliothek.gui.dock.station.split.Node;
@@ -36,6 +46,8 @@ import bibliothek.gui.dock.station.split.SplitNode;
 import bibliothek.gui.dock.themes.ThemeFactory;
 import bibliothek.gui.dock.title.DockTitle;
 import bibliothek.gui.dock.title.DockTitleVersion;
+import bibliothek.notes.model.Note;
+import bibliothek.notes.util.ResourceSet;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
 
@@ -350,9 +362,26 @@ public class DfWindowManager extends DockableWindowManager {
 		String title = getDockableTitle(name);
 		JEditDockable d = new JEditDockable(name, title, window);
 		created.put(name, d);
+		DefaultDockActionSource source = new DefaultDockActionSource();
+		source.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
+		d.setActionOffers(source);
+		source.add(new MyCloseAction(d));
 		return d;
 	}
 
+	private static class MyCloseAction extends SimpleButtonAction {
+		private Dockable d;
+		public MyCloseAction(Dockable d){
+			this.d = d;
+			setText("Close");
+			setIcon(new ImageIcon(DockController.class.getResource("/data/close.png")));
+		}
+		@Override
+		public void action(Dockable dockable) {
+			super.action(dockable);
+			d.getDockParent().drag(d);
+		}
+	}
 	private static class MainDockable extends DefaultDockable {
 		public MainDockable(JPanel panel) {
 			super(panel, (String)null);
