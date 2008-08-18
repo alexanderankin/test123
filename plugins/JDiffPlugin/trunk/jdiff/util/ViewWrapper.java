@@ -41,7 +41,8 @@ public class ViewWrapper {
     public void setSplitConfig(Buffer buffer, String config) {
         try {
             Object[] args = new Object[]{buffer, config};
-            PrivilegedAccessor.invokeMethod(view, "setSplitConfig", args);
+            Class[] classTypes = new Class[]{Buffer.class, String.class};
+            PrivilegedAccessor.getMethod( view, "setSplitConfig", classTypes ).invoke( view, args );
         }
         catch(Exception e) {    // NOPMD
             // ignored
@@ -54,7 +55,6 @@ public class ViewWrapper {
             return (String)PrivilegedAccessor.invokeMethod(view, "getSplitConfig", null);
         }
         catch(Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
