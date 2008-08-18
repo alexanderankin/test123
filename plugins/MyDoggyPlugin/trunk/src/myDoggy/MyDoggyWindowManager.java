@@ -111,10 +111,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
-	protected void dockingPositionChanged(String dockableName,
+	protected void dockingPositionChanged(String name,
 		String oldPosition, String newPosition)
 	{
-		showDockableWindow(dockableName);
+		showDockableWindow(name);
+		ToolWindow tw = getToolWindow(name);
+		if (tw != null)
+		{
+			ToolWindowAnchor anchor = position2anchor(getDockablePosition(name));
+			if (anchor != tw.getAnchor())
+				tw.setAnchor(anchor);
+		}
 	}
 
 	@Override
@@ -313,9 +320,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (tw != null)
 		{
 			activateToolWindow(tw);
-			ToolWindowAnchor anchor = position2anchor(getDockablePosition(name));
-			if (anchor != tw.getAnchor())
-				tw.setAnchor(anchor);
 			return;
 		}
 		tw = createToolWindow(name);
