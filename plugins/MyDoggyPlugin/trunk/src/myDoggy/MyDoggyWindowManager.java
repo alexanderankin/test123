@@ -104,6 +104,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			ViewConfig config)
 	{
 		super(view, instance, config);
+		UIManager.put("ToolWindowTitleButtonPanelUI", "myDoggy.TitleButtonPanelUI");
 		setLayout(new BorderLayout());
 		wm = new MyDoggyToolWindowManager();
 		add(wm, BorderLayout.CENTER);
