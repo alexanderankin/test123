@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -27,8 +26,8 @@ import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
-import bibliothek.gui.dock.action.actions.SimpleButtonAction;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
+import bibliothek.gui.dock.facile.action.CloseAction;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.Leaf;
 import bibliothek.gui.dock.station.split.Node;
@@ -60,6 +59,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private String theme;
 	private Map<String, Dockable> created = new HashMap<String, Dockable>();
 	private Map<String, Side> sides = new HashMap<String, Side>();
+	private CloseAction closeAction;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -69,6 +69,7 @@ public class DfWindowManager extends DockableWindowManager {
         stations = new HashMap<String, DockStation>();
 		controller = new DockController();
 		setTheme(DfOptionPane.getThemeName());
+		closeAction = new CloseAction(controller);
         center = new SplitDockStation();
         stations.put(CENTER, center);
         add(center.getComponent(), BorderLayout.CENTER);
@@ -357,23 +358,10 @@ public class DfWindowManager extends DockableWindowManager {
 		DefaultDockActionSource source = new DefaultDockActionSource();
 		source.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
 		d.setActionOffers(source);
-		source.add(new MyCloseAction(d));
+		source.add(closeAction);
 		return d;
 	}
 
-	private static class MyCloseAction extends SimpleButtonAction {
-		private Dockable d;
-		public MyCloseAction(Dockable d){
-			this.d = d;
-			setText("Close");
-			setIcon(new ImageIcon(DockController.class.getResource("/data/close.png")));
-		}
-		@Override
-		public void action(Dockable dockable) {
-			super.action(dockable);
-			d.getDockParent().drag(d);
-		}
-	}
 	private static class MainDockable extends DefaultDockable {
 		public MainDockable(JPanel panel) {
 			super(panel, (String)null);
