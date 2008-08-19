@@ -227,6 +227,7 @@ public class DfWindowManager extends DockableWindowManager {
 					station.setFrontDockable(d);
 				else
 					d.getComponent().setVisible(true);
+				focusDockable(name);
 				return;
 			} else {
 				// Windows has been closed
@@ -238,6 +239,7 @@ public class DfWindowManager extends DockableWindowManager {
 			return;
 		String position = getDockablePosition(name); 
 		drop(d, sides.get(position));
+		focusDockable(name);
 	}
 
     private void drop(Dockable dockable, Side side) {
