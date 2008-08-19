@@ -338,13 +338,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				bar.setVisible(true);
 		}
 		tw.setActive(true);
-		JComponent c = getDockable(tw.getId());
-		if (c == null)
-			return;
-		if (c instanceof DefaultFocusComponent)
-			((DefaultFocusComponent)c).focusOnDefaultComponent();
-		else
-			c.requestFocus();
+		focusDockable(tw.getId());
 	}
 
 	private ToolWindowAnchor position2anchor(String position)
