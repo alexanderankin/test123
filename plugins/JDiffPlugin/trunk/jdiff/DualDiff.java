@@ -493,7 +493,7 @@ public class DualDiff implements EBComponent {
                             if ( splitConfig != null ) {
                                 splitConfigs.remove( view );
                                 ViewWrapper vw = new ViewWrapper( view );
-                                vw.setSplitConfig( null, splitConfig);
+                                vw.setSplitConfig( null, splitConfig );
                             }
                             else {
                                 view.unsplit();
@@ -502,7 +502,7 @@ public class DualDiff implements EBComponent {
                             view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
                             EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
                             view.invalidate();
-                            view.repaint();
+                            view.validate();
                         }
                         else {
                             EditPane[] editPanes = view.getEditPanes();
@@ -533,11 +533,16 @@ public class DualDiff implements EBComponent {
                             // danson, make sure the divider is in the middle.  For some reason,
                             // the left side would be much smaller than the right side, this
                             // takes care of that.
-                            JSplitPane sp = view.getSplitPane();
-                            sp.setDividerLocation( 0.5 );
-                            sp.invalidate();
                             view.invalidate();
-                            view.repaint();
+                            view.validate();
+
+                            SwingUtilities.invokeLater( new Runnable() {
+                                        public void run() {
+                                            JSplitPane sp = view.getSplitPane();
+                                            sp.setDividerLocation( 0.5 );
+                                        }
+                                    }
+                                                                     );
                         }
                     }
                 };
