@@ -4,9 +4,12 @@ import java.awt.BorderLayout;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -23,9 +26,11 @@ import bibliothek.gui.DockStation;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.ScreenDockStation;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
+import bibliothek.gui.dock.action.actions.SimpleButtonAction;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
 import bibliothek.gui.dock.facile.action.CloseAction;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
@@ -64,6 +69,8 @@ public class DfWindowManager extends DockableWindowManager {
 	private CloseAction closeAction;
 	private DfDockingArea bottomArea, topArea, leftArea, rightArea;
 	private boolean hidden = false;
+	private FloatAction floatAction;
+	private DefaultDockActionSource dockedActionSource;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -100,6 +107,14 @@ public class DfWindowManager extends DockableWindowManager {
         topArea = new DfDockingArea(TOP);
         leftArea = new DfDockingArea(LEFT);
         rightArea = new DfDockingArea(RIGHT);
+        ScreenDockStation screenDock = new ScreenDockStation(view);
+        screenDock.setShowing(true);
+        controller.add(screenDock);
+		floatAction = new FloatAction(screenDock);
+		dockedActionSource = new DefaultDockActionSource();
+		dockedActionSource.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
+		dockedActionSource.add(closeAction);
+		dockedActionSource.add(floatAction);
 	}
 
 	@Override
@@ -114,6 +129,8 @@ public class DfWindowManager extends DockableWindowManager {
 			applyDockingLayout(layout);
 		}
 		hidden = (! hidden);
+		if (view.getEditPane() != null)
+			view.getEditPane().requestFocus();
 	}
 
 	private void setTheme(String name) {
@@ -385,13 +402,35 @@ public class DfWindowManager extends DockableWindowManager {
 		String title = getDockableTitle(name);
 		JEditDockable d = new JEditDockable(name, title, window);
 		created.put(name, d);
-		DefaultDockActionSource source = new DefaultDockActionSource();
-		source.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
-		d.setActionOffers(source);
-		source.add(closeAction);
+		d.setActionOffers(dockedActionSource);
 		return d;
 	}
 
+	private static class FloatAction extends SimpleButtonAction {
+
+		private static Icon floatIcon;
+		private ScreenDockStation screenDock;
+		
+		{
+			URL url = DfWindowManager.class.getClassLoader().getResource(
+				"icons/window-raise.png");
+	        floatIcon = new ImageIcon(url);
+		}
+		
+		public FloatAction(ScreenDockStation screenDock) {
+			this.screenDock = screenDock;
+			setText("Float");
+			setTooltip("Float");
+			setIcon(floatIcon);
+		}
+		
+		@Override
+		public void action(Dockable dockable) {
+			dockable.getDockParent().drag(dockable);
+			screenDock.drop(dockable);
+		}
+	}
+	
 	private static class MainDockable extends DefaultDockable {
 		public MainDockable(JPanel panel) {
 			super(panel, (String)null);
