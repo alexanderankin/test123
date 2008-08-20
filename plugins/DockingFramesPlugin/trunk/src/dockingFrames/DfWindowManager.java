@@ -49,6 +49,8 @@ public class DfWindowManager extends DockableWindowManager {
 	
 	private static final String CENTER = "center";
 	private static final String MAIN = "main";
+	private static final String toggleDocksLayoutName = "toggleDocks";
+	
 
 	private DockController controller;
 	private SplitDockStation center;
@@ -60,6 +62,8 @@ public class DfWindowManager extends DockableWindowManager {
 	private Map<String, Dockable> created = new HashMap<String, Dockable>();
 	private Map<String, Side> sides = new HashMap<String, Side>();
 	private CloseAction closeAction;
+	private DfDockingArea bottomArea, topArea, leftArea, rightArea;
+	private boolean hidden = false;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -92,6 +96,24 @@ public class DfWindowManager extends DockableWindowManager {
         sides.put(BOTTOM, Side.BOTTOM);
         sides.put(RIGHT, Side.RIGHT);
         sides.put(LEFT, Side.LEFT);
+        bottomArea = new DfDockingArea(BOTTOM);
+        topArea = new DfDockingArea(TOP);
+        leftArea = new DfDockingArea(LEFT);
+        rightArea = new DfDockingArea(RIGHT);
+	}
+
+	@Override
+	public void toggleDockAreas() {
+		DfDockingLayout layout = new DfDockingLayout(this);
+		if (! hidden) {
+			layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
+			for (Dockable d: created.values())
+				d.getDockParent().drag(d);
+		} else {
+			layout.loadLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
+			applyDockingLayout(layout);
+		}
+		hidden = (! hidden);
 	}
 
 	private void setTheme(String name) {
@@ -153,10 +175,21 @@ public class DfWindowManager extends DockableWindowManager {
 		return null;
 	}
 
+	private static class DfDockingArea implements DockingArea {
+		public DfDockingArea(String area) {
+		}
+		public String getCurrent() {
+			return null;
+		}
+		public void show(String name) {
+		}
+		public void showMostRecent() {
+		}
+	}
+	
 	@Override
 	public DockingArea getBottomDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		return bottomArea;
 	}
 
 	@Override
@@ -167,20 +200,17 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public DockingArea getLeftDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		return leftArea;
 	}
 
 	@Override
 	public DockingArea getRightDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		return rightArea;
 	}
 
 	@Override
 	public DockingArea getTopDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		return topArea;
 	}
 
 	@Override
