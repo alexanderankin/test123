@@ -32,6 +32,8 @@ import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
 import bibliothek.gui.dock.action.actions.SimpleButtonAction;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
+import bibliothek.gui.dock.event.DockHierarchyEvent;
+import bibliothek.gui.dock.event.DockHierarchyListener;
 import bibliothek.gui.dock.facile.action.CloseAction;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.Leaf;
@@ -70,7 +72,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private DfDockingArea bottomArea, topArea, leftArea, rightArea;
 	private boolean hidden = false;
 	private FloatAction floatAction;
-	private DefaultDockActionSource dockedActionSource;
+	private DefaultDockActionSource dockedActionSource, floatActionSource;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -115,6 +117,9 @@ public class DfWindowManager extends DockableWindowManager {
 		dockedActionSource.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
 		dockedActionSource.add(closeAction);
 		dockedActionSource.add(floatAction);
+		floatActionSource = new DefaultDockActionSource();
+		floatActionSource.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
+		floatActionSource.add(closeAction);
 	}
 
 	@Override
@@ -400,9 +405,19 @@ public class DfWindowManager extends DockableWindowManager {
 		if (window == null)
 			return null;
 		String title = getDockableTitle(name);
-		JEditDockable d = new JEditDockable(name, title, window);
+		final JEditDockable d = new JEditDockable(name, title, window);
 		created.put(name, d);
 		d.setActionOffers(dockedActionSource);
+		d.addDockHierarchyListener(new DockHierarchyListener() {
+			public void controllerChanged(DockHierarchyEvent event) {
+			}
+			public void hierarchyChanged(DockHierarchyEvent event) {
+				if (d.getDockParent() instanceof ScreenDockStation)
+					d.setActionOffers(floatActionSource);
+				else
+					d.setActionOffers(dockedActionSource);
+			}
+		});
 		return d;
 	}
 
