@@ -519,13 +519,11 @@ public class DualDiff implements EBComponent {
 
                             DualDiff.addTo( view );
                             DockableWindowManager dwm = view.getDockableWindowManager();
-                            if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) ) {
+                            if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
                                 if ( dwm.getDockableWindow( "jdiff-lines" ) == null ) {
                                     dwm.addDockableWindow( "jdiff-lines" );
                                 }
-                                if ( jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                                    dwm.showDockableWindow( "jdiff-lines" );
-                                }
+                                dwm.showDockableWindow( "jdiff-lines" );
                             }
 
                             EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
