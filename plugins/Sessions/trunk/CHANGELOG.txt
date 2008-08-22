@@ -1,4 +1,8 @@
 
+VERSION 1.4.3 (Steve Jakob)
+- incorporated code submitted by halyavin (patch #2006663) to change XML parser from Microstar's AElfred parser to the SAX parser included with the Sun JRE
+- changed SessionManager class to use the View.updateTitle() method to update the title bar, rather than sending a message on the EditBus
+
 VERSION 1.4.2 (Steve Jakob)
 - incorporated code submitted by strank (patch #1697914) to fix bug where current file was not being saved on Windows
 

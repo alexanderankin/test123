@@ -1,7 +1,7 @@
 /*
  * SessionManager.java
  * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
- * Copyright (c) 2007 Steve Jakob
+ * Copyright (c) 2007, 2008 Steve Jakob
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -557,8 +557,6 @@ public class SessionManager implements EBComponent
 				}
 						
 				jEdit.setTemporaryProperty("view.title", titleBarSessionName);
-				// TODO: once jEdit 4.3 is final, this can be changed to use
-				//       the View.updateTitle() method made public in 4.3pre2
 				refreshTitleBar();
 			}
 		}
@@ -582,7 +580,7 @@ public class SessionManager implements EBComponent
 		
 		for( int i = 0; i < views.length; i++ )
 		{
-			EditBus.send(new BufferUpdate(views[i].getBuffer(), views[i], BufferUpdate.LOADED));	
+			views[i].updateTitle();
 		}	
 	}
 	
