@@ -41,6 +41,7 @@ import org.noos.xing.mydoggy.plaf.ui.MyDoggyKeySpace;
 public class MyDoggyWindowManager extends DockableWindowManager {
 
 	private MyDoggyToolWindowManager wm = null;
+	private boolean addAnchorButtons = true;
 	
 	private class ToggleBarDockableDescriptor extends CustomDockableDescriptor
 	{
@@ -230,10 +231,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		}
 		if (! loaded) // No saved layout - just use the docking positions specified by jEdit properties
 			super.applyDockingLayout(null);
-		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.TOP);
-		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.BOTTOM);
-		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.LEFT);
-		new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.RIGHT);
+		if (addAnchorButtons) {
+			new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.TOP);
+			new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.BOTTOM);
+			new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.LEFT);
+			new ToggleBarDockableDescriptor(wm, ToolWindowAnchor.RIGHT);
+			addAnchorButtons = false;
+		}
 	}
 
 	public class PersistenceCallback implements PersistenceDelegateCallback
