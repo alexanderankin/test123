@@ -20,7 +20,6 @@ import javax.swing.UIManager;
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
-import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
