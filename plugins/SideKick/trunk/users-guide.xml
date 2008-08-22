@@ -365,6 +365,9 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <listitem><para> 
    Added a new option, which makes automatic completion popups get focus, to make the new behavior in 0.7.5 optional. (Kazutoshi Satoda, Bug #2027704)
  </para></listitem>
+ <listitem><para> 
+   Fixed a memory leak; multiple parser specific panels could be held in SideKickTree. (Kazutoshi Satoda)
+ </para></listitem>
  </itemizedlist>
  </listitem>
 

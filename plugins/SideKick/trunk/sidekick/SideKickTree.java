@@ -503,18 +503,33 @@ public class SideKickTree extends JPanel
 		}
 	} // }}}
 
-	//{{{ addParserToolbar() method
+	//{{{ addParserPanel() method
 	void addParserPanel(SideKickParser parser)
 	{
-		parserPanel = parser.getPanel();
-		if (parserPanel != null)
-			toolBox.add(BorderLayout.CENTER,parserPanel);
+		JPanel newParserPanel = parser.getPanel();
+		if (newParserPanel != parserPanel)
+		{
+			if (parserPanel != null)
+			{
+				toolBox.remove(parserPanel);
+				parserPanel = null;
+			}
+			if (newParserPanel != null)
+			{
+				toolBox.add(BorderLayout.CENTER,newParserPanel);
+				parserPanel = newParserPanel;
+			}
+		}
 	} // }}}
-	//{{{ removeParserToolbar() method
+
+	//{{{ removeParserPanel() method
 	void removeParserPanel()
 	{
 		if (parserPanel != null)
+		{
 			toolBox.remove(parserPanel);
+			parserPanel = null;
+		}
 	} // }}}
 
 	//{{{ expandTreeWithDelay() method
