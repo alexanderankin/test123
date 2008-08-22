@@ -295,6 +295,16 @@ public class DfWindowManager extends DockableWindowManager {
 		focusDockable(name);
 	}
 
+	@Override
+	public void disposeDockableWindow(String name) {
+		Dockable d = created.get(name);
+		if (d != null) {
+			if (d.getController() != null)
+				d.getDockParent().drag(d);
+			created.remove(name);
+		}
+	}
+
     private void drop(Dockable dockable, Side side) {
         Leaf leaf = find(center.getRoot(), side);
        
