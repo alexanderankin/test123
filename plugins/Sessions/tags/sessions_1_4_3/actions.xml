@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="session-save">
+		<CODE>
+			sessions.SessionManager.getInstance().saveCurrentSession(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-save-as">
+		<CODE>
+			sessions.SessionManager.getInstance().saveCurrentSessionAs(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-reload">
+		<CODE>
+			sessions.SessionManager.getInstance().reloadCurrentSession(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-manager">
+		<CODE>
+			sessions.SessionManager.getInstance().showSessionManagerDialog(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-properties">
+		<CODE>
+			sessions.SessionManager.getInstance().showSessionPropertiesDialog(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-changeFSBDirectory">
+		<CODE>
+			sessions.SessionManager.getInstance().changeFSBToBaseDirectory(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
