@@ -1,6 +1,7 @@
 /*
  * Session.java - represents a jEdit session
  * Copyright (c) 2001 Dirk Moebius
+ * Copyright (c) 2008 Steve Jakob
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -19,15 +20,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 package sessions;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.XMLUtilities;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 
 public class Session implements Cloneable
@@ -411,10 +427,11 @@ public class Session implements Cloneable
 
 		clear();
 
-		Reader reader = new BufferedReader(new FileReader(filename));
-		XmlParser parser = new XmlParser();
-		parser.setHandler(new SessionXmlHandler(parser));
-		parser.parse(null, null, reader);
+		// Reader reader = new BufferedReader(new FileReader(filename));
+		XMLUtilities.parseXML(new FileInputStream(filename), new SessionXmlHandler());
+		//XmlParser parser = new XmlParser();
+		//parser.setHandler(new SessionXmlHandler(parser));
+		//parser.parse(null, null, reader);
 	}
 
 
@@ -509,118 +526,60 @@ public class Session implements Cloneable
 	}
 
 
-	private class SessionXmlHandler extends HandlerBase
+	private class SessionXmlHandler extends DefaultHandler
 	{
-		SessionXmlHandler(XmlParser parser)
+		boolean atStart = false;
+		SessionXmlHandler()
 		{
-			this.parser = parser;
 		}
 
-
-		public void doctypeDecl(String name, String publicId, String systemId) throws XmlException
+		public void startDocument() throws SAXException
 		{
-			if (name.equalsIgnoreCase("SESSION"))
-				return;
-			else
-				throw new XmlException(
-					"DOCTYPE must be SESSION",
-					"SESSION",
-					parser.getLineNumber(),
-					parser.getColumnNumber()
-				);
+			super.startDocument();
+			atStart = true;
 		}
 
-
-		public Object resolveEntity(String publicId, String systemId) throws IOException
+		public void startElement(String uri, String localName, String name, Attributes attributes)
+			throws SAXException
 		{
-			if (systemId.equals("session.dtd"))
-				return new BufferedReader(new InputStreamReader(
-					this.getClass().getResourceAsStream("session.dtd")));
+			if (atStart)
+			{
+				if (localName.equalsIgnoreCase("session"))
+				{
+					atStart = false;
+					return;
+				}
+				else
+				{
+					throw new SAXException("DOCTYPE must be SESSION");
+				}
+			}
+			if (name.equalsIgnoreCase("prop"))
+			{
+				String key = attributes.getValue("key");
+				String value = attributes.getValue("value");
+				properties.put(key, value);
+			}
+			else if (name.equalsIgnoreCase("file"))
+			{
+				String filePath = attributes.getValue("filename");
+				String encoding = attributes.getValue("encoding");
+				boolean isCurrent = "true".equalsIgnoreCase(attributes.getValue("isCurrent"));
+				addFile(filePath, encoding);
+				if (isCurrent)
+				{
+					setCurrentFile(filePath);
+				}
+			}
+			super.startElement(uri, localName, name, attributes);
+		}
+
+		public InputSource resolveEntity(String publicId, String systemId) throws IOException
+		{
+			if (systemId.endsWith("session.dtd"))
+				return new InputSource(new BufferedReader(new InputStreamReader(this.getClass()
+					.getResourceAsStream("session.dtd"))));
 			return null;
 		}
-
-
-		public void attribute(String att, String value, boolean isSpecified) throws XmlException
-		{
-			if("name".equals(att))
-				currentName = value;
-			else if("filename".equals(att))
-				currentFilePath = value;
-			else if ("isCurrent".equals(att))
-			{
-				if(value == null)
-					currentIsCurrent = false;
-				else
-					currentIsCurrent = Boolean.valueOf(value).booleanValue();
-			}
-			else if("encoding".equals(att))
-				currentFileEncoding = value; // Note: value may be null, if missing
-			else if("carat".equals(att))
-			{
-				Integer carat = null;
-				try
-				{
-					carat = new Integer(value);
-				}
-				catch (NumberFormatException nfe)
-				{
-					carat = new Integer(0);
-				}
-				currentFileCarat = carat;
-			}
-			else if ("key".equals(att))
-				currentPropKey = value;
-			else if ("value".equals(att))
-				currentPropValue = value; // Note: value may be null, if missing
-			else
-				throw new XmlException(
-					"unknown attribute: " + att,
-					"SESSION",
-					parser.getLineNumber(),
-					parser.getColumnNumber()
-				);
-		}
-
-
-		public void endElement(String elementName)
-		{
-			if(elementName == null)
-				return;
-
-			if("SESSION".equals(elementName))
-			{
-				if(!currentName.equals(Session.this.name))
-				{
-					Log.log(Log.WARNING, this,
-						jEdit.getProperty("sessions.manager.warning.load.ambigious.message",
-							new Object[] { Session.this.name, currentName }));
-					Session.this.name = currentName;
-				}
-			}
-			else if("FILE".equals(elementName))
-			{
-				addFile(currentFilePath, currentFileEncoding);
-				if(currentIsCurrent)
-					setCurrentFile(currentFilePath);
-				// Clear the local values in preparation for the next FILE
-				currentFilePath = null;
-				currentFileEncoding = null;
-				currentFileCarat = null;
-			}
-			else if("PROP".equals(elementName))
-				properties.put(currentPropKey, currentPropValue);
-		}
-
-
-		private XmlParser parser;
-		private String currentName;
-		private String currentFilePath;
-		private String currentFileEncoding;
-		private Integer currentFileCarat;
-		private String currentPropKey;
-		private String currentPropValue;
-		private boolean currentIsCurrent;
 	}
-
-
 }
