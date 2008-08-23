@@ -7,7 +7,7 @@ import sidekick.util.Location;
 public class PropertyParser implements PropertyParserConstants {
 
     // accumulates parse exceptions
-    private List<ParseException> exceptions = new ArrayList();
+    private List<ParseException> exceptions = new ArrayList<ParseException>();
 
     // for testing...
     public static void main(String args[]) throws ParseException {
@@ -91,7 +91,7 @@ public class PropertyParser implements PropertyParserConstants {
     }
 
   final public List<Property> Properties() throws ParseException {
-    List list = new ArrayList();
+    List<Property> list = new ArrayList<Property>();
     Property p = null;
     label_1:
     while (true) {
