@@ -295,7 +295,6 @@ public class DfWindowManager extends DockableWindowManager {
 		focusDockable(name);
 	}
 
-	@Override
 	public void disposeDockableWindow(String name) {
 		Dockable d = created.get(name);
 		if (d != null) {
