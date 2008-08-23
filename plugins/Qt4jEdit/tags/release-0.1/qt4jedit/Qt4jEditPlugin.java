@@ -2,12 +2,13 @@ package qt4jedit;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StringList;
+
 /**
  * 
  * @author ezust
@@ -24,7 +25,7 @@ public class Qt4jEditPlugin extends EditPlugin {
 	}
 
     public void updateCommand() {
-    	StringList sl = new StringList();
+    	ArrayList<String> sl = new ArrayList<String>();
 		sl.add(jEdit.getProperty("qt4jedit.path-to-assistant", "assistant"));
 		sl.add("-enableRemoteControl");
 	    builder.command(sl);
@@ -44,14 +45,14 @@ public class Qt4jEditPlugin extends EditPlugin {
 			assistantProcess = builder.start();
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, this, "Unable to start process", ioe);
+			Log.log(Log.ERROR, ioe, "Unable to start process");
 		}
 	}
 
 	/**
 	 * @return selection, or word under caret
 	 */
-	public static String getSelectedTextOrWordUnderCaret(TextArea textArea) {
+	public static String getSelectedTextOrWordUnderCaret(JEditTextArea textArea) {
 		String text = textArea.getSelectedText();
 		int caretPos = textArea.getCaretPosition();
 		String currentChar = " ";
@@ -91,22 +92,22 @@ public class Qt4jEditPlugin extends EditPlugin {
 				os.flush();
 			}
 			catch (IOException ioee) {
-				Log.log(Log.ERROR, this, "sendToAssistant", ioee);				
+				Log.log(Log.ERROR, ioee, "sendToAssistant");				
 			}
 		}
 	}
 	
-	public void activateKeyword(TextArea textArea) {
+	public void activateKeyword(JEditTextArea textArea) {
 		String command = "activateKeyword " + getSelectedTextOrWordUnderCaret(textArea) + "\n";
 		sendToAssistant(command);
 	}
 	
-	public void activateIdentifier(TextArea textArea) {
+	public void activateIdentifier(JEditTextArea textArea) {
 		String command = "activateIdentifier " + getSelectedTextOrWordUnderCaret(textArea) + "\n";
 		sendToAssistant(command);
 	}
 	
-	public void openURL(TextArea textArea) {
+	public void openURL(JEditTextArea textArea) {
 		String command = "setSource " + getSelectedTextOrWordUnderCaret(textArea) + "\n";
 		sendToAssistant(command);
 	}
@@ -126,7 +127,6 @@ public class Qt4jEditPlugin extends EditPlugin {
 	}
 		
 	
-	@Override
 	public void stop() {
 		stopAssistant();
 	}
