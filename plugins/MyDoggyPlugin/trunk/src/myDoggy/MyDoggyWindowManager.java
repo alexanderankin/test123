@@ -29,7 +29,6 @@ import org.noos.xing.mydoggy.ToolWindow;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.ToolWindowBar;
 import org.noos.xing.mydoggy.ToolWindowManager;
-import org.noos.xing.mydoggy.ToolWindowTab;
 import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
@@ -257,7 +256,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	
 	private ToolWindow createFakeToolWindow(String name)
 	{
-		JComponent window = new JPanel();
+		JComponent window = new JPanel(new BorderLayout());
 		if (window == null)
 			return null;
 		String title = getDockableTitle(name);
@@ -267,7 +266,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
-		PropertyChangeListener listener = new VisibilityChangeListener(tw);
+		PropertyChangeListener listener = new VisibilityChangeListener(tw, name, window);
 		tw.addPropertyChangeListener("visible", listener);
 		return tw;
 	}
@@ -275,28 +274,20 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	private class VisibilityChangeListener implements PropertyChangeListener
 	{
 		ToolWindow tw;
-		public VisibilityChangeListener(ToolWindow tw)
+		String name;
+		JComponent window;
+		public VisibilityChangeListener(ToolWindow tw, String name, JComponent window)
 		{
 			this.tw = tw;
-		}
-		private ToolWindowTab getFakeTab() {
-			ToolWindowTab[] tabs = tw.getToolWindowTabs();
-			for (ToolWindowTab tab: tabs)
-				if (tab.getTitle().equals(tw.getTitle()))
-					return tab;
-			return null;
+			this.name = name;
+			this.window = window;
 		}
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (! tw.isVisible())
 				return;
-			removePropertyChangeListener("visible", this);
-			ToolWindowTab fakeTab = getFakeTab();
-			if (fakeTab == null)
-				return;
-			JComponent window = createDockable(tw.getId());
-			ToolWindowTab newTab = tw.addToolWindowTab(fakeTab.getTitle(), window);
-			tw.removeToolWindowTab(fakeTab);
-			newTab.setSelected(true);
+			tw.removePropertyChangeListener("visible", this);
+			JComponent comp = createDockable(name);
+			window.add(comp, BorderLayout.CENTER);
 		}
 	}
 	
