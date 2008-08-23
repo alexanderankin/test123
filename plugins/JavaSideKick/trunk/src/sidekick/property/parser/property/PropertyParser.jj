@@ -48,7 +48,7 @@ import sidekick.util.Location;
 public class PropertyParser {
 
     // accumulates parse exceptions
-    private List<ParseException> exceptions = new ArrayList();
+    private List<ParseException> exceptions = new ArrayList<ParseException>();
 
     // for testing...
     public static void main(String args[]) throws ParseException {
@@ -199,7 +199,7 @@ SKIP:
 
 List<Property> Properties() :
 {
-    List list = new ArrayList();
+    List<Property> list = new ArrayList<Property>();
     Property p = null;
 }
 {

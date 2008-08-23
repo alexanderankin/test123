@@ -116,14 +116,14 @@ public class TigerParser implements TigerParserConstants {
        } while (t != null && t.kind != kind);
    }
 
-   private List exceptions = new ArrayList();
+   private List<ErrorNode> exceptions = new ArrayList<ErrorNode>();
 
    private void addException(ParseException pe) {
        ErrorNode en = new ErrorNode(pe);
        exceptions.add(en);
    }
 
-   public List getErrors() {
+   public List<ErrorNode> getErrors() {
        return exceptions;
    }
 
@@ -180,7 +180,7 @@ public class TigerParser implements TigerParserConstants {
     return "";
   }
 
-  private String toTigerString(List list) {
+  private String toTigerString(List<TigerNode> list) {
       if (list != null) {
         StringBuffer sb = new StringBuffer();
         for (Iterator it = list.iterator(); it.hasNext(); ) {
@@ -201,7 +201,7 @@ public class TigerParser implements TigerParserConstants {
   final public CUNode getJavaCCRootNode(int tab_size) throws ParseException {
     setTabSize(tab_size);
     CUNode n = new CUNode();
-    List children = null;
+    List<TigerNode> children = null;
     children = javacc_input();
     if (children != null ) {
         for (Iterator it = children.iterator(); it.hasNext(); ) {
@@ -212,8 +212,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List javacc_input() throws ParseException {
-    List children = new ArrayList();
+  final public List<TigerNode> javacc_input() throws ParseException {
+    List<TigerNode> children = new ArrayList<TigerNode>();
     TigerNode options_node = null;
     Token parser_node_start_t = null;
     Token parser_node_end_t = null;
@@ -392,7 +392,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public TigerNode javacode_production() throws ParseException {
     JavaCodeProductionNode mn = new JavaCodeProductionNode();
-    List params = null;
+    List<TigerNode> params = null;
     Token start_t = null;
     Type resultType = null;
     String identifier = "";
@@ -451,7 +451,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public TigerNode bnf_production() throws ParseException {
     BNFProductionNode mn = new BNFProductionNode();
-    List params = null;
+    List<TigerNode> params = null;
     Type resultType = null;
     String identifier = "";
     Token end_t = null;
@@ -1396,8 +1396,8 @@ public class TigerParser implements TigerParserConstants {
    Token t = null;
    TigerNode kids = null;   // only need the children of this node
    String type_params = "";
-   List extends_list = null;
-   List implements_list = null;
+   List<TigerNode> extends_list = null;
+   List<TigerNode> implements_list = null;
    Token type = null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1473,9 +1473,9 @@ public class TigerParser implements TigerParserConstants {
  * @return a list of sidekick.java.node.Types representing items in an 'extends'
  * list, e.g. the "Bar" in "public class Foo extends Bar"
  */
-  final public List ExtendsList(boolean isInterface) throws ParseException {
+  final public List<TigerNode> ExtendsList(boolean isInterface) throws ParseException {
    boolean extendsMoreThanOne = false;
-   List list = new ArrayList();     // a list of Types
+   List<TigerNode> list = new ArrayList<TigerNode>();     // a list of Types
    Type type_s = null;
    Type type_a = null;
     try {
@@ -1508,8 +1508,8 @@ public class TigerParser implements TigerParserConstants {
  * @return a list of sidekick.java.node.Types representing items in an 'implements'
  * list, e.g. the "Bar" and "Serializable" in "public class Foo implements Bar, Serializable"
  */
-  final public List ImplementsList(boolean isInterface) throws ParseException {
-    List list = new ArrayList();
+  final public List<TigerNode> ImplementsList(boolean isInterface) throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
     Type type_s = null;
     Type type_a = null;
     try {
@@ -1988,7 +1988,7 @@ public class TigerParser implements TigerParserConstants {
 */
   final public VariableDeclarator VariableDeclarator() throws ParseException {
     VariableDeclarator s = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       s = VariableDeclaratorId();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2037,9 +2037,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List VariableInitializer() throws ParseException {
-    List list = new ArrayList();
-    List a = null;
+  final public List<TigerNode> VariableInitializer() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LBRACE:
@@ -2087,10 +2087,10 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ArrayInitializer() throws ParseException {
-    List list = new ArrayList();
-    List a = null;
-    List b = null;
+  final public List<TigerNode> ArrayInitializer() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       jj_consume_token(LBRACE);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2161,7 +2161,7 @@ public class TigerParser implements TigerParserConstants {
     String type_params = "";
     Type return_type = null;
     MethodNode m_node = null;
-    List name_list = null;
+    List<TigerNode> name_list = null;
     int line_number = -1;
     BlockNode block = null;
     Location endLoc = null;
@@ -2229,7 +2229,7 @@ public class TigerParser implements TigerParserConstants {
   final public MethodNode MethodDeclarator() throws ParseException {
     Token t = null;
     String s = "";
-    List f = null;
+    List<TigerNode> f = null;
     try {
       t = jj_consume_token(IDENTIFIER);
       f = FormalParameters();
@@ -2258,8 +2258,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List FormalParameters() throws ParseException {
-    ArrayList params = new ArrayList();
+  final public List<TigerNode> FormalParameters() throws ParseException {
+    ArrayList<TigerNode> params = new ArrayList<TigerNode>();
     Parameter a = null;
     try {
       jj_consume_token(LPAREN);
@@ -2350,8 +2350,8 @@ public class TigerParser implements TigerParserConstants {
 
   final public ConstructorNode ConstructorDeclaration(Modifier m) throws ParseException {
     Token t = null;
-    List params = null;
-    List name_list = null;
+    List<TigerNode> params = null;
+    List<TigerNode> name_list = null;
     String type_params = null;
     Token end_t = null;
     TigerNode child = null;
@@ -2632,7 +2632,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public Type ClassOrInterfaceType() throws ParseException {
     Type s = new Type();
-    List type_args = null;
+    List<TigerNode> type_args = null;
     Token t = null;
     try {
       t = jj_consume_token(IDENTIFIER);
@@ -2688,8 +2688,8 @@ public class TigerParser implements TigerParserConstants {
 /*
     for generics, returns a list of the things between the < and >.
 */
-  final public List TypeArguments() throws ParseException {
-    List list = new ArrayList();
+  final public List<TigerNode> TypeArguments() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
     Type a, b;
     try {
       jj_consume_token(LT);
@@ -2928,8 +2928,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List NameList() throws ParseException {
-    List nameList = new ArrayList();
+  final public List<TigerNode> NameList() throws ParseException {
+    List<TigerNode> nameList = new ArrayList<TigerNode>();
     String s = "";
     String a = "";
     NameNode tn;
@@ -2959,9 +2959,9 @@ public class TigerParser implements TigerParserConstants {
 /*
  * Expression syntax follows.
  */
-  final public List Expression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> Expression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = ConditionalExpression();
       if (jj_2_31(2)) {
@@ -3022,10 +3022,10 @@ public class TigerParser implements TigerParserConstants {
     }
   }
 
-  final public List ConditionalExpression() throws ParseException {
-    List a = null;
-    List b = null;
-    List c = null;
+  final public List<TigerNode> ConditionalExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
+    List<TigerNode> c = null;
     try {
       a = ConditionalOrExpression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3047,9 +3047,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ConditionalOrExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> ConditionalOrExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = ConditionalAndExpression();
       label_35:
@@ -3072,9 +3072,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ConditionalAndExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> ConditionalAndExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = InclusiveOrExpression();
       label_36:
@@ -3097,9 +3097,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List InclusiveOrExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> InclusiveOrExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = ExclusiveOrExpression();
       label_37:
@@ -3122,9 +3122,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ExclusiveOrExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> ExclusiveOrExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = AndExpression();
       label_38:
@@ -3147,9 +3147,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List AndExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> AndExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = EqualityExpression();
       label_39:
@@ -3173,9 +3173,9 @@ public class TigerParser implements TigerParserConstants {
   }
 
 /* @return List<Type> */
-  final public List EqualityExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> EqualityExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = InstanceOfExpression();
       label_40:
@@ -3209,8 +3209,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List InstanceOfExpression() throws ParseException {
-    List a = null;
+  final public List<TigerNode> InstanceOfExpression() throws ParseException {
+    List<TigerNode> a = null;
     Type t = null;
     try {
       a = RelationalExpression();
@@ -3232,9 +3232,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List RelationalExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> RelationalExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = ShiftExpression();
       label_41:
@@ -3276,9 +3276,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ShiftExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> ShiftExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = AdditiveExpression();
       label_42:
@@ -3312,9 +3312,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List AdditiveExpression() throws ParseException {
-    List a = null;
-    List b = null;
+  final public List<TigerNode> AdditiveExpression() throws ParseException {
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = MultiplicativeExpression();
       label_43:
@@ -3348,10 +3348,10 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List MultiplicativeExpression() throws ParseException {
+  final public List<TigerNode> MultiplicativeExpression() throws ParseException {
     TigerNode a = null;
     TigerNode b = null;
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     try {
       a = UnaryExpression();
                               if (a != null) list.add(a);
@@ -3671,9 +3671,9 @@ public class TigerParser implements TigerParserConstants {
  */
   final public TigerNode PrimaryExpression() throws ParseException {
     PrimaryExpressionNode node = null;
-    List list = new ArrayList();
-    List a = null;
-    List b = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
     try {
       a = PrimaryPrefix();
             if (a != null)
@@ -3704,8 +3704,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List MemberSelector() throws ParseException {
-    List a = null;
+  final public List<TigerNode> MemberSelector() throws ParseException {
+    List<TigerNode> a = null;
     try {
       jj_consume_token(DOT);
       a = TypeArguments();
@@ -3717,9 +3717,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List PrimaryPrefix() throws ParseException {
-    List expressions = new ArrayList();
-    List list = null;
+  final public List<TigerNode> PrimaryPrefix() throws ParseException {
+    List<TigerNode> expressions = new ArrayList<TigerNode>();
+    List<TigerNode> list = null;
     TigerNode tn = null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3792,8 +3792,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List PrimarySuffix() throws ParseException {
-    List list = null;
+  final public List<TigerNode> PrimarySuffix() throws ParseException {
+    List<TigerNode> list = null;
     try {
       if (jj_2_43(2)) {
         jj_consume_token(DOT);
@@ -3879,8 +3879,8 @@ public class TigerParser implements TigerParserConstants {
     jj_consume_token(NULL);
   }
 
-  final public List Arguments() throws ParseException {
-    List a = null;
+  final public List<TigerNode> Arguments() throws ParseException {
+    List<TigerNode> a = null;
     try {
       jj_consume_token(LPAREN);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3924,9 +3924,9 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ArgumentList() throws ParseException {
-    List a, b;
-    List list = new ArrayList();
+  final public List<TigerNode> ArgumentList() throws ParseException {
+    List<TigerNode> a, b;
+    List<TigerNode> list = new ArrayList<TigerNode>();
     try {
       a = Expression();
                         if (a != null) list.addAll(a);
@@ -3951,10 +3951,10 @@ public class TigerParser implements TigerParserConstants {
   }
 
 /** a list of TigerNodes */
-  final public List AllocationExpression() throws ParseException {
-    List list = new ArrayList();
+  final public List<TigerNode> AllocationExpression() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode tn;
-    List a = null;
+    List<TigerNode> a = null;
     try {
       if (jj_2_46(2)) {
         jj_consume_token(NEW);
@@ -4014,9 +4014,9 @@ public class TigerParser implements TigerParserConstants {
  * The third LOOKAHEAD specification below is to parse to PrimarySuffix
  * if there is an expression between the "[...]".
  */
-  final public List ArrayDimsAndInits() throws ParseException {
-    List list = new ArrayList();
-    List e = null;
+  final public List<TigerNode> ArrayDimsAndInits() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> e = null;
     try {
       if (jj_2_49(2)) {
         label_47:
@@ -4075,7 +4075,7 @@ public class TigerParser implements TigerParserConstants {
  */
   final public TigerNode Statement() throws ParseException {
     TigerNode bn = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       if (jj_2_50(2)) {
         LabeledStatement();
@@ -4546,7 +4546,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public TigerNode StatementExpression() throws ParseException {
     TigerNode tn = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INCR:
@@ -4642,7 +4642,7 @@ public class TigerParser implements TigerParserConstants {
     TigerNode child = null;
     Token start_t = null;
     Token end_t = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       start_t = jj_consume_token(SWITCH);
       jj_consume_token(LPAREN);
@@ -4736,8 +4736,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List SwitchLabel() throws ParseException {
-    List list = null;
+  final public List<TigerNode> SwitchLabel() throws ParseException {
+    List<TigerNode> list = null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CASE:
@@ -4762,7 +4762,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public BlockNode IfStatement() throws ParseException {
     BlockNode ifNode = new BlockNode("if");
-    List expression = null;
+    List<TigerNode> expression = null;
     TigerNode ifNodes = null;
     TigerNode elseNodes = null;
     Token start_t = null;
@@ -4803,7 +4803,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public BlockNode WhileStatement() throws ParseException {
     BlockNode bn = new BlockNode("while");
-    List expression = null;
+    List<TigerNode> expression = null;
     TigerNode kids = null;
     Token start_t = null;
     try {
@@ -4832,7 +4832,7 @@ public class TigerParser implements TigerParserConstants {
     TigerNode kids = null;
     Token start_t = null;
     Token end_t = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       start_t = jj_consume_token(DO);
       kids = Statement();
@@ -4858,8 +4858,8 @@ public class TigerParser implements TigerParserConstants {
 
   final public BlockNode ForStatement() throws ParseException {
     BlockNode bn = new BlockNode("for");
-    List exp_a = null;
-    List exp_b = null;
+    List<TigerNode> exp_a = null;
+    List<TigerNode> exp_b = null;
     TigerNode kids = null;
     Token start_t = null;
     try {
@@ -5041,10 +5041,10 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ForInit() throws ParseException {
-    List list = new ArrayList();
+  final public List<TigerNode> ForInit() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode tn = null;
-    List a = null;
+    List<TigerNode> a = null;
     try {
       if (jj_2_56(2147483647)) {
         tn = LocalVariableDeclaration();
@@ -5089,8 +5089,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List StatementExpressionList() throws ParseException {
-    List list = new ArrayList();
+  final public List<TigerNode> StatementExpressionList() throws ParseException {
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode a = null;
     TigerNode b = null;
     try {
@@ -5148,8 +5148,8 @@ public class TigerParser implements TigerParserConstants {
     jj_consume_token(SEMICOLON);
   }
 
-  final public List ReturnStatement() throws ParseException {
-    List list = null;
+  final public List<TigerNode> ReturnStatement() throws ParseException {
+    List<TigerNode> list = null;
     try {
       jj_consume_token(RETURN);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5193,8 +5193,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List ThrowStatement() throws ParseException {
-    List list = null;
+  final public List<TigerNode> ThrowStatement() throws ParseException {
+    List<TigerNode> list = null;
     try {
       jj_consume_token(THROW);
       list = Expression();
@@ -5210,7 +5210,7 @@ public class TigerParser implements TigerParserConstants {
     BlockNode bn = new BlockNode("synchronized");
     BlockNode child = null;
     Token start_t = null;
-    List list = null;
+    List<TigerNode> list = null;
     try {
       start_t = jj_consume_token(SYNCHRONIZED);
       jj_consume_token(LPAREN);
@@ -5233,7 +5233,7 @@ public class TigerParser implements TigerParserConstants {
   }
 
   final public BlockNode TryStatement() throws ParseException {
-    List nodes = new ArrayList();
+    List<TigerNode> nodes = new ArrayList<TigerNode>();
     BlockNode bn = new BlockNode("try");
     BlockNode child = null;
     Parameter exception = null;

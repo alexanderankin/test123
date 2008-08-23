@@ -157,14 +157,14 @@ public class TigerParser
        } while (t != null && t.kind != kind);
    }
 
-   private List exceptions = new ArrayList();
+   private List<ErrorNode> exceptions = new ArrayList<ErrorNode>();
 
    private void addException(ParseException pe) {
        ErrorNode en = new ErrorNode(pe);
        exceptions.add(en);
    }
 
-   public List getErrors() {
+   public List<ErrorNode> getErrors() {
        return exceptions;
    }
 
@@ -221,7 +221,7 @@ public class TigerParser
     return "";
   }
 
-  private String toTigerString(List list) {
+  private String toTigerString(List<TigerNode> list) {
       if (list != null) {
         StringBuffer sb = new StringBuffer();
         for (Iterator it = list.iterator(); it.hasNext(); ) {
@@ -567,7 +567,7 @@ CUNode getJavaCCRootNode(int tab_size) :
 {
     setTabSize(tab_size);
     CUNode n = new CUNode();
-    List children = null;
+    List<TigerNode> children = null;
 }
 {
   children = javacc_input()
@@ -582,9 +582,9 @@ CUNode getJavaCCRootNode(int tab_size) :
   }
 }
 
-List javacc_input() :
+List<TigerNode> javacc_input() :
 {
-    List children = new ArrayList();
+    List<TigerNode> children = new ArrayList<TigerNode>();
     TigerNode options_node = null;
     Token parser_node_start_t = null;
     Token parser_node_end_t = null;
@@ -718,7 +718,7 @@ TigerNode production() :
 TigerNode javacode_production() :
 {
     JavaCodeProductionNode mn = new JavaCodeProductionNode();
-    List params = null;
+    List<TigerNode> params = null;
     Token start_t = null;
     Type resultType = null;
     String identifier = "";
@@ -755,7 +755,7 @@ TigerNode javacode_production() :
 TigerNode bnf_production() :
 {
     BNFProductionNode mn = new BNFProductionNode();
-    List params = null;
+    List<TigerNode> params = null;
     Type resultType = null;
     String identifier = "";
     Token end_t = null;
@@ -1316,8 +1316,8 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
    Token t = null;
    TigerNode kids = null;   // only need the children of this node
    String type_params = "";
-   List extends_list = null;
-   List implements_list = null;
+   List<TigerNode> extends_list = null;
+   List<TigerNode> implements_list = null;
    Token type = null;
 }
 {
@@ -1372,10 +1372,10 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
  * @return a list of sidekick.java.node.Types representing items in an 'extends'
  * list, e.g. the "Bar" in "public class Foo extends Bar"
  */
-List ExtendsList(boolean isInterface):
+List<TigerNode> ExtendsList(boolean isInterface):
 {
    boolean extendsMoreThanOne = false;
-   List list = new ArrayList();     // a list of Types
+   List<TigerNode> list = new ArrayList<TigerNode>();     // a list of Types
    Type type_s = null;
    Type type_a = null;
 }
@@ -1400,9 +1400,9 @@ List ExtendsList(boolean isInterface):
  * @return a list of sidekick.java.node.Types representing items in an 'implements'
  * list, e.g. the "Bar" and "Serializable" in "public class Foo implements Bar, Serializable"
  */
-List ImplementsList(boolean isInterface):
+List<TigerNode> ImplementsList(boolean isInterface):
 {
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     Type type_s = null;
     Type type_a = null;
 }
@@ -1747,7 +1747,7 @@ FieldNode FieldDeclaration(Modifier m):
 VariableDeclarator VariableDeclarator():
 {
     VariableDeclarator s = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -1787,10 +1787,10 @@ VariableDeclarator VariableDeclaratorId():
     }
 }
 
-List VariableInitializer():
+List<TigerNode> VariableInitializer():
 {
-    List list = new ArrayList();
-    List a = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
 }
 {
     try {
@@ -1810,11 +1810,11 @@ List VariableInitializer():
 
 }
 
-List ArrayInitializer():
+List<TigerNode> ArrayInitializer():
 {
-    List list = new ArrayList();
-    List a = null;
-    List b = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -1838,7 +1838,7 @@ TigerNode MethodDeclaration(Modifier m):
     String type_params = "";
     Type return_type = null;
     MethodNode m_node = null;
-    List name_list = null;
+    List<TigerNode> name_list = null;
     int line_number = -1;
     BlockNode block = null;
     Location endLoc = null;
@@ -1890,7 +1890,7 @@ MethodNode MethodDeclarator():
 {
     Token t = null;
     String s = "";
-    List f = null;
+    List<TigerNode> f = null;
 }
 {
     try {
@@ -1912,9 +1912,9 @@ MethodNode MethodDeclarator():
     }
 }
 
-List FormalParameters():
+List<TigerNode> FormalParameters():
 {
-    ArrayList params = new ArrayList();
+    ArrayList<TigerNode> params = new ArrayList<TigerNode>();
     Parameter a = null;
 }
 {
@@ -1988,8 +1988,8 @@ Parameter FormalParameter():
 ConstructorNode ConstructorDeclaration(Modifier m):
 {
     Token t = null;
-    List params = null;
-    List name_list = null;
+    List<TigerNode> params = null;
+    List<TigerNode> name_list = null;
     String type_params = null;
     Token end_t = null;
     TigerNode child = null;
@@ -2127,7 +2127,7 @@ Type ReferenceType():
 Type ClassOrInterfaceType():
 {
     Type s = new Type();
-    List type_args = null;
+    List<TigerNode> type_args = null;
     Token t = null;
 }
 {
@@ -2174,9 +2174,9 @@ Type ClassOrInterfaceType():
 /*
     for generics, returns a list of the things between the < and >.
 */
-List TypeArguments():
+List<TigerNode> TypeArguments():
 {
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     Type a, b;
 }
 {
@@ -2374,9 +2374,9 @@ NameNode Name():
     }
 }
 
-List NameList():
+List<TigerNode> NameList():
 {
-    List nameList = new ArrayList();
+    List<TigerNode> nameList = new ArrayList<TigerNode>();
     String s = "";
     String a = "";
     NameNode tn;
@@ -2399,7 +2399,7 @@ List NameList():
  * Expression syntax follows.
  */
 
-List Expression():
+List<TigerNode> Expression():
 /*
  * This expansion has been written this way instead of:
  *   Assignment() | ConditionalExpression()
@@ -2410,8 +2410,8 @@ List Expression():
  * around this.
  */
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2437,11 +2437,11 @@ void AssignmentOperator():
   "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
 }
 
-List ConditionalExpression():
+List<TigerNode> ConditionalExpression():
 {
-    List a = null;
-    List b = null;
-    List c = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
+    List<TigerNode> c = null;
 }
 {
     try {
@@ -2455,10 +2455,10 @@ List ConditionalExpression():
     }
 }
 
-List ConditionalOrExpression():
+List<TigerNode> ConditionalOrExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2472,10 +2472,10 @@ List ConditionalOrExpression():
     }
 }
 
-List ConditionalAndExpression():
+List<TigerNode> ConditionalAndExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2489,10 +2489,10 @@ List ConditionalAndExpression():
     }
 }
 
-List InclusiveOrExpression():
+List<TigerNode> InclusiveOrExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2506,10 +2506,10 @@ List InclusiveOrExpression():
     }
 }
 
-List ExclusiveOrExpression():
+List<TigerNode> ExclusiveOrExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2523,10 +2523,10 @@ List ExclusiveOrExpression():
     }
 }
 
-List AndExpression():
+List<TigerNode> AndExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2541,10 +2541,10 @@ List AndExpression():
 }
 
 /* @return List<Type> */
-List EqualityExpression():
+List<TigerNode> EqualityExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2558,9 +2558,9 @@ List EqualityExpression():
     }
 }
 
-List InstanceOfExpression():
+List<TigerNode> InstanceOfExpression():
 {
-    List a = null;
+    List<TigerNode> a = null;
     Type t = null;
 }
 {
@@ -2578,10 +2578,10 @@ List InstanceOfExpression():
     }
 }
 
-List RelationalExpression():
+List<TigerNode> RelationalExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2595,10 +2595,10 @@ List RelationalExpression():
     }
 }
 
-List ShiftExpression():
+List<TigerNode> ShiftExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2612,10 +2612,10 @@ List ShiftExpression():
     }
 }
 
-List AdditiveExpression():
+List<TigerNode> AdditiveExpression():
 {
-    List a = null;
-    List b = null;
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2629,11 +2629,11 @@ List AdditiveExpression():
     }
 }
 
-List MultiplicativeExpression():
+List<TigerNode> MultiplicativeExpression():
 {
     TigerNode a = null;
     TigerNode b = null;
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
 }
 {
     try {
@@ -2793,9 +2793,9 @@ TigerNode CastExpression():
 TigerNode PrimaryExpression():
 {
     PrimaryExpressionNode node = null;
-    List list = new ArrayList();
-    List a = null;
-    List b = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> a = null;
+    List<TigerNode> b = null;
 }
 {
     try {
@@ -2826,9 +2826,9 @@ TigerNode PrimaryExpression():
     }
 }
 
-List MemberSelector():
+List<TigerNode> MemberSelector():
 {
-    List a = null;
+    List<TigerNode> a = null;
 }
 {
     try {
@@ -2842,10 +2842,10 @@ List MemberSelector():
     }
 }
 
-List PrimaryPrefix():
+List<TigerNode> PrimaryPrefix():
 {
-    List expressions = new ArrayList();
-    List list = null;
+    List<TigerNode> expressions = new ArrayList<TigerNode>();
+    List<TigerNode> list = null;
     TigerNode tn = null;
 }
 {
@@ -2880,9 +2880,9 @@ List PrimaryPrefix():
     }
 }
 
-List PrimarySuffix():
+List<TigerNode> PrimarySuffix():
 {
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -2945,9 +2945,9 @@ void NullLiteral():
   "null"
 }
 
-List Arguments():
+List<TigerNode> Arguments():
 {
-    List a = null;
+    List<TigerNode> a = null;
 }
 {
     try {
@@ -2961,10 +2961,10 @@ List Arguments():
     }
 }
 
-List ArgumentList():
+List<TigerNode> ArgumentList():
 {
-    List a, b;
-    List list = new ArrayList();
+    List<TigerNode> a, b;
+    List<TigerNode> list = new ArrayList<TigerNode>();
 }
 {
     try {
@@ -2979,11 +2979,11 @@ List ArgumentList():
 }
 
 /** a list of TigerNodes */
-List AllocationExpression():
+List<TigerNode> AllocationExpression():
 {
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode tn;
-    List a = null;
+    List<TigerNode> a = null;
 }
 {
     try {
@@ -3009,10 +3009,10 @@ List AllocationExpression():
  * The third LOOKAHEAD specification below is to parse to PrimarySuffix
  * if there is an expression between the "[...]".
  */
-List ArrayDimsAndInits():
+List<TigerNode> ArrayDimsAndInits():
 {
-    List list = new ArrayList();
-    List e = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> e = null;
 }
 {
     try {
@@ -3037,7 +3037,7 @@ List ArrayDimsAndInits():
 TigerNode Statement():
 {
     TigerNode bn = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3279,7 +3279,7 @@ TigerNode StatementExpression():
  */
 {
     TigerNode tn = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3313,7 +3313,7 @@ BlockNode SwitchStatement():
     TigerNode child = null;
     Token start_t = null;
     Token end_t = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3334,9 +3334,9 @@ BlockNode SwitchStatement():
     }
 }
 
-List SwitchLabel():
+List<TigerNode> SwitchLabel():
 {
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3360,7 +3360,7 @@ BlockNode IfStatement():
  */
 {
     BlockNode ifNode = new BlockNode("if");
-    List expression = null;
+    List<TigerNode> expression = null;
     TigerNode ifNodes = null;
     TigerNode elseNodes = null;
     Token start_t = null;
@@ -3395,7 +3395,7 @@ BlockNode IfStatement():
 BlockNode WhileStatement():
 {
     BlockNode bn = new BlockNode("while");
-    List expression = null;
+    List<TigerNode> expression = null;
     TigerNode kids = null;
     Token start_t = null;
 }
@@ -3425,7 +3425,7 @@ BlockNode DoStatement():
     TigerNode kids = null;
     Token start_t = null;
     Token end_t = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3451,8 +3451,8 @@ BlockNode DoStatement():
 BlockNode ForStatement():
 {
     BlockNode bn = new BlockNode("for");
-    List exp_a = null;
-    List exp_b = null;
+    List<TigerNode> exp_a = null;
+    List<TigerNode> exp_b = null;
     TigerNode kids = null;
     Token start_t = null;
 }
@@ -3491,11 +3491,11 @@ BlockNode ForStatement():
     }
 }
 
-List ForInit():
+List<TigerNode> ForInit():
 {
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode tn = null;
-    List a = null;
+    List<TigerNode> a = null;
 }
 {
     try {
@@ -3512,9 +3512,9 @@ List ForInit():
     }
 }
 
-List StatementExpressionList():
+List<TigerNode> StatementExpressionList():
 {
-    List list = new ArrayList();
+    List<TigerNode> list = new ArrayList<TigerNode>();
     TigerNode a = null;
     TigerNode b = null;
 }
@@ -3553,9 +3553,9 @@ void ContinueStatement():
   "continue" [ <IDENTIFIER> ] ";"
 }
 
-List ReturnStatement():
+List<TigerNode> ReturnStatement():
 {
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3569,9 +3569,9 @@ List ReturnStatement():
     }
 }
 
-List ThrowStatement():
+List<TigerNode> ThrowStatement():
 {
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3590,7 +3590,7 @@ BlockNode SynchronizedStatement():
     BlockNode bn = new BlockNode("synchronized");
     BlockNode child = null;
     Token start_t = null;
-    List list = null;
+    List<TigerNode> list = null;
 }
 {
     try {
@@ -3619,7 +3619,7 @@ BlockNode TryStatement():
  * finally/catch is present.
  */
 {
-    List nodes = new ArrayList();
+    List<TigerNode> nodes = new ArrayList<TigerNode>();
     BlockNode bn = new BlockNode("try");
     BlockNode child = null;
     Parameter exception = null;
