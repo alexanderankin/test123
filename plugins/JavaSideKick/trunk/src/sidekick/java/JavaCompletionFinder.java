@@ -9,9 +9,6 @@ import sidekick.java.options.*;
 import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-import sidekick.SideKickCompletion;
-import sidekick.SideKickParser;
 import sidekick.SideKickParsedData;
 
 /**
@@ -26,13 +23,11 @@ public class JavaCompletionFinder {
 
     private JavaSideKickParsedData data = null;
     private EditPane editPane = null;
-    private Buffer buffer = null;
     private int caret = 0;
 
 
     public JavaCompletion complete( EditPane editPane, int caret ) {
         this.editPane = editPane;
-        buffer = editPane.getBuffer();
         this.caret = caret;
 
         SideKickParsedData skpd = SideKickParsedData.getParsedData( editPane.getView() );
@@ -48,7 +43,7 @@ public class JavaCompletionFinder {
 
 
         // get the word just before the caret.  It might be a partial word, that's okay.
-        String word = getWordAtCursor( );
+        String word = getWordAtCursor( editPane.getBuffer() );
 
 
 
@@ -76,7 +71,7 @@ public class JavaCompletionFinder {
     /// Doesn't handle implicit return types, like:
     /// StringBuffer sb = new StringBuffer(); sb.append().app
     ///
-    private String getWordAtCursor( ) {
+    private String getWordAtCursor( Buffer buffer ) {
         if ( caret < 0 )
             return "";
         if ( data == null )
@@ -239,7 +234,7 @@ public class JavaCompletionFinder {
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-        Set choices = new HashSet();
+        Set<String> choices = new HashSet<String>();
         while ( true ) {
             List children = tn.getChildren();
             if ( children != null ) {
@@ -271,7 +266,7 @@ public class JavaCompletionFinder {
                 break;
         }
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
-        List list = new ArrayList( choices );
+        List<String> list = new ArrayList<String>( choices );
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
         JavaCompletion jc = getSuperCompletion( word );
         if (jc != null) {
@@ -529,7 +524,7 @@ public class JavaCompletionFinder {
             Class c = Class.forName( classname );
             return c;
         }
-        catch ( Exception e ) {
+        catch ( Exception e ) {     // NOPMD
         }
         return findClassInProject(classname, type, filename);
     }
@@ -554,7 +549,7 @@ public class JavaCompletionFinder {
                 try {
                     c = loader.findClass(classname);
                 }
-                catch(Exception ee) {
+                catch(Exception ee) {   // NOPMD
                 }
             }
         }
