@@ -83,11 +83,11 @@ public class CheckImports {
         checker.start();
     }
 
-    private boolean checkDuplicateImports( List imports, String filename ) {
+    private boolean checkDuplicateImports( List<ImportNode> imports, String filename ) {
         boolean hadDups = false;
         // check for duplicate imports
-        HashSet no_dups = new HashSet( imports );       // hashset doesn't allow duplicates
-        List maybe_dups = new ArrayList( imports );     // arraylist does
+        HashSet<ImportNode> no_dups = new HashSet<ImportNode>( imports );       // hashset doesn't allow duplicates
+        List<ImportNode> maybe_dups = new ArrayList<ImportNode>( imports );     // arraylist does
         if ( no_dups.size() < maybe_dups.size() ) {
             // there are duplicates, identify them
             for ( Iterator it = no_dups.iterator(); it.hasNext(); ) {

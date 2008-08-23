@@ -9,13 +9,13 @@ import java.util.*;
  */
 public class Path {
 
-    private List paths;
+    private List<String> paths;
 
     /** The system classspath as a Path object */
     public static Path systemClassPath = new Path( System.getProperty( "java.class.path" ) );
 
     public Path( String path ) {
-        paths = new ArrayList();
+        paths = new ArrayList<String>();
         if ( path != null ) {
             String[] parts = path.split( System.getProperty( "path.separator" ) );
             paths.addAll( Arrays.asList( parts ) );
@@ -28,7 +28,7 @@ public class Path {
 
     public Path concatSystemClassPath( boolean before ) {
         if ( paths == null )
-            paths = new ArrayList();
+            paths = new ArrayList<String>();
         if ( before )
             paths.addAll( 0, systemClassPath.getPaths() );
         else
@@ -37,7 +37,7 @@ public class Path {
         return this;
     }
 
-    public List getPaths() {
+    public List<String> getPaths() {
         compact();
         return paths;
     }

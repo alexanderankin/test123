@@ -123,12 +123,11 @@ public class AntClassLoader extends ClassLoader {
             while ( ( pathElementsIndex < pathComponents.size() )
                     && ( url == null ) ) {
                 try {
-                    File pathComponent
-                    = ( File ) pathComponents.elementAt( pathElementsIndex );
+                    File pathComponent = ( File ) pathComponents.elementAt( pathElementsIndex );
                     url = getResourceURL( pathComponent, this.resourceName );
                     pathElementsIndex++;
                 }
-                catch ( Exception e ) {
+                catch ( Exception e ) {     // NOPMD
                     // ignore path elements which are not valid relative to the
                     // project
                 }
@@ -150,7 +149,7 @@ public class AntClassLoader extends ClassLoader {
      * The components of the classpath that the classloader searches
      * for classes.
      */
-    private Vector pathComponents = new Vector();
+    private Vector<File> pathComponents = new Vector<File>();
 
 
     /**
@@ -164,14 +163,14 @@ public class AntClassLoader extends ClassLoader {
      * loader regardless of whether the parent class loader is being searched
      * first or not.
      */
-    private Vector systemPackages = new Vector();
+    private Vector<String> systemPackages = new Vector<String>();
 
     /**
      * These are the package roots that are to be loaded by this class loader
      * regardless of whether the parent class loader is being searched first
      * or not.
      */
-    private Vector loaderPackages = new Vector();
+    private Vector<String> loaderPackages = new Vector<String>();
 
     /**
      * Whether or not this classloader will ignore the base
@@ -189,7 +188,7 @@ public class AntClassLoader extends ClassLoader {
     /**
      * A hashtable of zip files opened by the classloader (File to ZipFile).
      */
-    private Hashtable zipFiles = new Hashtable();
+    private Hashtable<File, ZipFile> zipFiles = new Hashtable<File, ZipFile>();
 
     /**
      * The context loader saved when setting the thread's current
@@ -226,7 +225,7 @@ public class AntClassLoader extends ClassLoader {
             defineClassProtectionDomain
             = ClassLoader.class.getDeclaredMethod( "defineClass", args );
         }
-        catch ( Exception e ) {
+        catch ( Exception e ) {     // NOPMD
             // ignore failure to get access to 1.2+ methods
         }
     }
@@ -325,7 +324,7 @@ public class AntClassLoader extends ClassLoader {
                 try {
                     addPathElement( ( String ) it.next() );
                 }
-                catch ( Exception e ) {
+                catch ( Exception e ) {     // NOPMD
                     // ignore path elements which are invalid
                 }
             }
@@ -490,7 +489,7 @@ public class AntClassLoader extends ClassLoader {
                     // Expecting an exception to be thrown by this call:
                     // IllegalArgumentException: wrong number of Arguments
                 }
-                catch ( Throwable t ) {
+                catch ( Throwable t ) {     // NOPMD
                     // Ignore - we are interested only in the side
                     // effect - that of getting the static initializers
                     // invoked.  As we do not want to call a valid
@@ -1198,7 +1197,7 @@ public class AntClassLoader extends ClassLoader {
                 // ignore
             }
         }
-        zipFiles = new Hashtable();
+        zipFiles = new Hashtable<File, ZipFile>();
     }
 
 }
