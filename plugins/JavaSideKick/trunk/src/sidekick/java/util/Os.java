@@ -85,7 +85,7 @@ public class Os {
    private String version;
    private String arch;
 
-   private static Hashtable environment;
+   private static Hashtable<String, String> environment;
 
    /**
     * Default constructor
@@ -276,7 +276,7 @@ public class Os {
                throw new BuildException(
                    "Don\'t know how to detect os family \""
                    + family + "\"");
-                   */ 
+                   */
                return false;
             }
          }
@@ -307,7 +307,7 @@ public class Os {
       if ( environment != null ) {
          return ( String ) environment.get( name );
       }
-      environment = new Hashtable();
+      environment = new Hashtable<String, String>();
 
       try {
          String[] env_cmd = getProcEnvCommand();
@@ -320,7 +320,7 @@ public class Os {
 
 
          // this portion copied from org.apache.tools.ant.taskdefs.Execute //
-         Vector procEnvironment = new Vector();
+         Vector<String> procEnvironment = new Vector<String>();
          String var = null;
          String line, lineSep = System.getProperty( "line.separator" );
          while ( ( line = in.readLine() ) != null ) {
