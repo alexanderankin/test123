@@ -73,6 +73,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private boolean hidden = false;
 	private FloatAction floatAction;
 	private DefaultDockActionSource dockedActionSource, floatActionSource;
+	private ScreenDockStation screenDock;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config) {
@@ -109,7 +110,7 @@ public class DfWindowManager extends DockableWindowManager {
         topArea = new DfDockingArea(TOP);
         leftArea = new DfDockingArea(LEFT);
         rightArea = new DfDockingArea(RIGHT);
-        ScreenDockStation screenDock = new ScreenDockStation(view);
+        screenDock = new ScreenDockStation(view);
         screenDock.setShowing(true);
         controller.add(screenDock);
 		floatAction = new FloatAction(screenDock);
@@ -290,8 +291,12 @@ public class DfWindowManager extends DockableWindowManager {
 		d = createDefaultDockable(name);
 		if (d == null)
 			return;
-		String position = getDockablePosition(name); 
-		drop(d, sides.get(position));
+		String position = getDockablePosition(name);
+		Side side = sides.get(position);
+		if (side == null)
+			screenDock.drop(d);
+		else
+			drop(d, sides.get(position));
 		focusDockable(name);
 	}
 
