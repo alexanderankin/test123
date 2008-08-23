@@ -13,7 +13,6 @@ import sidekick.util.Range;
 public class CheckImports {
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
     private JavaCompletionFinder finder = new JavaCompletionFinder();
-    private AntClassLoader loader = null;
 
     // find the definition of the asset at the given position
     public void findDefinition( Buffer buffer, int caret_position ) {}
@@ -60,7 +59,7 @@ public class CheckImports {
         if ( filename == null ) {
             return ;    // need a filename for error reporting
         }
-        final List imports = cu.getImportNodes();
+        final List<ImportNode> imports = cu.getImportNodes();
         if ( imports == null ) {
             return ;    // nothing to check
         }
@@ -108,7 +107,7 @@ public class CheckImports {
 
     private boolean checkUnusedImports( CUNode cu, List imports, String filename ) {
         boolean hadUnused = false;
-        Set checked = new HashSet();
+        Set<String> checked = new HashSet<String>();
         checkChildImports( cu, cu, checked, filename );
 
         // check that checked and imports are the same
@@ -137,7 +136,7 @@ public class CheckImports {
     }
 
 
-    private void checkChildImports( CUNode cu, TigerNode child, Set checked, String filename ) {
+    private void checkChildImports( CUNode cu, TigerNode child, Set<String> checked, String filename ) {
         Class c = null;
         String type = null;
         switch ( child.getOrdinal() ) {
