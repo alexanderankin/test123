@@ -5,7 +5,7 @@ plugin.qt4jedit.Qt4jEditPlugin.docs=index.html
 
 plugin.qt4jedit.Qt4jEditPlugin.description=Provides an Assistant remote control for showing docs about the thing under the cursor.
 plugin.qt4jedit.Qt4jEditPlugin.author=Alan Ezust
-plugin.qt4jedit.Qt4jEditPlugin.depend.0=jedit 04.03.12.00
+plugin.qt4jedit.Qt4jEditPlugin.depend.0=jedit 04.02.99.00
 plugin.qt4jedit.Qt4jEditPlugin.depend.1=jdk 1.5
 
 plugin.qt4jedit.Qt4jEditPlugin.menu=assistant-start assistant-stop assistant-activate-identifier assistant-activate-keyword assistant-set-url
