@@ -288,7 +288,7 @@ public class FileUtils {
                 path = path.substring(1);
             }
         }
-        Stack s = new Stack();
+        Stack<String> s = new Stack<String>();
         s.push(root);
         StringTokenizer tok = new StringTokenizer(path, File.separator);
         while (tok.hasMoreTokens()) {

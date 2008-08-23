@@ -76,6 +76,7 @@
                srcdir="${src.dir}"
                target="1.5"
                source="1.5">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath refid="classpathref" />
         </javac>
          <copy todir="${classes.dir}/${icons}" overwrite="no">

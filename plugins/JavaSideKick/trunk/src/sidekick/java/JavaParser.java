@@ -31,13 +31,11 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import sidekick.java.node.*;
 import sidekick.java.options.*;
 import sidekick.java.parser.*;
-import sidekick.java.tools.CheckImports;
 
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
@@ -53,7 +51,6 @@ import sidekick.SideKickParsedData;
 
 public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
-    private JBrowseOptionDialog optionDialog;
     private GeneralOptions options;
     private MutableFilterOptions filterOpt;
     private MutableDisplayOptions displayOpt;
@@ -66,7 +63,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     private int parser_type = JAVA_PARSER;
 
-    private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
 
     /**
      * Defaults to parsing java files.
@@ -122,6 +118,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     public void deactivate( EditPane editPane ) {
+        EditBus.removeFromBus( this );
+        completionFinder = null;
         super.deactivate( editPane );
     }
 
@@ -170,7 +168,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
      */
     public CUNode parse( Buffer buffer ) {
         ByteArrayInputStream input = null;
-        String filename = buffer.getPath();
         TigerParser parser = null;
         CUNode compilationUnit = null;
         try {
@@ -203,7 +200,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             try {
                 input.close();
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // not to worry
             }
         }
@@ -258,18 +255,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // maybe show imports
             if ( filterOpt.getShowImports() == true ) {
-                List imports = compilationUnit.getImportNodes();
+                List<ImportNode> imports = compilationUnit.getImportNodes();
                 if ( imports != null && !imports.isEmpty() ) {
-                    Collections.sort( imports, new Comparator() {
-                                public int compare( Object a, Object b ) {
-                                    return ( ( TigerNode ) a ).getName().compareTo( ( ( TigerNode ) b ).getName() );
-                                }
-                            }
-                                    );
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( "Imports" );
                     root.add( importsNode );
-                    for ( Iterator it = imports.iterator(); it.hasNext(); ) {
-                        TigerNode anImport = ( TigerNode ) it.next();
+                    for ( TigerNode anImport : imports ) {
                         anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
                         anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
                         importsNode.add( new DefaultMutableTreeNode( anImport ) );
@@ -292,7 +282,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 }
             }
         }
-        catch ( ParseException e ) {
+        catch ( ParseException e ) {    // NOPMD
             // removed exception handling, all ParseExceptions are now caught
             // and accumulated in the parser, then dealt with in handleErrors.
         }
@@ -300,7 +290,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             try {
                 input.close();
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // not to worry
             }
         }
@@ -354,7 +344,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn ) {
         if ( tn.getChildCount() > 0 ) {
-            List children = tn.getChildren();
+            List<TigerNode> children = tn.getChildren();
             Collections.sort( children, nodeSorter );
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
@@ -473,7 +463,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
     }
 
-    private Comparator nodeSorter = new Comparator() {
+    private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
                 String LINE = jEdit.getProperty( "options.sidekick.java.sortByLine", "Line" );
                 String NAME = jEdit.getProperty( "options.sidekick.java.sortByName", "Name" );
                 String VISIBILITY = jEdit.getProperty( "options.sidekick.java.sortByVisibility", "Visibility" );
@@ -485,13 +475,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                  * @return a negative integer, zero, or a positive integer as this TigerNode is
                  * less than, equal to, or greater than the specified TigerNode.
                  */
-                public int compare( Object a, Object b ) {
-                    if ( ! ( a instanceof TigerNode ) )
-                        return -1;
-                    if ( ! ( b instanceof TigerNode ) )
-                        return 1;
-                    TigerNode tna = ( TigerNode ) a;
-                    TigerNode tnb = ( TigerNode ) b;
+                public int compare( TigerNode tna, TigerNode tnb ) {
                     String sortBy = displayOpt.getSortBy();
                     if ( LINE.equals( sortBy ) ) {
                         // sort by line

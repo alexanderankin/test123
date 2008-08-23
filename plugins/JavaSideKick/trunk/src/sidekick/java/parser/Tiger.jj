@@ -41,6 +41,7 @@ PARSER_BEGIN(TigerParser)
 
 package sidekick.java.parser;
 
+import sidekick.util.*;
 import sidekick.java.node.*;
 import sidekick.java.util.Log;
 
@@ -3142,7 +3143,7 @@ TigerNode BlockStatement():
 }
 {
     try {
-        [Annotation()]
+        [LOOKAHEAD(2) Annotation()]
             (
           LOOKAHEAD( Modifiers() Type() <IDENTIFIER>)
           tn=LocalVariableDeclaration() ";"

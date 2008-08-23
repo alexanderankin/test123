@@ -34,8 +34,8 @@ public class ListOps {
      * @param b the other set
      * @return a List containing the elements of both lists with no duplicates.
      */
-    public static Set union( Set a, Set b ) {
-        LinkedHashSet union = new LinkedHashSet( a );
+    public static <T> Set<T> union( Set<T> a, Set<T> b ) {
+        LinkedHashSet<T> union = new LinkedHashSet<T>( a );
         union.addAll( b );
         return union;
     }
@@ -48,9 +48,9 @@ public class ListOps {
      * @param b the other list
      * @return a List containing the elements of both lists with no duplicates.
      */
-    public static List union( List a, List b ) {
-        Set union = union( toSet( a ), toSet( b ) );
-        return new ArrayList( union );
+    public static <T> List<T> union( List<T> a, List<T> b ) {
+        Set<T> union = union( toSet( a ), toSet( b ) );
+        return new ArrayList<T>( union );
     }
 
     /**
@@ -60,13 +60,12 @@ public class ListOps {
      * @param the other set
      * @return the intersection of the two sets, may be empty, will not be null.
      */
-    public static Set intersection( Set a, Set b ) {
-        LinkedHashSet intersection = new LinkedHashSet();
-        Iterator itr = a.iterator();
-        while ( itr.hasNext() ) {
-            Object o = itr.next();
-            if ( b.contains( o ) )
-                intersection.add( o );
+    public static <T> Set<T> intersection( Set<T> a, Set<T> b ) {
+        LinkedHashSet<T> intersection = new LinkedHashSet<T>();
+        for ( T o : a ) {
+            if (b.contains( o )) {
+                intersection.add(o);
+            }
         }
         return intersection;
     }
@@ -78,7 +77,7 @@ public class ListOps {
      * @param the other List
      * @return the intersection of the two List, may be empty, will not be null.
      */
-    public static List intersection( List a, List b ) {
+    public static <T> List<T> intersection( List<T> a, List<T> b ) {
         return toList( intersection( toSet( a ), toSet( b ) ) );
     }
 
@@ -89,9 +88,9 @@ public class ListOps {
      * @return a set containing the elements of set <code>a</code> that are NOT also
      * in set <code>b</code>.
      */
-    public static Set difference( Set a, Set b ) {
-        LinkedHashSet difference = new LinkedHashSet();
-        for ( Object o : a ) {
+    public static <T> Set<T> difference( Set<T> a, Set<T> b ) {
+        LinkedHashSet<T> difference = new LinkedHashSet<T>();
+        for ( T o : a ) {
             if ( !b.contains( o ) ) {
                 difference.add( o );
             }
@@ -106,7 +105,7 @@ public class ListOps {
      * @return a set containing the elements of list <code>a</code> that are NOT also
      * in list <code>b</code>.
      */
-    public static List difference( List a, List b ) {
+    public static <T> List<T> difference( List<T> a, List<T> b ) {
         return toList( difference( toSet( a ), toSet( b ) ) );
     }
 
@@ -118,7 +117,7 @@ public class ListOps {
      * in set <code>b</code> unioned with the elements of set <code>b</code> that
      * are NOT also in set <code>a</code>.
      */
-    public static Set symmetricDifference( Set a, Set b ) {
+    public static <T> Set<T> symmetricDifference( Set<T> a, Set<T> b ) {
         return union( difference( a, b ), difference( b, a ) );
     }
 
@@ -130,64 +129,64 @@ public class ListOps {
      * in list <code>b</code> unioned with the elements of list <code>b</code> that
      * are NOT also in list <code>a</code>.
      */
-    public static List symmetricDifference( List a, List b ) {
+    public static <T> List<T> symmetricDifference( List<T> a, List<T> b ) {
         return toList( symmetricDifference( toSet( a ), toSet( b ) ) );
     }
 
     /**
      * @return true if all elements of <code>b</code> are also in <code>a</code>.
      */
-    public static boolean isSubset( Set a, Set b ) {
+    public static <T> boolean isSubset( Set<T> a, Set<T> b ) {
         return a.containsAll( b );
     }
 
     /**
      * @return true if all elements of <code>b</code> are also in <code>a</code>.
      */
-    public static boolean isSubset( List a, List b ) {
+    public static <T> boolean isSubset( List<T> a, List<T> b ) {
         return isSubset( toSet( a ), toSet( b ) );
     }
 
     /**
      * @return true if both sets contain the same elements.
      */
-    public static boolean equals( Set a, Set b ) {
+    public static <T> boolean equals( Set<T> a, Set<T> b ) {
         return isSubset( a, b ) && isSubset( b, a );
     }
 
     /**
      * @return true if both Lists contain the same elements.
      */
-    public static boolean equals( List a, List b ) {
+    public static <T> boolean equals( List<T> a, List<T> b ) {
         return equals( toSet( a ), toSet( b ) );
     }
 
     /**
      * Converts a List to a Set.
      */
-    public static Set toSet( List a ) {
-        return new LinkedHashSet( a );
+    public static <T> Set<T> toSet( List<T> a ) {
+        return new LinkedHashSet<T>( a );
     }
 
     /**
      * Converts a Set to a List.
      */
-    public static List toList( Set a ) {
-        return new ArrayList( a );
+    public static <T> List<T> toList( Set<T> a ) {
+        return new ArrayList<T>( a );
     }
 
 
     /**
      * Used by <code>product</code>, represents an ordered pair.
      */
-    public static class Pair {
+    public static class Pair<T> {
 
-        public Object x = null;
-        public Object y = null;
+        public T x = null;
+        public T y = null;
 
         public Pair() {}
 
-        public Pair( Object a, Object b ) {
+        public Pair( T a, T b ) {
             x = a;
             y = b;
         }

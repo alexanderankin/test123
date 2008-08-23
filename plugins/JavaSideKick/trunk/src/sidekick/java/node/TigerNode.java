@@ -86,7 +86,6 @@ public class TigerNode extends Asset implements SideKickElement {
     // name for this node
     private String name;
 
-    private TigerLabeler labeler = new TigerLabeler();
 
     // modifiers, see ModifierSet
     private int modifiers = 0;
@@ -96,7 +95,7 @@ public class TigerNode extends Asset implements SideKickElement {
     private Location endLocation = startLocation;
 
     // child nodes, may be null.
-    private ArrayList children;
+    private ArrayList<TigerNode> children;
 
     private Type type = null;
 
@@ -176,10 +175,6 @@ public class TigerNode extends Asset implements SideKickElement {
         super.setStart(p);
     }
 
-
-    public void setEnd( Position p ) {
-        super.setEnd( p );
-    }
 
     public void setEndPosition(Position p) {
         setEnd(p);
@@ -268,7 +263,7 @@ public class TigerNode extends Asset implements SideKickElement {
             return ;
         if ( canAdd( child ) ) {
             if ( children == null )
-                children = new ArrayList();
+                children = new ArrayList<TigerNode>();
             child.setParent( this );
             children.add( child );
         }
@@ -287,7 +282,7 @@ public class TigerNode extends Asset implements SideKickElement {
         if ( kids == null )
             return ;
         if ( children == null )
-            children = new ArrayList();
+            children = new ArrayList<TigerNode>();
         for ( Iterator it = kids.iterator(); it.hasNext(); ) {
             Object o = it.next();
             if ( ! ( o instanceof TigerNode ) ) {
@@ -303,7 +298,7 @@ public class TigerNode extends Asset implements SideKickElement {
      * @return the child nodes of this node, may be null.  Nodes will be sorted
      * per the current sorting scheme.
      */
-    public ArrayList getChildren() {
+    public ArrayList<TigerNode> getChildren() {
         return children;
     }
 
