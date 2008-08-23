@@ -1,5 +1,6 @@
 package sidekick.java.util;
 
+import java.lang.ref.SoftReference;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -19,14 +20,12 @@ import java.text.StringCharacterIterator;
  */
 public final class Locator {
 
-    private static File[] classpathJars = null;
-    private static List classpathClassNames = null;
-    private static File[] runtimeJars = null;
-    private static List runtimeClassNames = null;
+    private File[] classpathJars = null;
+    private List<String> classpathClassNames = null;
+    private File[] runtimeJars = null;
+    private List<String> runtimeClassNames = null;
 
-    private static class SingletonHolder {
-        private static Locator instance = new Locator();
-    }
+    private static SoftReference<Locator> cachedSingleton;
 
     /**
      * Not instantiable
@@ -39,13 +38,21 @@ public final class Locator {
     }
 
     public static Locator getInstance() {
-        return SingletonHolder.instance;
+        if ( cachedSingleton != null ) {
+            Locator cached = cachedSingleton.get();
+            if ( cached != null )
+                return cached;
+        }
+        Locator newOne = new Locator();
+        cachedSingleton = new SoftReference<Locator>( newOne );
+        return newOne;
     }
 
 
     public File[] getClassPathJars() {
-        if ( classpathJars != null )
-            return classpathJars;
+        if ( classpathJars != null ) {
+            return copyOf(classpathJars);
+        }
 
         String classpath = System.getProperty( "java.class.path" );
         if ( classpath == null || classpath.length() == 0 )
@@ -62,12 +69,15 @@ public final class Locator {
     /**
      * @return a list of class names of all classes in all jars in the classpath.
      */
-    public List getClassPathClassNames() {
+    public List<String> getClassPathClassNames() {
+        if ( classpathClassNames != null ) {
+            return classpathClassNames;
+        }
         File[] jars = getClassPathJars();
-        List allnames = new ArrayList();
+        List<String> allnames = new ArrayList<String>();
         for ( int i = 0; i < jars.length; i++ ) {
             File jar = jars[ i ];
-            List names = getJarClassNames( jar );
+            List<String> names = getJarClassNames( jar );
             if ( names != null ) {
                 allnames.addAll( names );
             }
@@ -78,8 +88,8 @@ public final class Locator {
     /**
      * @return a list of classnames contained in the given jar.
      */
-    private List getJarClassNames( File jar ) {
-        List names = new ArrayList();
+    private List<String> getJarClassNames( File jar ) {
+        List<String> names = new ArrayList<String>();
         try {
             JarFile jar_file = new JarFile( jar );
             Enumeration entries = jar_file.entries();
@@ -103,8 +113,9 @@ public final class Locator {
      * java.ext.dirs and java.endorsed.dirs
      */
     public File[] getRuntimeJars() {
-        if ( runtimeJars != null )
-            return runtimeJars;
+        if ( runtimeJars != null ) {
+            return copyOf(runtimeJars);
+        }
 
         // get runtime jars based on java.home setting
         File java_lib = null;             // location of $JAVA_HOME/lib
@@ -124,7 +135,7 @@ public final class Locator {
                         return pathname.getName().endsWith( ".jar" );
                     }
                 };
-        String ps = System.getProperty("path.separator");
+        String ps = System.getProperty( "path.separator" );
 
         libs = java_lib.listFiles( ff );
 
@@ -132,12 +143,12 @@ public final class Locator {
         String extDirs = System.getProperty( "java.ext.dirs" );
         if ( extDirs != null ) {
             String[] filenames = extDirs.split( ps );
-            exts = new ArrayList();
-            for (String filename : filenames) {
-                File dir = new File(filename);
-                if (dir.exists()) {
-                    File[] filelist = dir.listFiles(ff);
-                    exts.addAll(Arrays.asList(filelist));
+            exts = new ArrayList<File>();
+            for ( String filename : filenames ) {
+                File dir = new File( filename );
+                if ( dir.exists() ) {
+                    File[] filelist = dir.listFiles( ff );
+                    exts.addAll( Arrays.asList( filelist ) );
                 }
             }
         }
@@ -145,18 +156,18 @@ public final class Locator {
         String endorsedDirs = System.getProperty( "java.endorsed.dirs" );
         if ( endorsedDirs != null ) {
             String[] filenames = endorsedDirs.split( ps );
-            endorsed = new ArrayList();
-            for (String filename : filenames) {
-                File dir = new File(filename);
-                if (dir.exists()) {
-                    File[] filelist = dir.listFiles(ff);
-                    endorsed.addAll(Arrays.asList(filelist));
+            endorsed = new ArrayList<File>();
+            for ( String filename : filenames ) {
+                File dir = new File( filename );
+                if ( dir.exists() ) {
+                    File[] filelist = dir.listFiles( ff );
+                    endorsed.addAll( Arrays.asList( filelist ) );
                 }
             }
         }
 
         // add endorsed jars first, they should override standard jars
-        List<File> list = new ArrayList();
+        List<File> list = new ArrayList<File>();
         if ( endorsed != null && !endorsed.isEmpty() )
             list.addAll( endorsed );
         if ( libs != null && libs.length > 0 )
@@ -164,18 +175,18 @@ public final class Locator {
         if ( exts != null && !exts.isEmpty() )
             list.addAll( exts );
         runtimeJars = ( File[] ) list.toArray( new File[] {} );
-        return runtimeJars;
+        return copyOf(runtimeJars);
     }
 
     /**
      * @return a list of class names of public classes provided by the java runtime.
      */
-    public List getRuntimeClassNames() {
-        if (runtimeClassNames != null) {
+    public List<String> getRuntimeClassNames() {
+        if ( runtimeClassNames != null ) {
             return runtimeClassNames;
         }
         File[] jars = getRuntimeJars();
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         for ( int i = 0; i < jars.length; i++ ) {
             File jar = jars[ i ];
             try {
@@ -227,8 +238,8 @@ public final class Locator {
      * won't be null.
      */
 
-    public List getRuntimeClasses( String packageName ) {
-        List list = new ArrayList();
+    public List<String> getRuntimeClasses( String packageName ) {
+        List<String> list = new ArrayList<String>();
         if ( packageName == null || packageName.length() == 0 )
             return list;
         String name = packageName.replaceAll( "[.]", "/" );
@@ -265,8 +276,8 @@ public final class Locator {
      * @return a list of all class names that match.  The list may be empty, but
      * won't be null.
      */
-    public List getClassPathClasses( String packageName ) {
-        List list = new ArrayList();
+    public List<String> getClassPathClasses( String packageName ) {
+        List<String> list = new ArrayList<String>();
         if ( packageName == null || packageName.length() == 0 )
             return list;
         String name = packageName.replaceAll( "[.]", "/" );
@@ -285,18 +296,18 @@ public final class Locator {
      * that is, a path that could be used as a classpath.
      * @return a consolidated List<String> of classes found in the given paths.
      */
-    public List getClassesForPath( String path ) {
+    public List<String> getClassesForPath( String path ) {
         String pathSep = System.getProperty( "path.separator" );
         String[] paths = path.split( pathSep );
         // paths can be either jars, zips, directories, or individual classes
         // directories can contain individual classes.
-        List allnames = new ArrayList();
+        List<String> allnames = new ArrayList<String>();
         for ( int i = 0; i < paths.length; i++ ) {
             path = paths[ i ];
             File f = new File( path );
             // check for jar or zip
             if ( path.toLowerCase().endsWith( ".jar" ) || path.toLowerCase().endsWith( ".zip" ) ) {
-                List names = getJarClassNames( f );
+                List<String> names = getJarClassNames( f );
                 if ( names != null ) {
                     allnames.addAll( names );
                 }
@@ -313,8 +324,8 @@ public final class Locator {
         return allnames;
     }
 
-    private List getDirClassNames( File directory, String base ) {
-        List allclasses = new ArrayList();
+    private List<String> getDirClassNames( File directory, String base ) {
+        List<String> allclasses = new ArrayList<String>();
         File[] classes = directory.listFiles( new FileFilter() {
                     public boolean accept( File pathname ) {
                         return pathname.getName().endsWith( ".class" );
@@ -427,7 +438,7 @@ public final class Locator {
         try {
             url = new URL( uri );
         }
-        catch ( MalformedURLException emYouEarlEx ) {}
+        catch ( MalformedURLException emYouEarlEx ) {}  // NOPMD
         if ( url == null || !( "file".equals( url.getProtocol() ) ) ) {
             throw new IllegalArgumentException( "Can only handle valid file: URIs" );
         }
@@ -505,7 +516,7 @@ public final class Locator {
                 Class.forName( "sun.tools.javac.Main" );
                 toolsJarAvailable = true;
             }
-            catch ( Exception e2 ) {
+            catch ( Exception e2 ) {    // NOPMD
                 // ignore
             }
         }
@@ -602,4 +613,9 @@ public final class Locator {
         return urls;
     }
 
+    private File[] copyOf( File[] array ) {
+        File[] rtn = new File[ array.length ];
+        System.arraycopy( array, 0, rtn, 0, array.length );
+        return rtn;
+    }
 }
