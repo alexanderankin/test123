@@ -129,7 +129,8 @@ public class DfWindowManager extends DockableWindowManager {
 		if (! hidden) {
 			layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
 			for (Dockable d: created.values())
-				d.getDockParent().drag(d);
+				if (d.getDockParent() != null)
+					d.getDockParent().drag(d);
 		} else {
 			layout.loadLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
 			applyDockingLayout(layout);
