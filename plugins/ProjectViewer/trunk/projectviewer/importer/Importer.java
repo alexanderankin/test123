@@ -298,14 +298,23 @@ public abstract class Importer implements Runnable {
 			String curr = dirs.pop();
 			VPTNode n = findDirectory(curr, root, false);
 
+			if (n == null && flist != null) {
+				/* Look in the given list to see if the path is already there. */
+				for (VPTNode tmp : flist) {
+					if (tmp.getNodePath().equals(curr)) {
+						n = tmp;
+						break;
+					}
+				}
+			}
+
 			if (n == null) {
 				if (dirs.size() == 0 && isFile) {
 					n = new VPTFile(curr);
 				} else {
 					n = new VPTDirectory(curr);
 				}
-				if (flist != null && flist.size() == 0) {
-					selected = root;
+				if (root == selected && flist != null) {
 					flist.add(n);
 				} else {
 					root.insert(n, root.findIndexForChild(n));
