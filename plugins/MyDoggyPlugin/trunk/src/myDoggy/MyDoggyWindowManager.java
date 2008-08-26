@@ -2,6 +2,7 @@ package myDoggy;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -23,9 +24,12 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.noos.xing.mydoggy.Content;
+import org.noos.xing.mydoggy.DockedTypeDescriptor;
+import org.noos.xing.mydoggy.FloatingTypeDescriptor;
 import org.noos.xing.mydoggy.PersistenceDelegateCallback;
 import org.noos.xing.mydoggy.PushAwayMode;
 import org.noos.xing.mydoggy.ToolWindow;
+import org.noos.xing.mydoggy.ToolWindowAction;
 import org.noos.xing.mydoggy.ToolWindowAnchor;
 import org.noos.xing.mydoggy.ToolWindowBar;
 import org.noos.xing.mydoggy.ToolWindowManager;
@@ -103,7 +107,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			ViewConfig config)
 	{
 		super(view, instance, config);
-		UIManager.put("ToolWindowTitleButtonPanelUI", "myDoggy.TitleButtonPanelUI");
 		setLayout(new BorderLayout());
 		wm = new MyDoggyToolWindowManager();
 		add(wm, BorderLayout.CENTER);
@@ -305,7 +308,31 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
+		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
+		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
+		setFloatingProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING));
+		setFloatingProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING_FREE));
 		return tw;
+	}
+
+	private void setFloatingProperties(FloatingTypeDescriptor floatDescriptor) {
+		floatDescriptor.setAlwaysOnTop(false);
+		floatDescriptor.setOsDecorated(true);
+		floatDescriptor.setAddToTaskBar(true);
+	}
+	
+	private static class FloatingFreeAction extends ToolWindowAction {
+		public FloatingFreeAction() {
+			super("FloatingFreeAction",
+				UIManager.getIcon(MyDoggyKeySpace.FLOATING_INACTIVE));
+			setTooltipText("Floating free (without an anchor button)");
+			setVisibleOnMenuBar(true);
+			setVisibleOnTitleBar(true);
+			setVisible(true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			toolWindow.setType(ToolWindowType.FLOATING_FREE);
+		}
 	}
 	
 	@Override
