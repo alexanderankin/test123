@@ -11,15 +11,17 @@
 	<description>
 			This is an ant build.xml file for building the SuperAbbrevs plugin for jEdit.
 	</description>
-	
+	<property file="build.properties" />
+	<property file="../build.properties" />
 	<property name="build.support" value="../build-support" />    
+
 	<import file="${build.support}/plugin-build.xml" />
 	
 	<property name="ant.project.name" value="SuperAbbrevs" />
-  <property name="src.dir" value="."/>
+        <property name="src.dir" value="."/>
   
 	<property name="compiler.source" value="1.5" />
-  <property name="compiler.target" value="1.5" />
+        <property name="compiler.target" value="1.5" />
 	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
