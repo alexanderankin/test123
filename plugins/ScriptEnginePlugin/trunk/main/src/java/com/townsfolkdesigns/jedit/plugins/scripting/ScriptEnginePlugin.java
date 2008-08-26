@@ -127,6 +127,15 @@ public class ScriptEnginePlugin extends EditPlugin {
 
    @Override
    public void start() {
+   }
+
+   @Override
+   public void stop() {
+   }
+
+   private static ScriptEngineManager getScriptEngineManager() {
+      ScriptEngineManager manager = new ScriptEngineManager(new JARClassLoader());
+
       Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Searching for ScriptEngine Services.");
 
       String[] scriptEngineServiceNames = ServiceManager.getServiceNames(ScriptEngineService.class.getName());
@@ -138,18 +147,7 @@ public class ScriptEnginePlugin extends EditPlugin {
          Log.log(Log.DEBUG, ScriptEnginePlugin.class,
             "ScriptEngine Service found - mode: " + service.getMode().getName() + " | engine class: " +
             service.getEngineFactoryClass());
-      }
 
-   }
-
-   @Override
-   public void stop() {
-   }
-
-   private static ScriptEngineManager getScriptEngineManager() {
-      ScriptEngineManager manager = new ScriptEngineManager(new JARClassLoader());
-
-      for (ScriptEngineService service : scriptEngineServices.values()) {
          Class factoryClass = service.getEngineFactoryClass();
 
          try {
@@ -162,7 +160,6 @@ public class ScriptEnginePlugin extends EditPlugin {
             Log.log(Log.ERROR, ScriptEnginePlugin.class,
                "Could not create instance of ScriptEngineFactory class: " + factoryClass.getName(), e);
          }
-
       }
 
       return manager;
