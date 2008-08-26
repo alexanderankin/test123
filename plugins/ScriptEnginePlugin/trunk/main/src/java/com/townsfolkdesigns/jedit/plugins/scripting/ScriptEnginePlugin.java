@@ -23,6 +23,7 @@ package com.townsfolkdesigns.jedit.plugins.scripting;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.JARClassLoader;
+import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
@@ -54,7 +55,7 @@ public class ScriptEnginePlugin extends EditPlugin {
    }
 
    public static Object evaluateSelection(View view) {
-      String bufferText = view.getTextArea().getText();
+      String bufferText = view.getTextArea().getSelectedText();
       Mode bufferMode = view.getBuffer().getMode();
 
       return evaluateString(bufferText, bufferMode.getName());
@@ -65,7 +66,7 @@ public class ScriptEnginePlugin extends EditPlugin {
 
       ScriptEngine engine = getScriptEngineForName(engineName);
 
-      if (engine != null) {
+      if (engine != null && script != null && !script.equals("")) {
 
          try {
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Executing Script - content: \n" + script);
@@ -74,6 +75,8 @@ public class ScriptEnginePlugin extends EditPlugin {
          } catch (Exception e) {
             Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error executing script - content: \n" + script, e);
          }
+      } else {
+         Macros.message(jEdit.getActiveView(), "Could not find \"" + engineName + "\" Script Engine.");
       }
 
       return returnVal;
