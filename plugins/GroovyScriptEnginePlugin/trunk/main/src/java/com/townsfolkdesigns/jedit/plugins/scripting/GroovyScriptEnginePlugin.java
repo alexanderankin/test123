@@ -21,14 +21,32 @@
  */
 package com.townsfolkdesigns.jedit.plugins.scripting;
 
+import com.sun.script.groovy.GroovyScriptEngineFactory;
+
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
  * The GroovyScriptEnginePlugin provides the Groovy ScriptEngine to jEdit plugins.
  * @author elberry
  */
-public class GroovyScriptEnginePlugin extends EditPlugin {
+public class GroovyScriptEnginePlugin extends EditPlugin implements ScriptEngineService {
+
+   private GroovyScriptEngineFactory factory = new GroovyScriptEngineFactory();
+
+   public Class getEngineFactoryClass() {
+      return factory.getClass();
+   }
+
+   public String getEngineName() {
+      return factory.getEngineName();
+   }
+
+   public Mode getMode() {
+      return jEdit.getMode("groovy");
+   }
 
 
    @Override
