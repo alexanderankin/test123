@@ -18,7 +18,7 @@
     <property file="build.properties"/>
     <property file="../build.properties"/>
 
-    <property name="build.support" value="../../build-support" />
+    <property name="build.support" value="../build-support" />
     <property name="compiler.source" value="1.5" />
     <property name="compiler.target" value="1.5" />
     <property name="javadoc.packagenames"	value="xml.*, sidekick.*" />
@@ -29,9 +29,8 @@
 
 
     <selector id="packageFiles">
-
             <or>
-            <filename name="docs/*.html" />
+                <filename name="docs/*.html" />
                 <filename name="icons/*.gif" />
                 <filename name="xml/**/*.xml" />
                 <filename name="xml/**/catalog" />
@@ -54,9 +53,10 @@
         <pathelement location="."/>
     </path>
 
+    <echo>project.class.path = ${toString:project.class.path}</echo>
 
-    <!-- Generate ant-complete.xml file with AntComplete task --> 
-         
+    <!-- Generate ant-complete.xml file with AntComplete task -->
+
     <target name="ant-complete" depends="compile">
         <taskdef name="antcomplete" classname="xml.completion.AntCompleteTask" classpath="${build.classes}"/>
         <antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
@@ -88,4 +88,6 @@
             <arg path="." />
         </exec>
     </target>
+
+
 </project>
