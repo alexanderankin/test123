@@ -147,7 +147,6 @@ public class FileImporter extends Importer {
 					}
 				} else if (findDirectory(file.getPath(), parent, false) == null) {
 					node = new VPTFile(file.getPath());
-					System.err.println("Added file: " + node);
 					registerFile((VPTFile)node);
 					fileCount++;
 				}
@@ -157,6 +156,8 @@ public class FileImporter extends Importer {
 					}
 					if (parent != selected) {
 						parent.insert(node, parent.findIndexForChild(node));
+					} else {
+						lst.add(node);
 					}
 				}
 			}
