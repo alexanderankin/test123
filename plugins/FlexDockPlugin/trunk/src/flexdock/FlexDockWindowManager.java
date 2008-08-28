@@ -1,14 +1,14 @@
 package flexdock;
 
 import java.awt.BorderLayout;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
-import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.defaults.DefaultDockingPort;
+import org.flexdock.view.Viewport;
 import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
@@ -18,22 +18,25 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 @SuppressWarnings("serial")
 public class FlexDockWindowManager extends DockableWindowManager {
 
-	private DefaultDockingPort leftPort, rightPort, topPort, bottomPort;
-	
+	private Viewport port;
+	private org.flexdock.view.View main;
+	private Map<String, org.flexdock.view.View> regions =
+		new HashMap<String, org.flexdock.view.View>();
+	private Map<String, Float> splits =
+		new HashMap<String, Float>();
+		
 	public FlexDockWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
 	{
 		super(view, instance, config);
 		setLayout(new BorderLayout());
-		leftPort = new DefaultDockingPort();
-		add(leftPort, BorderLayout.WEST);
-		rightPort = new DefaultDockingPort();
-		add(rightPort, BorderLayout.EAST);
-		topPort = new DefaultDockingPort();
-		add(topPort, BorderLayout.NORTH);
-		bottomPort = new DefaultDockingPort();
-		add(bottomPort, BorderLayout.SOUTH);
+		port = new Viewport();
+		add(port, BorderLayout.CENTER);
 		PerspectiveManager.setPerspectiveDirty(true);
+		splits.put(DockingConstants.NORTH_REGION, 0.2f);
+		splits.put(DockingConstants.WEST_REGION, 0.2f);
+		splits.put(DockingConstants.SOUTH_REGION, 0.2f);
+		splits.put(DockingConstants.EAST_REGION, 0.6f);
 	}
 
 	@Override
@@ -97,23 +100,33 @@ public class FlexDockWindowManager extends DockableWindowManager {
 			window = createDockable(name);
 		if (window == null)
 			return;
-		Dockable d = DockingManager.registerDockable(window);
-		DefaultDockingPort port;
+		String title = getDockableTitle(name);
+		org.flexdock.view.View v = new org.flexdock.view.View(name, title);
+		v.setContentPane(window);
+		String region;
 		if (position.equals(DockableWindowManager.LEFT))
-			port = leftPort;
+			region = DockingConstants.WEST_REGION;
 		else if (position.equals(DockableWindowManager.RIGHT))
-			port = rightPort;
+			region = DockingConstants.EAST_REGION;
 		else if (position.equals(DockableWindowManager.TOP))
-			port = topPort;
+			region = DockingConstants.NORTH_REGION;
 		else
-			port = bottomPort;
-		port.dock(d, DockingConstants.CENTER_REGION);
+			region = DockingConstants.SOUTH_REGION;
+		org.flexdock.view.View regionView = regions.get(region);
+		if (regionView == null) {
+			main.dock(v, region, splits.get(region));
+			regions.put(region, v);
+		} else {
+			regionView.dock(v, DockingConstants.CENTER_REGION);
+		}
 	}
 
 	@Override
 	public void setMainPanel(JPanel panel)
 	{
-		add(panel, BorderLayout.CENTER);
+		main = new org.flexdock.view.View("main", "main");
+		main.setContentPane(panel);
+		port.dock(main);
 	}
 
 	public class FlexDockDockingArea implements DockingArea {
