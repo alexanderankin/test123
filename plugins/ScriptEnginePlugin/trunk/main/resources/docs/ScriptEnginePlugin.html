@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+
+		
+  
+  <title>ScriptEnginePlugin Documentation</title>
+</head>
+
+
+<body>
+<h1>Introduction</h1>
+The ScriptEnginePlugin provides an easy to use and easy to implement framework that makes&nbsp;<a href="https://scripting.dev.java.net">scripting.dev.java.net</a> ScriptEngines usable inside of jEdit.<br />
+<h1>Usage</h1>
+Two basic usage methods are provided:<br />
+<ul>
+  <li>Execute Buffer</li>
+  <li>Execute Selection</li>
+</ul>
+Both execute functions provided scripts the same variables provided to all jEdit macros.<br />
+<ul>
+  <li><span style="font-weight: bold;">view</span> - A View
+represents the current top-level editor window, extending Java's JFrame
+class, that contains the various visible components of the program,
+including the text area, menu bar, toolbar, and any docked windows.</li>
+</ul>
+<ul>
+  <li><span style="font-weight: bold;">buffer</span> - a Buffer object represents the contents of the currently visible open text file.</li>
+</ul>
+<span style="font-weight: bold;"></span>
+<ul>
+  <li><span style="font-weight: bold;">editPane</span> - an EditPane
+object contains a text area and buffer switcher. A view can be split to
+display edit panes. Among other things, the EditPane class contains
+methods for selecting the buffer to edit.</li>
+</ul>
+<span style="font-weight: bold;"></span>
+<ul>
+  <li><span style="font-weight: bold;">textArea</span> - a JEditTextArea is the visible component that displays the current buffer.</li>
+</ul>
+<span style="font-weight: bold;"></span>
+<ul>
+  <li><span style="font-weight: bold;">wm</span> - a
+DockableWindowManager is the visible component that manages dockable
+windows in the current view. This class is discussed in detail in
+Part&nbsp;IV, &ldquo;Writing Plugins&rdquo;. This object is useful for
+writing macros that interface with, open, or close plugin windows.</li>
+</ul>
+<span style="font-weight: bold;"></span>
+<ul>
+  <li><span style="font-weight: bold;">scriptPath</span> - set to the full path of the script currently being executed.</li>
+</ul>
+While executing scripts, the engine is chosen based on the mode of the
+current buffer. So, if you want to execute a Groovy script, you will
+need to be in Groovy mode.
+<h1>Development</h1>
+
+
+		
+</body>
+</html>
