@@ -21,21 +21,27 @@
  */
 package com.townsfolkdesigns.jedit.plugins.scripting;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.SimpleScriptContext;
 
 
 /**
@@ -50,23 +56,26 @@ public class ScriptEnginePlugin extends EditPlugin {
    public static Object evaluateBuffer(View view) {
       String bufferText = view.getTextArea().getText();
       Mode bufferMode = view.getBuffer().getMode();
+      ScriptContext scriptContext = getDefaultScriptContext(view);
 
-      return evaluateString(bufferText, bufferMode.getName());
+      return evaluateString(bufferText, bufferMode.getName(), scriptContext);
    }
 
    public static Object evaluateSelection(View view) {
       String bufferText = view.getTextArea().getSelectedText();
       Mode bufferMode = view.getBuffer().getMode();
+      ScriptContext scriptContext = getDefaultScriptContext(view);
 
-      return evaluateString(bufferText, bufferMode.getName());
+      return evaluateString(bufferText, bufferMode.getName(), scriptContext);
    }
 
-   public static Object evaluateString(String script, String engineName) {
+   public static Object evaluateString(String script, String engineName, ScriptContext scriptContext) {
       Object returnVal = null;
 
       ScriptEngine engine = getScriptEngineForName(engineName);
+      engine.setContext(scriptContext);
 
-      if (engine != null && script != null && !script.equals("")) {
+      if ((engine != null) && (script != null) && !script.equals("")) {
 
          try {
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Executing Script - content: \n" + script);
@@ -134,6 +143,26 @@ public class ScriptEnginePlugin extends EditPlugin {
 
    @Override
    public void stop() {
+   }
+
+   private static ScriptContext getDefaultScriptContext(View view) {
+      ScriptContext defaultScriptContext = new SimpleScriptContext();
+
+      synchronized (view) {
+         Buffer buffer = view.getBuffer();
+         EditPane editPane = view.getEditPane();
+         TextArea textArea = view.getTextArea();
+         DockableWindowManager wm = view.getDockableWindowManager();
+         String scriptPath = buffer.getPath();
+         defaultScriptContext.setAttribute("view", view, ScriptContext.ENGINE_SCOPE);
+         defaultScriptContext.setAttribute("buffer", buffer, ScriptContext.ENGINE_SCOPE);
+         defaultScriptContext.setAttribute("editPane", editPane, ScriptContext.ENGINE_SCOPE);
+         defaultScriptContext.setAttribute("textArea", textArea, ScriptContext.ENGINE_SCOPE);
+         defaultScriptContext.setAttribute("wm", wm, ScriptContext.ENGINE_SCOPE);
+         defaultScriptContext.setAttribute("scriptPath", scriptPath, ScriptContext.ENGINE_SCOPE);
+      }
+
+      return defaultScriptContext;
    }
 
    private static ScriptEngineManager getScriptEngineManager() {
