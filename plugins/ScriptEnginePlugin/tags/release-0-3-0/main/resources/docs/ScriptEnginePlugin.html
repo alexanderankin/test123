@@ -1,0 +1,536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+
+
+		
+  
+  
+  <title>ScriptEnginePlugin</title>
+</head>
+
+
+<body>
+
+
+
+		
+<h1>Introduction</h1>
+
+
+
+		The ScriptEnginePlugin provides an easy to use and easy to implement framework that makes&nbsp;<a href="https://scripting.dev.java.net">scripting.dev.java.net</a> ScriptEngines usable inside of jEdit.<br>
+
+
+
+		
+<h1>Usage</h1>
+
+
+
+		Two basic usage methods are provided:<br>
+
+
+
+		
+<ul>
+
+
+
+			<li>Execute Buffer</li>
+
+
+
+			<li>Execute Selection</li>
+
+
+
+		
+</ul>
+
+
+Both execute functions provided scripts the same variables provided to
+all jEdit macros and can be found under the "Plugins" -&gt; "Script
+Engine Plugin" menu.<br>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">view</span> - A View
+represents the current top-level editor window, extending Java's JFrame
+class, that contains the various visible components of the program,
+including the text area, menu bar, toolbar, and any docked windows. </li>
+
+
+
+		
+</ul>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">buffer</span> - a Buffer object represents the contents of the currently visible open text file.
+			</li>
+
+
+
+		
+</ul>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">editPane</span> - an
+EditPane object contains a text area and buffer switcher. A view can be
+split to display edit panes. Among other things, the EditPane class
+contains methods for selecting the buffer to edit. </li>
+
+
+
+		
+</ul>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">textArea</span> - a JEditTextArea is the visible component that displays the current buffer.
+			</li>
+
+
+
+		
+</ul>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">wm</span> - a
+DockableWindowManager is the visible component that manages dockable
+windows in the current view. This class is discussed in detail in
+Part&nbsp;IV, &ldquo;Writing Plugins&rdquo;. This object is useful for
+writing macros that interface with, open, or close plugin windows. </li>
+
+
+
+		
+</ul>
+
+
+
+		
+<ul>
+
+
+
+			<li>
+				<span style="font-weight: bold;">scriptPath</span> - set to the full path of the script currently being executed.
+			</li>
+
+
+
+		
+</ul>
+
+
+While executing scripts, the engine is chosen based on the mode of the
+current buffer. So, if you want to execute a Groovy script, you will
+need to be in Groovy mode. Any results (returned objects) from the
+executed scripts will either replace the currently selected text, or be
+inserted at the cursor location (when no text is selected).
+<h1>Development</h1>
+
+
+Creating a new ScriptEngine plugin is very simple but it requires that
+you know a little Java, how to create a basic jEdit plugin, and that
+your desired ScriptEngine adheres to the scripting.dev.java.net
+guidelines.<br>
+
+
+
+		<br>
+
+
+If you haven't done so already, you should read through the
+documentation for "Writing Plugins" and the documentation supplied at <a href="https://scripting.dev.java.net">https://scripting.dev.java.net</a> on implementing the Java scripting apis.<br>
+
+
+
+		<br>
+
+
+
+		
+
+
+
+		
+<p> The only thing necessary to include your
+ScriptEngine in jEdit, is to implement the ScriptEngineService and
+create an entry in your plugin's services.xml file. The simplest way is
+to have your plugin class implement ScriptEngineService and then define
+it in your services.xml. </p>
+
+
+
+		
+<table style="text-align: left; background-color: rgb(204, 204, 204); width: 100%; margin-left: 40px;" border="1" cellpadding="5" cellspacing="0">
+
+
+
+			<tbody>
+
+
+
+				<tr>
+
+
+
+					<td>
+      
+      <pre><span style="font-family: mon;">import com.sun.script.groovy.GroovyScriptEngineFactory;</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">import org.gjt.sp.jedit.EditPlugin;</span></pre>
+
+      
+      <pre><span style="font-family: mon;">import org.gjt.sp.jedit.Mode;</span></pre>
+
+      
+      <pre><span style="font-family: mon;">import org.gjt.sp.jedit.jEdit;</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">/**</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;* The GroovyScriptEnginePlugin provides the Groovy ScriptEngine to jEdit plugins.</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;* @author elberry</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;*/</span></pre>
+
+      
+      <pre><span style="font-family: mon;">public class GroovyScriptEnginePlugin extends EditPlugin implements ScriptEngineService {</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; private GroovyScriptEngineFactory factory = new GroovyScriptEngineFactory();</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; public Class getEngineFactoryClass() {</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return factory.getClass();</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; public String getEngineName() {</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return factory.getEngineName();</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; public Mode getMode() {</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return jEdit.getMode("groovy");</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; @Override</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; public void start() {</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; @Override</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; public void stop() {</span></pre>
+
+      
+      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
+
+      
+      <pre><span style="font-family: mon;"></span></pre>
+
+      
+      <pre><span style="font-family: mon;">}</span></pre>
+
+      </td>
+
+
+
+				</tr>
+
+
+
+			
+  
+  
+  </tbody>
+		
+</table>
+
+
+
+		
+<p>In this example, the
+GroovyScriptEngineFactory is provided by the Groovy ScriptEngine found
+on scripting.dev.java.net. This class extends the EditPlugin (as
+described in the jEdit "Creating Plugins" documentation), and then
+implements the ScriptEngineService.</p>
+
+
+
+		
+<p>The ScriptEngineService defines 3 methods which need to be implemented by each script engine plugin.</p>
+
+<ul>
+  <li><span style="font-weight: bold;">getEngineFactoryClass</span> - returns the <a href="http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngineFactory.html">ScriptEngineFactory</a> class that can be registered with the <a href="http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngineManager.html">ScriptEngineManager</a>.</li>
+</ul>
+<ul>
+  <li><span style="font-weight: bold;">getEngineName</span> - returns
+the name of the ScriptEngine which the ScriptEngineFactory is
+registered with. This is mainly used when trying to retrieve a
+ScriptEngine by the current edit mode.</li>
+  <ul>
+    <li>You should be able to use this name with ScriptEngineManager.getEngineByName.</li>
+  </ul>
+</ul>
+<ul>
+  <li><span style="font-weight: bold;">getMode</span> - returns the jEdit edit mode that this ScriptEngine is associated with.</li>
+</ul>
+		
+Next, you need to add the entry in your services.xml.<br>
+<div style="margin-left: 40px;">
+
+
+			<br>
+
+
+
+			
+<table style="text-align: left; background-color: rgb(204, 204, 204); width: 100%;" border="1" cellpadding="5" cellspacing="0">
+
+
+
+				<tbody>
+
+
+
+					<tr>
+
+
+
+						<td>
+							
+      
+      
+      <pre>&lt;?xml version="1.0"?&gt;</pre>
+
+
+
+							
+      
+      
+      <pre>&lt;!DOCTYPE SERVICES SYSTEM "services.dtd"&gt;</pre>
+
+
+
+							
+      
+      
+      <pre>&lt;SERVICES&gt;</pre>
+
+
+
+							
+      
+      
+      <pre>&nbsp;&nbsp;&nbsp; &lt;SERVICE CLASS="com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineService" NAME="GroovyScriptEngine"&gt;</pre>
+
+
+
+							
+      
+      
+      <pre>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return new com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin();</pre>
+
+
+
+							
+      
+      
+      <pre>&nbsp;&nbsp;&nbsp; &lt;/SERVICE&gt;</pre>
+
+
+
+							
+      
+      
+      <pre>&lt;/SERVICES&gt;</pre>
+
+
+
+						</td>
+
+
+
+					</tr>
+
+
+
+				
+  
+  
+  </tbody>
+			
+</table>
+
+
+
+			<br>
+</div>
+
+
+
+Lastly, make sure your plugin's .props file contains the dependency on the ScriptEnginePlugin.<br>
+<div style="margin-left: 40px;">
+
+
+			<br>
+
+
+
+			
+<table style="text-align: left; background-color: rgb(204, 204, 204); width: 100%;" border="1" cellpadding="5" cellspacing="0">
+
+
+
+				<tbody>
+
+
+
+					<tr>
+
+
+
+						<td>plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.depend.2=plugin
+com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin 0.3.0</td>
+
+
+
+					</tr>
+
+
+
+				
+  
+  
+  </tbody>
+			
+</table>
+
+
+
+			<br>
+
+
+
+			<br>
+</div>
+
+
+
+That's it. You should now be able to run scripts in your scripting language from within jEdit.<br>
+
+
+
+		
+
+
+		
+<div style="margin-left: 40px;"></div>
+
+
+
+		
+<h2>Author:</h2>
+
+
+
+		
+<div style="margin-left: 40px;">Eric Berry (v. 0.3.0 - 2008)</div>
+
+
+
+	
+</body>
+</html>
