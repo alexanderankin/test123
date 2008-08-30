@@ -89,8 +89,8 @@ public abstract class OptionPaneBase extends AbstractOptionPane
 	/**
 	 * Shortcut for adding a checkbox with an optional tooltip.
 	 *
-	 * @param[in]	label		Property name for the label / tooltip.
-	 * @param[in]	selected	Whether the checkbox is checked.
+	 * @param	label		Property name for the label / tooltip.
+	 * @param	selected	Whether the checkbox is checked.
 	 *
 	 * @return The checkbox (already added to the UI).
 	 */

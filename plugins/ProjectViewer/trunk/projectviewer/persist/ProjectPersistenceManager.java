@@ -181,14 +181,14 @@ public final class ProjectPersistenceManager {
 		private VPTProject proj;
 		private VPTNode currNode;
 
-		private Stack openNodes;
+		private Stack<String> openNodes;
 		//}}}
 
 		//{{{ +ProjectHandler(VPTProject) : <init>
 		public ProjectHandler(VPTProject proj) {
 			this.proj = proj;
 			this.currNode = proj;
-			this.openNodes = new Stack();
+			this.openNodes = new Stack<String>();
 		} //}}}
 
 		//{{{ +startElement(String) : void

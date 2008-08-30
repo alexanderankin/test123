@@ -395,7 +395,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Attributes
 	private View					view;
-	private HashSet					dontAsk;
+	private HashSet<String>			dontAsk;
 
 	private JPanel					topPane;
 	private ProjectTreePanel		treePanel;
@@ -581,12 +581,13 @@ public final class ProjectViewer extends JPanel
 	//{{{ -unloadInactiveProjects(VPTNode) : void
 	/** Checks if some of the projects that are loaded can be unloaded. */
 	private void unloadInactiveProjects(VPTNode newRoot) {
-		ArrayList active = null;
+		List<String> active = null;
 		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
 			ViewerEntry ve = (ViewerEntry) i.next();
 			if (ve.node != null && ve.dockable != this) {
-				if (active == null)
-					active = new ArrayList();
+				if (active == null) {
+					active = new ArrayList<String>();
+				}
 				if (ve.node.isProject()) {
 					active.add(ve.node.getName());
 				} else if (!ve.node.isRoot()) {
@@ -598,8 +599,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		ProjectManager pm = ProjectManager.getInstance();
-		for (Iterator i = pm.getProjects(); i.hasNext(); ) {
-			VPTProject p = (VPTProject) i.next();
+		for (VPTProject p : pm.getProjects()) {
 			if (pm.isLoaded(p.getName()) && (p != newRoot)
 				&& (active == null || !active.contains(p.getName())))
 			{
@@ -610,7 +610,7 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//{{{ -addProjectsToList(VPTNode, List) : void
-	private void addProjectsToList(VPTNode src, List l) {
+	private void addProjectsToList(VPTNode src, List<String> l) {
 		for (int i = 0; i < src.getChildCount(); i++) {
 			VPTNode n = (VPTNode) src.getChildAt(i);
 			if (n.isProject()) {
@@ -687,7 +687,7 @@ public final class ProjectViewer extends JPanel
 	 *	plugins/macros can peform actions on a selection of files.
 	 */
 	public List getSelectedFilePaths() {
-		List obfp = new ArrayList();
+		List<String> obfp = new ArrayList<String>();
 		JTree tree = getCurrentTree();
 		if (tree == null)
 			return null;
@@ -979,7 +979,7 @@ public final class ProjectViewer extends JPanel
 					}
 				} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE) {
 					if (dontAsk == null) {
-						dontAsk = new HashSet();
+						dontAsk = new HashSet<String>();
 					}
 					dontAsk.add(bu.getBuffer().getPath());
 				}

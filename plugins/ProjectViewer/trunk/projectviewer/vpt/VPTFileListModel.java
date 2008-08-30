@@ -22,6 +22,7 @@ package projectviewer.vpt;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Collections;
 import java.util.WeakHashMap;
 
@@ -49,11 +50,11 @@ import org.gjt.sp.util.Log;
 public class VPTFileListModel extends ProjectTreeModel {
 
 	//{{{ Private members
-	private WeakHashMap fileLists;
+	private Map<VPTProject,List<VPTNode>> fileLists;
 
 	private Object lastParent;
-	private ArrayList lastList;
-	private List pathBuilder;
+	private List<VPTNode> lastList;
+	private List<TreeNode> pathBuilder;
 	//}}}
 
 	//{{{ +VPTFileListModel(VPTNode) : <init>
@@ -64,8 +65,8 @@ public class VPTFileListModel extends ProjectTreeModel {
 	 */
 	public VPTFileListModel(VPTNode rootNode) {
 		super(rootNode);
-		fileLists = new WeakHashMap();
-		pathBuilder = new LinkedList();
+		fileLists = new WeakHashMap<VPTProject,List<VPTNode>>();
+		pathBuilder = new LinkedList<TreeNode>();
 	} //}}}
 
 	//{{{ +getChildCount(Object) : int
@@ -100,7 +101,7 @@ public class VPTFileListModel extends ProjectTreeModel {
 		if (node.isGroup()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
-			ArrayList lst = getProjectFileList((VPTProject) node);
+			List<VPTNode> lst = getProjectFileList((VPTProject) node);
 			if (index >= lst.size()) return null;
 			return lst.get(index);
 		}
@@ -117,7 +118,7 @@ public class VPTFileListModel extends ProjectTreeModel {
 		VPTNode n = (VPTNode) node;
 		if (!n.isGroup()) {
 			VPTProject p = VPTNode.findProjectFor(n);
-			ArrayList lst = new ArrayList(p.openableNodes.values());
+			List<VPTNode> lst = new ArrayList<VPTNode>(p.openableNodes.values());
 			Collections.sort(lst);
 			fileLists.put(p, lst);
 
@@ -132,14 +133,15 @@ public class VPTFileListModel extends ProjectTreeModel {
 	//{{{ +getIndexOfChild(Object, Object) : int
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent == lastParent) {
-			return Collections.binarySearch(lastList, child);
+			return Collections.binarySearch(lastList, (VPTNode) child);
 		}
 
 		VPTNode node = (VPTNode) child;
 		if (node.isGroup()) {
 			return super.getIndexOfChild(parent, child);
 		} else if (node.isProject()) {
-			return Collections.binarySearch(getProjectFileList((VPTProject) node), child);
+			return Collections.binarySearch(getProjectFileList((VPTProject) node),
+											(VPTNode) child);
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
 		return -1; // shouldn't reach here
@@ -147,11 +149,11 @@ public class VPTFileListModel extends ProjectTreeModel {
 
 	//{{{ -getProjectFileList(VPTProject) : ArrayList
 	/** Returns a vector with all the files of the project. */
-	private ArrayList getProjectFileList(VPTProject p) {
+	private List<VPTNode> getProjectFileList(VPTProject p) {
 		lastParent = p;
-		ArrayList lst = (ArrayList) fileLists.get(p);
+		List<VPTNode> lst = fileLists.get(p);
 		if (lst == null) {
-			lst = new ArrayList(p.openableNodes.values());
+			lst = new ArrayList<VPTNode>(p.openableNodes.values());
 			Collections.sort(lst);
 			fileLists.put(p, lst);
 		}
@@ -180,7 +182,7 @@ public class VPTFileListModel extends ProjectTreeModel {
 			aNode = aNode.getParent();
 		}
 		pathBuilder.add(0, aNode);
-		return (TreeNode[]) pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
+		return pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
 	} //}}}
 
 	//{{{ +nodeChanged(TreeNode) : void

@@ -101,7 +101,7 @@ public class ProjectTreePanel extends JPanel
         super(new BorderLayout());
         this.viewer = viewer;
 
-        trees = new ArrayList();
+        trees = new ArrayList<PVTree>();
 		contextMenu = new VPTContextMenu(viewer);
 		selectionListener = new VPTSelectionListener(viewer);
 
@@ -600,7 +600,7 @@ public class ProjectTreePanel extends JPanel
     //{{{ class _FileListTransferable_
     /** A transferable for a file. */
     private static class FileListTransferable
-        extends LinkedList
+        extends LinkedList<File>
         implements Transferable
     {
 

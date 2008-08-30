@@ -20,8 +20,8 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -142,8 +142,8 @@ public final class ProjectViewerConfig {
 	private String userContextMenu			= null;
 	private String lastInitVersion			= null;
 
-	private ArrayList 	listeners;
-	private Stack 		lastNodes;
+	private List<PropertyChangeListener>	listeners;
+	private Stack<Object>					lastNodes;
 
 	//}}}
 
@@ -158,7 +158,7 @@ public final class ProjectViewerConfig {
 	 *	@param	props	An object containing the configuration of the plugin.
 	 */
 	private ProjectViewerConfig() {
-		listeners = new ArrayList();
+		listeners = new ArrayList<PropertyChangeListener>();
 
 		// loads the properties
 		Properties props = new Properties();
@@ -253,7 +253,7 @@ public final class ProjectViewerConfig {
 		excludeDirs	 = props.getProperty(EXCLUDE_DIRS_OPT);
 
 		// Last path
-		lastNodes = new Stack();
+		lastNodes = new Stack<Object>();
 		int cnt = 0;
 		boolean foundPath = false;
 		tmp = props.getProperty(LAST_NODE_OPT + "count");
@@ -262,7 +262,7 @@ public final class ProjectViewerConfig {
 			foundPath = true;
 			cnt = Integer.parseInt(tmp);
 			for (int i = 0; i < cnt; i++) {
-				Stack path = new Stack();
+				Stack<String> path = new Stack<String>();
 				int j = 0;
 				do {
 					tmp = props.getProperty(LAST_NODE_OPT + i + "." + j);
@@ -277,7 +277,7 @@ public final class ProjectViewerConfig {
 			}
 		} else {
 			// old style single node path
-			Stack lastPath = new Stack();
+			Stack<String> lastPath = new Stack<String>();
 			while (props.getProperty(LAST_NODE_OPT + cnt) != null) {
 				lastPath.push(props.getProperty(LAST_NODE_OPT + cnt));
 				cnt++;
@@ -675,13 +675,13 @@ public final class ProjectViewerConfig {
 
 		// last path
 		int ncnt = 0;
-		for (Iterator i = lastNodes.iterator(); i.hasNext(); ) {
+		for (Object node : lastNodes) {
 			int pcnt = 0;
-			Object node = i.next();
 			if (node instanceof Stack) {
-				for (Iterator j = ((Stack)node).iterator(); j.hasNext(); ) {
+				Stack nodePaths = (Stack) node;
+				for (Object path : nodePaths) {
 					props.setProperty(LAST_NODE_OPT + ncnt + "." + pcnt,
-									  (String) j.next());
+									  path.toString());
 					pcnt++;
 				}
 			} else {
@@ -749,8 +749,8 @@ public final class ProjectViewerConfig {
 			 !oldValue.equals(newValue)) && listeners.size() > 0) {
 			PropertyChangeEvent evt =
 				new PropertyChangeEvent(this,property,oldValue,newValue);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((PropertyChangeListener)i.next()).propertyChange(evt);
+			for (PropertyChangeListener lsnr : listeners) {
+				lsnr.propertyChange(evt);
 			}
 		}
 	}
@@ -812,8 +812,8 @@ public final class ProjectViewerConfig {
 	 *	@since	PV 2.1.0
 	 */
 	private void updateLists(Properties importProps) {
-		for (Iterator i = importProps.keySet().iterator(); i.hasNext(); ) {
-			String key = (String) i.next();
+		for (Object _key : importProps.keySet()) {
+			String key = (String) _key;
 			if (key.startsWith(EXCLUDE_DIRS_OPT + "-")) {
 				if (needUpdate(key.substring(EXCLUDE_DIRS_OPT.length() + 1))) {
 					excludeDirs = mergeList(excludeDirs, importProps.getProperty(key));
@@ -888,8 +888,8 @@ public final class ProjectViewerConfig {
 				p.load(inprops);
 
 				Properties newp = new Properties();
-				for (Iterator i = p.keySet().iterator(); i.hasNext(); ) {
-					String key = (String) i.next();
+				for (Object _key : p.keySet()) {
+					String key = (String) _key;
 					newp.put("*." + key, p.get(key));
 				}
 				p = newp;

@@ -60,7 +60,8 @@ public class VPTFilteredModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
-	private Map cache = new HashMap();
+	private Map<VPTProject,List<VPTNode>> cache =
+		new HashMap<VPTProject,List<VPTNode>>();
 	//}}}
 
 	//{{{ +VPTFilteredModel(VPTNode) : <init>
@@ -143,18 +144,23 @@ public class VPTFilteredModel extends ProjectTreeModel {
 	} //}}}
 
 	//{{{ #getFilteredNodes(VPTProject) : List
-	protected List getFilteredNodes(VPTProject node) {
-		if (cache.get(node)!=null)
-			return (List)cache.get(node);
-		Log.log(Log.DEBUG, this, "not cached: "+node);
-		List filteredNodesList=new ArrayList();
+	protected List<VPTNode> getFilteredNodes(VPTProject node)
+	{
+		List<VPTNode> filteredNodesList = cache.get(node);
+		if (filteredNodesList != null) {
+			return filteredNodesList;
+		}
 
-		// openableNodes returns an unmodifiable Collection
-		// ==> copy it into a new list
-		List openableNodelist = new LinkedList();
-		Iterator openableNodesIt = node.openableNodes.values().iterator();
-		while (openableNodesIt.hasNext())
-			openableNodelist.add(openableNodesIt.next());
+		filteredNodesList = new ArrayList<VPTNode>();
+
+		/*
+		 * openableNodes returns an unmodifiable Collection, so
+		 * copy it into a new list.
+		 */
+		List<VPTNode> openableNodelist = new LinkedList<VPTNode>();
+		for (VPTNode n : node.openableNodes.values()) {
+			openableNodelist.add(n);
+		}
 
 		// check first project list, then global list
 		boolean useProjectFilter = true;
@@ -255,65 +261,67 @@ public class VPTFilteredModel extends ProjectTreeModel {
 	public class FilteredDirectoryNode extends VPTDirectory {
 
 		private VPTFilterData filterData;
-		private List files = new ArrayList();
+		private List<VPTNode> files = new ArrayList<VPTNode>();
 
-		//{{{ +FilteredDirectoryNode(VPTFilterData, List) : <init>
-		public FilteredDirectoryNode(VPTFilterData filterData, List openableNodeList)
+
+		public FilteredDirectoryNode(VPTFilterData filterData,
+									 List<VPTNode> openableNodeList)
 		{
 			super(filterData.getName());
 			this.filterData = filterData;
-			Iterator it = openableNodeList.iterator();
-			while (it.hasNext())
-			{
-				VPTNode node = (VPTNode)it.next();
-				if (filterData.getPattern().matcher(node.getName()).matches())
-				{
+			for (VPTNode node : openableNodeList) {
+				if (filterData.getPattern().matcher(node.getName()).matches()) {
 					add(node);
 				}
 			}
 			sortFiles();
 
-			// remove from openableNodeList
-			it = files.iterator();
-			while (it.hasNext())
-				openableNodeList.remove(it.next());
+			for (VPTNode n : files) {
+				openableNodeList.remove(n);
+			}
+		}
 
-		} //}}}
 
-		//{{{ +getName() : String
-		public String getName() {
+		public String getName()
+		{
 			return filterData.getName();
-		} //}}}
+		}
 
-		//{{{ +getFiles() : List
-		public List getFiles() {
+
+		public List getFiles()
+		{
 			return files;
-		} //}}}
+		}
 
-		//{{{ -sortFiles() : void
-		private void sortFiles() {
+
+		private void sortFiles()
+		{
 			Collections.sort(files);
-		} //}}}
+		}
 
-		//{{{ +getChildCount() : int
-		public int getChildCount() {
+
+		public int getChildCount()
+		{
 			return files.size();
-		} //}}}
+		}
 
-		//{{{ +remove(VPTNode) : void
-		public void remove(VPTNode node) {
+
+		public void remove(VPTNode node)
+		{
 			files.remove(node);
-		} //}}}
+		}
 
-		//{{{ +add(VPTNode) : void
-		public void add(VPTNode node) {
+
+		public void add(VPTNode node)
+		{
 			files.add(node);
-		} //}}}
+		}
 
-		//{{{ +getClipType() : int
-		public int getClipType() {
+
+		public int getClipType()
+		{
 			return VPTCellRenderer.CLIP_START;
-		} //}}}
+		}
 
 	} //}}}
 

@@ -20,9 +20,7 @@ package projectviewer;
 
 //{{{ Imports
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
@@ -123,8 +121,7 @@ public final class ProjectManager {
 
 	//{{{ -ProjectManager() : <init>
 	private ProjectManager() {
-		projects = new TreeMap();
-		listeners = new HashSet();
+		projects = new TreeMap<String,Entry>();
 
 		// Loads the configuration
 		try {
@@ -137,10 +134,9 @@ public final class ProjectManager {
 
 	//{{{ Instance variables
 
-	private ActionSet	nodeActions;
-	private TreeMap 	projects;
-	private HashSet 	listeners;
-	private List 		globalFilterList;
+	private ActionSet				nodeActions;
+	private TreeMap<String,Entry>	projects;
+	private List<VPTFilterData>		globalFilterList;
 
 	//}}}
 
@@ -230,9 +226,8 @@ public final class ProjectManager {
 		synchronized (projects) {
 			// save each project's data, if loaded
 			// if not loaded, no need to save.
-			for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-				String pName = (String) it.next();
-				Entry e = (Entry) projects.get(pName);
+			for (String pName : projects.keySet()) {
+				Entry e = projects.get(pName);
 				if (e.isLoaded) {
 					saveProject(e.project, true);
 				}
@@ -243,7 +238,7 @@ public final class ProjectManager {
 
 		// save the filter list to a config file
 		Properties p = new Properties();
-		List filters = getGlobalFilterList();
+		List<VPTFilterData> filters = getGlobalFilterList();
 		for (int i = 0; i < filters.size(); i++) {
 			VPTFilterData fd = (VPTFilterData) filters.get(i);
 			p.setProperty("filter." + i + ".glob", fd.getGlob());
@@ -331,7 +326,7 @@ public final class ProjectManager {
 	//{{{ +renameProject(String, String) : void
 	/** Updates information about a project to reflect its name change. */
 	public void renameProject(String oldName, String newName) {
-		Entry e = (Entry) projects.remove(oldName);
+		Entry e = projects.remove(oldName);
 		projects.put(newName, e);
 		if (e.fileName != null) {
 			try {
@@ -376,7 +371,7 @@ public final class ProjectManager {
 	 *	return null.
 	 */
 	public VPTProject getProject(String name) {
-		Entry e = (Entry) projects.get(name);
+		Entry e = projects.get(name);
 		if (!e.isLoaded) {
 			synchronized (e) {
 				if (!e.isLoaded) {
@@ -405,17 +400,17 @@ public final class ProjectManager {
 		return e.project;
 	} //}}}
 
-	//{{{ +getProjects() : Iterator
+	//{{{ +getProjects() : List<VPTProject>
 	/**
-	 *	Returns an iterator that points to the (ordered) list of project names
-	 *	managed by this manager. The Iterator is read-only.
+	 *	Returns a list containing the list of project names
+	 *	managed by this manager. The list is read-only.
 	 */
-	public Iterator getProjects() {
-		ArrayList lst = new ArrayList();
-		for (Iterator it = projects.values().iterator(); it.hasNext(); ) {
-			lst.add(((Entry)it.next()).project);
+	public List<VPTProject> getProjects() {
+		List<VPTProject> lst = new ArrayList<VPTProject>();
+		for (Entry e : projects.values()) {
+			lst.add(e.project);
 		}
-		return lst.iterator();
+		return Collections.unmodifiableList(lst);
 	} //}}}
 
 	//{{{ +isLoaded(String) : boolean
@@ -427,7 +422,7 @@ public final class ProjectManager {
 	 *	@throws NullPointerException	If the project does not exist.
 	 */
 	public boolean isLoaded(String pName) {
-		return ((Entry)projects.get(pName)).isLoaded;
+		return projects.get(pName).isLoaded;
 	} //}}}
 
 	//{{{ +hasProject(String) : boolean
@@ -442,7 +437,7 @@ public final class ProjectManager {
 	 *	state to "unloaded", freeing memory.
 	 */
 	public void unloadProject(VPTProject p) {
-		Entry e = (Entry) projects.get(p.getName());
+		Entry e = projects.get(p.getName());
 		saveProject(e.project, true);
 		e.project.removeAllChildren();
 		e.project.getProperties().clear();
@@ -457,9 +452,9 @@ public final class ProjectManager {
 	 *
 	 *	@since PV 2.2.2.0
 	 */
-	public List getGlobalFilterList() {
+	public List<VPTFilterData> getGlobalFilterList() {
 		if (globalFilterList == null)
-			globalFilterList = new ArrayList();
+			globalFilterList = new ArrayList<VPTFilterData>();
 		return globalFilterList;
 	} //}}}
 
@@ -471,7 +466,8 @@ public final class ProjectManager {
 	 *
 	 *	@since PV 2.2.2.0
 	 */
-	public void setGlobalFilterList(List globalFilterList) {
+	public void setGlobalFilterList(List<VPTFilterData> globalFilterList)
+	{
 		this.globalFilterList = globalFilterList;
 		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
 	} //}}}
@@ -569,7 +565,7 @@ public final class ProjectManager {
 			if (n.isGroup())
 				writeGroup(GRP_ELEMENT, (VPTGroup)n, out);
 			else if (n.isProject())
-				writeProject((Entry)projects.get(n.getName()), out);
+				writeProject(projects.get(n.getName()), out);
 		}
 
 		out.write("</");
@@ -603,11 +599,11 @@ public final class ProjectManager {
 	/**	SAX handler that takes care of reading the configuration file. */
 	private class PVConfigHandler extends DefaultHandler {
 
-		private Stack grpStack;
+		private Stack<VPTGroup> grpStack;
 
 		//{{{ +PVConfigHandler() : <init>
 		public PVConfigHandler() {
-			grpStack = new Stack();
+			grpStack = new Stack<VPTGroup>();
 			grpStack.push(VPTRoot.getInstance());
 		} //}}}
 

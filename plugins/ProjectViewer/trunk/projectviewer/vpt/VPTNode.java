@@ -43,7 +43,8 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  */
 public abstract class VPTNode extends DefaultMutableTreeNode
-								implements Comparable {
+								implements Comparable<VPTNode>
+{
 
 	//{{{ Constants
 
@@ -250,7 +251,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 */
 	public abstract String getNodePath(); //}}}
 
-	//{{{ +compareToNode(VPTNode) : int
+	//{{{ +compareTo(VPTNode) : int
 	/**
 	 *	This method is used to sort the nodes in the trees. The rough hierarchy
 	 *	is Root -> Groups -> Projects -> "allows children" -> leaves, so try
@@ -261,25 +262,12 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *	nodes of these kinds to take care of the comparison themselves.
 	 *	There's danger of infinite recursion if you don't take this into
 	 *	account.</p>
-	 */
-	public int compareToNode(VPTNode node) {
-		return 1;
-	} //}}}
-
-	//{{{ +compareTo(Object) : int
-	/**
-	 *	Implementation of the Comparable interface. Returns -1 if "o" is
-	 *	not another VPTNode, otherwise calls
-	 *	{@link #compareToNode(VPTNode) compareToNode(VPTNode)}.
 	 *
-	 *	@since	PV 2.1.0
+	 *	@since PV 3.0.0
 	 */
-	public int compareTo(Object o) {
-		if (o instanceof VPTNode) {
-			return compareToNode((VPTNode)o);
-		} else {
-			return -1;
-		}
+	public int compareTo(VPTNode node)
+	{
+		return 1;
 	} //}}}
 
 	//{{{ +findIndexForChild(VPTNode) : int
@@ -300,7 +288,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 
 		while (e - b > 1) {
 			n = (VPTNode) children.get(i);
-			int comp = child.compareToNode(n);
+			int comp = child.compareTo(n);
 
 			if (comp < 0) {
 				e = i;
@@ -314,7 +302,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 		}
 		if (b == children.size()) return b;
 		n = (VPTNode) children.get(b);
-		return (child.compareToNode(n) < 0 ? b : b + 1);
+		return (child.compareTo(n) < 0 ? b : b + 1);
 	} //}}}
 
 	//{{{ +setParent(MutableTreeNode) : void

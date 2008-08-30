@@ -58,9 +58,9 @@ public class VPTRoot extends VPTGroup {
 		return File.separator;
 	} //}}}
 
-	//{{{ +compareToNode(VPTNode) : int
+	//{{{ +compareTo(VPTNode) : int
 	/** The root is always the first node. Period. */
-	public int compareToNode(VPTNode node) {
+	public int compareTo(VPTNode node) {
 		return -1;
 	} //}}}
 

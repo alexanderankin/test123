@@ -131,13 +131,14 @@ public class VPTDirectory extends VPTNode {
 	}
 
 	/** Directories have precedende over openable nodes... */
-	public int compareToNode(VPTNode node) {
+	public int compareTo(VPTNode node)
+	{
 		if (node.canOpen()) {
 			return -1;
 		} else if (node.isDirectory()) {
 			return compareName(node);
 		} else {
-			return -1 * node.compareToNode(this);
+			return -1 * node.compareTo(this);
 		}
 	}
 

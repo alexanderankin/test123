@@ -29,7 +29,6 @@ import java.io.OutputStreamWriter;
 
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Iterator;
 import java.util.Properties;
 
 import java.util.regex.Pattern;
@@ -58,8 +57,6 @@ import projectviewer.ProjectPlugin;
  */
 public class AppLauncher {
 
-	//{{{ Singleton method & variable
-
 	private static AppLauncher instance;
 	static {
 		// make sure ProjectViewerConfig is loaded before the instance is
@@ -80,16 +77,13 @@ public class AppLauncher {
 		return instance;
 	} //}}}
 
-	//}}}
+	private TreeMap<ComparablePattern,String> appCol;
 
 	//{{{ +AppLauncher() : <init>
 	public AppLauncher() {
-		appCol = new TreeMap();
+		appCol = new TreeMap<ComparablePattern,String>();
 	} //}}}
 
-	//{{{ Private members & variables
-
-	private TreeMap appCol;
 
 	//}}}
 
@@ -136,8 +130,8 @@ public class AppLauncher {
 		if (inprops != null) {
 			props.load(inprops);
 
-			for (Iterator iter = props.keySet().iterator(); iter.hasNext(); ) {
-				String key = (String) iter.next();
+			for (Object _key : props.keySet()) {
+				String key = (String) _key;
 				String value = props.getProperty(key);
 				this.addAppExt(key, value);
 			}
@@ -153,9 +147,8 @@ public class AppLauncher {
 				ProjectPlugin.getResourceAsOutputStream("fileassocs.properties")
 			) );
 
-		for (Iterator iter = appCol.keySet().iterator(); iter.hasNext(); ) {
-			ComparablePattern key = (ComparablePattern) iter.next();
-			Object value = appCol.get(key);
+		for (ComparablePattern key : appCol.keySet()) {
+			String value = appCol.get(key);
 			out.println(key.glob + "=" + value);
 		}
 
@@ -218,8 +211,7 @@ public class AppLauncher {
 	/** Copies the data from another AppLauncher into this one. */
 	public void copy(AppLauncher other) {
 		appCol.clear();
-		for (Iterator it = other.appCol.keySet().iterator(); it.hasNext(); ) {
-			Object key = it.next();
+		for (ComparablePattern key : other.appCol.keySet()) {
 			appCol.put(key, other.appCol.get(key));
 		}
 	} //}}}
@@ -233,8 +225,7 @@ public class AppLauncher {
 	 */
 	public String getAppName(String path) {
 		String name = VFSManager.getVFSForPath(path).getFileName(path);
-		for (Iterator i = appCol.keySet().iterator(); i.hasNext(); ) {
-			ComparablePattern re = (ComparablePattern) i.next();
+		for (ComparablePattern re : appCol.keySet()) {
 			if (re.matches(name)) {
 				return (String) appCol.get(re);
 			}

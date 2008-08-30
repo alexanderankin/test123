@@ -20,6 +20,7 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.util.HashMap;
+import java.util.Map;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -69,7 +70,8 @@ public final class IconComposer {
 	//}}}
 
 	//{{{ Attributes
-	private final static HashMap iconCache = new HashMap();
+	private final static Map<Icon,Icon[][][][]> iconCache =
+		new HashMap<Icon,Icon[][][][]>();
 
 	private final static Icon FILE_STATE_CHANGED_IMG =
 		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/file_state_changed.png"));

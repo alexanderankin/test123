@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -71,7 +73,7 @@ import projectviewer.VFSHelper;
 public class CVSEntriesFilter extends ImporterFileFilter {
 
 	//{{{ Private members
-	private HashMap entries = new HashMap();
+	private Map<String,Set<String>> entries = new HashMap<String,Set<String>>();
 	//}}}
 
 	//{{{ +getDescription() : String
@@ -100,15 +102,17 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 *	Returns the set of files from the CVS/Entries file for the given path.
 	 *	In case the file has not yet been read, parse it.
 	 */
-	private HashSet getEntries(VFS vfs, String dirPath) {
-		HashSet h = (HashSet) entries.get(dirPath);
+	private Set<String> getEntries(VFS vfs,
+								   String dirPath)
+	{
+		Set<String> h = entries.get(dirPath);
 		if (h == null) {
 			BufferedReader br = null;
 			Object session;
 			String fPath;
 			View view;
 
-			h = new HashSet();
+			h = new HashSet<String>();
 			view = jEdit.getActiveView();
 
 			fPath = vfs.constructPath(dirPath, "CVS");
@@ -147,7 +151,7 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 		return h;
 	} //}}}
 
-	//{{{ -getSubversionEntries(HashSet, String) : void
+	//{{{ -getSubversionEntries(Set, String) : void
 	/**
 	 * Searches in subversion directories for 1.3 or 1.4 format ".svn/entries"
 	 * files, parses them and returns the list of filenames in a target set.
@@ -157,7 +161,7 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 * @param dirPath the location to search for subversion entries.
 	 */
 	private void getSubversionEntries(VFS vfs,
-									  HashSet target,
+									  Set<String> target,
 									  String dirPath)
 	{
 		boolean isXml = true;
@@ -249,13 +253,13 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 */
 	private static class SubversionEntriesHandler extends DefaultHandler {
 
-		private HashSet target;
+		private Set<String> target;
 
 		private boolean addEntry;
 		private String	path;
 
-		//{{{ +SubversionEntriesHandler(HashSet) : <init>
-		public SubversionEntriesHandler(HashSet target) {
+		//{{{ +SubversionEntriesHandler(Set) : <init>
+		public SubversionEntriesHandler(Set<String> target) {
 			this.target 	= target;
 			this.addEntry	= false;
 			this.path		= null;

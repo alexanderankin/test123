@@ -64,8 +64,9 @@ public class VPTGroup extends VPTNode {
 		return getName() + File.separator;
 	} //}}}
 
-	//{{{ +compareToNode(VPTNode) : int
-	public int compareToNode(VPTNode n) {
+	//{{{ +compareTo(VPTNode) : int
+	public int compareTo(VPTNode n)
+	{
 		if (!n.isGroup()) {
 			return -1;
 		} else if (n.isRoot()) {
