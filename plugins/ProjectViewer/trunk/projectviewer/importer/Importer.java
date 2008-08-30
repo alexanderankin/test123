@@ -25,14 +25,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
@@ -85,6 +87,8 @@ public abstract class Importer implements Runnable {
 	protected VPTProject	project;
 	private boolean			noThread;
 	private boolean			lockProject;
+
+	private Map<VPTNode,VPTNode> addedNodes;
 
 	/** The list of added files, if any, for event firing purposes. */
 	protected ArrayList		added;
@@ -150,6 +154,21 @@ public abstract class Importer implements Runnable {
 
 
 	/**
+	 * Method called when importing nodes. The implementation should
+	 * add files for import using one of the following methods:
+	 *
+	 * <ul>
+	 *     <li>{@link #addNode(VPTNode, VPTNode)}</li>
+	 *     <li>{@link #constructPath(VPTNode,String)}</li>
+	 *     <li>{@link #findDirectory(String,VPTNode,boolean)}</li>
+	 * </ul>
+	 *
+	 * @since PV 3.0.0
+	 */
+	protected abstract void internalDoImport();
+
+
+	/**
 	 * Tells the importer whether to lock the project while doing the
 	 * import. If not locking, the caller is responsible for locking
 	 * the project so other tasks are notified that the project is
@@ -165,41 +184,6 @@ public abstract class Importer implements Runnable {
 	}
 
 
-	//{{{ #importNode(VPTNode, VPTNode) : void
-	/**
-	 *	Imports a child into the given parent.
-	 *
-	 *	<p>Important: when using a separate thread, wrap a call to this method
-	 *	in a call to SwingUtilities.invokeLater() or
-	 *	SwingUtilities.invokeAndWait(), to ensure thread safety.</p>
-	 */
-	protected void importNode(VPTNode child, VPTNode where) {
-		ProjectViewer.insertNodeInto(child, where);
-	} //}}}
-
-	//{{{ #importNode(VPTNode) : void
-	/**
-	 *	Imports the node into the selected parent. The selected parent is
-	 *	defined in the constructor for the importer (and generally should
-	 *	be a selected node in the tree).
-	 *
-	 *	<p>Important: when using a separate thread, wrap a call to this method
-	 *	in a call to SwingUtilities.invokeLater() or
-	 *	SwingUtilities.invokeAndWait(), to ensure thread safety.</p>
-	 */
-	protected void importNode(VPTNode node) {
-		ProjectViewer.insertNodeInto(node, selected);
-	} //}}}
-
-	//{{{ #*internalDoImport()* : Collection
-	/**
-	 *	Method to be called when importing nodes. The implementation should
-	 *	eeturn a list of nodes to be added to the selected node. The method
-	 *	{@link #importNode(VPTNode) importNode(VPTNode)} will be called for
-	 *	each element of the collection.
-	 */
-	protected abstract Collection internalDoImport(); //}}}
-
 	/**
 	 *	This is called after {@link #internalDoImport()} is invoked, so
 	 *	implementations can clean up any internal state. Default implementation
@@ -207,22 +191,54 @@ public abstract class Importer implements Runnable {
 	 *
 	 *	@since	PV 3.0.0
 	 */
-	protected void cleanup() {
+	protected void cleanup()
+	{
 
 	}
 
-	//{{{ #findDirectory(String, VPTNode, boolean) : VPTNode
 	/**
-	 *	Looks, in the children list for the given parent, for a directory with
+	 * Inserts a new node into the private map of nodes that have been
+	 * imported. The {@link #run()} method of this class will take care
+	 * of processing all these nodes and properly registering files and
+	 * updating the trees.
+	 *
+	 * @param	node	The node being inserted.
+	 * @param	parent	Where the node is being inserted.
+	 *
+	 * @since PV 3.0.0
+	 */
+	protected void addNode(VPTNode node,
+						   VPTNode parent)
+	{
+		assert (node != null) : "null node";
+		assert (parent != null) : "null parent node";
+		if (addedNodes == null) {
+			addedNodes = new HashMap<VPTNode,VPTNode>();
+		}
+		addedNodes.put(node, parent);
+	}
+
+
+	/**
+	 *	Looks, in the children list for the given parent, for a node with
 	 *	the given path. If it exists, return it. If not, creates a new directory
 	 *	node if <i>create</i> is true, or else return null.
+	 *
+	 *	If a new node is created, it's automatically registered in the
+	 *	internal list of nodes to be processed.
 	 *
 	 *	@param	url		The URL of the directory to look for.
 	 *	@param	parent	The node where to look for the directory.
 	 *	@param	create	Whether to create a new node if a corresponding path is
 	 *					not found in the parent node.
+	 *
+	 *	@return The node representing the given URL, or null if not
+	 *	        found and create is false.
 	 */
-	protected VPTNode findDirectory(String url, VPTNode parent, boolean create) {
+	protected VPTNode findDirectory(String url,
+									VPTNode parent,
+									boolean create)
+	{
 		Enumeration e = parent.children();
 		while (e.hasMoreElements()) {
 			VPTNode n = (VPTNode) e.nextElement();
@@ -232,8 +248,14 @@ public abstract class Importer implements Runnable {
 				return n;
 			}
 		}
-		return (create) ? new VPTDirectory(url) : null;
-	} //}}}
+		if (create) {
+			VPTNode n = new VPTDirectory(url);
+			addNode(n, parent);
+			return n;
+		}
+		return null;
+	}
+
 
 	/**
 	 * Creates a subtree starting at the given root, going down to the
@@ -241,7 +263,6 @@ public abstract class Importer implements Runnable {
 	 *
 	 * @param root Root node where to start constructing the path.
 	 * @param path Path to insert (should be under the given root).
-	 * @param flist List of added nodes to be updated (null OK).
 	 *
 	 * @return The newly created node.
 	 * @throw IOException If an I/O error occur.
@@ -249,10 +270,10 @@ public abstract class Importer implements Runnable {
 	 * @since PV 3.0.0
 	 */
 	protected VPTNode constructPath(VPTNode root,
-									String path,
-									List<VPTNode> flist)
+									String path)
 		throws IOException
 	{
+		boolean addNode = true;
 		boolean isFile;
 		Stack<String> dirs;
 		String rootPath;
@@ -298,9 +319,9 @@ public abstract class Importer implements Runnable {
 			String curr = dirs.pop();
 			VPTNode n = findDirectory(curr, root, false);
 
-			if (n == null && flist != null) {
-				/* Look in the given list to see if the path is already there. */
-				for (VPTNode tmp : flist) {
+			if (n == null && addedNodes != null) {
+				/* Look in map of already added nodes. */
+				for (VPTNode tmp : addedNodes.keySet()) {
 					if (tmp.getNodePath().equals(curr)) {
 						n = tmp;
 						break;
@@ -309,13 +330,14 @@ public abstract class Importer implements Runnable {
 			}
 
 			if (n == null) {
-				if (dirs.size() == 0 && isFile) {
+				if (isFile && dirs.size() == 0) {
 					n = new VPTFile(curr);
 				} else {
 					n = new VPTDirectory(curr);
 				}
-				if (root == selected && flist != null) {
-					flist.add(n);
+				if (addNode) {
+					addNode(n, root);
+					addNode = false;
 				} else {
 					root.insert(n, root.findIndexForChild(n));
 				}
@@ -391,24 +413,12 @@ public abstract class Importer implements Runnable {
 		boolean error = false;
 		setViewerEnabled(false);
 		try {
-			final Collection c = internalDoImport();
+			internalDoImport();
 			cleanup();
 			PVActions.swingInvoke(
 				new Runnable() {
 					public void run() {
-						if (c != null && c.size() > 0) {
-							for (Iterator i = c.iterator(); i.hasNext(); ) {
-								VPTNode n = (VPTNode) i.next();
-								importNode(n);
-							}
-							ProjectViewer.nodeStructureChangedFlat(project);
-							fireProjectEvent();
-						} else if (fireEvent) {
-							if ((added != null && added.size() > 0) ||
-								(removed != null && removed.size() > 0)) {
-								fireProjectEvent();
-							}
-						}
+						processAddedNodes();
 					}
 				}
 			);
@@ -425,25 +435,6 @@ public abstract class Importer implements Runnable {
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(new PostActionWrapper());
-	} //}}}
-
-	//{{{ #fireProjectEvent() : void
-	/** Fires an event based on the imported file(s). */
-	protected void fireProjectEvent() {
-		if ((added == null || added.size() == 0)
-				&& (removed == null || removed.size() == 0)) {
-			return;
-		}
-
-		if (added != null && added.size() == 0) {
-			added = null;
-		}
-
-		if (removed != null && removed.size() == 0) {
-			removed = null;
-		}
-
-		project.fireFilesChanged(added, removed);
 	} //}}}
 
 
@@ -496,28 +487,100 @@ public abstract class Importer implements Runnable {
 	}
 
 
-	//{{{ #class ShowNode
-	/** Makes sure a node is visible. */
-	protected class ShowNode implements Runnable {
+	/**
+	 * Processes a directory node, registering all its child files.
+	 *
+	 * @param	node	The directory node.
+	 */
+	private void processDirectory(VPTNode node)
+	{
+		assert (node.isDirectory());
 
-		private VPTNode toShow;
+		for (int i = 0; i < node.getChildCount(); i++) {
+			VPTNode child = (VPTNode) node.getChildAt(i);
+			if (child.isFile()) {
+				registerFile((VPTFile)child);
+			} else if (child.isDirectory()) {
+				processDirectory(child);
+			}
+		}
+	}
 
-		//{{{ +ShowNode(VPTNode) : <init>
-		public ShowNode(VPTNode toShow) {
-			this.toShow = toShow;
-		} //}}}
 
-		//{{{ +run() : void
-		public void run() {
+	/**
+	 * Processes the internal list of added nodes, registering any new
+	 * files and properly inserting the nodes in the trees. This method
+	 * should be called in the AWT thread, since it updates the UI.
+	 */
+	private void processAddedNodes()
+	{
+		if (addedNodes == null) {
+			return;
+		}
+		for (VPTNode n : addedNodes.keySet()) {
+			VPTNode parent = addedNodes.get(n);
+			ProjectViewer.insertNodeInto(n, parent);
+			if (n.isFile()) {
+				registerFile((VPTFile)n);
+			} else if (n.isDirectory()) {
+				processDirectory(n);
+			}
+		}
+
+		/* Show the count of imported files. */
+		String msg = jEdit.getProperty("projectviewer.import.msg_result",
+							new Object[] { new Integer(added.size()) });
+		if (viewer != null) {
+			viewer.setStatus(msg);
+		} else {
+			jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+		}
+
+		/* Fire a project event notifying interested parties of any changes. */
+		if ((added == null || added.size() == 0)
+			&& (removed == null || removed.size() == 0)) {
+			return;
+		}
+
+		if (added != null && added.size() == 0) {
+			added = null;
+		}
+
+		if (removed != null && removed.size() == 0) {
+			removed = null;
+		}
+
+		project.fireFilesChanged(added, removed);
+	}
+
+
+	//{{{ #class ShowNodes
+	/**
+	 * Makes sure all newly imported nodes are visible. Added
+	 * directories will be automatically expanded.
+	 */
+	protected class ShowNodes implements Runnable
+	{
+
+		public void run()
+		{
 			JTree tree = viewer.getCurrentTree();
 			if (tree != null) {
-				DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
-				TreeNode[] nodes = tModel.getPathToRoot(toShow);
-				tree.makeVisible(new TreePath(nodes));
+				for (VPTNode n : addedNodes.keySet()) {
+					DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+					TreeNode[] nodes = tModel.getPathToRoot(n);
+					tree.makeVisible(new TreePath(nodes));
+					if (n.isDirectory()) {
+						/* Expand directories. */
+						TreePath path = new TreePath(nodes);
+						tree.expandPath(path);
+					}
+				}
 			}
-		} //}}}
+		}
 
 	} //}}}
+
 
 	//{{{ #class NodeStructureChange
 	protected class NodeStructureChange implements Runnable {

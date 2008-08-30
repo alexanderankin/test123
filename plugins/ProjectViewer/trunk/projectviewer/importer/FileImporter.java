@@ -24,10 +24,6 @@ import java.awt.Dialog;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -57,24 +53,23 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class FileImporter extends Importer {
 
-	//{{{ Constants
-	protected static final int FILTER_MSG_RECURSE			= 1;
-	protected static final int FILTER_MSG_INITIAL_IMPORT	= 2;
-	protected static final int FILTER_MSG_RE_IMPORT			= 3;
-	//}}}
-
-	//{{{ Protected Members
-	protected int fileCount;
 	protected VFSFileFilter fnf;
-	//}}}
 
-	//{{{ +FileImporter(VPTNode, ProjectViewer) : <init>
-	public FileImporter(VPTNode node, ProjectViewer viewer) {
+
+	/**
+	 * Constructs a new file importer.
+	 *
+	 * @param	node	The selected node in the viewer tree.
+	 * @param	viewer	The viewer instance.
+	 */
+	public FileImporter(VPTNode node,
+						ProjectViewer viewer)
+	{
 		super(node, viewer);
 		fnf = null;
-	} //}}}
+	}
 
-	//{{{ #internalDoImport() : Collection
+
 	/**
 	 *	Queries the user for files to be added by showing a file chooser
 	 *	dialog. If any directories are chosen, the user is asked (once)
@@ -84,26 +79,25 @@ public class FileImporter extends Importer {
 	 *	being added directly to the project or to a node that is a directory and
 	 *	whose path is parent to the files being added, the importer creates the
 	 *	tree to the files and appends that tree to the node.
-	 *
-	 *	@return	A collection of VPTNode instances.
 	 */
-	protected Collection internalDoImport() {
-		fileCount = 0;
-		int selectedOp = 0;
-		boolean forceUpdate = false;
-		VPTNode firstNode = null;
-
+	protected void internalDoImport() {
+		VPTNode where = selected;
 		ImportDialog id = getImportDialog();
 		loadImportFilterStatus(project, id);
 		id.setVisible(true);
 
-		List<VPTNode> lst = new ArrayList<VPTNode>();
 		VFSFile[] chosen = id.getSelectedFiles();
-		if (chosen == null || chosen.length == 0) return null;
+		if (chosen == null || chosen.length == 0) {
+			return;
+		}
 
 		boolean keepTree = id.getKeepTree();
+
+		/*
+		 * If the user requests, create a new named node into which
+		 * the imported files will be added.
+		 */
 		if (!keepTree && id.getNewNodeName() != null) {
-			VPTNode where;
 			VFS vfs = VFSManager.getVFSForPath(selected.getNodePath());
 			String newDir = vfs.constructPath(selected.getNodePath(),
 											  id.getNewNodeName());
@@ -111,8 +105,7 @@ public class FileImporter extends Importer {
 			if (where.isFile()) {
 				where = new VPTDirectory(newDir);
 			}
-			importNode(where);
-			selected = where;
+			addNode(where, selected);
 		}
 
 		fnf = id.getImportFilter();
@@ -120,21 +113,14 @@ public class FileImporter extends Importer {
 			for (VFSFile file : chosen) {
 				String parentPath = file.getVFS()
 										.getParentOfPath(file.getPath());
-				VPTNode parent = selected;
+				VPTNode parent = where;
 				VPTNode node = null;
 
-				if (keepTree && file.getPath().startsWith(project.getRootPath())) {
-					parent = constructPath(project, parentPath, lst);
+				if (keepTree &&
+					file.getPath().startsWith(project.getRootPath())) {
+					parent = constructPath(project, parentPath);
 					if (parent == null) {
 						throw new FileNotFoundException(parentPath);
-					}
-					/*
-					 * If the parent is not a new node, we need to force
-					 * a refresh of the tree at the end in case we're not
-					 * adding any new nodes.
-					 */
-					if (parent.getParent() != null) {
-						forceUpdate = true;
 					}
 				}
 
@@ -147,35 +133,16 @@ public class FileImporter extends Importer {
 					}
 				} else if (findDirectory(file.getPath(), parent, false) == null) {
 					node = new VPTFile(file.getPath());
-					registerFile((VPTFile)node);
-					fileCount++;
-				}
-				if (node != null) {
-					if (firstNode == null) {
-						firstNode = node;
-					}
-					if (parent != selected) {
-						parent.insert(node, parent.findIndexForChild(node));
-					} else {
-						lst.add(node);
-					}
+					addNode(node, parent);
 				}
 			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, "VFS error while importing", ioe);
 		}
 
-		showFileCount();
 		saveImportFilterStatus(project, id);
-
-		if (forceUpdate && lst.size() == 0) {
-			postAction = new NodeStructureChange(project, null);
-		} else {
-			assert (firstNode != null) : "firstNode is null!";
-			postAction = new ShowNode(firstNode);
-		}
-		return lst;
-	} //}}}
+		postAction = new ShowNodes();
+	}
 
 
 	/**
@@ -221,32 +188,16 @@ public class FileImporter extends Importer {
 			if (file == null) {
 				continue;
 			}
-			node = constructPath(where, url, null);
+			node = constructPath(where, url);
 			if (node != null && node.isFile()) {
 				registerFile((VPTFile)node);
 			}
 		}
 	}
 
-	//{{{ #showFileCount() : void
-	/** Shows a message in the status bar indicating how many files were imported. */
-	protected void showFileCount() {
-		final String msg = jEdit.getProperty("projectviewer.import.msg_result",
-							new Object[] { new Integer(fileCount) });
-		PVActions.swingInvoke(
-			new Runnable() {
-				public void run() {
-					if (viewer != null)
-						viewer.setStatus(msg);
-					else
-						jEdit.getActiveView().getStatus().setMessageAndClear(msg);
-				}
-			}
-		);
-	} //}}}
 
-	//{{{ #getImportDialog() : ImportDialog
-	protected ImportDialog getImportDialog() {
+	protected ImportDialog getImportDialog()
+	{
 		Dialog dParent = (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, viewer);
 		if (dParent != null) {
 			return new ImportDialog(dParent, project, selected);
@@ -254,9 +205,10 @@ public class FileImporter extends Importer {
 			return new ImportDialog(JOptionPane.getFrameForComponent(viewer),
 									project, selected);
 		}
-	} //}}}
+	}
 
-	protected void cleanup() {
+	protected void cleanup()
+	{
 		if (fnf instanceof ImporterFileFilter) {
 			((ImporterFileFilter)fnf).done();
 		}

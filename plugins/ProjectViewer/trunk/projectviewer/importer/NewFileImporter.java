@@ -51,31 +51,22 @@ public class NewFileImporter extends Importer {
 	}
 
 	/**
-	 *	Imports the file given in the constructor into the project. If the file
-	 *	is not below the project root, do nothing.
-	 *
-	 *	@return	A collection of VPTNode instances.
+	 * Imports the file given in the constructor into the project. If
+	 * the file is not below the project root, do nothing.
 	 */
-	protected Collection internalDoImport()
+	protected void internalDoImport()
 	{
-		List<VPTNode> added;
-		VPTNode node;
-
 		if (!path.startsWith(project.getRootPath())) {
-			return null;
+			return;
 		}
 
-		added = new ArrayList<VPTNode>();
 		try {
-			node = constructPath(project, path, added);
-			if (node != null) {
-				registerFile((VPTFile)node);
-				postAction = new ShowNode(node);
+			if (constructPath(project, path) != null) {
+				postAction = new ShowNodes();
 			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
-		return added;
 	}
 
 }
