@@ -50,112 +50,118 @@ import org.gjt.sp.util.Log;
  *	@version	$Id$
  *	@since		PV 2.1.0
  */
-public class VPTCompactModel extends ProjectTreeModel {
+public class VPTCompactModel extends ProjectCustomTreeModel
+{
 
-	//{{{ Private members
 	private static final String SEPARATOR = "/";
-	private Map<VPTNode,List<VPTNode>> cache =
-		new HashMap<VPTNode,List<VPTNode>>();
-	//}}}
 
-	//{{{ +VPTCompactModel(VPTNode) : <init>
+
 	/**
-	*	Create a new <code>VPTCompactModel</code>.
-	*
-	*	@param rootNode	The root node of the tree.
-	*/
-	public VPTCompactModel(VPTNode rootNode) {
+	 * Create a new <code>VPTCompactModel</code>.
+	 *
+	 * @param	rootNode	The root node of the tree.
+	 */
+	public VPTCompactModel(VPTNode rootNode)
+	{
 		super(rootNode);
 	}
-	//}}}
 
-	//{{{ +getChildCount(Object) : int
-	public int getChildCount(Object parent) {
-		VPTNode node = (VPTNode) parent;
-		if (node.isGroup()) {
-			return node.getChildCount();
-		} else if (node.isProject()) {
-			return getProjectChildren((VPTProject)node).size();
-		} else if (node instanceof CompactDirectoryNode) {
-			CompactDirectoryNode cd = (CompactDirectoryNode) node;
+
+	public int getChildCount(Object parent)
+	{
+		if (parent instanceof CompactDirectoryNode) {
+			CompactDirectoryNode cd = (CompactDirectoryNode) parent;
 			return cd.getFiles().size();
 		}
-		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent.getClass() = " + parent.getClass());
-		return 0; // shouldn't reach here
-	} //}}}
+		return super.getChildCount(parent);
+	}
 
-	//{{{ +getChild(Object, int) : Object
-	public Object getChild(Object parent, int index) {
-		VPTNode node = (VPTNode) parent;
-		if (node.isGroup()) {
-			return node.getChildAt(index);
-		} else if (node.isProject()) {
-			return getProjectChildren((VPTProject)node).get(index);
-		} else if (node instanceof CompactDirectoryNode) {
-			CompactDirectoryNode cd = (CompactDirectoryNode) node;
+
+	public Object getChild(Object parent,
+						   int index)
+	{
+		if (parent instanceof CompactDirectoryNode) {
+			CompactDirectoryNode cd = (CompactDirectoryNode) parent;
 			return cd.getFiles().get(index);
 		}
-		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent.getClass() = " + parent.getClass());
-		return null; // shouldn't reach here
-	} //}}}
+		return super.getChild(parent, index);
+	}
 
-	//{{{ +getIndexOfChild(Object, Object) : int
-	public int getIndexOfChild(Object parent, Object child) {
-		VPTNode node = (VPTNode) parent;
-		if (node.isGroup()) {
-			return super.getIndexOfChild(parent, child);
-		} else if (node.isProject()) {
-			List l = getProjectChildren((VPTProject)node);
-			return l.indexOf(child);
-		} else if (node instanceof CompactDirectoryNode) {
-			CompactDirectoryNode cd = (CompactDirectoryNode) node;
+
+	public int getIndexOfChild(Object parent,
+							   Object child)
+	{
+		if (parent instanceof CompactDirectoryNode) {
+			CompactDirectoryNode cd = (CompactDirectoryNode) parent;
 			return cd.getFiles().indexOf(child);
 		}
-		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent.getClass() = " + parent.getClass());
-		return -1; // shouldn't reach here
-	} //}}}
+		return super.getIndexOfChild(parent, child);
+	}
 
-	//{{{ +nodeStructureChanged(TreeNode) : void
-	public void nodeStructureChanged(TreeNode node) {
-		cache.clear();
-		super.nodeStructureChanged(node);
-	} //}}}
 
-	//{{{ +nodesWereInserted(TreeNode, int[]) : void
-	public void nodesWereInserted(TreeNode node, int[] childIndices) {
-		nodeStructureChanged(VPTNode.findProjectFor((VPTNode)node));
-	} //}}}
-
-	//{{{ +nodesWereRemoved(TreeNode, int[], Object[]) : void
-	public void nodesWereRemoved(TreeNode node, int[] childIndices, Object[] removedChildren) {
-		nodeStructureChanged(VPTNode.findProjectFor((VPTNode)node));
-	} //}}}
-
-	//{{{ #getCompressedDirectories(VPTProject) : List
-	protected List<VPTNode> getCompressedDirectories(VPTProject node)
+	public TreeNode[] getPathToRoot(TreeNode aNode)
 	{
-		if (cache.containsKey(node)) {
-			return cache.get(node);
+		if (aNode.isLeaf()) {
+			/*
+			 * For leaf nodes, need first to check whether there is
+			 * a parent node that contains the queried child before
+			 * delegating to the superclass.
+			 */
+			VPTNode node = (VPTNode) aNode;
+			VPTProject proj = VPTNode.findProjectFor(node);
+			List<VPTNode> dirs = getCachedChildren(proj);
+
+			for (VPTNode _dir : dirs) {
+				CompactDirectoryNode cd = (CompactDirectoryNode) _dir;
+				if (cd.getFiles().contains(node)) {
+					return buildPathToRoot(cd, node);
+				}
+			}
 		}
-		Log.log(Log.DEBUG, this, "not cached: "+node);
+		return super.getPathToRoot(aNode);
+	}
+
+
+	protected List<VPTNode> getChildren(VPTProject project)
+	{
+		List<VPTNode> cd = getCompressedDirectories(project);
+		for (int i = 0; i < project.getChildCount(); i++) {
+			VPTNode child = (VPTNode) project.getChildAt(i);
+			if (child.isFile()) {
+				cd.add(child);
+			}
+		}
+		return cd;
+	}
+
+
+	protected String getName()
+	{
+        return "projectviewer.compacttab";
+	}
+
+
+	private List<VPTNode> getCompressedDirectories(VPTProject node)
+	{
 		List<VPTNode> list = new ArrayList<VPTNode>();
 		getCompressedDirectories(new StringBuffer(), node, list);
-		cache.put(node, list);
 		return list;
-	} //}}}
+	}
 
-	//{{{ #getCompressedDirectories(StringBuffer, VPTNode, List) : void
-	protected void getCompressedDirectories(StringBuffer leading,
-											VPTNode node,
-											List<VPTNode> appendTo)
+
+	private void getCompressedDirectories(StringBuffer leading,
+										  VPTNode node,
+										  List<VPTNode> appendTo)
 	{
 		int oldLenght = leading.length();
+
 		if (node.isDirectory() && hasFile(node)) {
 			leading.append(node.getName());
 			appendTo.add(new CompactDirectoryNode(node, leading.toString()));
 			leading.setLength(oldLenght);
 		}
-		for(int i = 0; i < node.getChildCount(); i++) {
+
+		for (int i = 0; i < node.getChildCount(); i++) {
 			VPTNode child = (VPTNode) node.getChildAt(i);
 			String n;
 			if (node.isProject()) {
@@ -167,10 +173,11 @@ public class VPTCompactModel extends ProjectTreeModel {
 			getCompressedDirectories(leading, child, appendTo);
 			leading.setLength(oldLenght);
 		}
-	} //}}}
+	}
 
-	//{{{ #hasFile(VPTNode) : boolean
-	protected boolean hasFile(VPTNode node) {
+
+	private boolean hasFile(VPTNode node)
+	{
 		for (int i = 0; i < node.getChildCount(); i++) {
 			VPTNode child = (VPTNode) node.getChildAt(i);
 			if (child.isFile()) {
@@ -178,29 +185,12 @@ public class VPTCompactModel extends ProjectTreeModel {
 			}
 		}
 		return false;
-	} //}}}
-
-	//{{{ #getProjectChildren(VPTProject) : List
-	protected List<VPTNode> getProjectChildren(VPTProject project)
-	{
-		List<VPTNode> cd = getCompressedDirectories(project);
-		for (int i = 0; i < project.getChildCount(); i++) {
-			VPTNode child = (VPTNode) project.getChildAt(i);
-			if (child.isFile()) {
-				cd.add(child);
-			}
-		}
-		return cd;
-	} //}}}
-
-
-	protected String getName()
-	{
-        return "projectviewer.compacttab";
 	}
 
-	//{{{ +class _CompactDirectoryNode_
-	public static class CompactDirectoryNode extends VPTDirectory {
+
+	//{{{ class _CompactDirectoryNode_
+	private static class CompactDirectoryNode extends VPTDirectory
+	{
 
 		private VPTNode dir;
 		private String name;
@@ -220,11 +210,6 @@ public class VPTCompactModel extends ProjectTreeModel {
 			}
 		} //}}}
 
-		//{{{ +getDir() : VPTNode
-		public VPTNode getDir() {
-			return dir;
-		} //}}}
-
 		//{{{ +getName() : String
 		public String getName() {
 			return name;
@@ -233,16 +218,6 @@ public class VPTCompactModel extends ProjectTreeModel {
 		//{{{ +getFiles() : List
 		public List getFiles() {
 			return files;
-		} //}}}
-
-		//{{{ +remove(VPTNode) : void
-		public void remove(VPTNode node) {
-			files.remove(node);
-		} //}}}
-
-		//{{{ +add(VPTNode) : void
-		public void add(VPTNode node) {
-			files.add(node);
 		} //}}}
 
 		//{{{ +getClipType() : boolean

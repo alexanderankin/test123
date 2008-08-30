@@ -291,7 +291,7 @@ public class ProjectTreePanel extends JPanel
                                       : VPTNode.findProjectFor(node);
         for (JTree tree : trees) {
             ProjectTreeModel model = (ProjectTreeModel) tree.getModel();
-            if (model.isFlat()) {
+            if (model.isCustom()) {
                 model.nodeStructureChanged(root);
             } else {
                 model.nodeStructureChanged(node);
@@ -320,7 +320,7 @@ public class ProjectTreePanel extends JPanel
                                         : VPTNode.findProjectFor(parent);
         for (JTree tree : trees) {
             ProjectTreeModel model = (ProjectTreeModel) tree.getModel();
-            if (model.isFlat()) {
+            if (model.isCustom()) {
                 model.nodeStructureChanged(root);
             } else {
                 model.nodesWereInserted(parent, indexes);
@@ -340,7 +340,7 @@ public class ProjectTreePanel extends JPanel
                                         : VPTNode.findProjectFor(parent);
         for (JTree tree : trees) {
             ProjectTreeModel model = (ProjectTreeModel) tree.getModel();
-            if (model.isFlat()) {
+            if (model.isCustom()) {
                 model.nodeStructureChanged(root);
             } else {
                 model.nodesWereRemoved(parent, indexes, removed);
@@ -359,7 +359,7 @@ public class ProjectTreePanel extends JPanel
         }
         for (JTree tree : trees) {
             ProjectTreeModel model = (ProjectTreeModel) tree.getModel();
-            if (model.isFlat()) {
+            if (model.isCustom()) {
                 model.nodeStructureChanged(node);
             }
         }
