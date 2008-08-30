@@ -28,6 +28,7 @@ import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
+import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -116,9 +117,16 @@ public class ProjectNodeHandler extends NodeHandler {
 
 		// save the open files
 		OpenFileNodeHandler ofnh = new OpenFileNodeHandler();
-		for (Iterator it = proj.getOpenFiles(); it.hasNext(); ) {
-			ofnh.saveNode((String)it.next(), out);
+		for (String file : proj.getOpenFiles()) {
+			ofnh.saveNode(file, out);
 		}
+
+		// save the filters
+		FilterNodeHandler fnh = new FilterNodeHandler();
+		for (VPTFilterData filter : proj.getFilterList()) {
+			fnh.saveNode(filter, out);
+		}
+
 
 	} //}}}
 }
