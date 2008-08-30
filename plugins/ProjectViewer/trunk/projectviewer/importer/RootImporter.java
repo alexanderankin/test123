@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 
 import java.awt.Component;
@@ -86,11 +85,10 @@ public class RootImporter extends FileImporter {
 		this.clean = clean;
 	} //}}}
 
-	//{{{ #internalDoImport() : Collection
-	/** Asks if the user wants to import files from the chosen project root. */
-	protected Collection internalDoImport() {
-		fileCount = 0;
 
+	/** Asks if the user wants to import files from the chosen project root. */
+	protected void internalDoImport()
+	{
 		String dlgTitle = (project.getChildCount() == 0)
 						? "projectviewer.import.msg_proj_root.title"
 						: "projectviewer.import.msg_reimport.title";
@@ -100,7 +98,7 @@ public class RootImporter extends FileImporter {
 		id.setVisible(true);
 
 		if (!id.isApproved()) {
-			return null;
+			return;
 		}
 		fnf = id.getImportFilter();
 
@@ -147,14 +145,9 @@ public class RootImporter extends FileImporter {
 			Log.log(Log.ERROR, this, "VFS exception while importing", ioe);
 		}
 
-		if (state != null) {
-			postAction = new NodeStructureChange(project, state);
-		}
-
-		showFileCount();
+		postAction = new NodeStructureChange(project, state);
 		saveImportFilterStatus(project, id);
-		return null;
-	} //}}}
+	}
 
 	//{{{ #unregisterFiles(VPTDirectory) : void
 	/** Unregisters all files in the directory from the project, recursively. */

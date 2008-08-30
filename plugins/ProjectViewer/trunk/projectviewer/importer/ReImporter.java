@@ -22,7 +22,6 @@ package projectviewer.importer;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
@@ -65,12 +64,13 @@ public class ReImporter extends RootImporter {
 		fireEvent = false;
 	} //}}}
 
-	//{{{ #internalDoImport() : Collection
+
 	/**
 	 *	Uses the user options from the RootImporter and re-imports the nodes
 	 *	not under the root.
 	 */
-	protected Collection internalDoImport() {
+	protected void internalDoImport()
+	{
 		if (selected.isProject()) {
 			super.oldRoot = ((VPTProject)selected).getRootPath();
 			super.internalDoImport();
@@ -107,17 +107,7 @@ public class ReImporter extends RootImporter {
 				saveImportFilterStatus(project, id);
 			}
 		}
-
-		PVActions.swingInvoke(
-			new Runnable() {
-				public void run() {
-					fireProjectEvent();
-				}
-			}
-		);
-
-		return null;
-	} //}}}
+	}
 
 	//{{{ -reimportDirectory(VPTDirectory, boolean) : void
 	private void reimportDirectory(VPTDirectory dir, boolean flatten) {
