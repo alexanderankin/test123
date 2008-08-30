@@ -21,9 +21,9 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.IOException;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import java.awt.Component;
 
@@ -112,8 +112,8 @@ public class RootImporter extends FileImporter {
 				oldRoot = project.getRootPath();
 			}
 			Enumeration e = project.children();
-			ArrayList toRemove = new ArrayList();
-			removed = new ArrayList();
+			List<VPTNode> toRemove = new ArrayList<VPTNode>();
+			removed = new ArrayList<VPTFile>();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				// need to handle "virtual directories", which mess up the
@@ -126,8 +126,7 @@ public class RootImporter extends FileImporter {
 				}
 			}
 			if (toRemove.size() > 0) {
-				for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
-					VPTNode n = (VPTNode) i.next();
+				for (VPTNode n : toRemove) {
 					if (n.isDirectory()) {
 						unregisterFiles((VPTDirectory)n);
 					} else if (n.isFile()) {

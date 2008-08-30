@@ -54,7 +54,8 @@ public class VPTCompactModel extends ProjectTreeModel {
 
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
-	private Map cache = new HashMap();
+	private Map<VPTNode,List<VPTNode>> cache =
+		new HashMap<VPTNode,List<VPTNode>>();
 	//}}}
 
 	//{{{ +VPTCompactModel(VPTNode) : <init>
@@ -131,18 +132,23 @@ public class VPTCompactModel extends ProjectTreeModel {
 	} //}}}
 
 	//{{{ #getCompressedDirectories(VPTProject) : List
-	protected List getCompressedDirectories(VPTProject node) {
-		if (cache.get(node)!=null)
-			return (List)cache.get(node);
+	protected List<VPTNode> getCompressedDirectories(VPTProject node)
+	{
+		if (cache.containsKey(node)) {
+			return cache.get(node);
+		}
 		Log.log(Log.DEBUG, this, "not cached: "+node);
-		List list=new ArrayList();
+		List<VPTNode> list = new ArrayList<VPTNode>();
 		getCompressedDirectories(new StringBuffer(), node, list);
 		cache.put(node, list);
 		return list;
 	} //}}}
 
 	//{{{ #getCompressedDirectories(StringBuffer, VPTNode, List) : void
-	protected void getCompressedDirectories(StringBuffer leading, VPTNode node, List appendTo) {
+	protected void getCompressedDirectories(StringBuffer leading,
+											VPTNode node,
+											List<VPTNode> appendTo)
+	{
 		int oldLenght = leading.length();
 		if (node.isDirectory() && hasFile(node)) {
 			leading.append(node.getName());
@@ -175,8 +181,9 @@ public class VPTCompactModel extends ProjectTreeModel {
 	} //}}}
 
 	//{{{ #getProjectChildren(VPTProject) : List
-	protected List getProjectChildren(VPTProject project) {
-		List cd = getCompressedDirectories(project);
+	protected List<VPTNode> getProjectChildren(VPTProject project)
+	{
+		List<VPTNode> cd = getCompressedDirectories(project);
 		for (int i = 0; i < project.getChildCount(); i++) {
 			VPTNode child = (VPTNode) project.getChildAt(i);
 			if (child.isFile()) {
@@ -197,7 +204,7 @@ public class VPTCompactModel extends ProjectTreeModel {
 
 		private VPTNode dir;
 		private String name;
-		private List files = new ArrayList();
+		private List<VPTNode> files = new ArrayList<VPTNode>();
 
 		//{{{ +CompactDirectoryNode(VPTNode, String) : <init>
 		public CompactDirectoryNode(VPTNode dir, String name) {

@@ -23,10 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -91,9 +89,9 @@ public abstract class Importer implements Runnable {
 	private Map<VPTNode,VPTNode> addedNodes;
 
 	/** The list of added files, if any, for event firing purposes. */
-	protected ArrayList		added;
+	protected List<VPTFile>	added;
 	/** The list of removed files, if any, for event firing purposes. */
-	protected ArrayList		removed;
+	protected List<VPTFile>	removed;
 	/** Whether this class should automatically fire the project event. */
 	protected boolean fireEvent = true;
 
@@ -265,7 +263,7 @@ public abstract class Importer implements Runnable {
 	 * @param path Path to insert (should be under the given root).
 	 *
 	 * @return The newly created node.
-	 * @throw IOException If an I/O error occur.
+	 * @throws IOException If an I/O error occur.
 	 *
 	 * @since PV 3.0.0
 	 */
@@ -356,7 +354,9 @@ public abstract class Importer implements Runnable {
 	protected void registerFile(VPTFile file) {
 		project.registerNodePath(file);
 		if (!contains(removed, file)) {
-			if (added == null) added = new ArrayList();
+			if (added == null) {
+				added = new ArrayList<VPTFile>();
+			}
 			added.add(file);
 		}
 	} //}}}
@@ -371,20 +371,24 @@ public abstract class Importer implements Runnable {
 	protected void unregisterFile(VPTFile file) {
 		project.unregisterNodePath(file);
 		if (!contains(added, file)) {
-			if (removed == null) removed = new ArrayList();
+			if (removed == null) {
+				removed = new ArrayList<VPTFile>();
+			}
 			removed.add(file);
 		}
 	} //}}}
 
-	//{{{ -contains(ArrayList, VPTFile) : boolean
+
 	/**
 	 *	Checks whether the given list contains the given file or not. If the
 	 *	file is found, it is removed from the list.
 	 */
-	private boolean contains(ArrayList list, VPTFile file) {
+	private boolean contains(List<VPTFile> list,
+							 VPTFile file)
+	{
 		if (list != null)
 		for (int i = 0; i < list.size(); i++) {
-			if (((VPTNode)list.get(i)).compareToNode(file) == 0) {
+			if (list.get(i).compareTo(file) == 0) {
 				list.remove(i);
 				return true;
 			}

@@ -58,8 +58,8 @@ public class VPTProject extends VPTNode {
 
 	//{{{ Attributes
 
-	private List		openFiles;
-	private List 		filterList;
+	private List<String>		openFiles;
+	private List<VPTFilterData> filterList;
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
@@ -74,9 +74,9 @@ public class VPTProject extends VPTNode {
 	public VPTProject(String name) {
 		super(name, true);
 		openableNodes	= new HashMap<String,VPTNode>();
-		openFiles		= new ArrayList();
+		openFiles		= new ArrayList<String>();
 		properties		= new Properties();
-		filterList		= Collections.EMPTY_LIST;
+		filterList		= Collections.emptyList();
 		lock			= new AtomicBoolean(false);
 	}
 
@@ -259,9 +259,9 @@ public class VPTProject extends VPTNode {
 		return getRootPath();
 	} //}}}
 
-	//{{{ +compareToNode(VPTNode) : int
+	//{{{ +compareTo(VPTNode) : int
 	/** Projects have precedence over everything but groups. */
-	public int compareToNode(VPTNode node) {
+	public int compareTo(VPTNode node) {
 		if (node.isGroup()){
 			return 1;
 		} else if (node.isProject()) {
@@ -286,7 +286,7 @@ public class VPTProject extends VPTNode {
 	 *
 	 *	@since PV 2.2.2.0
 	 */
-	public void setFilterList(List filterList) {
+	public void setFilterList(List<VPTFilterData> filterList) {
 		this.filterList = filterList;
 		ProjectViewer.nodeStructureChanged(this);
 	} //}}}
@@ -298,7 +298,7 @@ public class VPTProject extends VPTNode {
 	 *
 	 *	@since PV 2.2.2.0
 	 */
-	public List getFilterList() {
+	public List<VPTFilterData> getFilterList() {
 		return filterList;
 	} //}}}
 

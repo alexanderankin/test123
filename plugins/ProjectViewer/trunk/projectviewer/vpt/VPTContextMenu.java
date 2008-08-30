@@ -158,7 +158,7 @@ public class VPTContextMenu extends MouseAdapter
 	 */
 	public void userMenuChanged()
 	{
-		updateExtensions(new ArrayList(extActions));
+		updateExtensions(new ArrayList<Object>(extActions));
 	}
 
 	/**

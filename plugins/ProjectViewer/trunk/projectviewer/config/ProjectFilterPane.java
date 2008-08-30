@@ -238,16 +238,18 @@ public class ProjectFilterPane extends AbstractOptionPane
 		/**
 		 * @param appAssoc  the collection of extentions and associations
 		 */
-		public FilterTabelModel(List filterList) {
-			if (filterList == java.util.Collections.EMPTY_LIST) {
-				this.filterList = new ArrayList();
+		public FilterTabelModel(List<VPTFilterData> filterList)
+		{
+			List<VPTFilterData> empty = java.util.Collections.emptyList();
+			if (filterList == empty) {
+				this.filterList = new ArrayList<VPTFilterData>();
 			} else {
 				this.filterList = filterList;
 			}
 		} //}}}
 
 		//{{{ +getFilterList() : List
-		public List getFilterList() {
+		public List<VPTFilterData> getFilterList() {
 			return filterList;
 		} //}}}
 
@@ -273,7 +275,7 @@ public class ProjectFilterPane extends AbstractOptionPane
 				int newIndex = rowIndex + increment;
 				if (newIndex < filterList.size() && newIndex >= 0)
 				{
-					Object moveEntry = filterList.get(rowIndex);
+					VPTFilterData moveEntry = filterList.get(rowIndex);
 					filterList.remove(rowIndex);
 					filterList.add(newIndex, moveEntry);
 				}
@@ -298,7 +300,7 @@ public class ProjectFilterPane extends AbstractOptionPane
 
 		//{{{ +getValueAt(int, int) : Object
 		public Object getValueAt(int r, int c) {
-			VPTFilterData fd = (VPTFilterData)filterList.get(r);
+			VPTFilterData fd = filterList.get(r);
 				switch(c) {
 					case 0: return fd.getGlob();
 					case 1: return fd.getName();
@@ -313,7 +315,7 @@ public class ProjectFilterPane extends AbstractOptionPane
 				jEdit.getProperty("projectviewer.filterconfig.filter");
 		} //}}}
 
-		private List filterList;
+		private List<VPTFilterData> filterList;
 
 	} //}}}
 

@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import java.util.Stack;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import org.gjt.sp.util.Log;
@@ -124,7 +124,7 @@ public final class OldConfigLoader {
 
 		if (props == null) return;
 
-		HashMap paths = new HashMap();
+		Map<String,VPTNode> paths = new HashMap<String,VPTNode>();
 
 
 		// ensures that the path does not have a trailing '/'
@@ -139,8 +139,8 @@ public final class OldConfigLoader {
 			p.setProperty("projectviewer.folder_tree_state", (String) props.get("folderTreeState"));
 		}
 
-		for (Iterator it = props.keySet().iterator(); it.hasNext(); ) {
-			String key = (String) it.next();
+		for (Object _key : props.keySet()) {
+			String key = (String) _key;
 			if (key.startsWith("file")) {
 				File f = new File(props.getProperty(key));
 				VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
@@ -168,7 +168,7 @@ public final class OldConfigLoader {
 		String suffix = ".project." + idx;
 
 		String fileName = props.getProperty(prefix + counter + suffix);
-		HashMap paths = new HashMap();
+		Map<String,VPTNode> paths = new HashMap<String,VPTNode>();
 
 		while (fileName != null) {
 			File f = new File(fileName);
@@ -192,7 +192,10 @@ public final class OldConfigLoader {
 	 *	@param	dirs	A HashMap containing the already added dirs (key = path).
 	 *	@return	The VPTNode representing the given directory.
 	 */
-	private static VPTNode ensureDirAdded(VPTProject p, String path, HashMap dirs) {
+	private static VPTNode ensureDirAdded(VPTProject p,
+										  String path,
+										  Map<String,VPTNode> dirs)
+	{
 		if (path.equals(p.getRootPath())) {
 			return p;
 		}
@@ -200,7 +203,7 @@ public final class OldConfigLoader {
 			return (VPTNode) dirs.get(path);
 		}
 
-		Stack toAdd = new Stack();
+		Stack<VPTNode> toAdd = new Stack<VPTNode>();
 		VPTNode dir = new VPTDirectory(path);
 		dirs.put(path, dir);
 		toAdd.push(dir);

@@ -24,8 +24,9 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.Reader;
 
-import java.util.HashSet;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,9 +168,9 @@ public class SearchAction extends Action {
 				pFilter = Pattern.compile(StandardUtilities.globToRE(filter));
 			}
 
-			HashSet fileset = new HashSet();
+			Set<String> fileset = new HashSet<String>();
 			addFiles(node, fileset);
-			return (String[]) fileset.toArray(new String[fileset.size()]);
+			return fileset.toArray(new String[fileset.size()]);
 		}
 		//}}}
 
@@ -178,7 +179,9 @@ public class SearchAction extends Action {
 		 *	Adds all the files below the given node to the list of search files,
 		 *	recursively.
 		 */
-		private void addFiles(VPTNode node, HashSet fileset) {
+		private void addFiles(VPTNode node,
+							  Set<String> fileset)
+		{
 			Enumeration e = node.children();
 			if (e != null)
 			while(e.hasMoreElements()) {

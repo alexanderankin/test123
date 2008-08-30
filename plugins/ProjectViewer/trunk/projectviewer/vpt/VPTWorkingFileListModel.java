@@ -22,6 +22,8 @@ package projectviewer.vpt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
@@ -40,11 +42,11 @@ import org.gjt.sp.jedit.Buffer;
 public class VPTWorkingFileListModel extends ProjectTreeModel {
 
 	//{{{ Private members
-	private WeakHashMap fileLists;
+	private Map<VPTProject,List<VPTNode>> fileLists;
 
 	private Object lastParent;
-	private ArrayList lastList;
-	private ArrayList pathBuilder;
+	private List<VPTNode> lastList;
+	private List<TreeNode> pathBuilder;
 	//}}}
 
 	//{{{ +VPTWorkingFileListModel(VPTNode) : <init>
@@ -55,8 +57,8 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 	 */
 	public VPTWorkingFileListModel(VPTNode rootNode) {
 		super(rootNode);
-		fileLists = new WeakHashMap();
-		pathBuilder = new ArrayList();
+		fileLists = new WeakHashMap<VPTProject,List<VPTNode>>();
+		pathBuilder = new ArrayList<TreeNode>();
 		checkOpenFiles();
 	} //}}}
 
@@ -76,7 +78,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 			return node.getChildCount();
 		} else if (node.isProject()) {
 			lastParent = parent;
-			ArrayList lst = (ArrayList) fileLists.get(node);
+			List<VPTNode> lst = fileLists.get(node);
 			lastList = lst;
 			return (lst != null) ? lst.size() : 0;
 		}
@@ -101,10 +103,10 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 		} else if (node.isProject()) {
 			lastParent = parent;
 			VPTProject p = (VPTProject) node;
-			ArrayList lst = (ArrayList) fileLists.get(p);
+			List<VPTNode> lst = fileLists.get(p);
 			if (lst == null) {
-				lst = new ArrayList();
-				fileLists.put(node, lst);
+				lst = new ArrayList<VPTNode>();
+				fileLists.put(p, lst);
 			}
 			lastList = lst;
 			if (index >= lst.size()) return null;
@@ -144,9 +146,9 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 			for (int j = 0; j < projs.length; j++) {
 				VPTNode n = projs[j].getChildNode(path);
 				if (n != null) {
-					ArrayList lst = (ArrayList) fileLists.get(projs[j]);
+					List<VPTNode> lst = fileLists.get(projs[j]);
 					if (lst == null) {
-						lst = new ArrayList();
+						lst = new ArrayList<VPTNode>();
 						fileLists.put(projs[j], lst);
 					}
 					lst.add(n);
@@ -164,7 +166,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 		Buffer[] bufs = jEdit.getBuffers();
 		VPTNode root = (VPTNode) this.root;
 
-		ArrayList lst = new ArrayList();
+		List<VPTNode> lst = new ArrayList<VPTNode>();
 		fileLists.put(p, lst);
 
 		for (int i = 0; i < bufs.length; i++) {
@@ -189,9 +191,9 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 		for (int j = 0; j < projs.length; j++) {
 			VPTNode n = projs[j].getChildNode(path);
 			if (n != null) {
-				ArrayList lst = (ArrayList) fileLists.get(projs[j]);
+				List<VPTNode> lst = fileLists.get(projs[j]);
 				if (lst == null) {
-					lst = new ArrayList();
+					lst = new ArrayList<VPTNode>();
 					fileLists.put(projs[j], lst);
 				}
 				if (!lst.contains(n)) {
@@ -215,7 +217,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 		for (int j = 0; j < projs.length; j++) {
 			VPTNode n = projs[j].getChildNode(path);
 			if (n != null) {
-				ArrayList lst = (ArrayList) fileLists.get(projs[j]);
+				List<VPTNode> lst = fileLists.get(projs[j]);
 				if (lst != null) {
 					lst.remove(n);
 					super.nodeStructureChanged(projs[j]);
@@ -233,7 +235,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 			projs = new VPTProject[1];
 			projs[0] = (VPTProject) root;
 		} else {
-			ArrayList lst = new ArrayList();
+			List<VPTProject> lst = new ArrayList<VPTProject>();
 			findProjects((VPTGroup)root, lst);
 			projs = (VPTProject[]) lst.toArray(new VPTProject[lst.size()]);
 		}
@@ -242,11 +244,13 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 	} //}}}
 
 	//{{{ -findProjects(VPTGroup, ArrayList) : void
-	private void findProjects(VPTGroup grp, ArrayList projs) {
+	private void findProjects(VPTGroup grp,
+							  List<VPTProject> projs)
+	{
 		for (Enumeration e = grp.children(); e.hasMoreElements(); ) {
 			VPTNode next = (VPTNode) e.nextElement();
 			if (next.isProject()) {
-				projs.add(next);
+				projs.add((VPTProject)next);
 			} else {
 				findProjects((VPTGroup)next, projs);
 			}
@@ -274,7 +278,7 @@ public class VPTWorkingFileListModel extends ProjectTreeModel {
 			aNode = aNode.getParent();
 		}
 		pathBuilder.add(0, aNode);
-		return (TreeNode[]) pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
+		return pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
 	} //}}}
 
 	//{{{ +nodeChanged(TreeNode) : void

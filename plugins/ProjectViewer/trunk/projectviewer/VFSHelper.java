@@ -76,7 +76,7 @@ public class VFSHelper
 	 *
 	 * @param vfs The VFS instance.
 	 * @param session The session to end.
-	 * @param view A jEdit view.
+	 * @param v A jEdit view.
 	 */
 	public static void endVFSSession(VFS vfs, Object session, View v)
 	{
