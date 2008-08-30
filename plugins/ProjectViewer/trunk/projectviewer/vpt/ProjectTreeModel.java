@@ -43,14 +43,16 @@ public abstract class ProjectTreeModel extends DefaultTreeModel
      */
     protected abstract String getName();
 
+
     /**
-     * Returns whether this model shows files in a nin-hierarchical
-     * ("flat") manner. "Flat" trees receive a few different
-     * notifications than non-flat ones: basically, they don't get
-     * notifications for changes in directories - rather, they are
-     * notified of a change in the project's structure instead.
+     * Returns whether this model shows files in a customized way
+     * that does not follow the implicit node hierarchy. Custom
+     * trees receive a few different notifications than regular ones:
+     * basically, they don't get notifications for changes in
+     * directories - rather, they areisCustom notified of a change in
+     * the project's structure instead.
      */
-    protected boolean isFlat()
+    protected boolean isCustom()
     {
         return false;
     }
