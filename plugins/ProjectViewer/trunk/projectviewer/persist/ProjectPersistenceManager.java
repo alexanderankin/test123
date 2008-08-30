@@ -308,6 +308,7 @@ public final class ProjectPersistenceManager {
 			handlerClasses.clear();
 			handlerNames.clear();
 			registerHandler(new FileNodeHandler());
+			registerHandler(new FilterNodeHandler());
 			registerHandler(new DirectoryNodeHandler());
 			registerHandler(new PropertyNodeHandler());
 			registerHandler(new OpenFileNodeHandler());

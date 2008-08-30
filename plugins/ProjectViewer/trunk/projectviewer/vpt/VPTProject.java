@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -150,14 +151,13 @@ public class VPTProject extends VPTNode {
 		return properties;
 	} //}}}
 
-	//{{{ +getOpenFiles() : Iterator
-	/**
-	 *	Returns an iterator to the list of open files that this project
-	 *	remembers.
-	 */
-	public Iterator getOpenFiles() {
-		return openFiles.iterator();
-	} //}}}
+
+	/** Returns the list of open files the project knows about. */
+	public List<String> getOpenFiles()
+	{
+		return openFiles;
+	}
+
 
 	//{{{ +addOpenFile(String) : void
 	/**
@@ -271,14 +271,21 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ +addFilter(VPTFilterData) : void
+
 	/**
+	 * Adds a "filtered tree" filter to the project's filter list.
 	 *
-	 *	@since PV 2.2.2.0
+	 * @since PV 2.2.2.0
 	 */
-	public void addFilter(VPTFilterData filterData) {
-		getFilterList().add(filterData);
-	} //}}}
+	public void addFilter(VPTFilterData filter)
+	{
+		List<VPTFilterData> empty = Collections.emptyList();
+		if (getFilterList() == empty) {
+			setFilterList(new LinkedList<VPTFilterData>());
+		}
+		getFilterList().add(filter);
+	}
+
 
 	//{{{ +setFilterList(List) : void
 	/**
@@ -333,25 +340,27 @@ public class VPTProject extends VPTNode {
 	}
 
 
-	//{{{ +fireFilesChanged(ArrayList, ArrayList) : void
 	/**
 	 *	Notifies the listeners that a group of files has been added to and/or
 	 *	removed from the project.
 	 */
-	public void fireFilesChanged(List<VPTFile> added, List<VPTFile> removed) {
+	public void fireFilesChanged(List<VPTFile> added,
+								 List<VPTFile> removed)
+	{
 		ProjectUpdate up = new ProjectUpdate(this, added, removed);
 		EditBus.send(up);
-	} //}}}
+	}
 
-	//{{{ +firePropertiesChanged() : void
+
 	/**
 	 *	Notifies the listeners that a single file has been added to the
 	 *	project.
 	 */
-	public void firePropertiesChanged() {
+	public void firePropertiesChanged()
+	{
 		ProjectUpdate up = new ProjectUpdate(this);
 		EditBus.send(up);
-	} //}}}
+	}
 
 }
 
