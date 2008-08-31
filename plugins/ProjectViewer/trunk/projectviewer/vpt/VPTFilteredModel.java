@@ -119,7 +119,7 @@ public class VPTFilteredModel extends ProjectCustomTreeModel
 
 	public TreeNode[] getPathToRoot(TreeNode aNode)
 	{
-		if (aNode.isLeaf()) {
+		if (aNode.isLeaf() && !aNode.getAllowsChildren()) {
 			VPTNode node = (VPTNode) aNode;
 			VPTProject proj = VPTNode.findProjectFor(node);
 			List<VPTNode> filters = getCachedChildren(proj);

@@ -101,7 +101,7 @@ public class VPTCompactModel extends ProjectCustomTreeModel
 
 	public TreeNode[] getPathToRoot(TreeNode aNode)
 	{
-		if (aNode.isLeaf()) {
+		if (aNode.isLeaf() && !aNode.getAllowsChildren()) {
 			/*
 			 * For leaf nodes, need first to check whether there is
 			 * a parent node that contains the queried child before
