@@ -1,0 +1,35 @@
+# Properties file for MetalColor plugin
+# $Id$
+
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.metalcolor.MetalColorPlugin.activate=startup
+
+# These two properties are required for all plugins
+plugin.metalcolor.MetalColorPlugin.name=MetalColor
+plugin.metalcolor.MetalColorPlugin.author=Jocelyn Turcotte
+
+# version number == jEdit version number
+plugin.metalcolor.MetalColorPlugin.version=1.0
+
+# online help
+plugin.metalcolor.MetalColorPlugin.docs=index.html
+
+# we only have one dependency, jEdit 4.2, since we use the new plugin API
+plugin.metalcolor.MetalColorPlugin.depend.0=jedit 04.02.01.00
+plugin.metalcolor.MetalColorPlugin.depend.1=jdk 1.5
+
+plugin.metalcolor.MetalColorPlugin.description=The MetalColor plugin allows you to customize colors of the Metal look-and-feel.
+
+# plugin option pane
+plugin.metalcolor.MetalColorPlugin.option-pane=metalcolor
+
+# Option pane activation BeanShell snippet
+options.metalcolor.code=new metalcolor.MetalColorOptionPane();
+
+options.metalcolor.label=MetalColor
+options.metalcolor.note=Note: Restart jEdit for changes to be applied completely
+options.metalcolor.controlcolor=Control color:
+options.metalcolor.backgroundcolor=Background color:
+options.metalcolor.textcolor=Text color:
+
