@@ -189,9 +189,6 @@ public class FileImporter extends Importer {
 				continue;
 			}
 			node = constructPath(where, url);
-			if (node != null && node.isFile()) {
-				registerFile((VPTFile)node);
-			}
 		}
 	}
 
