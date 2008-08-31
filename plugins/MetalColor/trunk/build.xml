@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <project name="MetalColor"
-		 default="build">
-	<description>
-		This is an ant build.xml file for building the MetalColor plugin for jEdit.
-	</description>
+         default="build">
+    <description>
+        This is an ant build.xml file for building the MetalColor plugin for jEdit.
+    </description>
 
     <property file="build.properties" />
     <property file="../build.properties" />
 
     <import file="${build.support}/plugin-build.xml" />
 
-	<selector id="packageFiles">
-		<filename name="index.html" />
-	</selector>
+    <selector id="packageFiles">
+        <filename name="index.html" />
+    </selector>
 </project>

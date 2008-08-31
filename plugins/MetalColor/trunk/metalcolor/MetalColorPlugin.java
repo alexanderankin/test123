@@ -41,19 +41,19 @@ import metalcolor.MetalColorTheme;
  */
 public class MetalColorPlugin extends EditPlugin
 {
-	public static final String NAME = "metalcolor";
+    public static final String NAME = "metalcolor";
     public static final String CONTROLCOLOR_PROPERTY_NAME = "metalcolor.basecolor";
     public static final String TEXTCOLOR_PROPERTY_NAME = "metalcolor.textcolor";
     public static final String BGCOLOR_PROPERTY_NAME = "metalcolor.backgroundcolor";
 
-	public void start()
-	{                                               
+    public void start()
+    {                                               
         updateTheme();
-	}
+    }
     
     public static void updateTheme()
     {
-		try
+        try
         {
             Color controlColor = jEdit.getColorProperty( CONTROLCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_CONTROLCOLOR );
             Color textColor = jEdit.getColorProperty( TEXTCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_TEXTCOLOR );
@@ -61,18 +61,18 @@ public class MetalColorPlugin extends EditPlugin
             
             MetalLookAndFeel.setCurrentTheme( new MetalColorTheme(controlColor, textColor, bgColor) );
             updateAllComponentTreeUIs();
-		}
+        }
         catch (Exception e)
         {
-			Log.log(Log.ERROR, MetalColorPlugin.class, e);
-		}
+            Log.log(Log.ERROR, MetalColorPlugin.class, e);
+        }
     }
     
-	/**
-	 * Update the component trees of all windows.
-	 */
-	private static void updateAllComponentTreeUIs() throws javax.swing.UnsupportedLookAndFeelException
-	{
+    /**
+     * Update the component trees of all windows.
+     */
+    private static void updateAllComponentTreeUIs() throws javax.swing.UnsupportedLookAndFeelException
+    {
         if( UIManager.getLookAndFeel() instanceof MetalLookAndFeel )
         {
             // re-install the Metal Look and Feel
@@ -84,5 +84,5 @@ public class MetalColorPlugin extends EditPlugin
                 SwingUtilities.updateComponentTreeUI(frames[i]);
             }
         }
-	}
+    }
 }
