@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectManager;
+import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -228,6 +229,7 @@ public class ProjectFilterPane extends AbstractOptionPane
 			ProjectManager.getInstance().setGlobalFilterList(model.getFilterList());
 		} else {
 			ProjectOptions.getProject().setFilterList(model.getFilterList());
+			ProjectViewer.nodeStructureChangedFlat(ProjectOptions.getProject());
 		}
 	}//}}}
 

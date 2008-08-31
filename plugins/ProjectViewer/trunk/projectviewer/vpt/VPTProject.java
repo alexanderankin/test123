@@ -295,7 +295,6 @@ public class VPTProject extends VPTNode {
 	 */
 	public void setFilterList(List<VPTFilterData> filterList) {
 		this.filterList = filterList;
-		ProjectViewer.nodeStructureChanged(this);
 	} //}}}
 
 	//{{{ +getFilterList() : List
