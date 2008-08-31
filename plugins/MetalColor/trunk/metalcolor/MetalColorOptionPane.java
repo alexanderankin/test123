@@ -30,47 +30,47 @@ import org.gjt.sp.jedit.*;
 
 public class MetalColorOptionPane extends AbstractOptionPane
 {
-	private ColorWellButton controlColor;
-	private ColorWellButton bgColor;
-	private ColorWellButton textColor;
+    private ColorWellButton controlColor;
+    private ColorWellButton bgColor;
+    private ColorWellButton textColor;
     
-	public MetalColorOptionPane()
+    public MetalColorOptionPane()
     {
-		super( MetalColorPlugin.NAME );
-	}
+        super( MetalColorPlugin.NAME );
+    }
 
-	public void _init()
+    public void _init()
     {
         controlColor = new ColorWellButton( jEdit.getColorProperty(MetalColorPlugin.CONTROLCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_CONTROLCOLOR) );
-		addComponent( jEdit.getProperty("options.metalcolor.controlcolor"), controlColor );
+        addComponent( jEdit.getProperty("options.metalcolor.controlcolor"), controlColor );
 
         bgColor = new ColorWellButton( jEdit.getColorProperty(MetalColorPlugin.BGCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_BGCOLOR) );
-		addComponent( jEdit.getProperty("options.metalcolor.backgroundcolor"), bgColor );
+        addComponent( jEdit.getProperty("options.metalcolor.backgroundcolor"), bgColor );
 
         textColor = new ColorWellButton( jEdit.getColorProperty(MetalColorPlugin.TEXTCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_TEXTCOLOR) );
-		addComponent( jEdit.getProperty("options.metalcolor.textcolor"), textColor );
+        addComponent( jEdit.getProperty("options.metalcolor.textcolor"), textColor );
         
         addSeparator();
-		addComponent( new JLabel(jEdit.getProperty("options.metalcolor.note")) );        
-	}
+        addComponent( new JLabel(jEdit.getProperty("options.metalcolor.note")) );        
+    }
 
-	public void _save()
+    public void _save()
     {
         boolean dirty = false;
         
         Color oldControl = jEdit.getColorProperty( MetalColorPlugin.CONTROLCOLOR_PROPERTY_NAME );
-		jEdit.setColorProperty( MetalColorPlugin.CONTROLCOLOR_PROPERTY_NAME, controlColor.getSelectedColor() );
+        jEdit.setColorProperty( MetalColorPlugin.CONTROLCOLOR_PROPERTY_NAME, controlColor.getSelectedColor() );
         dirty |= oldControl == null || !controlColor.getSelectedColor().equals(oldControl);
         
         Color oldBg = jEdit.getColorProperty( MetalColorPlugin.BGCOLOR_PROPERTY_NAME );
-		jEdit.setColorProperty( MetalColorPlugin.BGCOLOR_PROPERTY_NAME, bgColor.getSelectedColor() );
+        jEdit.setColorProperty( MetalColorPlugin.BGCOLOR_PROPERTY_NAME, bgColor.getSelectedColor() );
         dirty |= oldBg == null || !bgColor.getSelectedColor().equals(oldBg);
         
         Color oldText = jEdit.getColorProperty( MetalColorPlugin.TEXTCOLOR_PROPERTY_NAME );
-		jEdit.setColorProperty( MetalColorPlugin.TEXTCOLOR_PROPERTY_NAME, textColor.getSelectedColor() );
+        jEdit.setColorProperty( MetalColorPlugin.TEXTCOLOR_PROPERTY_NAME, textColor.getSelectedColor() );
         dirty |= oldText == null || !textColor.getSelectedColor().equals(oldText);
         
         if( dirty )
             MetalColorPlugin.updateTheme();
-	}
+    }
 }
