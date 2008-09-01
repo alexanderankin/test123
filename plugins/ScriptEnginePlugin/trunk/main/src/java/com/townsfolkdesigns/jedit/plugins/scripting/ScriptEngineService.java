@@ -39,12 +39,6 @@ public interface ScriptEngineService {
    public Class getEngineFactoryClass();
 
    /**
-    * Get the script engine name used in ScriptEngineManager.
-    * @return the script engine class used in ScriptEngineManager.
-    */
-   public String getEngineName();
-
-   /**
     * Get the mode the script engine is associated with.
     * @return the mode the script engine is associated with.
     */
