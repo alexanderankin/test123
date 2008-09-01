@@ -310,7 +310,6 @@ public class DiffAction extends SVNAction {
                 }
 
                 // show JDiff
-                getView().unsplit();
                 DualDiff.toggleFor( getView() );
 
                 Runnable r = new Runnable() {
@@ -329,9 +328,6 @@ public class DiffAction extends SVNAction {
                                     // show the 2nd remote revision in the right edit pane
                                     editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
                                 }
-
-                                // show the jdiff dockable
-                                getView().getDockableWindowManager().showDockableWindow( "jdiff-lines" );
 
                                 // do an explicit repaint of the view to clean up the display
                                 getView().repaint();
