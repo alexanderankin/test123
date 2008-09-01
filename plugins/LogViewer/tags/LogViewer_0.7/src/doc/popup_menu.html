@@ -1,0 +1,55 @@
+<html>
+<body>
+<h1>Log Viewer Plugin</h1>
+<h2>
+POPUP MENU
+</h2>
+The popup menu items should be self-explanatory:
+<table>
+<tr>
+<td>
+<img src="images/popup_menu.gif">
+</td>
+<td>
+<ul>
+<li>Open Log: open a log file.</li>
+<li>Close Log: close a log file.</li>
+-
+<li>Refresh: useful if latency is set to a high number.</li>
+<li>Reload: same as close then open.</li>
+<li>Jump to First Line</li> 
+<li>Jump to Last Line</li>
+<li>Tail: toggles auto scroll on and off for the current log.</li>
+<li>Find: display a "find" dialog.</li>
+-
+<li>Wrap Lines: in table view, wraps cell contents.</li>
+-
+<li>Clear Log: just clears the log window, does not alter the log file.</li>
+<li>Clear All Logs: clears all log windows, does not alter the log files.</li>
+<li>Delete Log: deletes the current log file from disk.</li>
+<li>Delete All Logs: deletes all open log files from disk.</li>
+</ul>
+</td>
+</tr>
+</table>
+
+<p>
+
+<h3>
+Refresh vs. Reload
+</h3>
+
+<ul>
+  <li><b>Refresh</b> is useful when the latency period is set to a high value. 
+  You may want to see if anything new has been added to the log file before 
+  the end of the latency period has been reached.  The refresh button will 
+  force a read of the log file.</li>
+  <li><b>Reload</b> is useful when the log file has been deleted or rolled,
+  then recreated, as is often the case with webserver log files.  Reload
+  will drop the current file handle and fetch a new one, then reread the
+  entire file.</li>
+</ul>  
+
+</body>
+</html>
+
