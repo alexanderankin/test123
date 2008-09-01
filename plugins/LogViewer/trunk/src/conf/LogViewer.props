@@ -3,7 +3,7 @@
 
 plugin.logviewer.LogViewerPlugin.name=Log Viewer
 plugin.logviewer.LogViewerPlugin.author=Don Brown
-plugin.logviewer.LogViewerPlugin.version=0.6
+plugin.logviewer.LogViewerPlugin.version=0.7
 plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
 plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.4
@@ -40,7 +40,7 @@ plugin.logviewer.LogViewerPlugin.menu=logviewer.show \
                 logviewer.deleteAll \
                 - \
                 logviewer.about
-                
+
 logviewer.menu.label=Log Viewer
 logviewer.show.label=Show Log Viewer
 logviewer.open.label=Open Log
@@ -75,12 +75,12 @@ logviewer.dialog.About.text=\
   License as published by the Free Software Foundation.\n\n\
   This program is distributed in the hope that it will be useful,\n\
   but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\                              
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\ 
   GNU General Public License for more details.\n\n\
   You should have received a copy of the GNU General Public License\n\
   along with this program; if not, write to the Free Software\n\
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 logviewer.message.filesDeletedSinceLastExecution.text=\
   The following {0,choice,1#file has|2#files have} been removed since the last time you ran Log Viewer:\n\n\
   {1}\n\
@@ -93,7 +93,7 @@ logviewer.message.unableToDeleteAll.title=Warning
 
 logviewer.message.unableToDelete.text=\
   Unable to delete the contents of this file due to an I/O error.
-logviewer.message.unableToDelete.title=Warning  
+logviewer.message.unableToDelete.title=Warning
 
 logviewer.dialog.confirmDelete.title=Warning
 logviewer.dialog.confirmDelete.message=\
@@ -197,7 +197,7 @@ logviewer.WhatIsThis.wordWrap.text=\
   want to scroll left and right to read the log. By changing the value\n\
   of this preference, you can control whether long lines wrap to \n\
   several lines.
-  
+
 logviewer.WhatIsThis.autoScroll.title=What Is Auto-Scroll?
 logviewer.WhatIsThis.autoScroll.text=\
   When auto-scroll is enabled, log viewer automatically scrolls\n\
@@ -206,4 +206,4 @@ logviewer.WhatIsThis.autoScroll.text=\
 logviewer.WhatIsThis.font.title=What Is Font?
 logviewer.WhatIsThis.font.text=\
   You can choose a font to be used to show the text of the log.
-  
+
