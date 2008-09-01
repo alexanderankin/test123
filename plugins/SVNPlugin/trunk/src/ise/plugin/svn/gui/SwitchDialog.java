@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-import java.awt.Color;
 import java.io.File;
 import java.util.*;
 import java.awt.event.*;
@@ -109,7 +108,6 @@ public class SwitchDialog extends JDialog {
         HistoryTextField to_replace_file = new HistoryTextField(PATH);
         to_replace_file.setText(path);
         to_replace_file.setEditable(false);
-        to_replace_file.setBackground(Color.WHITE);
 
         final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursively_switch?", "Recursively switch?") );
         recursive_cb.setSelected( recursive );
