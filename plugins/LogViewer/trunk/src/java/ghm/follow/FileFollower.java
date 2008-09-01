@@ -15,20 +15,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package ghm.follow;
 
 import java.io.BufferedReader;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.*;
 import javax.swing.JOptionPane;
 
-import logviewer.Log;
 import logviewer.LogType;
-import logviewer.StringUtils;
 
 /**
  * Instances of this class 'follow' a particular text file, assmebling that
@@ -284,14 +280,14 @@ public class FileFollower {
     */
     class Runner extends Thread {
         FileReader fileReader = null;
-        PushbackReader bufferedReader = null;
+        BufferedReader bufferedReader = null;
         char[] charArray = new char[bufferSize_];
 
         /** Constructor for Runner  */
         public Runner() {
             try {
                 fileReader = new FileReader(file_);
-                bufferedReader = new PushbackReader(fileReader, bufferSize_);
+                bufferedReader = new BufferedReader(fileReader, bufferSize_);
                 load();  /// need to make this a setting
             }
             catch (Exception e) {
@@ -314,7 +310,7 @@ public class FileFollower {
             try {
                 bufferedReader.close();
             }
-            catch (Exception e) {
+            catch (Exception e) {   // NOPMD
             }
         }
 
@@ -365,22 +361,14 @@ public class FileFollower {
                 // The default entry separator is \n, so if none is explicitly set, this
                 // does the same as reading by lines.  Sending a batch of entries may be
                 // an optimization for the destination
-                int numCharsRead = bufferedReader.read(charArray, 0, charArray.length);
+                String line = bufferedReader.readLine();
+                int numCharsRead = line.length();
                 if (numCharsRead > 0) {
                     String s = new String(charArray, 0, numCharsRead);
                     if (logEntryRegex == null) {
                         // no entry regex, so split the buffer into individual
                         // entries by entry separator
                         String[] entries = logEntryPattern.split(s);
-
-                        // pushback the last entry as it may not be complete
-                        /*
-                        if (entries.length > 0) {
-                            int pushback_length = entries[entries.length - 1].length();
-                            numCharsRead -= pushback_length;
-                            bufferedReader.unread(charArray, numCharsRead, pushback_length);
-                        }
-                        */
 
                         // send the entries to the destination(s).
                         List toPrint = new ArrayList();
@@ -393,14 +381,10 @@ public class FileFollower {
                     else {
                         // use regex to find individual entries
                         Matcher m = logEntryPattern.matcher(s);
-                        int end = 0;
                         List toPrint = new ArrayList();
                         while (m.find()) {
                             toPrint.add(m.group() + "\n");
-                            end = m.end();
                         }
-                        //bufferedReader.unread(charArray, end, numCharsRead - end);
-                        //numCharsRead = end;
                         print((String[])(toPrint.toArray(new String[]{})));
                     }
                 }
