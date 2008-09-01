@@ -270,18 +270,6 @@ it in your services.xml. </p>
       <pre><span style="font-family: mon;"></span></pre>
 
       
-      <pre><span style="font-family: mon;">&nbsp;&nbsp; public String getEngineName() {</span></pre>
-
-      
-      <pre><span style="font-family: mon;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return factory.getEngineName();</span></pre>
-
-      
-      <pre><span style="font-family: mon;">&nbsp;&nbsp; }</span></pre>
-
-      
-      <pre><span style="font-family: mon;"></span></pre>
-
-      
       <pre><span style="font-family: mon;">&nbsp;&nbsp; public Mode getMode() {</span></pre>
 
       
@@ -354,15 +342,6 @@ implements the ScriptEngineService.</p>
 
 <ul>
   <li><span style="font-weight: bold;">getEngineFactoryClass</span> - returns the <a href="http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngineFactory.html">ScriptEngineFactory</a> class that can be registered with the <a href="http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngineManager.html">ScriptEngineManager</a>.</li>
-</ul>
-<ul>
-  <li><span style="font-weight: bold;">getEngineName</span> - returns
-the name of the ScriptEngine which the ScriptEngineFactory is
-registered with. This is mainly used when trying to retrieve a
-ScriptEngine by the current edit mode.</li>
-  <ul>
-    <li>You should be able to use this name with ScriptEngineManager.getEngineByName.</li>
-  </ul>
 </ul>
 <ul>
   <li><span style="font-weight: bold;">getMode</span> - returns the jEdit edit mode that this ScriptEngine is associated with.</li>

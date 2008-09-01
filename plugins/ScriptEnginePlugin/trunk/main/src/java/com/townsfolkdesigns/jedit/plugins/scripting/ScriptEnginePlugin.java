@@ -73,9 +73,9 @@ public class ScriptEnginePlugin extends EditPlugin {
       Object returnVal = null;
 
       ScriptEngine engine = getScriptEngineForName(engineName);
-      engine.setContext(scriptContext);
 
       if ((engine != null) && (script != null) && !script.equals("")) {
+         engine.setContext(scriptContext);
 
          try {
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Executing Script - content: \n" + script);
@@ -96,7 +96,7 @@ public class ScriptEnginePlugin extends EditPlugin {
 
       if (scriptEngineServices.containsKey(mode)) {
          ScriptEngineService service = scriptEngineServices.get(mode);
-         engine = getScriptEngineForName(service.getEngineName());
+         engine = getScriptEngineForName(mode.getName());
       } else {
          Log.log(Log.ERROR, ScriptEnginePlugin.class, "No ScriptEngine registered for mode: " + mode.getName());
       }
@@ -108,6 +108,7 @@ public class ScriptEnginePlugin extends EditPlugin {
       ScriptEngine engine = null;
       ScriptEngineManager manager = getScriptEngineManager();
 
+      /* With jsr-223, this always returns a size 0, but when jEdit moves to java 6, this will work correctly.
       Log.log(Log.DEBUG, ScriptEnginePlugin.class,
          "ScriptEngineManager - factories: " + manager.getEngineFactories().size());
 
@@ -116,6 +117,7 @@ public class ScriptEnginePlugin extends EditPlugin {
             "ScriptEngineFactory - name: " + factory.getEngineName() + " | language name: " +
             factory.getLanguageName());
       }
+       */
 
       try {
          engine = manager.getEngineByName(engineName);
@@ -173,11 +175,17 @@ public class ScriptEnginePlugin extends EditPlugin {
       String[] scriptEngineServiceNames = ServiceManager.getServiceNames(ScriptEngineService.class.getName());
       ScriptEngineService service = null;
 
+      Log.log(Log.DEBUG, ScriptEnginePlugin.class,
+         "ScriptEngineService's registered: " + scriptEngineServiceNames.length);
+
+      Mode serviceMode = null;
+
       for (String serviceName : scriptEngineServiceNames) {
          service = (ScriptEngineService) ServiceManager.getService(ScriptEngineService.class.getName(), serviceName);
          scriptEngineServices.put(service.getMode(), service);
+         serviceMode = service.getMode();
          Log.log(Log.DEBUG, ScriptEnginePlugin.class,
-            "ScriptEngine Service found - mode: " + service.getMode().getName() + " | engine class: " +
+            "ScriptEngine Service found - mode: " + serviceMode.getName() + " | engine class: " +
             service.getEngineFactoryClass());
 
          Class factoryClass = service.getEngineFactoryClass();
@@ -185,9 +193,18 @@ public class ScriptEnginePlugin extends EditPlugin {
          try {
             ScriptEngineFactory factory = (ScriptEngineFactory) factoryClass.newInstance();
             Log.log(Log.DEBUG, ScriptEnginePlugin.class,
-               "Registering ScriptEngineFactory with manager - name: " + factory.getEngineName() + " | class: " +
-               factoryClass);
-            manager.registerEngineName(factory.getEngineName(), factory);
+               "Registering ScriptEngineFactory with manager - name: " + factory.getEngineName() + " | mode: " +
+               serviceMode.getName() + " | class: " + factoryClass);
+
+            // Use the Mode as the ScriptEngine name for consistency. Some engine's are named not for their languages.
+            // EG. The Javascript Engine used, is called "Mozilla Rhino" and not "javascript".
+            manager.registerEngineName(serviceMode.getName(), factory);
+
+            Log.log(Log.DEBUG, ScriptEnginePlugin.class,
+               "\"" + serviceMode.getName() + "\" ScriptEngine is registered: " +
+               (manager.getEngineByName(serviceMode.getName()) != null));
+
+
          } catch (Exception e) {
             Log.log(Log.ERROR, ScriptEnginePlugin.class,
                "Could not create instance of ScriptEngineFactory class: " + factoryClass.getName(), e);
