@@ -1,0 +1,13 @@
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.activate=defer
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.author=Eric Berry
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.depend.0=jdk 1.5
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.depend.1=jedit 04.03.15.00
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin 0.3.0
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.description=Provides jEdit with the ability to use the JRuby ScriptEngine provided on scripting.dev.java.net.
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.jars=asm-2.2.3.jar backport-util-concurrent.jar jruby.jar jruby-engine.jar
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.name=JRuby Script Engine Plugin
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.version=1.0.0
+
+
+#plugin.com.townsfolkdesigns.jedit.plugins.scripting.JRubyScriptEnginePlugin.docs=JRubyScriptEnginePlugin.html
+
