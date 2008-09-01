@@ -1,6 +1,7 @@
 package dockingFrames;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -51,7 +52,7 @@ import bibliothek.util.xml.XIO;
 public class DfWindowManager extends DockableWindowManager {
 
 	public static enum Side {
-		LEFT, RIGHT, TOP, BOTTOM
+		LEFT, RIGHT, TOP, BOTTOM, NONE
 	}
 	
 	private static final String CENTER = "center";
@@ -69,7 +70,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private Map<String, Dockable> created = new HashMap<String, Dockable>();
 	private Map<String, Side> sides = new HashMap<String, Side>();
 	private CloseAction closeAction;
-	private DfDockingArea bottomArea, topArea, leftArea, rightArea;
+	private Map<Side, DfDockingArea> areas = new HashMap<Side, DfDockingArea>();
 	private boolean hidden = false;
 	private FloatAction floatAction;
 	private DefaultDockActionSource dockedActionSource, floatActionSource;
@@ -106,10 +107,10 @@ public class DfWindowManager extends DockableWindowManager {
         sides.put(BOTTOM, Side.BOTTOM);
         sides.put(RIGHT, Side.RIGHT);
         sides.put(LEFT, Side.LEFT);
-        bottomArea = new DfDockingArea(BOTTOM);
-        topArea = new DfDockingArea(TOP);
-        leftArea = new DfDockingArea(LEFT);
-        rightArea = new DfDockingArea(RIGHT);
+        areas.put(Side.BOTTOM, new DfDockingArea(Side.BOTTOM));
+        areas.put(Side.TOP, new DfDockingArea(Side.TOP));
+        areas.put(Side.LEFT, new DfDockingArea(Side.LEFT));
+        areas.put(Side.RIGHT, new DfDockingArea(Side.RIGHT));
         screenDock = new ScreenDockStation(view);
         screenDock.setShowing(true);
         controller.add(screenDock);
@@ -189,8 +190,10 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public void closeCurrentArea() {
-		// TODO Auto-generated method stub
-
+		Dockable d = controller.getFocusedDockable();
+		Side side = getSide(d);
+		if (side != Side.NONE)
+			areas.get(side).show(null);
 	}
 
 	@Override
@@ -199,13 +202,34 @@ public class DfWindowManager extends DockableWindowManager {
 		return null;
 	}
 
-	private static class DfDockingArea implements DockingArea {
-		public DfDockingArea(String area) {
+	private class DfDockingArea implements DockingArea {
+		private Side side;
+		public DfDockingArea(Side side) {
+			this.side = side;
 		}
 		public String getCurrent() {
 			return null;
 		}
 		public void show(String name) {
+			if (name == null) { // hide
+				DfDockingLayout layout = new DfDockingLayout(DfWindowManager.this);
+				layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
+				while (true) {
+			        Leaf leaf = find(center.getRoot(), side);
+			        if( leaf != null ){
+			            if( !aside( leaf, side ))
+			                leaf = null;
+			        }
+			        if( leaf == null )
+			        	break;
+			        Dockable d = leaf.getDockable();
+			        d.getDockParent().drag(d);
+				}
+				if (view.getEditPane() != null)
+					view.getEditPane().requestFocus();
+			} else { // show
+				showDockableWindow(name);
+			}
 		}
 		public void showMostRecent() {
 		}
@@ -213,7 +237,7 @@ public class DfWindowManager extends DockableWindowManager {
 	
 	@Override
 	public DockingArea getBottomDockingArea() {
-		return bottomArea;
+		return areas.get(Side.BOTTOM);
 	}
 
 	@Override
@@ -224,17 +248,17 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public DockingArea getLeftDockingArea() {
-		return leftArea;
+		return areas.get(Side.LEFT);
 	}
 
 	@Override
 	public DockingArea getRightDockingArea() {
-		return rightArea;
+		return areas.get(Side.RIGHT);
 	}
 
 	@Override
 	public DockingArea getTopDockingArea() {
-		return topArea;
+		return areas.get(Side.TOP);
 	}
 
 	@Override
@@ -350,6 +374,21 @@ public class DfWindowManager extends DockableWindowManager {
             center.drop(dockable);
     }
  
+    private Side getSide(Dockable d) {
+    	if (d == null)
+    		return Side.NONE;
+    	Component c = d.getComponent();
+        Leaf centerLeaf = center.getRoot().getLeaf( mainPanel );
+        if (c.getY() + c.getHeight() <= centerLeaf.getBounds().y)
+        	return Side.TOP;
+        if (c.getY() >= centerLeaf.getBounds().y + centerLeaf.getBounds().height)
+        	return Side.BOTTOM;
+        if (c.getX() + c.getWidth() <= centerLeaf.getBounds().x)
+        	return Side.LEFT;
+        if (c.getX() >= centerLeaf.getBounds().x + centerLeaf.getBounds().width)
+        	return Side.RIGHT;
+        return Side.NONE;
+    }
     // tells whether the leaf is aside the center dockable on the given side
     private boolean aside( Leaf leaf, Side side ){
         Leaf centerLeaf = center.getRoot().getLeaf( mainPanel );
