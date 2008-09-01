@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<logs>
+   <log name="default">
+      <columns>
+         <column>Message</column>
+      </columns>
+   </log>
+
+   <log name="Weblogic">
+      <file_name_glob>weblogic.*</file_name_glob>
+      <first_line_glob>####</first_line_glob>
+      <column_regex>regex</column_regex>
+      <columns>
+         <column width="">Timestamp</column>
+         <column>Severity</column>
+         <column>Server Name</column>
+         <column>Machine Name</column>
+         <column>Thread ID</column>
+         <column>Transaction ID</column>
+         <column>User ID</column>
+         <column>Message ID</column>
+         <column>Message Text</column>
+      </columns>
+   </log>
+</logs>
+
+
+
