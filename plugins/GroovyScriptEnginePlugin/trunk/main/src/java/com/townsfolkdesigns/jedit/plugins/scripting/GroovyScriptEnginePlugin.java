@@ -40,10 +40,6 @@ public class GroovyScriptEnginePlugin extends EditPlugin implements ScriptEngine
       return factory.getClass();
    }
 
-   public String getEngineName() {
-      return factory.getEngineName();
-   }
-
    public Mode getMode() {
       return jEdit.getMode("groovy");
    }
