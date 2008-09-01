@@ -14,6 +14,8 @@ plugin.logviewer.LogViewerPlugin.jedit=04.02.00.00
 options.logviewer.label=Log Viewer
 options.logviewer.panel_label=Log Viewer Options
 
+plugin.logviewer.LogViewerPlugin.description=Log Viewer
+
 #-----------------------
 # option pane settings
 #-----------------------
