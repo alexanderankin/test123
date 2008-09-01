@@ -89,18 +89,24 @@ public class RootImporter extends FileImporter {
 	/** Asks if the user wants to import files from the chosen project root. */
 	protected void internalDoImport()
 	{
-		String dlgTitle = (project.getChildCount() == 0)
-						? "projectviewer.import.msg_proj_root.title"
-						: "projectviewer.import.msg_reimport.title";
-		ImportDialog id = getImportDialog();
-		id.setTitle(jEdit.getProperty(dlgTitle));
-		loadImportFilterStatus(project, id);
-		id.setVisible(true);
+		boolean flatten = false;
+		if (fnf == null) {
+			String dlgTitle = (project.getChildCount() == 0)
+							? "projectviewer.import.msg_proj_root.title"
+							: "projectviewer.import.msg_reimport.title";
+			ImportDialog id = getImportDialog();
+			id.setTitle(jEdit.getProperty(dlgTitle));
+			loadImportFilterStatus(project, id);
+			id.setVisible(true);
 
-		if (!id.isApproved()) {
-			return;
+			if (!id.isApproved()) {
+				return;
+			}
+
+			fnf = id.getImportFilter();
+			flatten = id.getFlattenFilePaths();
+			saveImportFilterStatus(project, id);
 		}
-		fnf = id.getImportFilter();
 
 		String state = null;
 		if (viewer != null) {
@@ -113,7 +119,6 @@ public class RootImporter extends FileImporter {
 			}
 			Enumeration e = project.children();
 			List<VPTNode> toRemove = new ArrayList<VPTNode>();
-			removed = new ArrayList<VPTFile>();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				// need to handle "virtual directories", which mess up the
@@ -129,23 +134,21 @@ public class RootImporter extends FileImporter {
 				for (VPTNode n : toRemove) {
 					if (n.isDirectory()) {
 						unregisterFiles((VPTDirectory)n);
+						removeDirectory((VPTDirectory)n);
 					} else if (n.isFile()) {
-						unregisterFile((VPTFile)n);
+						removeFile((VPTFile)n);
 					}
-					if (n.getChildCount() == 0)
-						n.removeFromParent();
 				}
 			}
 		}
 
 		try {
-			addTree(project, id.getImportFilter(), id.getFlattenFilePaths());
+			addTree(project, fnf, flatten);
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, "VFS exception while importing", ioe);
 		}
 
 		postAction = new NodeStructureChange(project, state);
-		saveImportFilterStatus(project, id);
 	}
 
 	//{{{ #unregisterFiles(VPTDirectory) : void
@@ -155,11 +158,9 @@ public class RootImporter extends FileImporter {
 			VPTNode n = (VPTNode) dir.getChildAt(i);
 			if (n.isDirectory()) {
 				unregisterFiles((VPTDirectory)n);
-				if (n.getChildCount() == 0)
-					dir.remove(i--);
+				removeDirectory((VPTDirectory)n);
 			} else if (n.isFile()) {
-				unregisterFile((VPTFile)n);
-				dir.remove(i--);
+				removeFile((VPTFile)n);
 			}
 		}
 	} //}}}

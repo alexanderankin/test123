@@ -89,11 +89,11 @@ public abstract class Importer implements Runnable {
 	private Map<VPTNode,VPTNode> addedNodes;
 
 	/** The list of added files, if any, for event firing purposes. */
-	protected List<VPTFile>	added;
+	private List<VPTFile>	added;
 	/** The list of removed files, if any, for event firing purposes. */
-	protected List<VPTFile>	removed;
-	/** Whether this class should automatically fire the project event. */
-	protected boolean fireEvent = true;
+	private List<VPTFile>	removed;
+	/** The list of directories to be removed. */
+	private List<VPTDirectory> removedDirs;
 
 	/**
 	 *	An action to be executed after the import occurs. It will be executed
@@ -330,6 +330,10 @@ public abstract class Importer implements Runnable {
 			if (n == null) {
 				if (isFile && dirs.size() == 0) {
 					n = new VPTFile(curr);
+					if (contains(removed, (VPTFile) n)) {
+						root = n;
+						break;
+					}
 				} else {
 					n = new VPTDirectory(curr);
 				}
@@ -339,44 +343,42 @@ public abstract class Importer implements Runnable {
 				} else {
 					root.insert(n, root.findIndexForChild(n));
 				}
+			} else if (n.isFile()) {
+				contains(removed, (VPTFile) n);
 			}
 			root = n;
 		}
 		return root;
 	}
 
-	//{{{ #registerFile(VPTFile) : void
-	/**
-	 *	Registers the file in the project. Also, checks if the file's absolute
-	 *	path is equal to the canonical path, and registers the canonical path
-	 *	in the project in case they differ.
-	 */
-	protected void registerFile(VPTFile file) {
-		project.registerNodePath(file);
-		if (!contains(removed, file)) {
-			if (added == null) {
-				added = new ArrayList<VPTFile>();
-			}
-			added.add(file);
-		}
-	} //}}}
 
-	//{{{ #unregisterFile(VPTFile) : void
 	/**
-	 *	Unregisters a file from a project and adds the file to the list of
-	 *	files that have been removed. It automatically checks that "added"
-	 *	list to see if the file is already in there, so that the event does
-	 *	not contain the same file being added and removed at the same time.
+	 * Marks a directory for removal. Directories will only be removed
+	 * if, at the end of the import process, they are empty - meaning
+	 * that the only children they have are other directories.
 	 */
-	protected void unregisterFile(VPTFile file) {
-		project.unregisterNodePath(file);
+	protected void removeDirectory(VPTDirectory dir)
+	{
+		if (removedDirs == null) {
+			removedDirs = new ArrayList<VPTDirectory>();
+		}
+		removedDirs.add(dir);
+	}
+
+
+	/**
+	 * Marks a file for removal. At the end of the importing process,
+	 * all removed files are unregistered from the project.
+	 */
+	protected void removeFile(VPTFile file)
+	{
 		if (!contains(added, file)) {
 			if (removed == null) {
 				removed = new ArrayList<VPTFile>();
 			}
 			removed.add(file);
 		}
-	} //}}}
+	}
 
 
 	/**
@@ -388,13 +390,13 @@ public abstract class Importer implements Runnable {
 	{
 		if (list != null)
 		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).compareTo(file) == 0) {
+			if (list.get(i).getURL().equals(file.getURL())) {
 				list.remove(i);
 				return true;
 			}
 		}
 		return false;
-	} //}}}
+	}
 
 	//{{{ #setViewerEnabled(boolean) : void
 	protected void setViewerEnabled(final boolean flag) {
@@ -512,49 +514,105 @@ public abstract class Importer implements Runnable {
 
 
 	/**
+	 * Checks whether the given directory is "empty". It's considered
+	 * empty if in the tree under the directory there are no openable
+	 * nodes.
+	 *
+	 * @param	dir		The directory node.
+	 */
+	private boolean isDirectoryEmpty(VPTDirectory dir)
+	{
+		for (int i = dir.getChildCount() - 1; i >= 0 ; i--) {
+			VPTNode child = (VPTNode) dir.getChildAt(i);
+			if (child.canOpen()) {
+				return false;
+			} else if (child.isDirectory() &&
+					   !isDirectoryEmpty((VPTDirectory)child)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/**
 	 * Processes the internal list of added nodes, registering any new
 	 * files and properly inserting the nodes in the trees. This method
 	 * should be called in the AWT thread, since it updates the UI.
 	 */
 	private void processAddedNodes()
 	{
-		if (addedNodes == null) {
-			return;
-		}
-		for (VPTNode n : addedNodes.keySet()) {
-			VPTNode parent = addedNodes.get(n);
-			ProjectViewer.insertNodeInto(n, parent);
-			if (n.isFile()) {
-				registerFile((VPTFile)n);
-			} else if (n.isDirectory()) {
-				processDirectory(n);
+		/* Process all the added nodes. */
+		if (addedNodes != null) {
+			for (VPTNode n : addedNodes.keySet()) {
+				VPTNode parent = addedNodes.get(n);
+				ProjectViewer.insertNodeInto(n, parent);
+				if (n.isFile()) {
+					registerFile((VPTFile)n);
+				} else if (n.isDirectory()) {
+					processDirectory(n);
+				}
 			}
 		}
 
-		/* Show the count of imported files. */
-		String msg = jEdit.getProperty("projectviewer.import.msg_result",
-							new Object[] { new Integer(added.size()) });
-		if (viewer != null) {
-			viewer.setStatus(msg);
-		} else {
-			jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+		/* Process all the files marked for removal. */
+		if (removed != null) {
+			for (VPTFile file : removed) {
+				project.unregisterNodePath(file);
+				ProjectViewer.removeNodeFromParent(file);
+			}
 		}
 
-		/* Fire a project event notifying interested parties of any changes. */
-		if ((added == null || added.size() == 0)
-			&& (removed == null || removed.size() == 0)) {
-			return;
+		/* Process all the directories marker for removal. */
+		if (removedDirs != null) {
+			for (VPTDirectory dir : removedDirs) {
+				if (isDirectoryEmpty(dir)) {
+					ProjectViewer.removeNodeFromParent(dir);
+				}
+			}
 		}
 
 		if (added != null && added.size() == 0) {
 			added = null;
 		}
 
+		/* Show the count of imported files. */
+		if (added != null) {
+			String msg = jEdit.getProperty("projectviewer.import.msg_result",
+								new Object[] { new Integer(added.size()) });
+			if (viewer != null) {
+				viewer.setStatus(msg);
+			} else {
+				jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+			}
+		}
+
+		/* Fire a project event notifying interested parties of any changes. */
+
 		if (removed != null && removed.size() == 0) {
 			removed = null;
 		}
 
-		project.fireFilesChanged(added, removed);
+		if (added != null || removed != null) {
+			project.fireFilesChanged(added, removed);
+		}
+	}
+
+
+	/**
+	 *	Registers the file in the project. Also, checks if the file's absolute
+	 *	path is equal to the canonical path, and registers the canonical path
+	 *	in the project in case they differ.
+	 */
+	private void registerFile(VPTFile file)
+	{
+		if (!contains(removed, file)) {
+			project.registerNodePath(file);
+			if (added == null) {
+				added = new ArrayList<VPTFile>();
+			}
+			added.add(file);
+		}
 	}
 
 

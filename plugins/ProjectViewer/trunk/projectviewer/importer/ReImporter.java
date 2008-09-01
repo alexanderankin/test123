@@ -21,8 +21,6 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.IOException;
 
-import java.util.ArrayList;
-
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
@@ -61,7 +59,6 @@ public class ReImporter extends RootImporter {
 	 */
 	public ReImporter(VPTNode node, ProjectViewer viewer) {
 		super(node, viewer, true);
-		fireEvent = false;
 	} //}}}
 
 
@@ -85,8 +82,7 @@ public class ReImporter extends RootImporter {
 					if (node.isFile()) {
 						VFSFile file = ((VPTFile)node).getFile();
 						if (file == null || !file.isReadable()) {
-							unregisterFile((VPTFile)node);
-							project.remove(i--);
+							removeFile((VPTFile)node);
 						}
 					} else if (node.isDirectory()) {
 						reimportDirectory((VPTDirectory)node, false);
@@ -116,19 +112,18 @@ public class ReImporter extends RootImporter {
 				unregisterDir(dir, flatten);
 				addTree(dir, fnf, flatten);
 			} else {
-				ArrayList toRemove = null;
 				for (int i = 0; i < dir.getChildCount(); i++) {
 					VPTNode node = (VPTNode) dir.getChildAt(i);
 					if (node.isFile()) {
 						VFSFile file = ((VPTFile)node).getFile();
 						if (file == null || !file.isReadable()) {
-							unregisterFile((VPTFile)node);
-							dir.remove(i--);
+							removeFile((VPTFile)node);
 						}
 					} else if (node.isDirectory()) {
 						reimportDirectory((VPTDirectory)node, flatten);
 					}
 				}
+				removeDirectory(dir);
 			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, "VFS error while importing", ioe);
@@ -150,14 +145,12 @@ public class ReImporter extends RootImporter {
 				if (VFSHelper.pathExists(cdir.getURL()) &&
 					parent.equals(dir.getNodePath())) {
 					unregisterFiles((VPTDirectory)n);
-					if (cdir.getChildCount() == 0)
-						dir.remove(i--);
+					removeDirectory((VPTDirectory)n);
 				} else {
 					reimportDirectory(cdir, flatten);
 				}
 			} else if (n.isFile()) {
-				unregisterFile((VPTFile)n);
-				dir.remove(i--);
+				removeFile((VPTFile)n);
 			}
 		}
 	} //}}}
