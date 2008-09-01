@@ -189,17 +189,17 @@ public class LogViewer extends JPanel implements EBComponent {
         floating = !docked;
     }
     //}}}
-    
+
     public boolean isDocked() {
-        return !floating;   
+        return !floating;
     }
-    
+
     public void setFloating(boolean b) {
-        floating = b;   
+        floating = b;
     }
-    
+
     public boolean isFloating() {
-        return floating;   
+        return floating;
     }
 
     //{{{ shutdown method
@@ -304,7 +304,7 @@ public class LogViewer extends JPanel implements EBComponent {
         super.removeNotify();
         EditBus.removeFromBus(this);
         for (Iterator it = fileToFollowingPaneMap_.values().iterator(); it.hasNext(); ) {
-            ((FileFollowingPane)it.next()).stopFollowing();   
+            ((FileFollowingPane)it.next()).stopFollowing();
         }
     }
 
@@ -341,7 +341,7 @@ public class LogViewer extends JPanel implements EBComponent {
             if (dockable != null && dockable.equals("log-viewer")) {
                 setFloating(!floating);
             }
-            
+
         }
     }
 
@@ -395,7 +395,7 @@ public class LogViewer extends JPanel implements EBComponent {
         popupMenu_.add(delete_);
         popupMenu_.add(deleteAll_);
     }
-    
+
     void reinitFiles() {
         initFilesDone = false;
         initFiles();
@@ -430,6 +430,7 @@ public class LogViewer extends JPanel implements EBComponent {
                 nonexistentFilesBuffer.append(messageLineSeparator);
             }
         }
+        /* this is annoying...
         if (nonexistentFileCount > 0) {
             // Alert the user of the fact that one or more files have been
             // deleted since the previous execution
@@ -447,6 +448,7 @@ public class LogViewer extends JPanel implements EBComponent {
                     JOptionPane.WARNING_MESSAGE
                     );
         }
+        */
         if (tabbedPane_.getTabCount() > 0) {
             if (tabbedPane_.getTabCount() > attributes_.getSelectedTabIndex()) {
                 tabbedPane_.setSelectedIndex(attributes_.getSelectedTabIndex());
