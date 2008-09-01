@@ -39,8 +39,8 @@ using this script.
 Packaging plugins can be a time-consuming and tedious task.
 One must get get the source and any dependencies, review the
 code, compile against the specified versions of jEdit and
-plugins, create packages, and perform upload them three times to
-three different places on sf.net.  `pjo.py`
+plugins, create packages, and perform upload them two times to
+two different places on sf.net.  `pjo.py`
 is a `Python`_ script which cuts down on some of the grunt work.
 It can checkout plugins from CVS or SVN, fetch dependencies, create
 packages, verify JAR file integrity, ensure that required jars
@@ -320,31 +320,19 @@ If you have to modify a `build.xml` file, send a patch
 to the author of the plugin.  This way the next person
 to package the plugin may not have to do the same thing.
 
-On Windows (at least w/my version `cvs`_) sometimes files
-that have Windows line endings (\r\n) end up getting double.
-I assume cvs is converting from Unix to Windows line endings
-which double-spaces files.  This can screw up things like
-property files where property values span multiple lines.
 
-Upload Step 2 
+Upload Step 1 
 =============
 
 Now the packaged files need to be uploaded to the "incoming" 
 directory on sf.net. This is in preparation for releasing the
 files.
 
-From plugins.jedit.org, in the batch directory you uploaded your
-packaged files to, ncftp to upload.sf.net (as anonymous), 
-cd to "incoming", and upload all package files.
-
-Example::
+sftp frs.sourceforge.net:uploads
+mput *.tgz
+mput *.zip
+   
     
-  /home/ezust/workspace/jedit/pjo/Highlight-1.4.1> ncftp ftp://upload.sf.net/incoming
-  Login successful.
-  Logged in to upload.sf.net.
-  Current remote directory is /incoming.
-  ncftp /incoming > mput *.tgz *.zip
-
 Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.
 
