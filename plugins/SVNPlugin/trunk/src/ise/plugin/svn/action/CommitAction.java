@@ -46,6 +46,7 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 
 
 /**
@@ -138,6 +139,14 @@ public class CommitAction extends SVNAction {
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
                         panel.addTab( jEdit.getProperty( "ips.Commit", "Commit" ), results_panel );
+
+                        // fix for 2081908
+                        for (String path : paths.keySet()) {
+                            Buffer buffer = jEdit.getBuffer(path);
+                            if ( buffer != null ) {
+                                buffer.reload(getView());
+                            }
+                        }
                     }
                     catch ( Exception e ) {     // NOPMD
                         // ignored
