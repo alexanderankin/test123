@@ -14,6 +14,8 @@ plugin.myDoggy.Plugin.version=0.1
 plugin.myDoggy.Plugin.depend.0=jdk 1.5
 plugin.myDoggy.Plugin.depend.1=jedit 04.03.12.00
 
+plugin.myDoggy.Plugin.jars=mydoggy-api-1.5.0-SNAPSHOT.jar mydoggy-plaf-1.5.0-SNAPSHOT.jar mydoggy-res-1.5.0-SNAPSHOT.jar filters-2.0.235.jar multiplegradientpaint-1.0.jar swing-layout-1.0.3.jar swing-worker-1.1.jar swingx-0.9.1.jar TableLayout-20050920.jar
+
 # Options
 plugin.myDoggy.Plugin.option-pane=mydoggy
 options.mydoggy.label=MyDoggyPlugin
