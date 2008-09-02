@@ -131,12 +131,12 @@ class ConsoleProcess
 				stderr.start();
 			}
 
-
+			
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
 
 		}
-		catch (IOException ioe)
+		catch (Exception ioe)
 		{
 			Log.log(Log.ERROR, ioe, "ConsoleProcess()");
 		}
