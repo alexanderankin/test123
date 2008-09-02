@@ -212,9 +212,11 @@ class StreamThread extends Thread
 			output.writeAttrs(color,
 				lineBuffer.substring(uncoloredWritten) + eol);
 		}
-		else
+		else try 
 		{
 			output.writeAttrs(color, line + eol);
+		} catch (Exception err) {
+			Log.log (Log.ERROR, this, "Can't Flush:", err);
 		}
 
 		lineBuffer.setLength(0);
