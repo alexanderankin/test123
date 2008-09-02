@@ -93,23 +93,23 @@ public class FileImporter extends Importer {
 
 		boolean keepTree = id.getKeepTree();
 
-		/*
-		 * If the user requests, create a new named node into which
-		 * the imported files will be added.
-		 */
-		if (!keepTree && id.getNewNodeName() != null) {
-			VFS vfs = VFSManager.getVFSForPath(selected.getNodePath());
-			String newDir = vfs.constructPath(selected.getNodePath(),
-											  id.getNewNodeName());
-			where = findDirectory(newDir, selected, true);
-			if (where.isFile()) {
-				where = new VPTDirectory(newDir);
-			}
-			addNode(where, selected);
-		}
-
-		fnf = id.getImportFilter();
 		try {
+			/*
+			 * If the user requests, create a new named node into which
+			 * the imported files will be added.
+			 */
+			if (!keepTree && id.getNewNodeName() != null) {
+				VFS vfs = VFSManager.getVFSForPath(selected.getNodePath());
+				String newDir = vfs.constructPath(selected.getNodePath(),
+												  id.getNewNodeName());
+				where = findChild(newDir, selected, false);
+				if (where == null || where.isFile()) {
+					where = new VPTDirectory(newDir);
+					addNode(where, selected);
+				}
+			}
+
+			fnf = id.getImportFilter();
 			for (VFSFile file : chosen) {
 				String parentPath = file.getVFS()
 										.getParentOfPath(file.getPath());
@@ -125,15 +125,12 @@ public class FileImporter extends Importer {
 				}
 
 				if (!VFSHelper.pathExists(file.getPath())) {
-					node = findDirectory(file.getPath(), parent, true);
-				} else if (file.getType() == VFSFile.DIRECTORY) {
-					node = findDirectory(file.getPath(), parent, true);
-					if (id.getTraverseDirectories()) {
+					node = findChild(file.getPath(), parent, true);
+				} else {
+					node = findChild(file.getPath(), parent, true);
+					if (node.isDirectory() && id.getTraverseDirectories()) {
 						addTree(node, fnf, id.getFlattenFilePaths());
 					}
-				} else if (findDirectory(file.getPath(), parent, false) == null) {
-					node = new VPTFile(file.getPath());
-					addNode(node, parent);
 				}
 			}
 		} catch (IOException ioe) {

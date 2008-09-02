@@ -21,13 +21,27 @@ package projectviewer.importer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.Timer;
 
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.Log;
 import org.gjt.sp.util.PropertiesBean;
 
+import projectviewer.VFSHelper;
+import projectviewer.vpt.VPTDirectory;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 
@@ -75,7 +89,14 @@ public class AutoReimporter implements ActionListener
 	/** Performs the re-import of the project's files. */
 	public void actionPerformed(ActionEvent ae)
 	{
-		System.err.println("AutoReimporter.run(): not implemented!");
+		Importer imp;
+		if (options.getCurrentOnly()) {
+			imp = new AutoReimporterImpl(project);
+		} else {
+			imp = new ReImporter(project, null);
+			((FileImporter)imp).fnf = options._getFilter();
+		}
+		imp.doImport();
 	}
 
 
@@ -215,6 +236,128 @@ public class AutoReimporter implements ActionListener
 		private int period;
 		private boolean currentDirsOnly;
 		private ImporterFileFilter filter;
+
+	}
+
+	/**
+	 * Implements the automatic reimport logic when the user chooses
+	 * not to import new directories. Traverse the project and, for
+	 * each directory found, remove all files, and do a non-recursive
+	 * listing to get the new files.
+	 */
+	private class AutoReimporterImpl extends Importer
+	{
+
+		private List<VPTDirectory> dirs;
+		private Map<VFS,Object> sessions;
+
+		private AutoReimporterImpl(VPTProject project)
+		{
+			super(project, null);
+			dirs = new ArrayList<VPTDirectory>();
+			sessions = new HashMap<VFS,Object>();
+		}
+
+		protected void internalDoImport()
+		{
+			try {
+				/* Step 1: re-import files from the project root. */
+				removeFiles(project);
+				importFiles(project);
+
+				/*
+				 * Step 2: recurse into directories.
+				 * Also marks the directory for removal, in case it ends up
+				 * being empty after importing is done.
+				 */
+				while (!dirs.isEmpty()) {
+					VPTDirectory dir = dirs.remove(0);
+					removeFiles(dir);
+					removeDirectory(dir);
+					importFiles(dir);
+				}
+
+				/* Step 3: close all opened VFS sessions. */
+				for (VFS vfs : sessions.keySet()) {
+					Object session = sessions.get(vfs);
+					VFSHelper.endVFSSession(vfs,
+											session,
+											jEdit.getActiveView());
+				}
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, this, "I/O error re-importing project", ioe);
+			}
+		}
+
+
+		/**
+		 * Removes all files under a given node, without traversing
+		 * child directories. Any subdirectories seen while looking
+		 * at the node's children are added to the internal "dirs"
+		 * list to be analysed later.
+		 */
+		private void removeFiles(VPTNode node)
+		{
+			for (int i = 0; i < node.getChildCount(); i++) {
+				VPTNode n = (VPTNode) node.getChildAt(i);
+				if (n.isFile()) {
+					removeFile((VPTFile)n);
+				} else if (n.isDirectory()) {
+					dirs.add((VPTDirectory)n);
+				}
+			}
+		}
+
+
+		/**
+		 * Imports the files directly under the given node. Does not
+		 * recurse into subdirectories.
+		 */
+		private void importFiles(VPTNode dest)
+			throws IOException
+		{
+			VFS vfs = VFSManager.getVFSForPath(dest.getNodePath());
+			Object session = getSession(vfs, dest.getNodePath());
+			String[] children;
+
+			children = vfs._listDirectory(session,
+										  dest.getNodePath(),
+										  options._getFilter(),
+										  false,
+										  jEdit.getActiveView(),
+										  false,
+										  true);
+
+			if (children == null || children.length == 0) {
+				return;
+			}
+
+			for (String url: children) {
+				VFSFile file = VFSHelper.getFile(url);
+				if (file != null &&
+					file.getType() == VFSFile.FILE) {
+					findChild(url, dest, true);
+				}
+			}
+		}
+
+
+		/**
+		 * Retrieves a VFS session from the cache, creating a new one
+		 * if a miss occurs.
+		 */
+		private Object getSession(VFS vfs,
+								  String path)
+		{
+			Object session = sessions.get(vfs);
+			if (session == null) {
+				session = VFSHelper.createVFSSession(vfs,
+													 path,
+													 jEdit.getActiveView());
+				sessions.put(vfs, session);
+			}
+			return session;
+		}
 
 	}
 

@@ -42,7 +42,11 @@ Version 3.0.0:
 		- Configuration data is now stored in the "plugin home"
 		  directory, so some stats are shown in the plugin manager
 		  dialog.
-
+		- SF Request #1694001: added a configurable "auto reimport"
+		  option for projects. This triggers a periodic task that
+		  updates the project according to the underlying filesystem's
+		  data, following some user-configurable options (such as which
+		  filter to use.
 
 ================================================================================
 

@@ -158,7 +158,7 @@ public abstract class Importer implements Runnable {
 	 * <ul>
 	 *     <li>{@link #addNode(VPTNode, VPTNode)}</li>
 	 *     <li>{@link #constructPath(VPTNode,String)}</li>
-	 *     <li>{@link #findDirectory(String,VPTNode,boolean)}</li>
+	 *     <li>{@link #findChild(String,VPTNode,boolean)}</li>
 	 * </ul>
 	 *
 	 * @since PV 3.0.0
@@ -219,11 +219,13 @@ public abstract class Importer implements Runnable {
 
 	/**
 	 *	Looks, in the children list for the given parent, for a node with
-	 *	the given path. If it exists, return it. If not, creates a new directory
-	 *	node if <i>create</i> is true, or else return null.
+	 *	the given path. If it exists, return it. If not, creates either a
+	 *	directory or file node (depending on what VFS says) if <i>create</i>
+	 *	is true, othrwise return null.
 	 *
 	 *	If a new node is created, it's automatically registered in the
-	 *	internal list of nodes to be processed.
+	 *	internal list of nodes to be processed (and removed from the
+	 *	list of nodes pending removal, if it's listed).
 	 *
 	 *	@param	url		The URL of the directory to look for.
 	 *	@param	parent	The node where to look for the directory.
@@ -233,9 +235,10 @@ public abstract class Importer implements Runnable {
 	 *	@return The node representing the given URL, or null if not
 	 *	        found and create is false.
 	 */
-	protected VPTNode findDirectory(String url,
-									VPTNode parent,
-									boolean create)
+	protected VPTNode findChild(String url,
+								VPTNode parent,
+								boolean create)
+		throws IOException
 	{
 		Enumeration e = parent.children();
 		while (e.hasMoreElements()) {
@@ -243,11 +246,27 @@ public abstract class Importer implements Runnable {
 			if (n.isDirectory() && ((VPTDirectory)n).getURL().equals(url)) {
 				return n;
 			} else if (n.isFile() && ((VPTFile)n).getURL().equals(url)) {
+				if (create) {
+					contains(removed, (VPTFile) n);
+				}
 				return n;
 			}
 		}
 		if (create) {
-			VPTNode n = new VPTDirectory(url);
+			VFSFile file = VFSHelper.getFile(url);
+			VPTNode n = null;
+
+			if (file != null && file.getType() == VFSFile.FILE) {
+				n = new VPTFile(url);
+				contains(removed, (VPTFile) n);
+			} else {
+				/*
+				 * Anything that is not a file is treated as a directory;
+				 * if the directory doesn't really exist, it's treated as
+				 * a "virtual directory".
+				 */
+				n = new VPTDirectory(url);
+			}
 			addNode(n, parent);
 			return n;
 		}
@@ -315,7 +334,7 @@ public abstract class Importer implements Runnable {
 
 		while (!dirs.isEmpty()) {
 			String curr = dirs.pop();
-			VPTNode n = findDirectory(curr, root, false);
+			VPTNode n = findChild(curr, root, false);
 
 			if (n == null && addedNodes != null) {
 				/* Look in map of already added nodes. */
@@ -663,7 +682,9 @@ public abstract class Importer implements Runnable {
 		//{{{ +run() : void
 		public void run() {
 			ProjectViewer.nodeStructureChanged(node);
-			viewer.getTreePanel().setFolderTreeState(node, state);
+			if (viewer != null) {
+				viewer.getTreePanel().setFolderTreeState(node, state);
+			}
 		} //}}}
 
 	} //}}}
