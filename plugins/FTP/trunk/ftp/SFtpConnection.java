@@ -33,6 +33,11 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
+/**
+ * Secure FTP connection class
+ * @author Slava Pestov
+ * @author Vadim Voituk
+ */
 public class SFtpConnection extends Connection implements UserInfo
 {
 	

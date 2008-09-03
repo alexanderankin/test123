@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2002 Slava Pestov
+ * Ñopyright (C) 2008 Vadim Voituk
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,95 +22,133 @@
 
 package ftp;
 
-public class FtpAddress
-{
-	public boolean secure;
-	public String host;
-	public String user;
-	public String password;
-	public String path;
+public class FtpAddress {
 
-	//{{{ FtpAddress constructor
-	public FtpAddress(String url)
-	{
-		if(url.startsWith(FtpVFS.FTP_PROTOCOL + ":"))
-			secure = false;
-		else if(url.startsWith(FtpVFS.SFTP_PROTOCOL + ":"))
-			secure = true;
-		else
-			throw new IllegalArgumentException();
+	private String scheme;
+	private String host;
+	private int port;
+	private String path;
+	private String user;
+	private String password;
 
-		// remove any leading slashes, and ftp: from URL
-		int trimAt = url.indexOf(':') + 1;
-		for(int i = trimAt; i < url.length(); i++)
-		{
-			if(url.charAt(i) != '/')
-			{
-				trimAt = i;
-				break;
-			}
-		}
-		url = url.substring(trimAt);
-
-		// get username
-		int index = url.indexOf('@');
-		if(index != -1)
-		{
-			user = url.substring(0,index);
-			// get password
-			if (user.indexOf(":") != -1)
-			{
-				password = user.substring(user.indexOf(":") + 1, user.length());
-				user = user.substring(0, user.indexOf(":"));
-			}
-			url = url.substring(index + 1);
-		}
-
-		// get host name and path
-		index = url.indexOf('/');
-		if(index == -1)
-			index = url.length();
-
-		host = url.substring(0,index);
-		if (host.contains(" "))
-		{
-			// remove spaces in the host
-			host = host.replace(" ", "");
+	/**
+	 * FtpAddress constructor
+	 * @param url
+	 * @throws IllegalArgumentException - on invalid FTP address
+	 */
+	public FtpAddress(String url) {
+		
+		if (url.startsWith(FtpVFS.FTP_PROTOCOL + "://"))
+			this.scheme = FtpVFS.FTP_PROTOCOL;
+		else if (url.startsWith(FtpVFS.SFTP_PROTOCOL + "://"))
+			this.scheme = FtpVFS.SFTP_PROTOCOL;
+		else 
+			throw new IllegalArgumentException("Unsupported URI scheme");
+		
+		// Parse path
+		String domainPart;
+		int pos = url.indexOf('/', this.scheme.length()+3);
+		if (pos == -1) {
+			this.path = null;
+			domainPart = url.substring(this.scheme.length()+3, url.length());
+		} else {
+			this.setPath( url.substring(pos) );
+			domainPart = url.substring(this.scheme.length()+3, pos);
 		}
 		
-		path = url.substring(index);
-		if(path.length() == 0)
-			path = "/";
+		
+		// Parse auth+domain part
+		pos = domainPart.lastIndexOf('@');
+		String authPart;
+		if (pos == -1)
+			authPart = null;
+		else {
+			authPart = domainPart.substring(0, pos);
+			domainPart = domainPart.substring(pos+1);
+			
+			// TODO: parse auth part
+			pos = authPart.indexOf(':');
+			if (pos == -1) {
+				this.user     = authPart;
+				this.password = null;
+			} else {
+				this.user = authPart.substring(0, pos);
+				this.password = authPart.substring(pos+1);
+			}		
+		}
+		
+		// parse domain part
+		pos = domainPart.lastIndexOf(':');
+		if (pos == -1) {
+			this.host = domainPart;
+			this.port = this.getDefaultPort();
+		} else {
+			this.host = domainPart.substring(0, pos);
+			try {
+				this.port = Integer.parseInt(domainPart.substring(pos+1));
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Invalid connection port: '"+domainPart.substring(pos+1)+"'", e);
+			}
+		}
+		
+		this.host = this.host.replace(" ", "");
 	} //}}}
 
-	//{{{ FtpAddress constructor
-	public FtpAddress(boolean secure, String host, String user, String path)
-	{
-		this.secure = secure;
-		if (host.contains(" "))
-		{
-			// remove spaces in the host
-			host = host.replace(" ", "");
-		}
-		this.host = host;
+	/**
+	 * FtpAddress constructor
+	 */ 
+	public FtpAddress(boolean secure, String host, String user, String path) {
+		this.host = host.replace(" ", "");
 		this.user = user;
-		this.path = path;
-	} //}}}
+		this.setPath(path);
+	}
 
 	//{{{ toString() method
 	public String toString()
 	{
 		StringBuilder buf = new StringBuilder();
-		buf.append(secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL);
+		buf.append(this.scheme);
 		buf.append("://");
 		if(user != null)
 		{
-			buf.append(user);
+			buf.append(this.user);
 			buf.append('@');
 		}
-		buf.append(host);
-		buf.append(path);
+		buf.append(this.host);
+		buf.append(this.path);
 
 		return buf.toString();
 	} //}}}
+
+	public String getScheme() {
+		return scheme;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+	
+	private int getDefaultPort() {
+		return this.scheme == FtpVFS.SFTP_PROTOCOL ? 22 : 21;
+	}
+
+	public String getPath() {
+		return path;
+	}
+	
+	public void setPath(String path) {
+		this.path = path==null ? null : path.trim();
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 }

@@ -22,7 +22,6 @@
 
 package ftp;
 import org.gjt.sp.util.Log;
-
 import com.jcraft.jsch.Logger;
 
 public class SftpLogger implements Logger
