@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <!-- FTP plugin user's guide -->
-<!-- (C) 2001, 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
@@ -67,6 +66,16 @@ If you notice that file permissions are not preserved after saving a file to an 
 
 <para>
 A workaround is to disable two-stage save in the <guilabel>General</guilabel> pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem> dialog box.
+</para>
+
+<para>
+A workaround to have a deal with "Auth Fail" and "Authentification not completed"  errors on some OpenSSH versions:
+
+Please open /etc/ssh/sshd_config file, find and comment this line: 
+<programlisting>PasswordAuthentication yes</programlisting>
+
+Become:
+<programlisting>#PasswordAuthentication no</programlisting>
 </para>
 
 </sect1>
