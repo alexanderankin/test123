@@ -243,17 +243,14 @@ public class ConnectionManager
 
 		if(address != null)
 		{
-			host = address.host;
-			if(host.indexOf(":") == -1)
-				host = host + ":" + FtpVFS.getDefaultPort(secure);
-			user = address.user;
-			password = address.password;
+			host = address.getHost()+":"+address.getPort();
+			user = address.getUser();
+			password = address.getPassword();
 
 			ConnectionInfo info = logins.get(host);
 
-			if(info != null && info.getPassword()!=null && (info.user.equals(user) || user == null)) {
+			if(info != null && info.getPassword()!=null && (info.user.equals(user) || user == null))
 				return info;
-			}
 		}
 		else {
 			host = user = password = null;
@@ -332,7 +329,7 @@ public class ConnectionManager
 					} catch (FtpLoginException e) {
 						Log.log(Log.DEBUG, ConnectionManager.class, "catch FtpLoginException");
 						//if (e.getResponse().getReturnCode() == "530")
-						info.password = null; // Show login dialog again   
+						info.password = null; // to Show login dialog again   
 						throw e;
 					}
 				}

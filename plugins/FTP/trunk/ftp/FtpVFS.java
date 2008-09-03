@@ -104,20 +104,20 @@ public class FtpVFS extends VFS
 	public String getFileName(String path)
 	{
 		FtpAddress address = new FtpAddress(path);
-		if(address.path.equals("/") || address.path.length() == 1)
+		if(address.getPath().equals("/") || address.getPath().length() == 1)
 		{
-			address.path = "";
+			address.setPath("");
 			return address.toString();
 		}
 		else
-			return super.getFileName(address.path);
+			return super.getFileName(address.getPath());
 	} //}}}
 	
 	//{{{ getParentOfPath() method
 	public String getParentOfPath(String path)
 	{
 		FtpAddress address = new FtpAddress(path);
-		address.path = super.getParentOfPath(address.path);
+		address.setPath( super.getParentOfPath(address.getPath()) );
 		return address.toString();
 	} //}}}
 	
@@ -130,7 +130,7 @@ public class FtpVFS extends VFS
 		if(path.startsWith("/"))
 		{
 			FtpAddress address = new FtpAddress(parent);
-			address.path = path;
+			address.setPath(path);
 			return address.toString();
 		}
 		else if(parent.endsWith("/"))
@@ -190,21 +190,16 @@ public class FtpVFS extends VFS
 	{
 		FtpAddress address = new FtpAddress(path);
 		
-		if(address.path.startsWith("/~"))
-		{
-			Connection session
-			= getConnection(_session);
+		if(address.getPath().startsWith("/~")) {
+			Connection session = getConnection(_session);
 			
-			if(session.home != null)
-			{
+			if(session.home != null) {
 				if(session.home.endsWith("/"))
-					address.path = session.home + address.path.substring(2);
+					address.setPath( session.home + address.getPath().substring(2) );
 				else
-					address.path = session.home + '/' + address.path.substring(2);
-				if(address.path.endsWith("/") && address.path.length() != 1)
-				{
-					address.path = address.path.substring(0,
-						address.path.length() - 1);
+					address.setPath( session.home + '/' + address.getPath().substring(2) );
+				if(address.getPath().endsWith("/") && address.getPath().length() != 1) {
+					address.setPath( address.getPath().substring(0,address.getPath().length() - 1) );
 				}
 			}
 		}
@@ -224,7 +219,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(url);
 		
-		directory = session.listDirectory(address.path);
+		directory = session.listDirectory(address.getPath());
 		
 		if(directory != null)
 		{
@@ -297,7 +292,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(path);
 		
-		FtpDirectoryEntry dirEntry = session.getDirectoryEntry(address.path);
+		FtpDirectoryEntry dirEntry = session.getDirectoryEntry(address.getPath());
 		if(dirEntry != null)
 		{
 			if(dirEntry.getType() == FtpDirectoryEntry.LINK) {
@@ -345,9 +340,9 @@ public class FtpVFS extends VFS
 		boolean returnValue;
 		
 		if(directoryEntry.getType() == VFSFile.FILE)
-			returnValue = session.removeFile(address.path);
+			returnValue = session.removeFile(address.getPath());
 		else //if(directoryEntry.type == VFSFile.DIRECTORY)
-			returnValue = session.removeDirectory(address.path);
+			returnValue = session.removeDirectory(address.getPath());
 		
 		DirectoryCache.clearCachedDirectory(getParentOfPath(url));
 		VFSManager.sendVFSUpdate(this,url,true);
@@ -363,7 +358,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(from);
 		
-		String toPath = new FtpAddress(to).path;
+		String toPath = new FtpAddress(to).getPath();
 		
 		VFSFile directoryEntry = _getFile(
 			_session,from,comp);
@@ -372,10 +367,10 @@ public class FtpVFS extends VFS
 		
 		directoryEntry = _getFile(_session,to,comp);
 		if(directoryEntry != null && directoryEntry.getType() == VFSFile.FILE
-			&& !address.path.equalsIgnoreCase(toPath))
+			&& !address.getPath().equalsIgnoreCase(toPath))
 		session.removeFile(toPath);
 		
-		boolean returnValue = session.rename(address.path,toPath);
+		boolean returnValue = session.rename(address.getPath(), toPath);
 		
 		DirectoryCache.clearCachedDirectory(getParentOfPath(from));
 		DirectoryCache.clearCachedDirectory(getParentOfPath(to));
@@ -393,7 +388,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(directory);
 		
-		boolean returnValue = session.makeDirectory(address.path);
+		boolean returnValue = session.makeDirectory(address.getPath());
 		
 		DirectoryCache.clearCachedDirectory(getParentOfPath(directory));
 		VFSManager.sendVFSUpdate(this,directory,true);
@@ -409,7 +404,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(path);
 		
-		return session.retrieve(address.path);
+		return session.retrieve(address.getPath());
 	} //}}}
 	
 	//{{{ _createOutputStream() method
@@ -420,7 +415,7 @@ public class FtpVFS extends VFS
 		
 		FtpAddress address = new FtpAddress(path);
 		
-		OutputStream out = session.store(address.path);
+		OutputStream out = session.store(address.getPath());
 		DirectoryCache.clearCachedDirectory(getParentOfPath(path));
 		
 		return out;
@@ -436,7 +431,7 @@ public class FtpVFS extends VFS
 		
 		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
 		if(permissions != 0)
-			session.chmod(address.path,permissions);
+			session.chmod(address.getPath(),permissions);
 	} //}}}
 	
 	
@@ -454,9 +449,8 @@ public class FtpVFS extends VFS
 	private static Connection getConnection(Object _session) throws IOException
 	{
 		FtpSession session = (FtpSession)_session;
-		if(session.connection == null) {
+		if(session.connection == null)
 			session.connection = ConnectionManager.getConnection(session.info);
-		}
 		
 		return session.connection;
 	} //}}}
@@ -469,8 +463,7 @@ public class FtpVFS extends VFS
 		
 		String path = constructPath(url,entry.getName());
 		String[] nameArray = new String[] { entry.getName() };
-		String link = session.resolveSymlink(new FtpAddress(path).path,
-			nameArray);
+		String link = session.resolveSymlink(new FtpAddress(path).getPath(), nameArray);
 		entry.setName(nameArray[0]);
 		
 		if(link == null)

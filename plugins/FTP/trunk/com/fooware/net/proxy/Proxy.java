@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * Basic interface for sokect factories aka Proxy
+ * Basic interface for socket factories aka Proxy
  * @author Vadim Voituk
  * @see ProxyHTTP
  * 
