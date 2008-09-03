@@ -316,9 +316,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	private void setFloatingProperties(FloatingTypeDescriptor floatDescriptor) {
-		floatDescriptor.setAlwaysOnTop(false);
-		floatDescriptor.setOsDecorated(true);
-		floatDescriptor.setAddToTaskBar(true);
+		floatDescriptor.setAlwaysOnTop(OptionPane.getFloatOnTopProp());
+		floatDescriptor.setOsDecorated(OptionPane.getFloatOsDecorationsProp());
+		floatDescriptor.setAddToTaskBar(OptionPane.getFloatAddToTaskBarProp());
 	}
 	
 	private static class FloatingFreeAction extends ToolWindowAction {
@@ -377,6 +377,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	public void setMainPanel(JPanel panel)
 	{
 		wm.getContentManager().addContent("main", "main", null, panel);
+		wm.getContentManager().setEnabled(false);
 	}
 
 	public class MyDoggyDockingArea implements DockingArea {

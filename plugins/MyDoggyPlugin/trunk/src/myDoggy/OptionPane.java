@@ -15,8 +15,17 @@ public class OptionPane extends AbstractOptionPane {
 	private static final String PUSH_AWAY_MODE_LABEL = PUSH_AWAY_MODE_PROP + ".label";
 	private static final String USE_ALTERNATE_LAYOUT_PROP = PREFIX + "useAlternateLayout";
 	private static final String USE_ALTERNATE_LAYOUT_LABEL = USE_ALTERNATE_LAYOUT_PROP + ".label";
+	private static final String FLOAT_ON_TOP_PROP = PREFIX + "floatOnTop";
+	private static final String FLOAT_ON_TOP_LABEL = FLOAT_ON_TOP_PROP + ".label";
+	private static final String FLOAT_OS_DECORATIONS_PROP = PREFIX + "floatOsDecorations";
+	private static final String FLOAT_OS_DECORATIONS_LABEL = FLOAT_OS_DECORATIONS_PROP + ".label";
+	private static final String FLOAT_ADD_TO_TASKBAR_PROP = PREFIX + "floatAddToTaskBar";
+	private static final String FLOAT_ADD_TO_TASKBAR_LABEL = FLOAT_ADD_TO_TASKBAR_PROP + ".label";
 	JComboBox pushAwayMode;
 	JCheckBox useAlternateLayout;
+	JCheckBox floatOnTop;
+	JCheckBox floatOsDecorations;
+	JCheckBox floatAddToTaskBar;
 	
 	public OptionPane() {
 		super("mydoggy");
@@ -34,6 +43,15 @@ public class OptionPane extends AbstractOptionPane {
 	public static boolean getUseAlternateLayoutProp() {
 		return jEdit.getBooleanProperty(USE_ALTERNATE_LAYOUT_PROP, true);
 	}
+	public static boolean getFloatOnTopProp() {
+		return jEdit.getBooleanProperty(FLOAT_ON_TOP_PROP, false);
+	}
+	public static boolean getFloatOsDecorationsProp() {
+		return jEdit.getBooleanProperty(FLOAT_OS_DECORATIONS_PROP, false);
+	}
+	public static boolean getFloatAddToTaskBarProp() {
+		return jEdit.getBooleanProperty(FLOAT_ADD_TO_TASKBAR_PROP, false);
+	}
 	
 	@Override
 	protected void _init() {
@@ -50,12 +68,27 @@ public class OptionPane extends AbstractOptionPane {
 			jEdit.getProperty(USE_ALTERNATE_LAYOUT_LABEL),
 			getUseAlternateLayoutProp());
 		addComponent(useAlternateLayout);
+		floatOnTop = new JCheckBox(
+			jEdit.getProperty(FLOAT_ON_TOP_LABEL),
+			getFloatOnTopProp());
+		addComponent(floatOnTop);
+		floatOsDecorations = new JCheckBox(
+				jEdit.getProperty(FLOAT_OS_DECORATIONS_LABEL),
+				getFloatOsDecorationsProp());
+		addComponent(floatOsDecorations);
+		floatAddToTaskBar = new JCheckBox(
+				jEdit.getProperty(FLOAT_ADD_TO_TASKBAR_LABEL),
+				getFloatAddToTaskBarProp());
+		addComponent(floatAddToTaskBar);
 	}
 
 	@Override
 	protected void _save() {
 		jEdit.setProperty(PUSH_AWAY_MODE_PROP, (String)pushAwayMode.getSelectedItem());
 		jEdit.setBooleanProperty(USE_ALTERNATE_LAYOUT_PROP, useAlternateLayout.isSelected());
+		jEdit.setBooleanProperty(FLOAT_ON_TOP_PROP, floatOnTop.isSelected());
+		jEdit.setBooleanProperty(FLOAT_OS_DECORATIONS_PROP, floatOsDecorations.isSelected());
+		jEdit.setBooleanProperty(FLOAT_ADD_TO_TASKBAR_PROP, floatAddToTaskBar.isSelected());
 		jEdit.propertiesChanged();
 	}
 
