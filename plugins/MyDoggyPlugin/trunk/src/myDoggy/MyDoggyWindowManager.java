@@ -462,7 +462,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		setPushAwayMode();
 	}
 
-	@Override
 	public void disposeDockableWindow(String name) {
 		ToolWindow tw = getToolWindow(name);
 		if (tw != null)
