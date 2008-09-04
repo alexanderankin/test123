@@ -49,7 +49,7 @@ public class FtpAddress {
 		String domainPart;
 		int pos = url.indexOf('/', this.scheme.length()+3);
 		if (pos == -1) {
-			this.path = null;
+			this.setPath("");
 			domainPart = url.substring(this.scheme.length()+3, url.length());
 		} else {
 			this.setPath( url.substring(pos) );
@@ -141,7 +141,7 @@ public class FtpAddress {
 	}
 	
 	public void setPath(String path) {
-		this.path = path==null ? null : path.trim();
+		this.path = path==null ? "" : path.trim();
 	}
 
 	public String getUser() {
