@@ -310,12 +310,16 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
-		setFloatingProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING));
-		setFloatingProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING_FREE));
+		setFloatingProperties(tw);
 		return tw;
 	}
 
-	private void setFloatingProperties(FloatingTypeDescriptor floatDescriptor) {
+	private void setFloatingProperties(ToolWindow tw) {
+		setFloatingDescriptorProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING));
+		setFloatingDescriptorProperties((FloatingTypeDescriptor) tw.getTypeDescriptor(ToolWindowType.FLOATING_FREE));
+	}
+
+	private void setFloatingDescriptorProperties(FloatingTypeDescriptor floatDescriptor) {
 		floatDescriptor.setAlwaysOnTop(OptionPane.getFloatOnTopProp());
 		floatDescriptor.setOsDecorated(OptionPane.getFloatOsDecorationsProp());
 		floatDescriptor.setAddToTaskBar(OptionPane.getFloatAddToTaskBarProp());
@@ -377,7 +381,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	public void setMainPanel(JPanel panel)
 	{
 		wm.getContentManager().addContent("main", "main", null, panel);
-		wm.getContentManager().setEnabled(false);
 	}
 
 	public class MyDoggyDockingArea implements DockingArea {
@@ -440,6 +443,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	protected void propertiesChanged() {
 		super.propertiesChanged();
 		setPushAwayMode();
+		// Update floating properties
+		ToolWindow[] windows = wm.getToolWindows();
+		for (ToolWindow w: windows)
+			setFloatingProperties(w);
 	}
 	
 	private void setPushAwayMode() {
