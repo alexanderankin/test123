@@ -58,14 +58,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public boolean isAvailableCountable() {
 			return false;
 		}
-		@Override
 		public JComponent getRepresentativeAnchor(Component parent) {
             if (representativeAnchor == null) {
                 representativeAnchor = new ToggleBarButton(manager.getToolWindowBar(anchor));
             }
             return representativeAnchor;
 		}
-		@Override
+
 		public void updateRepresentativeAnchor() {
 		}
 		
