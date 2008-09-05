@@ -312,7 +312,25 @@ public class DiffAction extends SVNAction {
                 // show JDiff
                 DualDiff.toggleFor( getView() );
 
-                Runnable r = new Runnable() {
+                SwingUtilities.invokeLater( new Runnable() {
+                            public void run() {
+                                // set the edit panes in the view
+                                EditPane[] editPanes = getView().getEditPanes();
+
+                                if ( remote2 == null ) {
+                                    // show the local working copy in the right edit pane
+                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
+                                }
+                                else {
+                                    // or show the 2nd remote revision in the right edit pane
+                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
+                                }
+
+                                // do an explicit repaint of the view to clean up the display
+                                getView().repaint();
+                            }
+                        });
+                SwingUtilities.invokeLater( new Runnable() {
                             public void run() {
                                 // set the edit panes in the view
                                 EditPane[] editPanes = getView().getEditPanes();
@@ -320,20 +338,10 @@ public class DiffAction extends SVNAction {
                                 // always show the 1st remote revision in the left edit pane
                                 editPanes[ 0 ].setBuffer( jEdit.openFile( getView(), remote1.getAbsolutePath() ) );
 
-                                if ( remote2 == null ) {
-                                    // or show the local working copy in the right edit pane
-                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), path1 ) );
-                                }
-                                else {
-                                    // show the 2nd remote revision in the right edit pane
-                                    editPanes[ 1 ].setBuffer( jEdit.openFile( getView(), remote2.getAbsolutePath() ) );
-                                }
-
                                 // do an explicit repaint of the view to clean up the display
                                 getView().repaint();
                             }
-                        };
-                SwingUtilities.invokeLater( r );
+                        });
 
             }
             catch ( Exception e ) {
