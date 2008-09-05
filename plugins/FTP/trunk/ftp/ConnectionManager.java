@@ -273,9 +273,7 @@ public class ConnectionManager
 				port = Integer.parseInt(host.substring(index + 1));
 				host = host.substring(0,index);
 			}
-			catch(NumberFormatException e)
-			{
-			}
+			catch(NumberFormatException e){}
 		}
 
 		ConnectionInfo info = new ConnectionInfo(secure,host,port,
