@@ -115,6 +115,8 @@ public class FtpAddress {
 			buf.append('@');
 		}
 		buf.append(this.host);
+		buf.append(":");
+		buf.append(this.port);
 		buf.append(this.path);
 
 		return buf.toString();
