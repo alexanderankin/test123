@@ -23,6 +23,7 @@ getAutoCompleteOfBuffer
   window</li>
   <li><a href="#Menu">Menu</a></li>
   <li><a href="#Options">Options</a></li>
+  <li><a href="#DefaultWordList">Loading default words for a buffer</a></li>
   <li><a href="#Accessing">Accessing the plugin from BeanShell</a></li>
   <li><a href="#Development">Development</a>
     <ul>
@@ -47,7 +48,7 @@ need to press any key to invoke the list of completions. Contrary to
 completions. Instead of that it keeps a list of remembered words (i.e.
 possible completions) that is created by parsing the buffer at startup and is
 updated with new words that you type. You can export (save), import and
-modify the list of remembered words. The plugin was inspired by a similar
+modify the list of remembered words.  It's also possible to import a default list of words for new buffers, see below. The plugin was inspired by a similar
 functionality in OpenOffice.org.</p>
 
 <p>The plugin is configurable, you can define what is a "word", what words
@@ -264,6 +265,26 @@ VK_BACK_SPACE, VK_DELETE, VK_F1 etc., VK_TAB, VK_UP, VK_DOWN and others.</p>
 
 <p>The button <var>Reset options</var> resets them to the default values.</p>
 
+<h2><a name="DefaultWordList" id="DefaultWordList">Loading default words for a buffer</a></h2>
+
+<p>Since: 0.9.8</p>
+
+<p>You can create a list of words that will be loaded by default for any buffer or for any buffer with a particular extension
+provided that TextAutocomplete is enabled for that buffer. Every line of the file 
+is taken as a 'word' - but see notes on the import word list function above. Currently this isn't
+yet configurable but it's planned for the future.</p>
+
+<p>If you want some words to be readily available in any buffer using the TextAutocomplete plugin then store them into the file named <code>autocompleteDefaultWordList</code>
+under the jEdit settings directory (see Utilities - Settings Directory; for me it's /home/jholy/.jedit).
+</p>
+
+<p>If you want some words to be loaded only for a buffer (file) with a particular extension then 
+store them into a file with the name <code>autocompleteDefaultWordList</code> and 
+the appropriate extension under the settings directory. So to load some words by default only 
+for PHP files, create the file  <code>autocompleteDefaultWordList.php</code>. The word list
+file's extension must be in lower-case (i.e. not Php). If there is an extension-specific 
+word list file then the common word list described above is not loaded.</p>
+
 <h2><a name="Accessing" id="Accessing">Accessing the plugin from
 BeanShell</a></h2>
 
@@ -342,6 +363,23 @@ Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
 </ul>
 
 <h3><a name="Change">Change Log</a></h3>
+
+<h4>Version 0.9.8, September 2008</h4>
+
+<p>This is a bug fixes and enhancement release. Additionally, the plugin has
+been updated for jEdit 4.3pre15.</p>
+
+<p>Bug fixes:</p>
+<ul>
+  <li>Fixed the function 'Import words', which stopped working due to a change in jEdit API.</li>
+  <li>Fixed positioning of the completion completions which was broken at least in 4.3pre15.</li>
+  <li>Enabled the use of backspace while the completions window is visible.</li>
+</ul>
+
+<p>New features:</p>
+<ul>
+  <li>Load a default words for any buffer or for a buffer with a particular extension from a file.</li>
+</ul>
 
 <h4>Version 0.9.4, October 2006</h4>
 
