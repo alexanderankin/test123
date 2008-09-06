@@ -21,6 +21,9 @@ package net.jakubholy.jedit.autocomplete;
 
 //import java.util.Vector;
 
+import java.util.Hashtable;
+
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditBus;
@@ -43,6 +46,9 @@ public class TextAutocompletePlugin extends EBPlugin {
 	
 	/** The prefix of (nearly) all properties used by this plugin. */
 	public static final String PROPS_PREFIX = "plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.";
+
+	/** Store temp. buffer's name to detect whether it has changed while saving. */
+	private Hashtable<Buffer, String> tmpBufferNameStore = new Hashtable<Buffer, String>(); 
 
 	/**
 	 * @see org.gjt.sp.jedit.EditPlugin#start()
@@ -74,16 +80,39 @@ public class TextAutocompletePlugin extends EBPlugin {
 		// Stop for closed buffers (== free resources - remebered words...)
 		if (message instanceof BufferUpdate) 
 		{
-			BufferUpdate bufferUpdateMsg = (BufferUpdate) message;
+			final BufferUpdate bufferUpdateMsg = (BufferUpdate) message;
+			final Buffer buffer = bufferUpdateMsg.getBuffer();
 			
 			if(bufferUpdateMsg.getWhat() == BufferUpdate.LOADED)
 			{
 				if(PreferencesManager.getPreferencesManager().isStartForBuffers())
-				{ AutoComplete.attachAction( bufferUpdateMsg.getBuffer() ); } 
+				{ 
+					AutoComplete.attachAction( bufferUpdateMsg.getBuffer() ); 
+				} 
 			}
 			else if(bufferUpdateMsg.getWhat() == BufferUpdate.CLOSED)
-			{ AutoComplete.detachAction( bufferUpdateMsg.getBuffer() ); }
+			{ 
+				AutoComplete.detachAction( bufferUpdateMsg.getBuffer() ); 
+			}
 			
+			// Default word list loading handling
+			if(bufferUpdateMsg.getWhat() == BufferUpdate.CREATED)
+			{
+				
+			}
+			else if(bufferUpdateMsg.getWhat() == BufferUpdate.SAVING) 
+			{
+				// Remember the current buffer name for a later check of its change 
+				tmpBufferNameStore.put(buffer, buffer.getName());
+			}
+			else if(bufferUpdateMsg.getWhat() == BufferUpdate.SAVED) 
+			{
+				final String oldName = tmpBufferNameStore.remove(buffer);
+				if (! buffer.getName().equals(oldName)) {
+					// TODO Buffer name has changed => recheck for default words
+					
+				}
+			}
 		}
 	}
 	
