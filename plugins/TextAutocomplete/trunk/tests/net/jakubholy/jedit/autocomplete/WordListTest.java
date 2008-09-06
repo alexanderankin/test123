@@ -46,10 +46,10 @@ public class WordListTest extends TestCase {
         wordList.addAll(completions);
         
         Completion[] words = wordList.getCompletions(prefix);
-        assertTrue("The nr of completions should be 3 (prefix," +
-                "prefix01, prefix02)",words.length == 3);
+        assertEquals("The # of completions should be 2 (" +
+                "prefix01, prefix02; excluding 'prefix')", 2, words.length);
         for (int i = 0; i < words.length; i++) {
-            assertEquals(words[i], completions[i+2]);
+            assertEquals(words[i], completions[i+3]);
         }
     }
 
@@ -67,8 +67,14 @@ public class WordListTest extends TestCase {
     public void testAdd() {
         //wordList.add(null);
         wordList.add(completions[0]);
+        assertEquals("wlist size", 1, wordList.size());
+        final String word = completions[0].getWord();
+        final String wordPrefix = word.substring(0, word.length() - 1);
+		assertNotNull("Completions for '"+wordPrefix+"' shalln't be null.", wordList.getCompletions(wordPrefix));
+        assertEquals("# completions for prefix '"+wordPrefix+"' if wordlist=['"+word+"' ]"
+        		, 1, wordList.getCompletions(wordPrefix).length);
         assertEquals(completions[0], 
-                wordList.getCompletions(completions[0].getWord())[0] );
+                wordList.getCompletions(wordPrefix)[0] );
     }
 
     // testAdd first!
