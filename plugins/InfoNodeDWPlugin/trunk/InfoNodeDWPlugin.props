@@ -1,0 +1,30 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.infonode.Plugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.infonode.Plugin.name=InfoNodeDWPlugin
+plugin.infonode.Plugin.author=Shlomy Reinstein
+plugin.infonode.Plugin.description=InfoNodeDWPlugin uses InfoNodeDWto manage the dockable windows in jEdit.
+
+plugin.infonode.Plugin.version=0.1
+
+# Dependencies
+ 
+plugin.infonode.Plugin.depend.0=jdk 1.5
+plugin.infonode.Plugin.depend.1=jedit 04.03.12.00
+
+plugin.infonode.Plugin.jars=idw-gpl.jar
+
+# Options
+#plugin.infonode.Plugin.option-pane=mydoggy
+#options.mydoggy.label=MyDoggyPlugin
+#options.mydoggy.code=new myDoggy.OptionPane();
+
+# Option pane labels
+#options.mydoggy.pushAwayMode.label=Push away mode:
+#options.mydoggy.useAlternateLayout.label=Override push-away mode with jEdit alternate layout property
+
+# docs
+plugin.infonode.Plugin.docs=index.html
+
