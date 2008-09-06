@@ -14,7 +14,7 @@ public interface WordList {
 
 	/** 
 	 * Return an array of all words in the list starting
-	 * with the given prefix.
+	 * with the given prefix and longer than that prefix.
 	 * @param prefix The prefix whose completions we search; at least 1 letter.
 	 * @return An array of possible completions of an  empty array.
 	 * 	Entries in the array are sorted.
