@@ -7,7 +7,10 @@ package net.jakubholy.jedit.autocomplete;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -16,6 +19,7 @@ import net.jakubholy.jedit.autocomplete.WordTypedListener.Filter;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.bsh.BshMethod;
 import org.gjt.sp.jedit.bsh.NameSpace;
@@ -23,7 +27,6 @@ import org.gjt.sp.jedit.bsh.UtilEvalError;
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
-
 
 /**
  * Makes user settings available for other classes so that they don't
@@ -77,6 +80,9 @@ public class PreferencesManager {
 	 * Holds the filename filter pattern.
 	 */
 	Pattern filenameFilter = null;
+	
+	/** Path to the directory holding default word lists for new buffers. */
+	private String defaultWordListsDir = null;
 	
     /////////////////////////////////////////////////////////////////////////////////////
     // getPreferencesManager {{{
@@ -584,6 +590,96 @@ public class PreferencesManager {
 		if( !sanitizedCode.endsWith(";") && !sanitizedCode.endsWith("}") )
 		{ sanitizedCode += ";"; }
 		return sanitizedCode;
+	}
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Return a list of default words for a newly opened buffer 
+     * of the given name if there is any. The format of the file 
+     * pointed to by the URL is the same as used by 
+     * {@link AutoComplete#importWordList()}.
+     * <p>
+     * This method shall be called when AutoCompletion is started for a 
+     * new buffer and perhaps also when the buffer name changes (e.g. 
+     * after the change from 'Untitled-1' to 'SourceCode.java' we will 
+     * want to load default words for Java files).
+     * <p>
+     * 
+     * @param bufferName a name of the buffer that AutoComplete has 
+     * just been started for; examples: 'SourceCode.java', 'Untitled-1'.
+     * It's used to find a suitable word list, usually based on the file
+     * name extension.
+     * @return either URL of a list of default words as in  
+     * {@link AutoComplete#importWordList()} or null if there're no defaults.
+     * Beware that the URL may point to a non-existing file.
+     */
+	public URL getDefaultWordListForBuffer(String bufferName) {
+		if (bufferName == null) {
+			throw new IllegalArgumentException("The param 'bufferName' may not be null.");
+		}
+		
+		URL wordListUrl = null;
+		final String settingsDir = getDefaultWordListsDir();
+    	if (settingsDir != null) 
+    	{
+    		String wordListPath = MiscUtilities.constructPath(
+    				settingsDir, "autocompleteDefaultWordList");
+    		
+    		try {
+    			
+    			// Buffer file name extension
+    			final String bufferExtension = MiscUtilities.getFileExtension(bufferName).toLowerCase();
+    			if (bufferExtension.length() > 0) 
+    			{
+    				final String extSpecificWordListPath = wordListPath + bufferExtension;
+    				final File extSpecificWordListFile = new File(extSpecificWordListPath);
+    				if (extSpecificWordListFile.canRead())
+    				{
+    					wordListPath = extSpecificWordListPath;
+    				}
+    			}
+    			
+    			wordListUrl = new URL("file://" + wordListPath);
+    			
+			} catch (MalformedURLException e) {
+				Log.log(Log.ERROR, TextAutocompletePlugin.class, "getDefaultWordListForBuffer: Failed " +
+						"to construct a URL from the default word list path '" +
+						wordListPath + "'. Reason: " + e);
+			}
+    		
+    	} 
+    	else
+    	{
+    		Log.log(Log.DEBUG, TextAutocompletePlugin.class
+    				, "getDefaultWordListForBuffer: No word list read because jEdit settings dir is unset." +
+    				"(Perhaps running with -nosetting or as a -server.)");
+    	} // if-else settings dir set
+    	
+    	Log.log(Log.DEBUG, TextAutocompletePlugin.class, "getDefaultWordListForBuffer('" +
+    			bufferName + "'): returning " + wordListUrl);
+    	
+    	return wordListUrl;
+    } /* getDefaultWordListForBuffer */
+
+	/**
+	 * The directory where default word lists are stored.
+	 */
+	private String getDefaultWordListsDir() {
+		if (defaultWordListsDir == null) 
+		{
+			defaultWordListsDir = jEdit.getSettingsDirectory();
+		}
+		return defaultWordListsDir;
+	}
+	
+	/**
+	 * Set path to the directory where default word lists are stored.
+	 * This method is intended to override the default location for 
+	 * JUnit testing purposes.
+	 * @param defaultWordListsDir E.g. /tmp/myTestDir
+	 */
+	void setDefaultWordListsDir(String defaultWordListsDir) {
+		this.defaultWordListsDir = defaultWordListsDir;
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////

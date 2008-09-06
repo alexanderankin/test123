@@ -43,6 +43,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -280,13 +284,9 @@ implements java.util.Observer
 	 * Read words from a file supplied
 	 * by the user and add them to those
 	 * remembered for this buffer.
-	 *
-	 * The file must contain one word
-	 * per line. We do not check that
-	 * they're words, remove white
-	 * spaces or anything like that - we
-	 * import them as they are. Only rows that contain
-	 * nothing but whitespaces are ignored.
+	 * <p>
+	 * See {@link #importWordList(Reader)} for details 
+	 * on the file format.
 	 *
 	 * @return Count of the imported words.
 	 * @throws MaxWordsExceededException When the maximal number of
@@ -308,17 +308,9 @@ implements java.util.Observer
 
 		if(files != null && files.length == 1)
 		{
-				BufferedReader in = new BufferedReader(new FileReader(files[0]));
-				String line;
-				while ((line = in.readLine()) != null)
-				{
-					if(line.trim().length() != 0)	// ignore empty lines
-					{
-						rememberWord(line);
-						lineCount++;
-					}
-				}
-				in.close();
+			 
+			final Reader wordListReader = new FileReader(files[0]);
+			lineCount = importWordList(wordListReader);
 		}
 		else
 		{
@@ -326,6 +318,47 @@ implements java.util.Observer
 				"nothing, no/too many input file(s) selected. ["+files+"]");
 		}
 
+		return lineCount;
+	}
+
+
+	/**
+	 * Read words via the provided
+	 * Reader and add them to those
+	 * remembered for this buffer.
+	 * <p>
+	 * The file must contain one word
+	 * per line. We do not check that
+	 * they're words, remove white
+	 * spaces or anything like that - we
+	 * import them as they are. Only rows that contain
+	 * nothing but whitespaces are ignored.
+	 * <p>
+	 * Note: The <code>wordListReader</code> is closed at the end.
+	 *
+	 * @param wordListReader A reader (e.g. FileReader) for reading the word list.
+	 * Note: it's closed at the end.
+	 * @return Count of the imported words.
+	 * @throws MaxWordsExceededException When the maximal number of
+     * remembered words have already been reached.
+	 * @throws IOException Exception when trying to read the file
+	 */
+	public int importWordList(final Reader wordListReader) throws IOException,
+			MaxWordsExceededException {
+		int lineCount = 0;
+		final BufferedReader in = new BufferedReader(wordListReader);
+		String line;
+		while ((line = in.readLine()) != null)
+		{
+			if(line.trim().length() != 0)	// ignore empty lines
+			{
+				rememberWord(line);
+				lineCount++;
+			}
+		}
+		in.close();
+		
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importWordList: Number of lines ('words') read: " + lineCount);
 		return lineCount;
 	}
 
@@ -353,7 +386,7 @@ implements java.util.Observer
 
     // {{{ constructor
 	/** Create a new AutoComplete that start's working for the given buffer. */
-    private AutoComplete( Buffer buffer )
+    AutoComplete( Buffer buffer )
     {
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CREATED ");
 //        this.thePopup 	= new CompletionPopup( jEdit.getActiveView() );
@@ -387,7 +420,7 @@ implements java.util.Observer
 	///////////////////////////////////////////////////////////////////////////
     // {{{ attach
     /** Attach the AutoCompletion to the buffer == start completing there.
-     * The buffer is parsed for words to remeber as possible completions. */
+     * The buffer is parsed for words to remember as possible completions. */
     public void attach( Buffer buffer )
     {
         // If attached already detach first
@@ -398,7 +431,44 @@ implements java.util.Observer
     	buffer.addBufferListener( m_wordTypedListener );
         // Collect words in the buffer
         parseBuffer();
+        // Load default words if any
+        importBufferDefaultWordList(buffer);
     } // attach }}}
+
+	/**
+	 * Import words from a default word list appropriate for the give buffer if 
+	 * there is any such list. 
+	 * <p>
+	 * It's error-safe: Exceptions are catched and just logged not to make this plugin unusable
+	 * because of problems with default word lists.
+	 * 
+	 * @param buffer The buffer to try to read default words for.
+	 * @return Number of imported words.
+	 */
+	int importBufferDefaultWordList(Buffer buffer) {
+		final URL defaultWordListUrl = prefManager.getDefaultWordListForBuffer(buffer.getName());
+		int countImportedWords = 0;
+		
+        if (defaultWordListUrl != null) 
+        {
+        	try {
+				countImportedWords = importWordList(new InputStreamReader( defaultWordListUrl.openStream() ));
+				Log.log(Log.NOTICE, TextAutocompletePlugin.class
+						, countImportedWords + " words imported from the default word list '" + 
+						defaultWordListUrl + "' for the buffer '" + buffer + "'");
+        	} catch (FileNotFoundException e) {
+				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer + 
+						"'): The default word list '" + defaultWordListUrl +
+						"' doesn't exist, not loading anything.");
+        	} catch (Exception e) {
+				Log.log(Log.ERROR, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer + 
+						"'): Failed to import the default word list '" + defaultWordListUrl +
+						"' because of: " + e);
+			}
+        }
+        
+        return countImportedWords;
+	} /* importBufferDefaultWordList */
 
 	///////////////////////////////////////////////////////////////////////////
 	// {{{ update
@@ -471,12 +541,9 @@ implements java.util.Observer
 	protected void displayCompletionPopup()
 	{
 		// TODO: (?) assert jEdit.getActiveView().getBuffer() == myBuffer
-        JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+        final JEditTextArea textArea = jEdit.getActiveView().getTextArea();
         
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: entry");
-
-        //int caretLine = textArea.getCaretLine();
-		int caret = textArea.getCaretPosition();
 
 		/* If the buffer isn't editable the user doesn't enter
 		 * a character and thus the pop-up will never show up.
@@ -498,23 +565,26 @@ implements java.util.Observer
 
 			if ( thePopup == null ) {
 				// Create
+
 				textArea.scrollToCaret(false);
 				Point location = textArea.offsetToXY(
-					caret - thePrefix.length());
+						textArea.getCaretPosition() - thePrefix.length());
 				location.y += textArea.getPainter().getFontMetrics()
 					.getHeight();
-				this.thePopup 	= new CompletionPopup( jEdit.getActiveView(), location );
-				thePopup.setWord( thePrefix );
-				//  Display the popup
-
+		
 				SwingUtilities.convertPointToScreen(location,
 					textArea.getPainter());
-			    thePopup.display( /*location ,*/ getCompletions( thePrefix ) );
+			    
+				this.thePopup 	= new CompletionPopup( jEdit.getActiveView() , location );
+				//  Display the popup
+
+				thePopup.setWord( thePrefix );
+			    thePopup.showCompletions( getCompletions( thePrefix ) );
 			    Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: popup displayed");
 			} else {
 			    // The pop-up is already visible => update it only
 				thePopup.setWord( thePrefix );
-			    thePopup.setCompletions( getCompletions( thePrefix ) );
+			    thePopup.showCompletions( getCompletions( thePrefix ) );
 			    Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: an already displayed popup updated");
 			} // if-else pop-up visible
 
@@ -548,7 +618,7 @@ implements java.util.Observer
 	/** The prefix to complete/typed so far. */
 	private String thePrefix = "";
 	/** A completion pop-up window; it's only set when displayed (otherwise null). */
-	private CompletionPopup thePopup;
+	private ITextAutoCompletionPopup thePopup;
 	//private View view;
 	/** The buffer this AutoComplete is attached to. */
 	private Buffer buffer = null;
