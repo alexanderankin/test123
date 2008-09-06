@@ -1,12 +1,6 @@
 package infonode;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,11 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
@@ -110,11 +101,6 @@ public class InfoNodeDWWindowManager extends DockableWindowManager {
 		return layout;
 	}
 
-	private String getToolWindowID(String dockableName)
-	{
-		return dockableName;
-	}
-	
 	@Override
 	public void hideDockableWindow(String name)
 	{
