@@ -22,6 +22,7 @@ package net.jakubholy.jedit.autocomplete;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.InputEvent;
+import java.net.URL;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -189,6 +190,15 @@ public class TextAutocompletePane extends AbstractOptionPane
 		selectionByNumberModifierMask.setToolTipText("Additional key that must be pressed together with the number N to select the Nth completion. Some may not work! [none]");
 		addComponent("Select by number modifier   ", selectionByNumberModifierMask);
 
+		addSeparator(); // -------------------------------------------------
+		
+		URL defWordList = PreferencesManager.getPreferencesManager().getDefaultWordListForBuffer("");
+		addComponent(new JLabel("<html><p>Default word list for buffer (not yet configurable)</p>" +
+				"<ul><li>General word list: " + defWordList + 
+				"</li><li>Buffer extension-specific word list: Same as above + the extension in lowercase<br>" +
+				"Ex: <code>" + defWordList + ".php</code>" + 
+				"</li></html>"));
+		
 		addSeparator(); // -------------------------------------------------
 
 		resetButton = new javax.swing.JButton();
