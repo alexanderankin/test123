@@ -36,35 +36,37 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.gui.CompleteWord;
 import org.gjt.sp.util.Log;
 
 /**
  * A pop-up window to display a list of available completions.
- *
+ * <p>
  * When visible it intercepts all keys and either passes them on
  * or handles them if they've a special meaning for it (such
  * as dispose or insert the selected completion). What keys
  * have what meaning is determined by a {@link PreferencesManager}.
  * It could be extended to react also to other events such as
  * focus lost.
- *
+ * <p>
  * The window is absolutely unaware of the AutoComplete that's
  * using it and that contains most of the logic to show/dispose
  * the pop-up/update the list of completions.
+ * <p>
+ * NOTE: Re-implemented based on the completion pop-up being
+ * part of the jEdit API. The implementation is inspired by
+ * {@link CompleteWord}. 
  */
 @SuppressWarnings("serial")
-public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
+public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup implements ITextAutoCompletionPopup
 {
 
-	/** A default location of the pop-up. */
-	private static final Point defaultLocation = new Point(100, 100);
+//	/** A default location of the pop-up. */
+//	private static final Point defaultLocation = new Point(100, 100);
 	
 /////////////////////////////////////////////////////////////////// GUI
     /**
-     * Create a new (so far invisible) popup with its listeners.
-     * @param buffer The buffer the AutoComplete is attached to; may be null but
-     * must be set before the first display of this.
+     * Create a new (so far invisible) pop-up with its listeners at the given location.
      */
     //{{{ Constructor
 	public CompletionPopup( View view, Point location )
@@ -73,22 +75,13 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 		this.view = view;
 	} //}}}
 
-	//////////////////////////////////////////////////////////////////	display
-	//	{{{ Display() method
-	/** Display a popup with the given completions. */
-	public void display( /*Point location,*/ Completion[] completions )
-	{
-//		setLocation( location );
-	    setCompletions( completions );
-	} // }}}
-
+	//####################### METHODS USED BY THE PLUGIN ###########################################
 	////////////////////////////////////////////////////////////////// setCompletions
-	// {{{ setCompletions
-	/** Set the list of completions shown in the pop-up window. Not null.
-	 * Size of the pop-up is adjusted to fit the length of the completions.
-	 * @param completions The completions to set; if empty => dispose.
-	 * @return Returns true if the operation succeeded (== valid completions). */
-	public boolean setCompletions( Completion[] completions )
+	// {{{ showCompletions
+	/* (non-Javadoc)
+	 * @see net.jakubholy.jedit.autocomplete.ITextAutoCompletionPopup#setCompletions(net.jakubholy.jedit.autocomplete.Completion[])
+	 */
+	public boolean showCompletions( Completion[] completions )
 	{
 		//Log.log(Log.DEBUG,this,"setComplet. called ");
 
@@ -96,34 +89,31 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 	    	dispose();
 	    	return false;
 	    } else {
-			reset( new Words(completions), true );
+			reset( new CandidatesImpl(completions), true );
 		    return true;
 	    }
 	} // setCompletions }}}
 
-	////////////////////////////////////////////////////////////////// dispose
-	//{{{ dispose() method
-	/** Hide the popup & cease to grab the key input. */
-	public void dispose()
-	{
-		// TODO: (low) After a user-invoked dispose do not show again for the same word.
-		super.dispose();
-		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.dispose called; displayable: " + isDisplayable());
-	} //}}}
+//	////////////////////////////////////////////////////////////// dispose
+//	//{{{ dispose() method
+//	/* (non-Javadoc)
+//	 * @see net.jakubholy.jedit.autocomplete.ITextAutoCompletionPopup#dispose()
+//	 */
+//	public void dispose()
+//	{
+//		// TODO: (low) After a user-invoked dispose do not show again for the same word.
+//		super.dispose();
+//		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.dispose called; displayable: " + isDisplayable());
+//	} //}}}
 
-	////////////////////////////////////////////////////////////////////
-	//			GETTERS & SETTERS
-    ////////////////////////////////////////////////////////////////////
-
-	/** Set the prefix being completed. */
+	/* (non-Javadoc)
+	 * @see net.jakubholy.jedit.autocomplete.ITextAutoCompletionPopup#setWord(java.lang.String)
+	 */
     public void setWord(String word) {
         this.word = word;
     }
-
-    /** Get the prefix being completed. */
-    public String getWord() {
-        return word;
-    }
+	
+	//####################### /METHODS USED BY THE PLUGIN ###########################################
 
 	////////////////////////////////////////////////////////////////////
 	//			FIELDS
@@ -171,10 +161,17 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 		else if ( prefManager.isSelectionUpKey(evt) )
 		{
 			moveSelection( evt, UP );
+			evt.consume(); //new
 		}
 		else if ( prefManager.isSelectionDownKey(evt) )
 		{
 			moveSelection( evt, DOWN );
+			evt.consume();//new
+		}
+		else if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+		{
+			view.getTextArea().backspace();
+			evt.consume();
 		}
 		else
 		{
@@ -184,6 +181,7 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 			if ( prefManager.isSelectionByNumberEnabled() &&
 					evt.getModifiers() == prefManager.getSelectionByNumberModifier())
 			{
+				// This is handled in keyTyped except of the following case:
 				// WORKAROUND FOR CTRL+NUMBER
 				// Ctrl+1 initiates 2*keyPressed (1st for Ctrl, 2nd for Ctrl+1) and no keyTyped
 				if ( prefManager.getSelectionByNumberModifier() == InputEvent.CTRL_MASK
@@ -191,12 +189,13 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 				{
 					selectCompletionByNumber(evt.getKeyChar());
 				}
+				
 				evt.consume();
 			}
 		} // if-else-... type of the key
 
 	} // keyTyped }}}
-
+	
 	/////////////////////////////////////////////////////////////////////////////////
 	/** A constant used by moveSelection - down arrow pressed. */
 	final protected int DOWN 	= 0;	// down arrow; towards higher indices
@@ -258,8 +257,9 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 			if (selectCompletionByNumber(ch))
 			{ evt.consume(); }
 		} else {
+			// Do nothing: it's passed to the view automatically (by our parent class)
 			// Insert it
-			view.getTextArea().userInput(ch);
+//			view.getTextArea().userInput(ch);
 		} // if a digit pressed
 	} // keyTyped }}}
 
@@ -285,39 +285,55 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 		return false;
 	}
 
-	/** Return the text area of the completed buffer's view. */
-	private JEditTextArea getTextArea() {
-		return view.getTextArea();
-	}
-
 	//{{{ Words class
-	private class Words implements Candidates
+	/**
+	 * An basic implementation of the {@link Candidates} interface 
+	 * suitable for our needs. Basically it just wraps 
+	 * a {@link Completion} array and provides a renderer that puts numbers
+	 * in the front of possible completions.
+	 * <p>
+	 * Based on {@link CompleteWord#Words}.
+	 */
+	private class CandidatesImpl implements Candidates
 	{
-		private final DefaultListCellRenderer renderer;
+		private final DefaultListCellRenderer renderer = new DefaultListCellRenderer();
 		private final Completion[] completions;
 
-		public Words(Completion[] completions)
+		public CandidatesImpl(Completion[] completions)
 		{
-			this.renderer = new DefaultListCellRenderer();
 			this.completions = completions;
 		}
 
+		/* (non-Javadoc)
+		 * @see Candidates#getSize()
+		 */
 		public int getSize()
 		{
 			return completions.length;
 		}
 
+		/* (non-Javadoc)
+		 * @see Candidates#isValid()
+		 */
 		public boolean isValid()
 		{
 			return true;
 		}
 
+		/* (non-Javadoc)
+		 * @see Candidates#complete()
+		 */
 		public void complete(int index)
 		{
 			String insertion = completions[index].toString().substring(word.length());
-			getTextArea().setSelectedText(insertion);
+			view.getTextArea().setSelectedText(insertion);
 		}
 	
+		/**
+		 * Render completions prefixed with numbers so that a selection
+		 * can be made by just pressing the number (unless disabled).
+		 * @see Candidates#getCellRenderer()
+		 */
 		public Component getCellRenderer(JList list, int index,
 			boolean isSelected, boolean cellHasFocus)
 		{
@@ -337,6 +353,9 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup
 			return renderer;
 		}
 
+		/* (non-Javadoc)
+		 * @see Candidates#isValid()
+		 */
 		public String getDescription(int index)
 		{
 			return null;
