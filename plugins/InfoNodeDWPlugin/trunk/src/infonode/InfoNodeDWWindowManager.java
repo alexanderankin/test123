@@ -64,6 +64,10 @@ public class InfoNodeDWWindowManager extends DockableWindowManager {
 		sw = new SplitWindow(false, 0.25f, tabWindows.get(DockableWindowManager.TOP), sw);
 		sw = new SplitWindow(false, 0.75f, sw, tabWindows.get(DockableWindowManager.BOTTOM));
 		rootWindow.setWindow(sw);
+		tabWindows.get(DockableWindowManager.TOP).setVisible(false);
+		tabWindows.get(DockableWindowManager.BOTTOM).setVisible(false);
+		tabWindows.get(DockableWindowManager.LEFT).setVisible(false);
+		tabWindows.get(DockableWindowManager.RIGHT).setVisible(false);
 		PerspectiveManager.setPerspectiveDirty(true);
 	}
 
@@ -157,15 +161,21 @@ public class InfoNodeDWWindowManager extends DockableWindowManager {
 	@Override
 	public void showDockableWindow(String name)
 	{
-		JComponent c = createDockable(name);
-		net.infonode.docking.View v = new net.infonode.docking.View(getDockableTitle(name), null, c);
-		String position = getDockablePosition(name);
-		TabWindow tw = tabWindows.get(position);
-		if (tw != null) {
-			if (v.getWindowParent() != tw)
-				tw.addTab(v);
-			tw.setVisible(true);
-		} 
+		net.infonode.docking.View v = views.getView(name);
+		if (v == null) {
+			JComponent c = createDockable(name);
+			v = new net.infonode.docking.View(getDockableTitle(name), null, c);
+			v.setName(name);
+			views.addView(v);
+			String position = getDockablePosition(name);
+			TabWindow tw = tabWindows.get(position);
+			if (tw != null) {
+				if (v.getWindowParent() != tw)
+					tw.addTab(v);
+				tw.setVisible(true);
+			}
+		}
+		v.requestFocus();
 	}
 
 	/*
