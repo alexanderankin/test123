@@ -270,7 +270,7 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 console.beanshell.prompt=BeanShell>
 ### Error parsing
-console.errors.default=generic perl ant python vhdl msvc msnet jade antemacs emacs
+console.errors.default=generic perl ant python vhdl msvc q_assert msnet jade antemacs emacs
 
 console.error.make.entering=Entering directory `(.+)'
 console.error.make.leaving=Leaving directory `(.+)'
@@ -294,6 +294,16 @@ console.error.msnet.filename=$1
 console.error.msnet.line=$2
 console.error.msnet.message=$4
 console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
+
+console.error.q_assert.message=$1
+console.error.q_assert.match=ASSERT\: "([^"]+)" in file ([^,]+), line (\\d+)
+console.error.q_assert.warning=
+console.error.q_assert.extra=
+console.error.q_assert.line=$3
+console.error.q_assert.filename=$2
+console.error.q_assert.name=Q_ASSERT
+console.error.q_assert.testtext=ASSERT\: "\!tagVar.isNull()" in file filetagger.cpp, line 8
+
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
