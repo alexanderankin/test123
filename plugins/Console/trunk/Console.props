@@ -296,14 +296,13 @@ console.error.msnet.message=$4
 console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
 
 console.error.q_assert.message=$1
-console.error.q_assert.match=ASSERT\: "([^"]+)" in file ([^,]+), line (\\d+)
+console.error.q_assert.match=ASSERT\: "(.+)" in file ([^,]+), line (\\d+)
 console.error.q_assert.warning=
 console.error.q_assert.extra=
 console.error.q_assert.line=$3
 console.error.q_assert.filename=$2
 console.error.q_assert.name=Q_ASSERT
-console.error.q_assert.testtext=ASSERT\: "\!tagVar.isNull()" in file filetagger.cpp, line 8
-
+console.error.q_assert.testtext=ASSERT\: "fn.toString() \=\= QString("t.mp3")" in file CPPPyWrapperExample.cpp, line 32
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
