@@ -505,17 +505,24 @@ public class DualDiff implements EBComponent {
                             view.validate();
                         }
                         else {
+                            // split the view -- if already split correctly,
+                            // don't split.  This might be a bit of a hack, in
+                            // the case where the view is split in two, but
+                            // horizontally rather than vertically, I'm checking
+                            // the output of the split config.  If it ends with
+                            // "horizontal", the view is split horizontally and
+                            // needs to be split vertically.
                             EditPane[] editPanes = view.getEditPanes();
-                            if ( editPanes.length > 1 ) {
+                            ViewWrapper vw = new ViewWrapper( view );
+                            String splitConfig = vw.getSplitConfig();
+                            if ( editPanes.length != 2 || (splitConfig != null && !splitConfig.endsWith("horizontal") ) ) {
                                 // remember split configuration so it can be restored later
-                                ViewWrapper vw = new ViewWrapper( view );
-                                String splitConfig = vw.getSplitConfig();
                                 if ( splitConfig != null ) {
                                     splitConfigs.put( view, splitConfig );
                                 }
                                 view.unsplit();
+                                view.splitVertically();
                             }
-                            view.splitVertically();
 
                             DualDiff.addTo( view );
                             DockableWindowManager dwm = view.getDockableWindowManager();
