@@ -43,11 +43,14 @@ public class VoxSpellMenuService extends DynamicContextMenuService
                                                 jEdit.getActionContext());
             }
         } else {
-            items = new EnhancedMenuItem[2];
+            items = new EnhancedMenuItem[3];
             items[0] = new EnhancedMenuItem("VoxSpell: add - \""+word+"\"", "voxspellcheck.ignoreWord",
                                             jEdit.getActionContext());
             items[1] = new EnhancedMenuItem("VoxSpell: ignore - \""+word+"\"", "voxspellcheck.addWord",
                                             jEdit.getActionContext());
+            items[2] = new EnhancedMenuItem("VoxSpell: suggest", "voxspellcheck.suggest",
+                                            jEdit.getActionContext());
+
         }
         return items;
     }
