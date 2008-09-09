@@ -1,8 +1,8 @@
 plugin.voxspellcheck.VoxSpellPlugin.activate=startup
 plugin.voxspellcheck.VoxSpellPlugin.name=VoxSpell
 plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
-plugin.voxspellcheck.VoxSpellPlugin.version=1.0.0
-plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.05.00
+plugin.voxspellcheck.VoxSpellPlugin.version=1.0.1
+plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.15.00
 plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
 plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
 plugin.voxspellcheck.VoxSpellPlugin.longdescription=description.html
@@ -14,7 +14,7 @@ voxspellcheck.check-spelling.label=VoxSpell
 options.voxspellcheck.label=VoxSpell
 options.voxspellcheck.code=new voxspellcheck.VoxSpellOptionPane();
 options.voxspellcheck.all_text_modes=text rest latex
-options.voxspellcheck.non_markup_modes=html xml
+options.voxspellcheck.non_markup_modes=html xml mail
 options.voxspellcheck.start_checking_on_activate=false
 options.voxspellcheck.start_checking_on_activate.title=Automatically start spell checking?
 
