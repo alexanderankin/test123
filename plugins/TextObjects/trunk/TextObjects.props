@@ -1,4 +1,4 @@
-plugin.textobjects.TextObjectsPlugin.activate=defer
+plugin.textobjects.TextObjectsPlugin.activate=startup
 plugin.textobjects.TextObjectsPlugin.name=Text Objects
 plugin.textobjects.TextObjectsPlugin.author=Matthew Gilbert
 plugin.textobjects.TextObjectsPlugin.docs=doc/index.html
