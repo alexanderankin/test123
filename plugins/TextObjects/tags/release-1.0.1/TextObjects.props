@@ -1,0 +1,47 @@
+plugin.textobjects.TextObjectsPlugin.activate=startup
+plugin.textobjects.TextObjectsPlugin.name=Text Objects
+plugin.textobjects.TextObjectsPlugin.author=Matthew Gilbert
+plugin.textobjects.TextObjectsPlugin.docs=doc/index.html
+plugin.textobjects.TextObjectsPlugin.version=1.0.1
+plugin.textobjects.TextObjectsPlugin.depend.0=jedit 04.03.15.00
+plugin.textobjects.TextObjectsPlugin.depend.1=jdk 1.5
+plugin.textobjects.TextObjectsPlugin.description=Plugin to select text objects (words, sentences, paragraphs, code blocks, quoted text, and comments).
+plugin.textobjects.TextObjectsPlugin.longdescription=description.html
+
+plugin.textobjects.TextObjectsPlugin.menu=textobjects.select-a-word - textobjects.select-in-word - \
+    textobjects.select-a-brace - textobjects.select-in-brace - textobjects.select-a-bracket - textobjects.select-in-bracket - \
+    textobjects.select-a-paren - textobjects.select-in-paren - textobjects.select-a-angle - textobjects.select-in-angle - \
+    textobjects.select-a-quote - textobjects.select-in-quote - textobjects.select-a-tick - textobjects.select-in-tick - \
+    textobjects.select-a-back-tick - textobjects.select-in-back-tick - textobjects.select-a-paragraph - \
+    textobjects.select-in-paragraph - textobjects.select-a-comment - textobjects.select-in-comment - \
+    textobjects.select-a-sentence - textobjects.select-in-sentence -
+
+textobjects.start-input-mode.label=Start TextObjects input mode
+
+textobjects.select-a-word.label=Select a word
+textobjects.select-in-word.label=Select in word
+
+textobjects.select-a-brace.label=Select a brace
+textobjects.select-in-brace.label=Select in brace
+textobjects.select-a-bracket.label=Select a bracket
+textobjects.select-in-bracket.label=Select in bracket
+textobjects.select-a-paren.label=Select a paren
+textobjects.select-in-paren.label=Select in paren
+textobjects.select-a-angle.label=Select a angle
+textobjects.select-in-angle.label=Select in angle
+
+textobjects.select-a-quote.label=Select a quote
+textobjects.select-in-quote.label=Select in quote
+textobjects.select-a-tick.label=Select a tick
+textobjects.select-in-tick.label=Select in tick
+textobjects.select-a-back-tick.label=Select a back-tick
+textobjects.select-in-back-tick.label=Select in back-tick
+
+textobjects.select-a-paragraph.label=Select a paragraph
+textobjects.select-in-paragraph.label=Select in paragraph
+
+textobjects.select-a-comment.label=Select a comment
+textobjects.select-in-comment.label=Select in comment
+
+textobjects.select-a-sentence.label=Select a sentence
+textobjects.select-in-sentence.label=Select in sentence
