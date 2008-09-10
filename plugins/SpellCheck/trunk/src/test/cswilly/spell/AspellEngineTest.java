@@ -57,7 +57,7 @@ public class AspellEngineTest{
 			Thread t = new Thread(){
 				public void run(){
 					try{
-						AspellEngine ae = new AspellEngine(DOES_NOT_EXIST,new String[]{"pipe"});
+						AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{DOES_NOT_EXIST,"pipe"}));
 						fail("Should not succeed");
 					}catch(Throwable t){
 						throwable=t;
@@ -87,7 +87,7 @@ public class AspellEngineTest{
 			Thread t = new Thread(){
 				public void run(){
 					try{
-						AspellEngine ae = new AspellEngine(SINK,new String[]{"pipe"});
+					AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{SINK,"pipe"}));
 						fail("Should not succeed");
 					}catch(Throwable t){
 						throwable=t;
@@ -117,7 +117,7 @@ public class AspellEngineTest{
 			Thread t = new Thread(){
 				public void run(){
 					try{
-						AspellEngine ae = new AspellEngine(WELCOME_THEN_SINK,new String[]{"pipe"});
+						AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{WELCOME_THEN_SINK,"pipe"}));
 						ae.stop();
 					}catch(Throwable t){
 						throwable=t;
@@ -149,7 +149,7 @@ public class AspellEngineTest{
 				new Result("& Foox 40 17: Fox, Fix, Foxy, Pox, Fax, Fonz, Foods, Fools, Foots, Fops, Cox, Box, Fog, Lox, Fogs, Foss, Coax, Coos, Flax, Flex, Flux, Foes, Fogy, Fork, Fons, Knox, Fobs, Hoax, Roux, Goo's, Fop's, Fox's, Fog's, Food's, Fool's, Foot's, Koo's, Foe's, Flo's, Fob's")
 			});
 		try{
-			final AspellEngine ae = new AspellEngine(SPELLCHECK_OK,new String[]{"pipe","--lang='en'"});
+			final AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{SPELLCHECK_OK,"pipe","--lang='en'"}));
 			Thread t = new Thread(){
 				public void run(){
 					try{
@@ -187,7 +187,7 @@ public class AspellEngineTest{
 				new Result("& Foox 6 17: Fox, Foo, Food, Fool, Foot, Foxy")
 			});
 		try{
-			final AspellEngine ae = new AspellEngine(SPELLCHECK_WIN,new String[]{"pipe","--lang='en'"});
+			final AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{SPELLCHECK_WIN,"pipe","--lang='en'"}));
 			Thread t = new Thread(){
 				public void run(){
 					try{
@@ -220,7 +220,7 @@ public class AspellEngineTest{
 	@Test
 	public void testSpellCheckSink(){
 		try{
-			final AspellEngine ae = new AspellEngine(WELCOME_THEN_SINK,new String[]{"pipe","--lang='en'"});
+			final AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{WELCOME_THEN_SINK,"pipe","--lang='en'"}));
 			Thread t = new Thread(){
 				public void run(){
 					try{

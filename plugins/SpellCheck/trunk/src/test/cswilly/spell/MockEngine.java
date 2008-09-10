@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class MockEngine implements Engine{
 	private int index;
 	private List<List<Result>> lres;
-	private boolean stopped;
+	private boolean stopped,ctxs;
 	public MockEngine(){
 		lres = new ArrayList<List<Result>>();
 		index = 0;
@@ -50,4 +50,14 @@ public class MockEngine implements Engine{
 	public void stop(){stopped=true;}
 	
 	public boolean isStopped(){return stopped;}
+	
+	public void setContextSensitive(boolean b){
+		if(!stopped)throw new IllegalStateException("can't change context-sensitivity when not stopped");
+		ctxs = b;
+	}
+	
+	
+	public boolean isContextSensitive(){
+		return ctxs;
+	}
 }

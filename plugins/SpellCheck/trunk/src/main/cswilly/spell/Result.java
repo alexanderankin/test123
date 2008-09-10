@@ -51,7 +51,7 @@ import java.util.*;
  *   </dl>
  */
 public
-class Result implements Cloneable
+final class Result implements Cloneable
 {
   private  int     _offset;
   private  Type    _type;

@@ -3,7 +3,6 @@
 * $Date$
 * $Author$
 *
-* Copyright (C) 2001 C. Scott Willy
 * Copyright (C) 2008 Eric Le Lay
 *
 * This program is free software; you can redistribute it and/or
@@ -37,9 +36,9 @@ public interface EngineManager extends EBComponent
 {
 	
 	/**
-	 * @return a user-friendly name
+	 * @return a user-friendly description of this spell-check engine
 	 */
-	public String getName();
+	public String getDescription();
 	
 	/**
 	 * It's not specified wether it should return a new one at each invocation.
@@ -61,7 +60,7 @@ public interface EngineManager extends EBComponent
 	 * @see cswilly.
 	 * @return a future to get the list of suported dictionaries
 	 */
-	public Future<Vector<String>> getAlternateLangDictionaries();
+	public Future<Vector<Dictionary>> getAlternateLangDictionaries();
 	
 	
 	/**

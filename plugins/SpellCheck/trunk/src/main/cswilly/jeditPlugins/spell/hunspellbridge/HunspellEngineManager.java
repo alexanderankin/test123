@@ -34,8 +34,10 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import java.util.Vector;
+import java.util.List;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 
 import cswilly.spell.Engine;
 import cswilly.spell.Validator;
@@ -49,19 +51,25 @@ import cswilly.jeditPlugins.spell.SpellCheckPlugin;
 
 import com.stibocatalog.hunspell.Hunspell;
 
+import static cswilly.jeditPlugins.spell.hunspellbridge.HunspellDictsManager.Dictionary;
 
 public class HunspellEngineManager implements EngineManager{
 	private Hunspell hspl;
+	
+	private HunspellDictsManager dictsManager;
+	
 	static final Pattern DICT_PATTERN=Pattern.compile("([a-z]{2}_[A-Z]{2}[-_\\w]*)\\.(?:dic|aff)");
 	
-	public HunspellEngineManager(){}
+	public HunspellEngineManager(){
+		dictsManager = new HunspellDictsManager();
+	}
 	
 	
 	public Engine getEngine(String mode,String language, boolean terse) throws SpellException{		
 		initHunspell();
 		try{
-			String home = getDirectoryForDict(language);
-			Hunspell.Dictionary d = hspl.getDictionary(home+"/"+language);
+			String sd = getFileForDict(language);
+			Hunspell.Dictionary d = hspl.getDictionary(sd);
 			
 			assert(d!=null);//hunspell returns non-null or throws an exception
 			
@@ -77,8 +85,8 @@ public class HunspellEngineManager implements EngineManager{
 	public Validator getValidator(String mode,String language)throws SpellException{
 		initHunspell();
 		try{
-			String home = getDirectoryForDict(language);
-			Hunspell.Dictionary d = hspl.getDictionary(home+"/"+language);
+			String sd = getFileForDict(language);
+			Hunspell.Dictionary d = hspl.getDictionary(sd);
 			
 			assert(d!=null);//hunspell returns non-null or throws an exception
 			
@@ -94,7 +102,7 @@ public class HunspellEngineManager implements EngineManager{
 	/**
 	 * @return list of dictionaries supported by VoxSpell
 	 */
-	 public Future<Vector<String>> getAlternateLangDictionaries(){
+	 public Future<Vector<cswilly.spell.Dictionary>> getAlternateLangDictionaries(){
 		 return new MyFuture();
 	 }
 
@@ -103,11 +111,16 @@ public class HunspellEngineManager implements EngineManager{
 		hspl = null;
 	}
 
+	public String getDescription(){
+		return jEdit.getProperty("spell-check-hunspell-engine.description");
+	}
+	
+	
 	/**
 	 * simply can't be cancelled, because it's synchronous
 	 */
-	 private class MyFuture implements Future<Vector<String>>{
-			 private Vector<String> dicts;
+	 private class MyFuture implements Future<Vector<cswilly.spell.Dictionary>>{
+			 private Vector<cswilly.spell.Dictionary> dicts;
 			 
 			 MyFuture(){
 				 dicts = getDicts();
@@ -118,10 +131,10 @@ public class HunspellEngineManager implements EngineManager{
 				 return false;
 			 }
 			 
-			 public Vector<String> get(){
+			 public Vector<cswilly.spell.Dictionary> get(){
 				 return dicts;
 			 }
-			 public Vector<String> get(long to, TimeUnit tu){
+			 public Vector<cswilly.spell.Dictionary> get(long to, TimeUnit tu){
 				 return get();
 			 }
 			 
@@ -149,31 +162,33 @@ public class HunspellEngineManager implements EngineManager{
 		assert(hspl!=null);//hunspell always returns or throws an exception
 	}
 	
-	private String getDirectoryForDict(String dict){
+	private String getFileForDict(String dict) throws FileNotFoundException{
 		File home = SpellCheckPlugin.getHomeDir(null);
-		return home.getPath();
+		
+		assert(home.exists());
+		
+		Dictionary d = dictsManager.getInstalledDict(dict);
+		if(d==null)throw new FileNotFoundException("Dictionary "+dict+" doesn't exist");
+		
+		File dirdict = new File(home,d.getDirectory());
+		File fdict = new File(dirdict,d.getFile());
+		return fdict.getPath();
 	}
 	
-	private Vector<String> getDicts(){
-		Vector<String> dicts = new Vector<String>();
-
-		File home = SpellCheckPlugin.getHomeDir(null);
-		File[]dd = home.listFiles(new FileFilter(){
-				public boolean accept(File f){
-					return (!f.isDirectory());
-				}
-		});
+	Vector<cswilly.spell.Dictionary> getDicts(){
+		Vector<cswilly.spell.Dictionary> dicts = new Vector<cswilly.spell.Dictionary>();
 		
-		for(int i=0;i<dd.length;i++){
-			Matcher m = DICT_PATTERN.matcher(dd[i].getName());
-			//Log.log(Log.DEBUG,HunspellEngineManager.class,"Considering : "+dd[i].getName());
-			if(m.matches()){
-				String d = m.group(1);
-				//Log.log(Log.DEBUG,HunspellEngineManager.class,"found : "+d);
-				if(!dicts.contains(d))dicts.add(d);
-			}
+		List<Dictionary> installed = dictsManager.getInstalled();
+		
+		for(Dictionary d:installed){
+			dicts.add(d);
 		}
 		
 		return dicts;
 	}
+	
+	HunspellDictsManager getDictsManager(){
+		return dictsManager;
+	}
+	
 }

@@ -26,11 +26,13 @@ import java.util.Vector;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.gjt.sp.jedit.jEdit;
 
 import cswilly.spell.Engine;
 import cswilly.spell.Validator;
 import cswilly.spell.SpellException;
 import cswilly.spell.EngineManager;
+import cswilly.spell.Dictionary;
 
 import voxspellcheck.OffsetTrie;
 import voxspellcheck.VoxSpellPlugin;
@@ -66,7 +68,7 @@ public class VoxSpellEngineManager implements EngineManager{
 	/**
 	 * @return list of dictionaries supported by VoxSpell
 	 */
-	 public Future<Vector<String>> getAlternateLangDictionaries(){
+	 public Future<Vector<Dictionary>> getAlternateLangDictionaries(){
 		 return new MyFuture();
 	 }
 
@@ -76,12 +78,16 @@ public class VoxSpellEngineManager implements EngineManager{
 		engine = null;
 	}
 
-	 private class MyFuture implements Future<Vector<String>>{
-			 private Vector<String> dicts;
+	public String getDescription(){
+	  return jEdit.getProperty("spell-check-voxspell-engine.description");
+	}
+	
+	 private class MyFuture implements Future<Vector<Dictionary>>{
+			 private Vector<Dictionary> dicts;
 			 private boolean cancelled;
 			 MyFuture(){
-				 dicts = new Vector<String>();
-				 dicts.add("en");
+				 dicts = new Vector<Dictionary>();
+				 dicts.add(new Dictionary("en","en"));
 				 cancelled = false;
 			 }
 		 
@@ -91,10 +97,10 @@ public class VoxSpellEngineManager implements EngineManager{
 				 return true;
 			 }
 			 
-			 public Vector<String> get(){
+			 public Vector<Dictionary> get(){
 				 return dicts;
 			 }
-			 public Vector<String> get(long to, TimeUnit tu){
+			 public Vector<Dictionary> get(long to, TimeUnit tu){
 				 return get();
 			 }
 			 

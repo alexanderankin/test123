@@ -29,7 +29,7 @@ import cswilly.spell.Validator;
 import cswilly.spell.AspellEngine;
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
-
+import cswilly.spell.Dictionary;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -42,7 +42,12 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
 import java.io.*;
-import java.util.*;
+import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.swing.JFileChooser;
 
@@ -195,7 +200,7 @@ public class AspellEngineManager implements EngineManager
   }
 
 
-  public Future<Vector<String>> getAlternateLangDictionaries()
+  public Future<Vector<Dictionary>> getAlternateLangDictionaries()
   {
 	  return new FutureListDicts(getAspellExeFilename());
   }
@@ -213,5 +218,9 @@ public class AspellEngineManager implements EngineManager
 	  if(message instanceof PropertiesChanged){
 		  //TODO : maybe initCommandLine() from here (but I won't have the language nor the node
 	  }
+  }
+  
+  public String getDescription(){
+	  return jEdit.getProperty("spell-check-aspell-engine.description");
   }
 }

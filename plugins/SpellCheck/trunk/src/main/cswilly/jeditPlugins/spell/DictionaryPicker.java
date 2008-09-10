@@ -55,6 +55,7 @@ import common.gui.OkCancelButtons;
 
 import cswilly.spell.SpellException;
 import cswilly.spell.EngineManager;
+import cswilly.spell.Dictionary;
 
 import static cswilly.jeditPlugins.spell.SpellCheckPlugin.*;
 
@@ -75,7 +76,7 @@ public class DictionaryPicker{
 	public static final String CONFIRMED_PROP = "dict-picker-confirmed";
 
 	private MutableComboBoxModel modelDicts;
-	private Future<Vector<String>> futureDicts;
+	private Future<Vector<Dictionary>> futureDicts;
 	private EngineManager futureSource;
 	private Action refreshAction;
 	
@@ -94,10 +95,15 @@ public class DictionaryPicker{
 		_aspellMainLanguageList.setEditable( true );	
 		_aspellMainLanguageList.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
-					String dict = (String)_aspellMainLanguageList.getSelectedItem();
-					if(dict==null)return;
-					propertyStore.put(LANG_PROP,dict);
-					Log.log(Log.DEBUG,DictionaryPicker.this,"changed : "+dict);
+					Object itm = _aspellMainLanguageList.getSelectedItem();
+					if(itm==null)return;
+					System.out.println("item is :"+itm.getClass()+" itm="+itm);
+					if(itm instanceof Dictionary){
+						Dictionary dict = (Dictionary)itm;
+						if(dict==null)return;
+						propertyStore.put(LANG_PROP,dict.getName());
+						Log.log(Log.DEBUG,DictionaryPicker.this,"changed : "+dict);
+					}
 				}
 		});
 		return _aspellMainLanguageList;
@@ -187,12 +193,12 @@ public class DictionaryPicker{
 				propertyStore.put(ERROR_PROP,null);
 				modelDicts.addElement(listing);
 				modelDicts.setSelectedItem(listing);
-				final Vector<String> dicts = new Vector<String>();
+				final Vector<Dictionary> dicts = new Vector<Dictionary>();
 				
 
 				getRefreshAction().setEnabled(true);
 				
-				Future<Vector<String>> ft = futureSource.getAlternateLangDictionaries();
+				Future<Vector<Dictionary>> ft = futureSource.getAlternateLangDictionaries();
 				futureDicts = ft;
 				try
 				{
@@ -236,7 +242,9 @@ public class DictionaryPicker{
 							}else{
 								String dict = propertyStore.get(INITIAL_LANG_PROP);
 								Log.log(Log.DEBUG,DictionaryPicker.this,"dict was "+dict);
-								if(dicts.contains(dict))modelDicts.setSelectedItem(dict);
+								for(Dictionary d:dicts){
+									if(d.getName().equals(dict))modelDicts.setSelectedItem(d);
+								}
 							}
 							
 							getRefreshAction().putValue(Action.NAME,jEdit.getProperty(REFRESH_BUTTON_START));

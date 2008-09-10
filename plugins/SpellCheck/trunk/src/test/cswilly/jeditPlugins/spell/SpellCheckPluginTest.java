@@ -216,7 +216,7 @@ public class SpellCheckPluginTest
 		
 		TestUtils.jeditFrame().menuItemWithPath("File","Save").select();
 		
-		final AtomicReference<Boolean> atr = new AtomicReference(Boolean.FALSE);
+		final AtomicReference<Boolean> atr = new AtomicReference<Boolean>(Boolean.FALSE);
 		EBComponent eb = new EBComponent(){
 			public void handleMessage(EBMessage ebm){
 				if(ebm instanceof ErrorSourceUpdate){

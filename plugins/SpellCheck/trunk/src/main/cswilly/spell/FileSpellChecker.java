@@ -159,7 +159,12 @@ class FileSpellChecker
     throws SpellException
   {
 	  if( _spellEngine == null ){
-      _spellEngine = new AspellEngine(_aspellExeFilename,_aspellArgs);
+		  List<String> args = new ArrayList<String>(_aspellArgs.length+1);
+		  args.add(_aspellExeFilename);
+		  for(int i=0;i<_aspellArgs.length;i++){
+			  args.add(_aspellArgs[i]);
+		  }
+      _spellEngine = new AspellEngine(args);
 	  }
     return _spellEngine;
   }

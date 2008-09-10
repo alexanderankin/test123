@@ -25,6 +25,7 @@ package cswilly.spell;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 public
 class TestSpellChecker
@@ -42,10 +43,11 @@ class TestSpellChecker
   {
     System.err.println( "TestSpellChecker()" );
 
-    String aSpellCommand ="O:\\local\\aspell\\aspell.exe";
-  	String[] aSpellArgs = {"pipe"};
+    List<String> l = new ArrayList<String>(2);
+	l.add("O:\\local\\aspell\\aspell.exe");
+  	l.add("pipe");
 
-    AspellEngine spellChecker = new AspellEngine( aSpellCommand, aSpellArgs );
+    AspellEngine spellChecker = new AspellEngine( l );
 
     String words;
     List results;
@@ -86,24 +88,21 @@ class TestSpellChecker
       Result result = (Result)results.get( ii );
       if( result.getType() != result.OK )
       {
-        ValidationDialog changeToDialog =
-          new ValidationDialog( result.getOriginalWord(),
-                                result.getSuggestions() );
+		  Result oldR = null;
+		  try{
+			  oldR = (Result)result.clone();
+		  }catch(CloneNotSupportedException cnse){}
 
-        changeToDialog.setVisible(true);
-        if( changeToDialog.getUserAction() == changeToDialog.CANCEL )
-          break;
-
-        System.err.println( "changeToDialog.getUserAction(): " +
-                            changeToDialog.getUserAction() );
-        System.err.println( "changeToDialog.getSelectedWord(): " +
-                            changeToDialog.getSelectedWord() );
-        _validator.replaceWord( line,
-                                result.getOriginalWord(),
-                                result.getOffset(),
-                                changeToDialog.getSelectedWord() );
+		  boolean confirmed = _validator.validate(1,line,result);
+		  
+		  if(!confirmed){
+			  System.err.println("User cancelled");
+			  return;
+		  }
+		  
+		  System.err.println("oldresult is : "+oldR);
+		  System.err.println("result is : "+result);
       }
     }
   }
-
 }
