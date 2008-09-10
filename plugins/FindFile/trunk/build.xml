@@ -11,25 +11,23 @@
 
 -->
 
-<project name="FindFile" default="compile" basedir=".">
+<project name="FindFile" default="dist" basedir=".">
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-	<property name="jar.name" value="findfile-dev.jar"/>
+	<property name="jar.name" value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
 
-	<property name="jedit.install.dir" value="C:/Program Files/jEdit 4.3pre14"/>
+	<property name="jedit.install.dir" value="../.."/>
 	<property name="src.dir" value="src"/>
 	<property name="install.dir" value="../../.jedit/jars"/>
 	<property name="build.dir" value="build"/>
-	<property name="lib.dir" value="lib"/>
 
 	<path id="project.class.path">
-		<!--<pathelement location="${jedit.install.dir}/jedit.jar"/>-->
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
-		<pathelement location="lib/jedit4.3pre15.jar" />
 	</path>
 
 	<target name="init">

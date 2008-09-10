@@ -9,6 +9,7 @@ plugin.findfile.FindFilePlugin.depend.1=jedit 04.02.11.00
 plugin.findfile.FindFilePlugin.depend.2=optional plugin Archive 0.4
 plugin.findfile.FindFilePlugin.docs=docs/about.html
 plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
+plugin.findfile.FindFilePlugin.dockable=FindFilePlugin
 
 plugin.findfile.FindFilePlugin.actions.newSearch.label=Search for files...
 
