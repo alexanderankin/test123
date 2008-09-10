@@ -276,12 +276,14 @@ public class HunspellOptionPane extends AbstractOptionPane{
 		{
 			super(parent,title);
 			this.thread = thread;
+			init();
 		}
 		
 		public ProgressObs(Dialog parent,String title,Thread thread)
 		{
 			super(parent,title);
 			this.thread = thread;
+			init();
 		}
 		
 		private void init(){
