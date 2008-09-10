@@ -56,7 +56,7 @@ class AspellEngine
       _aSpellProcess = pb.start();
 
 	  InputStream is = _aSpellProcess.getInputStream();
-	  for(int i=0;is.available()==0 && i<10;i++){
+	  for(int i=0;is.available()==0 && i<50;i++){
 		  try{
 			  Thread.sleep(500);
 		  }catch(InterruptedException ie){
@@ -165,6 +165,7 @@ class AspellEngine
   public
   void stop()
   {
+	if(_aSpellProcess==null)return;
     _aSpellProcess.destroy();
 	_aSpellProcess=null;
   }

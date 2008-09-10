@@ -57,16 +57,7 @@
 
 	<!-- I use a separate target to build the tests -->
 	<selector id="compileFiles">
-		<and>
         <filename name="**/*.java" />
-		<not>
-		<or>
-		<filename name="**/TestSpellChecker.java"/>
-		<filename name="**/DialogValidator.java"/>
-		<filename name="**/FileSpellChecker.java"/>
-		</or>
-		</not>
-		</and>
     </selector>
 
 	<target name="test.compile"
@@ -86,8 +77,8 @@
 	<selector id="junit.testcases">
 		<!--<and>
 		<or>-->
-		<!--<filename name="cswilly/**/*Test.java" />-->
-		<filename name="**/ValidationDialogTest.java" />
+		<filename name="cswilly/**/*Test.java" />
+		<!--<filename name="**/ValidationDialogTest.java" />-->
 		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
 		<!--</or>
 		<not><filename name="cswilly/spell/Test.java"/></not>
@@ -155,6 +146,12 @@
 			<fileset dir="${install.dir}">
 			<filename name="*.jar"/>
 			</fileset>
+
+			<fileset dir="./lib">
+			<include name="jna.jar"/>
+			<include name="hunspell.jar"/>
+			</fileset>
+
 			<path refid="project.class.path"/>
 			<flattenmapper/>
 		</copy>
@@ -194,6 +191,17 @@
 			<arg value="-nobackground"/>
 			<arg value="-settings=${build.dir}/settings"/>
 		</java>
+	</target>
+	
+	<target name="run-proto">
+	<javac classpath="${jedit.install.dir}/jedit.jar"
+		   destdir="${build.dir}/classes"
+		   srcdir="src/test"
+	>
+		<filename name="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto.java"/>
+	</javac>
+	<java fork="true" classpath="${jedit.install.dir}/jedit.jar:${build.dir}/classes"
+		  classname="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto"/>
 	</target>
 </project>
 

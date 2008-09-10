@@ -172,6 +172,8 @@ class BufferDialogValidator implements SpellCoordinator
 
 			Validator addValid = null;
 
+			// TODO: this should use some mode-sensitive values.
+			// eg only validate plain text in LateX files and only comments in source-code
 			if(!engine.isContextSensitive())
 				addValid = new ModeSensitiveValidator(area.getBuffer());
 			if(engineValidator!=null)

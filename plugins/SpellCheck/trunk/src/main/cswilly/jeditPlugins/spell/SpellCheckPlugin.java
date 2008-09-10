@@ -40,7 +40,8 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-
+import org.gjt.sp.jedit.ServiceManager;
+  
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OperatingSystem;
@@ -256,22 +257,16 @@ public class SpellCheckPlugin
   }
   
   static EngineManager getEngineManager(){
-	  String engine = jEdit.getProperty(ENGINE_MANAGER_PROP,"Aspell");
-	  if("VoxSpell".equals(engine)){
-			  if(_engineManager==null || !(_engineManager instanceof VoxSpellEngineManager)){
-				  if(_engineManager!=null)_engineManager.stop();
-				  _engineManager = new VoxSpellEngineManager();
-			  }
-	  }else if("Hunspell".equals(engine)){
-			  if(_engineManager==null || !(_engineManager instanceof HunspellEngineManager)){
-				  if(_engineManager!=null)_engineManager.stop();
-				  _engineManager = new HunspellEngineManager();
-			  }
-	  }else{
-			  if(_engineManager==null || !(_engineManager instanceof AspellEngineManager)){
-				  if(_engineManager!=null)_engineManager.stop();
-				  _engineManager = new AspellEngineManager();
-			  }
+	  String engineName = jEdit.getProperty(ENGINE_MANAGER_PROP,"Aspell");
+	  
+	  EngineManager eng = (EngineManager)ServiceManager.getService(EngineManager.class.getName(), engineName);
+	  if(eng==null){
+		  Log.log(Log.ERROR,SpellCheckPlugin.class,jEdit.getProperty("spell-check-no-such-service",new String[]{engineName}));
+		  eng = (EngineManager)ServiceManager.getService(EngineManager.class.getName(), "Aspell");
+	  }
+	  if(eng!=_engineManager){
+		  if(_engineManager!=null)_engineManager.stop();
+		  _engineManager=eng;
 	  }
 	  return _engineManager;
   }
@@ -283,7 +278,7 @@ public class SpellCheckPlugin
 		  _errorListSpellChecker = null;
 	  }
 	  if(_engineManager!=null){
-		  getEngineManager().stop();
+		  _engineManager.stop();
 		  _engineManager = null;
 	  }
 	  saveDictionaries(null);

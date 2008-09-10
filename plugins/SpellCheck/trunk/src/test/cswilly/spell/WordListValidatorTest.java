@@ -42,7 +42,7 @@ public class WordListValidatorTest{
 	@Test
 	public void testEmptyDict(){
 		WordListValidator dict = new WordListValidator();
-		ArrayList<Result> oldRes = new ArrayList(3);
+		ArrayList<Result> oldRes = new ArrayList<Result>(3);
 		
 		oldRes.add(new Result(0,Result.NONE,null,"currry"));
 		oldRes.add(new Result(7,Result.SUGGESTION,Arrays.asList(new String[]{"carry"}),"carri"));
@@ -65,7 +65,7 @@ public class WordListValidatorTest{
 	public void testOneWordDict(){
 		WordListValidator dict = new WordListValidator();
 		dict.addWord("currry");
-		ArrayList<Result> oldRes = new ArrayList(3);
+		ArrayList<Result> oldRes = new ArrayList<Result>(3);
 		
 		oldRes.add(new Result(0,Result.NONE,null,"currry"));
 		oldRes.add(new Result(7,Result.SUGGESTION,Arrays.asList(new String[]{"carry"}),"carri"));

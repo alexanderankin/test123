@@ -45,6 +45,7 @@ import javax.swing.text.JTextComponent;
 import java.io.File;
 import java.util.*;
 
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -65,9 +66,9 @@ import java.util.concurrent.TimeoutException;
 import cswilly.spell.SpellException;
 import cswilly.spell.FutureListDicts;
 import cswilly.spell.FutureListModes;
+import cswilly.spell.EngineManager;
 
 import static cswilly.jeditPlugins.spell.SpellCheckPlugin.*;
-import static cswilly.jeditPlugins.spell.AspellEngineManager.*;
 
 public class SpellCheckOptionPane
   extends AbstractOptionPane
@@ -105,7 +106,7 @@ public class SpellCheckOptionPane
 	propertyStore.put(SPELLCHECK_ON_SAVE_PROP,String.valueOf(spellOnSave));
 	
 	/* engine manager to use */
-	String[]engineManagers = {"Aspell","Hunspell","Voxspell"};
+	String[] engineManagers = ServiceManager.getServiceNames(EngineManager.class.getName());
 	
 	final JComboBox engineManagerBox = new JComboBox(engineManagers);
 	engineManagerBox.setSelectedItem(engineManager);
@@ -131,7 +132,7 @@ public class SpellCheckOptionPane
 
 	DictionaryPicker picker = new DictionaryPicker(SpellCheckPlugin.getEngineManager(),lang);
 	
-	//todo : add listener on EngineManager change
+	// TODO: add listener on EngineManager change
 	//propertyStore.addPropertyChangeListener(ASPELL_EXE_PROP,actionRefresh);
 
 

@@ -42,32 +42,32 @@ import java.util.regex.Pattern;
  * @author $Author$
  * @version $Revision$
  */
-public class FutureListDicts extends FutureAspell<Vector<String>>{
+public class FutureListDicts extends FutureAspell<Vector<Dictionary>>{
 	
 	public FutureListDicts(String aspellExeFilename){
 		super(Arrays.asList(new String[]{aspellExeFilename,"dump","dicts"}),new MyProcessor());
 	}
 	
 	
-	private static class MyProcessor implements Processor<Vector<String>>{
-		private Vector<String> dicts;
+	private static class MyProcessor implements Processor<Vector<Dictionary>>{
+		private Vector<Dictionary> dicts;
 		private Pattern pattern;
 		
 		MyProcessor(){
 			// each line is a dictionnary
 			//at least 2 letters language code, then anything
 			pattern = Pattern.compile("^[a-z]{2}[-\\w]*$");
-			dicts = new Vector<String>();
+			dicts = new Vector<Dictionary>();
 		}
 		
 		public void accumulate(String line) throws SpellException{
 			if(!pattern.matcher(line).matches())
 				throw new SpellException("Suspect dictionnary name ("+line+")");
 			Log.log(Log.DEBUG,FutureListDicts.class, "dict:"+line);
-			dicts.add(line);
+			dicts.add(new Dictionary(line,line));
 		}
 		
-		public Vector<String> done(){
+		public Vector<Dictionary> done(){
 			return dicts;
 		}
 	}

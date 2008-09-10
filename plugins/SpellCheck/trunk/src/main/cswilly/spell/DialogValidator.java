@@ -44,6 +44,9 @@ class DialogValidator implements Validator
   private final HashSet<String>        _ignoreAllSet = new HashSet<String>();
 
   
+  private ValidationDialog vd = new ValidationDialog(null);
+  private MyCallback mcb = new MyCallback();
+
   /**
    * Validate a line of words that have the <code>results</code> of a spell
    * check.
@@ -56,42 +59,29 @@ class DialogValidator implements Validator
   boolean validate(int lineNum, String line, Result result )
   {
 	  boolean cancelled = false;
-	  Result newResult = null;
       if( result.getType() != result.OK )
       {
-
-        if( _changeAllMap.containsKey( result.getOriginalWord() ) )
-        {
-          newResult = new Result(
-					result.getOffset(),
-					Result.SUGGESTION,
-					Arrays.asList(new String[]{_changeAllMap.get( result.getOriginalWord() )}),
-					result.getOriginalWord());
-        }
-        else if( _ignoreAllSet.contains( result.getOriginalWord() ) )
-        {
-          newResult = new Result(
-					result.getOffset(),
-					Result.OK,
-					null,
-					result.getOriginalWord());
-        }
-        else
-        {
-          newResult = validate( result );
-        }
-
-        if( newResult != null )
-        {
-			//if(Result.OK != newResult.getType())results.set(ii,newResult);
-        }
-		else
-		{
-            cancelled = true;
-		}
-      }
-
-    return !cancelled;
+		  
+		  if( _changeAllMap.containsKey( result.getOriginalWord() ) )
+		  {
+			  result.setType(Result.SUGGESTION);
+			  result.setSuggestions(Arrays.asList(new String[]{_changeAllMap.get( result.getOriginalWord() )}));
+		  }
+		  else if( _ignoreAllSet.contains( result.getOriginalWord() ) )
+		  {
+			  result.setType(Result.OK);
+		  }
+		  else
+		  {
+			  try{
+				  cancelled = validate(result);
+			  }catch(SpellException spe){
+				  System.err.println("Error validating "+result);
+				  cancelled = true;
+			  }
+		  }
+	  }
+	  return !cancelled;
   }
   
 
@@ -106,22 +96,18 @@ class DialogValidator implements Validator
    *         maybe the same or different from the original word in
    *         <code>result</code>.
    */
-  public
-  Result validate( Result result )
+  private
+  boolean validate( Result result ) throws SpellException
   {
     String replacementWord = null;
+	boolean confirm = vd.showAndGo(result,mcb);
 	
-    ValidationDialog validationDialog;
-    validationDialog = new ValidationDialog( result.getOriginalWord(),
-                                             result.getSuggestions() );
-    validationDialog.show();
 
-    ValidationDialog.UserAction userAction = validationDialog.getUserAction();
-    if( userAction == validationDialog.CANCEL )
+    if(!confirm )
     {
       replacementWord = null;
     }
-    else if( userAction == validationDialog.CHANGE_ALL )
+    else if(mcb.action == UserAction.CHANGE_ALL )
     {
       if( _changeAllMap.containsKey( result.getOriginalWord() ) )
       {
@@ -129,14 +115,14 @@ class DialogValidator implements Validator
                             result.getOriginalWord() );
       }
       _changeAllMap.put( result.getOriginalWord(),
-                         validationDialog.getSelectedWord() );
-      replacementWord = validationDialog.getSelectedWord();
+                         mcb.newword );
+      replacementWord = mcb.newword;
     }
-    else if( userAction == validationDialog.CHANGE )
+    else if(mcb.action == UserAction.CHANGE )
     {
-      replacementWord = validationDialog.getSelectedWord();
+      replacementWord = mcb.newword;
     }
-    else if( userAction == validationDialog.IGNORE_ALL )
+    else if(mcb.action == UserAction.IGNORE_ALL )
     {
       if( _ignoreAllSet.contains( result.getOriginalWord() ) )
       {
@@ -146,7 +132,7 @@ class DialogValidator implements Validator
       _ignoreAllSet.add( result.getOriginalWord() );
       replacementWord = result.getOriginalWord();
     }
-    else if( userAction == validationDialog.IGNORE )
+    else if(mcb.action == UserAction.IGNORE )
     {
       replacementWord = result.getOriginalWord();
     }
@@ -154,19 +140,16 @@ class DialogValidator implements Validator
 	if( replacementWord != null )
 	{
 		if(replacementWord.equals(result.getOriginalWord()))
-			return new Result(
-					result.getOffset(),
-					Result.OK,
-					null,
-					result.getOriginalWord());
-		else return new Result(
-					result.getOffset(),
-					Result.SUGGESTION,
-					Arrays.asList(new String[]{replacementWord}),
-					result.getOriginalWord());
+			result.setType(Result.OK);
+		else
+		{
+			result.setType(Result.SUGGESTION);
+			result.setSuggestions(Arrays.asList(new String[]{replacementWord}));
+		}
+		return false;
 	}
 	else
-		return null;
+		return true;
   }
 
   /**
@@ -196,5 +179,55 @@ class DialogValidator implements Validator
   public void done()
   {
 	  //do nothing
+  }
+  
+  static enum UserAction {ADD,CHANGE,CHANGE_ALL,IGNORE,IGNORE_ALL,SUGGEST}
+  
+  class MyCallback implements ValidationDialog.Callback{
+	  String newword;
+	  UserAction action;
+	  
+	  MyCallback(){
+		  newword = null;
+		  action = null;
+	  }
+	  
+	  public Result add()throws SpellException{
+		  action = UserAction.ADD;
+		  return null;
+	  }
+	  
+	  public Result change(String newWord)throws SpellException{
+		  action = UserAction.CHANGE;
+		  return null;
+	  }
+	  
+	  public Result changeAll(String newWord)throws SpellException{
+		  action = UserAction.CHANGE_ALL;
+		  return null;
+	  }
+	  
+	  public Result ignore()throws SpellException{
+		  action = UserAction.IGNORE;
+		  return null;
+	  }
+	  public Result ignoreAll()throws SpellException{
+		  action = UserAction.IGNORE_ALL;
+		  return null;
+	  }
+	  
+	  public Result suggest(String newWord)throws SpellException{
+		  action = UserAction.SUGGEST;
+		  return null;
+	  }
+	  
+	  public Result previous()throws SpellException{
+		  throw new SpellException("DialogValidator has no previous");
+	  }
+	  public boolean cancel(){ return true;}
+	  public void done(){}
+	  
+	  public boolean hasPrevious(){return false;}
+	  public boolean hasIgnored(){return !_ignoreAllSet.isEmpty();}
   }
 }

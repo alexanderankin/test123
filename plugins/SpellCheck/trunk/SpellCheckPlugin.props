@@ -3,7 +3,7 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R005
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R006
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
@@ -125,3 +125,48 @@ spell-check-dirty-dict.message=The dictionary for language {0} has been changed.
 spell-check-clear-ignore-all.label=Clear Ignored Words
 spell-check-clear-ignore-all-cleared.message=Ignored words cleared.
 spell-check-clear-ignore-all-none.message=No ignored words list to clear.
+
+#engines
+spell-check-aspell-engine.description=use an externall Aspell program
+spell-check-hunspell-engine.description=use bundled Hunspell library
+spell-check-voxspell-engine.description=use VoxSpell plugin's spell-checker
+spell-check-no-such-service=EngineManager service named {0} doesn't exist
+
+#hunspell option pane
+spell-check-fetch-available-error=An error occured while fetching available dictionaries:\n{0}
+options.spellcheck.hunspell.installed=Installed dictionaries...
+options.spellcheck.hunspell.available=Available dictionaries...
+options.spellcheck.hunspell.update=Update...
+options.spellcheck.hunspell.install=Install...
+options.spellcheck.hunspell.remove=Remove...
+options.spellcheck.hunspell.stop=Stop!
+
+spell-check-hunspell-error-unknownhost.title=Error refreshing availables dictionaries...
+spell-check-hunspell-error-unknownhost.message=It seems that you have a network connection problem:\n
+Unknown Host {0}
+spell-check-hunspell-error-fetch.title=Error refreshing availables dictionaries...
+spell-check-hunspell-error-fetch=An exception occured while fetching the list\n\
+of available dictionaries : {0}
+
+spell-check-hunspell-error-installed-dict.title=Error installing dictionary
+spell-check-hunspell-error-installed-dict.message=Dictionary {0} is corrupted ({1}).\n\
+Please reinstall it!
+
+options.spellcheck.hunspell.fetch-availables.title=refreshing availables dictionaries list...
+spell-check-hunspell-download.error.message=Download of {0} failed.\n
+
+options.spellcheck.hunspell.install-dict.title=Installing dictionary {0}
+spell-check-hunspell-download=Downloading
+spell-check-hunspell-error=Error
+spell-check-hunspell-install=Installing
+spell-check-hunspell-download.error.title=Error installing dictionary
+spell-check-hunspell-download.error.message=Download of {0} failed.\n
+Exception was {1}
+spell-check-hunspell-install.error.title=Error installing dictionary
+spell-check-hunspell-install.error=Installation of {0} failed.\n
+Exception was {1}
+spell-check-update-move.error.title=Error updating dictionary {0}
+spell-check-update-move.error.message=Unable to move dictionary {0} to backup\nin {1}\n:{2}
+spell-check-update-emergency.error.title=Error updating dictionary {0}
+spell-check-update-emergency.error.message=Emergency procedure failed (you'll have to re-install {0}):\n {1}
+

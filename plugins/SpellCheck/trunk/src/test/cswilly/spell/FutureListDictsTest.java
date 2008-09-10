@@ -41,7 +41,7 @@ public class FutureListDictsTest extends TestCase{
 	public void testTimeout(){
 		FutureListDicts ft = new FutureListDicts(SINK);
 		try{
-			Vector<String> dicts = ft.get(2,TimeUnit.SECONDS);
+			Vector<Dictionary> dicts = ft.get(2,TimeUnit.SECONDS);
 			fail("shouldn't succeed");
 		}catch(CancellationException ce){
 			fail("didn't cancel");
@@ -64,7 +64,7 @@ public class FutureListDictsTest extends TestCase{
 		new Thread(){
 			public void run(){
 				try{
-					Vector<String> dicts = ft.get(20,TimeUnit.SECONDS);
+					Vector<Dictionary> dicts = ft.get(20,TimeUnit.SECONDS);
 					fail("shouldn't succeed");
 				}catch(CancellationException ce){
 					System.out.println("OK, got cancel");
@@ -91,7 +91,7 @@ public class FutureListDictsTest extends TestCase{
 		new Thread(){
 			public void run(){
 				try{
-					Vector<String> dicts = ft.get(20,TimeUnit.SECONDS);
+					Vector<Dictionary> dicts = ft.get(20,TimeUnit.SECONDS);
 					assertEquals(42,dicts.size());
 				}catch(CancellationException ce){
 					fail("didn't cancel");

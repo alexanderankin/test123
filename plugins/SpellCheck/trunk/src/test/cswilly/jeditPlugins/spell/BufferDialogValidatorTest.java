@@ -336,7 +336,7 @@ public class BufferDialogValidatorTest{
 	public void testCancel(){
 		AspellEngine engine = null;
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+			engine = new AspellEngine( Arrays.asList(new String[]{exePath,"--lang","en","pipe"}));
 		}catch(SpellException spe){
 			fail("shouldn't throw an exception");
 		}
@@ -389,7 +389,7 @@ public class BufferDialogValidatorTest{
 	public void testCommit(){
 		AspellEngine engine = null;
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+			engine = new AspellEngine( Arrays.asList(new String[]{exePath, "--lang","en","pipe"}));
 		}catch(SpellException spe){
 			fail("shouldn't throw an exception");
 		}
@@ -452,7 +452,7 @@ public class BufferDialogValidatorTest{
 	public void testScroll(){
 		AspellEngine engine = null;
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+			engine = new AspellEngine(Arrays.asList(new String[]{exePath,"--lang","en","pipe"}));
 		}catch(SpellException spe){
 			fail("shouldn't throw an exception");
 		}
@@ -534,7 +534,7 @@ public class BufferDialogValidatorTest{
 
 		AspellEngine engine = null;
 		try{
-			engine = new AspellEngine( exePath, new String[]{"--lang","en","pipe"});
+			engine = new AspellEngine(Arrays.asList(new String[]{ exePath, "--lang","en","pipe"}));
 		}catch(SpellException spe){
 			fail("shouldn't throw an exception");
 		}
