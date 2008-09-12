@@ -407,7 +407,7 @@ commando.confirm.message=Do you want to run the following command?\n\
 commando.no-compiler.title=No Compiler Defined
 commando.no-compiler.message=There is no compiler associated with this buffer.\n\
 	You can specify compilers on a mode-specific basis in the\n\
-	Utilities->Global Options dialog box.
+	Plugin Options -> Console -> Compile and Run option pane.
 	{0}
 
 commando.not-saved-compile.title=Save Changes
