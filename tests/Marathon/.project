@@ -1,0 +1,20 @@
+#Marathon Project File
+#Sat Sep 13 15:17:50 GMT+02:00 2008
+marathon.test.dir=%marathon.project.dir%/TestCases
+marathon.application.launchtime=60000
+marathon.application.pythonpath=
+marathon.runtime.assertions=Enabled\:\:;Background\:\:;Foreground\:\:;RowCount\:javax.swing.JTable\:;ColumnCount\:javax.swing.JTable\:;ItemCount\:javax.swing.JComboBox\:;Model.Size\:javax.swing.JList\:ItemCount;Font\:\:;Font.Family\:\:FontFamily;Border\:\:;Border.LineColor\:\:BorderLineColor
+marathon.component.ignore.components=javax.swing.JMenuBar(ignorechild\:false);javax.swing.JToolBar(ignorechild\:false);javax.swing.JPanel(ignorechild\:false);javax.swing.JViewport(ignorechild\:false);javax.swing.JScrollBar(ignorechild\:true)
+marathon.application.classpath=C\:/Program Files/jEdit/jedit.jar
+marathon.application.arguments=-reuseview
+marathon.application.working.dir=
+marathon.capture.dir=%marathon.project.dir%/Modules
+marathon.application.mainclass=org.gjt.sp.jedit.jEdit
+marathon.recorder.namingstrategy=net.sourceforge.marathon.component.MarathonNamingStrategy
+marathon.fixture.dir=%marathon.project.dir%/Fixtures
+marathon.component.resolvers=
+marathon.application.toolkit_menumask=false
+marathon.project.description=
+marathon.application.vm.command=
+marathon.project.name=jEdit
+marathon.application.vm.arguments=-Xms64M -Xmx192M
