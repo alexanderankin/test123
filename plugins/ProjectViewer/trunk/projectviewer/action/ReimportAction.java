@@ -50,7 +50,12 @@ public class ReimportAction extends Action {
 	/** Reimports files below the project root. */
 	public void actionPerformed(ActionEvent ae) {
 		VPTNode n = viewer.getSelectedNode();
-		new ReImporter(n, viewer).doImport();
+		if (n == null && viewer.getRoot().isProject()) {
+			n = viewer.getRoot();
+		}
+		if (n != null) {
+			new ReImporter(n, viewer).doImport();
+		}
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
