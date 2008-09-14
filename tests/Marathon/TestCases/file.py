@@ -14,7 +14,6 @@ def test():
     close()
 
     if window(r'/jEdit - .*[/\\]?file.py'):
-        select('BufferTabs', 'file.py')
         s = getComponent('JEditTextArea').getText()
         assert s.find('if window(r\'/jEdit - .*[/\\\\]?file.py\'):') >= 0
         # Test File-New
