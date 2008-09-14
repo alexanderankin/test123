@@ -8,7 +8,7 @@ def test():
         click('document-open')
 
         if window('File Browser'):
-            select('VFSDirectoryEntryTable', 'cell:Name,0(org.gjt.sp.jedit.browser.VFSDirectoryEntryTableModel$Entry@a41ccf)')
+            select('File name', r'd:\jedit\tests\marathon\testcases\file.py')
             click('Open')
         close()
     close()
