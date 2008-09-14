@@ -70,6 +70,16 @@
 	<section id="change-log">
 		<title>Change log</title>
 		<itemizedlist>
+        
+			<listitem>
+				<para>Version 0.4, Requires jEdit 4.3pre16 and Java 1.5</para>
+				<itemizedlist>
+					<listitem>
+						<para>Using new sortable ActionSets.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+        
 			<listitem>
 				<para>Version 0.3, Requires jEdit 4.3pre15 and Java 1.5</para>
 				<itemizedlist>
