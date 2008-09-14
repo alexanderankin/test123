@@ -40,10 +40,12 @@ import java.util.Stack;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -99,7 +101,6 @@ public class SideKickTree extends JPanel
 	//{{{ Instance variables
 	private RolloverButton parseBtn;
 	private RolloverButton propsBtn;
-//	private Button parseBtn;
 
 	private JComboBox parserCombo;
 	protected JTree tree;
@@ -124,10 +125,9 @@ public class SideKickTree extends JPanel
 	private JPanel toolBox;
 	private JPanel parserPanel = null;
 
-	private JLabel searchPre;
-	private JLabel searchPost;
 	private JLabel search;
-	private String searchString;
+	private JTextField searchField;
+	private JButton clearSearchBtn;
 	//}}}
 
 	//{{{ SideKickTree constructor
@@ -142,6 +142,8 @@ public class SideKickTree extends JPanel
 		// create toolbar with parse button
 		JToolBar buttonBox = new JToolBar();
 		buttonBox.setFloatable(false);
+		JToolBar filterBox = new JToolBar();
+		filterBox.setFloatable(false);
 
 		parseBtn = new RolloverButton(GUIUtilities.loadIcon("Parse.png"));
 
@@ -175,19 +177,30 @@ public class SideKickTree extends JPanel
 		onChange.addActionListener(ah);
 		onSave.addActionListener(ah);
 		followCaret.addActionListener(ah);
-		searchPre = new JLabel("Filter: \"");
-		searchPost = new JLabel("\"");
-		search = new JLabel();
+		search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
 		search.setOpaque(true);
 		search.setBackground(jEdit.getColorProperty("view.bgColor"));
 		search.setForeground(jEdit.getColorProperty("view.fgColor"));
-		searchString = new String();
+		searchField = new JTextField();
+		searchField.setBackground(jEdit.getColorProperty("view.bgColor"));
+		searchField.setForeground(jEdit.getColorProperty("view.fgColor"));
+		searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
+		clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon( "16x16/actions/edit-clear.png" ));
+		clearSearchBtn.addActionListener(
+			new ActionListener() {
+				public void actionPerformed( ActionEvent ae ) {
+					searchField.setText("");
+					updateFilter();
+				}
+			}
+		);
+		clearSearchBtn.setToolTipText(jEdit.getProperty("sidekick-tree.clear-filter.tooltip"));
 
 		buttonBox.add(parseBtn);
 		buttonBox.add(propsBtn);
-		buttonBox.add(searchPre);
-		buttonBox.add(search);
-		buttonBox.add(searchPost);
+		filterBox.add(search);
+		filterBox.add(searchField);
+		filterBox.add(clearSearchBtn);
 
 		buttonBox.add(Box.createGlue());
 
@@ -197,9 +210,18 @@ public class SideKickTree extends JPanel
 
 		buttonBox.add(parserCombo);
 		parserCombo.addActionListener(ah);
+		parserCombo.addActionListener(
+			new ActionListener() {
+				public void actionPerformed( ActionEvent ae ) {
+					searchField.setText("");
+					updateFilter();
+				}
+			}
+		);
 
 		toolBox = new JPanel(new BorderLayout());
-				toolBox.add(BorderLayout.NORTH,buttonBox);
+		toolBox.add(BorderLayout.NORTH, buttonBox);
+		toolBox.add(BorderLayout.SOUTH, filterBox);
 
 		topPanel.add(BorderLayout.NORTH,toolBox);
 
@@ -208,9 +230,11 @@ public class SideKickTree extends JPanel
 		emptyModel = new FilteredTreeModel((DefaultTreeModel)emptyModel, true);
 		tree = buildTree(emptyModel);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.addKeyListener(new KeyHandler());
+		KeyHandler kh = new KeyHandler();
+		tree.addKeyListener(kh);
 		if(docked)
 			tree.addMouseMotionListener(new MouseHandler());
+		searchField.addKeyListener(kh);
 
 		// looks bad with the OS X L&F, apparently...
 		if(!OperatingSystem.isMacOSLF())
@@ -298,10 +322,10 @@ public class SideKickTree extends JPanel
 			if(((SideKickUpdate)msg).getView() == view)
 				update();
 		}
-		else if (msg instanceof PluginUpdate) {
+		//else if (msg instanceof PluginUpdate) {
 			// This causes a ClassCircularityError sometimes, with HTMLSideKick.
 			//	reloadParserCombo();
-		}
+		//}
 	} //}}}
 
 	//{{{ setStatus() method
@@ -381,9 +405,6 @@ public class SideKickTree extends JPanel
 				expandTreeAt(view.getTextArea().getCaretPosition());
 		}
 		updateSearchData();
-		
-		if (searchString.length() != 0)
-			updateFilter();
 
 		if (autoExpandTree == -1)
 			expandAll(true);
@@ -396,6 +417,9 @@ public class SideKickTree extends JPanel
 				    tree.expandRow( j );
 			}
 		}
+
+		if (searchField.getText().length() != 0)
+			updateFilter();
 
 	} //}}}
 
@@ -543,6 +567,7 @@ public class SideKickTree extends JPanel
 		// if(keystrokeTimer != null && keystrokeTimer.isRunning())
 			// return;
 
+		/* danson, removed this, other changes have made it unnecessary
 		if(caretTimer != null)
 			caretTimer.stop();
 
@@ -554,7 +579,7 @@ public class SideKickTree extends JPanel
 				// it when the tree is expanded for the current
 				// caret position.
 				if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-					searchString = "";
+					searchField.setText("");
 					updateFilter(false);
 				}
 				TextArea textArea = view.getTextArea();
@@ -567,6 +592,7 @@ public class SideKickTree extends JPanel
 		caretTimer.setInitialDelay(500);
 		caretTimer.setRepeats(false);
 		caretTimer.start();
+		*/
 	} //}}}
 
 	//{{{ expandTreeAt() method
@@ -642,6 +668,10 @@ public class SideKickTree extends JPanel
 							textArea.setCaretPosition(asset.getStart().getOffset());
 						}
 
+					}
+					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
+						searchField.setText("");
+						updateFilter(false);
 					}
 				}
 
@@ -782,15 +812,14 @@ public class SideKickTree extends JPanel
 
 	public void updateFilter(boolean with_delay)
 	{
-		search.setText(searchString);
 		FilteredTreeModel ftm = (FilteredTreeModel)tree.getModel();
-		if (searchString.length() == 0) {
+		if (searchField.getText().length() == 0) {
 			ftm.clearFilter();
 			ftm.reset();
 		} else {
-			ftm.filterByText(searchString);
+			ftm.filterByText(searchField.getText());
 		}
-		
+
 		if (autoExpandTree == -1)
 			expandAll(true);
 		else if (autoExpandTree == 0)
@@ -803,10 +832,10 @@ public class SideKickTree extends JPanel
 			}
 		}
 		if (with_delay) {
-			expandTreeWithDelay();	
+			expandTreeWithDelay();
 		}
 	}
-	
+
 	public void updateFilter()
 	{
 		updateFilter(true);
@@ -814,12 +843,12 @@ public class SideKickTree extends JPanel
 
 	public void setSearchFilter(String text)
 	{
-		this.searchString = text;
+		searchField.setText(text);
 		updateFilter();
 	}
 	public String getSearchFilter()
 	{
-		return searchString;
+		return searchField.getText();
 	}
 
 	//{{{ KeyHandler class
@@ -834,10 +863,10 @@ public class SideKickTree extends JPanel
 			switch (evt.getKeyCode()) {
 				case KeyEvent.VK_ESCAPE:
 					evt.consume();
-					if (searchString.length() == 0) {
+					if (searchField.getText().length() == 0) {
 						view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
 					} else {
-						searchString = "";
+						searchField.setText("");
 						updateFilter();
 					}
 					break;
@@ -865,7 +894,7 @@ public class SideKickTree extends JPanel
 										asset.getEnd().getOffset()));
 							} else {
 								if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-									searchString = "";
+									searchField.setText("");
 									updateFilter();
 								}
 								textArea.setCaretPosition(asset.getStart().getOffset());
@@ -876,10 +905,12 @@ public class SideKickTree extends JPanel
 					break;
 				case KeyEvent.VK_BACK_SPACE:
 					evt.consume();
-					if (searchString.length() <= 1) {
-						searchString = "";
+					if (searchField.getText().length() <= 1) {
+						searchField.setText("");
 					} else {
-						searchString = searchString.substring(0, searchString.length() - 1);
+						String s = searchField.getText();
+						s = s.substring(0, s.length() - 1);
+						searchField.setText(s);
 					}
 					updateFilter();
 					break;
@@ -947,19 +978,21 @@ public class SideKickTree extends JPanel
 					break;
 				}
 				default:
+					evt.consume();
 					break;
 			}
 		}
 
 		public void keyTyped(KeyEvent evt)
 		{
+			evt.consume();
 			Character c = evt.getKeyChar();
 			// TODO: What is the correct combo here to filter
 			// non-identifier characters?
 			if (Character.isLetterOrDigit(c) ||
 			    (" _!@$%^&*()_+-=[]{};':\",.<>/?\\|".indexOf(c) != -1))
 			{
-				searchString += c;
+				searchField.setText(searchField.getText() + c);
 				updateFilter();
 			}
 		}

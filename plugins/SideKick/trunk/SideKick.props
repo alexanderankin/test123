@@ -3,7 +3,7 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust
-plugin.sidekick.SideKickPlugin.version=0.7.6
+plugin.sidekick.SideKickPlugin.version=0.7.7
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.15.00
 plugin.sidekick.SideKickPlugin.depend.1=jdk 1.5
@@ -118,6 +118,9 @@ sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
 sidekick-tree.parsercombo.tooltip=Switches to another sidekick parser
+sidekick-tree.filter.label=Filter:
+sidekick-tree.filter.tooltip=Type some text to find nodes
+sidekick-tree.clear-filter.tooltip=Clear filter
 
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)
