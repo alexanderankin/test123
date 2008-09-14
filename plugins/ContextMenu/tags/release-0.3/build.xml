@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<project name="ContextMenu" default="dist.complete" basedir=".">
+        <property file="../../build.properties" />
+        <property file="../build.properties" />
+	<import file="${build.support}/plugin-build.xml" />
+</project>
