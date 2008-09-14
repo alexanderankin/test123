@@ -361,17 +361,16 @@ public class ModesOptionPane extends AbstractOptionPane implements ActionListene
 
 
 
-
 			JPanel actionPanel = new JPanel(new BorderLayout(6,6));
 
 			ActionSet[] actionsList = jEdit.getActionSets();
-			Vector vec = new Vector(actionsList.length);
+			TreeSet<ActionSet> vec = new TreeSet<ActionSet>();
 			for(int i = 0; i < actionsList.length; i++) {
 				ActionSet actionSet = actionsList[i];
 				if(actionSet.getActionCount() != 0)
-					vec.addElement(actionSet);
+					vec.add(actionSet);
 			}
-			combo = new JComboBox(vec);
+			combo = new JComboBox(vec.toArray());
 			combo.addActionListener(actionHandler);
 			actionPanel.add(BorderLayout.NORTH,combo);
 
