@@ -288,6 +288,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		PropertyChangeListener listener = new VisibilityChangeListener(tw, name, window);
 		tw.addPropertyChangeListener("visible", listener);
+		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
 		return tw;
 	}
 	
@@ -328,6 +329,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
 		setFloatingProperties(tw);
+		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
 		return tw;
 	}
 
@@ -462,8 +464,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		setPushAwayMode();
 		// Update floating properties
 		ToolWindow[] windows = wm.getToolWindows();
-		for (ToolWindow w: windows)
+		for (ToolWindow w: windows) {
 			setFloatingProperties(w);
+			w.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
+		}
 	}
 	
 	private void setPushAwayMode() {
