@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<SERVICE NAME="Caret Mark" CLASS="org.jedit.plugins.columnruler.DynamicMark">
+		new org.jedit.plugins.columnruler.marks.CaretMark();
+	</SERVICE>
+	<SERVICE NAME="Wrap Mark" CLASS="org.jedit.plugins.columnruler.DynamicMark">
+		new org.jedit.plugins.columnruler.marks.WrapMark();
+	</SERVICE>
+</SERVICES>
