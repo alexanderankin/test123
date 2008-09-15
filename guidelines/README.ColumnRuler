@@ -1,6 +1,9 @@
-CVS policy file
+SVN policy file
 
 plugin: Column Ruler
 author: Brad Mace <mace0031@mrs.umn.edu>
+Committers:
+Kazutoshi Satoda <k_satoda@users.sourceforge.net>
 
-please do not commit changes to this plugin without first consulting the author.
+Others, please submit patches to the jedit plugin patches tracker.
+https://sourceforge.net/tracker/?atid=997937&group_id=588
