@@ -59,7 +59,7 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		useTextAreaBackground = new JRadioButton("Use Text Area's Background", bgSrc.equals("textarea"));
 		useGutterBackground = new JRadioButton("Use Gutter's Background", bgSrc.equals("gutter"));
 		customBackgroundColor = new JRadioButton("Choose Background:", bgSrc.equals("custom"));
-		bgcolor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.background", Color.WHITE));
+		bgcolor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.background.color", Color.WHITE));
 		backgroundOptions.add(useTextAreaBackground);
 		backgroundOptions.add(useGutterBackground);
 		backgroundOptions.add(customBackgroundColor);
@@ -82,7 +82,7 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		borderOptions.add(useGutterBorder);
 		borderOptions.add(customBorder);
 
-		borderColor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.border", Color.WHITE));
+		borderColor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.border.color", Color.WHITE));
 
 		JPanel borderPanel = new JPanel(new GridLayout(3, 2));
 		borderPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Border w/ Text Area"));
