@@ -42,6 +42,7 @@ import java.awt.Rectangle;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.EventQueue;
+import java.awt.Color;
 
 public class VoxSpellPainter extends TextAreaExtension
 {
@@ -56,6 +57,27 @@ public class VoxSpellPainter extends TextAreaExtension
     
     // non-letter chars that should not indicate the end of the word.
     static private String no_word_sep = "'";
+    
+    static public java.awt.Color getUnderlineColor()
+    {        
+        String s;
+        boolean b;
+        
+        s = jEdit.getProperty("options.voxspellcheck.use_custom_color");
+        b = s.equals("true");
+        Integer bg;
+        if (b) {
+            bg = jEdit.getColorProperty("options.voxspellcheck.custom_color").getRGB();
+        } else {
+            s = jEdit.getProperty("view.status.background");
+            bg = Integer.decode(s);
+            // Default underline color is the inverse of the bg color
+            bg ^= ~1;
+        }
+        
+        bg = (bg & 0xffffff) | 0x88000000;
+        return new java.awt.Color(bg, true);
+    }
     
     public void setMode(String mode_)
     {
@@ -268,14 +290,7 @@ public class VoxSpellPainter extends TextAreaExtension
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         buffer.markTokens(textarea.getLineOfOffset(start), tokenHandler);
         
-        String bg_string = jEdit.getProperty("view.status.background");
-        Integer bg = Integer.decode(bg_string);
-        // Default underline color is the inverse of the bg color at ~half
-        // opacity.
-        bg ^= ~1;
-        bg = (bg & 0xffffff) | 0x88000000;
-        java.awt.Color color = new java.awt.Color(bg, true);
-        gfx.setColor(color);
+        gfx.setColor(getUnderlineColor());
         
         FontMetrics metrics = this.textarea.getPainter().getFontMetrics();
         int char_height = metrics.getHeight() - metrics.getLeading();
