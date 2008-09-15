@@ -43,12 +43,15 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	}
 
 	private void updatePosition(TextArea textArea) {
+		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
+		if (ruler == null) {
+			return;
+		}
 		if (!textArea.getBuffer().isLoading()) {
 			Point caret = textArea.offsetToXY(textArea.getCaretPosition());
 			if (caret != null) {
 				double caretX = (int) caret.getX();
 				int hScroll = textArea.getHorizontalOffset();
-				ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
 				int caretCol = (int) Math.round((caretX - hScroll) / ruler.getCharWidth());
 				positionMap.put(ruler, caretCol);
 				if (isVisible()) {
@@ -105,7 +108,10 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
-		updatePosition(jEdit.getActiveView().getTextArea());
+		Object source = e.getSource();
+		if (source instanceof TextArea) {
+			updatePosition((TextArea)source);
+		}
 	}
 	//}}}
 
