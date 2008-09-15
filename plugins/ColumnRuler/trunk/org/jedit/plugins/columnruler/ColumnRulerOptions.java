@@ -16,6 +16,7 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
 	private JCheckBox tabIndicator;
 
+	ButtonGroup numberingOptions = new ButtonGroup();
 	private JRadioButton numberTicks;
 	private JRadioButton numberChars;
 	
@@ -38,17 +39,16 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	protected void _init() {
 		activeByDefault = new JCheckBox("Active by Default", jEdit.getProperty("plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate", "defer").equals("startup"));
 		tabIndicator = new JCheckBox("Draw indicator for next tab stop", jEdit.getBooleanProperty("options.columnruler.nextTab"));
-
-		numberTicks = new JRadioButton("Number Ticks", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks"));
-		numberChars = new JRadioButton("Number Characters", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars"));
-		
-		
 		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
 		mainPanel.add(activeByDefault);
 		mainPanel.add(tabIndicator);
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "General"));
 		addComponent(mainPanel);
 
+		numberTicks = new JRadioButton("Number Ticks", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks"));
+		numberChars = new JRadioButton("Number Characters", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars"));
+		numberingOptions.add(numberTicks);
+		numberingOptions.add(numberChars);
 		JPanel numberingPanel = new JPanel(new GridLayout(2, 1));
 		numberingPanel.add(numberTicks);
 		numberingPanel.add(numberChars);
