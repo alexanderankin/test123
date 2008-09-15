@@ -174,21 +174,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}//}}}
 
 		//{{{ Draw numbers
-		gfx.setColor(foreground);
-		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
-		if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars")) {
-			for (int n = 10; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
-				float x = new Float(xOffset + ((n) * charWidth) - ((n + "").length() * charWidth)/2 + 1 + hScroll + (charWidth/2)).floatValue();
-				float y = (float) charHeight + 1;
-				gfx.drawString(n + "", x, y);
-			}
-		} else {
-			for (int n = 0; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
-				float x = new Float(xOffset + (n * charWidth) - ((n + "").length() * charWidth) / 2 + 1 + hScroll).floatValue();
-				float y = (float) charHeight + 1;
-				gfx.drawString(n + "", x, y);
-			}
-		}
+		drawNumbers(gfx, foreground, xOffset, hScroll, textAreaWidth, charWidth, charHeight);
 		//}}}
 
 		//{{{ Draw markers
@@ -218,25 +204,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//}}}
 
 		//{{{ Draw tick marks
-		gfx.setColor(foreground);
-		Line2D tick = new Line2D.Double();
-		for (int col = 0; col < (textAreaWidth - hScroll) / charWidth; col++) {
-			double x = xOffset + hScroll + col * charWidth;
-			tick.setLine(x, lineHeight, x, 2 * lineHeight / 3);
-			if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars")) {
-				tick.setLine(x, lineHeight, x, 4 * lineHeight / 5);
-			} else {
-				switch (col % 10) {
-								case 0:
-								case 5:
-									tick.setLine(x, lineHeight, x, 2 * lineHeight / 3);
-									break;
-								default:
-									tick.setLine(x, lineHeight, x, 4 * lineHeight / 5);
-				}
-			}
-			gfx.draw(tick);
-		}
+		drawTicks(gfx, foreground, xOffset, hScroll, textAreaWidth, charWidth, lineHeight);
 		//}}}
 
 		//{{{ Draw tab indicator
@@ -266,7 +234,65 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			gfx.draw(line);
 		}
 		//}}}
+	}
+
+	//{{{ Draw numbers
+	private void drawNumbers(Graphics2D gfx, Color color, int xOffset, int hScroll, int textAreaWidth, double charWidth, double charHeight) {
+		gfx.setColor(color);
+		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
+
+		float x0 = (float) (xOffset + hScroll);
+		float y = (float) (charHeight + 1);
+		int step = 10;
+		int maxDigitsLength = 10;	// assuming (column < 10000000000)
+		// Draw only visible range.
+		int start = (int) (Math.floor((-x0 - ((maxDigitsLength * charWidth) / 2)) / charWidth / step) * step);
+		if (start < 0) {
+			start = 0;
+		}
+		int end = (int) ((textAreaWidth - hScroll) / charWidth);
+		if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars")) {
+			x0 += (charWidth/2);
+			// Do not draw "0"
+			if (start == 0) {
+				start = step;
+			}
+		}
+
+		for (int column = start; column < end; column += step) {
+			String digits = Integer.toString(column);
+			float x = (float) (x0 + (column * charWidth) - ((digits.length() * charWidth) / 2) + 1);
+			gfx.drawString(digits, x, y);
+		}
 	}//}}}
+
+	//{{{ Draw tick marks
+	private void drawTicks(Graphics2D gfx, Color color, int xOffset, int hScroll, int textAreaWidth, double charWidth, double lineHeight) {
+		gfx.setColor(color);
+
+		double x0 = xOffset + hScroll;
+		// Draw only visible range.
+		int start = (int) (-x0 / charWidth);
+		if (start < 0) {
+			start = 0;
+		}
+		int end = (int) ((textAreaWidth - hScroll) / charWidth);
+
+		int emStep = 0;
+		if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks")) {
+			emStep = 5;
+		}
+		Line2D tick = new Line2D.Double();
+		for (int column = start; column < end; ++column) {
+			double x = x0 + column * charWidth;
+			int heightReduction = (emStep != 0 && (column % emStep == 0)) ? 3 : 5;
+			double height = lineHeight / heightReduction;
+			tick.setLine(x, lineHeight, x, lineHeight - height);
+			gfx.draw(tick);
+		}
+	}//}}}
+
+	//}}}
 
 	//{{{ EBComponent.handleMessage() method
 	public void handleMessage(EBMessage m) {
