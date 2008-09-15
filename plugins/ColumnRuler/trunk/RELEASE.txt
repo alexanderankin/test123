@@ -5,30 +5,24 @@ Name:
     Column Ruler
 
 Version Number:
-    1.0.1
+    1.0.2
 
 Requirements:
     * JDK 1.5.0
     * jEdit 4.3pre7
 
 Announcement:
-    - Now compatible with jEdit4.3pre7
-    - Added 'Clear Marks' action
-    - Added All Guides On and All Guides Off actions
-    - Fixed activation bug
-    - Fixed ConcurrentModificationException when stopping plugin
-    - Fixed deadlock when opening a file
-    - Fixed visual rattle on enabling the column ruler
-    - Rectangular selection highlighting now follow horizontal scroll
-    - Fixed NullPointerException when opening a view
-    - Fixed dropping of functions which is often seen after splitting
-    - Fixed some memory leaks
-    - WrapMark is now visible no matter which wrap mode is used
-    - Removed rude modification of built-in wrap guide switch
+    - Fixed some NPEs, including one which started to happen with
+      jEdit 4.3pre15 (SF.net plugin bug #2062585)
+    - Fixed the initial selection of customized background and
+      border colors on the option pane. (SF.net plugin bug #1672342)
+    - Fixed the grouping of radio buttons for numbering option
+    - Imporved the painting performance, especially much for large
+      number of columns
 
 Source:
-    plugins/ColumnRuler (in CVS repository)
-    tag: release-1_0_1
+    plugins/ColumnRuler (in SVN repository)
+    tag: release-1_0_2
 
 Short Description:
     Provides a ruler across the top of the text area which marks off columns.
