@@ -1,5 +1,15 @@
 {{{ 1.0
 
+	{{{ 1.0.2
+		- Fixed some NPEs, including one which started to happen with
+		  jEdit 4.3pre15 (SF.net plugin bug #2062585)
+		- Fixed the initial selection of customized background and
+		  border colors on the option pane. (SF.net plugin bug #1672342)
+		- Fixed the grouping of radio buttons for numbering option
+		- Imporved the painting performance, especially much for large
+		  number of columns
+	}}}
+
 	{{{ 1.0.1
 		- Now compatible with jEdit4.3pre7
 		- Added 'Clear Marks' action
