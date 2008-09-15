@@ -5,4 +5,3 @@
 	- draw guides in appropriate parts of wrapped lines
 	- adjust caretmark for overwrite mode
 	- Hide caret when guide is on
-	- adjust position when line numbers are turned on and off
