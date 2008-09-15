@@ -31,6 +31,10 @@ import java.awt.Component;
 import javax.swing.SwingUtilities;
 import javax.swing.JButton;
 
+import javax.swing.tree.*;
+import javax.swing.JTree;
+import java.util.Arrays;
+
 //{{{ 	jEdit
 import org.gjt.sp.jedit.*;
 
@@ -45,6 +49,7 @@ import static org.junit.Assert.*;
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.driver.BasicJTreeCellReader;
 //}}}
 
 ///}}}
@@ -62,40 +67,44 @@ public class TestUtils{
 
 	private static FrameFixture jeditFrame;
 	private static RobotFixture robot;
+	private static EmergencyAbortListener listener;  
 
 	private static boolean injEdit = false;
 	public static void setUpjEdit(){
 		System.out.println("Setting jedit up");
 		
-		// try{
-		// robot = RobotFixture.robotWithCurrentAwtHierarchy();
-		// // try{
-		// robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
-		// }catch(FileNotFoundException fnfe){}
-		// //jeditFrame = new FrameFixture(robot, jEdit.getActiveView());//DOESN'T WORK : WindowFinder.findFrame(View.class).using(robot);
-		//jeditFrame = new FrameFixture(robot,jEdit.newView(jeditFrame.targetCastedTo(View.class)));
-		// injEdit=true;
-		// }catch(RuntimeException re){
-		// 	System.out.println(re.toString());
-			injEdit = false;
-		 	robot = RobotFixture.robotWithNewAwtHierarchy();
-			String settings = System.getProperty(ENV_JEDIT_SETTINGS);
-			assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
+		try{
+			robot = RobotFixture.robotWithCurrentAwtHierarchy();
+			listener = EmergencyAbortListener.registerInToolkit();
 			
-			final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
-			Thread runJeditThread = new Thread(){
-				public void run(){
-					jEdit.main(args);
-				}
-			};
-			runJeditThread.start();
-			jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
-			try{
-				Class c = Class.forName(SpellCheckPlugin.class.getName());
-			}catch(ClassNotFoundException cnfe){
-				fail("Couldn't find plugin's class");
-			}
-		//}
+		try{
+		robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
+		}catch(FileNotFoundException fnfe){}
+		jeditFrame = new FrameFixture(robot, jEdit.getActiveView());//DOESN'T WORK : WindowFinder.findFrame(View.class).using(robot);
+		//jeditFrame = new FrameFixture(robot,jEdit.newView(jeditFrame.targetCastedTo(View.class)));
+		injEdit=true;
+		}catch(RuntimeException re){
+			System.out.println(re.toString());
+		}
+			// injEdit = false;
+		 	// robot = RobotFixture.robotWithNewAwtHierarchy();
+			// String settings = System.getProperty(ENV_JEDIT_SETTINGS);
+			// assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
+			
+			// final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
+			// Thread runJeditThread = new Thread(){
+			// 	public void run(){
+			// 		jEdit.main(args);
+			// 	}
+			// };
+			// runJeditThread.start();
+			// jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
+			// try{
+			// 	Class c = Class.forName(SpellCheckPlugin.class.getName());
+			// }catch(ClassNotFoundException cnfe){
+			// 	fail("Couldn't find plugin's class");
+			// }
+
 		System.out.println("Setup done");
 	}
 
@@ -108,6 +117,7 @@ public class TestUtils{
 	}
 	
 	public static  void tearDownjEdit(){
+		listener.unregister();  
 		if(injEdit){
 			//jeditFrame.cleanUp();
 			robot.releaseMouseButtons();
@@ -133,7 +143,9 @@ public class TestUtils{
 			}
 		});
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		TestUtils.findDialogByTitle("File Not Saved").button(AbstractButtonTextMatcher.withText(JButton.class,"Non")).click();
+		if(buffer.isDirty()){
+			TestUtils.findDialogByTitle("File Not Saved").button(AbstractButtonTextMatcher.withText(JButton.class,"Non")).click();
+		}
 	}
 
 	public static Buffer openFile(final String filename){
@@ -176,5 +188,51 @@ public class TestUtils{
 	
 	public static void replaceText(JTextComponentFixture f,String text){
 		f.select(f.text()).deleteText().enterText(text);
+	}
+	
+	public static TreePath getPathForStrings(JTreeFixture treeFixture,String[]path){
+		
+		JTree tree = treeFixture.targetCastedTo(JTree.class);
+		BasicJTreeCellReader rdr = new BasicJTreeCellReader();
+		TreeModel mdl = tree.getModel();
+		
+		
+		Object parent = mdl.getRoot();
+		TreePath returnPath = new TreePath(parent);
+		for(int i=0;i<path.length;i++){
+			boolean found=false;
+			for(int iChild=0;!found&&iChild<mdl.getChildCount(parent);iChild++){
+				Object val = mdl.getChild(parent,iChild);
+				String lbl = rdr.valueAt(tree,val);
+				if(path[i].equals(lbl)){
+					returnPath = returnPath.pathByAddingChild(val);
+					parent = val;
+					found=true;
+				}
+			}
+			if(!found){
+				throw new IllegalArgumentException("Couldn't find path"+Arrays.asList(path)+", stopped at level "+i);
+			}
+		}
+		return returnPath;
+	}
+	
+	public static void selectPath(JTreeFixture treeFixture, String[]path){
+		JTree tree = treeFixture.targetCastedTo(JTree.class);
+		TreePath finalPath = getPathForStrings(treeFixture,path);
+				
+		if(!tree.isVisible(finalPath)){
+			TreePath parentPath = new TreePath(finalPath.getPathComponent(0)); 
+			for(int i=1;i<finalPath.getPathCount();i++){
+				TreePath curPath = parentPath.pathByAddingChild(finalPath.getPathComponent(i));
+				if(!tree.isVisible(curPath)){
+					treeFixture.toggleRow(tree.getRowForPath(curPath.getParentPath()));
+				}
+				parentPath = curPath;
+			}
+		}
+
+		treeFixture.selectRow(tree.getRowForPath(finalPath));
+
 	}
 }

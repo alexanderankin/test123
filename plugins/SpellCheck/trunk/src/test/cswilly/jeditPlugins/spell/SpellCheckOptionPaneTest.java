@@ -50,7 +50,7 @@ import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.finder.DialogByTitleFinder;
 import static org.fest.swing.fixture.TableCell.row;
-//import org.fest.swing.cell.JTreeCellReader;
+import static org.fest.swing.core.matcher.JButtonByTextMatcher.withText;
 //}}}
 
 import cswilly.spell.ValidationDialog;
@@ -95,180 +95,61 @@ public class SpellCheckOptionPaneTest
 		jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().deactivatePlugin(false);
 	}
 	
-	
 	@Test
-	public void testExePath(){
+	public void testEngines(){
+		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
-
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		
 		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
 		
-		optionsDialog.tree().selectPath(new TreePath(new String[]{"Plugins","Spell Check"}));
-		JPanelFixture pane = optionsDialog.panel(new GenericTypeMatcher<SpellCheckOptionPane>(){
-			@Override protected boolean isMatching(SpellCheckOptionPane ignored) {
-				return true;
-			}
-		});
+		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
 		
-		JTextComponentFixture f = pane.textBox("AspellPath");
+		//VoxSpell, Aspell, Hunspell
+		optionsDialog.comboBox("engines").requireSelection("Aspell");
+		assertEquals(3,optionsDialog.comboBox("engines").contents().length);
 		
-		f.select(f.text()).deleteText().enterText(testsDir+"/sink.sh");
-		f.requireText(testsDir+"/sink.sh");
-		pane.button("Refresh").click();
-		try{Thread.sleep(11000);}catch(InterruptedException ie){}
-		//TestUtils.robot().printer().printComponents(System.out);
-		DialogFixture alertDialog = TestUtils.findDialogByTitle("I/O Error");
-		alertDialog.close();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		alertDialog.requireNotVisible();
-		f.requireText(testsDir+"/sink.sh");
-
-		// test with non existant
-		f.select(f.text()).deleteText().enterText(testsDir+"/NOT_THERE.sh");
-		pane.button("Refresh").click();
+		optionsDialog.comboBox("engines").selectItem("Hunspell");
 		
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		alertDialog = TestUtils.findDialogByTitle("I/O Error");
-		alertDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();	
-
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		alertDialog.requireNotVisible();
-
-
-		// test with wrong
-		f.select(f.text()).deleteText().enterText(testsDir+"/spellcheck_ok.sh");
-		pane.button("Refresh").click();
-		
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		alertDialog = TestUtils.findDialogByTitle("I/O Error");
-		alertDialog.close();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		alertDialog.requireNotVisible();
-
-
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
-		
-		assertEquals(testsDir+"/spellcheck_ok.sh",jEdit.getProperty(AspellEngineManager.ASPELL_EXE_PROP));
+
+		//effective?
+		assertEquals("Hunspell",jEdit.getProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP));
 	}
 	
 	@Test
-	public void testModes(){
+	public void testLanguages(){
+		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-		
-		
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
+		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en_GB");
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		
 		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
 		
-		optionsDialog.tree().selectPath(new TreePath(new String[]{"Plugins","Spell Check"}));
-		JPanelFixture pane = optionsDialog.panel(new GenericTypeMatcher<SpellCheckOptionPane>(){
-			@Override protected boolean isMatching(SpellCheckOptionPane ignored) {
-				return true;
-			}
-		});
-		
-		/* buttons in place */
-		for(AspellEngineManager.AspellMarkupMode mode: AspellEngineManager.AspellMarkupMode.values()){
-			pane.radioButton(mode.toString()).requireVisible();
-			assertTrue(pane.radioButton(mode.toString()).text().length()>0);
-		}
-		pane.radioButton(AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireSelected();
+		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
 		
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		
-		/* buttons effective */
-		pane.radioButton(AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString()).click();
-		pane.radioButton(AspellEngineManager.AspellMarkupMode.MANUAL_MARKUP_MODE.toString()).requireNotSelected();
+		//languages (provided that Aspell has English installed
+		optionsDialog.comboBox("languages").requireSelection("en_GB");
+		
+		optionsDialog.comboBox("engines").selectItem("Hunspell");
 		
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
-		
-		assertEquals(AspellEngineManager.AspellMarkupMode.NO_MARKUP_MODE.toString(),
-			jEdit.getProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP));
-	}
 
-	@Test public void testFilters(){
-		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
-		
-		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		
-		TestUtils.robot().settings().timeoutToBeVisible(10000);
-		JTreeFixture tree = optionsDialog.tree();
-		/*tree.cellReader(new JTreeCellReader(){
-				public String valueAt(JTree tree, Object modelValue){
-					//System.err.println("TREE:"+tree+" : "+tree.isRootVisible());
-					System.err.println("NODE:"+modelValue.getClass()+"  "+modelValue);
-					if(modelValue instanceof OptionGroup){
-						OptionGroup o = (OptionGroup)modelValue;
-						System.err.println("NAME:"+o.getName());
-						System.err.println("Label:"+o.getLabel());
-						return o.getLabel();
-					}
-					return modelValue.toString();
-				}
-		})*/;
-		//tree.targetCastedTo(JTree.class).setRootVisible(false);
-		//tree.selectPath("Plugins/SpellCheck");
-		tree.selectPath(new TreePath(new String[]{"Plugins","Spell Check"}));
-		JPanelFixture pane = optionsDialog.panel(new GenericTypeMatcher<SpellCheckOptionPane>(){
-			@Override protected boolean isMatching(SpellCheckOptionPane ignored) {
-				return true;
-			}
-		});
-		
-		
-		/* table in place */
-		JTableFixture table = pane.table("filtersTable");
-		table.requireVisible();
-		Mode[]modes = jEdit.getModes();
-		
-		String firstMode=modes[0].getName();
-		int indexHtml = -1;
-		
-		for(int i=0;i<modes.length;i++){
-			assertEquals(modes[i].getName(),table.cell(row(i).column(0)).content());
-			if("html".equals(modes[i].getName()))indexHtml=i;
-		}
-		
-		assertTrue(indexHtml!=-1);
-		
-		
-		table.cell(row(0).column(1)).click();
-		
-		pane.comboBox("filtersCombo").requireSelection("AUTO").selectItem("sgml");
-
-		assertEquals("sgml",table.cell(row(0).column(1)).content());
-		
-		//test default (in SpellCheck.properties) filter
-		table.cell(row(indexHtml).column(1)).click();
-		pane.comboBox("filtersCombo").requireSelection("sgml");
-		
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
-		
-		assertEquals("sgml",jEdit.getProperty(AspellEngineManager.FILTERS_PROP+"."+firstMode));
-		
 	}
 	
+	
 	@Test
-	public void testAdditional()
+	public void testCheckOnSave()
 	{
-		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
-		jEdit.setProperty(AspellEngineManager.ASPELL_MARKUP_MODE_PROP,"aspellManualMarkupMode");
-
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
+		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		
 		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
 		
-		optionsDialog.tree().selectPath(new TreePath(new String[]{"Plugins","Spell Check"}));
+		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
 		
-		
-		//additional parameters
-		optionsDialog.textBox("AdditionalParameters").requireEditable().requireEmpty();
-		optionsDialog.textBox("AdditionalParameters").enterText("TEST this");
 		
 		//spellcheck on save
 		optionsDialog.checkBox("SpellCheckOnSave").requireNotSelected().click();
@@ -277,20 +158,12 @@ public class SpellCheckOptionPaneTest
 		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
 
 		//effective?
-		assertEquals("TEST this", jEdit.getProperty(AspellEngineManager.ASPELL_OTHER_PARAMS_PROP));
 		assertTrue(jEdit.getBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP));
-		jEdit.setProperty(AspellEngineManager.ASPELL_OTHER_PARAMS_PROP,"");
 		jEdit.setBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP,false);
-		//this was funny : unsetProperty() called, assertEquals(null) succeeds, but
-		//property is still saved
-		//assertEquals(null, jEdit.getProperty(SpellCheckPlugin.ASPELL_OTHER_PARAMS_PROP));
-		// so re run option pane to save an empty value for other params 
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").select();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		optionsDialog.tree().selectPath(new TreePath(new String[]{"Plugins","Spell Check"}));
-		optionsDialog.textBox("AdditionalParameters").requireEmpty();
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
-		
-		
+		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
+		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();		
 	}
+	
 }

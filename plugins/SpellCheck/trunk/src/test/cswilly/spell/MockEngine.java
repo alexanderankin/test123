@@ -33,6 +33,7 @@ public class MockEngine implements Engine{
 		lres = new ArrayList<List<Result>>();
 		index = 0;
 		stopped = true;
+		ctxs=true;
 	}
 	
 	public void addResults(List<Result> res){

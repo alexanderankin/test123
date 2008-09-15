@@ -55,8 +55,9 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * A validator of a spell check results, ensuring that misspelled words are visible and selected
- * Upon prompt of the user
+ * Handles the validation of a whole buffer.
+ * Ensures that misspelled words are visible and selected.
+ * Uses user's dictionary.
  */
 public
 class BufferDialogValidator implements SpellCoordinator
@@ -78,8 +79,7 @@ class BufferDialogValidator implements SpellCoordinator
    *<p>
    *
    *<p>
-   * @param result A {@link Result} of spell checking one word
-   * @return validated correction (this is the replacement word). <i>null</i>
+   * @return action to take. <i>null</i>
    *         is returned if the operation is cancelled. The replacement word
    *         maybe the same or different from the original word in
    *         <code>result</code>.
@@ -91,10 +91,17 @@ class BufferDialogValidator implements SpellCoordinator
 	if(result.getType() == Result.OK) return new NopAction(null);
 
 	if(ignoreAll!=null)ignoreAll.validate(lineNum,line, result);
-	if(result.getType() == Result.OK) return new NopAction(null);
+	
+	if(result.getType() == Result.OK){
+		//Log.log(Log.DEBUG,BufferDialogValidator.class,"ignoreAll contains result");
+		return new NopAction(null);
+	}
 	
 	if(userDict!=null)userDict.validate(lineNum, line, result);
-	if(result.getType() == Result.OK) return new NopAction(null);
+	if(result.getType() == Result.OK){
+		//Log.log(Log.DEBUG,BufferDialogValidator.class,"userDict contains result");
+		return new NopAction(null);
+	}
 	
 	
 	if( _changeAllMap.containsKey( result.getOriginalWord() ) )
@@ -115,44 +122,81 @@ class BufferDialogValidator implements SpellCoordinator
 	// area.setSelection(s);
 	
 	sourceValidator.validate(lineNum,line,result);
-	if(result.getType() == Result.OK) return new NopAction(null);
+	if(result.getType() == Result.OK){
+		//Log.log(Log.DEBUG,BufferDialogValidator.class,"source validator validates result");
+		return new NopAction(null);
+	}
 
 	return null;
   }
 
 
- 
+  /**
+   * must be called before spellcheck()
+   * @param	ta	TextArea showing the buffer to spell-check
+   */
   public void setTextArea(TextArea ta){
 	  this.area = ta;
 	  this.buffer = ta.getBuffer();
 	  savedPosition = buffer.createPosition(ta.getCaretPosition());
   }
 
+  /**
+   * set optional user dictionary (will be enriched by user action "add")
+   * @param	valid	user dictionary
+   */
   public void setUserDictionary(WordListValidator valid){
 	 userDict = valid;
   }
   
+  /**
+   * @param	ignoreAll	user list of ignored words for current buffer
+   */
   public void setIgnoreAll(WordListValidator ignoreAll){
 	 this.ignoreAll = ignoreAll;
   }
   
+  /**
+   * must be called before spellcheck()
+   * @param	e	engine to use for spell-checking
+   */
   public void setEngine(Engine e){
 	  engine = e;
   }
   
+  /**
+   * redundant engine for context-sensitive engines, where
+   * "Suggest" action wouldn't work with a single word being
+   * ignored by the engine.
+   * must be called before spellcheck()
+   * @param	e	engine to use when user clicks on "Suggest"
+   */
   public void setEngineForSuggest(Engine e){
 	  engineForSuggest = e;
   }
 
+  /**
+   * optional validator associated with the engine
+   * @param	v	validator to use for spell-checking
+   */
   public void setValidator(Validator v){
 	  engineValidator = v;
   }
   
+  /**
+   * optional validator associated with the "Suggest" engine
+   * @param	v	validator to use
+   */
   public void setValidatorForSuggest(Validator v){
 	 engineValidatorForSuggest = v;
   }
 
   /**
+   * realise the whole spell-checking.
+   * setTextArea(), setEngine(), setEngineForSuggest() must have been called.
+   *
+   * @return	did the user confirm
+   * @throws	SpellException	on precondition failure or error from the engine
    */
   public
   boolean spellcheck()
@@ -174,8 +218,15 @@ class BufferDialogValidator implements SpellCoordinator
 
 			// TODO: this should use some mode-sensitive values.
 			// eg only validate plain text in LateX files and only comments in source-code
-			if(!engine.isContextSensitive())
+			if(engine.isContextSensitive()||"text".equals(buffer.getMode().getName())){
+				source.setAcceptAllTokens();
+			}
+			
+			/*if(!engine.isContextSensitive()){
 				addValid = new ModeSensitiveValidator(area.getBuffer());
+			}else{
+				source.setAcceptAllTokens();
+			}
 			if(engineValidator!=null)
 				if(addValid!=null)
 					addValid = new ChainingValidator(addValid,engineValidator);
@@ -183,11 +234,12 @@ class BufferDialogValidator implements SpellCoordinator
 
 			if(addValid!=null)
 				sourceValidator= new ChainingValidator(sourceValidator,addValid);
-
+			*/
+			if(engineValidator!=null)
+				sourceValidator= new ChainingValidator(sourceValidator,engineValidator);
 			sourceValidator.start();
 			if(ignoreAll!=null)ignoreAll.start();
 			if(userDict!=null)userDict.start();
-			
 			
 			Result firstRes = callback.firstResult();
 	
@@ -195,14 +247,14 @@ class BufferDialogValidator implements SpellCoordinator
 				ValidationDialog validationDialog = new ValidationDialog(((JEditTextArea)area).getView());
 				confirm = validationDialog.showAndGo(firstRes,callback);
 			}
-		
+			
 		}catch(SpellException spe){
 			engine.stop();
 			engineForSuggest.stop();
 			throw spe;
 		}finally{
 			source.done();//remove the lock
-			Log.log(Log.DEBUG,BufferDialogValidator.class,"spellcheck done, lock removed");
+			//Log.log(Log.DEBUG,BufferDialogValidator.class,"spellcheck done, lock removed");
 		}
 
 
@@ -224,17 +276,19 @@ class BufferDialogValidator implements SpellCoordinator
   {
 	  //TODO can I save a rectangular selection and restore it in a meaningful way ?
 	  area.setCaretPosition(savedPosition.getOffset());
-	  /*
-	  Waiting for fix to bug [ 1990960 ] "Invalid screen line error" when looping in macro
 	  area.scrollToCaret(false);
-	*/
+
   	  if(ignoreAll!=null)ignoreAll.done();
 	  if(userDict!=null)userDict.done();
 	  sourceValidator.done();
 	  userDict=null;
 	  ignoreAll=null;
   }
-  
+
+  /**
+   * handles previous/next, and actions to take according to user's actions on the
+   * validation dialog
+   */  
   private class BufferDialogValidatorCallback implements ValidationDialog.Callback{
 	  private boolean confirm;
 	  
@@ -245,6 +299,7 @@ class BufferDialogValidator implements SpellCoordinator
 	  private int iLine;
 	  private int iResults;
 	  private SpellSource source;
+	  /** the whole history of actions is kept to provide unlimited previous */
 	  private List<HistoryNode> history;
 	  
 	  class HistoryNode{
@@ -321,6 +376,7 @@ class BufferDialogValidator implements SpellCoordinator
 				  return res;
 			  }
 			  else{
+				  //Log.log(Log.DEBUG,BufferDialogValidatorCallback.class,"automatic action :"+action);
 				  //history.add(new HistoryNode(iLine,iResults,line,results,action));
 			  }
 		  }

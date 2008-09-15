@@ -92,6 +92,7 @@ public class DictionaryPicker{
 	
 	public JComboBox asComboBox(){
 		final JComboBox _aspellMainLanguageList = new JComboBox( modelDicts );
+		_aspellMainLanguageList.setName("languages");
 		_aspellMainLanguageList.setEditable( true );	
 		_aspellMainLanguageList.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){

@@ -48,10 +48,11 @@ import java.util.List;
 import java.util.Collections;
 
 /**
- * Performs spell-checking on a jEdit Buffer.
- * Read lock during spell-checking, then compound edit to apply modifications
- * @see	BufferDialogValidator	used to highlight the word currently checked, and scroll to it.
- * 
+ * A source for BufferDialogValidator to get lines of text from the buffer.
+ * Read lock from start() to done(), then compound edit to apply modifications.
+ * Performs filtering based upon jEdit syntax-handling except when setAcceptAllTokens() is called.
+ *
+ * @see	BufferSpellChecker.BufferValidator	used to highlight the word currently checked, and scroll to it.
  */
 public class BufferSpellChecker implements SpellSource, SpellEffector{
   
@@ -64,16 +65,44 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	private int iLine;
 	private boolean lastWasNext;
 	
+	private int tokensToAccept;
+	
   public BufferSpellChecker( TextArea area )
   {
 	  this.area = area;
+	  setTokensToAccept(
+		  new byte[]{Token.COMMENT1, Token.COMMENT2, Token.COMMENT3,
+				     Token.COMMENT4, Token.LITERAL1, Token.LITERAL2, 
+  					 Token.LITERAL3,Token.LITERAL4});
   }
 
+  /**
+   * set which kinds of words are to be spell-checked.
+   * if a lines contains no word of kind given in tokens,
+   * this line will be skipped.
+   * the validator will also automatically set to OK the status of Results of the wrong kind.
+   * @param	tokens	array of Token.kind to accept
+   */
+  public void setTokensToAccept(byte[]tokens){
+	  tokensToAccept = 0;
+	  if(Token.ID_COUNT>32)throw new RuntimeException("There are more token kinds than I can Handle...");
+	  
+	  for(int i=0;i<tokens.length;i++){
+		  tokensToAccept|=1<<tokens[i];
+	  }
+  }
   
   /**
-   * @return <i>true</i> if file completely checked and <i>false</i> if the user
-   * interupted the checking.
+   * disable context filtering.
+   * every non-empty line will be returned.
    */
+  public void setAcceptAllTokens(){
+	  Log.log(Log.ERROR,BufferSpellChecker.class,"accepting all tokens for "+input);
+	  for(int i=0;i<Token.ID_COUNT;i++){
+		  tokensToAccept|=1<<i;
+	  }
+  }
+
   public
   void start()
 	{
@@ -84,10 +113,12 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		}
 		
 		selections = area.getSelection();
-
-		input.readLock();
 		
-		assert(selections.length>0);
+		if(selections.length==0){
+			throw new IllegalStateException("No selection in text area");
+		}
+		
+		input.readLock();
 		
 		iSelection = 0;
 		iLine = selections[0].getStartLine();
@@ -109,28 +140,35 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 			iLine = sel.getStartLine();
 		}
 
-		String line = input.getLineText(iLine);
-		iLine++;
-		if(contextFilter())return line;
-		else return getNextLine();
+		if(contextFilter()){
+			return input.getLineText(iLine++);
+		}else{
+			iLine++;
+			return getNextLine();
+		}
 	}
 	
 	private boolean contextFilter(){
-
 		DefaultTokenHandler handler = new DefaultTokenHandler();
-		input.markTokens(iLine-1,handler);
+		input.markTokens(iLine,handler);
 		
+		/*if we want to return empty lines
+		if(handler.getTokens().size()==0)return true;
+		*/
 		for(Token token = handler.getTokens();token!=null;token=token.next){
-			switch(token.id){
-				case Token.COMMENT1 :
-				case Token.COMMENT2 :
-				case Token.COMMENT3 :
-				case Token.COMMENT4 :
-				case Token.LITERAL1 :
-				case Token.LITERAL2 :
-				case Token.LITERAL3 :
-				case Token.LITERAL4 :
-					return true;
+			// switch(token.id){
+			// 	case Token.COMMENT1 :
+			// 	case Token.COMMENT2 :
+			// 	case Token.COMMENT3 :
+			// 	case Token.COMMENT4 :
+			// 	case Token.LITERAL1 :
+			// 	case Token.LITERAL2 :
+			// 	case Token.LITERAL3 :
+			// 	case Token.LITERAL4 :
+			// 		return true;
+			// }
+			if((tokensToAccept&(1<<token.id))!=0){
+				return true;
 			}
 		}
 		return false;
@@ -155,9 +193,11 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		}
 
 		iLine--;
-		String line = input.getLineText(iLine);
-
-		return line;
+		if(contextFilter()){
+			return input.getLineText(iLine);
+		}else{
+			return getPreviousLine();
+		}
 	}
 	
 	public void done(){
@@ -182,17 +222,14 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 				int lineOffset = input.getLineStartOffset(res.line);
 				int originalIndex = lineOffset+res.offset-1;//offset starts at 1 for aspell
 				String newWord = res.newWord;
-				Log.log(Log.DEBUG,this,"o="+originalIndex+",n="+newWord);
+				//Log.log(Log.DEBUG,this,"o="+originalIndex+",n="+newWord);
 				input.remove(originalIndex,res.originalWord.length());
 				input.insert(originalIndex,newWord);
 			}
 		}
 		catch( Exception e )
 		{
-			if( e instanceof SpellException )
-				throw (SpellException)e;
-			else
-				throw new SpellException( "Error applying changes", e );
+			throw new SpellException( "Error applying changes", e );
 		}                 
 		finally{                       
 				input.endCompoundEdit();
@@ -205,12 +242,32 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	}
 	
 	private class BufferValidator implements Validator{
+		DefaultTokenHandler handler = new DefaultTokenHandler();
+		int cachedLine = -1;
 		
 		public
 		boolean validate( int lineNum, String line, Result result ){
+
+			//can we ignore it?
+			if(lineNum!=cachedLine){
+				input.markTokens(lineNum,handler);
+				cachedLine=lineNum;
+			}
+			int offset = result.getOffset()-1;
+			for(Token token = handler.getTokens();token!=null;token=token.next){
+				if(token.offset==offset){
+					if((tokensToAccept&(1<<token.id))==0){
+						result.setType(Result.OK);
+						return true;
+					}
+				}
+			}
+			
+			// select it
 			if(selections==null)throw new IllegalStateException("validate not between BufferSpellChecker.start() and done()");
-			int lineOffset = input.getLineStartOffset(lineNum)+result.getOffset()-1;
+			int lineOffset = input.getLineStartOffset(lineNum)+offset;
 			int endOffset = lineOffset+result.getOriginalWord().length();
+			//Log.log(Log.DEBUG,BufferValidator.class,result.getOriginalWord()+" is from "+lineOffset+"-"+endOffset);
 			
 			//Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
 			for(int iSelection=0;iSelection<selections.length;iSelection++){
@@ -221,8 +278,8 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 					+" "
 					+ selections[iSelection].getStart(input,lineNum)
 					+" "
-					+selections[iSelection].getEnd(input,lineNum));
-				*/
+					+selections[iSelection].getEnd(input,lineNum));*/
+				
 				if(selections[iSelection].getStartLine()<=lineNum
 					&& selections[iSelection].getEndLine()>=lineNum
 					&& lineOffset>=selections[iSelection].getStart(input,lineNum)

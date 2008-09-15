@@ -109,6 +109,7 @@ public class SpellCheckOptionPane
 	String[] engineManagers = ServiceManager.getServiceNames(EngineManager.class.getName());
 	
 	final JComboBox engineManagerBox = new JComboBox(engineManagers);
+	engineManagerBox.setName("engines");
 	engineManagerBox.setSelectedItem(engineManager);
 	engineManagerBox.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
@@ -137,7 +138,7 @@ public class SpellCheckOptionPane
 
 
 	JComboBox aspellMainLanguageList = picker.asComboBox();
-	
+
 	PropertyStore pickerStore  = picker.getPropertyStore();
 	
 	final Action actionRefresh = picker.getRefreshAction();

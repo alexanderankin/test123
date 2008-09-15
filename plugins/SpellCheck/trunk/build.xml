@@ -27,7 +27,7 @@
 
 	<!-- TODO: put this in properties -->
 	<path id="fest.class.path">
-			<pathelement location="lib/fest-swing-1.0a1.jar"/>
+			<pathelement location="lib/fest-swing-1.0b1.jar"/>
 			<pathelement location="lib/fest-util-0.4.jar"/>
 			<pathelement location="lib/fest-reflect-0.4.jar"/>
 			<pathelement location="lib/fest-assert-1.0a1.jar"/>
@@ -60,6 +60,25 @@
         <filename name="**/*.java" />
     </selector>
 
+	
+	<selector id="extraFiles">
+        <and>
+            <or>
+                <filename name="**/actions.xml" />
+                <filename name="**/browser.actions.xml" />
+                <filename name="**/dockables.xml" />
+                <filename name="**/services.xml" />
+                <filename name="**/*.props" />
+                <filename name="**/LICENSE" />
+                <filename name="**/README" />
+            </or>
+			<not>
+				<filename name="build/**"/>
+			</not>
+        </and>
+    </selector>
+
+	
 	<target name="test.compile"
 		description="Compile the plugin's test classes"
 		depends="compile">
@@ -72,19 +91,49 @@
 
     </target>
 
-	<!-- This selector controls which tests to run.
-	  -->
+
+	<!-- here you have all the tests about aspell-->
+	<selector id="testcases.aspellengine">
+	<or>
+	<filename name="**/cswilly/spell/AspellEngineTest.java"/>
+	<filename name="**/cswilly/spell/FutureAspellTest.java"/>
+	<filename name="**/cswilly/spell/FutureListDictsTest.java"/>
+	<filename name="**/cswilly/spell/FutureListModesTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellEngineManagerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellOptionPaneTest.java"/>
+	</or>
+	</selector>
+
+	<!-- here you have all the tests about VoxSpell bridge -->
+	<selector id="testcases.voxspell">
+	<filename name="**/cswilly/jeditPlugins/spell/voxspellbridge/*Test.java"/>
+	</selector>
+	
+	<!-- here you have functional tests : spell-check a buffer, show the options -->
+	<selector id="testcases.common">
+	<or>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferDialogValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/DictionaryPickerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckOptionPaneTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	</or>
+	</selector>
+	
+	<!-- this selector holds current test... -->
+	<selector id="testcases.current">
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	</selector>
+	
+	<!-- This selector controls which tests to run. -->
 	<selector id="junit.testcases">
-		<!--<and>
-		<or>-->
-		<filename name="cswilly/**/*Test.java" />
-		<!--<filename name="**/ValidationDialogTest.java" />-->
-		<!--<filename name="cswilly/**/InjEditTestNotifier.java" />-->
-		<!--</or>
-		<not><filename name="cswilly/spell/Test.java"/></not>
-		</and>-->
+	<selector refid="testcases.current"/>
     </selector>
 
+	
+	
 	<!-- for junit tests -->
 	<property name="unit.test.target" value="test-junit"/>
 
@@ -184,12 +233,28 @@
 		</copy>
 	</target>
 	
-	<target name="run" depends="build,test.prepare">
-		<java jar="${jedit.install.dir}/jedit.jar" fork="true">
+	<target name="run" depends="test.compile,test.prepare">
+		<java fork="true" classname="org.gjt.sp.jedit.jEdit">
 			<arg value="-norestore"/>
 			<arg value="-noserver"/>
 			<arg value="-nobackground"/>
-			<arg value="-settings=${build.dir}/settings"/>
+			<arg value="-settings=${basedir}/${build.dir}/settings"/>
+			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
+			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
+			<sysproperty key="test-tests.dir" path="tests"/>
+			
+			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
+
+            <classpath>
+                <pathelement location="${junit.jar}" />
+				
+				<!-- for junit annotations -->
+                <pathelement location="${hamcrest.jar}" />
+				
+                <pathelement location="${build.classes}" />
+                <path refid="default.class.path" />
+                <path refid="project.class.path" />
+            </classpath>
 		</java>
 	</target>
 	

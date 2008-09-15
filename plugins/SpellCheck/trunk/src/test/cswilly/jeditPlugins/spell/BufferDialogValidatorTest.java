@@ -119,7 +119,7 @@ public class BufferDialogValidatorTest{
 		MockEngine engine = new MockEngine();
 		engine.addResults(res);
 		valid.setEngine(engine);
-
+		valid.setEngineForSuggest(new MockEngine());
 		final AtomicReference<Boolean> cancel = new AtomicReference<Boolean>(Boolean.FALSE);
 		final AtomicReference<SpellException> except = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
@@ -212,6 +212,7 @@ public class BufferDialogValidatorTest{
 		MockEngine engine = new MockEngine();
 		engine.addResults(res);
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 
 		final AtomicReference<Boolean> cancel = new AtomicReference<Boolean>(Boolean.FALSE);
 		final AtomicReference<SpellException> except = new AtomicReference<SpellException>(null);
@@ -302,6 +303,7 @@ public class BufferDialogValidatorTest{
 		MockEngine engine = new MockEngine();
 		engine.addResults(res);
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 
 		final AtomicReference<Boolean> cancel = new AtomicReference<Boolean>(Boolean.FALSE);
 		final AtomicReference<SpellException> except = new AtomicReference<SpellException>(null);
@@ -344,6 +346,7 @@ public class BufferDialogValidatorTest{
 		
 		final BufferDialogValidator valid = new BufferDialogValidator();
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 		valid.setUserDictionary(userDict);
 		
 		final Buffer buffer = TestUtils.openFile(testsDir+"/spellTest.txt");
@@ -396,6 +399,7 @@ public class BufferDialogValidatorTest{
 
 		final BufferDialogValidator valid = new BufferDialogValidator();
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{
@@ -458,6 +462,7 @@ public class BufferDialogValidatorTest{
 		}
 		final BufferDialogValidator valid = new BufferDialogValidator();
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 		
 		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
 		try{
@@ -540,6 +545,7 @@ public class BufferDialogValidatorTest{
 		}
 		final BufferDialogValidator valid = new BufferDialogValidator();
 		valid.setEngine(engine);
+		valid.setEngineForSuggest(new MockEngine());
 		valid.setUserDictionary(new WordListValidator());
 		valid.setTextArea(TestUtils.view().getTextArea());
 		valid.setIgnoreAll(new WordListValidator());

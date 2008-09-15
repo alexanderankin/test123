@@ -62,6 +62,13 @@ import cswilly.spell.FutureListModes;
 import static cswilly.jeditPlugins.spell.SpellCheckPlugin.*;
 import static cswilly.jeditPlugins.spell.AspellEngineManager.*;
 
+/**
+ * manage properties for:
+ *  - executable to invoke
+ *  - modes handling (auto/none/manual)
+ *  - jEdit mode <-> Aspell filter handling
+ *  - additional parameters
+ */
 public class AspellOptionPane
   extends AbstractOptionPane
 {
@@ -214,16 +221,16 @@ public class AspellOptionPane
 	   so refreshList() displays an Error Dialog before the OptionPane is
 	   visible, so the Option Pane is on top of it, and we can close neither of them. 
 	 */
-	 /* DOESN'T WORK !
-	addComponentListener(
+	 /* doesn't work???
+	_aspellOtherParamsField.addComponentListener(
 		 new ComponentAdapter(){
 			public void componentHidden(ComponentEvent ce){
 					Log.log(Log.ERROR,AspellOptionPane.this,"Hidden");
 			}
 			public void componentShown(ComponentEvent ce){
-					Log.log(Log.DEBUG,this,"Hello");
-					actionRefresh.actionPerformed(null);
-					AspellOptionPane.this.removeComponentListener(this);
+				Log.log(Log.DEBUG,AspellOptionPane.class,"Hello");
+					// actionRefresh.actionPerformed(null);
+					// AspellOptionPane.this.removeComponentListener(this);
 			}
 		});
 	*/

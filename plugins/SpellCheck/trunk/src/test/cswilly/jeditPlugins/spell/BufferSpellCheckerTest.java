@@ -50,7 +50,6 @@ import org.fest.swing.finder.WindowFinder;
 
 import cswilly.spell.ValidationDialog;
 import cswilly.spell.SpellException;
-import cswilly.spell.AspellEngine;
 import cswilly.spell.ChangeWordAction;
 
 import static cswilly.jeditPlugins.spell.TestUtils.*;
@@ -69,12 +68,10 @@ public class BufferSpellCheckerTest{
 	public static void setUpjEdit(){
 		testsDir = System.getProperty(ENV_TESTS_DIR);
 		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testsDir!=null);
-		exePath = System.getProperty(ENV_ASPELL_EXE);
-		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
-
 		TestUtils.setUpjEdit();
-	}
 
+	}
+	
 	@AfterClass
 	public static  void tearDownjEdit(){
 		TestUtils.tearDownjEdit();
@@ -106,6 +103,7 @@ public class BufferSpellCheckerTest{
 		}catch(Exception e){}
 		String[] lines = text.split("\n");
 		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		source.setAcceptAllTokens();
 		source.start();
 		
 		assertEquals( "* This program is free software; you can redistribute it and/or",
@@ -120,17 +118,11 @@ public class BufferSpellCheckerTest{
 			source.getNextLine());
 		assertEquals(2,source.getLineNumber());
 
-		assertEquals( "",
-			source.getNextLine());
-		assertEquals(3,source.getLineNumber());
+		/* empty lines are now skipped */
 
 		assertEquals( "* of the License, or any later version.",
 			source.getNextLine());
 		assertEquals(4,source.getLineNumber());
-
-		assertEquals( "",
-			source.getPreviousLine());
-		assertEquals(3,source.getLineNumber());
 
 		assertEquals( "* as published by the Free Software Foundation; either version 2",
 			source.getPreviousLine());
@@ -273,15 +265,15 @@ public class BufferSpellCheckerTest{
 				TestUtils.view().getTextArea().setSelection(new Selection.Range(135,230));
 			}});
 		}catch(Exception e){}
-		try{Thread.sleep(10000);}catch(Exception e){}
+		try{Thread.sleep(1000);}catch(Exception e){}
 		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		source.setAcceptAllTokens();
 		source.start();
 		
 		assertEquals( "* as published by the Free Software Foundation; either version 2",
 			source.getNextLine());
 
-		assertEquals( "",
-			source.getNextLine());
+		/* empty lines are now skipped */
 
 		assertEquals( "* of the License, or any later version.",
 			source.getNextLine());
@@ -289,6 +281,27 @@ public class BufferSpellCheckerTest{
 		assertEquals( null,
 			source.getNextLine());
 		
+		TestUtils.close(TestUtils.view(),buf);
+	}
+	
+	@Test
+	public void testContext(){
+		final Buffer buf = TestUtils.openFile(testsDir+"/a.cpp");
+		assertEquals("c++",buf.getMode().getName());//just to be sure
+		try{Thread.sleep(10000);}catch(Exception e){}
+
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		source.start();
+		
+		source.getNextLine();
+		assertEquals(0,source.getLineNumber());
+
+		source.getNextLine();
+		assertEquals(3,source.getLineNumber());
+
+		assertEquals(null,source.getNextLine());
+
+
 		TestUtils.close(TestUtils.view(),buf);
 	}
 }

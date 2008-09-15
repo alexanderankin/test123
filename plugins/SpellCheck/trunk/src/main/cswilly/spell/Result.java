@@ -74,6 +74,11 @@ final class Result implements Cloneable
       processSuggestion( line );
     else if( line.charAt( 0 ) == '#' )
       processNone( line );
+   	// this case is added as Aspell tells you when there is no prefix at all
+	// TODO: parse this as well
+	// see : http://osdir.com/ml/gnu.aspell.user/2007/msg00077.html
+    else if( line.charAt( 0 ) == '?' )
+      processNone( line );
     else
       processError( line );
   }

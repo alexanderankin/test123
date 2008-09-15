@@ -90,9 +90,9 @@ public class ErrorListValidatorTest{
 	public void testNormal(){
 		final ErrorListValidator valid = new ErrorListValidator("ErrorListValidatorTest");
 		
-		TestUtils.jeditFrame().menuItemWithPath("Plugins").select();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").select();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").select();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins").click();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").click();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
 
 		
 		String path  = "/My/Test/Path";

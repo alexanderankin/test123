@@ -53,15 +53,27 @@ import javax.swing.JFileChooser;
 
 import java.util.concurrent.Future;
 
+/**
+ * keep track of running Aspell instances
+ * @see cswilly.spell.AspellEngine
+ * @see cswilly.spell.FutureListDicts
+ */
 public class AspellEngineManager implements EngineManager
 {
+  /** property holding the executable to invoke as Aspell */
   public static final String ASPELL_EXE_PROP                    = "spell-check-aspell-exe";
+  /** property holding the way aspell has to handle modes (none/automatic/manual) */
   public static final String ASPELL_MARKUP_MODE_PROP            = "spell-check-aspell-markup-mode";
+  /** property holding additional parameters */
   public static final String ASPELL_OTHER_PARAMS_PROP			= "spell-check-aspell-other-params";
-  public static final String FILTER_AUTO						= "AUTO";					
+  /** value for automatic mode */
+  public static final String FILTER_AUTO						= "AUTO";
+  /** root for properties holding the configured filter for each mode */
   public static final String FILTERS_PROP						= "spell-check-filter";					
 
-  
+  /**
+   * available modes for Aspell
+   */
   public static enum AspellMarkupMode{
 	  NO_MARKUP_MODE("aspellNoMarkupMode"),
 	  MANUAL_MARKUP_MODE("aspellManualMarkupMode"),

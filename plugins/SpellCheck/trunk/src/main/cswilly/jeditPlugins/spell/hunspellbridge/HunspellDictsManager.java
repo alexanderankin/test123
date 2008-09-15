@@ -47,21 +47,38 @@ import cswilly.jeditPlugins.spell.SpellCheckPlugin;
 import cswilly.spell.Dictionary;
 import org.gjt.sp.jedit.GUIUtilities;
 
-// TODO : use md5 sums to verify downloads
+/**
+ * This class serves as a dictionary registry for the HunspellEngineManager.
+ * It works with openoffice.org dictionaries and uses the same files as
+ * OOODict assistant.
+ * It has a network and file management part (doInstall,doUpdate,doRemove)
+ * and a property management part (mainly initInstalled,updateInstalledProp).
+ * TODO : use md5 sums to verify downloads
+ */
 public class HunspellDictsManager{
-	// TODO: in property
-	public static final String OOO_DICTS = "http://ftp.services.openoffice.org/pub/OpenOffice.org/contrib/dictionaries/";
+	public static final String OOO_DICTS_PROP = "spell-check-hunspell-site";
 	private static final String INSTALLED_DICTS_PROP = "spell-check-hunspell-dicts";
 	private static final Pattern VIRGULE_SPLIT = Pattern.compile(",");
 	
 	private List<Dictionary> availables;
 	private List<Dictionary> installed;
 	
+	/**
+	 * lazy initialisation : nothing is done yet
+	 * @see fetchAvailable()
+	 * @see initInstalled()
+	 */
 	public HunspellDictsManager(){
 		availables=null;
 		installed=null;
 	}
 	
+	/**
+	 * fetch the list of available dictionaries if it's the first time 
+	 * the method is called or there was a problem last time.
+	 * 
+	 * @return the list of available dictionaries (doesn't contain installed dicts)
+	 */
 	public List<Dictionary> getAvailables(ProgressObserver po){
 		if(availables == null){
 			fetchAvailable(po);
@@ -69,6 +86,13 @@ public class HunspellDictsManager{
 		return availables;
 	}
 	
+	
+	/**
+	 * initialise the list of installed dictionaries if it's the first time
+	 * the method is called or there was a problem last time.
+	 * 
+	 * @return the list of installed dictionaries (unmodifiable)
+	 */
 	public List<Dictionary> getInstalled(){
 		if(installed == null){
 			initInstalled();
@@ -77,6 +101,11 @@ public class HunspellDictsManager{
 		return Collections.unmodifiableList(installed);
 	}
 
+	/**
+	 * initialise the list of installed dictionaries,
+	 * according to the list saved in a property
+	 * @see createInstalledDict(String)
+	 */
 	private void initInstalled(){
 		String[] installedL = VIRGULE_SPLIT.split(jEdit.getProperty(INSTALLED_DICTS_PROP,""));
 
@@ -90,7 +119,12 @@ public class HunspellDictsManager{
 			else Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to init dict "+installedL[i]);
 		}
 	}
-
+	
+	/**
+	 * for HunspellEngineManager's convenience
+	 * @param 
+	 * @return installed dictionary named name, or starting with name (as fr_FR is returned when asked for fr_FR-1990), null otherwise
+	 */
 	Dictionary getInstalledDict(String name){
 		if(installed==null){
 			initInstalled();
@@ -108,6 +142,11 @@ public class HunspellDictsManager{
 		return null;
 	}
 	
+	/**
+	 * init an installed dictionary according to properties
+	 * and verifies that it has an *.aff and *.dic file in a subdirectory
+	 * of the plugin's home
+	 */
 	private Dictionary createInstalledDict(String name){
 		File home = SpellCheckPlugin.getHomeDir(null);
 		
@@ -171,12 +210,23 @@ public class HunspellDictsManager{
 
 	}
 	
+	/**
+	 * fetch and parse file available.lst from openoffice.org,
+	 * which contains the list of available dictionaries.
+	 * Also verifies if there is a new version of an installed dictionary,
+	 * by querying the server for lastModifiedDate on archives.
+	 * @param	po	the ProgressObserver to notify the user for progression (can't be null)
+	 * @throws	NullPointerException	if po is null
+	 */
 	private void fetchAvailable(ProgressObserver po){
+		if(po==null)throw new IllegalArgumentException("the progress observer can't be null");
 		if(availables==null) availables = new ArrayList<Dictionary>();
 		else availables.clear();
 		if(installed==null)initInstalled();
 		try{
-			URL available_url = new URL(OOO_DICTS+"available.lst");
+			
+			//connect to openoffice.org
+			URL available_url = new URL(jEdit.getProperty(OOO_DICTS_PROP)+"available.lst");
 			URLConnection connect = available_url.openConnection();
 			connect.connect();
 			InputStream is = connect.getInputStream();
@@ -246,11 +296,16 @@ public class HunspellDictsManager{
 		}
 	}
 	
+	/**
+	 * queries the ooo server for lastModifiedDate of given archive name
+	 * @param	archName	filename to query
+	 * @return	the modification date, or null if an Exception occured
+	 */
 	private Date fetchLastModifiedDate(String archName){
 		Date modifdate = null;
 		URL url = null;
 		try{
-			url = new URL(OOO_DICTS+archName+".zip");
+			url = new URL(jEdit.getProperty(OOO_DICTS_PROP)+archName+".zip");
 		}catch(MalformedURLException mfue){
 			Log.log(Log.ERROR,HunspellDictsManager.class,"Invalid archive name : "+archName);
 			GUIUtilities.error(null,"spell-check-hunspell-error-fetch",new String[]{mfue.getMessage()});
@@ -275,6 +330,12 @@ public class HunspellDictsManager{
 		return modifdate;
 	}
 	
+	/**
+	 * parse a line from available.lst, or stored line in a property
+	 * @param	line	line to parse (CSV,5 fields)
+	 * @return instanciated dictionary (never null)
+	 * @throws	IllegalArgumentException	if the description is invalid
+	 */
 	private Dictionary parseLine(String line){
 		String[] fields = VIRGULE_SPLIT.split(line);
 		if(fields.length==5){
@@ -297,6 +358,12 @@ public class HunspellDictsManager{
 		}
 	}
 
+	/**
+	 * public call to doInstall()
+	 * @param	d	dictionary to install
+	 * @param	po	observer to notify of any progress
+	 * @return	true if successful
+	 */
 	public boolean install(Dictionary d, ProgressObserver po){
 		if(d.installed){
 			po.setMaximum(100);
@@ -306,6 +373,17 @@ public class HunspellDictsManager{
 		return doInstallDict(d,po);
 	}
 	
+	
+	/**
+	 * public call to doUpdate()
+	 * if multiple dictionaries share the same archive, they all get updated
+	 * on success.
+	 * If update is unsuccesful, the dictionaries are either broken (files lost)
+	 * or returned to old version.
+	 * @param	d	dictionary to update
+	 * @param	po	observer to notify of any progress
+	 * @return	true if successful. On false, d.installed==false means that the dictionary was lost
+	 */
 	public boolean update(Dictionary d, ProgressObserver po){
 		if(!d.installed || !d.isOutdated()){
 			po.setMaximum(100);
@@ -332,13 +410,22 @@ public class HunspellDictsManager{
 		} else return doUpdateDict(d,po);
 	}
 
+	/**
+	 * public call to doRemove()
+	 * @param	d	dictionary to remove
+	 * @return	true if successful (if unsuccesful, it may be that the dictionary is still unusable
+	 */
 	public boolean remove(Dictionary d){
 		if(!d.installed)return true;
 		List<Dictionary> sharing = getSharingDicts(d);
 		//if one dictionary alone, sharing.size()==1 and we can delete files
 		return doRemoveDict(d,sharing.size()==1);
 	}
-
+	
+	/**
+	 * @param	d	d.archivename is the archive
+	 * @return a list of dictionaries using the same archive as d (contains d)
+	 */
 	private List<Dictionary> getSharingDicts(Dictionary d){
 		if(installed==null){
 			throw new IllegalStateException("Installed list should be initialised");
@@ -352,31 +439,43 @@ public class HunspellDictsManager{
 		return sharing;
 	}
 	
+	/**
+	 * @param	d	installed dictionary (not checked)
+	 * @param	removeFiles	in case of sharing archive, if false, won't remove any file, only clean properties for d
+	 * @return	files deleted ?
+	 */
 	private boolean doRemoveDict(Dictionary d, boolean removeFiles){
 		File home = SpellCheckPlugin.getHomeDir(null);
 		
 		String dir = d.getDirectory();
 		
-		assert(dir!=null && !"".equals(dir));
+		if(dir==null || "".equals(dir)){
+			Log.log(Log.ERROR,HunspellDictsManager.class,"Invalid dictionary (no directory) : "+d);
+			return false;
+		}
 		
 		//files
 		File installdir = new File(home,dir);
+
+		boolean deleted = false;
 		
 		if(!installdir.exists()){
 			Log.log(Log.ERROR,HunspellDictsManager.class,d.getKey()+" is sayed to be installed but can't find it!");
 		}else{
 			//remove dir
 			if(removeFiles){
-				boolean deleted = false;
 				try{
 				deleted = deleteFileTree(installdir);
 				}catch(IOException ioe){
 					Log.log(Log.ERROR,HunspellDictsManager.class,"exception while removing "+d.getKey());
 					Log.log(Log.ERROR,HunspellDictsManager.class,ioe);
 				}
-				assert(deleted);
+				if(!deleted){
+					Log.log(Log.ERROR,HunspellDictsManager.class,"unable to delete files for "+d.getKey());
+				}
 			}else{
 				Log.log(Log.MESSAGE,HunspellDictsManager.class,"not deleting files for "+d.getDirectory());
+				deleted = true;
 			}
 		}
 
@@ -385,16 +484,26 @@ public class HunspellDictsManager{
 
 		updateInstalledProp(d);
 		
-		return true;
+		return deleted;
 		
 	}
 	
+	/**
+	 * install a new version of a dictionary.
+	 * if something went wrong, restore old version.
+	 * @param	d	dictionary to update
+	 * @param	po	observer
+	 * @return	true if update was successful (if false, check d.installed)
+	 */
 	private boolean doUpdateDict(Dictionary d,ProgressObserver po){
 		File home = SpellCheckPlugin.getHomeDir(null);
 		
 		String dir = d.getDirectory();
 		
-		assert(dir!=null && !"".equals(dir));
+		if(dir==null || "".equals(dir)){
+			Log.log(Log.ERROR,HunspellDictsManager.class,"Invalid dictionary (no directory) : "+d);
+			return false;
+		}
 		
 		//files
 		File installdir = new File(home,dir);
@@ -452,6 +561,7 @@ public class HunspellDictsManager{
 
 	/**
 	 * @return true if everything was deleted...
+	 * @throws IOException if an exception occured in the call stack
 	 */
 	private static boolean deleteFileTree(File root) throws IOException{
 		if(!root.exists())return true;
@@ -467,6 +577,12 @@ public class HunspellDictsManager{
 		return deleted;
 	}
 	
+	/**
+	 * fetch, expand, install dictionary
+	 * @param	d	dictionary to install
+	 * @param	po	observer
+	 * @return	installed ?
+	 */
 	private boolean doInstallDict(Dictionary d, ProgressObserver po){
 		File home = SpellCheckPlugin.getHomeDir(null);
 		
@@ -504,7 +620,7 @@ public class HunspellDictsManager{
 
 		po.setStatus(jEdit.getProperty("spell-check-hunspell-download"));
 		try{
-			URL url = new URL(OOO_DICTS+d.archiveName+".zip");
+			URL url = new URL(jEdit.getProperty(OOO_DICTS_PROP)+d.archiveName+".zip");
 			URLConnection connect = url.openConnection();
 			connect.connect();
 			
@@ -567,7 +683,10 @@ public class HunspellDictsManager{
 			ZipEntry ze = entries.nextElement();
 			Log.log(Log.DEBUG,HunspellDictsManager.class,"Expanding : "+ze);
 			po.setValue(i);
-			assert(!ze.isDirectory());//quasi-certain that it's never a directory
+			if(ze.isDirectory()){
+				Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to handle directories in archives");
+				continue;
+			}
 
 			String fn = ze.getName();
 			File outFile = new File(extractdir,fn);
@@ -651,6 +770,12 @@ public class HunspellDictsManager{
 		return true;
 	}
 	
+	/**
+	 * save/clear all properties for this dictionary
+	 * and installed dictionaries property
+	 * @param	d	installed/updated/removed dictionary
+	 * @throws	IllegalStateException	when installed is uninitialised
+	 */
 	private void updateInstalledProp(Dictionary d){
 		if(installed==null)throw new IllegalStateException("No installed list");
 		
@@ -677,14 +802,18 @@ public class HunspellDictsManager{
 		jEdit.setProperty(INSTALLED_DICTS_PROP,installedS.substring(1));
 	}
 	
+	/**
+	 * holds more properties than just name/description
+	 * immutable outside HunspellDictsManager
+	 */
 	public static class Dictionary extends cswilly.spell.Dictionary implements Comparable<Dictionary>{
-		String lang;
-		String country;
-		String variant;
-		String descr;
+		private String lang;
+		private String country;
+		private String variant;
+		private String descr;
 		//minus .zip
 		private String archiveName;
-		boolean installed;
+		private boolean installed;
 		private boolean outdated;
 		private Date lastModified;
 		private Date installedDate;
@@ -698,13 +827,15 @@ public class HunspellDictsManager{
 		}
 		
 		public int compareTo(Dictionary other){
-			return getKey().compareTo(other.getKey());
+			return descr.compareTo(other.descr);
+			//return getKey().compareTo(other.getKey());
 		}
 		
 		public boolean equals(Object o){
 			if(o==null)return false;
 			if(!(o instanceof Dictionary))return false;
-			return getKey().equals(((Dictionary)o).getKey());
+			return descr.equals(((Dictionary) o).descr);
+			//return getKey().equals(((Dictionary)o).getKey());
 		}
 		
 		public String getDirectory(){
@@ -718,6 +849,10 @@ public class HunspellDictsManager{
 		public boolean isOutdated(){
 			return lastModified!=null && installedDate!=null
 					&& lastModified.after(installedDate);
+		}
+		
+		public boolean isInstalled(){
+			return installed;
 		}
 		
 		@Override
