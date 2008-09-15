@@ -188,7 +188,7 @@ class AspellEngine
 	  };
 	  t.start();
 	  try{
-	  t.join(4000);//4 seconds !
+	  t.join(10000);//10 seconds !
 	  }catch(InterruptedException ie){
 		  throw new SpellException("Interrupted while waiting for Aspell Process");
 	  }
@@ -201,7 +201,9 @@ class AspellEngine
   }
   
   public boolean isContextSensitive(){
-	  return !args.contains("--mode=none");
+	  // TODO: restore when context-sensitive config. is configurable
+	  // return !args.contains("--mode=none");
+	  return true;
   }
   
   public String toString(){

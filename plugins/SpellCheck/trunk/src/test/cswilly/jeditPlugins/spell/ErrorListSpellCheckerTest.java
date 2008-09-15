@@ -79,9 +79,9 @@ public class ErrorListSpellCheckerTest{
 	@Before
 	public void beforeTest(){
 		jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins").select();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").select();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").select();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins").click();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").click();
+		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
 	}
 
 	@After
@@ -138,6 +138,7 @@ public class ErrorListSpellCheckerTest{
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		assertNotNull(spellError);
 		ErrorSource.Error[] errors = spellError.getFileErrors(buff.getPath());
+		assertNotNull(errors);
 		for(int i=0;i<errors.length;i++){
 			System.err.println(errors[i].toString());
 		}

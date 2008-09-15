@@ -53,9 +53,8 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 	}
 	
 	/**
-	* @return <i>true</i> if file completely checked and <i>false</i> if the user
-	* interupted the checking.
-	*/
+	 * spell-check a whole buffer and add errors in ErrorList
+ 	 */
 	public
 	boolean spellcheck()
     throws SpellException
@@ -66,7 +65,10 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 		Buffer buffer = (Buffer)area.getBuffer();
 		spellValidator.setPath(buffer.getPath());
 		BufferSpellChecker source = new BufferSpellChecker(area);
-		
+		// TODO: must be configured
+		if(engine.isContextSensitive()||"text".equals(buffer.getMode().getName())){
+			source.setAcceptAllTokens();
+		}
 		boolean confirm = true;
 		try
 		{
@@ -76,11 +78,16 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 				confirm && line!=null;
 				line=source.getNextLine() )
 			{
+				//System.out.println("spellcheck line "+line);
 				List<Result> results = engine.checkLine( line );
 				for(Result r:results)
 				{
 					confirm = validator.validate(source.getLineNumber(), line, r );
-					if(!confirm)break;
+					//System.out.println("spellcheck result "+r);
+					if(!confirm){
+						Log.log(Log.ERROR,ErrorListSpellChecker.class,"validator didn't confirm");
+						break;
+					}
 				}
 			}
 		}
@@ -103,6 +110,7 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 			else
 			{	
 				Log.log(Log.DEBUG,this,spellValidator.getErrorCount()+" mispelled words for "+buffer.getName());
+				jEdit.getActiveView().getStatus().setMessage( "Spell-check finished" );
 			}
 		}
 		
@@ -120,7 +128,6 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 	}
 	
 	public void unload(){
-		Log.log(Log.DEBUG,this,"unloading errorsource");
 		ErrorSource.unregisterErrorSource(spellValidator);
 	}
 	
@@ -137,6 +144,7 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 	}
 	
 	public void setValidator(Validator v){
+		if(v==null)return;
 		validator = new ChainingValidator(v,spellValidator);
 	}
 	

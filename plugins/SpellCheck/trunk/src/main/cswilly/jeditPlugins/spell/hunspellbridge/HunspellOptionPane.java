@@ -29,6 +29,7 @@ package cswilly.jeditPlugins.spell.hunspellbridge;
 import java.io.*;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -38,8 +39,10 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
-import javax.swing.DefaultListModel;
-
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
+import java.awt.Font;
+import java.awt.Component;
 
 import javax.swing.AbstractAction;
 import javax.swing.event.ListSelectionListener;
@@ -92,14 +95,16 @@ public class HunspellOptionPane extends AbstractOptionPane{
 		
 		//external library
 		// TODO: external library
-		final DefaultListModel dlm = new DefaultListModel();
+		
+		//installed/availables
+		final SortedListModel dlm = new SortedListModel();
 		
 		listInstalled = new JList(dlm);
 		JScrollPane pi = new JScrollPane(listInstalled);
 		addSeparator("options.spellcheck.hunspell.installed");
 		addComponent(pi);
 		
-		final DefaultListModel dlma = new DefaultListModel();
+		final SortedListModel dlma = new SortedListModel();
 		
 		listAvailable = new JList(dlma);
 		JScrollPane pa = new JScrollPane(listAvailable);
@@ -114,7 +119,8 @@ public class HunspellOptionPane extends AbstractOptionPane{
 		listInstalled.addListSelectionListener(install);
 		listInstalled.addListSelectionListener(remove);
 		listInstalled.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+		listInstalled.setCellRenderer(new MyCellRenderer());
+
 		
 		JPanel p = new JPanel();
 		JButton bout = new JButton(install);
@@ -137,10 +143,13 @@ public class HunspellOptionPane extends AbstractOptionPane{
 					);
 				Log.log(Log.DEBUG,HunspellOptionPane.class,"Refresh availables started");
 				List<Dictionary> av = dictsManager.getAvailables(po);
+				try{
+					while(!po.isVisible())Thread.sleep(1000);
+				}catch(InterruptedException ie){}
 				po.setVisible(false);
 				List<Dictionary> dicts = dictsManager.getInstalled();
-				for(Dictionary d : av)dlma.addElement(d);
-				for(Dictionary d : dicts)dlm.addElement(d);
+				for(Dictionary d : av)dlma.add(d);
+				for(Dictionary d : dicts)dlm.add(d);
 				Log.log(Log.DEBUG,HunspellOptionPane.class,"Refresh availables done");
 			}
 		}.start();
@@ -171,17 +180,24 @@ public class HunspellOptionPane extends AbstractOptionPane{
 							this);
 						if(update){
 							boolean updated = dictsManager.update(dict,po);
+							po.setVisible(false);
 							if(!updated){
-								//todo
+								GUIUtilities.error(
+									GUIUtilities.getParentDialog(listAvailable),
+									(dict.isInstalled()?
+										"spell-check-hunspell-update-failed.old"
+										:"spell-check-hunspell-update-failed.broken"),
+									new String[]{dict.toString()});
 							}
+							listInstalled.repaint();
 						}else{
 							boolean installed  = dictsManager.install(dict,po);
 							po.setVisible(false);
 							if(installed){
 								SwingUtilities.invokeLater(new Runnable(){
 										public void run(){
-											((DefaultListModel)listInstalled.getModel()).addElement(dict);
-											((DefaultListModel)listAvailable.getModel()).remove(index);
+											((SortedListModel)listInstalled.getModel()).add(dict);
+											((SortedListModel)listAvailable.getModel()).remove(index);
 								}});
 							}else{
 								// TODO: nice message to the user...
@@ -205,7 +221,7 @@ public class HunspellOptionPane extends AbstractOptionPane{
 				currentDict = null;
 			}else{
 				currentIndex = indices[0];
-				currentDict = (Dictionary)((DefaultListModel)src.getModel()).elementAt(currentIndex);
+				currentDict = (Dictionary)src.getModel().getElementAt(currentIndex);
 				if(update){
 					setEnabled(currentDict.isOutdated());
 					putValue(Action.NAME,updtText);
@@ -239,8 +255,8 @@ public class HunspellOptionPane extends AbstractOptionPane{
 						if(removed){
 							SwingUtilities.invokeLater(new Runnable(){
 									public void run(){
-										((DefaultListModel)listAvailable.getModel()).addElement(dict);
-										((DefaultListModel)listInstalled.getModel()).remove(index);
+										((SortedListModel)listAvailable.getModel()).add(dict);
+										((SortedListModel)listInstalled.getModel()).remove(index);
 							}});
 						}else{
 							// TODO: nice message to the user...
@@ -261,152 +277,70 @@ public class HunspellOptionPane extends AbstractOptionPane{
 				currentDict = null;
 			}else{
 				currentIndex = indices[0];
-				currentDict = (Dictionary)((DefaultListModel)src.getModel()).elementAt(currentIndex);
+				currentDict = (Dictionary)src.getModel().getElementAt(currentIndex);
 				setEnabled(true);
 				listAvailable.clearSelection();
 			}
 		}
 	}
 	
-
-	private class ProgressObs extends JDialog implements ProgressObserver
-	{
-		//{{{ ProgressObs constructor
-		public ProgressObs(Frame parent,String title,Thread thread)
-		{
-			super(parent,title);
-			this.thread = thread;
-			init();
-		}
+	private class MyCellRenderer extends DefaultListCellRenderer {
+		private Font outdatedFont;
 		
-		public ProgressObs(Dialog parent,String title,Thread thread)
+		public Component getListCellRendererComponent(
+			JList list,
+			Object value,            // value to display
+			int index,               // cell index
+			boolean isSelected,      // is the cell selected
+			boolean cellHasFocus)    // the list and the cell have the focus
 		{
-			super(parent,title);
-			this.thread = thread;
-			init();
-		}
-		
-		private void init(){
-			JPanel content = new JPanel(new BorderLayout(12,12));
-			content.setBorder(new EmptyBorder(12,12,12,12));
-			setContentPane(content);
-	
-			progress = new JProgressBar();
-			progress.setStringPainted(true);
-			progress.setString(jEdit.getProperty("spell-check-hunspell-download"));
-	
-	
-			progress.setMaximum(1);
-			content.add(BorderLayout.NORTH,progress);
-	
-			stop = new JButton(jEdit.getProperty("options.spellcheck.hunspell.stop"));
-			stop.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent evt){
-						ProgressObs.this.thread.stop();
-						setVisible(false);
-				}});
-			JPanel panel = new JPanel(new FlowLayout(
-				FlowLayout.CENTER,0,0));
-			panel.add(stop);
-			content.add(BorderLayout.CENTER,panel);
-	
-			addWindowListener(new WindowHandler());
-	
-			pack();
-			new Thread(){
-				public void run(){
-					setVisible(true);
-			}}.start();
-		} //}}}
-	
-		//{{{ setValue() method
-	
-		/**
-		 * @param value the new value
-		 */
-		public void setValue(final int value)
-		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					progress.setValue(valueSoFar + value);
-				}
-			});
-		} //}}}
-	
-		//{{{ setValue() method
-		/**
-		 * Update the progress value.
-		 *
-		 * @param value the new value
-		 */
-		public void setValue(final long value)
-		{
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						progress.setValue(valueSoFar + (int) value);
-					}
-				});
-		} //}}}
-	
-		//{{{ setMaximum() method
-		/**
-		 * This method is unused with the plugin manager.
-		 *
-		 * @param value the new max value (it will be ignored)
-		 * @since jEdit 4.3pre3
-		 */
-		public void setMaximum(final long value) 
-		{
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						progress.setMaximum((int)value);
-					}
-				});
-		} //}}}
-	
-		//{{{ setStatus() method
-		 public void setStatus(final String status) 
-		 {
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						 progress.setString(status);
-					}
-				});
-		} //}}}
-	
-	
-		//{{{ Private members
-	
-		//{{{ Instance variables
-		private Thread thread;
-	
-		private JProgressBar progress;
-		private JButton stop;
-	
-		// progress value as of start of current task
-		private int valueSoFar;
-	
-		//}}}
-	
-	
-		//{{{ WindowHandler class
-		class WindowHandler extends WindowAdapter
-		{
-			public void windowClosing(WindowEvent evt)
-			{
-				thread.stop();
-				dispose();
+			if(outdatedFont==null){
+				outdatedFont = list.getFont().deriveFont(Font.ITALIC|Font.BOLD);
 			}
-		} //}}}
-	
-		//}}}
+			
+			Dictionary d = (Dictionary)value;
+			String s = d.toString();
+			if(d.isOutdated()){
+				s = jEdit.getProperty("options.spellcheck.hunspell.outdated-label",new String[]{s});
+				super.getListCellRendererComponent(list,s,index,isSelected,cellHasFocus);
+				setFont(outdatedFont);
+			}else{
+				super.getListCellRendererComponent(list,s,index,isSelected,cellHasFocus);
+			}
+			
+			return this;
+		}
 	}
+	/**
+	 * keeps data in a sorted set, to restore elements at their right place
+	 */
+	private class SortedListModel extends AbstractListModel{
+		private List<Dictionary> data;
+		SortedListModel(){
+			data = new ArrayList<Dictionary>();
+		}
+		public void add(Dictionary d){
+			for(ListIterator<Dictionary> it=data.listIterator();it.hasNext();){
+				int cmp = d.compareTo(it.next());
+				if(cmp<0){
+					it.previous();
+					it.add(d);
+					fireIntervalAdded(this,it.previousIndex(),it.previousIndex());
+					return;
+				}
+			}
+			data.add(d);
+			fireIntervalAdded(this,data.size()-1,data.size()-1);
+		}
+		public void remove(int index){
+			if(index<0||index>=data.size())throw new IllegalArgumentException("invalid index:"+index);
+			data.remove(index);
+			fireIntervalRemoved(this,index,index);
+		}
+		
+		public int getSize() { return data.size(); }
+		public Object getElementAt(int index) { return data.get(index); }
+	}
+	
+
 }

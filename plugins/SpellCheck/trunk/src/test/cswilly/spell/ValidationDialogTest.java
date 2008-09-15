@@ -427,7 +427,7 @@ public class ValidationDialogTest{
 		try{spellThread.sleep(2000);}catch(InterruptedException ie){}
 		spellDialog.textBox("changeTo").requireText("qwack");
 		assertEquals(1,spellDialog.list().contents().length);
-		assertEquals("wack",spellDialog.list().item(0).content());
+		assertEquals("wack",spellDialog.list().item(0).value());
 
 		
 		TestUtils.replaceText(spellDialog.textBox("changeTo"),"qwock");
