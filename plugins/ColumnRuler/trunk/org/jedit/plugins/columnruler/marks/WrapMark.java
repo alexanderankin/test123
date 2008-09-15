@@ -68,7 +68,6 @@ public class WrapMark extends DynamicMark implements EBComponent {
 	private void updateRulersViewing(TextArea textArea) {
 		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
 		if (ruler == null) {
-			Log.log(Log.DEBUG, this, "ruler not found");
 			return;
 		}
 		JEditBuffer buffer = textArea.getBuffer();
