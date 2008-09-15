@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -19,7 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import org.gjt.sp.jedit.PerspectiveManager;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -37,6 +40,8 @@ import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 import org.noos.xing.mydoggy.plaf.ui.CustomDockableDescriptor;
+import org.noos.xing.mydoggy.plaf.ui.DescriptorOwner;
+import org.noos.xing.mydoggy.plaf.ui.DockableDescriptor;
 import org.noos.xing.mydoggy.plaf.ui.MyDoggyKeySpace;
 
 @SuppressWarnings("serial")
@@ -69,7 +74,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public void updateRepresentativeAnchor() {
 		}
 		
-		private class ToggleBarButton extends JLabel
+		@SuppressWarnings("unchecked")
+		private class ToggleBarButton extends JLabel implements DescriptorOwner
 		{
 			ToolWindowBar twb;
 			public ToggleBarButton(ToolWindowBar bar)
@@ -100,6 +106,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE);
 				setIcon(icon);
 			}
+			
+			public DockableDescriptor getDockableDescriptor() {
+				return ToggleBarDockableDescriptor.this;
+			}
 		}
 	}
 	
@@ -108,7 +118,14 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	{
 		super(view, instance, config);
 		setLayout(new BorderLayout());
-		wm = new MyDoggyToolWindowManager();
+		// Search for the PluginJAR of mydoggy res jar file and use
+		// the classloader used by jEdit to load it...
+		ClassLoader uiClassLoader = null;
+		for (PluginJAR pluginJAR: jEdit.getPluginJARs()) {
+			if (pluginJAR.getPath().contains("mydoggy-res"))
+				uiClassLoader = pluginJAR.getClassLoader();
+		}
+		wm = new MyDoggyToolWindowManager(Locale.getDefault(), uiClassLoader);
 		add(wm, BorderLayout.CENTER);
 		PerspectiveManager.setPerspectiveDirty(true);
 	}
