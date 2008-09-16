@@ -43,7 +43,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JMenuItem;
@@ -80,7 +79,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -280,12 +278,14 @@ public class SideKickTree extends JPanel
 		}
 
 		update();
+		searchField.setRequestFocusEnabled(true);
+		searchField.requestFocusInWindow();
 	} //}}}
 
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
-		tree.requestFocus();
+		searchField.requestFocusInWindow();
 	} //}}}
 
 	//{{{ addNotify() method
@@ -319,8 +319,10 @@ public class SideKickTree extends JPanel
 			propertiesChanged();
 		else if(msg instanceof SideKickUpdate)
 		{
-			if(((SideKickUpdate)msg).getView() == view)
+			if(((SideKickUpdate)msg).getView() == view) {
 				update();
+				lastParsedBuffer = view.getBuffer();
+			}
 		}
 		//else if (msg instanceof PluginUpdate) {
 			// This causes a ClassCircularityError sometimes, with HTMLSideKick.
@@ -511,13 +513,11 @@ public class SideKickTree extends JPanel
 	{
 		parserCombo.setModel(new DefaultComboBoxModel(parserList().toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
-		if (currentParser != null ) try
+		if (currentParser != null )
 		{
-			parserCombo.setSelectedItem(currentParser.getName());
-		}
-		catch (NullPointerException npe)
-		{
-			parserCombo.setSelectedItem(SideKickPlugin.DEFAULT );
+			String name = currentParser.getName();
+			name = name == null ? SideKickPlugin.DEFAULT : name;
+			parserCombo.setSelectedItem(name);
 		}
 		else
 		{
@@ -540,10 +540,11 @@ public class SideKickTree extends JPanel
 			}
 			if (newParserPanel != null)
 			{
-				toolBox.add(BorderLayout.CENTER,newParserPanel);
+				toolBox.add(BorderLayout.WEST,newParserPanel);
 				parserPanel = newParserPanel;
 			}
 		}
+		focusOnDefaultComponent();
 	} // }}}
 
 	//{{{ removeParserPanel() method
@@ -563,36 +564,32 @@ public class SideKickTree extends JPanel
 	 */
 	protected void expandTreeWithDelay()
 	{
-		// if keystroke parse timer is running, do nothing
-		// if(keystrokeTimer != null && keystrokeTimer.isRunning())
-			// return;
-
-		/* danson, removed this, other changes have made it unnecessary
-		if(caretTimer != null)
+		if(caretTimer != null) {
 			caretTimer.stop();
-
-		caretTimer = new Timer(0,new ActionListener()
+		}
+		else
 		{
-			public void actionPerformed(ActionEvent evt)
+			caretTimer = new Timer(0,new ActionListener()
 			{
-				// If the filter is *not* persistent, then clear
-				// it when the tree is expanded for the current
-				// caret position.
-				if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-					searchField.setText("");
-					updateFilter(false);
+				public void actionPerformed(ActionEvent evt)
+				{
+					// If the filter is *not* persistent, then clear
+					// it when the tree is expanded for the current
+					// caret position.
+					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
+						searchField.setText("");
+						updateFilter(false);
+					}
+					TextArea textArea = view.getTextArea();
+					int caret = textArea.getCaretPosition();
+					Selection s = textArea.getSelectionAtOffset(caret);
+					expandTreeAt(s == null ? caret : s.getStart());
 				}
-				TextArea textArea = view.getTextArea();
-				int caret = textArea.getCaretPosition();
-				Selection s = textArea.getSelectionAtOffset(caret);
-				expandTreeAt(s == null ? caret : s.getStart());
-			}
-		});
-
-		caretTimer.setInitialDelay(500);
-		caretTimer.setRepeats(false);
+			});
+			caretTimer.setInitialDelay(500);
+			caretTimer.setRepeats(false);
+		}
 		caretTimer.start();
-		*/
 	} //}}}
 
 	//{{{ expandTreeAt() method
@@ -803,36 +800,41 @@ public class SideKickTree extends JPanel
 	{
 		public void caretUpdate(CaretEvent evt)
 		{
-			if (view.getBuffer() != lastParsedBuffer) return;
+			if (!view.getBuffer().equals( lastParsedBuffer)) {
+				return;
+			}
 			if(evt.getSource() == view.getTextArea() && SideKick.isFollowCaret())
+			{
 				expandTreeWithDelay();
-
+			}
 		}
 	} //}}}
 
 	public void updateFilter(boolean with_delay)
 	{
 		FilteredTreeModel ftm = (FilteredTreeModel)tree.getModel();
+
 		if (searchField.getText().length() == 0) {
 			ftm.clearFilter();
 			ftm.reset();
+			if (autoExpandTree == -1)
+				expandAll(true);
+			else if (autoExpandTree == 0)
+				expandAll(false);
+			else if (autoExpandTree > 0) {
+				tree.expandRow( 0 );
+				for (int i = 1; i < autoExpandTree; i++) {
+					for ( int j = tree.getRowCount() - 1; j > 0; j-- )
+						tree.expandRow( j );
+				}
+			}
+
+			if (with_delay) {
+				expandTreeWithDelay();
+			}
 		} else {
 			ftm.filterByText(searchField.getText());
-		}
-
-		if (autoExpandTree == -1)
 			expandAll(true);
-		else if (autoExpandTree == 0)
-			expandAll(false);
-		else if (autoExpandTree > 0) {
-			tree.expandRow( 0 );
-			for (int i = 1; i < autoExpandTree; i++) {
-				for ( int j = tree.getRowCount() - 1; j > 0; j-- )
-				    tree.expandRow( j );
-			}
-		}
-		if (with_delay) {
-			expandTreeWithDelay();
 		}
 	}
 
@@ -978,20 +980,19 @@ public class SideKickTree extends JPanel
 					break;
 				}
 				default:
-					evt.consume();
 					break;
 			}
 		}
 
 		public void keyTyped(KeyEvent evt)
 		{
-			evt.consume();
 			Character c = evt.getKeyChar();
 			// TODO: What is the correct combo here to filter
 			// non-identifier characters?
 			if (Character.isLetterOrDigit(c) ||
-			    (" _!@$%^&*()_+-=[]{};':\",.<>/?\\|".indexOf(c) != -1))
+				(" _!@$%^&*()_+-=[]{};':\",.<>/?\\|".indexOf(c) != -1))
 			{
+				evt.consume();
 				searchField.setText(searchField.getText() + c);
 				updateFilter();
 			}
