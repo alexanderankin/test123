@@ -49,6 +49,7 @@ import javax.script.SimpleScriptContext;
  * @author elberry
  */
 public class ScriptEnginePlugin extends EditPlugin {
+   public static final String SCRIPT_VALUE_VARIABLE = "SCRIPTVALUE";
 
    private static Map<Mode, ScriptEngineService> scriptEngineServices =
       new ConcurrentHashMap<Mode, ScriptEngineService>();
@@ -80,6 +81,11 @@ public class ScriptEnginePlugin extends EditPlugin {
          try {
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Executing Script - content: \n" + script);
             returnVal = engine.eval(script);
+
+            if (engine.get(SCRIPT_VALUE_VARIABLE) != null) {
+               returnVal = engine.get(SCRIPT_VALUE_VARIABLE);
+            }
+
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Script executed - return val: " + returnVal);
          } catch (Exception e) {
             Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error executing script - content: \n" + script, e);
