@@ -1,12 +1,19 @@
 useFixture(default)
+import os
+
+def enterString(s):
+    for i in range(len(s)):
+        keystroke('JEditTextArea', s[i])
 
 def test():
     java_recorded_version = '1.6.0_07'
 
-    inputFile = r'd:\jedit\tests\marathon\testcases\file.py'
+    baseDir = r'd:\jedit\tests\marathon\testcases\\'
+    inputFile = baseDir + r'file.py'
+
     if window(r'/jEdit - .*'):
         select_menu('File>>Close All')
-        # Test File->Open
+        # Test File-Open
         click('document-open')
 
         if window('File Browser'):
@@ -28,7 +35,29 @@ def test():
         if window(r'/jEdit - Untitled-1'):
             s = getComponent('JEditTextArea').getText()
             assert len(s) == 0
+
+        # Test File-Save as
+        enterString('Some dummy text to test the Save As operation.')
+        select_menu('File>>Save As...')
+
+        outFile = baseDir + r'dummy.txt'
+        try:
+            os.remove(outFile)
+        except:
+            pass
+        if window('File Browser'):
+            select('File name', outFile)
+            click('Save')
         close()
+        assert os.path.exists(outFile) == 1
+
+        # Test File-Save
+        keystroke('JEditTextArea', 'Enter')
+        enterString(r'A second dummy text to test the Save As operation.')
+        select_menu('File>>Save')
+        l = open(inputFile).readlines()
+        assert len(l) >= 2
+
     close()
 
 
