@@ -353,8 +353,22 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			setVisibleOnTitleBar(true);
 			setVisible(true);
 		}
+		
+		@Override
+		public void setToolWindow(final ToolWindow toolWindow) {
+			super.setToolWindow(toolWindow);
+			toolWindow.addPropertyChangeListener("type", new PropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent evt) {
+					if (evt.getOldValue() == ToolWindowType.FLOATING) {
+						toolWindow.setRepresentativeAnchorButtonVisible(true);
+					}
+				}
+			});
+		}
+
 		public void actionPerformed(ActionEvent e) {
-			toolWindow.setType(ToolWindowType.FLOATING_FREE);
+			toolWindow.setRepresentativeAnchorButtonVisible(false);
+			toolWindow.setType(ToolWindowType.FLOATING);
 		}
 	}
 	
