@@ -9,7 +9,8 @@ def enterString(s):
 def test():
     java_recorded_version = '1.6.0_07'
 
-    baseDir = r'd:\jedit\tests\marathon\testcases\\'
+    print __project_dir__ 
+    baseDir = __project_dir__ + r'\testcases\\'
     inputFile = baseDir + r'file.py'
 
     if window(r'/jEdit - .*'):
@@ -33,7 +34,7 @@ def test():
         # Test File-New
         click('document-new')
 
-        if window(r'/jEdit - Untitled-1'):
+        if window(r'/jEdit - Untitled-1(\s.*)?'):
             s = getComponent('JEditTextArea').getText()
             assert len(s) == 0
 
@@ -61,5 +62,6 @@ def test():
         assert len(l) >= 2
 
     close()
+
 
 
