@@ -40,7 +40,6 @@ import org.noos.xing.mydoggy.ToolWindowType;
 import org.noos.xing.mydoggy.PersistenceDelegate.MergePolicy;
 import org.noos.xing.mydoggy.plaf.MyDoggyToolWindowManager;
 import org.noos.xing.mydoggy.plaf.ui.CustomDockableDescriptor;
-import org.noos.xing.mydoggy.plaf.ui.DescriptorOwner;
 import org.noos.xing.mydoggy.plaf.ui.DockableDescriptor;
 import org.noos.xing.mydoggy.plaf.ui.MyDoggyKeySpace;
 
@@ -74,8 +73,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public void updateRepresentativeAnchor() {
 		}
 		
-		@SuppressWarnings("unchecked")
-		private class ToggleBarButton extends JLabel implements DescriptorOwner
+		private class ToggleBarButton extends JLabel
 		{
 			ToolWindowBar twb;
 			public ToggleBarButton(ToolWindowBar bar)
