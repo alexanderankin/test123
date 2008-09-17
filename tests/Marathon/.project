@@ -1,5 +1,5 @@
 #Marathon Project File
-#Sat Sep 13 15:17:50 GMT+02:00 2008
+#Sun Sep 14 09:13:35 IDT 2008
 marathon.test.dir=%marathon.project.dir%/TestCases
 marathon.application.launchtime=60000
 marathon.application.pythonpath=
@@ -7,7 +7,7 @@ marathon.runtime.assertions=Enabled\:\:;Background\:\:;Foreground\:\:;RowCount\:
 marathon.component.ignore.components=javax.swing.JMenuBar(ignorechild\:false);javax.swing.JToolBar(ignorechild\:false);javax.swing.JPanel(ignorechild\:false);javax.swing.JViewport(ignorechild\:false);javax.swing.JScrollBar(ignorechild\:true)
 marathon.application.classpath=C\:/Program Files/jEdit/jedit.jar
 marathon.application.arguments=-reuseview
-marathon.application.working.dir=
+marathon.application.working.dir=D\:\\jedit\\tests\\Marathon\\TestCases
 marathon.capture.dir=%marathon.project.dir%/Modules
 marathon.application.mainclass=org.gjt.sp.jedit.jEdit
 marathon.recorder.namingstrategy=net.sourceforge.marathon.component.MarathonNamingStrategy
