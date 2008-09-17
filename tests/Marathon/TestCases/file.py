@@ -1,5 +1,6 @@
 useFixture(default)
-import os
+
+import os
 
 def enterString(s):
     for i in range(len(s)):
@@ -22,7 +23,7 @@ def test():
         close()
     close()
 
-    if window(r'/jEdit - .*[/\\]?file.py'):
+    if window(r'/jEdit - .*[/\\]?file.py(\s.*)?'):
         s = getComponent('JEditTextArea').getText()
         l1 = s.splitlines(true)
         l2 = open(inputFile).readlines()
@@ -49,6 +50,7 @@ def test():
             select('File name', outFile)
             click('Save')
         close()
+        sleep(1)
         assert os.path.exists(outFile) == 1
 
         # Test File-Save
