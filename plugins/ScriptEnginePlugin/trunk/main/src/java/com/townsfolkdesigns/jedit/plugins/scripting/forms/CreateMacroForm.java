@@ -23,6 +23,8 @@ package com.townsfolkdesigns.jedit.plugins.scripting.forms;
 
 import com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin;
 
+import org.gjt.sp.jedit.jEdit;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -51,6 +53,7 @@ public class CreateMacroForm extends JPanel {
    public JTextField nameField;
 
    public JLabel nameLabel;
+   private JLabel directionsLabel;
 
    public CreateMacroForm() {
       initComponents();
@@ -62,14 +65,32 @@ public class CreateMacroForm extends JPanel {
    }
 
    public void show(Component parent) {
-      int value = JOptionPane.showConfirmDialog(parent, this, "Create New Macro", JOptionPane.OK_CANCEL_OPTION, -1);
+      String dialogTitle = getMessage("scriptengine.plugin.macro.create.label", "Create Macro");
+      int value = JOptionPane.showConfirmDialog(parent, this, dialogTitle, JOptionPane.OK_CANCEL_OPTION, -1);
 
    }
 
+   private String getMessage(String key, String defaultMessage) {
+      String message = null;
+		try {
+			message = jEdit.getProperty(key);
+		} catch(NullPointerException npe) {
+			// jedit isn't set up. Forget it, use default message.
+		}
+
+      if (message == null) {
+         message = defaultMessage;
+      }
+
+      return message;
+   }
+
    private void initComponents() {
-      nameLabel = new JLabel("Name:");
-      directoryLabel = new JLabel("Directory:");
-      languageLabel = new JLabel("Language:");
+      nameLabel = new JLabel(getMessage("scriptengine.plugin.macro.create.form.name.label", "Name:"));
+      directoryLabel = new JLabel(getMessage("scriptengine.plugin.macro.create.form.directory.label", "Directory:"));
+      languageLabel = new JLabel(getMessage("scriptengine.plugin.macro.create.form.language.label", "Language:"));
+      directionsLabel = new JLabel(getMessage("scriptengine.plugin.macro.create.form.directions",
+            "<html><body>Spaces in the macro name will be replaced with underscores<br>and dirctory names are subject to the restrictions of your<br>Operating System.</body></html>"));
       nameField = new JTextField();
       nameField.setSize(INPUT_FIELD_SIZE);
       nameField.setPreferredSize(INPUT_FIELD_SIZE);
@@ -91,24 +112,29 @@ public class CreateMacroForm extends JPanel {
       gbc.weightx = 0.0f;
       gbc.weighty = 0.0f;
       gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridwidth = 2;
+		layout.setConstraints(directionsLabel, gbc);
+		add(directionsLabel);
+		gbc.gridwidth = 1;
+		gbc.gridy++;
       layout.setConstraints(nameLabel, gbc);
       add(nameLabel);
-      gbc.gridy = 1;
+      gbc.gridy++;
       layout.setConstraints(directoryLabel, gbc);
       add(directoryLabel);
-      gbc.gridy = 2;
+      gbc.gridy++;
       layout.setConstraints(languageLabel, gbc);
       add(languageLabel);
 
       gbc.gridx = 1;
-      gbc.gridy = 0;
+      gbc.gridy = 1;
       gbc.weightx = 1.0f;
       layout.setConstraints(nameField, gbc);
       add(nameField);
-      gbc.gridy = 1;
+      gbc.gridy++;
       layout.setConstraints(directoryField, gbc);
       add(directoryField);
-      gbc.gridy = 2;
+      gbc.gridy++;
 
       //gbc.insets = new Insets(0, 5, 0, 5);
       layout.setConstraints(languageField, gbc);

@@ -1,6 +1,6 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <ACTIONS>
-	<ACTION NAME="scriptengineplugin.evaluate.buffer">
+	<ACTION NAME="scriptengine.plugin.evaluate.buffer">
 		<CODE>
 			Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateBuffer(view);
 			if(returnValue != null) {
@@ -8,7 +8,7 @@
 			}
 		</CODE>
 	</ACTION>
-	<ACTION NAME="scriptengineplugin.evaluate.selection">
+	<ACTION NAME="scriptengine.plugin.evaluate.selection">
 		<CODE>
 			if(view.getTextArea().getSelectedText() != null) {
 				Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateSelection(view);
@@ -20,12 +20,12 @@
 			}
 		</CODE>
 	</ACTION>
-	<ACTION NAME="scriptengineplugin.macro.create">
+	<ACTION NAME="scriptengine.plugin.macro.create">
 		<CODE>
 			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacro(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="scriptengineplugin.macro.create.from.buffer">
+	<ACTION NAME="scriptengine.plugin.macro.create.from.buffer">
 		<CODE>
 			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacroFromBuffer(view);
 		</CODE>
