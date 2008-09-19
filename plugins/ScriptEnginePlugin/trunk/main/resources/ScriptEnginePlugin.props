@@ -8,7 +8,9 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.jars=scri
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.name=Script Engine Plugin
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0.3.0
 
-plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu=scriptengineplugin.evaluate.buffer scriptengineplugin.evaluate.selection
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu=scriptengineplugin.evaluate.buffer scriptengineplugin.evaluate.selection - scriptengineplugin.macro.create scriptengineplugin.macro.create.from.buffer
 scriptengineplugin.evaluate.buffer.label=Evaluate Buffer
 scriptengineplugin.evaluate.selection.label=Evaluate Selection
+scriptengineplugin.macro.create.label=Create Macro
+scriptengineplugin.macro.create.from.buffer.label=Create Macro from Buffer
 scriptengineplugin.menu.label=Scripting

@@ -21,6 +21,7 @@
  */
 package com.townsfolkdesigns.jedit.plugins.scripting;
 
+import com.townsfolkdesigns.jedit.plugins.scripting.forms.CreateMacroForm;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -34,6 +35,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
+import java.io.File;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,12 +58,30 @@ public class ScriptEnginePlugin extends EditPlugin {
    private static Map<Mode, ScriptEngineService> scriptEngineServices =
       new ConcurrentHashMap<Mode, ScriptEngineService>();
 
+   public static void createMacro(View view) {
+		getScriptEngineManager();
+		new CreateMacroForm().show(view);
+   }
+
+   public static void createMacroFromBuffer(View view) {
+
+   }
+
    public static Object evaluateBuffer(View view) {
       String bufferText = view.getTextArea().getText();
       Mode bufferMode = view.getBuffer().getMode();
       ScriptContext scriptContext = getDefaultScriptContext(view);
 
       return evaluateString(bufferText, bufferMode.getName(), scriptContext);
+   }
+
+   public static Object evaluateMacro(String scriptPath, String engineName) {
+      Object returnVal = null;
+
+      File beanShellMacroFile = new File(scriptPath);
+      File macroDirectory = beanShellMacroFile.getParentFile();
+
+      return returnVal;
    }
 
    public static Object evaluateSelection(View view) {
@@ -77,6 +99,8 @@ public class ScriptEnginePlugin extends EditPlugin {
 
       if ((engine != null) && (script != null) && !script.equals("")) {
          engine.setContext(scriptContext);
+
+         // TODO: Add ability for ScriptEnginePlugins to provide extra context items and an init script.
 
          try {
             Log.log(Log.DEBUG, ScriptEnginePlugin.class, "Executing Script - content: \n" + script);
@@ -151,6 +175,10 @@ public class ScriptEnginePlugin extends EditPlugin {
 
    @Override
    public void stop() {
+   }
+
+   public static Collection<Mode> getRegisteredModes() {
+      return scriptEngineServices.keySet();
    }
 
    private static ScriptContext getDefaultScriptContext(View view) {
