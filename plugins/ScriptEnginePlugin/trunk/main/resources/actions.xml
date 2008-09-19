@@ -20,4 +20,14 @@
 			}
 		</CODE>
 	</ACTION>
+	<ACTION NAME="scriptengineplugin.macro.create">
+		<CODE>
+			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacro(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengineplugin.macro.create.from.buffer">
+		<CODE>
+			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacroFromBuffer(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
