@@ -133,9 +133,7 @@ public class SpellCheckOptionPane
 
 	DictionaryPicker picker = new DictionaryPicker(SpellCheckPlugin.getEngineManager(),lang);
 	
-	// TODO: add listener on EngineManager change
-	//propertyStore.addPropertyChangeListener(ASPELL_EXE_PROP,actionRefresh);
-
+	propertyStore.addPropertyChangeListener(ENGINE_MANAGER_PROP,new SetEngineAction(picker));
 
 	JComboBox aspellMainLanguageList = picker.asComboBox();
 
@@ -213,4 +211,21 @@ public class SpellCheckOptionPane
 	jEdit.setProperty( SPELLCHECK_ON_SAVE_PROP,  propertyStore.get(SPELLCHECK_ON_SAVE_PROP) );
   }
 
+  private static class SetEngineAction implements PropertyChangeListener{
+	  private DictionaryPicker picker;
+	  
+	  SetEngineAction(DictionaryPicker picker){
+		  this.picker = picker;
+	  }
+	  
+	  public void propertyChange(PropertyChangeEvent pce){
+		  String engine = (String)pce.getNewValue();
+		  EngineManager manager = (EngineManager)ServiceManager.getService(EngineManager.class.getName(),engine);
+		  if(engine==null){
+			  Log.log(Log.ERROR,SpellCheckOptionPane.class,"Can't find engine named : "+engine);
+		  }else{
+			  picker.setEngineManager(manager);
+		  }
+	  }
+  }
 }

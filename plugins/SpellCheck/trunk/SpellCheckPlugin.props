@@ -38,7 +38,7 @@ options.spellcheck.hunspell.code=new cswilly.jeditPlugins.spell.hunspellbridge.H
 options.SpellCheck.label=Spell Check
 options.SpellCheck.fileChooser=Choose
 options.SpellCheck.aspellExe=Aspell executable filename:
-options.SpellCheck.aspellLang=Lang dictionary to use (leave it empty for default dictionary):
+options.SpellCheck.aspellLang=Dictionary to use:
 options.SpellCheck.aspellMarkupMode=Markup mode:
 options.SpellCheck.aspellNoMarkupMode=Disable markup mode
 options.SpellCheck.aspellNoMarkupMode.tooltip=Tells Aspell to disable mode filters, for all edit modes (filter name 'none').
@@ -142,11 +142,15 @@ options.spellcheck.hunspell.install=Install...
 options.spellcheck.hunspell.remove=Remove...
 options.spellcheck.hunspell.stop=Stop!
 
+options.spellcheck.hunspell.external-lib=Location of external Hunspell library (restart jEdit to take effect):
+spell-check-hunspell-init-error.title=Hunspell Error
+spell-check-hunspell-init-error.message=Unable to load the library. Error is:\n{0}
+
 spell-check-hunspell-error-unknownhost.title=Error refreshing availables dictionaries...
 spell-check-hunspell-error-unknownhost.message=It seems that you have a network connection problem:\n
 Unknown Host {0}
 spell-check-hunspell-error-fetch.title=Error refreshing availables dictionaries...
-spell-check-hunspell-error-fetch=An exception occured while fetching the list\n\
+spell-check-hunspell-error-fetch.message=An exception occured while fetching the list\n\
 of available dictionaries : {0}
 
 spell-check-hunspell-error-installed-dict.title=Error installing dictionary

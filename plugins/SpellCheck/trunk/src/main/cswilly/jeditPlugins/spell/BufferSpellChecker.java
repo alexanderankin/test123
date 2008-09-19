@@ -66,14 +66,20 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	private boolean lastWasNext;
 	
 	private int tokensToAccept;
+	private boolean ignoreSelections;
 	
-  public BufferSpellChecker( TextArea area )
+	/**
+	 * @param	area	text area containing the buffer to check
+	 * @param	ignoreSelections	spell-check all the lines in the buffer
+	 */
+  public BufferSpellChecker( TextArea area,boolean ignoreSelections )
   {
 	  this.area = area;
 	  setTokensToAccept(
 		  new byte[]{Token.COMMENT1, Token.COMMENT2, Token.COMMENT3,
 				     Token.COMMENT4, Token.LITERAL1, Token.LITERAL2, 
   					 Token.LITERAL3,Token.LITERAL4});
+	  this.ignoreSelections=ignoreSelections;
   }
 
   /**
@@ -108,20 +114,25 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 	{
 		input = area.getBuffer();
 
-		if(area.getSelectionCount() == 0){
-			area.setSelection(new Selection.Range(0,input.getLength()));
+		if(ignoreSelections){
+			iSelection=-1;
+			iLine=0;
+		}else{
+			if(area.getSelectionCount() == 0){
+				area.setSelection(new Selection.Range(0,input.getLength()));
+			}
+			
+			selections = area.getSelection();
+			
+			if(selections.length==0){
+				throw new IllegalStateException("No selection in text area");
+			}
+			iSelection = 0;
+			iLine = selections[0].getStartLine();
 		}
-		
-		selections = area.getSelection();
-		
-		if(selections.length==0){
-			throw new IllegalStateException("No selection in text area");
-		}
-		
+
 		input.readLock();
 		
-		iSelection = 0;
-		iLine = selections[0].getStartLine();
 		lastWasNext=true;
 	}
 	
@@ -129,17 +140,22 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		if(!lastWasNext)iLine++;
 		lastWasNext=true;
 
-		if(iSelection>=selections.length)return null;
-		
-		Selection sel = selections[iSelection];
-		if(iLine>sel.getEndLine())
-		{
-			iSelection++;
+		if(ignoreSelections){
+			//end of buffer
+			if(iLine>=input.getLineCount())return null;
+		}else{
 			if(iSelection>=selections.length)return null;
-			sel = selections[iSelection];
-			iLine = sel.getStartLine();
+			
+			Selection sel = selections[iSelection];
+			if(iLine>sel.getEndLine())
+			{
+				iSelection++;
+				if(iSelection>=selections.length)return null;
+				sel = selections[iSelection];
+				iLine = sel.getStartLine();
+			}
 		}
-
+		
 		if(contextFilter()){
 			return input.getLineText(iLine++);
 		}else{
@@ -148,6 +164,10 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		}
 	}
 	
+	/**
+	 * ignore empty lines and lines containing no interesting token types
+	 * @return	is the current line interesting
+	 */
 	private boolean contextFilter(){
 		DefaultTokenHandler handler = new DefaultTokenHandler();
 		input.markTokens(iLine,handler);
@@ -156,17 +176,6 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		if(handler.getTokens().size()==0)return true;
 		*/
 		for(Token token = handler.getTokens();token!=null;token=token.next){
-			// switch(token.id){
-			// 	case Token.COMMENT1 :
-			// 	case Token.COMMENT2 :
-			// 	case Token.COMMENT3 :
-			// 	case Token.COMMENT4 :
-			// 	case Token.LITERAL1 :
-			// 	case Token.LITERAL2 :
-			// 	case Token.LITERAL3 :
-			// 	case Token.LITERAL4 :
-			// 		return true;
-			// }
 			if((tokensToAccept&(1<<token.id))!=0){
 				return true;
 			}
@@ -174,6 +183,10 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		return false;
 	}
 	
+	/**
+	 * the BufferSpellChecker doesn't have to return each line.
+	 * @return current line number (as last call to getNextLine() or getPreviousLine())
+	 */
 	public int getLineNumber(){
 		if(lastWasNext)return iLine-1;
 		else return iLine;
@@ -183,15 +196,20 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		if(lastWasNext)iLine--;
 		lastWasNext=false;
 		
-		Selection sel=null;
-		if(iSelection>selections.length
-			|| iLine<=selections[iSelection].getStartLine())
-		{
-			iSelection--;
-			sel = selections[iSelection];
-			iLine = sel.getEndLine()+1;
+		if(ignoreSelections){
+			//begining of buffer
+			if(iLine<=0)return null;
+		}else{
+			Selection sel=null;
+			if(iSelection>selections.length
+				|| iLine<=selections[iSelection].getStartLine())
+			{
+				iSelection--;
+				sel = selections[iSelection];
+				iLine = sel.getEndLine()+1;
+			}
 		}
-
+		
 		iLine--;
 		if(contextFilter()){
 			return input.getLineText(iLine);
@@ -247,7 +265,9 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 		
 		public
 		boolean validate( int lineNum, String line, Result result ){
-
+			//invalid line number !!
+			if(lineNum<0||lineNum>=input.getLineCount())return false;
+			
 			//can we ignore it?
 			if(lineNum!=cachedLine){
 				input.markTokens(lineNum,handler);
@@ -264,39 +284,43 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
 			}
 			
 			// select it
-			if(selections==null)throw new IllegalStateException("validate not between BufferSpellChecker.start() and done()");
-			int lineOffset = input.getLineStartOffset(lineNum)+offset;
-			int endOffset = lineOffset+result.getOriginalWord().length();
-			//Log.log(Log.DEBUG,BufferValidator.class,result.getOriginalWord()+" is from "+lineOffset+"-"+endOffset);
-			
-			//Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
-			for(int iSelection=0;iSelection<selections.length;iSelection++){
-				/*Log.log(Log.DEBUG,BufferValidator.class,"selection:"+selections[iSelection]
-					+selections[iSelection].getStartLine()
-					+" "
-					+ selections[iSelection].getEndLine()
-					+" "
-					+ selections[iSelection].getStart(input,lineNum)
-					+" "
-					+selections[iSelection].getEnd(input,lineNum));*/
+			if(!ignoreSelections){
+				if(selections==null)throw new IllegalStateException("validate not between BufferSpellChecker.start() and done()");
+				int lineOffset = input.getLineStartOffset(lineNum)+offset;
+				int endOffset = lineOffset+result.getOriginalWord().length();
+				//Log.log(Log.DEBUG,BufferValidator.class,result.getOriginalWord()+" is from "+lineOffset+"-"+endOffset);
 				
-				if(selections[iSelection].getStartLine()<=lineNum
-					&& selections[iSelection].getEndLine()>=lineNum
-					&& lineOffset>=selections[iSelection].getStart(input,lineNum)
-					&& endOffset<=selections[iSelection].getEnd(input,lineNum)
-				){
-				//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" in selection");
-				Selection s = new Selection.Range(lineOffset,endOffset);
-				area.setSelection(s);
-				area.scrollTo(lineNum,result.getOffset()-1,false);
-				return true;
+				//Log.log(Log.DEBUG,BufferValidator.class,"selection count:"+selections.length);
+				for(int iSelection=0;iSelection<selections.length;iSelection++){
+					/*Log.log(Log.DEBUG,BufferValidator.class,"selection:"+selections[iSelection]
+						+selections[iSelection].getStartLine()
+						+" "
+						+ selections[iSelection].getEndLine()
+						+" "
+						+ selections[iSelection].getStart(input,lineNum)
+						+" "
+						+selections[iSelection].getEnd(input,lineNum));*/
+					
+					if(selections[iSelection].getStartLine()<=lineNum
+						&& selections[iSelection].getEndLine()>=lineNum
+						&& lineOffset>=selections[iSelection].getStart(input,lineNum)
+						&& endOffset<=selections[iSelection].getEnd(input,lineNum)
+					){
+					//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" in selection");
+					Selection s = new Selection.Range(lineOffset,endOffset);
+					area.setSelection(s);
+					area.scrollTo(lineNum,result.getOffset()-1,false);
+					return true;
+					}
 				}
-			}
 			
-			//out of selection
-			//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" not in selection");
-			result.setType(Result.OK);
-			return true;
+				//out of selection
+				//Log.log(Log.DEBUG,BufferSpellChecker.class,result.getOriginalWord()+" not in selection");
+				result.setType(Result.OK);
+				return true;
+			}else{
+				return true;
+			}
 		}
 		
 		public void start(){}

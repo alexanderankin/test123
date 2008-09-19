@@ -64,7 +64,7 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 		if(area==null)throw new SpellException("No textarea configured");
 		Buffer buffer = (Buffer)area.getBuffer();
 		spellValidator.setPath(buffer.getPath());
-		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferSpellChecker source = new BufferSpellChecker(area,true);
 		// TODO: must be configured
 		if(engine.isContextSensitive()||"text".equals(buffer.getMode().getName())){
 			source.setAcceptAllTokens();

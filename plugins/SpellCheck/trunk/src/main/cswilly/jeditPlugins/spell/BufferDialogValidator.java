@@ -117,11 +117,8 @@ class BufferDialogValidator implements SpellCoordinator
 	//no automatic correction...
 	
 	// ensures visible and selected
-	// int offset = buffer.getLineStartOffset(lineNum)+result.getOffset()-1;
-	// Selection s = new Selection.Range(offset,offset+result.getOriginalWord().length());
-	// area.setSelection(s);
-	
 	sourceValidator.validate(lineNum,line,result);
+	
 	if(result.getType() == Result.OK){
 		//Log.log(Log.DEBUG,BufferDialogValidator.class,"source validator validates result");
 		return new NopAction(null);
@@ -207,7 +204,7 @@ class BufferDialogValidator implements SpellCoordinator
 
 		boolean confirm = true;
 
-		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferSpellChecker source = new BufferSpellChecker(area,false);
 		BufferDialogValidatorCallback callback = new BufferDialogValidatorCallback(source);
 
 		source.start();

@@ -29,6 +29,7 @@ import java.net.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Calendar;
 
 import java.util.regex.Pattern;
 import java.text.DateFormat;
@@ -198,11 +199,19 @@ public class HunspellDictsManager{
 		dict.installed = true;
 		
 		String date = jEdit.getProperty(INSTALLED_DICTS_PROP+"."+name+".date","");
+		String modDate = jEdit.getProperty(INSTALLED_DICTS_PROP+"."+name+".lastModifiedDate","");
 		try{
 			long dat = Long.parseLong(date);
 			dict.installedDate = new Date(dat);
 		}catch(NumberFormatException nfe){
 			Log.log(Log.ERROR,HunspellDictsManager.class,"invalid date property for "+name+":"+date);
+			dict.installedDate = new Date(0L);
+		}
+		try{
+			long dat = Long.parseLong(date);
+			dict.lastModified = new Date(dat);
+		}catch(NumberFormatException nfe){
+			Log.log(Log.ERROR,HunspellDictsManager.class,"invalid last modified date property for "+name+":"+date);
 			dict.lastModified = new Date(0L);
 		}
 		
@@ -224,37 +233,52 @@ public class HunspellDictsManager{
 		else availables.clear();
 		if(installed==null)initInstalled();
 		try{
-			
-			//connect to openoffice.org
-			URL available_url = new URL(jEdit.getProperty(OOO_DICTS_PROP)+"available.lst");
-			URLConnection connect = available_url.openConnection();
-			connect.connect();
-			InputStream is = connect.getInputStream();
-			
-			po.setMaximum(connect.getContentLength());
-			
-			//copy to file
-			File f = File.createTempFile("available","lst");
-			OutputStream os = new FileOutputStream(f);
-			
-			boolean copied = IOUtilities.copyStream(
-				po,
-				is,
-				os,
-				true
-				);
-			if(!copied){
-				Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to download "+available_url.toString());
-				GUIUtilities.error(null,"spell-check-hunspell-error-fetch",new String[]{"Unable to download file "+available_url.toString()});
-				availables = null;
-				return;
+			//is there an old buffer file ?
+			File home = SpellCheckPlugin.getHomeDir(jEdit.getActiveView());
+			File target = new File(home,"available.lst");
+			boolean skipDownload = false;
+			if(target.exists()){
+				long modifiedDate = target.lastModified();
+				Calendar c = Calendar.getInstance();
+				c.setTimeInMillis(modifiedDate);
+				Calendar yesterday = Calendar.getInstance();
+				yesterday.add(Calendar.HOUR,-1);
+				skipDownload = yesterday.before(c);
+			}
+			String enc = null;
+			if(!skipDownload){
+				//connect to openoffice.org
+				URL available_url = new URL(jEdit.getProperty(OOO_DICTS_PROP)+"available.lst");
+				URLConnection connect = available_url.openConnection();
+				connect.connect();
+				InputStream is = connect.getInputStream();
+				
+				po.setMaximum(connect.getContentLength());
+				
+				//copy to file
+				OutputStream os = new FileOutputStream(target);
+				
+				boolean copied = IOUtilities.copyStream(
+					po,
+					is,
+					os,
+					true
+					);
+				if(!copied){
+					Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to download "+available_url.toString());
+					GUIUtilities.error(null,"spell-check-hunspell-error-fetch",new String[]{"Unable to download file "+available_url.toString()});
+					availables = null;
+					if(target.exists())target.delete();
+					return;
+				}
+				
+				IOUtilities.closeQuietly(os);
+				enc = connect.getContentEncoding();
+				//System.out.println(connect.getHeaderFields());
 			}
 			
-			IOUtilities.closeQuietly(os);
 			//read file
-			String enc = connect.getContentEncoding();
-			//System.out.println(connect.getHeaderFields());
-			FileInputStream fis = new FileInputStream(f);
+			FileInputStream fis = new FileInputStream(target);
 			Reader r;
 			if(enc!=null){
 				try{
@@ -277,9 +301,11 @@ public class HunspellDictsManager{
 						availables.add(d);
 					}else{
 						Dictionary id = installed.get(ind);
-						Date lmd = fetchLastModifiedDate(id.archiveName);
-						if(lmd!=null){
-							id.lastModified = lmd;
+						if(!skipDownload){
+							Date lmd = fetchLastModifiedDate(id.archiveName);
+							if(lmd!=null){
+								id.lastModified = lmd;
+							}
 						}
 					}
 				}
@@ -783,12 +809,14 @@ public class HunspellDictsManager{
 			String line = d.lang+","+d.country+","+d.variant+","+d.descr+","+d.archiveName+".zip";
 			jEdit.setProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".line",line);
 			jEdit.setProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".date",String.valueOf(d.installedDate.getTime()));
+			jEdit.setProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".lastModifiedDate",String.valueOf(d.lastModified.getTime()));
 			
 			availables.remove(d);
 			installed.add(d);
 		}else{
 			jEdit.unsetProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".line");
 			jEdit.unsetProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".date");
+			jEdit.unsetProperty(INSTALLED_DICTS_PROP+"."+d.getKey()+".lastModifiedDate");
 			
 			installed.remove(d);
 			availables.add(d);

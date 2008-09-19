@@ -36,8 +36,14 @@ import java.util.regex.Matcher;
 import java.util.Vector;
 import java.util.List;
 
+import java.io.*;
+
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.EditBus;
 
 import cswilly.spell.Engine;
 import cswilly.spell.Validator;
@@ -53,24 +59,48 @@ import com.stibocatalog.hunspell.Hunspell;
 
 import static cswilly.jeditPlugins.spell.hunspellbridge.HunspellDictsManager.Dictionary;
 
+/**
+ * Entry point for the Hunspell bridge.
+ * Keeps a reference to the dictionary manager and to Hunspell library.
+ *
+ */
 public class HunspellEngineManager implements EngineManager{
+	/** property hold the path/name to an external library for hunspell */
+	public static final String HUNSPELL_LIBRARY_PROP="spell-check-hunspell-library";
+	
+	/** reference to the library via JNA */
 	private Hunspell hspl;
 	
+	/** reference to the dictionary registry */
 	private HunspellDictsManager dictsManager;
 	
+	/** pattern to identify dictionary files : *.aff or *.dic */
 	static final Pattern DICT_PATTERN=Pattern.compile("([a-z]{2}_[A-Z]{2}[-_\\w]*)\\.(?:dic|aff)");
+	
+	/** the cached name of the library */
+	private String libName;
 	
 	public HunspellEngineManager(){
 		dictsManager = new HunspellDictsManager();
+		EditBus.addToBus(this);
 	}
 	
-	
+	/**
+	 * allways return a fresh engine, but caching is performed at the library level
+	 * @param	mode	the jEdit mode of the buffer (not used)
+	 * @param	language	the language of the dictionary to use
+	 * @param	terse	should the engine do suggestions (not used)
+	 */
 	public Engine getEngine(String mode,String language, boolean terse) throws SpellException{		
 		initHunspell();
 		try{
 			String sd = getFileForDict(language);
-			Hunspell.Dictionary d = hspl.getDictionary(sd);
-			
+			Hunspell.Dictionary d = null;
+			try{
+				d = hspl.getDictionary(sd);
+			}catch(UnsatisfiedLinkError ule){
+				throw new SpellException("Unable to load Hunspell library",ule);
+			}
 			assert(d!=null);//hunspell returns non-null or throws an exception
 			
 			return new HunspellEngine(d);
@@ -82,6 +112,10 @@ public class HunspellEngineManager implements EngineManager{
 		}
 	}
 
+	/**
+	 * @param	mode	unused
+	 * @param	language	name of the dictionary to use
+	 */
 	public Validator getValidator(String mode,String language)throws SpellException{
 		initHunspell();
 		try{
@@ -109,6 +143,7 @@ public class HunspellEngineManager implements EngineManager{
 	 
 	public void stop(){
 		hspl = null;
+		EditBus.removeFromBus(this);
 	}
 
 	public String getDescription(){
@@ -147,13 +182,40 @@ public class HunspellEngineManager implements EngineManager{
 			 }
 	}
 	
-	public void handleMessage(org.gjt.sp.jedit.EBMessage m){}
+	public void handleMessage(org.gjt.sp.jedit.EBMessage m){
+		if(m instanceof PropertiesChanged){
+			String newLibName = jEdit.getProperty(HUNSPELL_LIBRARY_PROP);
+			if((libName==null && newLibName!=null)
+				|| !libName.equals(newLibName))
+			{
+				// TODO: are we leaking memory there ?
+				hspl=null;
+			}
+		}
+	}
 	
 	
 	private void initHunspell() throws SpellException{
+		libName = jEdit.getProperty(HUNSPELL_LIBRARY_PROP);
 		if(hspl==null){
+			Log.log(Log.DEBUG,HunspellEngineManager.class,"Loading Hunspell library from "+libName);
 			try{
-				hspl = Hunspell.getInstance();
+				if(libName==null)hspl = Hunspell.getInstance();
+				else{
+					//work-arround to keep hunspell.jar as it is
+					String expectedName=Hunspell.libName();
+					File home = SpellCheckPlugin.getHomeDir(null);
+					File libFile = new File(home,expectedName);
+					if(libFile.exists())libFile.delete();
+					FileOutputStream fos = new FileOutputStream(libFile);
+					File sourceLib = new File(libName);
+					FileInputStream fis = new FileInputStream(sourceLib);
+					IOUtilities.copyStream(null,fis,fos,false);
+					IOUtilities.closeQuietly(fis);
+					IOUtilities.closeQuietly(fos);
+
+					hspl = Hunspell.getInstance(home.getAbsolutePath());
+				}
 			}catch(Exception e){
 				throw new SpellException("Unable to load Hunspell",e);
 			}
@@ -175,7 +237,7 @@ public class HunspellEngineManager implements EngineManager{
 		return fdict.getPath();
 	}
 	
-	Vector<cswilly.spell.Dictionary> getDicts(){
+	private Vector<cswilly.spell.Dictionary> getDicts(){
 		Vector<cswilly.spell.Dictionary> dicts = new Vector<cswilly.spell.Dictionary>();
 		
 		List<Dictionary> installed = dictsManager.getInstalled();
@@ -187,6 +249,9 @@ public class HunspellEngineManager implements EngineManager{
 		return dicts;
 	}
 	
+	/**
+	 * package protected because it's used in the option pane.
+	 */
 	HunspellDictsManager getDictsManager(){
 		return dictsManager;
 	}

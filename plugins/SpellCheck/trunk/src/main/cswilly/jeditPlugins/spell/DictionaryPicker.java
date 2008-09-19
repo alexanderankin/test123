@@ -89,6 +89,15 @@ public class DictionaryPicker{
 		propertyStore = new PropertyStore(this);
 		propertyStore.put(INITIAL_LANG_PROP,initial);
 	}
+	/**
+	 * thread-safe. Not effective until a refresh is triggered.
+	 * @param	newEngine	new EngineManager to use
+	 * @throws	NullPointerException	on null newEngine
+	 */
+	public void setEngineManager(EngineManager newEngine){
+		if(newEngine == null)throw new IllegalArgumentException("EngineManager can't be null");
+		futureSource=newEngine;
+	}
 	
 	public JComboBox asComboBox(){
 		final JComboBox _aspellMainLanguageList = new JComboBox( modelDicts );
