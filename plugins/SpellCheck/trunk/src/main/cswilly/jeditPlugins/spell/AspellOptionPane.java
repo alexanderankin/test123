@@ -49,6 +49,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.util.Log;
 
+import common.gui.FileTextField;
+
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.CancellationException;
@@ -112,30 +114,17 @@ public class AspellOptionPane
 
     addComponent( _aspellExeFilenameLabel );
 
-    final JTextField _aspellExeFilenameField = new JTextField( 25 );
-    _aspellExeFilenameField.setText( aspellExecutable );
+    FileActionHandler _aspellExeFilenameComp = new FileActionHandler(aspellExecutable);
+	JTextField _aspellExeFilenameField = _aspellExeFilenameComp.getTextField();
+	_aspellExeFilenameField.setColumns( 25 );
 	_aspellExeFilenameField.setName("AspellPath");
 
 	TextFieldHandler exeHandler = new TextFieldHandler(ASPELL_EXE_PROP);
 	_aspellExeFilenameField.addFocusListener(exeHandler);
 	_aspellExeFilenameField.addActionListener(exeHandler);
 	
-	//synchronize file chooser and text-field via the property
-	propertyStore.addPropertyChangeListener(ASPELL_EXE_PROP, new PropertyChangeListener(){
-			public void propertyChange(PropertyChangeEvent evt){
-				_aspellExeFilenameField.setText((String)evt.getNewValue());
-			}
-	});
 	/* file chooser */
-    JButton _fileChooser = new JButton( jEdit.getProperty( "options.SpellCheck.fileChooser" ) );
-    _fileChooser.addActionListener(new FileActionHandler());
-	_fileChooser.setActionCommand(BROWSE);
-	_fileChooser.setName("Browse");
-    JPanel _filePanel = new JPanel( new BorderLayout( 5, 0 ) );
-    _filePanel.add( _aspellExeFilenameField, BorderLayout.WEST );
-    _filePanel.add( _fileChooser, BorderLayout.EAST );
-
-    addComponent( _filePanel );
+    addComponent( _aspellExeFilenameComp );
 
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
@@ -302,18 +291,16 @@ public class AspellOptionPane
 	  }
   }
   
-  private class FileActionHandler implements ActionListener
+  private class FileActionHandler extends FileTextField
   {
+	  FileActionHandler(String text){
+		  super(text,true);
+	  }
     public void actionPerformed( ActionEvent evt )
     {
-			//It's better to show last one, not saved one !
-			String initialPath = propertyStore.get( ASPELL_EXE_PROP );
-			
-			String[] paths = GUIUtilities.showVFSFileDialog( null, initialPath, JFileChooser.OPEN_DIALOG, false );
-			
-			if ( paths != null ){
-				propertyStore.put(ASPELL_EXE_PROP,paths[0]);
-			}
+		super.actionPerformed(evt);
+		String path = getTextField().getText();
+		propertyStore.put(ASPELL_EXE_PROP,path);
 
     }	
   }

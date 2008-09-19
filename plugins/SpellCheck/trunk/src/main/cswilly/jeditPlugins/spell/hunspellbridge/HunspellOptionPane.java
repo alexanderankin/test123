@@ -63,6 +63,7 @@ import java.awt.Frame;
 import java.awt.Dialog;
 
 import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -84,6 +85,8 @@ public class HunspellOptionPane extends AbstractOptionPane{
 	private JList listAvailable;
 	private JList listInstalled;
 	
+	private FileTextField externalLibField;
+	
 	public HunspellOptionPane(){
 		super("SpellCheck-Hunspell-bridge");
 		HunspellEngineManager engMan = (HunspellEngineManager)ServiceManager.getService(EngineManager.class.getName(), "Hunspell");
@@ -94,10 +97,19 @@ public class HunspellOptionPane extends AbstractOptionPane{
 	protected void _init(){
 		
 		//external library
-		// TODO: external library
+		String externalLib = jEdit.getProperty(HunspellEngineManager.HUNSPELL_LIBRARY_PROP,"");
+
+		JLabel lbl = new JLabel(jEdit.getProperty("options.spellcheck.hunspell.external-lib"));
+		addComponent(lbl);
+		externalLibField = new FileTextField(externalLib,true);
+		externalLibField.getTextField().setColumns(50);
+		addComponent(externalLibField);
+		
 		
 		//installed/availables
 		final SortedListModel dlm = new SortedListModel();
+		List<Dictionary> dicts = dictsManager.getInstalled();
+		for(Dictionary d : dicts)dlm.add(d);
 		
 		listInstalled = new JList(dlm);
 		JScrollPane pi = new JScrollPane(listInstalled);
@@ -147,15 +159,17 @@ public class HunspellOptionPane extends AbstractOptionPane{
 					while(!po.isVisible())Thread.sleep(1000);
 				}catch(InterruptedException ie){}
 				po.setVisible(false);
-				List<Dictionary> dicts = dictsManager.getInstalled();
 				for(Dictionary d : av)dlma.add(d);
-				for(Dictionary d : dicts)dlm.add(d);
 				Log.log(Log.DEBUG,HunspellOptionPane.class,"Refresh availables done");
 			}
 		}.start();
 		
 	}
-	protected void _save(){}
+	protected void _save(){
+		String newLib = externalLibField.getTextField().getText();
+		if("".equals(newLib))jEdit.unsetProperty(HunspellEngineManager.HUNSPELL_LIBRARY_PROP);
+		else jEdit.setProperty(HunspellEngineManager.HUNSPELL_LIBRARY_PROP,newLib);
+	}
 	
 	private class InstallUpdateAction extends AbstractAction implements ListSelectionListener{
 		Dictionary currentDict;

@@ -45,43 +45,95 @@
 
   <para>
 This is a jEdit plugin to perform spell checking of text in a jEdit buffer.
-It is based on Aspell (<uri>http://aspell.sourceforge.net/</uri>)
-(which you may need to download and install before using this plugin) which is
-available for Windows and various Unix platforms.
+It can use various engines to perform the spell-checking.
 </para>
  </chapter>
+
+
+ <!--               FEATURES            -->
  <chapter id="features">
   <title>Features</title>
   <itemizedlist>
    <listitem>
-    <para>An jEdit action to spell check selected text or entire buffer if
-    no selection.</para>
+    <para>spell check selected text or the entire buffer if
+    no selection;
+    </para>
    </listitem>
    <listitem>
-    <para>An jEdit action to spell check selected text or entire buffer if
-    no selection using an alternate lang dictionary.</para>
+    <para>highlight misspelled words for easy access (uses ErrorList);
+    this can be automatically invoke at save;</para>
    </listitem>
    <listitem>
-    <para>Configurable location of <ulink url="http://aspell.sourceforge.net/">Aspell</ulink>
-    executable.</para>
+    <para>an editable user dictionary for each language;</para>
    </listitem>
    <listitem>
-    <para>Configurable main language dictionary (requires the correct installation
-    of the corresponding language for Aspell).</para>
+    <para>markup-sensitive spell-checking (to only spell-check comments
+    in source code);</para>
    </listitem>
    <listitem>
-    <para>Automatically (or manually) discards tags for all defined markup edit modes
-    likes html, xml, ...</para>
-   </listitem>
-   <listitem>
-    <para>Spell check dialog to allow the user to validate each suspect word. The
-    dialog has buttons for: Cancel, Change, Change All, Ignore, and Ignore All.
-    It shows the suspect word, lists suggested replacements, and has a field
-    where the user can type in the replacement word.</para>
+    <para>a rich dialog letting the user review suspect words
+    (see a wordy description <link linkend="dialog-box">there</link>);
+    </para>
    </listitem>
   </itemizedlist>
  </chapter>
 
+
+ <!--               ENGINES            -->
+ <chapter id="engines">
+  <title>Engines</title>
+  <para>The SpellCheck plugin has the ability to work with different spell-checkers.
+  It currently supports Aspell, Hunspell and VoxSpell</para>
+  
+  <section>
+  <title>Aspell</title>
+  <para>Aspell is a famous spell-checker, used as a standalone program or as a library
+  in the Unix world. A windows port also exists, but it's for an old version.
+  </para>
+  <para>The interactions with Aspell are done via a pipe : the SpellCheck plugin
+  invokes the Aspell executable, send lines via standard input and gets results
+  by parsing the output. This leads to slow interactions but is quite independent
+  of the way Aspell is installed.</para>
+  <para>Aspell is not bundled with this plugin, 
+  see <link linkend="install-aspell">installation instructions</link>.
+  You will also have to install dictionaries.</para>
+  </section>
+
+  <section>
+  <title>Hunspell</title>
+  <para>Hunspell is the spell-checker bundled with OpenOffice.org (as of 2.0.2)
+  and Mozilla firefox (as of 3.0).
+  The java interface is from <ulink url="http://dion.swamp.dk/hunspell.html">Flemming Frandsen</ulink>.
+  </para>
+  <para>The interactions with Hunspell are done via native calls: some string-copying
+  is still involved, but the SpellCheck plugin gets directly some structures representing
+  spell-check results from the library.</para>
+  <para>A version of Hunspell is bundled for:
+  <itemizedlist>
+  <listitem><para>Mac OS X PPC32</para></listitem>
+  <listitem><para>Mac OS X x86</para></listitem>
+  <listitem><para>Windows x86 (32 bits)</para></listitem>
+  <listitem><para>Linux x86 (32 bits)</para></listitem>
+  <listitem><para>Linux x86 (64 bits)</para></listitem>
+  </itemizedlist>
+  The plugin provides a way to install dictionaries.
+  </para>
+  </section>
+  
+  <section>
+  <title>VoxSpell</title>
+  <para>VoxSpell is a plugin for jEdit. It is implemented in pure java
+  and provides spell-check as you type. It is very fast but consumes
+  a lot of memory.</para>
+  
+  <para>You can get VoxSpell from the <guimenuitem>Plugin Manager</guimenuitem>.
+  An English dictionary is included.</para>
+  </section>
+  
+  </chapter>
+
+
+ <!--               SYSTEM REQUIREMENTS            -->
  <chapter id="sysreq">
   <title>System Requirements</title>
 
@@ -95,16 +147,30 @@ available for Windows and various Unix platforms.
    <listitem>
     <para>Tested on Mac OS X, Windows XP and Linux.</para>
    </listitem>
+   <listitem><para>Depending of the engine, you will need:
+   <itemizedlist>
    <listitem>
-    <para>Aspell 0.32.6 alpha or better (I am using Aspell 0.60.5).</para>
+    <para>Aspell 0.50 or better (I am using Aspell 0.60.5).</para>
    </listitem>
+   <listitem>
+    <para>Hunspell 1.1.12 or better (this is the bundled version)</para>
+   </listitem>
+   <listitem>
+    <para>VoxSpell plugin 1.0.1 ( TODO: verify that the patch was applied)</para>
+   </listitem>
+   </itemizedlist>
+   </para></listitem>
   </itemizedlist>
 
  </chapter>
 
+
+ <!--               INSTALLATION            -->
  <chapter id="install">
   <title>Installation and Configuration</title>
 
+  <section id="install-aspell">
+  <title>Installing Aspell</title>
   <itemizedlist>
    <listitem><para>First, you must have Aspell, as well as some dictionary installed.</para>
    <glosslist>
@@ -114,11 +180,11 @@ available for Windows and various Unix platforms.
    <para><code>Aspell</code> is not pre-installed on Windows.
    You can get it from <emphasis>Gnu</emphasis>: <uri>http://ftp.gnu.org/gnu/aspell/w32/</uri>.
    The installer is <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-0-50-3-3-Setup.exe">Aspell-0-50-3-3-Setup.exe</ulink>.
-   The dictionary for your language of choice comes by the two letter ISO code of the language, like
-   <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-fr-0.50-3-3.exe">Aspell-fr-0.50-3-3.exe</ulink> for French,
-   or <ulink url="http://ftp.gnu.org/gnu/aspell/w32/Aspell-uk-0.50-3-3.exe">Aspell-uk-0.50-3-3.exe</ulink> for UK English.
-   These are installers, so you only have to execute the full installer, then the dictionary installer
-   to be done with this.</para>
+   The dictionary for your language of choice comes by the two letter ISO code of the country, like
+   <ulink url="http://ftp.gnu.org/gnu/aspell/w32/aspell-fr-0.50-3-3.exe">Aspell-fr-0.50-3-3.exe</ulink> for French,
+   or <ulink url="http://ftp.gnu.org/gnu/aspell/w32/aspell-uk-0.50-3-3.exe">Aspell-uk-0.50-3-3.exe</ulink> for UK English.
+   You can leave everything to default and will be done with installing pretty quickly.
+   </para>
    </glossdef>
    </glossentry>
    <glossentry>
@@ -129,7 +195,7 @@ available for Windows and various Unix platforms.
     If you see something like <code>@(#) International Ispell Version 3.1.20 (but really Aspell 0.60.5)</code>,
     it's OK.
    </para>
-   <para>If aspell is not present (you are getting <code>-bash: aspell: command not found</code>),
+   <para>If Aspell is not present (you are getting <code>-bash: aspell: command not found</code>),
    use your package manager to install it automatically.
    Alternatively, you can get the source from <uri>http://ftp.gnu.org/gnu/aspell/</uri>.
    </para>
@@ -138,56 +204,95 @@ available for Windows and various Unix platforms.
    <glossentry>
    <glossterm>On Mac OS X</glossterm>
    <glossdef><para>
-    You should use <ulink url="http://www.macports.org">Macports</ulink> to get aspell.
+    You should use <ulink url="http://www.macports.org">Macports</ulink> to get Aspell.
     If you are already using Macports, all you have to do is <code>sudo port install aspell</code>.
-    If you do not, there is some guidance on <uri>http://docs.moodle.org/en/Configuring_aspell_on_Mac_OS_X</uri>.
+    If you are not, there is some guidance about installing Aspell on <uri>http://docs.moodle.org/en/Configuring_aspell_on_Mac_OS_X</uri>.
     </para>
     </glossdef>
     </glossentry>
    </glosslist>
    </listitem>
    <listitem>
-    <para>Use the <emphasis>Plugin Manager</emphasis> to download and install automatically the SpellCheck plugin.
-    </para><para>Alternatively, copy the the <code>SpellCheck.jar</code> file to your jEdit <code>jars</code>
-    directory (in that case, you will have to restart jEdit)</para>
-   </listitem>
-   <listitem>
-    <para>You should see a <guisubmenu>Spell Check</guisubmenu> entry on the <guimenu>Plugins</guimenu>
-    menu.</para>
-   </listitem>
-   <listitem>
    <para>
    In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
-    option dialog, section <code>SpellCheck</code>, there are some options to set.
-    See <link linkend="options">Options</link> chapter below.
+    option dialog, section <code>SpellCheck/Aspell Engine</code>, you must set the path to the
+    Aspell executable : see <link linkend="options">Options</link> chapter below.
     </para>
    </listitem>
    </itemizedlist>
-  </chapter>
+   </section>
+   <section id="install-hunspell">
+   <title>Installing Hunspell</title>
+   <para>If your architecture is supported by the plugin, you have nothing to install.</para>
+   <para>To check if the bundled Hunspell library works, there is no other way than setting
+   Hunspell as the engine in  <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options</guimenuitem>&gt; <code>Spell Check</code> &gt; <code>General</code>
+   and trying to spell-check a buffer (<guimenu>Plugins</guimenu> -&gt; <guimenuitem>Spell Check</guimenuitem> &gt; <guimenuitem>Spell check selection...</guimenuitem>.
+   </para>
+   <para>If your architecture is not supported, I can only point you to the
+   homepage of Hunspell <uri>http://hunspell.sourceforge.net/</uri>.
+   Once you managed to install Hunspell, you'll have to point to the library in
+   <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options</guimenuitem>&gt; <code>Spell Check</code> &gt; <code>Hunspell Engine</code>.
+   You must restart jEdit for the change to take effect.
+   </para>
+   <para>You can pick a dictionary to install from the list in the option pane.
+   Clicking on <guibutton>Install</guibutton> downloads and expands a dictionary.</para>
+   </section>
+
+   <section id="install-voxspell">
+   <title>Installing VoxSpell</title>
+   <para>Install the plugin as you already installed SpellCheck : open the <guimenuitem>Plugin Manager</guimenuitem>
+   and in the pane <guilabel>Install</guilabel>, select it then click on <guibutton>Install</guibutton></para>
+   </section>
+
+ </chapter>
+  
+  
+  
+ <!--               OPTIONS            -->
    <chapter id="options">
    <title>Options</title>
    <para>In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
     option dialog, section <code>SpellCheck</code>, there are some options to set.
     </para>
 
- 
+    <section id="options-general">
+    <title>General Options</title>
+
+    <section id="engine-option">
+    <title>Spell-checking engine to use</title>
+    <para>Here you can choose which engine to use. The engines listed here
+    are the supported engines. They might require some additional installation
+    to actually work.</para>
+    </section>
+    
+    <section id="language-option"><title>Dictionary to use</title>
+    <para>You can choose in the list which dictionary to use for spell-checking.
+    The contents of the list depends on the selected engine.</para>
+    </section>
+
+  <section id="spell-check-on-save"><title>Spell-check on save</title>
+  <para>This experimental feature takes advantage of the <code>Error List</code>
+   plugin to report every misspelled word as a warning. Spell-checking is performed each time
+   you save a file.</para>
+   <tip><para>Depending on the engine, this can get pretty sluggish. So I recommend
+   you use Hunspell or VoxSpell engines if you want this.</para></tip>
+  
+  </section>
+ </section>
+ <section id="options-aspell">
+  <title>Aspell Options</title>
    <section id="executable-option"><title>Aspell executable filename</title>
 
    <para>It is important to set the <code>Aspell executable filename</code> to where you have
-    installed aspell. If you didn't install it manually, try to leave it to "aspell".</para>
+    installed Aspell. If you didn't install it manually, try to leave it to "aspell".</para>
     <para>Here are some potential locations:</para>
       <itemizedlist>
       <listitem><para>On <emphasis>Windows</emphasis> it's in <code>c:\Program Files\Aspell\bin</code></para></listitem>
       <listitem><para>On <emphasis>Mac OS X</emphasis> it's in <code>/opt/local/bin</code></para></listitem>
       <listitem><para>On <emphasis>Linux</emphasis> it's in <code>/usr/local/bin</code></para></listitem>
       </itemizedlist>
+ </section>
  
-    </section>
-    <section id="language-option"><title>Lang dictionary to use</title>
-    <para>You can choose in the dictionary list which dictionary to use for spell-checking.
-    (the list is taken from aspell output, so Aspell executable path must be correctly set for that).</para>
-    
-    </section>
     <section id="markup-modes"><title>Markup Mode</title>
     
     <para>Aspell is able to deal automatically with certain kinds of documents,
@@ -225,7 +330,7 @@ available for Windows and various Unix platforms.
   </itemizedlist>
   </para>
   <para>If you choose the <emphasis>Manual Markup Mode</emphasis>,
-  you will have to configure which aspell filter to use for each mode.
+  you will have to configure which Aspell filter to use for each mode.
   Leave it to <emphasis>AUTO</emphasis> to let aspell choose.
   Use the filter named <emphasis>none</emphasis> to disable context-filtering at all.
   </para>
@@ -237,19 +342,35 @@ available for Windows and various Unix platforms.
   They will be directly passed to aspell.
   This way, you can use a personal dictionary, for instance...
   </para>
-  <para>Note however that the parameters are
-  currently not allowed to contain white space.
+  <para>Note however that white space is not allowed in parameter. Please file a
+  feature request or send an e-mail if you need it.
   </para>
   </section>
 
-  <section id="spell-check-on-save"><title>Spell-check on save</title>
-  <para>This experimental feature takes advantage of the <code>Error List</code>
-   plugin to report every misspelled word as a warning. Spell-checking is performed each time
-   you save a file.</para>
-   <para>As you will soon discover, this can turn very annoying, because it's quickly
-   sluggish. So : beware !
-   </para>
+  </section>
   
+  <section id="options-hunspell">
+  <title>Hunspell Engine</title>
+  
+  <section id="hunspell-library">
+  <title>Location of the Hunspell library</title>
+  <para>You need this only if the bundled library doesn't work on your system.
+  Look for the actual library file (something like <filename>libhunspell-1.2.so</filename>
+  on Linux).
+  </para>
+  </section>
+  
+  <section id="hunspell-dict">
+  <title>Managing Dictionaries</title>
+  <para>Installed Dictionaries are listed in the top list. You can remove them
+  one by one by selecting one and clicking on <guibutton>remove</guibutton></para>
+  <para>Available Dictionaries are fetched from a file on <uri>openoffice.org</uri>
+  server. It's the same file as for the &quot;Add dictionary&quot; Wizard in OpenOffice.</para>
+  <para>This list is fetched only once a day. If you experience some inconsistencies,
+  you should delete the file <filename>available.lst</filename> in the plugin home directory
+  (accessible via <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Browse user dictionaries</guimenuitem>).
+  </para>
+  </section>
   </section>
  </chapter>
 
@@ -264,9 +385,9 @@ available for Windows and various Unix platforms.
     <listitem>
      <para>Choose the menu item
      <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Spell check selection...</guimenuitem>
-    for default lang dictionary or
+    for default dictionary or
     <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Spell check</guisubmenu> -&gt; <guimenuitem>Spell check selection with lang...</guimenuitem>
-    to use an alternate lang dictionary.</para>
+    to use an alternate dictionary.</para>
     </listitem>
     <listitem>
      <para>You will be prompted with a MS-Office-like spell check dialog box for each
@@ -280,12 +401,14 @@ available for Windows and various Unix platforms.
   <section id="dialog-box">
    <title>Spell Check Dialog Box</title>
 
+   <section>
+   <title>Available actions</title>
    <para>For each misspelled word the user has buttons to choose to:
 <glosslist>
   <glossentry>
-  <glossterm>Add (not in this version)</glossterm>
+  <glossterm>Add</glossterm>
       <glossdef>
-       <para>Adds the word not in the <code> Not in Dictionary</code> field to the dictionary.</para>
+       <para>Adds the current word to the user's dictionary.</para>
       </glossdef>
      </glossentry>
      <glossentry>
@@ -297,37 +420,38 @@ available for Windows and various Unix platforms.
      <glossentry>
       <glossterm>Change</glossterm>
       <glossdef>
-       <para>Replaces the word in the <code> Not in Dictionary</code> text field with the word in the
-    <code> Change to</code>  text field. If the <code> Change to</code> text field is empty,
-    the button name changes to <code>Delete</code>. To remove the selected word from the item, click
-    <code>Delete</code>.</para>
+       <para>Replaces the word in the <guilabel>Not in Dictionary</guilabel> text field with the word in the
+    <guilabel>Change to</guilabel> text field.</para>
       </glossdef>
      </glossentry>
      <glossentry>
       <glossterm>Change All</glossterm>
       <glossdef>
-       <para>Replaces all instances of the word not in the <code> Not in Dictionary</code>
-    text field with the word in the
-    <code> Change to</code>  text field. If the <code> Change to</code> text field is empty,
-    the button name changes to <code>Delete All</code>. To remove all instances of the selected word from the item, click
-    <code>Delete</code>.</para>
+       <para>Replaces all instances of the word not in the <guilabel>Not in Dictionary</guilabel>
+    text field with the word in the <guilabel>Change to</guilabel>  text field.</para>
       </glossdef>
      </glossentry>
      <glossentry>
       <glossterm>Ignore</glossterm>
       <glossdef>
-       <para>Leaves the word in the <code> Not in Dictionary</code> text field unchanged.</para>
+       <para>Leaves the word in the <guilabel>Not in Dictionary</guilabel> text field unchanged.</para>
       </glossdef>
      </glossentry>
      <glossentry>
       <glossterm>Ignore All</glossterm>
       <glossdef>
-       <para>Leaves all instances of the word in the <code> Not in Dictionary</code>
-    text field unchanged.</para>
+       <para>Leaves this and all later occurences of the word in the <code>Not in Dictionary</code>
+    text field unchanged. A reminder (wearing sunglasses) will appear.</para>
+    <para>To clear the list of ignored words, go to the menu
+    <guimenu>Plugins</guimenu>&gt;<guimenuitem>Spell Check</guimenuitem>&gt;<guimenuitem>Clear ignored words</guimenuitem>.
+    </para>
       </glossdef>
      </glossentry>
     </glosslist>
    </para>
+   </section>
+   <section>
+   <title>Text components</title>
    <para>The dialog has the following components:
 <glosslist>
   <glossentry><glossterm>Not in Dictionary</glossterm>
@@ -338,10 +462,9 @@ available for Windows and various Unix platforms.
      <glossentry>
       <glossterm>Change to:</glossterm>
       <glossdef>
-       <para>Displays a suggested word to replace the word that appears in the <code> Not in Dictionary</code>
-    text field. To accept the suggested replacement, click <code>Change</code>. To delete the word in the
-    <code> Not in Dictionary</code> text field, delete the text in the <code> Change to</code>
-    text field, and then click <code>Delete</code>.</para>
+       <para>Displays a suggested word to replace the word that appears in the <guilabel> Not in Dictionary</guilabel>
+    text field. To accept the suggested replacement, click <guibutton>Change</guibutton>.
+    You can verify if the word you typed is in the dictionary by clicking on the <guibutton>Suggest</guibutton> button.</para>
       </glossdef>
      </glossentry>
      <glossentry>
@@ -352,17 +475,63 @@ available for Windows and various Unix platforms.
      </glossentry>
     </glosslist>
    </para>
+   </section>
+   <section>
+   <title>Navigation</title>
+<glosslist>
+  <glossentry><glossterm>Previous:</glossterm>
+      <glossdef>
+       <para>go back to previous misspelled word, rolling back any change.</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Cancel:</glossterm>
+      <glossdef>
+       <para>stops this spell-checking session without applying changes. There is no way to go back
+       from there, so beware of loosing painfully corrected words...</para>
+      </glossdef>
+     </glossentry>
+     <glossentry>
+      <glossterm>Done:</glossterm>
+      <glossdef>
+       <para>stops this spell-checking session and applies all modifications so far.</para>
+      </glossdef>
+     </glossentry>
+    </glosslist>
+   </section>
   </section>
-
-
  </chapter>
 
+ <chapter id="user-dicts">
+ <title>User dictionaries</title>
+  <para>User dictionaries consist in lists of words. Any misspelled word reported by
+  the spell-checker which is present in the user dictionary is ignored.
+  Independent User dictionaries are kept for each language.</para>
+  <section id="managing-dicts">
+  <title>Managing user dictionaries</title>
+  <para>User dictionaries are saved as text files inside the plugin's settings directory.
+  They look like <filename>user.***.dict</filename>.
+  You can browse this directory from jEdit by using <guimenu>Plugins</guimenu>&gt;<guimenuitem>Spell Check</guimenuitem>&gt;<guimenuitem>Browse user dictionaries</guimenuitem>.
+  </para>
+  <para>You can edit directly a user dictionary : it consists in a newline-separated
+  text file. jEdit will pick <code>UTF-8</code> encoding. When you open the file,
+  any change in a dictionary will be persisted, so that you can review the latest
+  changes. On save, the user dictionary will be reloaded to take your changes into account.
+  </para>
+  <para>Otherwise, changed dictionaries are saved when the plugin has stopped.
+  You can also invoke  <guimenu>Plugins</guimenu>&gt;<guimenuitem>Spell Check</guimenuitem>&gt;<guimenuitem>Persist Dictionaries on disk</guimenuitem> at any time.</para>
+  </section>
+ </chapter>
  <chapter id="building"><title>Building</title>
 <para>
 As of release R005, the build process is the same as other plugins.
 It uses the <code>build-support/plugin-build.xml</code> build file,
 available from jedit repository. The documentation is generated using docbook xsl.
-</para> 
+</para>
+<para>Some tests are included. They are based upon <ulink url="http://fest.easytesting.org/swing/wiki/pmwiki.php">FEST-swing</ulink>
+for GUI testing. Otherwise they are plain <ulink url="http://www.junit.org/">jUnit</ulink> tests.
+To run the tests, <command>cd</command> to the plugin root directory and type <command>ant test</command>.
+</para>
  </chapter>
 <chapter id="bugs">
 <title>Current Bugs</title>
@@ -376,25 +545,25 @@ available from jedit repository. The documentation is generated using docbook xs
 </chapter>
 <chapter id="todo"><title>Current ToDo List</title>
 <itemizedlist>
-  <listitem><para>Add words to an user dictionary</para></listitem>
-  <listitem><para>Allow the user to reset Ignore All and Change All options (currently these
-    are result only if jEdit is restarted)</para></listitem>
-  <listitem><para>Undo a change : for now, one can only cancel the whole
-  spell-checking but not undo the last action.</para></listitem>
-  <listitem><para>Allow the user access all of Aspell options</para></listitem>
-  <listitem><para>Highlight the context of the word being corrected.
-  This is partially fixed in R005. It doesn't scroll to show the word yet,
-  because of bug #1990960 in jEdit.</para></listitem>
-  <listitem><para>Use the output of <code>aspell dump modes</code> in Option pane:
-  it would be nice to output in some way the description of the modes from Aspell.</para></listitem>
-<listitem><para>Try to use VoxSpell plugin in some way (as another engine ?).</para></listitem>
+  <listitem><para>Allow the user access all of Aspell options.
+  This is now dormant, as new engines are included.</para></listitem>
+  <listitem><para>Allow the user to choose which tokens to spellcheck</para></listitem>
 </itemizedlist>
 </chapter>
 
 <chapter id="changelog"><title>Change Log</title>
 
 <itemizedlist>
-<listitem><para>Release 005 (June, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E.Le Lay</ulink></para>
+<listitem><para>Release 006 (September, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E. Le Lay</ulink></para>
+  <itemizedlist>
+    <listitem><para>user dictionaries</para></listitem>
+    <listitem><para>multiple engines (Hunspell bundled)</para></listitem>
+    <listitem><para>previous and done actions in spell-check dialog</para></listitem>
+    <listitem><para>suggest action in spell-check dialog</para></listitem>
+    <listitem><para>use buffer tokens for context-sensitive spellchecking</para></listitem>
+    </itemizedlist>
+</listitem>
+<listitem><para>Release 005 (August 26, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E. Le Lay</ulink></para>
   <itemizedlist>
     <listitem><para>Fix: bug [787498] : 	SpellCheck freeze. Now SpellCheck shouldn't
       freeze the editor any more. (If it does, please report !)</para></listitem>

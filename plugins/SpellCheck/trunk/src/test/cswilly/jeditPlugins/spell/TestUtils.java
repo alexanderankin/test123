@@ -64,6 +64,7 @@ public class TestUtils{
 	//common environment variables
 	public static final String ENV_ASPELL_EXE	  = "test-jedit.aspell-exe";
 	public static final String ENV_TESTS_DIR	  = "test-tests.dir";
+	public static final String ENV_IN_JEDIT		  = "test-in-jedit";
 
 	private static FrameFixture jeditFrame;
 	private static RobotFixture robot;
@@ -71,40 +72,44 @@ public class TestUtils{
 
 	private static boolean injEdit = false;
 	public static void setUpjEdit(){
-		System.out.println("Setting jedit up");
 		
-		try{
-			robot = RobotFixture.robotWithCurrentAwtHierarchy();
-			listener = EmergencyAbortListener.registerInToolkit();
-			
-		try{
-		robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
-		}catch(FileNotFoundException fnfe){}
-		jeditFrame = new FrameFixture(robot, jEdit.getActiveView());//DOESN'T WORK : WindowFinder.findFrame(View.class).using(robot);
-		//jeditFrame = new FrameFixture(robot,jEdit.newView(jeditFrame.targetCastedTo(View.class)));
-		injEdit=true;
-		}catch(RuntimeException re){
-			System.out.println(re.toString());
-		}
-			// injEdit = false;
-		 	// robot = RobotFixture.robotWithNewAwtHierarchy();
-			// String settings = System.getProperty(ENV_JEDIT_SETTINGS);
-			// assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
-			
-			// final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
-			// Thread runJeditThread = new Thread(){
-			// 	public void run(){
-			// 		jEdit.main(args);
-			// 	}
-			// };
-			// runJeditThread.start();
-			// jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
-			// try{
-			// 	Class c = Class.forName(SpellCheckPlugin.class.getName());
-			// }catch(ClassNotFoundException cnfe){
-			// 	fail("Couldn't find plugin's class");
-			// }
+		System.out.println("Setting jedit up");
 
+		String inJedit = System.getProperty(ENV_IN_JEDIT);
+		injEdit = "yes".equals(injEdit);
+		
+		if(injEdit){
+			try{
+				robot = RobotFixture.robotWithCurrentAwtHierarchy();
+				listener = EmergencyAbortListener.registerInToolkit();
+				
+			try{
+			robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
+			}catch(FileNotFoundException fnfe){}
+			jeditFrame = new FrameFixture(robot, jEdit.getActiveView());//DOESN'T WORK : WindowFinder.findFrame(View.class).using(robot);
+			//jeditFrame = new FrameFixture(robot,jEdit.newView(jeditFrame.targetCastedTo(View.class)));
+			}catch(RuntimeException re){
+				System.out.println(re.toString());
+			}
+		}else{
+		 	robot = RobotFixture.robotWithNewAwtHierarchy();
+			String settings = System.getProperty(ENV_JEDIT_SETTINGS);
+			assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
+			
+			final String[] args = {"-settings="+settings,"-norestore","-noserver","-nobackground"};
+			Thread runJeditThread = new Thread(){
+				public void run(){
+					jEdit.main(args);
+				}
+			};
+			runJeditThread.start();
+			jeditFrame = WindowFinder.findFrame(View.class).withTimeout(40000).using(robot);
+			try{
+				Class c = Class.forName(SpellCheckPlugin.class.getName());
+			}catch(ClassNotFoundException cnfe){
+				fail("Couldn't find plugin's class");
+			}
+		}
 		System.out.println("Setup done");
 	}
 

@@ -102,7 +102,7 @@ public class BufferSpellCheckerTest{
 				buf.insert(0,text);}});
 		}catch(Exception e){}
 		String[] lines = text.split("\n");
-		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea(),true);
 		source.setAcceptAllTokens();
 		source.start();
 		
@@ -153,7 +153,7 @@ public class BufferSpellCheckerTest{
 		SwingUtilities.invokeAndWait(new Runnable(){public void run(){
 				buf.insert(0,text);}});
 		}catch(Exception e){}
-		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferSpellChecker source = new BufferSpellChecker(area,true);
 		source.start();
 		source.done();
 		
@@ -188,7 +188,7 @@ public class BufferSpellCheckerTest{
 
 		final JEditTextArea area = TestUtils.view().getTextArea();
 
-		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferSpellChecker source = new BufferSpellChecker(area,true);
 		
 		List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
 		changes.add(new ChangeWordAction(null,0,8,"programme","program"));
@@ -233,7 +233,7 @@ public class BufferSpellCheckerTest{
 
 		final JEditTextArea area = TestUtils.view().getTextArea();
 
-		BufferSpellChecker source = new BufferSpellChecker(area);
+		BufferSpellChecker source = new BufferSpellChecker(area,true);
 		
 		List<ChangeWordAction> changes = new ArrayList<ChangeWordAction>();
 		changes.add(new ChangeWordAction(null,0,8,"programme","program"));
@@ -266,7 +266,7 @@ public class BufferSpellCheckerTest{
 			}});
 		}catch(Exception e){}
 		try{Thread.sleep(1000);}catch(Exception e){}
-		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea(),false);
 		source.setAcceptAllTokens();
 		source.start();
 		
@@ -290,7 +290,7 @@ public class BufferSpellCheckerTest{
 		assertEquals("c++",buf.getMode().getName());//just to be sure
 		try{Thread.sleep(10000);}catch(Exception e){}
 
-		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea());
+		BufferSpellChecker source = new BufferSpellChecker(TestUtils.view().getTextArea(),true);
 		source.start();
 		
 		source.getNextLine();

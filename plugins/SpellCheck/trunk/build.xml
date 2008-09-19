@@ -124,7 +124,7 @@
 	
 	<!-- this selector holds current test... -->
 	<selector id="testcases.current">
-	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellOptionPaneTest.java"/>
 	</selector>
 	
 	<!-- This selector controls which tests to run. -->
@@ -242,6 +242,7 @@
 			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
 			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
 			<sysproperty key="test-tests.dir" path="tests"/>
+			<sysproperty key="test-in-jedit" value="yes"/>
 			
 			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
 

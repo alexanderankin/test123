@@ -136,6 +136,15 @@ public class WordListValidator implements Validator
 	   if(!isDirty() && f.exists())return;//to recreate a file if necessary
 	   //if(!f.exists())throw new IOException("file "+f.getPath()+" doesn't exist");
 	   Writer writer = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
+	   String header = "# this is a user dictionary for the SpellCheck plugin,\n"
+	   				  +"# keep the formatting of one word per line and everything should work\n."
+					  +"# comments are ignored and not re-created so beware...\n";
+	   header+="#:";
+	   header+="mode=text";
+	   header+=":";
+	   header+="encoding=UTF-8";
+	   header+=":\n";
+	   writer.write(header);
 	   for(String word: words){
 		  writer.write(word+"\n");
 	   }
