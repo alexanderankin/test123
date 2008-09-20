@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
@@ -71,7 +70,7 @@ public class LogResultsPanel extends JPanel {
 
     private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
     private static Color foreground = jEdit.getColorProperty("view.fgColor", Color.BLACK);
-    private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
+    //private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
 
 
     /**
@@ -162,20 +161,20 @@ public class LogResultsPanel extends JPanel {
             TableColumn column0 = column_model.getColumn( 0 );  // revision
             column0.setMaxWidth( 60 );
             column0.setPreferredWidth( 60 );
-            column0.setCellRenderer( new TextCellRenderer() );
+            column0.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
             TableColumn column1 = column_model.getColumn( 1 );  // date
             column1.setMaxWidth( 190 );
             column1.setPreferredWidth( 190 );
-            column1.setCellRenderer( new TextCellRenderer() );
+            column1.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
             TableColumn column2 = column_model.getColumn( 2 );  // author
             column2.setMaxWidth( 100 );
             column2.setPreferredWidth( 100 );
-            column2.setCellRenderer( new TextCellRenderer() );
+            column2.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
             TableColumn column3 = column_model.getColumn( 3 );  // comment
-            column3.setCellRenderer( new CommentCellRenderer() );
+            column3.setCellRenderer( new BestRowTable.WrapCellRenderer() );
             if ( showPaths ) {
                 TableColumn column4 = column_model.getColumn( 4 );    // paths
-                column4.setCellRenderer( new PathCellRenderer() );
+                column4.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
             }
 
             table.packRows();
@@ -221,40 +220,6 @@ public class LogResultsPanel extends JPanel {
 
         public String getPath() {
             return LogTable.this.path;
-        }
-    }
-
-    /**
-     * Non-wrapping text area cell renderer.
-     */
-    public static class TextCellRenderer extends JTextArea implements TableCellRenderer {
-        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            setText( value == null ? "" : value.toString() );
-            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
-            return this;
-        }
-    }
-
-    /**
-     * Non-wrapping text area cell renderer for the paths column.
-     */
-    public static class PathCellRenderer extends JTextArea implements TableCellRenderer {
-        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            setText( value == null ? "" : value.toString() );
-            //setToolTipText( "<html><b>Other files in this revision:</b><br><pre>" + getText() );
-            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
-            return this;
-        }
-    }
-
-    /**
-     * Wrapping text area cell renderer.
-     */
-    public static class CommentCellRenderer extends JTextPane implements TableCellRenderer {
-        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            setText( value == null ? "" : value.toString() );
-            setBackground( isSelected ? LogResultsPanel.selection : LogResultsPanel.background );
-            return this;
         }
     }
 

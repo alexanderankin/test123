@@ -140,13 +140,51 @@ public class BestRowTable extends JTable {
 
     /**
      * Wrapping text area cell renderer.  This is useful for displaying text
-     * contents that contain line separators.
+     * contents that contain line separators.  This renderer will provide the
+     * right preferred size so that all of the text can be visible in a table
+     * cell.
      */
-    public static class ValueCellRenderer extends JTextPane implements TableCellRenderer {
+    public static class WrapCellRenderer extends JTextArea implements TableCellRenderer {
+        JTable table = null;
+        int column = 0;
+        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
+            this.table = table;
+            this.column = column;
+            setText( value == null ? "" : value.toString() );
+            setBackground( isSelected ? selection : background );
+            setLineWrap(true);
+            setWrapStyleWord(true);
+            return this;
+        }
+
+        /**
+         * Calculates the preferred size based on the column width and the
+         * amount of text to display so that the entire text will be visible.
+         */
+        @Override
+        public Dimension getPreferredSize() {
+            Dimension d = super.getPreferredSize();
+            if (table != null) {
+                d.width = table.getColumnModel().getColumn(column).getWidth();
+                FontMetrics fm = getFontMetrics(getFont());
+                int stringWidth = fm.stringWidth(getText());
+                int rows = (stringWidth / d.width) + 1;
+                d.height = (fm.getAscent() + fm.getDescent()) * rows;
+            }
+            return d;
+        }
+    }
+
+    /**
+     * Non-wrapping text area cell renderer.
+     */
+    public static class NoWrapCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             setText( value == null ? "" : value.toString() );
             setBackground( isSelected ? selection : background );
             return this;
         }
     }
+
+
 }
