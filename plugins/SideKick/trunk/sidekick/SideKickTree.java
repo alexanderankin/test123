@@ -856,6 +856,68 @@ public class SideKickTree extends JPanel
 	//{{{ KeyHandler class
 	class KeyHandler extends KeyAdapter
 	{
+
+		protected void next()
+		{
+			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+			if (node == null) {
+				node = (DefaultMutableTreeNode)model.getRoot();
+			}
+			if (model.isLeaf(node)) {
+				node = node.getNextLeaf();
+			} else {
+				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
+				node = e.nextElement();
+			}
+			if (node != null) {
+				while ((node != null) && (!model.isVisible(node))) {
+					node = node.getNextLeaf();
+				}
+				if (node != null) {
+					TreePath p = new TreePath(node.getPath());
+					tree.setSelectionPath(p);
+					//tree.scrollRowToVisible(tree.getRowForPath(p));
+					Rectangle r = tree.getPathBounds(p);
+					if (r != null) {
+						r.width = 1;
+						tree.scrollRectToVisible(r);
+					}
+				}
+			}
+		}
+
+		protected void prev()
+		{
+			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+			if (node == null) {
+				node = (DefaultMutableTreeNode)model.getRoot();
+			}
+			// If the node isn't a leaf, use depthFirstEnumeration to find the next
+			// leaf (which moves us forward), then get the previous (to get the previous
+			// node from where we started).
+			if (!model.isLeaf(node)) {
+				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
+				node = e.nextElement();
+			}
+			node = node.getPreviousLeaf();
+			if (node != null) {
+				while ((node != null) && (!model.isVisible(node))) {
+					node = node.getPreviousLeaf();
+				}
+				if (node != null) {
+					TreePath p = new TreePath(node.getPath());
+					tree.setSelectionPath(p);
+					Rectangle r = tree.getPathBounds(p);
+					if (r != null) {
+						r.width = 1;
+						tree.scrollRectToVisible(r);
+					}
+				}
+			}
+		}
+
 		public void keyPressed(KeyEvent evt)
 		{
 			if(caretTimer != null)
@@ -917,68 +979,31 @@ public class SideKickTree extends JPanel
 					updateFilter();
 					break;
 				case KeyEvent.VK_DOWN:
-				{
 					evt.consume();
-					DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
-					FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
-					if (node == null) {
-						node = (DefaultMutableTreeNode)model.getRoot();
-					}
-					if (model.isLeaf(node)) {
-						node = node.getNextLeaf();
-					} else {
-						Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
-						node = e.nextElement();
-					}
-					if (node != null) {
-						while ((node != null) && (!model.isVisible(node))) {
-							node = node.getNextLeaf();
-						}
-						if (node != null) {
-							TreePath p = new TreePath(node.getPath());
-							tree.setSelectionPath(p);
-							//tree.scrollRowToVisible(tree.getRowForPath(p));
-							Rectangle r = tree.getPathBounds(p);
-							if (r != null) {
-								r.width = 1;
-								tree.scrollRectToVisible(r);
-							}
-						}
-					}
+					next();
 					break;
-				}
 				case KeyEvent.VK_UP:
+					evt.consume();
+					prev();
+					break;
+				case KeyEvent.VK_PAGE_UP:
 				{
 					evt.consume();
-					DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
-					FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
-					if (node == null) {
-						node = (DefaultMutableTreeNode)model.getRoot();
-					}
-					// If the node isn't a leaf, use depthFirstEnumeration to find the next
-					// leaf (which moves us forward), then get the previous (to get the previous
-					// node from where we started).
-					if (!model.isLeaf(node)) {
-						Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
-						node = e.nextElement();
-					}
-					node = node.getPreviousLeaf();
-					if (node != null) {
-						while ((node != null) && (!model.isVisible(node))) {
-							node = node.getPreviousLeaf();
-						}
-						if (node != null) {
-							TreePath p = new TreePath(node.getPath());
-							tree.setSelectionPath(p);
-							Rectangle r = tree.getPathBounds(p);
-							if (r != null) {
-								r.width = 1;
-								tree.scrollRectToVisible(r);
-							}
-						}
-					}
-					break;
+
+					int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
+					for (int i = 0; i < offset; ++i)
+						prev();
 				}
+				break;
+				case KeyEvent.VK_PAGE_DOWN:
+				{
+					evt.consume();
+
+					int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
+					for (int i = 0; i < offset; ++i)
+						next();
+				}
+				break;
 				default:
 					break;
 			}
