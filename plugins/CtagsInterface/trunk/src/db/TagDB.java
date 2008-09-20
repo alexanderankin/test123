@@ -396,7 +396,7 @@ public class TagDB {
 		}
 	}
 
-	public String quote(Object value) {
+	static public String quote(Object value) {
 		if (value instanceof String)
 			return "'" + ((String)value).replaceAll("'", "''") + "'";
 		return value.toString();
