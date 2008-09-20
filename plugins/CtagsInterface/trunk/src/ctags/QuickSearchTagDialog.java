@@ -130,9 +130,9 @@ public class QuickSearchTagDialog extends JDialog {
 				projectQuery.addCondition(TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
 					"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID);
 				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
-					"=" + db.quote(project));
+					"=" + TagDB.quote(project));
 				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
-						"=" + db.quote(TagDB.PROJECT_ORIGIN));
+						"=" + TagDB.quote(TagDB.PROJECT_ORIGIN));
 				q.addCondition("EXISTS (" + projectQuery.toString() + ")");
 			}
 		}
@@ -176,7 +176,7 @@ public class QuickSearchTagDialog extends JDialog {
 				TagDB db = CtagsInterfacePlugin.getDB();
 				Vector<Object> conditions = baseQuery.getConditions();
 				Object prefixCondition = db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
-					" LIKE " + db.quote(input + "%"); 
+					" LIKE " + TagDB.quote(input + "%"); 
 				conditions.add(prefixCondition);
 				baseQuery.setConditions(conditions);
 				try {

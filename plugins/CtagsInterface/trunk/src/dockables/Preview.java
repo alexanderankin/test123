@@ -14,14 +14,10 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -46,7 +42,6 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -54,12 +49,12 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.syntax.ModeProvider;
+import org.gjt.sp.jedit.textarea.JEditEmbeddedTextArea;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 
 import ctags.CtagsInterfacePlugin;
 import ctags.Tag;
-import db.TagDB;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
@@ -117,7 +112,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			}
 		});
 		toolbar.add(wrap);
-		text = jEdit.createTextArea();
+		text = new JEditEmbeddedTextArea();
         text.getBuffer().setProperty("folding","explicit");
 		textPanel.add(text, BorderLayout.CENTER);
 		textPanel.add(text, BorderLayout.CENTER);
@@ -290,7 +285,6 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
 		//private Font tagListFont = new Font("Monospaced", Font.PLAIN, 12);
-		@SuppressWarnings("unchecked")
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
