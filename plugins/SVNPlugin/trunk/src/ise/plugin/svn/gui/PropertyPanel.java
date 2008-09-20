@@ -157,7 +157,7 @@ public class PropertyPanel extends JPanel {
             }
 
             TableColumn column1 = props_table.getColumnModel().getColumn( 1 );  // property value
-            column1.setCellRenderer( new BestRowTable.ValueCellRenderer() );
+            column1.setCellRenderer( new BestRowTable.WrapCellRenderer() );
 
             // add a mouse listener for the popup
             props_table.addMouseListener( new TableCellViewer( props_table ) );

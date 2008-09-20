@@ -149,22 +149,37 @@ public class BlameAction extends SVNAction {
                         BlamePane pane = new BlamePane( model );
                         JEditTextArea textArea = getView().getEditPane().getTextArea();
                         JEditBuffer buffer = textArea.getBuffer();
+
+                        // remove any previous blame display
                         Object old_blame = buffer.getProperty( "_old_blame_" );
                         if ( old_blame != null ) {
                             textArea.removeLeftOfScrollBar( ( JComponent ) old_blame );
                             Object old_closer = buffer.getProperty( "_old_closer_" );
                             textArea.removeTopComponent( ( JComponent ) old_closer );
                         }
+
+                        // add column of revisions and author names to the right
+                        // side of the text area
                         textArea.addLeftOfScrollBar( pane );
+
+                        // add a "close" button at the top of the text area to be
+                        // able to remove the blame display
                         JComponent closer = pane.getCloser( getView() );
                         textArea.addTopComponent( closer );
+
+                        // caret listener moves the highlight in the text area to
+                        // correspond with the hightlight in the blame pane
                         textArea.addCaretListener( pane );
+
+                        // store a reference to the blame display for future use
                         buffer.setProperty( "_old_blame_", pane );
                         buffer.setProperty( "_old_closer_", closer );
+
                         getView().invalidate();
                         getView().validate();
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Done.", "Done." ) );
                         if ( model.outOfDate() ) {
+                            // TODO: put message in properties file
                             JOptionPane.showMessageDialog( getView(), "File has local modifications, blame may not be correct.", "Warning: Local Modifications", JOptionPane.WARNING_MESSAGE );
                         }
                     }
