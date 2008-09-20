@@ -36,5 +36,10 @@
 			ctags.CtagsInterfacePlugin.tagAllProjects(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-complete" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.complete(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 

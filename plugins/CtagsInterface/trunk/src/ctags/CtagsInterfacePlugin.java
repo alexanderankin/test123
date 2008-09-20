@@ -2,6 +2,7 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -25,6 +26,8 @@ import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+
+import context.CaretContext;
 
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
@@ -259,6 +262,45 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jumpToTags(view, tags);
 	}
 
+	// Actions: Offer code completion options
+	public static void complete(final View view)
+	{
+		String context = CaretContext.getContextUnderCaret(view, false);
+		if (context == null) {
+			JOptionPane.showMessageDialog(null, "No context found");
+			return;
+		}
+		JOptionPane.showMessageDialog(view, "Context: " + context);
+		/*// Retrieve possible completions from context
+		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
+		String [] scopes = "class struct union enum interface namespace".split(" ");
+		StringBuffer sb = new StringBuffer();
+		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
+		boolean first = true;
+		for (int i = 0; i < scopes.length; i++) {
+			String cname = TagDB.extension2column(scopes[i]);
+			if (! columns.contains(cname))
+				continue;
+			if (! first)
+				sb.append(" OR ");
+			else
+				first = false;
+			sb.append(TagDB.extension2column(scopes[i]) + "=" + db.quote(context));
+		}
+		q.addCondition("(" + sb.toString() + ")");
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
+		if (tags.isEmpty())
+			return;
+		String [] completions = new String[tags.size()];
+		for (int i = 0; i < tags.size(); i++) {
+			Tag member = tags.get(i);
+			completions[i] = member.getName();
+		}
+		JOptionPane.showInputDialog(null, "Select completion:", "Completion dialog",
+			0, null, completions, 0);
+		*/
+	}
+	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
 	static public String getDestinationTag(View view) {
 		String tag = view.getTextArea().getSelectedText();
