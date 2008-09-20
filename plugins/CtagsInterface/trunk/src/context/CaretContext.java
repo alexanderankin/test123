@@ -31,19 +31,17 @@ public class CaretContext {
 	
 	private Pattern pat, identifier, memberRef;
 	private int pos, line;
-	private String path;
 	private Buffer buffer;
-	private String tag;
 	
 	public CaretContext(final View view) {
 		pat = Pattern.compile("(\\w+)((\\.|->)(\\w)*)*");
 		identifier = Pattern.compile("\\w+");
 		memberRef = Pattern.compile("(\\.|->)");
 		buffer = view.getBuffer();
-		path = buffer.getPath();
+		buffer.getPath();
 		line = view.getTextArea().getCaretLine() + 1;
 		pos = view.getTextArea().getCaretPosition();
-		tag = CtagsInterfacePlugin.getDestinationTag(view);
+		CtagsInterfacePlugin.getDestinationTag(view);
 	}
 	/* Algorithm:
 	 * In general (for a simple case), we have a construct like:

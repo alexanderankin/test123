@@ -3,8 +3,6 @@ package context;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Vector;
-
 import org.gjt.sp.jedit.Buffer;
 
 import ctags.CtagsInterfacePlugin;

@@ -2,7 +2,6 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -120,7 +119,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		dumpQuery("SELECT * FROM " + TagDB.TAGS_TABLE +
 			" WHERE " + TagDB.TAGS_NAME + " LIKE " +
-			db.quote("%" + s + "%"));
+			TagDB.quote("%" + s + "%"));
     }
 
     static private class TagFileHandler implements TagHandler {
@@ -518,7 +517,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		for (int i = 0; i < files.size(); i++) {
 			if (i > 0)
 				filesStr.append(",");
-			filesStr.append(db.quote(files.get(i)));
+			filesStr.append(TagDB.quote(files.get(i)));
 		}
 		String st = "DELETE FROM " + TagDB.FILES_TABLE + " WHERE " +
 			TagDB.FILES_NAME + " IN (" + filesStr.toString() + ")" +

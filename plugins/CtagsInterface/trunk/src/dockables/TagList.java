@@ -62,7 +62,6 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		setTags(null);
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected void jumpTo(int selectedIndex) {
 		Tag tag = (Tag) tagModel.getElementAt(selectedIndex);
 		CtagsInterfacePlugin.jumpToTag(view, tag);
@@ -81,7 +80,6 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	}
 
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
-		@SuppressWarnings("unchecked")
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,

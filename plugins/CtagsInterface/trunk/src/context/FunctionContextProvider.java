@@ -18,7 +18,7 @@ public class FunctionContextProvider {
 				db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) +
 		           	"=" + db.field(TagDB.FILES_TABLE, TagDB.FILES_ID),
 		        db.field(TagDB.FILES_TABLE, TagDB.FILES_NAME) +
-		        	"=" + db.quote(path)});
+		        	"=" + TagDB.quote(path)});
 		ResultSet rs = null;
 		int best = 0;
 		Tag tag = null;
