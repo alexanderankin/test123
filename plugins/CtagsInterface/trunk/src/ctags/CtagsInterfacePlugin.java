@@ -292,9 +292,15 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		Vector<String> completions = new Vector<String>();
 		String prefix = getDestinationTag(view);
+		if (prefix == null)
+			return;
 		for (Tag member: members) {
 			if (member.getName().startsWith(prefix))
 				completions.add(member.getName());
+		}
+		if (completions.isEmpty()) {
+			JOptionPane.showMessageDialog(view, "No completions");
+			return;
 		}
 		String [] options = new String[completions.size()];
 		int i = 0;
