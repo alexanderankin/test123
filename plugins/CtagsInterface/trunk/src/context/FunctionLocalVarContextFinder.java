@@ -13,7 +13,9 @@ public class FunctionLocalVarContextFinder extends FunctionContextProvider imple
 		if (functionLine == 0)
 			return null;
 		Pattern pat = CaretContext.getVarDeclPattern(identifier);
-		for (int i = functionLine; i <= line; i++) {
+		// Go back from current line to function definition, since there may
+		// be several declarations of the variable in nested blocks of code.
+		for (int i = line; i >= functionLine; i--) {
 			String l = buffer.getLineText(i - 1);
 			Matcher m = pat.matcher(l);
 			if (m.matches())
