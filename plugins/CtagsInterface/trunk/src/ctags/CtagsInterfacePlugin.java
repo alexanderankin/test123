@@ -266,11 +266,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
 		String context = CaretContext.getContextUnderCaret(view, false);
 		if (context == null) {
-			JOptionPane.showMessageDialog(null, "No context found");
+			JOptionPane.showMessageDialog(view, "No context found");
 			return;
 		}
 		JOptionPane.showMessageDialog(view, "Context: " + context);
-		/*// Retrieve possible completions from context
+		// Retrieve possible completions from context
 		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
 		String [] scopes = "class struct union enum interface namespace".split(" ");
 		StringBuffer sb = new StringBuffer();
@@ -284,20 +284,26 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				sb.append(" OR ");
 			else
 				first = false;
-			sb.append(TagDB.extension2column(scopes[i]) + "=" + db.quote(context));
+			sb.append(TagDB.extension2column(scopes[i]) + "=" + TagDB.quote(context));
 		}
 		q.addCondition("(" + sb.toString() + ")");
-		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
-		if (tags.isEmpty())
+		Vector<Tag> members = CtagsInterfacePlugin.query(q.toString());
+		if (members.isEmpty())
 			return;
-		String [] completions = new String[tags.size()];
-		for (int i = 0; i < tags.size(); i++) {
-			Tag member = tags.get(i);
-			completions[i] = member.getName();
+		Vector<String> completions = new Vector<String>();
+		String prefix = getDestinationTag(view);
+		for (Tag member: members) {
+			if (member.getName().startsWith(prefix))
+				completions.add(member.getName());
 		}
-		JOptionPane.showInputDialog(null, "Select completion:", "Completion dialog",
-			0, null, completions, 0);
-		*/
+		String [] options = new String[completions.size()];
+		int i = 0;
+		for (String completion: completions) {
+			options[i] = completion;
+			i++;
+		}
+		JOptionPane.showInputDialog(view, "Select completion:",
+			"Completion dialog", 0, null, options, options[0]);
 	}
 	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
