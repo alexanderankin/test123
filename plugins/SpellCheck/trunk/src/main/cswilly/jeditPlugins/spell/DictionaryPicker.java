@@ -102,7 +102,8 @@ public class DictionaryPicker{
 	public JComboBox asComboBox(){
 		final JComboBox _aspellMainLanguageList = new JComboBox( modelDicts );
 		_aspellMainLanguageList.setName("languages");
-		_aspellMainLanguageList.setEditable( true );	
+		_aspellMainLanguageList.setEditable( true );
+		_aspellMainLanguageList.setPrototypeDisplayValue("Français Classique (France)");
 		_aspellMainLanguageList.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
 					Object itm = _aspellMainLanguageList.getSelectedItem();

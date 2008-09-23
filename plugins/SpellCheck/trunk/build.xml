@@ -124,12 +124,14 @@
 	
 	<!-- this selector holds current test... -->
 	<selector id="testcases.current">
-	<filename name="**/cswilly/jeditPlugins/spell/AspellOptionPaneTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
 	</selector>
 	
 	<!-- This selector controls which tests to run. -->
 	<selector id="junit.testcases">
+	<or>
 	<selector refid="testcases.current"/>
+	</or>
     </selector>
 
 	

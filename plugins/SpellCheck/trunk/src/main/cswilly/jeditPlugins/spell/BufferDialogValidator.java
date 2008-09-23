@@ -213,9 +213,10 @@ class BufferDialogValidator implements SpellCoordinator
 
 			Validator addValid = null;
 
-			// TODO: this should use some mode-sensitive values.
-			// eg only validate plain text in LateX files and only comments in source-code
-			if(engine.isContextSensitive()||"text".equals(buffer.getMode().getName())){
+			// here we only control "accept all tokens"
+			// in relation with the engine
+			// BufferSpellChecker handles the rest...
+			if(engine.isContextSensitive()){
 				source.setAcceptAllTokens();
 			}
 			

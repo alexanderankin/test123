@@ -232,10 +232,10 @@ public class HunspellDictsManager{
 		if(availables==null) availables = new ArrayList<Dictionary>();
 		else availables.clear();
 		if(installed==null)initInstalled();
+		File home = SpellCheckPlugin.getHomeDir(jEdit.getActiveView());
+		File target = new File(home,"available.lst");
 		try{
 			//is there an old buffer file ?
-			File home = SpellCheckPlugin.getHomeDir(jEdit.getActiveView());
-			File target = new File(home,"available.lst");
 			boolean skipDownload = false;
 			if(target.exists()){
 				long modifiedDate = target.lastModified();
@@ -319,6 +319,7 @@ public class HunspellDictsManager{
 				GUIUtilities.error(null,"spell-check-hunspell-error-fetch",new String[]{ioe.getMessage()});
 			}
 			ioe.printStackTrace();
+			if(target.exists())target.delete();
 		}
 	}
 	

@@ -65,10 +65,11 @@ public class ErrorListSpellChecker implements SpellCoordinator{
 		Buffer buffer = (Buffer)area.getBuffer();
 		spellValidator.setPath(buffer.getPath());
 		BufferSpellChecker source = new BufferSpellChecker(area,true);
-		// TODO: must be configured
-		if(engine.isContextSensitive()||"text".equals(buffer.getMode().getName())){
+		if(engine.isContextSensitive()){
+			Log.log(Log.DEBUG,ErrorListSpellChecker.class,"Will spellcheck all tokens because engine is contex-sensitive");
 			source.setAcceptAllTokens();
 		}
+		validator = new ChainingValidator(source.getValidator(),validator);
 		boolean confirm = true;
 		try
 		{

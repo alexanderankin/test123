@@ -186,7 +186,7 @@ public class HunspellEngineManager implements EngineManager{
 		if(m instanceof PropertiesChanged){
 			String newLibName = jEdit.getProperty(HUNSPELL_LIBRARY_PROP);
 			if((libName==null && newLibName!=null)
-				|| !libName.equals(newLibName))
+				|| (libName!=null && !libName.equals(newLibName)))
 			{
 				// TODO: are we leaking memory there ?
 				hspl=null;
