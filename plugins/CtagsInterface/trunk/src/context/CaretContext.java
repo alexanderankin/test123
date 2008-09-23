@@ -1,5 +1,8 @@
 package context;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,22 +10,16 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 
 import ctags.CtagsInterfacePlugin;
+import ctags.Tag;
+import db.Query;
+import db.TagDB;
 
 public class CaretContext {
-	static FunctionLocalVarContextFinder localVarContext;
-	static FunctionArgContextFinder argContext;
-	static MemberContext memberContext;
 	
 	public static Pattern getVarDeclPattern(String var) {
 		return Pattern.compile(".*\\b(\\w+)\\s*([*&]+\\s*|\\s+)(const\\s+)?" + var + "\\b.*");
 	}
 
-	{
-		localVarContext = new FunctionLocalVarContextFinder();
-		argContext = new FunctionArgContextFinder();
-		memberContext = new MemberContext();
-	}
-	
 	public static String getContextUnderCaret(final View view, boolean includeCaret)
 	{
 		CaretContext context = new CaretContext(view);
@@ -81,15 +78,18 @@ public class CaretContext {
 			 * 4. Static variable in file
 			 * 5. Global variable
 			 */
-			context = localVarContext.getContext(identifier, buffer, line, pos);
-			if (context != null)
-				return context;
-			context = argContext.getContext(identifier, buffer, line, pos);
-			if (context != null)
-				return context;
-			context = memberContext.getContext(identifier, buffer, line, pos);
-			if (context != null)
-				return context;
+			Tag functionTag = getFunctionContext(buffer.getPath(), line);
+			if (functionTag != null) {
+				context = getLocalVarContext(functionTag, identifier, buffer, line, pos);
+				if (context != null)
+					return context;
+				context = getFunctionArgContext(functionTag, identifier, buffer, line, pos);
+				if (context != null)
+					return context;
+				context = getMemberContext(functionTag, identifier, buffer, line, pos);
+				if (context != null)
+					return context;
+			}
 			return null;
 		} else {
 			/* look for identifier member of context */
@@ -127,4 +127,72 @@ public class CaretContext {
 		return selected;
 
 	}
+	public Tag getFunctionContext(String path, int line)
+	{
+		TagDB db = CtagsInterfacePlugin.getDB();
+		Query q = new Query(new String[]{"*"},
+			new String[]{TagDB.TAGS_TABLE, TagDB.FILES_TABLE},
+			new String[]{
+				db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) +
+		           	"=" + db.field(TagDB.FILES_TABLE, TagDB.FILES_ID),
+		        db.field(TagDB.FILES_TABLE, TagDB.FILES_NAME) +
+		        	"=" + TagDB.quote(path)});
+		ResultSet rs = null;
+		int best = 0;
+		Tag tag = null;
+		try {
+			rs = db.query(q);
+			Vector<Tag> tags = db.getResultSetTags(rs);
+			rs.close();
+			for (Tag t: tags) {
+				int n = t.getLine();
+				if (n > line || n < best)
+					continue;
+				best = n;
+				tag = t;
+			}
+		} catch (SQLException e) {
+		}
+		return tag;		
+	}
+	public String getLocalVarContext(Tag functionTag, String identifier,
+			Buffer buffer, int line, int pos)
+	{
+		int functionLine = functionTag.getLine();
+		if (functionLine == 0)
+			return null;
+		Pattern pat = getVarDeclPattern(identifier);
+		// Go back from current line to function definition, since there may
+		// be several declarations of the variable in nested blocks of code.
+		for (int i = line; i >= functionLine; i--) {
+			String l = buffer.getLineText(i - 1);
+			Matcher m = pat.matcher(l);
+			if (m.matches())
+				return m.group(1);
+		}
+		return null;
+	}
+	public String getFunctionArgContext(Tag functionTag, String identifier,
+			Buffer buffer, int line, int pos)
+	{
+		String signature = functionTag.getExtension(TagDB.extension2column("signature"));
+		if (signature == null)
+			return null;
+		Pattern pat = getVarDeclPattern(identifier);
+		Matcher m = pat.matcher(signature);
+		if (m.matches())
+			return m.group(1);
+		return null;
+	}
+	public String getMemberContext(Tag functionTag, String identifier, Buffer buffer,
+			int line, int pos)
+	{
+		String namespace = functionTag.getNamespace();
+		if (namespace == null)
+			return null;
+		NamespaceMemberContext c = new NamespaceMemberContext(namespace); 
+		boolean isMember = c.isMember(identifier);
+		return isMember ? namespace : null;
+	}
+
 }

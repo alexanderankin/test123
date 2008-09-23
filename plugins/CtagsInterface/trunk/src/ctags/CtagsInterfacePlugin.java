@@ -270,6 +270,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		}
 		JOptionPane.showMessageDialog(view, "Context: " + context);
+		/*
 		// Retrieve possible completions from context
 		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
 		String [] scopes = "class struct union enum interface namespace".split(" ");
@@ -310,6 +311,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		JOptionPane.showInputDialog(view, "Select completion:",
 			"Completion dialog", 0, null, options, options[0]);
+			*/
 	}
 	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
