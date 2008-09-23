@@ -23,12 +23,15 @@ public class OptionPane extends AbstractOptionPane {
 	private static final String FLOAT_ADD_TO_TASKBAR_LABEL = FLOAT_ADD_TO_TASKBAR_PROP + ".label";
 	private static final String ENABLE_PREVIEW_PROP = PREFIX + "enablePreview";
 	private static final String ENABLE_PREVIEW_LABEL = ENABLE_PREVIEW_PROP + ".label";
+	private static final String ENABLE_ANIMATIONS_PROP = PREFIX + "enableAnimations";
+	private static final String ENABLE_ANIMATIONS_LABEL = ENABLE_ANIMATIONS_PROP + ".label";
 	JComboBox pushAwayMode;
 	JCheckBox useAlternateLayout;
 	JCheckBox floatOnTop;
 	JCheckBox floatOsDecorations;
 	JCheckBox floatAddToTaskBar;
 	JCheckBox enablePreview;
+	JCheckBox enableAnimations;
 	
 	public OptionPane() {
 		super("mydoggy");
@@ -57,6 +60,9 @@ public class OptionPane extends AbstractOptionPane {
 	}
 	public static boolean getEnablePreviewProp() {
 		return jEdit.getBooleanProperty(ENABLE_PREVIEW_PROP, true);
+	}
+	public static boolean getEnableAnimationsProp() {
+		return jEdit.getBooleanProperty(ENABLE_ANIMATIONS_PROP, true);
 	}
 	
 	@Override
@@ -90,6 +96,10 @@ public class OptionPane extends AbstractOptionPane {
 				jEdit.getProperty(ENABLE_PREVIEW_LABEL),
 				getEnablePreviewProp());
 		addComponent(enablePreview);
+		enableAnimations = new JCheckBox(
+				jEdit.getProperty(ENABLE_ANIMATIONS_LABEL),
+				getEnableAnimationsProp());
+		addComponent(enableAnimations);
 	}
 
 	@Override
@@ -100,6 +110,7 @@ public class OptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(FLOAT_OS_DECORATIONS_PROP, floatOsDecorations.isSelected());
 		jEdit.setBooleanProperty(FLOAT_ADD_TO_TASKBAR_PROP, floatAddToTaskBar.isSelected());
 		jEdit.setBooleanProperty(ENABLE_PREVIEW_PROP, enablePreview.isSelected());
+		jEdit.setBooleanProperty(ENABLE_ANIMATIONS_PROP, enableAnimations.isSelected());
 		jEdit.propertiesChanged();
 	}
 

@@ -124,6 +124,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				uiClassLoader = pluginJAR.getClassLoader();
 		}
 		wm = new MyDoggyToolWindowManager(Locale.getDefault(), uiClassLoader);
+		wm.getTypeDescriptorTemplate(ToolWindowType.DOCKED).setAnimating(
+			OptionPane.getEnableAnimationsProp());
 		add(wm, BorderLayout.CENTER);
 		PerspectiveManager.setPerspectiveDirty(true);
 	}
@@ -474,6 +476,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	protected void propertiesChanged() {
 		super.propertiesChanged();
 		setPushAwayMode();
+		wm.getTypeDescriptorTemplate(ToolWindowType.DOCKED).setAnimating(
+			OptionPane.getEnableAnimationsProp());
 		// Update floating properties
 		ToolWindow[] windows = wm.getToolWindows();
 		for (ToolWindow w: windows) {
