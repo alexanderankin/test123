@@ -9,11 +9,10 @@
         h1 { margin-top: 0.0em; margin-bottom: 0.0em; font-family: serif; font-size: x-large; font-weight: bold; font-style: normal; }
         h2 { margin-top: 1.8em; margin-bottom: 0.0em; font-family: serif; font-size: large; font-weight: bold; font-style: normal; }
         h3 { margin-top: 1.2em; margin-bottom: 0.0em; font-family: serif; font-size: medium; font-weight: normal; font-style: italic; }
-        .title_box   { width: 100%; background: #CCCCFF; padding: 0.5em; border: none; }
+        .title_box   { width: 100%; background: #CCCCFF; padding: 0.5em; border: 2px #8A6CAA solid; }
         .warning_box { width: 80%; margin-left: 8%; margin-right: 8%; border: solid; border-width: thin; border-color: #BB0000; padding: 1.0em; text-align: center; font-weight: bold; }
-        .contact     { font-family: "Verdana", sans-serif; font-size: 80%; font-weight: bold; }
-        .version     { font-family: serif; color=#555555; font-size: 80%; text-align: center; }
-        .copyright   { font-family: serif; color=#555555; font-size: 80%; text-align: center; }
+        .version     { font-family: serif; font-size: 80%; text-align: center; }
+        .copyright   { font-family: serif; font-size: 80%; text-align: center; }
     </style>
 </head>
 
@@ -23,8 +22,13 @@
         <tr>
             <td align="left"><h1>FindFile Plugin</h1></td>
             <td align="right">
-                <span class="contact">Maintainer: Anthony Keeley, keeleyt83@yahoo.com</span><br/>
-                <span class="contact">Original Author: Nicholas O'Leary, nol@nol-edge.co.uk</span>
+                <br />
+                <address>Original Author:&nbsp;
+                    <a href="mailto:nol@nol-edge.co.uk">Nicholas O'Leary</a>
+                </address>
+                <address>Maintainer: &nbsp;
+                    <a href="mailto:keeleyt83@yahoo.com">Anthony Keeley</a>
+                </address><br/>
             </td>
         </tr>
     </table>
@@ -34,6 +38,7 @@
 
 <p>This plugin allows you to search within a filesystem for any files that match
 a given filter.</p>
+<hr />
 
 <h2>Features</h2>
 
@@ -45,6 +50,7 @@ a given filter.</p>
 <li>Able to copy search results to jEdit clipboard</li>
 </ul>
 
+<hr />
 <h2>Change Log</h2>
 
 <p>Sept 9 2008: 1.1</p>
@@ -86,6 +92,7 @@ the "recurse sub-directories" option.</li>
 <li>Initial Beta release</li>
 </ul>
 
+<hr />
 <h2>Usage</h2>
 
 <h3>Performing a search</h3>
@@ -136,12 +143,13 @@ protocol. The Archive plugin provides a suitable set of protocols to enable this
 the HyperSearch results pane. This does not make use of the proper Search dialog - to be addressed.</li>
 </ul>
 
+<hr />
 <h2>Known bugs and issues</h2>
 <ul>
-<li>Doesn't return all files meeting search criteria?</li>
-<li>Nothing major - please let me know if you find anything!</li>
+<li>Doesn't return all files meeting search criteria (specifically archives)?</li>
 </ul>
 
+<hr />
 <h2>Future development</h2>
 
 <p>There are a few tweaks I would like to make to this plugin, to make it look
@@ -149,9 +157,8 @@ and act more like hypersearch, and to make it a little more robust. Expect
 most of these changes in the v1.2 release.</p>
 <ul>
 <li>Allow basic file operations, such as delete and rename.</li>
-<li>Add a user-definable list of extensions that may be opened</li>
+<li>Add a user-definable list of extensions that may be opened (maybe just integrate use of HelperLauncher?)</li>
 <li>Make use of the proper Search dialog for searching in a file</li>
-<li>Integrate use of helperlauncher</li>
 <li>Code cleanup (from comments to analysing code and improving implementation)</li>
 <li>Change the search-time status (look like HyperSearch)</li>
 <li>Change search node wording style to HyperSearch style</li>
@@ -167,11 +174,12 @@ most of these changes in the v1.2 release.</p>
 </li>
 </ul>
 
+<hr />
 <h2>Feedback</h2>
 Please send all feedback to the maintainer or original author mentioned in
 the header.
+<hr />
 <h2>Version</h2>
-<code>$Id: about.html,v 1.4 Tue Sep 09 21:51:33 CDT 2008 keeleyt83 Exp $</code>
+<code>$Id: about.html,v 1.4 Mon Sep 22 16:35:41 CDT 2008 keeleyt83 Exp $</code>
 </body>
 </html>
-
