@@ -1,0 +1,37 @@
+--- ./hunspell-1.1.12/src/hunspell/hunspell.h	2008-02-04 15:31:07.000000000 +0100
++++ ./hunspell-1.1.12-works-on-windows/src/hunspell/hunspell.h	2008-02-04 15:31:32.000000000 +0100
+@@ -7,15 +7,21 @@
+ 
+ typedef struct Hunhandle Hunhandle;
+ 
+-Hunhandle *Hunspell_create(const char * affpath, const char * dpath);
+-void Hunspell_destroy(Hunhandle *pHunspell);
++#ifdef _MSC_VER
++#define DLL __declspec ( dllexport )
++#else
++#define DLL 
++#endif
++
++DLL Hunhandle *Hunspell_create(const char * affpath, const char * dpath);
++DLL void Hunspell_destroy(Hunhandle *pHunspell);
+ 
+ /* spell(word) - spellcheck word
+  * output: 0 = bad word, not 0 = good word
+  */
+-int Hunspell_spell(Hunhandle *pHunspell, const char *);
++DLL int Hunspell_spell(Hunhandle *pHunspell, const char *);
+ 
+-char *Hunspell_get_dic_encoding(Hunhandle *pHunspell);
++DLL char *Hunspell_get_dic_encoding(Hunhandle *pHunspell);
+ 
+ /* suggest(suggestions, word) - search suggestions
+  * input: pointer to an array of strings pointer and the (bad) word
+@@ -24,7 +30,7 @@
+  *   a newly allocated array of strings (*slts will be NULL when number
+  *   of suggestion equals 0.)
+  */
+-int Hunspell_suggest(Hunhandle *pHunspell, char*** slst, const char * word);
++DLL int Hunspell_suggest(Hunhandle *pHunspell, char*** slst, const char * word);
+ 
+ #ifdef __cplusplus
+ }
