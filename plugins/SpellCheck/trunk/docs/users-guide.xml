@@ -279,6 +279,59 @@ It can use various engines to perform the spell-checking.
   
   </section>
  </section>
+ <section id="options-syntax">
+ <title>Syntax handling Options</title>
+ <section id="concept-tokens">
+ <title>Concept : syntax aware spell-checking</title>
+
+ <para>
+ For each buffer, jEdit does syntax-highlighting for you.
+ To do this, it splits the content of the buffer in tokens and gives
+ every token a <emphasis>token type</emphasis>.
+ Token types are taken from a predefined set, like <code>COMMENT1</code>, <code>MARKUP</code>,
+ etc..
+ </para>
+ 
+ <para> When spell-checking a Java file, you are generally only interested
+ in the correctness of strings (output to the user) and comments.
+ In other words, you are only interested in token types <code>COMMENT1</code> to <code>COMMENT4</code>
+ and <code>LITERAL1</code>. This is done via syntax aware spell-checking.
+ </para>
+ 
+ </section>
+ 
+ <section id="really-syntax-options">
+ <title>Option pane contents</title>
+ <para>
+ The <guilabel>Syntax handling</guilabel> option pane lets you customize which
+ token type will be spell-checked for each mode.
+ </para>
+ 
+ <para>Modes are grouped by <emphasis>profiles</emphasis>, so that you don't repeat yourself too much.
+ For instance, the <guilabel>markup</guilabel> profile already includes xml and html. For these two
+ modes, only comments, literals and plain text will be spell-checked.
+ </para>
+ 
+ <para>The <guibutton>Add...</guibutton> and <guibutton>Remove...</guibutton> buttons
+ let you manage the profiles, while clicking in a cell of the table lets you edit their
+ content.
+ <itemizedlist>
+ <listitem><para>The <guilabel>Name</guilabel> of a profile identifies it. Please do not include spaces.</para></listitem>
+ <listitem><para>The <guilabel>Modes</guilabel> of a profile are the modes to which the settings apply.</para></listitem>
+ <listitem><para>The <guilabel>Tokens</guilabel> of a profile are the token types that <emphasis>will</emphasis> be spell-checked.</para></listitem>
+ </itemizedlist>
+ </para>
+ 
+ <para>The <guilabel>code</guilabel> is the default profile, but you can change this
+ via the check-boxes in the first column of the table.</para>
+ 
+ <para>You can globally disable syntax aware spell-checking for an engine manager
+ in the <guilabel>General</guilabel> option pane.
+ Aspell has it disabled by default, as it has its own syntax handling.
+ </para>
+ </section>
+ </section>
+ 
  <section id="options-aspell">
   <title>Aspell Options</title>
    <section id="executable-option"><title>Aspell executable filename</title>
@@ -547,7 +600,6 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
 <itemizedlist>
   <listitem><para>Allow the user access all of Aspell options.
   This is now dormant, as new engines are included.</para></listitem>
-  <listitem><para>Allow the user to choose which tokens to spellcheck</para></listitem>
 </itemizedlist>
 </chapter>
 
@@ -560,7 +612,7 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
     <listitem><para>multiple engines (Hunspell bundled)</para></listitem>
     <listitem><para>previous and done actions in spell-check dialog</para></listitem>
     <listitem><para>suggest action in spell-check dialog</para></listitem>
-    <listitem><para>use buffer tokens for context-sensitive spellchecking</para></listitem>
+    <listitem><para>use buffer token types for context-sensitive spellchecking</para></listitem>
     </itemizedlist>
 </listitem>
 <listitem><para>Release 005 (August 26, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E. Le Lay</ulink></para>

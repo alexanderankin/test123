@@ -87,7 +87,7 @@ public class AspellOptionPane
   private JTextArea _filtersDescription;
   public AspellOptionPane()
   {
-    super( "SpellCheck-Aspell-bridge" );
+    super( "spellcheck.aspell" );
   }
 
   public void _init()

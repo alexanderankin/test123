@@ -22,6 +22,7 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.jars=hunspell.jar jna.jar
 
 ### Option panel labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.option-group=	spellcheck.general \
+	spellcheck.syntax \
 	spellcheck.aspell \
     spellcheck.hunspell
 
@@ -34,6 +35,8 @@ options.spellcheck.aspell.code=new cswilly.jeditPlugins.spell.AspellOptionPane()
 options.spellcheck.hunspell.label=Hunspell Engine
 options.spellcheck.hunspell.code=new cswilly.jeditPlugins.spell.hunspellbridge.HunspellOptionPane();
 
+options.spellcheck.syntax.label=Syntax handling
+options.spellcheck.syntax.code=new cswilly.jeditPlugins.spell.SyntaxOptionPane();
 
 options.SpellCheck.label=Spell Check
 options.SpellCheck.fileChooser=Choose
@@ -54,10 +57,13 @@ options.SpellCheck.stop-refresh-langs=Stop!
 options.SpellCheck.no-dictionary=<No Dictionary Found>
 options.SpellCheck.spellcheckOnSave=Spell-check on save
 options.SpellCheck.spellcheckOnSave.tooltip=Report spelling errors via ErrorList : experimental and slugish ;)
-options.SpellCheck.filtersDescription.default=Here you will find a description of the Aspell's filtering capatibilities...
-options.SpellCheck.filtersDescription.error=Couldn't detect Aspell's filtering capatibilities!
-options.SpellCheck.filtersDescription.prolog=This is the description of the different filters:
-options.SpellCheck.engineManager=Spell-checking engine to use:
+options.SpellCheck.filtersDescription.default=Here you will find a description of the Aspell's filtering capabilities...
+options.SpellCheck.filtersDescription.error=Couldn't detect Aspell's filtering capabilities!
+options.SpellCheck.filtersDescription.prolog=This is the description of the different filters:\n
+options.SpellCheck.engineManager=Spell-checking engine:
+options.SpellCheck.disableSyntax=Disable syntax-aware spell-checking for this engine.
+options.SpellCheck.disableSyntax.tooltip=With this option checked, each and every word will be spell-checked by the engine.
+options.SpellCheck.spellcheckOnSaveSep=Misspelled words highlighting...
 ### Menu item labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
@@ -71,17 +77,19 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
 spell-check-menu.label=Spell Check
 
 spell-check-selection.label=Spell check selection...
-spell-check-selection-with-lang.label=Spell check selection with lang...
+spell-check-selection-with-lang.label=Spell check selection with dictionary...
 spell-check-errorlist.label=Highlight misspelled words
 spell-check-set-buffer-lang.label=Set Buffer's language...
 spell-check-save-dicts.label=Persist Dictionaries on disk
 spell-check-browse-dicts.label=Browse user dictionaries...
 ### Messages
 spell-check-selection-with-lang.title=Spell check selection with lang...
-spell-check-selection-with-lang.message=Enter an alternative lang dictionary:
+spell-check-selection-with-lang.message=Enter an alternative dictionary:
 
 spell-check-noAspellExe.title=Unable to locate the aspell executable...
-spell-check-noAspellExe.message=The spell check engine is unable to locate your aspell executable.\nPlease tell it which one to use.
+spell-check-noAspellExe.message=The spell check engine is unable to locate your aspell executable.\n\
+ Please go to "Plugin Options > Spell Check > Aspell engine"\
+ and fill-in the form.
 
 spell-check-error.title=Error spell checking (Aspell).
 spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}
@@ -127,10 +135,12 @@ spell-check-clear-ignore-all-cleared.message=Ignored words cleared.
 spell-check-clear-ignore-all-none.message=No ignored words list to clear.
 
 #engines
+spell-check-engine=hunspell
 spell-check-aspell-engine.description=use an externall Aspell program
 spell-check-hunspell-engine.description=use bundled Hunspell library
 spell-check-voxspell-engine.description=use VoxSpell plugin's spell-checker
 spell-check-no-such-service=EngineManager service named {0} doesn't exist
+spell-check-engine.aspell.disableSyntax=true
 
 #hunspell option pane
 spell-check-fetch-available-error=An error occured while fetching available dictionaries:\n{0}
@@ -142,15 +152,15 @@ options.spellcheck.hunspell.install=Install...
 options.spellcheck.hunspell.remove=Remove...
 options.spellcheck.hunspell.stop=Stop!
 
-options.spellcheck.hunspell.external-lib=Location of external Hunspell library (restart jEdit to take effect):
+options.spellcheck.hunspell.external-lib=Location of external Hunspell library (restart jEdit to apply):
 spell-check-hunspell-init-error.title=Hunspell Error
 spell-check-hunspell-init-error.message=Unable to load the library. Error is:\n{0}
 
-spell-check-hunspell-error-unknownhost.title=Error refreshing availables dictionaries...
+spell-check-hunspell-error-unknownhost.title=Error refreshing available dictionaries...
 spell-check-hunspell-error-unknownhost.message=It seems that you have a network connection problem:\n
 Unknown Host {0}
-spell-check-hunspell-error-fetch.title=Error refreshing availables dictionaries...
-spell-check-hunspell-error-fetch.message=An exception occured while fetching the list\n\
+spell-check-hunspell-error-fetch.title=Error refreshing available dictionaries...
+spell-check-hunspell-error-fetch.message=An exception occurred while fetching the list\n\
 of available dictionaries : {0}
 
 spell-check-hunspell-error-installed-dict.title=Error installing dictionary
@@ -180,3 +190,28 @@ spell-check-hunspell-update-failed.broken.title=Update failed...
 spell-check-hunspell-update-failed.broken.message=Update of {0} failed and the old version has been uninstalled. Please retry...
 
 spell-check-hunspell-site=http://ftp.services.openoffice.org/pub/OpenOffice.org/contrib/dictionaries/
+#syntax option pane
+options.SpellCheck.syntax.dialog.title=Token types picker...
+options.SpellCheck.syntax.dialog.message=Please pick the token types to spell-check.
+options.SpellCheck.syntax.dialog.select-all=All
+options.SpellCheck.syntax.add.name=Add...
+options.SpellCheck.syntax.add.tooltip=Add a new profile for spell-checking
+options.SpellCheck.syntax.remove.name=Remove...
+options.SpellCheck.syntax.remove.tooltip=Delete a profile
+options.SpellCheck.syntax.edit=Edit...
+spell-check-syntax-profiles-list=code,markup,text
+
+spell-check-syntax-profiles-list.code.tokens=COMMENT1,COMMENT2,COMMENT3,COMMENT4,LITERAL1,LITERAL2,LITERAL3,LITERAL4
+spell-check-syntax-profiles-list.code.default=true
+
+spell-check-syntax-profiles-list.markup.tokens=NULL,COMMENT1,LITERAL1
+spell-check-syntax-profiles-list.markup.modes=xml,html
+
+spell-check-syntax-profiles-list.text.tokens=NULL
+spell-check-syntax-profiles-list.text.modes=tex,latex,text
+options.SpellCheck.syntax.description=Here you can configure which parts of your buffers to spell-check, depending on the mode (java,text).\n\
+ Modes are grouped by profiles, so that you don't repeat yourself too much.\n\
+ For instance, the 'code' profile includes only literals (e.g. string constants) and comments,\n\
+ while the 'text' mode includes only NULL token types (plain text).
+options.SpellCheck.syntax.warning-disabled=Syntax aware spell-checking is disabled for current engine.\n\
+ To enable it, go to the "SpellCheck>General" option pane.

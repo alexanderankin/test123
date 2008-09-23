@@ -83,11 +83,11 @@ public class SpellCheckOptionPane
 	//the properties in this Option Pane
 	private PropertyStore propertyStore;
 
-  private static final int ASPELL_OPTION_VERTICAL_STRUT  = 7;
+  private static final int ASPELL_OPTION_VERTICAL_STRUT  = 27;
 
   public SpellCheckOptionPane()
   {
-    super( SpellCheckPlugin.PLUGIN_NAME );
+    super( "spellcheck.general" );
   }
 
   public void _init()
@@ -99,6 +99,9 @@ public class SpellCheckOptionPane
 	String engineManager = jEdit.getProperty(ENGINE_MANAGER_PROP);
 	propertyStore.put(ENGINE_MANAGER_PROP,engineManager);
 
+	boolean disableSyntax = jEdit.getBooleanProperty(ENGINE_MANAGER_PROP+"."+engineManager+".disableSyntax");
+	propertyStore.put(ENGINE_MANAGER_PROP+"."+engineManager+".disableSyntax",String.valueOf(disableSyntax));
+	
 	String lang = SpellCheckPlugin.getMainLanguage();
 	propertyStore.put(MAIN_LANGUAGE_PROP,lang);
 	
@@ -122,11 +125,40 @@ public class SpellCheckOptionPane
 	addComponent(jEdit.getProperty( "options.SpellCheck.engineManager" ),
 				 engineManagerBox);
 	
+	/* disable syntax-aware spell-checking */
+	
+	final JCheckBox cbSyntax = new JCheckBox(jEdit.getProperty( "options.SpellCheck.disableSyntax" ),disableSyntax);
+	cbSyntax.setToolTipText(jEdit.getProperty( "options.SpellCheck.disableSyntax.tooltip" ));
+	
+	//change property on action
+	cbSyntax.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e){
+			boolean selected = cbSyntax.isSelected();
+			String curEngine = propertyStore.get(ENGINE_MANAGER_PROP);
+			propertyStore.put(ENGINE_MANAGER_PROP+"."+curEngine+".disableSyntax",String.valueOf(selected));
+		}
+	});
+	
+	//update check-box value on engine change
+	propertyStore.addPropertyChangeListener(new PropertyChangeListener(){
+			public void propertyChange(PropertyChangeEvent pce){
+				if(ENGINE_MANAGER_PROP.equals(pce.getPropertyName())){
+					String key = ENGINE_MANAGER_PROP+"."+pce.getNewValue()+".disableSyntax";
+					String sel = propertyStore.get(key);
+					if(sel == null){
+						sel = jEdit.getProperty(key,"false");
+						propertyStore.put(key,sel);
+					}
+					boolean selected = Boolean.parseBoolean(sel);
+					cbSyntax.setSelected(selected);
+				}
+			}
+	});
+	addComponent("",cbSyntax);
+	
+	
     /* aspell main lang dictionary */
-    JLabel _aspellMainLanguageLabel = new JLabel();
-    _aspellMainLanguageLabel.setText( jEdit.getProperty( "options.SpellCheck.aspellLang" ) );
-
-    addComponent( _aspellMainLanguageLabel );
+    addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
     JPanel listingPanel = new JPanel( new BorderLayout( 5, 0 ) );
 
@@ -155,8 +187,12 @@ public class SpellCheckOptionPane
 	refreshButton.setName("Refresh");
 	listingPanel.add( refreshButton, BorderLayout.EAST );
 
-	addComponent(listingPanel);
+	addComponent(jEdit.getProperty( "options.SpellCheck.aspellLang" ),
+				 listingPanel);
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
+
+    addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
+	addSeparator("options.SpellCheck.spellcheckOnSaveSep");
 
 	/* spell-check on save */
 	final JCheckBox spellOnSaveBox = new JCheckBox();
@@ -170,7 +206,7 @@ public class SpellCheckOptionPane
 					String.valueOf(ItemEvent.SELECTED == e.getStateChange()));
 			}
 	});
-	addComponent(spellOnSaveBox);
+	addComponent("",spellOnSaveBox);
 	
 	
 	
@@ -207,8 +243,12 @@ public class SpellCheckOptionPane
 	if(jEdit.getProperty(NO_DICTIONARY).equals(lang))lang="";
 		jEdit.setProperty( MAIN_LANGUAGE_PROP, lang);
 	
-	jEdit.setProperty( ENGINE_MANAGER_PROP,  propertyStore.get(ENGINE_MANAGER_PROP) );
+	String engine = propertyStore.get(ENGINE_MANAGER_PROP);
+	jEdit.setProperty( ENGINE_MANAGER_PROP,  engine );
+	String disableSyntaxKey = ENGINE_MANAGER_PROP+"."+engine+".disableSyntax";
 	jEdit.setProperty( SPELLCHECK_ON_SAVE_PROP,  propertyStore.get(SPELLCHECK_ON_SAVE_PROP) );
+	jEdit.setProperty( disableSyntaxKey,  propertyStore.get(disableSyntaxKey) );
+	jEdit.setProperty( SyntaxHandlingManager.GLOBAL_DISABLE_PROP,propertyStore.get(disableSyntaxKey));
   }
 
   private static class SetEngineAction implements PropertyChangeListener{
@@ -228,4 +268,5 @@ public class SpellCheckOptionPane
 		  }
 	  }
   }
+  
 }

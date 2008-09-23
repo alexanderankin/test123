@@ -70,19 +70,19 @@ public class TestUtils{
 	private static RobotFixture robot;
 	private static EmergencyAbortListener listener;  
 
-	private static boolean injEdit = false;
+	private static Boolean injEdit = null;
 	public static void setUpjEdit(){
-		
+		assert(robot==null);
 		System.out.println("Setting jedit up");
-
-		String inJedit = System.getProperty(ENV_IN_JEDIT);
-		injEdit = "yes".equals(injEdit);
-		
-		if(injEdit){
+		if(injEdit==null){
+			String injEditS = System.getProperty(ENV_IN_JEDIT);
+			injEdit = "yes".equals(injEditS);
+		}
+		if(injEdit.booleanValue()){
 			try{
+				System.out.println("No need to launch jEdit");
 				robot = RobotFixture.robotWithCurrentAwtHierarchy();
 				listener = EmergencyAbortListener.registerInToolkit();
-				
 			try{
 			robot.printer().printComponents(new PrintStream(new FileOutputStream("/Users/elelay/temp/client2/jEdit/SpellCheck/print-comps")));
 			}catch(FileNotFoundException fnfe){}
@@ -92,7 +92,10 @@ public class TestUtils{
 				System.out.println(re.toString());
 			}
 		}else{
+			System.out.println("Starting a new jEdit");
 		 	robot = RobotFixture.robotWithNewAwtHierarchy();
+			listener = EmergencyAbortListener.registerInToolkit();
+
 			String settings = System.getProperty(ENV_JEDIT_SETTINGS);
 			assertTrue("Forgot to set env. variable '"+ENV_JEDIT_SETTINGS+"'",settings!=null);
 			
@@ -134,6 +137,40 @@ public class TestUtils{
 		robot = null;
 		jeditFrame = null;
 
+	}
+	
+	public static void beforeTest(){
+		System.out.println("beforeTest");
+		if(injEdit==null){
+			System.out.println("null jEdit");
+			setUpjEdit();
+		}else{
+			System.out.println("null jEdit");
+			if(injEdit.booleanValue()){
+				setUpjEdit();
+			}
+		}
+	}
+	public static void afterTest(){
+		if(injEdit.booleanValue()){
+			tearDownjEdit();
+		}
+	}
+	
+	public static void beforeClass(){
+		System.out.println("before class");
+		if(injEdit==null){
+			setUpjEdit();
+		} if(!injEdit.booleanValue()){
+				setUpjEdit();
+		}
+	}
+	
+	public static void afterClass(){
+		System.out.println("after class");
+		if(!injEdit.booleanValue()){
+				tearDownjEdit();
+		}
 	}
 	
 	public static DialogFixture findDialogByTitle(String title){

@@ -35,6 +35,7 @@ import cswilly.spell.ChangeWordAction;
 
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.Selection;
@@ -55,7 +56,14 @@ import java.util.Collections;
  * @see	BufferSpellChecker.BufferValidator	used to highlight the word currently checked, and scroll to it.
  */
 public class BufferSpellChecker implements SpellSource, SpellEffector{
-  
+
+	private static final byte[] DEFAULT_TOKENS = 
+		{
+			Token.COMMENT1, Token.COMMENT2, Token.COMMENT3,
+			Token.COMMENT4, Token.LITERAL1, Token.LITERAL2, 
+  			Token.LITERAL3,Token.LITERAL4
+		};
+		
 	private TextArea area;
 	private JEditBuffer input;
 	
@@ -75,10 +83,17 @@ public class BufferSpellChecker implements SpellSource, SpellEffector{
   public BufferSpellChecker( TextArea area,boolean ignoreSelections )
   {
 	  this.area = area;
-	  setTokensToAccept(
-		  new byte[]{Token.COMMENT1, Token.COMMENT2, Token.COMMENT3,
-				     Token.COMMENT4, Token.LITERAL1, Token.LITERAL2, 
-  					 Token.LITERAL3,Token.LITERAL4});
+	  
+	  if(SyntaxHandlingManager.isSyntaxHandlingDisabled()){
+		  setAcceptAllTokens();
+	  } else {
+		  Mode mode = area.getBuffer().getMode();
+		  byte[] toInclude=DEFAULT_TOKENS;
+		  if(mode!=null){
+			  toInclude = SyntaxHandlingManager.getTokensToInclude(mode.getName());
+		  }
+		  setTokensToAccept(toInclude);
+	  }
 	  this.ignoreSelections=ignoreSelections;
   }
 

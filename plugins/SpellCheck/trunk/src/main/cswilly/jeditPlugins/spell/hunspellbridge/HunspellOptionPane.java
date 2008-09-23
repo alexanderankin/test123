@@ -88,7 +88,7 @@ public class HunspellOptionPane extends AbstractOptionPane{
 	private FileTextField externalLibField;
 	
 	public HunspellOptionPane(){
-		super("SpellCheck-Hunspell-bridge");
+		super("spellcheck.hunspell");
 		HunspellEngineManager engMan = (HunspellEngineManager)ServiceManager.getService(EngineManager.class.getName(), "Hunspell");
 		assert(engMan!=null);
 		dictsManager = engMan.getDictsManager();

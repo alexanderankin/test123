@@ -77,27 +77,31 @@ import static cswilly.jeditPlugins.spell.TestUtils.*;
 public class SpellCheckPluginTest
 {	
 
-	// @BeforeClass
-	// public  static void setUpjEdit(){
-	// 	TestUtils.setUpjEdit();
-	// }
+	@BeforeClass
+	public  static void setUpjEdit(){
+		System.err.println("beforeClass");
+		TestUtils.beforeClass();
+	}
 
-	// @AfterClass
-	// public static void tearDownjEdit(){
-	// 	TestUtils.tearDownjEdit();
-	// }
+	@AfterClass
+	public static void tearDownjEdit(){
+		System.err.println("afterClass");
+		TestUtils.afterClass();
+	}
 	
-	@Before
-	public void beforeTest(){
-		TestUtils.setUpjEdit();
-		jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
-	}
+	// @Before
+	// public void beforeTest(){
+	// 	System.err.println("beforeTest");
+	// 	TestUtils.beforeTest();
+	// 	jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
+	// }
 
-	@After
-	public void afterTest(){
-		jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().deactivatePlugin(false);
-		TestUtils.tearDownjEdit();
-	}
+	// @After
+	// public void afterTest(){
+	// 	System.err.println("afterTest");
+	// 	jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().deactivatePlugin(false);
+	// 	TestUtils.afterTest();
+	// }
 
 	@Test
 	public void testOptions(){
