@@ -101,7 +101,7 @@ public class HunspellEngineManager implements EngineManager{
 			}catch(UnsatisfiedLinkError ule){
 				throw new SpellException("Unable to load Hunspell library",ule);
 			}
-			assert(d!=null);//hunspell returns non-null or throws an exception
+			if(d==null)throw new SpellException("Unable to find Hunspell dictionary for "+language);
 			
 			return new HunspellEngine(d);
 			
