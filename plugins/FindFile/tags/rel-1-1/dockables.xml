@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- $Id: dockables.xml,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $ -->
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="FindFilePlugin">
+		new findfile.FindFileResults(view);
+	</DOCKABLE>
+</DOCKABLES>
+
