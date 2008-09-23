@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- $Id: actions.xml,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $ -->
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+   <ACTION NAME='plugin.findfile.FindFilePlugin.actions.newSearch'>
+      <CODE>
+         findfile.FindFileDialog fsd = new findfile.FindFileDialog(view,buffer.getVFS().getParentOfPath(buffer.getPath()));
+         fsd.setVisible(true);
+      </CODE>
+   </ACTION>
+</ACTIONS>
+
