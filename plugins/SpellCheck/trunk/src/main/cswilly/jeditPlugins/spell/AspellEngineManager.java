@@ -105,6 +105,7 @@ public class AspellEngineManager implements EngineManager
   {
 	  List<String> aspellCommandLine = initCommandLine(mode,language,terse);
 	  String aspellExeFilename = getAspellExeFilename();
+	  if(aspellExeFilename == null)throw new SpellException("Aspell executable is not defined");
 	  aspellCommandLine.add(0,aspellExeFilename);
 	  AspellEngine engine = engines.get(aspellCommandLine);
 	if(engine == null || engine.isStopped()){

@@ -135,7 +135,7 @@ spell-check-clear-ignore-all-cleared.message=Ignored words cleared.
 spell-check-clear-ignore-all-none.message=No ignored words list to clear.
 
 #engines
-spell-check-engine=hunspell
+spell-check-engine=Hunspell
 spell-check-aspell-engine.description=use an externall Aspell program
 spell-check-hunspell-engine.description=use bundled Hunspell library
 spell-check-voxspell-engine.description=use VoxSpell plugin's spell-checker

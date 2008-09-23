@@ -108,16 +108,22 @@ public class HunspellDictsManager{
 	 * @see createInstalledDict(String)
 	 */
 	private void initInstalled(){
-		String[] installedL = VIRGULE_SPLIT.split(jEdit.getProperty(INSTALLED_DICTS_PROP,""));
 
 		if(installed==null){
-			installed = new ArrayList<Dictionary>(installedL.length);
+			installed = new ArrayList<Dictionary>();
 		}else installed.clear();
-			
-		for(int i=0;i<installedL.length;i++){
-			Dictionary d = createInstalledDict(installedL[i]);
-			if(d!=null)installed.add(d);
-			else Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to init dict "+installedL[i]);
+
+		String installedP = jEdit.getProperty(INSTALLED_DICTS_PROP);
+
+		if(installedP==null || "".equals(installedP)){
+			Log.log(Log.DEBUG,HunspellDictsManager.class,"No Hunspell dictionary registered!");
+		} else {
+			String[] installedL = VIRGULE_SPLIT.split(installedP);
+			for(int i=0;i<installedL.length;i++){
+				Dictionary d = createInstalledDict(installedL[i]);
+				if(d!=null)installed.add(d);
+				else Log.log(Log.ERROR,HunspellDictsManager.class,"Unable to init dict "+installedL[i]);
+			}
 		}
 	}
 	
