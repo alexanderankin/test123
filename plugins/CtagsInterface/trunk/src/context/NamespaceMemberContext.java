@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,31 +18,39 @@ import db.TagDB;
 public class NamespaceMemberContext {
 	static String [] scopes =
 		"class struct union enum interface namespace".split(" ");
-	private String namespace;
+	static String scopeCondition;
+	private Tag namespaceTag = null;
 
+	{
+		StringBuffer sb = new StringBuffer();
+		for (String scope: scopes) {
+			if (!(sb.length() > 0))
+				sb.append(",");
+			sb.append("'" + scope + "'");
+		}
+		scopeCondition = TagDB.extension2column("kind") + " IN (" + sb + ")";
+	}
 	public NamespaceMemberContext(String namespace) {
-		this.namespace = namespace;
+		Query q = new Query("*", TagDB.TAGS_TABLE, "NAME='" + namespace + "'");
+		q.addCondition(scopeCondition);
+		TagDB db = CtagsInterfacePlugin.getDB();
+		ResultSet rs;
+		try {
+			rs = db.query(q);
+		} catch (SQLException e) {
+			return;
+		}
+		Vector<Tag> tags = db.getResultSetTags(rs);
+		if (! tags.isEmpty())
+			namespaceTag = tags.firstElement();
 	}
 	private Vector<Tag> getMember(String member) {
-		StringBuffer sb = new StringBuffer();
-		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
-		boolean first = true;
-		for (String scope: scopes) {
-			String cname = TagDB.extension2column(scope);
-			if (! columns.contains(cname))
-				continue;
-			if (! first)
-				sb.append(" OR ");
-			else
-				first = false;
-			sb.append(TagDB.extension2column(scope) + "=" + TagDB.quote(namespace));
-		}
-		Query q = CtagsInterfacePlugin.getBasicTagQuery();
-		q.addCondition("(" + sb.toString() + ")");
+		TagDB db = CtagsInterfacePlugin.getDB();
+		Query q = db.getBasicTagQuery();
 		q.addCondition(TagDB.TAGS_NAME + "=" + TagDB.quote(member));
+		q.addCondition(TagDB.extension2column("kind") + "=" + TagDB.quote(namespaceTag.getKind()));
 		ResultSet rs;
 		Vector<Tag> tags = null;
-		TagDB db = CtagsInterfacePlugin.getDB();
 		try {
 			rs = db.query(q);
 			tags = db.getResultSetTags(rs);
@@ -71,7 +78,7 @@ public class NamespaceMemberContext {
 		return text;
 	}
 	public String getContext(String member) {
-		if (namespace == null)
+		if (namespaceTag == null)
 			return null;
 		Vector<Tag> tags = getMember(member);
 		if (tags.isEmpty())
