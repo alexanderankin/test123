@@ -50,6 +50,8 @@ public class VoxSpellOptionPane extends AbstractOptionPane
     private JCheckBox use_custom_color;
     private Color color;
     
+    private static String color_button_text = "Click here to select a new underline color";
+    
     private class CustomButton extends JButton
     {
         protected Font font;
@@ -66,10 +68,10 @@ public class VoxSpellOptionPane extends AbstractOptionPane
             setForeground(jEdit.getColorProperty("view.fgColor"));
             
             s = jEdit.getProperty("view.font");
-            Font font = new Font(s, 0, getFont().getSize());
+            font = new Font(s, 0, getFont().getSize());
             setFont(font);
             
-            Rectangle2D r = font.getStringBounds("select color", new FontRenderContext(null, true, true));
+            Rectangle2D r = font.getStringBounds(color_button_text, new FontRenderContext(null, true, true));
             width = (int)r.getWidth();
             height = (int)r.getHeight();
             this.setSize((int)width + 10, getHeight());
@@ -83,6 +85,9 @@ public class VoxSpellOptionPane extends AbstractOptionPane
             
             super.paintComponent(gfx);
             
+            Rectangle2D font_rect = font.getStringBounds(color_button_text, gfx.getFontRenderContext());
+            width = (int)font_rect.getWidth();
+            height = (int)font_rect.getHeight();
             x = (int)((getBounds(null).width / 2.0) - (width / 2.0));
             y = (int)((getBounds(null).height / 2.0) + (height / 2.0));
             gfx.setColor(color);
@@ -102,11 +107,11 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         boolean b;
         s = jEdit.getProperty("options.voxspellcheck.all_text_modes");
         all_text_modes = new JTextField(s);
-        addComponent(new JLabel("All text modes: "), all_text_modes);
+        addComponent(new JLabel("Modes where all text is checked: "), all_text_modes);
         
         s = jEdit.getProperty("options.voxspellcheck.non_markup_modes");
         non_markup_modes = new JTextField(s);
-        addComponent(new JLabel("Non-markup modes: "), non_markup_modes);
+        addComponent(new JLabel("Modes where only plain text (not syntax highlighted) is checked: "), non_markup_modes);
         
         s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
         b = s.equals("true");
@@ -122,7 +127,7 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         use_custom_color.setActionCommand("enable");
         //panel.add(use_custom_color);
         addComponent(use_custom_color);
-        final CustomButton color_button = new CustomButton("select color");
+        final CustomButton color_button = new CustomButton(color_button_text);
         if (!b)
             color_button.setEnabled(false);
         //panel.add(color_button);
