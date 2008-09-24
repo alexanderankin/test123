@@ -31,11 +31,6 @@ import cswilly.spell.WordListValidator;
 import cswilly.spell.ChainingValidator;
 import cswilly.spell.SpellCoordinator;
 
-import cswilly.jeditPlugins.spell.voxspellbridge.VoxSpellEngineManager;
-
-import cswilly.jeditPlugins.spell.hunspellbridge.HunspellEngineManager;
-
-
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
