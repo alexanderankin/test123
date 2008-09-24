@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- This file defines actions. Each action is a short snippet of
+     BeanShell code that may be bound to a menu item or keystroke.
+
+     Menu item labels for actions should be defined in properties named
+     <action>.label.
+
+     Shortcuts for actions should *not* be assigned by plugins. -->
+
+<ACTIONS>
+  <!-- Menu action for spell checking the current selection -->
+  <ACTION NAME="spell-check-selection">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.checkBuffer(view,buffer);
+    </CODE>
+  </ACTION>
+  <!-- Menu action for printing misspelled words via ErrorList -->
+  <ACTION NAME="spell-check-errorlist">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.checkBufferErrorList(view,buffer);
+    </CODE>
+  </ACTION>
+
+  <!-- Menu action for spell checking the current selection with a specified lang -->
+  <ACTION NAME="spell-check-selection-with-lang">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view,buffer);
+    </CODE>
+  </ACTION>
+  
+  <!-- Menu action for setting the language of current buffer -->
+  <ACTION NAME="spell-check-set-buffer-lang">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.setBufferLanguage(view,buffer);
+    </CODE>
+  </ACTION>
+  <!-- Menu action for setting the language of current buffer -->
+  <ACTION NAME="spell-check-clear-ignore-all">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.clearIgnoreAll(view,buffer);
+    </CODE>
+  </ACTION>
+  <!-- Menu action for persisting the dictionaries -->
+  <ACTION NAME="spell-check-save-dicts">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.saveDictionaries(view);
+    </CODE>
+  </ACTION>
+  <!-- Menu action for browsing dictionaries -->
+  <ACTION NAME="spell-check-browse-dicts">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.browseUserDicts(view);
+    </CODE>
+  </ACTION>
+</ACTIONS>

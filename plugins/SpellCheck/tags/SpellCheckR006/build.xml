@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<!-- :tabSize=4:indentSize=4:noTabs=false: -->
+
+<!-- This is a build.xml file for building the SpellCheck plugin.     -->
+<!--                                                                  -->
+<!-- The 'dist' target compiles the plugin, creates the documentation -->
+<!--      and the SpellCheck.jar file.                                -->
+<!-- Note that this build file uses ../build-support,                 -->
+<!-- available from jedit source repository                           -->
+<!-- $Id$ - $Revision                                                 -->
+<project name="SpellCheck" default="dist" basedir=".">
+
+	
+	<!-- where the source code lives -->
+	<property name="src.dir" value="src/main"/>
+
+	<!-- separate dir for test code (see test.compile) -->
+	<property name="src.test.dir" value="src/test"/>
+
+	<!-- separate dir for images -->
+	<property name="resources.dir" value="resources"/>
+
+	<!-- for build-support location -->
+	<property file="../build.properties"/>
+	<!-- build support -->
+	<import file="${build.support}/plugin-build.xml" />
+
+	<!-- TODO: put this in properties -->
+	<path id="fest.class.path">
+			<pathelement location="lib/fest-swing-1.0b1.jar"/>
+			<pathelement location="lib/fest-util-0.4.jar"/>
+			<pathelement location="lib/fest-reflect-0.4.jar"/>
+			<pathelement location="lib/fest-assert-1.0a1.jar"/>
+	</path>
+	
+	<!-- TODO: make use of recursive dependencies build -->
+	<path id="plugins.class.path">
+		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
+		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
+		<!--<pathelement location="${jedit.jars.dir}/Voxspell.jar"/>-->
+	</path>
+	
+	<path id="hunspell.class.path">
+		<pathelement location="lib/hunspell.jar"/>
+	</path>
+	
+	<!-- consists in previously defined paths -->
+	<path id="project.class.path">
+		<path refid="plugins.class.path"/>
+		<path refid="fest.class.path"/>
+		<path refid="hunspell.class.path"/>
+	</path>
+	
+	<!-- where to put tests results -->
+    <property name="build.tests"  value="${build.dir}/tests" />
+
+	<!-- I use a separate target to build the tests -->
+	<selector id="compileFiles">
+		<and>
+        <filename name="**/*.java" />
+		<not><filename name="**/VoxSpell*.java"/></not>
+		</and>
+    </selector>
+
+	
+	<selector id="extraFiles">
+        <and>
+            <or>
+                <filename name="**/actions.xml" />
+                <filename name="**/browser.actions.xml" />
+                <filename name="**/dockables.xml" />
+                <filename name="**/services.xml" />
+                <filename name="**/*.props" />
+                <filename name="**/LICENSE" />
+                <filename name="**/README" />
+            </or>
+			<not>
+				<filename name="build/**"/>
+			</not>
+        </and>
+    </selector>
+
+	
+	<target name="test.compile"
+		description="Compile the plugin's test classes"
+		depends="compile">
+
+        <mkdir dir="${build.classes}" />
+        <jp.javac>
+            <src location="${src.test.dir}" />
+			<selector refid="compileFiles"/>
+        </jp.javac>
+
+    </target>
+
+
+	<!-- here you have all the tests about aspell-->
+	<selector id="testcases.aspellengine">
+	<or>
+	<filename name="**/cswilly/spell/AspellEngineTest.java"/>
+	<filename name="**/cswilly/spell/FutureAspellTest.java"/>
+	<filename name="**/cswilly/spell/FutureListDictsTest.java"/>
+	<filename name="**/cswilly/spell/FutureListModesTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellEngineManagerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellOptionPaneTest.java"/>
+	</or>
+	</selector>
+
+	<!-- here you have all the tests about VoxSpell bridge -->
+	<selector id="testcases.voxspell">
+	<filename name="**/cswilly/jeditPlugins/spell/voxspellbridge/*Test.java"/>
+	</selector>
+	
+	<!-- here you have functional tests : spell-check a buffer, show the options -->
+	<selector id="testcases.common">
+	<or>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferDialogValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/DictionaryPickerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckOptionPaneTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	</or>
+	</selector>
+	
+	<!-- this selector holds current test... -->
+	<selector id="testcases.current">
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	</selector>
+	
+	<!-- This selector controls which tests to run. -->
+	<selector id="junit.testcases">
+	<or>
+	<selector refid="testcases.current"/>
+	</or>
+    </selector>
+
+	
+	
+	<!-- for junit tests -->
+	<property name="unit.test.target" value="test-junit"/>
+
+    <!-- {{{ Target: test-junit============================ -->
+	<!-- started as a copy of plugin-build.xml, but added system properties,
+	     batch-processing.
+	  -->
+    <target name="test-junit"
+            description="Runs the plugin's jUnit tests."
+			depends="test.compile,test.prepare">
+        <echo message="Running tests..."/>
+		
+        <junit printsummary="${junit.printsummary}"
+                haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}"
+				fork="yes">
+
+			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
+			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
+			<sysproperty key="test-tests.dir" path="tests"/>
+			
+			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
+
+            <classpath>
+                <pathelement location="${junit.jar}" />
+				
+				<!-- for junit annotations -->
+                <pathelement location="${hamcrest.jar}" />
+				
+                <pathelement location="${build.classes}" />
+                <path refid="default.class.path" />
+                <path refid="project.class.path" />
+            </classpath>
+
+            <batchtest todir="${build.tests}">
+                <fileset dir="${src.test.dir}">
+                  <selector refid="junit.testcases"/>
+                </fileset>
+           </batchtest>
+           <formatter type="brief"/>
+        </junit>
+
+    </target>
+    <!-- ===============================================}}} -->
+
+	<target name="test.prepare"
+		description="creates fresh jedit settings directory for tests">
+		<!--depends="test.compile">-->
+        <mkdir dir="${build.tests}"/>
+		<delete dir="${build.dir}/settings"/>
+		<copy todir="${build.dir}/settings">
+			<fileset dir="tests/settings"/>
+		</copy>
+		<antcall target="build">
+			<param name="want-to-test" value="yes"/>
+		</antcall>
+		<echo message="Preparing tests"/>
+
+		<copy todir="${build.dir}/settings/jars">
+			<fileset dir="${install.dir}">
+			<filename name="*.jar"/>
+			</fileset>
+
+			<fileset dir="./lib">
+			<include name="jna.jar"/>
+			<include name="hunspell.jar"/>
+			</fileset>
+
+			<path refid="project.class.path"/>
+			<flattenmapper/>
+		</copy>
+	</target>	
+
+	<!-- remove test classes from build directory.
+	     The property 'want-to-test' is to protect test.prepare which
+		 needs these classes !
+	  -->
+	<target name="build.remove-tests"
+		depends="compile"
+		description="Remove Unit-Tests from the build classes"
+		unless="want-to-test">
+		<echo message="Removing test classes.."/>
+		<delete dir="${build.classes}">
+			<and>
+			<filename name="**/*Test*.class"/>
+			<not><filename name="cswilly/spell/Test.class"/></not>
+			</and>
+		</delete>
+	</target>
+	
+	<target name="build.prepare"
+		depends="build.remove-tests">
+        <mkdir dir="${build.extras}" />
+		<copy todir="${build.extras}">
+			<fileset dir="${resources.dir}">
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="run" depends="test.compile,test.prepare">
+		<java fork="true" classname="org.gjt.sp.jedit.jEdit">
+			<arg value="-norestore"/>
+			<arg value="-noserver"/>
+			<arg value="-nobackground"/>
+			<arg value="-settings=${basedir}/${build.dir}/settings"/>
+			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
+			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
+			<sysproperty key="test-tests.dir" path="tests"/>
+			<sysproperty key="test-in-jedit" value="yes"/>
+			
+			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
+
+            <classpath>
+                <pathelement location="${junit.jar}" />
+				
+				<!-- for junit annotations -->
+                <pathelement location="${hamcrest.jar}" />
+				
+                <pathelement location="${build.classes}" />
+                <path refid="default.class.path" />
+                <path refid="project.class.path" />
+            </classpath>
+		</java>
+	</target>
+	
+	<target name="run-proto">
+	<javac classpath="${jedit.install.dir}/jedit.jar"
+		   destdir="${build.dir}/classes"
+		   srcdir="src/test"
+	>
+		<filename name="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto.java"/>
+	</javac>
+	<java fork="true" classpath="${jedit.install.dir}/jedit.jar:${build.dir}/classes"
+		  classname="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto"/>
+	</target>
+</project>
+
