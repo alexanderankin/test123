@@ -1,0 +1,46 @@
+FindFile TODO
+Anthony Keeley
+Sat Aug 16 19:02:38 CDT 2008
+
+- Return all files in a search (why doesn't it return archives).
+- Integrate use of helperlauncher.
+- Code cleanup (from comments to analysing code and improving implementation)
+- Change the search-time status (look like HyperSearch)
+- Change search node wording style to HyperSearch style.
+- Modify dialog
+  - Change button names to Find, Close (change to default and exit buttons too)
+  - title bar icon?
+  - Add a "Choose..." button for a link to the File Browser
+  - Path label to "Directory"
+  - Settings fieldset:
+    - Keep Dialog
+    - Ignore Case
+    - Search subdirectories
+  - Context menu
+    - result node:
+      - Open
+      - Open in New View
+      - Open in New Plain View
+      - Close
+      - ---
+      - Remove Node
+      - ---
+      - Copy File Path
+      - Browse File Path...
+      - Search in File...
+    - search node:
+      - Remove Node
+      - Expand Child Nodes
+      - Collapse Child Nodes
+      - Redo Search
+      - ---
+      - Open All Files
+      - Close All Files
+      - ---
+      - Copy Results
+      - Search in Files...
+      - Sort Results >
+
+
+
+
