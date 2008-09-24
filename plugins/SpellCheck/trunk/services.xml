@@ -9,7 +9,7 @@
         <SERVICE CLASS="cswilly.spell.EngineManager" NAME="Hunspell">
                 new cswilly.jeditPlugins.spell.hunspellbridge.HunspellEngineManager();
         </SERVICE>
-<!--        <SERVICE CLASS="cswilly.spell.EngineManager" NAME="VoxSpell">
+        <SERVICE CLASS="cswilly.spell.EngineManager" NAME="VoxSpell">
                 new cswilly.jeditPlugins.spell.voxspellbridge.VoxSpellEngineManager();
-        </SERVICE>-->
+        </SERVICE>
 </SERVICES>
