@@ -1,7 +1,7 @@
 plugin.voxspellcheck.VoxSpellPlugin.activate=startup
 plugin.voxspellcheck.VoxSpellPlugin.name=VoxSpell
 plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
-plugin.voxspellcheck.VoxSpellPlugin.version=1.0.1
+plugin.voxspellcheck.VoxSpellPlugin.version=1.0.2
 plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.15.00
 plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
 plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
@@ -18,7 +18,7 @@ options.voxspellcheck.non_markup_modes=html xml mail
 options.voxspellcheck.start_checking_on_activate=false
 options.voxspellcheck.start_checking_on_activate.title=Automatically start spell checking?
 options.voxspellcheck.use_custom_color=false
-options.voxspellcheck.use_custom_color.title=Use custom color?
+options.voxspellcheck.use_custom_color.title=Use custom underline color?
 
 plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
     voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
