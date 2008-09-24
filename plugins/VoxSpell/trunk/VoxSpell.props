@@ -18,7 +18,7 @@ options.voxspellcheck.non_markup_modes=html xml mail
 options.voxspellcheck.start_checking_on_activate=false
 options.voxspellcheck.start_checking_on_activate.title=Automatically start spell checking?
 options.voxspellcheck.use_custom_color=false
-options.voxspellcheck.use_custom_color.title=Use custom color
+options.voxspellcheck.use_custom_color.title=Use custom color?
 
 plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
     voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
