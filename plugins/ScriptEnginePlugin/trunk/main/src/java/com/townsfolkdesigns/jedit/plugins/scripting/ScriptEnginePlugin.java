@@ -22,6 +22,7 @@
 package com.townsfolkdesigns.jedit.plugins.scripting;
 
 import com.townsfolkdesigns.jedit.plugins.scripting.forms.CreateMacroForm;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -36,8 +37,11 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,6 +50,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleScriptContext;
+
+import javax.swing.JOptionPane;
 
 
 /**
@@ -58,9 +64,23 @@ public class ScriptEnginePlugin extends EditPlugin {
    private static Map<Mode, ScriptEngineService> scriptEngineServices =
       new ConcurrentHashMap<Mode, ScriptEngineService>();
 
+   private static final String MACRO_TEMPLATE = "import com.townsfolkdesigns.jedit.plugins.scripting.*;\n" +
+      "ScriptEnginePlugin.executeMacro(view, scriptPath, \"%1$s\");";
+
    public static void createMacro(View view) {
-		getScriptEngineManager();
-		new CreateMacroForm().show(view);
+      getScriptEngineManager();
+
+      CreateMacroForm form = new CreateMacroForm();
+      form.show(view);
+
+      int dialogValue = form.getDialogValue();
+
+      if (dialogValue == JOptionPane.OK_OPTION) {
+         String macroName = form.getMacroName();
+         String directory = form.getDirectoryName();
+         Mode mode = form.getMode();
+         createMacro(macroName, directory, mode);
+      }
    }
 
    public static void createMacroFromBuffer(View view) {
@@ -73,15 +93,6 @@ public class ScriptEnginePlugin extends EditPlugin {
       ScriptContext scriptContext = getDefaultScriptContext(view);
 
       return evaluateString(bufferText, bufferMode.getName(), scriptContext);
-   }
-
-   public static Object evaluateMacro(String scriptPath, String engineName) {
-      Object returnVal = null;
-
-      File beanShellMacroFile = new File(scriptPath);
-      File macroDirectory = beanShellMacroFile.getParentFile();
-
-      return returnVal;
    }
 
    public static Object evaluateSelection(View view) {
@@ -121,13 +132,37 @@ public class ScriptEnginePlugin extends EditPlugin {
       return returnVal;
    }
 
-   public static ScriptEngine getScriptEngineForMode(Mode mode) {
-      ScriptEngine engine = null;
+   public static void executeMacro(View view, String scriptPath, String modeStr) {
+      Mode mode = jEdit.getMode(modeStr);
+      File bshScriptFile = new File(scriptPath);
+      String bshScriptName = bshScriptFile.getName();
+      int indexOfDot = bshScriptName.lastIndexOf(".");
+      bshScriptName = bshScriptName.substring(0, indexOfDot);
 
-      if (scriptEngineServices.containsKey(mode)) {
-         ScriptEngineService service = scriptEngineServices.get(mode);
-         engine = getScriptEngineForName(mode.getName());
-      } else {
+      String scriptExtension = getScriptExtension(mode);
+      String macroScriptName = bshScriptName + "." + scriptExtension;
+      File macroScriptFile = new File(bshScriptFile.getParentFile(), macroScriptName);
+
+      if (macroScriptFile.exists()) {
+         ScriptEngine engine = getScriptEngineForMode(mode);
+
+         try {
+            engine.eval(new FileReader(macroScriptFile));
+         } catch (Exception e) {
+            Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error executing script file: " + macroScriptFile.getPath(),
+               e);
+         }
+      }
+   }
+
+   public static Collection<Mode> getRegisteredModes() {
+      return scriptEngineServices.keySet();
+   }
+
+   public static ScriptEngine getScriptEngineForMode(Mode mode) {
+      ScriptEngine engine = getScriptEngineForName(mode.getName());;
+
+      if (engine == null) {
          Log.log(Log.ERROR, ScriptEnginePlugin.class, "No ScriptEngine registered for mode: " + mode.getName());
       }
 
@@ -177,8 +212,30 @@ public class ScriptEnginePlugin extends EditPlugin {
    public void stop() {
    }
 
-   public static Collection<Mode> getRegisteredModes() {
-      return scriptEngineServices.keySet();
+   private static String cleanMacroName(String macroName) {
+      String cleanMacroName = macroName;
+      cleanMacroName = cleanMacroName.replaceAll(" ", "_");
+
+      return cleanMacroName;
+   }
+
+   private static void createMacro(String macroName, String directory, Mode mode) {
+      macroName = cleanMacroName(macroName);
+
+      File macroFile = new File(jEdit.getSettingsDirectory(), "macros");
+
+      if (macroFile.exists()) {
+         macroFile = new File(macroFile, directory);
+
+         if (!macroFile.exists()) {
+            macroFile.mkdirs();
+         }
+
+         File scriptMacroFile = writeScriptMacroTemplate(macroFile, macroName, mode);
+
+         // open new macro file in jEdit.
+         jEdit.openFile(jEdit.getActiveView(), scriptMacroFile.getPath());
+      }
    }
 
    private static ScriptContext getDefaultScriptContext(View view) {
@@ -246,6 +303,56 @@ public class ScriptEnginePlugin extends EditPlugin {
       }
 
       return manager;
+   }
+
+   private static String getScriptExtension(Mode mode) {
+      String scriptExtension = null;
+      ScriptEngine engine = getScriptEngineForMode(mode);
+
+      if (engine != null) {
+         ScriptEngineFactory factory = engine.getFactory();
+         List<String> extensions = factory.getExtensions();
+
+         // just pick the first one.
+         scriptExtension = extensions.get(0);
+      }
+
+      return scriptExtension;
+   }
+
+   private static File writeScriptMacroTemplate(File macroFile, String macroName, Mode mode) {
+      String bshMacroFileName = macroName + ".bsh";
+      String scriptMacroFileName = macroName + "." + getScriptExtension(mode);
+      File bshMacroFile = new File(macroFile, bshMacroFileName);
+      File scriptMacroFile = new File(macroFile, scriptMacroFileName);
+      PrintWriter writer = null;
+
+      try {
+         writer = new PrintWriter(bshMacroFile);
+         writer.format(MACRO_TEMPLATE, mode);
+         writer.flush();
+      } catch (Exception e) {
+         Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error creating file writer.", e);
+      } finally {
+
+         if (writer != null) {
+
+            try {
+               writer.close();
+            } catch (Exception e) {
+               Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error closing file writer.", e);
+            }
+         }
+      }
+
+      try {
+         scriptMacroFile.createNewFile();
+      } catch (Exception e) {
+         Log.log(Log.ERROR, ScriptEnginePlugin.class, "Error creating script macro file: " + scriptMacroFile.getPath(),
+            e);
+      }
+
+      return scriptMacroFile;
    }
 
 }
