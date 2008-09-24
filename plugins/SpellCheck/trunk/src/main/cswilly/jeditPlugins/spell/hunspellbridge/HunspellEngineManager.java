@@ -202,19 +202,9 @@ public class HunspellEngineManager implements EngineManager{
 			try{
 				if(libName==null)hspl = Hunspell.getInstance();
 				else{
-					//work-arround to keep hunspell.jar as it is
-					String expectedName=Hunspell.libName();
-					File home = SpellCheckPlugin.getHomeDir(null);
-					File libFile = new File(home,expectedName);
-					if(libFile.exists())libFile.delete();
-					FileOutputStream fos = new FileOutputStream(libFile);
-					File sourceLib = new File(libName);
-					FileInputStream fis = new FileInputStream(sourceLib);
-					IOUtilities.copyStream(null,fis,fos,false);
-					IOUtilities.closeQuietly(fis);
-					IOUtilities.closeQuietly(fos);
-
-					hspl = Hunspell.getInstance(home.getAbsolutePath());
+					File f = new File(libName);
+					if(!f.exists())Log.log(Log.WARNING,HunspellEngineManager.class,"The library file doesn't exist...");
+					hspl = Hunspell.getInstance(f.getParent(),f.getName());
 				}
 			}catch(Exception e){
 				throw new SpellException("Unable to load Hunspell",e);

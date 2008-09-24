@@ -64,11 +64,38 @@ public class Hunspell {
         return hunspell;
     }
 
+    /**
+     * The instance of the HunspellManager, looks for the native lib in
+     * the directory specified and with the given filename.
+     *
+     * @param libDir Optional absolute directory where the native lib can be found. 
+     * @param libFile Optional name of the native lib 
+     */
+    public static Hunspell getInstance(String libDir,String libFile) throws Exception { 
+        if (hunspell != null) {
+            return hunspell;
+        }
+        
+        hunspell = new Hunspell(libDir,libFile);
+        return hunspell;
+    }
+
     protected void tryLoad(String libFile) throws UnsupportedOperationException {
 		hsl = (HunspellLibrary)Native.loadLibrary(libFile, HunspellLibrary.class);
     }
 
-
+    /**
+     * Constructor for the library, loads the native lib.
+     * Uses default names
+     * @see void libName()
+	 * @see void libNameBare()
+     * @param libDir Optional absolute directory where the native lib can be found. 
+     * @throws UnsupportedOperationException if the OS or architecture is simply not supported.
+     */
+    protected Hunspell(String libDir) throws UnsatisfiedLinkError, UnsupportedOperationException {
+		this(libDir,libDir != null ? libDir+"/"+libName() : libNameBare());
+	}
+	
     /**
      * Constructor for the library, loads the native lib.
      *
@@ -80,15 +107,20 @@ public class Hunspell {
      * @param libDir Optional absolute directory where the native lib can be found. 
      * @throws UnsupportedOperationException if the OS or architecture is simply not supported.
      */
-    protected Hunspell(String libDir) throws UnsatisfiedLinkError, UnsupportedOperationException {
+    protected Hunspell(String libDir, String libName) throws UnsatisfiedLinkError, UnsupportedOperationException {
 
-		String libFile = libDir != null ? libDir+"/"+libName() : libNameBare();
+		String libFile = null;
+		if(libDir != null){
+			libFile = libDir + "/"+ (libName!=null ? libName : libName());
+		}else{
+			libFile = libName!=null ? libName : libNameBare();
+		}
 		try {	   
 			hsl = (HunspellLibrary)Native.loadLibrary(libFile, HunspellLibrary.class);
 		} catch (UnsatisfiedLinkError urgh) {
 	    
 			// Oh dear, the library was not found in the file system, let's try the classpath
-			libFile = libName();
+			libFile = libName!=null ? libName : libName();
 			InputStream is = Hunspell.class.getResourceAsStream("/"+libFile);
 			if (is == null) {
 				throw new UnsatisfiedLinkError("Can't find "+libFile+

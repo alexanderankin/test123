@@ -85,7 +85,7 @@ It can use various engines to perform the spell-checking.
   <para>The SpellCheck plugin has the ability to work with different spell-checkers.
   It currently supports Aspell, Hunspell and VoxSpell</para>
   
-  <section>
+  <section id="engine-aspell">
   <title>Aspell</title>
   <para>Aspell is a famous spell-checker, used as a standalone program or as a library
   in the Unix world. A windows port also exists, but it's for an old version.
@@ -99,7 +99,7 @@ It can use various engines to perform the spell-checking.
   You will also have to install dictionaries.</para>
   </section>
 
-  <section>
+  <section id="engines-hunspell">
   <title>Hunspell</title>
   <para>Hunspell is the spell-checker bundled with OpenOffice.org (as of 2.0.2)
   and Mozilla firefox (as of 3.0).
@@ -404,6 +404,26 @@ It can use various engines to perform the spell-checking.
   
   <section id="options-hunspell">
   <title>Hunspell Engine</title>
+
+  <section id="hunspell-troubleshooting">
+  <title>Troubleshooting</title>
+  <para>Depending on you OS/architecture, you may experience some issues with Hunspell.</para>
+  <para>The library might not have been packaged with the plugin.
+  This results in an <emphasis>Unknown OS/arch...</emphasis> message.
+  It is solved by installing Hunspell yourself (or via your package manager)
+  and pointing the plugin to the library file (see <xref linkend="hunspell-library"/>).
+  </para>
+  <para>Or JNA itself might not work : this results in a <emphasis>libjnidispatch.* not found</emphasis>
+  message.
+  You can replace the bundled <filename>jna.jar</filename> with the latest version
+  from <uri>http://jna.dev.java.net</uri>. They are supporting more and more 
+  architectures, so it has a fair chance to work. However, if you are the lucky 
+  owner of a linux/ppc machine, this doesn't work. Your last chance is downloading
+  the latest sources of JNA and building them yourself.
+  This is done vi <command>ant dist</command>. Then copy the <filename>build/jna.jar</filename>
+  and <filename>build/YOUR_ARCHITECTURE.jar</filename> to jEdit jar directory.
+  The new library is picked automatically and everything should work...</para>
+  </section>
   
   <section id="hunspell-library">
   <title>Location of the Hunspell library</title>
