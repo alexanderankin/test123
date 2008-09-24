@@ -72,6 +72,16 @@ public class VoxSpellPlugin extends EBPlugin
     private static SuggestionTree suggestions = null;
     private static String prop_key = "VoxSpellExtension";
     
+    public static OffsetTrie getChecker()
+    {
+        return checker;
+    }
+    
+    public static SuggestionTree getSuggestionTree()
+    {
+        return suggestions;
+    }
+    
     public static VoxSpellPainter getVoxSpellPainter(EditPane ep)
     {
         try {
