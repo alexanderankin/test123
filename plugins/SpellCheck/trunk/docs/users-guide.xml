@@ -128,6 +128,8 @@ It can use various engines to perform the spell-checking.
   
   <para>You can get VoxSpell from the <guimenuitem>Plugin Manager</guimenuitem>.
   An English dictionary is included.</para>
+  <para><emphasis>The VoxSpell bridge is not yet functional. This will appear
+  in the near future.</emphasis></para>
   </section>
   
   </chapter>
