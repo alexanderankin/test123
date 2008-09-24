@@ -235,6 +235,7 @@ public class ScriptEnginePlugin extends EditPlugin {
 
          // open new macro file in jEdit.
          jEdit.openFile(jEdit.getActiveView(), scriptMacroFile.getPath());
+			Macros.loadMacros();
       }
    }
 
