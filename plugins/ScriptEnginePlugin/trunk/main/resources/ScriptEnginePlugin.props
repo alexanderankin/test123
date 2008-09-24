@@ -6,7 +6,7 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.descripti
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.docs=/docs/ScriptEnginePlugin.html
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.jars=script-api.jar
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.name=Script Engine Plugin
-plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0.3.0
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0.5.0
 
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu= \
 	scriptengine.plugin.evaluate.buffer \
@@ -28,5 +28,8 @@ scriptengine.plugin.macro.create.form.directory.label=Directory:
 scriptengine.plugin.macro.create.form.language.label=Language:
 scriptengine.plugin.macro.create.form.directions= \
 	<html><body>Spaces in the macro name will be replaced with underscores<br> \
-	and dirctory names are subject to the restrictions of your \
-	<br>Operating System.</body></html>
+	and dirctory names are subject to the restrictions of your<br> \
+	Operating System.<br><br> \
+	\
+	Macro files can be found under:<br> \
+	%1$s/macros/[directory]/[macro name]</body></html>
