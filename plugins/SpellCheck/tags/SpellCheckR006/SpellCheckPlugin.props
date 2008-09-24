@@ -16,6 +16,7 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.11.00
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.5
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.4=plugin voxspellcheck.VoxSpellPlugin 1.0.2
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.jars=hunspell.jar jna.jar
 

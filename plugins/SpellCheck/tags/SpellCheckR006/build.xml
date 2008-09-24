@@ -38,7 +38,7 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
 		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
-		<!--<pathelement location="${jedit.jars.dir}/Voxspell.jar"/>-->
+		<pathelement location="${jedit.jars.dir}/Voxspell.jar"/>
 	</path>
 	
 	<path id="hunspell.class.path">
@@ -57,10 +57,7 @@
 
 	<!-- I use a separate target to build the tests -->
 	<selector id="compileFiles">
-		<and>
         <filename name="**/*.java" />
-		<not><filename name="**/VoxSpell*.java"/></not>
-		</and>
     </selector>
 
 	
