@@ -1,4 +1,5 @@
 package options;
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -83,8 +84,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		previewWrap = new JCheckBox(jEdit.getProperty(MESSAGE + "previewWrap"),
 				jEdit.getBooleanProperty(PREVIEW_WRAP));
 		previewPanel.add(previewWrap);
-		JPanel previewDelayPanel = new JPanel();
-		previewDelayPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "previewDelay")));
+		JPanel previewDelayPanel = new JPanel(new BorderLayout());
+		previewDelayPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "previewDelay")),
+			BorderLayout.WEST);
 		previewDelay = new JTextField(String.valueOf(
 			jEdit.getIntegerProperty(PREVIEW_DELAY)), 5);
 		previewDelay.setInputVerifier(new InputVerifier() {
@@ -97,7 +99,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				return true;
 			}
 		});
-		previewDelayPanel.add(previewDelay);
+		previewDelayPanel.add(previewDelay, BorderLayout.EAST);
 		previewPanel.add(previewDelayPanel);
 		addComponent(previewPanel);
 
