@@ -55,16 +55,20 @@ public class CreateMacroForm extends JPanel {
    private JLabel languageLabel;
    private GridBagLayout layout;
    private JTextField nameField;
-
    private JLabel nameLabel;
+   private boolean showModeOn;
 
    public CreateMacroForm() {
       initComponents();
-      initLayout();
+      setShowModeOn(true);
    }
 
    public static void main(String[] args) {
-      new CreateMacroForm().show(null);
+      CreateMacroForm form = new CreateMacroForm();
+      form.show(null);
+      form = new CreateMacroForm();
+      form.setShowModeOn(false);
+      form.show(null);
    }
 
    public int getDialogValue() {
@@ -83,6 +87,10 @@ public class CreateMacroForm extends JPanel {
       return (Mode) languageField.getSelectedItem();
    }
 
+   public boolean isShowModeOn() {
+      return showModeOn;
+   }
+
    public void setDialogValue(int dialogValue) {
       this.dialogValue = dialogValue;
    }
@@ -99,7 +107,13 @@ public class CreateMacroForm extends JPanel {
       languageField.setSelectedItem(mode);
    }
 
+   public void setShowModeOn(boolean showModeOn) {
+      this.showModeOn = showModeOn;
+   }
+
    public void show(Component parent) {
+      initLayout();
+
       String dialogTitle = getMessage("scriptengine.plugin.macro.create.label", "Create Macro");
       dialogValue = JOptionPane.showConfirmDialog(parent, this, dialogTitle, JOptionPane.OK_CANCEL_OPTION, -1);
    }
@@ -159,9 +173,12 @@ public class CreateMacroForm extends JPanel {
       gbc.gridy++;
       layout.setConstraints(directoryLabel, gbc);
       add(directoryLabel);
-      gbc.gridy++;
-      layout.setConstraints(languageLabel, gbc);
-      add(languageLabel);
+
+      if (isShowModeOn()) {
+         gbc.gridy++;
+         layout.setConstraints(languageLabel, gbc);
+         add(languageLabel);
+      }
 
       gbc.gridx = 1;
       gbc.gridy = 1;
@@ -171,11 +188,11 @@ public class CreateMacroForm extends JPanel {
       gbc.gridy++;
       layout.setConstraints(directoryField, gbc);
       add(directoryField);
-      gbc.gridy++;
 
-      //gbc.insets = new Insets(0, 5, 0, 5);
-      layout.setConstraints(languageField, gbc);
-      add(languageField);
+      if (isShowModeOn()) {
+         gbc.gridy++;
+         layout.setConstraints(languageField, gbc);
+         add(languageField);
+      }
    }
-
 }

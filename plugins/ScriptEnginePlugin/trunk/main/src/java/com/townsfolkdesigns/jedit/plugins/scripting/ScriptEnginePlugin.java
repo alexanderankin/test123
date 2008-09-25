@@ -79,12 +79,34 @@ public class ScriptEnginePlugin extends EditPlugin {
          String macroName = form.getMacroName();
          String directory = form.getDirectoryName();
          Mode mode = form.getMode();
-         createMacro(macroName, directory, mode);
+         createMacro(macroName, directory, mode, null);
       }
    }
 
    public static void createMacroFromBuffer(View view) {
+      getScriptEngineManager();
 
+      Mode bufferMode = view.getBuffer().getMode();
+      String bufferTitle = view.getBuffer().getName();
+      int dotIndex = bufferTitle.lastIndexOf(".");
+
+      if (dotIndex > 0) {
+         bufferTitle = bufferTitle.substring(0, dotIndex);
+      }
+
+      CreateMacroForm form = new CreateMacroForm();
+      form.setShowModeOn(false);
+		form.setMacroName(bufferTitle);
+      form.show(view);
+
+
+      int dialogValue = form.getDialogValue();
+
+      if (dialogValue == JOptionPane.OK_OPTION) {
+         String macroName = form.getMacroName();
+         String directory = form.getDirectoryName();
+         createMacro(macroName, directory, bufferMode, view.getTextArea().getText());
+      }
    }
 
    public static Object evaluateBuffer(View view) {
@@ -160,7 +182,8 @@ public class ScriptEnginePlugin extends EditPlugin {
    }
 
    public static ScriptEngine getScriptEngineForMode(Mode mode) {
-      ScriptEngine engine = getScriptEngineForName(mode.getName());;
+      ScriptEngine engine = getScriptEngineForName(mode.getName());
+      ;
 
       if (engine == null) {
          Log.log(Log.ERROR, ScriptEnginePlugin.class, "No ScriptEngine registered for mode: " + mode.getName());
@@ -219,12 +242,14 @@ public class ScriptEnginePlugin extends EditPlugin {
       return cleanMacroName;
    }
 
-   private static void createMacro(String macroName, String directory, Mode mode) {
+   private static void createMacro(String macroName, String directory, Mode mode, String content) {
       macroName = cleanMacroName(macroName);
 
       File macroFile = new File(jEdit.getSettingsDirectory(), "macros");
 
-      if (macroFile.exists()) {
+      String scriptExtension = getScriptExtension(mode);
+
+      if (macroFile.exists() && (scriptExtension != null)) {
          macroFile = new File(macroFile, directory);
 
          if (!macroFile.exists()) {
@@ -233,9 +258,40 @@ public class ScriptEnginePlugin extends EditPlugin {
 
          File scriptMacroFile = writeScriptMacroTemplate(macroFile, macroName, mode);
 
+         if (content != null) {
+            PrintWriter pw = null;
+
+            try {
+               pw = new PrintWriter(scriptMacroFile);
+               pw.print(content);
+               pw.flush();
+            } catch (Exception e) {
+               Log.log(Log.ERROR, ScriptEnginePlugin.class,
+                  "Error writing buffer contents to script file: " + scriptMacroFile.getPath(), e);
+            } finally {
+
+               if (pw != null) {
+
+                  try {
+                     pw.close();
+                  } catch (Exception e) {
+                     Log.log(Log.ERROR, ScriptEnginePlugin.class,
+                        "Error closing print stream on script file: " + scriptMacroFile.getPath(), e);
+                  }
+               }
+            }
+         }
+
          // open new macro file in jEdit.
          jEdit.openFile(jEdit.getActiveView(), scriptMacroFile.getPath());
-			Macros.loadMacros();
+         Macros.loadMacros();
+      } else if (scriptExtension == null) {
+         Log.log(Log.ERROR, ScriptEnginePlugin.class,
+            "No extension found for mode \"" + mode +
+            "\" - please make sure you have a ScriptEnginePlugin installed for this language.");
+         Macros.error(jEdit.getActiveView(),
+            "No extension found for mode \"" + mode +
+            "\" - please make sure you have a ScriptEnginePlugin installed for this language.");
       }
    }
 
