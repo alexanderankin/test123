@@ -85,7 +85,7 @@ public class NamespaceMemberContext {
 			return null;
 		Tag t = tags.firstElement();
 		// Parse the declaration of the member to find its type.
-		Pattern pat = CaretContext.getVarDeclPattern(member);
+		Pattern pat = CppContextFinder.getVarDeclPattern(member);
 		String line = read(t.getFile(), t.getLine());
 		if (line == null)
 			return null;
