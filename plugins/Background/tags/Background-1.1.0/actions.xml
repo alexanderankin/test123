@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="background.toggle-background">
+        <CODE>
+            background.BackgroundHighlight.toggleHighlightEnabledFor(editPane);
+        </CODE>
+
+        <IS_SELECTED>
+            background.BackgroundHighlight.isHighlightEnabledFor(editPane);
+        </IS_SELECTED>
+    </ACTION>
+</ACTIONS>
+
