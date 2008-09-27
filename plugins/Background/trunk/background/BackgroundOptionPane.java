@@ -61,12 +61,15 @@ public class BackgroundOptionPane extends AbstractOptionPane
     static String[] POSITION_LABELS = new String[IMAGE_POSITIONS.length];
     
     static {
-      for (int i =0 ; i < IMAGE_POSITIONS.length; i++)
-      {
-        POSITION_LABELS[i] =
-          jEdit.getProperty("options.background.image-" + IMAGE_POSITIONS[i], IMAGE_POSITIONS[i]);
-      }
+        for (int i =0 ; i < IMAGE_POSITIONS.length; i++) {
+            POSITION_LABELS[i] = jEdit.getProperty(
+                "options.background.image-" + IMAGE_POSITIONS[i],
+                IMAGE_POSITIONS[i]
+            );
+        }
     }
+
+
     public BackgroundOptionPane() {
         super("background");
     }
@@ -93,15 +96,15 @@ public class BackgroundOptionPane extends AbstractOptionPane
 
         imagePosition = new JComboBox(POSITION_LABELS);
         String position = jEdit.getProperty("background.position", "tile");
-        for (int i =0 ; i < IMAGE_POSITIONS.length; i++)
-        {
-          if (position.equals(IMAGE_POSITIONS[i]))
-          {
-            imagePosition.setSelectedIndex(i);
-          }
+        for (int i =0 ; i < IMAGE_POSITIONS.length; i++) {
+            if (position.equals(IMAGE_POSITIONS[i])) {
+                imagePosition.setSelectedIndex(i);
+            }
         }
         addComponent(
-          jEdit.getProperty("options.background.image-position"), imagePosition);
+            jEdit.getProperty("options.background.image-position"),
+            imagePosition
+        );
         
         this.blend = new JCheckBox(
             jEdit.getProperty("options.background.blend"),
@@ -165,7 +168,9 @@ public class BackgroundOptionPane extends AbstractOptionPane
         );
         
         jEdit.setProperty(
-          "background.position", IMAGE_POSITIONS[imagePosition.getSelectedIndex()]);
+            "background.position",
+            IMAGE_POSITIONS[imagePosition.getSelectedIndex()]
+        );
     }
 
 

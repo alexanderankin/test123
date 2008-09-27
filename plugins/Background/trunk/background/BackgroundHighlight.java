@@ -48,12 +48,10 @@ public class BackgroundHighlight extends TextAreaExtension
     private static final int ICON_STRECH = 1;
     private static final int ICON_TILE = 2;
     private static int getIconPositionFromString(String s) {
-        for (int i =0 ; i < BackgroundOptionPane.IMAGE_POSITIONS.length; i++)
-        {
-          if (BackgroundOptionPane.IMAGE_POSITIONS[i].equals(s))
-          {
-            return i;
-          }
+        for (int i =0 ; i < BackgroundOptionPane.IMAGE_POSITIONS.length; i++) {
+            if (BackgroundOptionPane.IMAGE_POSITIONS[i].equals(s)) {
+                return i;
+            }
         }
         return ICON_TILE;
     }
@@ -131,9 +129,8 @@ public class BackgroundHighlight extends TextAreaExtension
         int lastLine, int[] physicalLines, int[] start, int[] end,
         int lineY, int lineHeight
     ) {
-        if (!isEnabled() || icon == null || icon.getImageLoadStatus() != MediaTracker.COMPLETE)
-        {
-          return;
+        if (!isEnabled() || icon == null || icon.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            return;
         }
 
         TextAreaPainter painter = this.textArea.getPainter();
@@ -145,34 +142,31 @@ public class BackgroundHighlight extends TextAreaExtension
         
         Rectangle rect = gfx.getClipBounds();
 
-        if (iconPosition == ICON_TILE)
-        {
-          int x0 = rect.x;
-          int x1 = x0 + rect.width;
-          int y0 = rect.y;
-          int y1 = y0 + rect.height;
-          for (int x = 0; x <= x1; x += iconWidth) {
-            if (x + iconWidth > x0) {
-              for (int y = 0; y <= y1; y += iconHeight) {
-                if (y + iconHeight > y0) {
-                  gfx.drawImage(iconImage, x, y, textArea);
+        if (iconPosition == ICON_TILE) {
+            int x0 = rect.x;
+            int x1 = x0 + rect.width;
+            int y0 = rect.y;
+            int y1 = y0 + rect.height;
+            for (int x = 0; x <= x1; x += iconWidth) {
+                if (x + iconWidth > x0) {
+                    for (int y = 0; y <= y1; y += iconHeight) {
+                        if (y + iconHeight > y0) {
+                            gfx.drawImage(iconImage, x, y, textArea);
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-        else if (iconPosition == ICON_STRECH)
-        {
-          gfx.drawImage(iconImage,
-              0, 0, painterWidth, painterHeight,
-              textArea);
+        else if (iconPosition == ICON_STRECH) {
+            gfx.drawImage(iconImage,
+                0, 0, painterWidth, painterHeight,
+                textArea);
         }
-        else if (iconPosition == ICON_CENTER)
-        {
-          gfx.drawImage(iconImage,
-              (painterWidth - iconWidth) / 2,
-              (painterHeight - iconHeight) / 2,
-              textArea);
+        else if (iconPosition == ICON_CENTER) {
+            gfx.drawImage(iconImage,
+                (painterWidth - iconWidth) / 2,
+                (painterHeight - iconHeight) / 2,
+                textArea);
         }
 
         if (blend) {
