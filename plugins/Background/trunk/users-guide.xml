@@ -53,8 +53,8 @@
     <para>Background requires:</para>
 
     <itemizedlist>
-        <listitem>JDK 1.4</listitem>
-        <listitem>jEdit 4.2</listitem>
+        <listitem><simpara>JDK 1.4</simpara></listitem>
+        <listitem><simpara>jEdit 4.2</simpara></listitem>
     </itemizedlist>
 
 </chapter>
@@ -120,15 +120,15 @@
 
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
+        <listitem><simpara>
             or jEdit-users mailing-list
             <email>jedit-users@lists.sourceforge.net</email>;
-        </listitem>
+        </simpara></listitem>
 
-        <listitem>
+        <listitem><simpara>
             or jEdit-devel mailing-list
             <email>jedit-devel@lists.sourceforge.net</email>.
-        </listitem>
+        </simpara></listitem>
     </itemizedlist>
 </chapter>
 
