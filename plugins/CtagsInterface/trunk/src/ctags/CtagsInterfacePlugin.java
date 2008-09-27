@@ -278,7 +278,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (members.isEmpty())
 			return;
 		Vector<String> completions = new Vector<String>();
-		String prefix = getDestinationTag(view);
+		String prefix = getCompletionPrefix(view);
 		if (prefix == null)
 			return;
 		for (Tag member: members) {
@@ -298,6 +298,36 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		JOptionPane.showInputDialog(view, "Select completion from context " +
 			context.getName() + ":",
 			"Completion dialog", 0, null, options, options[0]);
+	}
+	
+	// Returns the prefix for code completion
+	public static String getCompletionPrefix(View view) {
+		String tag = view.getTextArea().getSelectedText();
+		if (tag == null || tag.length() == 0)
+			tag = getTagUpToCaret(view);
+		return tag;
+	}
+
+	private static String getTagUpToCaret(View view) {
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine();
+		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile(GeneralOptionPane.getPattern());
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		String selected = "";
+		while (end < index) {
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if (start > index || selected.length() == 0)
+			return null;
+		return selected.substring(0, selected.length() - (end - index));
 	}
 	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
