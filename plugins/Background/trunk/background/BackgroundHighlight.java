@@ -46,6 +46,16 @@ public class BackgroundHighlight extends TextAreaExtension
     private static final int ICON_CENTER = 0;
     private static final int ICON_STRECH = 1;
     private static final int ICON_TILE = 2;
+    private static int getIconPositionFromString(String s) {
+        for (int i =0 ; i < BackgroundOptionPane.IMAGE_POSITIONS.length; i++)
+        {
+          if (BackgroundOptionPane.IMAGE_POSITIONS[i].equals(s))
+          {
+            return i;
+          }
+        }
+        return ICON_TILE;
+    }
     
     // (EditPane, BackgroundHighlight) association
     private static Hashtable highlights = new Hashtable();
@@ -81,6 +91,8 @@ public class BackgroundHighlight extends TextAreaExtension
             icon     = null;
             Log.log(Log.DEBUG, BackgroundHighlight.class, e);
         }
+        iconPosition = getIconPositionFromString(
+            jEdit.getProperty("background.position", "tile"));
 
         blend      = jEdit.getBooleanProperty("background.blend", false);
         blendColor = jEdit.getColorProperty(
@@ -267,16 +279,8 @@ public class BackgroundHighlight extends TextAreaExtension
 
         iconName = newIconName;
         icon     = newIcon;
-        
-        String position = jEdit.getProperty("background.position", "tile");
-        for (int i =0 ; i < BackgroundOptionPane.IMAGE_POSITIONS.length; i++)
-        {
-          if (BackgroundOptionPane.IMAGE_POSITIONS[i].equals(position))
-          {
-            iconPosition = i;
-            break;
-          }
-        }
+        iconPosition = getIconPositionFromString(
+            jEdit.getProperty("background.position", "tile"));
 
         blend      = jEdit.getBooleanProperty("background.blend", false);
         blendColor = jEdit.getColorProperty(
