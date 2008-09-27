@@ -234,8 +234,11 @@ public class CppContextFinder extends AbstractContextFinder {
 		for (int i = line; i >= functionLine - 1; i--) {
 			String l = buffer.getLineText(i);
 			Matcher m = pat.matcher(l);
-			if (m.matches())
+			if (m.matches()) {
+				String type = m.group(1);
+				if (! type.equals("return"))
 				return m.group(1);
+			}
 		}
 		return null;
 	}
