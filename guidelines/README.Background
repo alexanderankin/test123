@@ -1,0 +1,14 @@
+SVN policy file
+
+plugin: Background
+author: Andre Kaplan <akaplan@jedit.org>
+Committers:
+  See README.jEdit
+    Since the author is no longer maintaining the plugin actively, the
+    core commiters are responsible to commit required changes.
+    If someone is willling to become a new maintainer, please let them
+    know on jedit-devel.
+
+Others, please submit patches to the jedit plugin patches tracker.
+https://sourceforge.net/tracker/?atid=997937&group_id=588
+
