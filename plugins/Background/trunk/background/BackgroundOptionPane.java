@@ -39,6 +39,7 @@ import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -171,12 +172,14 @@ public class BackgroundOptionPane extends AbstractOptionPane
     private class FileActionHandler implements ActionListener
     {
         public void actionPerformed(ActionEvent evt) {
+            JTextField field = BackgroundOptionPane.this.tfBackground;
             String[] paths = GUIUtilities.showVFSFileDialog(
-                null, null, JFileChooser.OPEN_DIALOG, false
+                jEdit.getActiveView(),
+                MiscUtilities.getParentOfPath(field.getText()),
+                JFileChooser.OPEN_DIALOG, false
             );
-
             if (paths != null) {
-                BackgroundOptionPane.this.tfBackground.setText(paths[0]);
+                field.setText(paths[0]);
             }
         }
     }
