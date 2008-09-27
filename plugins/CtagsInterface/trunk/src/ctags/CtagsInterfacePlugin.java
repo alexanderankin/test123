@@ -3,6 +3,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 import context.CaretContext;
+import context.CtagsContextUtil;
 
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
@@ -264,31 +266,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// Actions: Offer code completion options
 	public static void complete(final View view)
 	{
-		String context = CaretContext.getContextUnderCaret(view, false);
+		Tag context = CaretContext.getContext(view);
 		if (context == null) {
 			JOptionPane.showMessageDialog(view, "No context found");
 			return;
 		}
 		JOptionPane.showMessageDialog(view, "Context: " + context);
-		/*
 		// Retrieve possible completions from context
-		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
-		String [] scopes = "class struct union enum interface namespace".split(" ");
-		StringBuffer sb = new StringBuffer();
-		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
-		boolean first = true;
-		for (int i = 0; i < scopes.length; i++) {
-			String cname = TagDB.extension2column(scopes[i]);
-			if (! columns.contains(cname))
-				continue;
-			if (! first)
-				sb.append(" OR ");
-			else
-				first = false;
-			sb.append(TagDB.extension2column(scopes[i]) + "=" + TagDB.quote(context));
-		}
-		q.addCondition("(" + sb.toString() + ")");
-		Vector<Tag> members = CtagsInterfacePlugin.query(q.toString());
+		CtagsContextUtil util = CtagsContextUtil.instance();
+		Set<String> classes = util.getSuperClasses(context.getName());
+		Vector<Tag> members = util.getMembers(classes);
 		if (members.isEmpty())
 			return;
 		Vector<String> completions = new Vector<String>();
@@ -311,7 +298,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		}
 		JOptionPane.showInputDialog(view, "Select completion:",
 			"Completion dialog", 0, null, options, options[0]);
-			*/
 	}
 	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
