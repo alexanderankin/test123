@@ -271,7 +271,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			JOptionPane.showMessageDialog(view, "No context found");
 			return;
 		}
-		JOptionPane.showMessageDialog(view, "Context: " + context);
 		// Retrieve possible completions from context
 		CtagsContextUtil util = CtagsContextUtil.instance();
 		Set<String> classes = util.getSuperClasses(context.getName());
@@ -287,7 +286,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				completions.add(member.getName());
 		}
 		if (completions.isEmpty()) {
-			JOptionPane.showMessageDialog(view, "No completions");
+			JOptionPane.showMessageDialog(view, "Context: " + context.getName() + " - No completions");
 			return;
 		}
 		String [] options = new String[completions.size()];
@@ -296,7 +295,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			options[i] = completion;
 			i++;
 		}
-		JOptionPane.showInputDialog(view, "Select completion:",
+		JOptionPane.showInputDialog(view, "Select completion from context " +
+			context.getName() + ":",
 			"Completion dialog", 0, null, options, options[0]);
 	}
 	
