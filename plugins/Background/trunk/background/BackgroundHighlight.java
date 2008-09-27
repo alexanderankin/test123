@@ -194,14 +194,21 @@ public class BackgroundHighlight extends TextAreaExtension
 
 
     public static TextAreaExtension addHighlightTo(EditPane editPane) {
-        TextAreaExtension textAreaHighlight = new BackgroundHighlight(editPane.getTextArea());
-        highlights.put(editPane, textAreaHighlight);
-        return textAreaHighlight;
+        JEditTextArea textArea = editPane.getTextArea();
+        TextAreaPainter painter = textArea.getPainter();
+        BackgroundHighlight highlight = new BackgroundHighlight(textArea);
+        painter.addExtension(TextAreaPainter.BACKGROUND_LAYER, highlight);
+        highlights.put(editPane, highlight);
+        return highlight;
     }
 
 
     public static void removeHighlightFrom(EditPane editPane) {
-        highlights.remove(editPane);
+        BackgroundHighlight highlight = (BackgroundHighlight) highlights.remove(editPane);
+
+        if (highlight == null) { return; }
+
+        editPane.getTextArea().getPainter().removeExtension(highlight);
     }
 
 

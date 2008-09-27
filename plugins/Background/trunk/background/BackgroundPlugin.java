@@ -23,7 +23,6 @@ package background;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 
 public class BackgroundPlugin extends EBPlugin
@@ -33,7 +32,7 @@ public class BackgroundPlugin extends EBPlugin
         while (view != null) {
             EditPane[] panes = view.getEditPanes();
             for (int i = 0; i < panes.length; i++)
-                initEditPane(panes[i]);
+                BackgroundHighlight.addHighlightTo(panes[i]);
             view = view.getNext();
         }
     }
@@ -43,7 +42,7 @@ public class BackgroundPlugin extends EBPlugin
         while (view != null) {
             EditPane[] panes = view.getEditPanes();
             for (int i = 0; i < panes.length; i++)
-                uninitEditPane(panes[i]);
+                BackgroundHighlight.removeHighlightFrom(panes[i]);
             view = view.getNext();
         }
     }
@@ -54,32 +53,13 @@ public class BackgroundPlugin extends EBPlugin
             EditPane editPane = epu.getEditPane();
             
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                initEditPane(editPane);
+                BackgroundHighlight.addHighlightTo(editPane);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
-                uninitEditPane(editPane);
+                BackgroundHighlight.removeHighlightFrom(editPane);
             }
         } else if (message instanceof PropertiesChanged) {
             BackgroundHighlight.propertiesChanged();
         }
-    }
-    
-    private static void initEditPane(EditPane editPane) {
-        TextAreaPainter textAreaPainter = editPane.getTextArea().getPainter();
-        
-        BackgroundHighlight backgroundHighlight =
-        (BackgroundHighlight) BackgroundHighlight.addHighlightTo(editPane);
-        
-        textAreaPainter.addExtension(TextAreaPainter.BACKGROUND_LAYER, backgroundHighlight);
-    }
-    
-    private static void uninitEditPane(EditPane editPane) {
-        TextAreaPainter textAreaPainter = editPane.getTextArea().getPainter();
-        
-        BackgroundHighlight backgroundHighlight =
-        BackgroundHighlight.getHighlightFor(editPane);
-        
-        textAreaPainter.removeExtension(backgroundHighlight);
-        BackgroundHighlight.removeHighlightFrom(editPane);
     }
 }
 
