@@ -27,6 +27,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
+import java.awt.Image;
 
 import java.util.Hashtable;
 
@@ -126,63 +127,54 @@ public class BackgroundHighlight extends TextAreaExtension
     }
 
 
-    private void paintLine(final Graphics2D gfx, final int lineY) {
+    public void paintScreenLineRange(Graphics2D gfx, int firstLine,
+        int lastLine, int[] physicalLines, int[] start, int[] end,
+        int lineY, int lineHeight
+    ) {
         if (!isEnabled() || icon == null || icon.getImageLoadStatus() != MediaTracker.COMPLETE)
         {
           return;
         }
 
         TextAreaPainter painter = this.textArea.getPainter();
-        FontMetrics fm = painter.getFontMetrics();
-
-        final int lineX = 0;
-
-        // Line width
-        int width  = painter.getWidth();
-
-        // Line height
-        int height = fm.getHeight();
-
-        if ((lineY + height) >= painter.getHeight()) {
-            height = painter.getHeight() - lineY;
-        }
-
-        int textWidth = textArea.getWidth();
-        int textHeight = textArea.getHeight();
+        int painterWidth = painter.getWidth();
+        int painterHeight = painter.getHeight();
         int iconWidth = icon.getIconWidth();
         int iconHeight = icon.getIconHeight();
+        Image iconImage = icon.getImage();
         
-        int x0 = 0; // (lineX / icon.getIconWidth()) * icon.getIconWidth();
-        int x1 = ((lineX + width - 1) / iconWidth) * iconWidth;
-
-        int y0 = (lineY / iconHeight) * iconHeight;
-        int y1 = ((lineY + height - 1) / iconHeight) * iconHeight;
-
-        // Remember the original clip bounds
         Rectangle rect = gfx.getClipBounds();
-
-        gfx.setClip(lineX, lineY, width, height);
 
         if (iconPosition == ICON_TILE)
         {
-          for (int x = x0; x <= x1; x += icon.getIconWidth()) {
-            for (int y = y0; y <= y1; y += icon.getIconHeight()) {
-                icon.paintIcon(this.textArea, gfx, x, y);
+          int x0 = rect.x;
+          int x1 = x0 + rect.width;
+          int y0 = rect.y;
+          int y1 = y0 + rect.height;
+          for (int x = 0; x <= x1; x += iconWidth) {
+            if (x + iconWidth > x0) {
+              for (int y = 0; y <= y1; y += iconHeight) {
+                if (y + iconHeight > y0) {
+                  gfx.drawImage(iconImage, x, y, textArea);
+                }
+              }
             }
           }
         }
         else if (iconPosition == ICON_STRECH)
         {
-          gfx.drawImage(icon.getImage(), 0, 0, width, textHeight,  textArea);          
+          gfx.drawImage(iconImage,
+              0, 0, painterWidth, painterHeight,
+              textArea);
         }
         else if (iconPosition == ICON_CENTER)
         {
-          int x = (width - iconWidth) / 2 ;
-          int y = (textHeight - iconHeight)/ 2;
-          gfx.drawImage(icon.getImage(), x, y, textArea);
+          gfx.drawImage(iconImage,
+              (painterWidth - iconWidth) / 2,
+              (painterHeight - iconHeight) / 2,
+              textArea);
         }
 
-                
         if (blend) {
             // Remember the original color and composite
             Color     color     = gfx.getColor();
@@ -191,30 +183,12 @@ public class BackgroundHighlight extends TextAreaExtension
             gfx.setColor(alphaColor);
             gfx.setComposite(alphaComposite);
 
-            gfx.fillRect(lineX, lineY, width, height);
+            gfx.fillRect(rect.x, rect.y, rect.width, rect.height);
 
             // Restore the original color and composite
             gfx.setColor(color);
             gfx.setComposite(composite);
         }
-
-        // Restore the original clip bounds
-        gfx.setClip(rect);
-    }
-
-
-    public void paintValidLine(
-            final Graphics2D gfx, final int screenLine, final int physicalLine,
-            final int start, final int end, final int y
-    ) {
-        this.paintLine(gfx, y);
-    }
-
-
-    public void paintInvalidLine(
-            final Graphics2D gfx, final int screenLine, final int y
-    ) {
-        this.paintLine(gfx, y);
     }
 
 
