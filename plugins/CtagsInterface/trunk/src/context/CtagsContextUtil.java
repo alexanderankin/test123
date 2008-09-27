@@ -14,7 +14,7 @@ public class CtagsContextUtil {
 
 	private static CtagsContextUtil instance = new CtagsContextUtil();
 	private static String [] scopes =
-		"class struct".split(" ");
+		"class struct union enum interface namespace".split(" ");
 
 	private String getMemberCondition(Set<String> classes)
 	{
@@ -24,11 +24,15 @@ public class CtagsContextUtil {
 				classesStr.append(",");
 			classesStr.append(TagDB.quote(clazz));
 		}
+		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
 		StringBuffer conditionStr = new StringBuffer();
 		for (String scope: scopes) {
+			String column = TagDB.extension2column(scope);
+			if (! columns.contains(column))
+				continue;
 			if (conditionStr.length() > 0)
 				conditionStr.append(" OR ");
-			conditionStr.append(TagDB.extension2column(scope) + " IN (" + classesStr + ")");
+			conditionStr.append(column + " IN (" + classesStr + ")");
 		}
 		return conditionStr.toString();
 	}
