@@ -20,14 +20,25 @@
 
 package background;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
-import javax.swing.*;
 
-import org.gjt.sp.jedit.GUIUtilities;
+import java.util.Hashtable;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -38,8 +49,23 @@ public class BackgroundOptionPane extends AbstractOptionPane
     private JCheckBox  blend;
     private JButton    blendColor;
     private JSlider    blendAlpha;
+    private JComboBox  imagePosition;
 
-
+    public static final String[] IMAGE_POSITIONS = {
+      "center",
+      "strech",
+      "tile"
+    };
+    
+    static String[] POSITION_LABELS = new String[IMAGE_POSITIONS.length];
+    
+    static {
+      for (int i =0 ; i < IMAGE_POSITIONS.length; i++)
+      {
+        POSITION_LABELS[i] =
+          jEdit.getProperty("options.background.image-" + IMAGE_POSITIONS[i], IMAGE_POSITIONS[i]);
+      }
+    }
     public BackgroundOptionPane() {
         super("background");
     }
@@ -64,6 +90,18 @@ public class BackgroundOptionPane extends AbstractOptionPane
             filePanel
         );
 
+        imagePosition = new JComboBox(POSITION_LABELS);
+        String position = jEdit.getProperty("background.position", "tile");
+        for (int i =0 ; i < IMAGE_POSITIONS.length; i++)
+        {
+          if (position.equals(IMAGE_POSITIONS[i]))
+          {
+            imagePosition.setSelectedIndex(i);
+          }
+        }
+        addComponent(
+          jEdit.getProperty("options.background.image-position"), imagePosition);
+        
         this.blend = new JCheckBox(
             jEdit.getProperty("options.background.blend"),
             jEdit.getBooleanProperty("background.blend", false)
@@ -124,6 +162,9 @@ public class BackgroundOptionPane extends AbstractOptionPane
         jEdit.setIntegerProperty(
             "background.blend-alpha", this.blendAlpha.getValue()
         );
+        
+        jEdit.setProperty(
+          "background.position", IMAGE_POSITIONS[imagePosition.getSelectedIndex()]);
     }
 
 

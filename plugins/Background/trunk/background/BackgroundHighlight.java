@@ -20,10 +20,17 @@
 
 package background;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.MediaTracker;
+import java.awt.Rectangle;
+
 import java.util.Hashtable;
-import java.util.Vector;
-import javax.swing.*;
+
+import javax.swing.ImageIcon;
 
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
@@ -36,6 +43,10 @@ import org.gjt.sp.util.Log;
 
 public class BackgroundHighlight extends TextAreaExtension
 {
+    private static final int ICON_CENTER = 0;
+    private static final int ICON_STRECH = 1;
+    private static final int ICON_TILE = 2;
+    
     // (EditPane, BackgroundHighlight) association
     private static Hashtable highlights = new Hashtable();
 
@@ -45,6 +56,7 @@ public class BackgroundHighlight extends TextAreaExtension
     private static Color     blendColor = null;
     private static int       blendAlpha = 127;
     private static Color     alphaColor = null;
+    private static int       iconPosition = ICON_TILE;
 
     private static AlphaComposite alphaComposite = AlphaComposite.getInstance(
         AlphaComposite.SRC_OVER
@@ -103,11 +115,10 @@ public class BackgroundHighlight extends TextAreaExtension
 
 
     private void paintLine(final Graphics2D gfx, final int lineY) {
-        if (!this.isEnabled()) { return; }
-
-        if (icon == null) { return; }
-
-        if (icon.getImageLoadStatus() != MediaTracker.COMPLETE) { return; }
+        if (!isEnabled() || icon == null || icon.getImageLoadStatus() != MediaTracker.COMPLETE)
+        {
+          return;
+        }
 
         TextAreaPainter painter = this.textArea.getPainter();
         FontMetrics fm = painter.getFontMetrics();
@@ -124,23 +135,42 @@ public class BackgroundHighlight extends TextAreaExtension
             height = painter.getHeight() - lineY;
         }
 
+        int textWidth = textArea.getWidth();
+        int textHeight = textArea.getHeight();
+        int iconWidth = icon.getIconWidth();
+        int iconHeight = icon.getIconHeight();
+        
         int x0 = 0; // (lineX / icon.getIconWidth()) * icon.getIconWidth();
-        int x1 = ((lineX + width - 1) / icon.getIconWidth()) * icon.getIconWidth();
+        int x1 = ((lineX + width - 1) / iconWidth) * iconWidth;
 
-        int y0 = (lineY / icon.getIconHeight()) * icon.getIconHeight();
-        int y1 = ((lineY + height - 1) / icon.getIconHeight()) * icon.getIconHeight();
+        int y0 = (lineY / iconHeight) * iconHeight;
+        int y1 = ((lineY + height - 1) / iconHeight) * iconHeight;
 
         // Remember the original clip bounds
         Rectangle rect = gfx.getClipBounds();
 
         gfx.setClip(lineX, lineY, width, height);
 
-        for (int x = x0; x <= x1; x += icon.getIconWidth()) {
+        if (iconPosition == ICON_TILE)
+        {
+          for (int x = x0; x <= x1; x += icon.getIconWidth()) {
             for (int y = y0; y <= y1; y += icon.getIconHeight()) {
                 icon.paintIcon(this.textArea, gfx, x, y);
             }
+          }
+        }
+        else if (iconPosition == ICON_STRECH)
+        {
+          gfx.drawImage(icon.getImage(), 0, 0, width, textHeight,  textArea);          
+        }
+        else if (iconPosition == ICON_CENTER)
+        {
+          int x = (width - iconWidth) / 2 ;
+          int y = (textHeight - iconHeight)/ 2;
+          gfx.drawImage(icon.getImage(), x, y, textArea);
         }
 
+                
         if (blend) {
             // Remember the original color and composite
             Color     color     = gfx.getColor();
@@ -237,6 +267,16 @@ public class BackgroundHighlight extends TextAreaExtension
 
         iconName = newIconName;
         icon     = newIcon;
+        
+        String position = jEdit.getProperty("background.position", "tile");
+        for (int i =0 ; i < BackgroundOptionPane.IMAGE_POSITIONS.length; i++)
+        {
+          if (BackgroundOptionPane.IMAGE_POSITIONS[i].equals(position))
+          {
+            iconPosition = i;
+            break;
+          }
+        }
 
         blend      = jEdit.getBooleanProperty("background.blend", false);
         blendColor = jEdit.getColorProperty(
