@@ -43,7 +43,10 @@
 
     <para>Background lets you configure a background for the main jEdit text area.</para>
 
-    <para>If necessary, the background image is tiled to fill the entire text area.</para>
+    <para>
+    The background image can be tiled or stretched to fill the entire
+    text area, or drawn at the center of text area.
+    </para>
 
     <para>
     It's also possible to set a &quot;tinted glass&quot; effect thanks to the blend

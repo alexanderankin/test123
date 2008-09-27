@@ -1,8 +1,10 @@
 plugin.background.BackgroundPlugin.name=Background
 plugin.background.BackgroundPlugin.author=André Kaplan
-plugin.background.BackgroundPlugin.version=1.0.0
+plugin.background.BackgroundPlugin.version=1.1.0
 plugin.background.BackgroundPlugin.docs=users-guide.html
 plugin.background.BackgroundPlugin.activate=startup
+plugin.background.BackgroundPlugin.description=Background lets you \
+    configure a background image for the main jEdit text area.
 
 plugin.background.BackgroundPlugin.depend.0=jdk 1.4
 plugin.background.BackgroundPlugin.depend.1=jedit 04.02.99.00
