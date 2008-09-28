@@ -321,7 +321,6 @@ public class SideKickTree extends JPanel
 		{
 			if(((SideKickUpdate)msg).getView() == view) {
 				update();
-				lastParsedBuffer = view.getBuffer();
 			}
 		}
 		//else if (msg instanceof PluginUpdate) {
@@ -383,7 +382,8 @@ public class SideKickTree extends JPanel
 	{
 		onChange.setState(SideKick.isParseOnChange());
 		onSave.setState(SideKick.isParseOnSave());
-		SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
+		Buffer parsedBuffer = view.getBuffer();
+		SideKickParser parser = SideKickPlugin.getParserForBuffer(parsedBuffer);
 		if (parser != null) {
 			Object item = parserCombo.getSelectedItem();
 			if (item != parser.getName()) {
@@ -394,15 +394,16 @@ public class SideKickTree extends JPanel
 		data = SideKickParsedData.getParsedData(view);
 		if(parser == null || data == null)
 		{
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(view.getBuffer().getName());
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(parsedBuffer.getName());
 			root.insert(new DefaultMutableTreeNode(
 				jEdit.getProperty("sidekick-tree.not-parsed")),0);
-
 			tree.setModel(new FilteredTreeModel(new DefaultTreeModel(root), true));
+			lastParsedBuffer = null;
 		}
 		else
 		{
 			tree.setModel(new FilteredTreeModel(data.tree, true));
+			lastParsedBuffer = parsedBuffer;
 			if(SideKick.isFollowCaret())
 				expandTreeAt(view.getTextArea().getCaretPosition());
 		}
@@ -788,7 +789,6 @@ public class SideKickTree extends JPanel
 					if (sp == null)  return;
 					else reloadParserCombo();
 				}
-				lastParsedBuffer = view.getBuffer();
 				SideKickPlugin.parse(view,true);
 			}
 			level--;
