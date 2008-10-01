@@ -54,7 +54,18 @@ public class SyntaxHighlightingEditor extends JPanel implements EBComponent {
 			JEditTextArea textArea = view.getTextArea();
 			int lineNum = textArea.getCaretLine();
 			Buffer buffer = view.getBuffer();
-			int start = buffer.getLineStartOffset(lineNum);
+			int start;
+			// If this method it is invoked using invokeLater() from caretUpdate
+			// for the event of closing a buffer, it might be called when the
+			// buffer has been replaced by a new one, but the caret location in
+			// the text area hasn't been updated yet, and the new buffer may not
+			// have this line number in it (i.e. may have less lines than the
+			// previous).
+			try {
+				start = buffer.getLineStartOffset(lineNum);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return;
+			}
 			int position = textArea.getCaretPosition();
 			
 			DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
