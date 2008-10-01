@@ -829,7 +829,7 @@ public class SideKickTree extends JPanel
 				}
 			}
 
-			if (with_delay) {
+			if (SideKick.isFollowCaret() && with_delay) {
 				expandTreeWithDelay();
 			}
 		} else {
