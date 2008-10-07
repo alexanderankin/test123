@@ -100,7 +100,7 @@ public class TextAreaHandler {
     void removeAbbrev(Abbrev abbrev) {
         // the offset of the caret in the full text 
         int end = textArea.getCaretPosition();
-        int start = end - abbrev.abbreviation.length();
+        int start = end - abbrev.getAbbreviation().length();
         textArea.setSelection(new Selection.Range(start, end));
         textArea.setSelectedText("");
     }

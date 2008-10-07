@@ -44,22 +44,62 @@ public class Abbrev implements Comparable<Abbrev> {
     /**
      * A short name of the abbreviation.
      */
-    public String name;
+    private String name;
     
     /**
      * The abbreviation that will get expanded.
      */
-    public String abbreviation;    
+    private String abbreviation;    
     
     /**
      * The expansion of the abbreviation.
      */
-    public String expansion;
+    private String expansion;
     
     /**
      * True if the abbreviation should be indented when changed.
      */
     public boolean autoIndent;
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    public boolean isAutoIndent() {
+        return autoIndent;
+    }
+
+    public void setAutoIndent(boolean autoIndent) {
+        this.autoIndent = autoIndent;
+    }
+
+    public String getExpansion() {
+        return expansion;
+    }
+
+    public void setExpansion(String expansion) {
+        this.expansion = expansion;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public WhenInvokedAsCommand getWhenInvokedAsCommand() {
+        return whenInvokedAsCommand;
+    }
+
+    public void setWhenInvokedAsCommand(WhenInvokedAsCommand whenInvokedAsCommand) {
+        this.whenInvokedAsCommand = whenInvokedAsCommand;
+    }
         
     public static class WhenInvokedAsCommand {
         /**

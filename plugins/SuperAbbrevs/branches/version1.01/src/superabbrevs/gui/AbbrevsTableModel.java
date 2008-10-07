@@ -63,9 +63,9 @@ public class AbbrevsTableModel extends AbstractTableModel {
         ColumnNames name = columns[columnIndex];
         switch (name) {
             case Name:
-                return a.name;
+                return a.getName();
             case Abbreviation:
-                return a.abbreviation;
+                return a.getAbbreviation();
             default:
                 assert false;
         }
@@ -78,9 +78,9 @@ public class AbbrevsTableModel extends AbstractTableModel {
         ColumnNames name = columns[columnIndex];
         switch (name) {
             case Name:
-                a.name = (String) aValue;
+                a.setName((String) aValue);
             case Abbreviation:
-                a.abbreviation = (String) aValue;
+                a.setAbbreviation((String) aValue);
             default:
                 assert false;
         }

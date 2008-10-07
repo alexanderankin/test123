@@ -71,11 +71,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane2" alignment="0" pref="178" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="0" pref="180" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="modeJLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="modesJComboBox" pref="135" max="32767" attributes="0"/>
+                              <Component id="modesJComboBox" pref="137" max="32767" attributes="0"/>
                           </Group>
                           <Component id="abbrevsJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
@@ -180,9 +180,9 @@
                     </Property>
                   </Properties>
                   <Events>
+                    <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="abbrevsJListValueChanged"/>
                     <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="abbrevsJListMousePressed"/>
                     <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="abbrevsJListMouseReleased"/>
-                    <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="abbrevsJListValueChanged"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -306,7 +306,7 @@
                           <Component id="commandOrJLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="4" pref="4" max="-2" attributes="0"/>
                           <Component id="commandNoSelectionReplacementJComboBox" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="521" max="32767" attributes="0"/>
+                          <EmptySpace pref="509" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

@@ -33,7 +33,7 @@ public class AbbrevsHandler {
             Mode mode = Persistence.loadMode(modeName);
             trie = new BackwardsTrie<Abbrev>();
             for(Abbrev abbrev : mode.getAbbreviations()) {
-                trie.put(abbrev.abbreviation, abbrev);
+                trie.put(abbrev.getAbbreviation(), abbrev);
             }
             cache.put(modeName, trie);
         }
