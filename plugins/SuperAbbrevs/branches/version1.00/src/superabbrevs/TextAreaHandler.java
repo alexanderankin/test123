@@ -9,8 +9,12 @@
 
 package superabbrevs;
 
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.ParseException;
+import org.gjt.sp.jedit.bsh.TargetError;
 import superabbrevs.model.Abbrev;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.SwingUtilities;
@@ -105,7 +109,17 @@ public class TextAreaHandler {
     }
     
     void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand) {
-        templateHandler.expandAbbrev(abbrev, invokedAsACommand);
+        try {
+            templateHandler.expandAbbrev(abbrev, invokedAsACommand);
+        } catch (TargetError ex) {
+            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+        } catch (ParseException ex) {
+            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+        } catch (EvalError ex) {
+            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+        } catch (IOException ex) {
+            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+        }
     }
     
     boolean selectNextAbbrev() {

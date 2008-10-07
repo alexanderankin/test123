@@ -1,5 +1,8 @@
 package superabbrevs.utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Sune Simonsen
  * class TextUtil

@@ -11,11 +11,8 @@ package superabbrevs;
 
 import java.util.ArrayList;
 import superabbrevs.model.Abbrev;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
-import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -27,13 +24,10 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 public class InputHandler {
 
     private View view;
-
     private JEditTextArea textArea;
-
     private Buffer buffer;
 
     private TextAreaHandler textAreaHandler;
-
     private AbbrevsHandler abbrevsHandler = new AbbrevsHandler();
        
     /** Creates a new instance of InputHandler */
@@ -43,6 +37,15 @@ public class InputHandler {
         this.buffer = buffer;
         
         textAreaHandler = new TextAreaHandler(view, textArea, buffer);
+    }
+    
+    public void esc() {
+        if(textAreaHandler.isInTemplateMode()){
+            // Stop the template mode
+            Handler.removeHandler(buffer);
+        } else {
+            textArea.selectNone();
+        }
     }
     
     public void tab() {

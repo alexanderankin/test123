@@ -39,6 +39,11 @@ public class SuperAbbrevsPlugin extends EditPlugin {
         inputHandler.tab();
     }
     
+    public static void esc(View view, JEditTextArea textArea, Buffer buffer) {
+        InputHandler inputHandler = new InputHandler(view, textArea, buffer);        
+        inputHandler.esc();
+    }
+    
     public static void showSearchDialog(View view, JEditTextArea textArea,
             Buffer buffer){
         InputHandler inputHandler = new InputHandler(view, textArea, buffer);        
@@ -51,7 +56,6 @@ public class SuperAbbrevsPlugin extends EditPlugin {
         
         AbbrevsOptionPaneController controller = new AbbrevsOptionPaneController(mode);
         JDialog dialog = new AbbrevsDialog(view, false, controller);
-        dialog.setLocationRelativeTo(view);
         dialog.setVisible(true);
     }
     

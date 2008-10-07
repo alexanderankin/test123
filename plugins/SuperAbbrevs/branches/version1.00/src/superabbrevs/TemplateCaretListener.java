@@ -1,6 +1,9 @@
 package superabbrevs;
+import superabbrevs.template.fields.SelectableField;
+import java.util.HashMap;
 import javax.swing.event.*;
 import java.util.Hashtable;
+import java.util.Map;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
 import superabbrevs.template.*;
@@ -38,7 +41,8 @@ public class TemplateCaretListener implements CaretListener {
 	
 	//{{{ Caret listener management
 	
-	private static Hashtable caretListeners = new Hashtable();
+	private static Map<JEditTextArea,TemplateCaretListener> caretListeners = 
+                new HashMap<JEditTextArea, TemplateCaretListener>();
 		
 	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
 		textArea.removeCaretListener(getCaretListener(textArea));

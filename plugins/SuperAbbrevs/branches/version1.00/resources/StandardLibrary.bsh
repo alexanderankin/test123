@@ -5,15 +5,6 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public void print(String s){
-	_out.append(s);
-}
-
-public void println(String s){
-	
-	_out.append(s+"\n");
-}
-
 public String date() {
     Calendar cal = Calendar.getInstance(TimeZone.getDefault());
     

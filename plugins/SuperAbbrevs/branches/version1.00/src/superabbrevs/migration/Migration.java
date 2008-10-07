@@ -21,8 +21,8 @@ public class Migration {
 
     public static void Migrate() {
         Log.log(Log.Level.DEBUG, Migration.class, "Migrating old abbreviations");
-        importOldAbbrevs();
-        deleteAbbrevsDir();
+        //importOldAbbrevs();
+        //deleteAbbrevsDir();
         removeOldMacros();
     }
     
@@ -35,8 +35,8 @@ public class Migration {
     private static void importOldAbbrevs() {
         for (org.gjt.sp.jedit.Mode mode : jEdit.getModes()) {
             Hashtable<String, ArrayList<Abbrev>> newAbbrevs = loadAbbrevs(mode.getName());
-
             Hashtable<String, String> oldAbbrevs = readModeFile(mode.getName());
+            
             if (oldAbbrevs != null) {
                 importOldAbbrevsForMode(mode.getName(), oldAbbrevs, newAbbrevs);
             }
@@ -70,9 +70,10 @@ public class Migration {
             insertIfNotExist(abbrev.getKey(), abbrev.getValue(), newAbbrevs);
         }
 
+        Mode mode = new Mode(modeName);
+        mode.getAbbreviations().addAll(flatten(newAbbrevs));
+            
         try {
-            Mode mode = new Mode(modeName);
-            mode.getAbbreviations().addAll(flatten(newAbbrevs));
             // todo migrate variables
             Persistence.saveMode(mode);
         } catch (IOException ex) {
@@ -166,6 +167,7 @@ public class Migration {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static Hashtable<String, String> readObjectFile(File file) {
         if (file.exists()) {
             try {

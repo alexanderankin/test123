@@ -3,12 +3,10 @@ package superabbrevs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
 import superabbrevs.model.Abbrev;
 import superabbrevs.model.Mode;
 
@@ -42,7 +40,7 @@ public class AbbrevsOptionPaneController {
         }
         
         Arrays.sort(modeNames,1,jEditModes.length-1,
-                new MiscUtilities.StringICaseCompare());
+                String.CASE_INSENSITIVE_ORDER);
         
         for (int i = 1; i < jEditModes.length; i++) {
             if (modeNames[i].equals(this.modeName)) {

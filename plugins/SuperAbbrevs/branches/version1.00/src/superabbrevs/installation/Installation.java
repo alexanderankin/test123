@@ -50,7 +50,7 @@ public class Installation {
             String name = modes[i].getName();
             // would be nicer if I knew how to iterate the files in the resource
             // directory
-            copyFileFromResourceDir(name);
+            copyFileFromResourceDir(name + ".xml");
         }
     }
     
@@ -87,6 +87,7 @@ public class Installation {
     public static void install() {
         Log.log(Log.Level.DEBUG, Installation.class, "Installing plugin");
         createAbbrevsDir();
+        writeDefaultAbbrevs();
         writeDefaultAbbrevFunctions();
         writeDefaultTemplateGenerationFunctions();
         Migration.Migrate();

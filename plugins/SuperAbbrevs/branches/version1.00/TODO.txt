@@ -51,12 +51,10 @@ Things I've like to implement
 * Merge default abbrevs with already defined abbrevs in the 
   install process.
   
-* Abbrevs and user variable names has to be a valid identifier.
-
-* The change abbrevs editor only shows the mode specific abbrevaition, if it is
-  not defined then show the global abbrevaition.
-  
 * Use JEditBuffer.createPosition(int offset) to manage the template fields 
   positions.
+
+* All functions in Std that use the state of the textArea when the 
+  abbreviation was expanded should be moved to Tpg
 
 2007/06/17 - Sune Simonsen
