@@ -1,0 +1,335 @@
+<mode>
+  <name>html</name>
+  <abbreviations>
+    <abbreviation>
+      <name>Ampersand</name>
+      <abbreviation>&amp;</abbreviation>
+      <expansion>&amp;amp;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Bold</name>
+      <abbreviation>b</abbreviation>
+      <expansion>&lt;b&gt;$3&lt;/b&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Division</name>
+      <abbreviation>div</abbreviation>
+      <expansion>&lt;div class=&quot;$1&quot;&gt;
+	&lt;#=input#&gt;$end
+&lt;/div&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>SELECTED_LINES</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Heading 1</name>
+      <abbreviation>h1</abbreviation>
+      <expansion>&lt;h1&gt;$1&lt;/h1&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Heading 2</name>
+      <abbreviation>h2</abbreviation>
+      <expansion>&lt;h2&gt;$1&lt;/h2&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Heading 3</name>
+      <abbreviation>h3</abbreviation>
+      <expansion>&lt;h3&gt;$1&lt;/h3&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Horizontal Rule</name>
+      <abbreviation>hr</abbreviation>
+      <expansion>&lt;hr /&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Html close tag</name>
+      <abbreviation>&gt;</abbreviation>
+      <expansion>&lt;#
+String beforeCaret = std.getLineBeforeCaret();
+String afterCaret = std.getLineAfterCaret();
+
+if (beforeCaret.length() != 0 &amp;&amp; !afterCaret.startsWith(&quot;&lt;&quot;)) {
+	
+	Pattern p = Pattern.compile(&quot;&lt;(\\w+)([^&lt;/&gt;])*$&quot;);
+	Matcher m = p.matcher(beforeCaret);
+	if(m.find()) {
+		tag = beforeCaret.substring(m.start(1), m.end(1));
+		print(&quot;&gt;$1&lt;/&quot;+tag+&quot;&gt;&quot;);
+	} else {
+		print(&quot;&gt;\t&quot;);
+	}
+} else {
+	print(&quot;&gt;\t&quot;);
+}
+#&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Html document</name>
+      <abbreviation>html</abbreviation>
+      <expansion>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html&gt;
+	&lt;head&gt;
+	&lt;title&gt;${1:Title}&lt;/title&gt;
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;${2:css}&quot; /&gt;
+		&lt;script type=&quot;text/javascript&quot; src=&quot;&quot;&gt;&lt;/script&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-8859-1&quot; /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		$end
+	&lt;/body&gt;
+&lt;/html&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Html tag</name>
+      <abbreviation>&lt;</abbreviation>
+      <expansion>&lt;#
+singleTags = &quot;br|hr|img&quot;;
+
+getTag(s) {
+	Pattern p = Pattern.compile(&quot;^(\\w+)([^&lt;&gt;])*$&quot;);
+	Matcher m = p.matcher(s);
+	if(m.find()) {
+		return s.substring(m.start(1), m.end(1)); 
+	}
+	return null;
+}
+
+closeStyle(s) {
+	tag = getTag(s);
+	if (tag == null) {
+		return &quot;/&gt;&quot;;
+	}
+	
+	return std.choose(tag,singleTags,&quot; /&gt;&quot;,&quot;&gt;&quot;);
+}
+
+closeTag(s) {
+	tag = getTag(s);
+	if (tag == null) {
+		return &quot;/&gt;&quot;;
+	}
+	
+	return std.choose(tag,singleTags,&quot;&quot;,&quot;&lt;/&quot;+tag+&quot;&gt;&quot;);
+}
+#&gt;
+&lt;${1:tag}${1=closeStyle(s)}$end${1=closeTag(s)}</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Image</name>
+      <abbreviation>img</abbreviation>
+      <expansion>&lt;img src=&quot;$1&quot; /&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Italic</name>
+      <abbreviation>i</abbreviation>
+      <expansion>&lt;i&gt;$1&lt;/i&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>JavaScript</name>
+      <abbreviation>script</abbreviation>
+      <expansion>&lt;script type=&quot;text/javascript&quot;&gt;
+$end
+&lt;/script&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Line break</name>
+      <abbreviation>br</abbreviation>
+      <expansion>&lt;br /&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Link</name>
+      <abbreviation>a</abbreviation>
+      <expansion>&lt;a href=&quot;$1&quot; alt=&quot;$2&quot;&gt;${3:&lt;#=input#&gt;}&lt;/a&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>WORD</replacementType>
+        <replacementSelectionType>SELECTION</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>List item</name>
+      <abbreviation>li</abbreviation>
+      <expansion>&lt;li&gt;$1&lt;/li&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>List item chaning</name>
+      <abbreviation>&lt;/li&gt;</abbreviation>
+      <expansion>&lt;/li&gt;
+&lt;li&gt;$1&lt;/li&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Nonbreaking space</name>
+      <abbreviation>&amp;</abbreviation>
+      <expansion>&amp;nbsp;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Ordered List</name>
+      <abbreviation>ol</abbreviation>
+      <expansion>&lt;ol&gt;
+	$end
+&lt;/ol&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Paragraph</name>
+      <abbreviation>p</abbreviation>
+      <expansion>&lt;p&gt;
+	$end
+&lt;/p&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Span</name>
+      <abbreviation>span</abbreviation>
+      <expansion>&lt;span class=&quot;$1&quot;&gt;$end&lt;/span&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Style attribute</name>
+      <abbreviation>st</abbreviation>
+      <expansion>style=&quot;$1&quot;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Table</name>
+      <abbreviation>table</abbreviation>
+      <expansion>&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;
+			$end
+		&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Table cell</name>
+      <abbreviation>td</abbreviation>
+      <expansion>&lt;td&gt;
+	$end
+&lt;/td&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>Table row</name>
+      <abbreviation>tr</abbreviation>
+      <expansion>&lt;tr&gt;
+	&lt;td&gt;
+		$end
+	&lt;/td&gt;
+&lt;/tr&gt;</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+  </abbreviations>
+  <variables/>
+</mode>
