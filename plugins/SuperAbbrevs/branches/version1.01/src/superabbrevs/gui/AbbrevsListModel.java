@@ -80,8 +80,8 @@ public class AbbrevsListModel extends AbstractListModel{
     
     int update(int selection, String name) {
         Abbrev selectedAbbrev = abbrevs.get(selection);
-        if (!selectedAbbrev.name.equals(name)) {
-            selectedAbbrev.name = name;
+        if (!selectedAbbrev.getName().equals(name)) {
+            selectedAbbrev.setName(name);
             return sort(selection);
         } else {
             return selection;

@@ -106,7 +106,7 @@ public class Migration {
         Iterator<Abbrev> iter = abbrevsList.iterator();
         while (!found && iter.hasNext()) {
             Abbrev ab = iter.next();
-            found = ab.expansion.equals(expansion);
+            found = ab.getExpansion().equals(expansion);
         }
 
         if (!found) {
@@ -120,10 +120,10 @@ public class Migration {
                 new Hashtable<String, ArrayList<Abbrev>>();
 
         for (Abbrev abbrev : Persistence.loadMode(modeName).getAbbreviations()) {
-            ArrayList<Abbrev> abbrevs = result.get(abbrev.abbreviation);
+            ArrayList<Abbrev> abbrevs = result.get(abbrev.getAbbreviation());
             if (abbrevs == null) {
                 abbrevs = new ArrayList<Abbrev>();
-                result.put(abbrev.abbreviation, abbrevs);
+                result.put(abbrev.getAbbreviation(), abbrevs);
             }
 
             abbrevs.add(abbrev);

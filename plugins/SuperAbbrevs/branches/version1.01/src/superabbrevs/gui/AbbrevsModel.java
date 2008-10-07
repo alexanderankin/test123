@@ -33,7 +33,7 @@ public class AbbrevsModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        get(rowIndex).name = aValue.toString();
+        get(rowIndex).setName(aValue.toString());
     }
 
     @Override

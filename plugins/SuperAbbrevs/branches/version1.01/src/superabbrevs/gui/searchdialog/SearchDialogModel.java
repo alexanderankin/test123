@@ -32,8 +32,8 @@ public class SearchDialogModel implements TableModel {
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
-            case 0: return matches.get(rowIndex).name; 
-            default: return matches.get(rowIndex).abbreviation; 
+            case 0: return matches.get(rowIndex).getName(); 
+            default: return matches.get(rowIndex).getAbbreviation(); 
         }
     }
     
@@ -56,8 +56,8 @@ public class SearchDialogModel implements TableModel {
         searchText = searchText.toLowerCase();
         matches.clear();
         for (Abbrev abbrev : abbrevs) {
-            if (abbrev.name.toLowerCase().indexOf(searchText) != -1 ||
-                abbrev.abbreviation.toLowerCase().indexOf(searchText) != -1) {
+            if (abbrev.getName().toLowerCase().indexOf(searchText) != -1 ||
+                abbrev.getAbbreviation().toLowerCase().indexOf(searchText) != -1) {
                 matches.add(abbrev);
             }
         }

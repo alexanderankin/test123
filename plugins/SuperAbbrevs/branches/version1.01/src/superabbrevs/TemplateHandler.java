@@ -57,7 +57,7 @@ public class TemplateHandler {
 
         TemplateFactory tf = new TemplateFactory(ti, indent);
         
-        Template t = tf.createTemplate(abbrev.expansion);
+        Template t = tf.createTemplate(abbrev.getExpansion());
         t.setOffset(templateStart);
 
         textArea.setSelectedText(t.toString());

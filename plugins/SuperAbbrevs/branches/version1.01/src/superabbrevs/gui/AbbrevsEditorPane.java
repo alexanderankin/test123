@@ -431,10 +431,12 @@ public class AbbrevsEditorPane extends JPanel {
 
     private void saveAbbrev(int selection) {
         Abbrev abbrev = abbrevsModel.get(selection);
-        abbrev.abbreviation = abbrevJTextField.getText();
-        abbrev.expansion = abbrevsEditorJTextArea.getText();
-        abbrev.whenInvokedAsCommand.replacementType = (Abbrev.ReplacementTypes) commandNoSelectionReplacementJComboBox.getSelectedItem();
-        abbrev.whenInvokedAsCommand.replacementSelectionType = (Abbrev.ReplementSelectionTypes) commandSelectionReplacementJComboBox.getSelectedItem();
+        abbrev.setAbbreviation(abbrevJTextField.getText());
+        abbrev.setExpansion(abbrevsEditorJTextArea.getText());
+        abbrev.whenInvokedAsCommand.replacementType = 
+                (Abbrev.ReplacementTypes) commandNoSelectionReplacementJComboBox.getSelectedItem();
+        abbrev.whenInvokedAsCommand.replacementSelectionType = 
+                (Abbrev.ReplementSelectionTypes) commandSelectionReplacementJComboBox.getSelectedItem();
     }
 
     private void loadAbbrev() {
@@ -461,8 +463,8 @@ public class AbbrevsEditorPane extends JPanel {
 
     private void setAbbrevValues(Abbrev abbrev) {
 
-        abbrevJTextField.setText(abbrev.abbreviation);
-        abbrevsEditorJTextArea.setText(abbrev.expansion);
+        abbrevJTextField.setText(abbrev.getAbbreviation());
+        abbrevsEditorJTextArea.setText(abbrev.getExpansion());
         commandSelectionReplacementJComboBox.setSelectedItem(
                 abbrev.whenInvokedAsCommand.replacementSelectionType);
         commandNoSelectionReplacementJComboBox.setSelectedItem(
@@ -581,11 +583,11 @@ public class AbbrevsEditorPane extends JPanel {
                 Abbrev abbrev = abbrevsModel.get(selection);
 
                 String name = JOptionPane.showInputDialog(mainPanel,
-                        "Enter the new name for the abbreviation", abbrev.name);
-                if (name != null && !name.trim().equals("") && !name.equals(abbrev.name)) {
+                        "Enter the new name for the abbreviation", abbrev.getName());
+                if (name != null && !name.trim().equals("") && !name.equals(abbrev.getName())) {
                     abbrevsJList.clearSelection();
 
-                    abbrev.name = name;
+                    abbrev.setName(name);
                     selection = abbrevsModel.sort(selection);
                     setSelection(selection);
                     abbrevsJList.ensureIndexIsVisible(selection);
