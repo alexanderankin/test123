@@ -37,7 +37,14 @@ public class SearchDialog extends EnhancedDialog {
         abbreviationsJTable.getSelectionModel().setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
     }
+
+    private void fireSearchAcceptedEvent(Object o) {
+        for (SearchAcceptedListener listener : searchAcceptedListeners) {
+            listener.accepted(o);
+        }
+    }
     
+    @SuppressWarnings("deprecation")
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -55,6 +62,7 @@ public class SearchDialog extends EnhancedDialog {
         setTitle("Search for an abbreviation");
         setName("searchDialog"); // NOI18N
 
+        searchJTextField.setName("searchJTextField"); // NOI18N
         searchJTextField.setNextFocusableComponent(abbreviationsJTable);
         searchJTextField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -67,8 +75,8 @@ public class SearchDialog extends EnhancedDialog {
             }
         });
 
-        abbreviationsJScrollPane.setBackground(new java.awt.Color(255, 255, 255));
         abbreviationsJScrollPane.setFocusable(false);
+        abbreviationsJScrollPane.setName("abbreviationsJScrollPane"); // NOI18N
 
         abbreviationsJTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -93,10 +101,10 @@ public class SearchDialog extends EnhancedDialog {
                 return canEdit [columnIndex];
             }
         });
+        abbreviationsJTable.setName("abbreviationsJTable"); // NOI18N
         abbreviationsJTable.setNextFocusableComponent(searchJTextField);
         abbreviationsJTable.setShowHorizontalLines(false);
         abbreviationsJTable.setShowVerticalLines(false);
-        abbreviationsJTable.setUpdateSelectionOnSort(false);
         abbreviationsJTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 abbreviationsJTableFocusGained(evt);
@@ -115,32 +123,32 @@ public class SearchDialog extends EnhancedDialog {
         jLabel1.setDisplayedMnemonic('S');
         jLabel1.setLabelFor(searchJTextField);
         jLabel1.setText("Search for:");
-        jLabel1.setDisplayedMnemonicIndex(0);
+        jLabel1.setName("jLabel1"); // NOI18N
         jLabel1.setNextFocusableComponent(searchJTextField);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(abbreviationsJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchJTextField)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(abbreviationsJScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 302, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(layout.createSequentialGroup()
+                        .add(jLabel1)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(searchJTextField)))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(searchJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(abbreviationsJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(searchJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(abbreviationsJScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 280, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -149,6 +157,10 @@ public class SearchDialog extends EnhancedDialog {
 
     private void searchJTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchJTextFieldKeyReleased
         model.searchTextChanged(searchJTextField.getText());
+        
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            dispose();
+        }
     }//GEN-LAST:event_searchJTextFieldKeyReleased
 
     private void searchJTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_searchJTextFieldFocusGained
@@ -205,9 +217,9 @@ public class SearchDialog extends EnhancedDialog {
         if (!abbreviationsJTable.getSelectionModel().isSelectionEmpty()) {
             int s = abbreviationsJTable.getSelectionModel().getMinSelectionIndex();
             Object o = model.getRowObject(s); 
-            for (SearchAcceptedListener listener : searchAcceptedListeners) {
-                listener.accepted(o);
-            }
+            fireSearchAcceptedEvent(o);
+        } else if (0 < abbreviationsJTable.getRowCount()) {
+            fireSearchAcceptedEvent(model.getRowObject(0));
         }
     }
 

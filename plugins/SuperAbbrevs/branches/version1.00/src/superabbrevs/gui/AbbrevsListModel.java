@@ -2,10 +2,7 @@ package superabbrevs.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import javax.swing.AbstractListModel;
-import javax.swing.event.ListDataListener;
-import javax.swing.table.AbstractTableModel;
 import superabbrevs.model.Abbrev;
 
 /**
@@ -19,6 +16,8 @@ public class AbbrevsListModel extends AbstractListModel{
      * Creates a new instance of AbbrevsModel
      */
     public AbbrevsListModel(ArrayList<Abbrev> abbrevs) {
+        // Sort the table
+        Collections.sort(abbrevs);
         this.abbrevs = abbrevs;
     }
     
@@ -80,8 +79,9 @@ public class AbbrevsListModel extends AbstractListModel{
     }
     
     int update(int selection, String name) {
-        if (abbrevs.get(selection).name != name) {
-            abbrevs.get(selection).name = name;
+        Abbrev selectedAbbrev = abbrevs.get(selection);
+        if (!selectedAbbrev.name.equals(name)) {
+            selectedAbbrev.name = name;
             return sort(selection);
         } else {
             return selection;

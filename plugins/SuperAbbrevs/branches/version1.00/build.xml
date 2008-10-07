@@ -39,6 +39,7 @@
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${lib.dir}/xpp3_min-1.1.3.4.O.jar"/>
         <pathelement location="${lib.dir}/xstream-1.2.1.jar"/>
+        <pathelement location="${lib.dir}/swing-layout-1.0.3.jar"/>
         <pathelement location="${extlib.dir}/junit-3.8.1.jar"/>
         <pathelement location="${build.dir}/"/>
     </path>
@@ -57,7 +58,8 @@
   -->
     <target name="jflex">
         <exec executable="jflex">
-            <arg value="superabbrevs/lexer/*.lex"/>
+            <arg value="src/superabbrevs/lexer/templategenerator/*.lex"/>
+            <arg value="src/superabbrevs/lexer/template/*.lex"/>
         </exec>
     </target>
     
@@ -67,8 +69,8 @@
     
     <target name="compile" depends="init">
         <javac 
-            target="1.6"
-            source="1.6"
+            target="1.5"
+            source="1.5"
             srcdir="${src.dir}"
             destdir="${build.dir}"
             debug="on"
@@ -78,8 +80,8 @@
             <classpath refid="project.class.path"/>
         </javac>
         <javac 
-            target="1.6"
-            source="1.6"
+            target="1.5"
+            source="1.5"
             srcdir="${test.dir}"
             destdir="${build.dir}"
             debug="on"

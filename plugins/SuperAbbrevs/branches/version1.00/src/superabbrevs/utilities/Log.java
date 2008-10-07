@@ -6,7 +6,6 @@
 package superabbrevs.utilities;
 
 import java.util.HashMap;
-import superabbrevs.SuperAbbrevsPlugin;
 
 /**
  *

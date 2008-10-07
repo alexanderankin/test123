@@ -13,6 +13,11 @@
 			superabbrevs.SuperAbbrevsPlugin.tab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
+        <ACTION NAME="SuperAbbrevs.esc">
+		<CODE>
+			superabbrevs.SuperAbbrevsPlugin.esc(view, textArea, buffer);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="SuperAbbrevs.showSearchDialog">
 		<CODE>
 			superabbrevs.SuperAbbrevsPlugin.showSearchDialog(view, textArea, buffer);

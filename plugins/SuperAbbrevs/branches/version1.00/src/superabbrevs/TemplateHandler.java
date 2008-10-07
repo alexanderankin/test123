@@ -8,27 +8,23 @@
  */
 package superabbrevs;
 
+import superabbrevs.model.Abbrev.ReplementSelectionTypes;
+import superabbrevs.model.Abbrev.ReplacementTypes;
 import superabbrevs.utilities.TextUtil;
-import bsh.EvalError;
-import bsh.Interpreter;
-import bsh.ParseException;
-import bsh.TargetError;
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.ParseException;
+import org.gjt.sp.jedit.bsh.TargetError;
 import java.io.IOException;
-import java.io.StringReader;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import superabbrevs.model.Abbrev.InputTypes;
-import superabbrevs.lexer.TemplateGeneratorLexer;
-import superabbrevs.lexer.TemplateGeneratorParser;
 import superabbrevs.model.Abbrev;
-import superabbrevs.template.EndField;
-import superabbrevs.template.SelectableField;
+import superabbrevs.template.fields.EndField;
+import superabbrevs.template.fields.SelectableField;
 import superabbrevs.template.Template;
 import superabbrevs.template.TemplateFactory;
-import superabbrevs.utilities.Log;
+import superabbrevs.template.TemplateInterpreter;
 
 /**
  *
@@ -47,39 +43,34 @@ public class TemplateHandler {
         this.buffer = buffer;
     }
 
-    void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand) {
-        Interpreter interpreter = new Interpreter();
-        setInput(interpreter, abbrev, invokedAsACommand);
-        
-        if (invokedAsACommand) {
-            selectReplacementArea(abbrev.whenInvokedAsCommand);
-        }
+    void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand)
+            throws TargetError, ParseException, EvalError, IOException {
         
         int templateStart = getSelectionStart();
         String indent = getIndent(templateStart);
         
-        try {
-            Template t = TemplateFactory.createTemplate(abbrev.expansion, interpreter, indent);
-            t.setOffset(templateStart);
+        TemplateInterpreter ti = new TemplateInterpreter(view, textArea, buffer);
+        ti.setInput(abbrev, invokedAsACommand, indent);
 
-            textArea.setSelectedText(t.toString());
+        if (invokedAsACommand) {
+            selectReplacementArea(abbrev.whenInvokedAsCommand);
+        }        
 
-            // select the current field in the template
-            selectField(t);
+        TemplateFactory tf = new TemplateFactory(ti, indent);
+        
+        Template t = tf.createTemplate(abbrev.expansion);
+        t.setOffset(templateStart);
 
-            Handler h = new Handler(t, textArea, buffer);
-            Handler.putHandler(buffer, h);
+        textArea.setSelectedText(t.toString());
 
-            TemplateCaretListener.putCaretListener(textArea, new TemplateCaretListener());
-        } catch (TargetError ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
-        } catch (ParseException ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
-        } catch (EvalError ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
-        } catch (IOException ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
-        }
+        // select the current field in the template
+        selectField(t);
+
+        Handler h = new Handler(t, textArea, buffer);
+        Handler.putHandler(buffer, h);
+
+        TemplateCaretListener.putCaretListener(textArea,
+                new TemplateCaretListener());
     }
 
     public boolean isInTempateMode() {
@@ -92,7 +83,7 @@ public class TemplateHandler {
 
         // the text on the current line
         String line = textArea.getLineText(lineNumber);
-        
+
         return TextUtil.getIndent(line);
     }
 
@@ -104,9 +95,12 @@ public class TemplateHandler {
         }
     }
 
-    private void selectBuffer() {
-        int end = textArea.getBufferLength() - 1;
-        textArea.setSelection(new Selection.Range(0, end));
+    private void selectChar() {
+        textArea.selectNone();
+        int caretPos = textArea.getCaretPosition();
+        if (caretPos < textArea.getBufferLength()) {
+            textArea.setSelection(new Selection.Range(caretPos, caretPos + 1));
+        }
     }
 
     /**
@@ -128,14 +122,14 @@ public class TemplateHandler {
 
         TemplateCaretListener listener =
                 TemplateCaretListener.removeCaretListener(textArea);
-        
+
         if (t.getCurrentField() instanceof EndField) {
             Handler.removeHandler(buffer);
             return false;
-        } 
-        
+        }
+
         t.nextField();
-        SelectableField f = t.getCurrentField();     
+        SelectableField f = t.getCurrentField();
 
         if (f != null) {
             int start = f.getOffset();
@@ -144,7 +138,7 @@ public class TemplateHandler {
             textArea.addToSelection(new Selection.Range(start, end));
         }
         TemplateCaretListener.putCaretListener(textArea, listener);
-        
+
         return true;
     }
 
@@ -171,113 +165,37 @@ public class TemplateHandler {
         int[] lines = textArea.getSelectedLines();
         int start = textArea.getLineStartOffset(lines[0]);
         int end = textArea.getLineEndOffset(lines[lines.length - 1]);
-        textArea.setSelection(new Selection.Range(start, end));
+
+        textArea.setSelection(new Selection.Range(start, --end));
     }
 
-    private void selectReplacementArea(Abbrev.InvokedAsCommand whenInvokedAsCommand) {
-        switch (whenInvokedAsCommand.replacementType) {
+    private void selectReplacementArea(ReplementSelectionTypes replaceType) {
+        switch (replaceType) {
+            case NOTHING: textArea.selectNone(); break;
             case SELECTED_LINES: selectLines(); break;
-            case BUFFER: selectBuffer(); break;
+            case SELECTION: break;
+        }
+    }
+
+    private void selectReplacementArea(ReplacementTypes replaceType) {
+        switch (replaceType) {
+            case AT_CARET: textArea.selectNone(); break;
+            case CHAR: selectChar(); break;
+            case WORD: textArea.selectWord(); break;
             case LINE: textArea.selectLine(); break;
+            case BUFFER: textArea.selectAll(); break;
         }
     }
 
-    private void setInput(Interpreter interpreter, Abbrev abbrev, 
-            boolean invokedAsACommand) {
-        try {
-            interpreter.set("input", "");
-            
-            if (invokedAsACommand) {
-                if (1 == textArea.getSelectionCount()) {
-                    switch (abbrev.whenInvokedAsCommand.inputSelectionType) {
-                        case SELECTED_LINES: setSelectedLines(interpreter); break;
-                        case SELECTION: setSelection(interpreter); break;
-                    }
-                } else {
-                    switch (abbrev.whenInvokedAsCommand.inputType) {
-                        case BUFFER: setDocument(interpreter); break;
-                        case LINE: setCaretLine(interpreter); break;
-                        case WORD: setCaretWord(interpreter); break;
-                    }
-                }
-            } else {
-                switch (abbrev.inputType) {
-                    case BUFFER: setDocument(interpreter); break;
-                    case LINE: setCaretLine(interpreter); break;
-                    case WORD: setCaretWord(interpreter); break;
-                }
-            }
-            
-            // set the file name of the current buffer
-            interpreter.set("filename", buffer.getName());
-            
-            // we keep the selection variable for backwards compatibility
-            interpreter.set("selection", getSelection());
-        } catch (EvalError ex) {
-            // Should never happen.
-            // TODO: write to log
+    private void selectReplacementArea(
+            Abbrev.WhenInvokedAsCommand whenInvokedAsCommand) {
+        Abbrev.ReplementSelectionTypes replacementSelectionType =
+                whenInvokedAsCommand.replacementSelectionType;
+        if (replacementSelectionType != Abbrev.ReplementSelectionTypes.NOTHING &&
+                1 == textArea.getSelectionCount()) {
+            selectReplacementArea(replacementSelectionType);
+        } else {
+            selectReplacementArea(whenInvokedAsCommand.replacementType);
         }
-    }
-    
-    private String getSelection() {
-        String selection = textArea.getSelectedText();
-        return selection == null ? "" : selection;
-    }
-    
-    private void setDocument(Interpreter interpreter) throws EvalError {
-        interpreter.set("input", textArea.getText());
-        interpreter.set("offset", textArea.getCaretPosition());
-    }
-    
-    private void setCaretLine(Interpreter interpreter) throws EvalError {
-        int line = textArea.getCaretLine();
-        String input = "";
-        int offsetInLine = 0;
-        if(textArea.getLineLength(line) != 0) {
-            input = textArea.getLineText(line);
-            int lineStart = textArea.getLineStartOffset(line);
-            offsetInLine = textArea.getCaretPosition() - lineStart;
-        }
-        interpreter.set("input", input);
-        interpreter.set("offset", offsetInLine);
-    }
-    
-    private void setCaretWord(Interpreter interpreter) throws EvalError {
-        int line = textArea.getCaretLine();
-        String input = "";
-        int caretOffsetInWord = 0;
-        if(textArea.getLineLength(line) != 0) {
-            String lineText = textArea.getLineText(line);
-        
-            int lineStart = textArea.getLineStartOffset(line);
-            int offset = textArea.getCaretPosition() - lineStart;
-
-            String noWordSep = buffer.getStringProperty("noWordSep");
-
-            if(offset == textArea.getLineLength(line)) offset--;
-
-            int wordStart = TextUtilities.findWordStart(lineText,offset,
-                    noWordSep,true,false,false);
-            int wordEnd = TextUtilities.findWordEnd(lineText,offset+1,
-                    noWordSep,true,false,false);
-            
-            input = textArea.getText(lineStart+wordStart, wordEnd - wordStart);
-            caretOffsetInWord = offset - wordStart;
-        }
-        interpreter.set("input", input);
-        interpreter.set("offset", caretOffsetInWord);
-    }
-
-    private void setSelectedLines(Interpreter interpreter) throws EvalError {
-        StringBuffer sb = new StringBuffer();
-        for (int line : textArea.getSelectedLines()) {
-            sb.append(textArea.getLineText(line) + "\n");
-        }
-        
-        interpreter.set("input", sb.toString());
-    }
-
-    private void setSelection(Interpreter interpreter) throws EvalError {
-        interpreter.set("input", textArea.getSelectedText());
     }
 }
