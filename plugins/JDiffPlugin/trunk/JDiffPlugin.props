@@ -93,6 +93,7 @@ options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
 options.jdiff.ignore-all-whitespace=Ignore all whitespace
 options.jdiff.auto-show-dockable=Automatically show dockable on diff
 options.jdiff.show-line-diff=Show line diff in dockable
+options.jdiff.beep-on-error=Beep on error
 options.jdiff.orientation.label=Merge Toolbar Orientation:
 options.jdiff.toolbar-horizontal=Horizontal
 options.jdiff.toolbar-vertical=Vertical
