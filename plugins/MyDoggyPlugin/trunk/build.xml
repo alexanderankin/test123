@@ -24,9 +24,9 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${install.dir}/mydoggy-api-1.5.0-SNAPSHOT.jar"/>
-		<pathelement location="${install.dir}/mydoggy-plaf-1.5.0-SNAPSHOT.jar"/>
-		<pathelement location="${install.dir}/mydoggy-res-1.5.0-SNAPSHOT.jar"/>
+		<pathelement location="${install.dir}/mydoggy-api-1.5.0.jar"/>
+		<pathelement location="${install.dir}/mydoggy-plaf-1.5.0.jar"/>
+		<pathelement location="${install.dir}/mydoggy-res-1.5.0.jar"/>
 	</path>
 	
 	<target name="build.prepare" >
@@ -36,9 +36,9 @@
 		<copy file="MyDoggy/swing-layout-1.0.3.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/swing-worker-1.1.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/swingx-0.9.1.jar" todir="${install.dir}" />
-		<copy file="MyDoggy/mydoggy-api-1.5.0-SNAPSHOT.jar" todir="${install.dir}" />
-		<copy file="MyDoggy/mydoggy-plaf-1.5.0-SNAPSHOT.jar" todir="${install.dir}" />
-		<copy file="MyDoggy/mydoggy-res-1.5.0-SNAPSHOT.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/mydoggy-api-1.5.0.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/mydoggy-plaf-1.5.0.jar" todir="${install.dir}" />
+		<copy file="MyDoggy/mydoggy-res-1.5.0.jar" todir="${install.dir}" />
 		<copy file="MyDoggy/TableLayout-20050920.jar" todir="${install.dir}" />
 	</target>
 
