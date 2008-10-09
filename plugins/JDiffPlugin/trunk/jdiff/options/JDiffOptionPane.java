@@ -38,6 +38,7 @@ public class JDiffOptionPane extends AbstractOptionPane
     private JCheckBox ignoreAmountOfWhitespace;
     private JCheckBox ignoreAllWhitespace;
     private JCheckBox autoShowDockable;
+    private JCheckBox beepOnError;
     private JRadioButton horizontal;
     private JRadioButton vertical;
     private JRadioButton compact;
@@ -55,6 +56,7 @@ public class JDiffOptionPane extends AbstractOptionPane
         ignoreAllWhitespace  = createCheckBox("jdiff.ignore-all-whitespace", false);
         autoShowDockable = createCheckBox("jdiff.auto-show-dockable", false);
         showLineDiff = createCheckBox("jdiff.show-line-diff", true );
+        beepOnError = createCheckBox("jdiff.beep-on-error", true);
 
         int orientation = jEdit.getIntegerProperty("jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL);
         horizontal = new JRadioButton(jEdit.getProperty("options.jdiff.toolbar-horizontal"));
@@ -90,6 +92,7 @@ public class JDiffOptionPane extends AbstractOptionPane
         addComponent(ignoreAllWhitespace);
         addComponent(autoShowDockable);
         addComponent(showLineDiff);
+        addComponent(beepOnError);
         addComponent(orientation_label);
         addComponent(horizontal);
         addComponent(vertical);
@@ -126,6 +129,9 @@ public class JDiffOptionPane extends AbstractOptionPane
         );
         jEdit.setBooleanProperty("jdiff.show-line-diff",
             showLineDiff.isSelected()
+        );
+        jEdit.setBooleanProperty("jdiff.beep-on-error",
+            beepOnError.isSelected()
         );
 
 
