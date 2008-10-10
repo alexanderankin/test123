@@ -1,3 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
-<SERVICES></SERVICES>
+<SERVICES>
+    <SERVICE CLASS="console.Shell" NAME="ssh">
+         new com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineShell();
+    </SERVICE>
+</SERVICES>

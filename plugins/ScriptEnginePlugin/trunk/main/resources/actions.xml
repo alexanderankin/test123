@@ -8,7 +8,27 @@
 			}
 		</CODE>
 	</ACTION>
+        <ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
+		<CODE>
+			Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateBuffer(view);
+			if(returnValue != null) {
+				view.getTextArea().setSelectedText(returnValue.toString());
+			}
+		</CODE>
+	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection">
+		<CODE>
+			if(view.getTextArea().getSelectedText() != null) {
+				Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateSelection(view);
+				if(returnValue != null) {
+					view.getTextArea().setSelectedText(returnValue.toString());
+				}
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.evaluate.selection.to.console">
 		<CODE>
 			if(view.getTextArea().getSelectedText() != null) {
 				Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateSelection(view);
