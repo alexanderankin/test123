@@ -180,6 +180,15 @@ public class VPTFilteredModel extends ProjectCustomTreeModel
 		{
 			return VPTCellRenderer.CLIP_START;
 		}
+        
+		public int compareTo(VPTNode node)
+		{
+			if (node instanceof FilteredDirectoryNode) {
+				return compareName(node);
+			} else {
+				return -1 * node.compareTo(this);
+			}
+		}
 
 	} //}}}
 

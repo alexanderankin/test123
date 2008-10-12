@@ -1113,6 +1113,7 @@ public final class ProjectViewer extends JPanel
 		 */
 		public void run() {
 			treePanel.loadGUI();
+			ProjectViewer.this.revalidate();
 			willRun = false;
 		}//}}}
 
