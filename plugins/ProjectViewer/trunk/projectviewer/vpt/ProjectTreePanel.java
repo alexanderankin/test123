@@ -136,6 +136,7 @@ public class ProjectTreePanel extends JPanel
     {
         setRoot(null);
         trees.clear();
+        treePane = null;
         folderTree = null;
         super.removeAll();
     }

@@ -225,6 +225,15 @@ public class VPTCompactModel extends ProjectCustomTreeModel
 			return VPTCellRenderer.CLIP_START;
 		} //}}}
 
+		public int compareTo(VPTNode node)
+		{
+			if (node instanceof CompactDirectoryNode) {
+				return compareName(node);
+			} else {
+				return -1 * node.compareTo(this);
+			}
+		}
+
 	} //}}}
 
 }
