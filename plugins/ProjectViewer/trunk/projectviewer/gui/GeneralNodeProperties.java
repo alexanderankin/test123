@@ -26,6 +26,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+
 import java.text.DecimalFormat;
 
 import javax.swing.JButton;
@@ -38,6 +40,7 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import projectviewer.VFSHelper;
@@ -84,14 +87,19 @@ class GeneralNodeProperties implements NodePropertyProvider
 	private static class NodePropertiesPane extends JPanel
 											implements ActionListener
 	{
+		private final DecimalFormat fmt;
 		private final GridBagLayout gbl;
 		private final GridBagConstraints gbc;
+		private final VPTNode node;
+
+		private JLabel nodeSzLabel;
 
 		public NodePropertiesPane(VPTNode node)
 		{
-			DecimalFormat fmt = new DecimalFormat("#,###");
+			fmt = new DecimalFormat("#,###");
 			gbl = new GridBagLayout();
 			gbc = new GridBagConstraints();
+			this.node = node;
 
 			setLayout(gbl);
 			gbc.fill = GridBagConstraints.NONE;
@@ -110,6 +118,14 @@ class GeneralNodeProperties implements NodePropertyProvider
 			/* Horizontal rule separating top pane. */
 			JSeparator sep = new JSeparator();
 			_add(sep, GridBagConstraints.REMAINDER);
+
+			VFSFile f;
+			try {
+				f = VFSHelper.getFile(node.getNodePath());
+			} catch (java.io.IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+				f = null;
+			}
 
 			/* Node-specific information. */
 			if (node.isProject()) {
@@ -138,16 +154,11 @@ class GeneralNodeProperties implements NodePropertyProvider
 
 				text = new JLabel(fmt.format(p.getOpenableNodes().size()));
 				_add(text, GridBagConstraints.REMAINDER);
+				
+				/* Disk size; calculated on demand. */
+				addSizeWidget(f, true);
 			} else {
 				JLabel text;
-				VFSFile f;
-
-				try {
-					f = VFSHelper.getFile(node.getNodePath());
-				} catch (java.io.IOException ioe) {
-					Log.log(Log.WARNING, this, ioe);
-					f = null;
-				}
 
 				/* Location. */
 				text = new JLabel(getProperty("location"));
@@ -160,30 +171,7 @@ class GeneralNodeProperties implements NodePropertyProvider
 				 * Size. For directories, it's only calculated
 				 * when requested.
 				 */
-				text = new JLabel(getProperty("size"));
-				_add(text, 1);
-
-				if (node.isFile()) {
-					if (f != null) {
-						text = new JLabel(formatSize(fmt, f.getLength()));
-					} else {
-						text = new JLabel(getProperty("unknown"));
-					}
-					_add(text, GridBagConstraints.REMAINDER);
-				} else {
-					JButton calc;
-
-					text = new JLabel(getProperty("unknown"));
-					gbc.gridwidth = 1;
-					gbc.weightx = 3.0;
-					gbl.setConstraints(text, gbc);
-					add(text);
-
-					calc = new JButton(getProperty("calculate"));
-					calc.addActionListener(this);
-					calc.setEnabled(f != null);
-					_add(calc, GridBagConstraints.REMAINDER);
-				}
+				addSizeWidget(f, !node.isFile());
 
 				/* Modification time. */
 				if (f != null) {
@@ -211,7 +199,43 @@ class GeneralNodeProperties implements NodePropertyProvider
 		/** Calculate the size of the directory being shown. */
 		public void actionPerformed(ActionEvent ae)
 		{
-			/* TODO. */
+			if (VFSManager.getVFSForPath(node.getNodePath()) == VFSManager.getFileVFS()) {
+				File f = new File(node.getNodePath());
+				long len = IOUtilities.fileLength(f);
+				nodeSzLabel.setText(formatSize(fmt, len));
+			}
+		}
+		
+		
+		private void addSizeWidget(VFSFile f,
+								   boolean calcOnDemand)
+		{
+			JLabel text;
+			
+			text = new JLabel(getProperty("size"));
+			_add(text, 1);
+			
+			if (calcOnDemand || f == null) {
+				text = new JLabel(getProperty("unknown"));
+			} else {
+				text = new JLabel(formatSize(fmt, f.getLength()));
+			}
+			gbc.gridwidth = 1;
+			gbc.weightx = 3.0;
+			gbl.setConstraints(text, gbc);
+
+			if (calcOnDemand) {
+				JButton calc;
+
+				add(text);
+				calc = new JButton(getProperty("calculate"));
+				calc.addActionListener(this);
+				calc.setEnabled(f != null);
+				_add(calc, GridBagConstraints.REMAINDER);
+				nodeSzLabel = text;
+			} else {
+				_add(text, GridBagConstraints.REMAINDER);
+			}
 		}
 
 
