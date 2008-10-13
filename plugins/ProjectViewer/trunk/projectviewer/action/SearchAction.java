@@ -94,14 +94,12 @@ public class SearchAction extends Action {
 			} else if (node.isLeaf()) {
 				node = (VPTNode) node.getParent();
 			}
-
-			SearchFileSet curr = SearchAndReplace.getSearchFileSet();
+			
 			String selected = jEdit.getActiveView().getTextArea().getSelectedText();
 			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
 			SearchDialog.showSearchDialog(jEdit.getActiveView(),
 										  selected,
 										  SearchDialog.DIRECTORY);
-			SearchAndReplace.setSearchFileSet(curr);
 		} else {
 			JOptionPane.showMessageDialog(
 					(viewer != null) ? (Component) viewer : (Component) jEdit.getActiveView(),
