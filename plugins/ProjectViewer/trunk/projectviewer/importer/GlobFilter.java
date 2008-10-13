@@ -154,10 +154,10 @@ public final class GlobFilter extends ImporterFileFilter {
 		}
 
 		if (file.getType() == VFSFile.FILE) {
-			return file_positive.matcher(file.getPath()).matches()
-				   && !file_negative.matcher(file.getPath()).matches();
+			return file_positive.matcher(file.getName()).matches()
+				   && !file_negative.matcher(file.getName()).matches();
 		} else if (file.getType() == VFSFile.DIRECTORY) {
-			return !dir_negative.matcher(file.getPath()).matches();
+			return !dir_negative.matcher(file.getName()).matches();
 		}
 		return false;
 	} //}}}
