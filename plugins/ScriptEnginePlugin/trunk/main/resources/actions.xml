@@ -2,15 +2,25 @@
 <ACTIONS>
 	<ACTION NAME="scriptengine.plugin.evaluate.buffer">
 		<CODE>
-			Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateBuffer(view);
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			Object returnValue = delegate.evaluateBuffer(view);
 			if(returnValue != null) {
 				view.getTextArea().setSelectedText(returnValue.toString());
 			}
 		</CODE>
 	</ACTION>
-        <ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
+	<ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
 		<CODE>
-			Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateBuffer(view);
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			Object returnValue = delegate.evaluateBuffer(view);
 			if(returnValue != null) {
 				view.getTextArea().setSelectedText(returnValue.toString());
 			}
@@ -18,8 +28,13 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection">
 		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
 			if(view.getTextArea().getSelectedText() != null) {
-				Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateSelection(view);
+				Object returnValue = delegate.evaluateSelection(view);
 				if(returnValue != null) {
 					view.getTextArea().setSelectedText(returnValue.toString());
 				}
@@ -30,8 +45,13 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection.to.console">
 		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
 			if(view.getTextArea().getSelectedText() != null) {
-				Object returnValue = com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.evaluateSelection(view);
+				Object returnValue = delegate.evaluateSelection(view);
 				if(returnValue != null) {
 					view.getTextArea().setSelectedText(returnValue.toString());
 				}
@@ -42,12 +62,22 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.macro.create">
 		<CODE>
-			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacro(view);
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			MacroDelegate delegate = plugin.getMacroDelegate();
+			
+			delegate.createMacro(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.macro.create.from.buffer">
 		<CODE>
-			com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.createMacroFromBuffer(view);
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			MacroDelegate delegate = plugin.getMacroDelegate();
+			
+			delegate.createMacroFromBuffer(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
