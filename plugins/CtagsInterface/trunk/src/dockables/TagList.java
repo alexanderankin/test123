@@ -37,7 +37,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		"class", "struct", "access" 
 	};
 	
-	TagList(View view) {
+	public TagList(View view) {
 		super(new BorderLayout());
 		this.view = view;
 		tagModel = new DefaultListModel();
