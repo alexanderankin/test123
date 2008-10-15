@@ -59,7 +59,7 @@ public class FindFileRequest extends WorkRequest {
 	searchOptions.setResultCount(rootSearchNode.getChildCount());
 	VFSManager.runInAWTThread(new Runnable() {
 	    public void run() {
-		results.searchDone(rootSearchNode);
+		results.searchDone(rootSearchNode, searchOptions.filter, searchOptions.path);
 	    }
 	} );
     }//}}}
