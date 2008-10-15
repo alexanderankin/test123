@@ -74,7 +74,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	private JPanel textPanel;
 	private boolean toolbarShown;
 	
-	Preview(View view) {
+	public Preview(View view) {
 		super(new BorderLayout());
 		this.view = view;
 		timer = null;
