@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
- * @version $Id: FindFileDialog.java,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $
+ * @version $Id: FindFileDialog.java 13886 Thu Oct 16 16:01:01 CDT 2008 keeleyt83 $
  */
 
 package findfile;
