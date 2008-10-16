@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
- * @version $Id: ResultTreeNode.java,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $
+ * @version $Id: ResultTreeNode.java 13892 Thu Oct 16 16:04:49 CDT 2008 keeleyt83 $
  */
 
 package findfile;
@@ -25,7 +25,7 @@ public class ResultTreeNode {
     private char fileSep;
     /**
      * Constructor.
-     * @param searchPath The path that was specfied in the original search
+     * @param searchPath The path that was specified in the original search
      * @param file The full path of the file
      */
     public ResultTreeNode(String searchPath, String file) {
