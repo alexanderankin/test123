@@ -5,7 +5,7 @@
  *
  * A jEdit plugin that provides file search capabilities.
  * @author Nicholas O'Leary
- * @version $Id: FindFilePlugin.java,v 1.2 2004/04/01 21:26:19 olearyni Exp $
+ * @version $Id: FindFilePlugin.java 13888 Thu Oct 16 16:04:49 CDT 2008 keeleyt83 $
  */
 
 package findfile;
