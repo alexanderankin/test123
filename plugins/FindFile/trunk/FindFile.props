@@ -1,8 +1,8 @@
 # FindFile Plugin properties
-# $Id: FindFile.props,v 1.4 2004/03/22 22:54:44 olearyni Exp $
+# $Id: FindFile.props 13885 Thu Oct 16 15:59:08 CDT 2008 keeleyt83 $
 plugin.findfile.FindFilePlugin.name=FindFile
 plugin.findfile.FindFilePlugin.author=Nicholas O'Leary, Anthony Keeley
-plugin.findfile.FindFilePlugin.version=1.1
+plugin.findfile.FindFilePlugin.version=1.2
 plugin.findfile.FindFilePlugin.activate=defer
 plugin.findfile.FindFilePlugin.depend.0=jdk 1.5.0
 plugin.findfile.FindFilePlugin.depend.1=jedit 04.03.15.00
@@ -58,8 +58,9 @@ FindFilePlugin.option-pane-labels.sortBy=Result sort order
 FindFilePlugin.option-pane-defaults.archiveFilter=*.{zip,tar,tgz,jar}
 
 FindFilePlugin.status-message.started=Searching...
-FindFilePlugin.status-message.finished=Done.
+FindFilePlugin.status-message.finished=Results for
 FindFilePlugin.status-message.blank=
+FindFilePlugin.status-message.noResults=No results for
 
 FindFilePlugin.delete-confirm.title=Confirm deletion
 FindFilePlugin.delete-confirm.message=Are you sure you want to delete: {0}?
@@ -88,5 +89,3 @@ FindFilePlugin.search-in-file.title=Search in file
 FindFilePlugin.search-in-file.message=Enter text to search for.
 
 vfs.browser.FindFile.label=Search for files...
-
-
