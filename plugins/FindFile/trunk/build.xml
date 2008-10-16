@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<!-- $Id: build.xml,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $ -->
-<!--  2008.05.05: updates by keeleyt83 -->
+<!-- $Id: build.xml 13881 Thu Oct 16 15:53:17 CDT 2008 keeleyt83 $ -->
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
 
 <!--
 
@@ -98,5 +98,3 @@
 	</target>
 
 </project>
-
-<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
