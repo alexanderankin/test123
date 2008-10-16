@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
- * @version $Id: FindFileRequest.java,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $
+ * @version $Id: FindFileRequest.java 13889 Thu Oct 16 16:05:29 CDT 2008 keeleyt83 $
  */
 
 package findfile;
