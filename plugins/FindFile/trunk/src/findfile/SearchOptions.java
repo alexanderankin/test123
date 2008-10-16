@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
- * @version $Id: SearchOptions.java,v 1.1.1.1 2003/11/20 17:19:14 olearyni Exp $
+ * @version $Id: SearchOptions.java 13893 Thu Oct 16 16:04:49 CDT 2008 keeleyt83 $
  */
 
 package findfile;
@@ -31,6 +31,6 @@ public class SearchOptions {
     }
 
     @Override public String toString() {
-	return filter + " in " + path + " (" + resultCount + " result" + ((resultCount != 1) ? "s" : "") + ")";
+	return filter + " in " + path + " (" + resultCount + " occurrence" + ((resultCount != 1) ? "s" : "") + ")";
     }
 }
