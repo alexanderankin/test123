@@ -9,10 +9,9 @@ plugin.findfile.FindFilePlugin.depend.1=jedit 04.03.15.00
 plugin.findfile.FindFilePlugin.depend.2=optional plugin Archive 0.4.3
 plugin.findfile.FindFilePlugin.docs=docs/about.html
 plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
-plugin.findfile.FindFilePlugin.dockable=FindFilePlugin
 plugin.findfile.FindFilePlugin.description=This plugin allows you to search with in a filesystem for any files that match a given filter.
 
-plugin.findfile.FindFilePlugin.actions.newSearch.label=Search for files...
+plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
 
 options.FindFilePlugin-options.label=FindFile
 options.FindFilePlugin-options.code=new findfile.FindFileOptionPane();
@@ -27,17 +26,17 @@ FindFilePlugin.action-labels.openAs=Open as...
 FindFilePlugin.action-labels.close=Close
 FindFilePlugin.action-labels.delete=Delete...
 FindFilePlugin.action-labels.rename=Rename...
-FindFilePlugin.action-labels.browsePath=Browse file's path
+FindFilePlugin.action-labels.browsePath=Browse File Path...
 FindFilePlugin.action-labels.browseArchive=Browse archive
-FindFilePlugin.action-labels.copyResult=Copy path
+FindFilePlugin.action-labels.copyResult=Copy File Path
 FindFilePlugin.action-labels.removeSearch=Remove search
-FindFilePlugin.action-labels.searchInFile=Search in file...
+FindFilePlugin.action-labels.searchInFile=Search in File...
 FindFilePlugin.action-labels.searchInArchive=Search in archive...
 FindFilePlugin.action-labels.searchInFiles=Search in files...
 
-FindFilePlugin.action-labels.openAllResults=Open all files
-FindFilePlugin.action-labels.closeAllResults=Close all files
-FindFilePlugin.action-labels.copyAllResults=Copy results
+FindFilePlugin.action-labels.openAllResults=Open All Files
+FindFilePlugin.action-labels.closeAllResults=Close All Files
+FindFilePlugin.action-labels.copyAllResults=Copy Results
 FindFilePlugin.action-labels.sortByFileName=By file name
 FindFilePlugin.action-labels.sortByPath=By path
 FindFilePlugin.action-labels.newSearch=Search for files...
@@ -70,8 +69,7 @@ FindFilePlugin.not-implemented.message=Not implemented in this version.
 
 FindFilePlugin.invalid-archive-filter.title=Invalid archive filter
 FindFilePlugin.invalid-archive-filter.message={0} appears to be an invalid filter:\n\
- {1}
-
+    {1}
 
 FindFilePlugin.failed-to-open.title=Failed to open
 FindFilePlugin.failed-to-open.message=Failed to open: {0} \
@@ -89,3 +87,13 @@ FindFilePlugin.search-in-file.title=Search in file
 FindFilePlugin.search-in-file.message=Enter text to search for.
 
 vfs.browser.FindFile.label=Search for files...
+
+# Menu
+plugin.findfile.FindFilePlugin.menu=plugin.findfile.FindFilePlugin.actions.newSearch \
+    - \
+    plugin.finfile.FindFilePlugin.actions.showResults \
+    plugin.finfile.FindFilePlugin.actions.clearResults
+
+plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
+plugin.finfile.FindFilePlugin.actions.showResults.label=Show Results
+plugin.finfile.FindFilePlugin.actions.clearResults.label=Clear Results

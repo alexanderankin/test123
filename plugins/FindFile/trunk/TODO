@@ -3,38 +3,37 @@ Anthony Keeley
 Sat Aug 16 19:02:38 CDT 2008
 
 - Return all files in a search (why doesn't it return archives).
-- Add commands to Plugin menu item.
 - Integrate use of helperlauncher.
 - Modify dialog
-  - Change button names to Find, Close (change to default and exit buttons too)
-  - title bar icon?
-  - Add a "Choose..." button for a link to the File Browser
-  - Path label to "Directory"
-  - Settings fieldset:
-    - Keep Dialog
-    - Ignore Case
-    - Search subdirectories
-  - Context menu
+    - Change button names to Find, Close (change to default and exit buttons too)
+    - title bar icon?
+    - Add a "Choose..." button for a link to the File Browser
+    - Path label to "Directory"
+    - Settings fieldset:
+        - Keep Dialog
+        - Ignore Case
+        - Search subdirectories
+- Modify context menus
     - result node:
-      - Open
-      - Open in New View
-      - Open in New Plain View
-      - Close
-      - ---
-      - Remove Node
-      - ---
-      - Copy File Path
-      - Browse File Path...
-      - Search in File...
+        - Open
+        - Open in New View
+        - Open in New Plain View
+        - Close
+        - ---
+        - Remove Node
+        - ---
+        - Copy File Path
+        - Browse File Path...
+        - Search in File...
     - search node:
-      - Remove Node
-      - Expand Child Nodes
-      - Collapse Child Nodes
-      - Redo Search
-      - ---
-      - Open All Files
-      - Close All Files
-      - ---
-      - Copy Results
-      - Search in Files...
-      - Sort Results >
+        - Remove Node
+        - Expand Child Nodes
+        - Collapse Child Nodes
+        - Redo Search
+        - ---
+        - Open All Files
+        - Close All Files
+        - ---
+        - Copy Results
+        - Search in Files...
+        - Sort Results >
