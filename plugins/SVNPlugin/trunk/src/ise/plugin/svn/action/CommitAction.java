@@ -40,13 +40,17 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.swingworker.*;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+
+import org.tmatesoft.svn.core.wc.*;
 
 
 /**
@@ -76,6 +80,36 @@ public class CommitAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
+            // check for /tag/ and warn user if it appears they are
+            // trying to commit to a tag directory
+            List<String> possible_tags = new ArrayList<String>();
+            SVNWCClient client = SVNClientManager.newInstance().getWCClient();
+            Set<String> keys = paths.keySet();
+            for ( String path : keys ) {
+                try {
+                    SVNInfo info = client.doInfo( new File( path ), SVNRevision.WORKING );
+                    if ( info != null && info.getURL().toString().indexOf( "/tags/" ) > -1 ) {
+                        possible_tags.add( path );
+                    }
+                }
+                catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+            if ( possible_tags != null && possible_tags.size() > 0 ) {
+                StringBuffer msg = new StringBuffer();
+                msg.append( "It appears you may be attempting to commit some files to a tag:\n\n" );
+                for ( String path : possible_tags ) {
+                    msg.append( path ).append( "\n" );
+                }
+                msg.append( "\n" );
+                msg.append( "Are you sure you want to commit these files?" );
+                int no = JOptionPane.showConfirmDialog( getView(), msg, jEdit.getProperty( "ips.Confirm_Commit", "Confirm Commit" ), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
+                if ( no == JOptionPane.NO_OPTION ) {
+                    return ;
+                }
+            }
+
             dialog = new CommitDialog( getView(), paths, false );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
@@ -141,10 +175,10 @@ public class CommitAction extends SVNAction {
                         panel.addTab( jEdit.getProperty( "ips.Commit", "Commit" ), results_panel );
 
                         // fix for 2081908
-                        for (String path : paths.keySet()) {
-                            Buffer buffer = jEdit.getBuffer(path);
+                        for ( String path : paths.keySet() ) {
+                            Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
-                                buffer.reload(getView());
+                                buffer.reload( getView() );
                             }
                         }
                     }
