@@ -278,6 +278,8 @@ public class ProjectTreePanel extends JPanel
     public void setRoot(VPTNode root)
     {
         for (JTree tree : trees) {
+            VPTCellRenderer renderer = (VPTCellRenderer) tree.getCellRenderer();
+            tree.setRowHeight(renderer.getRowHeight(root));
             ((ProjectTreeModel)tree.getModel()).setRoot(root);
         }
     }

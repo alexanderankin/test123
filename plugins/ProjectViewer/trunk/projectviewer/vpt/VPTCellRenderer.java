@@ -53,10 +53,10 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 	//}}}
 
 	//{{{ Private members
-	private boolean underlined;
-
 	private JTree tree;
 	private VPTNode node;
+	private boolean expanded;
+	private boolean selected;
 	private boolean useTooltips;
 	private int row;
 	//}}}
@@ -81,89 +81,112 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			boolean sel, boolean expanded,
 			boolean leaf, int row,
 			boolean focus) {
-		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
 		try {
-			VPTNode node = (VPTNode) value;
-			setIcon(node.getIcon(expanded));
-			setBackground(node.getBackgroundColor(sel));
-			setForeground(node.getForegroundColor(sel));
-			setFont(leaf ? leafFont : folderFont);
-			underlined = (node.canOpen() && node.isOpened());
-			setText(node.getName());
-			if (useTooltips && node.canOpen()) {
-				setToolTipText(node.getNodePath());
-			}
-
+			this.node = (VPTNode) value;
+			setFont(node.getAllowsChildren() ? folderFont : leafFont);
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
 			this.tree = tree;
 			this.row = row;
 			this.node = node;
+			this.expanded = expanded;
+			this.selected = sel;
 		} catch (ClassCastException cce) {
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
 			this.node = null;
+			setText(value.toString());
 		}
 		return this;
 	} //}}}
 
 	//{{{ +paintComponent(Graphics) : void
 	public void paintComponent(Graphics g) {
-		FontMetrics fm = null;
-		String toShow = getText();
+		if (this.node != null) {
+			FontMetrics fm;
+			boolean underlined;
+			
+			setIcon(node.getIcon(expanded));
+			setBackground(node.getBackgroundColor(selected));
+			setForeground(node.getForegroundColor(selected));
+			underlined = (node.canOpen() && node.isOpened());
+			setText(node.getName());
+			if (useTooltips && node.canOpen()) {
+				setToolTipText(node.getNodePath());
+			}
 
-		//{{{ see if we need to clip the text
-		if (node != null && node.getClipType() != CLIP_NOCLIP) {
-			Rectangle bounds = tree.getRowBounds(row);
 			fm = getFontMetrics(getFont());
 
-			int width = fm.stringWidth(toShow);
-			int textStart = (int) bounds.getX();
-			if (getIcon() != null)
-				textStart += getIcon().getIconWidth() + getIconTextGap();
-
-			if(textStart < tree.getParent().getWidth()
-					&& textStart + width > tree.getParent().getWidth()) {
-				// figure out how much to clip
-				int availableWidth = tree.getParent().getWidth() - textStart
-										- fm.stringWidth("...");
-
-				int shownChars = 0;
-				for (int i = 1; i < toShow.length(); i++) {
-					width = (node.getClipType() == CLIP_START)
-						? fm.stringWidth(toShow.substring(toShow.length() - i, toShow.length()))
-						: fm.stringWidth(toShow.substring(0, i));
-					if (width < availableWidth)
-						shownChars++;
-					else
-						break;
-				}
-
-				if (shownChars > 0) {
-					// ask the node whether it wants to be clipped at the start or
-					// at the end of the string
-					if (node.getClipType() == CLIP_START) {
-						toShow = "..." +
-							toShow.substring(toShow.length() - shownChars, toShow.length());
-					} else {
-						toShow = toShow.substring(0, shownChars) + "...";
+			//{{{ see if we need to clip the text
+			if (node.getClipType() != CLIP_NOCLIP) {
+				Rectangle bounds = tree.getRowBounds(row);
+				String toShow = getText();
+	
+				int width = fm.stringWidth(toShow);
+				int textStart = (int) bounds.getX();
+				if (getIcon() != null)
+					textStart += getIcon().getIconWidth() + getIconTextGap();
+	
+				if(textStart < tree.getParent().getWidth()
+						&& textStart + width > tree.getParent().getWidth()) {
+					// figure out how much to clip
+					int availableWidth = tree.getParent().getWidth() - textStart
+											- fm.stringWidth("...");
+	
+					int shownChars = 0;
+					for (int i = 1; i < toShow.length(); i++) {
+						width = (node.getClipType() == CLIP_START)
+							? fm.stringWidth(toShow.substring(toShow.length() - i, toShow.length()))
+							: fm.stringWidth(toShow.substring(0, i));
+						if (width < availableWidth)
+							shownChars++;
+						else
+							break;
 					}
-					setText(toShow);
+	
+					if (shownChars > 0) {
+						// ask the node whether it wants to be clipped at the start or
+						// at the end of the string
+						if (node.getClipType() == CLIP_START) {
+							toShow = "..." +
+								toShow.substring(toShow.length() - shownChars, toShow.length());
+						} else {
+							toShow = toShow.substring(0, shownChars) + "...";
+						}
+						setText(toShow);
+					}
 				}
-			}
-		} //}}}
+			} //}}}
 
-		// underlines the string if needed
-		if (underlined) {
-			if (fm == null)
-				fm = getFontMetrics(getFont());
-			int x, y;
-			y = getHeight() - 3;
-			x = (getIcon() == null)
-					? 0
-					: getIcon().getIconWidth() + getIconTextGap();
-			g.setColor(getForeground());
-			g.drawLine(x, y, x + fm.stringWidth(getText()), y);
+			// underlines the string if needed
+			if (underlined) {
+				int x, y;
+				y = getHeight() - 3;
+				x = (getIcon() == null)
+						? 0
+						: getIcon().getIconWidth() + getIconTextGap();
+				g.setColor(getForeground());
+				g.drawLine(x, y, x + fm.stringWidth(getText()), y);
+			}
 		}
 
 		super.paintComponent(g);
 	} //}}}
+	
+	
+	/**
+	 * Returns the desired row height based on the given node. This is
+	 * used by the tree handling code to set a fixed row height for the
+	 * trees.
+	 *
+	 * @param	node	Node on which to base the row height.
+	 *
+	 * @return The desired row height for the given node.
+	 */
+	protected int getRowHeight(VPTNode node)
+	{
+		FontMetrics fm = getFontMetrics(folderFont);
+		/* 16 is the size of the tree icons, plus 2 pixels for padding. */
+		return Math.max(fm.getHeight(), 16) + 2;
+	}
 
 }
 
