@@ -6,5 +6,8 @@
     <SERVICE CLASS="org.gjt.sp.jedit.gui.DynamicContextMenuService" NAME="subversion">
         new ise.plugin.svn.ContextMenuService();
     </SERVICE>
+    <SERVICE CLASS="projectviewer.action.Action" NAME="My Action Name">
+		new ise.plugin.svn.pv.SVNAction();
+    </SERVICE>
 </SERVICES>
 

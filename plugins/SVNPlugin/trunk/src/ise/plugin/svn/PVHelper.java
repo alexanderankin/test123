@@ -122,11 +122,10 @@ public class PVHelper {
 
         // check ProjectViewer
         ProjectManager pm = ProjectManager.getInstance();
-        for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
-            project = ( VPTProject ) it.next();
-            if ( project.isInProject( filename ) || ( project.getRootPath() != null && filename.startsWith( project.getRootPath() ) )) {
-                projectForFile.put(filename, project);
-                return project;
+        for ( VPTProject proj : pm.getProjects() ) {
+            if ( proj.isInProject( filename ) || ( proj.getRootPath() != null && filename.startsWith( proj.getRootPath() ) )) {
+                projectForFile.put(filename, proj);
+                return proj;
             }
         }
         return null;
