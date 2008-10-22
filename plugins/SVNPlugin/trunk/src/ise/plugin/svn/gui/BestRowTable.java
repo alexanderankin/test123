@@ -150,7 +150,7 @@ public class BestRowTable extends JTable {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
             this.table = table;
             this.column = column;
-            setText( value == null ? "" : value.toString() );
+            setText( value == null ? "" : value.toString().trim() );
             setBackground( isSelected ? selection : background );
             setLineWrap(true);
             setWrapStyleWord(true);
@@ -180,7 +180,7 @@ public class BestRowTable extends JTable {
      */
     public static class NoWrapCellRenderer extends JTextArea implements TableCellRenderer {
         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-            setText( value == null ? "" : value.toString() );
+            setText( value == null ? "" : value.toString().trim() );
             setBackground( isSelected ? selection : background );
             return this;
         }

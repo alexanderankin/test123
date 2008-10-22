@@ -169,7 +169,7 @@ public class SVNInfoPanel extends JPanel {
         panel.add( info_table, BorderLayout.CENTER );
         info_table.setModel( info_table_model );
         TableColumn column1 = info_table.getColumnModel().getColumn( 1 );
-        column1.setCellRenderer( new BestRowTable.WrapCellRenderer() );
+        column1.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
         info_table.getColumnModel().getColumn( 0 ).setMaxWidth( 150 );
         info_table.getColumnModel().getColumn( 0 ).setMinWidth( 150 );
         info_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 600 );
