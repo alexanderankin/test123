@@ -132,7 +132,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                 try {
                     Long revision = get();
                     if ( revision == null ) {
-                        throw new Exception( jEdit.getProperty( "ips.Checkout_failed.", "Checkout failed." ) );
+                        throw new Exception( jEdit.getProperty( "ips.Checkout_failed.", "Checkout failed." ) ); // NOPMD
                     }
                     data.getOut().print( jEdit.getProperty( "ips.Checkout_completed,_revision", "Checkout completed, revision" ) + " " + revision );
                     firePropertyChange( "done", "false", revision.toString() );
@@ -202,7 +202,8 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                                     // add the project to ProjectViewer, but first
                                     // get the group. If the user picked one, it will be
                                     // a project property, otherwise, default to the root project group
-                                    VPTGroup group = ( VPTGroup ) project.getObjectProperty( "projectviewer.new-parent" );
+                                    VPTGroup group = ( VPTGroup ) project.getParent();
+                                    //VPTGroup group = ( VPTGroup ) project.getObjectProperty( "projectviewer.new-parent" );
                                     if ( group == null ) {
                                         group = VPTRoot.getInstance();
                                     }
