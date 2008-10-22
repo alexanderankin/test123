@@ -20,8 +20,6 @@ package ise.plugin.svn.gui.component;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -40,7 +38,7 @@ import org.gjt.sp.jedit.jEdit;
  * should subclass as appropriate.  This class handles the actual layout of the
  * panel.  This is the "V" in MVC.
  */
-public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener, PropertyChangeListener {
+public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener {
 
     private RevisionSelectionPanel controller;
 
@@ -285,17 +283,6 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         revision_number.setEnabled( revision_number_rb.isSelected() );
         date_spinner.setEnabled( date_rb.isSelected() );
         date_popup.setEnabled( date_rb.isSelected() );
-    }
-
-    public void propertyChange( PropertyChangeEvent event ) {
-        // set revision
-        SVNRevision revision = controller.getModel().getRevision();
-        if ( revision.getNumber() != -1 ) {
-            revision_number.getModel().setValue( revision.getNumber() );
-        }
-        else if ( revision.getDate() != null ) {
-            date_spinner.getModel().setValue( revision.getDate() );
-        }
     }
 
     private JSpinner getRevisionChooser() {
