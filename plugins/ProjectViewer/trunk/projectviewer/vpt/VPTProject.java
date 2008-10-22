@@ -55,7 +55,7 @@ import projectviewer.event.ProjectUpdate;
  */
 public class VPTProject extends VPTNode {
 
-	private final static Icon projectIcon = GUIUtilities.loadIcon("DriveSmall.png");
+	protected final static Icon projectIcon = GUIUtilities.loadIcon("DriveSmall.png");
 
 	//{{{ Attributes
 
