@@ -86,6 +86,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			setFont(node.getAllowsChildren() ? folderFont : leafFont);
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
 			setText(node.getName());
+			setIcon(VPTProject.projectIcon);
 			this.tree = tree;
 			this.row = row;
 			this.node = node;
