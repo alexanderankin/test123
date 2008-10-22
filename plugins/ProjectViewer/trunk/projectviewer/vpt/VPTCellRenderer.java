@@ -85,6 +85,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			this.node = (VPTNode) value;
 			setFont(node.getAllowsChildren() ? folderFont : leafFont);
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
+			setText(node.getName());
 			this.tree = tree;
 			this.row = row;
 			this.node = node;
@@ -108,7 +109,6 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			setBackground(node.getBackgroundColor(selected));
 			setForeground(node.getForegroundColor(selected));
 			underlined = (node.canOpen() && node.isOpened());
-			setText(node.getName());
 			if (useTooltips && node.canOpen()) {
 				setToolTipText(node.getNodePath());
 			}
