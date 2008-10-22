@@ -38,7 +38,8 @@ import ise.plugin.svn.data.DiffData;
 /**
  * Action for ProjectViewer's context menu to execute an svn diff between a
  * working copy and a remote revision.  Allows just one node to be selected in
- * PV, and that node must be a file, not a directory.
+ * PV, and that node must be a file, not a directory, otherwise, does an svn
+ * diff, not a JDiff diff.
  */
 public class DiffActor extends NodeActor {
 

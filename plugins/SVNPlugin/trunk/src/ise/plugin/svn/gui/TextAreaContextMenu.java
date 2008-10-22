@@ -68,6 +68,7 @@ public class TextAreaContextMenu extends JMenu {
         log
         properties
         diff
+        time lapse
         -
         checkout
         switch
@@ -122,6 +123,9 @@ public class TextAreaContextMenu extends JMenu {
         add( item );
         item = new JMenuItem( jEdit.getProperty("ips.Diff...", "Diff...") );
         item.addActionListener( getDiffActionListener() );
+        add( item );
+        item = new JMenuItem( jEdit.getProperty("ips.TimeLapse...", "Time Lapse") );
+        item.addActionListener( getTimeLapseActionListener() );
         add( item );
         addSeparator();
         item = new JMenuItem( jEdit.getProperty("ips.Checkout", "Checkout") );
@@ -269,6 +273,15 @@ public class TextAreaContextMenu extends JMenu {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
                        DiffAction action = new DiffAction( view, getPaths().get( 0 ), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getTimeLapseActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       TimeLapseAction action = new TimeLapseAction( view, getPaths().get( 0 ), null, null );
                        action.actionPerformed( ae );
                    }
                };
