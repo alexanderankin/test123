@@ -80,11 +80,20 @@ public class Info {
         // convert first path to File
         List<String> paths = data.getPaths();
 
-        // use default svn config options
-        ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        SVNClientManager clientManager;
+        if (data.pathsAreURLs()) {
+            // use default svn config options
+            ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+
+            // need to log in to remote repository for urls
+            clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        }
+        else {
+            // get info from local working directory
+            clientManager = SVNClientManager.newInstance();
+        }
 
         // get a commit client
         SVNWCClient client = clientManager.getWCClient();
@@ -104,7 +113,7 @@ public class Info {
         else {
             for ( String path : paths ) {
                 File localPath = new File( path );
-                SVNInfo result = client.doInfo( localPath, SVNRevision.HEAD );
+                SVNInfo result = client.doInfo( localPath, SVNRevision.WORKING );
                 results.add( result );
             }
         }

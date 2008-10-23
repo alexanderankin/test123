@@ -169,12 +169,13 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 SVNData info_data = new SVNData();
                 info_data.setOut( new ConsolePrintStream( new NullOutputStream() ) );
                 info_data.setPaths( info_path );
+                info_data.setPathsAreURLs(false);
                 Info info = new Info();
                 List<SVNInfo> results = info.info( info_data );
                 info_data.getOut().close();
                 return results;
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // ignored
             }
             return null;
@@ -204,7 +205,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 password_label.setVisible( true );
                 password.setVisible( true );
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // ignored
             }
         }
