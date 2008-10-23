@@ -164,7 +164,7 @@ public class CheckoutDialog extends JDialog {
         // TODO: can I do some munging here to get the project name out of the url?
         path.setText( PVHelper.getProjectRoot(view));
         path.setColumns( 30 );
-        JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse", "Browse") );
+        JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse...", "Browse...") );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
