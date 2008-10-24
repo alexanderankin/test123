@@ -1,6 +1,5 @@
 /**
  * ResultTreeNode.java - A single file found in a search.
- * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
@@ -29,14 +28,13 @@ public class ResultTreeNode {
      * @param file The full path of the file
      */
     public ResultTreeNode(String searchPath, String file) {
-	fullname = file;
-	shortname = file.substring(searchPath.length());
-	fileSep = VFSManager.getVFSForPath(fullname).getFileSeparator();
-	if (shortname.indexOf(fileSep) == 0) {
-	    shortname = shortname.substring(1);
-	}
-
-	filename = VFSManager.getVFSForPath(fullname).getFileName(fullname);
+        fullname = file;
+        shortname = file.substring(searchPath.length());
+        fileSep = VFSManager.getVFSForPath(fullname).getFileSeparator();
+        if (shortname.indexOf(fileSep) == 0) {
+            shortname = shortname.substring(1);
+        }
+        filename = VFSManager.getVFSForPath(fullname).getFileName(fullname);
     }
 
     /**
@@ -45,22 +43,19 @@ public class ResultTreeNode {
      * @return whether the file is open.
      */
     public boolean isOpen() {
-	return (jEdit.getBuffer(fullname) != null);
+        return (jEdit.getBuffer(fullname) != null);
     }
 
     /**
      * @return the shortname
      */
-
     @Override public String toString() {
-	if (jEdit.getProperty(FindFileOptionPane.OPTIONS + "hidePath",
-		"false").equals("false"))
-	{
-	    return shortname;
-	} else {
-	    return filename;
-	}
-
-
+        if (jEdit.getProperty(FindFileOptionPane.OPTIONS + "hidePath",
+            "false").equals("false"))
+        {
+            return shortname;
+        } else {
+            return filename;
+        }
     }
 }

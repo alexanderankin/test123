@@ -29,19 +29,21 @@ FindFilePlugin.action-labels.rename=Rename...
 FindFilePlugin.action-labels.browsePath=Browse File Path...
 FindFilePlugin.action-labels.browseArchive=Browse archive
 FindFilePlugin.action-labels.copyResult=Copy File Path
-FindFilePlugin.action-labels.removeSearch=Remove search
+FindFilePlugin.action-labels.removeSearch=Remove Node
 FindFilePlugin.action-labels.searchInFile=Search in File...
 FindFilePlugin.action-labels.searchInArchive=Search in archive...
-FindFilePlugin.action-labels.searchInFiles=Search in files...
+FindFilePlugin.action-labels.searchInFiles=Search in Files...
 
 FindFilePlugin.action-labels.openAllResults=Open All Files
 FindFilePlugin.action-labels.closeAllResults=Close All Files
 FindFilePlugin.action-labels.copyAllResults=Copy Results
-FindFilePlugin.action-labels.sortByFileName=By file name
-FindFilePlugin.action-labels.sortByPath=By path
+FindFilePlugin.action-labels.sortByFileName=File Name
+FindFilePlugin.action-labels.sortByPath=Path
 FindFilePlugin.action-labels.newSearch=Search for files...
+FindFilePlugin.action-labels.removeNode=Remove Node
 FindFilePlugin.action-labels.removeAllSearches=Remove All Nodes
 FindFilePlugin.action-labels.toggleMultple=Toggle Multiple Results
+FindFilePlugin.action-labels.redoSearch=Redo Search
 
 FindFilePlugin.option-pane-labels.multipleResults=Show multiple results
 FindFilePlugin.option-pane-labels.hidePath=Hide path details

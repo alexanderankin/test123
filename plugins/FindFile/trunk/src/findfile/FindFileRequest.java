@@ -1,6 +1,5 @@
 /**
  * FindFileRequest.java - A WorkRequest to perform the file search in the appropriate thread.
- * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
@@ -31,12 +30,10 @@ public class FindFileRequest extends WorkRequest {
      * @param results A FindFileResults pane to place the results.
      * @param searchOptions The set of options for the search.
      */
-    public FindFileRequest(View view, FindFileResults results,
-	     SearchOptions searchOptions)
-    {
-	this.view = view;
-	this.results = results;
-	this.searchOptions = searchOptions;
+    public FindFileRequest(View view, FindFileResults results, SearchOptions searchOptions) {
+        this.view = view;
+        this.results = results;
+        this.searchOptions = searchOptions;
     }//}}}
 
     //{{{ run
@@ -44,23 +41,23 @@ public class FindFileRequest extends WorkRequest {
      * Perform the search.
      */
     public void run() {
-	setStatus(jEdit.getProperty("FindFilePlugin.status-message.started"));
-	DirectoryListSet dls = new DirectoryListSet(searchOptions.path, searchOptions.filter,searchOptions.recursive);
+        setStatus(jEdit.getProperty("FindFilePlugin.status-message.started"));
+        DirectoryListSet dls = new DirectoryListSet(searchOptions.path, searchOptions.filter,searchOptions.recursive);
 
-	String []dirs = dls.getFiles(view);
-	final DefaultMutableTreeNode rootSearchNode = new DefaultMutableTreeNode(searchOptions);
-	if (dirs != null) {
-	    for (int i = 0; i != dirs.length; i++) {
-		rootSearchNode.add(new DefaultMutableTreeNode(new ResultTreeNode(searchOptions.path,dirs[i].toString())));
-	    }
-	}
-	view.getDockableWindowManager().addDockableWindow("FindFilePlugin");
-	setStatus(jEdit.getProperty("FindFilePlugin.status-message.started"));
-	searchOptions.setResultCount(rootSearchNode.getChildCount());
-	VFSManager.runInAWTThread(new Runnable() {
-	    public void run() {
-		results.searchDone(rootSearchNode, searchOptions.filter, searchOptions.path);
-	    }
-	} );
+        String []dirs = dls.getFiles(view);
+        final DefaultMutableTreeNode rootSearchNode = new DefaultMutableTreeNode(searchOptions);
+        if (dirs != null) {
+            for (int i = 0; i != dirs.length; i++) {
+                rootSearchNode.add(new DefaultMutableTreeNode(new ResultTreeNode(searchOptions.path,dirs[i].toString())));
+            }
+        }
+        view.getDockableWindowManager().addDockableWindow("FindFilePlugin");
+        setStatus(jEdit.getProperty("FindFilePlugin.status-message.started"));
+        searchOptions.setResultCount(rootSearchNode.getChildCount());
+        VFSManager.runInAWTThread(new Runnable() {
+            public void run() {
+                results.searchDone(rootSearchNode, searchOptions.filter, searchOptions.path);
+            }
+        } );
     }//}}}
 }
