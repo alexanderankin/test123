@@ -6,9 +6,10 @@ Sat Aug 16 19:02:38 CDT 2008
 - Integrate use of helperlauncher.
 - Modify dialog
     - Change button names to Find, Close (change to default and exit buttons too)
-    - title bar icon?
+    - title bar icon, title
     - Add a "Choose..." button for a link to the File Browser
     - Path label to "Directory"
+    - Remembers previous directories and search strings automatically
     - Settings fieldset:
         - Keep Dialog
         - Ignore Case
@@ -16,20 +17,19 @@ Sat Aug 16 19:02:38 CDT 2008
 - Modify context menus
     - result node:
         - Open
-        - Open in New View
-        - Open in New Plain View
+        * Open in New View
+        * Open in New Plain View
         - Close
         - ---
         - Remove Node
+        * Delete File
         - ---
         - Copy File Path
         - Browse File Path...
         - Search in File...
     - search node:
         - Remove Node
-        - Expand Child Nodes
-        - Collapse Child Nodes
-        - Redo Search
+        * Redo Search
         - ---
         - Open All Files
         - Close All Files

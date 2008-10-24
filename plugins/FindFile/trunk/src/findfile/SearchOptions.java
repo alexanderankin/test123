@@ -1,6 +1,5 @@
 /**
  * SearchOptions.java - A set of options to define the file search to be performed.
- * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
@@ -27,10 +26,10 @@ public class SearchOptions {
     private int resultCount = 0;
 
     public void setResultCount(int i) {
-	resultCount = i;
+        resultCount = i;
     }
 
     @Override public String toString() {
-	return filter + " in " + path + " (" + resultCount + " occurrence" + ((resultCount != 1) ? "s" : "") + ")";
+        return filter + " in " + path + " (" + resultCount + " occurrence" + ((resultCount != 1) ? "s" : "") + ")";
     }
 }
