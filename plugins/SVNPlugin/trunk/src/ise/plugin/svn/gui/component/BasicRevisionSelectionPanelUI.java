@@ -286,8 +286,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     }
 
     private JSpinner getRevisionChooser() {
-        SpinnerNumberModel model = new SpinnerNumberModel();
-        model.setMinimum( 0 );
+        SpinnerNumberModel model = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
         revision_number = new JSpinner( model );
         JSpinner.NumberEditor number_editor = new JSpinner.NumberEditor( revision_number, "# " );
         revision_number.setEditor( number_editor );
@@ -296,6 +295,12 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                         if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
                             Number number = ( Number ) revision_number.getValue();
                             controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
+                            try {
+                                revision_number.commitEdit();
+                            }
+                            catch(java.text.ParseException pe) {
+                                pe.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -322,6 +327,12 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                         if ( BasicRevisionSelectionPanelUI.this.date_spinner.isEnabled() ) {
                             Date date = ( Date ) date_spinner.getValue();
                             controller.getModel().setRevision( SVNRevision.create( date ) );
+                            try {
+                                date_spinner.commitEdit();
+                            }
+                            catch(java.text.ParseException pe) {
+                                pe.printStackTrace();
+                            }
                         }
                     }
                 }
