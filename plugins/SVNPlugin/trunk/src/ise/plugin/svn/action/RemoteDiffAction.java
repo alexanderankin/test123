@@ -117,7 +117,8 @@ public class RemoteDiffAction extends SVNAction {
             @Override
             public File[] doInBackground() {
                 try {
-                    System.out.println("+++++ RemoteDiffAction");
+                    log( data.toString() );
+                    //System.out.println("+++++ RemoteDiffAction");
                     String path1 = data.getPaths().get( 0 );
                     if ( path1.startsWith( data.getURL() ) ) {
                         path1 = path1.substring( data.getURL().length() );
@@ -135,14 +136,14 @@ public class RemoteDiffAction extends SVNAction {
                     if ( path2.startsWith( "/" ) ) {
                         path2 = path2.substring( 1 );
                     }
-                    System.out.println("+++++ path1 = " + path1);
-                    System.out.println("+++++ path2 = " + path2);
+                    //System.out.println("+++++ path1 = " + path1);
+                    //System.out.println("+++++ path2 = " + path2);
 
                     BrowseRepository br = new BrowseRepository();
                     File remote1 = br.getFile( data.getURL(), path1, data.getRevision1(), data.getUsername(), data.getPassword() );
                     File remote2 = br.getFile( data.getURL(), path2, data.getRevision2(), data.getUsername(), data.getPassword() );
-                    System.out.println("+++++ file1 = " + remote1);
-                    System.out.println("+++++ file2 = " + remote2);
+                    //System.out.println("+++++ file1 = " + remote1);
+                    //System.out.println("+++++ file2 = " + remote2);
 
                     File[] files = new File[ 2 ];
                     files[ 0 ] = remote1;

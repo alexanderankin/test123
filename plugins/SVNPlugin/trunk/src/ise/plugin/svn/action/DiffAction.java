@@ -197,6 +197,7 @@ public class DiffAction extends SVNAction {
             panel.showConsole( );
 
             logger = panel.getLogger();
+            log( data.toString() );
 
             SwingWorker runner;
             if ( data.getSvnDiff() ) {
@@ -226,6 +227,7 @@ public class DiffAction extends SVNAction {
         public File[] doInBackground() {
             try {
                 log( jEdit.getProperty( "ips.Preparing_to_diff...", "Preparing to diff..." ) );
+                log( data.toString() );
                 SVNURL url = null;
                 String svn_path = null;
                 File remote1 = null;
