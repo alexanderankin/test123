@@ -29,7 +29,7 @@ public class RefByList extends JPanel {
 	private SourceElementTableModel model;
 	
 	private class SourceElementTableModel extends AbstractTableModel {
-		private final String [] Columns = { "Type", "Name", "Kind", "Location" };
+		private final String [] Columns = { "Type", "Name", "Signature", "Kind", "Location" };
 		private Vector<SourceElement> elements;
 
 		public SourceElementTableModel() {
@@ -65,8 +65,9 @@ public class RefByList extends JPanel {
 			switch (columnIndex) {
 			case 0: return element.namespace;
 			case 1: return element.name;
-			case 2: return element.kind;
-			case 3: return element.getLocation();
+			case 2: return element.sig;
+			case 3: return element.kind;
+			case 4: return element.getLocation();
 			}
 			return null;
 		}
