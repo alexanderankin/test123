@@ -29,9 +29,9 @@ options.source-navigator-options-main.code=new sn.MainOptionPane();
 
 # dockables
 source-navigator-ref-by-list.title=Referred by list
-source-navigator-ref-by-list.label=Referred By
+source-navigator-ref-by-list.label=Referred By List
 source-navigator-ref-by-tree.title=Referred by tree
-source-navigator-ref-by-tree.label=Referred By
+source-navigator-ref-by-tree.label=Referred By Tree
 
 # docs
 #plugin.sn.SourceNavigatorPlugin.docs=index.html
