@@ -67,6 +67,28 @@ public class RefByDbAccess extends DbAccess {
 			return strings;
 		}
 	}
+	private DatabaseEntry identifierToKey(String identifier) {
+        int index = identifier.lastIndexOf("::");
+        byte[] bytes;
+        if (index >= 0) {
+        	String namespace = identifier.substring(0, index);
+        	String name = identifier.substring(index + 2);
+        	bytes = new byte[index + 1 + name.length() + 1];
+        	for (int i = 0; i < namespace.length(); i++)
+        		bytes[i] = (byte) namespace.charAt(i);
+        	bytes[index] = 1;
+        	for (int i = 0; i < name.length(); i++)
+        		bytes[index + 1 + i] = (byte) name.charAt(i);
+        } else {
+        	bytes = new byte[3 + identifier.length()];
+        	bytes[0] = '#';
+        	bytes[1] = 1;
+        	for (int i = 0; i < identifier.length(); i++)
+        		bytes[2 + i] = (byte) identifier.charAt(i);
+        }
+    	bytes[bytes.length - 1] = 1;
+        return new DatabaseEntry(bytes);
+	}
 	public interface RefByRecordHandler {
 		boolean handle(RefByRecord rec);
 	}
@@ -78,6 +100,10 @@ public class RefByDbAccess extends DbAccess {
 		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
 			return handler.handle(new RefByRecord(key, data));
 		}
+	}
+	public void lookup(String identifier, RefByRecordHandler handler)
+	{
+		lookup(identifierToKey(identifier), new DatabaseEntry(), handler);
 	}
 	public void lookup(DatabaseEntry key, DatabaseEntry data, RefByRecordHandler handler)
 	{

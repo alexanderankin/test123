@@ -26,8 +26,6 @@ import org.gjt.sp.jedit.View;
 import sn.RefByDbAccess.RefByRecord;
 import sn.RefByDbAccess.RefByRecordHandler;
 
-import com.sleepycat.db.DatabaseEntry;
-
 @SuppressWarnings("serial")
 public class RefByTree extends JPanel {
 
@@ -158,29 +156,6 @@ public class RefByTree extends JPanel {
 		add(p, BorderLayout.NORTH);
 	}
 	
-	private DatabaseEntry identifierToKey(String identifier) {
-        int index = identifier.lastIndexOf("::");
-        byte[] bytes;
-        if (index >= 0) {
-        	String namespace = identifier.substring(0, index);
-        	String name = identifier.substring(index + 2);
-        	bytes = new byte[index + 1 + name.length() + 1];
-        	for (int i = 0; i < namespace.length(); i++)
-        		bytes[i] = (byte) namespace.charAt(i);
-        	bytes[index] = 1;
-        	for (int i = 0; i < name.length(); i++)
-        		bytes[index + 1 + i] = (byte) name.charAt(i);
-        } else {
-        	bytes = new byte[3 + identifier.length()];
-        	bytes[0] = '#';
-        	bytes[1] = 1;
-        	for (int i = 0; i < identifier.length(); i++)
-        		bytes[2 + i] = (byte) identifier.charAt(i);
-        }
-    	bytes[bytes.length - 1] = 1;
-        return new DatabaseEntry(bytes);
-	}
-	
 	private class TreeRecordHandler implements RefByRecordHandler {
 		private String dir;
 		private String identifier;
@@ -207,9 +182,7 @@ public class RefByTree extends JPanel {
 			public void run() {
 				parent.removeAllChildren();
 				RefByDbAccess db = new RefByDbAccess();
-				DatabaseEntry key = identifierToKey(identifier);
-				DatabaseEntry data = new DatabaseEntry();
-				db.lookup(key, data, new TreeRecordHandler(db.getDir(), identifier, parent));
+				db.lookup(identifier, new TreeRecordHandler(db.getDir(), identifier, parent));
 				model.nodeStructureChanged(parent);
 			}
 		});
