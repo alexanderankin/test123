@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jEdit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BerkleyDB"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/Shlomy/.jedit/jars/CommonControls.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
