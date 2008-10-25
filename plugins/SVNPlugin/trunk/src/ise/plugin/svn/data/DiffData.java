@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
+import java.util.List;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
@@ -88,7 +89,23 @@ public class DiffData extends SVNData {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "DiffData[" ).append( "path1=" ).append( getPaths().get( 0 ) ).append( ", path2=" ).append( getPaths().get( 1 ) ).append( ", url=" ).append( repositoryUrl ).append( ", rev1=" ).append( revision1 ).append( ", rev2=" ).append( revision2 ).append( "]" );
+        sb.append( "DiffData[\n" );
+        List paths = getPaths();
+        if ( paths != null && paths.size() > 0 ) {
+            sb.append( "\n\tpath1=" );
+            sb.append( getPaths().get( 0 ) );
+        }
+        if ( paths != null && paths.size() > 1 ) {
+            sb.append( "\n\tpath2=" );
+            sb.append( getPaths().get( 1 ) );
+        }
+        sb.append( "\n\turl=" );
+        sb.append( repositoryUrl );
+        sb.append( "\n\trev1=" );
+        sb.append( revision1 );
+        sb.append( "\n\trev2=" );
+        sb.append( revision2 );
+        sb.append( "\n]" );
         return sb.toString();
     }
 }
