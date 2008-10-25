@@ -176,12 +176,7 @@ public class SideKickTree extends JPanel
 		onSave.addActionListener(ah);
 		followCaret.addActionListener(ah);
 		search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
-		search.setOpaque(true);
-		search.setBackground(jEdit.getColorProperty("view.bgColor"));
-		search.setForeground(jEdit.getColorProperty("view.fgColor"));
 		searchField = new JTextField();
-		searchField.setBackground(jEdit.getColorProperty("view.bgColor"));
-		searchField.setForeground(jEdit.getColorProperty("view.fgColor"));
 		searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
 		clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon( "16x16/actions/edit-clear.png" ));
 		clearSearchBtn.addActionListener(
