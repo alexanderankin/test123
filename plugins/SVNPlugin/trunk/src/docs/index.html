@@ -10,15 +10,15 @@ Author: Dale Anson
 </p>
 
 <p>
-<a href="#intro">Intro</a><br/>
-<a href="#installation">Installation</a><br/>
-<a href="#0">Dockables</a><br/>
-<a href="#1">Checking out a project</a><br/>
-<a href="#1a">Option Settings</a><br/>
-<a href="#2">Creating a project from existing files</a><br/>
-<a href="#3">Handling individual files</a><br/>
-<a href="#4">How to undelete a deleted file</a><br/>
-<a href="#5">Licenses</a><br/>
+<a href="#intro">Intro</a><br>
+<a href="#installation">Installation</a><br>
+<a href="#0">Dockables</a><br>
+<a href="#1">Checking out a project</a><br>
+<a href="#1a">Option Settings</a><br>
+<a href="#2">Creating a project from existing files</a><br>
+<a href="#3">Handling individual files</a><br>
+<a href="#4">How to undelete a deleted file</a><br>
+<a href="#5">Licenses</a><br>
 </p>
 <hr>
 <p>
@@ -63,7 +63,7 @@ SVNPlugin depends on the Project Viewer, Common Controls, and JDiff plugins.  If
 <a name="0"><h2>Dockables</h2></a>
 </p>
 <p>
-The Subversion plugin provides 2 dockables to jEdit:<br/>
+The Subversion plugin provides 2 dockables to jEdit:<br>
 <ol>
 <li><a href="#svn_browser">SVN Browser</a></li>
 <li><a href="#svn_console">SVN Console</a></li>
@@ -79,9 +79,9 @@ You can dock them for easier access using Utilities -&gt; Global Options... -&gt
 <a name="svn_browser"><h3>SVN Browser</h3></a>
 </p>
 <p>
-The SVN Browser is best docked at either the left or right:<br/>
-<br/>
-<img src="svn_browser.jpg"/>
+The SVN Browser is best docked at either the left or right:<br>
+<br>
+<img src="svn_browser.jpg">
 </p>
 <p>
 <h4>SVN Browser Buttons</h4>
@@ -90,16 +90,16 @@ The SVN Browser is best docked at either the left or right:<br/>
 <table border="0">
 <tr>
 <td>
-<img src="add_repos.jpg"/>
+<img src="add_repos.jpg">
 </td>
 <td>This button allows you to add a new repository to the SVN Browser.<td>
 </tr>
 </table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="add_repos_dialog.jpg"/><br/>
-<br/>
+<br>
+Clicking this button brings up this dialog:<br>
+<br>
+<img src="add_repos_dialog.jpg"><br>
+<br>
 <ul>
 <li>Name:  This is for a user-friendly name for the repository, like "jEdit Plugins".
 This can be whatever name you want for this repository.</li>
@@ -115,16 +115,16 @@ anonymous access, you can leave this blank.</li>
 <table border="0">
 <tr>
 <td>
-<img src="edit_repos.jpg"/>
+<img src="edit_repos.jpg">
 </td>
 <td>This button allows you to edit the settings for a repository.<td>
 </tr>
 </table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="edit_repos_dialog.jpg"/><br/>
-<br/>
+<br>
+Clicking this button brings up this dialog:<br>
+<br>
+<img src="edit_repos_dialog.jpg"><br>
+<br>
 These fields are identical to those in the Add Repository dialog shown above.
 </p>
 
@@ -132,7 +132,7 @@ These fields are identical to those in the Add Repository dialog shown above.
 <table border="0">
 <tr>
 <td>
-<img src="remove_repos.jpg"/>
+<img src="remove_repos.jpg">
 </td>
 <td>This button allows you to remove a repository from the SVN Browser.  This
 does <strong>NOT</strong> delete anything from the repository or your local
@@ -140,38 +140,38 @@ file system.  It only removes the repository from the SVN Browser drop down
 list.<td>
 </tr>
 </table>
-<br/>
-Clicking this button brings up this dialog:<br/>
-<br/>
-<img src="remove_repos_dialog.jpg"/><br/>
-<br/>
+<br>
+Clicking this button brings up this dialog:<br>
+<br>
+<img src="remove_repos_dialog.jpg"><br>
+<br>
 You must confirm to actually remove the repository from the SVN Browser.
 </p>
 <p>
 <table border="0">
 <tr>
 <td>
-<img src="refresh_repos.jpg"/>
+<img src="refresh_repos.jpg">
 </td>
 <td>This button refreshes the SVN Browser from the currently selected repository.
 The SVN Browser tree is lazy-loaded since it can take some time to retrieve the
 repository data necessary to construct the tree.  Folder contents are fetched only
 when the folder is expanded to show its contents.  The refresh button will bring in
-any new data that may have been added since the last time the tree was loaded.<td>
+any new data that may have been added since the last time the tree was loaded. Note that this button only refreshes the currently selected item in the tree, which is handy for situations where you have a large tree and only need to refresh a small part of it.  If no node is selected in the tree, then the entire tree will be refreshed.<td>
 </tr>
 </table>
-<br/>
-<br/>
+<br>
+<br>
 <p>
-Right clicking on an item in the tree will show this popup menu:<br/>
-<br/>
-<img src="browser_context_menu.jpg"/>
-<br/>
+Right clicking on an item in the tree will show this popup menu:<br>
+<br>
+<img src="browser_context_menu.jpg">
+<br>
 The commands available on this menu are standard Subversion commands and shouldn't
 need additional explanation, although the "Checkout..." command is covered in some
 detail below.
 </p>
-<br/>
+<br>
 </p>
 
 <a name="svn_console">
@@ -188,17 +188,17 @@ This dockable is best docked at the bottom of jEdit.
 </p>
 
 <p>
-Here is a shot of the SVN Console after running an "Info" command:<br/>
-<br/>
-<img src="svn_console_1.jpg"/><br/>
-<br/>
+Here is a shot of the SVN Console after running an "Info" command:<br>
+<br>
+<img src="svn_console_1.jpg"><br>
+<br>
 The "SVN Console" tab cannot be closed.
 </p>
 <p>
-And here is a shot of the Info command results:<br/>
-<br/>
-<img src="svn_console.jpg"/><br/>
-<br/>
+And here is a shot of the Info command results:<br>
+<br>
+<img src="svn_console.jpg"><br>
+<br>
 The "Info" tab can be closed by clicking on the "X".  It can also be closed
 by right clicking on it and choosing "Close".  If there are multiple tabs open,
 they can all be closed by right clicking on any tab and choosing "Close All".
@@ -224,16 +224,16 @@ popup.
 <p>
 If you are wanting to check out some files from a Subversion repository for the
 first time, do this:
-<br/>
+<br>
 <ol>
 <li>
 Right click on a directory or file in the SVN Browser, and choose "Checkout...".
 </li>
 <li>
-Fill in this dialog:<br/>
-<br/>
-<img src="checkout_dialog.jpg"/><br/>
-<br/>
+Fill in this dialog:<br>
+<br>
+<img src="checkout_dialog.jpg"><br>
+<br>
 <ul>
    <li>URL: should be filled in for you.</li>
    <li>Path: enter the location on your computer to put the files.</li>
@@ -245,23 +245,23 @@ Fill in this dialog:<br/>
 Wait for the files to be checked out.
 </li>
 <li>
-Choose "Yes" to create a project in Project Viewer:<br/>
-<br/>
-<img src="create_project_dialog.jpg"/><br/>
-<br/>
+Choose "Yes" to create a project in Project Viewer:<br>
+<br>
+<img src="create_project_dialog.jpg"><br>
+<br>
 </li>
 <li>
-Fill in the information necessary to create the project:<br/>
+Fill in the information necessary to create the project:<br>
 </br>
-<img src="create_project_dialog_2.jpg"/><br/>
-<br/>
+<img src="create_project_dialog_2.jpg"><br>
+<br>
 </li>
 <li>
 Last, actually import your files into your project. Be sure to choose the "Use CVS or SVN entries file" or
-all the .svn files will end up in your Project, which you probably don't want:<br/>
-<br/>
-<img src="initial_import.jpg"/><br/>
-<br/>
+all the .svn files will end up in your Project, which you probably don't want:<br>
+<br>
+<img src="initial_import.jpg"><br>
+<br>
 Project Viewer will automatically switch to your new project so you can begin working immediately.
 </li>
 </ol>
@@ -291,28 +291,28 @@ repository.  You can create a project from these files like this:
 <li>Activate the Project Viewer plugin.</li>
 <li>From the drop down at the top of Project Viewer, browse to the place you
 want to create the project and select "New project here".</li>
-<li>Fill in the dialog:<br/>
-<br/>
-<img src="create_new_project_dialog.jpg"/><br/>
-<br/>
+<li>Fill in the dialog:<br>
+<br>
+<img src="create_new_project_dialog.jpg"><br>
+<br>
 </li>
 <li>
 Next, you'll be asked to import your files into your project. Be sure to choose the "Use CVS or SVN entries file" or
-all the .svn files will end up in your Project, which you probably don't want:<br/>
-<br/>
-<img src="initial_import.jpg"/><br/>
-<br/>
-Project Viewer will automatically switch to your new project so you can begin working immediately.<br/>
-<br/>
+all the .svn files will end up in your Project, which you probably don't want:<br>
+<br>
+<img src="initial_import.jpg"><br>
+<br>
+Project Viewer will automatically switch to your new project so you can begin working immediately.<br>
+<br>
 </li>
 <li>
 Right click on the top node of your project and select "Properties".  Select
 "Subversion settings" from the left panel.  The URL should be filled in for you.
 If the repository requires a username and password, fill them in here, or leave the
-fields blank if the repository allows anonymous access:<br/>
-<br/>
-<img src="subversion_settings.jpg"/><br/>
-<br/>
+fields blank if the repository allows anonymous access:<br>
+<br>
+<img src="subversion_settings.jpg"><br>
+<br>
 </li>
 <li>
 Click "OK" to save your settings.
@@ -331,10 +331,10 @@ There may be times when you are working on a file that is not in a Project Viewe
 project, but the file is under version control.  All you want to do is update or
 commit that file.  Several Subversion commands are available on the text area
 context menu.  Right click anywhere in the text area and select the "Subversion"
-submenu:<br/>
-<br/>
-<img src="text_area_context_menu.jpg"/><br/>
-<br/>
+submenu:<br>
+<br>
+<img src="text_area_context_menu.jpg"><br>
+<br>
 
 </p>
 <p>
@@ -366,8 +366,8 @@ and error from each of these commands.
 Don't forget that in subversion, a "move" is really a "copy" followed by a "delete".  To undo a "move", your best bet
 is to just "move" the files back.  Doing a "revert" does NOT undo a "move".  If you do "revert", your moved files will
 be removed from their new destination, and then you'll also need to follow the undelete instructions above to get them
-back into their original location.<br/>
-<br/>
+back into their original location.<br>
+<br>
 </p>
 
 <hr>
@@ -376,8 +376,8 @@ back into their original location.<br/>
 </p>
 
 <p>
-<b>SVN Plugin</b><br/>
-<br/>
+<b>SVN Plugin</b><br>
+<br>
 The SVNPlugin is licensed as follows:
 
 <pre>
@@ -410,8 +410,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </p>
 
 <p>
-<b>SVNKit Library</b><br/>
-<br/>
+<b>SVNKit Library</b><br>
+<br>
 This plugin uses the SVNKit library (www.svnkit.com) from TMate Software, which has this license:
 
 <pre>
@@ -466,18 +466,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </p>
 
 <p>
-<b>Date Selector Utility</b><br/>
-<br/>
+<b>Date Selector Utility</b><br>
+<br>
 This plugin uses the Date Selector Utility as published in the July 2003
-issue of JavaWorld:<br/>
-<br/>
+issue of JavaWorld:<br>
+<br>
 This program contains Allen Holub's Date Selector utility.
 (c) 2003 Allen I. Holub. All Rights Reserved.
 </p>
 
 <p>
-<b>SwingWorker</b><br/>
-<br/>
+<b>SwingWorker</b><br>
+<br>
 This plugin also uses the original SwingWorker library, which is licensed as follows.
 Once Java 1.6 becomes more widespread, I'll replace this library with the SwingWorker
 classes distributed with Java itself.
