@@ -23,7 +23,8 @@ import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.View;
 
-import sn.DbAccess.RecordHandler;
+import sn.RefByDbAccess.RefByRecord;
+import sn.RefByDbAccess.RefByRecordHandler;
 
 import com.sleepycat.db.DatabaseEntry;
 
@@ -180,48 +181,26 @@ public class RefByTree extends JPanel {
         return new DatabaseEntry(bytes);
 	}
 	
-	private class RefByRecordHandler implements RecordHandler {
+	private class TreeRecordHandler implements RefByRecordHandler {
 		private String dir;
 		private String identifier;
 		private SourceElementTreeNode parent;
 		
-		public RefByRecordHandler(String dir, String identifier, SourceElementTreeNode parent) {
+		public TreeRecordHandler(String dir, String identifier, SourceElementTreeNode parent) {
 			this.dir = dir;
 			this.identifier = identifier;
 			this.parent = parent;
 		}
-		@Override
-		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
-			String [] strings = keyToStrings(key);
-			if (! getIdentifier(strings).equals(identifier))
+		public boolean handle(RefByRecord rec) {
+			if (! rec.getIdentifier().equals(identifier))
 				return false;
-			SourceElement element = recordToSourceElement(strings, dir);
+			SourceElement element = recordToSourceElement(rec, dir);
 			parent.addChild(element);
 			return true;
 		}
-		private String [] keyToStrings(DatabaseEntry key) {
-			byte [] bytes = key.getData();
-			String [] strings = new String[9];
-			int start = 0;
-			int index = 0;
-			for (int i = 0; i < bytes.length && index < 9; i++) {
-				if (bytes[i] <= 1) {
-					strings[index++] = new String(bytes, start, i - start);
-					start = i + 1;
-				}
-			}
-			if (index < 9)
-				strings[index] = new String(bytes, start, bytes.length - start - 1);
-			return strings;
-		}
-		private String getIdentifier(String [] strings) {
-			if (strings[0].equals("#"))
-				return strings[1];
-			return strings[0] + "::" + strings[1];
-		}
-		private SourceElement recordToSourceElement(String [] strings, String dir) {
-			return new SourceElement(strings[3], strings[4], strings[5], strings[8],
-				Integer.valueOf(strings[7]), dir);
+		private SourceElement recordToSourceElement(RefByRecord rec, String dir) {
+			return new SourceElement(rec.refByType, rec.refByName, rec.refByKind,
+					rec.file, rec.line, dir);
 		}
 	}
 	private void find(String identifier) {
@@ -231,10 +210,10 @@ public class RefByTree extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				parent.removeAllChildren();
-				DbAccess db = new DbAccess("by");
+				RefByDbAccess db = new RefByDbAccess();
 				DatabaseEntry key = identifierToKey(identifier);
 				DatabaseEntry data = new DatabaseEntry();
-				db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier, parent));
+				db.lookup(key, data, new TreeRecordHandler(db.getDir(), identifier, parent));
 				model.nodeStructureChanged(parent);
 			}
 		});

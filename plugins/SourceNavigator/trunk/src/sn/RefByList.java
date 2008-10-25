@@ -15,7 +15,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.gjt.sp.jedit.View;
 
-import sn.DbAccess.RecordHandler;
+import sn.RefByDbAccess.RefByRecord;
+import sn.RefByDbAccess.RefByRecordHandler;
 
 import com.sleepycat.db.DatabaseEntry;
 import common.gui.HelpfulJTable;
@@ -131,53 +132,26 @@ public class RefByList extends JPanel {
         return new DatabaseEntry(bytes);
 	}
 	
-	private class RefByRecordHandler implements RecordHandler {
+	private class ListRecordHandler implements RefByRecordHandler {
 		private String dir;
 		private String identifier;
-		public RefByRecordHandler(String dir, String identifier) {
+		public ListRecordHandler(String dir, String identifier) {
 			this.dir = dir;
 			this.identifier = identifier;
 		}
-		@Override
-		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
-			String [] strings = keyToStrings(key);
-			if (! getIdentifier(strings).equals(identifier))
+		public boolean handle(RefByRecord rec) {
+			if (! rec.getIdentifier().equals(identifier))
 				return false;
-			model.addElement(recordToSourceElement(strings, dir));
+			model.addElement(rec.refBySourceElement(dir));
 			return true;
 		}
-		private String [] keyToStrings(DatabaseEntry key) {
-			byte [] bytes = key.getData();
-			String [] strings = new String[9];
-			int start = 0;
-			int index = 0;
-			for (int i = 0; i < bytes.length && index < 9; i++) {
-				if (bytes[i] <= 1) {
-					strings[index++] = new String(bytes, start, i - start);
-					start = i + 1;
-				}
-			}
-			if (index < 9)
-				strings[index] = new String(bytes, start, bytes.length - start - 1);
-			return strings;
-		}
-		private String getIdentifier(String [] strings) {
-			if (strings[0].equals("#"))
-				return strings[1];
-			return strings[0] + "::" + strings[1];
-		}
-		private SourceElement recordToSourceElement(String [] strings, String dir) {
-			return new SourceElement(strings[3], strings[4], strings[5], strings[8],
-				Integer.valueOf(strings[7]), dir);
-		}
-		
 	}
 	private void find(String identifier) {
 		model.clear();
-		DbAccess db = new DbAccess("by");
+		RefByDbAccess db = new RefByDbAccess();
 		DatabaseEntry key = identifierToKey(identifier);
 		DatabaseEntry data = new DatabaseEntry();
-		db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier));
+		db.lookup(key, data, new ListRecordHandler(db.getDir(), identifier));
 		model.fireTableDataChanged();
 	}
 }
