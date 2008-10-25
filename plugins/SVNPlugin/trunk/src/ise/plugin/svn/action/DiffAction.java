@@ -48,7 +48,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
 import jdiff.DualDiff;
-import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
@@ -228,7 +227,7 @@ public class DiffAction extends SVNAction {
             try {
                 log( jEdit.getProperty( "ips.Preparing_to_diff...", "Preparing to diff..." ) );
                 log( data.toString() );
-                SVNURL url = null;
+                String url = null;
                 String svn_path = null;
                 File remote1 = null;
                 File remote2 = null;
@@ -240,20 +239,21 @@ public class DiffAction extends SVNAction {
                     return null;
                 }
                 SVNInfo svn_info = infos.get( 0 );
-                url = svn_info.getRepositoryRootURL();
-                svn_path = svn_info.getPath();
+                url = svn_info.getRepositoryRootURL().toString();
+                svn_path = svn_info.getURL().toString();
+                svn_path = svn_path.substring(url.length());
                 BrowseRepository br = new BrowseRepository();
 
                 // there should always be one remote revision to fetch for diffing against a working copy
                 // or for diffing against another revision
                 log( jEdit.getProperty( "ips.Diff,_fetching_file_data...", "Diff, fetching file data..." ) );
-                remote1 = br.getFile( url.toString(), svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+                remote1 = br.getFile( url, svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
 
                 // there may be a second remote revision for diffing between 2 remote revisions
                 remote2 = null;
                 if ( data.getRevision2() != null ) {
                     log( jEdit.getProperty( "ips.Diff,_fetching_revision_data...", "Diff, fetching revision data..." ) );
-                    remote2 = br.getFile( url.toString(), svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
+                    remote2 = br.getFile( url, svn_path, data.getRevision2(), data.getUsername(), data.getPassword() );
 
                     // sort, oldest revision first
                     boolean lessThan = lessThan( data.getRevision2(), data.getRevision1() );
@@ -296,14 +296,14 @@ public class DiffAction extends SVNAction {
             try {
                 File[] files = get();
                 if ( files == null ) {
-                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ) + "\nNo files.", jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                     return ;
                 }
                 final File remote1 = files[ 0 ];
                 final File remote2 = files[ 1 ];
 
                 if ( remote1 == null && remote2 == null ) {
-                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( getView(), jEdit.getProperty( "ips.Unable_to_fetch_contents_for_comparison.", "Unable to fetch contents for comparison." ) + "\nNull files.", jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                     return ;
                 }
                 if ( ( remote1 != null && remote1.isDirectory() ) || ( remote2 != null && remote2.isDirectory() ) ) {

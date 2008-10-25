@@ -227,7 +227,7 @@ public class BrowseRepository {
                     br.close();
                 }
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 //e.printStackTrace();
                 // ignored
             }

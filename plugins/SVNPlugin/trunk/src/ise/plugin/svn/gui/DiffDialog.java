@@ -56,6 +56,7 @@ public class DiffDialog extends JDialog {
         super( ( JFrame ) view, jEdit.getProperty("ips.Diff", "Diff"), true );
         DiffData data = new DiffData();
         data.addPath( path );
+        data.setPathsAreURLs(false);
         path1 = path;
         this.data = data;
         init();
