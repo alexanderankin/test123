@@ -3,16 +3,16 @@ package sn;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
 
 import org.gjt.sp.jedit.View;
 
@@ -25,26 +25,71 @@ public class RefByList extends JPanel {
 
 	private View view;
 	private JTextField text;
-	private JList list;
-	private DefaultListModel model;
+	private JTable table;
+	private SourceElementTableModel model;
+	
+	private class SourceElementTableModel extends AbstractTableModel {
+		private final String [] Columns = { "Type", "Name", "Kind", "Location" };
+		private Vector<SourceElement> elements;
 
+		public SourceElementTableModel() {
+			elements = new Vector<SourceElement>();
+		}
+		public SourceElement getElement(int rowIndex) {
+			if (rowIndex < 0 || rowIndex >= getRowCount())
+				return null;
+			return elements.get(rowIndex);
+		}
+		public void clear() {
+			elements.clear();
+		}
+		public void addElement(SourceElement element) {
+			elements.add(element);
+		}
+		public int getColumnCount() {
+			return Columns.length;
+		}
+		public String getColumnName(int columnIndex) {
+			return Columns[columnIndex];
+		}
+		public int getRowCount() {
+			return elements.size();
+		}
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			if (rowIndex < 0 || rowIndex >= elements.size() ||
+				columnIndex < 0 || columnIndex >= getColumnCount())
+			{
+				return null;
+			}
+			SourceElement element = elements.get(rowIndex);
+			switch (columnIndex) {
+			case 0: return element.namespace;
+			case 1: return element.name;
+			case 2: return element.kind;
+			case 3: return element.getLocation();
+			}
+			return null;
+		}
+	}
 	public RefByList(View view) {
 		super(new BorderLayout());
 		this.view = view;
-		model = new DefaultListModel();
-		list = new JList(model);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.addListSelectionListener(new ListSelectionListener() {
+		model = new SourceElementTableModel();
+		table = new JTable(model);
+		table.setRowSelectionAllowed(true);
+		//table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
-					SourceElement refBy = (SourceElement) list.getSelectedValue();
+					SourceElement refBy = (SourceElement)
+						model.getElement(table.getSelectedRow());
 					if (refBy != null)
 						refBy.jumpTo(RefByList.this.view);
 				}
 			}
 		});
-		add(new JScrollPane(list), BorderLayout.CENTER);
+		add(new JScrollPane(table), BorderLayout.CENTER);
 		JPanel p = new JPanel(new BorderLayout());
 		JLabel l = new JLabel("Find:");
 		p.add(l, BorderLayout.WEST);
@@ -132,5 +177,6 @@ public class RefByList extends JPanel {
 		DatabaseEntry key = identifierToKey(identifier);
 		DatabaseEntry data = new DatabaseEntry();
 		db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier));
+		model.fireTableDataChanged();
 	}
 }

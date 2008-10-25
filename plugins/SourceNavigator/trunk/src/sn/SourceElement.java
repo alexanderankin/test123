@@ -29,6 +29,9 @@ public class SourceElement {
 		sb.append(" [" + kind + "] (" + file + ":" + line + ")");
 		return sb.toString();
 	}
+	public String getLocation() {
+		return file + ":" + line;
+	}
 	public void jumpTo(View view) {
 		String path;
 		if (! MiscUtilities.isAbsolutePath(file))
