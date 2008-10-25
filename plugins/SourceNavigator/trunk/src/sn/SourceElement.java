@@ -22,11 +22,13 @@ public class SourceElement {
 		this.dir = dir;
 	}
 	public String toString() {
+		return getRepresentativeName() + " [" + kind + "] (" + file + ":" + line + ")";
+	}
+	public String getRepresentativeName() {
 		StringBuffer sb = new StringBuffer();
 		if (namespace != null && namespace.length() > 0)
 			sb.append(namespace + "::");
 		sb.append(name);
-		sb.append(" [" + kind + "] (" + file + ":" + line + ")");
 		return sb.toString();
 	}
 	public String getLocation() {

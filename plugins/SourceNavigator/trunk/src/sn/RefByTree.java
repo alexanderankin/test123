@@ -3,94 +3,112 @@ package sn;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.View;
 
 import sn.DbAccess.RecordHandler;
 
 import com.sleepycat.db.DatabaseEntry;
-import common.gui.HelpfulJTable;
 
 @SuppressWarnings("serial")
-public class RefByList extends JPanel {
+public class RefByTree extends JPanel {
 
 	private View view;
 	private JTextField text;
-	private HelpfulJTable table;
-	private SourceElementTableModel model;
+	private JTree tree;
+	private DefaultTreeModel model;
+	private SourceElementTreeNode root;
+	private SourceElementTreeNode lastClicked;
 	
-	private class SourceElementTableModel extends AbstractTableModel {
-		private final String [] Columns = { "Type", "Name", "Kind", "Location" };
+	static private class SourceElementTreeNode extends DefaultMutableTreeNode {
+		private String desc;
 		private Vector<SourceElement> elements;
-
-		public SourceElementTableModel() {
+		int index = 0;
+		public SourceElementTreeNode(SourceElement element) {
 			elements = new Vector<SourceElement>();
+			if (element == null)
+				return;
+			add(element);
+			desc = element.getRepresentativeName();
+			index = 0;
 		}
-		public SourceElement getElement(int rowIndex) {
-			if (rowIndex < 0 || rowIndex >= getRowCount())
-				return null;
-			return elements.get(rowIndex);
-		}
-		public void clear() {
-			elements.clear();
-		}
-		public void addElement(SourceElement element) {
-			elements.add(element);
-		}
-		public int getColumnCount() {
-			return Columns.length;
-		}
-		public String getColumnName(int columnIndex) {
-			return Columns[columnIndex];
-		}
-		public int getRowCount() {
-			return elements.size();
-		}
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (rowIndex < 0 || rowIndex >= elements.size() ||
-				columnIndex < 0 || columnIndex >= getColumnCount())
-			{
-				return null;
-			}
-			SourceElement element = elements.get(rowIndex);
-			switch (columnIndex) {
-			case 0: return element.namespace;
-			case 1: return element.name;
-			case 2: return element.kind;
-			case 3: return element.getLocation();
-			}
-			return null;
-		}
-	}
-	public RefByList(View view) {
-		super(new BorderLayout());
-		this.view = view;
-		model = new SourceElementTableModel();
-		table = new HelpfulJTable();
-		table.setModel(model);
-		table.setAutoResizeWithHeaders(true);
-		table.setRowSelectionAllowed(true);
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() == false) {
-					SourceElement refBy = (SourceElement)
-						model.getElement(table.getSelectedRow());
-					if (refBy != null)
-						refBy.jumpTo(RefByList.this.view);
+		public void addChild(SourceElement element) {
+			String desc = element.getRepresentativeName();
+			if (getChildCount() > 0) {
+				TreeNode child = getFirstChild();
+				while (child != null) {
+					SourceElementTreeNode childNode = (SourceElementTreeNode) child;
+					String childDesc = childNode.toString();
+					if (childDesc.equals(desc)) {
+						childNode.add(element);
+						return;
+					}
+					child = childNode.getNextSibling();
 				}
 			}
+			SourceElementTreeNode node = new SourceElementTreeNode(element);
+			add(node);
+		}
+		public String toString() {
+			return desc;
+		}
+		public void add(SourceElement element) {
+			elements.add(element);
+		}
+		public SourceElement getNext() {
+			if (index >= elements.size())
+				index = 0;
+			return elements.get(index++);
+		}
+		public void reset() {
+			index = 0;
+		}
+	}
+	public RefByTree(View view) {
+		super(new BorderLayout());
+		this.view = view;
+		root = new SourceElementTreeNode(null);
+		model = new DefaultTreeModel(root);
+		tree = new JTree(model);
+		tree.setRootVisible(false);
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent e) {
+				SourceElementTreeNode n = (SourceElementTreeNode)
+					e.getPath().getLastPathComponent();
+				if (lastClicked != null)
+					lastClicked.reset();
+				lastClicked = n;
+				SourceElement refBy = n.getNext();
+				if (refBy != null)
+					refBy.jumpTo(RefByTree.this.view);
+			}
 		});
-		add(new JScrollPane(table), BorderLayout.CENTER);
+		tree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				SourceElementTreeNode n = (SourceElementTreeNode)
+					tree.getSelectionPath().getLastPathComponent();
+				if (lastClicked != n)
+					return;
+				SourceElement refBy = n.getNext();
+				if (refBy != null)
+					refBy.jumpTo(RefByTree.this.view);
+			}
+		});
+		add(new JScrollPane(tree), BorderLayout.CENTER);
 		JPanel p = new JPanel(new BorderLayout());
 		JLabel l = new JLabel("Find:");
 		p.add(l, BorderLayout.WEST);
@@ -134,16 +152,20 @@ public class RefByList extends JPanel {
 	private class RefByRecordHandler implements RecordHandler {
 		private String dir;
 		private String identifier;
-		public RefByRecordHandler(String dir, String identifier) {
+		private SourceElementTreeNode parent;
+		
+		public RefByRecordHandler(String dir, String identifier, SourceElementTreeNode parent) {
 			this.dir = dir;
 			this.identifier = identifier;
+			this.parent = parent;
 		}
 		@Override
 		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
 			String [] strings = keyToStrings(key);
 			if (! getIdentifier(strings).equals(identifier))
 				return false;
-			model.addElement(recordToSourceElement(strings, dir));
+			SourceElement element = recordToSourceElement(strings, dir);
+			parent.addChild(element);
 			return true;
 		}
 		private String [] keyToStrings(DatabaseEntry key) {
@@ -173,11 +195,11 @@ public class RefByList extends JPanel {
 		
 	}
 	private void find(String identifier) {
-		model.clear();
+		root.removeAllChildren();
 		DbAccess db = new DbAccess("by");
 		DatabaseEntry key = identifierToKey(identifier);
 		DatabaseEntry data = new DatabaseEntry();
-		db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier));
-		model.fireTableDataChanged();
+		db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier, root));
+		model.nodeStructureChanged(root);
 	}
 }
