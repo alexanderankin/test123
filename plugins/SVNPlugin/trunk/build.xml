@@ -105,6 +105,11 @@
                 <include name="**/*.gif"/>
             </fileset>
         </copy>
+        <copy todir="${classes.dir}/ise/plugin/svn/gui/icons" overwrite="no">
+            <fileset dir="${src.dir}/ise/plugin/svn/gui/icons">
+                <include name="**/*.png"/>
+            </fileset>
+        </copy>
     </target>
 
 
@@ -178,6 +183,7 @@
                 <include name="SVNPlugin.props"/>
                 <include name="dockables.xml"/>
                 <include name="actions.xml"/>
+                <include name="services.xml"/>
             </fileset>
         </copy>
 
@@ -241,7 +247,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.gui.RevisionSelectionPanel">
+        <java classname="ise.plugin.svn.gui.RevisionDialog">
             <classpath refid="classpathref" />
         </java>
     </target>
