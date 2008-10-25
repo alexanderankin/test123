@@ -19,13 +19,14 @@ import org.gjt.sp.jedit.View;
 import sn.DbAccess.RecordHandler;
 
 import com.sleepycat.db.DatabaseEntry;
+import common.gui.HelpfulJTable;
 
 @SuppressWarnings("serial")
 public class RefByList extends JPanel {
 
 	private View view;
 	private JTextField text;
-	private JTable table;
+	private HelpfulJTable table;
 	private SourceElementTableModel model;
 	
 	private class SourceElementTableModel extends AbstractTableModel {
@@ -75,9 +76,10 @@ public class RefByList extends JPanel {
 		super(new BorderLayout());
 		this.view = view;
 		model = new SourceElementTableModel();
-		table = new JTable(model);
+		table = new HelpfulJTable();
+		table.setModel(model);
+		table.setAutoResizeWithHeaders(true);
 		table.setRowSelectionAllowed(true);
-		//table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {

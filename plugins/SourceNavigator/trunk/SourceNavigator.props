@@ -9,6 +9,7 @@ plugin.sn.SourceNavigatorPlugin.description=\
 
 plugin.sn.SourceNavigatorPlugin.depend.0=jdk 1.6
 plugin.sn.SourceNavigatorPlugin.depend.1=jedit 04.03.16.00
+plugin.browser.GlobalPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 
 plugin.sn.SourceNavigatorPlugin.docs=index.html
 
