@@ -20,6 +20,8 @@ package ise.plugin.svn.gui.component;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -266,7 +268,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     }
 
     /**
-     * @return a BorderLayout
+     * @return a KappaLayout
      */
     protected LayoutManager createLayoutManager() {
         return new KappaLayout();
@@ -285,22 +287,38 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         date_popup.setEnabled( date_rb.isSelected() );
     }
 
+    public void propertyChange( PropertyChangeEvent event ) {
+        // set revision
+        SVNRevision revision = controller.getModel().getRevision();
+        if ( revision.getNumber() != -1 ) {
+            revision_number.getModel().setValue( revision.getNumber() );
+        }
+        else if ( revision.getDate() != null ) {
+            date_spinner.getModel().setValue( revision.getDate() );
+        }
+    }
+
     private JSpinner getRevisionChooser() {
-        SpinnerNumberModel model = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
+        SpinnerNumberModel model = new SpinnerNumberModel( 0, 0, Integer.MAX_VALUE, 1 );
         revision_number = new JSpinner( model );
         JSpinner.NumberEditor number_editor = new JSpinner.NumberEditor( revision_number, "# " );
+        number_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
+                    // this is necessary because JSpinner won't automatically keep its internal
+                    // model up to date.
+                    public void propertyChange( PropertyChangeEvent pce ) {
+                        try {
+                            revision_number.commitEdit();
+                        }
+                        catch ( java.text.ParseException pe ) {}    // NOPMD
+                    }
+                }
+                                                              );
         revision_number.setEditor( number_editor );
         revision_number.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
                         if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
                             Number number = ( Number ) revision_number.getValue();
                             controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
-                            try {
-                                revision_number.commitEdit();
-                            }
-                            catch(java.text.ParseException pe) {
-                                pe.printStackTrace();
-                            }
                         }
                     }
                 }
@@ -319,20 +337,33 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         calendar.add( Calendar.YEAR, -10 );
         Date earliestDate = calendar.getTime();
         SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
-        date_spinner = new JSpinner( model );
+        date_spinner = new JSpinner( model ) {
+                    public void processFocusEvent( FocusEvent fe ) {
+                        try {
+                            commitEdit();
+                        }
+                        catch ( java.text.ParseException pe ) {}    // NOPMD
+                    }
+                }
+                ;
         JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty( "ips.DateFormat", "dd MMM yyyy HH:mm" ) );
+        date_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
+                    // this is necessary because JSpinner won't automatically keep its internal
+                    // model up to date.
+                    public void propertyChange( PropertyChangeEvent pce ) {
+                        try {
+                            date_spinner.commitEdit();
+                        }
+                        catch ( java.text.ParseException pe ) {}    // NOPMD
+                    }
+                }
+                                                            );
         date_spinner.setEditor( date_editor );
         date_spinner.addChangeListener( new ChangeListener() {
                     public void stateChanged( ChangeEvent ce ) {
                         if ( BasicRevisionSelectionPanelUI.this.date_spinner.isEnabled() ) {
                             Date date = ( Date ) date_spinner.getValue();
                             controller.getModel().setRevision( SVNRevision.create( date ) );
-                            try {
-                                date_spinner.commitEdit();
-                            }
-                            catch(java.text.ParseException pe) {
-                                pe.printStackTrace();
-                            }
                         }
                     }
                 }
