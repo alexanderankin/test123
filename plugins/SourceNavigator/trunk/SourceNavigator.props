@@ -1,0 +1,42 @@
+plugin.sn.SourceNavigatorPlugin.activate=defer
+
+# general plugin information
+plugin.sn.SourceNavigatorPlugin.name=Source Navigator Plugin
+plugin.sn.SourceNavigatorPlugin.author=Shlomy Reinstein
+plugin.sn.SourceNavigatorPlugin.version=0.1
+plugin.sn.SourceNavigatorPlugin.description=\
+	Source Navigator Plugin provides an interface to the GNU tool "Source Navigator".
+
+plugin.sn.SourceNavigatorPlugin.depend.0=jdk 1.6
+plugin.sn.SourceNavigatorPlugin.depend.1=jedit 04.03.16.00
+
+plugin.sn.SourceNavigatorPlugin.docs=index.html
+
+# action labels
+source-navigator-add-file.label=Add tag file...
+#ctags-interface-print-tags.label=Print tags
+#ctags-interface-print-tags-containing.label=Print tags with substring...
+
+# menu items
+plugin.sn.SourceNavigatorPlugin.menu=source-navigator-ref-by-list \
+	source-navigator-ref-by-tree
+
+# option panes
+plugin.sn.SourceNavigatorPlugin.option-pane=source-navigator-options-main
+options.source-navigator-options-main.label=Source Navigator
+options.source-navigator-options-main.code=new sn.MainOptionPane();
+
+# dockables
+source-navigator-ref-by-list.title=Referred by list
+source-navigator-ref-by-list.label=Referred By
+source-navigator-ref-by-tree.title=Referred by tree
+source-navigator-ref-by-tree.label=Referred By
+
+# docs
+#plugin.sn.SourceNavigatorPlugin.docs=index.html
+
+# options
+#options.CtagsInterface.ctags=ctags
+
+# messages
+#messages.CtagsInterface.ctags=Ctags executable path:
