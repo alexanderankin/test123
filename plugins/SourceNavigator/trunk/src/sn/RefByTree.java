@@ -12,11 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.View;
 
@@ -34,14 +37,17 @@ public class RefByTree extends JPanel {
 	private SourceElementTreeNode root;
 	private SourceElementTreeNode lastClicked;
 	
-	static private class SourceElementTreeNode extends DefaultMutableTreeNode {
+	private class SourceElementTreeNode extends DefaultMutableTreeNode {
 		private String desc;
 		private Vector<SourceElement> elements;
 		int index = 0;
+		private boolean childrenCreated = false;
 		public SourceElementTreeNode(SourceElement element) {
 			elements = new Vector<SourceElement>();
-			if (element == null)
+			if (element == null) {	// root node
+				childrenCreated = true;
 				return;
+			}
 			add(element);
 			desc = element.getRepresentativeName();
 			index = 0;
@@ -77,6 +83,20 @@ public class RefByTree extends JPanel {
 		public void reset() {
 			index = 0;
 		}
+		@Override
+		public int getChildCount() {
+			if (! childrenCreated) {
+				childrenCreated = true;
+				find(desc, this);
+			}
+			return super.getChildCount();
+		}
+		@Override
+		public boolean isLeaf() {
+			if (childrenCreated)
+				return (getChildCount() == 0);
+			return false;
+		}
 	}
 	public RefByTree(View view) {
 		super(new BorderLayout());
@@ -84,7 +104,13 @@ public class RefByTree extends JPanel {
 		root = new SourceElementTreeNode(null);
 		model = new DefaultTreeModel(root);
 		tree = new JTree(model);
+		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+		renderer.setOpenIcon(null);
+		renderer.setClosedIcon(null);
+		renderer.setLeafIcon(null);
+		tree.setCellRenderer(renderer);
 		tree.setRootVisible(false);
+		tree.setShowsRootHandles(true);
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
 				SourceElementTreeNode n = (SourceElementTreeNode)
@@ -99,8 +125,13 @@ public class RefByTree extends JPanel {
 		});
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
+				if (tp == null)
+					return;
 				SourceElementTreeNode n = (SourceElementTreeNode)
-					tree.getSelectionPath().getLastPathComponent();
+					tp.getLastPathComponent();
+				if (n == null)
+					return;
 				if (lastClicked != n)
 					return;
 				SourceElement refBy = n.getNext();
@@ -192,14 +223,20 @@ public class RefByTree extends JPanel {
 			return new SourceElement(strings[3], strings[4], strings[5], strings[8],
 				Integer.valueOf(strings[7]), dir);
 		}
-		
 	}
 	private void find(String identifier) {
-		root.removeAllChildren();
-		DbAccess db = new DbAccess("by");
-		DatabaseEntry key = identifierToKey(identifier);
-		DatabaseEntry data = new DatabaseEntry();
-		db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier, root));
-		model.nodeStructureChanged(root);
+		find(identifier, root);
+	}
+	private void find(final String identifier, final SourceElementTreeNode parent) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				parent.removeAllChildren();
+				DbAccess db = new DbAccess("by");
+				DatabaseEntry key = identifierToKey(identifier);
+				DatabaseEntry data = new DatabaseEntry();
+				db.lookup(key, data, new RefByRecordHandler(db.getDir(), identifier, parent));
+				model.nodeStructureChanged(parent);
+			}
+		});
 	}
 }
