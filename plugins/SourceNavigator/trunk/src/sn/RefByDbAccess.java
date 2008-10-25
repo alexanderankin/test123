@@ -13,6 +13,7 @@ public class RefByDbAccess extends DbAccess {
 	static public class RefByRecord {
 		public String type, name, kind, refByType, refByName, refByKind, access, file;
 		public int line;
+		public String sig, refBySig;
 		RefByRecord(DatabaseEntry key, DatabaseEntry data) {
 			String [] s = keyToStrings(key);
 			type = s[0];
@@ -24,6 +25,9 @@ public class RefByDbAccess extends DbAccess {
 			access = s[6];
 			file = s[8];
 			line = Integer.valueOf(s[7]);
+			s = dataToStrings(data);
+			sig = s[0];
+			refBySig = s[1];
 		}
 		public String getIdentifier() {
 			if (type.equals("#"))
@@ -31,7 +35,21 @@ public class RefByDbAccess extends DbAccess {
 			return type + "::" + name;
 		}
 		public SourceElement refBySourceElement(String dir) {
-			return new SourceElement(refByType, refByName, refByKind, file, line, dir);
+			return new SourceElement(refByType, refByName, refByKind, refBySig, file, line, dir);
+		}
+		private String [] dataToStrings(DatabaseEntry data) {
+			byte [] bytes = data.getData();
+			String [] s = new String[2];
+			int i = 1;
+			while (bytes[i] != '}')
+				i++;
+			s[0] = new String(bytes, 1, i - 1);
+			i += 3;
+			int start = i;
+			while (bytes[i] != '}')
+				i++;
+			s[1] = new String(bytes, start, i - start);
+			return s;
 		}
 		private String [] keyToStrings(DatabaseEntry key) {
 			byte [] bytes = key.getData();

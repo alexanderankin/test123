@@ -88,7 +88,7 @@ public class RefByTree extends JPanel {
 		public int getChildCount() {
 			if (! childrenCreated) {
 				childrenCreated = true;
-				find(desc, this);
+				find(elements.get(0).getQualifiedName(), this);
 			}
 			return super.getChildCount();
 		}
@@ -194,13 +194,9 @@ public class RefByTree extends JPanel {
 		public boolean handle(RefByRecord rec) {
 			if (! rec.getIdentifier().equals(identifier))
 				return false;
-			SourceElement element = recordToSourceElement(rec, dir);
+			SourceElement element = rec.refBySourceElement(dir);
 			parent.addChild(element);
 			return true;
-		}
-		private SourceElement recordToSourceElement(RefByRecord rec, String dir) {
-			return new SourceElement(rec.refByType, rec.refByName, rec.refByKind,
-					rec.file, rec.line, dir);
 		}
 	}
 	private void find(String identifier) {
