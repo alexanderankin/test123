@@ -573,8 +573,10 @@ public class SideKickTree extends JPanel
 					// it when the tree is expanded for the current
 					// caret position.
 					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-						searchField.setText("");
-						updateFilter(false);
+						if (! searchField.getText().isEmpty()) {
+							searchField.setText("");
+							updateFilter(false);
+						}
 					}
 					TextArea textArea = view.getTextArea();
 					int caret = textArea.getCaretPosition();
@@ -663,8 +665,10 @@ public class SideKickTree extends JPanel
 
 					}
 					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-						searchField.setText("");
-						updateFilter(false);
+						if (! searchField.getText().isEmpty()) {
+							searchField.setText("");
+							updateFilter(false);
+						}
 					}
 				}
 
@@ -953,8 +957,10 @@ public class SideKickTree extends JPanel
 										asset.getEnd().getOffset()));
 							} else {
 								if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-									searchField.setText("");
-									updateFilter();
+									if (! searchField.getText().isEmpty()) {
+										searchField.setText("");
+										updateFilter();
+									}
 								}
 								textArea.setCaretPosition(asset.getStart().getOffset());
 								textArea.requestFocus();
