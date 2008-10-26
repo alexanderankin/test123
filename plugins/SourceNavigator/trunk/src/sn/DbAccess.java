@@ -62,9 +62,12 @@ public class DbAccess {
 			}
 			db.close();
 		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Database not found at '" + dbPath + "'.");
 		} catch (DatabaseException e1) {
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Message: " + e1.getMessage() + "Stack trace:\n" +
+				e1.getStackTrace());
 		}
 	}
 }
