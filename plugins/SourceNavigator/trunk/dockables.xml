@@ -10,6 +10,28 @@
 	<DOCKABLE NAME="source-navigator-ref-by-tree" MOVABLE="TRUE">
 		new sn.RefByTree(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-class-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "cl", "Name?Line?File", 2, 1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-constant-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "con", "Name?Line?File", 2, 1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-enumeration-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "e", "Name?Line?File", 2, 1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-enumerator-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "ec", "Name?Line?File", 2, 1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-file-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "f", "Name", 0, -1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-function-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "fd", "Name?Line?File", 2, 1);
+	</DOCKABLE>
+	<DOCKABLE NAME="source-navigator-symbol-list" MOVABLE="TRUE">
+		dockable = new sn.DbDockable(view, "fil", "File?Line?Class?Name?Type", 0, 1);
+	</DOCKABLE>
+	
 </DOCKABLES>
 
 <!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->

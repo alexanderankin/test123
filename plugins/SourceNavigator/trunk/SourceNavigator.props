@@ -1,4 +1,4 @@
-plugin.sn.SourceNavigatorPlugin.activate=defer
+plugin.sn.SourceNavigatorPlugin.activate=startup
 
 # general plugin information
 plugin.sn.SourceNavigatorPlugin.name=Source Navigator Plugin
@@ -32,6 +32,29 @@ source-navigator-ref-by-list.title=Referred by list
 source-navigator-ref-by-list.label=Referred By List
 source-navigator-ref-by-tree.title=Referred by tree
 source-navigator-ref-by-tree.label=Referred By Tree
+# ... now to standard table dockables
+source-navigator-table.1=class,Classes,cl,Name?Line?File,2,1
+source-navigator-table.2=constant,Constants,con,Name?Line?File,2,1
+source-navigator-table.3=enumeration,Enumerations,e,Name?Line?File,2,1
+source-navigator-table.4=enumerator,Enumerators,ec,Name?Line?File,2,1
+source-navigator-table.5=file,Files,f,Name,0,-1
+source-navigator-table.6=function-definition,Function Definitions,fd,Name?Line?File,2,1
+source-navigator-table.7=symbol,Symbols,fil,File?Line?Class?Name?Type,0,1
+source-navigator-table.8=friend,Friends,fr,Class?Friend?Line?File,3,2
+source-navigator-table.9=function,Functions,fu,Name?Line?File,2,1
+source-navigator-table.10=variable,Variables,gv,Name?Line?File,2,1
+source-navigator-table.11=inheritance,Inheritances,in,Class?Base Class?Line?File,3,2
+source-navigator-table.12=include,Includes,iu,File?Line?Included From,2,1
+source-navigator-table.13=instance-variable,Instance Variables,iv,Class?Name?Line?File,3,2
+source-navigator-table.14=local-variable,Local Variables,lv,Function?Name?Line?File,3,2
+source-navigator-table.15=macro,Macros,ma,Name?Line?File,2,1
+source-navigator-table.16=method-definition,Method Definitions,md,Class?Name?Line?File,3,2
+source-navigator-table.17=method-implementation,Method Implementations,mi,Class?Name?Line?File,3,2
+source-navigator-table.18=remark,Remarks,rem,File?Line?Class?Function,0,1
+source-navigator-table.19=subroutine,Subroutines,su,Name?Line?File,2,1
+source-navigator-table.20=typedef,Typedefs,t,Name?Line?File,2,1
+source-navigator-table.21=refers-to,Refers To,to,Class?Name?Type?Ref Class?Ref Name?Ref Type?Access?Line?File,8,7
+source-navigator-table.22=union,Unions,un,Name?Line?File,2,1
 
 # docs
 #plugin.sn.SourceNavigatorPlugin.docs=index.html
