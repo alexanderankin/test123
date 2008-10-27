@@ -9,10 +9,12 @@ import org.gjt.sp.jedit.io.VFSManager;
 
 public class SourceNavigatorPlugin extends EditPlugin {
 	
+	private static final String SOURCE_NAVIGATOR_TABLES_MENU = "source-navigator-tables";
 	static public String OPTION_PREFIX = "option.source-navigator.";
 	
 	public void start()
 	{
+		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		for (int i = 1; ; i++) {
 			String s = jEdit.getProperty("source-navigator-table." + i);
 			if (s == null || s.isEmpty())
@@ -43,6 +45,12 @@ public class SourceNavigatorPlugin extends EditPlugin {
 			"new sn.DbDockable(view, \"" + db + "\", \"" + columns + "\", " +
 				fileCol + ", " + lineCol + ");",
 			true, true);
+		String menu = jEdit.getProperty(SOURCE_NAVIGATOR_TABLES_MENU);
+		if (menu == null)
+			menu = dockableName;
+		else
+			menu = menu + "\n\t" + dockableName;
+		jEdit.setProperty(SOURCE_NAVIGATOR_TABLES_MENU, menu);
 	}
 	static public String getOption(String name) {
 		return jEdit.getProperty(OPTION_PREFIX + name);

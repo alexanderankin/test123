@@ -20,7 +20,11 @@ source-navigator-add-file.label=Add tag file...
 
 # menu items
 plugin.sn.SourceNavigatorPlugin.menu=source-navigator-ref-by-list \
-	source-navigator-ref-by-tree
+	source-navigator-ref-by-tree \
+	- \
+	%source-navigator-tables
+
+source-navigator-tables.label=Database tables
 
 # option panes
 plugin.sn.SourceNavigatorPlugin.option-pane=source-navigator-options-main
