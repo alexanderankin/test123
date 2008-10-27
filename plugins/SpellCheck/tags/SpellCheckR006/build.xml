@@ -36,9 +36,9 @@
 	<!-- TODO: make use of recursive dependencies build -->
 	<path id="plugins.class.path">
 		<pathelement location="${install.dir}/ErrorList.jar"/>
-		<pathelement location="${jedit.jars.dir}/CommonControls.jar"/>
-		<pathelement location="${jedit.jars.dir}/kappalayout.jar"/>
-		<pathelement location="${jedit.jars.dir}/Voxspell.jar"/>
+		<pathelement location="${install.dir}/CommonControls.jar"/>
+		<pathelement location="${install.dir}/kappalayout.jar"/>
+		<pathelement location="${install.dir}/Voxspell.jar"/>
 	</path>
 	
 	<path id="hunspell.class.path">
