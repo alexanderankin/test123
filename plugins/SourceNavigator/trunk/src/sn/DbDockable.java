@@ -136,8 +136,9 @@ public class DbDockable extends JPanel {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
+					int sel = table.getSelectedRow();
 					SourceLink link = (SourceLink)
-						model.getSourceLink(table.getSelectedRow());
+						model.getSourceLink(table.convertRowIndexToModel(sel));
 					if (link != null)
 						link.jumpTo(DbDockable.this.view);
 				}
