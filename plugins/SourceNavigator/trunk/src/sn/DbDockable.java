@@ -154,14 +154,14 @@ public class DbDockable extends JPanel {
 		JPanel p = new JPanel(new BorderLayout());
 		JLabel l = new JLabel("Find:");
 		p.add(l, BorderLayout.WEST);
-		final JCheckBox complete = new JCheckBox("Precise");
-		p.add(complete, BorderLayout.EAST);
+		final JCheckBox prefix = new JCheckBox("Prefix");
+		p.add(prefix, BorderLayout.EAST);
 		text = new JTextField(40);
 		text.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					find(text.getText(), complete.isSelected());
+					find(text.getText(), prefix.isSelected());
 			}
 		});
 		p.add(text, BorderLayout.CENTER);
@@ -170,14 +170,14 @@ public class DbDockable extends JPanel {
 	
 	private class DbRecordHandler implements RecordHandler {
 		private String [] keyStrings;
-		private boolean completeKey;
+		private boolean prefix;
 		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
 			String [] s = breakToStrings(key);
 			// Check that the record matches the search key
 			if (keyStrings != null) {
 				for (int i = 0; i < keyStrings.length; i++) {
 					if (! s[i].equals(keyStrings[i])) {
-						if (completeKey || i < keyStrings.length - 1)
+						if (! prefix || i < keyStrings.length - 1)
 							return false;
 						if (! s[i].startsWith(keyStrings[i]))
 							return false;
@@ -187,9 +187,9 @@ public class DbDockable extends JPanel {
 			model.addElement(s);
 			return true;
 		}
-		private void setSearchKey(String key, boolean completeKey) {
+		private void setSearchKey(String key, boolean prefixKey) {
 			keyStrings = key.split(SN_SEP);
-			this.completeKey = completeKey;
+			prefix = prefixKey;
 		}
 		private String [] breakToStrings(DatabaseEntry e) {
 			byte [] bytes = e.getData();
@@ -209,7 +209,7 @@ public class DbDockable extends JPanel {
 		}
 	}
 	
-	private void find(String text, boolean completeKey) {
+	private void find(String text, boolean prefixKey) {
 		model.clear();
 		DbAccess dba = new DbAccess(db);
 		model.setBaseDir(dba.getDir());
@@ -222,14 +222,14 @@ public class DbDockable extends JPanel {
 		} else {
 			// Get records starting with the prefix
 			byte [] bytes = text.getBytes();
-			byte [] keyBytes = new byte[bytes.length + (completeKey ? 1 : 0)];
+			byte [] keyBytes = new byte[bytes.length + (prefixKey ? 1 : 0)];
 			int i;
 			for (i = 0; i < bytes.length; i++)
 				keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
-			if (completeKey)
+			if (prefixKey)
 				keyBytes[i] = 1;
 			key.setData(keyBytes);
-			handler.setSearchKey(text, completeKey);
+			handler.setSearchKey(text, prefixKey);
 			dba.lookup(key, data, handler);
 		}
 		model.fireTableDataChanged();
