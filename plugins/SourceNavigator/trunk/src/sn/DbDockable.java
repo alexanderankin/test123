@@ -5,6 +5,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +25,9 @@ import com.sleepycat.db.DatabaseEntry;
 @SuppressWarnings("serial")
 public class DbDockable extends JPanel {
 
+	private static final char FIND_FIELD_SEP = '?';
+	private static final String SN_SEP = "\\?";
+
 	public class SourceLink {
 		String path;
 		int line;
@@ -40,7 +44,6 @@ public class DbDockable extends JPanel {
 	
 	public class DbTableModel extends AbstractTableModel {
 		
-		private static final String SN_SEP = "\\?";
 		String [] columns;
 		int fileColumn;
 		int lineColumn;
@@ -55,6 +58,9 @@ public class DbDockable extends JPanel {
 		}
 		public void setBaseDir(String baseDir) {
 			this.baseDir = baseDir;
+		}
+		public void clear() {
+			elements.clear();
 		}
 		@Override
 		public int getColumnCount() {
@@ -148,26 +154,42 @@ public class DbDockable extends JPanel {
 		JPanel p = new JPanel(new BorderLayout());
 		JLabel l = new JLabel("Find:");
 		p.add(l, BorderLayout.WEST);
+		final JCheckBox complete = new JCheckBox("Precise");
+		p.add(complete, BorderLayout.EAST);
 		text = new JTextField(40);
 		text.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					find(text.getText());
-				else
-					super.keyReleased(e);
+					find(text.getText(), complete.isSelected());
 			}
 		});
 		p.add(text, BorderLayout.CENTER);
 		add(p, BorderLayout.NORTH);
-		find(null);
 	}
 	
 	private class DbRecordHandler implements RecordHandler {
+		private String [] keyStrings;
+		private boolean completeKey;
 		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
 			String [] s = breakToStrings(key);
+			// Check that the record matches the search key
+			if (keyStrings != null) {
+				for (int i = 0; i < keyStrings.length; i++) {
+					if (! s[i].equals(keyStrings[i])) {
+						if (completeKey || i < keyStrings.length - 1)
+							return false;
+						if (! s[i].startsWith(keyStrings[i]))
+							return false;
+					}
+				}
+			}
 			model.addElement(s);
 			return true;
+		}
+		private void setSearchKey(String key, boolean completeKey) {
+			keyStrings = key.split(SN_SEP);
+			this.completeKey = completeKey;
 		}
 		private String [] breakToStrings(DatabaseEntry e) {
 			byte [] bytes = e.getData();
@@ -187,15 +209,29 @@ public class DbDockable extends JPanel {
 		}
 	}
 	
-	private void find(String text) {
+	private void find(String text, boolean completeKey) {
+		model.clear();
 		DbAccess dba = new DbAccess(db);
 		model.setBaseDir(dba.getDir());
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
-		RecordHandler handler = new DbRecordHandler();
+		DbRecordHandler handler = new DbRecordHandler();
 		if (text == null || text.length() == 0) {
 			// Get all records in the table
 			dba.lookup(key, data, handler);
+		} else {
+			// Get records starting with the prefix
+			byte [] bytes = text.getBytes();
+			byte [] keyBytes = new byte[bytes.length + (completeKey ? 1 : 0)];
+			int i;
+			for (i = 0; i < bytes.length; i++)
+				keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
+			if (completeKey)
+				keyBytes[i] = 1;
+			key.setData(keyBytes);
+			handler.setSearchKey(text, completeKey);
+			dba.lookup(key, data, handler);
 		}
+		model.fireTableDataChanged();
 	}
 }
