@@ -69,8 +69,7 @@ public class VoxSpellPainter extends TextAreaExtension
         if (b) {
             bg = jEdit.getColorProperty("options.voxspellcheck.custom_color").getRGB();
         } else {
-            s = jEdit.getProperty("view.status.background");
-            bg = Integer.decode(s);
+            bg = jEdit.getColorProperty("view.bgColor").getRGB();
             // Default underline color is the inverse of the bg color
             bg ^= ~1;
         }
