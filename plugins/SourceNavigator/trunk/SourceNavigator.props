@@ -36,6 +36,8 @@ source-navigator-ref-by-list.title=Referred by list
 source-navigator-ref-by-list.label=Referred By List
 source-navigator-ref-by-tree.title=Referred by tree
 source-navigator-ref-by-tree.label=Referred By Tree
+source-navigator-any-database-lookup.title=Database Lookup
+source-navigator-any-database-lookup.label=Database Lookup
 # ... now to standard table dockables
 source-navigator-table.1=class,Classes,cl,Name?Line?File,2,1
 source-navigator-table.2=constant,Constants,con,Name?Line?File,2,1
@@ -59,6 +61,7 @@ source-navigator-table.19=subroutine,Subroutines,su,Name?Line?File,2,1
 source-navigator-table.20=typedef,Typedefs,t,Name?Line?File,2,1
 source-navigator-table.21=refers-to,Refers To,to,Class?Name?Type?Ref Class?Ref Name?Ref Type?Access?Line?File,8,7
 source-navigator-table.22=union,Unions,un,Name?Line?File,2,1
+source-navigator-table.23=referred-by,Referred By,by,Ref Class?Ref Name?Ref Type?Class?Name?Type?Access?Line?File,8,7
 
 # docs
 #plugin.sn.SourceNavigatorPlugin.docs=index.html

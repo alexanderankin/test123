@@ -1,5 +1,9 @@
 package sn;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
@@ -9,41 +13,69 @@ import org.gjt.sp.jedit.io.VFSManager;
 
 public class SourceNavigatorPlugin extends EditPlugin {
 	
-	private static final String SOURCE_NAVIGATOR_TABLES_MENU = "source-navigator-tables";
+	static private final String SOURCE_NAVIGATOR_TABLES_MENU = "source-navigator-tables";
 	static public String OPTION_PREFIX = "option.source-navigator.";
+	static private Vector<DbDescriptor> dbDescriptors;
 	
 	public void start()
 	{
 		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
+		dbDescriptors = new Vector<DbDescriptor>();
 		for (int i = 1; ; i++) {
 			String s = jEdit.getProperty("source-navigator-table." + i);
 			if (s == null || s.isEmpty())
 				break;
-			createDockable(s);
+			DbDescriptor desc = createDockable(s);
+			if (desc != null)
+				dbDescriptors.add(desc);
 		}
+		Collections.sort(dbDescriptors, new Comparator<DbDescriptor>() {
+			public int compare(DbDescriptor d1, DbDescriptor d2) {
+				return d1.label.compareTo(d2.label);
+			}
+		});
 	}
 
 	public void stop()
 	{
 	}
 
-	private void createDockable(String s) {
+	public static Vector<DbDescriptor> getDbDescriptors() {
+		return dbDescriptors;
+	}
+	
+	public static class DbDescriptor {
+		public String name, label, db, columns;
+		public int fileCol, lineCol;
+		public DbDescriptor() {
+			fileCol = lineCol = -1;
+		}
+		public String toString() {
+			return label;
+		}
+	}
+	
+	private DbDescriptor createDockable(String s) {
 		String [] parts = s.split(",");
 		if (parts.length != 6)
-			return;
-		String name = parts[0];
-		String label = parts[1];
-		String db = parts[2];
-		String columns = parts[3];
-		String fileCol = parts[4];
-		String lineCol = parts[5];
-		String dockableName = "source-navigator-" + name + "-list";
-		jEdit.setProperty(dockableName + ".label", label);
-		jEdit.setProperty(dockableName + ".title", label);
+			return null;
+		DbDescriptor desc = new DbDescriptor();
+		desc.name = parts[0];
+		desc.label = parts[1];
+		desc.db = parts[2];
+		desc.columns = parts[3];
+		try {
+			desc.fileCol = Integer.valueOf(parts[4]);
+			desc.lineCol = Integer.valueOf(parts[5]);
+		} catch (Exception e) {
+		}
+		String dockableName = "source-navigator-" + desc.name + "-list";
+		jEdit.setProperty(dockableName + ".label", desc.label);
+		jEdit.setProperty(dockableName + ".title", desc.label);
 		DockableWindowFactory.getInstance().registerDockableWindow(
 			getPluginJAR(), dockableName,
-			"new sn.DbDockable(view, \"" + db + "\", \"" + columns + "\", " +
-				fileCol + ", " + lineCol + ");",
+			"new sn.DbDockable(view, \"" + desc.db + "\", \"" +
+			desc.columns + "\", " + desc.fileCol + ", " + desc.lineCol + ");",
 			true, true);
 		String menu = jEdit.getProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		if (menu == null)
@@ -51,6 +83,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		else
 			menu = menu + "\n\t" + dockableName;
 		jEdit.setProperty(SOURCE_NAVIGATOR_TABLES_MENU, menu);
+		return desc;
 	}
 	static public String getOption(String name) {
 		return jEdit.getProperty(OPTION_PREFIX + name);
