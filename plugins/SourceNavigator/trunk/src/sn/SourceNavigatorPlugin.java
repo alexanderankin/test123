@@ -22,12 +22,13 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		dbDescriptors = new Vector<DbDescriptor>();
 		for (int i = 1; ; i++) {
-			String s = jEdit.getProperty("source-navigator-table." + i);
+			String base = "source-navigator-table." + i + ".";
+			String s = jEdit.getProperty(base + "name");
 			if (s == null || s.isEmpty())
 				break;
-			DbDescriptor desc = createDockable(s);
-			if (desc != null)
-				dbDescriptors.add(desc);
+			DbDescriptor desc = new DbDescriptor(base);
+			dbDescriptors.add(desc);
+			createDockable(desc);
 		}
 		Collections.sort(dbDescriptors, new Comparator<DbDescriptor>() {
 			public int compare(DbDescriptor d1, DbDescriptor d2) {
@@ -47,6 +48,18 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	public static class DbDescriptor {
 		public String name, label, db, columns;
 		public int fileCol, lineCol;
+		public DbDescriptor(String base) {
+			super();
+			name = jEdit.getProperty(base + "name");
+			label = jEdit.getProperty(base + "label");
+			db = jEdit.getProperty(base + "db");
+			columns = jEdit.getProperty(base + "columns");
+			try {
+				fileCol = Integer.valueOf(jEdit.getProperty(base + "file-col"));
+				lineCol = Integer.valueOf(jEdit.getProperty(base + "line-col"));
+			} catch (Exception e) {
+			}
+		}
 		public DbDescriptor() {
 			fileCol = lineCol = -1;
 		}
@@ -55,20 +68,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		}
 	}
 	
-	private DbDescriptor createDockable(String s) {
-		String [] parts = s.split(",");
-		if (parts.length != 6)
-			return null;
-		DbDescriptor desc = new DbDescriptor();
-		desc.name = parts[0];
-		desc.label = parts[1];
-		desc.db = parts[2];
-		desc.columns = parts[3];
-		try {
-			desc.fileCol = Integer.valueOf(parts[4]);
-			desc.lineCol = Integer.valueOf(parts[5]);
-		} catch (Exception e) {
-		}
+	private void createDockable(DbDescriptor desc) {
 		String dockableName = "source-navigator-" + desc.name + "-list";
 		jEdit.setProperty(dockableName + ".label", desc.label);
 		jEdit.setProperty(dockableName + ".title", desc.label);
@@ -83,7 +83,6 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		else
 			menu = menu + "\n\t" + dockableName;
 		jEdit.setProperty(SOURCE_NAVIGATOR_TABLES_MENU, menu);
-		return desc;
 	}
 	static public String getOption(String name) {
 		return jEdit.getProperty(OPTION_PREFIX + name);
