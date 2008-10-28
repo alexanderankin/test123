@@ -273,8 +273,6 @@ public class SideKickTree extends JPanel
 		}
 
 		update();
-		searchField.setRequestFocusEnabled(true);
-		searchField.requestFocusInWindow();
 	} //}}}
 
 	//{{{ focusOnDefaultComponent() method
@@ -527,6 +525,7 @@ public class SideKickTree extends JPanel
 	void addParserPanel(SideKickParser parser)
 	{
 		JPanel newParserPanel = parser.getPanel();
+		boolean returnFocusToSearchField = searchField.hasFocus();
 		if (newParserPanel != parserPanel)
 		{
 			if (parserPanel != null)
@@ -540,7 +539,8 @@ public class SideKickTree extends JPanel
 				parserPanel = newParserPanel;
 			}
 		}
-		focusOnDefaultComponent();
+		if (returnFocusToSearchField)
+			focusOnDefaultComponent();
 	} // }}}
 
 	//{{{ removeParserPanel() method
