@@ -61,6 +61,7 @@ public class AllDbDockable extends JPanel {
 		}
 		add(current, BorderLayout.CENTER);
 		validate();
+		repaint();
 	}
 			
 }
