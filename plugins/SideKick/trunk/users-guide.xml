@@ -367,6 +367,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <listitem><para>
    Rearranged SideKick toolbars in dockable to add a text field for the "Filter" and a "clear" button to remove the current filter.  Typing works as it did previously, that is, you don't have to click into the text field to begin entering a filter. (danson)
  </para></listitem>
+ <listitem><para> Applied patch from bug#2134884 to resolve focus issues with filter textfield (Matthew Gilbert). </para></listitem>
  </itemizedlist>
  </listitem>
 
