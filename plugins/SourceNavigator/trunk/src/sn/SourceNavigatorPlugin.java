@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
+import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -15,8 +17,10 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	
 	static private final String SOURCE_NAVIGATOR_TABLES_MENU = "source-navigator-tables";
 	static public String OPTION_PREFIX = "option.source-navigator.";
+	static public final String COMPLETION_ACTION_SET = "Plugin: Source Navigator - Completion";
+	static public final String JUMPING_ACTION_SET = "Plugin: Source Navigator - Jumping";
 	static private Vector<DbDescriptor> dbDescriptors;
-	
+
 	public void start()
 	{
 		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
@@ -35,6 +39,43 @@ public class SourceNavigatorPlugin extends EditPlugin {
 				return d1.label.compareTo(d2.label);
 			}
 		});
+		createActions();
+	}
+
+	static private class CompleteAction extends EditAction {
+		private static final String COMPLETE_ACTION_PREFIX = "source-navigator-complete-";
+		public CompleteAction(DbDescriptor desc) {
+			super(COMPLETE_ACTION_PREFIX + desc.name);
+			jEdit.setTemporaryProperty(
+				COMPLETE_ACTION_PREFIX + desc.name + ".label", "Complete " + desc.label);
+		}
+		@Override
+		public void invoke(View view) {
+		}
+	}
+	static private class JumpAction extends EditAction {
+		private static final String JUMP_ACTION_PREFIX = "source-navigator-jump-";
+		public JumpAction(DbDescriptor desc) {
+			super(JUMP_ACTION_PREFIX + desc.name);
+			jEdit.setTemporaryProperty(
+					JUMP_ACTION_PREFIX + desc.name + ".label", "Jump to " + desc.label);
+		}
+		@Override
+		public void invoke(View view) {
+		}
+	}
+	
+	private void createActions() {
+		ActionSet actions = new ActionSet(COMPLETION_ACTION_SET);
+		for (DbDescriptor desc: dbDescriptors)
+			actions.addAction(new CompleteAction(desc));
+		actions.initKeyBindings();
+		jEdit.addActionSet(actions);
+		actions = new ActionSet(JUMPING_ACTION_SET);
+		for (DbDescriptor desc: dbDescriptors)
+			actions.addAction(new JumpAction(desc));
+		actions.initKeyBindings();
+		jEdit.addActionSet(actions);
 	}
 
 	public void stop()
