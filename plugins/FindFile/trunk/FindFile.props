@@ -9,7 +9,7 @@ plugin.findfile.FindFilePlugin.depend.1=jedit 04.03.15.00
 plugin.findfile.FindFilePlugin.depend.2=optional plugin Archive 0.4.3
 plugin.findfile.FindFilePlugin.docs=docs/about.html
 plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
-plugin.findfile.FindFilePlugin.description=This plugin allows you to search with in a filesystem for any files that match a given filter.
+plugin.findfile.FindFilePlugin.description=This plugin allows you to search within a filesystem for any files that match a given filter.
 
 plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
 
