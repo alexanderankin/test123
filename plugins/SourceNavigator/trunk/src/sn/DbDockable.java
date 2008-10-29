@@ -15,7 +15,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 
 import sn.DbAccess.DbRecord;
@@ -24,42 +23,14 @@ import sn.SourceNavigatorPlugin.DbDescriptor;
 @SuppressWarnings("serial")
 public class DbDockable extends JPanel {
 
-	public class SourceLink {
-		String path;
-		int line;
-		int offset;
-		public SourceLink(String path, int line, int offset) {
-			this.path = path;
-			this.line = line;
-			this.offset = offset;
-		}
-		public void jumpTo(View view) {
-			SourceNavigatorPlugin.jumpTo(view, path, line, offset);
-		}
-	}
-	
 	public class DbTableModel extends AbstractTableModel {
 		
 		DbDescriptor desc;
-		int fileColumn;
-		int lineColumn;
-		String baseDir;
 		Vector<DbRecord> elements;
 		
 		public DbTableModel(DbDescriptor desc) {
 			this.desc = desc;
-			fileColumn = lineColumn = -1;	// None by default
-			for (int i = 0; i < desc.getColumnCount(); i++) {
-				String columnName = desc.getColumn(i);
-				if (columnName.equals("File"))
-					fileColumn = i;
-				else if (columnName.equals("Line"))
-					lineColumn = i;
-			}
 			elements = new Vector<DbRecord>();
-		}
-		public void setBaseDir(String baseDir) {
-			this.baseDir = baseDir;
 		}
 		public void clear() {
 			elements.clear();
@@ -80,28 +51,7 @@ public class DbDockable extends JPanel {
 			return elements.get(rowIndex).getColumn(columnIndex);
 		}
 		public SourceLink getSourceLink(int selectedRow) {
-			if (fileColumn < 0)
-				return null;
-			String file = (String) getValueAt(selectedRow, fileColumn);
-			if (file == null)
-				return null;
-			int line = 0;
-			int offset = 0;
-			if (lineColumn >= 0) {
-				String lineStr = (String) getValueAt(selectedRow, lineColumn);
-				if (lineStr == null)
-					return null;
-				try {
-					String [] pos = lineStr.split("\\.");
-					line = Integer.valueOf(pos[0]);
-					offset = (pos.length > 1) ? Integer.valueOf(pos[1]) : 0;
-				} catch (Exception e) {
-					return null;
-				}
-			}
-			if (! MiscUtilities.isAbsolutePath(file))
-				file = baseDir + "/" + file;
-			return new SourceLink(file, line, offset);
+			return elements.get(selectedRow).getSourceLink();
 		}
 		public void setElements(Vector<DbRecord> elements) {
 			this.elements = elements;
@@ -164,8 +114,6 @@ public class DbDockable extends JPanel {
 	
 	private void find(String text, boolean prefixKey) {
 		model.clear();
-		DbAccess dba = new DbAccess(dbDescriptor.db);
-		model.setBaseDir(dba.getDir());
 		Vector<DbRecord> records = DbAccess.lookup(dbDescriptor, text, prefixKey);
 		model.setElements(records);
 		model.fireTableDataChanged();

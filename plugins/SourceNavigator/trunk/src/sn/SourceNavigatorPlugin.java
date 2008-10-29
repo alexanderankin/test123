@@ -3,6 +3,8 @@ package sn;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
@@ -12,6 +14,9 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import sn.DbAccess.DbRecord;
 
 public class SourceNavigatorPlugin extends EditPlugin {
 	
@@ -55,13 +60,19 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	}
 	static private class JumpAction extends EditAction {
 		private static final String JUMP_ACTION_PREFIX = "source-navigator-jump-";
+		private DbDescriptor desc;
 		public JumpAction(DbDescriptor desc) {
 			super(JUMP_ACTION_PREFIX + desc.name);
 			jEdit.setTemporaryProperty(
 					JUMP_ACTION_PREFIX + desc.name + ".label", "Jump to " + desc.label);
+			this.desc = desc;
 		}
 		@Override
 		public void invoke(View view) {
+			String tag = getTagFromView(view);
+			Vector<DbRecord> tags = DbAccess.lookup(desc, tag, false);
+			if (tags != null && tags.size() > 0)
+				tags.get(0).getSourceLink().jumpTo(view);
 		}
 	}
 	
@@ -96,12 +107,21 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		static private final String SN_SEP = "\\?";
 		public String name, label, db, columns;
 		public String [] columnNames;
+		int fileColumn, lineColumn;
 		public DbDescriptor(String base) {
 			name = jEdit.getProperty(base + "name");
 			label = jEdit.getProperty(base + "label");
 			db = jEdit.getProperty(base + "db");
 			columns = jEdit.getProperty(base + "columns");
 			columnNames = columns.split(SN_SEP);
+			fileColumn = lineColumn = -1;	// None by default
+			for (int i = 0; i < getColumnCount(); i++) {
+				String columnName = getColumn(i);
+				if (columnName.equals("File"))
+					fileColumn = i;
+				else if (columnName.equals("Line"))
+					lineColumn = i;
+			}
 		}
 		public int getColumnCount() {
 			return columnNames.length;
@@ -163,4 +183,34 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		});
 	}
 
+	// Returns the tag to jump to: The selected tag or the one at the caret.
+	static public String getTagFromView(View view) {
+		String tag = view.getTextArea().getSelectedText();
+		if (tag == null || tag.length() == 0)
+			tag = getTagAtCaret(view);
+		return tag;
+	}
+	
+	// Returns the tag at the caret.
+	static private String getTagAtCaret(View view) {
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine();
+		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile("\\w+");
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		String selected = "";
+		while (end <= index) {
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if (start > index || selected.length() == 0)
+			return null;
+		return selected;
+	}
 }
