@@ -22,6 +22,7 @@ source-navigator-add-file.label=Add tag file...
 plugin.sn.SourceNavigatorPlugin.menu=source-navigator-ref-by-list \
 	source-navigator-ref-by-tree \
 	- \
+	source-navigator-any-database-lookup \
 	%source-navigator-tables
 
 source-navigator-tables.label=Database tables
