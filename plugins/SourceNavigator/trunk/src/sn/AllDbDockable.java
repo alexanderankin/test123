@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -22,6 +23,7 @@ public class AllDbDockable extends JPanel {
 	private View view;
 	private JPanel empty;
 	
+	@SuppressWarnings("unchecked")
 	public AllDbDockable(View view) {
 		super(new BorderLayout());
 		this.view = view;
@@ -30,13 +32,16 @@ public class AllDbDockable extends JPanel {
 		add(p, BorderLayout.NORTH);
 		JLabel l = new JLabel("Select database:");
 		p.add(l, BorderLayout.WEST);
-		dbSelection = new JComboBox(SourceNavigatorPlugin.getDbDescriptors());
+		Vector<DbDescriptor> dbDescriptors = (Vector<DbDescriptor>)
+			SourceNavigatorPlugin.getDbDescriptors().clone();
+		dbSelection = new JComboBox(dbDescriptors);
 		dbSelection.insertItemAt("None", 0);
 		dbSelection.setSelectedIndex(0);
 		p.add(dbSelection, BorderLayout.CENTER);
 		dbSelection.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				setDatabase(e.getItem());
+				if (e.getStateChange() == ItemEvent.SELECTED)
+					setDatabase(e.getItem());
 			}
 		});
 	}
@@ -49,7 +54,7 @@ public class AllDbDockable extends JPanel {
 			DbDescriptor desc = (DbDescriptor) item;
 			current = dockables.get(item);
 			if (current == null) {
-				DbDockable dockable = new DbDockable(view, desc.db, desc.columns);
+				DbDockable dockable = new DbDockable(view, desc.db);
 				dockables.put(desc, dockable);
 				current = dockable;
 			}

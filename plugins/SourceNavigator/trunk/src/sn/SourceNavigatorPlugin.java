@@ -44,14 +44,31 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	public static Vector<DbDescriptor> getDbDescriptors() {
 		return dbDescriptors;
 	}
+	public static DbDescriptor getDbDescriptor(String db) {
+		for (DbDescriptor desc: dbDescriptors)
+			if (desc.db.equals(db))
+				return desc;
+		return null;
+	}
 	
 	public static class DbDescriptor {
+		static private final String SN_SEP = "\\?";
 		public String name, label, db, columns;
+		public String [] columnNames;
 		public DbDescriptor(String base) {
 			name = jEdit.getProperty(base + "name");
 			label = jEdit.getProperty(base + "label");
 			db = jEdit.getProperty(base + "db");
-			columns = jEdit.getProperty(base + "columns"); 
+			columns = jEdit.getProperty(base + "columns");
+			columnNames = columns.split(SN_SEP);
+		}
+		public int getColumnCount() {
+			return columnNames.length;
+		}
+		public String getColumn(int index) {
+			if (index < 0 || index >= columnNames.length)
+				return null;
+			return columnNames[index];
 		}
 		public String toString() {
 			return label;

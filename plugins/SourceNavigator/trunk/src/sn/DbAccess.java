@@ -1,10 +1,13 @@
 package sn;
 
 import java.io.FileNotFoundException;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
+
+import sn.SourceNavigatorPlugin.DbDescriptor;
 
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -16,6 +19,8 @@ import com.sleepycat.db.OperationStatus;
 
 public class DbAccess {
 	
+	private static final char FIND_FIELD_SEP = '?';
+	private static final String SN_SEP = "\\?";
 	private String dir;
 	private String proj;
 	private String db;
@@ -33,6 +38,9 @@ public class DbAccess {
 	public String getDir() {
 		return dir;
 	}
+	
+	/* Basic record lookup */
+	
 	public interface RecordHandler {
 		// Returns true to continue record iteration, false to abort it
 		boolean handle(DatabaseEntry key, DatabaseEntry data);
@@ -69,5 +77,111 @@ public class DbAccess {
 				"Message: " + e1.getMessage() + "Stack trace:\n" +
 				e1.getStackTrace());
 		}
+	}
+	
+	/* Table-specific record lookup */
+	static public class DbRecord {
+		private DbDescriptor desc;
+		private String [] key;
+		public DbRecord(DbDescriptor desc, String [] key) {
+			this.desc = desc;
+			this.key = key;
+		}
+		private int getColumnIndex(String columnName) {
+			for (int i = 0; i < desc.columnNames.length; i++)
+				if (desc.columnNames[i].equals(columnName))
+					return i;
+			return (-1);
+		}
+		public String getColumn(String columnName) {
+			return getColumn(getColumnIndex(columnName));
+		}
+		public String getColumn(int columnIndex) {
+			if (columnIndex < 0 || columnIndex >= key.length)
+				return null;
+			return key[columnIndex];
+		}
+	}
+	static private class DbRecordCollector implements RecordHandler {
+		private DbDescriptor desc;
+		private String [] keyStrings;
+		private boolean prefix;
+		private Vector<DbRecord> records;
+		public DbRecordCollector(DbDescriptor desc) {
+			this.desc = desc;
+			records = new Vector<DbRecord>();
+		}
+		public Vector<DbRecord> getCollectedRecords() {
+			return records;
+		}
+		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
+			String [] s = breakToStrings(key);
+			// Check that the record matches the search key
+			if (keyStrings != null) {
+				for (int i = 0; i < keyStrings.length; i++) {
+					if (! s[i].equals(keyStrings[i])) {
+						if (! prefix || i < keyStrings.length - 1)
+							return false;
+						if (! s[i].startsWith(keyStrings[i]))
+							return false;
+					}
+				}
+			}
+			records.add(new DbRecord(desc, s));
+			return true;
+		}
+		private void setSearchKey(String key, boolean prefixKey) {
+			keyStrings = key.split(SN_SEP);
+			prefix = prefixKey;
+		}
+		private String [] breakToStrings(DatabaseEntry e) {
+			byte [] bytes = e.getData();
+			int nStrings = desc.getColumnCount();
+			String [] strings = new String[nStrings];
+			int start = 0;
+			int index = 0;
+			for (int i = 0; i < bytes.length && index < nStrings; i++) {
+				if (bytes[i] <= 1) {
+					strings[index++] = new String(bytes, start, i - start);
+					start = i + 1;
+				}
+			}
+			if (index < nStrings)
+				strings[index] = new String(bytes, start, bytes.length - start - 1);
+			return strings;
+		}
+	}
+	static private DatabaseEntry textToKey(String text, boolean prefix) {
+		// If 'prefix' is set, get records starting with 'text'.
+		// Otherwise, get records matching 'text'.
+		DatabaseEntry key = new DatabaseEntry();
+		byte [] bytes = text.getBytes();
+		byte [] keyBytes = new byte[bytes.length + (prefix ? 1 : 0)];
+		int i;
+		for (i = 0; i < bytes.length; i++)
+			keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
+		if (prefix)
+			keyBytes[i] = 1;
+		key.setData(keyBytes);
+		return key;
+		
+	}
+	static public Vector<DbRecord> lookup(DbDescriptor desc, String text,
+		boolean prefixKey)
+	{
+		DbAccess dba = new DbAccess(desc.db);
+		DatabaseEntry data = new DatabaseEntry();
+		DbRecordCollector handler = new DbRecordCollector(desc);
+		if (text == null || text.length() == 0) {
+			// Get all records in the table
+			DatabaseEntry key = new DatabaseEntry();
+			dba.lookup(key, data, handler);
+		} else {
+			// Get records (possibly starting with text as prefix)
+			DatabaseEntry key = textToKey(text, prefixKey);
+			handler.setSearchKey(text, prefixKey);
+			dba.lookup(key, data, handler);
+		}
+		return handler.getCollectedRecords();
 	}
 }
