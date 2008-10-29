@@ -16,7 +16,6 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import sn.DbAccess.DbRecord;
 
 public class SourceNavigatorPlugin extends EditPlugin {
 	
@@ -103,47 +102,13 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		return null;
 	}
 	
-	public static class DbDescriptor {
-		static private final String SN_SEP = "\\?";
-		public String name, label, db, columns;
-		public String [] columnNames;
-		int fileColumn, lineColumn;
-		public DbDescriptor(String base) {
-			name = jEdit.getProperty(base + "name");
-			label = jEdit.getProperty(base + "label");
-			db = jEdit.getProperty(base + "db");
-			columns = jEdit.getProperty(base + "columns");
-			columnNames = columns.split(SN_SEP);
-			fileColumn = lineColumn = -1;	// None by default
-			for (int i = 0; i < getColumnCount(); i++) {
-				String columnName = getColumn(i);
-				if (columnName.equals("File"))
-					fileColumn = i;
-				else if (columnName.equals("Line"))
-					lineColumn = i;
-			}
-		}
-		public int getColumnCount() {
-			return columnNames.length;
-		}
-		public String getColumn(int index) {
-			if (index < 0 || index >= columnNames.length)
-				return null;
-			return columnNames[index];
-		}
-		public String toString() {
-			return label;
-		}
-	}
-	
 	private void createDockable(DbDescriptor desc) {
 		String dockableName = "source-navigator-" + desc.name + "-list";
 		jEdit.setProperty(dockableName + ".label", desc.label);
 		jEdit.setProperty(dockableName + ".title", desc.label);
 		DockableWindowFactory.getInstance().registerDockableWindow(
 			getPluginJAR(), dockableName,
-			"new sn.DbDockable(view, \"" + desc.db + "\", \"" +
-				desc.columns + ");",
+			"new sn.DbDockable(view, \"" + desc.db + "\");",
 			true, true);
 		String menu = jEdit.getProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		if (menu == null)

@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 
-import sn.SourceNavigatorPlugin.DbDescriptor;
 
 @SuppressWarnings("serial")
 public class AllDbDockable extends JPanel {

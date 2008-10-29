@@ -17,8 +17,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.gjt.sp.jedit.View;
 
-import sn.DbAccess.DbRecord;
-import sn.SourceNavigatorPlugin.DbDescriptor;
 
 @SuppressWarnings("serial")
 public class DbDockable extends JPanel {
