@@ -277,9 +277,11 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				updateCaretListenerState();
 		} else if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate msg = (EditPaneUpdate) message;
-			JEditTextArea textArea = msg.getEditPane().getTextArea(); 
-			if (tracking.contains(textArea))
-				setCaretTracking(textArea, false);
+			if (msg.getWhat() == EditPaneUpdate.DESTROYED) {
+				JEditTextArea textArea = msg.getEditPane().getTextArea(); 
+				if (tracking.contains(textArea))
+					setCaretTracking(textArea, false);
+			}
 		}
 	}
 
