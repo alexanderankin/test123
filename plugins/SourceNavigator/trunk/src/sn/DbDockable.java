@@ -18,15 +18,11 @@ import javax.swing.table.AbstractTableModel;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 
-import sn.DbAccess.RecordHandler;
-
-import com.sleepycat.db.DatabaseEntry;
+import sn.DbAccess.DbRecord;
+import sn.SourceNavigatorPlugin.DbDescriptor;
 
 @SuppressWarnings("serial")
 public class DbDockable extends JPanel {
-
-	private static final char FIND_FIELD_SEP = '?';
-	private static final String SN_SEP = "\\?";
 
 	public class SourceLink {
 		String path;
@@ -44,22 +40,23 @@ public class DbDockable extends JPanel {
 	
 	public class DbTableModel extends AbstractTableModel {
 		
-		String [] columns;
+		DbDescriptor desc;
 		int fileColumn;
 		int lineColumn;
 		String baseDir;
-		Vector<String []> elements;
+		Vector<DbRecord> elements;
 		
-		public DbTableModel(String columnsString) {
-			columns = columnsString.split(SN_SEP);
+		public DbTableModel(DbDescriptor desc) {
+			this.desc = desc;
 			fileColumn = lineColumn = -1;	// None by default
-			for (int i = 0; i < columns.length; i++) {
-				if (columns[i].equals("File"))
+			for (int i = 0; i < desc.getColumnCount(); i++) {
+				String columnName = desc.getColumn(i);
+				if (columnName.equals("File"))
 					fileColumn = i;
-				else if (columns[i].equals("Line"))
+				else if (columnName.equals("Line"))
 					lineColumn = i;
 			}
-			elements = new Vector<String []>();
+			elements = new Vector<DbRecord>();
 		}
 		public void setBaseDir(String baseDir) {
 			this.baseDir = baseDir;
@@ -69,7 +66,7 @@ public class DbDockable extends JPanel {
 		}
 		@Override
 		public int getColumnCount() {
-			return columns.length;
+			return desc.getColumnCount();
 		}
 		@Override
 		public int getRowCount() {
@@ -80,7 +77,7 @@ public class DbDockable extends JPanel {
 			if (rowIndex < 0 || rowIndex >= getRowCount() ||
 				columnIndex < 0 || columnIndex >= getColumnCount())
 				return null;
-			return elements.get(rowIndex)[columnIndex];
+			return elements.get(rowIndex).getColumn(columnIndex);
 		}
 		public SourceLink getSourceLink(int selectedRow) {
 			if (fileColumn < 0)
@@ -106,22 +103,12 @@ public class DbDockable extends JPanel {
 				file = baseDir + "/" + file;
 			return new SourceLink(file, line, offset);
 		}
-		public void addElement(String [] columns) {
-			// Pad with empty strings if there's a need
-			if (columns.length < getColumnCount()) {
-				String [] newColumns = new String[getColumnCount()];
-				int i;
-				for (i = 0; i < columns.length; i++)
-					newColumns[i] = columns[i];
-				for (; i < getColumnCount(); i++)
-					newColumns[i] = "";
-				columns = newColumns;
-			}
-			elements.add(columns);
+		public void setElements(Vector<DbRecord> elements) {
+			this.elements = elements;
 		}
 		@Override
 		public String getColumnName(int column) {
-			return columns[column];
+			return desc.getColumn(column);
 		}
 	}
 	
@@ -129,14 +116,15 @@ public class DbDockable extends JPanel {
 	private DbTableModel model;
 	private JTable table;
 	private JTextField text;
-	private String db;
+	private DbDescriptor dbDescriptor;
 	
-	public DbDockable(View view, String db, String columns)
+	public DbDockable(View view, String db)
 	{
 		super(new BorderLayout());
 		this.view = view;
-		this.db = db;
-		model = new DbTableModel(columns);
+		dbDescriptor = SourceNavigatorPlugin.getDbDescriptor(db);
+		System.err.println("Desc:" + dbDescriptor.name + " label:" + dbDescriptor.label);
+		model = new DbTableModel(dbDescriptor);
 		table = new JTable();
 		table.setModel(model);
 		table.setAutoCreateRowSorter(true);
@@ -174,70 +162,12 @@ public class DbDockable extends JPanel {
 		add(p, BorderLayout.NORTH);
 	}
 	
-	private class DbRecordHandler implements RecordHandler {
-		private String [] keyStrings;
-		private boolean prefix;
-		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
-			String [] s = breakToStrings(key);
-			// Check that the record matches the search key
-			if (keyStrings != null) {
-				for (int i = 0; i < keyStrings.length; i++) {
-					if (! s[i].equals(keyStrings[i])) {
-						if (! prefix || i < keyStrings.length - 1)
-							return false;
-						if (! s[i].startsWith(keyStrings[i]))
-							return false;
-					}
-				}
-			}
-			model.addElement(s);
-			return true;
-		}
-		private void setSearchKey(String key, boolean prefixKey) {
-			keyStrings = key.split(SN_SEP);
-			prefix = prefixKey;
-		}
-		private String [] breakToStrings(DatabaseEntry e) {
-			byte [] bytes = e.getData();
-			int nStrings = model.getColumnCount();
-			String [] strings = new String[nStrings];
-			int start = 0;
-			int index = 0;
-			for (int i = 0; i < bytes.length && index < nStrings; i++) {
-				if (bytes[i] <= 1) {
-					strings[index++] = new String(bytes, start, i - start);
-					start = i + 1;
-				}
-			}
-			if (index < nStrings)
-				strings[index] = new String(bytes, start, bytes.length - start - 1);
-			return strings;
-		}
-	}
-	
 	private void find(String text, boolean prefixKey) {
 		model.clear();
-		DbAccess dba = new DbAccess(db);
+		DbAccess dba = new DbAccess(dbDescriptor.db);
 		model.setBaseDir(dba.getDir());
-		DatabaseEntry key = new DatabaseEntry();
-		DatabaseEntry data = new DatabaseEntry();
-		DbRecordHandler handler = new DbRecordHandler();
-		if (text == null || text.length() == 0) {
-			// Get all records in the table
-			dba.lookup(key, data, handler);
-		} else {
-			// Get records starting with the prefix
-			byte [] bytes = text.getBytes();
-			byte [] keyBytes = new byte[bytes.length + (prefixKey ? 1 : 0)];
-			int i;
-			for (i = 0; i < bytes.length; i++)
-				keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
-			if (prefixKey)
-				keyBytes[i] = 1;
-			key.setData(keyBytes);
-			handler.setSearchKey(text, prefixKey);
-			dba.lookup(key, data, handler);
-		}
+		Vector<DbRecord> records = DbAccess.lookup(dbDescriptor, text, prefixKey);
+		model.setElements(records);
 		model.fireTableDataChanged();
 	}
 }
