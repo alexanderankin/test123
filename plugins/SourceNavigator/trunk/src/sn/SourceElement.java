@@ -48,6 +48,6 @@ public class SourceElement {
 			path = dir + "/" + file;
 		else
 			path = file;
-		SourceNavigatorPlugin.jumpTo(view, path, line);
+		SourceNavigatorPlugin.getEditorInterface().jumpTo(view, path, line);
 	}
 }
