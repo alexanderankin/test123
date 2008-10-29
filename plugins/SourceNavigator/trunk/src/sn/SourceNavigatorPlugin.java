@@ -47,21 +47,11 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	
 	public static class DbDescriptor {
 		public String name, label, db, columns;
-		public int fileCol, lineCol;
 		public DbDescriptor(String base) {
-			super();
 			name = jEdit.getProperty(base + "name");
 			label = jEdit.getProperty(base + "label");
 			db = jEdit.getProperty(base + "db");
-			columns = jEdit.getProperty(base + "columns");
-			try {
-				fileCol = Integer.valueOf(jEdit.getProperty(base + "file-col"));
-				lineCol = Integer.valueOf(jEdit.getProperty(base + "line-col"));
-			} catch (Exception e) {
-			}
-		}
-		public DbDescriptor() {
-			fileCol = lineCol = -1;
+			columns = jEdit.getProperty(base + "columns"); 
 		}
 		public String toString() {
 			return label;
@@ -75,7 +65,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		DockableWindowFactory.getInstance().registerDockableWindow(
 			getPluginJAR(), dockableName,
 			"new sn.DbDockable(view, \"" + desc.db + "\", \"" +
-			desc.columns + "\", " + desc.fileCol + ", " + desc.lineCol + ");",
+				desc.columns + ");",
 			true, true);
 		String menu = jEdit.getProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		if (menu == null)
