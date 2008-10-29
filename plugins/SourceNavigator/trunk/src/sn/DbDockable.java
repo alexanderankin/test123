@@ -50,10 +50,15 @@ public class DbDockable extends JPanel {
 		String baseDir;
 		Vector<String []> elements;
 		
-		public DbTableModel(String columns, int fileColumn, int lineColumn) {
-			this.columns = columns.split(SN_SEP);
-			this.fileColumn = fileColumn;
-			this.lineColumn = lineColumn;
+		public DbTableModel(String columnsString) {
+			columns = columnsString.split(SN_SEP);
+			fileColumn = lineColumn = -1;	// None by default
+			for (int i = 0; i < columns.length; i++) {
+				if (columns[i].equals("File"))
+					fileColumn = i;
+				else if (columns[i].equals("Line"))
+					lineColumn = i;
+			}
 			elements = new Vector<String []>();
 		}
 		public void setBaseDir(String baseDir) {
@@ -78,6 +83,8 @@ public class DbDockable extends JPanel {
 			return elements.get(rowIndex)[columnIndex];
 		}
 		public SourceLink getSourceLink(int selectedRow) {
+			if (fileColumn < 0)
+				return null;
 			String file = (String) getValueAt(selectedRow, fileColumn);
 			if (file == null)
 				return null;
@@ -124,13 +131,12 @@ public class DbDockable extends JPanel {
 	private JTextField text;
 	private String db;
 	
-	public DbDockable(View view,
-		String db, String columns, int fileColumn, int lineColumn)
+	public DbDockable(View view, String db, String columns)
 	{
 		super(new BorderLayout());
 		this.view = view;
 		this.db = db;
-		model = new DbTableModel(columns, fileColumn, lineColumn);
+		model = new DbTableModel(columns);
 		table = new JTable();
 		table.setModel(model);
 		table.setAutoCreateRowSorter(true);

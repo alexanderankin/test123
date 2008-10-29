@@ -49,8 +49,7 @@ public class AllDbDockable extends JPanel {
 			DbDescriptor desc = (DbDescriptor) item;
 			current = dockables.get(item);
 			if (current == null) {
-				DbDockable dockable = new DbDockable(
-					view, desc.db, desc.columns, desc.fileCol, desc.lineCol);
+				DbDockable dockable = new DbDockable(view, desc.db, desc.columns);
 				dockables.put(desc, dockable);
 				current = dockable;
 			}
