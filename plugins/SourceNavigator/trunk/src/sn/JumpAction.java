@@ -20,7 +20,8 @@ public class JumpAction extends EditAction {
 	}
 	@Override
 	public void invoke(View view) {
-		String tag = SourceNavigatorPlugin.getTagFromView(view);
+		String tag = SourceNavigatorPlugin.getEditorInterface().getTagForJump(
+			view, "\\w+");
 		Vector<DbRecord> tags = DbAccess.lookup(desc, tag, false);
 		if (tags != null && tags.size() > 0)
 			tags.get(0).getSourceLink().jumpTo(view);

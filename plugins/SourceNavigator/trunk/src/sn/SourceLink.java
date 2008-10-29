@@ -15,6 +15,6 @@ public class SourceLink {
 		this.offset = offset;
 	}
 	public void jumpTo(View view) {
-		SourceNavigatorPlugin.jumpTo(view, path, line, offset);
+		SourceNavigatorPlugin.getEditorInterface().jumpTo(view, path, line, offset);
 	}
 }
