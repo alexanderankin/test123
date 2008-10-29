@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -27,7 +26,6 @@ public class SourceNavigatorPlugin extends EditPlugin {
 
 	public void start()
 	{
-		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
 		dbDescriptors = new Vector<DbDescriptor>();
 		for (int i = 1; ; i++) {
 			String base = "source-navigator-table." + i + ".";
@@ -36,43 +34,28 @@ public class SourceNavigatorPlugin extends EditPlugin {
 				break;
 			DbDescriptor desc = new DbDescriptor(base);
 			dbDescriptors.add(desc);
-			createDockable(desc);
 		}
 		Collections.sort(dbDescriptors, new Comparator<DbDescriptor>() {
 			public int compare(DbDescriptor d1, DbDescriptor d2) {
 				return d1.label.compareTo(d2.label);
 			}
 		});
+		createDockables();
 		createActions();
 	}
 
-	static private class CompleteAction extends EditAction {
-		private static final String COMPLETE_ACTION_PREFIX = "source-navigator-complete-";
-		public CompleteAction(DbDescriptor desc) {
-			super(COMPLETE_ACTION_PREFIX + desc.name);
-			jEdit.setTemporaryProperty(
-				COMPLETE_ACTION_PREFIX + desc.name + ".label", "Complete " + desc.label);
-		}
-		@Override
-		public void invoke(View view) {
-		}
+	public void stop()
+	{
 	}
-	static private class JumpAction extends EditAction {
-		private static final String JUMP_ACTION_PREFIX = "source-navigator-jump-";
-		private DbDescriptor desc;
-		public JumpAction(DbDescriptor desc) {
-			super(JUMP_ACTION_PREFIX + desc.name);
-			jEdit.setTemporaryProperty(
-					JUMP_ACTION_PREFIX + desc.name + ".label", "Jump to " + desc.label);
-			this.desc = desc;
+
+	private void createDockables() {
+		jEdit.resetProperty(SOURCE_NAVIGATOR_TABLES_MENU);
+		StringBuffer menu = new StringBuffer();
+		for (DbDescriptor desc: dbDescriptors) {
+			String dockableName = createDockable(desc);
+			menu.append(dockableName + "\n\t");
 		}
-		@Override
-		public void invoke(View view) {
-			String tag = getTagFromView(view);
-			Vector<DbRecord> tags = DbAccess.lookup(desc, tag, false);
-			if (tags != null && tags.size() > 0)
-				tags.get(0).getSourceLink().jumpTo(view);
-		}
+		jEdit.setProperty(SOURCE_NAVIGATOR_TABLES_MENU, menu.toString());
 	}
 	
 	private void createActions() {
@@ -88,10 +71,6 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		jEdit.addActionSet(actions);
 	}
 
-	public void stop()
-	{
-	}
-
 	public static Vector<DbDescriptor> getDbDescriptors() {
 		return dbDescriptors;
 	}
@@ -102,7 +81,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		return null;
 	}
 	
-	private void createDockable(DbDescriptor desc) {
+	private String createDockable(DbDescriptor desc) {
 		String dockableName = "source-navigator-" + desc.name + "-list";
 		jEdit.setProperty(dockableName + ".label", desc.label);
 		jEdit.setProperty(dockableName + ".title", desc.label);
@@ -110,12 +89,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 			getPluginJAR(), dockableName,
 			"new sn.DbDockable(view, \"" + desc.db + "\");",
 			true, true);
-		String menu = jEdit.getProperty(SOURCE_NAVIGATOR_TABLES_MENU);
-		if (menu == null)
-			menu = dockableName;
-		else
-			menu = menu + "\n\t" + dockableName;
-		jEdit.setProperty(SOURCE_NAVIGATOR_TABLES_MENU, menu);
+		return dockableName;
 	}
 	static public String getOption(String name) {
 		return jEdit.getProperty(OPTION_PREFIX + name);
