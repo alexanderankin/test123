@@ -13,11 +13,6 @@ plugin.browser.GlobalPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 
 plugin.sn.SourceNavigatorPlugin.docs=index.html
 
-# action labels
-source-navigator-add-file.label=Add tag file...
-#ctags-interface-print-tags.label=Print tags
-#ctags-interface-print-tags-containing.label=Print tags with substring...
-
 # menu items
 plugin.sn.SourceNavigatorPlugin.menu=source-navigator-ref-by-list \
 	source-navigator-ref-by-tree \
@@ -76,7 +71,7 @@ source-navigator-table.4.columns=Name?Line?File
 source-navigator-table.5.name=file
 source-navigator-table.5.label=Files
 source-navigator-table.5.db=f
-source-navigator-table.5.columns=Name
+source-navigator-table.5.columns=File
 source-navigator-table.6.name=function-definition
 source-navigator-table.6.label=Function Definitions
 source-navigator-table.6.db=fd
