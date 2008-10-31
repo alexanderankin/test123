@@ -107,7 +107,7 @@ public class Log {
                 LogHandler handler = new LogHandler( path );
                 // files for logs, paths, peg revision, start revision,
                 // end revision, stop on copy, report paths, number of entries, handler
-                client.doLog( svnurl, null, SVNRevision.create( 0L ), data.getStartRevision(),
+                client.doLog( svnurl, null, data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }
@@ -125,8 +125,8 @@ public class Log {
                 SVNURL rep_url = SVNURL.parseURIEncoded(rep_url_string);
                 String[] rep_paths = new String[]{path};
                 // I should also be able to set the peg revision, but it seems that
-                // using anything beside 0 fails.
-                client.doLog( rep_url, rep_paths, SVNRevision.create(0L), data.getStartRevision(),
+                // using anything beside 0 or UNDEFINED fails.
+                client.doLog( rep_url, rep_paths, data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
                 entries.put( handler.getPath(), handler.getEntries() );
             }

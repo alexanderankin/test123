@@ -83,6 +83,9 @@ public class LogResultsPanel extends JPanel {
      */
     public LogResultsPanel( LogResults logResults, boolean showPaths, View view, String username, String password ) {
         super( new LambdaLayout() );
+        if (logResults == null) {
+            return;
+        }
         this.view = view;
         this.logResults = logResults;
         this.username = username;

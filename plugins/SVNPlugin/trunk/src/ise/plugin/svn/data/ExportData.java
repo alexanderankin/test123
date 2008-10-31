@@ -39,7 +39,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class ExportData extends CopyData implements Serializable {
 
     private String eol = "native";
-    private SVNRevision pegRevision = null;
+    private SVNRevision pegRevision = SVNRevision.UNDEFINED;
 
     public void setEOLStyle(String eol) {
         // these definitions are in SVNUpdateClient.doExport javadocs

@@ -35,7 +35,7 @@ public class PropertyData extends CheckoutData {
 
     private static final long serialVersionUID = 42L;
 
-    private transient SVNRevision pegRevision = SVNRevision.create( 0L );
+    private transient SVNRevision pegRevision = SVNRevision.UNDEFINED;
     private transient SVNRevision revision = SVNRevision.HEAD;
     private transient boolean recursive = false;
     private transient boolean hasDirectory = false;

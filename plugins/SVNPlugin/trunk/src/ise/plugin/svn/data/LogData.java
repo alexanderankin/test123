@@ -36,6 +36,7 @@ public class LogData extends CheckoutData {
 
     private transient SVNRevision startRevision = SVNRevision.create( 0L );
     private transient SVNRevision endRevision = SVNRevision.HEAD;
+    private transient SVNRevision pegRevision = SVNRevision.UNDEFINED;
     private int maxLogs = 1000;
     private boolean stopOnCopy = true;
     private boolean showPaths = false;
@@ -113,4 +114,18 @@ public class LogData extends CheckoutData {
         this.endRevision = endRevision;
     }
 
+    /**
+     * Returns the value of pegRevision.
+     */
+    public SVNRevision getPegRevision() {
+        return pegRevision;
+    }
+
+    /**
+     * Sets the value of pegRevision.
+     * @param pegRevision The value to assign pegRevision.
+     */
+    public void setPegRevision( SVNRevision pegRevision ) {
+        this.pegRevision = pegRevision;
+    }
 }
