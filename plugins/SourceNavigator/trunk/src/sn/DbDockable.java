@@ -110,10 +110,14 @@ public class DbDockable extends JPanel {
 		add(p, BorderLayout.NORTH);
 	}
 	
-	private void find(String text, boolean prefixKey) {
+	public void show(Vector<DbRecord> records) {
 		model.clear();
-		Vector<DbRecord> records = DbAccess.lookup(dbDescriptor, text, prefixKey);
 		model.setElements(records);
 		model.fireTableDataChanged();
+	}
+	
+	private void find(String text, boolean prefixKey) {
+		Vector<DbRecord> records = DbAccess.lookup(dbDescriptor, text, prefixKey);
+		show(records);
 	}
 }

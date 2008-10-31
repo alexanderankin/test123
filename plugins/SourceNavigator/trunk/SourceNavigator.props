@@ -53,7 +53,8 @@ source-navigator-any-database-lookup.label=Database Lookup
 #options.CtagsInterface.ctags=ctags
 
 # messages
-#messages.CtagsInterface.ctags=Ctags executable path:
+messages.source-navigator.no-tag-for-jump=No tag selected nor identified at the caret.
+messages.source-navigator.no-tags-found=No tags found.
 
 # Source Navigator database table descriptions
 source-navigator-table.1.name=class
