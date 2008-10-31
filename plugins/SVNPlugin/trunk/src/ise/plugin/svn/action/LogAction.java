@@ -152,6 +152,10 @@ public class LogAction extends SVNAction {
                 @Override
                 protected void done() {
                     try {
+                        LogResults results = get();
+                        if (results == null) {
+                            return;
+                        }
                         JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
                     }

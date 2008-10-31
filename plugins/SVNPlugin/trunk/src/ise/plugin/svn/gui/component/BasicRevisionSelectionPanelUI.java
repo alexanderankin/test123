@@ -101,8 +101,8 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
 
         // set up the revision number entry field
         revision_number = new RevisionTextField();
-        revision_number.setRevisionModel(controller.getModel());
         revision_number.setText( "0" );
+        revision_number.setRevisionModel(controller.getModel());
         revision_number.setHorizontalAlignment( JTextField.RIGHT );
         revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
         revision_number.setForeground( foreground );
@@ -294,51 +294,6 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         date_spinner.setEnabled( date_rb.isSelected() );
         date_popup.setEnabled( date_rb.isSelected() );
     }
-
-    /*
-    public void propertyChange( PropertyChangeEvent event ) {
-        // set revision
-        SVNRevision revision = controller.getModel().getRevision();
-        if ( revision.getNumber() != -1 ) {
-            revision_number.getModel().setValue( revision.getNumber() );
-        }
-        else if ( revision.getDate() != null ) {
-            date_spinner.getModel().setValue( revision.getDate() );
-        }
-}
-
-    private JSpinner getRevisionChooser() {
-        SpinnerNumberModel model = new SpinnerNumberModel( 0, 0, Integer.MAX_VALUE, 1 );
-        revision_number = new JSpinner( model );
-        JSpinner.NumberEditor number_editor = new JSpinner.NumberEditor( revision_number, "# " );
-        number_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
-                    // this is necessary because JSpinner won't automatically keep its internal
-                    // model up to date.
-                    public void propertyChange( PropertyChangeEvent pce ) {
-                        try {
-                            revision_number.commitEdit();
-                        }
-                        catch ( java.text.ParseException pe ) {}    // NOPMD
-                    }
-                }
-                                                              );
-        revision_number.setEditor( number_editor );
-        revision_number.addChangeListener( new ChangeListener() {
-                    public void stateChanged( ChangeEvent ce ) {
-                        if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
-                            Number number = ( Number ) revision_number.getValue();
-                            controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
-                        }
-                    }
-                }
-                                         );
-        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
-        revision_number.setForeground( foreground );
-        revision_number.setBackground( background );
-        revision_number.setEnabled( false );
-        return revision_number;
-}
-    */
 
     private JSpinner getDateChooser() {
         Calendar calendar = Calendar.getInstance();
