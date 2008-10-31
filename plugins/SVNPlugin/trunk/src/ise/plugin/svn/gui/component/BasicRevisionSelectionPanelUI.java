@@ -26,6 +26,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.text.*;
 
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.gui.dateselector.*;
@@ -49,7 +50,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     private JRadioButton base_rb = new JRadioButton( jEdit.getProperty( "ips.BASE", "BASE" ) );
     private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
     private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
-    private JSpinner revision_number = null;
+    private RevisionTextField revision_number = null;
     private JRadioButton date_rb = new JRadioButton( jEdit.getProperty( "ips.Date", "Date" ) + ":" );
     private JSpinner date_spinner = null;
     private JButton date_popup = null;
@@ -98,8 +99,15 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             head_rb.setSelected( true );
         }
 
-        // set up the revision number chooser
-        revision_number = getRevisionChooser();
+        // set up the revision number entry field
+        revision_number = new RevisionTextField();
+        revision_number.setRevisionModel(controller.getModel());
+        revision_number.setText( "0" );
+        revision_number.setHorizontalAlignment( JTextField.RIGHT );
+        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
+        revision_number.setForeground( foreground );
+        revision_number.setBackground( background );
+        revision_number.setEnabled( false );
 
         // set up date chooser
         date_spinner = getDateChooser();
@@ -178,7 +186,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                     public void actionPerformed( ActionEvent ae ) {
                         BasicRevisionSelectionPanelUI.this.revision_number.setEnabled( BasicRevisionSelectionPanelUI.this.revision_number_rb.isSelected() );
                         if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
-                            Number number = ( Number ) revision_number.getValue();
+                            Number number = Integer.parseInt( revision_number.getText() );
                             controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
                         }
                     }
@@ -287,6 +295,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         date_popup.setEnabled( date_rb.isSelected() );
     }
 
+    /*
     public void propertyChange( PropertyChangeEvent event ) {
         // set revision
         SVNRevision revision = controller.getModel().getRevision();
@@ -296,7 +305,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         else if ( revision.getDate() != null ) {
             date_spinner.getModel().setValue( revision.getDate() );
         }
-    }
+}
 
     private JSpinner getRevisionChooser() {
         SpinnerNumberModel model = new SpinnerNumberModel( 0, 0, Integer.MAX_VALUE, 1 );
@@ -328,7 +337,8 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         revision_number.setBackground( background );
         revision_number.setEnabled( false );
         return revision_number;
-    }
+}
+    */
 
     private JSpinner getDateChooser() {
         Calendar calendar = Calendar.getInstance();
