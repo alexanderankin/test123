@@ -9,7 +9,7 @@ public class DbDescriptor {
 	static private final String SN_SEP = "\\?";
 	public String name, label, db, columns;
 	public String [] columnNames;
-	int fileColumn, lineColumn;
+	int nameColumn, fileColumn, lineColumn;
 	public DbDescriptor(String base) {
 		name = jEdit.getProperty(base + "name");
 		label = jEdit.getProperty(base + "label");
@@ -23,6 +23,8 @@ public class DbDescriptor {
 				fileColumn = i;
 			else if (columnName.equals("Line"))
 				lineColumn = i;
+			else if (columnName.equals("Name"))
+				nameColumn = i;
 		}
 	}
 	public int getColumnCount() {

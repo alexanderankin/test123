@@ -11,6 +11,31 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class EditorInterface {
 	
+	/* Returns the text to complete: The specified regexp ending at
+	 * the caret. (null if not found)
+	 */
+	public String getTextToComplete(View view, String tagRegExp) {
+		JEditTextArea ta = view.getTextArea();
+		int line = ta.getCaretLine();
+		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile(tagRegExp);
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		String selected = "";
+		while (end < index) {
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if (start > index || selected.length() == 0)
+			return null;
+		return text.substring(start, index);
+	}
+	
 	/* Returns the tag to jump to: The selected tag or the specified
 	 * regexp at the caret. (null if not found)
 	 */

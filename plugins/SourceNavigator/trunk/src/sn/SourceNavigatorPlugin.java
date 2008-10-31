@@ -15,6 +15,8 @@ import utils.EditorInterface;
 public class SourceNavigatorPlugin extends EditPlugin {
 	
 	static private final String SOURCE_NAVIGATOR_TABLES_MENU = "source-navigator-tables";
+	static private final String SOURCE_NAVIGATOR_JUMP_MENU = "source-navigator-jump";
+	static private final String SOURCE_NAVIGATOR_COMPLETE_MENU = "source-navigator-complete";
 	static public String OPTION_PREFIX = "option.source-navigator.";
 	static public final String COMPLETION_ACTION_SET = "Plugin: Source Navigator - Completion";
 	static public final String JUMPING_ACTION_SET = "Plugin: Source Navigator - Jumping";
@@ -62,14 +64,26 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	}
 	
 	private void createActions() {
+		StringBuffer menu = new StringBuffer();
+		jEdit.resetProperty(SOURCE_NAVIGATOR_COMPLETE_MENU);
 		ActionSet actions = new ActionSet(COMPLETION_ACTION_SET);
-		for (DbDescriptor desc: dbDescriptors)
-			actions.addAction(new CompleteAction(desc));
+		for (DbDescriptor desc: dbDescriptors) {
+			CompleteAction action = new CompleteAction(desc); 
+			actions.addAction(action);
+			menu.append(action.getName() + "\n\t");
+		}
+		jEdit.setProperty(SOURCE_NAVIGATOR_COMPLETE_MENU, menu.toString());
 		actions.initKeyBindings();
 		jEdit.addActionSet(actions);
+		menu = new StringBuffer();
+		jEdit.resetProperty(SOURCE_NAVIGATOR_JUMP_MENU);
 		actions = new ActionSet(JUMPING_ACTION_SET);
-		for (DbDescriptor desc: dbDescriptors)
-			actions.addAction(new JumpAction(desc));
+		for (DbDescriptor desc: dbDescriptors) {
+			JumpAction action = new JumpAction(desc);
+			actions.addAction(action);
+			menu.append(action.getName() + "\n\t");
+		}
+		jEdit.setProperty(SOURCE_NAVIGATOR_JUMP_MENU, menu.toString());
 		actions.initKeyBindings();
 		jEdit.addActionSet(actions);
 	}
