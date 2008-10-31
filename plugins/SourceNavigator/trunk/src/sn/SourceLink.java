@@ -17,4 +17,7 @@ public class SourceLink {
 	public void jumpTo(View view) {
 		SourceNavigatorPlugin.getEditorInterface().jumpTo(view, path, line, offset);
 	}
+	public String toString() {
+		return path + ":" + line + "." + offset;
+	}
 }

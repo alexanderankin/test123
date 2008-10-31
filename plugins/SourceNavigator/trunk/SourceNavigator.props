@@ -23,9 +23,15 @@ plugin.sn.SourceNavigatorPlugin.menu=source-navigator-ref-by-list \
 	source-navigator-ref-by-tree \
 	- \
 	source-navigator-any-database-lookup \
-	%source-navigator-tables
+	%source-navigator-tables \
+	- \
+	%source-navigator-jump \
+	- \
+	%source-navigator-complete
 
 source-navigator-tables.label=Database tables
+source-navigator-jump.label=Tag jumping
+source-navigator-complete.label=Code completion
 
 # option panes
 plugin.sn.SourceNavigatorPlugin.option-pane=source-navigator-options-main
