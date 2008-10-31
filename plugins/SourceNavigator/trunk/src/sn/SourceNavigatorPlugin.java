@@ -18,6 +18,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	static private final String SOURCE_NAVIGATOR_JUMP_MENU = "source-navigator-jump";
 	static private final String SOURCE_NAVIGATOR_COMPLETE_MENU = "source-navigator-complete";
 	static public String OPTION_PREFIX = "option.source-navigator.";
+	static public String MESSAGE_PREFIX = "messages.source-navigator.";
 	static public final String COMPLETION_ACTION_SET = "Plugin: Source Navigator - Completion";
 	static public final String JUMPING_ACTION_SET = "Plugin: Source Navigator - Jumping";
 	static private Vector<DbDescriptor> dbDescriptors;
@@ -99,7 +100,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	}
 	
 	private String createDockable(DbDescriptor desc) {
-		String dockableName = "source-navigator-" + desc.name + "-list";
+		String dockableName = getDockableName(desc);
 		jEdit.setProperty(dockableName + ".label", desc.label);
 		jEdit.setProperty(dockableName + ".title", desc.label);
 		DockableWindowFactory.getInstance().registerDockableWindow(
@@ -108,11 +109,18 @@ public class SourceNavigatorPlugin extends EditPlugin {
 			true, true);
 		return dockableName;
 	}
+
+	static public String getDockableName(DbDescriptor desc) {
+		return "source-navigator-" + desc.name + "-list";
+	}
+	
 	static public String getOption(String name) {
 		return jEdit.getProperty(OPTION_PREFIX + name);
 	}
 	static public void setOption(String name, String value) {
 		jEdit.setProperty(OPTION_PREFIX + name, value);
 	}
-
+	static public String getMessage(String name) {
+		return jEdit.getProperty(MESSAGE_PREFIX + name);
+	}
 }
