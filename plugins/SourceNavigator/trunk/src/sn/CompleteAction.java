@@ -5,8 +5,6 @@ package sn;
 
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
