@@ -138,11 +138,11 @@ public class DbAccess {
 		// Otherwise, get records matching 'text'.
 		DatabaseEntry key = new DatabaseEntry();
 		byte [] bytes = text.getBytes();
-		byte [] keyBytes = new byte[bytes.length + (prefix ? 1 : 0)];
+		byte [] keyBytes = new byte[bytes.length + (prefix ? 0 : 1)];
 		int i;
 		for (i = 0; i < bytes.length; i++)
 			keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
-		if (prefix)
+		if (! prefix)
 			keyBytes[i] = 1;
 		key.setData(keyBytes);
 		return key;
