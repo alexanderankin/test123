@@ -117,7 +117,7 @@ public class DbDockable extends JPanel {
 	}
 	
 	private void find(String text, boolean prefixKey) {
-		Vector<DbRecord> records = DbAccess.lookup(dbDescriptor, text, prefixKey);
+		Vector<DbRecord> records = DbAccess.lookupByKey(dbDescriptor, text, prefixKey);
 		show(records);
 	}
 }
