@@ -102,7 +102,7 @@ public class DbDockable extends JPanel {
 		JLabel l = new JLabel("Find:");
 		p1.add(l);
 		// If the name column is not the first one, add option to filter by name
-		if (dbDescriptor.nameColumn > 0) {
+		if (dbDescriptor.isNameSearchUseful()) {
 			findKey = new JRadioButton("Key");
 			p1.add(findKey);
 			JRadioButton findName = new JRadioButton("Name");

@@ -38,4 +38,7 @@ public class DbDescriptor {
 	public String toString() {
 		return label;
 	}
+	public boolean isNameSearchUseful() {
+		return (nameColumn > 0);
+	}
 }
