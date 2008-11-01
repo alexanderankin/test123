@@ -5,9 +5,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -65,6 +67,7 @@ public class DbDockable extends JPanel {
 	private JTable table;
 	private JTextField text;
 	private DbDescriptor dbDescriptor;
+	private JRadioButton findKey;
 	
 	public DbDockable(View view, String db)
 	{
@@ -94,16 +97,31 @@ public class DbDockable extends JPanel {
 		});
 		add(new JScrollPane(table), BorderLayout.CENTER);
 		JPanel p = new JPanel(new BorderLayout());
+		JPanel p1 = new JPanel();
+		p.add(p1, BorderLayout.WEST);
 		JLabel l = new JLabel("Find:");
-		p.add(l, BorderLayout.WEST);
+		p1.add(l);
+		// If the name column is not the first one, add option to filter by name
+		if (dbDescriptor.nameColumn > 0) {
+			findKey = new JRadioButton("Key");
+			p1.add(findKey);
+			JRadioButton findName = new JRadioButton("Name");
+			p1.add(findName);
+			ButtonGroup findBy = new ButtonGroup();
+			findBy.add(findKey);
+			findBy.add(findName);
+			findKey.setSelected(true);
+		}
 		final JCheckBox prefix = new JCheckBox("Prefix");
 		p.add(prefix, BorderLayout.EAST);
 		text = new JTextField(40);
 		text.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					find(text.getText(), prefix.isSelected());
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					boolean byKey = (findKey == null || findKey.isSelected());
+					find(byKey, text.getText(), prefix.isSelected());
+				}
 			}
 		});
 		p.add(text, BorderLayout.CENTER);
@@ -116,8 +134,12 @@ public class DbDockable extends JPanel {
 		model.fireTableDataChanged();
 	}
 	
-	private void find(String text, boolean prefixKey) {
-		Vector<DbRecord> records = DbAccess.lookupByKey(dbDescriptor, text, prefixKey);
+	private void find(boolean byKey, String text, boolean prefix) {
+		Vector<DbRecord> records;
+		if (byKey)
+			records = DbAccess.lookupByKey(dbDescriptor, text, prefix);
+		else
+			records = DbAccess.lookupByName(dbDescriptor, text, prefix);
 		show(records);
 	}
 }

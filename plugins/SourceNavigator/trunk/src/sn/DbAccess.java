@@ -122,6 +122,7 @@ public class DbAccess {
 		private DbDescriptor desc;
 		private String baseDir;
 		private DbRecordFilter filter;
+		private boolean stopOnFirstReject;
 		private Vector<DbRecord> records;
 		public DbRecordCollector(DbDescriptor desc) {
 			this.desc = desc;
@@ -138,13 +139,14 @@ public class DbAccess {
 			DbRecord record = new DbRecord(desc, s);
 			// Check if this record is not filtered
 			if (filter != null && (! filter.accept(record)))
-				return false;
+				return (! stopOnFirstReject);
 			record.setBaseDir(baseDir);
 			records.add(record);
 			return true;
 		}
-		private void setFilter(DbRecordFilter filter) {
+		private void setFilter(DbRecordFilter filter, boolean stopOnFirstReject) {
 			this.filter = filter;
+			this.stopOnFirstReject = stopOnFirstReject;
 		}
 		private String [] breakToStrings(DatabaseEntry e) {
 			byte [] bytes = e.getData();
@@ -176,14 +178,14 @@ public class DbAccess {
 		
 	}
 	static private Vector<DbRecord> lookup(DbDescriptor desc, DatabaseEntry key,
-		DbRecordFilter filter)
+		DbRecordFilter filter, boolean stopOnFirstReject)
 	{
 		DbAccess dba = new DbAccess(desc.db);
 		DatabaseEntry data = new DatabaseEntry();
 		DbRecordCollector handler = new DbRecordCollector(desc);
 		handler.setBaseDir(dba.getDir());
 		if (filter != null)
-			handler.setFilter(filter);
+			handler.setFilter(filter, stopOnFirstReject);
 		dba.lookup(key, data, handler);
 		return handler.getCollectedRecords();
 	
@@ -191,7 +193,8 @@ public class DbAccess {
 	static public Vector<DbRecord> lookupByName(DbDescriptor desc, String name,
 		boolean prefix)
 	{
-		return lookup(desc, new DatabaseEntry(), new DbNameRecordFilter(name, prefix));
+		return lookup(desc, new DatabaseEntry(), new DbNameRecordFilter(name, prefix),
+			false);
 	}
 	static public Vector<DbRecord> lookupByKey(DbDescriptor desc, String text,
 		boolean prefix)
@@ -206,6 +209,6 @@ public class DbAccess {
 			key = textToKey(text);
 			filter = new DbKeyRecordFilter(text, prefix);
 		}
-		return lookup(desc, key, filter);
+		return lookup(desc, key, filter, true);
 	}
 }
