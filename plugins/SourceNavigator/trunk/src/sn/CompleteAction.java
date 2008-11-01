@@ -25,6 +25,11 @@ public class CompleteAction extends EditAction {
 		Vector<DbRecord> tags = DbAccess.lookup(desc, text, true);
 		if (tags == null || tags.isEmpty())
 			return;
-		new DbRecordCompletionPopup(view, text, tags);
+		if (tags.size() == 1) {
+			String insertion = tags.get(0).getName().substring(text.length());
+			SourceNavigatorPlugin.getEditorInterface().insertAtCaret(view, insertion);
+		} else {
+			new DbRecordCompletionPopup(view, text, tags);
+		}
 	}
 }

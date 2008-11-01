@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -97,4 +98,20 @@ public class EditorInterface {
 		});
 	}
 
+	// Insert text at the caret location (for code completion)
+	public void insertAtCaret(View view, String text)
+	{
+		JEditTextArea textArea = view.getTextArea(); 
+		int caret = textArea.getCaretPosition();
+		JEditBuffer buffer = textArea.getBuffer();
+		try
+		{
+			buffer.beginCompoundEdit();
+			buffer.insert(caret, text);
+		}
+		finally
+		{
+			buffer.endCompoundEdit();
+		}
+	}
 }

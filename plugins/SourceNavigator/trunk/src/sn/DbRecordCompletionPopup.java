@@ -13,7 +13,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.CompletionPopup;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -61,18 +60,8 @@ class DbRecordCompletionPopup extends CompletionPopup {
 		}
 		public void complete(int index) {
 			String selected = candidates.get(index).toString();
-			JEditTextArea textArea = view.getTextArea(); 
-			int caret = textArea.getCaretPosition();
-			JEditBuffer buffer = textArea.getBuffer();
-			try
-			{
-				buffer.beginCompoundEdit();
-				buffer.insert(caret, selected.substring(text.length()));
-			}
-			finally
-			{
-				buffer.endCompoundEdit();
-			}
+			String insertion = selected.substring(text.length());
+			SourceNavigatorPlugin.getEditorInterface().insertAtCaret(view, insertion);
 		}
 		public Component getCellRenderer(JList list, int index,
 				boolean isSelected, boolean cellHasFocus) {
