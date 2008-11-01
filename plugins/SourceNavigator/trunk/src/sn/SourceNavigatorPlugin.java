@@ -68,9 +68,6 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		StringBuffer menu = new StringBuffer();
 		jEdit.resetProperty(SOURCE_NAVIGATOR_COMPLETE_MENU);
 		ActionSet actions = new ActionSet(COMPLETION_ACTION_SET);
-		CompleteAction completeAnyAction = new CompleteAction();
-		actions.addAction(completeAnyAction);
-		menu.append(completeAnyAction.getName() + "\n\t");
 		for (DbDescriptor desc: dbDescriptors) {
 			CompleteAction action = new CompleteAction(desc); 
 			actions.addAction(action);
@@ -82,9 +79,6 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		menu = new StringBuffer();
 		jEdit.resetProperty(SOURCE_NAVIGATOR_JUMP_MENU);
 		actions = new ActionSet(JUMPING_ACTION_SET);
-		JumpAction jumpAnyAction = new JumpAction();
-		actions.addAction(jumpAnyAction);
-		menu.append(jumpAnyAction.getName() + "\n\t");
 		for (DbDescriptor desc: dbDescriptors) {
 			JumpAction action = new JumpAction(desc);
 			actions.addAction(action);

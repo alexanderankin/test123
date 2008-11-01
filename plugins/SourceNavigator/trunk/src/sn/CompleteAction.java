@@ -9,9 +9,6 @@ import org.gjt.sp.jedit.View;
 
 public class CompleteAction extends LookupAction {
 	private static final String COMPLETE_ACTION_PREFIX = "complete";
-	public CompleteAction() { // Complete any kind of tag
-		this(null);
-	}
 	public CompleteAction(DbDescriptor desc) {
 		super(COMPLETE_ACTION_PREFIX, "Complete ", desc);
 	}

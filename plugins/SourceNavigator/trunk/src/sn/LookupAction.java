@@ -13,14 +13,10 @@ public abstract class LookupAction extends EditAction {
 	private static final String ACTION_PREFIX = "source-navigator-";
 	protected DbDescriptor desc;
 	private String prefix;
-	public LookupAction(String prefix, String label) { // Complete any kind of tag
-		this(prefix, label, null);
-	}
 	public LookupAction(String prefix, String label, DbDescriptor desc) {
-		super(ACTION_PREFIX + prefix + "-" + ((desc == null) ? "any" : desc.name));
+		super(ACTION_PREFIX + prefix + "-" + desc.name);
 		this.prefix = prefix;
-		jEdit.setTemporaryProperty(getName() + ".label",
-			label +  ((desc == null) ? "Any" : desc.label));
+		jEdit.setTemporaryProperty(getName() + ".label", label + desc.label);
 		this.desc = desc;
 	}
 	protected abstract String getTextForAction(View view);
@@ -46,10 +42,7 @@ public abstract class LookupAction extends EditAction {
 			return;
 		}
 		Vector<DbRecord> tags;
-		if (desc != null)
-			tags = DbAccess.lookup(desc, text, isPrefixLookup());
-		else
-			tags = DbAccess.lookupAll(text, isPrefixLookup());
+		tags = DbAccess.lookup(desc, text, isPrefixLookup());
 		if (tags == null || tags.isEmpty()) {
 			noTags(view, text);
 			return;
