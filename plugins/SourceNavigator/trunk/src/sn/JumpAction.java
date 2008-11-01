@@ -5,46 +5,35 @@ package sn;
 
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
-import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 
-public class JumpAction extends EditAction {
-	private static final String JUMP_ACTION_PREFIX = "source-navigator-jump-";
-	private DbDescriptor desc;
+public class JumpAction extends LookupAction {
+	private static final String JUMP_ACTION_PREFIX = "jump";
+	public JumpAction() { // Jump to any kind of tag
+		this(null);
+	}
 	public JumpAction(DbDescriptor desc) {
-		super(JUMP_ACTION_PREFIX + desc.name);
-		jEdit.setTemporaryProperty(
-				JUMP_ACTION_PREFIX + desc.name + ".label", "Jump to " + desc.label);
-		this.desc = desc;
+		super(JUMP_ACTION_PREFIX, "Jump to ", desc);
 	}
 	@Override
-	public void invoke(View view) {
-		String tag = SourceNavigatorPlugin.getEditorInterface().getTagForJump(
-			view, "\\w+");
-		if (tag == null || tag.length() == 0) {
-			JOptionPane.showMessageDialog(
-				view, SourceNavigatorPlugin.getMessage("no-tag-for-jump"));
-			return;
-		} 
-		Vector<DbRecord> tags = DbAccess.lookup(desc, tag, false);
-		if (tags == null || tags.isEmpty()) {
-			JOptionPane.showMessageDialog(
-				view, SourceNavigatorPlugin.getMessage("no-tags-found"));
-			return;
-		}
-		// Single tag found - jump
-		if (tags.size() == 1) {
-			tags.get(0).getSourceLink().jumpTo(view);
-			return;
-		}
-		// Multiple tags found - show found tags in table
+	protected String getTextForAction(View view) {
+		return SourceNavigatorPlugin.getEditorInterface().getTagForJump(
+				view, "\\w+");
+	}
+	@Override
+	protected boolean isPrefixLookup() {
+		return false;
+	}
+	@Override
+	protected void multipleTags(View view, String text, Vector<DbRecord> records) {
 		String dockableName = SourceNavigatorPlugin.getDockableName(desc);
 		view.getDockableWindowManager().showDockableWindow(dockableName);
 		DbDockable dockable = (DbDockable)
 			view.getDockableWindowManager().getDockableWindow(dockableName);
-		dockable.show(tags);
+		dockable.show(records);
+	}
+	@Override
+	protected void singleTag(View view, String text, DbRecord record) {
+		record.getSourceLink().jumpTo(view);
 	}
 }

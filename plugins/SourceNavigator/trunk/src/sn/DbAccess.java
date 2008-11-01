@@ -218,4 +218,12 @@ public class DbAccess {
 			return lookupByName(desc, text, prefix);
 		return lookupByKey(desc, text, prefix);
 	}
+	static public Vector<DbRecord> lookupAll(String text, boolean prefix)
+	{
+		Vector<DbRecord> records = new Vector<DbRecord>();
+		Vector<DbDescriptor> descriptors = SourceNavigatorPlugin.getDbDescriptors();
+		for (DbDescriptor desc: descriptors)
+			records.addAll(lookup(desc, text, prefix));
+		return records;
+	}
 }
