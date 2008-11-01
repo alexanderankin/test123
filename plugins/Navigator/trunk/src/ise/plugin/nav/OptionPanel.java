@@ -25,13 +25,14 @@ public class OptionPanel extends AbstractOptionPane
 
 		addComponent(new JLabel("<html><h3>Navigator</h3>"));
 		showOnToolbar = new JCheckBox("Show Navigator on toolbar (buggy)");
-
+        addComponent( showOnToolbar );
 	}
 
 	public void _save()
 	{
 		boolean useToolBars = showOnToolbar.isSelected();
 		jEdit.setBooleanProperty(getName() + ".showOnToolbar", useToolBars);
+	    NavigatorPlugin.setToolBars();
 	}
 
 	public String getName()
