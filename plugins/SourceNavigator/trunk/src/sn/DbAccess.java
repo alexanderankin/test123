@@ -104,6 +104,20 @@ public class DbAccess {
 			return true;
 		}
 	}
+	static private class DbNameRecordFilter implements DbRecordFilter {
+		private String name;
+		private boolean prefix;
+		public DbNameRecordFilter(String name, boolean prefix) {
+			this.name = name;
+			this.prefix = prefix;
+		}
+		public boolean accept(DbRecord record) {
+			String recordName = record.getName();
+			if (prefix)
+				return recordName.startsWith(name);
+			return recordName.equals(name);
+		}
+	}
 	static private class DbRecordCollector implements RecordHandler {
 		private DbDescriptor desc;
 		private String baseDir;
@@ -161,23 +175,37 @@ public class DbAccess {
 		return key;
 		
 	}
-	static public Vector<DbRecord> lookup(DbDescriptor desc, String text,
-		boolean prefixKey)
+	static private Vector<DbRecord> lookup(DbDescriptor desc, DatabaseEntry key,
+		DbRecordFilter filter)
 	{
 		DbAccess dba = new DbAccess(desc.db);
 		DatabaseEntry data = new DatabaseEntry();
 		DbRecordCollector handler = new DbRecordCollector(desc);
 		handler.setBaseDir(dba.getDir());
-		if (text == null || text.length() == 0) {
-			// Get all records in the table
-			DatabaseEntry key = new DatabaseEntry();
-			dba.lookup(key, data, handler);
-		} else {
-			// Get records (possibly starting with text as prefix)
-			DatabaseEntry key = textToKey(text);
-			handler.setFilter(new DbKeyRecordFilter(text, prefixKey));
-			dba.lookup(key, data, handler);
-		}
+		if (filter != null)
+			handler.setFilter(filter);
+		dba.lookup(key, data, handler);
 		return handler.getCollectedRecords();
+	
+	}
+	static public Vector<DbRecord> lookupByName(DbDescriptor desc, String name,
+		boolean prefix)
+	{
+		return lookup(desc, new DatabaseEntry(), new DbNameRecordFilter(name, prefix));
+	}
+	static public Vector<DbRecord> lookupByKey(DbDescriptor desc, String text,
+		boolean prefix)
+	{
+		DbRecordFilter filter;
+		DatabaseEntry key;
+		if (text == null || text.length() == 0) {
+			key = new DatabaseEntry();
+			filter = null;
+		}
+		else {
+			key = textToKey(text);
+			filter = new DbKeyRecordFilter(text, prefix);
+		}
+		return lookup(desc, key, filter);
 	}
 }

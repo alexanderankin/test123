@@ -29,7 +29,7 @@ public class JumpAction extends EditAction {
 				view, SourceNavigatorPlugin.getMessage("no-tag-for-jump"));
 			return;
 		} 
-		Vector<DbRecord> tags = DbAccess.lookup(desc, tag, false);
+		Vector<DbRecord> tags = DbAccess.lookupByKey(desc, tag, false);
 		if (tags == null || tags.isEmpty()) {
 			JOptionPane.showMessageDialog(
 				view, SourceNavigatorPlugin.getMessage("no-tags-found"));

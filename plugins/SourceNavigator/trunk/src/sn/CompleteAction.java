@@ -22,7 +22,7 @@ public class CompleteAction extends EditAction {
 	public void invoke(View view) {
 		String text = SourceNavigatorPlugin.getEditorInterface().getTextToComplete(
 				view, "\\w+");
-		Vector<DbRecord> tags = DbAccess.lookup(desc, text, true);
+		Vector<DbRecord> tags = DbAccess.lookupByKey(desc, text, true);
 		if (tags == null || tags.isEmpty())
 			return;
 		new DbRecordCompletionPopup(view, text, tags);
