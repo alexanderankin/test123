@@ -26,7 +26,15 @@ public class JumpAction extends LookupAction {
 	}
 	@Override
 	protected void multipleTags(View view, String text, Vector<DbRecord> records) {
-		String dockableName = SourceNavigatorPlugin.getDockableName(desc);
+		DbDescriptor descToUse = desc;
+		if (desc == null) {
+			descToUse = records.get(0).getDbDescriptor();
+			for (DbRecord record: records)
+				if (record.getDbDescriptor() != descToUse)
+					return;	// No implementation yet
+		}
+		// Show the table with the lookup result
+		String dockableName = SourceNavigatorPlugin.getDockableName(descToUse);
 		view.getDockableWindowManager().showDockableWindow(dockableName);
 		DbDockable dockable = (DbDockable)
 			view.getDockableWindowManager().getDockableWindow(dockableName);

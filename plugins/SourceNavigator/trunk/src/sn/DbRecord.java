@@ -34,6 +34,9 @@ public class DbRecord {
 	public String getName() {
 		return getColumn(desc.nameColumn);
 	}
+	public DbDescriptor getDbDescriptor() {
+		return desc;
+	}
 	public SourceLink getSourceLink() {
 		if (link != null)
 			return link;
