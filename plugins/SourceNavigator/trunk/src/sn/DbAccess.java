@@ -211,4 +211,11 @@ public class DbAccess {
 		}
 		return lookup(desc, key, filter, true);
 	}
+	static public Vector<DbRecord> lookup(DbDescriptor desc, String text,
+		boolean prefix)
+	{
+		if (desc.isNameSearchUseful())
+			return lookupByName(desc, text, prefix);
+		return lookupByKey(desc, text, prefix);
+	}
 }
