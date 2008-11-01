@@ -78,11 +78,36 @@ public class DbAccess {
 		}
 	}
 	
+	public interface DbRecordFilter {
+		boolean accept(DbRecord record);
+	}
+	static private class DbKeyRecordFilter implements DbRecordFilter {
+		private String [] keyStrings;
+		private boolean prefix;
+		private int prefixIndex;
+		public DbKeyRecordFilter(String key, boolean prefix) {
+			keyStrings = key.split(SN_SEP);
+			this.prefix = prefix;
+			prefixIndex = (prefix ? keyStrings.length - 1 : keyStrings.length);
+		}
+		public boolean accept(DbRecord record) {
+			if (keyStrings == null)
+				return true;
+			for (int i = 0; i < prefixIndex; i++)
+				if (! record.getColumn(i).equals(keyStrings[i]))
+					return false;
+			if (prefix &&
+				(! record.getColumn(prefixIndex).startsWith(keyStrings[prefixIndex])))
+			{
+				return false;
+			}
+			return true;
+		}
+	}
 	static private class DbRecordCollector implements RecordHandler {
 		private DbDescriptor desc;
 		private String baseDir;
-		private String [] keyStrings;
-		private boolean prefix;
+		private DbRecordFilter filter;
 		private Vector<DbRecord> records;
 		public DbRecordCollector(DbDescriptor desc) {
 			this.desc = desc;
@@ -96,25 +121,16 @@ public class DbAccess {
 		}
 		public boolean handle(DatabaseEntry key, DatabaseEntry data) {
 			String [] s = breakToStrings(key);
-			// Check that the record matches the search key
-			if (keyStrings != null) {
-				for (int i = 0; i < keyStrings.length; i++) {
-					if (! s[i].equals(keyStrings[i])) {
-						if (! prefix || i < keyStrings.length - 1)
-							return false;
-						if (! s[i].startsWith(keyStrings[i]))
-							return false;
-					}
-				}
-			}
 			DbRecord record = new DbRecord(desc, s);
+			// Check if this record is not filtered
+			if (filter != null && (! filter.accept(record)))
+				return false;
 			record.setBaseDir(baseDir);
 			records.add(record);
 			return true;
 		}
-		private void setSearchKey(String key, boolean prefixKey) {
-			keyStrings = key.split(SN_SEP);
-			prefix = prefixKey;
+		private void setFilter(DbRecordFilter filter) {
+			this.filter = filter;
 		}
 		private String [] breakToStrings(DatabaseEntry e) {
 			byte [] bytes = e.getData();
@@ -133,17 +149,14 @@ public class DbAccess {
 			return strings;
 		}
 	}
-	static private DatabaseEntry textToKey(String text, boolean prefix) {
+	static private DatabaseEntry textToKey(String text) {
 		// If 'prefix' is set, get records starting with 'text'.
 		// Otherwise, get records matching 'text'.
 		DatabaseEntry key = new DatabaseEntry();
 		byte [] bytes = text.getBytes();
-		byte [] keyBytes = new byte[bytes.length + (prefix ? 0 : 1)];
-		int i;
-		for (i = 0; i < bytes.length; i++)
-			keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1	: bytes[i];
-		if (! prefix)
-			keyBytes[i] = 1;
+		byte [] keyBytes = new byte[bytes.length];
+		for (int i = 0; i < bytes.length; i++)
+			keyBytes[i] = (bytes[i] == FIND_FIELD_SEP) ? 1 : bytes[i];
 		key.setData(keyBytes);
 		return key;
 		
@@ -161,8 +174,8 @@ public class DbAccess {
 			dba.lookup(key, data, handler);
 		} else {
 			// Get records (possibly starting with text as prefix)
-			DatabaseEntry key = textToKey(text, prefixKey);
-			handler.setSearchKey(text, prefixKey);
+			DatabaseEntry key = textToKey(text);
+			handler.setFilter(new DbKeyRecordFilter(text, prefixKey));
 			dba.lookup(key, data, handler);
 		}
 		return handler.getCollectedRecords();

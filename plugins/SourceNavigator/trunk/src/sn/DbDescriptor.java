@@ -16,7 +16,7 @@ public class DbDescriptor {
 		db = jEdit.getProperty(base + "db");
 		columns = jEdit.getProperty(base + "columns");
 		columnNames = columns.split(SN_SEP);
-		fileColumn = lineColumn = -1;	// None by default
+		fileColumn = lineColumn = nameColumn = -1;	// None by default
 		for (int i = 0; i < getColumnCount(); i++) {
 			String columnName = getColumn(i);
 			if (columnName.equals("File"))
@@ -37,5 +37,8 @@ public class DbDescriptor {
 	}
 	public String toString() {
 		return label;
+	}
+	public boolean isNameUsedAsKey() {
+		return (nameColumn == 0);
 	}
 }
