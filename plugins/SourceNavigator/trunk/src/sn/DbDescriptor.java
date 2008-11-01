@@ -38,7 +38,4 @@ public class DbDescriptor {
 	public String toString() {
 		return label;
 	}
-	public boolean isNameUsedAsKey() {
-		return (nameColumn == 0);
-	}
 }
