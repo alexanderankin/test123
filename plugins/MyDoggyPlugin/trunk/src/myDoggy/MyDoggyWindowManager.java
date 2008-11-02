@@ -382,7 +382,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			return;
 		}
 		tw = createToolWindow(name);
-		tw.setType(ToolWindowType.DOCKED);
+		if (DockableWindowManager.FLOATING.equals(getDockablePosition(name)))
+			tw.setType(ToolWindowType.FLOATING_FREE);
+		else
+			tw.setType(ToolWindowType.DOCKED);
 		activateToolWindow(tw);
 	}
 
