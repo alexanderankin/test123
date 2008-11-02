@@ -5,6 +5,7 @@ package sn;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
@@ -21,11 +22,15 @@ class DbRecordCompletionPopup extends CompletionPopup {
 	private View view;
 	private String text;
 	private Vector<Candidate> candidates;
+	private CompleteAction action;
 	
-	public DbRecordCompletionPopup(View view, String text, Vector<DbRecord> records) {
+	public DbRecordCompletionPopup(View view, String text, Vector<DbRecord> records,
+		CompleteAction action)
+	{
 		super(view, getLocation(view.getTextArea(), text));
 		this.view = view;
 		this.text = text;
+		this.action = action;
 		candidates = new Vector<Candidate>();
 		for (DbRecord record: records)
 			candidates.add(new Candidate(record));
@@ -78,4 +83,48 @@ class DbRecordCompletionPopup extends CompletionPopup {
 			return (! candidates.isEmpty());
 		}
 	}
+	
+	protected void keyPressed(KeyEvent e)
+	{
+		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+		{
+			dispose();
+			view.getTextArea().backspace();
+			e.consume();
+			if(text.length() > 1)
+				action.invoke(view);
+		}
+	}
+
+	protected void keyTyped(KeyEvent e)
+	{
+		char ch = e.getKeyChar();
+		if (Character.isDigit(ch))
+		{
+			int index = ch - '0';
+			if(index == 0)
+				index = 9;
+			else
+				index--;
+			if(index < getCandidates().getSize())
+			{
+				setSelectedIndex(index);
+				if(doSelectedCompletion())
+				{
+					e.consume();
+					dispose();
+				}
+				return;
+			}
+		}
+
+		if (ch != '\b' && ch != '\t')
+		{
+			view.getTextArea().userInput(ch);
+			e.consume();
+			dispose();
+			action.invoke(view);
+		}
+	}
+
 }
