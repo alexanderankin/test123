@@ -23,17 +23,18 @@ class DbRecordCompletionPopup extends CompletionPopup {
 	private View view;
 	private String text;
 	private Vector<DbRecord> records;
-	private CompleteAction action;
+	private TagCandidates candidates;
+	private String currentText;
 	
-	public DbRecordCompletionPopup(View view, String text, Vector<DbRecord> records,
-		CompleteAction action)
+	public DbRecordCompletionPopup(View view, String text, Vector<DbRecord> records)
 	{
 		super(view, getLocation(view.getTextArea(), text));
 		this.view = view;
 		this.text = text;
 		this.records = records;
-		this.action = action;
-		reset(new TagCandidates(text, records), true);
+		currentText = text;
+		candidates = new TagCandidates(text, records);
+		reset(candidates, true);
 	}
 	
 	// Position the popup below the caret line, aligned with the text being completed
@@ -47,15 +48,21 @@ class DbRecordCompletionPopup extends CompletionPopup {
 	private class TagCandidates implements Candidates {
 		private final ListCellRenderer renderer;
 		private Vector<String> completions;
+		private String text;
 		public TagCandidates(String text, Vector<DbRecord> records) {
 			renderer = new DefaultListCellRenderer();
 			completions = new Vector<String>();
+			reset(text, records);
+		}
+		public void reset(String newText, Vector<DbRecord> records) {
+			text = newText;
+			completions.clear();
 			for (DbRecord record: records) {
 				String name = record.getName();
-				if (! completions.contains(name))
+				if (name.startsWith(text) && ! completions.contains(name))
 					completions.add(name);
 			}
-			Collections.sort(completions);
+			Collections.sort(completions);	
 		}
 		public void complete(int index) {
 			String selected = completions.get(index);
@@ -82,17 +89,19 @@ class DbRecordCompletionPopup extends CompletionPopup {
 	{
 		if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 		{
-			dispose();
 			view.getTextArea().backspace();
 			e.consume();
-			if(text.length() > 1)
-				action.invoke(view);
+			if (currentText.length() > text.length())
+				updateText(currentText.substring(0, currentText.length() - 1));
+			else
+				dispose();
 		}
 	}
 
 	protected void keyTyped(KeyEvent e)
 	{
 		char ch = e.getKeyChar();
+		/*
 		if (Character.isDigit(ch))
 		{
 			int index = ch - '0';
@@ -111,14 +120,17 @@ class DbRecordCompletionPopup extends CompletionPopup {
 				return;
 			}
 		}
-
+		*/
 		if (ch != '\b' && ch != '\t')
 		{
 			view.getTextArea().userInput(ch);
 			e.consume();
-			dispose();
-			action.invoke(view);
+			updateText(currentText + ch);
 		}
 	}
-
+	private void updateText(String newText) {
+		currentText = newText;
+		candidates.reset(currentText, records);
+		reset(candidates, true);
+	}
 }
