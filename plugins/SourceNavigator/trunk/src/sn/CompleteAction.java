@@ -23,7 +23,7 @@ public class CompleteAction extends LookupAction {
 	}
 	@Override
 	protected void multipleTags(View view, String text, Vector<DbRecord> records) {
-		new DbRecordCompletionPopup(view, text, records, this);
+		new DbRecordCompletionPopup(view, text, records);
 	}
 	@Override
 	protected void singleTag(View view, String text, DbRecord record) {
