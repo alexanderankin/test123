@@ -327,7 +327,7 @@ public class ConnectionManager
 					} catch (FtpLoginException e) {
 						Log.log(Log.DEBUG, ConnectionManager.class, "catch FtpLoginException");
 						//if (e.getResponse().getReturnCode() == "530")
-						info.password = null; // to Show login dialog again   
+						info.password = null; // necessary to show login dialog again instead of using save password again    
 						throw e;
 					}
 				}
@@ -343,8 +343,8 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ releaseConnection() method
-	public static void releaseConnection(Connection connect)
-	{
+	public static void releaseConnection(Connection connect) {
+		Log.log(Log.DEBUG, ConnectionManager.class, "releaseConnection(" + connect + ")");
 		if (connect==null) return;
 		synchronized(lock) {
 			connect.unlock();
@@ -356,19 +356,18 @@ public class ConnectionManager
 	{
 		synchronized(lock)
 		{
-			if(connect.inUse)
+			if(connect.inUse()) {
+				Log.log(Log.DEBUG, ConnectionManager.class, "Can't close connection that still in use");
 				return;
+			}
 
 			Log.log(Log.DEBUG,ConnectionManager.class, "Closing connection to "+ connect.info);
-			try
-			{
+			try {
 				connect.logout();
 			}
-			catch(IOException io)
-			{
+			catch(IOException io) {
 				Log.log(Log.ERROR,ConnectionManager.class,io);
 			}
-
 			connections.remove(connect);
 		}
 	} //}}}
@@ -396,8 +395,7 @@ public class ConnectionManager
 			try {
 				passwordFile.createNewFile();
 			} catch(IOException e) {
-				Log.log(Log.WARNING,ConnectionManager.class,
-					"Unable to create password file: "+passwordFile);
+				Log.log(Log.WARNING,ConnectionManager.class, "Unable to create password file: " + passwordFile);
 			}
 		}
 	} //}}}

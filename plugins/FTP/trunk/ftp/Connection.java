@@ -23,18 +23,17 @@ public abstract class Connection
 	int id;
 	ConnectionInfo info;
 	String home;
-	boolean inUse;
 	Timer closeTimer;
+	
+	private boolean inUse;
 
 	Connection(ConnectionInfo info)
 	{
 		id = COUNTER++;
 		this.info = info;
 
-		closeTimer = new Timer(0,new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
+		closeTimer = new Timer(0,new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				ConnectionManager.closeConnection(Connection.this);
 			}
 		});
@@ -53,41 +52,30 @@ public abstract class Connection
 	abstract String resolveSymlink(String path, String[] name) throws IOException;
 	abstract void logout() throws IOException;
 
-	boolean inUse()
-	{
+	public boolean inUse() {
 		return inUse;
 	}
 
-	void lock()
-	{
+	void lock() {
 		if(inUse)
-		{
-			throw new InternalError("Trying to lock "
-				+ "connection twice!");
-		}
-		else
-		{
-			Log.log(Log.DEBUG,ConnectionManager.class,
-				Thread.currentThread() +
-				": Connection " + this + " locked");
-			inUse = true;
-			closeTimer.stop();
-		}
+			throw new InternalError("Trying to lock connection twice!");
+		
+		Log.log(Log.DEBUG,ConnectionManager.class,
+				Thread.currentThread() + ": Connection " + this + " locked");
+		inUse = true;
+		closeTimer.stop();
 	}
 
 	void unlock()
 	{
-		if(!inUse)
-		{
+		if(!inUse) {
 			Log.log(Log.ERROR,ConnectionManager.class,
-				new Exception(Thread.currentThread() +
-				": Trying to release connection twice!"));
+				new Exception(Thread.currentThread() + ": Trying to release connection twice!"));
 		}
 		else
 		{
 			Log.log(Log.DEBUG,ConnectionManager.class,
-				Thread.currentThread() +
-				": Connection " + this + " released");
+					Thread.currentThread() + ": Connection " + this + " released");
 		}
 
 		inUse = false;

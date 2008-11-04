@@ -22,6 +22,9 @@
 
 package ftp;
 
+/**
+ * @author Vadim Voituk
+ */
 public class FtpAddress {
 
 	private String scheme;
@@ -66,7 +69,7 @@ public class FtpAddress {
 			authPart = domainPart.substring(0, pos);
 			domainPart = domainPart.substring(pos+1);
 			
-			// TODO: parse auth part
+			// parse auth part
 			pos = authPart.indexOf(':');
 			if (pos == -1) {
 				this.user     = authPart;

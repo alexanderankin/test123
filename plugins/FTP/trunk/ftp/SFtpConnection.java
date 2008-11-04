@@ -238,8 +238,7 @@ public class SFtpConnection extends Connection implements UserInfo
 		return returnValue;
 	}
 	
-	void logout() throws IOException
-	{
+	void logout() throws IOException {
 		sftp.disconnect();
 	}
 	
