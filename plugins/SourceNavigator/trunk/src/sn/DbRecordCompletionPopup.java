@@ -49,9 +49,12 @@ class DbRecordCompletionPopup extends CompletionPopup {
 		private final ListCellRenderer renderer;
 		private Vector<String> completions;
 		private String text;
+		private boolean firstTime;
+		
 		public TagCandidates(String text, Vector<DbRecord> records) {
 			renderer = new DefaultListCellRenderer();
 			completions = new Vector<String>();
+			firstTime = true;
 		}
 		private void updateText(String newText) {
 			currentText = newText;
@@ -70,14 +73,19 @@ class DbRecordCompletionPopup extends CompletionPopup {
 				if (name.startsWith(text) && ! completions.contains(name))
 					completions.add(name);
 			}
-			String common = MiscUtilities.getLongestPrefix(completions, false);
-			if (! common.equals(text)) {
-				String insertion = common.substring(text.length());
-				SourceNavigatorPlugin.getEditorInterface().insertAtCaret(view, insertion);
-				updateText(common);
-			} else {
-				Collections.sort(completions);
+			// First time only, automatically apply the longest common
+			// prefix of all available completions.
+			if (firstTime) {
+				firstTime = false;
+				String common = MiscUtilities.getLongestPrefix(completions, false);
+				if (! common.equals(text)) {
+					String insertion = common.substring(text.length());
+					SourceNavigatorPlugin.getEditorInterface().insertAtCaret(view, insertion);
+					updateText(common);
+					return;
+				}
 			}
+			Collections.sort(completions);
 		}
 		public void complete(int index) {
 			String selected = completions.get(index);
