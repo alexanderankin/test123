@@ -9,6 +9,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 
+import utils.BufferWatcher;
 import utils.EditorInterface;
 
 
@@ -23,6 +24,7 @@ public class SourceNavigatorPlugin extends EditPlugin {
 	static public final String JUMPING_ACTION_SET = "Plugin: Source Navigator - Jumping";
 	static private Vector<DbDescriptor> dbDescriptors;
 	static private EditorInterface editorInterface;
+	private BufferWatcher bufferWatcher;
 	
 	public void start()
 	{
@@ -42,10 +44,12 @@ public class SourceNavigatorPlugin extends EditPlugin {
 		});
 		createDockables();
 		createActions();
+		bufferWatcher = new BufferWatcher(new BufferUpdater());
 	}
 
 	public void stop()
 	{
+		bufferWatcher.shutdown();
 	}
 
 	static public EditorInterface getEditorInterface() {
