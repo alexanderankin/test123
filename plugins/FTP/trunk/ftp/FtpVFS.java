@@ -160,9 +160,8 @@ public class FtpVFS extends VFS
 	//{{{ createVFSSession() method
 	public Object createVFSSession(String path, Component comp)
 	{
-		try
-		{
-			Log.log(Log.DEBUG, this, "FtpVFS.createVFSSession()" );
+		try {
+			Log.log(Log.DEBUG, this, "FtpVFS.createVFSSession("+path+", "+comp+")" );
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(comp,
 				path == null ? null : new FtpAddress(path), secure);
 			
@@ -381,8 +380,7 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	//{{{ _mkdir() method
-	public boolean _mkdir(Object _session, String directory, Component comp)
-	throws IOException
+	public boolean _mkdir(Object _session, String directory, Component comp) throws IOException
 	{
 		Connection session = getConnection(_session);
 		
@@ -423,22 +421,21 @@ public class FtpVFS extends VFS
 	
 	//{{{ _finishTwoStageSave() method
 	public void _finishTwoStageSave(Object _session, Buffer buffer, String path,
-		Component comp) throws IOException
-	{
+		Component comp) throws IOException {
+		Log.log(Log.DEBUG, "Run FtpVFS._finishTwoStageSave()", path);
 		Connection session = getConnection(_session);
 		
 		FtpAddress address = new FtpAddress(path);
 		
+		// Restore permissions
 		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
 		if(permissions != 0)
 			session.chmod(address.getPath(),permissions);
 	} //}}}
 	
 	
-	public void _saveComplete(java.lang.Object session,
-		Buffer buffer,
-		java.lang.String path,
-		java.awt.Component comp)
+	public void _saveComplete(java.lang.Object session, Buffer buffer,
+		java.lang.String path, java.awt.Component comp)
 	throws java.io.IOException
 	{
 	}
