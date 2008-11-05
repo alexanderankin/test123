@@ -14,5 +14,6 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 	</path>
-
+<!-- Note to packagers:  Copy docs/Ancestor.html to build/ and run ant as follows: -->
+<!--    ant -propertyfile ../../build.properties -Ddocs-proc.target=none dist  -->
 </project>
