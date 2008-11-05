@@ -457,10 +457,10 @@ public class BrowseRepositoryPanel extends JPanel {
         }
 
         String pbase = "ise.plugin.svn.gui.br.";
-        for ( int i = 1; i < 100; i++ ) {
+        for ( int i = 1; i < 25; i++ ) {
             String label = jEdit.getProperty( pbase + "label." + i );
             if ( label == null ) {
-                break;
+                continue;
             }
             if ( label.equals( "-" ) ) {
                 pm.addSeparator();
@@ -480,7 +480,7 @@ public class BrowseRepositoryPanel extends JPanel {
             catch ( Exception e ) {
                 // class not found or instantiation exception, don't worry
                 // about it, assume it's a typo
-                e.printStackTrace();
+                //e.printStackTrace();
                 continue;
             }
         }

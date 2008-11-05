@@ -124,9 +124,10 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( jEdit.getProperty("ips.Diff...", "Diff...") );
         item.addActionListener( getDiffActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.TimeLapse...", "Time Lapse") );
-        item.addActionListener( getTimeLapseActionListener() );
-        add( item );
+        /// TODO: uncomment these when time lapse works
+        //item = new JMenuItem( jEdit.getProperty("ips.TimeLapse...", "Time Lapse") );
+        //item.addActionListener( getTimeLapseActionListener() );
+        //add( item );
         addSeparator();
         item = new JMenuItem( jEdit.getProperty("ips.Checkout", "Checkout") );
         item.addActionListener( getCheckoutActionListener() );
@@ -278,6 +279,8 @@ public class TextAreaContextMenu extends JMenu {
                };
     }
 
+    /// TODO: uncomment when time lapse works
+    /*
     private ActionListener getTimeLapseActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
@@ -286,6 +289,7 @@ public class TextAreaContextMenu extends JMenu {
                    }
                };
     }
+    */
 
     private ActionListener getCheckoutActionListener() {
         return new ActionListener() {
