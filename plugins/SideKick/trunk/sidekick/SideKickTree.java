@@ -294,6 +294,17 @@ public class SideKickTree extends JPanel
 		super.removeNotify();
 		EditBus.removeFromBus(this);
 	} //}}}
+	
+	//{{{ selectPath() method
+	protected void selectPath(TreePath path)
+	{
+		tree.setSelectionPath(path);
+		Rectangle r = tree.getPathBounds(path);
+		if (r != null) {
+			r.width = 1;
+			tree.scrollRectToVisible(r);
+		}
+	} //}}}
 
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
@@ -671,8 +682,11 @@ public class SideKickTree extends JPanel
 						}
 					}
 				}
-
 				super.processMouseEvent(evt);
+				searchField.requestFocusInWindow();
+				if (path != null) {
+					selectPath(path);
+				}
 				break; //}}}
 			//{{{ MOUSE_EXITED...
 			case MouseEvent.MOUSE_EXITED:
@@ -875,13 +889,7 @@ public class SideKickTree extends JPanel
 				}
 				if (node != null) {
 					TreePath p = new TreePath(node.getPath());
-					tree.setSelectionPath(p);
-					//tree.scrollRowToVisible(tree.getRowForPath(p));
-					Rectangle r = tree.getPathBounds(p);
-					if (r != null) {
-						r.width = 1;
-						tree.scrollRectToVisible(r);
-					}
+					selectPath(p);
 				}
 			}
 		}
@@ -907,12 +915,7 @@ public class SideKickTree extends JPanel
 				}
 				if (node != null) {
 					TreePath p = new TreePath(node.getPath());
-					tree.setSelectionPath(p);
-					Rectangle r = tree.getPathBounds(p);
-					if (r != null) {
-						r.width = 1;
-						tree.scrollRectToVisible(r);
-					}
+					selectPath(p);
 				}
 			}
 		}
@@ -963,6 +966,7 @@ public class SideKickTree extends JPanel
 									}
 								}
 								textArea.setCaretPosition(asset.getStart().getOffset());
+								selectPath(path);
 								textArea.requestFocus();
 							}
 						}
