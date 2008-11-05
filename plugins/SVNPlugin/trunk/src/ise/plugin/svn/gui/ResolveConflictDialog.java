@@ -48,6 +48,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 public class ResolveConflictDialog extends JDialog implements EBComponent {
     private ButtonGroup bg = null;
@@ -245,9 +246,6 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
     /**
      * Do a manual merge via JDiff.
-     * TODO: if the user clicks the unsplit button in the middle of merging, there
-     * needs to be a way to remove the "Keep this file" buttons from the top of the
-     * text areas.
      */
     private void doManualMerge() {
         try {
@@ -324,6 +322,24 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                                                 }
                                             );
                                             theirs_panel.add( theirs_btn );
+
+                                            // add a handler to the edit bus to remove the 'keep this file' button
+                                            // when the view is unsplit
+                                            EBComponent handler = new EBComponent() {
+                                                        public void handleMessage( EBMessage message ) {
+                                                            if ( message instanceof EditPaneUpdate ) {
+                                                                EditPaneUpdate epu = ( EditPaneUpdate ) message;
+                                                                EditPane editPane = epu.getEditPane();
+                                                                View view = editPane.getView();
+                                                                if ( epu.getWhat() == EditPaneUpdate.DESTROYED ) {
+                                                                    editPanes[ 1 ].getTextArea().removeTopComponent( theirs_panel );
+                                                                    view.repaint();
+                                                                    EditBus.removeFromBus(this);
+                                                                }
+                                                            }
+                                                        }
+                                                    };
+                                            EditBus.addToBus( handler );
                                             editPanes[ 1 ].getTextArea().addTopComponent( theirs_panel );
 
                                             // do an explicit repaint of the view to clean up the display
@@ -387,6 +403,24 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                                                 }
                                             );
                                             mine_panel.add( mine_btn );
+
+                                            // add a handler to the edit bus to remove the 'keep this file' button
+                                            // when the view is unsplit
+                                            EBComponent handler = new EBComponent() {
+                                                        public void handleMessage( EBMessage message ) {
+                                                            if ( message instanceof EditPaneUpdate ) {
+                                                                EditPaneUpdate epu = ( EditPaneUpdate ) message;
+                                                                EditPane editPane = epu.getEditPane();
+                                                                View view = editPane.getView();
+                                                                if ( epu.getWhat() == EditPaneUpdate.DESTROYED ) {
+                                                                    editPanes[ 0 ].getTextArea().removeTopComponent( mine_panel );
+                                                                    view.repaint();
+                                                                    EditBus.removeFromBus(this);
+                                                                }
+                                                            }
+                                                        }
+                                                    };
+                                            EditBus.addToBus( handler );
                                             editPanes[ 0 ].getTextArea().addTopComponent( mine_panel );
 
                                             // do an explicit repaint of the view to clean up the display
