@@ -1,0 +1,60 @@
+Tags Change Log
+===============
+
+Version 1.1
+===========
+
+* updated for 4.2 plugin API
+* removed ``import`` statements from actions.xml
+* made `TagsOptionsPanel` a public class
+* consolidated parser code into ExuberantCTagsParser
+* removed tags\GenericTagsParser.java, tags\TagsParser.java
+* removed all reference to TagFile.category
+* return focus to TextArea when ESC is entered on ChooseTagListPopup
+* removed ``_`` from variable names in TagFile.java
+* changed format for saving tag index files.  old format will
+  be converted to new format automatically.  This was done to
+  make handle paths with spaces.
+* moved tag file handling code into TagFiles.java
+* add TagStack dockable
+  - added TagStack.java, TagStackModel.java, & StackPosition.java
+  - moved tag stack position handling into TagsPlugin.java
+* removed getProperty methods from Tags.java
+* make StackPosition.goTo work with closed buffers and handle pending i/o
+* StackPostions release Buffer and Position referenced when a buffer is closed
+* added NO_REPEAT to most actions
+* added 'Push Position onto Tag Stack' action
+* made 'Enabled' column in tag index files table in Option panel smaller
+* TagFile.setEnabled() was broken (I broke it)
+* Fixed bug with popping positions for open buffers off the Tag Stack
+* removed tags\TagsCmdLine.java
+* re-added tags\TagsCmdLine.java at Ken's request
+* re-added Tags.setJEditAvailable(boolean)
+* tag index file for current buffer can't be removed disable/enable
+  in the table, because it puts it out of sync with the othe controls.
+  When you click to enabled it, it adds another copy.
+* removed Tags.getFuncNameUnderCursorOld()
+* Fixed bug finding tag index file in parent directories.
+* removed StackPosition.getPosition()
+* updated TagStack popup menu to use TagsPlugin.popPosition()
+* request focus for ChooseTagListDialog after it's shown -- fixes
+  focus not being moved on my gentoo linux box.
+* changed options.tags.tag-search-current-buff-tag-file default to True.
+* removed StackPosition.getBuffer() -- doing path comparisons instead 
+  of buffer comparisions for releasing positions.
+  StackPosition.releaseBuffer() -> StackPosition.releasePosition()
+* sequential duplicate positions won't be pushed onto the tag stack
+* fixed off by 1 error in StackPosition.goTo when a buffer had
+  to be opened.
+* Locations for tags followed are now added to the TagStack, so
+  2 positions are added for each jump.
+* Current cursor position is now an implicit position on the top
+  of the TagStack.  If not sitting at the position of the topmost
+  element on the TagStack, that's where the cursor is moved when
+  popping, otherwise the topmost element is popped.
+* Changed label of `Pop Tag` to `Pop Position`.
+
+* Fixed NPE when following a Tag before a Search has ever been done
+  (was trying to restore a null value)
+* Fixed passing null to GUIUtilities.showVFSBrowserDialog.
+
