@@ -78,11 +78,17 @@ public class Property {
                 // check for file existence?
             }
 
-            // use default svn config options
-            ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-
             // use the svnkit client manager
-            SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+            SVNClientManager clientManager;
+            if ( data.getUsername() != null ) {
+                // use default svn config options
+                ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+                clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+            }
+            else {
+                System.out.println("+++++ set, no username");
+                clientManager = SVNClientManager.newInstance();
+            }
 
             // get a working copy client
             SVNWCClient wc_client = clientManager.getWCClient();
@@ -107,7 +113,7 @@ public class Property {
                         Object key = me.getKey();
                         if ( key != null ) {
                             name = key.toString();
-                            value = String.valueOf(me.getValue());
+                            value = String.valueOf( me.getValue() );
                             wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), ISVNPropertyHandler.NULL );
                         }
                     }
@@ -147,11 +153,18 @@ public class Property {
             }
         }
 
-        // use default svn config options
-        ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        SVNClientManager clientManager;
+        if ( data.getUsername() != null ) {
+            System.out.println("+++++ get, have username");
+            // use default svn config options
+            ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+            clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        }
+        else {
+            System.out.println("+++++ get, no username");
+            clientManager = SVNClientManager.newInstance();
+        }
 
         // get a working copy client
         SVNWCClient wc_client = clientManager.getWCClient();
@@ -170,14 +183,19 @@ public class Property {
             }
         }
         else {
+            System.out.println("+++++ get, doing files");
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
+                System.out.println("+++++ get 1");
                 wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
+                System.out.println("+++++ get 2");
                 mergeResults( handler.getResults() );
+                System.out.println("+++++ get 3");
             }
         }
         out.flush();
         out.close();
+        System.out.println("+++++ get is done");
     }
 
     private void mergeResults( TreeMap<String, Properties> handler_results ) {
@@ -284,7 +302,7 @@ public class Property {
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;
-            File file = new File( args[0] );
+            File file = new File( args[ 0 ] );
             PropertyHandler handler = prop.getPropertyHandler( file );
             //wc_client.doSetProperty( file, "test:key", "test value", false, false, handler );
             wc_client.doGetProperty( file, null, SVNRevision.UNDEFINED, SVNRevision.WORKING, false, handler );

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2007, Dale Anson
+Copyright (c) 2008, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -26,33 +26,36 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package ise.plugin.svn.gui.br;
+package ise.plugin.svn.pv;
 
-import java.awt.event.ActionListener;
+
 import java.awt.event.ActionEvent;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
-import org.gjt.sp.jedit.View;
-import ise.plugin.svn.action.*;
-import ise.plugin.svn.gui.*;
-import ise.plugin.svn.data.*;
-import ise.plugin.svn.library.GUIUtils;
+import java.io.*;
 import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
+import projectviewer.vpt.VPTNode;
+import ise.plugin.svn.action.IgnoreAction;
 
-
-public class Import extends BRAction {
+/**
+ * Action for ProjectViewer's context menu to set svn:ignore property.
+ */
+public class IgnoreActor extends NodeActor {
 
     public void actionPerformed( ActionEvent ae ) {
-        TreePath[] tree_paths = tree.getSelectionPaths();
-        if ( tree_paths.length == 0 ) {
-            return ;
+        if ( nodes != null && nodes.size() == 1 ) {
+            List<String> paths = new ArrayList<String>();
+            for ( VPTNode node : nodes ) {
+                if ( node != null ) {
+                    paths.add( node.getNodePath() );
+                }
+            }
+
+            IgnoreAction action = new IgnoreAction(view, paths.get(0), null, null);
+            action.actionPerformed(ae);
         }
-        if ( tree_paths.length > 1 ) {
-            JOptionPane.showMessageDialog( view, "Please select a single entry.", "Too many selections", JOptionPane.ERROR_MESSAGE );
-            return ;
+        else {
+                JOptionPane.showMessageDialog(view, "Ignore can only handle 1 item at a time.\nPlease select a single file or directory.", "Too Many Files", JOptionPane.WARNING_MESSAGE);
         }
-        ImportAction action = new ImportAction( view );
-        action.actionPerformed( ae );
     }
 }
