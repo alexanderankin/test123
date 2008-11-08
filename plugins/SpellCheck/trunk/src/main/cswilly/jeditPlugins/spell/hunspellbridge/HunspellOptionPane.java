@@ -39,6 +39,7 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import java.awt.Font;
@@ -147,18 +148,15 @@ public class HunspellOptionPane extends AbstractOptionPane{
 		
 		new Thread(){
 			public void run(){
-				// TODO: use a component inside the option pane to have it visible 
-				ProgressObs po = new ProgressObs(
-						jEdit.getActiveView(),
-						jEdit.getProperty("options.spellcheck.hunspell.fetch-availables.title"),
-						this
+				ProgressObs po = new ProgressObs(this);
+				JComponent poComp = po.asComponent(
+						jEdit.getProperty("options.spellcheck.hunspell.fetch-availables.title")
 					);
+				HunspellOptionPane.this.addComponent(poComp);
+				HunspellOptionPane.this.revalidate();
 				Log.log(Log.DEBUG,HunspellOptionPane.class,"Refresh availables started");
 				List<Dictionary> av = dictsManager.getAvailables(po);
-				try{
-					while(!po.isVisible())Thread.sleep(1000);
-				}catch(InterruptedException ie){}
-				po.setVisible(false);
+				poComp.setVisible(false);
 				for(Dictionary d : av)dlma.add(d);
 				Log.log(Log.DEBUG,HunspellOptionPane.class,"Refresh availables done");
 			}
@@ -188,13 +186,14 @@ public class HunspellOptionPane extends AbstractOptionPane{
 					private Dictionary dict = currentDict;
 					private int index = currentIndex;
 					public void run(){
-						ProgressObs po = new ProgressObs(
+						ProgressObs po = new ProgressObs(this);
+						JDialog poDialog = po.asDialog(
 							GUIUtilities.getParentDialog(listAvailable),
-							jEdit.getProperty("options.spellcheck.hunspell.install-dict.title",new String[]{dict.getDescription()}),
-							this);
+							jEdit.getProperty("options.spellcheck.hunspell.install-dict.title",new String[]{dict.getDescription()})
+						);
 						if(update){
 							boolean updated = dictsManager.update(dict,po);
-							po.setVisible(false);
+							poDialog.setVisible(false);
 							if(!updated){
 								GUIUtilities.error(
 									GUIUtilities.getParentDialog(listAvailable),
@@ -206,7 +205,7 @@ public class HunspellOptionPane extends AbstractOptionPane{
 							listInstalled.repaint();
 						}else{
 							boolean installed  = dictsManager.install(dict,po);
-							po.setVisible(false);
+							poDialog.setVisible(false);
 							if(installed){
 								SwingUtilities.invokeLater(new Runnable(){
 										public void run(){
