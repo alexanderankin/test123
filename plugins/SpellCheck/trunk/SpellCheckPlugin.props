@@ -168,7 +168,7 @@ spell-check-hunspell-error-installed-dict.title=Error installing dictionary
 spell-check-hunspell-error-installed-dict.message=Dictionary {0} is corrupted ({1}).\n\
 Please reinstall it!
 
-options.spellcheck.hunspell.fetch-availables.title=refreshing availables dictionaries list...
+options.spellcheck.hunspell.fetch-availables.title=refreshing available dictionaries list...
 spell-check-hunspell-download.error.message=Download of {0} failed.\n
 
 options.spellcheck.hunspell.install-dict.title=Installing dictionary {0}
