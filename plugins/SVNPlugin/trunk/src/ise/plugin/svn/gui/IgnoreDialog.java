@@ -42,12 +42,23 @@ import ise.java.awt.LambdaLayout;
 
 public class IgnoreDialog extends JDialog {
 
+    private String pathfilename = null;
+    private String path = null;
     private String filename = null;
+    private String pattern = null;
     private boolean recursive = false;
+    private boolean cancelled = false;
 
-    public IgnoreDialog( View view, String name ) {
+    /**
+     * @param view parent frame
+     * @param pathfilename absolute path of a file or directory
+     */
+    public IgnoreDialog( View view, String pathfilename ) {
         super( ( JFrame ) view, jEdit.getProperty( "ips.Ignore_title", "Ignore" ), true );
-        this.filename = new String( name );
+        this.pathfilename = pathfilename;
+        File f = new File( pathfilename );
+        path = f.getParent();
+        filename = f.getName();
 
         JPanel panel = new JPanel( new LambdaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
@@ -55,7 +66,6 @@ public class IgnoreDialog extends JDialog {
         // choices
         ButtonGroup bg = new ButtonGroup();
         final JRadioButton this_file_btn = new JRadioButton( jEdit.getProperty( "ips.This_file", "This file" ) );
-        this_file_btn.setSelected( true );
         final JRadioButton this_dir_btn = new JRadioButton( jEdit.getProperty( "ips.This_directory", "This directory" ) );
         final JRadioButton this_dir_pattern_btn = new JRadioButton( jEdit.getProperty( "ips.Files_in_this_directory_with_this_pattern>", "Files in this directory with this pattern:" ) );
         bg.add( this_file_btn );
@@ -63,7 +73,9 @@ public class IgnoreDialog extends JDialog {
         bg.add( this_dir_pattern_btn );
 
         final JTextField pattern_field = new JTextField();
+        pattern_field.setEnabled( false );
         final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recursive", "Recursive" ), false );
+        recursive_cb.setEnabled( false );
 
         // buttons
         KappaLayout kl = new KappaLayout();
@@ -75,35 +87,52 @@ public class IgnoreDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         // actions
-        ok_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        File file = new File( filename );
-                        if ( this_dir_btn.isSelected() ) {
-                            filename = file.getParent();
-                            if ( pattern_field.getText() != null ) {
-                                filename += File.separator + pattern_field.getText();
-                            }
-                        }
-                        recursive = recursive_cb.isSelected();
-                        IgnoreDialog.this.setVisible( false );
-                        IgnoreDialog.this.dispose();
-                    }
+        this_dir_pattern_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    pattern_field.setEnabled( this_dir_pattern_btn.isEnabled() );
+                    recursive_cb.setEnabled( this_dir_pattern_btn.isEnabled() );
                 }
-                                );
+            }
+        );
 
-        cancel_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        filename = null;
-                        IgnoreDialog.this.setVisible( false );
-                        IgnoreDialog.this.dispose();
+        ok_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    if ( this_dir_pattern_btn.isSelected() ) {
+                        path = IgnoreDialog.this.pathfilename;
                     }
+                    pattern = pattern_field.getText();
+                    if ( pattern != null && pattern.length() == 0 ) {
+                        pattern = null;
+                    }
+                    recursive = recursive_cb.isSelected();
+                    IgnoreDialog.this.setVisible( false );
+                    IgnoreDialog.this.dispose();
                 }
-                                    );
+            }
+        );
+
+        cancel_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    cancelled = true;
+                    IgnoreDialog.this.setVisible( false );
+                    IgnoreDialog.this.dispose();
+                }
+            }
+        );
 
         // layout the panel
-        panel.add( "0, 0, 8, 1, W, wh, 3", new JLabel("Ignore:"));
-        panel.add( "0, 1, 8, 1, W, wh, 3", this_file_btn );
-        panel.add( "0, 2, 8, 1, W, wh, 3", this_dir_btn );
+        panel.add( "0, 0, 8, 1, W, wh, 3", new JLabel( "Ignore:" ) );
+        if ( f.isFile() ) {
+            this_file_btn.setSelected( true );
+            panel.add( "0, 1, 8, 1, W, wh, 3", this_file_btn );
+        }
+        else {
+            this_dir_btn.setSelected( true );
+            panel.add( "0, 2, 8, 1, W, wh, 3", this_dir_btn );
+        }
         panel.add( "0, 3, 8, 1, W, wh, 3", this_dir_pattern_btn );
         panel.add( "1, 4, 7, 1, W, wh, 3", pattern_field );
         panel.add( "1, 5, 7, 1, W, wh, 3", recursive_cb );
@@ -114,12 +143,24 @@ public class IgnoreDialog extends JDialog {
         pack();
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public String getFilename() {
         return filename;
     }
 
+    public String getPattern() {
+        return pattern;
+    }
+
     public boolean getRecursive() {
         return recursive;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     public static void main ( String[] args ) {

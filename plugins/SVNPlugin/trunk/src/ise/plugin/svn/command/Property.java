@@ -86,7 +86,6 @@ public class Property {
                 clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
             }
             else {
-                System.out.println("+++++ set, no username");
                 clientManager = SVNClientManager.newInstance();
             }
 
@@ -102,8 +101,9 @@ public class Property {
                 // TODO: use user set revisions
                 String name = data.getName();
                 String value = data.getValue();
+                PropertyHandler handler = new PropertyHandler( file );
                 if ( name != null ) {
-                    wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), ISVNPropertyHandler.NULL );
+                    wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), handler );
                 }
                 else {
                     // check for multiple properties
@@ -114,7 +114,7 @@ public class Property {
                         if ( key != null ) {
                             name = key.toString();
                             value = String.valueOf( me.getValue() );
-                            wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), ISVNPropertyHandler.NULL );
+                            wc_client.doSetProperty( file, name, value, data.getForce(), data.getRecursive(), handler );
                         }
                     }
                 }
@@ -156,13 +156,11 @@ public class Property {
         // use the svnkit client manager
         SVNClientManager clientManager;
         if ( data.getUsername() != null ) {
-            System.out.println("+++++ get, have username");
             // use default svn config options
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
             clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
         }
         else {
-            System.out.println("+++++ get, no username");
             clientManager = SVNClientManager.newInstance();
         }
 
@@ -183,19 +181,14 @@ public class Property {
             }
         }
         else {
-            System.out.println("+++++ get, doing files");
             for ( File file : localPaths ) {
                 PropertyHandler handler = new PropertyHandler( file );
-                System.out.println("+++++ get 1");
                 wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), data.isRecursive(), handler );
-                System.out.println("+++++ get 2");
                 mergeResults( handler.getResults() );
-                System.out.println("+++++ get 3");
             }
         }
         out.flush();
         out.close();
-        System.out.println("+++++ get is done");
     }
 
     private void mergeResults( TreeMap<String, Properties> handler_results ) {
