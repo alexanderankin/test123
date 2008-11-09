@@ -32,6 +32,7 @@ import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.*;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -68,8 +69,14 @@ public class IgnoreDialog extends JDialog {
         final JRadioButton this_file_btn = new JRadioButton( jEdit.getProperty( "ips.This_file", "This file" ) );
         final JRadioButton this_dir_btn = new JRadioButton( jEdit.getProperty( "ips.This_directory", "This directory" ) );
         final JRadioButton this_dir_pattern_btn = new JRadioButton( jEdit.getProperty( "ips.Files_in_this_directory_with_this_pattern>", "Files in this directory with this pattern:" ) );
-        bg.add( this_file_btn );
-        bg.add( this_dir_btn );
+        if (f.isFile()) {
+            bg.add( this_file_btn );
+            this_file_btn.setSelected(true);
+        }
+        else {
+            bg.add( this_dir_btn );
+            this_dir_btn.setSelected(true);
+        }
         bg.add( this_dir_pattern_btn );
 
         final JTextField pattern_field = new JTextField();
@@ -87,11 +94,12 @@ public class IgnoreDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         // actions
-        this_dir_pattern_btn.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    pattern_field.setEnabled( this_dir_pattern_btn.isEnabled() );
-                    recursive_cb.setEnabled( this_dir_pattern_btn.isEnabled() );
+        this_dir_pattern_btn.addChangeListener(
+            new ChangeListener() {
+                public void stateChanged( ChangeEvent ae ) {
+                    AbstractButton btn = ( AbstractButton ) ae.getSource();
+                    pattern_field.setEnabled( btn.isSelected() );
+                    recursive_cb.setEnabled( btn.isSelected() );
                 }
             }
         );
@@ -125,19 +133,12 @@ public class IgnoreDialog extends JDialog {
 
         // layout the panel
         panel.add( "0, 0, 8, 1, W, wh, 3", new JLabel( "Ignore:" ) );
-        if ( f.isFile() ) {
-            this_file_btn.setSelected( true );
-            panel.add( "0, 1, 8, 1, W, wh, 3", this_file_btn );
-        }
-        else {
-            this_dir_btn.setSelected( true );
-            panel.add( "0, 2, 8, 1, W, wh, 3", this_dir_btn );
-        }
-        panel.add( "0, 3, 8, 1, W, wh, 3", this_dir_pattern_btn );
-        panel.add( "1, 4, 7, 1, W, wh, 3", pattern_field );
-        panel.add( "1, 5, 7, 1, W, wh, 3", recursive_cb );
-        panel.add( "0, 6, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 7, 8, 1, E,   , 0", btn_panel );
+        panel.add( "0, 1, 8, 1, W, wh, 3", f.isFile() ? this_file_btn : this_dir_btn );
+        panel.add( "0, 2, 8, 1, W, wh, 3", this_dir_pattern_btn );
+        panel.add( "1, 3, 7, 1, W, wh, 3", pattern_field );
+        panel.add( "1, 4, 7, 1, W, wh, 3", recursive_cb );
+        panel.add( "0, 5, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 6, 8, 1, E,   , 0", btn_panel );
 
         setContentPane( panel );
         pack();
