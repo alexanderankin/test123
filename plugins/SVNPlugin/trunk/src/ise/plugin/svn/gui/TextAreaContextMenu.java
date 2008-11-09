@@ -63,6 +63,7 @@ public class TextAreaContextMenu extends JMenu {
         add
         resolve
         delete
+        ignore
         -
         info
         log
@@ -107,6 +108,9 @@ public class TextAreaContextMenu extends JMenu {
         add( item );
         item = new JMenuItem( jEdit.getProperty("ips.Delete...", "Delete...") );
         item.addActionListener( getDeleteActionListener() );
+        add( item );
+        item = new JMenuItem( jEdit.getProperty("ips.Ignore...", "Ignore...") );
+        item.addActionListener( getIgnoreActionListener() );
         add( item );
         addSeparator();
         item = new JMenuItem( jEdit.getProperty("ips.Info...", "Info...") );
@@ -223,6 +227,15 @@ public class TextAreaContextMenu extends JMenu {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
                        DeleteAction action = new DeleteAction( view, getPaths(), null, null );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
+    private ActionListener getIgnoreActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       IgnoreAction action = new IgnoreAction( view, view.getBuffer().getPath() );
                        action.actionPerformed( ae );
                    }
                };
