@@ -119,14 +119,14 @@ public class PropertyPanel extends JPanel {
             final BestRowTable props_table = new BestRowTable( );
 
             // declare buttons here so table action listeners can react
-            final JButton add_btn = new JButton( jEdit.getProperty("ips.Add", "Add") );
-            final JButton edit_btn = new JButton( jEdit.getProperty("ips.Edit", "Edit") );
-            final JButton delete_btn = new JButton( jEdit.getProperty("ips.Delete", "Delete") );
+            final JButton add_btn = new JButton( jEdit.getProperty( "ips.Add", "Add" ) );
+            final JButton edit_btn = new JButton( jEdit.getProperty( "ips.Edit", "Edit" ) );
+            final JButton delete_btn = new JButton( jEdit.getProperty( "ips.Delete", "Delete" ) );
 
             // set up table model and selection model
             final DefaultTableModel model = new DefaultTableModel(
                         new String[] {
-                            jEdit.getProperty("ips.Name", "Name"), jEdit.getProperty("ips.Value", "Value")
+                            jEdit.getProperty( "ips.Name", "Name" ), jEdit.getProperty( "ips.Value", "Value" )
                         }, props.size() );
             props_table.setModel( model );
             props_table.setRowSelectionAllowed( true );
@@ -156,8 +156,13 @@ public class PropertyPanel extends JPanel {
                 ++i;
             }
 
-            TableColumn column1 = props_table.getColumnModel().getColumn( 1 );  // property value
-            column1.setCellRenderer( new BestRowTable.WrapCellRenderer() );
+            TableColumnModel column_model = props_table.getColumnModel();
+            TableColumn column0 = column_model.getColumn( 0 );  // name
+            column0.setPreferredWidth( 120 );
+            column0.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            TableColumn column1 = column_model.getColumn( 1 );  // value
+            column1.setPreferredWidth( 200 );
+            column1.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
 
             // add a mouse listener for the popup
             props_table.addMouseListener( new TableCellViewer( props_table ) );
@@ -165,10 +170,10 @@ public class PropertyPanel extends JPanel {
             // create and add a panel with this result
             JPanel panel = new JPanel( new LambdaLayout() );
             panel.setBorder( new CompoundBorder( new EtchedBorder(), new EmptyBorder( 3, 3, 3, 3 ) ) );
-            JLabel filename_label = new JLabel( jEdit.getProperty("ips.Properties_for>", "Properties for:") + " " + filename, JLabel.LEFT );
+            JLabel filename_label = new JLabel( jEdit.getProperty( "ips.Properties_for>", "Properties for:" ) + " " + filename, JLabel.LEFT );
             panel.add( filename_label, "0, 0, 1, 1, W, w, 3" );
             props_table.packRows();
-            panel.add(GUIUtils.createTablePanel(props_table), "0, 1, 1, 1, 0, wh, 3");
+            panel.add( GUIUtils.createTablePanel( props_table ), "0, 1, 1, 1, 0, wh, 3" );
 
             // set up the add, edit, and delete buttons if for working copy
             if ( !originalData.getRemote() ) {
@@ -246,8 +251,8 @@ public class PropertyPanel extends JPanel {
                             int row = props_table.getSelectedRow();
                             String key = ( String ) model.getValueAt( row, 0 );
                             int confirm = JOptionPane.showConfirmDialog( view,
-                                    jEdit.getProperty("ips.Delete_property_named", "Delete property named") + " " + key + "?",
-                                    jEdit.getProperty("ips.Confirm_Delete?", "Confirm Delete?"),
+                                    jEdit.getProperty( "ips.Delete_property_named", "Delete property named" ) + " " + key + "?",
+                                    jEdit.getProperty( "ips.Confirm_Delete?", "Confirm Delete?" ),
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE );
                             if ( confirm != JOptionPane.YES_OPTION ) {

@@ -64,7 +64,7 @@ public class IgnoreAction extends SVNAction {
      * @param data what to show
      */
     public IgnoreAction( View view, String path ) {
-        this(view, path, null, null);
+        this( view, path, null, null );
     }
 
     /**
@@ -83,32 +83,36 @@ public class IgnoreAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( path != null ) {
-            System.out.println("+++++ path: " + path);
-            IgnoreDialog dialog = new IgnoreDialog( getView(), path );
+
+            // get settings from the user for what to ignore
+            final IgnoreDialog dialog = new IgnoreDialog( getView(), path );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
-            final String filename = dialog.getFilename(); // this could be different than path, it might have a pattern attached
-            if ( filename == null ) {
-                return ;     // user cancelled
+            if ( dialog.isCancelled() ) {
+                return ;
             }
-            System.out.println("++++ filename: " + filename);
 
-            // set up the svn console
+            /*
+            System.out.println("+++++ dialog.getPath = " + dialog.getPath());
+            System.out.println("+++++ dialog.getFilename = " + dialog.getFilename());
+            System.out.println("+++++ dialog.getPattern = " + dialog.getPattern());
+            System.out.println("+++++ dialog.getRecursive = " + dialog.getRecursive());
+            */
+
+            // set up the data transfer object
             final PropertyData data = new PropertyData();
             data.setOut( new ConsolePrintStream( getView() ) );
+
             List<String> paths = new ArrayList<String>();
-            File filepath = new File(path);
-            if (filepath.isFile()) {
-                path = filepath.getParent();
-            }
-            System.out.println("+++++ path: " + path);
-            paths.add( path );
+            paths.add( dialog.getPath() );
             data.setPaths( paths );
             data.setUsername( username );
             data.setPassword( password );
             data.setRecursive( dialog.getRecursive() );
-            data.setPathsAreURLs(false);
-            data.setRevision(SVNRevision.WORKING);
+            data.setPathsAreURLs( false );
+            data.setRevision( SVNRevision.WORKING );
+
+            // set up the svn console
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
@@ -119,17 +123,54 @@ public class IgnoreAction extends SVNAction {
                 @Override
                 public TreeMap<String, Properties> doInBackground() {
                     try {
+                        // get the current properties
                         Property prop = new Property();
                         prop.doGetProperties( data );
                         Properties props = prop.getProperties().get( path );
+
+                        // get any existing 'ignore' value
                         String to_ignore = null;
-                        if (props != null) {
+                        if ( props != null ) {
                             to_ignore = props.getProperty( "svn:ignore" );
                         }
+
+                        // set 'ignore' property name
                         data.setName( "svn:ignore" );
-                        data.setValue(to_ignore == null ? filename : to_ignore + "\n" + filename);
+
+                        // set the new ignore value
+                        String filename = dialog.getPattern();
+                        if ( filename == null ) {
+                            filename = dialog.getFilename();
+                        }
+                        Set<String> set = new HashSet<String>();
+                        if ( to_ignore != null ) {
+                            String[] old_ignored = to_ignore.split( "\n" );
+                            for ( String i : old_ignored ) {
+                                set.add( i );
+                            }
+                        }
+                        set.add( filename );
+                        StringBuffer sb = new StringBuffer();
+                        for ( String i : set ) {
+                            sb.append( i ).append( "\n" );
+                        }
+                        data.setValue( sb.toString() );
+
+                        // actually set the 'ignore' property
                         prop.doSetProperties( data );
-                        return prop.getProperties();
+
+                        // get the results to display to the user
+                        TreeMap<String, Properties> rtn = prop.getProperties();
+                        props = rtn.get( path );
+                        if ( props != null ) {
+                            props.put( "svn:ignore", sb.toString() );
+                        }
+                        else {
+                            Properties p = new Properties();
+                            p.put( "svn:ignore", sb.toString() );
+                            rtn.put( path, p );
+                        }
+                        return rtn;
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();
@@ -174,7 +215,7 @@ public class IgnoreAction extends SVNAction {
 
             // fetch the properties
             Runner runner = new Runner();
-            panel.addWorker( "Property", runner );
+            panel.addWorker( "Ignore", runner );
             runner.execute();
         }
     }
