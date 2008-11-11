@@ -34,6 +34,8 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
 import javax.swing.JPanel;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -49,33 +51,58 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ProgressObserver;
 
-public class ProgressObs extends JDialog implements ProgressObserver{
+public class ProgressObs implements ProgressObserver{
+
 		//{{{ ProgressObs constructor
-		public ProgressObs(Frame parent,String title,ActionListener action)
-		{
-			super(parent,title);
+		public ProgressObs(ActionListener action){
 			this.stopAction = action;
 			init();
 		}
 
-		public ProgressObs(Frame parent,String title,Thread thread)
+		public ProgressObs(Thread thread)
 		{
-			super(parent,title);
 			this.thread = thread;
 			init();
 		}
+		///}}}
 		
-		public ProgressObs(Dialog parent,String title,Thread thread)
+		
+		//{{{ asDialog() and asComponent()
+		public JDialog asDialog(Frame parent,String title)
 		{
-			super(parent,title);
-			this.thread = thread;
-			init();
+			dialog = new JDialog(parent,title);
+			initDialog(dialog);
+			return dialog;
+		}
+
+		public JDialog asDialog(Dialog parent,String title)
+		{
+			dialog = new JDialog(parent,title);
+			initDialog(dialog);
+			return dialog;
+		}
+
+
+		public JComponent asComponent(String title){
+			content.add(BorderLayout.NORTH,new JLabel(title));
+			return content;
 		}
 		
+		private void initDialog(final JDialog dialog){
+			dialog.setContentPane(content);
+
+			dialog.addWindowListener(new WindowHandler());
+	
+			dialog.pack();
+			new Thread(){
+				public void run(){
+					dialog.setVisible(true);
+			}}.start();
+		}
+
 		private void init(){
-			JPanel content = new JPanel(new BorderLayout(12,12));
+			content = new JPanel(new BorderLayout(12,12));
 			content.setBorder(new EmptyBorder(12,12,12,12));
-			setContentPane(content);
 	
 			progress = new JProgressBar();
 			progress.setStringPainted(true);
@@ -90,7 +117,7 @@ public class ProgressObs extends JDialog implements ProgressObserver{
 				stopAction = new ActionListener(){
 				public void actionPerformed(ActionEvent evt){
 						ProgressObs.this.thread.stop();
-						setVisible(false);
+						if(dialog!=null)dialog.setVisible(false);
 				}};
 			}
 			
@@ -100,15 +127,7 @@ public class ProgressObs extends JDialog implements ProgressObserver{
 				FlowLayout.CENTER,0,0));
 			panel.add(stop);
 			content.add(BorderLayout.CENTER,panel);
-	
-			addWindowListener(new WindowHandler());
-	
-			pack();
-			new Thread(){
-				public void run(){
-					setVisible(true);
-			}}.start();
-		} //}}}
+			} //}}}
 	
 	
 		//{{{ setValue() method
@@ -169,7 +188,8 @@ public class ProgressObs extends JDialog implements ProgressObserver{
 		private ActionListener stopAction;
 		// progress value as of start of current task
 		private int valueSoFar;
-	
+		private JPanel content;
+		private JDialog dialog;
 		//}}}
 	
 	
@@ -179,7 +199,7 @@ public class ProgressObs extends JDialog implements ProgressObserver{
 			public void windowClosing(WindowEvent evt)
 			{
 				thread.stop();
-				dispose();
+				evt.getWindow().dispose();
 			}
 		} //}}}
 	

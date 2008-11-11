@@ -93,7 +93,7 @@ public class Hunspell {
      * @throws UnsupportedOperationException if the OS or architecture is simply not supported.
      */
     protected Hunspell(String libDir) throws UnsatisfiedLinkError, UnsupportedOperationException {
-		this(libDir,libDir != null ? libDir+"/"+libName() : libNameBare());
+		this(libDir,(libDir != null ? libDir+"/" : "")+libName());
 	}
 	
     /**
