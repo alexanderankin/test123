@@ -43,7 +43,7 @@ import cswilly.spell.SpellException;
 public
 class HunspellEngine implements Engine
 {
-	private static final Pattern WORDS_PATTERN = Pattern.compile("\\w+");
+	private static final Pattern WORDS_PATTERN = Pattern.compile("\\p{L}+");
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 
 	private Hunspell.Dictionary dict;
