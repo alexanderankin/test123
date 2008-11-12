@@ -584,7 +584,7 @@ public class SideKickTree extends JPanel
 					// it when the tree is expanded for the current
 					// caret position.
 					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-						if (! searchField.getText().isEmpty()) {
+						if (searchField.getText().length() > 0) {
 							searchField.setText("");
 							updateFilter(false);
 						}
@@ -676,7 +676,7 @@ public class SideKickTree extends JPanel
 
 					}
 					if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-						if (! searchField.getText().isEmpty()) {
+						if (searchField.getText().length() > 0) {
 							searchField.setText("");
 							updateFilter(false);
 						}
@@ -960,7 +960,7 @@ public class SideKickTree extends JPanel
 										asset.getEnd().getOffset()));
 							} else {
 								if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
-									if (! searchField.getText().isEmpty()) {
+									if (searchField.getText().length() > 0) {
 										searchField.setText("");
 										updateFilter();
 									}
