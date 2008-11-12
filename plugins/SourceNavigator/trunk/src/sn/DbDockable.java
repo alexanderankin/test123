@@ -35,15 +35,12 @@ public class DbDockable extends JPanel {
 		public void clear() {
 			elements.clear();
 		}
-		@Override
 		public int getColumnCount() {
 			return desc.getColumnCount();
 		}
-		@Override
 		public int getRowCount() {
 			return elements.size();
 		}
-		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (rowIndex < 0 || rowIndex >= getRowCount() ||
 				columnIndex < 0 || columnIndex >= getColumnCount())
@@ -84,7 +81,6 @@ public class DbDockable extends JPanel {
 		//table.setAutoResizeWithHeaders(true);
 		table.setRowSelectionAllowed(true);
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
 					int sel = table.getSelectedRow();
