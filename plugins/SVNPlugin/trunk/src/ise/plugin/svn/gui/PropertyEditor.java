@@ -123,7 +123,7 @@ public class PropertyEditor extends JDialog {
     private String[] keyword_choices = new String[] {"Date", "Revision", "Author", "HeadURL", "Id"};
 
     // name of eol-style property
-    // TOD: is using an array of any value?
+    // TODO: is using an array of any value?
     private String[] eol_names = new String[] {"svn:eol-style"};
 
     // eol-style values understood by svn
@@ -196,9 +196,7 @@ public class PropertyEditor extends JDialog {
         // there are 2 radio buttons, the top one lets the user enter or select
         // property values, the second lets the user specify a file with the
         // property data.
-        // TODO: put string in props file
-        //final JRadioButton text_btn = new JRadioButton( jEdit.getProperty( "ips.Enter_a_text_value>", "Enter a text value:" ) );
-        final JRadioButton text_btn = new JRadioButton( "Enter a text value:" );
+        final JRadioButton text_btn = new JRadioButton( jEdit.getProperty( "ips.Enter_a_text_value>", "Enter a text value:" ) );
         text_btn.setSelected( true );
         final JRadioButton file_btn = new JRadioButton( jEdit.getProperty( "ips.Or_load_value_from_file>", "Or load value from file:" ) );
         ButtonGroup bg = new ButtonGroup();
@@ -296,8 +294,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        // TODO: put string in props
-                                        text_btn.setText( "Choose a value:" );
+                                        text_btn.setText( jEdit.getProperty("ips.Choose_a_value>", "Choose a value:") );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -325,8 +322,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        // TODO: put string in props
-                                        text_btn.setText( "Choose one or more values:" );
+                                        text_btn.setText( jEdit.getProperty("ips.Choose_one_or_more_values>", "Choose one or more values:") );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -348,8 +344,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        // TODO: put string in props
-                                        text_btn.setText( "Choose a value:" );
+                                        text_btn.setText( jEdit.getProperty("ips.Choose_a_value>", "Choose a value:") );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }

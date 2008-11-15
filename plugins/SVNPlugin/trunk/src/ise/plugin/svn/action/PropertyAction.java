@@ -121,11 +121,11 @@ public class PropertyAction extends SVNAction {
                 public boolean cancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
-                        data.getOut().printError( "Stopped 'Property' action." );
+                        data.getOut().printError( jEdit.getProperty("ips.Stopped_'Property'_action.", "Stopped 'Property' action.") );
                         data.getOut().close();
                     }
                     else {
-                        data.getOut().printError( "Unable to stop 'Property' action." );
+                        data.getOut().printError( jEdit.getProperty("ips.Unable_to_stop_'Property'_action.", "Unable to stop 'Property' action.") );
                     }
                     return cancelled;
                 }
@@ -150,7 +150,7 @@ public class PropertyAction extends SVNAction {
 
             // fetch the properties
             Runner runner = new Runner();
-            panel.addWorker( "Property", runner );
+            panel.addWorker( jEdit.getProperty("ips.Property", "Property"), runner );
             runner.execute();
         }
     }

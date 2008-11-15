@@ -179,8 +179,10 @@ public class BlameAction extends SVNAction {
                         getView().validate();
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Done.", "Done." ) );
                         if ( model.outOfDate() ) {
-                            // TODO: put message in properties file
-                            JOptionPane.showMessageDialog( getView(), "File has local modifications, blame may not be correct.", "Warning: Local Modifications", JOptionPane.WARNING_MESSAGE );
+                            JOptionPane.showMessageDialog( getView(),
+                                jEdit.getProperty("ips.File_has_local_modifications,_blame_may_not_be_correct.", "File has local modifications, blame may not be correct."),
+                                jEdit.getProperty("ips.Warning>_Local_Modifications", "Warning: Local Modifications"),
+                                JOptionPane.WARNING_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {

@@ -96,8 +96,8 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
     }
 
     /**
-     * Finds a file named like the given file, but with ".rXXX" appended to the name,
-     * where XXX represents a revision number.
+     * Finds a file named like the given file, but with ".rNNN" appended to the name,
+     * where NNN represents a revision number.
      * Since it is possible that there are several such files, this method returns
      * the file with the largest number.
      */
