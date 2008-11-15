@@ -11,7 +11,7 @@ apply patch - won't do, use JDiff for this
 --
 revert - done
 add - done
-ignore         // TODO
+ignore - done
 edit conflicts - done?
 resolve - done
 (not in Eclipse, I added "delete" here)

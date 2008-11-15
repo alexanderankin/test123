@@ -50,7 +50,7 @@ import ise.plugin.svn.io.ConsolePrintStream;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 /**
- * /// TODO: convert this to an Actor and an ActionListener.
+ * Action for ProjectViewer's context menu to execute an svn resolve.
  */
 public class ResolvedActor extends NodeActor {
 

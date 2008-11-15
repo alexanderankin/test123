@@ -23,7 +23,6 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
  * Simple data model to transport necessary data for the SVN "blame" command.
- * DONE: Should this go in the 'data' package? --> NO
  */
 public class BlameModel {
 

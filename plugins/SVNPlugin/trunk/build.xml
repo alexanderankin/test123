@@ -247,7 +247,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.gui.RevisionDialog">
+        <java classname="ise.plugin.svn.gui.PropertyEditor">
             <classpath refid="classpathref" />
         </java>
     </target>

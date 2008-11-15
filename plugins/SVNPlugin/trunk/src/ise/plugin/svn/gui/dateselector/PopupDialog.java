@@ -8,9 +8,6 @@ import java.awt.event.*;
 import java.net.URL;
 
 // Test this class by instantiating DateSelector
-// TODO: Draw the close box in a paint() override using lines so that
-//    the dependancy on the image file goes away and so that
-//    it can change colors to match the foreground color.
 
 /** A PopupDialog is a clean, lightweight, "modal" window intended for
  *  simple pop-up user-interface widgets. The  frame, as shown at right,
