@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!-- Dockable component definition file for CookViewer plugin -->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- CookViewer dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="cookviewer">
+		new CookViewer(view, position);
+	</DOCKABLE>
+</DOCKABLES>
+
+<!-- :folding=explicit:tabSize=2:indentSize=2: -->

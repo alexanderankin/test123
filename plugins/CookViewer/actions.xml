@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="cookviewer.toggle">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow(CookViewerPlugin.NAME);
+			view.getDockableWindowManager().getDockable(CookViewerPlugin.NAME);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cookviewer.render">
+  	<CODE>
+			view.getDockableWindowManager().addDockableWindow(CookViewerPlugin.NAME);
+			view.getDockableWindowManager().getDockable(CookViewerPlugin.NAME).renderContent();
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
+<!-- :folding=explicit:tabSize=2:indentSize=2: -->
