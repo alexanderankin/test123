@@ -8,6 +8,7 @@ Beauty          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Beauty/t
 BufferList      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferList/trunk
 BufferTabs      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferTabs/trunk
 BufferLocal     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferLocal/trunk
+BufferTabs      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferTabs/trunk
 Calculator      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk
 Cipher          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Cipher/trunk
 ClassBrowser    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ClassBrowser/trunk
@@ -18,6 +19,7 @@ ConfigurableFoldHandler    https://jedit.svn.sourceforge.net/svnroot/jedit/plugi
 Console         https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Console/trunk
 ContextMenu     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ContextMenu/trunk
 CscopeFinder    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CscopeFinder/trunk
+CtagsInterface  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsInterface/trunk
 CtagsSideKick   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsSideKick/trunk
 Docker          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Docker/trunk
 ErrorList       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk
@@ -53,8 +55,7 @@ PHPParser       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PHPParse
 PerlSideKick    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PerlSideKick/trunk
 ProjectOptions  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk
 ProjectViewer   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectViewer/trunk
-Perspective     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Perspective/trunk
-RFCReader       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk
+RFCReader      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk
 RubyPlugin      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk
 SQL             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk
 SVNPlugin       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin/trunk
