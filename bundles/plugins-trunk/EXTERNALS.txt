@@ -27,9 +27,9 @@ FoldViewer      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FoldView
 GdbPlugin       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GdbPlugin/trunk
 GnuRegexp       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GnuRegexp/trunk
 HelperLauncher  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/HelperLauncher/trunk
-Hex                     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hex/trunk
+Hex             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hex/trunk
 Highlight       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Highlight/trunk
-Hyperlinks       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hyperlinks/trunk
+Hyperlinks      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Hyperlinks/trunk
 InfoViewer      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/InfoViewer/trunk
 JCompiler       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JCompiler/trunk
 JDiffPlugin     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JDiffPlugin/trunk
@@ -44,6 +44,7 @@ LogViewer       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LogViewe
 LookAndFeel     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LookAndFeel/trunk
 LucenePlugin    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LucenePlugin/trunk
 MacroManager    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/MacroManager/trunk
+MyDoggyPlugin   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/MyDoggyPlugin/trunk
 Navigator       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Navigator/trunk
 Optional        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Optional/trunk
 Outline         https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Outline/trunk
@@ -67,7 +68,7 @@ TaskList        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TaskList
 Templates       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Templates/trunk
 TextAutocomplete https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextAutocomplete/trunk
 TextFilter      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextFilter/trunk
-TextTools        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextTools/trunk
+TextTools       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextTools/trunk
 WincryptCipher  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/WincryptCipher/trunk
 XInsert         https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XInsert/trunk
 XML             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk
