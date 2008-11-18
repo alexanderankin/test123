@@ -2,6 +2,9 @@ FindFile TODO
 Anthony Keeley
 Sat Aug 16 19:02:38 CDT 2008
 
+- Clean up xlint warnings.
+- Delete files?
+- Open in new view, new plain view?
 - Return all files in a search (why doesn't it return archives, exe's?).
 - Integrate use of helperlauncher.
 - Modify dialog
@@ -14,26 +17,3 @@ Sat Aug 16 19:02:38 CDT 2008
         - Keep Dialog
         - Ignore Case
         - Search subdirectories
-- Modify context menus
-    - result node:
-        - Open
-        * Open in New View
-        * Open in New Plain View
-        - Close
-        - ---
-        - Remove Node
-        * Delete File
-        - ---
-        - Copy File Path
-        - Browse File Path...
-        - Search in File...
-    - search node:
-        - Remove Node
-        * Redo Search
-        - ---
-        - Open All Files
-        - Close All Files
-        - ---
-        - Copy Results
-        - Search in Files...
-        - Sort Results >
