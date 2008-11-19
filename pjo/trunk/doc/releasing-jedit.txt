@@ -26,14 +26,14 @@ Workflow
    in jEdits source directory to be sure you are in sync with the SVN repository
 
 4. Tag the sourcecode for release in the SVN repository by doing
-        svn copy https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/trunk https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-pre16 -m "Tagging 4.3pre16 for release."
+        svn copy https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/trunk https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-pre17 -m "Tagging 4.3pre17 for release."
    with the correct version in the second URL and in the commit message
 
 5. To be sure to work with the exact tagged source, check out the newly tagged source in a new directory by doing
-        svn checkout https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-pre16 jEdit4.3pre16
-   no matter where. You will find the source in a subfolder jEdit4.3pre16 where you executed the command
+        svn checkout https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-pre17 jEdit4.3pre17
+   no matter where. You will find the source in a subfolder jEdit4.3pre17 where you executed the command
 
-6. Copy build.properties and jars/build.properties from your jEdit source directory to the newly created jEdit4.3pre15 source directory. If you don't have the two, then create them. For the root directory you find a template called build.properties.sample there and for the jars/build.properties you find a template in build-support/build.properties. These are independent and have to be set up correctly. The one in the root directory is for jEdit itself, the one in jars is for the standard plugins.
+6. Copy build.properties and jars/build.properties from your jEdit source directory to the newly created jEdit4.3pre17 source directory. If you don't have the two, then create them. For the root directory you find a template called build.properties.sample there and for the jars/build.properties you find a template in build-support/build.properties. These are independent and have to be set up correctly. The one in the root directory is for jEdit itself, the one in jars is for the standard plugins.
    To give an example, in build.properties I customized the following properties:
     - innosetup.compiler.executable=C:\\Programme\\Inno Setup 5\\Compil32.exe
     - xsltproc.executable=C:\\Programme\\xsltproc\\xsltproc.exe
@@ -52,73 +52,73 @@ Workflow
 
 7.1. Build the distribution files by doing
           ant dist
-     in the jEdit4.3pre16 directory
-     In the newly created directory jEdit4.3pre16/dist you find 8 files:
-      - jedit4.3pre16manual-a4.pdf
-      - jedit4.3pre16manual-letter.pdf
-      - jedit4.3pre16source.tar.bz2
-      - jedit4.3pre16install.jar
-      - jedit-4.3pre16-noarch-1sao.tgz
-      - jedit_4.3pre16_all.deb
-      - jedit4.3pre16install.exe or jedit4.3pre16-dist-win-finish.tar.bz2
-      - jedit4.3pre16install.dmg or jedit4.3pre16-dist-mac-finish.tar.bz2
+     in the jEdit4.3pre17 directory
+     In the newly created directory jEdit4.3pre17/dist you find 8 files:
+      - jedit4.3pre17manual-a4.pdf
+      - jedit4.3pre17manual-letter.pdf
+      - jedit4.3pre17source.tar.bz2
+      - jedit4.3pre17install.jar
+      - jedit-4.3pre17-noarch-1sao.tgz
+      - jedit_4.3pre17_all.deb
+      - jedit4.3pre17install.exe or jedit4.3pre17-dist-win-finish.tar.bz2
+      - jedit4.3pre17install.dmg or jedit4.3pre17-dist-mac-finish.tar.bz2
 
-7.2. If you have jedit4.3pre16-dist-win-finish.tar.bz2 in your jEdit4.3pre16/dist folder you probably don't run a Windows box, so please hand over this file to someone (e. g. <Björn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
+7.2. If you have jedit4.3pre17-dist-win-finish.tar.bz2 in your jEdit4.3pre17/dist folder you probably don't run a Windows box, so please hand over this file to someone (e. g. <Björn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
           ant dist-win-finish
-     and to hand over the resulting file jedit4.3pre16install.exe to you. The requirements for this are described in README.SRC.txt
+     and to hand over the resulting file jedit4.3pre17install.exe to you. The requirements for this are described in README.SRC.txt
 
-7.3. If you have jedit4.3pre16-dist-mac-finish.tar.bz2 in your jEdit4.3pre16/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. Björn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
+7.3. If you have jedit4.3pre17-dist-mac-finish.tar.bz2 in your jEdit4.3pre17/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. Björn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
           ant dist-mac-finish
-     and to hand over the resulting file jedit4.3pre16install.dmg to you. The requirements for this are described in README.SRC.txt
+     and to hand over the resulting file jedit4.3pre17install.dmg to you. The requirements for this are described in README.SRC.txt
 
-7.4. After you received the final distribution files jedit4.3pre16install.exe and jedit4.3pre16install.dmg you can delete jedit4.3pre16-dist-win-finish.tar.bz2 and jedit4.3pre16-dist-mac-finish.tar.bz2
+7.4. After you received the final distribution files jedit4.3pre17install.exe and jedit4.3pre17install.dmg you can delete jedit4.3pre17-dist-win-finish.tar.bz2 and jedit4.3pre17-dist-mac-finish.tar.bz2
 
 8. Upload the 8 final distribution files via Web Upload, WebDAV, rsynch over SSH or SFTP to the SourceForge servers. For further information about how to do it, read http://alexandria.wiki.sourceforge.net/File+Release+System+-+Offering+Files+for+Download#upload. FTP is not supported any longer and SCP is not either.
 
 9. - Go to http://sourceforge.net/project/admin/editpackages.php?group_id=588
    - If you do a preX release, click on "Add release" of the "jedit-devel" package, if you do a final release, click on "Add release" of the "jedit" package
-   - Enter "4.3pre16" as the new release name and click on "Create This Release"
+   - Enter "4.3pre17" as the new release name and click on "Create This Release"
    - Write any notes in the Notes textarea if you have any
-   - Paste the beginning lines of the jEdit4.3pre16/doc/CHANGES.txt from "JEDIT 4.3 VERSION HISTORY" up to the closing explicit fold marker of the version you release into the Change Log textarea
+   - Paste the beginning lines of the jEdit4.3pre17/doc/CHANGES.txt from "JEDIT 4.3 VERSION HISTORY" up to the closing explicit fold marker of the version you release into the Change Log textarea
    - Check "Preserve my pre-formatted text." checkbox
    - Click "Submit/Refresh"
    - In the list of files check the 8 distribution files you uploaded.
    - Click on "Add Files and/or Refresh View"
    - Make the following settings for "Processor" and "File Type" for each file and BE SURE TO CLICK THE "UPDATE/REFRESH" BUTTON AFTER CHANGES FOR EACH FILE SEPERATELY or the changes to the other files are lost and have to be redone, so change the settings for one file, then click the "Update/Refresh" button for that file, and then advance to the next file.
-        - jedit_4.3pre16_all.deb:            Processor=Platform-Independent     File Type=.deb
-        - jedit4.3pre16install.dmg:          Processor=Mac Universal (PPC/x86)  File Type=.dmg
-        - jedit4.3pre16install.exe:          Processor=i386                     File Type=.exe (32-bit Windows)
-        - jedit4.3pre16install.jar:          Processor=Platform-Independent     File Type=.jar
-        - jedit4.3pre16manual-a4.pdf:        Processor=Platform-Independent     File Type=pdf
-        - jedit4.3pre16manual-letter.pdf:    Processor=Platform-Independent     File Type=pdf
-        - jedit-4.3pre16-noarch-1sao.tgz:    Processor=Platform-Independent     File Type=.gz
-        - jedit4.3pre16source.tar.bz2:       Processor=Platform-Independent     File Type=Source .bz2
+        - jedit_4.3pre17_all.deb:            Processor=Platform-Independent     File Type=.deb
+        - jedit4.3pre17install.dmg:          Processor=Mac Universal (PPC/x86)  File Type=.dmg
+        - jedit4.3pre17install.exe:          Processor=i386                     File Type=.exe (32-bit Windows)
+        - jedit4.3pre17install.jar:          Processor=Platform-Independent     File Type=.jar
+        - jedit4.3pre17manual-a4.pdf:        Processor=Platform-Independent     File Type=pdf
+        - jedit4.3pre17manual-letter.pdf:    Processor=Platform-Independent     File Type=pdf
+        - jedit-4.3pre17-noarch-1sao.tgz:    Processor=Platform-Independent     File Type=.gz
+        - jedit4.3pre17source.tar.bz2:       Processor=Platform-Independent     File Type=Source .bz2
    - Check the "I'm sure" checkbox next to the "Send Notice" button
    - Click the "Send Notice" button
 
 10. Update the website in the following places:
-    - Open sftp://jedit.org/home/groups/j/je/jedit/htdocs/download.html e. g. in jEdit with installed FTP plugin and update the website for the new release, means the filenames, filesizes and amount of pages in the Users Guides
-    - Open sftp://jedit.org/home/groups/j/je/jedit/htdocs/jEdit-version.txt e. g. in jEdit with installed FTP plugin and update the versions in the file, which is needed by the LatestVersion Plugin
-    - Open sftp://jedit.org/home/groups/j/je/jedit/htdocs/CHANGES43.txt e. g. in jEdit with installed FTP plugin and copy the contents of jEdit4.3pre16/doc/CHANGES.txt to this file
-    - Open sftp://jedit.org/home/groups/j/je/jedit/htdocs/index.php e. g. in jEdit with installed FTP plugin and update the version number and the Last Site Update date
-    - Open sftp://jedit.org/home/groups/j/je/jedit/htdocs/devel.html e. g. in jEdit with installed FTP plugin and update the release date of 4.3pre16 in the Release Schedule. Then add a line for 4.3pre17 with a date of approximately three months ahead.
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/download.html e. g. in jEdit with installed FTP plugin and update the website for the new release, means the filenames, filesizes and amount of pages in the Users Guides
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/jEdit-version.txt e. g. in jEdit with installed FTP plugin and update the versions in the file, which is needed by the LatestVersion Plugin
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/CHANGES43.txt e. g. in jEdit with installed FTP plugin and copy the contents of jEdit4.3pre17/doc/CHANGES.txt to this file
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/index.php e. g. in jEdit with installed FTP plugin and update the version number and the Last Site Update date
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/devel.html e. g. in jEdit with installed FTP plugin and update the release date of 4.3pre17 in the Release Schedule. Then add a line for 4.3pre18 with a date of approximately three months ahead.
 
 11. Update the plugin wizard
      - Go to http://plugins.jedit.org/wiz/release_add.php?package_id=24
-     - Enter the Version 4.3pre16
+     - Enter the Version 4.3pre17
      - Switch "Head of Branch" to devel if you do a preX release or to main if you do a final release
      - Check the "Remove" checkbox for the jEdit dependency
      - Switch the "Low Version" of the JDK dependency to "1.5 [jdk-1.5]"
      - Click "Update Dependencies"
      - Click "Create Release"
 
-12. Send an announcement eMail to the jEdit-announce list. The announcement should contain the contents of jEdit4.3pre16/doc/CHANGES.txt for this release.
+12. Send an announcement eMail to the jEdit-announce list. The announcement should contain the contents of jEdit4.3pre17/doc/CHANGES.txt for this release.
     You have to be set up to be able to post to jEdit-announce list.
     The mail should automatically get forwarded to the jedit-users list, but for that you have to be subscribed to that list too.
 
 13. Ask Vampire <Vampire@jEdit.org> (Vampire0@#jEdit@chat.freenode.net) to update the topic of the IRC Channel
 
-14. Delete the jEdit4.3pre16 folder
+14. Delete the jEdit4.3pre17 folder
 
 15. Update the version number
      - Add the following section to doc/CHANGES.txt
@@ -138,14 +138,14 @@ Thanks to  for contributing to this release.
 
 }}}
      - Update the build number in org/gjt/sp/jedit/jEdit.java getBuild() method to
-            return "04.03.17.00";
+            return "04.03.18.00";
      - Update the version and build number in build.xml to
             <property name="jedit.version"
-                      value="4.3pre17" />
+                      value="4.3pre18" />
             <property name="jedit.build.number"
-                      value="04.03.17.00" />
+                      value="04.03.18.00" />
      - Submit your changes by doing
-            svn commit -m "Updated the version number to 4.3pre17."
+            svn commit -m "Updated the version number to 4.3pre18."
        in the root source directory
 
 :wrap=soft:maxLineLen=0:folding=indent:
