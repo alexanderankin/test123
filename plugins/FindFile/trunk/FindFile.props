@@ -1,5 +1,6 @@
 # FindFile Plugin properties
 # $Id: FindFile.props 13885 Thu Oct 16 15:59:08 CDT 2008 keeleyt83 $
+
 plugin.findfile.FindFilePlugin.name=FindFile
 plugin.findfile.FindFilePlugin.author=Nicholas O'Leary, Anthony Keeley
 plugin.findfile.FindFilePlugin.version=1.2
@@ -10,7 +11,6 @@ plugin.findfile.FindFilePlugin.depend.2=optional plugin Archive 0.4.3
 plugin.findfile.FindFilePlugin.docs=docs/about.html
 plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
 plugin.findfile.FindFilePlugin.description=This plugin allows you to search within a filesystem for any files that match a given filter.
-
 plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
 
 options.FindFilePlugin-options.label=FindFile
@@ -20,7 +20,6 @@ plugin.findfile.FindFilePlugin.browser-menu-item=vfs.browser.FindFile
 
 FindFilePlugin.label=FindFile
 FindFilePlugin.title=FindFile Results
-FindFilePlugin.find-dialog.title=Find Files
 FindFilePlugin.action-labels.open=Open
 FindFilePlugin.action-labels.openAs=Open as...
 FindFilePlugin.action-labels.close=Close
@@ -45,6 +44,12 @@ FindFilePlugin.action-labels.removeAllSearches=Remove All Nodes
 FindFilePlugin.action-labels.toggleMultple=Toggle Multiple Results
 FindFilePlugin.action-labels.redoSearch=Redo Search
 
+FindFilePlugin.search-dialog.title=Find Files
+FindFilePlugin.search-dialog.labels.directory=Directory:
+FindFilePlugin.search-dialog.labels.filter=Filter:
+FindFilePlugin.search-dialog.buttons.find=Find
+FindFilePlugin.search-dialog.buttons.close=Close
+
 FindFilePlugin.option-pane-labels.multipleResults=Show multiple results
 FindFilePlugin.option-pane-labels.hidePath=Hide path details
 FindFilePlugin.option-pane-labels.defaultSettings=Default search options
@@ -55,7 +60,6 @@ FindFilePlugin.option-pane-labels.recursiveSearch=Search subdirectories
 FindFilePlugin.option-pane-labels.openAllResults=Open all results
 FindFilePlugin.option-pane-labels.archiveFilter=Filter to identify archives:
 FindFilePlugin.option-pane-labels.sortBy=Result sort order
-
 FindFilePlugin.option-pane-defaults.archiveFilter=*.{zip,tar,tgz,jar}
 
 FindFilePlugin.status-message.started=Searching...
@@ -75,12 +79,12 @@ FindFilePlugin.invalid-archive-filter.message={0} appears to be an invalid filte
 
 FindFilePlugin.failed-to-open.title=Failed to open
 FindFilePlugin.failed-to-open.message=Failed to open: {0} \
- as no suitable edit mode was detected.
+    as no suitable edit mode was detected.
 
 FindFilePlugin.failed-to-open-some.title=Failed to open some files
 FindFilePlugin.failed-to-open-some.message=Failed to open some files as\n\
- no suitable edit modes were detected.\n\
- See the Activity Log for more information.
+    no suitable edit modes were detected.\n\
+    See the Activity Log for more information.
 
 FindFilePlugin.archive-not-installed.title=Archive plugin not installed
 FindFilePlugin.archive-not-installed.message=Browsing an archive requires the Archive plugin to be installed.
