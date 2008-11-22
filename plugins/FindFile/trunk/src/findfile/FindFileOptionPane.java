@@ -24,6 +24,8 @@ public class FindFileOptionPane extends AbstractOptionPane {
     private JCheckBox useModeDetection;
     private JCheckBox hidePath;
     private JCheckBox openResults;
+    private JCheckBox keepDialog;
+    private JCheckBox rememberLastSearch;
     private JTextField archiveFilter;
     private JComboBox sortBy;
     //}}}
@@ -66,6 +68,12 @@ public class FindFileOptionPane extends AbstractOptionPane {
         gbc.gridy = 2;
         general.add(hidePath,gbc);
 
+        rememberLastSearch = new JCheckBox(jEdit.getProperty(OPTION_PANE_LABELS + "rememberLastSearch"));
+        rememberLastSearch.setSelected(jEdit.getProperty(OPTIONS + "rememberLastSearch", "false").equals("true"));
+
+        gbc.gridy = 3;
+        general.add(rememberLastSearch,gbc);
+
         addComponent(general,GridBagConstraints.BOTH);
 
         gbc.gridy = 0;
@@ -79,13 +87,18 @@ public class FindFileOptionPane extends AbstractOptionPane {
 
         gbc.gridy = 1;
         openResults = new JCheckBox(jEdit.getProperty(OPTION_PANE_LABELS + "openAllResults"));
-        openResults = new JCheckBox(jEdit.getProperty("FindFilePlugin.option-pane-labels.openAllResults"));
         openResults.setSelected(jEdit.getProperty(OPTIONS + "openAllResults", "false").equals("true"));
 
         defaults.add(openResults,gbc);
 
-        gbc.gridwidth = 1;
         gbc.gridy = 2;
+        keepDialog = new JCheckBox(jEdit.getProperty(OPTION_PANE_LABELS + "keepDialog"));
+        keepDialog.setSelected(jEdit.getProperty(OPTIONS + "keepDialog", "false").equals("true"));
+
+        defaults.add(keepDialog,gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridy = 3;
         sortBy = new JComboBox();
         sortBy.addItem("path");
         sortBy.addItem("filename");
@@ -112,7 +125,6 @@ public class FindFileOptionPane extends AbstractOptionPane {
     }//}}}
 
     //{{{ _save
-
     @Override public void _save() {
         jEdit.setProperty(OPTIONS + "multipleResults", (multipleResults.isSelected() ? "true" : "false"));
         jEdit.setProperty(OPTIONS + "recursiveSearch", (recursiveSearch.isSelected() ? "true" : "false"));
@@ -121,5 +133,7 @@ public class FindFileOptionPane extends AbstractOptionPane {
         jEdit.setProperty(OPTIONS + "sortBy", sortBy.getSelectedItem().toString());
         jEdit.setProperty(OPTIONS + "archiveFilter",archiveFilter.getText());
         jEdit.setProperty(OPTIONS + "openAllResults", (openResults.isSelected() ? "true" : "false"));
+        jEdit.setProperty(OPTIONS + "keepDialog", (keepDialog.isSelected() ? "true" : "false"));
+        jEdit.setProperty(OPTIONS + "rememberLastSearch", (rememberLastSearch.isSelected() ? "true" : "false"));
     }//}}}
 }
