@@ -303,8 +303,10 @@ public class VoxSpellPainter extends TextAreaExtension
                     break skip;
                 }
     
-                int x = textarea.offsetToXY(start + char_count).x;
-                Point p;
+                Point p = textarea.offsetToXY(start + char_count);
+                if (p == null)
+                    break skip;
+                int x = p.x;
                 try {
                     p = textarea.offsetToXY(start + char_count + word.length());
                 } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
