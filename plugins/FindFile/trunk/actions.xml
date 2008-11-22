@@ -5,7 +5,8 @@
 <ACTIONS>
     <ACTION NAME="plugin.findfile.FindFilePlugin.actions.newSearch">
         <CODE>
-            findfile.FindFileDialog fsd = new findfile.FindFileDialog(view,buffer.getVFS().getParentOfPath(buffer.getPath()));
+            findfile.FindFileDialog fsd;
+            fsd = findfile.FindFileDialog.getFindFileDialog(view);
             fsd.setVisible(true);
         </CODE>
     </ACTION>

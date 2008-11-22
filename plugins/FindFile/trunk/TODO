@@ -2,19 +2,11 @@ FindFile TODO
 Anthony Keeley
 Sat Aug 16 19:02:38 CDT 2008
 
-- Clean up props file
 - Clean up xlint warnings.
 - Delete files?
 - Open in new view, new plain view?
 - Return all files in a search (why doesn't it return archives, exe's?).
 - Integrate use of helperlauncher.
-- Modify dialog
-    - Change button names to Find, Close (change to default and exit buttons too)
-    - title bar icon, title
-    - Add a "Choose..." button for a link to the File Browser
-    - Path label to "Directory"
-    - Remembers previous directories and search strings automatically
-    - Settings fieldset:
-        - Keep Dialog
-        - Ignore Case
-        - Search subdirectories
+- title bar icon
+- hide path details?
+- debug "last search"
