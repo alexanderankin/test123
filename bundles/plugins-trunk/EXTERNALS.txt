@@ -21,7 +21,6 @@ ContextMenu     https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ContextM
 CscopeFinder    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CscopeFinder/trunk
 CtagsInterface  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsInterface/trunk
 CtagsSideKick   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsSideKick/trunk
-Docker          https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Docker/trunk
 ErrorList       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk
 FTP             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FTP/trunk
 FastOpen        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FastOpen/trunk
