@@ -344,7 +344,7 @@ public class VoxSpellPlugin extends EBPlugin
         }
     }
     
-    protected static String matchCase(String first, String second)
+    public static String matchCase(String first, String second)
     {
         int len = Math.min(first.length(), second.length());
         char[] new_chars = new char[len];
