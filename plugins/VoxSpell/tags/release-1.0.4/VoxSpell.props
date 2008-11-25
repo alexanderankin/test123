@@ -1,0 +1,31 @@
+plugin.voxspellcheck.VoxSpellPlugin.activate=startup
+plugin.voxspellcheck.VoxSpellPlugin.name=VoxSpell
+plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
+plugin.voxspellcheck.VoxSpellPlugin.version=1.0.4
+plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.15.00
+plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
+plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
+plugin.voxspellcheck.VoxSpellPlugin.longdescription=description.html
+plugin.voxspellcheck.VoxSpellPlugin.docs=doc/index.html
+plugin.voxspellcheck.VoxSpellPlugin.option-pane=voxspellcheck
+
+voxspellcheck.check-spelling.label=VoxSpell
+
+options.voxspellcheck.label=VoxSpell
+options.voxspellcheck.code=new voxspellcheck.VoxSpellOptionPane();
+options.voxspellcheck.all_text_modes=text rest latex
+options.voxspellcheck.non_markup_modes=html xml mail
+options.voxspellcheck.start_checking_on_activate=false
+options.voxspellcheck.start_checking_on_activate.title=Automatically start spell checking?
+options.voxspellcheck.use_custom_color=false
+options.voxspellcheck.use_custom_color.title=Use custom underline color?
+
+plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
+    voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
+    voxspellcheck.suggest
+voxspellcheck.start.label=Start spell checking
+voxspellcheck.stop.label=Stop spell checking
+voxspellcheck.addWord.label=Add word
+voxspellcheck.ignoreWord.label=Ignore word
+voxspellcheck.reset.label=Reset ignored words
+voxspellcheck.suggest.label=Suggest a replacement word
