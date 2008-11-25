@@ -21,6 +21,7 @@
 package gatchan.jedit.ancestor;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
@@ -102,6 +103,17 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 					addAncestorToolBar(view);
 				bar = viewAncestorToolBar.get(view);
 				bar.setBuffer(editPane.getBuffer());
+			}
+		}
+		if (message instanceof BufferUpdate)
+		{
+			BufferUpdate bufferUpdate = (BufferUpdate) message;
+			// Needed to catch renaming of buffers / saving of new buffers
+			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+			{
+				View view = bufferUpdate.getView();
+				AncestorToolBar bar = viewAncestorToolBar.get(view);
+				bar.setBuffer(bufferUpdate.getBuffer());
 			}
 		}
 	} //}}}
