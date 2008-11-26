@@ -9,7 +9,7 @@
   <property name="doc" location="doc"/>
   <property name="lib" location="lib"/>
   
-  <property name="jedit.install.dir"  value="/Users/jpavel/Programs/jEdit.app/Contents/Resources/Java"/>
+  <property name="jedit.install.dir"  value="/Applications/jEdit.app/Contents/Resources/Java"/>
   <property name="jedit.windows_install.dir" value="C:\\Program Files\\jEdit"/>
   
   <path id="libraries">

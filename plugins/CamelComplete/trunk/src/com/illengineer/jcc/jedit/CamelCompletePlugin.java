@@ -223,13 +223,13 @@ public class CamelCompletePlugin extends EditPlugin {
 	    This routine reads all the configuration options in the optionsMap and creates the
 	    appropriate IdentifierProviders and Tokenizers, and sends them to the CompletionEngine.
 	*/
-	static void processConfiguration() {
+	public static void processConfiguration() {
 	    for (String engineName : enginesOptionsMap.keySet())
 		processConfiguration(engineName);
 	    
 	}  
 	
-	static void processConfiguration(String engineName) {
+	public static void processConfiguration(String engineName) {
 	    OptionPanel.EngineOpts eo = eoMap.get(engineName);
 	    if (eo != null && !eo.enabled)
 		return;
@@ -303,7 +303,7 @@ public class CamelCompletePlugin extends EditPlugin {
 	    eg.modified = true;
 	}
 	
-	static void deleteEngine(String engineName) {
+	public static void deleteEngine(String engineName) {
 	    if (enginesOptionsMap.size() <= 1)
 		return;
 		
