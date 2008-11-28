@@ -20,10 +20,10 @@
 package templates;
 import java.io.File;
 import java.util.*;
+import java.util.regex.*;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
-import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 /**
@@ -36,7 +36,8 @@ import org.gjt.sp.util.Log;
 public class TemplateDir extends TemplateFile
 {
 	private Vector templateFiles;
-	private static RE backupFilter;
+	// private static RE backupFilter;
+	public static Pattern backupPattern;
 
 	//Constructors
 	public TemplateDir(TemplateDir parent, File templateFile)
@@ -76,22 +77,33 @@ public class TemplateDir extends TemplateFile
 					TemplateDir submenu = new TemplateDir(this, f);
 					this.templateFiles.addElement(submenu);
 					submenu.refreshTemplates();
-				} else if (!backupFilter.isMatch(files[i]))
-				{// if not a backup file
-					TemplateFile tf = new TemplateFile(this, f);
-					this.templateFiles.addElement(tf);
+				}
+				else
+				{
+					Matcher m = backupPattern.matcher(files[i]);
+					if (!m.matches())
+					{// if not a backup file
+						TemplateFile tf = new TemplateFile(this, f);
+						this.templateFiles.addElement(tf);
+					}
 				}
 			}
 		}
-		catch (gnu.regexp.REException ree)
+		catch (PatternSyntaxException pe)
 		{
 			Log.log(Log.ERROR, this, jEdit.getProperty(
 						"plugin.TemplatesPlugin.error.bad-backup-filter"));
 		}
+		catch (IllegalArgumentException iae)
+		{
+			// This won't happen if the programmer did his job right.
+			Log.log(Log.ERROR, this, "IllegalArgumentException in backup RE");
+		}
 		Collections.sort(this.templateFiles);
 	}
 
-	private static void createBackupFilter() throws gnu.regexp.REException
+	private static void createBackupFilter()
+	throws PatternSyntaxException, IllegalArgumentException
 	{
 		String exp = jEdit.getProperty("backup.prefix") +
 				"\\S+" +
@@ -100,7 +112,8 @@ public class TemplateDir extends TemplateFile
 		{
 			exp = "";
 		}
-		backupFilter = new RE(exp, RE.REG_ICASE);
+		// backupFilter = new RE(exp, RE.REG_ICASE);
+		backupPattern = Pattern.compile(exp, Pattern.CASE_INSENSITIVE);
 	}
 
 	/**

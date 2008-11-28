@@ -1,7 +1,7 @@
 /*
  *  TemplateFile.java - Represents a file within the templates
  *  directory hierarchy.
- *  Copyright (C) 1999 Steve Jakob
+ *  Copyright (C) 1999, 2008 Steve Jakob
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ package templates;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import javax.swing.tree.TreeNode;
-import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 /**
@@ -39,7 +39,8 @@ public class TemplateFile implements TreeNode, Comparable
 			"(\\s*##\\s*)(TEMPLATE)(\\s*=\\s*)(\\S+.*)";
 	protected String label;
 	protected File templateFile;
-	private static RE ctpragmaLabelFilter = null;
+	// private static RE ctpragmaLabelFilter = null;
+	private static Pattern templateLabelPattern;
 	private TemplateDir parent;
 
 	//Constructors
@@ -143,10 +144,12 @@ public class TemplateFile implements TreeNode, Comparable
 			String line;
 			if ((line = in.readLine()) != null)
 			{
-				REMatch labelMatch = ctpragmaLabelFilter.getMatch(line);
-				if (labelMatch != null)
+				Matcher m = templateLabelPattern.matcher(line);
+				// REMatch labelMatch = templateLabelMatcher.getMatch(line);
+				if (m.matches())
 				{
-					templateLabel = labelMatch.toString(4);
+					// templateLabel = labelMatch.toString(4);
+					templateLabel = m.group(4);
 				}
 			}
 		}
@@ -167,23 +170,34 @@ public class TemplateFile implements TreeNode, Comparable
 	}
 
 	/**
-	 * Creates a RE to parse #ctpragma directives. Each directive is composed of 4
+	 * Creates a RE to parse template labels. Each directive is composed of 4
 	 * parts:<P>
 	 *
 	 *
-	 * <LI> #ctpragma
-	 * <LI> the directive type (eg. LABEL, NAME, etc.)
+	 * <LI> Velcocity comments token ("##")
+	 * <LI> the directive type ("TEMPLATE")
 	 * <LI> an equals ("=") sign
-	 * <LI> the value to assign for this directive type
+	 * <LI> the value to assign for the template label
 	 */
-	private static void createREs()
+	private void createREs()
 	{
 		try
 		{
-			ctpragmaLabelFilter = new RE(labelRE, RE.REG_ICASE);
+			templateLabelPattern = Pattern.compile(labelRE, Pattern.CASE_INSENSITIVE);
+			// ctpragmaLabelFilter = new RE(labelRE, RE.REG_ICASE);
 		}
-		catch (gnu.regexp.REException e)
-		{}// this shouldn't happen
+		catch (PatternSyntaxException pe)
+		{
+			// This won't happen if the programmer did his job right.
+			Log.log(Log.ERROR, TemplateFile.this, "PatternSyntaxException in label RE: " +
+				labelRE);
+		}
+		catch (IllegalArgumentException iae)
+		{
+			// This won't happen if the programmer did his job right.
+			Log.log(Log.ERROR, TemplateFile.this, "IllegalArgumentException in label RE: " +
+				labelRE);
+		}
 	}
 
 	public int compareTo(Object o)
