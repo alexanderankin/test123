@@ -24,6 +24,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 /**
  * An context to interface with jEdit.
@@ -99,11 +100,11 @@ public class jEditContext extends AbstractContext
          if (tab == null) {
             int tabSize = textArea.getBuffer().getTabSize();
             boolean noTabs = textArea.getBuffer().getBooleanProperty("noTabs");
-            tab = MiscUtilities.createWhiteSpace(tabSize, (noTabs ? 0 : tabSize));
+            tab = StandardUtilities.createWhiteSpace(tabSize, (noTabs ? 0 : tabSize));
          }
          return tab;
       } else if (SELECTION.equals(key)) {
-         return selectionText;
+		  return (selectionText == null ? "" : selectionText);
       }
       return null;
    }
@@ -150,9 +151,9 @@ public class jEditContext extends AbstractContext
       if (line == null) {
          line = "";
       }
-      int len = MiscUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize());
+      int len = StandardUtilities.getLeadingWhiteSpaceWidth(line, buffer.getTabSize());
       int tabs = buffer.getBooleanProperty("noTabs") ? 0 : buffer.getTabSize();
-      return MiscUtilities.createWhiteSpace(len, tabs);
+      return StandardUtilities.createWhiteSpace(len, tabs);
    }
 
    /**
