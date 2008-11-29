@@ -104,7 +104,8 @@ ise.plugin.svn.action.label.28=Lock
 ise.plugin.svn.action.code.28=ise.plugin.svn.pv.LockActor
 ise.plugin.svn.action.label.29=Unlock
 ise.plugin.svn.action.code.29=ise.plugin.svn.pv.UnlockActor
-
+ise.plugin.svn.action.label.30=Merge
+ise.plugin.svn.action.code.30=ise.plugin.svn.pv.MergeActor
 
 # register subversion commands with ProjectViewer
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.context-menu-actions=ise.plugin.svn.pv.SVNAction
@@ -300,6 +301,14 @@ ips.Author=Author
 ips.Date=Date
 ips.Zoom=Zoom
 
+# for Merge dialog
+ips.Merge=Merge
+ips.Merge_this_path>=Merge this path:
+ips.Into_this_path>=Into this path:
+ips.From_this_revision>=From this revision:
+ips.To_this_revision>=To this revision:
+ips.Place_merged_files_here>=Place merged files here:
+
 # for MkDir dialog
 ips.mkdir=mkdir
 ips.Create_new_directory_at_this_location>=Create new directory at this location:
@@ -311,7 +320,7 @@ ips.this_URL>=this URL:
 ips.these_URLs>=these URLs:
 ips.Move_from_this_revision>=Move from this revision:
 ips.To_this_location>=To this location:
-ips.Browse_Local...=Browse Local...
+ips.Browse_Local...=Local...
 ips.File_exists,_okay_to_overwrite?=File exists, okay to overwrite?
 ips.File_exists=File exists
 ips.Enter_comment_for_this_move>=Enter comment for this move:
@@ -437,7 +446,7 @@ ips.from>=from:
 ips.Create=Create
 ips.from_this_revision>=from this revision:
 ips.at_this_location>=at this location:
-ips.Browse_Remote...=Browse Remote...
+ips.Browse_Remote...=Remote...
 ips.Select_Repository_Destination=Select Repository Destination
 ips.Enter_comment_for_this=Enter comment for this
 ips.tag>=tag:
@@ -589,3 +598,4 @@ ips.Property=Property
 ips.Choose_a_value>=Choose a value:
 ips.Choose_one_or_more_values>=Choose one or more values:
 ips.Choose_a_value>=Choose a value:
+ips.Select_Repository_Location=Select Repository Location

@@ -59,7 +59,7 @@ public class SVNAction extends projectviewer.action.Action {
         // code property is the fully qualified classname of a class in the
         // ise.plugin.svn.action package.
         String pbase = "ise.plugin.svn.action.";
-        for ( int i = 1; i < 30; i++ ) {
+        for ( int i = 1; i < 40; i++ ) {
             String label = jEdit.getProperty( pbase + "label." + i );
             if ( label == null ) {
                 continue;
