@@ -84,9 +84,10 @@ public class TemplateDockable extends JPanel
 	 * the TemplatesMenu object may wish to respond.
 	 */
 	public void handleMessage(EBMessage msg) {
-		if (msg instanceof TemplatesChanged)
+		if (msg instanceof TemplatesChanged) {
 		Log.log(Log.DEBUG,this,"... TemplateDockable.handleMessage()");
 			templates.reload();
+      }
 	}
 
    /**
