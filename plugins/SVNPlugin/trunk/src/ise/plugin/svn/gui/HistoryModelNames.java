@@ -13,4 +13,6 @@ public class HistoryModelNames {
 
     public static final String MKDIR_PATH = "svnplugin.mkdirpath";
     public static final String MOVE_PATH = "svnplugin.movepath";
+
+    public static final String MERGE_PATH = "svnplugin.mergepath";
 }
