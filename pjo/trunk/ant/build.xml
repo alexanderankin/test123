@@ -22,7 +22,7 @@
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
 		<attribute name="pluginTag" />
-		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
 			<ant antfile="${scm.targets.file}" target="checkout-plugin">
 				<property name="plugin.name" value="@{pluginName}" />
@@ -37,7 +37,7 @@
 		<attribute name="pluginVersion" />
 		<sequential>
 			<loadproperties>
-				<fileset dir="@{pluginName}-@{pluginVersion}">
+				<fileset dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}">
 					<include name="**/@{pluginName}.props"/>
 				</fileset>
 				<filterchain>
@@ -53,7 +53,7 @@
 		<attribute name="pluginJeditVersion" />
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
-		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
 			<property name="jedit.install.dir" value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
 			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
@@ -76,7 +76,7 @@
 	<macrodef name="plugin-package">
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
-		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
 			<ant antfile="${package.targets.file}" target="package">
 				<property name="plugin.name" value="@{pluginName}" />
