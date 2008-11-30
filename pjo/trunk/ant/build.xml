@@ -18,6 +18,12 @@
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-package pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 	</target>
+	<target name="view">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<plugin-view pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
+	</target>
 	<macrodef name="plugin-download">
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
@@ -85,6 +91,21 @@
 				<property name="jar.location" value="@{pluginDownloadDir}/../dist" />
 				<property name="out.dir" value="@{pluginDownloadDir}/../packages" />
 			</ant>
+		</sequential>
+	</macrodef>
+	<macrodef name="plugin-view">
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<attribute name="pluginJeditVersion" />
+		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<sequential>
+			<property name="jedit.install.dir" value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<java fork="true" jar="${jedit.install.dir}/jedit.jar">
+				<jvmarg value="-Xmx192M"/>
+				<arg value="-noserver"/>
+				<arg value="-settings=${jedit.settings.dir}"/>
+			</java>
 		</sequential>
 	</macrodef>
 </project>
