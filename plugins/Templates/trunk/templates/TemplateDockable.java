@@ -3,6 +3,7 @@
  * :tabSize=3:indentSize=3:noTabs=true:
  *
  * Copyright (c) 2002 Calvin Yu
+ * Copyright (c) 2008 Steve Jakob
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +32,7 @@ import org.gjt.sp.util.Log;
  * A dockable template tree..
  */
 public class TemplateDockable extends JPanel
-   implements MouseListener, KeyListener, ActionListener, EBComponent
+   implements MouseListener, ActionListener, EBComponent
 {
 
    public final static String RELOAD = "reload";
@@ -49,7 +50,12 @@ public class TemplateDockable extends JPanel
       super(new BorderLayout());
       view = aView;
       add(new JScrollPane(templates = new TemplateTree()));
-      templates.addKeyListener(this);
+      // Add ENTER key binding for TemplateTree component
+      templates.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+            "templates-tree-select-node");
+      templates.getActionMap().put("templates-tree-select-node",
+            new NodeSelectAction());
+
       templates.addMouseListener(this);
    }
    
@@ -207,31 +213,20 @@ public class TemplateDockable extends JPanel
    }
    //}}}
 
-   //{{{ KeyListener Methods
-   /**
-    * Handle a key press.
-    */
-   public void keyPressed(KeyEvent evt)
+   public class NodeSelectAction extends AbstractAction
    {
-   }
-
-   /**
-    * Handle a key released.
-    */
-   public void keyReleased(KeyEvent evt)
-   {
-      if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-         processSelectedTemplate();
+      public void actionPerformed(ActionEvent e)
+      {
+         TreePath path = templates.getSelectionPath();
+         if (templates.isLastPathComponentATemplate(path)) 
+         {
+            processSelectedTemplate();
+         } else
+         {
+            templates.expandPath(path);
+         }
       }
    }
-
-   /**
-    * Handle a key typed.
-    */
-   public void keyTyped(KeyEvent evt)
-   {
-   }
-   //}}}
 
 }
 
