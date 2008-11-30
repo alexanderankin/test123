@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<project name="Plugin Release" basedir="." default="help">
+	<property file="build.properties" />
+	<target name="download">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<input addproperty="plugin.tag" message="Release Tag:" />
+		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
+	</target>
+	<target name="build">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
+	</target>
+	<target name="package">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-package pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+	</target>
+	<macrodef name="plugin-download">
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<attribute name="pluginTag" />
+		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<sequential>
+			<ant antfile="${scm.targets.file}" target="checkout-plugin">
+				<property name="plugin.name" value="@{pluginName}" />
+				<property name="plugin.version" value="@{pluginVersion}" />
+				<property name="plugin.tag" value="@{pluginTag}" />
+				<property name="plugin.download.dir" value="@{pluginDownloadDir}" />
+			</ant>
+		</sequential>
+	</macrodef>
+	<macrodef name="plugin-jedit-version">
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<sequential>
+			<loadproperties>
+				<fileset dir="@{pluginName}-@{pluginVersion}">
+					<include name="**/@{pluginName}.props"/>
+				</fileset>
+				<filterchain>
+					<tokenfilter>
+						<replaceregex pattern="plugin.*depend.*=jedit\s+(\w+)\.(\w+).*" replace="plugin.jedit.version=\1.\2"/>
+					</tokenfilter>
+				</filterchain>
+			</loadproperties>
+			<echo>@{pluginName} requires jedit version: ${plugin.jedit.version}</echo>
+		</sequential>
+	</macrodef>
+	<macrodef name="plugin-build">
+		<attribute name="pluginJeditVersion" />
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<sequential>
+			<property name="jedit.install.dir" value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
+			<property name="jedit.plugins.dir" value="${install.dir}" />
+			<echo>jedit.install.dir=${jedit.install.dir}</echo>
+			<echo>jedit.settings.dir=${jedit.settings.dir}</echo>
+			<echo>install.dir=${install.dir}</echo>
+			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="clean"/>
+			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="dist">
+				<property name="install.dir" value="@{pluginDownloadDir}/../dist" />
+			</ant>
+			<copy todir="${install.dir}">
+				<fileset dir="@{pluginDownloadDir}/../dist">
+					<include name="*"/>
+				</fileset>
+			</copy>
+		</sequential>
+	</macrodef>
+	<macrodef name="plugin-package">
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<attribute name="pluginDownloadDir" default="${basedir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<sequential>
+			<ant antfile="${package.targets.file}" target="package">
+				<property name="plugin.name" value="@{pluginName}" />
+				<property name="plugin.version" value="@{pluginVersion}" />
+				<property name="src.dir" value="@{pluginDownloadDir}" />
+				<property name="jar.location" value="@{pluginDownloadDir}/../dist" />
+				<property name="out.dir" value="@{pluginDownloadDir}/../packages" />
+			</ant>
+		</sequential>
+	</macrodef>
+</project>
