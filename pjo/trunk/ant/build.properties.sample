@@ -1,9 +1,36 @@
+# The jEdit Subversion url - shouldn't ever change.
 jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
+
+# This is your sandbox directory, all plugins will be downloaded and built from here.
 sandbox.dir=/Users/elberry/development/projects/jEdit/plugins/sandbox
+
+# The jedit version properties specify where your "major" versions are installed.
+# Currently, there are only two major versions, 4.2 and 4.3. It is recommended that
+# you use the Java installer to install them, and then point this file towards them.
+
+# Your 4.2 install.
 jedit.version.04.02.install.dir=${sandbox.dir}/4.2
+# Where you want plugins requiring 4.2 to "install" their jars.
 jedit.version.04.02.settings.dir=${jedit.version.04.02.install.dir}/settings
+
+# Your 4.3 install.
 jedit.version.04.03.install.dir=${sandbox.dir}/4.3pre16
+# Where you want plugins requiring 4.3 to "install" their jars.
 jedit.version.04.03.settings.dir=${jedit.version.04.03.install.dir}/settings
+
+# The scm.targets.file defines a file where the SCM targets can be found.
+# Currently, there is only one target, checkout-plugin, which checks out the 
+# plugin's release tag into your sandbox directory.
 scm.targets.file=svn_cl.xml
+
+# The package.targets.file defines a file where the packaging targets can be 
+# found. 
+# Currently, there is only one target, package, which creates the 4 release 
+# package files for the plugin.
 package.targets.file=package.xml
+
+# The build.support file is used by lots of plugins, and is defined here. This
+# property is passed down to all plugin builds.
 build.support=/Users/elberry/development/projects/jEdit/build-support
+
+#mode=properties#
