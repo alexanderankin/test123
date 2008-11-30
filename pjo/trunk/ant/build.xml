@@ -1,17 +1,61 @@
 <?xml version="1.0"?>
-<project name="Plugin Release" basedir="." default="help">
+<project name="Plugin Release" basedir="." default="usage">
 	<property file="build.properties" />
-	<target name="download">
-		<input addproperty="plugin.name" message="Plugin Name:" />
-		<input addproperty="plugin.version" message="Version:" />
-		<input addproperty="plugin.tag" message="Release Tag:" />
-		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
+	<target name="usage">
+		<echo>build                 : Builds the downloaded plugin in the sandbox</echo>
+		<echo>                        directory. This target calls the clean,</echo>
+		<echo>                        and build targets of the downloaded plugin.</echo>
+		<echo>                        This task will put any "distributables" in</echo>
+		<echo>                        [sandbox]/[name]-[version]/dist</echo>
+		<echo></echo>
+		<echo>download              : Uses the SCM targets to download a plugin</echo>
+		<echo>                        into the sandbox directory. The plugin is</echo>
+		<echo>                        downloaded into this structure -</echo>
+		<echo>                        [sandbox]/[name]-[version]/[name]</echo>
+		<echo></echo>
+		<echo>package               : Packages plugin distributables into the 4</echo>
+		<echo>                        package files required for release. Release</echo>
+		<echo>                        packages can be found under -</echo>
+		<echo>                        [sandbox]/[name]-[version]/packages</echo>
+		<echo></echo>
+		<echo>view                  : Starts up the "major" version of jEdit</echo>
+		<echo>                        required by the plugin with the plugin</echo>
+		<echo>                        installed.</echo>
+		<echo></echo>
+		<echo>These tasks ask you for the plugin name, and plugin version. You</echo>
+		<echo>can avoid being prompted for them by supplying the plugin.name and</echo>
+		<echo>plugin.version properties - either by putting them in the</echo>
+		<echo>build.properties file, or by passing them as system properties.</echo>
+		<echo></echo>
+		<echo>Hopefully, you should be able to simply execute:</echo>
+		<echo>   "ant download build view package"</echo>
+		<echo></echo>
+		<echo>or:</echo>
+		<echo>   "ant download build view package -Dplugin.name=PluginName -Dplugin.version=1.0"</echo>
+		<echo></echo>
+		<echo>And you should be able see see the plugin in use before it's </echo>
+		<echo>release packages are created.</echo>
+		<echo></echo>
+		<echo>Your sandbox directory is set to:</echo>
+		<echo>   ${sandbox.dir}</echo>
+		<echo></echo>
+		<echo>Your SCM targets file is set to:</echo>
+		<echo>   ${scm.targets.file}</echo>
+		<echo></echo>
+		<echo>Your Packaging targets file is set to:</echo>
+		<echo>   ${package.targets.file}</echo>
 	</target>
 	<target name="build">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
+	</target>
+	<target name="download">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<input addproperty="plugin.tag" message="Release Tag:" />
+		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
 	</target>
 	<target name="package">
 		<input addproperty="plugin.name" message="Plugin Name:" />
