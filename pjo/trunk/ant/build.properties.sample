@@ -1,0 +1,9 @@
+jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
+sandbox.dir=/Users/elberry/development/projects/jEdit/plugins/sandbox
+jedit.version.04.02.install.dir=${sandbox.dir}/4.2
+jedit.version.04.02.settings.dir=${jedit.version.04.02.install.dir}/settings
+jedit.version.04.03.install.dir=${sandbox.dir}/4.3pre16
+jedit.version.04.03.settings.dir=${jedit.version.04.03.install.dir}/settings
+scm.targets.file=svn_cl.xml
+package.targets.file=package.xml
+build.support=/Users/elberry/development/projects/jEdit/build-support
