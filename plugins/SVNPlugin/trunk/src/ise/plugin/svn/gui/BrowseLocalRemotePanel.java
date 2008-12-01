@@ -82,7 +82,7 @@ public class BrowseLocalRemotePanel extends JPanel {
         }
         path.setText( startPath );
         path.setColumns( 30 );
-        JButton browse_local_btn = new JButton( getProperty( "ips.Browse_Local...", "Browse Local..." ) );
+        JButton browse_local_btn = new JButton( getProperty( "ips.Browse_Local...", "Local..." ) );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, startPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -97,70 +97,66 @@ public class BrowseLocalRemotePanel extends JPanel {
                 }
                                           );
 
-        JButton browse_remote_btn = null;
-        if ( show_remote ) {
-            browse_remote_btn = new JButton( getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
-            browse_remote_btn.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        final JDialog dialog = new JDialog( view, getProperty( "ips.Select_Repository_Location", "Select Repository Location" ) );
-                        dialog.setModal( true );
-                        JPanel panel = new JPanel( new LambdaLayout() );
-                        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
-                        final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, endPath, false );
-                        panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
-                        KappaLayout btn_layout = new KappaLayout();
-                        JPanel button_panel = new JPanel( btn_layout );
-                        JButton ok_btn = new JButton( getProperty( "ips.Ok", "Ok" ) );
-                        ok_btn.addActionListener(
-                            new ActionListener() {
-                                public void actionPerformed( ActionEvent ae ) {
-                                    String selection = burp.getSelectionPath();
-                                    dialog.setVisible( false );
-                                    dialog.dispose();
-                                    if ( selection != null && selection.length() > 0 ) {
-                                        path.setText( selection );
-                                        destinationIsLocal = false;
-                                        path.addCurrentToHistory();
-                                    }
+        JButton browse_remote_btn =browse_remote_btn = new JButton( getProperty( "ips.Browse_Remote...", "Remote..." ) );
+        browse_remote_btn.setVisible(show_remote);
+        browse_remote_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    final JDialog dialog = new JDialog( view, getProperty( "ips.Select_Repository_Location", "Select Repository Location" ) );
+                    dialog.setModal( true );
+                    JPanel panel = new JPanel( new LambdaLayout() );
+                    panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+                    final BrowseRepositoryPanel burp = new BrowseRepositoryPanel( view, endPath, false );
+                    panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
+                    KappaLayout btn_layout = new KappaLayout();
+                    JPanel button_panel = new JPanel( btn_layout );
+                    JButton ok_btn = new JButton( getProperty( "ips.Ok", "Ok" ) );
+                    ok_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                String selection = burp.getSelectionPath();
+                                dialog.setVisible( false );
+                                dialog.dispose();
+                                if ( selection != null && selection.length() > 0 ) {
+                                    path.setText( selection );
+                                    destinationIsLocal = false;
+                                    path.addCurrentToHistory();
                                 }
                             }
-                        );
-                        JButton cancel_btn = new JButton( getProperty( "ips.Cancel", "Cancel" ) );
-                        cancel_btn.addActionListener(
-                            new ActionListener() {
-                                public void actionPerformed( ActionEvent ae ) {
-                                    dialog.setVisible( false );
-                                    dialog.dispose();
-                                }
+                        }
+                    );
+                    JButton cancel_btn = new JButton( getProperty( "ips.Cancel", "Cancel" ) );
+                    cancel_btn.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                dialog.setVisible( false );
+                                dialog.dispose();
                             }
-                        );
-                        button_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
-                        button_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
-                        btn_layout.makeColumnsSameWidth( 0, 1 );
+                        }
+                    );
+                    button_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
+                    button_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
+                    btn_layout.makeColumnsSameWidth( 0, 1 );
 
-                        panel.add( "0, 1, 1, 1", KappaLayout.createStrut( 350, 11, false ) );
-                        panel.add( "0, 2, 1, 1, E, , 3", button_panel );
-                        dialog.setContentPane( panel );
-                        dialog.pack();
-                        GUIUtils.center( view, dialog );
-                        dialog.setVisible( true );
-                    }
+                    panel.add( "0, 1, 1, 1", KappaLayout.createStrut( 350, 11, false ) );
+                    panel.add( "0, 2, 1, 1, E, , 3", button_panel );
+                    dialog.setContentPane( panel );
+                    dialog.pack();
+                    GUIUtils.center( view, dialog );
+                    dialog.setVisible( true );
                 }
-            );
-        }
+            }
+        );
 
         KappaLayout button_panel_layout = new KappaLayout();
         JPanel buttonPanel = new JPanel( button_panel_layout );
-        buttonPanel.add( "0, 0, 1, 1, 0, w, 3", browse_local_btn );
-        if (show_remote) {
-            buttonPanel.add( "1, 0, 1, 1, 0, w, 3", browse_remote_btn );
-            button_panel_layout.makeColumnsSameWidth( 0, 1 );
-        }
+        buttonPanel.add( "0, 0, 1, 1, W, w, 3", browse_local_btn );
+        buttonPanel.add( "1, 0, 1, 1, E, w, 3", browse_remote_btn );
+        button_panel_layout.makeColumnsSameWidth( 0, 1 );
 
         add( "0, 0, 1, 1, W,  , 3", path_label );
-        add( "0, 1, 5, 1, 0, w, 3", path );
-        add( "5, 1, 1, 1, E, w, 3", buttonPanel );
+        add( "0, 1, 1, 1, W, w, 3", path );
+        add( "1, 1, 1, 1, E, w, 3", buttonPanel );
     }
 
     // for testing, jEdit.getProperty doesn't work when this is ran outside of jEdit
@@ -174,7 +170,8 @@ public class BrowseLocalRemotePanel extends JPanel {
     }
 
     public String getPath() {
-        return path.getText();
+        String p = path.getText();
+        return p == null || p.length() == 0 ? null : p;
     }
 
     public boolean isDestinationLocal() {

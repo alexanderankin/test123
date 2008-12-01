@@ -12,7 +12,6 @@ plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 # docs
 plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 
-
 # dependencies
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.5.0
 plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.15.00
@@ -81,6 +80,8 @@ ise.plugin.svn.action.label.14=Properties
 ise.plugin.svn.action.code.14=ise.plugin.svn.pv.PropertyActor
 ise.plugin.svn.action.label.15=Diff...
 ise.plugin.svn.action.code.15=ise.plugin.svn.pv.DiffActor
+ise.plugin.svn.action.label.16=Merge...
+ise.plugin.svn.action.code.16=ise.plugin.svn.pv.MergeActor
 #ise.plugin.svn.action.label.16=Time Lapse
 #ise.plugin.svn.action.code.16=ise.plugin.svn.pv.TimeLapseActor
 ise.plugin.svn.action.label.17=-
@@ -104,8 +105,6 @@ ise.plugin.svn.action.label.28=Lock
 ise.plugin.svn.action.code.28=ise.plugin.svn.pv.LockActor
 ise.plugin.svn.action.label.29=Unlock
 ise.plugin.svn.action.code.29=ise.plugin.svn.pv.UnlockActor
-ise.plugin.svn.action.label.30=Merge
-ise.plugin.svn.action.code.30=ise.plugin.svn.pv.MergeActor
 
 # register subversion commands with ProjectViewer
 plugin.projectviewer.ise.plugin.svn.SVNPlugin.context-menu-actions=ise.plugin.svn.pv.SVNAction
