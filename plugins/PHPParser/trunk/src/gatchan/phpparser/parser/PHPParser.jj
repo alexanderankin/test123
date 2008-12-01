@@ -44,6 +44,7 @@ options {
 PARSER_BEGIN(PHPParser)
 package gatchan.phpparser.parser;
 
+//{{{ Imports
 import java.util.ArrayList;
 import java.io.StringReader;
 import java.io.*;
@@ -54,6 +55,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+//}}}
 
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
@@ -1315,85 +1317,105 @@ ClassDeclaration ClassDeclaration() :
 //{{{ classHeader(Token abstractToken)
 ClassHeader classHeader(Token abstractToken) :
 {
-  Token classToken;
-  Token className = null;
-  Token superclassName;
-  Token firstToken = abstractToken;
-  String classNameImage = SYNTAX_ERROR_CHAR;
-  String superclassNameImage = null;
-  Token interfaceToken;
-  List interfaceNames = null;
+	Token classToken;
+	Token className = null;
+	Token superclassName;
+	Token firstToken = abstractToken;
+	String classNameImage = SYNTAX_ERROR_CHAR;
+	String superclassNameImage = null;
+	Token interfaceToken;
+	List interfaceNames = null;
 }
 {
-  try {
-    classToken = <CLASS>
-    {
-      if (firstToken == null) firstToken = classToken;
-    }
-  } catch (ParseException e) {
-    fireParseError("identifier expected","identifier", e.currentToken.next);
-  }
-  try {
-    className = <IDENTIFIER>
-    {
-      classNameImage = className.image;
-    }
-  } catch (ParseException e) {
-    fireParseError("identifier expected","identifier",e.currentToken.next);
-  }
-  [
-  <EXTENDS>
-  try {
-    superclassName = <IDENTIFIER>
-    {
-      superclassNameImage = superclassName.image;
-    }
-  } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError("identifier expected", "identifier", e.currentToken.next);
-    superclassNameImage = SYNTAX_ERROR_CHAR;
-    error_skipto(LBRACE);//}}}
-  }
-  ]
-  [
-      {
-          interfaceNames = new ArrayList();
-      }
-    <IMPLEMENTS>
-    interfaceToken = <IDENTIFIER>
-    {
-        interfaceNames.add(interfaceToken.image);
-    }
-    (
-      <COMMA>
-      interfaceToken = <IDENTIFIER>
-      {
-        interfaceNames.add(interfaceToken.image);
-      }
-    )*
-  ]
-  {
-    final int end,endLine,endColumn;
-    if (className == null) {
-      end         = firstToken.sourceEnd;
-      endLine     = firstToken.endLine;
-      endColumn   = firstToken.endColumn;
-    } else {
-      end         = className.sourceEnd;
-      endLine     = className.endLine;
-      endColumn   = className.endColumn;
-    }
-    return new ClassHeader(path,
-                           classNameImage,
-                           superclassNameImage,
-                           interfaceNames,
-                           firstToken.sourceStart,
-                           end,
-                           firstToken.beginLine,
-                           endLine,
-                           firstToken.beginColumn,
-                           endColumn);
-  }
+	//{{{ class
+	try 
+	{
+		classToken = <CLASS>
+		{
+			if (firstToken == null) firstToken = classToken;
+		}
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError("identifier expected","identifier", e.currentToken.next);
+	} //}}}
+
+	//{{{ identifier
+	try 
+	{
+		className = <IDENTIFIER>
+		{
+			classNameImage = className.image;
+		}
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError("identifier expected","identifier",e.currentToken.next);
+	} //}}}
+
+	//{{{ extends XXX
+	[
+	<EXTENDS>
+	try 
+	{
+		(superclassName = <IDENTIFIER> | superclassName = <OBJECT>)
+		{
+			superclassNameImage = superclassName.image;
+		}
+	} 
+	catch (ParseException e) 
+	{
+		//{{{ Parse error
+		fireParseError("identifier expected", "identifier", e.currentToken.next);
+		superclassNameImage = SYNTAX_ERROR_CHAR;
+		error_skipto(LBRACE);//}}}
+	}
+	] //}}}
+
+	//{{{ implements xxx,yyy
+	[
+	{
+		interfaceNames = new ArrayList();
+	}
+	<IMPLEMENTS>
+	interfaceToken = <IDENTIFIER>
+	{
+		interfaceNames.add(interfaceToken.image);
+	}
+	(
+	 <COMMA>
+	 interfaceToken = <IDENTIFIER>
+	 {
+		 interfaceNames.add(interfaceToken.image);
+	 }
+	)*
+	] //}}}
+
+	{
+		final int end,endLine,endColumn;
+		if (className == null) 
+		{
+			end         = firstToken.sourceEnd;
+			endLine     = firstToken.endLine;
+			endColumn   = firstToken.endColumn;
+		} 
+		else 
+		{
+			end         = className.sourceEnd;
+			endLine     = className.endLine;
+			endColumn   = className.endColumn;
+		}
+		return new ClassHeader(path,
+				       classNameImage,
+				       superclassNameImage,
+				       interfaceNames,
+				       firstToken.sourceStart,
+				       end,
+				       firstToken.beginLine,
+				       endLine,
+				       firstToken.beginColumn,
+				       endColumn);
+	}
 }//}}}
 
 //{{{ ClassBody(ClassDeclaration classDeclaration)
@@ -4654,7 +4676,7 @@ Define defineStatement() :
 	}
 	catch (ParseException e)
 	{
-		fireParseError("expression expected", "expression", e.currentToken.image);
+		fireParseError("expression expected", "expression", e.currentToken);
 		defineName = new StringLiteral(SYNTAX_ERROR_CHAR,pos,pos,
 					       e.currentToken.beginLine,
 					       e.currentToken.endLine,
