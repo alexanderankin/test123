@@ -9,5 +9,5 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.nam
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.version=1.0.0
 
 
-#plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.docs=GroovyScriptEnginePlugin.html
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.docs=GroovyScriptEnginePlugin.html
 
