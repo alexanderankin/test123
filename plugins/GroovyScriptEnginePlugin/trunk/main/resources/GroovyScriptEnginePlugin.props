@@ -4,7 +4,8 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.dep
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.depend.1=jedit 04.03.15.00
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin 0.3.0
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.description=Provides jEdit with the ability to use the Groovy ScriptEngine provided on scripting.dev.java.net.
-plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.jars=groovy-all-1.5.6.jar	groovy-engine.jar
+# Versons: Groovy 1.5.6, miglayout-swing 3.6
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.jars=groovy-all.jar groovy-engine.jar miglayout-swing.jar
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.name=Groovy Script Engine Plugin
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.version=1.0.0
 
