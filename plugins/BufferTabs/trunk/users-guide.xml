@@ -100,7 +100,15 @@
 <appendix id="changelog">
   <title>Change log</title>
   <formalpara>
-     <title>Version 1.1 </title>
+     <title>Version 1.1.1</title>
+        <para> Requires JDK 1.5, jEdit 4.3pre15
+          <itemizedlist>
+            <listitem><para>Implemented bufferSetSorted() method for 4.3pre17 compatibility</para></listitem>
+          </itemizedlist>
+      </para>
+   </formalpara>
+   <formalpara>
+     <title>Version 1.1.0</title>
         <para> Requires JDK 1.5, jEdit 4.3pre15 
           <itemizedlist>
             <listitem><para> Shows only buffers belonging to the editPane's view </para></listitem>
