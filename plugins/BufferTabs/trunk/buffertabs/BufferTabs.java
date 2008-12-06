@@ -339,6 +339,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		changeHandler.setEnabled(true);
 	}
 
+	public void bufferSetSorted()
+	{
+		// do nothing
+	}
+
 	public void propertiesChanged()
 	{
 		if (ColorTabs.instance().isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
