@@ -62,7 +62,7 @@ public class Caret extends Directive
          return false;
       }
       BufferWriter bufferWriter = (BufferWriter) writer;
-	  int caretPos = bufferWriter.getOffset() - 1;
+	  int caretPos = bufferWriter.getOffset();
 	  if (caretPos < 0) {
 	  	caretPos = 0;
 	  }

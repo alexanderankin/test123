@@ -6,6 +6,7 @@ CHANGES:
 - removed dependency on the gnu.regexp library in favour of java.util.regex
 - fixed a bug which caused the templates tree to reload for every EditBus message (patch by Nick Clarke)
 - fixed Enter key handling in Templates dockable (based on patch by Nick Clarke)
+- fixed a bug in the #caret directive which caused the caret to be placed on position ahead of where it should have been (patch by Nick Clarke)
 
 Version 4.1.1 (24-JAN-2008)
 =============================
