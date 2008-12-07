@@ -1,9 +1,11 @@
 CHANGES file for Templates plugin.
 
-Version 4.1.2 (17-MAR-2008)
+Version 4.1.2 (xx-xxx-200x)
 =============================
 CHANGES:
-- updated dependencies as a result of the gnu.regexp library being moved out of core and into the GnuRegexp plugin
+- removed dependency on the gnu.regexp library in favour of java.util.regex
+- fixed a bug which caused the templates tree to reload for every EditBus message (patch by Nick Clarke)
+- fixed Enter key handling in Templates dockable (based on patch by Nick Clarke)
 
 Version 4.1.1 (24-JAN-2008)
 =============================
