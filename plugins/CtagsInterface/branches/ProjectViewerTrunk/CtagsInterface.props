@@ -1,0 +1,132 @@
+plugin.ctags.CtagsInterfacePlugin.activate=startup
+
+# general plugin information
+plugin.ctags.CtagsInterfacePlugin.name=CtagsInterface
+plugin.ctags.CtagsInterfacePlugin.author=Shlomy Reinstein
+plugin.ctags.CtagsInterfacePlugin.version=0.2
+plugin.ctags.CtagsInterfacePlugin.description=\
+	CtagsInterface provides common Ctags services to interested plugins.
+
+plugin.ctags.CtagsInterfacePlugin.depend.0=jdk 1.5
+plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.13.00
+plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.1.3.7
+
+plugin.ctags.CtagsInterfacePlugin.jars=hsqldb.jar
+plugin.ctags.CtagsInterfacePlugin.docs=index.html
+
+# action labels
+ctags-interface-add-file.label=Add tag file...
+ctags-interface-print-tags.label=Print tags
+ctags-interface-print-tags-containing.label=Print tags with substring...
+ctags-interface-jump-to-tag.label=Jump to tag
+ctags-interface-search-tag-by-substring.label=Search for a tag with substring...
+ctags-interface-search-tag-by-prefix.label=Search for a tag with prefix...
+ctags-interface-tag-all-projects.label=Tag all projects
+ctags-interface-complete.label=Suggest completion options
+
+# menu items
+plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
+	ctags-interface-jump-to-tag \
+	ctags-interface-search-tag-by-prefix \
+	ctags-interface-search-tag-by-substring \
+	ctags-interface-preview \
+	ctags-interface-complete \
+	- \
+	ctags-interface-tag-all-projects
+#  class-browser-show-selected-hierarchy
+
+# option panes
+plugin.ctags.CtagsInterfacePlugin.option-group=CtagsInterface-General \
+	CtagsInterface-Actions \
+	CtagsInterface-Dirs \
+	CtagsInterface-Projects
+options.CtagsInterface-General.label=General
+options.CtagsInterface-General.code=new options.GeneralOptionPane();
+options.CtagsInterface-Actions.label=Actions
+options.CtagsInterface-Actions.code=new options.ActionsOptionPane();
+options.CtagsInterface-Dirs.label=Source trees
+options.CtagsInterface-Dirs.code=new options.DirsOptionPane();
+options.CtagsInterface-Projects.label=Projects
+options.CtagsInterface-Projects.code=new options.ProjectsOptionPane();
+
+# dockables
+ctags-interface-tag-list.title=Tag List
+ctags-interface-tag-list.label=Tag List
+ctags-interface-preview.title=Tag Preview
+ctags-interface-preview.label=Tag Preview
+
+# docs
+#plugin.ctags.CtagsInterfacePlugin.docs=index.html
+
+# options
+options.CtagsInterface.ctags=ctags
+options.CtagsInterface.cmd=--fields=+anzKiS
+options.CtagsInterface.pattern=\\w+
+options.CtagsInterface.dbClass=org.hsqldb.jdbcDriver
+options.CtagsInterface.dbConnection=jdbc:hsqldb:file:<default>
+options.CtagsInterface.dbUser=sa
+options.CtagsInterface.dbPassword=
+
+# messages
+messages.CtagsInterface.ctags=Ctags executable path:
+messages.CtagsInterface.cmd=Ctags invocation options:
+messages.CtagsInterface.pattern=Tag pattern (to extract tag at caret):
+messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
+messages.CtagsInterface.updateOnSave=Refresh file tags when saved
+messages.CtagsInterface.background=Perform tag updates in background
+messages.CtagsInterface.previewTitle=Tag Preview dockable
+messages.CtagsInterface.previewToolbar=Show toolbar
+messages.CtagsInterface.previewWrap=Use soft wrap
+messages.CtagsInterface.previewDelay=Delay before tag preview (in milliseconds):
+messages.CtagsInterface.dbTitle=Database
+messages.CtagsInterface.dbClass=JDBC driver class:
+messages.CtagsInterface.dbConnection=Connection string:
+messages.CtagsInterface.dbUser=User:
+messages.CtagsInterface.dbPassword=Password:
+messages.CtagsInterface.actions=Actions:
+messages.CtagsInterface.actionEditorTitle=Action Editor
+messages.CtagsInterface.actionName=Action name:
+messages.CtagsInterface.sqlQuery=SQL query:
+messages.CtagsInterface.dirs=Source trees:
+messages.CtagsInterface.projects=Projects:
+messages.CtagsInterface.trackProjectList=Automatically add new projects and remove deleted projects
+messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projects are changed
+messages.CtagsInterface.searchScope=Tag search scope
+messages.CtagsInterface.searchGlobally=Global
+messages.CtagsInterface.searchActiveProjectOnly=Active project only
+messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
+
+# projectviewer context menu actions
+plugin.projectviewer.ctags.CtagsInterfacePlugin.context-menu-actions=\
+	projects.ProjectAddAction,projects.ProjectRemoveAction
+
+# projectviewer option pane
+plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
+
+# file system browser context menu item
+plugin.ctags.CtagsInterfacePlugin.browser-menu-item=ctags-interface-add-dir
+ctags-interface-add-dir.label=Add source tree to tag database
+
+options.CtagsInterface-ProjectDependencies.label=Dependencies
+options.CtagsInterface-ProjectDependencies.code=new projects.ProjectDependencies()
+
+# icons
+options.CtagsInterface.icons.kind.class=class.png
+options.CtagsInterface.icons.kind.field=variable.png
+options.CtagsInterface.icons.kind.function=function.png
+options.CtagsInterface.icons.kind.macro=macro.png
+options.CtagsInterface.icons.kind.member=variable.png
+options.CtagsInterface.icons.kind.method=function.png
+options.CtagsInterface.icons.kind.package=package.png
+options.CtagsInterface.icons.kind.procedure=function.png
+options.CtagsInterface.icons.kind.prototype=prototype.png
+options.CtagsInterface.icons.kind.struct=struct.png
+options.CtagsInterface.icons.kind.typedef=typedef.png
+options.CtagsInterface.icons.kind.union=union.png
+options.CtagsInterface.icons.kind.variable=variable.png
+options.CtagsInterface.icons.kind.enum=enum.png
+options.CtagsInterface.icons.kind.enumerator=enumerator.png
+# Perl icons...
+options.CtagsInterface.icons.kind.subroutine=function.png
+options.CtagsInterface.icons.kind.constant=macro.png
+options.CtagsInterface.icons.kind.label=variable.png
