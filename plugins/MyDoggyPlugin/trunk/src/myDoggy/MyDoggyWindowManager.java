@@ -282,8 +282,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		String id = getToolWindowID(name);
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
-		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
-		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
+		initToolWindowsDescriptors(name, tw);
 		PropertyChangeListener listener = new VisibilityChangeListener(tw, name, window);
 		tw.addPropertyChangeListener("visible", listener);
 		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
@@ -322,13 +321,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		String title = getDockableTitle(name);
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
+		initToolWindowsDescriptors(name, tw);
+		return tw;
+	}
+
+	private void initToolWindowsDescriptors(String name, ToolWindow tw) {
 		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
 		setFloatingProperties(tw);
 		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
-		return tw;
 	}
 
 	private void setFloatingProperties(ToolWindow tw) {
