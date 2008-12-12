@@ -346,6 +346,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		public FloatingFreeAction() {
 			super("FloatingFreeAction",
 				UIManager.getIcon(MyDoggyKeySpace.FLOATING_INACTIVE));
+			setText("Floating free");
 			setTooltipText("Floating free (without an anchor button)");
 			setVisibleOnMenuBar(true);
 			setVisibleOnTitleBar(true);
