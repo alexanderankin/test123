@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -127,7 +126,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		wm.getTypeDescriptorTemplate(ToolWindowType.DOCKED).setAnimating(
 			OptionPane.getEnableAnimationsProp());
 		add(wm, BorderLayout.CENTER);
-		PerspectiveManager.setPerspectiveDirty(true);
 	}
 
 	@Override

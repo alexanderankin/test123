@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager.DockingLayout;
 import org.noos.xing.mydoggy.ToolWindowManager;
 
@@ -18,8 +19,12 @@ public class MyDoggyDockingLayout extends DockingLayout {
 	
 	public MyDoggyDockingLayout(ToolWindowManager manager) {
 		wm = manager;
-		saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
-		layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		// Save the layout, so it can be retrieved later, unless we're
+		// called during jEdit startup, when the perspective is loaded.
+		if (jEdit.isStartupDone()) {
+			saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+			layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		}
 	}
 	
 	public String getLayoutFilename() {
