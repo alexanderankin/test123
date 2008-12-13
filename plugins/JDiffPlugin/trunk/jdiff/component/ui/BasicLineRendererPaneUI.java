@@ -31,6 +31,7 @@ import jdiff.component.*;
 public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements ChangeListener {
 
     private LineRendererPane lineRendererPane = null;
+    private JScrollPane scrollPane = null;
     private DiffLineModel model;
     private LineRenderer lineRenderer = null;
     private Color fgColor = jEdit.getColorProperty("view.fgColor", Color.BLACK);
@@ -85,7 +86,8 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
      */
     public void installComponents() {
         lineRenderer = new LineRenderer( );
-        lineRendererPane.add( new JScrollPane(lineRenderer), BorderLayout.CENTER );
+        scrollPane = new JScrollPane(lineRenderer);
+        lineRendererPane.add( scrollPane, BorderLayout.CENTER );
     }
 
     /**
@@ -147,6 +149,9 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
     public class LineRenderer extends JPanel {
 
         private int leftMargin = 6;
+
+        private int preferredWidth = 600;
+        private int preferredHeight = 100;
         private Dimension minimumSize = new Dimension( 600, 100 );
 
         public LineRenderer( ) {
@@ -157,7 +162,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
          * @return 600 x 100
          */
         public Dimension getPreferredSize() {
-            return getMinimumSize();
+            return new Dimension(preferredWidth, preferredHeight);
         }
 
         public Dimension getMinimumSize() {
@@ -202,9 +207,10 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
 
             // set up the font
             Font font = lineRendererPane.getFont();
-            Font bold = font.deriveFont( Font.BOLD );
             gfx.setFont( font );
             FontMetrics fm = gfx.getFontMetrics();
+
+            preferredHeight = 8 * fm.getHeight();
 
             // draw the characters, left line above the right line
             // draw "Left" and bounding line with start and end ticks
@@ -217,7 +223,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + left_width, y );
             gfx.drawLine( x, y, x, y + tick_height );
             gfx.drawLine( x + left_width, y, x + left_width, y + tick_height );
-            minimumSize.width = Math.max(minimumSize.width, x + left_width + leftMargin);
+            preferredWidth = Math.max(minimumSize.width, x + left_width + leftMargin);
 
             // draw text of left line
             Color color;
@@ -260,7 +266,9 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + right_width, y );
             gfx.drawLine( x, y, x, y - tick_height );
             gfx.drawLine( x + right_width, y, x + right_width, y - tick_height );
-            minimumSize.width = Math.max(minimumSize.width, x + right_width + leftMargin);
+            preferredWidth = Math.max(preferredWidth, x + right_width + leftMargin);
+
+            scrollPane.revalidate();
         }
     }
 }
