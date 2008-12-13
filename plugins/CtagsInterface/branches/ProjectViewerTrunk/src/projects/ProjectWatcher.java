@@ -1,60 +1,37 @@
 package projects;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import options.ProjectsOptionPane;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
-import projectviewer.event.ProjectEvent;
-import projectviewer.event.ProjectListener;
-import projectviewer.event.ProjectViewerAdapter;
-import projectviewer.event.ProjectViewerEvent;
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.StructureUpdate;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ctags.CtagsInterfacePlugin;
 import db.TagDB;
 
-public class ProjectWatcher implements ProjectListener {
+public class ProjectWatcher implements EBComponent {
 
 	Set<String> watched;
-	Set<View> views;
-	ProjectEventListener pvListener;
 	
 	public ProjectWatcher() {
 		watched = new HashSet<String>();
-		views = new HashSet<View>();
-		pvListener = new ProjectEventListener();
 		if (ProjectsOptionPane.getAutoUpdateProjects())
 			updateWatchers();
-		if (ProjectsOptionPane.getTrackProjectList())
-			setProjectListTracking(true);
 	}
 
-	public void setProjectListTracking(boolean on) {
-		Iterator<View> it = views.iterator();
-		while (it.hasNext()) {
-			View view = it.next();
-			ProjectViewer.removeProjectViewerListener(pvListener, view);
-		}
-		views.clear();
-		if (on) {
-			View [] v = jEdit.getViews();
-			for (int i = 0; i < v.length; i++) {
-				ProjectViewer.addProjectViewerListener(pvListener, v[i]);
-				views.add(v[i]);
-			}
-		}
-	}
-	
 	public void updateWatchers() {
 		Vector<String> projects = ProjectsOptionPane.getProjects();
 		Iterator<String> all = getProjects().iterator();
@@ -73,7 +50,6 @@ public class ProjectWatcher implements ProjectListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Vector<String> getFiles(String project) {
 		ProjectManager pm = ProjectManager.getInstance();
 		VPTProject p = pm.getProject(project);
@@ -88,11 +64,10 @@ public class ProjectWatcher implements ProjectListener {
 		return files;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Vector<String> getProjects() {
 		ProjectManager pm = ProjectManager.getInstance();
 		Vector<String> projects = new Vector<String>();
-		Iterator<VPTProject> it = pm.getProjects();
+		Iterator<VPTProject> it = pm.getProjects().iterator();
 		while (it.hasNext()) {
 			VPTProject proj = it.next();
 			projects.add(proj.getName());
@@ -111,62 +86,64 @@ public class ProjectWatcher implements ProjectListener {
 		VPTProject proj = ProjectManager.getInstance().getProject(project);
 		if (proj == null)
 			return;
-		proj.addProjectListener(this);
+		watched.add(project);
 	}
 	private void unwatchProject(String project) {
 		VPTProject proj = ProjectManager.getInstance().getProject(project);
 		if (proj == null)
 			return;
-		proj.removeProjectListener(this);
+		watched.remove(project);
 	}
 	
 	// ProjectListener methods
 	
-	public void fileAdded(ProjectEvent pe) {
-		Vector<String> added = new Vector<String>();
-		added.add(pe.getAddedFile().getNodePath());
-		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
-			added, null);
-	}
-
-	public void fileRemoved(ProjectEvent pe) {
+	public void handleFilesChanged(ProjectUpdate pu) {
 		Vector<String> removed = new Vector<String>();
-		removed.add(pe.getRemovedFile().getNodePath());
-		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
-			null, removed);
-	}
-
-	@SuppressWarnings("unchecked")
-	public void filesAdded(ProjectEvent pe) {
-		Vector<String> added = new Vector<String>();
-		ArrayList<VPTFile> nodes = pe.getAddedFiles();
-		for (int i = 0; i < nodes.size(); i++)
-			added.add(nodes.get(i).getNodePath());
-		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
-			added, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public void filesRemoved(ProjectEvent pe) {
-		Vector<String> removed = new Vector<String>();
-		ArrayList<VPTFile> nodes = pe.getRemovedFiles();
+		List<VPTFile> nodes = pu.getRemovedFiles();
 		for (int i = 0; i < nodes.size(); i++)
 			removed.add(nodes.get(i).getNodePath());
-		CtagsInterfacePlugin.updateProject(pe.getProject().getName(),
-			null, removed);
+		Vector<String> added = new Vector<String>();
+		nodes = pu.getAddedFiles();
+		for (int i = 0; i < nodes.size(); i++)
+			added.add(nodes.get(i).getNodePath());
+		CtagsInterfacePlugin.updateProject(pu.getProject().getName(),
+			added, removed);
 	}
 
-	public void propertiesChanged(ProjectEvent pe) {
+	public void handlePropertiesChanged(ProjectUpdate pu) {
 		// TODO Auto-generated method stub
 	}
-	
-	private static class ProjectEventListener extends ProjectViewerAdapter {
-		public void projectAdded(ProjectViewerEvent evt) {
-			CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
-		}
 
-		public void projectRemoved(ProjectViewerEvent evt) {
-			CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, evt.getProject().getName());
+	public void handleStructureUpdate(StructureUpdate su) {
+		if (su.getType() == StructureUpdate.Type.PROJECT_ADDED) {
+			String name = su.getNode().getName();
+			CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, name);
+			watched.add(name);
+		}
+		else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED) {
+			String name = su.getNode().getName();
+			CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, name);
+			watched.remove(name);
 		}
 	}
+	
+	public void handleMessage(EBMessage message) {
+		if (message instanceof ProjectUpdate) {
+			ProjectUpdate pu = (ProjectUpdate) message;
+			String name = ((ProjectUpdate) message).getProject().getName();
+			if (! watched.contains(name))
+				return;
+			if (pu.getType() == ProjectUpdate.Type.FILES_CHANGED)
+				handleFilesChanged(pu);
+			else if (pu.getType() == ProjectUpdate.Type.PROPERTIES_CHANGED)
+				handlePropertiesChanged(pu);
+		} else if (message instanceof StructureUpdate) {
+			if (! ProjectsOptionPane.getTrackProjectList())
+				return;
+			StructureUpdate su = (StructureUpdate) message;
+			if (su.getType() == StructureUpdate.Type.PROJECT_ADDED)
+				handleStructureUpdate(su);
+		}
+	}
+
 }

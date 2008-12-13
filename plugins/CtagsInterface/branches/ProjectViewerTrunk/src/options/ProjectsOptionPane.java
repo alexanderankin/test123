@@ -22,9 +22,9 @@ import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.util.StandardUtilities;
 
 import projects.ProjectWatcher;
 import ctags.CtagsInterfacePlugin;
@@ -107,7 +107,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 					Vector<String> nameVec = pvi.getProjects();
 					String [] names = new String[nameVec.size()];
 					nameVec.toArray(names);
-					Arrays.sort(names, new MiscUtilities.StringICaseCompare());
+					Arrays.sort(names, new StandardUtilities.StringCompare<String>(true));
 					String selected = (String) JOptionPane.showInputDialog(
 						ProjectsOptionPane.this, "Select project:", "Projects",
 						JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
@@ -145,8 +145,6 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(GLOBAL, global.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_FIRST, activeFirst.isSelected());
-		if (pvi != null)
-			pvi.setProjectListTracking(getTrackProjectList());
 	}
 	
 	static public Vector<String> getProjects() {
