@@ -343,17 +343,39 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		floatDescriptor.setAlwaysOnTop(OptionPane.getFloatOnTopProp());
 		floatDescriptor.setOsDecorated(OptionPane.getFloatOsDecorationsProp());
 		floatDescriptor.setAddToTaskBar(OptionPane.getFloatAddToTaskBarProp());
+		floatDescriptor.addToolWindowAction(new RemoveDockableAction(), 0);
 	}
-	
-	private static class FloatingFreeAction extends ToolWindowAction {
-		public FloatingFreeAction() {
-			super("FloatingFreeAction",
-				UIManager.getIcon(MyDoggyKeySpace.FLOATING_INACTIVE));
-			setText("Floating free");
-			setTooltipText("Floating free (without an anchor button)");
+
+	private static abstract class DockableAction extends ToolWindowAction {
+		public DockableAction(String name, Icon icon, String text, String tooltip) {
+			super(name, icon);
+			setText(text);
+			setTooltipText(tooltip);
 			setVisibleOnMenuBar(true);
 			setVisibleOnTitleBar(true);
 			setVisible(true);
+		}
+	}
+	private static class RemoveDockableAction extends DockableAction {
+		public RemoveDockableAction() {
+			super("RemoveDockableAction",
+				UIManager.getIcon(MyDoggyKeySpace.HIDE_TOOL_WINDOW),
+				"Remove", "Remove dockable completely");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ToolWindowManager wm = getToolWindow().getDockableManager();
+			String id = getToolWindow().getId();
+			wm.unregisterToolWindow(id);
+		}
+	}
+	
+	private static class FloatingFreeAction extends DockableAction {
+		public FloatingFreeAction() {
+			super("FloatingFreeAction",
+				UIManager.getIcon(MyDoggyKeySpace.FLOATING_INACTIVE),
+				"Floating free", "Floating free (without an anchor button)");
 		}
 		
 		@Override
