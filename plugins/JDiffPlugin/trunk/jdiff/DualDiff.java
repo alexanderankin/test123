@@ -505,6 +505,14 @@ public class DualDiff implements EBComponent {
                             view.validate();
                         }
                         else {
+                            // remember split configuration so it can be restored later
+                            EditPane[] editPanes = view.getEditPanes();
+                            ViewWrapper vw = new ViewWrapper( view );
+                            String splitConfig = vw.getSplitConfig();
+                            if ( splitConfig != null ) {
+                                splitConfigs.put( view, splitConfig );
+                            }
+
                             // split the view -- if already split correctly,
                             // don't split.  This might be a bit of a hack, in
                             // the case where the view is split in two, but
@@ -512,14 +520,7 @@ public class DualDiff implements EBComponent {
                             // the output of the split config.  If it ends with
                             // "horizontal", the view is split horizontally and
                             // needs to be split vertically.
-                            EditPane[] editPanes = view.getEditPanes();
-                            ViewWrapper vw = new ViewWrapper( view );
-                            String splitConfig = vw.getSplitConfig();
                             if ( editPanes.length != 2 || (splitConfig != null && !splitConfig.endsWith("horizontal") ) ) {
-                                // remember split configuration so it can be restored later
-                                if ( splitConfig != null ) {
-                                    splitConfigs.put( view, splitConfig );
-                                }
                                 view.unsplit();
                                 view.splitVertically();
                             }
