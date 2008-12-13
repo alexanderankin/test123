@@ -137,6 +137,9 @@ public class TagFilesOptionPane extends AbstractOptionPane
 			TagFile tagFile = (TagFile)listModel.elementAt(i);
 			jEdit.setProperty("tags.tagfile.path." + i, tagFile.getPath());
 			jEdit.setBooleanProperty("tags.tagfile.enabled." + i, tagFile.isEnabled());
+			if (tagFile.isCurrentDirIndexFile()) {
+				jEdit.setProperty("options.tags.current-buffer-file-name", tagIndexFilename);
+			}
 		}
 		jEdit.unsetProperty("tags.tagfile.path." + listModel.size());
         jEdit.unsetProperty("tags.tagfile.enabled." + listModel.size());
