@@ -63,6 +63,11 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showErrorOverview"));
 
+		addComponent(showUnderlines = new JCheckBox(jEdit.getProperty(
+			"options.error-list.showUnderlines")));
+		showUnderlines.setSelected(jEdit.getBooleanProperty(
+			ErrorListPlugin.SHOW_UNDERLINES));
+
 		addComponent(showIconsInGutter = new JCheckBox(jEdit.getProperty(
 			"options.error-list.gutterIcons")));
 		showIconsInGutter.setSelected(jEdit.getBooleanProperty(
@@ -115,6 +120,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			isInclusionFilter.isSelected());
 		jEdit.setProperty(ErrorListPlugin.FILENAME_FILTER,
 			filenameFilter.getText());
+		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_UNDERLINES,
+			showUnderlines.isSelected());
 		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_ICONS_IN_GUTTER,
 			showIconsInGutter.isSelected());
 	} //}}}
@@ -129,6 +136,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JRadioButton isInclusionFilter;
 	private JRadioButton isExclusionFilter;
 	private JTextField filenameFilter;
+	private JCheckBox showUnderlines;
 	private JCheckBox showIconsInGutter;
 	//}}}
 }

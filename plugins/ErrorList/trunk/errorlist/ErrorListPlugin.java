@@ -39,6 +39,7 @@ public class ErrorListPlugin extends EBPlugin
 {
 	static final String FILENAME_FILTER = "error-list.filenameFilter";
 	static final String IS_INCLUSION_FILTER = "error-list.isInclusionFilter";
+	static final String SHOW_UNDERLINES = "error-list.showUnderlines";
 	static final String SHOW_ICONS_IN_GUTTER = "error-list.showIconsInGutter";
 
 	//{{{ start() method
@@ -153,6 +154,12 @@ public class ErrorListPlugin extends EBPlugin
 		return isInclusionFilter;
 	} //}}}
 
+	//{{{ showUnderlines() method
+	static boolean showUnderlines()
+	{
+		return jEdit.getBooleanProperty(SHOW_UNDERLINES, true);
+	} //}}}
+	
 	//{{{ showIconsInGutter() method
 	static boolean showIconsInGutter()
 	{
@@ -209,7 +216,7 @@ public class ErrorListPlugin extends EBPlugin
 			gutter.addExtension(ext);
 			gutter.putClientProperty("ErrorHighlight", ext);
 		}
-		else
+		if (showUnderlines())
 		{
 			ext = new ErrorHighlight(editPane);
 			textArea.getPainter().addExtension(ext);
