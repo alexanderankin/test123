@@ -48,6 +48,7 @@ options.error-list.autoCloseOnNoErrors=Auto-close on no errors
 options.error-list.autoRefocusTextArea=Auto-refocus on text area
 options.error-list.errorColor=Error highlight color:
 options.error-list.warningColor=Warning highlight color:
+options.error-list.showUnderlines=Show errors with underlines
 options.error-list.gutterIcons=Show error icons in the gutter
 options.error-list.isInclusionFilter=Include filenames matching glob patterns
 options.error-list.isExclusionFilter=Exclude filenames matching glob patterns
