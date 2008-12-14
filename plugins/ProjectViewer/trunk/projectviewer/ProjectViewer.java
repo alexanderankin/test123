@@ -554,7 +554,7 @@ public final class ProjectViewer extends JPanel
 			for (Iterator i = p.getOpenFiles().iterator(); i.hasNext(); ) {
 				String next = (String) i.next();
 				if (i.hasNext())
-					jEdit.openFile(null, next);
+					jEdit.openFile((View)null, next);
 				else
 					jEdit.openFile(view, next);
 			}
