@@ -26,8 +26,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.TextListener;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -218,10 +218,10 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 	{
 		path.add(node);
 
-		Enumeration e = node.getMembers();
-		while (e.hasMoreElements())
+		Iterator<Object> itr = node.getMembers();
+		while (itr.hasNext())
 		{
-			Object obj = e.nextElement();
+			Object obj = itr.next();
 			if (obj instanceof OptionGroup)
 			{
 				OptionGroup grp = (OptionGroup) obj;
@@ -361,10 +361,10 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		if (obj instanceof OptionGroup)
 		{
 			OptionGroup grp = (OptionGroup) obj;
-			Enumeration members = grp.getMembers();
-			while (members.hasMoreElements())
+			Iterator<Object> members = grp.getMembers();
+			while (members.hasNext())
 			{
-				save(members.nextElement());
+				save(members.next());
 			}
 		}
 		else if (obj instanceof OptionPane)

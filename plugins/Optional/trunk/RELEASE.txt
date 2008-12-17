@@ -1,9 +1,9 @@
 Announcement:
-    Optional, release 0.2.4
+    Optional, release 1.0.1
 
 Requirements:
 	* jdk 1.5
-	* jEdit 4.3pre12
+	* jEdit 4.3pre17
 
 Author:
 	Alan Ezust
@@ -30,7 +30,8 @@ History:
 0.2.1	Updated for 4.3pre6 encoding options pane
 0.2.2	Removed redundant buffer options pane
 1.0     Bug fixes, "Combined Options" remembers previous selected tab.
-
+1.0.1   Updated to work with 4.3pre17, which uses Iterators instead of 
+        Enumerators for its option pane classes.
 
 
 
