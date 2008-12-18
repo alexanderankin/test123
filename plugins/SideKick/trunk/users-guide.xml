@@ -357,11 +357,10 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-<listitem> 
-  <para>
-  <emphasis role="bold">Version 0.7.7</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.
-  </para>
-  <itemizedlist>
+
+<listitem> <para>
+ <emphasis role="bold">Version 0.7.7</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
+ <itemizedlist>
     <listitem>
       <para>
       Fixed "parse on save" so parsing does not occur when parse on save is not selected. (danson)
@@ -372,12 +371,6 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
       Possible fix for 1633393, "TextArea painting corruption when saving". (danson)
       </para>
     </listitem>
-  </itemizedlist>
-</listitem>
- 
-<listitem> <para>
- <emphasis role="bold">Version 0.7.7</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
- <itemizedlist>
  <listitem><para>
    Fixed the auto-expand tree functionality that I broke earlier when adjusting it for the new filtering. (danson)
  </para></listitem>
