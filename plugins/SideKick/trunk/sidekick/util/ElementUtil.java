@@ -29,10 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package sidekick.util;
 
 import java.util.Enumeration;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gjt.sp.jedit.Buffer;
-import sidekick.IAsset;
 
 public class ElementUtil {
 
@@ -51,19 +51,19 @@ public class ElementUtil {
      * @return  a Position representing the offset from the start of the buffer
      * to the start of the element
      */
-    public static Position createStartPosition(Buffer buffer, SideKickElement element) {
+    public static Position createStartPosition( Buffer buffer, SideKickElement element ) {
         int line_offset = buffer.getLineStartOffset(
-                Math.max(element.getStartLocation().line - 1, 0));
-        int[] totalVirtualWidth = new int[1];
+                    Math.max( element.getStartLocation().line - 1, 0 ) );
+        int[] totalVirtualWidth = new int[ 1 ];
         int column_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(element.getStartLocation().line - 1, 0),
-                Math.max(element.getStartLocation().column - 1, 0),
-                totalVirtualWidth);
-        if (column_offset == -1) {
-            column_offset = totalVirtualWidth[0];
+                    Math.max( element.getStartLocation().line - 1, 0 ),
+                    Math.max( element.getStartLocation().column - 1, 0 ),
+                    totalVirtualWidth );
+        if ( column_offset == -1 ) {
+            column_offset = totalVirtualWidth[ 0 ];
         }
-        Position p = createPosition(line_offset, column_offset);
-        element.setStartPosition(p);
+        Position p = createPosition( line_offset, column_offset );
+        element.setStartPosition( p );
         return p;
     }
 
@@ -82,30 +82,30 @@ public class ElementUtil {
      * @return  a Position representing the offset from the start of the buffer
      * to the end of the element
      */
-    public static Position createEndPosition(Buffer buffer, SideKickElement element) {
+    public static Position createEndPosition( Buffer buffer, SideKickElement element ) {
         int line_offset = buffer.getLineStartOffset(
-                Math.max(element.getEndLocation().line - 1, 0));
-        int[] totalVirtualWidth = new int[1];
+                    Math.max( element.getEndLocation().line - 1, 0 ) );
+        int[] totalVirtualWidth = new int[ 1 ];
         int column_offset = buffer.getOffsetOfVirtualColumn(
-                Math.max(element.getEndLocation().line - 1, 0),
-                Math.max(element.getEndLocation().column - 1, 0),
-                totalVirtualWidth);
-        if (column_offset == -1) {
-            column_offset = totalVirtualWidth[0];
+                    Math.max( element.getEndLocation().line - 1, 0 ),
+                    Math.max( element.getEndLocation().column - 1, 0 ),
+                    totalVirtualWidth );
+        if ( column_offset == -1 ) {
+            column_offset = totalVirtualWidth[ 0 ];
         }
-        Position p = createPosition(line_offset, column_offset);
-        element.setEndPosition(p);
+        Position p = createPosition( line_offset, column_offset );
+        element.setEndPosition( p );
         return p;
     }
 
-    public static Position createPosition(int line_offset, int column_offset) {
+    public static Position createPosition( int line_offset, int column_offset ) {
         final int lo = line_offset;
         final int co = column_offset;
         return new Position() {
-                public int getOffset() {
-                    return lo + co;
-                }
-            };
+                   public int getOffset() {
+                       return lo + co;
+                   }
+               };
 
     }
 
@@ -119,22 +119,34 @@ public class ElementUtil {
      * tree nodes.
      * @param node the root node of the tree to convert.
      */
-    public static void convert(Buffer buffer, DefaultMutableTreeNode node) {
+    public static void convert( Buffer buffer, DefaultMutableTreeNode node ) {
+        final Buffer _buffer = buffer;
+        final DefaultMutableTreeNode _node = node;
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    _convert( _buffer, _node );
+                }
+            }
+        );
+    }
+
+    private static void _convert( Buffer buffer, DefaultMutableTreeNode node ) {
         // convert the children of the node
         Enumeration children = node.children();
-        while (children.hasMoreElements()) {
-            convert(buffer, (DefaultMutableTreeNode) children.nextElement());
+        while ( children.hasMoreElements() ) {
+            _convert( buffer, ( DefaultMutableTreeNode ) children.nextElement() );
         }
 
         // convert the node itself
-        if ((node.getUserObject() instanceof SideKickElement)) {
-            SideKickElement userObject = (SideKickElement)node.getUserObject();
-            Position start_position = createStartPosition(buffer, userObject);
-            Position end_position = createEndPosition(buffer, userObject);
-            SideKickAsset asset = new SideKickAsset(userObject);
-            asset.setStart(start_position);
-            asset.setEnd(end_position);
-            node.setUserObject(asset);
+        if ( ( node.getUserObject() instanceof SideKickElement ) ) {
+            SideKickElement userObject = ( SideKickElement ) node.getUserObject();
+            Position start_position = createStartPosition( buffer, userObject );
+            Position end_position = createEndPosition( buffer, userObject );
+            SideKickAsset asset = new SideKickAsset( userObject );
+            asset.setStart( start_position );
+            asset.setEnd( end_position );
+            node.setUserObject( asset );
         }
     }
 
