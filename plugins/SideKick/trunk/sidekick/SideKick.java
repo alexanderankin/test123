@@ -81,7 +81,7 @@ class SideKick implements EBComponent
 	public static final String AUTO_EXPAND_DEPTH = "sidekick-tree.auto-expand-tree-depth";
 	public static final String SHOW_STATUS= "sidekick.showStatusWindow.label";
 	// }}}
-			
+
 	//{{{ SideKick constructor
 	SideKick(View view)
 	{
@@ -117,19 +117,19 @@ class SideKick implements EBComponent
 	public static void setFollowCaret(boolean fc) {
 		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
 	}
-		
+
 	public static void setParseOnSave(boolean val) {
 		jEdit.setBooleanProperty(BUFFER_SAVE, val);
 	}
-	
+
 	public static void setParseOnChange(boolean val) {
 		jEdit.setBooleanProperty(BUFFER_CHANGE, val);
 	}
-	
+
 	public static boolean isParseOnSave() {
 		return jEdit.getBooleanProperty(BUFFER_SAVE);
 	}
-	
+
 	public static boolean isParseOnChange() {
 		return jEdit.getBooleanProperty(BUFFER_CHANGE);
 	} // }}}
@@ -158,7 +158,7 @@ class SideKick implements EBComponent
 
 		// unconditionally get the right parser
 		parser = SideKickPlugin.getParserForBuffer(buffer);
-		//{{{ check for unknown file		
+		//{{{ check for unknown file
 		if (parser == null) {
 			Log.log(Log.DEBUG,this,"No parser");
 			setErrorSource(null);
@@ -207,7 +207,7 @@ class SideKick implements EBComponent
 		if (newBuffer != null) buffer = newBuffer;
 		parser = SideKickPlugin.getParserForBuffer(buffer);
 		activateParser();
-		
+
 //		autoParse();
 	} //}}}
 
@@ -240,7 +240,7 @@ class SideKick implements EBComponent
 	private void autoParse()
 	{
 		if(buffer.getBooleanProperty(
-			"sidekick.buffer-change-parse") || 
+			"sidekick.buffer-change-parse") ||
 			|| buffer.getBooleanProperty(
 			"sidekick.keystroke-parse"))
 		{
@@ -260,7 +260,7 @@ class SideKick implements EBComponent
 		{
 			ErrorSource.unregisterErrorSource(this.errorSource);
 			this.errorSource.clear();
-		}		
+		}
 		this.errorSource = errorSource;
 
 		if(errorSource != null)
@@ -276,7 +276,7 @@ class SideKick implements EBComponent
 	{
 		if(!addedBufferChangeHandler)
 		{
-			
+
 			buffer.addBufferListener(bufferListener = new BufferChangeListener());
 //			buffer.addBufferChangeListener(bufferHandler);
 			addedBufferChangeHandler = true;
@@ -308,7 +308,7 @@ class SideKick implements EBComponent
 		{
 			delay = 1500;
 		}
-		
+
 	} //}}}
 
 	//{{{ showNotParsedMessage() method
@@ -334,7 +334,7 @@ class SideKick implements EBComponent
 
 			if(keystrokeTimer.isRunning())
 				keystrokeTimer.stop();
-	
+
 			keystrokeTimer.setInitialDelay(delay);
 			keystrokeTimer.setRepeats(false);
 			keystrokeTimer.start();
@@ -357,25 +357,26 @@ class SideKick implements EBComponent
 			view.getBuffer() == bmsg.getBuffer()) {
 			String prevMode =
 				buffer.getStringProperty(SideKickPlugin.PARSER_MODE_PROPERTY);
-			String currMode = (buffer.getMode() != null) ? buffer.getMode().getName() : ""; 
-			if (! currMode.equals(prevMode))
+			String currMode = (buffer.getMode() != null) ? buffer.getMode().getName() : "";
+			if (! currMode.equals(prevMode)) {
 				buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
-			setParser(view.getBuffer());
+				setParser(view.getBuffer());
+			}
 		}
 
 		if (bmsg.getView() != view &&
 			(bmsg.getView() != null || bmsg.getBuffer() != view.getBuffer()))
 			return;
-		
-		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
+
+		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave())
 			parse(true);
-		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange()) 
+		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
 			parse(true);
-		else if(bmsg.getWhat() == BufferUpdate.CLOSED) 
+		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			setErrorSource(null);
-		
+
 	} //}}}
-	
+
 	//{{{ handleEditPaneUpdate() method
 	private void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
@@ -468,7 +469,7 @@ class SideKick implements EBComponent
 		}
 		else
 			removeBufferChangeListener(buffer);
-		
+
 		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
 		if (tree == null) return;
 		tree.reloadParserCombo();
@@ -527,9 +528,9 @@ class SideKick implements EBComponent
 				Log.log(Log.DEBUG,this,"ParseAWTRequest");
 
 				setErrorSource(errorSource);
-	
+
 				int errorCount = errorSource.getErrorCount();
-				
+
 				if(showParsingMessage || errorCount != 0)
 				{
 					String label = jEdit.getProperty("sidekick.parser."
@@ -538,11 +539,11 @@ class SideKick implements EBComponent
 					view.getStatus().setMessageAndClear(jEdit.getProperty(
 						"sidekick.parsing-complete",pp));
 				}
-	
+
 				buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
 				if(buffer.getProperty("folding").equals("sidekick"))
 					buffer.invalidateCachedFoldLevels();
-	
+
 				View _view = jEdit.getFirstView();
 				while(_view != null)
 				{
@@ -550,7 +551,7 @@ class SideKick implements EBComponent
 						SideKickParsedData.setParsedData(_view,data[0]);
 					_view = _view.getNext();
 				}
-	
+
 				sendUpdate();
 			}
 			finally
@@ -577,9 +578,9 @@ class SideKick implements EBComponent
 
 			if(buffer.getBooleanProperty("sidekick.keystroke-parse"))
 				parseWithDelay();
-		} 
+		}
 
-		
+
 		public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
 		{
 			parseOnKeyStroke(buffer);
@@ -589,7 +590,7 @@ class SideKick implements EBComponent
 		{
 			parseOnKeyStroke(buffer);
 		}
-		
-	
+
+
 	} //}}}
 }
