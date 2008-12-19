@@ -118,6 +118,9 @@ public class VoxSpellPlugin extends EBPlugin
     
     static public void updateEditPane(EditPane edit_pane)
     {
+        if (edit_pane == null)
+            return;
+        
         VoxSpellPainter painter = null;
         Buffer buffer = edit_pane.getBuffer();
         TextArea text_area = edit_pane.getTextArea();
