@@ -23,6 +23,8 @@ package com.townsfolkdesigns.jedit.plugins.scripting;
 
 
 import org.gjt.sp.jedit.EditPlugin;
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 
 /**
@@ -36,6 +38,7 @@ public class ScriptEnginePlugin extends EditPlugin {
    private MacroDelegate macroDelegate;
    private ScriptEngineDelegate scriptEngineDelegate;
    private ScriptExecutionDelegate scriptExecutionDelegate;
+	private ErrorSource errorSource;
 
    public ScriptEnginePlugin() {
       scriptEngineDelegate = new ScriptEngineDelegate();
@@ -70,9 +73,13 @@ public class ScriptEnginePlugin extends EditPlugin {
 
    @Override
    public void start() {
+		errorSource = new DefaultErrorSource("ScriptEnginePlugin");
+		scriptExecutionDelegate.setErrorSource(errorSource);
+		ErrorSource.registerErrorSource(errorSource);
    }
 
    @Override
    public void stop() {
+		ErrorSource.unregisterErrorSource(errorSource);
    }
 }

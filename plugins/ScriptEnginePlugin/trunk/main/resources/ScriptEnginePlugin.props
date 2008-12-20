@@ -2,27 +2,37 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.activate=
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.author=Eric Berry
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.depend.0=jdk 1.5
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.depend.1=jedit 04.03.15.00
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.depend.3=optional plugin console.ConsolePlugin 4.3.8
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.description=Provides a framework to make JSR223/scripting.dev.java.net scripting engines usable within jEdit.
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.docs=/docs/ScriptEnginePlugin.html
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.jars=script-api.jar
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.name=Script Engine Plugin
-plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0.5.0
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0.5.1
 
+# can use this one after console support is added.
+#plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu= \
+#	scriptengine.plugin.evaluate.buffer \
+#	scriptengine.plugin.evaluate.buffer.to.console \
+#	- \
+#	scriptengine.plugin.evaluate.selection \
+#	scriptengine.plugin.evaluate.selection.to.console \
+#	- \
+#	scriptengine.plugin.macro.create \
+#	scriptengine.plugin.macro.create.from.buffer
+	
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu= \
 	scriptengine.plugin.evaluate.buffer \
-	scriptengine.plugin.evaluate.buffer.to.console \
-	- \
 	scriptengine.plugin.evaluate.selection \
-	scriptengine.plugin.evaluate.selection.to.console \
 	- \
 	scriptengine.plugin.macro.create \
 	scriptengine.plugin.macro.create.from.buffer
 
 # Menu Labels.
 scriptengine.plugin.evaluate.buffer.label=Evaluate Buffer
-scriptengine.plugin.evaluate.buffer.to.console.label=-   in Console
+scriptengine.plugin.evaluate.buffer.to.console.label=Buffer to Console
 scriptengine.plugin.evaluate.selection.label=Evaluate Selection
-scriptengine.plugin.evaluate.selection.to.console.label=-   in Console
+scriptengine.plugin.evaluate.selection.to.console.label=Selection to Console
 scriptengine.plugin.macro.create.label=Create Macro
 scriptengine.plugin.macro.create.from.buffer.label=Create Macro from Buffer
 scriptengine.plugin.menu.label=Scripting
