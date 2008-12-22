@@ -68,6 +68,7 @@ public class TagDB {
 			st = conn.createStatement();
         } catch (final Exception e) {
 			e.printStackTrace();
+			return;
 		}
 		createTables();
 		columns = getColumns();
