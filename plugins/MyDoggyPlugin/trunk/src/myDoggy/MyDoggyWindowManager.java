@@ -330,6 +330,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
+		dockedDescriptor.addToolWindowAction(new RemoveDockableAction(), 0);
 		setFloatingProperties(tw);
 		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
 	}
