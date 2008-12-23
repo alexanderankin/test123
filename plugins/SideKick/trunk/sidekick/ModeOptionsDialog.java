@@ -27,7 +27,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JCheckBox;
@@ -175,10 +175,10 @@ public class ModeOptionsDialog extends OptionsDialog
 		if(obj instanceof OptionGroup)
 		{
 			OptionGroup grp = (OptionGroup)obj;
-			Enumeration members = grp.getMembers();
-			while(members.hasMoreElements())
+			Iterator<Object> members = grp.getMembers();
+			while(members.hasNext())
 			{
-				load(members.nextElement());
+				load(members.next());
 			}
 		}
 	} 
