@@ -779,8 +779,8 @@ MORE :
 {
  < ~[] > : IN_STRING
 }
-/* SEPARATORS */
 
+//{{{ SEPARATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <LPAREN    : "("> : PHPPARSING
@@ -793,9 +793,9 @@ MORE :
 | <COMMA     : ","> : PHPPARSING
 | <DOT       : "."> : PHPPARSING
 }
+//}}}
 
-
-/* COMPARATOR */
+//{{{ COMPARATOR
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <GT                 : ">"  > : PHPPARSING
@@ -808,8 +808,9 @@ MORE :
 | <BANGDOUBLEEQUAL    : "!=="> : PHPPARSING
 | <TRIPLEEQUAL        : "==="> : PHPPARSING
 }
+//}}}
 
-/* ASSIGNATION */
+//{{{ ASSIGNATION
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <ASSIGN             : "="  > : PHPPARSING
@@ -826,6 +827,7 @@ MORE :
 | <LSHIFTASSIGN       : "<<="> : PHPPARSING
 | <RSIGNEDSHIFTASSIGN : ">>="> : PHPPARSING
 }
+//}}}
 
 //}}}
 
@@ -834,44 +836,42 @@ MORE :
 //{{{ PHP Structures
 
 //{{{ phpTest()
-
 void phpTest() :
 {}
 {
   Php()
   <EOF>
-}
+} //}}}
 
-//}}}
 //{{{ phpFile()
-
 void phpFile() :
 {}
 {
-  try {
-    (PhpBlock())*
-    {
-      createNewHTMLCode();
-    }
-  } catch (TokenMgrError e) {
-    //{{{ Parse Error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          e.getMessage(),
-                                          e.getMessage(),
-                                          null,
-                                          jj_input_stream.getBeginOffset(),
-                                          jj_input_stream.getEndOffset(),
-                                          jj_input_stream.getBeginLine(),
-                                          jj_input_stream.getEndLine(),
-                                          jj_input_stream.getBeginColumn(),
-                                          jj_input_stream.getEndColumn())); //}}}
-  }
-}
+	try 
+	{
+		(PhpBlock())*
+		{
+			createNewHTMLCode();
+		}
+	} 
+	catch (TokenMgrError e)
+	{
+		//{{{ Parse Error
+		fireParseError(new PHPParseErrorEvent(ERROR,
+						      path,
+						      e.getMessage(),
+						      e.getMessage(),
+						      null,
+						      jj_input_stream.getBeginOffset(),
+						      jj_input_stream.getEndOffset(),
+						      jj_input_stream.getBeginLine(),
+						      jj_input_stream.getEndLine(),
+						      jj_input_stream.getBeginColumn(),
+						      jj_input_stream.getEndColumn())); //}}}
+	}
+} //}}}
 
-//}}}
 //{{{ PhpBlock()
-
 /**
  * A php block is a <?= expression [;]?>
  * or <?php somephpcode ?>
@@ -879,46 +879,53 @@ void phpFile() :
  */
 void PhpBlock() :
 {
-  final PHPEchoBlock phpEchoBlock;
-  final Token token,phpEnd;
+	final PHPEchoBlock phpEchoBlock;
+	final Token token,phpEnd;
 }
 {
-  phpEchoBlock = phpEchoBlock()
-  {pushOnAstNodes(phpEchoBlock);}
+	phpEchoBlock = phpEchoBlock()
+	{
+		pushOnAstNodes(phpEchoBlock);
+	}
 |
-  [   <PHPSTARTLONG>
-    | token = <PHPSTARTSHORT>
-    {
-      fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
-                                                path,
-                                                "You should use '<?php' instead of '<?' it will avoid some problems with XML",
-                                                token));
-    }
-  ]
-  {
-    createNewHTMLCode();
-  }
-  Php()
-  try {
-    phpEnd = <PHPEND>
-   {
-    htmlStart = phpEnd.sourceEnd;
-    htmlLineStart = phpEnd.endLine;
-    htmlColumnStart = phpEnd.endColumn;
-   }
-  } catch (ParseException e) {
-      fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-                                                path,
-                                                "'?>' is missing",
-                                                e.currentToken));
-  }
-}
+	//{{{ <? | <?php
+	[   
+  	<PHPSTARTLONG>
+	| 
+	token = <PHPSTARTSHORT>
+	{
+		fireParseMessage(new PHPParseMessageEvent(INFO,
+							  PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
+							  path,
+							  "You should use '<?php' instead of '<?' it will avoid some problems with XML",
+							  token));
+	}
+	]
+	//}}}
+	{
+		createNewHTMLCode();
+	}
+	Php()
+	try 
+	{
+		phpEnd = <PHPEND>
+		{
+			htmlStart = phpEnd.sourceEnd;
+			htmlLineStart = phpEnd.endLine;
+			htmlColumnStart = phpEnd.endColumn;
+		}
+	}
+	catch (ParseException e) 
+	{
+		fireParseMessage(new PHPParseMessageEvent(INFO,
+							  PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
+							  path,
+							  "'?>' is missing",
+							  e.currentToken));
+	}
+} //}}}
 
-//}}}
 //{{{ phpEchoBlock()
-
 PHPEchoBlock phpEchoBlock() :
 {
   final Expression expr;
@@ -955,18 +962,14 @@ PHPEchoBlock phpEchoBlock() :
     pushOnAstNodes(echoBlock);
     return echoBlock;
   }
-}
+} //}}}
 
-//}}}
 //{{{ Php()
-
 void Php() :
 {}
 {
-  (BlockStatement())*
-}
-
-//}}}
+	(BlockStatement())*
+} //}}}
 
 
 //}}}
@@ -2295,42 +2298,40 @@ Variable Var() :
 }
 
 //}}}
-//{{{ VariableInitializer()
 
-Expression VariableInitializer() :
+//{{{ VariableInitializer()
+ Expression VariableInitializer() :
 {
   Expression expr;
-  final Token token, token2;
 }
 {
+  //{{{ literal 
   LOOKAHEAD(2)
   expr = Literal()
   {
     return expr;
-  }
+  } //}}}
 |
-  token2 = <MINUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
+  //{{{ +/- integer 
   {
-    return new PrefixedUnaryExpression(new NumberLiteral(Type.INTEGER,token),
-                                       token2.kind,
-                                       token2.sourceStart,
-                                       token2.beginLine,
-                                       token2.beginColumn);
+	  Token value;
+	  Token operator;
   }
-|
-  token2 = <PLUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
+  (operator = <PLUS> | operator = <MINUS>) (value = <INTEGER_LITERAL> | value = <FLOATING_POINT_LITERAL>)
   {
-    return new PrefixedUnaryExpression(new NumberLiteral(Type.INTEGER,token),
-                                       token2.kind,
-                                       token2.sourceStart,
-                                       token2.beginLine,
-                                       token2.beginColumn);
-  }
+    return new PrefixedUnaryExpression(new NumberLiteral(Type.INTEGER,value),
+                                       operator);
+  } //}}}
 |
+  //{{{ array 
   expr = ArrayDeclarator()
   {
-    return expr;
-  }
+	  return expr;
+  } //}}}
+  // expr = methodDeclaration(CONST_FUNCTION,null)
+  // {
+	//   return expr;
+  // }
 |
     (
         expr = ClassIdentifier()
@@ -2343,9 +2344,7 @@ Expression VariableInitializer() :
     {
       return expr;
     }
-}
-
-//}}}
+} //}}}
 
 
 //}}}
@@ -2816,12 +2815,7 @@ Expression Expression() :
                        e.currentToken.endLine,
                        e.currentToken.endColumn,
                        e.currentToken.endColumn)); //}}}
-        return new DummyExpression(e.currentToken.sourceStart,
-                                   e.currentToken.sourceEnd,
-                                   e.currentToken.beginLine,
-                                   e.currentToken.endLine,
-                                   e.currentToken.beginColumn,
-                                   e.currentToken.endColumn);
+        return new DummyExpression(e.currentToken);
     }
   )
   {
@@ -2846,12 +2840,7 @@ Expression assignment() :
     {
       if (initializer == null)
       {
-        initializer = new DummyExpression(assignOperator.next.sourceStart,
-                                          assignOperator.next.sourceEnd,
-                                          assignOperator.next.beginLine,
-                                          assignOperator.next.endLine,
-                                          assignOperator.next.beginColumn,
-                                          assignOperator.next.endColumn);
+        initializer = new DummyExpression(assignOperator.next);
       }
       expr = new Assignment(expr,
                             initializer,
@@ -2873,30 +2862,26 @@ Expression assignment() :
 } //}}}
 
 //{{{ prefixedPrimaryExpression()
-
-Expression prefixedPrimaryExpression() :
+ Expression prefixedPrimaryExpression() :
 {
-  Expression expr;
-  Token prefixToken;
+	Expression expr;
+	Token prefix = null;
 }
 {
-  prefixToken = <BANG> expr = prefixedPrimaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,PHPParserConstants.BANG,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
-  }
-|
-  prefixToken = <AT> expr = prefixedPrimaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,PHPParserConstants.AT,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
-  }
-|
-  prefixToken = <TILDE> expr = prefixedPrimaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,PHPParserConstants.TILDE,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
-  }
-|
-  expr = PrimaryExpression()
-  {return expr;}
+	(
+		prefix = <BANG> expr = prefixedPrimaryExpression()
+	|
+		prefix = <AT> expr = prefixedPrimaryExpression()
+	|
+		prefix = <TILDE> expr = prefixedPrimaryExpression()
+	|
+		expr = PrimaryExpression()
+	)
+	{
+		if (prefix != null)
+			expr = new PrefixedUnaryExpression(expr, prefix);
+		return expr;
+	}
 } //}}}
 
 //}}}
@@ -3423,119 +3408,99 @@ Expression UnaryExpression() :
     return UnaryExpression();
     */
   }
+} //}}}
 
-}
-
-//}}}
 //{{{ AtNotTildeUnaryExpression()
-
 Expression AtNotTildeUnaryExpression() :
 {
-  if (shouldStop) throw new ParsingAbortedError();
-  final Expression expr;
-  final Token token;
+	if (shouldStop) 
+		throw new ParsingAbortedError();
+	Expression expr;
+	Token prefix = null;
 }
 {
-  token = <AT>
-  expr = AtNotTildeUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,PHPParserConstants.AT,token.sourceStart,token.beginLine,token.beginColumn);}
-|
-  token = <TILDE>
-  expr = AtNotTildeUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,PHPParserConstants.TILDE,token.sourceStart,token.beginLine,token.beginColumn);}
-|
-  token = <BANG>
-  expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,PHPParserConstants.BANG,token.sourceStart,token.beginLine,token.beginColumn);}
-|
-  expr = UnaryExpressionNoPrefix()
-  {return expr;}
-}
+	(
+		prefix = <AT> expr = AtNotTildeUnaryExpression()
+	|
+		prefix = <TILDE> expr = AtNotTildeUnaryExpression()
+	|
+		prefix = <BANG> expr = AtNotUnaryExpression()
+	|
+		expr = UnaryExpressionNoPrefix()
+	)
+	{
+		if (prefix != null)
+			expr = new PrefixedUnaryExpression(expr, prefix);
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ AtNotUnaryExpression()
-
 /**
  * An expression prefixed (or not) by one or more @ and !.
  * @return the expression
  */
 Expression AtNotUnaryExpression() :
 {
-  final Expression expr;
-  final Token token;
+	Expression expr;
+	Token prefix = null;
 }
 {
-  token = <AT>
-  expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,PHPParserConstants.AT,token.sourceStart,token.beginLine,token.beginColumn);}
-|
-  token = <BANG>
-  expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,PHPParserConstants.BANG,token.sourceStart,token.beginLine,token.beginColumn);}
-|
-  expr = UnaryExpressionNoPrefix()
-  {return expr;}
-}
+	(
+		prefix = <AT> expr = AtNotUnaryExpression()
+	|
+		prefix = <BANG> expr = AtNotUnaryExpression()
+	|
+		expr = UnaryExpressionNoPrefix()
+	)
+	{
+		if (prefix != null)
+			expr = new PrefixedUnaryExpression(expr, prefix);
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ UnaryExpressionNoPrefix()
-
 Expression UnaryExpressionNoPrefix() :
 {
-  final Expression expr;
-  final Token token;
+	Expression expr;
+	Token prefix = null;
 }
 {
-  token = <PLUS> expr = AtNotTildeUnaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,
-                                       PHPParserConstants.PLUS,
-                                       token.sourceStart,
-                                       token.beginLine,
-                                       token.beginColumn);
-  }
-|
-  token = <MINUS> expr = AtNotTildeUnaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,
-                                       PHPParserConstants.MINUS,
-                                       token.sourceStart,
-                                       token.beginLine,
-                                       token.beginColumn);
-  }
-|
-  expr = PreIncDecExpression()
-  {return expr;}
-|
-  expr = UnaryExpressionNotPlusMinus()
-  {return expr;}
-}
+	(
+		prefix = <PLUS> expr = AtNotTildeUnaryExpression()
+	|
+		prefix = <MINUS> expr = AtNotTildeUnaryExpression()
+	|
+		expr = PreIncDecExpression()
+	|
+		expr = UnaryExpressionNotPlusMinus()
+	)
+	{
+		if (prefix != null)
+			expr = new PrefixedUnaryExpression(expr, prefix);
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ PreIncDecExpression()
-
 Expression PreIncDecExpression() :
 {
-final Expression expr;
-final Token token;
+	Expression expr;
+	Token prefix;
 }
 {
-  (
-      token = <PLUS_PLUS>
-    |
-      token = <MINUS_MINUS>
-  )
-  expr = PrimaryExpression()
-  {
-    return new PrefixedUnaryExpression(expr,
-                                       token.kind,
-                                       token.sourceStart,
-                                       token.beginLine,
-                                       token.beginColumn);
-  }
-}
+	(
+		prefix = <PLUS_PLUS>
+	|
+		prefix = <MINUS_MINUS>
+	)
+	expr = PrimaryExpression()
+	{
+		return new PrefixedUnaryExpression(expr, prefix);
+	}
+} //}}}
 
-//}}}
 //{{{ UnaryExpressionNotPlusMinus()
 
 Expression UnaryExpressionNotPlusMinus() :
@@ -4031,12 +3996,7 @@ ClassAccess classAccess(Expression prefix) :
 		 )
 	} catch (ParseException e) {
 		fireParseError("expression expected", "expression", e.currentToken);
-		expression = new DummyExpression(e.currentToken.sourceStart,
-						 e.currentToken.sourceEnd,
-						 e.currentToken.beginLine,
-						 e.currentToken.endLine,
-						 e.currentToken.endColumn,
-						 e.currentToken.beginColumn);
+		expression = new DummyExpression(e.currentToken);
 	}
 	{
 		return new ClassAccess(prefix,
@@ -5303,57 +5263,62 @@ Block Block() :
 }
 
 //}}}
-//{{{ BlockStatement()
 
+//{{{ BlockStatement()
 Statement BlockStatement() :
 {
-  Statement statement = null;
+	Statement statement = null;
 }
 {
-  (
-  try {
-    statement = Statement()
-    {
-      if (phpDocument == currentSegment) pushOnAstNodes(statement);
-    }
-  } catch (ParseException e) {
-    final Token semicolumn = error_skipto(SEMICOLON);
-    final Token nextToken = e.currentToken.next;
-    if (nextToken == semicolumn) {
-      //{{{ Parse Error
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "statement expected",
-                                            "statement",
-                                            nextToken.image,
-                                            nextToken.sourceEnd,
-                                            semicolumn.sourceStart,
-                                            nextToken.endLine,
-                                            semicolumn.beginLine,
-                                            nextToken.endColumn,
-                                            semicolumn.beginColumn)); //}}}
-    } else {
-      fireParseError("statement expected","statement",nextToken);
-    }
-  }
-|
-    statement = ClassDeclaration()
-|
-    statement = interfaceDeclaration()
-|
-    statement = methodDeclaration(CONST_FUNCTION,null)
-    {
-        if (phpDocument == currentSegment) pushOnAstNodes(statement);
-        currentSegment.add((MethodDeclaration) statement);
-        //((MethodDeclaration) statement).analyzeCode(this);
-    }
-  )
-  {
-      return statement;
-  }
+(
+	 try 
+	 {
+		 statement = Statement()
+		 {
+			 if (phpDocument == currentSegment) pushOnAstNodes(statement);
+		 }
+	 } 
+	 catch (ParseException e) 
+	 {                                  
+		 final Token semicolumn = error_skipto(SEMICOLON);
+		 final Token nextToken = e.currentToken.next;
+		 if (nextToken == semicolumn)
+		 {
+			 //{{{ Parse Error
+			 fireParseError(new PHPParseErrorEvent(ERROR,
+							       path,
+							       "statement expected",
+							       "statement",
+							       nextToken.image,
+							       nextToken.sourceEnd,
+							       semicolumn.sourceStart,
+							       nextToken.endLine,
+							       semicolumn.beginLine,
+							       nextToken.endColumn,
+							       semicolumn.beginColumn)); //}}}
+		 } 
+		 else 
+		 {
+			 fireParseError("statement expected","statement",nextToken);
+		 }
+	 }
+	 |
+	 statement = ClassDeclaration()
+	 |
+	 statement = interfaceDeclaration()
+	 |
+	 statement = methodDeclaration(CONST_FUNCTION,null)
+	 {
+		 if (phpDocument == currentSegment) pushOnAstNodes(statement);
+		 currentSegment.add((MethodDeclaration) statement);
+		 //((MethodDeclaration) statement).analyzeCode(this);
+	 }
+)
+{
+	return statement;
 }
+} //}}}
 
-//}}}
 //{{{ BlockStatementNoBreak()
 
 /**
