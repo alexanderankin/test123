@@ -363,6 +363,11 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <itemizedlist>
     <listitem>
       <para>
+        Updated to 4.3pre17 API (using Iterator instead of Enumerator)
+      </para>
+    </listitem>
+    <listitem>
+      <para>
       Fixed "parse on save" so parsing does not occur when parse on save is not selected. (danson)
       </para>
     </listitem>
