@@ -84,11 +84,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		if (File.separatorChar == '\\') {
-			project.setRootPath(attrs.getValue(PATH_ATTR).replace('/', '\\'));
-		} else {
-			project.setRootPath(attrs.getValue(PATH_ATTR));
-		}
+		project.setRootPath(fixPath(attrs.getValue(PATH_ATTR)));
 		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
 	} //}}}
