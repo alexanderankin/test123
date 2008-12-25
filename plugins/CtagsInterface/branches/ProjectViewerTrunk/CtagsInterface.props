@@ -96,10 +96,6 @@ messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
 
-# projectviewer context menu actions
-plugin.projectviewer.ctags.CtagsInterfacePlugin.context-menu-actions=\
-	projects.ProjectAddAction,projects.ProjectRemoveAction
-
 # projectviewer option pane
 plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
 
