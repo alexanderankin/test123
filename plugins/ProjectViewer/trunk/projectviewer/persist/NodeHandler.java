@@ -20,6 +20,7 @@ package projectviewer.persist;
 
 //{{{ Imports
 
+import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
@@ -140,5 +141,14 @@ public abstract class NodeHandler {
 		return src.replace('\\', '/');
 	}
 
+	/**
+	 *  Translates the directory separators read from the XML according
+	 *  the file system.
+	 */
+	protected final String fixPath(String src) {
+		if (File.separatorChar == '\\')
+			return src.replace('/', '\\');
+		return src;
+	}
 }
 
