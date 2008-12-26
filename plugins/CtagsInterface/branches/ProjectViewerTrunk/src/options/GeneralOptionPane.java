@@ -169,16 +169,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		dbPreset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String preset = (String) dbPreset.getSelectedItem();
-				boolean isCustom = preset.equals(CUSTOM_DB); 
-				if (isCustom)
-					preset = "";
-				else
-					preset = "." + preset;
-				removePreset.setEnabled(! isCustom);
-				dbClass.setText(jEdit.getProperty(DB_CLASS + preset));
-				dbConnection.setText(jEdit.getProperty(DB_CONNECTION + preset));
-				dbUser.setText(jEdit.getProperty(DB_USER + preset));
-				dbPassword.setText(jEdit.getProperty(DB_PASSWORD + preset));
+				removePreset.setEnabled(! preset.equals(CUSTOM_DB));
+				dbClass.setText(getDbPropertyByPreset(DB_CLASS, preset));
+				dbConnection.setText(getDbPropertyByPreset(DB_CONNECTION, preset));
+				dbUser.setText(getDbPropertyByPreset(DB_USER, preset));
+				dbPassword.setText(getDbPropertyByPreset(DB_PASSWORD, preset));
 			}
 		});
 		savePreset.addActionListener(new ActionListener() {
@@ -221,13 +216,28 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
-		jEdit.setProperty(DB_SELECTED_PRESET, (String) dbPreset.getSelectedItem());
-		jEdit.setProperty(DB_CLASS, dbClass.getText());
-		jEdit.setProperty(DB_CONNECTION, dbConnection.getText());
-		jEdit.setProperty(DB_USER, dbUser.getText());
-		jEdit.setProperty(DB_PASSWORD, dbPassword.getText());
+		String selectedPreset = (String) dbPreset.getSelectedItem();
+		jEdit.setProperty(DB_SELECTED_PRESET, selectedPreset);
+		savePreset(selectedPreset, false);
 	}
 
+	private static String getDbPropertyPresetSuffix(String preset) {
+		if (preset.equals(CUSTOM_DB))
+			preset = "";
+		else
+			preset = "." + preset;
+		return preset;
+	}
+
+	static private String getDbPropertyByPreset(String propBase, String preset) {
+		return jEdit.getProperty(propBase + getDbPropertyPresetSuffix(preset));
+	}
+	
+	static private String getDbPropertyOfSelectedPreset(String propBase) {
+		String preset = getDbSelectedPreset();
+		return getDbPropertyByPreset(propBase, preset);
+	}
+	
 	private void savePresetList() {
 		StringBuffer presets = new StringBuffer();
 		for (int i = 0; i < dbPreset.getItemCount(); i++) {
@@ -254,10 +264,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 				savePresetList();
 			}
 		}
-		if (preset.equals(CUSTOM_DB))
-			preset = "";
-		else
-			preset = "." + preset;
+		preset = getDbPropertyPresetSuffix(preset);
 		jEdit.setProperty(DB_CLASS + preset, dbClass.getText());
 		jEdit.setProperty(DB_CONNECTION + preset, dbConnection.getText());
 		jEdit.setProperty(DB_USER + preset, dbUser.getText());
@@ -303,16 +310,19 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	public static int getPreviewDelay() {
 		return jEdit.getIntegerProperty(PREVIEW_DELAY, 0);
 	}
+	public static String getDbSelectedPreset() {
+		return jEdit.getProperty(DB_SELECTED_PRESET);
+	}
 	public static String getDbClass() {
-		return jEdit.getProperty(DB_CLASS);
+		return getDbPropertyOfSelectedPreset(DB_CLASS);
 	}
 	public static String getDbConnection() {
-		return jEdit.getProperty(DB_CONNECTION);
+		return getDbPropertyOfSelectedPreset(DB_CONNECTION);
 	}
 	public static String getDbUser() {
-		return jEdit.getProperty(DB_USER);
+		return getDbPropertyOfSelectedPreset(DB_USER);
 	}
 	public static String getDbPassword() {
-		return jEdit.getProperty(DB_PASSWORD);
+		return getDbPropertyOfSelectedPreset(DB_PASSWORD);
 	}
 }
