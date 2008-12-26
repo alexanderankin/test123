@@ -11,6 +11,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import ctags.sidekick.options.GeneralOptionPane;
@@ -64,10 +67,23 @@ public class ToolBar extends JPanel {
 			populate();
 		}
 
+		private String getMode()
+		{
+			View view = jEdit.getActiveView();
+			if (view != null) {
+				Buffer buffer = view.getBuffer();
+				if (buffer != null) {
+					Mode mode = buffer.getMode();
+					if (mode != null)
+						return mode.getName();
+				}
+			}
+			return null;
+		}
+		
 		public void populate()
 		{
- 			final String mode =
-				jEdit.getActiveView().getBuffer().getMode().getName();
+ 			final String mode = getMode();
 			Vector<String> items = manager.getProcessorNames();
 			for (int i = 0; i < items.size(); i++)
 			{
