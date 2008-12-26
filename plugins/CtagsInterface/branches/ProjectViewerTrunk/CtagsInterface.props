@@ -23,6 +23,7 @@ ctags-interface-search-tag-by-substring.label=Search for a tag with substring...
 ctags-interface-search-tag-by-prefix.label=Search for a tag with prefix...
 ctags-interface-tag-all-projects.label=Tag all projects
 ctags-interface-complete.label=Suggest completion options
+ctags-interface-change-db-settings.label=Change database settings...
 
 # menu items
 plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
@@ -32,8 +33,9 @@ plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-preview \
 	ctags-interface-complete \
 	- \
-	ctags-interface-tag-all-projects
-#  class-browser-show-selected-hierarchy
+	ctags-interface-tag-all-projects \
+	- \
+	ctags-interface-change-db-settings
 
 # option panes
 plugin.ctags.CtagsInterfacePlugin.option-group=CtagsInterface-General \
@@ -109,10 +111,9 @@ messages.CtagsInterface.searchScope=Tag search scope
 messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
-messages.CtagsInterface.dbSettingsChanged=The new database settings might be incompatible with the previous settings. What would you like to do?
 messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)
 messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database settings due to an internal error.
-messages.CtagsInterface.dbSettingsChangedDialogTitle=Database settings changed
+messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
 
 # projectviewer option pane
 plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
