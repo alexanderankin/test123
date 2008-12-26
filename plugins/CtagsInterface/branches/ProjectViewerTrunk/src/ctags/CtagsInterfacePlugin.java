@@ -410,10 +410,21 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// new database using the previous origins.
 	static public void switchDatabase(boolean rebuild) {
 		EditPlugin plugin = jEdit.getPlugin("ctags.CtagsInterfacePlugin");
-		if (plugin == null)
+		if (plugin == null) {
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				jEdit.getProperty(MESSAGE + "cannotSwitchDatabase"));
 			return;
+		}
+		Vector<String> dirs = db.getOrigins(TagDB.DIR_ORIGIN);
+		Vector<String> projects = db.getOrigins(TagDB.PROJECT_ORIGIN);
 		plugin.stop();
 		plugin.start();
+		if (rebuild) {
+			if (dirs != null)
+				updateOrigins(TagDB.DIR_ORIGIN, dirs);
+			if (projects != null)
+				updateOrigins(TagDB.PROJECT_ORIGIN, projects);
+		}
 	}
 	
 	// Updates the given origins in the DB
