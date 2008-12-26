@@ -112,6 +112,7 @@ messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only 
 messages.CtagsInterface.dbSettingsChanged=The new database settings might be incompatible with the previous settings. What would you like to do?
 messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)
 messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database settings due to an internal error.
+messages.CtagsInterface.dbSettingsChangedDialogTitle=Database settings changed
 
 # projectviewer option pane
 plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
