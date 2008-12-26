@@ -422,8 +422,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				jEdit.getProperty(MESSAGE + "cannotSwitchDatabase"));
 			return;
 		}
-		Vector<String> dirs = db.getOrigins(TagDB.DIR_ORIGIN);
-		Vector<String> projects = db.getOrigins(TagDB.PROJECT_ORIGIN);
+		Vector<String> dirs = null;
+		Vector<String> projects = null;
+		if (rebuild) {
+			dirs = db.getOrigins(TagDB.DIR_ORIGIN);
+			projects = db.getOrigins(TagDB.PROJECT_ORIGIN);
+		}
 		plugin.stop();
 		plugin.start();
 		if (rebuild) {
