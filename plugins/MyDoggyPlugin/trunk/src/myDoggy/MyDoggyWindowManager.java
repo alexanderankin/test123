@@ -114,6 +114,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			ViewConfig config)
 	{
 		super(view, instance, config);
+		UIManager.put(MyDoggyKeySpace.DEBUG, false);
 		setLayout(new BorderLayout());
 		// Search for the PluginJAR of mydoggy res jar file and use
 		// the classloader used by jEdit to load it...
