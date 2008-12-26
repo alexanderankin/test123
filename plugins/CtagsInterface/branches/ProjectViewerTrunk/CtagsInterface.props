@@ -63,7 +63,7 @@ options.CtagsInterface.ctags=ctags
 options.CtagsInterface.cmd=--fields=+anzKiS
 options.CtagsInterface.pattern=\\w+
 # Default db settings
-options.CtagsInterface.dbSelectedPreset=hsqldb
+options.CtagsInterface.dbSelectedPreset=
 options.CtagsInterface.dbClass=org.hsqldb.jdbcDriver
 options.CtagsInterface.dbConnection=jdbc:hsqldb:file:<default>
 options.CtagsInterface.dbUser=sa
