@@ -1,8 +1,10 @@
 package options;
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -13,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -60,6 +63,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JTextField dbConnection;
 	JTextField dbUser;
 	JTextField dbPassword;
+	Vector<String> initialDbProperties;
 	
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
@@ -203,8 +207,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		if (! presets.contains(selected))
 			selected = CUSTOM_DB;
 		dbPreset.setSelectedItem(selected);
+		
+		// Store the initial DB properties to compare when saving
+		initialDbProperties = getDbProperties();
 	}
-	
+
 	@Override
 	public void _save() {
 		jEdit.setProperty(CTAGS, ctags.getText());
@@ -219,8 +226,41 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		String selectedPreset = (String) dbPreset.getSelectedItem();
 		jEdit.setProperty(DB_SELECTED_PRESET, selectedPreset);
 		savePreset(selectedPreset, false);
+		// Check if the DB properties have changed, act accordingly.
+		compareDbProperties();
 	}
 
+	// Compare the current DB properties with the initial properties.
+	// If the properties have changed, ask the user if we should:
+	// - Erase the current DB (that was used by the previous DB properties)
+	// - Rebuild the DB with the new settings
+	private void compareDbProperties() {
+		Vector<String> props = getDbProperties();
+		boolean same = true;
+		for (int i = 0; i < props.size(); i++) {
+			if (! props.get(i).equals(initialDbProperties.get(i))) {
+				same = false;
+				break;
+			}
+		}
+		if (! same) {
+			DbPropertyChangeDialog dlg =
+				new DbPropertyChangeDialog(jEdit.getActiveView());
+			dlg.setVisible(true);
+		}
+	}
+	private Vector<String> getDbProperties() {
+		Vector<String> props = new Vector<String>();
+		props.add(getDbClass());
+		props.add(getDbConnection());
+		props.add(getDbUser());
+		props.add(getDbPassword());
+		for (int i = 0; i < props.size(); i++)
+			if (props.get(i) == null)
+				props.set(i, "");
+		return props;
+	}
+	
 	private static String getDbPropertyPresetSuffix(String preset) {
 		if (preset.equals(CUSTOM_DB))
 			preset = "";
@@ -324,5 +364,36 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static String getDbPassword() {
 		return getDbPropertyOfSelectedPreset(DB_PASSWORD);
+	}
+	
+	private static class DbPropertyChangeDialog extends JDialog {
+		public DbPropertyChangeDialog(Frame frame) {
+			super(frame, true);
+			setLayout(new GridBagLayout());
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(5, 5, 5, 5);
+			c.gridx = 0;
+			c.gridy = 0;
+			c.weighty = 1.0;
+			c.fill = GridBagConstraints.BOTH; 
+			add(new JLabel(jEdit.getProperty(MESSAGE + "dbSettingsChanged")), c);
+			final JCheckBox rebuildNewDb = new JCheckBox(
+				jEdit.getProperty(MESSAGE + "rebuildNewDb"), false);
+			c.gridy++;
+			add(rebuildNewDb, c);
+			JButton close = new JButton("Close");
+			c.fill = GridBagConstraints.NONE;
+			c.anchor = GridBagConstraints.WEST;
+			c.gridy++;
+			add(close, c);
+			close.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					setVisible(false);
+					CtagsInterfacePlugin.switchDatabase(
+						rebuildNewDb.isSelected());
+				}
+			});
+			pack();
+		}
 	}
 }

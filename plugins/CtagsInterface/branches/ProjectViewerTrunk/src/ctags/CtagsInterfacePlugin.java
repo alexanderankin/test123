@@ -406,6 +406,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		});
 	}
 	
+	// Switch to a new database. If 'rebuild' is true, rebuild the
+	// new database using the previous origins.
+	static public void switchDatabase(boolean rebuild) {
+		EditPlugin plugin = jEdit.getPlugin("ctags.CtagsInterfacePlugin");
+		if (plugin == null)
+			return;
+		plugin.stop();
+		plugin.start();
+	}
+	
 	// Updates the given origins in the DB
 	static public void updateOrigins(String type, Vector<String> names) {
 		// Remove obsolete origins
