@@ -62,10 +62,23 @@ ctags-interface-preview.label=Tag Preview
 options.CtagsInterface.ctags=ctags
 options.CtagsInterface.cmd=--fields=+anzKiS
 options.CtagsInterface.pattern=\\w+
+# Default db settings
+options.CtagsInterface.dbSelectedPreset=hsqldb
 options.CtagsInterface.dbClass=org.hsqldb.jdbcDriver
 options.CtagsInterface.dbConnection=jdbc:hsqldb:file:<default>
 options.CtagsInterface.dbUser=sa
 options.CtagsInterface.dbPassword=
+# Preset db settings
+options.CtagsInterface.dbPresets=hsqldb,h2
+options.CtagsInterface.dbClass.hsqldb=org.hsqldb.jdbcDriver
+options.CtagsInterface.dbConnection.hsqldb=jdbc:hsqldb:file:<default>
+options.CtagsInterface.dbUser.hsqldb=sa
+options.CtagsInterface.dbPassword.hsqldb=
+options.CtagsInterface.dbPreset.h2=h2
+options.CtagsInterface.dbClass.h2=org.h2.Driver
+options.CtagsInterface.dbConnection.h2=jdbc:h2:<default>
+options.CtagsInterface.dbUser.h2=sa
+options.CtagsInterface.dbPassword.h2=
 
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
@@ -79,6 +92,7 @@ messages.CtagsInterface.previewToolbar=Show toolbar
 messages.CtagsInterface.previewWrap=Use soft wrap
 messages.CtagsInterface.previewDelay=Delay before tag preview (in milliseconds):
 messages.CtagsInterface.dbTitle=Database
+messages.CtagsInterface.dbPreset=Select preset values:
 messages.CtagsInterface.dbClass=JDBC driver class:
 messages.CtagsInterface.dbConnection=Connection string:
 messages.CtagsInterface.dbUser=User:
