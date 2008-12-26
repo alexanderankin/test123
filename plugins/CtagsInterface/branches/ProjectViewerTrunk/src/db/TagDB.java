@@ -24,7 +24,7 @@ public class TagDB {
 	private static final String DEFAULT_DB_FILE_SPEC = "<default>";
 	private Connection conn;
 	private Set<String> columns;
-	Statement st;
+	Statement st = null;
 	// Column types
 	public static final String IDENTITY_TYPE = "IDENTITY";
 	public static final String VARCHAR_TYPE = "VARCHAR";
@@ -74,6 +74,10 @@ public class TagDB {
 		columns = getColumns();
 	}
 
+	public boolean isFailed() {
+		return (st == null);
+	}
+	
 	// Check if a source file is in the DB
 	public boolean hasSourceFile(String file) {
 		return tableColumnContainsValue(FILES_TABLE, FILES_NAME, file);

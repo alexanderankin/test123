@@ -54,6 +54,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	{
 		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
 		db = new TagDB();
+		if (db.isFailed())
+			return;
 		parser = new Parser();
 		runner = new Runner();
 		watcher = new BufferWatcher(db);
