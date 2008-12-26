@@ -24,6 +24,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import ctags.CtagsInterfacePlugin;
@@ -367,8 +368,21 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	
 	private static class DbPropertyChangeDialog extends JDialog {
+		static private String DB_SETTINGS_CHANGED_DIALOG_GEOMETRY =
+			OPTION + "dbSettingsChangedDialogGeometry";
+		private void saveGeometry() {
+			GUIUtilities.saveGeometry(this, DB_SETTINGS_CHANGED_DIALOG_GEOMETRY);
+		} 
 		public DbPropertyChangeDialog(Frame frame) {
-			super(frame, true);
+			super(frame, jEdit.getProperty(
+				MESSAGE + "dbSettingsChangedDialogTitle"), true);
+			addWindowListener(new java.awt.event.WindowAdapter()
+	        {
+	            public void windowClosing(java.awt.event.WindowEvent evt)
+	            {
+	            	saveGeometry();	
+	            }
+	        });
 			setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
 			c.insets = new Insets(5, 5, 5, 5);
@@ -388,12 +402,14 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			add(close, c);
 			close.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					saveGeometry();
 					setVisible(false);
 					CtagsInterfacePlugin.switchDatabase(
 						rebuildNewDb.isSelected());
 				}
 			});
 			pack();
+			GUIUtilities.loadGeometry(this, DB_SETTINGS_CHANGED_DIALOG_GEOMETRY);
 		}
 	}
 }
