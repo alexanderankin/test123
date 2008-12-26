@@ -14,13 +14,20 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
-import options.GeneralOptionPane;
-
 import org.gjt.sp.jedit.jEdit;
 
+import ctags.CtagsInterfacePlugin;
 import ctags.Tag;
 
 public class TagDB {
+	static public final String OPTION = CtagsInterfacePlugin.OPTION;
+	static public final String CUSTOM_DB = "Custom";
+	static public final String DB_SELECTED_PRESET = OPTION + "dbSelectedPreset";
+	static public final String DB_PRESETS = OPTION + "dbPresets";
+	static public final String DB_CLASS = OPTION + "dbClass";
+	static public final String DB_CONNECTION = OPTION + "dbConnection";
+	static public final String DB_USER = OPTION + "dbUser";
+	static public final String DB_PASSWORD = OPTION + "dbPassword";
 	private static final String DEFAULT_DB_FILE_SPEC = "<default>";
 	private Connection conn;
 	private Set<String> columns;
@@ -59,12 +66,12 @@ public class TagDB {
 	public TagDB() {
 		removeStaleLock();
         try {
-			Class.forName(GeneralOptionPane.getDbClass());
-			String connectionString = GeneralOptionPane.getDbConnection();
+			Class.forName(TagDB.getDbClass());
+			String connectionString = TagDB.getDbConnection();
 			conn = DriverManager.getConnection(
 				connectionString.replace(DEFAULT_DB_FILE_SPEC, getDBFilePath()),
-				GeneralOptionPane.getDbUser(),
-				GeneralOptionPane.getDbPassword());
+				TagDB.getDbUser(),
+				TagDB.getDbPassword());
 			st = conn.createStatement();
         } catch (final Exception e) {
 			e.printStackTrace();
@@ -516,4 +523,37 @@ public class TagDB {
 		}
 	}
 	
+	public static String getDbSelectedPreset() {
+		return jEdit.getProperty(DB_SELECTED_PRESET);
+	}
+	private static String getDbPropertyPresetSuffix(String preset) {
+		if (preset.equals(CUSTOM_DB))
+			preset = "";
+		else
+			preset = "." + preset;
+		return preset;
+	}
+	public static String getDbPropertyByPreset(String propBase, String preset) {
+		return jEdit.getProperty(propBase + getDbPropertyPresetSuffix(preset));
+	}
+	public static void setDbPropertyByPreset(String propBase, String preset, String value) {
+		preset = TagDB.getDbPropertyPresetSuffix(preset);
+		jEdit.setProperty(propBase + preset, value);
+	}
+	public static String getDbPropertyOfSelectedPreset(String propBase) {
+		String preset = getDbSelectedPreset();
+		return getDbPropertyByPreset(propBase, preset);
+	}
+	public static String getDbClass() {
+		return getDbPropertyOfSelectedPreset(DB_CLASS);
+	}
+	public static String getDbConnection() {
+		return getDbPropertyOfSelectedPreset(DB_CONNECTION);
+	}
+	public static String getDbUser() {
+		return getDbPropertyOfSelectedPreset(DB_USER);
+	}
+	public static String getDbPassword() {
+		return getDbPropertyOfSelectedPreset(DB_PASSWORD);
+	}
 }

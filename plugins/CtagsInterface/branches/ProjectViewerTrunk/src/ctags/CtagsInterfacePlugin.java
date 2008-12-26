@@ -34,6 +34,7 @@ import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
 import db.Query;
 import db.TagDB;
+import dialogs.ChangeDbSettings;
 import dockables.TagList;
 
 public class CtagsInterfacePlugin extends EditPlugin {
@@ -404,6 +405,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				view.getTextArea().setCaretPosition(offset);
 			}
 		});
+	}
+
+	// Opens the dialog to change the database settings.
+	public static void changeDbSettings(final View view) {
+		ChangeDbSettings dlg = new ChangeDbSettings(view);
+		dlg.setVisible(true);
 	}
 	
 	// Switch to a new database. If 'rebuild' is true, rebuild the

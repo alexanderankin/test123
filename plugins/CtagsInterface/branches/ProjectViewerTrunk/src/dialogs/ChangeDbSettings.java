@@ -1,0 +1,251 @@
+package dialogs;
+
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+
+import ctags.CtagsInterfacePlugin;
+import db.TagDB;
+
+@SuppressWarnings("serial")
+public class ChangeDbSettings extends JDialog {
+	
+	static public final String OPTION = CtagsInterfacePlugin.OPTION;
+	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
+	static private String DIALOG_GEOMETRY =
+		OPTION + "dbSettingsDialogGeometry";
+	JComboBox dbPreset;
+	JTextField dbClass;
+	JTextField dbConnection;
+	JTextField dbUser;
+	JTextField dbPassword;
+	JCheckBox rebuildNewDb;
+	Vector<String> initialDbProperties;
+	
+	private void saveGeometry() {
+		GUIUtilities.saveGeometry(this, DIALOG_GEOMETRY);
+	} 
+	
+	public ChangeDbSettings(Frame frame) {
+		super(frame, jEdit.getProperty(
+			MESSAGE + "changeDbSettingsDialogTitle"), true);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent evt) {
+				saveGeometry();	
+			}
+		});
+		setLayout(new GridBagLayout());
+		
+		JPanel dbPanel = new JPanel();
+		dbPanel.setLayout(new GridBagLayout());
+		dbPanel.setBorder(new TitledBorder(jEdit.getProperty(
+			MESSAGE + "dbTitle")));
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.WEST;
+		c.gridx = c.gridy = 0;
+		JPanel dbPresetPanel = new JPanel();
+		dbPresetPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbPreset")));
+		Vector<String> presets = new Vector<String>();
+		presets.add(TagDB.CUSTOM_DB);
+		String presetStr = jEdit.getProperty(TagDB.DB_PRESETS);
+		if ((presetStr != null) && (! presetStr.isEmpty())) {
+			String [] items = presetStr.split(",");
+			for (String item: items)
+				presets.add(item);
+		}
+		dbPreset = new JComboBox(presets);
+		dbPresetPanel.add(dbPreset);
+		JButton savePreset = new JButton("Save");
+		dbPresetPanel.add(savePreset);
+		JButton savePresetAs = new JButton("Save as...");
+		dbPresetPanel.add(savePresetAs);
+		final JButton removePreset = new JButton("Remove");
+		dbPresetPanel.add(removePreset);
+		dbPanel.add(dbPresetPanel, c);
+		JPanel dbClassPanel = new JPanel();
+		dbClassPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbClass")));
+		dbClass = new JTextField(jEdit.getProperty(TagDB.DB_CLASS), 40);
+		dbClassPanel.add(dbClass);
+		c.gridy++;
+		dbPanel.add(dbClassPanel, c);
+		JPanel dbConnectionPanel = new JPanel();
+		dbConnectionPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbConnection")));
+		dbConnection = new JTextField(jEdit.getProperty(TagDB.DB_CONNECTION), 40);
+		dbConnectionPanel.add(dbConnection);
+		c.gridy++;
+		dbPanel.add(dbConnectionPanel, c);
+		JPanel dbUserPanel = new JPanel();
+		dbUserPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbUser")));
+		dbUser = new JTextField(jEdit.getProperty(TagDB.DB_USER), 20);
+		dbUserPanel.add(dbUser);
+		c.gridy++;
+		dbPanel.add(dbUserPanel, c);
+		JPanel dbPasswordPanel = new JPanel();
+		dbPasswordPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbPassword")));
+		dbPassword = new JTextField(jEdit.getProperty(TagDB.DB_PASSWORD), 20);
+		dbPasswordPanel.add(dbPassword);
+		c.gridy++;
+		dbPanel.add(dbPasswordPanel, c);
+		rebuildNewDb = new JCheckBox(
+			jEdit.getProperty(MESSAGE + "rebuildNewDb"), false);
+		c.gridy++;
+		dbPanel.add(rebuildNewDb, c);
+		c = new GridBagConstraints();
+		c.insets = new Insets(5,5,5,5);
+		c.gridx = c.gridy = 0;
+		add(dbPanel);
+		JPanel buttons = new JPanel();
+		JButton ok = new JButton("Ok");
+		buttons.add(ok);
+		JButton cancel = new JButton("Cancel");
+		buttons.add(cancel);
+		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridy++;
+		add(buttons, c);
+
+		dbPreset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String preset = (String) dbPreset.getSelectedItem();
+				removePreset.setEnabled(! preset.equals(TagDB.CUSTOM_DB));
+				dbClass.setText(TagDB.getDbPropertyByPreset(TagDB.DB_CLASS, preset));
+				dbConnection.setText(TagDB.getDbPropertyByPreset(TagDB.DB_CONNECTION, preset));
+				dbUser.setText(TagDB.getDbPropertyByPreset(TagDB.DB_USER, preset));
+				dbPassword.setText(TagDB.getDbPropertyByPreset(TagDB.DB_PASSWORD, preset));
+			}
+		});
+		savePreset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				savePreset((String) dbPreset.getSelectedItem(), false);
+			}			
+		});
+		savePresetAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String preset = JOptionPane.showInputDialog("DB preset name:");
+				if ((preset == null) || preset.isEmpty() || (! preset.matches("\\w+")))
+					return;
+				savePreset(preset, true);
+			}
+		});
+		removePreset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int index = dbPreset.getSelectedIndex();
+				dbPreset.removeItemAt(index);
+				savePresetList();
+				if (index == dbPreset.getItemCount())
+					index--;
+				dbPreset.setSelectedIndex(index);
+			}
+		});
+		String selected = jEdit.getProperty(TagDB.DB_SELECTED_PRESET);
+		if (! presets.contains(selected))
+			selected = TagDB.CUSTOM_DB;
+		dbPreset.setSelectedItem(selected);
+		
+		// Store the initial DB properties to compare when saving
+		initialDbProperties = getDbProperties();
+		
+		ok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveGeometry();
+				save();
+				setVisible(false);
+			}
+		});
+		cancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
+		});
+		pack();
+		GUIUtilities.loadGeometry(this, DIALOG_GEOMETRY);
+	}
+	
+	private void save() {
+		String selectedPreset = (String) dbPreset.getSelectedItem();
+		jEdit.setProperty(TagDB.DB_SELECTED_PRESET, selectedPreset);
+		savePreset(selectedPreset, false);
+		// Check if the DB properties have changed, act accordingly.
+		compareDbProperties();
+	}
+	// Compare the current DB properties with the initial properties.
+	// If the properties have changed, ask the user if we should:
+	// - Erase the current DB (that was used by the previous DB properties)
+	// - Rebuild the DB with the new settings
+	private void compareDbProperties() {
+		Vector<String> props = getDbProperties();
+		boolean same = true;
+		for (int i = 0; i < props.size(); i++) {
+			if (! props.get(i).equals(initialDbProperties.get(i))) {
+				same = false;
+				break;
+			}
+		}
+		if (! same) {
+			CtagsInterfacePlugin.switchDatabase(rebuildNewDb.isSelected());
+		}
+	}
+	
+	private Vector<String> getDbProperties() {
+		Vector<String> props = new Vector<String>();
+		props.add(TagDB.getDbClass());
+		props.add(TagDB.getDbConnection());
+		props.add(TagDB.getDbUser());
+		props.add(TagDB.getDbPassword());
+		for (int i = 0; i < props.size(); i++)
+			if (props.get(i) == null)
+				props.set(i, "");
+		return props;
+	}
+
+	private void savePresetList() {
+		StringBuffer presets = new StringBuffer();
+		for (int i = 0; i < dbPreset.getItemCount(); i++) {
+			String preset = (String) dbPreset.getItemAt(i);
+			if (preset.equals(TagDB.CUSTOM_DB))
+				continue;
+			if (presets.length() > 0)
+				presets.append(",");
+			presets.append(preset);
+		}
+		jEdit.setProperty(TagDB.DB_PRESETS, presets.toString());
+	}
+	
+	private void savePreset(String preset, boolean checkNew) {
+		if (checkNew) {
+			int i;
+			for (i = 0; i < dbPreset.getItemCount(); i++) {
+				if (dbPreset.getItemAt(i).equals(preset))
+					break;
+			}
+			if (i == dbPreset.getItemCount()) {
+				// New preset!
+				((DefaultComboBoxModel)dbPreset.getModel()).insertElementAt(preset, 1);
+				savePresetList();
+			}
+		}
+		TagDB.setDbPropertyByPreset(TagDB.DB_CLASS, preset, dbClass.getText());
+		TagDB.setDbPropertyByPreset(TagDB.DB_CONNECTION, preset, dbConnection.getText());
+		TagDB.setDbPropertyByPreset(TagDB.DB_USER, preset, dbUser.getText());
+		TagDB.setDbPropertyByPreset(TagDB.DB_PASSWORD, preset, dbPassword.getText());
+	}
+	
+}

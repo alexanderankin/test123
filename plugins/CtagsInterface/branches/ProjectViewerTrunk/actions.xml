@@ -41,5 +41,10 @@
 			ctags.CtagsInterfacePlugin.complete(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-change-db-settings" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.CtagsInterfacePlugin.changeDbSettings(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
