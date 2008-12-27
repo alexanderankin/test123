@@ -73,6 +73,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	private JPanel toolbar;
 	private JPanel textPanel;
 	private boolean toolbarShown;
+	private JSplitPane split;
 	
 	public Preview(View view) {
 		super(new BorderLayout());
@@ -127,7 +128,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		});
 		propertiesChanged();
 		text.setMinimumSize(new Dimension(150, 50));
-		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+		split = new JSplitPane(getSplitOrientation(),
 			new JScrollPane(tags), textPanel);
 		split.setOneTouchExpandable(true);
 		split.setDividerLocation(100);
@@ -182,7 +183,15 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			textArea.removeCaretListener(this);	
 		}
 	}
-	private void propertiesChanged()	{
+	
+	private int getSplitOrientation() {
+		return GeneralOptionPane.getPreviewVerticalSplit() ?
+			JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
+	}
+	
+	private void propertiesChanged() {
+		if (split != null)
+			split.setOrientation(getSplitOrientation());
 		if (GeneralOptionPane.getPreviewToolbar() != toolbarShown) {
 			toolbarShown = GeneralOptionPane.getPreviewToolbar();
 			if (toolbarShown)
