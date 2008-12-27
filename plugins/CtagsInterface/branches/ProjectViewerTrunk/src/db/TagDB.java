@@ -70,7 +70,9 @@ public class TagDB {
 	public static final String TEMP_ORIGIN = "Temp";
 	public static final String PROJECT_ORIGIN = "Project";
 	public static final String DIR_ORIGIN = "Dir";
-
+	// Characters to escape (precede with '\') in string values
+	private static String charsToEscape = null;
+	
 	public TagDB() {
 		removeStaleLock();
         try {
@@ -110,6 +112,23 @@ public class TagDB {
 		identityType = props.getProperty("identityType", identityType);
 		varcharType = props.getProperty("varcharType", varcharType);
 		integerType = props.getProperty("integerType", integerType);
+		charsToEscape = props.getProperty("stringValueCharsToEscape");
+		if (charsToEscape != null) {
+			// Prepare a pattern for the characters to escape
+			// The pattern uses a character class ('[]'), so escape
+			// any meta-characters inside a character class.
+			StringBuffer escaped = new StringBuffer();
+			for (int i = 0; i < charsToEscape.length(); i++) {
+				char c = charsToEscape.charAt(i);
+				if (c == ']' || c == '^' || c == '\\' || c == '-')
+					escaped.append('\\');
+				escaped.append(c);
+			}
+			if (escaped.length() > 0)
+				charsToEscape = "([" + escaped + "])";
+			else
+				charsToEscape = null;
+		}
 	}
 	
 	public boolean isFailed() {
@@ -440,8 +459,11 @@ public class TagDB {
 	}
 
 	static public String quote(Object value) {
-		if (value instanceof String)
+		if (value instanceof String) {
+			if (charsToEscape != null)
+				value = ((String) value).replaceAll(charsToEscape, "\\\\$1");
 			return "'" + ((String)value).replaceAll("'", "''") + "'";
+		}
 		return value.toString();
 	}
 	
