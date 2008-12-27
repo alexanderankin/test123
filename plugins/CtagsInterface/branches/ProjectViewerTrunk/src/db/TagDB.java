@@ -1,6 +1,9 @@
 package db;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,6 +14,7 @@ import java.sql.Types;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -28,6 +32,7 @@ public class TagDB {
 	static public final String DB_CONNECTION = OPTION + "dbConnection";
 	static public final String DB_USER = OPTION + "dbUser";
 	static public final String DB_PASSWORD = OPTION + "dbPassword";
+	static public final String DB_MAPPINGS_FILE = OPTION + "dbMappingsFile";
 	private static final String DEFAULT_DB_FILE_SPEC = "<default>";
 	private Connection conn;
 	private Set<String> columns;
@@ -89,6 +94,22 @@ public class TagDB {
 		identityType = IDENTITY_TYPE;
 		varcharType = VARCHAR_TYPE;
 		integerType = INTEGER_TYPE;
+		String mapFile = getDbMappingsFile();
+		if (mapFile == null || mapFile.isEmpty())
+			return;
+		Properties props = new Properties();
+		try {
+			props.load(new FileInputStream(mapFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		identityType = props.getProperty("identityType", identityType);
+		varcharType = props.getProperty("varcharType", varcharType);
+		integerType = props.getProperty("integerType", integerType);
 	}
 	
 	public boolean isFailed() {
@@ -565,5 +586,8 @@ public class TagDB {
 	}
 	public static String getDbPassword() {
 		return getDbPropertyOfSelectedPreset(DB_PASSWORD);
+	}
+	public static String getDbMappingsFile() {
+		return getDbPropertyOfSelectedPreset(DB_MAPPINGS_FILE);
 	}
 }

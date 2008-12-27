@@ -111,6 +111,7 @@ messages.CtagsInterface.searchScope=Tag search scope
 messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
+messages.CtagsInterface.dbMappingsFile=Database SQL mappings file:
 messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)
 messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database settings due to an internal error.
 messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
