@@ -12,7 +12,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import ctags.CtagsInterfacePlugin;
 
@@ -27,6 +29,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	static public final String BACKGROUND = OPTION + "background";
+	static public final String PREVIEW_VERTICAL_SPLIT = OPTION + "previewVerticalSplit";
 	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
@@ -36,6 +39,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox updateOnLoad;
 	JCheckBox updateOnSave;
 	JCheckBox background;
+	JCheckBox previewVerticalSplitter;
 	JCheckBox previewToolbar;
 	JCheckBox previewWrap;
 	JTextField previewDelay;
@@ -68,6 +72,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		previewPanel.setLayout(new GridLayout(0, 1));
 		previewPanel.setBorder(new TitledBorder(jEdit.getProperty(
 			MESSAGE + "previewTitle")));
+		previewVerticalSplitter = new JCheckBox(jEdit.getProperty(MESSAGE + "previewVerticalSplit"),
+				getPreviewVerticalSplit());
+		previewPanel.add(previewVerticalSplitter);
 		previewToolbar = new JCheckBox(jEdit.getProperty(MESSAGE + "previewToolbar"),
 				getPreviewToolbar());
 		previewPanel.add(previewToolbar);
@@ -102,9 +109,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
+		jEdit.setBooleanProperty(PREVIEW_VERTICAL_SPLIT, previewVerticalSplitter.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
+		EditBus.send(new PropertiesChanged(null));
 	}
 
 	public static String getCtags() {
@@ -133,6 +142,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getUpdateInBackground() {
 		return jEdit.getBooleanProperty(BACKGROUND, true);
+	}
+	public static boolean getPreviewVerticalSplit() {
+		return jEdit.getBooleanProperty(PREVIEW_VERTICAL_SPLIT, true);
 	}
 	public static boolean getPreviewToolbar() {
 		return jEdit.getBooleanProperty(PREVIEW_TOOLBAR, true);

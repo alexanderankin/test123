@@ -90,6 +90,7 @@ messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
 messages.CtagsInterface.updateOnSave=Refresh file tags when saved
 messages.CtagsInterface.background=Perform tag updates in background
 messages.CtagsInterface.previewTitle=Tag Preview dockable
+messages.CtagsInterface.previewVerticalSplit=Vertical split
 messages.CtagsInterface.previewToolbar=Show toolbar
 messages.CtagsInterface.previewWrap=Use soft wrap
 messages.CtagsInterface.previewDelay=Delay before tag preview (in milliseconds):
