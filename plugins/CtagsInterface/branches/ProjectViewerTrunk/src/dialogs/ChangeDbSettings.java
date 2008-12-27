@@ -43,7 +43,6 @@ public class ChangeDbSettings extends JDialog {
 	JTextField dbPassword;
 	JTextField dbMappingsFile;
 	JCheckBox rebuildNewDb;
-	Vector<String> initialDbProperties;
 	
 	private void saveGeometry() {
 		GUIUtilities.saveGeometry(this, DIALOG_GEOMETRY);
@@ -184,9 +183,6 @@ public class ChangeDbSettings extends JDialog {
 			}
 		});
 		
-		// Store the initial DB properties to compare when saving
-		initialDbProperties = getDbProperties();
-		
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveGeometry();
@@ -216,39 +212,10 @@ public class ChangeDbSettings extends JDialog {
 		String selectedPreset = (String) dbPreset.getSelectedItem();
 		jEdit.setProperty(TagDB.DB_SELECTED_PRESET, selectedPreset);
 		savePreset(selectedPreset, false);
-		// Check if the DB properties have changed, act accordingly.
-		compareDbProperties();
-	}
-	// Compare the current DB properties with the initial properties.
-	// If the properties have changed, ask the user if we should:
-	// - Erase the current DB (that was used by the previous DB properties)
-	// - Rebuild the DB with the new settings
-	private void compareDbProperties() {
-		Vector<String> props = getDbProperties();
-		boolean same = true;
-		for (int i = 0; i < props.size(); i++) {
-			if (! props.get(i).equals(initialDbProperties.get(i))) {
-				same = false;
-				break;
-			}
-		}
-		if (! same) {
-			CtagsInterfacePlugin.switchDatabase(rebuildNewDb.isSelected());
-		}
+		// Make the new settings take effect immediately.
+		CtagsInterfacePlugin.switchDatabase(rebuildNewDb.isSelected());
 	}
 	
-	private Vector<String> getDbProperties() {
-		Vector<String> props = new Vector<String>();
-		props.add(TagDB.getDbClass());
-		props.add(TagDB.getDbConnection());
-		props.add(TagDB.getDbUser());
-		props.add(TagDB.getDbPassword());
-		for (int i = 0; i < props.size(); i++)
-			if (props.get(i) == null)
-				props.set(i, "");
-		return props;
-	}
-
 	private void savePresetList() {
 		StringBuffer presets = new StringBuffer();
 		for (int i = 0; i < dbPreset.getItemCount(); i++) {
