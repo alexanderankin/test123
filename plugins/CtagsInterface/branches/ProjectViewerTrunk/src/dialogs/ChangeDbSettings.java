@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,6 +38,7 @@ public class ChangeDbSettings extends JDialog {
 	JTextField dbConnection;
 	JTextField dbUser;
 	JTextField dbPassword;
+	JTextField dbMappingsFile;
 	JCheckBox rebuildNewDb;
 	Vector<String> initialDbProperties;
 	
@@ -104,6 +106,14 @@ public class ChangeDbSettings extends JDialog {
 		dbPasswordPanel.add(dbPassword);
 		c.gridy++;
 		dbPanel.add(dbPasswordPanel, c);
+		JPanel dbMappingsPanel = new JPanel();
+		dbMappingsPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbMappingsFile")));
+		dbMappingsFile = new JTextField(jEdit.getProperty(TagDB.DB_MAPPINGS_FILE), 20);
+		dbMappingsPanel.add(dbMappingsFile);
+		JButton dbMappingsFileBrowse = new JButton("...");
+		dbMappingsPanel.add(dbMappingsFileBrowse);
+		c.gridy++;
+		dbPanel.add(dbMappingsPanel, c);
 		rebuildNewDb = new JCheckBox(
 			jEdit.getProperty(MESSAGE + "rebuildNewDb"), false);
 		c.gridy++;
@@ -130,6 +140,7 @@ public class ChangeDbSettings extends JDialog {
 				dbConnection.setText(TagDB.getDbPropertyByPreset(TagDB.DB_CONNECTION, preset));
 				dbUser.setText(TagDB.getDbPropertyByPreset(TagDB.DB_USER, preset));
 				dbPassword.setText(TagDB.getDbPropertyByPreset(TagDB.DB_PASSWORD, preset));
+				dbMappingsFile.setText(TagDB.getDbPropertyByPreset(TagDB.DB_MAPPINGS_FILE, preset));
 			}
 		});
 		savePreset.addActionListener(new ActionListener() {
@@ -159,6 +170,16 @@ public class ChangeDbSettings extends JDialog {
 		if (! presets.contains(selected))
 			selected = TagDB.CUSTOM_DB;
 		dbPreset.setSelectedItem(selected);
+		
+		dbMappingsFileBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser(dbMappingsFile.getText());
+				int ret = fc.showOpenDialog(ChangeDbSettings.this);
+				if (ret != JFileChooser.APPROVE_OPTION)
+					return;
+				dbMappingsFile.setText(fc.getSelectedFile().getAbsolutePath());
+			}
+		});
 		
 		// Store the initial DB properties to compare when saving
 		initialDbProperties = getDbProperties();
@@ -246,6 +267,7 @@ public class ChangeDbSettings extends JDialog {
 		TagDB.setDbPropertyByPreset(TagDB.DB_CONNECTION, preset, dbConnection.getText());
 		TagDB.setDbPropertyByPreset(TagDB.DB_USER, preset, dbUser.getText());
 		TagDB.setDbPropertyByPreset(TagDB.DB_PASSWORD, preset, dbPassword.getText());
+		TagDB.setDbPropertyByPreset(TagDB.DB_MAPPINGS_FILE, preset, dbMappingsFile.getText());
 	}
 	
 }
