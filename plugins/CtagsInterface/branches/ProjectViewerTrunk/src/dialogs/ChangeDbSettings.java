@@ -6,18 +6,21 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.GUIUtilities;
@@ -125,7 +128,7 @@ public class ChangeDbSettings extends JDialog {
 		JPanel buttons = new JPanel();
 		JButton ok = new JButton("Ok");
 		buttons.add(ok);
-		JButton cancel = new JButton("Cancel");
+		final JButton cancel = new JButton("Cancel");
 		buttons.add(cancel);
 		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.WEST;
@@ -196,6 +199,15 @@ public class ChangeDbSettings extends JDialog {
 				setVisible(false);
 			}
 		});
+		
+		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+		ActionListener cancelListener = new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				cancel.doClick();
+			}
+		};
+		rootPane.registerKeyboardAction(cancelListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
 		pack();
 		GUIUtilities.loadGeometry(this, DIALOG_GEOMETRY);
 	}
