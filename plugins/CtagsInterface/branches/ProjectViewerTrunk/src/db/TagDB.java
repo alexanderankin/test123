@@ -36,6 +36,9 @@ public class TagDB {
 	public static final String IDENTITY_TYPE = "IDENTITY";
 	public static final String VARCHAR_TYPE = "VARCHAR";
 	public static final String INTEGER_TYPE = "INTEGER";
+	private String identityType;
+	private String varcharType;
+	private String integerType;
 	// Tags table
 	public static final String TAGS_TABLE = "TAGS";
 	public static final String TAGS_NAME = "NAME";
@@ -77,10 +80,17 @@ public class TagDB {
 			e.printStackTrace();
 			return;
 		}
+        initDbSettings();
 		createTables();
 		columns = getColumns();
 	}
 
+	private void initDbSettings() {
+		identityType = IDENTITY_TYPE;
+		varcharType = VARCHAR_TYPE;
+		integerType = INTEGER_TYPE;
+	}
+	
 	public boolean isFailed() {
 		return (st == null);
 	}
@@ -149,7 +159,7 @@ public class TagDB {
 			if (! columns.contains(col)) {
 				try {
 					update("ALTER TABLE " + TAGS_TABLE + " ADD " + col + " " +
-						VARCHAR_TYPE + ";");
+						varcharType + ";");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -490,31 +500,31 @@ public class TagDB {
 		try {
 			// Create Tags table
 			createTable(TAGS_TABLE, new String [] {
-				TAGS_NAME, VARCHAR_TYPE,
-				TAGS_FILE_ID, INTEGER_TYPE,
-				TAGS_PATTERN, VARCHAR_TYPE
+				TAGS_NAME, varcharType,
+				TAGS_FILE_ID, integerType,
+				TAGS_PATTERN, varcharType
 			});
 			createIndex("TAGS_NAME", TAGS_TABLE, TAGS_NAME);
 			createIndex("TAGS_FILE", TAGS_TABLE, TAGS_FILE_ID);
 			// Create Files table
 			createTable(FILES_TABLE, new String [] {
-				FILES_ID, IDENTITY_TYPE,
-				FILES_NAME, VARCHAR_TYPE
+				FILES_ID, identityType,
+				FILES_NAME, varcharType
 			});
 			createIndex("FILES_NAME", FILES_TABLE, FILES_NAME);
 			// Create Origins table
 			createTable(ORIGINS_TABLE, new String [] {
-				ORIGINS_ID, IDENTITY_TYPE,
-				ORIGINS_NAME, VARCHAR_TYPE,
-				ORIGINS_TYPE, VARCHAR_TYPE
+				ORIGINS_ID, identityType,
+				ORIGINS_NAME, varcharType,
+				ORIGINS_TYPE, varcharType
 			});
 			update("INSERT INTO " + ORIGINS_TABLE + " (" + ORIGINS_ID + "," +
 				ORIGINS_NAME + "," + ORIGINS_TYPE + ") VALUES (" + TEMP_ORIGIN_INDEX +
 				"," + quote(TEMP_ORIGIN_NAME) + ", " + quote(TEMP_ORIGIN) + ")");
 			// Create Map table
 			createTable(MAP_TABLE, new String [] {
-				MAP_FILE_ID, INTEGER_TYPE,
-				MAP_ORIGIN_ID, INTEGER_TYPE
+				MAP_FILE_ID, integerType,
+				MAP_ORIGIN_ID, integerType
 			});
 			createIndex("MAP_FILE_ID", MAP_TABLE, MAP_FILE_ID);
 			createIndex("MAP_ORIGIN_ID", MAP_TABLE, MAP_ORIGIN_ID);
