@@ -327,7 +327,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	private void initToolWindowsDescriptors(String name, ToolWindow tw) {
-		tw.setRepresentativeAnchorButtonTitle(shortTitle(name));
+		tw.getRepresentativeAnchorDescriptor().setTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
@@ -386,14 +386,14 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			toolWindow.addPropertyChangeListener("type", new PropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent evt) {
 					if (evt.getOldValue() == ToolWindowType.FLOATING) {
-						toolWindow.setRepresentativeAnchorButtonVisible(true);
+						toolWindow.getRepresentativeAnchorDescriptor().setVisible(true);
 					}
 				}
 			});
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			toolWindow.setRepresentativeAnchorButtonVisible(false);
+			toolWindow.getRepresentativeAnchorDescriptor().setVisible(false);
 			toolWindow.setType(ToolWindowType.FLOATING);
 		}
 	}
