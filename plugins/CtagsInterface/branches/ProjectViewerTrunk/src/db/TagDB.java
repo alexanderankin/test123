@@ -338,7 +338,8 @@ public class TagDB {
 	 */
 	private boolean tableColumnContainsValue(String table, String column, Object value) {
 		try {
-			Query q = new Query("TOP 1 " + column, table, column + "=" + quote(value));
+			Query q = new Query(column, table, column + "=" + quote(value));
+			q.setLimit(1);
 			ResultSet rs = query(q);
 			return rs.next();
 		} catch (SQLException e) {
