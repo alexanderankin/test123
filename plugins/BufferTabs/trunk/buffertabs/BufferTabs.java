@@ -27,23 +27,39 @@
 
 package buffertabs;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.bufferset.BufferSetListener;
-import org.gjt.sp.jedit.bufferset.BufferSet;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.util.Log;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.util.Set;
-import java.util.HashSet;
+import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.bufferset.BufferSet;
+import org.gjt.sp.jedit.bufferset.BufferSetListener;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.util.Log;
 
 /**
  * A tabbed pane that contains a text area.  The text area's buffer is
@@ -59,12 +75,14 @@ import java.util.Collections;
  * @author Joe Laffey
  * @author Chris Samuels
  * @author Matthieu Casanova
+ * @author Shlomy Reinstein
  */
+@SuppressWarnings("serial")
 public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetListener
 {
 	private final EditPane editPane;
 	private final JComponent textArea;
-	private BufferSet bufferSet;
+	BufferSet bufferSet;
 
 	private final ChangeHandler changeHandler;
 	private final MouseHandler mouseHandler;
@@ -264,7 +282,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		try
 		{
 			// workaround: calls to SwingUtilities.updateComponentTreeUI
-			getUI().uninstallUI(this);
+			//getUI().uninstallUI(this);
 			changeHandler.setEnabled(false);
 			knownBuffers.add(buffer);
 			//ColorTabs.instance().setEnabled( false );
@@ -277,6 +295,15 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 			insertTab(buffer.getName(), null, component, buffer.getPath(), index);
 			updateTitleAt(index);
+			try {
+				Method m = getClass().getMethod("setTabComponentAt",
+					new Class[] {int.class, Component.class});
+				if (m != null) {
+					BufferTabComponent tab = new BufferTabComponent(this);
+					m.invoke(this, index, tab);
+				}
+			} catch (Exception e) {
+			}
 			//	 int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
 			//      this.setSelectedIndex(selectedIndex);
 			//Log.log(Log.MESSAGE, BufferTabs.class, "selected : 1 " + selectedIndex +" index "+ index  );
@@ -290,7 +317,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			changeHandler.setEnabled(true);
 			//ColorTabs.instance().setEnabled( true );
 			// workaround: calls to SwingUtilities.updateComponentTreeUI
-			getUI().installUI(this);
+			//getUI().installUI(this);
 		}
 
 		if (editPane.getBuffer() == buffer)
@@ -644,6 +671,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 	@Override
 	public int indexOfComponent(Component component)
 	{
+		if (component instanceof BufferTabComponent)
+			return super.indexOfComponent(component);
 		return super.indexOfComponent(textArea);
 	}
 
@@ -727,8 +756,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 				int x = e.getX();
 				int y = e.getY();
-
-				View view = editPane.getView();
 
 				// Display it!
 				popupMenu.show(e.getComponent(), x, y);
