@@ -97,7 +97,7 @@ public class TagDB {
 		varcharType = VARCHAR_TYPE;
 		integerType = INTEGER_TYPE;
 		String mapFile = getDbMappingsFile();
-		if (mapFile == null || mapFile.isEmpty())
+		if (mapFile == null || mapFile.length() == 0)
 			return;
 		Properties props = new Properties();
 		try {
