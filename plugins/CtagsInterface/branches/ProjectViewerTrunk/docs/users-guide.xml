@@ -42,12 +42,68 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
 </note>
  </chapter>
 
+ <chapter id="configuration">
+ <title> Configuration </title>
+
+ <para> CtagsInterface will happily index all files in your project or source tree, unless you tell it otherwise.
+ Under Plugin Options - CtagsInterface - General - you will find a field for specifying <emphasis role="bold">Ctags Invocation Options</emphasis>. By adding extra options to this field, you can specify that only certain file types are scanned and indexed. </para>
+ 
+ <literallayout> --languages=c,c++,java,python </literallayout>
+ 
+ <para> CtagsInterface will work out of the box with two open-source Java databases: <ulink url= "http://hsqldb.org/">hsql</ulink>, and <ulink url="http://www.h2database.com/html/main.html">h2</ulink>. You must make sure that at least one of them is available in the ~/.jedit/jars directory. The in-process java databases are preferred for their ability to be used without any configuration.  However, for larger databases, you may want to consider using mysql.  </para>
+ 
+ <para> To use a mysql database called <literal>ctags</literal> on <literal>localhost</literal>, you can follow these steps. </para>
+ 
+ 
+ <orderedlist>
+   <listitem><para>  As the root user, create a database and grant the user "sa" all priveleges to it: </para>
+   <literallayout>
+   create database ctags;
+   grant all on ctags.* to 'sa'@'localhost';
+   </literallayout>   
+   </listitem>
+   
+   <listitem> <para> Plugins - Ctags - Database Settings (You might want to map this to a shortcut now..) </para></listitem> 
+   <listitem><para>
+    <literal>Select Preset Values</literal>: <emphasis>Custom</emphasis> </para>
+
+    <table>
+    <title>Mysql settings:</title>
+    <tgroup cols="2">
+        <thead> <row><entry>Entry</entry><entry>Value</entry></row> </thead>
+    <tbody>
+        <row> <entry> JDBC Driver Class</entry> <entry> com.mysql.jdbc.Driver </entry> </row>
+        <row> <entry> Connection String </entry> <entry> jdbc:mysql://localhost:3306/ctags </entry> </row>
+        <row> <entry> User </entry> <entry> sa </entry> </row>        
+        <row> <entry> Password </entry> <entry>  </entry> </row>
+        <row> <entry> SQL Mappings file: </entry> <entry> jeditresource:/CtagsInterface.jar!/mysql.map  </entry> </row>
+    </tbody>
+    </tgroup> </table> 
+    </listitem>
+    <listitem><para> <literal>Save as:</literal> <emphasis role="bold">mysql</emphasis> </para></listitem>
+    
+</orderedlist>
+    <para> The mappings file, <literal>mysql.map</literal> contains type mappings for mysql, but the mappings can be defined for other databases as well. The current mapping for mysql contains two lines: </para>
+<literallayout>
+    identityType=SERIAL
+    varcharType=VARCHAR(300)
+</literallayout>
+
+  <para> The option <emphasis role="bold">Rebuild new database using current projects and source trees</emphasis> can also be used to bring over and reindex the set of projects from one existing ctags database to another. </para>
+
+
+</chapter>
+ 
+ 
+
  <chapter id="tagdbs">
    <title> Tagging Projects and Source Trees </title>
    
    <para> CtagsInterface uses an embedded sql database, hsqldb, to keep track of tag data from multiple projects and directory trees.
    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem> provides dialogs for adding projects and directory trees that should be indexed.
    </para>
+ 
+    
    
    <para> The first step is to add the projects and source trees that you want to be tagged in the database. Tag them in the background, and go back into jEdit. 
    When they are done, you should see no pending I/O requests in the <guimenuitem>Utilities - Troubleshooting - I/O Progress Monitor</guimenuitem>. After your selected projects have been added, you can lookup some tags. </para>
@@ -95,15 +151,15 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
    <para> To manage (create/delete/modify) dynamic actions, select the <guilabel>Actions</guilabel> pane in the plugin options.
    To define a new dynamic action, click the <guilabel>+</guilabel> button. You will be asked to provide a name for the action and an SQL query. The action name you provide should not contain spaces, as it is used to define an ordinary edit action. The SQL query is an ordinary SQL <guilabel>select</guilabel> statement, which can make use of the following keywords:
    <itemizedlist>
-      <listitem><guilabel>{tag}</guilabel>: The tag being looked up</listitem>
-      <listitem><guilabel>{project}</guilabel>: The name of the active project</listitem>
+      <listitem><para><guilabel>{tag}</guilabel>: The tag being looked up</para></listitem>
+      <listitem><para><guilabel>{project}</guilabel>: The name of the active project</para></listitem>
    </itemizedlist>
    Here are a few examples:
    <itemizedlist>
-      <listitem>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='function' and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
-	  </listitem>
-      <listitem>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='prototype'  and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
-	  </listitem>
+      <listitem><para>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='function' and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
+	  </para></listitem>
+      <listitem><para>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='prototype'  and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
+	  </para></listitem>
    </itemizedlist>
    </para>
    
