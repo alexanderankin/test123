@@ -288,9 +288,9 @@ implements EBComponent, DefaultFocusComponent
 		if(msg instanceof PropertiesChanged) propertiesChanged();
 		else if (msg instanceof DockableWindowUpdate) {
 			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
-			if (dwu.getWhat() != null &&
-			    dwu.getDockable().equals("console") && dwu.getWhat().equals(dwu.ACTIVATED))
-				scrollToBottom();
+			if (dwu.getWhat() != null &&  dwu.getWhat().equals(dwu.ACTIVATED))
+				if (dwu.getDockable().equals("console")) 
+					scrollToBottom();
 		}
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
