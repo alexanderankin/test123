@@ -88,8 +88,8 @@
 		<sequential>
 			<loadproperties>
 				<fileset dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}">
-					<exclude name="**/build/*"/>
-					<exclude name="**/dist/*"/>
+					<exclude name="**/build/**"/>
+					<exclude name="**/dist/**"/>
 					<include name="**/@{pluginName}.props"/>
 				</fileset>
 				<filterchain>
