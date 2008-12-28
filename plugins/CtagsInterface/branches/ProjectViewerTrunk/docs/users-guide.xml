@@ -50,13 +50,12 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
  
  <literallayout> --languages=c,c++,java,python </literallayout>
  
- <para> CtagsInterface will work out of the box with two open-source Java databases: <ulink url= "http://hsqldb.org/">hsql</ulink>, and <ulink url="http://www.h2database.com/html/main.html">h2</ulink>. You must make sure that at least one of them is available in the ~/.jedit/jars directory. The in-process java databases are preferred for their ability to be used without any configuration.  However, for larger databases, you may want to consider using mysql.  </para>
+ <para> CtagsInterface will work out of the box with two open-source Java databases: <ulink url= "http://hsqldb.org/">hsql</ulink>, and <ulink url="http://www.h2database.com/html/main.html">h2</ulink>. You must make sure that at least one of them is available in the ~/.jedit/jars directory. The in-process java databases are preferred for their ability to be used without any configuration.  However, for larger databases, you may want to consider using MySQL, or h2 in "server mode", where the database runs independently as a server and does not occupy memory in jEdit's process or impact its performance.  </para>
  
- <para> To use a mysql database called <literal>ctags</literal> on <literal>localhost</literal>, you can follow these steps. </para>
- 
+ <para> To use a MySQL database called <literal>ctags</literal> on <literal>localhost</literal>, you can follow these steps. </para>
  
  <orderedlist>
-   <listitem><para>  As the root user, create a database and grant the user "sa" all priveleges to it: </para>
+   <listitem><para>  As the root user, create a database and grant the user <literal>sa</literal> all priveleges to it: </para>
    <literallayout>
    create database ctags;
    grant all on ctags.* to 'sa'@'localhost';
@@ -66,7 +65,6 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
    <listitem> <para> <emphasis role="bold">Plugins - CtagsInterface - Change Database Settings</emphasis> (You might want to map this to a shortcut now..) </para></listitem> 
    <listitem><para>
     <literal>Select Preset Values</literal>: <emphasis>Custom</emphasis> </para>
-
     <table>
     <title>Mysql settings:</title>
     <tgroup cols="2">
@@ -76,26 +74,25 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
         <row> <entry> Connection String </entry> <entry> jdbc:mysql://localhost:3306/ctags </entry> </row>
         <row> <entry> User </entry> <entry> sa </entry> </row>        
         <row> <entry> Password </entry> <entry>  </entry> </row>
-        <row> <entry> SQL Mappings file: </entry> <entry> jeditresource:/CtagsInterface.jar!/mysql.map  </entry> </row>
+        <row> <entry> SQL Mappings file: </entry> <entry> <ulink url="jeditresource:/CtagsInterface.jar!/mysql.map">/path/to/local/mysql.map</ulink> </entry> </row>
     </tbody>
     </tgroup> </table> 
     </listitem>
     <listitem><para> <literal>Save as:</literal> <emphasis role="bold">mysql</emphasis> </para></listitem>
     
 </orderedlist>
-    <para> The mappings file, <literal>mysql.map</literal> contains necessary type mappings for mysql, but mappings can be defined for other databases as well. The current mapping for mysql contains two lines: </para>
+
+    <para> The mappings file below, also included with CtagsInterface.jar, <literal>mysql.map</literal>, contains necessary type mappings for MySQL. Mappings can be defined for other databases as well. The current mapping for MySQL contains only two lines. You can copy and paste them into your own local copy, and enter that in <literal>SQL Mappings File</literal>.</para>
+
 <literallayout>
     identityType=SERIAL
     varcharType=VARCHAR(300)
 </literallayout>
-   <para> This means that when using this database setup, instead of using IDENTITY, it uses SERIAL, and instead of VARCHAR, we must specify a fixed-size string, since VARCHAR without a size is not supported in mysql. </para>
    
-  <para> The option <emphasis role="bold">Rebuild new database using current projects and source trees</emphasis> can also be used to bring over and reindex the set of projects from one existing ctags database to another. </para>
-
-
-</chapter>
- 
- 
+  <para> This means that when using MySQL, ctags generates SQL statements that, instead of using <literal>IDENTITY</literal>, uses <literal>SERIAL</literal>, and instead of <literal>VARCHAR</literal>, specifies a fixed-size string, since VARCHAR without a size is not supported in MySQL. </para>
+      
+  <para> The option <emphasis role="bold">Rebuild new database using current projects and source trees</emphasis> can be used to bring over and reindex the set of projects and directory trees from one existing ctags database to another. </para>
+  </chapter>
 
  <chapter id="tagdbs">
    <title> Tagging Projects and Source Trees </title>
@@ -199,6 +196,12 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
  <title> Changelog </title>
  
 <itemizedlist>
+ <listitem><para> <emphasis role="bold">Version 0.2</emphasis> - Requires jEdit 4.3pre13, Java 1.5, and ProjectViewer 2.9.</para>
+<itemizedlist> 
+ <listitem><para>Database profiles, and support for h2, mysql, and perhaps other databases. </para></listitem>
+ <listitem><para>Support for latest ProjectViewer </para> </listitem>
+</itemizedlist>
+</listitem>
  <listitem><para> <emphasis role="bold">Version 0.1</emphasis> - Requires jedit 4.3pre12, Java 1.5, and ProjectViewer 2.1.3 (optional). </para>
   <para> Initial release </para>
  </listitem>
