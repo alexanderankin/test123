@@ -64,11 +64,13 @@ class BufferTabComponent extends JPanel
 	static private class CloseIcon implements Icon {
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			g.setColor(Color.BLACK);
-			g.drawLine(0, 0, getIconWidth() - 1, getIconHeight() - 1);
-			g.drawLine(getIconWidth() - 1, 0, 0, getIconHeight() - 1);
+			g.drawLine(0, 0, getIconWidth() - 2, getIconHeight() - 1);
+			g.drawLine(1, 0, getIconWidth() - 1, getIconHeight() - 1);
+			g.drawLine(getIconWidth() - 1, 0, 1, getIconHeight() - 1);
+			g.drawLine(getIconWidth() - 2, 0, 0, getIconHeight() - 1);
 		}
 		public int getIconWidth() {
-			return 6;
+			return 7;
 		}
 		public int getIconHeight() {
 			return 6;
