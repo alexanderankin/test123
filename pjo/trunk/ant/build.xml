@@ -130,6 +130,17 @@
 		<attribute name="pluginVersion" />
 		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
+			<!-- Clean plugin's src directory first -->
+			<property name="jedit.install.dir" value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
+			<property name="jedit.plugins.dir" value="${install.dir}" />
+			<echo>jedit.install.dir=${jedit.install.dir}</echo>
+			<echo>jedit.settings.dir=${jedit.settings.dir}</echo>
+			<echo>install.dir=${install.dir}</echo>
+			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="clean"/>
+			
+			<!-- Then package it all up -->
 			<ant antfile="${package.targets.file}" target="package">
 				<property name="plugin.name" value="@{pluginName}" />
 				<property name="plugin.version" value="@{pluginVersion}" />
