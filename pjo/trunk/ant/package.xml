@@ -1,67 +1,67 @@
 <project name="package" default="package" basedir=".">
 
-    <!-- name of the plugin, e.g. TextObjects -->
-    <property name="plugin.name" value="TextObjects"/>
+	<!-- name of the plugin, e.g. TextObjects -->
+	<property name="plugin.name" value="TextObjects"/>
 
-    <!-- version of the plugin, e.g. 1.0.1 -->
-    <property name="plugin.version" value="1.0.1"/>
+	<!-- version of the plugin, e.g. 1.0.1 -->
+	<property name="plugin.version" value="1.0.1"/>
 
-    <!-- name of the plugin jar file, e.g. TextObjects.jar -->
-    <property name="jar.filename" value="TextObjects.jar"/>
+	<!-- name of the plugin jar file, e.g. TextObjects.jar -->
+	<property name="jar.filename" value="TextObjects.jar"/>
 
-    <!-- full path location of the plugin jar -->
-    <property name="jar.location" location="/home/danson/.hudson/jobs/jEdit 4.3pre15/workspace/jEdit_4.3pre15/build/jars"/>
+	<!-- full path location of the plugin jar -->
+	<property name="jar.location" location="/home/danson/.hudson/jobs/jEdit 4.3pre15/workspace/jEdit_4.3pre15/build/jars"/>
 
-    <!-- full path location of the source directory for the plugin -->
-    <property name="src.dir" location="/home/danson/.hudson/jobs/TextObjects/workspace/TextObjects_1.0.1"/>
+	<!-- full path location of the source directory for the plugin -->
+	<property name="src.dir" location="/home/danson/.hudson/jobs/TextObjects/workspace/TextObjects_1.0.1"/>
 
-    <!-- where to put the tgz and zip files -->
-    <property name="out.dir" location="/home/danson/tmp"/>
+	<!-- where to put the tgz and zip files -->
+	<property name="out.dir" location="/home/danson/tmp"/>
 
-    <!-- package the plugin for release to plugin central -->
-    <target name="package">
-        <mkdir dir="${out.dir}"/>
+	<!-- package the plugin for release to plugin central -->
+	<target name="package">
+		<mkdir dir="${out.dir}"/>
 
-        <!-- tar/gzip, includes plugin jar and source code -->
-        <property name="tar.filename" value="${out.dir}/${plugin.name}-${plugin.version}"/>
-        <tar destfile="${tar.filename}.tar">
-            <tarfileset dir="${src.dir}">
-                <include name="**/*"/>
-            </tarfileset>
-            <tarfileset dir="${jar.location}">
-                <include name="${jar.filename}"/>
-            </tarfileset>
-        </tar>
-        <gzip zipfile="${tar.filename}.tgz" src="${tar.filename}.tar"/>
-        <delete file="${tar.filename}.tar"/>
+		<!-- tar/gzip, includes plugin jar and source code -->
+		<property name="tar.filename" value="${out.dir}/${plugin.name}-${plugin.version}"/>
+		<tar destfile="${tar.filename}.tar">
+			<tarfileset dir="${src.dir}">
+				<include name="**/*"/>
+			</tarfileset>
+			<tarfileset dir="${jar.location}">
+				<include name="${jar.filename}"/>
+			</tarfileset>
+		</tar>
+		<gzip zipfile="${tar.filename}.tgz" src="${tar.filename}.tar"/>
+		<delete file="${tar.filename}.tar"/>
 
-        <!-- tar/gzip bin, only includes plugin jar -->
-        <property name="tar.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin"/>
-        <tar destfile="${tar.bin.filename}.tar">
-            <tarfileset dir="${jar.location}">
-                <include name="*.jar"/>
-            </tarfileset>
-        </tar>
-        <gzip zipfile="${tar.bin.filename}.tgz" src="${tar.bin.filename}.tar"/>
-        <delete file="${tar.bin.filename}.tar"/>
+		<!-- tar/gzip bin, only includes plugin jar -->
+		<property name="tar.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin"/>
+		<tar destfile="${tar.bin.filename}.tar">
+			<tarfileset dir="${jar.location}">
+				<include name="*.jar"/>
+			</tarfileset>
+		</tar>
+		<gzip zipfile="${tar.bin.filename}.tgz" src="${tar.bin.filename}.tar"/>
+		<delete file="${tar.bin.filename}.tar"/>
 
-        <!-- zip bin, only includes plugin jar -->
-        <property name="zip.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin.zip"/>
-        <zip destfile="${zip.bin.filename}">
-            <zipfileset dir="${jar.location}">
-                <include name="*.jar"/>
-            </zipfileset>
-        </zip>
+		<!-- zip bin, only includes plugin jar -->
+		<property name="zip.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin.zip"/>
+		<zip destfile="${zip.bin.filename}">
+			<zipfileset dir="${jar.location}">
+				<include name="*.jar"/>
+			</zipfileset>
+		</zip>
 
-        <!-- zip, includes plugin jar and source code -->
-        <property name="zip.filename" value="${out.dir}/${plugin.name}-${plugin.version}.zip"/>
-        <zip destfile="${zip.filename}">
-            <zipfileset dir="${src.dir}">
-                <include name="**/*"/>
-            </zipfileset>
-            <zipfileset dir="${jar.location}">
-                <include name="*.jar"/>
-            </zipfileset>
-        </zip>
-    </target>
+		<!-- zip, includes plugin jar and source code -->
+		<property name="zip.filename" value="${out.dir}/${plugin.name}-${plugin.version}.zip"/>
+		<zip destfile="${zip.filename}">
+			<zipfileset dir="${src.dir}">
+				<include name="**/*"/>
+			</zipfileset>
+			<zipfileset dir="${jar.location}">
+				<include name="*.jar"/>
+			</zipfileset>
+		</zip>
+	</target>
 </project>
