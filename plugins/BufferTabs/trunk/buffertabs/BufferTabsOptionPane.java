@@ -40,10 +40,12 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 
+@SuppressWarnings("serial")
 public class BufferTabsOptionPane extends AbstractOptionPane implements ItemListener {
     private JCheckBox enableCB;
     private JCheckBox iconsCB;
     private JCheckBox popupCB;
+    private JCheckBox closeButtonCB;
     private JComboBox locationChoice;
 
     private JRadioButton colorTabRB;
@@ -71,6 +73,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		addSeparator("options.buffertabs.mouse-options.label");
         popupCB = new JCheckBox(jEdit.getProperty("options.buffertabs.popup.label"));
         addComponent(popupCB);
+        closeButtonCB = new JCheckBox(jEdit.getProperty("options.buffertabs.closeButton.label"));
+        addComponent(closeButtonCB);
 
        addComponent(new Box.Filler(ySpace, ySpace, ySpace));
        
@@ -205,7 +209,10 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         popupCB.setSelected(
             jEdit.getBooleanProperty("buffertabs.usePopup", true)
         );
-
+        closeButtonCB.setSelected(
+        	jEdit.getBooleanProperty("buffertabs.closeButton", true)
+        );
+        
         locationChoice.setSelectedItem(
             getLocationProperty("buffertabs.location", "bottom")
         );
@@ -271,6 +278,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty("buffertabs.enable", enableCB.isSelected());
         jEdit.setBooleanProperty("buffertabs.icons", iconsCB.isSelected());
         jEdit.setBooleanProperty("buffertabs.usePopup", popupCB.isSelected());
+        jEdit.setBooleanProperty("buffertabs.closeButton", closeButtonCB.isSelected());
         jEdit.setProperty("buffertabs.location",
         locationChoice.getSelectedItem().toString());
 
