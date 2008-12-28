@@ -295,15 +295,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 			insertTab(buffer.getName(), null, component, buffer.getPath(), index);
 			updateTitleAt(index);
-			try {
-				Method m = getClass().getMethod("setTabComponentAt",
-					new Class[] {int.class, Component.class});
-				if (m != null) {
-					BufferTabComponent tab = new BufferTabComponent(this);
-					m.invoke(this, index, tab);
-				}
-			} catch (Exception e) {
-			}
+			if (jEdit.getBooleanProperty("buffertabs.closeButton", true))
+				setTabComponent(index, true);
 			//	 int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
 			//      this.setSelectedIndex(selectedIndex);
 			//Log.log(Log.MESSAGE, BufferTabs.class, "selected : 1 " + selectedIndex +" index "+ index  );
@@ -353,6 +346,23 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 				updateColorAt(index);
 			}
 		}     */
+	}
+
+
+	private void setTabComponent(int index, boolean set) {
+		try {
+			Method m = getClass().getMethod("setTabComponentAt",
+				new Class[] {int.class, Component.class});
+			if (m != null) {
+				BufferTabComponent tab;
+				if (set)
+					tab = new BufferTabComponent(this);
+				else
+					tab = null;
+				m.invoke(this, index, tab);
+			}
+		} catch (Exception e) {
+		}
 	}
 
 	public void bufferCleared()
@@ -594,6 +604,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		{
 			return;
 		}
+		setTabComponent(index,
+			jEdit.getBooleanProperty("buffertabs.closeButton", true));
 		Buffer buffer = bufferSet.getBuffer(index);
 		String title = buffer.getName();
 		Icon icon = null;

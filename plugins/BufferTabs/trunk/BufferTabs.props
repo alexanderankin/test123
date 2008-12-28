@@ -60,6 +60,7 @@ buffertabs.color-selected-foreground=false
 options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
 options.buffertabs.popup.label=Enable right-click popup menu
+options.buffertabs.closeButton.label=Show close button on tabs (only from Java 1.6)
 options.buffertabs.location.label=Location of BufferTabs:
 options.buffertabs.color-tabs.label=Enable colored tabs
 options.buffertabs.color-selected.label=Colorize selected tab:
