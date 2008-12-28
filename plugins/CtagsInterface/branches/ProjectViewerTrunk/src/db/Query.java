@@ -10,6 +10,7 @@ public class Query {
 	private Vector<Object> conditions;
 	private Vector<Object> tables;
 	private Vector<Object> columns;
+	private int limit = 0;
 	
 	public Query() {
 		conditions = new Vector<Object>();
@@ -79,6 +80,11 @@ public class Query {
 		this.columns = columns;
 	}
 	
+	// Set the max number of rows to return.
+	public void setLimit(int limit) {
+		this.limit = limit; 
+	}
+	
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append("SELECT ");
@@ -87,6 +93,8 @@ public class Query {
 		s.append(join(",", tables));
 		s.append(" WHERE ");
 		s.append(join(" AND ", conditions));
+		if (limit > 0)
+			s.append(" LIMIT " + limit);
 		return s.toString();
 	}
 
