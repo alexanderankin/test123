@@ -1,3 +1,4 @@
+
 <project name="package" default="package" basedir=".">
 
 	<!-- name of the plugin, e.g. TextObjects -->
@@ -17,25 +18,10 @@
 
 	<!-- where to put the tgz and zip files -->
 	<property name="out.dir" location="/home/danson/tmp"/>
-
-	<!-- package the plugin for release to plugin central -->
-	<target name="package">
-		<mkdir dir="${out.dir}"/>
-
-		<!-- tar/gzip, includes plugin jar and source code -->
-		<property name="tar.filename" value="${out.dir}/${plugin.name}-${plugin.version}"/>
-		<tar destfile="${tar.filename}.tar">
-			<tarfileset dir="${src.dir}">
-				<include name="**/*"/>
-			</tarfileset>
-			<tarfileset dir="${jar.location}">
-				<include name="${jar.filename}"/>
-			</tarfileset>
-		</tar>
-		<gzip zipfile="${tar.filename}.tgz" src="${tar.filename}.tar"/>
-		<delete file="${tar.filename}.tar"/>
-
-		<!-- tar/gzip bin, only includes plugin jar -->
+	
+	<!-- Create the [name]-[version].tgz file. It should contain only the 
+			plugin's jar files. -->
+	<target name="package-bin-tar">
 		<property name="tar.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin"/>
 		<tar destfile="${tar.bin.filename}.tar">
 			<tarfileset dir="${jar.location}">
@@ -44,24 +30,63 @@
 		</tar>
 		<gzip zipfile="${tar.bin.filename}.tgz" src="${tar.bin.filename}.tar"/>
 		<delete file="${tar.bin.filename}.tar"/>
-
-		<!-- zip bin, only includes plugin jar -->
+	</target>
+	
+	<!-- Create the [name]-[version].zip file. It should contain only the 
+			plugin's jar files. -->
+	<target name="package-bin-zip">
 		<property name="zip.bin.filename" value="${out.dir}/${plugin.name}-${plugin.version}-bin.zip"/>
 		<zip destfile="${zip.bin.filename}">
 			<zipfileset dir="${jar.location}">
 				<include name="*.jar"/>
 			</zipfileset>
 		</zip>
-
-		<!-- zip, includes plugin jar and source code -->
+	</target>
+	
+	<!-- Create the [name]-[version]-src.tgz file. It should contain the plugin's 
+			directory, and it's jar files. -->
+	<target name="package-src-tar">
+		<property name="tar.filename" value="${out.dir}/${plugin.name}-${plugin.version}"/>
+		<tar destfile="${tar.filename}.tar">
+			<tarfileset dir="${src.dir}/..">
+				<include name="${plugin.name}/**/*"/>
+			</tarfileset>
+			<tarfileset dir="${jar.location}">
+				<include name="*.jar"/>
+			</tarfileset>
+		</tar>
+		<gzip zipfile="${tar.filename}.tgz" src="${tar.filename}.tar"/>
+		<delete file="${tar.filename}.tar"/>
+	</target>
+	
+	<!-- Create the [name]-[version]-src.zip file. It should contain the plugin's 
+			directory, and it's jar files. -->
+	<target name="package-src-zip">
 		<property name="zip.filename" value="${out.dir}/${plugin.name}-${plugin.version}.zip"/>
 		<zip destfile="${zip.filename}">
-			<zipfileset dir="${src.dir}">
-				<include name="**/*"/>
+			<zipfileset dir="${src.dir}/..">
+				<include name="${plugin.name}/**/*"/>
 			</zipfileset>
 			<zipfileset dir="${jar.location}">
 				<include name="*.jar"/>
 			</zipfileset>
 		</zip>
+	</target>
+
+	<!-- package the plugin for release to plugin central -->
+	<target name="package">
+		<mkdir dir="${out.dir}"/>
+		
+		<!-- tar/gzip bin, only includes plugin jar -->
+		<antcall target="package-bin-tar" />
+
+		<!-- zip bin, only includes plugin jar -->
+		<antcall target="package-bin-zip" />
+
+		<!-- tar/gzip, includes plugin jar and source code -->
+		<antcall target="package-src-tar" />
+
+		<!-- zip, includes plugin jar and source code -->
+		<antcall target="package-src-zip" />
 	</target>
 </project>
