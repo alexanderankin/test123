@@ -748,13 +748,13 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			if (!jEdit.getBooleanProperty("buffertabs.usePopup", true))
-			{
-				return;
-			}
-
 			if (GUIUtilities.isPopupTrigger(e))
 			{
+				if (!jEdit.getBooleanProperty("buffertabs.usePopup", true))
+				{
+					return;
+				}
+
 				// Request focus to this buffer so we close/reload/save the
 				// right buffer!
 				editPane.focusOnTextArea();
