@@ -12,6 +12,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import javax.swing.event.ListSelectionListener;
 
 import options.GeneralOptionPane;
 
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -296,31 +298,47 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 
 	private final class TagListCellRenderer extends DefaultListCellRenderer {
 		//private Font tagListFont = new Font("Monospaced", Font.PLAIN, 12);
+        
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
 				isSelected, cellHasFocus);
 			Tag tag = (Tag) tagModel.getElementAt(index);
 			//l.setFont(tagListFont );
-			String text = getText(tag);
-			l.setText(text);
-			l.setToolTipText(text);
+			l.setText(getText(tag, false));
+			l.setToolTipText(getText(tag, true));
 			ImageIcon icon = tag.getIcon();
 			if (icon != null)
 				l.setIcon(icon);
 			return l;
 		}
-		String getText(Tag tag) {
+		
+		/**
+		 * 
+		 * @param tag
+		 * @param full if true, include full pathname (tooltip). if false, return short format (text)
+		 * @return
+		 */
+		String getText(Tag tag, boolean full) {
 			StringBuffer s = new StringBuffer();
 			s.append(tag.getName());
 			String signature = tag.getExtension("signature");
 			if (signature != null && signature.length() > 0)
 				s.append(signature);
 			s.append("   ");
-			s.append(tag.getFile());
 			int line = tag.getLine();
-			if (line > -1)
-				s.append(":" + line);
+            if (full) {
+                s.append(tag.getFile());
+                if (line > -1)
+    				s.append(":" + line);
+            }
+            else {
+            	File f = new File(tag.getFile());
+                s.append(f.getName() + ":" + line);
+                s.append("  (" + MiscUtilities.abbreviate(f.getParent()) + ")");
+                if (line > -1)
+    				s.append(":" + line);
+            }
 			return s.toString();
 		}
 	}
