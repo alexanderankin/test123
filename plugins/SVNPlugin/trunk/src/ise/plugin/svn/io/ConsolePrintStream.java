@@ -46,8 +46,7 @@ public class ConsolePrintStream extends PrintStream {
         super( new LogOutputStream( view ), true );
     }
 
-    // print a message to the system shell in the Console plugin.  This is an
-    // easy way to display output without a lot of work.
+    // print a message to the SVN Console in the OutputPanel
     public void print( String msg ) {
         print( msg, Level.INFO );
     }
