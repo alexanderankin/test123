@@ -46,10 +46,21 @@ class BufferTabComponent extends JPanel
 			}
 		};
 		add(l);
-		JLabel close = new JLabel(icon);
+		final JLabel close = new JLabel(icon);
 		close.setPreferredSize(iconDimension);
+		close.setForeground(Color.BLACK);
 		add(close);
 		close.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				close.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				close.setForeground(Color.BLACK);
+			}
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int index = pane.indexOfTabComponent(BufferTabComponent.this);
@@ -62,18 +73,20 @@ class BufferTabComponent extends JPanel
 	}
 	
 	static private class CloseIcon implements Icon {
+		static final private int width = 9;
+		static final private int height = 11;
+		static final private int top = 3;
 		public void paintIcon(Component c, Graphics g, int x, int y) {
-			g.setColor(Color.BLACK);
-			g.drawLine(0, 0, getIconWidth() - 2, getIconHeight() - 1);
-			g.drawLine(1, 0, getIconWidth() - 1, getIconHeight() - 1);
-			g.drawLine(getIconWidth() - 1, 0, 1, getIconHeight() - 1);
-			g.drawLine(getIconWidth() - 2, 0, 0, getIconHeight() - 1);
+			g.drawLine(0, top, width - 2, height - 1);
+			g.drawLine(1, top, width - 1, height - 1);
+			g.drawLine(width - 1, top, 1, height - 1);
+			g.drawLine(width - 2, top, 0, height - 1);
 		}
 		public int getIconWidth() {
-			return 7;
+			return width;
 		}
 		public int getIconHeight() {
-			return 6;
+			return height;
 		}
 	}
 
