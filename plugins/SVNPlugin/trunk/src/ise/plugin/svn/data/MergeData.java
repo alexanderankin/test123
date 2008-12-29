@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class MergeData extends SVNData implements Serializable {
@@ -40,34 +41,127 @@ public class MergeData extends SVNData implements Serializable {
 
     private String fromPath = null;
     private File fromFile = null;
-    private String intoPath = null;
-    private File intoFile = null;
-    private String destPath = null;
+    private String toPath = null;
+    private File toFile = null;
     private File destFile = null;
     private SVNRevision startRevision = null;
     private SVNRevision endRevision = null;
     private boolean recursive = false;
     private boolean force = false;
+    private boolean dryRun = true;
+    private boolean ignoreAncestry = true;
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("MergeData[");
+        sb.append("fromPath=").append(fromPath == null ? "null" : fromPath).append(",");
+        sb.append("fromFile=").append(fromFile == null ? "null" : fromFile.getAbsolutePath()).append(",");
+        sb.append("toPath=").append(toPath == null ? "null" : toPath).append(",");
+        sb.append("toFile=").append(toFile == null ? "null" : toFile.getAbsolutePath()).append(",");
+        sb.append("destFile=").append(destFile == null ? "null" : destFile.getAbsolutePath()).append(",");
+        sb.append("startRevision=").append(startRevision == null ? "null" : startRevision.toString()).append(",");
+        sb.append("endRevision=").append(endRevision == null ? "null" : endRevision.toString()).append(",");
+        sb.append("recursive=").append(recursive).append(",");
+        sb.append("force=").append(force).append(",");
+        sb.append("dryRun=").append(dryRun).append(",");
+        sb.append("ignoreAncestry=").append(ignoreAncestry).append(",");
+        return sb.toString();
+    }
+
+    public String commandLineEquivalent() {
+        if (fromFile == null && fromPath == null) {
+            return "Invalid merge 'from'.";
+        }
+        if (startRevision == null) {
+            return "Invalid start revision.";
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("svn merge ");
+
+        // flags
+        if (dryRun == true) {
+            sb.append("--dry-run ");
+        }
+        if (ignoreAncestry == true) {
+            sb.append("--ignore-ancestry ");
+        }
+        if (recursive == false) {
+            sb.append("--non-recursive ");
+        }
+        if (force == true) {
+            sb.append("--force ");
+        }
+
+        // urls and revisions
+        if ((toFile == null && toPath == null) ||
+            (fromFile != null && fromFile.equals(toFile)) ||
+            (fromPath != null && fromPath.equals(toPath))) {
+            // svn merge [-c M | -r N:M] SOURCE WCPATH
+            if (startRevision != null && startRevision.equals(endRevision)) {
+                sb.append("-c ").append(startRevision.getNumber()).append(" ");
+            }
+            else if (startRevision != null && endRevision != null) {
+                sb.append("-r ").append(startRevision.getNumber()).append(":").append(endRevision.getNumber()).append(" ");
+            }
+            if (toFile != null) {
+                sb.append(toFile);
+            }
+            else {
+                sb.append(toPath);
+            }
+            sb.append(" ");
+            if (destFile == null) {
+                return "Invalid working copy.";
+            }
+            else {
+                sb.append(destFile.getAbsolutePath());
+            }
+            return sb.toString();
+        }
+        else if (toFile != null || toPath != null){
+            // svn merge sourceURL1@N sourceURL2@M WCPATH
+            if (fromFile == null && fromPath == null) {
+                return "Invalid from path.";
+            }
+            if (endRevision == null) {
+                return "Invalid end revision.";
+            }
+            sb.append(fromFile == null ? fromPath : fromFile.getAbsolutePath()).append("@");
+            sb.append(startRevision.getNumber()).append(" ");
+            sb.append(toFile == null ? toPath : toFile.getAbsolutePath()).append("@");
+            sb.append(endRevision.getNumber()).append(" ");
+            if (destFile == null) {
+                return "Invalid working copy.";
+            }
+            else {
+                sb.append(destFile.getAbsolutePath());
+            }
+            return sb.toString();
+        }
+        else {
+            return "Invalid values for merge request.";
+        }
+    }
 
     /**
      * @return null if valid, error string if not.
      */
     public String checkValid() {
         if ( fromPath == null && fromFile == null ) {
-            return "Merge from path not selected.";
+            return jEdit.getProperty("ips.Merge_from_path_not_selected.", "Merge from path not selected.");
         }
-        if ( intoPath == null && intoFile == null ) {
-            return "Merge to path not selected.";
+        if ( toPath == null && toFile == null ) {
+            return jEdit.getProperty("ips.Merge_to_path_not_selected.", "Merge to path not selected.");
         }
-        if ( destPath == null && destFile == null ) {
-            return "Merge destination not selected.";
+        if ( destFile == null ) {
+            return jEdit.getProperty("ips.Merge_destination_not_selected.", "Merge destination not selected.");
         }
         if ( startRevision == null ) {
-            return "Start revision not selected.";
+            return jEdit.getProperty("ips.Start_revision_not_selected.", "Start revision not selected.");
         }
         if ( endRevision == null ) {
-            return "End revision not selected.";
+            return jEdit.getProperty("ips.End_revision_not_selected.", "End revision not selected.");
         }
         return null;
     }
@@ -89,48 +183,33 @@ public class MergeData extends SVNData implements Serializable {
     }
 
     /**
-     * Returns the value of intoPath.
+     * Returns the value of toPath.
      */
-    public String getIntoPath() {
-        return intoPath;
+    public String getToPath() {
+        return toPath;
     }
 
     /**
-     * Sets the value of intoPath.
-     * @param intoPath The value to assign intoPath.
+     * Sets the value of toPath.
+     * @param toPath The value to assign toPath.
      */
-    public void setIntoPath( String intoPath ) {
-        this.intoPath = intoPath;
+    public void setToPath( String toPath ) {
+        this.toPath = toPath;
     }
 
     /**
-     * Returns the value of intoFile.
+     * Returns the value of toFile.
      */
-    public File getIntoFile() {
-        return intoFile;
+    public File getToFile() {
+        return toFile;
     }
 
     /**
-     * Sets the value of intoFile.
-     * @param intoFile The value to assign intoFile.
+     * Sets the value of toFile.
+     * @param toFile The value to assign toFile.
      */
-    public void setIntoFile( File intoFile ) {
-        this.intoFile = intoFile;
-    }
-
-    /**
-     * Returns the value of destPath.
-     */
-    public String getDestPath() {
-        return destPath;
-    }
-
-    /**
-     * Sets the value of destPath.
-     * @param destPath The value to assign destPath.
-     */
-    public void setDestPath( String destPath ) {
-        this.destPath = destPath;
+    public void setToFile( File toFile ) {
+        this.toFile = toFile;
     }
 
     /**
@@ -179,21 +258,6 @@ public class MergeData extends SVNData implements Serializable {
     }
 
     /**
-     * Returns the value of destPath.
-     */
-    public String getDestinationPath() {
-        return destPath;
-    }
-
-    /**
-     * Sets the value of destPath.
-     * @param destPath The value to assign destPath.
-     */
-    public void setDestinationPath( String destPath ) {
-        this.destPath = destPath;
-    }
-
-    /**
      * Returns the value of endRevision.
      */
     public SVNRevision getEndRevision() {
@@ -238,5 +302,34 @@ public class MergeData extends SVNData implements Serializable {
         this.force = force;
     }
 
+    /**
+     * Returns the value of dryRun.
+     */
+    public boolean getDryRun() {
+        return dryRun;
+    }
+
+    /**
+     * Sets the value of dryRun.
+     * @param dryRun The value to assign dryRun.
+     */
+    public void setDryRun( boolean dryRun ) {
+        this.dryRun = dryRun;
+    }
+
+    /**
+     * Returns the value of ignoreAncestry.
+     */
+    public boolean getIgnoreAncestry() {
+        return ignoreAncestry;
+    }
+
+    /**
+     * Sets the value of ignoreAncestry.
+     * @param ignoreAncestry The value to assign ignoreAncestry.
+     */
+    public void setIgnoreAncestry( boolean ignoreAncestry ) {
+        this.ignoreAncestry = ignoreAncestry;
+    }
 
 }

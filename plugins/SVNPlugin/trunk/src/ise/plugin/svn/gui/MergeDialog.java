@@ -31,10 +31,14 @@ package ise.plugin.svn.gui;
 // imports
 import java.awt.BorderLayout;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -46,14 +50,14 @@ import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 import ise.plugin.svn.gui.component.*;
+import ise.plugin.svn.action.MergeAction;
 
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Dialog for merge command
  * Merge this (local or remote file or directory)
- * Into this (local or remote file or directory)
- * Put the results here (local directory)
- * cb Dry run?
+ * Into this (local file or directory)
  */
 public class MergeDialog extends JDialog {
     // instance fields
@@ -82,17 +86,54 @@ public class MergeDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // merge from location
-        final BrowseLocalRemotePanel merge_from_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.Merge_this_path>", "Merge this path:" ), fromPath, "" );
+        JPanel merge_from_panel = new JPanel( new BorderLayout() );
+        final BrowseLocalRemotePanel from_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.Merge_from_this_path/revision>", "Merge from this path/revision:"), fromPath, "" );
+        final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.At_this_revision>", "At this revision:" ) );
+        start_revision_panel.setShowBase( false );
+        start_revision_panel.setShowDate( false );
+        merge_from_panel.add( from_url_panel, BorderLayout.NORTH );
+        merge_from_panel.add( start_revision_panel, BorderLayout.SOUTH );
 
-        // revision selection panel
-        JPanel revision_selection_panel = new JPanel( new BorderLayout() );
-        final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.From_this_revision>", "From this revision:" ) );
-        final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.To_this_revision>", "To this revision:" ) );
-        revision_selection_panel.add( start_revision_panel, BorderLayout.WEST );
-        revision_selection_panel.add( end_revision_panel, BorderLayout.EAST );
+        // merge to location
+        JPanel merge_to_panel = new JPanel( new BorderLayout() );
+        final BrowseLocalRemotePanel to_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.To_this_path/revision>", "To this path/revision:"), fromPath, "" );
+        final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.At_this_revision>", "At this revision:" ) );
+        end_revision_panel.setShowBase( false );
+        end_revision_panel.setShowDate( false );
+        merge_to_panel.add( to_url_panel, BorderLayout.NORTH );
+        merge_to_panel.add( end_revision_panel, BorderLayout.SOUTH );
 
-        // merge into location
-        final BrowseLocalRemotePanel merge_into_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.Into_this_path>", "Into this path:" ), fromPath, "" );
+        // sync "from" and "to", so that when the user makes a change in the
+        // "from", the "to" changes to be the same. This makes it easier on the
+        // user for "-c" style merges
+        from_url_panel.addDocumentListener(
+            new DocumentListener() {
+                public void changedUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                public void insertUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                public void removeUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                private void changed( DocumentEvent de ) {
+                    to_url_panel.setPath( from_url_panel.getPath() );
+                }
+            }
+        );
+        start_revision_panel.addPropertyChangeListener(
+            new PropertyChangeListener() {
+                public void propertyChange( PropertyChangeEvent pce ) {
+                    if ( pce != null && pce.getNewValue() != null && pce.getNewValue() instanceof SVNRevision ) {
+                        end_revision_panel.setRevision( ( SVNRevision ) pce.getNewValue() );
+                    }
+                }
+            }
+        );
 
         // merge destination location
         String destination = null;
@@ -100,15 +141,63 @@ public class MergeDialog extends JDialog {
             File f = new File( fromPath );
             destination = f.isDirectory() ? f.getAbsolutePath() : f.getParent();
         }
-        final BrowseLocalRemotePanel merge_destination_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.Place_merged_files_here>", "Place merged files here:" ), destination, "", false );
+        final BrowseLocalRemotePanel merge_destination_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.Place_merged_files_in_this_working_directory>", "Place merged files in this working directory:"), destination, "", false );
 
-        // force and recursive checkboxes
+        // merge option checkboxes
         JPanel merge_options_panel = new JPanel( new KappaLayout() );
-        merge_options_panel.setBorder( BorderFactory.createTitledBorder( "Merge Options" ) );
+        merge_options_panel.setBorder( BorderFactory.createTitledBorder( "Merge Options:" ) );
+        final JCheckBox dryrun_cb = new JCheckBox( jEdit.getProperty( "ips.Dry_run", "Dry run" ) );
+        dryrun_cb.setSelected( true );
         final JCheckBox force_cb = new JCheckBox( jEdit.getProperty( "ips.Force", "Force" ) );
         final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recursive", "Recursive" ) );
-        merge_options_panel.add( "0, 0, 1, 1, 0, , 6", recursive_cb );
-        merge_options_panel.add( "1, 0, 1, 1, 0, , 6", force_cb );
+        recursive_cb.setSelected( true );
+        final JCheckBox ignore_ancestry_cb = new JCheckBox( jEdit.getProperty( "ips.Ignore_Ancestry", "Ignore Ancestry" ) );
+        merge_options_panel.add( "0, 0, 1, 1, 0, , 6", dryrun_cb );
+        merge_options_panel.add( "1, 0, 1, 1, 0, , 6", recursive_cb );
+        merge_options_panel.add( "2, 0, 1, 1, 0, , 6", force_cb );
+        merge_options_panel.add( "3, 0, 1, 1, 0, , 6", ignore_ancestry_cb );
+
+        // command line sample
+        JPanel command_line_panel = new JPanel( new LambdaLayout() );
+        command_line_panel.setBorder( BorderFactory.createTitledBorder( "Command-line Equivalent:" ) );
+        final JTextArea command_line = new JTextArea( 5, 40 );
+        command_line.setLineWrap( true );
+        command_line.setWrapStyleWord( true );
+        command_line.setEditable( false );
+        JButton show_command_line = new JButton( "Show" );
+        show_command_line.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    // fill in the merge data object
+                    data = new MergeData();
+                    if ( from_url_panel.isDestinationLocal() && from_url_panel.getPath() != null ) {
+                        data.setFromFile( new File( from_url_panel.getPath() ) );
+                    }
+                    else {
+                        data.setFromPath( from_url_panel.getPath() );
+                    }
+                    if ( to_url_panel.isDestinationLocal() && to_url_panel.getPath() != null ) {
+                        data.setToFile( new File( to_url_panel.getPath() ) );
+                    }
+                    else {
+                        data.setToPath( to_url_panel.getPath() );
+                    }
+                    if ( merge_destination_panel.isDestinationLocal() && merge_destination_panel.getPath() != null ) {
+                        data.setDestinationFile( new File( merge_destination_panel.getPath() ) );
+                    }
+                    data.setStartRevision( start_revision_panel.getRevision() );
+                    data.setEndRevision( end_revision_panel.getRevision() );
+                    data.setDryRun( dryrun_cb.isSelected() );
+                    data.setRecursive( recursive_cb.isSelected() );
+                    data.setForce( force_cb.isSelected() );
+                    data.setIgnoreAncestry( ignore_ancestry_cb.isSelected() );
+
+                    command_line.setText( data.commandLineEquivalent() );
+                }
+            }
+        );
+        command_line_panel.add( "0, 0, 6, 1, 0, w, 3", new JScrollPane( command_line ) );
+        command_line_panel.add( "6, 0, 1, 1, N, 0, 3", show_command_line );
 
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
@@ -124,28 +213,27 @@ public class MergeDialog extends JDialog {
 
                         // fill in the merge data object
                         data = new MergeData();
-                        if ( merge_from_panel.isDestinationLocal() && merge_from_panel.getPath() != null ) {
-                            data.setFromFile( new File( merge_from_panel.getPath() ) );
+                        if ( from_url_panel.isDestinationLocal() && from_url_panel.getPath() != null ) {
+                            data.setFromFile( new File( from_url_panel.getPath() ) );
                         }
                         else {
-                            data.setFromPath( merge_from_panel.getPath() );
+                            data.setFromPath( from_url_panel.getPath() );
                         }
-                        if ( merge_into_panel.isDestinationLocal() && merge_into_panel.getPath() != null ) {
-                            data.setIntoFile( new File( merge_into_panel.getPath() ) );
+                        if ( to_url_panel.isDestinationLocal() && to_url_panel.getPath() != null ) {
+                            data.setToFile( new File( to_url_panel.getPath() ) );
                         }
                         else {
-                            data.setIntoPath( merge_into_panel.getPath() );
+                            data.setToPath( to_url_panel.getPath() );
                         }
                         if ( merge_destination_panel.isDestinationLocal() && merge_destination_panel.getPath() != null ) {
                             data.setDestinationFile( new File( merge_destination_panel.getPath() ) );
                         }
-                        else {
-                            data.setDestinationPath( merge_destination_panel.getPath() );
-                        }
                         data.setStartRevision( start_revision_panel.getRevision() );
                         data.setEndRevision( end_revision_panel.getRevision() );
+                        data.setDryRun( dryrun_cb.isSelected() );
                         data.setRecursive( recursive_cb.isSelected() );
                         data.setForce( force_cb.isSelected() );
+                        data.setIgnoreAncestry( ignore_ancestry_cb.isSelected() );
 
                         String check_valid = data.checkValid();
                         if ( check_valid != null ) {
@@ -157,6 +245,9 @@ public class MergeDialog extends JDialog {
                         canceled = false;
                         MergeDialog.this.setVisible( false );
                         MergeDialog.this.dispose();
+
+                        MergeAction action = new MergeAction( view, data );
+                        action.actionPerformed( ae );
                     }
                 }
                                 );
@@ -170,19 +261,18 @@ public class MergeDialog extends JDialog {
                 }
                                     );
 
-
         // add the components to the option panel
-        panel.add( "0, 0, 1, 1, 0, w , 3", merge_from_panel );
-        panel.add( "0, 1, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 2, 1, 1, 0, w , 3", revision_selection_panel );
-        panel.add( "0, 3, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 4, 1, 1, 0, w , 3", merge_into_panel );
-        panel.add( "0, 5, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 6, 1, 1, 0, w , 3", merge_destination_panel );
-        panel.add( "0, 7, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 8, 1, 1, 0, w , 3", merge_options_panel );
-        panel.add( "0, 9, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 16, true ) );
-        panel.add( "0, 10, 1, 1, E,   , 3", btn_panel );
+        panel.add( "0,  0, 1, 1, 0, w , 3", merge_from_panel );
+        panel.add( "0,  1, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  2, 1, 1, 0, w , 3", merge_to_panel );
+        panel.add( "0,  3, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  6, 1, 1, 0, w , 3", merge_destination_panel );
+        panel.add( "0,  7, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  8, 1, 1, 0, w , 3", merge_options_panel );
+        panel.add( "0,  9, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 10, 1, 1, 0, w , 3", command_line_panel );
+        panel.add( "0, 11, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 16, true ) );
+        panel.add( "0, 12, 1, 1, E,   , 3", btn_panel );
 
         setContentPane( panel );
         pack();

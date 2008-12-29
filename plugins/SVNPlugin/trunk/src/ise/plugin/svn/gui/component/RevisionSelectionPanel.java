@@ -151,6 +151,14 @@ public class RevisionSelectionPanel extends JComponent {
         }
     }
 
+    protected void firePropertyChanged(PropertyChangeEvent event) {
+        if ( propertyChangeListeners.size() > 0 ) {
+            for ( PropertyChangeListener cl : propertyChangeListeners ) {
+                cl.propertyChange( event );
+            }
+        }
+    }
+
     /**
      * @return parent frame
      */

@@ -34,6 +34,8 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.event.DocumentListener;
+
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -97,8 +99,8 @@ public class BrowseLocalRemotePanel extends JPanel {
                 }
                                           );
 
-        JButton browse_remote_btn =browse_remote_btn = new JButton( getProperty( "ips.Browse_Remote...", "Remote..." ) );
-        browse_remote_btn.setVisible(show_remote);
+        JButton browse_remote_btn = browse_remote_btn = new JButton( getProperty( "ips.Browse_Remote...", "Remote..." ) );
+        browse_remote_btn.setVisible( show_remote );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
@@ -154,7 +156,9 @@ public class BrowseLocalRemotePanel extends JPanel {
         buttonPanel.add( "1, 0, 1, 1, E, w, 3", browse_remote_btn );
         button_panel_layout.makeColumnsSameWidth( 0, 1 );
 
-        add( "0, 0, 1, 1, W,  , 3", path_label );
+        if ( labelText != null ) {
+            add( "0, 0, 1, 1, W,  , 3", path_label );
+        }
         add( "0, 1, 1, 1, W, w, 3", path );
         add( "1, 1, 1, 1, E, w, 3", buttonPanel );
     }
@@ -174,7 +178,19 @@ public class BrowseLocalRemotePanel extends JPanel {
         return p == null || p.length() == 0 ? null : p;
     }
 
+    public void setPath( String p ) {
+        if ( p != null ) {
+            path.setText( p );
+        }
+    }
+
     public boolean isDestinationLocal() {
         return destinationIsLocal;
+    }
+
+    public void addDocumentListener( DocumentListener listener ) {
+        if ( listener != null ) {
+            path.getDocument().addDocumentListener( listener );
+        }
     }
 }
