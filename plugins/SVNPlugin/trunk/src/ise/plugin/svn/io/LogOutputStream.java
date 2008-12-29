@@ -59,6 +59,11 @@ public class LogOutputStream extends OutputStream {
 
     public void write( byte[] bytes, int offset, int length ) {
         String s = new String( bytes, offset, length );
+        if (s.endsWith("\n")) {
+            // logger.log will do a println, so remove the last new line to
+            // avoid double spacing
+            s = s.substring(0, s.length() - 1);
+        }
         logger.log( level, s );
     }
     public void close() {
