@@ -41,7 +41,7 @@ import org.gjt.sp.jedit.jEdit;
  * should subclass as appropriate.  This class handles the actual layout of the
  * panel.  This is the "V" in MVC.
  */
-public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener {
+public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener, PropertyChangeListener {
 
     private RevisionSelectionPanel controller;
 
@@ -89,7 +89,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         bg.add( base_rb );
         bg.add( working_rb );
 
-        if ( SVNRevision.BASE.equals( controller.getModel().getDefaultRevision() ) ) {
+        if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( controller.getModel().getDefaultRevision() ) ) {
             base_rb.setSelected( true );
         }
         else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( controller.getModel().getDefaultRevision() ) ) {
@@ -102,12 +102,35 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         // set up the revision number entry field
         revision_number = new RevisionTextField();
         revision_number.setText( "0" );
-        revision_number.setRevisionModel(controller.getModel());
+        revision_number.setRevisionModel( controller.getModel() );
         revision_number.setHorizontalAlignment( JTextField.RIGHT );
         revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
         revision_number.setForeground( foreground );
         revision_number.setBackground( background );
         revision_number.setEnabled( false );
+        revision_number.getDocument().addDocumentListener(
+            // notify listeners of changes to the revision, this allows another
+            // RevisionSelectionPanel to synchronize its revision field to this
+            // revision field
+            new DocumentListener() {
+                public void changedUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                public void insertUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                public void removeUpdate( DocumentEvent de ) {
+                    changed( de );
+                }
+
+                private void changed( DocumentEvent de ) {
+                    PropertyChangeEvent pce = new PropertyChangeEvent( BasicRevisionSelectionPanelUI.this, "revision", null, SVNRevision.parse( revision_number.getText() ) );
+                    controller.firePropertyChanged( pce );
+                }
+            }
+        );
 
         // set up date chooser
         date_spinner = getDateChooser();
@@ -166,6 +189,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
      */
     public void installListeners() {
         controller.addChangeListener( this );
+        controller.addPropertyChangeListener( this );
         ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         revision_number.setEnabled ( BasicRevisionSelectionPanelUI.this.revision_number_rb.isSelected() );
@@ -283,6 +307,9 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
     }
 
     public void stateChanged( ChangeEvent event ) {
+        uninstallComponents();
+        installComponents();
+
         // set enabled
         boolean b = controller.getModel().isEnabled();
         head_rb.setEnabled( b );
@@ -293,6 +320,23 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         revision_number.setEnabled( revision_number_rb.isSelected() );
         date_spinner.setEnabled( date_rb.isSelected() );
         date_popup.setEnabled( date_rb.isSelected() );
+
+        controller.repaint();
+    }
+
+    public void propertyChange( PropertyChangeEvent pce ) {
+        if ( pce == null ) {
+            return ;
+        }
+        if ( equals( pce.getSource() ) ) {
+            // avoid endless recursion
+            return ;
+        }
+        if ( revision_number_rb.isEnabled() && "revision".equals( pce.getPropertyName() ) ) {
+            revision_number_rb.setSelected( true );
+            revision_number.setText( String.valueOf( ( ( SVNRevision ) pce.getNewValue() ).getNumber() ) );
+            revision_number.setEnabled( true );
+        }
     }
 
     private JSpinner getDateChooser() {
