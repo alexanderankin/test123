@@ -327,18 +327,17 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				s.append(signature);
 			s.append("   ");
 			int line = tag.getLine();
-            if (full) {
-                s.append(tag.getFile());
-                if (line > -1)
-    				s.append(":" + line);
-            }
-            else {
-            	File f = new File(tag.getFile());
-                s.append(f.getName());
-                if (line > -1)
-    				s.append(":" + line);
-                s.append("  (" + MiscUtilities.abbreviate(f.getParent()) + ")");
-               
+			if (full) {
+				s.append(tag.getFile());
+				if (line > -1)
+					s.append(":" + line);
+			}
+			else {
+				File f = new File(tag.getFile());
+				s.append(f.getName());
+				if (line > -1)
+					s.append(":" + line);
+				s.append("  (" + MiscUtilities.abbreviate(f.getParent()) + ")");
             }
 			return s.toString();
 		}
