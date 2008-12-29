@@ -365,7 +365,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				"Remove", "Remove dockable completely");
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent e) {
 			ToolWindowManager wm = getToolWindow().getDockableManager();
 			String id = getToolWindow().getId();
