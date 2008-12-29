@@ -45,7 +45,7 @@ public class RevisionTextField extends JTextField {
         addFilter();
     }
 
-    public void setRevisionModel(RevisionSelectionPanelModel model) {
+    public void setRevisionModel( RevisionSelectionPanelModel model ) {
         this.model = model;
     }
 
@@ -59,15 +59,25 @@ public class RevisionTextField extends JTextField {
         public void insertString( FilterBypass fb,
                 int offset, String string, AttributeSet attr )
         throws BadLocationException {
-
             if ( string == null )
                 return ;
             if ( isNumeric( string ) ) {
                 super.insertString( fb, offset, string, attr );
-                if (model != null) {
-                    Number number = Integer.parseInt(RevisionTextField.this.getText());
+                if ( model != null ) {
+                    Number number = Integer.parseInt( RevisionTextField.this.getText() );
                     model.setRevision( SVNRevision.create( number.longValue() ) );
                 }
+            }
+        }
+
+        public void remove( DocumentFilter.FilterBypass fb,
+                int offset,
+                int length )
+        throws BadLocationException {
+            super.remove( fb, offset, length );
+            if ( model != null ) {
+                Number number = Integer.parseInt( RevisionTextField.this.getText() );
+                model.setRevision( SVNRevision.create( number.longValue() ) );
             }
         }
 
@@ -78,8 +88,8 @@ public class RevisionTextField extends JTextField {
                 return ;
             if ( isNumeric( text ) ) {
                 super.replace( fb, offset, length, text, attrs );
-                if (model != null) {
-                    Number number = Integer.parseInt(RevisionTextField.this.getText());
+                if ( model != null ) {
+                    Number number = Integer.parseInt( RevisionTextField.this.getText() );
                     model.setRevision( SVNRevision.create( number.longValue() ) );
                 }
             }
