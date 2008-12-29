@@ -394,10 +394,9 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                                                                                 }
                                                                             }
                                                                             ResolveConflictDialog.this.resolve();
-                                                                            SwingUtilities.invokeLater( r2d2 );
                                                                         }
                                                                     };
-
+                                                            SwingUtilities.invokeLater( r2d2 );
                                                         }
                                                         catch ( Exception e ) {
                                                             e.printStackTrace();
