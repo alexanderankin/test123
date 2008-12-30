@@ -9,6 +9,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -133,6 +135,17 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				}
 			}
 		});
+		text.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) &&
+					(e.getKeyCode() == KeyEvent.VK_C))
+				{
+					copyPreviewSelection();
+					e.consume();
+				}
+			}
+		});
 		propertiesChanged();
 		text.setMinimumSize(new Dimension(150, 50));
 		split = new JSplitPane(getSplitOrientation(),
@@ -162,6 +175,10 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		});
 	}
 
+	private void copyPreviewSelection() {
+		Registers.copy(text, '$');
+	}
+	
 	private void updateCaretListenerState() {
 		boolean visible = isVisible() && getWidth() > 0 && getHeight() > 0; 
 		if (visible) {
@@ -417,10 +434,11 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			popup = new JPopupMenu();
 			String sel = getSelectedText();
 			if (sel != null && sel.length() > 0) {
-				JMenuItem copyAction = new JMenuItem("Copy");
+				JMenuItem copyAction = new JMenuItem(
+					jEdit.getProperty(MESSAGE + "copyPreviewSelection"));
 				copyAction.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Registers.copy(PreviewTextArea.this, '$');
+						copyPreviewSelection();
 					}
 				});
 				popup.add(copyAction);
