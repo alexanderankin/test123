@@ -26,7 +26,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.Timer;
@@ -43,7 +45,9 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.Registers;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -62,6 +66,7 @@ import ctags.Tag;
 public class Preview extends JPanel implements DefaultFocusComponent,
 	CaretListener, ListSelectionListener, EBComponent {
 
+	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
@@ -115,7 +120,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			}
 		});
 		toolbar.add(wrap);
-		text = new JEditEmbeddedTextArea();
+		text = new PreviewTextArea();
         text.getBuffer().setProperty("folding","explicit");
 		textPanel.add(text, BorderLayout.CENTER);
 		textPanel.add(text, BorderLayout.CENTER);
@@ -401,6 +406,34 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			text.scrollTo(line, 0, true);
 			text.setCaretPosition(text.getLineStartOffset(line - 1));
 			buffer.setReadOnly(true);
+		}
+	}
+	
+	private class PreviewTextArea extends JEditEmbeddedTextArea {
+
+		@Override
+		public void createPopupMenu(MouseEvent evt) {
+			// Create a context menu for the text area
+			popup = new JPopupMenu();
+			String sel = getSelectedText();
+			if (sel != null && sel.length() > 0) {
+				JMenuItem copyAction = new JMenuItem("Copy");
+				copyAction.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						Registers.copy(PreviewTextArea.this, '$');
+					}
+				});
+				popup.add(copyAction);
+			}
+			JMenuItem jumpAction = new JMenuItem(
+				jEdit.getProperty(MESSAGE + "openInEditor"));
+			jumpAction.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					CtagsInterfacePlugin.jumpToOffset(Preview.this.view,
+						file, getCaretPosition());
+				}				
+			});
+			popup.add(jumpAction);
 		}
 	}
 }

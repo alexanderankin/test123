@@ -94,6 +94,7 @@ messages.CtagsInterface.previewVerticalSplit=Vertical split
 messages.CtagsInterface.previewToolbar=Show toolbar
 messages.CtagsInterface.previewWrap=Use soft wrap
 messages.CtagsInterface.previewDelay=Delay before tag preview (in milliseconds):
+messages.CtagsInterface.openInEditor=Open in editor (double-click)
 messages.CtagsInterface.dbTitle=Database
 messages.CtagsInterface.dbPreset=Select preset values:
 messages.CtagsInterface.dbClass=JDBC driver class:
