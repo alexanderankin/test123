@@ -49,7 +49,7 @@ public class TextAreaContextMenu extends JMenu {
     private View view = null;
 
     public TextAreaContextMenu( View view ) {
-        super( jEdit.getProperty("ips.Subversion", "Subversion") );
+        super( jEdit.getProperty( "ips.Subversion", "Subversion" ) );
         this.view = view;
 
         /* these items act on working copies. This is the order in the PV
@@ -69,6 +69,7 @@ public class TextAreaContextMenu extends JMenu {
         log
         properties
         diff
+        merge
         time lapse
         -
         checkout
@@ -84,89 +85,92 @@ public class TextAreaContextMenu extends JMenu {
         unlock
         */
 
-        JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Status", "Status") );
+        JMenuItem item = new JMenuItem( jEdit.getProperty( "ips.Status", "Status" ) );
         item.addActionListener( getStatusActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Update...", "Update...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Update...", "Update..." ) );
         item.addActionListener( getUpdateActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Commit...", "Commit...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Commit...", "Commit..." ) );
         item.addActionListener( getCommitActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( jEdit.getProperty("ips.Revert...", "Revert...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Revert...", "Revert..." ) );
         item.addActionListener( getRevertActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Add...", "Add...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Add...", "Add..." ) );
         item.addActionListener( getAddActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Resolve_Conflicts...", "Resolve Conflicts..."));
-        item.addActionListener( getResolveConflictsActionListener());
+        item = new JMenuItem( jEdit.getProperty( "ips.Resolve_Conflicts...", "Resolve Conflicts..." ) );
+        item.addActionListener( getResolveConflictsActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Mark_File_Resolved...", "Mark File Resolved...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Mark_File_Resolved...", "Mark File Resolved..." ) );
         item.addActionListener( getResolvedActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Delete...", "Delete...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Delete...", "Delete..." ) );
         item.addActionListener( getDeleteActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Ignore...", "Ignore...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Ignore...", "Ignore..." ) );
         item.addActionListener( getIgnoreActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( jEdit.getProperty("ips.Info...", "Info...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Info...", "Info..." ) );
         item.addActionListener( getInfoActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Log...", "Log...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Log...", "Log..." ) );
         item.addActionListener( getLogActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Blame", "Blame") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Blame", "Blame" ) );
         item.addActionListener( getBlameActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Properties...", "Properties...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Properties...", "Properties..." ) );
         item.addActionListener( getPropertyActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Diff...", "Diff...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Diff...", "Diff..." ) );
         item.addActionListener( getDiffActionListener() );
+        add( item );
+        item = new JMenuItem( jEdit.getProperty( "ips.Merge", "Merge" ) + "..." );
+        item.addActionListener( getMergeActionListener() );
         add( item );
         /// TODO: uncomment these when time lapse works
         //item = new JMenuItem( jEdit.getProperty("ips.TimeLapse...", "Time Lapse") );
         //item.addActionListener( getTimeLapseActionListener() );
         //add( item );
         addSeparator();
-        item = new JMenuItem( jEdit.getProperty("ips.Checkout", "Checkout") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Checkout", "Checkout" ) );
         item.addActionListener( getCheckoutActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Switch", "Switch") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Switch", "Switch" ) );
         item.addActionListener( getSwitchActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Cleanup...", "Cleanup...") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Cleanup...", "Cleanup..." ) );
         item.addActionListener( getCleanupActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( jEdit.getProperty("ips.Copy", "Copy") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Copy", "Copy" ) );
         item.addActionListener( getCopyActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Move", "Move") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Move", "Move" ) );
         item.addActionListener( getMoveActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Import", "Import") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Import", "Import" ) );
         item.addActionListener( getImportActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Export", "Export") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Export", "Export" ) );
         item.addActionListener( getExportActionListener() );
         add( item );
         addSeparator();
-        item = new JMenuItem( jEdit.getProperty("ips.Lock", "Lock") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Lock", "Lock" ) );
         item.addActionListener( getLockActionListener() );
         add( item );
-        item = new JMenuItem( jEdit.getProperty("ips.Unlock", "Unlock") );
+        item = new JMenuItem( jEdit.getProperty( "ips.Unlock", "Unlock" ) );
         item.addActionListener( getUnlockActionListener() );
         add( item );
 
     }
 
     public String toString() {
-        return jEdit.getProperty("ips.Subversion", "Subversion");
+        return jEdit.getProperty( "ips.Subversion", "Subversion" );
     }
 
     // get a list containing a single path representing the file in the current
@@ -208,8 +212,8 @@ public class TextAreaContextMenu extends JMenu {
     private ActionListener getResolveConflictsActionListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
-                        ResolveConflictDialog dialog = new ResolveConflictDialog(view, view.getBuffer().getPath());
-                        dialog.setVisible(true);
+                       ResolveConflictDialog dialog = new ResolveConflictDialog( view, view.getBuffer().getPath() );
+                       dialog.setVisible( true );
                    }
                };
     }
@@ -292,6 +296,22 @@ public class TextAreaContextMenu extends JMenu {
                };
     }
 
+    private ActionListener getMergeActionListener() {
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       MergeDialog dialog = new MergeDialog( view, getPaths().get( 0 ) );
+                       GUIUtils.center( view, dialog );
+                       dialog.setVisible( true );
+                       MergeData data = dialog.getData();
+                       if ( data == null ) {
+                           return ;     // user canceled
+                       }
+                       MergeAction action = new MergeAction( view, data );
+                       action.actionPerformed( ae );
+                   }
+               };
+    }
+
     /// TODO: uncomment when time lapse works
     /*
     private ActionListener getTimeLapseActionListener() {
@@ -301,7 +321,7 @@ public class TextAreaContextMenu extends JMenu {
                        action.actionPerformed( ae );
                    }
                };
-    }
+}
     */
 
     private ActionListener getCheckoutActionListener() {

@@ -34,11 +34,10 @@ import java.util.*;
 import java.util.logging.*;
 import projectviewer.vpt.VPTNode;
 
-//import ise.plugin.svn.action.MergeAction;
+import ise.plugin.svn.action.MergeAction;
 import ise.plugin.svn.data.MergeData;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.gui.MergeDialog;
-import ise.plugin.svn.PVHelper;
 
 
 
@@ -69,8 +68,8 @@ public class MergeActor extends NodeActor {
                 data.setPassword( password );
             }
 
-            //MergeAction action = new MergeAction(view, data);
-            //action.actionPerformed(null);
+            MergeAction action = new MergeAction(view, data);
+            action.actionPerformed(null);
         }
     }
 }
