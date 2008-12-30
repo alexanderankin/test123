@@ -54,6 +54,7 @@ import org.gjt.sp.jedit.jEdit;
 public class StatusAction extends SVNAction {
 
     private SVNData data = null;
+    private String title = jEdit.getProperty( "ips.Status", "Status" );
 
     public StatusAction( View view, List<String> paths, String username, String password ) {
         super( view, jEdit.getProperty( "ips.Status", "Status" ) );
@@ -71,6 +72,17 @@ public class StatusAction extends SVNAction {
     public StatusAction( View view, SVNData data ) {
         super( view, jEdit.getProperty( "ips.Status", "Status" ) );
         this.data = data;
+    }
+
+    /**
+     * After a merge, this action is called to show the user the results of
+     * the merge.  This method lets the merge command set the tab title to
+     * "Merge".
+     */
+    public void setTabTitle( String title ) {
+        if ( title != null && title.length() > 0 ) {
+            this.title = title;
+        }
     }
 
     public void actionPerformed( ActionEvent ae ) {
@@ -134,7 +146,7 @@ public class StatusAction extends SVNAction {
             protected void done() {
                 try {
                     JPanel panel = new StatusResultsPanel( get(), getView(), getUsername(), getPassword() );
-                    output_panel.addTab( jEdit.getProperty( "ips.Status", "Status" ), panel );
+                    output_panel.addTab( title, panel );
                 }
                 catch ( Exception e ) {
                     System.err.println( e.getMessage() );

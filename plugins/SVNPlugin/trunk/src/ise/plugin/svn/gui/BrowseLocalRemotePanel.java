@@ -30,6 +30,7 @@ package ise.plugin.svn.gui;
 
 // imports
 import java.io.File;
+import java.net.URL;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -61,7 +62,6 @@ public class BrowseLocalRemotePanel extends JPanel {
     private String startPath = null;
     private String endPath = null;
     private HistoryTextField path = null;
-    private boolean destinationIsLocal = true;
 
     public BrowseLocalRemotePanel( View view, String labelText, String start_path, String end_path ) {
         this( view, labelText, start_path, end_path, true );
@@ -92,7 +92,6 @@ public class BrowseLocalRemotePanel extends JPanel {
                             String filename = dirs[ 0 ];
                             File f = new File( filename );
                             path.setText( f.getAbsolutePath() );
-                            destinationIsLocal = true;
                             path.addCurrentToHistory();
                         }
                     }
@@ -121,7 +120,6 @@ public class BrowseLocalRemotePanel extends JPanel {
                                 dialog.dispose();
                                 if ( selection != null && selection.length() > 0 ) {
                                     path.setText( selection );
-                                    destinationIsLocal = false;
                                     path.addCurrentToHistory();
                                 }
                             }
@@ -185,7 +183,13 @@ public class BrowseLocalRemotePanel extends JPanel {
     }
 
     public boolean isDestinationLocal() {
-        return destinationIsLocal;
+        try {
+            new URL(getPath());
+            return false;
+        }
+        catch(Exception e) {
+            return true;
+        }
     }
 
     public void addDocumentListener( DocumentListener listener ) {
