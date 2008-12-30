@@ -245,9 +245,6 @@ public class MergeDialog extends JDialog {
                         canceled = false;
                         MergeDialog.this.setVisible( false );
                         MergeDialog.this.dispose();
-
-                        MergeAction action = new MergeAction( view, data );
-                        action.actionPerformed( ae );
                     }
                 }
                                 );

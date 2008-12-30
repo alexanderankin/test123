@@ -53,89 +53,92 @@ public class MergeData extends SVNData implements Serializable {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("MergeData[");
-        sb.append("fromPath=").append(fromPath == null ? "null" : fromPath).append(",");
-        sb.append("fromFile=").append(fromFile == null ? "null" : fromFile.getAbsolutePath()).append(",");
-        sb.append("toPath=").append(toPath == null ? "null" : toPath).append(",");
-        sb.append("toFile=").append(toFile == null ? "null" : toFile.getAbsolutePath()).append(",");
-        sb.append("destFile=").append(destFile == null ? "null" : destFile.getAbsolutePath()).append(",");
-        sb.append("startRevision=").append(startRevision == null ? "null" : startRevision.toString()).append(",");
-        sb.append("endRevision=").append(endRevision == null ? "null" : endRevision.toString()).append(",");
-        sb.append("recursive=").append(recursive).append(",");
-        sb.append("force=").append(force).append(",");
-        sb.append("dryRun=").append(dryRun).append(",");
-        sb.append("ignoreAncestry=").append(ignoreAncestry).append(",");
+        sb.append( "MergeData[" );
+        sb.append( "fromPath=" ).append( fromPath == null ? "null" : fromPath ).append( "," );
+        sb.append( "fromFile=" ).append( fromFile == null ? "null" : fromFile.getAbsolutePath() ).append( "," );
+        sb.append( "toPath=" ).append( toPath == null ? "null" : toPath ).append( "," );
+        sb.append( "toFile=" ).append( toFile == null ? "null" : toFile.getAbsolutePath() ).append( "," );
+        sb.append( "destFile=" ).append( destFile == null ? "null" : destFile.getAbsolutePath() ).append( "," );
+        sb.append( "startRevision=" ).append( startRevision == null ? "null" : startRevision.toString() ).append( "," );
+        sb.append( "endRevision=" ).append( endRevision == null ? "null" : endRevision.toString() ).append( "," );
+        sb.append( "recursive=" ).append( recursive ).append( "," );
+        sb.append( "force=" ).append( force ).append( "," );
+        sb.append( "dryRun=" ).append( dryRun ).append( "," );
+        sb.append( "ignoreAncestry=" ).append( ignoreAncestry ).append( "," );
         return sb.toString();
     }
 
     public String commandLineEquivalent() {
-        if (fromFile == null && fromPath == null) {
+        if ( fromFile == null && fromPath == null ) {
             return "Invalid merge 'from'.";
         }
-        if (startRevision == null) {
+        if ( startRevision == null ) {
             return "Invalid start revision.";
         }
 
         StringBuffer sb = new StringBuffer();
-        sb.append("svn merge ");
+        sb.append( "svn merge " );
 
         // flags
-        if (dryRun == true) {
-            sb.append("--dry-run ");
+        if ( dryRun == true ) {
+            sb.append( "--dry-run " );
         }
-        if (ignoreAncestry == true) {
-            sb.append("--ignore-ancestry ");
+        if ( ignoreAncestry == true ) {
+            sb.append( "--ignore-ancestry " );
         }
-        if (recursive == false) {
-            sb.append("--non-recursive ");
+        if ( recursive == false ) {
+            sb.append( "--non-recursive " );
         }
-        if (force == true) {
-            sb.append("--force ");
+        if ( force == true ) {
+            sb.append( "--force " );
         }
 
         // urls and revisions
-        if ((toFile == null && toPath == null) ||
-            (fromFile != null && fromFile.equals(toFile)) ||
-            (fromPath != null && fromPath.equals(toPath))) {
+        if ( ( toFile == null && toPath == null ) ||
+                ( fromFile != null && fromFile.equals( toFile ) ) ||
+                ( fromPath != null && fromPath.equals( toPath ) ) ) {
             // svn merge [-c M | -r N:M] SOURCE WCPATH
-            if (startRevision != null && startRevision.equals(endRevision)) {
-                sb.append("-c ").append(startRevision.getNumber()).append(" ");
+            if ( startRevision != null && startRevision.equals( endRevision ) ) {
+                String sr = startRevision.getNumber() == -1 ? "HEAD" : String.valueOf( startRevision.getNumber() );
+                sb.append( "-c " ).append( sr ).append( " " );
             }
-            else if (startRevision != null && endRevision != null) {
-                sb.append("-r ").append(startRevision.getNumber()).append(":").append(endRevision.getNumber()).append(" ");
+            else if ( startRevision != null && endRevision != null ) {
+                String sr = startRevision.getNumber() == -1 ? "HEAD" : String.valueOf( startRevision.getNumber() );
+                String er = endRevision.getNumber() == -1 ? "HEAD" : String.valueOf( endRevision.getNumber() );
+                sb.append( "-r " ).append( sr ).append( ":" ).append( er ).append( " " );
             }
-            if (toFile != null) {
-                sb.append(toFile);
+            if ( toFile != null ) {
+                sb.append( toFile );
             }
             else {
-                sb.append(toPath);
+                sb.append( toPath );
             }
-            sb.append(" ");
-            if (destFile == null) {
+            sb.append( " " );
+            if ( destFile == null ) {
                 return "Invalid working copy.";
             }
             else {
-                sb.append(destFile.getAbsolutePath());
+                sb.append( destFile.getAbsolutePath() );
             }
             return sb.toString();
         }
-        else if (toFile != null || toPath != null){
+        else if ( toFile != null || toPath != null ) {
             // svn merge sourceURL1@N sourceURL2@M WCPATH
-            if (fromFile == null && fromPath == null) {
+            if ( fromFile == null && fromPath == null ) {
                 return "Invalid from path.";
             }
-            if (endRevision == null) {
+            if ( endRevision == null ) {
                 return "Invalid end revision.";
             }
-            sb.append(fromFile == null ? fromPath : fromFile.getAbsolutePath()).append("@");
-            sb.append(startRevision.getNumber()).append(" ");
-            sb.append(toFile == null ? toPath : toFile.getAbsolutePath()).append("@");
-            sb.append(endRevision.getNumber()).append(" ");
-            if (destFile == null) {
+            sb.append( fromFile == null ? fromPath : fromFile.getAbsolutePath() ).append( "@" );
+            sb.append( startRevision.getNumber() ).append( " " );
+            sb.append( toFile == null ? toPath : toFile.getAbsolutePath() ).append( "@" );
+            sb.append( endRevision.getNumber() ).append( " " );
+            if ( destFile == null ) {
                 return "Invalid working copy.";
             }
             else {
-                sb.append(destFile.getAbsolutePath());
+                sb.append( destFile.getAbsolutePath() );
             }
             return sb.toString();
         }
@@ -149,19 +152,19 @@ public class MergeData extends SVNData implements Serializable {
      */
     public String checkValid() {
         if ( fromPath == null && fromFile == null ) {
-            return jEdit.getProperty("ips.Merge_from_path_not_selected.", "Merge from path not selected.");
+            return jEdit.getProperty( "ips.Merge_from_path_not_selected.", "Merge from path not selected." );
         }
         if ( toPath == null && toFile == null ) {
-            return jEdit.getProperty("ips.Merge_to_path_not_selected.", "Merge to path not selected.");
+            return jEdit.getProperty( "ips.Merge_to_path_not_selected.", "Merge to path not selected." );
         }
         if ( destFile == null ) {
-            return jEdit.getProperty("ips.Merge_destination_not_selected.", "Merge destination not selected.");
+            return jEdit.getProperty( "ips.Merge_destination_not_selected.", "Merge destination not selected." );
         }
         if ( startRevision == null ) {
-            return jEdit.getProperty("ips.Start_revision_not_selected.", "Start revision not selected.");
+            return jEdit.getProperty( "ips.Start_revision_not_selected.", "Start revision not selected." );
         }
         if ( endRevision == null ) {
-            return jEdit.getProperty("ips.End_revision_not_selected.", "End revision not selected.");
+            return jEdit.getProperty( "ips.End_revision_not_selected.", "End revision not selected." );
         }
         return null;
     }
