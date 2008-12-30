@@ -34,15 +34,24 @@ import java.util.*;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
-import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.SVNException;
 
+import org.tmatesoft.svn.cli.SVNCommand;
+import org.tmatesoft.svn.core.SVNCancelException;
+import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNProperty;
+import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
+import org.tmatesoft.svn.core.wc.ISVNEventHandler;
+import org.tmatesoft.svn.core.wc.SVNEvent;
+import org.tmatesoft.svn.core.wc.SVNEventAction;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
+
 import ise.plugin.svn.data.MergeData;
 import ise.plugin.svn.data.MergeResults;
+
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -72,21 +81,15 @@ public class Merge {
         // get a diff client
         SVNDiffClient client = clientManager.getDiffClient();
 
-        // results holder
-        MergeResults results = new MergeResults();
-
         // set an event handler so that messages go to the merge data streams for display
-        client.setEventHandler(
-            new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) {
-                @Override
-                public void handleEvent( SVNEvent event, double progress ) {
-                    super.handleEvent( event, progress );
-                }
-            }
-        );
+        MergeResults results = new MergeResults();
+        results.setDryRun(data.getDryRun());
+        results.setCommandLineEquivalent(data.commandLineEquivalent());
+        MergeEventProcessor handler = new MergeEventProcessor( data.getOut(), results );
+        client.setEventHandler( handler );
 
         try {
-            System.out.println(data.toString());
+            System.out.println( data.toString() );
             if ( data.getFromFile() != null && data.getToFile() != null ) {
                 //local, revision, local, revision, destination
                 System.out.println( "+++++ method 1" );
@@ -145,14 +148,113 @@ public class Merge {
             }
             else {
                 String msg = data.checkValid();
-                results.setErrorMessage( msg == null ? jEdit.getProperty( "ips.Merge_data_error.", "Merge data error." ) : msg );
+                handler.getResults().setErrorMessage( msg == null ? jEdit.getProperty( "ips.Merge_data_error.", "Merge data error." ) : msg );
             }
 
         }
         catch ( Exception e ) {
             e.printStackTrace();
         }
-        return results;
+        return handler.getResults();
     }
 
+    class MergeEventProcessor implements ISVNEventHandler {
+
+        private final PrintStream out;
+        private MergeResults results = null;
+
+
+        public MergeEventProcessor( PrintStream out, MergeResults results ) {
+            this.out = out;
+            this.results = results;
+        }
+
+        public MergeResults getResults() {
+            return results;
+        }
+
+        public void handleEvent( SVNEvent event, double progress ) {
+            String filename = "";
+            if ( event.getFile() != null ) {
+                filename = SVNFormatUtil.formatPath( event.getFile() );
+            }
+            if ( event.getAction() == SVNEventAction.UPDATE_ADD ) {
+                if ( event.getContentsStatus() == SVNStatusType.CONFLICTED ) {
+                    SVNCommand.println( out, "C    " + filename );
+                    results.addConflicted( filename );
+                }
+                else {
+                    SVNCommand.println( out, "A    " + filename );
+                    results.addAdded( filename );
+                }
+            }
+            else if ( event.getAction() == SVNEventAction.UPDATE_DELETE ) {
+                SVNCommand.println( out, "D    " + filename );
+                results.addDeleted( filename );
+            }
+            else if ( event.getAction() == SVNEventAction.UPDATE_UPDATE ) {
+                StringBuffer sb = new StringBuffer();
+                if ( event.getNodeKind() != SVNNodeKind.DIR ) {
+                    if ( event.getContentsStatus() == SVNStatusType.CHANGED ) {
+                        sb.append( "U" );
+                        results.addUpdated( filename );
+                    }
+                    else if ( event.getContentsStatus() == SVNStatusType.CONFLICTED ) {
+                        sb.append( "C" );
+                        results.addConflicted( filename );
+                    }
+                    else if ( event.getContentsStatus() == SVNStatusType.MERGED ) {
+                        sb.append( "G" );
+                        results.addMerged( filename );
+                    }
+                    else {
+                        sb.append( " " );
+                    }
+                }
+                else {
+                    sb.append( ' ' );
+                }
+                if ( event.getPropertiesStatus() == SVNStatusType.CHANGED ) {
+                    sb.append( "U" );
+                    results.addUpdated( filename );
+                }
+                else if ( event.getPropertiesStatus() == SVNStatusType.CONFLICTED ) {
+                    sb.append( "C" );
+                    results.addConflicted( filename );
+                }
+                else if ( event.getPropertiesStatus() == SVNStatusType.MERGED ) {
+                    sb.append( "G" );
+                    results.addMerged( filename );
+                }
+                else {
+                    sb.append( " " );
+                }
+                if ( sb.toString().trim().length() > 0 ) {
+                    SVNCommand.println( out, sb.toString() + "  " + filename );
+                }
+            }
+            else if ( event.getAction() == SVNEventAction.ADD ) {
+                if ( SVNProperty.isBinaryMimeType( event.getMimeType() ) ) {
+                    SVNCommand.println( out, "A  (bin)  " + filename );
+                    results.addAdded( filename );
+                }
+                else {
+                    SVNCommand.println( out, "A         " + filename );
+                    results.addAdded( filename );
+                }
+            }
+            else if ( event.getAction() == SVNEventAction.DELETE ) {
+                SVNCommand.println( out, "D         " + filename );
+                results.addDeleted( filename );
+            }
+            else if ( event.getAction() == SVNEventAction.SKIP ) {
+                SVNCommand.println( out, "Skipped '" + filename + "'" );
+                results.addSkipped( filename );
+            }
+        }
+
+        public void checkCancelled() throws SVNCancelException {}
+
+
+    }
 }

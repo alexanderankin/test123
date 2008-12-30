@@ -34,7 +34,8 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Merge;
 import ise.plugin.svn.data.MergeData;
 import ise.plugin.svn.data.MergeResults;
-//import ise.plugin.svn.gui.MergeResultsPanel;
+import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.gui.MergeResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
@@ -66,7 +67,7 @@ public class MergeAction extends SVNAction {
         if ( getUsername() == null ) {
             verifyLogin( data.getFromFile() == null ? "" : data.getFromFile().getAbsolutePath() );
             if ( isCanceled() ) {
-                return;
+                return ;
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
@@ -78,7 +79,7 @@ public class MergeAction extends SVNAction {
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         Logger logger = panel.getLogger();
-        logger.log( Level.INFO, jEdit.getProperty("ips.Merging...", "Merging...") );
+        logger.log( Level.INFO, jEdit.getProperty( "ips.Merging...", "Merging..." ) );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -120,9 +121,24 @@ public class MergeAction extends SVNAction {
                     if ( results == null ) {
                         return ;
                     }
-                    //JPanel results_panel = new MergeResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
-                    JPanel results_panel = new JPanel();
-                    panel.addTab( jEdit.getProperty( "ips.Merge", "Merge" ), results_panel );
+                    if ( results.isDryRun() ) {
+                        JPanel results_panel = new MergeResultsPanel( results );
+                        panel.addTab( jEdit.getProperty( "ips.Merge", "Merge" ), results_panel );
+                    }
+                    else {
+                        // after doing a real merge, run a status for the results
+                        SVNData cd = new SVNData();
+                        cd.addPath( data.getDestinationFile().getAbsolutePath() );
+                        cd.setRemote( false );
+                        cd.setRecursive( data.getRecursive() );
+                        cd.setOut( data.getOut() );
+                        cd.setErr( data.getErr() );
+                        cd.setUsername( data.getUsername() );
+                        cd.setPassword( data.getPassword() );
+                        StatusAction sa = new StatusAction( MergeAction.this.getView(), cd );
+                        sa.setTabTitle( jEdit.getProperty( "ips.Merge", "Merge" ) );
+                        sa.actionPerformed( null );
+                    }
                 }
                 catch ( Exception e ) {
                     // ignored
