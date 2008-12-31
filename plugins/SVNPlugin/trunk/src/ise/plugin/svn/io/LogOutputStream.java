@@ -41,6 +41,7 @@ public class LogOutputStream extends OutputStream {
 
     private Logger logger = null;
     private Level level = Level.INFO;
+    private String LS = System.getProperty("line.separator");
 
     public LogOutputStream( View view ) {
         OutputPanel panel = SVNPlugin.getOutputPanel( view );
@@ -59,10 +60,10 @@ public class LogOutputStream extends OutputStream {
 
     public void write( byte[] bytes, int offset, int length ) {
         String s = new String( bytes, offset, length );
-        if (s.endsWith("\n")) {
-            // logger.log will do a println, so remove the last new line to
-            // avoid double spacing
-            s = s.substring(0, s.length() - 1);
+        if (s.endsWith(LS)) {
+            // logger.log will do a println, so remove the last line separator
+            // to avoid double spacing
+            s = s.substring(0, s.length() - LS.length());
         }
         logger.log( level, s );
     }
