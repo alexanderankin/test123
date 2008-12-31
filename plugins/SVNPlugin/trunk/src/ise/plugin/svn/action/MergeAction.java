@@ -85,11 +85,11 @@ public class MergeAction extends SVNAction {
         }
 
         class Runner extends SwingWorker < MergeResults , Object > {
+            Merge merge = new Merge();
 
             @Override
             public MergeResults doInBackground() {
                 try {
-                    Merge merge = new Merge();
                     return merge.doMerge( data );
                 }
                 catch ( Exception e ) {
@@ -104,6 +104,7 @@ public class MergeAction extends SVNAction {
             @Override
             public boolean cancel( boolean mayInterruptIfRunning ) {
                 boolean cancelled = super.cancel( mayInterruptIfRunning );
+                merge.setCancelled( cancelled );
                 if ( cancelled ) {
                     data.getOut().printError( "Stopped 'Merge' action." );
                     data.getOut().close();
@@ -121,11 +122,9 @@ public class MergeAction extends SVNAction {
                     if ( results == null ) {
                         return ;
                     }
-                    if ( results.isDryRun() ) {
-                        JPanel results_panel = new MergeResultsPanel( results );
-                        panel.addTab( jEdit.getProperty( "ips.Merge", "Merge" ), results_panel );
-                    }
-                    else {
+                    JPanel results_panel = new MergeResultsPanel( results );
+                    panel.addTab( jEdit.getProperty( "ips.Merge", "Merge" ), results_panel );
+                    if ( !results.isDryRun() ) {
                         // after doing a real merge, run a status for the results
                         SVNData cd = new SVNData();
                         cd.addPath( data.getDestinationFile().getAbsolutePath() );
