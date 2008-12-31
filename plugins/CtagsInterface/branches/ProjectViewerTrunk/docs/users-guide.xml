@@ -29,7 +29,7 @@
  </para>
  
  <note> <title> About Memory and Database Size </title>
- <para> Because the database can get rather large, depending on how much sourcecode is indexed, this can also mean that jEdit's JVM will require a larger heap size. Be sure to keep that in mind, if you find that jEdit periodically grinds to a halt, or crashes, when CtagsInterface is used - out of heap memory errors can happen in many different places and may exhibit very different behavior depending on where it happens first. You can increase the JVM heap size by editing the script that starts jEdit
+ <para> Because the database can get rather large, depending on how much sourcecode is indexed, this can also mean that jEdit's JVM will require a larger heap size. Be sure to keep that in mind, if you find that jEdit periodically grinds to a halt, or crashes, when CtagsInterface is used - out of heap memory errors can happen depending on the size of data, and may exhibit very different behavior depending on where it happens first, and which database you are using. You can increase the JVM heap size by editing the script that starts jEdit
  </para>
  
 <programlisting>
@@ -50,9 +50,10 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
  
  <literallayout> --languages=c,c++,java,python </literallayout>
  
- <para> CtagsInterface will work out of the box with two open-source Java databases: <ulink url= "http://hsqldb.org/">hsql</ulink>, and <ulink url="http://www.h2database.com/html/main.html">h2</ulink>. You must make sure that at least one of them is available in the ~/.jedit/jars directory. The in-process java databases are preferred for their ability to be used without any configuration.  However, for larger databases, you may want to consider using MySQL, or h2 in "server mode", where the database runs independently as a server and does not occupy memory in jEdit's process or impact its performance.  </para>
+ <para> CtagsInterface will work out of the box with two open-source Java databases: <ulink url= "http://hsqldb.org/">hsql</ulink>, and <ulink url="http://www.h2database.com/html/main.html">h2</ulink>. We have also tested it with MySQL.
+ You must make sure that at least one of them is available in the ~/.jedit/jars directory. The in-process java databases are preferred for their ability to be used without any configuration.  However, for larger databases, you may want to consider using a database in server mode, that does not occupy memory in jEdit's process or impact its performance. This requires you to set up the database, user, and password independently of jEdit.  </para>
  
- <para> To use a MySQL database called <literal>ctags</literal> on <literal>localhost</literal>, you can follow these steps. </para>
+ <para> For example, to use a MySQL database called <literal>ctags</literal> on <literal>localhost</literal>, you can follow these steps. </para>
  
  <orderedlist>
    <listitem><para>  As the root user, create a database and grant the user <literal>sa</literal> all priveleges to it: </para>
@@ -82,7 +83,11 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
     
 </orderedlist>
 
-    <para> The mappings file below, also included with CtagsInterface.jar, <literal>mysql.map</literal>, contains necessary type mappings for MySQL. Mappings can be defined for other databases as well. The current mapping for MySQL contains only two lines. You can copy and paste them into your own local copy, and enter that in <literal>SQL Mappings File</literal>.</para>
+    <para> The mappings file below, also included with CtagsInterface.jar, <literal>mysql.map</literal>, contains necessary type mappings for MySQL. Mappings can be
+    defined for other databases as well. The current mapping for MySQL contains only two lines.
+    You can copy and paste them, save as, and enter this path in the <literal>SQL Mappings
+    File</literal> above. 
+    </para>
 
 <literallayout>
     identityType=SERIAL
@@ -97,25 +102,33 @@ exec "$JAVA_HOME/bin/java" -mx${JAVA_HEAP_SIZE}m  "-Djedit.home=$JEDIT_HOME"
  <chapter id="tagdbs">
    <title> Tagging Projects and Source Trees </title>
    
-   <para> CtagsInterface uses the sql database to keep track of tag data from multiple projects and directory trees.    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem> provides dialogs for adding projects and directory trees that should be indexed.
+   <para> CtagsInterface uses an sql database to keep track of tag data from multiple projects and directory trees.    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem>
+   provides dialogs for adding projects and directory trees that should be indexed.
    </para>
   
-   <para> The first step is to add the projects and source trees that you want to be tagged in the database. Tag them in the background, and go back into jEdit. 
-   When they are done, you should see no pending I/O requests in the <guimenuitem>Utilities - Troubleshooting - I/O Progress Monitor</guimenuitem>. After your selected projects have been added, you can lookup some tags. </para>
+   <para> The first step is to add the projects and source trees that you want to be tagged in
+   the database. Tag them in the background, and go back into jEdit.
+   When they are done, you should see no pending I/O requests in the <guimenuitem>Utilities -
+   Troubleshooting - I/O Progress Monitor</guimenuitem>. After your selected projects have been
+   added, you can lookup some tags. </para>
    
-   <para> You can add projects two ways. From the ProjectViewer, right click on the project and <guimenuitem>Add Project to Database</guimenuitem>. Or, from <guimenuitem>Plugin Options - CtagsInterface - Projects</guimenuitem>. </para>
+   <para> You can add projects two ways. From the ProjectViewer, right click on the project and
+   <guimenuitem>Add Project to Database</guimenuitem>. Or, from <guimenuitem>Plugin Options -
+   CtagsInterface - Projects</guimenuitem>. </para>
    
-   <para> Similarly, you can add sourcetrees from the <guimenuitem>plugin options - CtagsInterface - Source Trees</guimenuitem>, or from the file system browser context menu: <guimenuitem>Plugins - Add source tree to Tags Database</guimenuitem>. </para> 
+   <para> Similarly, you can add sourcetrees from the <guimenuitem>plugin options -
+   CtagsInterface - Source Trees</guimenuitem>, or from the file system browser context menu:
+   <guimenuitem>Plugins - Add source tree to Tags Database</guimenuitem>. </para> 
    
  </chapter>
 
  <chapter id="lookup">
    <title> Tag Lookup </title>
    
-   <para> By default, tag lookup will search the entire tag database for matching tags, including all added projects and source trees. </para>
+   <para> By default, tag lookup will search the entire tag database for matching tags,
+   including all added projects and source trees. </para>
    
    <para> When using jEdit with ProjectViewer, you might be working with a set of files, and have to frequently check another set of files that you are reusing. This means that you will probably want to restrict your search to only the projects and source trees that are related to your project. </para> 
-   
    
    <para> By editing the properties of the current project, you can see a <guilabel>Dependencies</guilabel> pane, which allows you to set the related projects or source trees on an individual project basis. While running the Tag Preview, or performing a Jump to Tag while working in a project that has dependencies set, CtagsInterface should restrict its searches to tag data from only those projects and directory trees.
    </para>
