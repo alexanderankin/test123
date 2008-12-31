@@ -78,12 +78,11 @@ options.buffertabs.mouse-options.label=Mouse Options
 options.buffertabs.layout-and-style-options.label=Layout and Style Options
 
 # Miscelaneous labels
-buffertabs.reorderBuffersDisabled.label=Buffer Tab Order
-buffertabs.bufferTabPositioningDisabled.label=\
-	Changing the position of buffer tabs is disabled \
-    because the option "Sort buffer sets" (Global Options / View) \
-    is selected. What would you like to do?
-buffertabs.disableBufferSorting.label=Deselect "Sort buffer sets", \
-	to allow buffer tabs to be manually positioned.
-buffertabs.keepBufferSorting.label=Keep "Sort buffer sets" selected, \
-	and manual positioning of buffer tabs disabled.
+buffertabs.reorderBuffersDisabled.label=Buffer Tab Positioning
+buffertabs.bufferTabPositioningDisabled.label=<html>\
+	The position of buffer tabs cannot be manually changed because the option<br>\
+	"Sort buffer sets" (Global Options / View) is selected. What would you like to do?</html>
+buffertabs.disableBufferSorting.label=\
+	Turn off "Sort buffer sets" to allow buffer tabs to be manually positioned.
+buffertabs.keepBufferSorting.label=\
+	Keep "Sort buffer sets" selected, preventing manual positioning of buffer tabs.

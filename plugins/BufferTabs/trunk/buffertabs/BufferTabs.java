@@ -33,6 +33,7 @@ import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -773,18 +774,18 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			
 			GridBagConstraints c = new GridBagConstraints();
 			c.anchor = GridBagConstraints.WEST;
-			c.gridx = 0;
-			c.gridy = 0;
+			c.insets = new Insets(5, 5, 5, 5);
 			JLabel message = new JLabel(jEdit.getProperty(
 				"buffertabs.bufferTabPositioningDisabled.label"));
+			c.gridx = 0;
+			c.gridy = 0;
 			c.gridheight = 2;
 			add(message, c);
-			c.gridheight = 1;
-			c.gridy++;
 			disableSorting = new JRadioButton(
 				jEdit.getProperty("buffertabs.disableBufferSorting.label"),
 				true);
-			c.gridy++;
+			c.gridy += c.gridheight;
+			c.gridheight = 1;
 			add(disableSorting, c);
 			keepSorting = new JRadioButton(
 					jEdit.getProperty("buffertabs.keepBufferSorting.label"));
