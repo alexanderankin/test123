@@ -18,6 +18,7 @@ Author: Dale Anson
 <a href="#2">Creating a project from existing files</a><br>
 <a href="#3">Handling individual files</a><br>
 <a href="#4">How to undelete a deleted file</a><br>
+<a href="#41">Merging</a><br>
 <a href="#5">Licenses</a><br>
 </p>
 <hr>
@@ -370,6 +371,127 @@ back into their original location.<br>
 <br>
 </p>
 
+<hr>
+<p>
+<a name="41"><h2>Merging</h2></a>
+</p>
+<p>
+Merging is not hard, it just takes practice.  Hopefully, the GUI for doing merges with the SVN Plugin helps make it easier, but when in doubt, use the command line.
+</p>
+<p>
+The merge dialog lets you choose the source, revision(s) and destination for merging.
+</p>
+<p>
+<img src="merge_dialog.jpg">
+</p>
+<p>
+The merge dialog has these features:
+<ul>
+<li>Select source file or directory from either the local file system or the repository.</li>
+<li>Select a single revision or a revision range for the merge.</li>
+<li>The "to" range is synchronized with the "from" path and revision so it is easy to set up those "-c" style merges.</li>
+<li>Select destination directory from the local file system.</li>
+<li>"Dry run" and "Recursive" are selected by default since these are common choices.</li>
+<li>Show a preview of the equivalent svn command.  This is great for verifying that the plugin is going to do the right thing.</li>
+</ul>
+</p>
+
+<p>
+Doing a "dry run" merge will show full merge output in the SVN Console.  This will let you see all files that have conflicts, adds, deletes, merged, etc.  This view is not interactive, since it is just a preview of what will happen in the merge.
+</p>
+
+<p>
+Doing an actual merge (dry run unchecked) will show the same output as a dry run merge, then will be followed by a Status on the working directory.  This is the same status that is shown when doing a regular status, and has the same popup commands for resolving conflicts, diff, log, etc.
+</p>
+
+<p>
+<b>How to merge</b><br>
+This section is about how to merge using the SVN plugin.  The tips provided here also apply to command-line svn.
+</p>
+<br>
+<br>
+General tips:
+<ol>
+<li>Always do merges locally.  Check out the code branch to merge from and the code branch to merge to to your local machine.</li>
+<li>Make sure both branches for your merge are up to date.</li>
+<li>Before doing a switch, make sure your current branch is up to date and changes have been checked in.  Files with uncommitted changes will not be switched, which can cause no end of problems.</li>
+<li>Always use explicit revision numbers for merging, avoid using HEAD.  Doing merges locally (see #1) reduces the danger of using HEAD as a revision parameter.  If you must merge from the repository, using HEAD is not necessarily safe since someone else could check in changes that you are not aware of and those changes can get lost.</li>
+<li>If you are working on a development branch that will eventually be merged back to trunk, do regular merges from trunk to your branch.  Depending on the pace of your development team, you may need to merge daily, and probably not less than weekly.  The more changes that are made, the more often you'll need to merge.</li>
+<li>Keep a merge diary.  You can keep it in a notebook, or a document checked into Subversion.  Keep track of dates, revisions, and what branch was merged to where.</li>
+<li><b>Make good comments in your commits!</b>  For example, "Merged from trunk at revision 1066", or "Merged from Widget branch from revision 102 to revision 151."  This is especially critical when you are working on a development branch and need to regularly merge changes from trunk to your branch.</li>
+<li>You can find the revision that a branch was created at by running a log command on the branch.  In the SVN Plugin, click on the branch in the SVN Browser, choose "Log" from the popup menu, check "Stop on copy", then show the log.  In the Path column of the last log entry, you'll see something like <code>A /test3/branches/branch1 (from /test3/trunk revision 21)</code>.  The part in the parenthesis tells you exactly where the branch came from.</li>
+</ol>
+<br>
+<br>
+<b>Situation 1:</b>  You fixed a bug in a single revision on a release branch and want to merge that change to trunk.  This assumes you have the trunk already checked out locally.  This diagram shows the situation:
+<br>
+<img src="merge_branch_to_trunk_1.jpg">
+<br>
+You want to merge the fix in revision 1034 to trunk.  This revision may contain one or more files.
+<br>
+<br>
+Steps:
+<ol>
+<li>Open the merge dialog.</li>
+<li>In the "merge from" box, select the top level directory containing your branch code.  The "To this path/revision" box will automatically fill in with the same path.</li>
+<li>In the top revision box, enter "1034" to specify the single revision you want to merge.  The revision box in the "To this path/revision" will automatically fill with the same revision number.</li>
+<li>Select the directory containing the trunk code in the "working directory" box.</li>
+<li>Uncheck the "dry run" checkbox. (Or leave it checked and do a dry run first, which is always a good idea.)</li>
+<li>Click the "Show" button beside the command-line preview box.  You should see:<br>
+<code>svn merge -c 1034 branch_directory trunk_directory</code></li>
+<li>Click the "Ok" button.</li>
+<li>Resolve any conflicts, build, run unit tests, etc, then commit.</li>
+</ol>
+
+<br>
+<br>
+<b>Situation 2:</b>  You have been working on a development branch while others have been working on trunk.  You want to merge the latest changes on trunk into your branch so you are working with the latest trunk code.  This assumes you have both your working branch and trunk checked out locally.  This diagram describes the situation:
+<br>
+<img src="trunk_to_dev_branch.jpg">
+<br>
+You previously merged from trunk to your dev branch at revision 2167 and currently head of trunk is revision 2182.  You want to merge all changes on trunk from revision 2167 through 2182 to your development branch. This assumes you have both the trunk and your development branch checked out locally, and that both the trunk code and development branch code are up to date.
+<br>
+<br>
+Steps:
+<ol>
+<li>Open the merge dialog.</li>
+<li>In the "merge from" box, use the "Local" button to select the top level directory containing your trunk code.  The "To this path/revision" box will automatically fill in with the same path.</li>
+<li>Enter "2167" in the top revision box.</li>
+<li>The revision box in the "To this path/revision" will automatically fill with the same revision number.  Change it to "2182"</li>
+<li>Select the directory containing your development branch code in the "working directory" box.</li>
+<li>Uncheck the "dry run" checkbox. (Or leave it checked and do a dry run first, which is always a good idea.)</li>
+<li>Click the "Show" button beside the command-line preview box.  You should see:<br>
+<code>svn merge -r 2167:2182 trunk_directory branch_directory</code></li>
+<li>Click the "Ok" button.</li>
+<li>Resolve any conflicts, build, run unit tests, etc, then commit from your development branch.</li>
+</ol>
+
+<br>
+<br>
+<b>Situation 3:</b>  You have been working on a development branch while others have been working on trunk.  You have completed work on the branch and are ready to merge your code to trunk. This assumes you have both your working branch and trunk checked out locally.  This diagram describes the situation:
+<br>
+<img src="dev_branch_to_trunk.jpg">
+<br>
+The development branch was created from the trunk at revision 2149, and the current head of the branch is revision 2195.  You want to merge your entire branch to trunk.
+<br>
+<br>
+Steps:
+<ol>
+<li>Open the merge dialog.</li>
+<li>In the "merge from" box, use the "Local" button to select the top level directory containing your development branch code.  The "To this path/revision" box will automatically fill in with the same path.</li>
+<li>Enter "2149" in the top revision box.</li>
+<li>The revision box in the "To this path/revision" will automatically fill with the same revision number.  Change it to "2195"</li>
+<li>Select the directory containing your trunk code in the "working directory" box.</li>
+<li>Uncheck the "dry run" checkbox. (Or leave it checked and do a dry run first, which is always a good idea.)</li>
+<li>Click the "Show" button beside the command-line preview box.  You should see:<br>
+<code>svn merge -r 2149:2195 branch_directory trunk_directory</code></li>
+<li>Click the "Ok" button.</li>
+<li>Resolve any conflicts, build, run unit tests, etc, then commit your trunk code.</li>
+</ol>
+
+<b>Recovering from a bad merge:</b>
+<br>
+It happens.  You pick the wrong directory, or merge the wrong way, or merge from the wrong revisions.  Since you did everything locally and all your code was up to date from the repository, there is no harm done.  Just delete your "from" and "working" directories, check them both out from the repository, and do the merge again.
 <hr>
 <p>
 <a name="5"><h2>Licenses</h2></a>
