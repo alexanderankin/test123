@@ -334,5 +334,4 @@ public class MergeData extends SVNData implements Serializable {
     public void setIgnoreAncestry( boolean ignoreAncestry ) {
         this.ignoreAncestry = ignoreAncestry;
     }
-
 }

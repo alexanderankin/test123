@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-// imports
-import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -45,12 +43,12 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.*;
 
 import ise.java.awt.*;
+import ise.plugin.svn.action.LogAction;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.library.*;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 import ise.plugin.svn.gui.component.*;
-import ise.plugin.svn.action.MergeAction;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -74,7 +72,7 @@ public class MergeDialog extends JDialog {
      * @param fromPath path/file to merge
      */
     public MergeDialog( View view, String fromPath ) {
-        super( ( JFrame ) view, jEdit.getProperty( "ips.Merge", "Merge" ), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Merge", "Merge" ), false );
         this.view = view;
         this.fromPath = fromPath;
         init();
@@ -86,22 +84,46 @@ public class MergeDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // merge from location
-        JPanel merge_from_panel = new JPanel( new BorderLayout() );
-        final BrowseLocalRemotePanel from_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.Merge_from_this_path/revision>", "Merge from this path/revision:"), fromPath, "" );
+        JPanel merge_from_panel = new JPanel( new KappaLayout() );
+        final BrowseLocalRemotePanel from_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.Merge_from_this_path/revision>", "Merge from this path/revision:" ), fromPath, "" );
         final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.At_this_revision>", "At this revision:" ) );
+        JButton from_log_btn = new JButton( jEdit.getProperty( "ips.Log", "Log" ) );
         start_revision_panel.setShowBase( false );
         start_revision_panel.setShowDate( false );
-        merge_from_panel.add( from_url_panel, BorderLayout.NORTH );
-        merge_from_panel.add( start_revision_panel, BorderLayout.SOUTH );
+        merge_from_panel.add( "0, 0, 6, 1, E, w, 3", from_url_panel );
+        merge_from_panel.add( "0, 1, 5, 1, E, w, 3", start_revision_panel );
+        merge_from_panel.add( "5, 1, 1, 1, 0, w, 3", from_log_btn );
+        from_log_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    List<String> paths = new ArrayList<String>();
+                    paths.add( from_url_panel.getPath() );
+                    LogAction la = new LogAction( view, paths, null, null );
+                    la.actionPerformed( null );
+                }
+            }
+        );
 
         // merge to location
-        JPanel merge_to_panel = new JPanel( new BorderLayout() );
-        final BrowseLocalRemotePanel to_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.To_this_path/revision>", "To this path/revision:"), fromPath, "" );
+        JPanel merge_to_panel = new JPanel( new KappaLayout() );
+        final BrowseLocalRemotePanel to_url_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.To_this_path/revision>", "To this path/revision:" ), fromPath, "" );
         final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.At_this_revision>", "At this revision:" ) );
+        JButton to_log_btn = new JButton( jEdit.getProperty( "ips.Log", "Log" ) );
         end_revision_panel.setShowBase( false );
         end_revision_panel.setShowDate( false );
-        merge_to_panel.add( to_url_panel, BorderLayout.NORTH );
-        merge_to_panel.add( end_revision_panel, BorderLayout.SOUTH );
+        merge_to_panel.add( "0, 0, 6, 1, E, w, 3", to_url_panel );
+        merge_to_panel.add( "0, 1, 5, 1, E, w, 3", end_revision_panel );
+        merge_to_panel.add( "5, 1, 1, 1, 0, w, 3", to_log_btn );
+        to_log_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    List<String> paths = new ArrayList<String>();
+                    paths.add( to_url_panel.getPath() );
+                    LogAction la = new LogAction( view, paths, null, null );
+                    la.actionPerformed( null );
+                }
+            }
+        );
 
         // sync "from" and "to", so that when the user makes a change in the
         // "from", the "to" changes to be the same. This makes it easier on the
@@ -141,7 +163,7 @@ public class MergeDialog extends JDialog {
             File f = new File( fromPath );
             destination = f.isDirectory() ? f.getAbsolutePath() : f.getParent();
         }
-        final BrowseLocalRemotePanel merge_destination_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty("ips.Place_merged_files_in_this_working_directory>", "Place merged files in this working directory:"), destination, "", false );
+        final BrowseLocalRemotePanel merge_destination_panel = new BrowseLocalRemotePanel( view, jEdit.getProperty( "ips.Place_merged_files_in_this_working_directory>", "Place merged files in this working directory:" ), destination, "", false );
 
         // merge option checkboxes
         JPanel merge_options_panel = new JPanel( new KappaLayout() );
@@ -158,9 +180,11 @@ public class MergeDialog extends JDialog {
         merge_options_panel.add( "3, 0, 1, 1, 0, , 6", ignore_ancestry_cb );
 
         // command line sample
-        JPanel command_line_panel = new JPanel( new LambdaLayout() );
-        command_line_panel.setBorder( BorderFactory.createTitledBorder( "Command-line Equivalent:" ) );
-        final JTextArea command_line = new JTextArea( 5, 40 );
+        JPanel command_line_panel = new JPanel( new KappaLayout() );
+        JLabel command_line_label = new JLabel( jEdit.getProperty( "ips.Command-line_Equivalent>", "Command-line Equivalent:" ) );
+        final JTextArea command_line = new JTextArea();
+        command_line.setRows( 5 );
+        command_line.setColumns( 42 );
         command_line.setLineWrap( true );
         command_line.setWrapStyleWord( true );
         command_line.setEditable( false );
@@ -196,8 +220,9 @@ public class MergeDialog extends JDialog {
                 }
             }
         );
-        command_line_panel.add( "0, 0, 6, 1, 0, w, 3", new JScrollPane( command_line ) );
-        command_line_panel.add( "6, 0, 1, 1, N, 0, 3", show_command_line );
+        command_line_panel.add( "0, 0, 6, 1, E, w, 3", command_line_label );
+        command_line_panel.add( "0, 1, 5, 1, E, w, 3", new JScrollPane( command_line ) );
+        command_line_panel.add( "5, 1, 1, 1, 0, w, 3", show_command_line );
 
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
@@ -259,17 +284,17 @@ public class MergeDialog extends JDialog {
                                     );
 
         // add the components to the option panel
-        panel.add( "0,  0, 1, 1, 0, w , 3", merge_from_panel );
-        panel.add( "0,  1, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0,  2, 1, 1, 0, w , 3", merge_to_panel );
-        panel.add( "0,  3, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0,  6, 1, 1, 0, w , 3", merge_destination_panel );
-        panel.add( "0,  7, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0,  8, 1, 1, 0, w , 3", merge_options_panel );
-        panel.add( "0,  9, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 10, 1, 1, 0, w , 3", command_line_panel );
-        panel.add( "0, 11, 1, 1, 0,   , 0", KappaLayout.createVerticalStrut( 16, true ) );
-        panel.add( "0, 12, 1, 1, E,   , 3", btn_panel );
+        panel.add( "0,  0, 1, 1, 0, w, 3", merge_from_panel );
+        panel.add( "0,  1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  2, 1, 1, 0, w, 3", merge_to_panel );
+        panel.add( "0,  3, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  6, 1, 1, 0, w, 3", merge_destination_panel );
+        panel.add( "0,  7, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0,  8, 1, 1, 0, w, 3", merge_options_panel );
+        panel.add( "0,  9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        panel.add( "0, 10, 1, 1, 0, w, 3", command_line_panel );
+        panel.add( "0, 11, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 16, true ) );
+        panel.add( "0, 12, 1, 1, E,  , 3", btn_panel );
 
         setContentPane( panel );
         pack();

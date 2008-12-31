@@ -58,6 +58,9 @@ import org.gjt.sp.jedit.jEdit;
 
 public class Merge {
 
+
+    private boolean cancelled = false;
+
     /**
      * Fills a MergeResults based on the given MergeData.
      * @param data MergeData containing the information necessary to do a merge.
@@ -92,7 +95,6 @@ public class Merge {
             System.out.println( data.toString() );
             if ( data.getFromFile() != null && data.getToFile() != null ) {
                 //local, revision, local, revision, destination
-                System.out.println( "+++++ method 1" );
                 client.doMerge(
                     data.getFromFile(),
                     data.getStartRevision(),
@@ -106,7 +108,6 @@ public class Merge {
             }
             else if ( data.getFromFile() != null && data.getToPath() != null ) {
                 //local, revision, remote, revision, destination
-                System.out.println( "+++++ method 2" );
                 client.doMerge(
                     data.getFromFile(),
                     data.getStartRevision(),
@@ -120,7 +121,6 @@ public class Merge {
             }
             else if ( data.getFromPath() != null && data.getToFile() != null ) {
                 //remote, revision, local, revision, destination
-                System.out.println( "+++++ method 3" );
                 client.doMerge(
                     SVNURL.parseURIDecoded( data.getFromPath() ),
                     data.getStartRevision(),
@@ -134,7 +134,6 @@ public class Merge {
             }
             else if ( data.getFromPath() != null && data.getToPath() != null ) {
                 //remote, revision, remote, revision, destination
-                System.out.println( "+++++ method 4" );
                 client.doMerge(
                     SVNURL.parseURIDecoded( data.getFromPath() ),
                     data.getStartRevision(),
@@ -152,10 +151,14 @@ public class Merge {
             }
 
         }
-        catch ( Exception e ) {
-            e.printStackTrace();
+        catch ( Exception ignored ) {   // NOPMD
+            //e.printStackTrace();
         }
         return handler.getResults();
+    }
+
+    public void setCancelled(boolean c) {
+        cancelled = c;
     }
 
     class MergeEventProcessor implements ISVNEventHandler {
@@ -253,7 +256,12 @@ public class Merge {
             }
         }
 
-        public void checkCancelled() throws SVNCancelException {}
+        public void checkCancelled() throws SVNCancelException {
+            if (Merge.this.cancelled) {
+                results.setCancelled(true);
+                throw new SVNCancelException();
+            }
+        }
 
 
     }

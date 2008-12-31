@@ -50,6 +50,7 @@ public class MergeResults implements Serializable {
     private List<String> updated = null;
 
     private boolean dryRun = true;
+    private boolean cancelled = false;
 
     private String commandLineEquivalent;
     /**
@@ -210,4 +211,19 @@ public class MergeResults implements Serializable {
         this.errorMessage = errorMessage;
     }
 
+
+    /**
+     * Returns the value of cancelled.
+     */
+    public boolean getCancelled() {
+        return cancelled;
+    }
+
+    /**
+     * Sets the value of cancelled.
+     * @param cancelled The value to assign cancelled.
+     */
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 }
