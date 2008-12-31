@@ -56,6 +56,7 @@
 	<include name="actions.xml"/>
 	<include name="default.options"/>
 	<include name="simple-complete-config.options"/>
+	<include name="simple-complete-lisp-config.options"/>
       </fileset>
     </copy>
   </target>

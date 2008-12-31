@@ -101,6 +101,8 @@ public class CamelCompletePlugin extends EditPlugin {
 		optionsMap.put("simple-mode", Boolean.TRUE);
 	    if (!optionsMap.containsKey("simple-search-all"))
 		optionsMap.put("simple-search-all", Boolean.FALSE);
+	    if (!optionsMap.containsKey("simple-token-C-style"))
+		optionsMap.put("simple-token-C-style", Boolean.TRUE);
 	    if (!optionsMap.containsKey("popup-rows"))
 		optionsMap.put("popup-rows", new Integer(12));
 	    if (!optionsMap.containsKey("remove-dups"))

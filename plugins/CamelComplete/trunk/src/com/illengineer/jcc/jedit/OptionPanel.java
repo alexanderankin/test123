@@ -85,6 +85,10 @@ public class OptionPanel extends AbstractOptionPane
 	    
 	    searchAllBuffersButton.setSelected(
 		    ((Boolean)CamelCompletePlugin.getOption("simple-search-all")).booleanValue());
+	    if (((Boolean)CamelCompletePlugin.getOption("simple-token-C-style")).booleanValue())
+		CJavaButton.setSelected(true);
+	    else
+		lispButton.setSelected(true);
 	    if (((Boolean)CamelCompletePlugin.getOption("simple-mode")).booleanValue()) {
 		simpleModeButton.doClick();
 	    } else {
@@ -105,6 +109,7 @@ public class OptionPanel extends AbstractOptionPane
 	    CamelCompletePlugin.setOption("update", Boolean.valueOf(updateCheck.isSelected()));
 	    CamelCompletePlugin.setOption("simple-mode", Boolean.valueOf(simpleModeButton.isSelected()));
 	    CamelCompletePlugin.setOption("simple-search-all", Boolean.valueOf(searchAllBuffersButton.isSelected()));
+	    CamelCompletePlugin.setOption("simple-token-C-style", Boolean.valueOf(CJavaButton.isSelected()));
 	    CamelCompletePlugin.setOption("loading-dlg", Boolean.valueOf(loadDialogCheck.isSelected()));
 	    CamelCompletePlugin.setOption("popup-rows", popupRowsSpinner.getValue());
 	}
@@ -372,7 +377,7 @@ public class OptionPanel extends AbstractOptionPane
 	    // {{{ Simple/Advanced Mode Buttons
 	    else if (source == simpleModeButton || source == advancedModeButton) {
 		optionPanel.setVisible(!(source == simpleModeButton));
-		searchAllBuffersButton.setVisible(source == simpleModeButton);
+		simplePanel.setVisible(source == simpleModeButton);
 	    }
 	    // }}}
 	}
@@ -630,7 +635,8 @@ public class OptionPanel extends AbstractOptionPane
 	    HashMap<String, OptionPanel.EngineOpts> import_eoMap = null;
 
 	    try {
-		InputStream i = CamelCompletePlugin.class.getResourceAsStream("/simple-complete-config.options");
+		InputStream i = CamelCompletePlugin.class.getResourceAsStream(CJavaButton.isSelected() ?
+			"/simple-complete-config.options" : "/simple-complete-lisp-config.options");
 		ObjectInputStream  ois = new ObjectInputStream(i);
 		import_optionsMap = (HashMap<String,Object>)ois.readObject();
 		ois.close();
@@ -732,10 +738,15 @@ public class OptionPanel extends AbstractOptionPane
 		processButton = new JButton();
 		processAllButton = new JButton();
 		messageLabel = new JLabel();
+		panel6 = new JPanel();
 		modePanel = new JPanel();
 		simpleModeButton = new JRadioButton();
 		advancedModeButton = new JRadioButton();
+		simplePanel = new JPanel();
 		searchAllBuffersButton = new JCheckBox();
+		label11 = new JLabel();
+		CJavaButton = new JRadioButton();
+		lispButton = new JRadioButton();
 		impExpDialog = new JDialog();
 		scrollPane3 = new JScrollPane();
 		impExpList = new JList();
@@ -1182,23 +1193,47 @@ public class OptionPanel extends AbstractOptionPane
 			}
 			mainPanel.add(optionPanel, BorderLayout.CENTER);
 
-			//======== modePanel ========
+			//======== panel6 ========
 			{
-				modePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 1));
+				panel6.setLayout(new BorderLayout());
 
-				//---- simpleModeButton ----
-				simpleModeButton.setText("Simple Mode");
-				modePanel.add(simpleModeButton);
+				//======== modePanel ========
+				{
+					modePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 1));
 
-				//---- advancedModeButton ----
-				advancedModeButton.setText("Advanced Mode");
-				modePanel.add(advancedModeButton);
+					//---- simpleModeButton ----
+					simpleModeButton.setText("Simple Mode");
+					modePanel.add(simpleModeButton);
 
-				//---- searchAllBuffersButton ----
-				searchAllBuffersButton.setText("Search All Buffers");
-				modePanel.add(searchAllBuffersButton);
+					//---- advancedModeButton ----
+					advancedModeButton.setText("Advanced Mode");
+					modePanel.add(advancedModeButton);
+				}
+				panel6.add(modePanel, BorderLayout.NORTH);
+
+				//======== simplePanel ========
+				{
+					simplePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+					//---- searchAllBuffersButton ----
+					searchAllBuffersButton.setText("Search All Buffers");
+					simplePanel.add(searchAllBuffersButton);
+
+					//---- label11 ----
+					label11.setText("    Token Style:");
+					simplePanel.add(label11);
+
+					//---- CJavaButton ----
+					CJavaButton.setText("C/Java");
+					simplePanel.add(CJavaButton);
+
+					//---- lispButton ----
+					lispButton.setText("Lisp");
+					simplePanel.add(lispButton);
+				}
+				panel6.add(simplePanel, BorderLayout.SOUTH);
 			}
-			mainPanel.add(modePanel, BorderLayout.NORTH);
+			mainPanel.add(panel6, BorderLayout.NORTH);
 		}
 
 		//======== impExpDialog ========
@@ -1268,6 +1303,11 @@ public class OptionPanel extends AbstractOptionPane
 		ButtonGroup buttonGroup4 = new ButtonGroup();
 		buttonGroup4.add(simpleModeButton);
 		buttonGroup4.add(advancedModeButton);
+
+		//---- buttonGroup5 ----
+		ButtonGroup buttonGroup5 = new ButtonGroup();
+		buttonGroup5.add(CJavaButton);
+		buttonGroup5.add(lispButton);
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 	}
 	// }}}
@@ -1353,10 +1393,15 @@ public class OptionPanel extends AbstractOptionPane
 	JButton processButton;
 	JButton processAllButton;
 	JLabel messageLabel;
+	JPanel panel6;
 	JPanel modePanel;
 	JRadioButton simpleModeButton;
 	JRadioButton advancedModeButton;
+	JPanel simplePanel;
 	JCheckBox searchAllBuffersButton;
+	JLabel label11;
+	JRadioButton CJavaButton;
+	JRadioButton lispButton;
 	JDialog impExpDialog;
 	JScrollPane scrollPane3;
 	JList impExpList;
