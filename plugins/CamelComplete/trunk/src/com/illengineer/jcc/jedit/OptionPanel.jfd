@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.5.0_13" class="java.beans.XMLDecoder"> 
+<java version="1.5.0_16" class="java.beans.XMLDecoder"> 
  <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -1675,64 +1675,156 @@
        <object class="com.jformdesigner.model.FormContainer"> 
         <string>javax.swing.JPanel</string> 
         <object class="com.jformdesigner.model.FormLayoutManager"> 
-         <class>java.awt.FlowLayout</class> 
-         <void method="setProperty"> 
-          <string>vgap</string> 
-          <int>1</int> 
-         </void> 
-         <void method="setProperty"> 
-          <string>alignment</string> 
-          <int>0</int> 
-         </void> 
+         <class>java.awt.BorderLayout</class> 
         </object> 
         <void property="name"> 
-         <string>modePanel</string> 
+         <string>panel6</string> 
         </void> 
         <void method="add"> 
-         <object class="com.jformdesigner.model.FormComponent"> 
-          <string>javax.swing.JRadioButton</string> 
-          <void method="setProperty"> 
-           <string>text</string> 
-           <string>Simple Mode</string> 
+         <object class="com.jformdesigner.model.FormContainer"> 
+          <string>javax.swing.JPanel</string> 
+          <object class="com.jformdesigner.model.FormLayoutManager"> 
+           <class>java.awt.FlowLayout</class> 
+           <void method="setProperty"> 
+            <string>vgap</string> 
+            <int>1</int> 
+           </void> 
+           <void method="setProperty"> 
+            <string>alignment</string> 
+            <int>0</int> 
+           </void> 
+          </object> 
+          <void property="name"> 
+           <string>modePanel</string> 
           </void> 
-          <void method="setProperty"> 
-           <string>$buttonGroup</string> 
-           <object class="com.jformdesigner.model.FormReference"> 
-            <string>buttonGroup4</string> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JRadioButton</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Simple Mode</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>$buttonGroup</string> 
+             <object class="com.jformdesigner.model.FormReference"> 
+              <string>buttonGroup4</string> 
+             </object> 
+            </void> 
+            <void property="name"> 
+             <string>simpleModeButton</string> 
+            </void> 
            </object> 
           </void> 
-          <void property="name"> 
-           <string>simpleModeButton</string> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JRadioButton</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Advanced Mode</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>$buttonGroup</string> 
+             <object class="com.jformdesigner.model.FormReference"> 
+              <string>buttonGroup4</string> 
+             </object> 
+            </void> 
+            <void property="name"> 
+             <string>advancedModeButton</string> 
+            </void> 
+           </object> 
+          </void> 
+         </object> 
+         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+          <class>java.lang.String</class> 
+          <void method="setProperty"> 
+           <string>value</string> 
+           <string>North</string> 
           </void> 
          </object> 
         </void> 
         <void method="add"> 
-         <object class="com.jformdesigner.model.FormComponent"> 
-          <string>javax.swing.JRadioButton</string> 
-          <void method="setProperty"> 
-           <string>text</string> 
-           <string>Advanced Mode</string> 
+         <object class="com.jformdesigner.model.FormContainer"> 
+          <string>javax.swing.JPanel</string> 
+          <object class="com.jformdesigner.model.FormLayoutManager"> 
+           <class>java.awt.FlowLayout</class> 
+           <void method="setProperty"> 
+            <string>alignment</string> 
+            <int>0</int> 
+           </void> 
+           <void method="setProperty"> 
+            <string>vgap</string> 
+            <int>0</int> 
+           </void> 
+          </object> 
+          <void property="name"> 
+           <string>simplePanel</string> 
           </void> 
-          <void method="setProperty"> 
-           <string>$buttonGroup</string> 
-           <object class="com.jformdesigner.model.FormReference"> 
-            <string>buttonGroup4</string> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JCheckBox</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Search All Buffers</string> 
+            </void> 
+            <void property="name"> 
+             <string>searchAllBuffersButton</string> 
+            </void> 
            </object> 
           </void> 
-          <void property="name"> 
-           <string>advancedModeButton</string> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JLabel</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>    Token Style:</string> 
+            </void> 
+            <void property="name"> 
+             <string>label11</string> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JRadioButton</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>C/Java</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>$buttonGroup</string> 
+             <object class="com.jformdesigner.model.FormReference"> 
+              <string>buttonGroup5</string> 
+             </object> 
+            </void> 
+            <void property="name"> 
+             <string>CJavaButton</string> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormComponent"> 
+            <string>javax.swing.JRadioButton</string> 
+            <void method="setProperty"> 
+             <string>text</string> 
+             <string>Lisp</string> 
+            </void> 
+            <void method="setProperty"> 
+             <string>$buttonGroup</string> 
+             <object class="com.jformdesigner.model.FormReference"> 
+              <string>buttonGroup5</string> 
+             </object> 
+            </void> 
+            <void property="name"> 
+             <string>lispButton</string> 
+            </void> 
+           </object> 
           </void> 
          </object> 
-        </void> 
-        <void method="add"> 
-         <object class="com.jformdesigner.model.FormComponent"> 
-          <string>javax.swing.JCheckBox</string> 
+         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+          <class>java.lang.String</class> 
           <void method="setProperty"> 
-           <string>text</string> 
-           <string>Search All Buffers</string> 
-          </void> 
-          <void property="name"> 
-           <string>searchAllBuffersButton</string> 
+           <string>value</string> 
+           <string>South</string> 
           </void> 
          </object> 
         </void> 
@@ -1964,6 +2056,24 @@
        <object class="java.awt.Point"> 
         <int>0</int> 
         <int>813</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="com.jformdesigner.model.FormNonVisual"> 
+      <string>javax.swing.ButtonGroup</string> 
+      <void property="name"> 
+       <string>buttonGroup5</string> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>867</int> 
        </object> 
       </void> 
      </object> 
