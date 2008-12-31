@@ -30,7 +30,12 @@ package buffertabs;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -39,9 +44,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -80,6 +90,7 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetListener
 {
+	private static final String SORT_BUFFERS = "sortBuffers";
 	private final EditPane editPane;
 	private final JComponent textArea;
 	BufferSet bufferSet;
@@ -152,6 +163,17 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		removeMouseMotionListener(mouseMotionHandler);
 	}
 
+	private boolean areBuffersSorted()
+	{
+		return jEdit.getBooleanProperty(SORT_BUFFERS);
+	}
+	
+	private void stopBufferSorting()
+	{
+		jEdit.setBooleanProperty(SORT_BUFFERS, false);
+		jEdit.propertiesChanged();
+	}
+	
 	/**
 	 * Gets the EditPane this tab set is attached to.
 	 */
@@ -732,6 +754,68 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 	private static int moving = -1;
 
+	class ReorderBuffersDisabledDialog extends JDialog
+	{
+		static private final String GEOMETRY =
+			"buffertabs.reorderBuffersDisabledDialog.geometry";
+		private JRadioButton disableSorting;
+		private JRadioButton keepSorting;
+		
+		public ReorderBuffersDisabledDialog(Frame frame) {
+			super(frame, jEdit.getProperty(
+				"buffertabs.reorderBuffersDisabled.label"), true);
+			addWindowListener(new java.awt.event.WindowAdapter() {
+				public void windowClosing(java.awt.event.WindowEvent evt) {
+					saveGeometry();	
+				}
+			});
+			setLayout(new GridBagLayout());
+			
+			GridBagConstraints c = new GridBagConstraints();
+			c.anchor = GridBagConstraints.WEST;
+			c.gridx = 0;
+			c.gridy = 0;
+			JLabel message = new JLabel(jEdit.getProperty(
+				"buffertabs.bufferTabPositioningDisabled.label"));
+			c.gridheight = 2;
+			add(message, c);
+			c.gridheight = 1;
+			c.gridy++;
+			disableSorting = new JRadioButton(
+				jEdit.getProperty("buffertabs.disableBufferSorting.label"),
+				true);
+			c.gridy++;
+			add(disableSorting, c);
+			keepSorting = new JRadioButton(
+					jEdit.getProperty("buffertabs.keepBufferSorting.label"));
+			c.gridy++;
+			add(keepSorting, c);
+			ButtonGroup options = new ButtonGroup();
+			options.add(disableSorting);
+			options.add(keepSorting);
+			
+			JButton close = new JButton("Close");
+			close.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					saveGeometry();
+					save();
+					setVisible(false);
+				}
+			});
+			c.gridy++;
+			add(close, c);
+			pack();
+			GUIUtilities.loadGeometry(this, GEOMETRY);
+		}
+		private void save() {
+			if (disableSorting.isSelected())
+				stopBufferSorting();
+		}
+		private void saveGeometry() {
+			GUIUtilities.saveGeometry(this, GEOMETRY);
+		} 
+	}
+	
 	/**
 	 * An inner class used to handle a popup menu when right-clicking on the
 	 * tab pane. The actions currently apply to the frontmost buffer, which is
@@ -805,10 +889,19 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 					int index = getTabAt(e.getX(), e.getY());
 					if (index != -1 && index != mv)
 					{
-						//System.out.println( "moving tab from " + moving + " to " + index );
-						Buffer movedBuffer = bufferSet.getBuffer(mv);
-						bufferSet.addBufferAt(movedBuffer, index);
-						// moving the tab
+						boolean movingEnabled = true;
+						if (areBuffersSorted()) {
+							JDialog dlg = new ReorderBuffersDisabledDialog(
+								editPane.getView());
+							dlg.setVisible(true);
+							movingEnabled = (! areBuffersSorted());
+						}
+						if (movingEnabled) {
+							//System.out.println( "moving tab from " + moving + " to " + index );
+							Buffer movedBuffer = bufferSet.getBuffer(mv);
+							bufferSet.addBufferAt(movedBuffer, index);
+							// moving the tab
+						}
 					}
 					else
 					{
