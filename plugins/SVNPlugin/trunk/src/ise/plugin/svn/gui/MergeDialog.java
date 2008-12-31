@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
+import java.awt.Font;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -73,6 +74,7 @@ public class MergeDialog extends JDialog {
      */
     public MergeDialog( View view, String fromPath ) {
         super( ( JFrame ) view, jEdit.getProperty( "ips.Merge", "Merge" ), false );
+        setResizable( false );
         this.view = view;
         this.fromPath = fromPath;
         init();
@@ -103,6 +105,7 @@ public class MergeDialog extends JDialog {
                 }
             }
         );
+        from_log_btn.setToolTipText( jEdit.getProperty( "ips.Show_log_for_this_file.", "Show log for this file." ) );
 
         // merge to location
         JPanel merge_to_panel = new JPanel( new KappaLayout() );
@@ -124,6 +127,7 @@ public class MergeDialog extends JDialog {
                 }
             }
         );
+        to_log_btn.setToolTipText( jEdit.getProperty( "ips.Show_log_for_this_file.", "Show log for this file." ) );
 
         // sync "from" and "to", so that when the user makes a change in the
         // "from", the "to" changes to be the same. This makes it easier on the
@@ -184,9 +188,10 @@ public class MergeDialog extends JDialog {
         JLabel command_line_label = new JLabel( jEdit.getProperty( "ips.Command-line_Equivalent>", "Command-line Equivalent:" ) );
         final JTextArea command_line = new JTextArea();
         command_line.setRows( 5 );
-        command_line.setColumns( 42 );
+        command_line.setColumns( 80 );
         command_line.setLineWrap( true );
         command_line.setWrapStyleWord( true );
+        command_line.setFont( new Font("Monospaced", Font.PLAIN, 10) );
         command_line.setEditable( false );
         JButton show_command_line = new JButton( "Show" );
         show_command_line.addActionListener(
@@ -221,7 +226,7 @@ public class MergeDialog extends JDialog {
             }
         );
         command_line_panel.add( "0, 0, 6, 1, E, w, 3", command_line_label );
-        command_line_panel.add( "0, 1, 5, 1, E, w, 3", new JScrollPane( command_line ) );
+        command_line_panel.add( "0, 1, 5, 1, 0, w, 3", new JScrollPane( command_line ) );
         command_line_panel.add( "5, 1, 1, 1, 0, w, 3", show_command_line );
 
         // ok and cancel buttons
