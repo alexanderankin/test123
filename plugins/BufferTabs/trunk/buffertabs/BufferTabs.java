@@ -774,6 +774,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 			
 			GridBagConstraints c = new GridBagConstraints();
 			c.anchor = GridBagConstraints.WEST;
+			c.fill = GridBagConstraints.HORIZONTAL;
 			c.insets = new Insets(5, 5, 5, 5);
 			JLabel message = new JLabel(jEdit.getProperty(
 				"buffertabs.bufferTabPositioningDisabled.label"));
@@ -804,6 +805,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 				}
 			});
 			c.gridy++;
+			c.fill = GridBagConstraints.NONE;
 			add(close, c);
 			pack();
 			GUIUtilities.loadGeometry(this, GEOMETRY);
