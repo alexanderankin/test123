@@ -406,7 +406,7 @@ Doing an actual merge (dry run unchecked) will show the same output as a dry run
 
 <p>
 <b>How to merge</b><br>
-This section is about how to merge using the SVN plugin.  The tips provided here also apply to command-line svn.
+This section is about how to merge using the SVN plugin.  The tips provided here also apply to command-line svn.  This is not an all-inclusive guide, nor does it cover all situations, but it does cover the most common use cases.
 </p>
 <br>
 <br>
@@ -416,10 +416,10 @@ General tips:
 <li>Make sure both branches for your merge are up to date.</li>
 <li>Before doing a switch, make sure your current branch is up to date and changes have been checked in.  Files with uncommitted changes will not be switched, which can cause no end of problems.</li>
 <li>Always use explicit revision numbers for merging, avoid using HEAD.  Doing merges locally (see #1) reduces the danger of using HEAD as a revision parameter.  If you must merge from the repository, using HEAD is not necessarily safe since someone else could check in changes that you are not aware of and those changes can get lost.</li>
-<li>If you are working on a development branch that will eventually be merged back to trunk, do regular merges from trunk to your branch.  Depending on the pace of your development team, you may need to merge daily, and probably not less than weekly.  The more changes that are made, the more often you'll need to merge.</li>
+<li>If you are working on a development branch that will eventually be merged back to trunk, do regular merges from trunk to your branch.  Depending on the pace of your development team, you may need to merge daily, and probably not less than weekly.  The more changes that are made, the more often you'll need to merge. It is much easier to a lot of small merges than one large merge.</li>
 <li>Keep a merge diary.  You can keep it in a notebook, or a document checked into Subversion.  Keep track of dates, revisions, and what branch was merged to where.</li>
 <li><b>Make good comments in your commits!</b>  For example, "Merged from trunk at revision 1066", or "Merged from Widget branch from revision 102 to revision 151."  This is especially critical when you are working on a development branch and need to regularly merge changes from trunk to your branch.</li>
-<li>You can find the revision that a branch was created at by running a log command on the branch.  In the SVN Plugin, click on the branch in the SVN Browser, choose "Log" from the popup menu, check "Stop on copy", then show the log.  In the Path column of the last log entry, you'll see something like <code>A /test3/branches/branch1 (from /test3/trunk revision 21)</code>.  The part in the parenthesis tells you exactly where the branch came from.</li>
+<li>You can find the revision that a branch was created at by running a log command on the branch.  In the SVN Plugin, click on the branch in the SVN Browser, choose "Log" from the popup menu, check "Stop on copy", then show the log.  In the Path column of the last log entry, you'll see something like <br><code>A /test3/branches/branch1 (from /test3/trunk revision 21)</code><br>  The part in the parenthesis tells you exactly where the branch came from.</li>
 </ol>
 <br>
 <br>
