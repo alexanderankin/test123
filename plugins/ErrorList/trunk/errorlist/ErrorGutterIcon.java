@@ -61,7 +61,9 @@ public class ErrorGutterIcon extends TextAreaExtension {
 			errMsg.append("</html>");
 		}
 
-		return errMsg.toString();
+		if (errMsg.length() > 0)
+			return errMsg.toString();
+		return null;
 	}
 
 	public void paintValidLine(Graphics2D gfx, int screenLine,
