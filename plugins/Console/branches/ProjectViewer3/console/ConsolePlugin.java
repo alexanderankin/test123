@@ -106,14 +106,14 @@ public class ConsolePlugin extends EBPlugin
 	    JComponent comp = wm.getDockable("projectviewer");
 	    if (comp == null) return ".";
 	    ProjectViewer pv = (ProjectViewer) comp;	    
-	    VPTProject project = pv.getActiveProject(view);
+	    VPTProject project = ProjectViewer.getActiveProject(view);
 	    if (project != null) {
 	        return project.getRootPath();
 	    }
 	    // no active project - find out which one it is based on the nodes
-	    Iterator iterator = projectviewer.ProjectManager.getInstance().getProjects();
+	    Iterator<VPTProject> iterator = projectviewer.ProjectManager.getInstance().getProjects().iterator();
 	    while (iterator.hasNext()) {
-		    project = (VPTProject) iterator.next();
+		    project =  iterator.next();
 		    VPTNode node = project.getChildNode(buffer.getPath());
 		    if (node != null) {
 			    return project.getRootPath();

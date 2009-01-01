@@ -19,7 +19,7 @@ public class SystemOptionPane extends AbstractOptionPane
 	private JCheckBox nodeselect;
 	private JCheckBox mergeError;
 	private JCheckBox showExitStatus;
-	private JCheckBox pvselect;
+//	private JCheckBox pvselect;
 	private JCheckBox pvchange;
 	private JTextField pathDirs ;
 	private JCheckBox pathDirsAppend;
@@ -75,12 +75,12 @@ public class SystemOptionPane extends AbstractOptionPane
 		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
 		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
 		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
-		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
-		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
+//		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
+//		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvpvselect"));		
 
 		addComponent(nodeselect);
 		addComponent(pvchange);
-		addComponent(pvselect);
+//		addComponent(pvselect);
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 
 		
@@ -88,7 +88,7 @@ public class SystemOptionPane extends AbstractOptionPane
 
 	public void _save() {
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
-		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
+//		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
 		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
@@ -96,7 +96,5 @@ public class SystemOptionPane extends AbstractOptionPane
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
 		jEdit.setBooleanProperty("console.shell.pathdirs.append", pathDirsAppend.isSelected());
 		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
-
-		
 	}
 }

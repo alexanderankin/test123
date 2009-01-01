@@ -104,6 +104,7 @@ implements EBComponent, DefaultFocusComponent
 	private ConsolePane text;
 	private Color infoColor, warningColor, errorColor, plainColor;
 	private DefaultErrorSource errorSource;
+	private ProjectTreeListener listener;
 	// }}}
 	// }}}
 
@@ -121,6 +122,9 @@ implements EBComponent, DefaultFocusComponent
 		propertiesChanged();
 		Shell s = Shell.getShell("System");
 		setShell(s);
+		addProjectListener();
+		
+		
 	} //}}}
 
 	// {{{ methods
@@ -136,16 +140,33 @@ implements EBComponent, DefaultFocusComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-
+		addProjectListener();
 		errorSource = new DefaultErrorSource("error parsing");
 	} //}}}
 
+	void addProjectListener()
+	{
+		if (listener != null) return;
+		String[] dockables = DockableWindowFactory.getInstance().getRegisteredDockableWindows();
+		EditPlugin[] plugins = jEdit.getPlugins();
+		for (EditPlugin p: plugins) {
+			if (p.getClassName() .equals("projectviewer.ProjectPlugin")) {
+				listener = new ProjectTreeListener(this);
+				EditBus.addToBus(listener);
+				break;
+			}
+		}
+	}
+	
 	//{{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-
+		if (listener != null) {
+			EditBus.removeFromBus(listener);
+			listener.finalize();
+		}
 		ErrorSource.unregisterErrorSource(errorSource);
 
 		Iterator iter = shellStateMap.values().iterator();
@@ -707,6 +728,7 @@ implements EBComponent, DefaultFocusComponent
 
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
+//		Log.log(Log.WARNING, this, "VFSPathSelected: " + msg.getPath());
 		if (view != msg.getView()) return;
 		if (!isVisible()) return;
 		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
