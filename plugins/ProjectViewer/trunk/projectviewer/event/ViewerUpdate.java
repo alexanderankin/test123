@@ -23,7 +23,6 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
 
 import projectviewer.ProjectViewer;
-import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 
 /**
@@ -47,7 +46,7 @@ public final class ViewerUpdate extends EBMessage
 
     private final boolean isViewer;
     private final Type type;
-
+    private final VPTNode node;
     /**
      *  Construct a new message with the given type and no associated
      *  viewer. {@link #getViewer()} might still return a viewer, if
@@ -60,6 +59,7 @@ public final class ViewerUpdate extends EBMessage
         super(v);
         this.type = type;
         this.isViewer = false;
+        this.node = n;
     }
 
     /**
@@ -72,6 +72,7 @@ public final class ViewerUpdate extends EBMessage
     {
         super(v);
         this.type = type;
+        this.node = n;
         this.isViewer = true;
     }
 
@@ -94,6 +95,10 @@ public final class ViewerUpdate extends EBMessage
         }
     }
 
+    public VPTNode getNode() {
+	    return node;
+    }
+    
     /**
      *  Returns the view where the event occurred.
      */
