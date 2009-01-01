@@ -412,6 +412,7 @@ This section is about how to merge using the SVN plugin.  The tips provided here
 <br>
 General tips:
 <ol>
+<li>Read the official Subversion documentation.  It goes into great detail about merging and branching and is well worth reading.</li>
 <li>Always do merges locally.  Check out the code branch to merge from and the code branch to merge to to your local machine.</li>
 <li>Make sure both branches for your merge are up to date.</li>
 <li>Before doing a switch, make sure your current branch is up to date and changes have been checked in.  Files with uncommitted changes will not be switched, which can cause no end of problems.</li>
@@ -491,7 +492,22 @@ Steps:
 
 <b>Recovering from a bad merge:</b>
 <br>
-It happens.  You pick the wrong directory, or merge the wrong way, or merge from the wrong revisions.  Since you did everything locally and all your code was up to date from the repository, there is no harm done.  Just delete your "from" and "working" directories, check them both out from the repository, and do the merge again.
+It happens.  You pick the wrong directory, or merge the wrong way, or merge from the wrong revisions.  Since you did everything locally and all your code was up to date from the repository, there is no harm done -- as long as you haven't committed yet.  Just "Revert" your changes from your working directory.  If you are not comfortable with that, you can also delete your "from" and "working" directories, check them both out from the repository, and do the merge again.
+<br>
+<br>
+If you have already committed your changes, you can do a "reverse merge":
+
+<ol>
+<li>Open the merge dialog.</li>
+<li>Select the top level of your working directory in the "merge from" box.</li>
+<li>Enter the revision that contained the bad merge, for example, 2196.</li>
+<li>In the "to path/revision", enter one revision less, continuing the example, enter 2195.</li>
+<li>Set the working directory to the same as the "merge from" box.</li>
+<li>Click the "Show" button beside the command-line preview box.  You should see:<br>
+<code>svn merge -r 2196:2195 working_directory working_directory</code></li>
+<li>Click the "Ok" button.</li>
+<li>Resolve any conflicts, build, run unit tests, etc, then commit your trunk code.</li>
+</ol>
 <hr>
 <p>
 <a name="5"><h2>Licenses</h2></a>
