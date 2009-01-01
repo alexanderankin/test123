@@ -5,7 +5,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * (c) 2005 by Alan Ezust
+ * (c) 2005, 2009 by Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -91,7 +91,7 @@ public class ProjectTreeListener implements EBComponent
 				}
 				VPTNode n = vu.getNode();
 				View view = vu.getView();
-				if (view == null || !view.isVisible()) return;
+				if (view == null || view != jEdit.getActiveView()) return;
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);
@@ -105,10 +105,7 @@ public class ProjectTreeListener implements EBComponent
 	/** Reloads properties and updates flags */
 	private void update()
 	{
-		onProjectChange = jEdit
-				.getBooleanProperty("console.changedir.pvchange");
-
-
+		onProjectChange = jEdit.getBooleanProperty("console.changedir.pvchange");
 	} // }}}
 
 
