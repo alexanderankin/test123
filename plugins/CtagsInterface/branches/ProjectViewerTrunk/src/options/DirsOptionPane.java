@@ -8,7 +8,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,6 +17,8 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import ctags.CtagsInterfacePlugin;
@@ -57,13 +58,15 @@ public class DirsOptionPane extends AbstractOptionPane {
 
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				JFileChooser fc = new JFileChooser();
-				fc.setDialogTitle("Select root of source tree");
-				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int ret = fc.showOpenDialog(DirsOptionPane.this);
-				if (ret != JFileChooser.APPROVE_OPTION)
+				VFSFileChooserDialog chooser = new VFSFileChooserDialog(
+					GUIUtilities.getParentDialog(DirsOptionPane.this),
+					jEdit.getActiveView(), System.getProperty("user.home"),
+					VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false, false);
+				chooser.setTitle("Select root of source tree");
+				chooser.setVisible(true);
+				if (chooser.getSelectedFiles() == null)
 					return;
-				String dir = fc.getSelectedFile().getAbsolutePath();
+				String dir = chooser.getSelectedFiles()[0];
 				dirsModel.addElement(MiscUtilities.resolveSymlinks(dir));
 			}
 		});
