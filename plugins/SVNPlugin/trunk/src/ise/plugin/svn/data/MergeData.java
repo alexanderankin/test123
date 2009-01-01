@@ -70,10 +70,10 @@ public class MergeData extends SVNData implements Serializable {
 
     public String commandLineEquivalent() {
         if ( fromFile == null && fromPath == null ) {
-            return "Invalid merge 'from'.";
+            return jEdit.getProperty("ips.Invalid_merge_'from'.", "Invalid merge 'from'.");
         }
         if ( startRevision == null ) {
-            return "Invalid start revision.";
+            return jEdit.getProperty("ips.Invalid_start_revision.", "Invalid start revision.");
         }
 
         StringBuffer sb = new StringBuffer();
@@ -115,7 +115,7 @@ public class MergeData extends SVNData implements Serializable {
             }
             sb.append( " " );
             if ( destFile == null ) {
-                return "Invalid working copy.";
+                return jEdit.getProperty("ips.Invalid_working_copy.", "Invalid working copy.");
             }
             else {
                 sb.append( destFile.getAbsolutePath() );
@@ -125,17 +125,17 @@ public class MergeData extends SVNData implements Serializable {
         else if ( toFile != null || toPath != null ) {
             // svn merge sourceURL1@N sourceURL2@M WCPATH
             if ( fromFile == null && fromPath == null ) {
-                return "Invalid from path.";
+                return jEdit.getProperty("ips.Invalid_from_path.", "Invalid from path.");
             }
             if ( endRevision == null ) {
-                return "Invalid end revision.";
+                return jEdit.getProperty("ips.Invalid_end_revision.", "Invalid end revision.");
             }
             sb.append( fromFile == null ? fromPath : fromFile.getAbsolutePath() ).append( "@" );
             sb.append( startRevision.getNumber() ).append( " " );
             sb.append( toFile == null ? toPath : toFile.getAbsolutePath() ).append( "@" );
             sb.append( endRevision.getNumber() ).append( " " );
             if ( destFile == null ) {
-                return "Invalid working copy.";
+                return jEdit.getProperty("ips.Invalid_working_copy.", "Invalid working copy.");
             }
             else {
                 sb.append( destFile.getAbsolutePath() );
@@ -143,7 +143,7 @@ public class MergeData extends SVNData implements Serializable {
             return sb.toString();
         }
         else {
-            return "Invalid values for merge request.";
+            return jEdit.getProperty("ips.Invalid_values_for_merge_request.", "Invalid values for merge request.");
         }
     }
 

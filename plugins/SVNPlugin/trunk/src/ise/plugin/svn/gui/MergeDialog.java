@@ -171,7 +171,7 @@ public class MergeDialog extends JDialog {
 
         // merge option checkboxes
         JPanel merge_options_panel = new JPanel( new KappaLayout() );
-        merge_options_panel.setBorder( BorderFactory.createTitledBorder( "Merge Options:" ) );
+        merge_options_panel.setBorder( BorderFactory.createTitledBorder( jEdit.getProperty("ips.Merge_Options>", "Merge Options:") ) );
         final JCheckBox dryrun_cb = new JCheckBox( jEdit.getProperty( "ips.Dry_run", "Dry run" ) );
         dryrun_cb.setSelected( true );
         final JCheckBox force_cb = new JCheckBox( jEdit.getProperty( "ips.Force", "Force" ) );
@@ -193,7 +193,7 @@ public class MergeDialog extends JDialog {
         command_line.setWrapStyleWord( true );
         command_line.setFont( new Font("Monospaced", Font.PLAIN, 10) );
         command_line.setEditable( false );
-        JButton show_command_line = new JButton( "Show" );
+        JButton show_command_line = new JButton( jEdit.getProperty("ips.Show", "Show") );
         show_command_line.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
