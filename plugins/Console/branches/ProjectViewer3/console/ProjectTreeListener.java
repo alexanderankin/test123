@@ -26,77 +26,58 @@ package console;
 // {{{ imports
 
 import org.gjt.sp.jedit.BeanShell;
-import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import projectviewer.event.ProjectViewerAdapter;
-import projectviewer.event.ProjectViewerEvent;
+import projectviewer.event.ViewerUpdate;
 import projectviewer.vpt.VPTNode;
 //import projectviewer.vpt.VPTProject;
 import org.gjt.sp.jedit.bsh.NameSpace;
 // }}}
+import org.gjt.sp.util.Log;
 
 // {{{ ProjectTreeListener class
 /**
  *
- * Listener of ProjectViewer 2.1 node selection events.
+ * Listener of ProjectViewer 2.9 node selection events.
  * Triggers console beanshell scripts as actions in response.
-
- * @deprecated: this class will be obsolete once ProjectViewer 3.0 is released, since
- * future events will (hopefully) derive from jedit core classes. 
  * 
  * @author ezust
  *
  */
 
-public class ProjectTreeListener extends ProjectViewerAdapter
+public class ProjectTreeListener implements EBComponent
 {
-	// {{{ Data Members
-	// {{{ Static members
-
-	static ProjectTreeListener instance;
 
 	static boolean onProjectChange;
 
-	static boolean onNodeSelection;
-
-	// }}}
-	// {{{ private members
-	private VPTNode lastNode;
-
-//	private VPTProject lastProject;
-	// }}}
-	// }}}
-
-	// {{{ reset method
-	public static void reset() {
-		if (instance == null) {
-			new ProjectTreeListener();
-		}
-		instance.update();
-	} // }}}
-
+	private Console console;
 	// {{{ constructor
-	public ProjectTreeListener()
+	public ProjectTreeListener(Console c)
 	{
 		update();
-		instance = this;
+		console = c;
 	}
 	// }}}
-
+	public void finalize() {
+		console = null;
+	}
 
 	// {{{ projectLoaded()
 	/**
 	 * On project change...
 	 */
-	public void projectLoaded(ProjectViewerEvent evt)
+	public void handleMessage(EBMessage msg)
 	{
+		update();
 		if (!onProjectChange)
 			return;
-		update();
-		// if (evt.getProject() == lastProject) return;
-//		lastProject = evt.getProject();
+		if (!(msg instanceof ViewerUpdate)) return;
+		final ViewerUpdate vu = (ViewerUpdate) msg;
+		if (vu.getView() != console.getView()) return;
+		if (vu.getType() != ViewerUpdate.Type.PROJECT_LOADED) return;
 		new Thread()
 		{
 			public void run()
@@ -108,35 +89,16 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				catch (InterruptedException ie)
 				{
 				}
-				View view = jEdit.getActiveView();
+				VPTNode n = vu.getNode();
+				View view = vu.getView();
 				if (view == null || !view.isVisible()) return;
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);
+			
 			}
 		}.start();
 	} // }}}
-
-	// {{{ nodeSelected ()
-	/** called when Nodes are selected */
-	public void nodeSelected(ProjectViewerEvent evt)
-	{
-		if (!onNodeSelection)
-			return;
-		update();
-		VPTNode newNode = evt.getNode();
-		if (onNodeSelection && (newNode != lastNode))
-		{
-			View view = jEdit.getActiveView();
-			EditAction action = jEdit.getAction("chdir-pv-selected");
-			try {
-				action.invoke(view);
-			}
-			catch (Exception e) {}
-			lastNode = newNode;
-		}
-	} // }}}
-
 
 
 	// {{{ update()
@@ -145,10 +107,9 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	{
 		onProjectChange = jEdit
 				.getBooleanProperty("console.changedir.pvchange");
-		onNodeSelection = jEdit
-				.getBooleanProperty("console.changedir.pvselect");
 
 
 	} // }}}
+
 
 } // }}}

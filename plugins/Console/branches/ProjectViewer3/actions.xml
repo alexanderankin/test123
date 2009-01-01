@@ -14,6 +14,12 @@
 			new console.commando.CommandoDialog(view,null);
 		</CODE>
 	</ACTION>
+    <ACTION NAME="console-clear">
+       <CODE>
+          console = view.getDockableWindowManager().getDockable("console");
+          console.clear();
+       </CODE>
+    </ACTION>
 	<ACTION NAME="commando-compile">
 		<CODE>
 			console.ConsolePlugin.compile(view,buffer);
