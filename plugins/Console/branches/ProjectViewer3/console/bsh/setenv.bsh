@@ -1,0 +1,9 @@
+/* Returns environment variable value. */
+setenv(String env, String value)
+{
+	import console.ConsolePlugin;
+
+	return ConsolePlugin.setSystemShellVariableValue(env,value);
+}
+
+help.setenv = "usage: setenv ( env, value )";
