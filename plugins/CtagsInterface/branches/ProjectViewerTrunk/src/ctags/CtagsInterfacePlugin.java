@@ -2,6 +2,7 @@ package ctags;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -499,6 +500,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			tagProject(name, handler);
 		else if (type.equals(TagDB.DIR_ORIGIN))
 			tagSourceTree(name, handler);
+		else if (type.equals(TagDB.ARCHIVE_ORIGIN))
+			tagArchive(name, handler);
 	}
 	
 	private static void addWorkRequest(Runnable run, boolean inAWT) {
@@ -554,6 +557,24 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		removeStatusMessage();
 	}
 
+	/* Archive support */
+	
+	public static void tagArchive(final String archive, final TagHandler handler) {
+		setStatusMessage("Tagging archive: " + archive);
+		addWorkRequest(new Runnable() {
+			public void run() {
+				HashMap<String, String> localToVFS =
+					new HashMap<String, String>();
+				String tagFile = runner.runOnArchive(archive, localToVFS);
+				if (tagFile == null)
+					return;
+				parser.setSourcePathMapping(localToVFS);
+				parseTagFile(tagFile, handler);
+			}
+		}, false);
+		removeStatusMessage();
+	}
+	
 	/* Source tree support */
 	
 	// Runs Ctags on a source tree and add the tags and associated data to the DB

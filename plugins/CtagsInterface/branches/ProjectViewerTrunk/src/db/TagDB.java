@@ -70,6 +70,7 @@ public class TagDB {
 	public static final String TEMP_ORIGIN = "Temp";
 	public static final String PROJECT_ORIGIN = "Project";
 	public static final String DIR_ORIGIN = "Dir";
+	public static final String ARCHIVE_ORIGIN = "Archive";
 	// Characters to escape (precede with '\') in string values
 	private static String charsToEscape = null;
 	

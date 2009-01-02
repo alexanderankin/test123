@@ -22,17 +22,21 @@ import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import ctags.CtagsInterfacePlugin;
+import ctags.VFSHelper;
 import db.TagDB;
 
 @SuppressWarnings("serial")
 public class DirsOptionPane extends AbstractOptionPane {
 
 	private static final String DIR_ORIGIN = TagDB.DIR_ORIGIN;
+	private static final String ARCHIVE_ORIGIN = TagDB.ARCHIVE_ORIGIN;
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String DIRS = OPTION + "dirs.";
 	JList dirs;
 	DefaultListModel dirsModel;
+	private DefaultListModel archivesModel;
+	private JList archives;
 	
 	public DirsOptionPane() {
 		super("CtagsInterface-Dirs");
@@ -56,6 +60,24 @@ public class DirsOptionPane extends AbstractOptionPane {
 		buttons.add(tag);
 		addComponent(buttons);
 
+		archivesModel = new DefaultListModel();
+		Vector<String> archiveFiles = getArchives();
+		for (int i = 0; i < archiveFiles.size(); i++)
+			archivesModel.addElement(archiveFiles.get(i));
+		archives = new JList(archivesModel);
+		scroller = new JScrollPane(archives);
+		scroller.setBorder(BorderFactory.createTitledBorder(
+				jEdit.getProperty(MESSAGE + "archives")));
+		addComponent(scroller, GridBagConstraints.HORIZONTAL);
+		buttons = new JPanel();
+		JButton addArchive = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
+		buttons.add(addArchive);
+		JButton removeArchive = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
+		buttons.add(removeArchive);
+		JButton tagArchive = new JButton("Tag");
+		buttons.add(tagArchive);
+		addComponent(buttons);
+		
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				VFSFileChooserDialog chooser = new VFSFileChooserDialog(
@@ -86,17 +108,50 @@ public class DirsOptionPane extends AbstractOptionPane {
 				}
 			}
 		});
+
+		addArchive.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				VFSFileChooserDialog chooser = new VFSFileChooserDialog(
+					GUIUtilities.getParentDialog(DirsOptionPane.this),
+					jEdit.getActiveView(), System.getProperty("user.home"),
+					VFSBrowser.OPEN_DIALOG, false, false);
+				chooser.setTitle("Select source archive");
+				chooser.setVisible(true);
+				if (chooser.getSelectedFiles() == null)
+					return;
+				String archive = chooser.getSelectedFiles()[0];
+				if (! VFSHelper.checkArchiveVFS(archive))
+					return;
+				archivesModel.addElement(archive);
+			}
+		});
+		removeArchive.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				int i = archives.getSelectedIndex();
+				if (i >= 0)
+					archivesModel.removeElementAt(i);
+			}
+		});
 	}
 
-	public void save() {
+	public void saveOrigins(String origin, DefaultListModel model) {
 		Vector<String> names = new Vector<String>();
-		int nDirs = dirsModel.size(); 
-		for (int i = 0; i < nDirs; i++)
-			names.add((String) dirsModel.getElementAt(i));
-		CtagsInterfacePlugin.updateOrigins(DIR_ORIGIN, names);
+		int nItems = model.size();
+		for (int i = 0; i < nItems; i++)
+			names.add((String) model.getElementAt(i));
+		CtagsInterfacePlugin.updateOrigins(origin, names);
+	}
+	
+	public void save() {
+		saveOrigins(DIR_ORIGIN, dirsModel);
+		saveOrigins(ARCHIVE_ORIGIN, archivesModel);
 	}
 	
 	static public Vector<String> getDirs() {
 		return CtagsInterfacePlugin.getDB().getOrigins(DIR_ORIGIN);
+	}
+	
+	static public Vector<String> getArchives() {
+		return CtagsInterfacePlugin.getDB().getOrigins(ARCHIVE_ORIGIN);
 	}
 }

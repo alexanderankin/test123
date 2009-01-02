@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 public class Parser {
 	
 	String tagFileDir;
+	HashMap<String, String> sourcePathMap;
 	
 	interface TagHandler {
 		void processTag(Tag t);
@@ -46,6 +48,10 @@ public class Parser {
 		}
 	}
 
+	public void setSourcePathMapping(HashMap<String, String> map) {
+		sourcePathMap = map;
+	}
+	
 	private Tag parse(String line) {
 		Hashtable<String, String> info =
 			new Hashtable<String, String>();
@@ -62,6 +68,12 @@ public class Parser {
 		String file = fields[1];
 		if (! new File(file).isAbsolute())
 			file = tagFileDir + "/" + fields[1];
+		if (sourcePathMap != null) {
+			String target = sourcePathMap.get(file);
+			if (target != null) {
+				file = target;
+			}
+		}
 		Tag t = new Tag(fields[0], file, fields[2]);
 		// Extensions
 		fields = line.substring(idx + 3).split("\t");
