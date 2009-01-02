@@ -424,18 +424,29 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		}
 		Vector<String> dirs = null;
+		Vector<String> archives = null;
 		Vector<String> projects = null;
 		if (rebuild) {
 			dirs = db.getOrigins(TagDB.DIR_ORIGIN);
+			archives = db.getOrigins(TagDB.ARCHIVE_ORIGIN);
 			projects = db.getOrigins(TagDB.PROJECT_ORIGIN);
 		}
 		plugin.stop();
 		plugin.start();
 		if (rebuild) {
 			if (dirs != null)
-				updateOrigins(TagDB.DIR_ORIGIN, dirs);
+				rebuildOrigins(TagDB.DIR_ORIGIN, dirs);
+			if (archives != null)
+				rebuildOrigins(TagDB.ARCHIVE_ORIGIN, archives);
 			if (projects != null)
-				updateOrigins(TagDB.PROJECT_ORIGIN, projects);
+				rebuildOrigins(TagDB.PROJECT_ORIGIN, projects);
+		}
+	}
+	
+	static public void rebuildOrigins(String type, Vector<String> names) {
+		for (String name: names) {
+			deleteOrigin(type, name);
+			insertOrigin(type, name);
 		}
 	}
 	
