@@ -156,6 +156,7 @@ public class ChangeDbSettings extends JDialog {
 				if ((preset == null) || preset.isEmpty() || (! preset.matches("\\w+")))
 					return;
 				savePreset(preset, true);
+				dbPreset.setSelectedItem(preset);
 			}
 		});
 		removePreset.addActionListener(new ActionListener() {
