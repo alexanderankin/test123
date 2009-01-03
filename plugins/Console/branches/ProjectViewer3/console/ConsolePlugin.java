@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -182,6 +183,13 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ stop() method
 	public void stop()
 	{
+		// clean up edit bus
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++) {
+			Console console = getConsole(views[i]);
+			if (console != null)
+				console.unload();
+		}
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);

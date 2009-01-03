@@ -56,6 +56,7 @@ import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 import console.SystemShell.ConsoleState;
@@ -123,6 +124,7 @@ implements EBComponent, DefaultFocusComponent
 		Shell s = Shell.getShell("System");
 		setShell(s);
 		addProjectListener();
+		load();
 		
 		
 	} //}}}
@@ -135,10 +137,9 @@ implements EBComponent, DefaultFocusComponent
 		text.requestFocus();
 	} //}}}
 
-	//{{{ addNotify() method
-	public void addNotify()
+	//{{{ load() method
+	public void load()
 	{
-		super.addNotify();
 		EditBus.addToBus(this);
 		addProjectListener();
 		errorSource = new DefaultErrorSource("error parsing");
@@ -158,10 +159,9 @@ implements EBComponent, DefaultFocusComponent
 		}
 	}
 	
-	//{{{ removeNotify() method
-	public void removeNotify()
+	//{{{ unload() method
+	public void unload()
 	{
-		super.removeNotify();
 		EditBus.removeFromBus(this);
 		if (listener != null) {
 			EditBus.removeFromBus(listener);
@@ -317,10 +317,18 @@ implements EBComponent, DefaultFocusComponent
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
 			handleNodeSelected((VFSPathSelected)msg);
-		
+		else if (msg instanceof ViewUpdate)
+			handleViewUpdate((ViewUpdate)msg);
 
 	} //}}}
 
+	//{{{ handleViewUpdate() method
+	private void handleViewUpdate(ViewUpdate vu) {
+		if (vu.getWhat() == ViewUpdate.CLOSED && vu.getView() == view)
+			unload();
+	}
+	//}}}
+		
 	//{{{ getErrorSource() method
 	/**
 	 * Returns this console's error source instance. Plugin shells can
