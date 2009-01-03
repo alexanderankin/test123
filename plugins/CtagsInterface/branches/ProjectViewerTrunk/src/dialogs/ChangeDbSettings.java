@@ -41,6 +41,7 @@ public class ChangeDbSettings extends JDialog {
 	JTextField dbConnection;
 	JTextField dbUser;
 	JTextField dbPassword;
+	JTextField dbOnExit;
 	JTextField dbMappingsFile;
 	JCheckBox rebuildNewDb;
 	
@@ -108,6 +109,12 @@ public class ChangeDbSettings extends JDialog {
 		dbPasswordPanel.add(dbPassword);
 		c.gridy++;
 		dbPanel.add(dbPasswordPanel, c);
+		JPanel dbOnExitPanel = new JPanel();
+		dbOnExitPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbOnExit")));
+		dbOnExit = new JTextField(jEdit.getProperty(TagDB.DB_ON_EXIT), 20);
+		dbOnExitPanel.add(dbOnExit);
+		c.gridy++;
+		dbPanel.add(dbOnExitPanel, c);
 		JPanel dbMappingsPanel = new JPanel();
 		dbMappingsPanel.add(new JLabel(jEdit.getProperty(MESSAGE + "dbMappingsFile")));
 		dbMappingsFile = new JTextField(jEdit.getProperty(TagDB.DB_MAPPINGS_FILE), 20);
@@ -142,6 +149,7 @@ public class ChangeDbSettings extends JDialog {
 				dbConnection.setText(TagDB.getDbPropertyByPreset(TagDB.DB_CONNECTION, preset));
 				dbUser.setText(TagDB.getDbPropertyByPreset(TagDB.DB_USER, preset));
 				dbPassword.setText(TagDB.getDbPropertyByPreset(TagDB.DB_PASSWORD, preset));
+				dbOnExit.setText(TagDB.getDbPropertyByPreset(TagDB.DB_ON_EXIT, preset));
 				dbMappingsFile.setText(TagDB.getDbPropertyByPreset(TagDB.DB_MAPPINGS_FILE, preset));
 			}
 		});
@@ -247,6 +255,7 @@ public class ChangeDbSettings extends JDialog {
 		TagDB.setDbPropertyByPreset(TagDB.DB_CONNECTION, preset, dbConnection.getText());
 		TagDB.setDbPropertyByPreset(TagDB.DB_USER, preset, dbUser.getText());
 		TagDB.setDbPropertyByPreset(TagDB.DB_PASSWORD, preset, dbPassword.getText());
+		TagDB.setDbPropertyByPreset(TagDB.DB_ON_EXIT, preset, dbOnExit.getText());
 		TagDB.setDbPropertyByPreset(TagDB.DB_MAPPINGS_FILE, preset, dbMappingsFile.getText());
 	}
 	

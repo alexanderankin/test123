@@ -76,11 +76,13 @@ options.CtagsInterface.dbClass.hsqldb=org.hsqldb.jdbcDriver
 options.CtagsInterface.dbConnection.hsqldb=jdbc:hsqldb:file:<default>
 options.CtagsInterface.dbUser.hsqldb=sa
 options.CtagsInterface.dbPassword.hsqldb=
+options.CtagsInterface.dbOnExit.hsqldb=SHUTDOWN
 options.CtagsInterface.dbPreset.h2=h2
 options.CtagsInterface.dbClass.h2=org.h2.Driver
 options.CtagsInterface.dbConnection.h2=jdbc:h2:<default>
 options.CtagsInterface.dbUser.h2=sa
 options.CtagsInterface.dbPassword.h2=
+options.CtagsInterface.dbOnExit.h2=SHUTDOWN
 
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
@@ -102,6 +104,7 @@ messages.CtagsInterface.dbClass=JDBC driver class:
 messages.CtagsInterface.dbConnection=Connection string:
 messages.CtagsInterface.dbUser=User:
 messages.CtagsInterface.dbPassword=Password:
+messages.CtagsInterface.dbOnExit=SQL statement to run on exit:
 messages.CtagsInterface.actions=Actions:
 messages.CtagsInterface.actionEditorTitle=Action Editor
 messages.CtagsInterface.actionName=Action name:
