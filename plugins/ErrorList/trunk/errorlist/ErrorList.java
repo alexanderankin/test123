@@ -54,6 +54,7 @@ import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
 
 import errorlist.ErrorSource.Error;
@@ -201,19 +202,19 @@ public class ErrorList extends JPanel implements EBComponent,
 		scroller.setPreferredSize(new Dimension(640,200));
 		add(BorderLayout.CENTER,scroller);
 		updateStatus();
+		
+		load();
 	} //}}}
 
-	//{{{ addNotify() method
-	public void addNotify()
+	//{{{ load() method
+	public void load()
 	{
-		super.addNotify();
 		EditBus.addToBus(this);
 	} //}}}
 
-	//{{{ removeNotify() method
-	public void removeNotify()
+	//{{{ unload() method
+	public void unload()
 	{
-		super.removeNotify();
 		EditBus.removeFromBus(this);
 	} //}}}
 
@@ -250,7 +251,16 @@ public class ErrorList extends JPanel implements EBComponent,
 	{
 		if(message instanceof ErrorSourceUpdate)
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
+		else if(message instanceof ViewUpdate)
+			handleViewUpdate((ViewUpdate)message);
 	} //}}}
+
+	//{{{ handleViewUpdate() method
+	private void handleViewUpdate(ViewUpdate vu) {
+		if (vu.getWhat() == ViewUpdate.CLOSED && vu.getView() == view)
+			unload();
+	}
+	//}}}
 
 	//{{{ nextErrorFile() method
 	public void nextErrorFile()
