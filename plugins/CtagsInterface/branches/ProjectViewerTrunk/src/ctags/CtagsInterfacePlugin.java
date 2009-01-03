@@ -74,8 +74,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	public void stop()
 	{
-		watcher.shutdown();
-		db.shutdown();
+		if (watcher != null)
+			watcher.shutdown();
+		if ((db != null) && (! db.isFailed()))
+			db.shutdown();
 	}
 	
 	static public TagDB getDB() {
