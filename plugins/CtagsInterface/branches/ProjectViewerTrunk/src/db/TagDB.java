@@ -33,10 +33,12 @@ public class TagDB {
 	static public final String DB_USER = OPTION + "dbUser";
 	static public final String DB_PASSWORD = OPTION + "dbPassword";
 	static public final String DB_MAPPINGS_FILE = OPTION + "dbMappingsFile";
+	static public final String DB_ON_EXIT = OPTION + "dbOnExit";
 	private static final String DEFAULT_DB_FILE_SPEC = "<default>";
 	private Connection conn;
 	private Set<String> columns;
 	Statement st = null;
+	String onExit = null;
 	// Column types
 	public static final String IDENTITY_TYPE = "IDENTITY";
 	public static final String VARCHAR_TYPE = "VARCHAR";
@@ -84,6 +86,7 @@ public class TagDB {
 				TagDB.getDbUser(),
 				TagDB.getDbPassword());
 			st = conn.createStatement();
+			onExit = TagDB.getDbOnExit();
         } catch (final Exception e) {
 			e.printStackTrace();
 			return;
@@ -452,9 +455,13 @@ public class TagDB {
 	public void shutdown()
 	{
 		try {
-	        st.execute("SHUTDOWN");
-	        st.close();
-	        conn.close();
+			if (st != null) {
+				if ((onExit != null) && (onExit.length() > 0))
+					st.execute(onExit);
+		        st.close();
+			}
+			if (conn != null)
+				conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -613,5 +620,8 @@ public class TagDB {
 	}
 	public static String getDbMappingsFile() {
 		return getDbPropertyOfSelectedPreset(DB_MAPPINGS_FILE);
+	}
+	public static String getDbOnExit() {
+		return getDbPropertyOfSelectedPreset(DB_ON_EXIT);
 	}
 }
