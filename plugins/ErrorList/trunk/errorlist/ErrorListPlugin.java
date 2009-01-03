@@ -72,6 +72,10 @@ public class ErrorListPlugin extends EBPlugin
 				uninitEditPane(panes[i]);
 				removeErrorOverview(panes[i]);
 			}
+			ErrorList errorList = (ErrorList)
+				view.getDockableWindowManager().getDockable("error-list");
+			if (errorList != null)
+				errorList.unload();
 			view = view.getNext();
 		}
 	} //}}}
