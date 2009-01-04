@@ -117,6 +117,7 @@ messages.CtagsInterface.autoUpdateProjects=Automatically update tags when projec
 messages.CtagsInterface.searchScope=Tag search scope
 messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
+messages.CtagsInterface.searchActiveProjectAndDeps=Active project and its dependencies
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
 messages.CtagsInterface.dbMappingsFile=Database SQL mappings file:
 messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)

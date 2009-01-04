@@ -31,6 +31,7 @@ import org.gjt.sp.util.Log;
 import context.CaretContext;
 import context.CtagsContextUtil;
 
+import projects.ProjectDependencies;
 import projects.ProjectWatcher;
 import ctags.Parser.TagHandler;
 import db.Query;
@@ -232,18 +233,32 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return null;
 		boolean projectScope = (pvi != null &&
 			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
-			 ProjectsOptionPane.getSearchActiveProjectFirst()));
+			 ProjectsOptionPane.getSearchActiveProjectFirst() ||
+			 ProjectsOptionPane.getSearchActiveProjectAndDeps()));
 		Vector<Tag> tags;
 		try {
 			String project = pvi.getActiveProject(view);
-			if (projectScope && project != null) {
-				ResultSet rs = db.queryTagInProject(tag, project);
-				tags = db.getResultSetTags(rs);
-				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
-					tags.isEmpty())
-				{
-					rs = db.queryTag(tag);
+			if (project != null && projectScope) {
+				if (ProjectsOptionPane.getSearchActiveProjectAndDeps()) {
+					HashMap<String, Vector<String>> origins =
+						ProjectDependencies.getDependencies(project);
+					Vector<String> projects = origins.get(TagDB.PROJECT_ORIGIN);
+					if (projects == null) {
+						projects = new Vector<String>();
+						origins.put(TagDB.PROJECT_ORIGIN, projects);
+					}
+					projects.add(project);
+					ResultSet rs = db.queryTagInOrigins(tag, origins);
 					tags = db.getResultSetTags(rs);
+				} else {
+					ResultSet rs = db.queryTagInProject(tag, project);
+					tags = db.getResultSetTags(rs);
+					if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
+							tags.isEmpty())
+					{
+						rs = db.queryTag(tag);
+						tags = db.getResultSetTags(rs);
+					}
 				}
 			} else {
 				ResultSet rs = db.queryTag(tag);
