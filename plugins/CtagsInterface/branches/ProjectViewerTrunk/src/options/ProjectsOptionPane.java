@@ -41,6 +41,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	static public final String AUTO_UPDATE = OPTION + "autoUpdateProjects";
 	static public final String GLOBAL = OPTION + "searchGlobally";
 	static public final String ACTIVE_ONLY = OPTION + "searchActiveProjectOnly";
+	static public final String ACTIVE_AND_DEPS = OPTION + "searchActiveProjectAndDeps";
 	static public final String ACTIVE_FIRST = OPTION + "searchActiveProjectFirst";
 	JList projects;
 	DefaultListModel projectsModel;
@@ -49,6 +50,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	JCheckBox autoUpdate;
 	JRadioButton global;
 	JRadioButton activeOnly;
+	JRadioButton activeAndDeps;
 	JRadioButton activeFirst;
 	
 	public ProjectsOptionPane() {
@@ -91,6 +93,10 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 			jEdit.getBooleanProperty(ACTIVE_ONLY));
 		p.add(activeOnly);
 		g.add(activeOnly);
+		activeAndDeps = new JRadioButton(jEdit.getProperty(MESSAGE + "searchActiveProjectAndDeps"),
+				jEdit.getBooleanProperty(ACTIVE_AND_DEPS));
+		p.add(activeAndDeps);
+		g.add(activeAndDeps);
 		activeFirst = new JRadioButton(jEdit.getProperty(MESSAGE + "searchActiveProjectFirst"),
 			jEdit.getBooleanProperty(ACTIVE_FIRST));
 		p.add(activeFirst);
@@ -144,6 +150,7 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 		jEdit.setBooleanProperty(GLOBAL, global.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_ONLY, activeOnly.isSelected());
+		jEdit.setBooleanProperty(ACTIVE_AND_DEPS, activeAndDeps.isSelected());
 		jEdit.setBooleanProperty(ACTIVE_FIRST, activeFirst.isSelected());
 	}
 	
@@ -161,6 +168,9 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	}
 	static public boolean getSearchActiveProjectOnly() {
 		return jEdit.getBooleanProperty(ACTIVE_ONLY);
+	}
+	static public boolean getSearchActiveProjectAndDeps() {
+		return jEdit.getBooleanProperty(ACTIVE_AND_DEPS);
 	}
 	static public boolean getSearchActiveProjectFirst() {
 		return jEdit.getBooleanProperty(ACTIVE_FIRST);

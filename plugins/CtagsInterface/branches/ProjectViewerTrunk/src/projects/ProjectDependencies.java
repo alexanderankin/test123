@@ -3,6 +3,7 @@ package projects;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -20,9 +21,11 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
+import projectviewer.ProjectManager;
 import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTProject;
 import ctags.CtagsInterfacePlugin;
+import db.TagDB;
 
 @SuppressWarnings("serial")
 public class ProjectDependencies extends AbstractOptionPane {
@@ -71,17 +74,7 @@ public class ProjectDependencies extends AbstractOptionPane {
 	}
 
 	private Vector<String> getListProperty(String propertyName) {
-		Vector<String> list = new Vector<String>();
-		VPTProject project = ProjectOptions.getProject();
-		int i = 0;
-		while (true) {
-			String value = project.getProperty(propertyName + i);
-			if (value == null)
-				break;
-			list.add(value);
-			i++;
-		}
-		return list;
+		return getListProperty(ProjectOptions.getProject(), propertyName);
 	}
 	private void setListProperty(String propertyName, Vector<String> list) {
 		VPTProject project = ProjectOptions.getProject();
@@ -154,5 +147,32 @@ public class ProjectDependencies extends AbstractOptionPane {
 	protected void _save() {
 		setListModel(PROJECT_DEPENDENCY, projectsModel);
 		setListModel(TREE_DEPENDENCY, treesModel);
+	}
+	
+	public static Vector<String> getListProperty(VPTProject project, String propertyName)
+	{
+		Vector<String> list = new Vector<String>();
+		int i = 0;
+		while (true) {
+			String value = project.getProperty(propertyName + i);
+			if (value == null)
+				break;
+			list.add(value);
+			i++;
+		}
+		return list;
+	}
+	
+	public static HashMap<String, Vector<String>> getDependencies(String projectName)
+	{
+		HashMap<String, Vector<String>> map = new HashMap<String, Vector<String>>();
+		VPTProject project = ProjectManager.getInstance().getProject(projectName);
+		if (project == null)
+			return map;
+		Vector<String> projectDeps = getListProperty(project, PROJECT_DEPENDENCY);
+		map.put(TagDB.PROJECT_ORIGIN, projectDeps);
+		Vector<String> treeDeps = getListProperty(project, TREE_DEPENDENCY);
+		map.put(TagDB.DIR_ORIGIN, treeDeps);
+		return map;
 	}
 }

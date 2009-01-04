@@ -11,6 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -260,6 +261,48 @@ public class TagDB {
 			projectQuery.toString() + ")");
 		tagQuery.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
 	}
+	// Returns a query for a tag name in a list of specified origins
+	// origins: A hash of origin type -> vector of origin names
+	private Query getTagInOriginsQuery(String tag,
+		HashMap<String, Vector<String>> origins) 
+	{
+		StringBuffer sb = new StringBuffer();
+		Set<String> types = origins.keySet();
+		for (String type: types) {
+			Vector<String> names = origins.get(type);
+			if (names == null || names.size() == 0)
+				continue;
+			if (sb.length() > 0)
+				sb.append(" OR ");
+			sb.append("(" + ORIGINS_TYPE + "=" + quote(type) + " AND " +
+				ORIGINS_NAME + " IN (");
+			StringBuffer nameList = new StringBuffer();
+			for (String name: names) {
+				if (nameList.length() > 0)
+					nameList.append(", ");
+				nameList.append(quote(name));
+			}
+			sb.append(nameList + "))");
+		}
+		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, sb);
+
+		Query projectFilesQuery = new Query();
+		projectFilesQuery.setColumn(MAP_FILE_ID);
+		projectFilesQuery.setTable(MAP_TABLE);
+		projectFilesQuery.addCondition(field(
+				MAP_TABLE, MAP_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		projectFilesQuery.addCondition(field(
+				MAP_TABLE, MAP_ORIGIN_ID) + "=(" + projectQuery.toString() + ")");
+
+		Query q = new Query();
+		q.addColumn("*");
+		q.addTable(TAGS_TABLE);
+		q.addTable(FILES_TABLE);
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
+		q.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
+		return q;
+	}
 	// Returns a query for a tag name in a specified project
 	private Query getTagInProjectQuery(String tag, String project) {
 		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, ORIGINS_NAME + "=" +
@@ -286,6 +329,13 @@ public class TagDB {
 	// Runs a query for the specified tag name
 	public ResultSet queryTag(String tag) throws SQLException {
 		return query(getTagNameQuery(tag));
+	}
+	// Runs a query for the specified tag name in the specified origins
+	public ResultSet queryTagInOrigins(String tag, HashMap<String, Vector<String>> origins)
+	throws SQLException
+	{
+		Query q = getTagInOriginsQuery(tag, origins);
+		return query(q);
 	}
 	// Runs a query for the specified tag name in the specified project
 	public ResultSet queryTagInProject(String tag, String project) throws SQLException {
