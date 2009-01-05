@@ -292,7 +292,7 @@ public class TagDB {
 		projectFilesQuery.addCondition(field(
 				MAP_TABLE, MAP_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
 		projectFilesQuery.addCondition(field(
-				MAP_TABLE, MAP_ORIGIN_ID) + "=(" + projectQuery.toString() + ")");
+				MAP_TABLE, MAP_ORIGIN_ID) + " IN (" + projectQuery.toString() + ")");
 
 		Query q = new Query();
 		q.addColumn("*");
