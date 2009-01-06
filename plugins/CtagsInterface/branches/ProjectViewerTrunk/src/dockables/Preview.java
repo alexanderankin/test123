@@ -277,6 +277,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	
 	static public String getContents(String path) {
 		StringBuffer contents = new StringBuffer();
+		String ret = null;
 		BufferedReader input = null;
 		try {
 			input = new BufferedReader(new FileReader(path));
@@ -285,6 +286,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				contents.append(line);
 				contents.append(System.getProperty("line.separator"));
 			}
+			ret = contents.toString();
 		}
 		catch (IOException ex) {
 			ex.printStackTrace();
@@ -298,7 +300,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 				ex.printStackTrace();
 			}
 		}
-		return contents.toString();
+		return ret;
 	}
 
 	public void handleMessage(EBMessage message) {
@@ -401,7 +403,8 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			if (line > -1)
 			{
 				String s = getContents(file);
-				VFSManager.runInAWTThread(new PreviewBufferUpdate(s, line));
+				if (s != null)
+					VFSManager.runInAWTThread(new PreviewBufferUpdate(s, line));
 			}
 		}
 	}
@@ -415,7 +418,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		public void run() {
 			JEditBuffer buffer = text.getBuffer();
 			buffer.setReadOnly(false);
-			text.setText(getContents(file));
+			text.setText(s);
 			Mode mode = ModeProvider.instance.getModeForFile(file, buffer.getLineText(0));
 			if (mode == null)
 				mode = ModeProvider.instance.getMode("text");
