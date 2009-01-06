@@ -237,7 +237,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			 ProjectsOptionPane.getSearchActiveProjectAndDeps()));
 		Vector<Tag> tags;
 		try {
-			String project = pvi.getActiveProject(view);
+			String project = projectScope ? pvi.getActiveProject(view) : null;
 			if (project != null && projectScope) {
 				if (ProjectsOptionPane.getSearchActiveProjectAndDeps()) {
 					HashMap<String, Vector<String>> origins =
