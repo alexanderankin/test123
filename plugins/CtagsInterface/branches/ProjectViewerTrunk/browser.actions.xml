@@ -3,7 +3,8 @@
 <ACTIONS>
     <ACTION NAME="ctags-interface-add-dir" NO_REPEAT="TRUE">
        <CODE> 
-           ctags.CtagsInterfacePlugin.insertOrigin(db.TagDB.DIR_ORIGIN, browser.getDirectory());
+           ctagsinterface.main.CtagsInterfacePlugin.insertOrigin(
+               ctagsinterface.db.TagDB.DIR_ORIGIN, browser.getDirectory());
        </CODE>
     </ACTION>
 </ACTIONS>

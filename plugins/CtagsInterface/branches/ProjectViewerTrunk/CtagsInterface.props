@@ -1,18 +1,18 @@
-plugin.ctags.CtagsInterfacePlugin.activate=startup
+plugin.ctagsinterface.main.CtagsInterfacePlugin.activate=startup
 
 # general plugin information
-plugin.ctags.CtagsInterfacePlugin.name=CtagsInterface
-plugin.ctags.CtagsInterfacePlugin.author=Shlomy Reinstein
-plugin.ctags.CtagsInterfacePlugin.version=0.2
-plugin.ctags.CtagsInterfacePlugin.description=\
+plugin.ctagsinterface.main.CtagsInterfacePlugin.name=CtagsInterface
+plugin.ctagsinterface.main.CtagsInterfacePlugin.author=Shlomy Reinstein
+plugin.ctagsinterface.main.CtagsInterfacePlugin.version=0.2
+plugin.ctagsinterface.main.CtagsInterfacePlugin.description=\
 	CtagsInterface provides common Ctags services to interested plugins.
 
-plugin.ctags.CtagsInterfacePlugin.depend.0=jdk 1.5
-plugin.ctags.CtagsInterfacePlugin.depend.1=jedit 04.03.13.00
-plugin.ctags.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.0.0
+plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.0=jdk 1.5
+plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.1=jedit 04.03.13.00
+plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.0.0
 
-plugin.ctags.CtagsInterfacePlugin.jars=hsqldb.jar
-plugin.ctags.CtagsInterfacePlugin.docs=index.html
+plugin.ctagsinterface.main.CtagsInterfacePlugin.jars=hsqldb.jar
+plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
 
 # action labels
 ctags-interface-add-file.label=Add tag file...
@@ -26,7 +26,7 @@ ctags-interface-complete.label=Suggest completion options
 ctags-interface-change-db-settings.label=Change database settings...
 
 # menu items
-plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
+plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-jump-to-tag \
 	ctags-interface-search-tag-by-prefix \
 	ctags-interface-search-tag-by-substring \
@@ -38,18 +38,18 @@ plugin.ctags.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-change-db-settings
 
 # option panes
-plugin.ctags.CtagsInterfacePlugin.option-group=CtagsInterface-General \
+plugin.ctagsinterface.main.CtagsInterfacePlugin.option-group=CtagsInterface-General \
 	CtagsInterface-Actions \
 	CtagsInterface-Dirs \
 	CtagsInterface-Projects
 options.CtagsInterface-General.label=General
-options.CtagsInterface-General.code=new options.GeneralOptionPane();
+options.CtagsInterface-General.code=new ctagsinterface.options.GeneralOptionPane();
 options.CtagsInterface-Actions.label=Actions
-options.CtagsInterface-Actions.code=new options.ActionsOptionPane();
+options.CtagsInterface-Actions.code=new ctagsinterface.options.ActionsOptionPane();
 options.CtagsInterface-Dirs.label=Source trees
-options.CtagsInterface-Dirs.code=new options.DirsOptionPane();
+options.CtagsInterface-Dirs.code=new ctagsinterface.options.DirsOptionPane();
 options.CtagsInterface-Projects.label=Projects
-options.CtagsInterface-Projects.code=new options.ProjectsOptionPane();
+options.CtagsInterface-Projects.code=new ctagsinterface.options.ProjectsOptionPane();
 
 # dockables
 ctags-interface-tag-list.title=Tag List
@@ -58,7 +58,7 @@ ctags-interface-preview.title=Tag Preview
 ctags-interface-preview.label=Tag Preview
 
 # docs
-#plugin.ctags.CtagsInterfacePlugin.docs=index.html
+#plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
 
 # options
 options.CtagsInterface.ctags=ctags
@@ -125,14 +125,14 @@ messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database s
 messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
 
 # projectviewer option pane
-plugin.projectviewer.ctags.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
+plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
 
 # file system browser context menu item
-plugin.ctags.CtagsInterfacePlugin.browser-menu-item=ctags-interface-add-dir
+plugin.ctagsinterface.main.CtagsInterfacePlugin.browser-menu-item=ctags-interface-add-dir
 ctags-interface-add-dir.label=Add source tree to tag database
 
 options.CtagsInterface-ProjectDependencies.label=Dependencies
-options.CtagsInterface-ProjectDependencies.code=new projects.ProjectDependencies()
+options.CtagsInterface-ProjectDependencies.code=new ctagsinterface.projects.ProjectDependencies()
 
 # icons
 options.CtagsInterface.icons.kind.class=class.png
