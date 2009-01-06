@@ -3,6 +3,10 @@
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 
 <SERVICES>
-        <SERVICE CLASS="projectviewer.action.Action" NAME="Add to database">new projects.ProjectAddAction();</SERVICE>
-		<SERVICE CLASS="projectviewer.action.Action" NAME="Remove from database">new projects.ProjectRemoveAction();</SERVICE>
+        <SERVICE CLASS="projectviewer.action.Action" NAME="Add to database">
+        	new ctagsinterface.projects.ProjectAddAction();
+        </SERVICE>
+		<SERVICE CLASS="projectviewer.action.Action" NAME="Remove from database">
+			new ctagsinterface.projects.ProjectRemoveAction();
+		</SERVICE>
 </SERVICES>
