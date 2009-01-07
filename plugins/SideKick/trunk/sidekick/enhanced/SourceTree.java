@@ -176,7 +176,17 @@ public class SourceTree extends SideKickTree {
         }
     } //}}}
 
-    protected class KeyHandler extends KeyAdapter {
+    @Override
+    protected void propertiesChanged() {
+    	super.propertiesChanged();
+    	Color c = jEdit.getColorProperty("view.gutter.markerColor");
+    	if (! _markerColor.equals(c)) {
+    		_markerColor = c;
+    		repaint();
+    	}
+    }
+
+	protected class KeyHandler extends KeyAdapter {
         //{{{ KeyHandler class
         public void keyPressed( KeyEvent evt ) {
             handleKey( evt );
