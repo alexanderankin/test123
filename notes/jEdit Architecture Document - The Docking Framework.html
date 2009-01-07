@@ -1,0 +1,9 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>jEdit Architecture Document - The Docking Framework</title></head><body><h1>jEdit Architecture Document</h1><h2>The Docking Framework (DockableWindowManager)</h2><h3>Introduction</h3>Let's begin by describing the various elements in a jEdit window:<br><ul><li>A jEdit window is called a <strong>view</strong> (View).</li><li>The area of the view where the text of a buffer is shown and edited is called a <strong>text area</strong> (JEditTextArea).</li><li>Each text area is wrapped by an <strong>edit pane</strong> (EditPane). An edit pane manages a set of buffers, and may optionally contain a <strong>buffer switcher</strong>, which is a combo-box for selecting the buffer to be edited. When a buffer is selected in the combo-box, the edit pane sets the text area to edit the selected buffer.</li><li>Edit
+panes can be split vertically or horizontally; there are buttons for
+this on the tool bar. Splitting an edit pane causes its screen area to
+be split between itself and the new edit pane, with a draggable
+splitter separating them.The arrangement of split edit panes inside a view&nbsp; is called the&nbsp; <strong>split configuration</strong> of the view.</li><li>The edit panes inside a view are all children of a <strong>center panel</strong> container. Dockable windows are always placed around this center panel.</li><li>The
+dockable window manager is the part of the view that contains the
+center panel, the dockable windows, and optionally the tool bars
+(depending on the optional "Alternate tool bar placement").</li><li></li></ul></body></html>
