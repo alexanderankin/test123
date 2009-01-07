@@ -62,10 +62,10 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
-import ctags.CtagsInterfacePlugin;
-import ctags.Tag;
-import db.Query;
-import db.TagDB;
+import ctagsinterface.db.Query;
+import ctagsinterface.db.TagDB;
+import ctagsinterface.main.CtagsInterfacePlugin;
+import ctagsinterface.main.Tag;
 
 @SuppressWarnings("serial")
 public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
