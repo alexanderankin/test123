@@ -39,6 +39,7 @@ import ctagsinterface.projects.ProjectWatcher;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
+	private static final String QUALIFIED_PLUGIN_NAME = "ctagsinterface.main.CtagsInterfacePlugin";
 	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
@@ -432,7 +433,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// Switch to a new database. If 'rebuild' is true, rebuild the
 	// new database using the previous origins.
 	static public void switchDatabase(boolean rebuild) {
-		EditPlugin plugin = jEdit.getPlugin("ctags.CtagsInterfacePlugin");
+		EditPlugin plugin = jEdit.getPlugin(QUALIFIED_PLUGIN_NAME);
 		if (plugin == null) {
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
 				jEdit.getProperty(MESSAGE + "cannotSwitchDatabase"));
