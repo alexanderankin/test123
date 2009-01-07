@@ -476,7 +476,7 @@ public class SideKickTree extends JPanel
 	}//}}}
 
 	//{{{ propertiesChanged() method
-	private void propertiesChanged()
+	protected void propertiesChanged()
 	{
 		followCaret.setSelected(SideKick.isFollowCaret());
 		Mode m = view.getBuffer().getMode();
