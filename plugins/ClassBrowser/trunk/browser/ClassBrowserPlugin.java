@@ -20,7 +20,7 @@ package browser;
 
 import org.gjt.sp.jedit.EditPlugin;
 
-import ctags.CtagsInterfacePlugin;
+import ctagsinterface.main.CtagsInterfacePlugin;
 
 public class ClassBrowserPlugin extends EditPlugin
 {
