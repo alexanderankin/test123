@@ -29,7 +29,11 @@ main role of the docking framework, as its name implies, is to provide
 a common docking framework for all sorts of windows that can be used in
 jEdit. The common framework enables each plugin-provided window (and
 also several core windows) to be docked inside the view, or be undocked
-(floating) outside the view. Historically, jEdit had a built-in docking
+(floating) outside the view. The docking framework saves the dockable
+window layout (a.k.a. "perspective") to disk when jEdit exits, and
+reloads it from disk when jEdit is restarted. The docking framework
+supports "named perspectives" - saving and loading a dockable window
+layout to and from the disk under a user-defined name.<h4>The built-in docking framework</h4>Historically, jEdit had a built-in docking
 framework, which was quite simplistic compared to modern docking
 frameworks, but perhaps advanced for the time it was designed. The
 built-in docking framework was implemented by a non-extensible class,
@@ -42,11 +46,11 @@ refactored into a concrete&nbsp; implementation of the
 DockableWindowManager, named DockableWindowManagerImpl. The built-in
 docking framework provides the following features:<br><ul><li>Dockable
 windows can be docked inside the view in any of four docking positions
-around the center panel - top, bottom, right, left.</li><li>Each docking position can have at most one dockable window visible at a time. </li><li>Multiple
+around the center panel - top, bottom, right, left.</li><ul><li>The docking positions of the dockable windows are specified using properties, and are persistent in the jEdit properties file.</li><li>The docking positions can be changed from the GUI using:</li><ul><li>The "Docking" option pane in the "Global Options" dialog</li><li>The context menu available for each docking window.</li></ul></ul><li>Each docking position can have at most one dockable window visible at a time. </li><li>Multiple
 dockable windows can be docked in the same position. Each docking
 position contains a "button bar", with a button for each window docked
 in it, named after the window. The buttons are used to show or hide
-their respective windows.</li><li>Dockable windows can be "floated" - undocked from the view, have their own top-level window (JFrame).</li><li>The docking positions of the dockable windows are specified using properties, and are persistent in the jEdit properties file.</li><li>Draggable splitters allow resizing the dockable windows on the expense of the center panel (and vice versa).</li><li>While the docking positions of each dockable window are
+their respective windows.</li><li>Dockable windows can be "floated" - undocked from the view, have their own top-level window (JFrame).</li><li>Draggable splitters allow resizing the dockable windows on the expense of the center panel (and vice versa).</li><li>While the docking positions of each dockable window are
 specified using properties, the docking layout is persistent in the
 perspective.xml file - specifying the location of the splitters, the
 name of the visible window in each position, and so on.</li><li>Predefined
@@ -56,9 +60,12 @@ the pluggable docking framework was introduced into jEdit&nbsp;when
 jEdit was already very mature and had lots of plugins, the interface of
 the abstract base class DockableWindowManager was derived from the
 built-in docking framework, in order to eliminate the need in changing
-the massive usage of this interface.<h3><a class="mozTocH3" name="mozTocId843111"></a>The docking framework interface</h3>Each view has its own instance of DockableWindowManager, which can be retrieved using:<br>&nbsp;&nbsp;&nbsp; view.getDockableWindowManager();<br>This
+the massive usage of this interface (backward-compatibility).<br><h4>The pluggable docking framework</h4>The
+abstract base class DockableWindowManager defines the roles of the
+docking framework. This includes all the roles that the built-in
+docking framework used to have, and a few additional roles.<h3><a class="mozTocH3" name="mozTocId843111"></a>The docking framework interface</h3>Each view has its own instance of DockableWindowManager, which can be retrieved using:<br>&nbsp;&nbsp;&nbsp; view.getDockableWindowManager();<br>This
 is also available for BeanShell code (e.g. in actions.xml) because
-'view' is a predefined variable for BeanShell code in jEdit.<br><br>The docking framework (DockableWindowManager) provides API methods for:<br><ul><li>Showing/Hiding/Toggling dockable windows:<br>showDockableWindow(String name) / hideDockableWindow(String name) / toggleDockableWindow(String name)</li><li>Docking/Floating dockable windows</li><ul><li>This is done by means of setting the docking position properties and sending a PropertiesChanged edit bus message.<br>jEdit.setProperty(name + ".dock-position", DockableWindowManager.BOTTOM);<br>jEdit.propertiesChanged();</li></ul><li>Closing (hiding) a docking position<br>getLeftDockingArea().show(null)</li><li>Closing (removing) dockable windows</li><ul><li>Also done by means of setting the dock-position to "float", and sending a PropertiesChanged edit bus message.</li></ul><li>Retrieving the dockable window component by name<br>getDockableWindow(String name)<br>This
+'view' is a predefined variable for BeanShell code in jEdit.<br>This section describes the public interface of the DockableWindowManager:<br><br>The docking framework (DockableWindowManager) provides API methods for:<br><ul><li>Showing/Hiding/Toggling dockable windows:<br>showDockableWindow(String name) / hideDockableWindow(String name) / toggleDockableWindow(String name)</li><li>Docking/Floating dockable windows</li><ul><li>This is done by means of setting the docking position properties and sending a PropertiesChanged edit bus message.<br>jEdit.setProperty(name + ".dock-position", DockableWindowManager.BOTTOM);<br>jEdit.propertiesChanged();</li></ul><li>Closing (hiding) a docking position<br>getLeftDockingArea().show(null)</li><li>Closing (removing) dockable windows</li><ul><li>Also done by means of setting the dock-position to "float", and sending a PropertiesChanged edit bus message.</li></ul><li>Retrieving the dockable window component by name<br>getDockableWindow(String name)<br>This
 is used by many plugins to find their dockable instance that is docked
 in a view and invoke methods in it. This method returns a JComponent,
 which can be cast to the right type in order to call methods of that
