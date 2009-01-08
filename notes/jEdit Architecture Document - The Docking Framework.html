@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>jEdit Architecture Document - The Docking Framework</title></head>
-<body><h1><a class="mozTocH1" name="mozTocId974439"></a>jEdit Architecture Document</h1><h2><a class="mozTocH2" name="mozTocId873227"></a>The Docking Framework (DockableWindowManager)</h2><ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId974439">jEdit Architecture Document</a><ol><li><a href="#mozTocId873227">The Docking Framework (DockableWindowManager)</a><ol><li><a href="#mozTocId461306">Introduction</a></li><li><a href="#mozTocId486556">The roles of the docking framework</a></li><li><a href="#mozTocId843111">The docking framework interface</a></li><li><a href="#mozTocId856380">Providing an alternative docking framework</a></li></ol></li></ol></li></ol><h3><a class="mozTocH3" name="mozTocId461306"></a><a name="introduction"></a>Introduction</h3>Let's
+<body><h1><a class="mozTocH1" name="mozTocId974439"></a>jEdit Architecture Document</h1><h2><a class="mozTocH2" name="mozTocId873227"></a>The Docking Framework (DockableWindowManager)</h2><ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId974439">jEdit Architecture Document</a><ol><li><a href="#mozTocId873227">The Docking Framework (DockableWindowManager)</a><ol><li><a href="#mozTocId461306">Introduction</a></li><li><a href="#mozTocId486556">The roles of the docking framework</a></li><li><a href="#mozTocId843111">The docking framework interface</a></li><li><a href="#mozTocId856380">Providing an alternative docking framework</a></li></ol></li></ol></li></ol><h3><a class="mozTocH3" name="mozTocId461306"></a>Introduction</h3>Let's
 begin by describing the various elements in a jEdit window. The names
 in parentheses are the names of the classes implementing these elements.<br><ul><li>A jEdit window is called a <strong>view</strong> (View).</li><li>The area of the view where the text of a buffer is shown and edited is called a <strong>text area</strong> (JEditTextArea).</li><li>Each text area is wrapped by an <strong>edit pane</strong> (EditPane). An edit pane manages a set of buffers, and may optionally contain a <strong>buffer switcher</strong>,
 which is a combo-box for selecting the buffer to be edited. When a
@@ -17,10 +17,14 @@ the search bar (when visible). Each view has its own instance of a
 dockable window manager.</li><ul><li>Depending
 on the option "Alternate tool bar placement", the tool bars can be
 children of the dockable window manager, in which case they have and
-same width as the edit center panel, or they can bechildren of the view, in which case they use the entire view width. <br></li></ul><li>The view itself contains the window frame (title bar, system buttons for close/minimize/maximize..., border), the menu bar, the status bar, the dockable window manager, and optionally the tool bars (depending on the option "Alternate tool bar placement").</li></ul>Did
+same width as the edit center panel, or they can bechildren of the view, in which case they use the entire view width. <br></li></ul><li>The
+view itself contains the window frame (title bar, system buttons for
+close/minimize/maximize..., border), the menu bar, the status bar, the
+dockable window manager, and optionally the tool bars (depending on the
+option "Alternate tool bar placement").</li></ul>Did
 I forget anything? If so, excuse me. In any case, the purpose is to
 show the design of the docking framework, and the elements described
-above are sufficient for that purpose.<br><h3><a class="mozTocH3" name="mozTocId486556"></a><a name="roles"></a>The roles of the docking framework</h3>The
+above are sufficient for that purpose.<br><h3><a class="mozTocH3" name="mozTocId486556"></a>The roles of the docking framework</h3>The
 main role of the docking framework, as its name implies, is to provide
 a common docking framework for all sorts of windows that can be used in
 jEdit. The common framework enables each plugin-provided window (and
@@ -45,12 +49,20 @@ in it, named after the window. The buttons are used to show or hide
 their respective windows.</li><li>Dockable windows can be "floated" - undocked from the view, have their own top-level window (JFrame).</li><li>The docking positions of the dockable windows are specified using properties, and are persistent in the jEdit properties file.</li><li>Draggable splitters allow resizing the dockable windows on the expense of the center panel (and vice versa).</li><li>While the docking positions of each dockable window are
 specified using properties, the docking layout is persistent in the
 perspective.xml file - specifying the location of the splitters, the
-name of the visible window in each position, and so on.</li><li>Predefined actions exist for various docking operations, e.g. toggling or floating each dockable window, closing docking positions, etc.<span style="font-weight: bold;"></span></li></ul>Since
+name of the visible window in each position, and so on.</li><li>Predefined
+actions exist for various docking operations, e.g. toggling or floating
+each dockable window, closing docking positions, etc.<span style="font-weight: bold;"></span></li></ul>Since
 the pluggable docking framework was introduced into jEdit&nbsp;when
 jEdit was already very mature and had lots of plugins, the interface of
 the abstract base class DockableWindowManager was derived from the
 built-in docking framework, in order to eliminate the need in changing
-the massive usage of this interface.<h3><a class="mozTocH3" name="mozTocId843111"></a><a name="interface"></a>The docking framework interface</h3>The docking framework provides API methods for:<br><ul><li>Showing/Hiding/Toggling dockable windows</li><li>Docking/Floating dockable windows</li><ul><li>This is done by means of setting the docking position properties and sending a PropertiesChanged edit bus message.</li></ul><li>Closing (hiding) a docking position</li><li>Closing (removing) dockable windows</li><li>Retrieving the dockable window component by name</li><li>Getting/Setting dockable window titles</li><li>Checking if a dockable window is docked</li></ul><h3><a class="mozTocH3" name="mozTocId856380"></a><a name="plugging_in"></a>Providing an alternative docking framework</h3>Plugins can now provide their own implementation of a docking framework
+the massive usage of this interface.<h3><a class="mozTocH3" name="mozTocId843111"></a>The docking framework interface</h3>Each view has its own instance of DockableWindowManager, which can be retrieved using:<br>&nbsp;&nbsp;&nbsp; view.getDockableWindowManager();<br>This
+is also available for BeanShell code (e.g. in actions.xml) because
+'view' is a predefined variable for BeanShell code in jEdit.<br><br>The docking framework (DockableWindowManager) provides API methods for:<br><ul><li>Showing/Hiding/Toggling dockable windows:<br>showDockableWindow(String name) / hideDockableWindow(String name) / toggleDockableWindow(String name)</li><li>Docking/Floating dockable windows</li><ul><li>This is done by means of setting the docking position properties and sending a PropertiesChanged edit bus message.<br>jEdit.setProperty(name + ".dock-position", DockableWindowManager.BOTTOM);<br>jEdit.propertiesChanged();</li></ul><li>Closing (hiding) a docking position<br>getLeftDockingArea().show(null)</li><li>Closing (removing) dockable windows</li><ul><li>Also done by means of setting the dock-position to "float", and sending a PropertiesChanged edit bus message.</li></ul><li>Retrieving the dockable window component by name<br>getDockableWindow(String name)<br>This
+is used by many plugins to find their dockable instance that is docked
+in a view and invoke methods in it. This method returns a JComponent,
+which can be cast to the right type in order to call methods of that
+dockable type (in both BeanShell and Java).</li><li>Getting/Setting dockable window titles</li><li>Checking if a dockable window is docked</li></ul><h3><a class="mozTocH3" name="mozTocId856380"></a>Providing an alternative docking framework</h3>Plugins can now provide their own implementation of a docking framework
 for jEdit. The first plugin to provide a docking framework is
 MyDoggyPlugin, which uses the modern docking framework named MyDoggy to
 manage the dockable windows in jEdit.<br><br>To
