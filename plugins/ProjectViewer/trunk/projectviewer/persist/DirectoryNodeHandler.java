@@ -77,7 +77,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		VPTDirectory dir = new VPTDirectory(attrs.getValue(PATH_ATTR));
+		VPTDirectory dir = new VPTDirectory(fixPath(attrs.getValue(PATH_ATTR)));
 		if (attrs.getValue(NAME_ATTR) != null) {
 			dir.setName(attrs.getValue(NAME_ATTR));
 		}
