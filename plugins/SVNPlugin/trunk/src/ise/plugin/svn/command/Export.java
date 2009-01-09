@@ -41,7 +41,7 @@ import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 
 import ise.plugin.svn.data.ExportData;
 import ise.plugin.svn.data.UpdateData;
-import ise.plugin.svn.command.UpdateEventHandler;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 /**
  * File -> File or
@@ -93,14 +93,18 @@ public class Export {
             peg_revision = SVNRevision.UNDEFINED;
         }
         if ( data.getSourceFiles() != null ) {
-            for ( File source : data.getSourceFiles() ) {
-                revision = client.doExport( source, new File( destination, source.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
+            SVNCopySource[] sources = data.getSourceFiles();
+            for (SVNCopySource source : sources) {
+                File file = source.getFile();
+                revision = client.doExport( file, new File( destination, file.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
             }
         }
         else if ( data.getSourceURLs() != null ) {
-            for ( SVNURL source : data.getSourceURLs() ) {
-                String filename = source.getPath().substring(source.getPath().lastIndexOf("/") + 1);
-                revision = client.doExport( source, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
+            SVNCopySource[] sources = data.getSourceFiles();
+            for (SVNCopySource source : sources) {
+                SVNURL url = source.getURL();
+                String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
+                revision = client.doExport( url, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
             }
         }
 
