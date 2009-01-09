@@ -54,6 +54,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 
 /**
@@ -116,10 +117,11 @@ public class CopyAction extends SVNAction {
                     TreeMap<String, SVNCommitInfo> results = new TreeMap<String, SVNCommitInfo>();
                     try {
                         if ( data.getSourceFiles() != null ) {
-                            for ( File file : data.getSourceFiles() ) {
-                                if ( file == null ) {
+                            for ( SVNCopySource source : data.getSourceFiles() ) {
+                                if ( source == null ) {
                                     continue;
                                 }
+                                File file = source.getFile();
                                 CopyData cd = new CopyData();
                                 cd.setSourceFile( file );
                                 cd.setRevision( data.getRevision() );
@@ -127,7 +129,7 @@ public class CopyAction extends SVNAction {
                                 if ( data.getDestinationFile() != null ) {
                                     // working copy -> working copy
                                     where2where = W2W;
-                                    if ( data.getSourceFiles().size() > 1 ) {
+                                    if ( data.getSourceFiles().length > 1 ) {
                                         checkDestination( data.getDestinationFile() );
                                     }
 
@@ -145,7 +147,7 @@ public class CopyAction extends SVNAction {
                                 else if ( data.getDestinationURL() != null ) {
                                     // working copy -> repository
                                     where2where = W2U;
-                                    if ( data.getSourceFiles().size() > 1 ) {
+                                    if ( data.getSourceFiles().length > 1 ) {
                                         // must be copying to a directory -- TODO: how to check
                                         // destination is actually a remote directory?
                                         // For now, assume directory and append filename.
@@ -166,10 +168,11 @@ public class CopyAction extends SVNAction {
                             }
                         }
                         else if ( data.getSourceURLs() != null ) {
-                            for ( SVNURL url : data.getSourceURLs() ) {
-                                if ( url == null ) {
+                            for ( SVNCopySource source : data.getSourceURLs() ) {
+                                if ( source == null ) {
                                     continue;
                                 }
+                                SVNURL url = source.getURL();
                                 CopyData cd = new CopyData();
                                 String destination = "";
                                 cd.setSourceURL( url );
@@ -177,7 +180,7 @@ public class CopyAction extends SVNAction {
                                 if ( data.getDestinationFile() != null ) {
                                     // repository -> working file
                                     where2where = U2W;
-                                    if ( data.getSourceURLs().size() > 1 ) {
+                                    if ( data.getSourceURLs().length > 1 ) {
                                         checkDestination( data.getDestinationFile() );
                                     }
 

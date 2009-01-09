@@ -120,7 +120,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="clean,init,compile,prep_files">
+            depends="init,compile,prep_files">
 
 
         <!-- make the plugin jar file -->
@@ -247,7 +247,7 @@
     <target name="run"
             description="run"
             depends="init,setClasspath">
-        <java classname="ise.plugin.svn.gui.PropertyEditor">
+        <java classname="ise.plugin.svn.gui.BrowseLocalRemotePanel">
             <classpath refid="classpathref" />
         </java>
     </target>

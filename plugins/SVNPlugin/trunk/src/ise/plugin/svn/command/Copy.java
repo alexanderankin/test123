@@ -38,9 +38,9 @@ import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCopyClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 import ise.plugin.svn.data.CopyData;
 
@@ -80,34 +80,39 @@ public class Copy {
 
         // actually do the copy
         PrintStream out = data.getOut();
-        File sourceFile = data.getSourceFile();
+        SVNCopySource[] sourceFiles = data.getSourceFiles();
         File destinationFile = data.getDestinationFile();
-        SVNURL sourceURL = data.getSourceURL();
+        SVNCopySource[] sourceURLs = data.getSourceURLs();
         SVNURL destinationURL = data.getDestinationURL();
         SVNCommitInfo results = SVNCommitInfo.NULL;
 
-        if (sourceFile != null && destinationFile != null) {
+        if (sourceFiles != null && destinationFile != null) {
             // copy working copy to working copy, this is a local copy or move
             SVNRevision revision = data.getRevision();
             if (revision == null) {
                 revision = SVNRevision.WORKING;
             }
             // message on local copy
-            out.println("source file: " + sourceFile);
+            out.println("source file(s): ");
+            for (SVNCopySource source : sourceFiles) {
+                out.println("\t" + source.getFile().getAbsolutePath());
+            }
             out.println("revision: " + revision);
 
-            client.doCopy(sourceFile, revision, destinationFile, data.getForce(), data.getIsMove());
+            // TODO: put hard-coded parameters in copy data
+            client.doCopy(sourceFiles, destinationFile, data.getIsMove(), true, false);
         }
-        else if (sourceFile != null && destinationURL != null) {
+        else if (sourceFiles != null && destinationURL != null) {
             // copy working copy to repository with immediate commit, this can
             // be used to make a branch or tag
             SVNRevision revision = data.getRevision();
             if (revision == null) {
                 revision = SVNRevision.WORKING;
             }
-            results = client.doCopy(sourceFile, revision, destinationURL, !data.getForce(), data.getMessage());
+            // TODO: put hard-coded parameters in copy data
+            results = client.doCopy(sourceFiles, destinationURL, data.getIsMove(), true, false, data.getMessage(), null);
         }
-        else if (sourceURL != null && destinationURL != null) {
+        else if (sourceURLs != null && destinationURL != null) {
             // copy a repository file or directory to another repository file or
             // directory with immediate commit, this could be used to make a
             // branch or tag
@@ -115,9 +120,10 @@ public class Copy {
             if (revision == null) {
                 revision = SVNRevision.HEAD;
             }
-            results = client.doCopy(sourceURL, revision, destinationURL, data.getIsMove(), !data.getForce(), data.getMessage());
+            // TODO: put hard-coded parameters in copy data
+            results = client.doCopy(sourceURLs, destinationURL, data.getIsMove(), true, false, data.getMessage(), null);
         }
-        else if (sourceURL != null && destinationFile != null) {
+        else if (sourceURLs != null && destinationFile != null) {
             // copy a file or directory from the repository to a local working
             // copy, this can be used for an undelete.
             SVNRevision revision = data.getRevision();
@@ -125,13 +131,21 @@ public class Copy {
                 revision = SVNRevision.WORKING;
             }
             // no message on copy to local
-            client.doCopy(sourceURL, revision, destinationFile);
+
+            // TODO: put hard-coded parameters in copy data
+            client.doCopy(sourceURLs, destinationFile, data.getIsMove(), true, false);
         }
         else {
             StringBuilder sb = new StringBuilder();
             sb.append("Invalid file and/or URL parameters:\n");
-            sb.append("sourceFile = ").append(sourceFile).append("\n");
-            sb.append("sourceURL = ").append(sourceURL).append("\n");
+            sb.append("sourceFile(s) = ").append("\n");
+            for (SVNCopySource source : sourceFiles) {
+                sb.append("\t").append(source.getFile().getAbsolutePath()).append("\n");
+            }
+            sb.append("sourceURL(s) = ").append("\n");
+            for (SVNCopySource source : sourceURLs) {
+                sb.append("\t").append(source.getURL()).append("\n");
+            }
             sb.append("destinationFile = ").append(destinationFile).append("\n");
             sb.append("destinationURL = ").append(destinationURL).append("\n");
             throw new CommandInitializationException(sb.toString());

@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 
 public class CopyData extends SVNData implements Serializable {
@@ -110,12 +111,18 @@ public class CopyData extends SVNData implements Serializable {
     public void setSourceFiles(List<File> files) {
         sourceFiles = files;
     }
-    public SVNCopySource getSourceFiles() {
+    public SVNCopySource[] getSourceFiles() {
         if (sourceFiles == null && sourceFile != null) {
             sourceFiles = new ArrayList<File>();
             sourceFiles.add(sourceFile);
         }
-        return sourceFiles;
+        SVNCopySource[] sources = new SVNCopySource[sourceFiles.size()];
+        for (int i = 0; i < sourceFiles.size(); i++) {
+            File f = sourceFiles.get(i);
+            SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
+            sources[i] = source;
+        }
+        return sources;
     }
 
     // set/get source url for copying remote url
@@ -126,13 +133,20 @@ public class CopyData extends SVNData implements Serializable {
         this.sourceURL = sourceURL;
     }
 
-    public List<SVNURL> getSourceURLs() {
+    public SVNCopySource[] getSourceURLs() {
         if (sourceURLs == null && sourceURL != null) {
             sourceURLs = new ArrayList<SVNURL>();
             sourceURLs.add(sourceURL);
         }
-        return sourceURLs;
+        SVNCopySource[] sources = new SVNCopySource[sourceURLs.size()];
+        for (int i = 0; i < sourceURLs.size(); i++) {
+            SVNURL f = sourceURLs.get(i);
+            SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
+            sources[i] = source;
+        }
+        return sources;
     }
+
     public void setSourceURLs( List<SVNURL> sourceURLs ) {
         this.sourceURLs = sourceURLs;
     }

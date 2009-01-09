@@ -49,6 +49,7 @@ import ise.plugin.svn.library.*;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 public class ExportDialog extends JDialog {
     // instance fields
@@ -82,12 +83,18 @@ public class ExportDialog extends JDialog {
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // source for export
-        List paths;
+        List paths = new ArrayList();
         if ( data.getSourceFiles() != null ) {
-            paths = data.getSourceFiles();
+            SVNCopySource[] sources = data.getSourceFiles();
+            for (SVNCopySource source : sources) {
+                paths.add(source.getFile());
+            }
         }
         else {
-            paths = data.getSourceURLs();
+            SVNCopySource[] sources = data.getSourceFiles();
+            for (SVNCopySource source : sources) {
+                paths.add(source.getURL());
+            }
         }
 
         JLabel file_label = new JLabel( jEdit.getProperty("ips.Export", "Export") + " " + ( paths.size() == 1 ? jEdit.getProperty("ips.this_file>", "this file:") : jEdit.getProperty("ips.these_files>", "these files:") ) );
