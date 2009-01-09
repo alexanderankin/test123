@@ -1,12 +1,10 @@
 #{{{ Marathon Fixture
 from default import *
 from java.lang import System
+from util import *
 import os
+import shutil
 #}}} Marathon Fixture
-
-def makePath(dir, file):
-	sep = System.getProperty('file.separator')
-	return dir + sep + file
 
 def enterString(str):
 	for char in list(str):
@@ -20,8 +18,12 @@ def test():
 	outputDir = makePath(projDir, 'Output')
 	inputFile = makePath(inputDir, 'TestPlan.txt')
 	saveFile = makePath(outputDir, 'savedFile.txt')
-	os.remove(saveFile)
-	
+	try:
+		os.remove(saveFile)
+		shutil.copy(makePath(inputDir, 'properties'), makePath(settingsDir, 'properties'))
+	except os.error:
+		pass
+
 	if window('/jEdit - .*'):
 		select_menu('File>>Open...')
 
