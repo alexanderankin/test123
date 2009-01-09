@@ -44,6 +44,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -152,12 +153,18 @@ public class LogAction extends SVNAction {
                 @Override
                 protected void done() {
                     try {
-                        LogResults results = get();
-                        if (results == null) {
-                            return;
+                        final LogResults results = get();
+                        if ( results == null ) {
+                            return ;
                         }
-                        JPanel results_panel = new LogResultsPanel( get(), data.getShowPaths(), getView(), getUsername(), getPassword() );
-                        panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
+                        SwingUtilities.invokeLater(
+                            new Runnable() {
+                                public void run() {
+                                    JPanel results_panel = new LogResultsPanel( results, data.getShowPaths(), getView(), getUsername(), getPassword() );
+                                    panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
+                                }
+                            }
+                        );
                     }
                     catch ( Exception e ) {
                         // ignored

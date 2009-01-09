@@ -39,11 +39,10 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.SVNException;
 
-import org.tmatesoft.svn.cli.SVNCommand;
 import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperty;
-import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.ISVNEventHandler;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
@@ -79,7 +78,7 @@ public class Merge {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
 
         // get a diff client
         SVNDiffClient client = clientManager.getDiffClient();
@@ -183,16 +182,16 @@ public class Merge {
             }
             if ( event.getAction() == SVNEventAction.UPDATE_ADD ) {
                 if ( event.getContentsStatus() == SVNStatusType.CONFLICTED ) {
-                    SVNCommand.println( out, "C    " + filename );
+                    out.println( "C    " + filename );
                     results.addConflicted( filename );
                 }
                 else {
-                    SVNCommand.println( out, "A    " + filename );
+                    out.println( "A    " + filename );
                     results.addAdded( filename );
                 }
             }
             else if ( event.getAction() == SVNEventAction.UPDATE_DELETE ) {
-                SVNCommand.println( out, "D    " + filename );
+                out.println( "D    " + filename );
                 results.addDeleted( filename );
             }
             else if ( event.getAction() == SVNEventAction.UPDATE_UPDATE ) {
@@ -233,25 +232,25 @@ public class Merge {
                     sb.append( " " );
                 }
                 if ( sb.toString().trim().length() > 0 ) {
-                    SVNCommand.println( out, sb.toString() + "  " + filename );
+                    out.println( sb.toString() + "  " + filename );
                 }
             }
             else if ( event.getAction() == SVNEventAction.ADD ) {
                 if ( SVNProperty.isBinaryMimeType( event.getMimeType() ) ) {
-                    SVNCommand.println( out, "A  (bin)  " + filename );
+                    out.println( "A  (bin)  " + filename );
                     results.addAdded( filename );
                 }
                 else {
-                    SVNCommand.println( out, "A         " + filename );
+                    out.println( "A         " + filename );
                     results.addAdded( filename );
                 }
             }
             else if ( event.getAction() == SVNEventAction.DELETE ) {
-                SVNCommand.println( out, "D         " + filename );
+                out.println( "D         " + filename );
                 results.addDeleted( filename );
             }
             else if ( event.getAction() == SVNEventAction.SKIP ) {
-                SVNCommand.println( out, "Skipped '" + filename + "'" );
+                out.println( "Skipped '" + filename + "'" );
                 results.addSkipped( filename );
             }
         }

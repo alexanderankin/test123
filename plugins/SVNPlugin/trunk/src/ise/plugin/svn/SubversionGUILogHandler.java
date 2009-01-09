@@ -113,15 +113,15 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             _text.setForeground( Color.BLACK );
             foreground = Color.BLACK;
         }
-        if (_font == null) {
+        if ( _font == null ) {
             _font = jEdit.getFirstView().getEditPane().getTextArea().getPainter().getFont();
-            _text.setFont(_font);
+            _text.setFont( _font );
         }
         _text.setCaretPosition( 0 );
         _content_pane.add( new JScrollPane( _text ), BorderLayout.CENTER );
-        JPanel bottom_panel = new JPanel(new BorderLayout());
-        bottom_panel.add( getControlPanel(), BorderLayout.EAST);
-        bottom_panel.add( getStopPanel(), BorderLayout.WEST);
+        JPanel bottom_panel = new JPanel( new BorderLayout() );
+        bottom_panel.add( getControlPanel(), BorderLayout.EAST );
+        bottom_panel.add( getStopPanel(), BorderLayout.WEST );
         _content_pane.add( bottom_panel, BorderLayout.SOUTH );
 
         if ( use_frame ) {
@@ -271,58 +271,54 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             // I removed the invokeLater for svn plugin since the callers _should_
             // already be in an invokeLater.  Calling invokeLater from within an
             // invokeLater causes the logging to be delayed to the UI.
-            /*
             SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
-                        */
-            String msg = lr.getMessage();
-            if ( msg == null )
-                return ;
-            if ( getFormatter() != null )
-                msg = getFormatter().format( lr );
-            if ( _text == null ) {
-                return ;
-            }
-            try {
-                int index = _text.getDocument().getLength();
-                int caret_position = _text.getCaretPosition();
-                SimpleAttributeSet set = new SimpleAttributeSet();
-                if ( _font == null ) {
-                    StyleConstants.setFontFamily( set, "Monospaced" );
+                        String msg = lr.getMessage();
+                        if ( msg == null )
+                            return ;
+                        if ( getFormatter() != null )
+                            msg = getFormatter().format( lr );
+                        if ( _text == null ) {
+                            return ;
+                        }
+                        try {
+                            int index = _text.getDocument().getLength();
+                            int caret_position = _text.getCaretPosition();
+                            SimpleAttributeSet set = new SimpleAttributeSet();
+                            if ( _font == null ) {
+                                StyleConstants.setFontFamily( set, "Monospaced" );
+                            }
+                            else {
+                                StyleConstants.setFontFamily( set, _font.getFamily() );
+                                StyleConstants.setBold( set, _font.isBold() );
+                                StyleConstants.setItalic( set, _font.isItalic() );
+                                StyleConstants.setFontSize( set, _font.getSize() );
+                            }
+                            if ( lr.getLevel().equals( Level.WARNING ) ) {
+                                StyleConstants.setForeground( set, GREEN );
+                            }
+                            else if ( lr.getLevel().equals( Level.SEVERE ) ) {
+                                StyleConstants.setForeground( set, Color.RED );
+                            }
+                            else if ( lr.getLevel().equals( Level.INFO ) ) {
+                                StyleConstants.setForeground( set, foreground );
+                            }
+                            else {
+                                StyleConstants.setForeground( set, foreground );
+                            }
+                            _text.getDocument().insertString( index, msg, set );
+                            if ( _tail )
+                                _text.setCaretPosition( index + msg.length() );
+                            else
+                                _text.setCaretPosition( caret_position );
+                        }
+                        catch ( Exception e ) {     // NOPMD
+                            //Log.log( e );
+                        }
+                    }
                 }
-                else {
-                    StyleConstants.setFontFamily( set, _font.getFamily() );
-                    StyleConstants.setBold( set, _font.isBold() );
-                    StyleConstants.setItalic( set, _font.isItalic() );
-                    StyleConstants.setFontSize( set, _font.getSize() );
-                }
-                if ( lr.getLevel().equals( Level.WARNING ) ) {
-                    StyleConstants.setForeground( set, GREEN );
-                }
-                else if ( lr.getLevel().equals( Level.SEVERE ) ) {
-                    StyleConstants.setForeground( set, Color.RED );
-                }
-                else if ( lr.getLevel().equals( Level.INFO ) ) {
-                    StyleConstants.setForeground( set, foreground );
-                }
-                else {
-                    StyleConstants.setForeground( set, foreground );
-                }
-                _text.getDocument().insertString( index, msg, set );
-                if ( _tail )
-                    _text.setCaretPosition( index + msg.length() );
-                else
-                    _text.setCaretPosition( caret_position );
-            }
-            catch ( Exception e ) {     // NOPMD
-                //Log.log( e );
-            }
-            /*
-        }
-        }
             );
-            */
         }
         catch ( Exception ignored ) {   // NOPMD
             // ignored
@@ -331,7 +327,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     }
 
     public StopPanel getStopPanel() {
-        if (stopPanel == null) {
+        if ( stopPanel == null ) {
             stopPanel = new StopPanel();
         }
         return stopPanel;

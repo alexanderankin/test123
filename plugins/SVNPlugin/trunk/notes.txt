@@ -21,7 +21,7 @@ unlock - done
 --
 tag - done
 branch - done
-merge          // TODO
+merge - done         // TODO
 switch - done
 --
 show properties - done
@@ -58,7 +58,7 @@ svn info - done
 svn list - done
 svn lock - done
 svn log - done
-svn merge
+svn merge - done
 svn mkdir - done
 svn move - done
 svn propdel - done
@@ -93,6 +93,10 @@ Done - Fix Info and Log commands to work correctly with svn:external links.
 
 - on the various results panels, add ability to open a file in a jEdit buffer. --> done in some places
 
+- add Tag/Branch command to Log output.  It would be handy to be able to look at a log, pick a revision and create a branch or tag from that revision.
+
+- remove ... from Info in context menu, there is no interstitial dialog
+
 - clean up popups, the tool tips are often too large to be useful and don't stay visible long enough. The TableCellViewer that I borrowed from Antelope conflicts with the popup menu mouse gesture.  Right now, there is a mix, should figure out how to avoid the popup menu conflict and use the TableCellViewer popup as it is more useful. Maybe a "zoom" menu item? --> added "zoom" in some places.
 
 *** add option to automatically tag external links when tagging a project?
@@ -106,7 +110,9 @@ Done - Need to check, doesn't Eclipse have a "Move"? --> Don't care, move is don
 Done - There should be a "compare" to open a diff.  This needs a dialog to be able to pick a specific revision to compare the local file to, or to
 diff two non-local revisions.  Need to pop this as an option in the log
 viewer. -> done, I called it "diff" rather than "compare" and am using JDiff
-plugin rather than svn diff.  IN PROGRESS: there is a need for svn diff.  It's currently working from PV and text area context menu, but not from SVN Browser.
+plugin rather than svn diff.  
+
+Done - there is a need for svn diff.  It's currently working from PV and text area context menu, but not from SVN Browser. --> done for SVNBrowser
 
 Done - Update docs on undelete to point out that Move is really a copy and delete, so to undo a move, either move back or revert and undelete.
 
