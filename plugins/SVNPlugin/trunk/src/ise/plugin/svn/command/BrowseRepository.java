@@ -35,12 +35,12 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperty;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
-import org.tmatesoft.svn.core.io.SVNFileRevision;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -51,7 +51,6 @@ import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.io.SVNFile;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.PrivilegedAccessor;
 
 
 public class BrowseRepository {
@@ -189,8 +188,8 @@ public class BrowseRepository {
          * by getDir.
          */
         List<DirTreeNode> list = new ArrayList<DirTreeNode>();
-        Map dir_props = new HashMap();
-        Collection entries = repository.getDir( path, -1, dir_props, ( Collection ) null );
+        SVNProperties dir_props = new SVNProperties();
+        Collection entries = repository.getDir( path, -1L, dir_props, ( Collection ) null );
         Iterator iterator = entries.iterator();
         while ( iterator.hasNext() ) {
             SVNDirEntry entry = ( SVNDirEntry ) iterator.next();
@@ -210,7 +209,7 @@ public class BrowseRepository {
         // if the directory entry has svn:externals property, load those external
         // entries also and add them to the list
         if ( dir_props.size() > 0 ) {
-            String value = ( String ) dir_props.get( SVNProperty.EXTERNALS );
+            String value = ( String ) dir_props.asMap().get( SVNProperty.EXTERNALS );
             try {
                 if ( value != null ) {
                     BufferedReader br = new BufferedReader( new StringReader( value ) );
@@ -306,15 +305,15 @@ public class BrowseRepository {
             if ( nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR ) {
                 return null;
             }
-            Map<Object, Object> fileproperties = new HashMap<Object, Object>( );
+            SVNProperties fileproperties = new SVNProperties();
             ByteArrayOutputStream baos = new ByteArrayOutputStream( );
             repository.getFile( filepath , revision , fileproperties , baos );
 
-            String mimeType = ( String ) fileproperties.get( SVNProperty.MIME_TYPE );
+            String mimeType = ( String ) fileproperties.asMap().get( SVNProperty.MIME_TYPE );
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
             // copy the properties to a Properties
-            Properties props = convertMap( fileproperties );
+            Properties props = convertMap( fileproperties.asMap() );
 
             // ignore non-text files for now
             if ( isTextType ) {

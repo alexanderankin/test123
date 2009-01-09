@@ -470,7 +470,32 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
     class MySVNStatus extends SVNStatus {
         public MySVNStatus( File file, File conflictNewFile, File conflictWrkFile ) {
-            super( null, file, null, null, null, null, null, null, null, null, null, false, false, false, conflictNewFile, null, conflictWrkFile, null, null, null, null, null, null );
-        }
-    }
+            super(
+                null,                   // SVNURL url,
+                file,                   // File file,
+                null,                   // SVNNodeKind kind,
+                null,                   // SVNRevision revision,
+                null,                   // SVNRevision committedRevision,
+                null,                   // Date committedDate,
+                null,                   // String author,
+                null,                   // SVNStatusType contentsStatus,
+                null,                   // SVNStatusType propertiesStatus,
+                null,                   // SVNStatusType remoteContentsStatus,
+                null,                   // SVNStatusType remotePropertiesStatus,
+                false,                  // boolean isLocked,
+                false,                  // boolean isCopied,
+                false,                  // boolean isSwitched,
+                conflictNewFile,        // File conflictNewFile,
+                null,                   // File conflictOldFile,
+                conflictWrkFile,        // File conflictWrkFile,
+                null,                   // File projRejectFile,
+                null,                   // String copyFromURL,
+                null,                   // SVNRevision copyFromRevision,
+                null,                   // SVNLock remoteLock,
+                null,                   // SVNLock localLock,
+                null,                   // Map entryProperties,
+                null,                   // String changelistName,
+                -1);                    // int wcFormatVersion    
+        }                           
+    }                               
 }

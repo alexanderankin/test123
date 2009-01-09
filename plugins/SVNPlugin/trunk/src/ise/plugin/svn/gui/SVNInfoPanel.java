@@ -40,11 +40,11 @@ import javax.swing.table.*;
 
 import org.tmatesoft.svn.core.SVNLock;
 import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.internal.util.SVNFormatUtil;
 import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import ise.plugin.svn.library.TableCellViewer;
+import ise.plugin.svn.command.SVNFormatUtil;
 
 import org.gjt.sp.jedit.jEdit;
 

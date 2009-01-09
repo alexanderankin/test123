@@ -31,7 +31,6 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
-import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNAnnotateHandler;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
@@ -43,6 +42,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.gui.component.BlameModel;
 
@@ -80,7 +80,7 @@ public class Blame {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, data.getUsername(), data.getDecryptedPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
 
         // get a client
         SVNLogClient client = clientManager.getLogClient();
@@ -91,8 +91,22 @@ public class Blame {
         out = data.getOut();
 
         ISVNAnnotateHandler handler = new ISVNAnnotateHandler() {
+                    @Deprecated
                     public void handleLine( Date date, long revision,
                             String author, String line ) {
+                        results.add( revision + " " + author );
+                    }
+                    public void handleEOF() {
+                        
+                    }
+                    
+                    public boolean handleRevision(Date date, long revision, String author, File contents) {
+                        return false;
+                    }
+                    
+                    public void handleLine(Date data, long revision, String author, 
+                        String line, Date mergedDate, long mergedRevision, 
+                        String mergedAuthor, String mergedPath, int lineNumber) {
                         results.add( revision + " " + author );
                     }
                 };

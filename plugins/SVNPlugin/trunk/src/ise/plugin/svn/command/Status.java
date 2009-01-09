@@ -31,12 +31,12 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
-import org.tmatesoft.svn.cli.command.SVNCommandEventProcessor;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
@@ -63,7 +63,7 @@ public class Status {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, cd.getUsername(), cd.getDecryptedPassword() );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
 
         // get a client
         SVNStatusClient client = clientManager.getStatusClient();
