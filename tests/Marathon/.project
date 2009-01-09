@@ -1,5 +1,6 @@
 #Marathon Project File
-#Sun Sep 14 09:13:35 IDT 2008
+#Thu Jan 08 22:41:49 GMT+02:00 2009
+marathon.checklist.dir=%marathon.project.dir%/Checklists
 marathon.test.dir=%marathon.project.dir%/TestCases
 marathon.application.launchtime=60000
 marathon.application.pythonpath=
@@ -7,9 +8,10 @@ marathon.runtime.assertions=Enabled\:\:;Background\:\:;Foreground\:\:;RowCount\:
 marathon.component.ignore.components=javax.swing.JMenuBar(ignorechild\:false);javax.swing.JToolBar(ignorechild\:false);javax.swing.JPanel(ignorechild\:false);javax.swing.JViewport(ignorechild\:false);javax.swing.JScrollBar(ignorechild\:true)
 marathon.application.classpath=C\:/Program Files/jEdit/jedit.jar
 marathon.application.arguments=-reuseview
-marathon.application.working.dir=D\:\\jedit\\tests\\Marathon\\TestCases
+marathon.application.working.dir=
 marathon.capture.dir=%marathon.project.dir%/Modules
 marathon.application.mainclass=org.gjt.sp.jedit.jEdit
+marathon.application.pythonhome=
 marathon.recorder.namingstrategy=net.sourceforge.marathon.component.MarathonNamingStrategy
 marathon.fixture.dir=%marathon.project.dir%/Fixtures
 marathon.component.resolvers=
@@ -17,4 +19,5 @@ marathon.application.toolkit_menumask=false
 marathon.project.description=
 marathon.application.vm.command=
 marathon.project.name=jEdit
+marathon.project.script.model=net.sourceforge.marathon.python.PythonScriptModel
 marathon.application.vm.arguments=-Xms64M -Xmx192M

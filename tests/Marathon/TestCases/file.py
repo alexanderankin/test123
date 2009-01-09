@@ -1,4 +1,6 @@
-useFixture(default)
+#{{{ Marathon Fixture
+from default import *
+#}}} Marathon Fixture
 
 import os
 
