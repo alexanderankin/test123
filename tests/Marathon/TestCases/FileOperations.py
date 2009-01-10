@@ -13,7 +13,7 @@ def enterString(str):
 def test():
 	java_recorded_version = '1.6.0_11'
 
-	projDir = System.getProperty('marathon.project.dir')
+	projDir = makePath(System.getProperty('marathon.test.dir'), '..')
 	inputDir = makePath(projDir, 'Input')
 	outputDir = makePath(projDir, 'Output')
 	inputFile = makePath(inputDir, 'TestPlan.txt')
