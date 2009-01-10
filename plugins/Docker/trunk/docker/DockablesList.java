@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * A list of dockables.
  */
+@SuppressWarnings("serial")
 class DockablesList extends JList {
    /**
     * Create a new <code>DockablesList</code>.
@@ -53,7 +54,7 @@ class DockablesList extends JList {
       ((DockablesModel) getModel()).removeDockable(idx);
    }
 
-   public List getDockables() {
+   public List<String> getDockables() {
       return ((DockablesModel) getModel()).dockables;
    }
 
@@ -66,10 +67,10 @@ class DockablesList extends JList {
    }
 
    private class DockablesModel extends AbstractListModel {
-      private List dockables;
+      private List<String> dockables;
 
       public DockablesModel() {
-         dockables = new LinkedList();
+         dockables = new LinkedList<String>();
       }
 
       public int getSize() {

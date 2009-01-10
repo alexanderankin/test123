@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * A combo box of registered dockables.
  */
+@SuppressWarnings("serial")
 class DockablesComboBox extends JComboBox {
    /**
     * Create a new <code>DockablesComboBox</code>.
@@ -39,10 +40,10 @@ class DockablesComboBox extends JComboBox {
    public DockablesComboBox() {
    }
 
-   public void setDockables(List dockables) {
+   public void setDockables(List<String> dockables) {
       removeAllItems();
-      for (Iterator i = dockables.iterator(); i.hasNext();) {
-         addItem(new DockableModel((String) i.next()));
+      for (Iterator<String> i = dockables.iterator(); i.hasNext();) {
+         addItem(new DockableModel(i.next()));
       }
    }
 

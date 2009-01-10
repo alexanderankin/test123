@@ -27,7 +27,6 @@ import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,9 +37,8 @@ import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingArea;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-
 import org.gjt.sp.util.Log;
 
 /**
@@ -155,7 +153,7 @@ class DockFocusManager implements EBComponent, ContainerListener
 		setFocusCycleRoot(view, view.getDockableWindowManager().getRightDockingArea());
 	}
 
-	private void setFocusCycleRoot(View view, PanelWindowContainer dock)
+	private void setFocusCycleRoot(View view, DockingArea dock)
 	{
 		String[] names = dock.getDockables();
 		for (int i = 0; i < names.length; i++)

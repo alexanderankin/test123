@@ -23,7 +23,7 @@
 package docker;
 
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingArea;
 
 /**
  * A handler for handling the collapsing of a particular dock.
@@ -32,7 +32,7 @@ public class DockHandler {
    private String dockName;
    private boolean visible;
    private DockableWindowManager wm;
-   private PanelWindowContainer dock;
+   private DockingArea dock;
    private DockerConfig config;
 
    /**
@@ -40,7 +40,7 @@ public class DockHandler {
     */
    public DockHandler(String aDockName,
                       DockableWindowManager aWm,
-                      PanelWindowContainer aDock,
+                      DockingArea aDock,
                       DockerConfig aConfig) {
       dockName = aDockName;
       wm = aWm;

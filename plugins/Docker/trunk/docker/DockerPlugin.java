@@ -40,7 +40,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingArea;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -208,7 +208,7 @@ public class DockerPlugin extends EBPlugin
 	/**
 	 * Show a popup for a particular dock.
 	 */
-	private void showDockPopup(final View view, final PanelWindowContainer dock,
+	private void showDockPopup(final View view, final DockingArea dock,
 		String actionName)
 	{
 		String[] names = dock.getDockables();
@@ -218,7 +218,7 @@ public class DockerPlugin extends EBPlugin
 		{
 			items.add(new DockListItem(view.getDockableWindowManager(), names[i]));
 		}
-		PopupList popup = PopupList.show(view, items, getCurrentDockable(view, dock), 
+		PopupList.show(view, items, getCurrentDockable(view, dock), 
 			new ActionListener()
 			{
 				public void actionPerformed(ActionEvent evt)
@@ -259,13 +259,12 @@ public class DockerPlugin extends EBPlugin
 					}
 				}
 			});
-		popup.enableKeyStrokeCycling(actionName);
 	}
 
 	/**
 	 * Finds the current visible dockable at the given dock.
 	 */
-	static private String getCurrentDockable(View view, PanelWindowContainer dock)
+	static private String getCurrentDockable(View view, DockingArea dock)
 	{
 		String[] names = dock.getDockables();
 		for (int i = 0; i < names.length; i++)
