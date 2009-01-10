@@ -12,7 +12,7 @@
   <property name="doc" location="doc"/>
   <property name="lib" location="lib"/>
   
-  <property name="jedit.install.dir"  value="/Users/jpavel/Programs/jEdit.app/Contents/Resources/Java"/>
+  <property name="jedit.install.dir"  value="/Applications/jEdit.app/Contents/Resources/Java"/>
   <property name="jedit.windows_install.dir" value="C:\\Program Files\\jEdit"/>
   
   <path id="libraries">
@@ -48,7 +48,7 @@
     <copy todir="${dist}">
       <fileset dir="${build}"/>
     </copy>
-    <unjar src="${lib}/forms.jar" dest="${dist}"/> 
+    <unjar src="${lib}/forms.jar" dest="${dist}"/>
     <mkdir dir="${dist}/doc"/>
     <copy todir="${dist}/doc">
 	<fileset dir="${doc}"/>
@@ -59,6 +59,7 @@
 	<include name="actions.xml"/>
 	<include name="default.options"/>
 	<include name="simple-complete-config.options"/>
+	<include name="simple-complete-lisp-config.options"/>
       </fileset>
     </copy>
   </target>
