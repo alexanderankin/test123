@@ -1228,7 +1228,7 @@ public class OptionPanel extends AbstractOptionPane
 					simplePanel.add(CJavaButton);
 
 					//---- lispButton ----
-					lispButton.setText("Lisp");
+					lispButton.setText("Lisp/XML");
 					simplePanel.add(lispButton);
 				}
 				panel6.add(simplePanel, BorderLayout.SOUTH);
