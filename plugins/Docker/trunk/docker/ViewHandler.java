@@ -24,12 +24,16 @@ package docker;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.PanelWindowContainer;
+import org.gjt.sp.jedit.gui.DockableWindowManager.DockingArea;
 
 /**
  * Handles auto-hiding when the EditPane gets focus. One of these is created for each View.
@@ -80,7 +84,7 @@ public class ViewHandler implements FocusListener
 	 */
 	public void detach()
 	{
-		for (Iterator i = docks.values().iterator(); i.hasNext();)
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
 		{
 			((DockHandler) i.next()).detach();
 		}
@@ -106,7 +110,7 @@ public class ViewHandler implements FocusListener
 	 */
 	public boolean isAnyDockVisible()
 	{
-		for (Iterator i = docks.values().iterator(); i.hasNext();)
+		for (Iterator<DockHandler> i = docks.values().iterator(); i.hasNext();)
 		{
 			if (((DockHandler) i.next()).isDockVisible())
 			{
@@ -177,29 +181,16 @@ public class ViewHandler implements FocusListener
 	 */
 	private void attachDock(String dockName)
 	{
-		int compIdx = 0;
 		DockableWindowManager wm = view.getDockableWindowManager();
-		PanelWindowContainer container = null;
+		DockingArea container = null;
 		if (DockableWindowManager.TOP.equals(dockName))
-		{
 			container = wm.getTopDockingArea();
-			compIdx = 4;
-		}
 		else if (DockableWindowManager.LEFT.equals(dockName))
-		{
 			container = wm.getLeftDockingArea();
-			compIdx = 5;
-		}
 		else if (DockableWindowManager.BOTTOM.equals(dockName))
-		{
 			container = wm.getBottomDockingArea();
-			compIdx = 6;
-		}
 		else if (DockableWindowManager.RIGHT.equals(dockName))
-		{
 			container = wm.getRightDockingArea();
-			compIdx = 7;
-		}
 		docks.put(dockName, new DockHandler(dockName, wm, container, config));
 	}
 

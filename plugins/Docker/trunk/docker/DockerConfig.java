@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
 import org.gjt.sp.jedit.jEdit;
 
 class DockerConfig {
-   private List autoHideOverrides;
+   private List<String> autoHideOverrides;
 
    /**
     * Sets whether a given dock has auto hide enabled.
@@ -59,7 +59,7 @@ class DockerConfig {
     * Returns the list dockables that will override the auto hide feature of
     * docker.
     */
-   public List getAutoHideOverrides() {
+   public List<String> getAutoHideOverrides() {
       loadAutoHideOverrides();
       return autoHideOverrides;
    }
@@ -68,10 +68,10 @@ class DockerConfig {
     * Set the list of dockables that will override the auto hide feature of
     * docker.
     */
-   public void setAutoHideOverrides(List dockables) {
+   public void setAutoHideOverrides(List<String> dockables) {
       StringBuffer buf = new StringBuffer();
-      for (Iterator i = dockables.iterator(); i.hasNext();) {
-         String dockable = (String) i.next();
+      for (Iterator<String> i = dockables.iterator(); i.hasNext();) {
+         String dockable = i.next();
          buf.append(dockable);
          if (i.hasNext()) {
             buf.append(',');
@@ -114,7 +114,7 @@ class DockerConfig {
     */
    private void loadAutoHideOverrides() {
       if (autoHideOverrides == null) {
-         autoHideOverrides = new ArrayList();
+         autoHideOverrides = new ArrayList<String>();
          StringTokenizer strtok = new StringTokenizer(getProperty("auto-hide-overrides", ""), ",");
          while (strtok.hasMoreTokens()) {
             autoHideOverrides.add(strtok.nextToken());

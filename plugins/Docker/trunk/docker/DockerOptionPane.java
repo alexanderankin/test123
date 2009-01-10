@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 /**
  * Option pane for the docker plugin.
  */
+@SuppressWarnings("serial")
 public class DockerOptionPane extends AbstractOptionPane {
    private JCheckBox topEnabled, leftEnabled, bottomEnabled, rightEnabled;
    private DockablesComboBox addAutoHideOverrideCombo;
@@ -97,7 +98,7 @@ public class DockerOptionPane extends AbstractOptionPane {
                                           bottomEnabled.isSelected());
       config.setAutoHideEnabled(DockableWindowManager.RIGHT,
                                           rightEnabled.isSelected());
-      List overrides = autoHideOverrides.getDockables();
+      List<String> overrides = autoHideOverrides.getDockables();
       config.setAutoHideOverrides(overrides);
    }
 
@@ -115,7 +116,7 @@ public class DockerOptionPane extends AbstractOptionPane {
       addAutoHideOverrideCombo = new DockablesComboBox();
       gbc.gridy++;
       gbc.gridwidth = 1;
-      gbc.fill = gbc.HORIZONTAL;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.weightx = .999;
       gbc.insets = new Insets(0, 0, 11, 11);
       panel.add(addAutoHideOverrideCombo, gbc);
@@ -148,8 +149,8 @@ public class DockerOptionPane extends AbstractOptionPane {
             removeAutoHideButton.setEnabled(autoHideOverrides.hasSelection());
          }
       });
-      for (Iterator i = config.getAutoHideOverrides().iterator(); i.hasNext();) {
-         autoHideOverrides.addDockable((String) i.next());
+      for (Iterator<String> i = config.getAutoHideOverrides().iterator(); i.hasNext();) {
+         autoHideOverrides.addDockable(i.next());
       }
       gbc.gridx = 0; gbc.gridy++;
       gbc.gridheight = 2;
@@ -191,8 +192,8 @@ public class DockerOptionPane extends AbstractOptionPane {
    }
 
    private void filterCombo() {
-      List overridingDockables = autoHideOverrides.getDockables();
-      List availDocks = new ArrayList(overridingDockables.size());
+      List<String> overridingDockables = autoHideOverrides.getDockables();
+      List<String> availDocks = new ArrayList<String>(overridingDockables.size());
       for (int i=0; i<dockables.length; i++) {
          if (!overridingDockables.contains(dockables[i]))
             availDocks.add(dockables[i]);
