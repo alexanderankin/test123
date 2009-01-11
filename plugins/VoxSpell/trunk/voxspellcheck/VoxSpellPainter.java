@@ -1,6 +1,6 @@
 
 /*
-Copyright (C) 2008 Matthew Gilbert
+Copyright (C) 2008, 2009 Matthew Gilbert
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -56,7 +56,7 @@ public class VoxSpellPainter extends TextAreaExtension
     private MarkupMode markup_mode;
     
     // non-letter chars that should not indicate the end of the word.
-    static private String no_word_sep = "'";
+    static private String no_word_sep = "'\u2019";
     
     static public java.awt.Color getUnderlineColor()
     {        
@@ -117,14 +117,14 @@ public class VoxSpellPainter extends TextAreaExtension
         try {
             Character c = text.charAt(offset + num_chars++);
             
+            // Classify by the first character, then grab the rest of the
+            // matching characters.
             if (Character.isSpaceChar(c)) {
                 while (Character.isSpaceChar(c) || c.equals('\t')) {
                     c = text.charAt(offset + num_chars++);
                 }
             } else if (Character.isLetterOrDigit(c)) {
-                while (Character.isLetterOrDigit(c) || 
-                       (no_word_sep.indexOf(c) != -1))
-                {
+                while (Character.isLetterOrDigit(c) || (no_word_sep.indexOf(c) != -1)) {
                     c = text.charAt(offset + num_chars++);
                 }
             } else {
@@ -182,6 +182,11 @@ public class VoxSpellPainter extends TextAreaExtension
                             DefaultTokenHandler tokenHandler,
                             boolean user_only)
     {
+        // FIXME: Hack for unicode apostrophe
+        if (word.indexOf("\u2019") != -1) {
+            word = word.replaceAll("\u2019", "'");
+        }
+        
         String trim_word = word.trim();
         String low_word = trim_word.toLowerCase();
         
