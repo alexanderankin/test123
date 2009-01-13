@@ -86,7 +86,6 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
-
 //}}}
 
 /**
@@ -178,7 +177,7 @@ public class SideKickTree extends JPanel
 		search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
 		searchField = new JTextField();
 		searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
-		clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon( "16x16/actions/edit-clear.png" ));
+		clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon( "22x22/actions/edit-clear.png" ));
 		clearSearchBtn.addActionListener(
 			new ActionListener() {
 				public void actionPerformed( ActionEvent ae ) {
