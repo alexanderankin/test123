@@ -20,45 +20,32 @@
 
 package foldviewer;
 
-import bsh.*;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.*;
 import java.util.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 
 public class FoldWindow extends JWindow {
-        private JEditTextArea textArea;
-        private Buffer buffer;
-        
+        private TextArea textArea;
+
         //{{{ constructor.
-        public FoldWindow(final JEditTextArea jEditTextArea) {
+        public FoldWindow(JEditTextArea jEditTextArea) {
                 super(jEditTextArea.getView());
                 try {
-                        // buffer.
-                        final Constructor constructor = Buffer.class
-                        .getDeclaredConstructor(String.class, boolean.class, boolean.class, Hashtable.class);
-                        constructor.setAccessible(true);
-                        
-                        Hashtable props = new Hashtable();
+                        Map props = new HashMap();
                         props.put("wrap", "none");
                         props.put(Buffer.CARET, 0);
                         props.put(Buffer.ENCODING_AUTODETECT, true);
-                        
-                        buffer = (Buffer) constructor.newInstance("", true, true, props);
-                        buffer.setMode(((Buffer)jEditTextArea.getBuffer()).getMode());
-                        
-                        buffer.load(jEditTextArea.getView(), false);
-                       
+
+
                         // {{{ setContentPane
                         setContentPane(new JPanel(new BorderLayout()) {
                                         public boolean getFocusTraversalKeysEnabled() {
@@ -69,9 +56,9 @@ public class FoldWindow extends JWindow {
                         
                         getRootPane().setBorder(new LineBorder(Color.BLACK));
                         
-                        textArea = new JEditTextArea(jEditTextArea.getView());
+                        textArea = new JEditEmbeddedTextArea();
+	                textArea.getBuffer().setMode(jEditTextArea.getBuffer().getMode());
                         updatePainter();
-                        textArea.setBuffer(buffer);
                         //{{{ listeners.
                         addWindowFocusListener(new WindowAdapter() {
                                         public void windowLostFocus(WindowEvent e) {
@@ -99,7 +86,8 @@ public class FoldWindow extends JWindow {
         
         //{{{ showText method.
         public void showText(int x, int y, String text, int width, int height) {
-                buffer.beginCompoundEdit();
+	        JEditBuffer buffer = textArea.getBuffer();
+	        buffer.beginCompoundEdit();
                 textArea.setText(text);
 		textArea.setCaretPosition(0);
                 buffer.endCompoundEdit();
