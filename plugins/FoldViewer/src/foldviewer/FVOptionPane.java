@@ -21,8 +21,6 @@ package foldviewer;
 
 import java.awt.GridBagConstraints;
 
-import javax.swing.JLabel;
-
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
