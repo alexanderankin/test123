@@ -34,6 +34,7 @@ import java.util.*;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
@@ -100,10 +101,10 @@ public class Add {
         // actually do the add(s)
         PrintStream out = cd.getOut();
         for ( String path : paths ) {
-            // path, force, mkdir, add parents, recursive
+            // path, force, mkdir, add parents, climbUnversionedParents, depth, includeIgnored, makeParents
             try {
                 File file = new File(path);
-                client.doAdd( file, false, false, true, cd.getRecursive() );
+                client.doAdd( file, false, false, true, cd.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY, false, true );
             }
             catch ( Exception e ) {
                 out.println( e.getMessage() );

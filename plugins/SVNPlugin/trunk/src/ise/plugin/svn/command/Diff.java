@@ -34,8 +34,8 @@ import java.util.*;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -118,7 +118,7 @@ public class Diff {
         else {
             // File, rev, rev -- from PV, working file against revision
             for (File file : localPaths) {
-                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), file.isDirectory(), false, diff_output );
+                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, (Collection)null );
             }
         }
         return diff_output.toString();
