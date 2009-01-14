@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <ACTIONS>
-	<ACTION NAME="minimap-show" NO_REPEAT="TRUE">
+	<ACTION NAME="minimap" NO_REPEAT="TRUE">
 		<CODE>
 			minimap.MinimapPlugin.show(view);
 		</CODE>
