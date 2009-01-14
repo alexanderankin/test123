@@ -482,7 +482,6 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 					tw.setAnchor(anchor);
 			}
 		}
-		@Override
 		public String[] getDockables() {
 			ToolWindow[] tools = wm.getToolsByAnchor(anchor);
 			String [] docked = new String[tools.length];
