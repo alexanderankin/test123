@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.util.SyntaxUtilities;
+import org.gjt.sp.util.Log;
 
 
 public class FoldWindow extends JWindow {
@@ -79,7 +81,7 @@ public class FoldWindow extends JWindow {
                         textArea.setBorder(null);
                         add(textArea);
                 } catch (Exception e) {
-                        e.printStackTrace();
+	                Log.log(Log.ERROR, this, e, e);
                 }
         } 
         //}}}
@@ -115,7 +117,7 @@ public class FoldWindow extends JWindow {
                 
 		String defaultFont = jEdit.getProperty("view.font");
 		int defaultFontSize = jEdit.getIntegerProperty("view.fontsize",12);
-		painter.setStyles(GUIUtilities.loadStyles(defaultFont,defaultFontSize));
+		painter.setStyles(SyntaxUtilities.loadStyles(defaultFont,defaultFontSize));
                 painter.setLineHighlightEnabled(false);
         } 
         //}}}

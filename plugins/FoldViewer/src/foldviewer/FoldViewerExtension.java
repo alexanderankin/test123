@@ -19,16 +19,9 @@
 
 package foldviewer;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Window;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
