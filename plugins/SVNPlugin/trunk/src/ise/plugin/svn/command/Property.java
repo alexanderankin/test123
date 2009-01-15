@@ -85,7 +85,7 @@ public class Property {
             if ( data.getUsername() != null ) {
                 // use default svn config options
                 ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-                clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword() ));
+                clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
             }
             else {
                 clientManager = SVNClientManager.newInstance();
@@ -105,7 +105,7 @@ public class Property {
                 String value = data.getValue();
                 PropertyHandler handler = new PropertyHandler( file );
                 if ( name != null ) {
-                    wc_client.doSetProperty( file, name, SVNPropertyValue.create(value), data.getForce(), data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY, handler, (Collection)null );
+                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY, handler, ( Collection ) null );
                 }
                 else {
                     // check for multiple properties
@@ -116,7 +116,7 @@ public class Property {
                         if ( key != null ) {
                             name = key.toString();
                             value = String.valueOf( me.getValue() );
-                            wc_client.doSetProperty( file, name, SVNPropertyValue.create(value), data.getForce(), data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY, handler, (Collection)null );
+                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY, handler, ( Collection ) null );
                         }
                     }
                 }
@@ -160,7 +160,7 @@ public class Property {
         if ( data.getUsername() != null ) {
             // use default svn config options
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-            clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+            clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
         }
         else {
             clientManager = SVNClientManager.newInstance();
@@ -230,14 +230,19 @@ public class Property {
             path = p;
         }
         public void handleProperty( File path, SVNPropertyData property ) {
+            if ( property == null ) {
+                return ;
+            }
             String key = path.toString();
             Properties prop = ( Properties ) results.get( key );
             if ( prop == null ) {
                 prop = new Properties();
                 results.put( key, prop );
             }
-            prop.setProperty( property.getName(), property.getValue().getString() );
-            out.println( "F " + path + ": " + property.getName() + " = " + property.getValue().getString() );
+            if ( property.getName() != null && property.getValue() != null && property.getValue().getString() != null ) {
+                prop.setProperty( property.getName(), property.getValue().getString() );
+                out.println( "F " + path + ": " + property.getName() + " = " + property.getValue().getString() );
+            }
         }
 
         public void handleProperty( long revision, SVNPropertyData property ) {
@@ -293,7 +298,7 @@ public class Property {
             org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
             org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-            SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager("daleanson", "" ));
+            SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( "daleanson", "" ) );
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;

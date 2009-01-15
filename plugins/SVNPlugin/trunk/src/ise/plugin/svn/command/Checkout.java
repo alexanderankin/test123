@@ -31,6 +31,7 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
@@ -85,7 +86,7 @@ public class Checkout {
         client.setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
 
 
-        long revision = client.doCheckout(SVNURL.parseURIDecoded(cd.getURL()), localPath, SVNRevision.HEAD, SVNRevision.HEAD, true);
+        long revision = client.doCheckout(SVNURL.parseURIDecoded(cd.getURL()), localPath, SVNRevision.HEAD, SVNRevision.HEAD, SVNDepth.INFINITY, false);
 
         out.flush();
         out.close();
