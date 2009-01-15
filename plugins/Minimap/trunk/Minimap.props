@@ -13,3 +13,12 @@ minimap-hide.label=Hide minimap of current edit pane
 
 # menu items
 plugin.minimap.MinimapPlugin.menu=minimap-show minimap-hide
+
+# options
+plugin.minimap.MinimapPlugin.option-pane=minimap
+options.minimap.label=Minimap
+options.minimap.code=new minimap.Options();
+
+# labels
+labels.minimap.fontSize=Minimap font size:
+labels.minimap.auto=Automatically add a minimap to all edit panes

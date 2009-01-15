@@ -21,11 +21,20 @@ package minimap;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
-public class MinimapPlugin extends EditPlugin {
+public class MinimapPlugin extends EBPlugin {
+
+	@Override
+	public void handleMessage(EBMessage message) {
+		if (message instanceof EditPaneUpdate) {
+			//EditPaneUpdate msg = (EditPaneUpdate) message;
+		}
+	}
 
 	private static Map<EditPane, Minimap> maps;
 
