@@ -31,9 +31,10 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 @SuppressWarnings("serial")
 public class Minimap extends JPanel {
 
-	EditPane editPane;
-	MinimapTextArea miniMap;
-	Component child;
+	private EditPane editPane;
+	private MinimapTextArea miniMap;
+	private Component child;
+	private JSplitPane splitter;
 	
 	public Minimap(EditPane editPane) {
 		setLayout(new GridLayout(1, 1));
@@ -46,11 +47,26 @@ public class Minimap extends JPanel {
 			child = c;
 			c = c.getParent();
 		}
-		JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitter.add(miniMap);
-		splitter.add(child);
+		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		setSplitterComponents();
 		add(splitter);
 		miniMap.setBuffer(textArea.getBuffer());
+	}
+
+	private void setSplitterComponents() {
+		splitter.remove(miniMap);
+		splitter.remove(child);
+		if (Options.getSideProp().equals(Options.LEFT)) {
+			splitter.add(miniMap);
+			splitter.add(child);
+		} else {
+			splitter.add(child);
+			splitter.add(miniMap);
+		}
+	}
+	
+	public void propertiesChanged() {
+		setSplitterComponents();
 	}
 	
 	public void start() {
