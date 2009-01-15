@@ -70,6 +70,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.addMouseListener(ml);
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
+		scrollToMakeTextAreaVisible();
 	}
 	public void stop() {
 		textArea.removeScrollListener(textAreaScrollListener);
@@ -95,8 +96,22 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 
 		public void scrolledVertically(TextArea textArea) {
-			repaint();
+			scrollToMakeTextAreaVisible();
 		}
+	}
+	
+	private void scrollToMakeTextAreaVisible() {
+		int otherFirst = textArea.getFirstLine();
+		int thisFirst = getFirstLine();
+		if (otherFirst < thisFirst)
+			setFirstLine(otherFirst);
+		else {
+			int otherLast = otherFirst + textArea.getVisibleLines() - 1;
+			int thisLast = thisFirst + getVisibleLines() - 1;
+			if (otherLast > thisLast)
+				setFirstLine(thisFirst + otherLast - thisLast);
+		}
+		repaint();
 	}
 	
 	@Override
@@ -105,10 +120,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		Color c = g.getColor();
 		g.setColor(Color.RED);
 		TextAreaPainter painter = getPainter();
-		int x = 0;
+		int x = 1;
 		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
-		int y = textArea.getFirstLine() * h;
+		int y = (textArea.getFirstLine() - getFirstLine()) * h;
 		int height = textArea.getVisibleLines() * h - 1;
 		g.drawRect(x, y, width, height);
 		g.setColor(c);
@@ -136,9 +151,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		public void mousePressed(MouseEvent e) {
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-			int y = textArea.getFirstLine() * h;
-			int height = textArea.getVisibleLines() * h - 2;
-			if (e.getY() >= y && e.getY() <= y + height - 1) {
+			int y = (textArea.getFirstLine() - getFirstLine()) * h;
+			int height = textArea.getVisibleLines() * h - 1;
+			if (e.getY() >= y && e.getY() < y + height) {
 				line = textArea.getFirstLine();
 				dragY = e.getY();
 				drag = true;
@@ -149,6 +164,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		public void mouseReleased(MouseEvent e) {
 			if (drag)
 				e.consume();
+			else {
+				// Move the text area to where the mouse was released
+				int h = painter.getFontMetrics().getHeight();
+				int line = getFirstLine() + e.getY() / h;
+				textArea.scrollTo(line, 0, false);
+			}
 			drag = false;
 		}
 	}
