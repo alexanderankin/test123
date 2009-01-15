@@ -43,6 +43,8 @@ public class MinimapPlugin extends EBPlugin {
 		} else if (message instanceof PropertiesChanged) {
 			if (Options.getAutoProp())
 				showAll();
+			for (Minimap map: maps.values())
+				map.propertiesChanged();
 		}
 	}
 
