@@ -43,6 +43,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		// Align scrolling
 		textAreaScrollListener = new TextAreaScrollListener();
 		textArea.addScrollListener(textAreaScrollListener);
+		MouseListener mouseListeners[]= painter.getMouseListeners();
+		for (MouseListener l: mouseListeners)
+			painter.removeMouseListener(l);
+		MouseMotionListener motionListeners[]= painter.getMouseMotionListeners();
+		for (MouseMotionListener l: motionListeners)
+			painter.removeMouseMotionListener(l);
 		MouseListener ml = new MapMouseListener();
 		MouseMotionListener mml = new MapMouseMotionListener();
 		painter.addMouseListener(ml);
