@@ -1,31 +1,26 @@
 package minimap;
+
+import java.util.Map;
 import java.util.HashMap;
 
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 
-public class MinimapPlugin extends EBPlugin {
+public class MinimapPlugin extends EditPlugin {
 
-	static private HashMap<EditPane, Minimap> maps;
-	
-	@Override
-	public void handleMessage(EBMessage message) {
-		// TODO Auto-generated method stub
-		super.handleMessage(message);
-	}
+	private static Map<EditPane, Minimap> maps;
 
-	public void stop()
-	{
+	public void stop() {
 		maps = null;
 	}
 
-	public void start()
-	{
+	public void start() {
 		maps = new HashMap<EditPane, Minimap>();
 	}
-	static public void show(View view) {
+	
+	public static void show(View view) {
 		EditPane editPane = view.getEditPane();
 		if (maps.containsKey(editPane))
 			return;
@@ -33,7 +28,8 @@ public class MinimapPlugin extends EBPlugin {
 		map.start();
 		maps.put(editPane, map);
 	}
-	static public void hide(View view) {
+	
+	public static void hide(View view) {
 		EditPane editPane = view.getEditPane();
 		if (! maps.containsKey(editPane))
 			return;
