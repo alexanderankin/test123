@@ -24,15 +24,25 @@ import java.util.Map;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 
 public class MinimapPlugin extends EBPlugin {
 
 	@Override
 	public void handleMessage(EBMessage message) {
 		if (message instanceof EditPaneUpdate) {
-			//EditPaneUpdate msg = (EditPaneUpdate) message;
+			EditPaneUpdate msg = (EditPaneUpdate) message;
+			if (msg.getWhat() == EditPaneUpdate.CREATED) {
+				if (Options.getAutoProp())
+					show((EditPane) msg.getSource());
+			} else if (msg.getWhat() == EditPaneUpdate.DESTROYED)
+				hide((EditPane) msg.getSource());
+		} else if (message instanceof PropertiesChanged) {
+			if (Options.getAutoProp())
+				showAll();
 		}
 	}
 
@@ -46,8 +56,16 @@ public class MinimapPlugin extends EBPlugin {
 		maps = new HashMap<EditPane, Minimap>();
 	}
 	
-	public static void show(View view) {
-		EditPane editPane = view.getEditPane();
+	public static void showAll() {
+		jEdit.visit(new JEditVisitorAdapter() {
+			@Override
+			public void visit(EditPane editPane) {
+				show(editPane);
+			}
+		});
+	}
+
+	public static void show(EditPane editPane) {
 		if (maps.containsKey(editPane))
 			return;
 		Minimap map = new Minimap(editPane);
@@ -55,8 +73,12 @@ public class MinimapPlugin extends EBPlugin {
 		maps.put(editPane, map);
 	}
 	
-	public static void hide(View view) {
-		EditPane editPane = view.getEditPane();
+	public static void hideAll() {
+		for (EditPane ep: maps.keySet())
+			hide(ep);
+	}
+	
+	public static void hide(EditPane editPane) {
 		if (! maps.containsKey(editPane))
 			return;
 		Minimap map = maps.get(editPane);

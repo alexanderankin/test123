@@ -10,9 +10,13 @@ plugin.minimap.MinimapPlugin.depend.1=jedit 04.03.15.00
 
 minimap-show.label=Show minimap of current edit pane
 minimap-hide.label=Hide minimap of current edit pane
+minimap-show-all.label=Show minimaps of all edit panes
+minimap-hide-all.label=Hide minimaps of all edit panes
 
 # menu items
-plugin.minimap.MinimapPlugin.menu=minimap-show minimap-hide
+plugin.minimap.MinimapPlugin.menu=minimap-show minimap-hide \
+	- \
+	minimap-show-all minimap-hide-all
 
 # options
 plugin.minimap.MinimapPlugin.option-pane=minimap
