@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import javax.swing.event.MouseInputAdapter;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -31,14 +32,14 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		this.textArea = textArea;
 		getBuffer().setProperty("folding","explicit");
 		TextAreaPainter painter = getPainter();
-        Font f = painter.getFont().deriveFont((float) 2.0);
-        painter.setFont(f);
-        SyntaxStyle [] styles = painter.getStyles();
-        updateStyles(styles);
-        painter.setStyles(styles);
-        styles = painter.getFoldLineStyle();
-        updateStyles(styles);
-        painter.setFoldLineStyle(styles);
+		Font f = painter.getFont().deriveFont((float) 2.0);
+		painter.setFont(f);
+		SyntaxStyle [] styles = painter.getStyles();
+		updateStyles(styles);
+		painter.setStyles(styles);
+		styles = painter.getFoldLineStyle();
+		updateStyles(styles);
+		painter.setFoldLineStyle(styles);
 		setBuffer(textArea.getBuffer());
 	}
 
@@ -46,12 +47,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		// Align scrolling
 		textAreaScrollListener = new TextAreaScrollListener();
 		textArea.addScrollListener(textAreaScrollListener);
-		MouseListener mouseListeners[]= painter.getMouseListeners();
-		for (MouseListener l: mouseListeners)
-			painter.removeMouseListener(l);
-		MouseMotionListener motionListeners[]= painter.getMouseMotionListeners();
-		for (MouseMotionListener l: motionListeners)
-			painter.removeMouseMotionListener(l);
 		MouseListener ml = new MapMouseListener();
 		MouseMotionListener mml = new MapMouseMotionListener();
 		painter.addMouseListener(ml);
@@ -62,6 +57,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		textArea.removeScrollListener(textAreaScrollListener);
 		EditBus.removeFromBus(this);
 	}
+	
+	//{{{ setMouseHandler() method
+	public void setMouseHandler(MouseInputAdapter mouseInputAdapter)
+	{
+	} //}}}
+
 	
 	private void updateStyles(SyntaxStyle[] styles) {
 		for (int i = 0; i < styles.length; i++) {
