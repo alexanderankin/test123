@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
@@ -96,7 +97,7 @@ public class Import {
         });
 
         // make the directories
-        SVNCommitInfo info = client.doImport( from, to, cd.getMessage(), true );
+        SVNCommitInfo info = client.doImport( from, to, cd.getMessage(), null, false, false, SVNDepth.INFINITY );
 
         // handle the results
         PrintStream out = cd.getOut();

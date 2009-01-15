@@ -71,6 +71,36 @@ public class CopyData extends SVNData implements Serializable {
     private String title = "Copy";
 
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(title);
+        sb.append("[");
+        if (sourceFile != null) {
+            sb.append("sourceFile:").append(sourceFile).append(", ");
+        }
+        if (sourceFiles != null) {
+            sb.append("sourceFiles:");
+            for(File f : sourceFiles) {
+                sb.append(f.getAbsolutePath()).append(", ");
+            }
+        }
+        if (sourceURL != null) {
+            sb.append("sourceURL:").append(sourceURL).append(", ");
+        }
+        if (sourceURLs != null) {
+            sb.append("sourceURLs:");
+            for (SVNURL url : sourceURLs) {
+                sb.append(url.toString()).append(", ");
+            }
+        }
+        sb.append("destinationFile:").append(destinationFile).append(", ");
+        sb.append("destinationURL:").append(destinationURL).append(", ");
+        sb.append("isMove:").append(isMove).append(", ");
+        sb.append("message:").append(message).append("]");
+        return sb.toString();
+    }
+
+
     // set/get commit message
     public void setMessage(String m) {
         message = m;
@@ -112,8 +142,10 @@ public class CopyData extends SVNData implements Serializable {
         sourceFiles = files;
     }
     public SVNCopySource[] getSourceFiles() {
-        if (sourceFiles == null && sourceFile != null) {
+        if (sourceFiles == null) {
             sourceFiles = new ArrayList<File>();
+        }
+        if (sourceFile != null && !sourceFiles.contains(sourceFile)) {
             sourceFiles.add(sourceFile);
         }
         SVNCopySource[] sources = new SVNCopySource[sourceFiles.size()];
@@ -134,8 +166,10 @@ public class CopyData extends SVNData implements Serializable {
     }
 
     public SVNCopySource[] getSourceURLs() {
-        if (sourceURLs == null && sourceURL != null) {
+        if (sourceURLs == null) {
             sourceURLs = new ArrayList<SVNURL>();
+        }
+        if (sourceURL != null && !sourceURLs.contains(sourceURL)) {
             sourceURLs.add(sourceURL);
         }
         SVNCopySource[] sources = new SVNCopySource[sourceURLs.size()];
