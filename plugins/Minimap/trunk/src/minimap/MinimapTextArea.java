@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.textarea.JEditEmbeddedTextArea;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -49,8 +50,13 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
 		getBuffer().setProperty("folding","explicit");
+		setMapFont();
+		setBuffer(textArea.getBuffer());
+	}
+
+	private void setMapFont() {
 		TextAreaPainter painter = getPainter();
-		Font f = painter.getFont().deriveFont((float) 2.0);
+		Font f = painter.getFont().deriveFont(getFontSize());
 		painter.setFont(f);
 		SyntaxStyle [] styles = painter.getStyles();
 		updateStyles(styles);
@@ -58,9 +64,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		styles = painter.getFoldLineStyle();
 		updateStyles(styles);
 		painter.setFoldLineStyle(styles);
-		setBuffer(textArea.getBuffer());
 	}
 
+	private float getFontSize() {
+		return (float) Options.getSizeProp();
+	}
+	
 	public void start() {
 		// Align scrolling
 		textAreaScrollListener = new TextAreaScrollListener();
@@ -87,7 +96,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		for (int i = 0; i < styles.length; i++) {
         	SyntaxStyle style = styles[i];
         	styles[i] = new SyntaxStyle(style.getForegroundColor(),
-        		style.getBackgroundColor(), style.getFont().deriveFont((float) 2.0));
+        		style.getBackgroundColor(), style.getFont().deriveFont(getFontSize()));
         }
 	}
 
@@ -139,6 +148,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 					repaint();
 				}
 			}
+		} else if (message instanceof PropertiesChanged) {
+			//PropertiesChanged pc = (PropertiesChanged) message;
+			setMapFont();
+			propertiesChanged();
 		}
 	}
 	
@@ -171,7 +184,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				int visibleLines = textArea.getVisibleLines();
 				line -= visibleLines >> 1;
 				textArea.setFirstLine(line);
-				// textArea.scrollTo(line, 0, false);
 			}
 			drag = false;
 		}
@@ -184,9 +196,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
 			int diff = (e.getY() - dragY) / h;
-			System.out.println("line="+line+" diff="+diff);
 			textArea.setFirstLine(line + diff);
-			// textArea.scrollTo(line + diff, 0, false);
 			e.consume();
 		}
 	}
