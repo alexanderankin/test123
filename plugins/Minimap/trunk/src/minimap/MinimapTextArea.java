@@ -150,6 +150,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			}
 		} else if (message instanceof PropertiesChanged) {
 			//PropertiesChanged pc = (PropertiesChanged) message;
+			EditPane.initPainter(getPainter());
 			setMapFont();
 			propertiesChanged();
 		}
