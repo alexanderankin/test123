@@ -15,6 +15,7 @@ public class Minimap extends JPanel {
 
 	EditPane editPane;
 	MinimapTextArea miniMap;
+	Component child;
 	
 	public Minimap(EditPane editPane) {
 		setLayout(new GridLayout(1, 1));
@@ -22,15 +23,27 @@ public class Minimap extends JPanel {
 		JEditTextArea textArea = editPane.getTextArea();
 		miniMap = new MinimapTextArea(textArea);
 		Container c = textArea.getParent();
-		Component prev = textArea;
+		child = textArea;
 		while (! (c instanceof EditPane)) {
-			prev = c;
+			child = c;
 			c = c.getParent();
 		}
 		JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitter.add(miniMap);
-		splitter.add(prev);
+		splitter.add(child);
 		add(splitter);
 		miniMap.setBuffer(textArea.getBuffer());
+	}
+	
+	public void start() {
+		miniMap.start();
+		editPane.add(this);
+		editPane.validate();
+	}
+	public void stop() {
+		miniMap.stop();
+		editPane.remove(this);
+		editPane.add(child);
+		editPane.validate();
 	}
 }

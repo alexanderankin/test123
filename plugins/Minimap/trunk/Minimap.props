@@ -8,7 +8,8 @@ plugin.minimap.MinimapPlugin.docs=description.html
 plugin.minimap.MinimapPlugin.depend.0=jdk 1.5
 plugin.minimap.MinimapPlugin.depend.1=jedit 04.03.15.00
 
-minimap.label=Minimap for current edit pane
+minimap-show.label=Show minimap of current edit pane
+minimap-hide.label=Hide minimap of current edit pane
 
 # menu items
-plugin.minimap.MinimapPlugin.menu=minimap
+plugin.minimap.MinimapPlugin.menu=minimap-show minimap-hide
