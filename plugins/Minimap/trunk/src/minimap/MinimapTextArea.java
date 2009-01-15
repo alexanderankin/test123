@@ -168,7 +168,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				// Move the text area to where the mouse was released
 				int h = painter.getFontMetrics().getHeight();
 				int line = getFirstLine() + e.getY() / h;
-				textArea.scrollTo(line, 0, false);
+				textArea.setFirstLine(line);
+				// textArea.scrollTo(line, 0, false);
 			}
 			drag = false;
 		}
@@ -181,7 +182,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
 			int diff = (e.getY() - dragY) / h;
-			textArea.scrollTo(line + diff, 0, false);
+			System.out.println("line="+line+" diff="+diff);
+			textArea.setFirstLine(line + diff);
+			// textArea.scrollTo(line + diff, 0, false);
 			e.consume();
 		}
 	}
