@@ -18,12 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 
 public class MinimapPlugin extends EditPlugin {
@@ -53,6 +52,7 @@ public class MinimapPlugin extends EditPlugin {
 			return;
 		Minimap map = maps.get(editPane);
 		map.stop();
+		maps.remove(editPane);
 	}
 
 }
