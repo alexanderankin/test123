@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package minimap;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -26,6 +28,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+
+import javax.swing.JScrollBar;
 import javax.swing.event.MouseInputAdapter;
 
 import org.gjt.sp.jedit.EBComponent;
@@ -52,8 +56,27 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		getBuffer().setProperty("folding","explicit");
 		setMapFont();
 		setBuffer(textArea.getBuffer());
+		hideScrollbar();
 	}
 
+	private void hideScrollbar() {
+		JScrollBar sb = findScrollBar(this);
+		if (sb != null)
+			sb.setVisible(false);
+	}
+	
+	private JScrollBar findScrollBar(Container c) {
+		for (Component comp: c.getComponents()) {
+			if (comp instanceof JScrollBar)
+				return (JScrollBar) comp;
+			if (comp instanceof Container) {
+				JScrollBar sb = findScrollBar((Container) comp);
+				if (sb != null)
+					return sb;
+			}
+		}
+		return null;
+	}
 	private void setMapFont() {
 		TextAreaPainter painter = getPainter();
 		Font f = painter.getFont().deriveFont(getFontSize());
