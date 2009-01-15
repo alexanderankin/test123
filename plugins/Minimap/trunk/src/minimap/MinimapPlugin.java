@@ -30,9 +30,15 @@ public class MinimapPlugin extends EBPlugin {
 		if (maps.containsKey(editPane))
 			return;
 		Minimap map = new Minimap(editPane);
+		map.start();
 		maps.put(editPane, map);
-		editPane.add(map);
-		editPane.validate();
+	}
+	static public void hide(View view) {
+		EditPane editPane = view.getEditPane();
+		if (! maps.containsKey(editPane))
+			return;
+		Minimap map = maps.get(editPane);
+		map.stop();
 	}
 
 }

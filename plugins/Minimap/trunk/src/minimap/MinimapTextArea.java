@@ -40,6 +40,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
         updateStyles(styles);
         painter.setFoldLineStyle(styles);
 		setBuffer(textArea.getBuffer());
+	}
+
+	public void start() {
 		// Align scrolling
 		textAreaScrollListener = new TextAreaScrollListener();
 		textArea.addScrollListener(textAreaScrollListener);
@@ -55,7 +58,11 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
 	}
-
+	public void stop() {
+		textArea.removeScrollListener(textAreaScrollListener);
+		EditBus.removeFromBus(this);
+	}
+	
 	private void updateStyles(SyntaxStyle[] styles) {
 		for (int i = 0; i < styles.length; i++) {
         	SyntaxStyle style = styles[i];
@@ -79,11 +86,11 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		Color c = g.getColor();
 		g.setColor(Color.RED);
 		TextAreaPainter painter = getPainter();
-		int x = 1;
-		int width = painter.getWidth() - 2;
+		int x = 0;
+		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
 		int y = textArea.getFirstLine() * h;
-		int height = textArea.getVisibleLines() * h - 2;
+		int height = textArea.getVisibleLines() * h - 1;
 		g.drawRect(x, y, width, height);
 		g.setColor(c);
 	}
