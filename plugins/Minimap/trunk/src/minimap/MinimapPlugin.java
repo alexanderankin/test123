@@ -19,8 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package minimap;
 
 import java.awt.event.ActionEvent;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Timer;
@@ -104,7 +107,10 @@ public class MinimapPlugin extends EBPlugin {
 	}
 	
 	public static void hideAll() {
+		Set<EditPane> editPanes = new HashSet<EditPane>();
 		for (EditPane ep: maps.keySet())
+			editPanes.add(ep);
+		for (EditPane ep: editPanes)
 			hide(ep);
 	}
 	
