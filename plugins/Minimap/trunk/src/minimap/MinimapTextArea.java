@@ -21,6 +21,7 @@ package minimap;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -75,6 +76,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		foldChecker = new FoldChecker();
 		foldCheckTimer = new Timer(Options.getTimeProp(), foldChecker);
 		foldCheckTimer.setRepeats(true);
+		getPainter().setCursor(
+			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
 
 	private void hideScrollbar() {
@@ -204,6 +207,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private class MapMouseListener extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (e.getButton() != MouseEvent.BUTTON1)
+				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
 			int y = (textArea.getFirstLine() - getFirstLine()) * h;
@@ -217,6 +222,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			if (e.getButton() != MouseEvent.BUTTON1)
+				return;
 			if (drag)
 				e.consume();
 			else {
