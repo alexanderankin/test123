@@ -36,16 +36,19 @@ public class Options extends AbstractOptionPane {
 	private static final String FONT_LABEL = "labels.minimap.fontFamily";
 	private static final String SIZE_LABEL = "labels.minimap.fontSize";
 	private static final String SIDE_LABEL = "labels.minimap.side";
+	private static final String FOLD_LABEL = "labels.minimap.fold";
 	private static final String TIME_LABEL = "labels.minimap.time";
 	private static final String AUTO_PROP = "options.minimap.auto";
 	private static final String FONT_PROP = "options.minimap.font";
 	private static final String SIZE_PROP = "options.minimap.size";
 	private static final String SIDE_PROP = "options.minimap.side";
+	private static final String FOLD_PROP = "options.minimap.fold";
 	private static final String TIME_PROP = "options.minimap.time";
 	private JComboBox font;
 	private JTextField size;
 	private JCheckBox auto;
 	private JComboBox side;
+	private JCheckBox fold;
 	private JSlider time;
 	public static final String LEFT = "Left";
 	public static final String RIGHT = "Right";
@@ -64,6 +67,8 @@ public class Options extends AbstractOptionPane {
 		addComponent(auto);
 		side = new JComboBox(SIDES);
 		addComponent(jEdit.getProperty(SIDE_LABEL), side);
+		fold = new JCheckBox(jEdit.getProperty(FOLD_LABEL));
+		addComponent(fold);
 		time = new JSlider(500, 5000);
 		time.setMajorTickSpacing(500);
 		time.setMinorTickSpacing(100);
@@ -77,6 +82,7 @@ public class Options extends AbstractOptionPane {
 		size.setText(String.valueOf(getSizeProp()));
 		auto.setSelected(getAutoProp());
 		side.setSelectedItem(getSideProp());
+		fold.setSelected(getFoldProp());
 		time.setValue(getTimeProp());
 	}
 	public void _save() {
@@ -90,6 +96,7 @@ public class Options extends AbstractOptionPane {
 		jEdit.setDoubleProperty(SIZE_PROP, d);
 		jEdit.setBooleanProperty(AUTO_PROP, auto.isSelected());
 		jEdit.setProperty(SIDE_PROP, side.getSelectedItem().toString());
+		jEdit.setBooleanProperty(FOLD_PROP, fold.isSelected());
 		jEdit.setIntegerProperty(TIME_PROP, time.getValue());
 	}
 	
@@ -108,6 +115,9 @@ public class Options extends AbstractOptionPane {
 			if (s.equalsIgnoreCase(sideOption))
 				return sideOption;
 		return SIDES[0];
+	}
+	public static boolean getFoldProp() {
+		return jEdit.getBooleanProperty(FOLD_PROP, true);
 	}
 	public static int getTimeProp() {
 		return jEdit.getIntegerProperty(TIME_PROP, 500);
