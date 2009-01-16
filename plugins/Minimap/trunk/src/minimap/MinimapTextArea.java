@@ -53,7 +53,6 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
 
-	static private final int CHECK_FOLDING_PERIOD = 500; // milliseconds
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
 	private boolean drag = false;
@@ -74,7 +73,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		ml = new MapMouseListener();
 		mml = new MapMouseMotionListener();
 		foldChecker = new FoldChecker();
-		foldCheckTimer = new Timer(CHECK_FOLDING_PERIOD, foldChecker);
+		foldCheckTimer = new Timer(Options.getTimeProp(), foldChecker);
 		foldCheckTimer.setRepeats(true);
 	}
 
@@ -198,6 +197,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			EditPane.initPainter(getPainter());
 			setMapFont();
 			propertiesChanged();
+			foldCheckTimer.setDelay(Options.getTimeProp());
 		}
 	}
 	

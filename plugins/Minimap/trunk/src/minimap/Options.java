@@ -20,6 +20,7 @@ package minimap;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -32,12 +33,15 @@ public class Options extends AbstractOptionPane {
 	private static final String AUTO_LABEL = "labels.minimap.auto";
 	private static final String SIZE_LABEL = "labels.minimap.fontSize";
 	private static final String SIDE_LABEL = "labels.minimap.side";
+	private static final String TIME_LABEL = "labels.minimap.time";
 	private static final String AUTO_PROP = "options.minimap.auto";
 	private static final String SIZE_PROP = "options.minimap.size";
 	private static final String SIDE_PROP = "options.minimap.side";
+	private static final String TIME_PROP = "options.minimap.time";
 	private JTextField size;
 	private JCheckBox auto;
 	private JComboBox side;
+	private JSlider time;
 	public static final String LEFT = "Left";
 	public static final String RIGHT = "Right";
 	private static final String[] SIDES = { LEFT, RIGHT };
@@ -51,12 +55,19 @@ public class Options extends AbstractOptionPane {
 		addComponent(auto);
 		side = new JComboBox(SIDES);
 		addComponent(jEdit.getProperty(SIDE_LABEL), side);
+		time = new JSlider(500, 5000);
+		time.setMajorTickSpacing(500);
+		time.setMinorTickSpacing(100);
+		time.setPaintLabels(true);
+		time.setPaintTicks(true);
+		addComponent(jEdit.getProperty(TIME_LABEL), time);
 	}
 	
 	public void _init() {
 		size.setText(String.valueOf(getSizeProp()));
 		auto.setSelected(getAutoProp());
 		side.setSelectedItem(getSideProp());
+		time.setValue(getTimeProp());
 	}
 	public void _save() {
 		double d = 2.0;
@@ -68,6 +79,7 @@ public class Options extends AbstractOptionPane {
 		jEdit.setDoubleProperty(SIZE_PROP, d);
 		jEdit.setBooleanProperty(AUTO_PROP, auto.isSelected());
 		jEdit.setProperty(SIDE_PROP, side.getSelectedItem().toString());
+		jEdit.setIntegerProperty(TIME_PROP, time.getValue());
 	}
 	
 	public static double getSizeProp() {
@@ -82,5 +94,8 @@ public class Options extends AbstractOptionPane {
 			if (s.equalsIgnoreCase(sideOption))
 				return sideOption;
 		return SIDES[0];
+	}
+	public static int getTimeProp() {
+		return jEdit.getIntegerProperty(TIME_PROP, 500);
 	}
 }
