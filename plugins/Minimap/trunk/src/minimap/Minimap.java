@@ -85,4 +85,8 @@ public class Minimap extends JPanel {
 		splitter.remove(child);
 		splitter.remove(miniMap);
 	}
+	
+	public void updateFolds() {
+		miniMap.updateFolds();
+	}
 }

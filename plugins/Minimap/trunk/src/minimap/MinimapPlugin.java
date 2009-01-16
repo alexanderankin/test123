@@ -18,8 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.AbstractAction;
+import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
@@ -30,6 +34,8 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 
 public class MinimapPlugin extends EBPlugin {
+
+	Timer foldCheckTimer;
 
 	@Override
 	public void handleMessage(EBMessage message) {
@@ -43,6 +49,7 @@ public class MinimapPlugin extends EBPlugin {
 		} else if (message instanceof PropertiesChanged) {
 			if (Options.getAutoProp())
 				showAll();
+			foldCheckTimer.setDelay(Options.getTimeProp());
 			for (Minimap map: maps.values())
 				map.propertiesChanged();
 		}
@@ -60,11 +67,21 @@ public class MinimapPlugin extends EBPlugin {
 	}
 
 	public void stop() {
+		foldCheckTimer.stop();
 		maps = null;
 	}
 
+	@SuppressWarnings("serial")
 	public void start() {
 		maps = new HashMap<EditPane, Minimap>();
+		foldCheckTimer = new Timer(Options.getTimeProp(), new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				for (Minimap map: maps.values())
+					map.updateFolds();
+			}
+		});
+		foldCheckTimer.setRepeats(true);
+		foldCheckTimer.start();
 	}
 
 	// Action interface (for actions.xml)

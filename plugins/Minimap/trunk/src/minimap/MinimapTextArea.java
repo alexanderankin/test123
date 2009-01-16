@@ -24,16 +24,13 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.JScrollBar;
-import javax.swing.Timer;
 import javax.swing.event.MouseInputAdapter;
 
 import org.gjt.sp.jedit.EBComponent;
@@ -61,8 +58,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private int line = 0;
 	private MouseListener ml;
 	private MouseMotionListener mml;
-	Timer foldCheckTimer;
-	FoldChecker foldChecker;
 	
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
@@ -73,9 +68,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		textAreaScrollListener = new TextAreaScrollListener();
 		ml = new MapMouseListener();
 		mml = new MapMouseMotionListener();
-		foldChecker = new FoldChecker();
-		foldCheckTimer = new Timer(Options.getTimeProp(), foldChecker);
-		foldCheckTimer.setRepeats(true);
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 	}
@@ -120,10 +112,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
 		scrollToMakeTextAreaVisible();
-		foldCheckTimer.start();
 	}
 	public void stop() {
-		foldCheckTimer.stop();
 		EditBus.removeFromBus(this);
 		painter.removeMouseMotionListener(mml);
 		painter.removeMouseListener(ml);
@@ -200,7 +190,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			EditPane.initPainter(getPainter());
 			setMapFont();
 			propertiesChanged();
-			foldCheckTimer.setDelay(Options.getTimeProp());
 		}
 	}
 	
@@ -250,36 +239,36 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 	}
 
-	private class FoldChecker extends AbstractAction {
-		public void actionPerformed(ActionEvent e) {
-			if (getDisplayManager().getScrollLineCount() !=
-				textArea.getDisplayManager().getScrollLineCount())
-			{
-				updateFolds();
-			}
+	public void updateFolds() {
+		if (getDisplayManager().getScrollLineCount() ==
+			textArea.getDisplayManager().getScrollLineCount())
+		{
+			return;
 		}
-		private void updateFolds() {
-			int first = getFirstLine();
-			DisplayManager tdm = textArea.getDisplayManager();
-			DisplayManager dm = getDisplayManager();
-			int i = first;
-			while (i < dm.getLastVisibleLine()) {
-				if (tdm.isLineVisible(i))
-					if (tdm.isLineVisible(i + 1)) {
-						dm.expandFold(i, false);
-						if (i >= getLastPhysicalLine())
-							return;
-						i++;
+		int first = getFirstLine();
+		DisplayManager tdm = textArea.getDisplayManager();
+		DisplayManager dm = getDisplayManager();
+		int i = first;
+		while (i < dm.getLastVisibleLine()) {
+			if (tdm.isLineVisible(i)) {
+				if (tdm.isLineVisible(i + 1)) {
+					dm.expandFold(i, false);
+					if (i >= getLastPhysicalLine())
+						return;
+					i++;
+				}
+				else {
+					if (dm.isLineVisible(i + 1))
+						dm.collapseFold(i);
+					try {
+						i = tdm.getNextVisibleLine(i);
+					} catch (Exception e) {
+						return;
 					}
-					else {
-						if (dm.isLineVisible(i + 1))
-							dm.collapseFold(i);
-						try {
-							i = tdm.getNextVisibleLine(i);
-						} catch (Exception e) {
-							return;
-						}
-					}
+				}
+			} else {
+				dm.collapseFold(i - 1);
+				i = tdm.getNextVisibleLine(i);
 			}
 		}
 	}
