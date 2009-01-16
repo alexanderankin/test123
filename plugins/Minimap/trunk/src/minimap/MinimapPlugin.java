@@ -39,7 +39,7 @@ public class MinimapPlugin extends EBPlugin {
 				if (Options.getAutoProp())
 					show((EditPane) msg.getSource());
 			} else if (msg.getWhat() == EditPaneUpdate.DESTROYED)
-				hide((EditPane) msg.getSource());
+				hide((EditPane) msg.getSource(), false);
 		} else if (message instanceof PropertiesChanged) {
 			if (Options.getAutoProp())
 				showAll();
@@ -50,6 +50,15 @@ public class MinimapPlugin extends EBPlugin {
 
 	private static Map<EditPane, Minimap> maps;
 
+	// restore - whether to restore the previous edit pane child
+	private static void hide(EditPane editPane, boolean restore) {
+		if (! maps.containsKey(editPane))
+			return;
+		Minimap map = maps.get(editPane);
+		map.stop(restore);
+		maps.remove(editPane);
+	}
+
 	public void stop() {
 		maps = null;
 	}
@@ -57,6 +66,8 @@ public class MinimapPlugin extends EBPlugin {
 	public void start() {
 		maps = new HashMap<EditPane, Minimap>();
 	}
+
+	// Action interface (for actions.xml)
 	
 	public static void showAll() {
 		jEdit.visit(new JEditVisitorAdapter() {
@@ -81,11 +92,7 @@ public class MinimapPlugin extends EBPlugin {
 	}
 	
 	public static void hide(EditPane editPane) {
-		if (! maps.containsKey(editPane))
-			return;
-		Minimap map = maps.get(editPane);
-		map.stop();
-		maps.remove(editPane);
+		hide(editPane, true);
 	}
-
+	
 }

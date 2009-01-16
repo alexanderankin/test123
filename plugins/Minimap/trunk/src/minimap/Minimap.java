@@ -74,10 +74,15 @@ public class Minimap extends JPanel {
 		editPane.add(this);
 		editPane.validate();
 	}
-	public void stop() {
+	public void stop(boolean restore) {
 		miniMap.stop();
 		editPane.remove(this);
-		editPane.add(child);
-		editPane.validate();
+		if (restore) {
+			editPane.add(child);
+			editPane.validate();
+		}
+		remove(splitter);
+		splitter.remove(child);
+		splitter.remove(miniMap);
 	}
 }

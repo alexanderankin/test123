@@ -126,6 +126,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.removeMouseMotionListener(mml);
 		painter.removeMouseListener(ml);
 		textArea.removeScrollListener(textAreaScrollListener);
+		dispose();
 	}
 	
 	//{{{ setMouseHandler() method
