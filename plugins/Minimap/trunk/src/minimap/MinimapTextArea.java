@@ -23,13 +23,16 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.JScrollBar;
+import javax.swing.Timer;
 import javax.swing.event.MouseInputAdapter;
 
 import org.gjt.sp.jedit.EBComponent;
@@ -40,6 +43,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
+import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditEmbeddedTextArea;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.ScrollListener;
@@ -49,8 +53,16 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
 
-	JEditTextArea textArea;
-	ScrollListener textAreaScrollListener;
+	static private final int CHECK_FOLDING_PERIOD = 500; // milliseconds
+	private JEditTextArea textArea;
+	private ScrollListener textAreaScrollListener;
+	private boolean drag = false;
+	private int dragY = 0;
+	private int line = 0;
+	private MouseListener ml;
+	private MouseMotionListener mml;
+	Timer foldCheckTimer;
+	FoldChecker foldChecker;
 	
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
@@ -58,6 +70,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		setMapFont();
 		setBuffer(textArea.getBuffer());
 		hideScrollbar();
+		textAreaScrollListener = new TextAreaScrollListener();
+		ml = new MapMouseListener();
+		mml = new MapMouseMotionListener();
+		foldChecker = new FoldChecker();
+		foldCheckTimer = new Timer(CHECK_FOLDING_PERIOD, foldChecker);
+		foldCheckTimer.setRepeats(true);
 	}
 
 	private void hideScrollbar() {
@@ -95,19 +113,19 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	}
 	
 	public void start() {
-		// Align scrolling
-		textAreaScrollListener = new TextAreaScrollListener();
 		textArea.addScrollListener(textAreaScrollListener);
-		MouseListener ml = new MapMouseListener();
-		MouseMotionListener mml = new MapMouseMotionListener();
 		painter.addMouseListener(ml);
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
 		scrollToMakeTextAreaVisible();
+		foldCheckTimer.start();
 	}
 	public void stop() {
-		textArea.removeScrollListener(textAreaScrollListener);
+		foldCheckTimer.stop();
 		EditBus.removeFromBus(this);
+		painter.removeMouseMotionListener(mml);
+		painter.removeMouseListener(ml);
+		textArea.removeScrollListener(textAreaScrollListener);
 	}
 	
 	//{{{ setMouseHandler() method
@@ -182,10 +200,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 	}
 	
-	private boolean drag = false;
-	private int dragY = 0;
-	private int line = 0;
-	
 	private class MapMouseListener extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -228,4 +242,37 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 	}
 
+	private class FoldChecker extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
+			if (getDisplayManager().getScrollLineCount() !=
+				textArea.getDisplayManager().getScrollLineCount())
+			{
+				updateFolds();
+			}
+		}
+		private void updateFolds() {
+			int first = getFirstLine();
+			DisplayManager tdm = textArea.getDisplayManager();
+			DisplayManager dm = getDisplayManager();
+			int i = first;
+			while (i < dm.getLastVisibleLine()) {
+				if (tdm.isLineVisible(i))
+					if (tdm.isLineVisible(i + 1)) {
+						dm.expandFold(i, false);
+						if (i >= getLastPhysicalLine())
+							return;
+						i++;
+					}
+					else {
+						if (dm.isLineVisible(i + 1))
+							dm.collapseFold(i);
+						try {
+							i = tdm.getNextVisibleLine(i);
+						} catch (Exception e) {
+							return;
+						}
+					}
+			}
+		}
+	}
 }
