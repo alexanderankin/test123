@@ -60,6 +60,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private int line = 0;
 	private MouseListener ml;
 	private MouseMotionListener mml;
+	private boolean lastFoldProp;
 	
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
@@ -72,6 +73,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		mml = new MapMouseMotionListener();
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lastFoldProp = Options.getFoldProp();
 	}
 
 	private void hideScrollbar() {
@@ -196,6 +198,14 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		{
 			EditPane.initPainter(getPainter());
 			setMapFont();
+			boolean foldProp = Options.getFoldProp();
+			if (foldProp != lastFoldProp) {
+				lastFoldProp = foldProp;
+				if (foldProp)
+					updateFolds();
+				else
+					getDisplayManager().expandAllFolds();
+			}
 			propertiesChanged();
 		}
 	}
@@ -247,6 +257,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	}
 
 	public void updateFolds() {
+		if (! Options.getFoldProp())
+			return;
 		if (getDisplayManager().getScrollLineCount() ==
 			textArea.getDisplayManager().getScrollLineCount())
 		{
