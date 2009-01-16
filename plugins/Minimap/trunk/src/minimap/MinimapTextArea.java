@@ -29,6 +29,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 import javax.swing.JScrollBar;
 import javax.swing.event.MouseInputAdapter;
@@ -92,7 +94,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	}
 	private void setMapFont() {
 		TextAreaPainter painter = getPainter();
-		Font f = painter.getFont().deriveFont(getFontSize());
+		Font f = deriveFont(painter.getFont());
 		painter.setFont(f);
 		SyntaxStyle [] styles = painter.getStyles();
 		updateStyles(styles);
@@ -105,7 +107,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private float getFontSize() {
 		return (float) Options.getSizeProp();
 	}
-	
+	private Font deriveFont(Font f) {
+		Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) f.getAttributes();
+		attributes.put(TextAttribute.FAMILY, Options.getFontProp());
+		attributes.put(TextAttribute.SIZE, getFontSize());
+		return f.deriveFont(attributes);
+	}
 	public void start() {
 		textArea.addScrollListener(textAreaScrollListener);
 		painter.addMouseListener(ml);
@@ -131,7 +138,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		for (int i = 0; i < styles.length; i++) {
         	SyntaxStyle style = styles[i];
         	styles[i] = new SyntaxStyle(style.getForegroundColor(),
-        		style.getBackgroundColor(), style.getFont().deriveFont(getFontSize()));
+        		style.getBackgroundColor(), deriveFont(style.getFont()));
         }
 	}
 

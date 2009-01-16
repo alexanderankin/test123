@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
+import java.awt.GraphicsEnvironment;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JSlider;
@@ -31,13 +33,16 @@ import org.gjt.sp.jedit.jEdit;
 public class Options extends AbstractOptionPane {
 
 	private static final String AUTO_LABEL = "labels.minimap.auto";
+	private static final String FONT_LABEL = "labels.minimap.fontFamily";
 	private static final String SIZE_LABEL = "labels.minimap.fontSize";
 	private static final String SIDE_LABEL = "labels.minimap.side";
 	private static final String TIME_LABEL = "labels.minimap.time";
 	private static final String AUTO_PROP = "options.minimap.auto";
+	private static final String FONT_PROP = "options.minimap.font";
 	private static final String SIZE_PROP = "options.minimap.size";
 	private static final String SIDE_PROP = "options.minimap.side";
 	private static final String TIME_PROP = "options.minimap.time";
+	private JComboBox font;
 	private JTextField size;
 	private JCheckBox auto;
 	private JComboBox side;
@@ -49,6 +54,10 @@ public class Options extends AbstractOptionPane {
 	public Options() {
 		super("minimap");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		String [] fonts = ge.getAvailableFontFamilyNames();
+		font = new JComboBox(fonts);
+		addComponent(jEdit.getProperty(FONT_LABEL), font);
 		size = new JTextField();
 		addComponent(jEdit.getProperty(SIZE_LABEL), size);
 		auto = new JCheckBox(jEdit.getProperty(AUTO_LABEL));
@@ -64,12 +73,14 @@ public class Options extends AbstractOptionPane {
 	}
 	
 	public void _init() {
+		font.setSelectedItem(getFontProp());
 		size.setText(String.valueOf(getSizeProp()));
 		auto.setSelected(getAutoProp());
 		side.setSelectedItem(getSideProp());
 		time.setValue(getTimeProp());
 	}
 	public void _save() {
+		jEdit.setProperty(FONT_PROP, font.getSelectedItem().toString());
 		double d = 2.0;
 		try {
 			d = Double.valueOf(size.getText());
@@ -82,6 +93,9 @@ public class Options extends AbstractOptionPane {
 		jEdit.setIntegerProperty(TIME_PROP, time.getValue());
 	}
 	
+	public static String getFontProp() {
+		return jEdit.getProperty(FONT_PROP, jEdit.getFontProperty("view.font").getFamily());
+	}
 	public static double getSizeProp() {
 		return jEdit.getDoubleProperty(SIZE_PROP, 2.0);
 	}
