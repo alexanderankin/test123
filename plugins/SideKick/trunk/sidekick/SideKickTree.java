@@ -140,6 +140,7 @@ public class SideKickTree extends JPanel
 		JToolBar buttonBox = new JToolBar();
 		buttonBox.setFloatable(false);
 		JToolBar filterBox = new JToolBar();
+		filterBox.setLayout(new BorderLayout());
 		filterBox.setFloatable(false);
 
 		parseBtn = new RolloverButton(GUIUtilities.loadIcon("Parse.png"));
@@ -190,9 +191,9 @@ public class SideKickTree extends JPanel
 
 		buttonBox.add(parseBtn);
 		buttonBox.add(propsBtn);
-		filterBox.add(search);
-		filterBox.add(searchField);
-		filterBox.add(clearSearchBtn);
+		filterBox.add(search, BorderLayout.WEST);
+		filterBox.add(searchField, BorderLayout.CENTER);
+		filterBox.add(clearSearchBtn, BorderLayout.EAST);
 
 		buttonBox.add(Box.createGlue());
 
