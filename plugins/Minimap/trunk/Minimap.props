@@ -24,6 +24,7 @@ options.minimap.label=Minimap
 options.minimap.code=new minimap.Options();
 
 # labels
+labels.minimap.fontFamily=Minimap font family:
 labels.minimap.fontSize=Minimap font size:
 labels.minimap.auto=Automatically add a minimap to all edit panes
 labels.minimap.side=Show minimap on this side of the edit pane:
