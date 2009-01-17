@@ -117,4 +117,10 @@ public class MinimapPlugin extends EBPlugin {
 		hide(editPane, true);
 	}
 	
+	public static void toggle(EditPane editPane) {
+		if (maps.containsKey(editPane))
+			hide(editPane);
+		else
+			show(editPane);
+	}
 }

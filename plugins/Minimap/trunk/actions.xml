@@ -11,6 +11,11 @@
 			minimap.MinimapPlugin.hide(editPane);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="minimap-toggle" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.toggle(editPane);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="minimap-show-all" NO_REPEAT="TRUE">
 		<CODE>
 			minimap.MinimapPlugin.showAll();
