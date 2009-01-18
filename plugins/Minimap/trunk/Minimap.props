@@ -2,11 +2,11 @@ plugin.minimap.MinimapPlugin.name=Minimap
 plugin.minimap.MinimapPlugin.activate=startup
 plugin.minimap.MinimapPlugin.description=Show minimap for the text area
 plugin.minimap.MinimapPlugin.author=Shlomy Reinstein
-plugin.minimap.MinimapPlugin.version=0.1
+plugin.minimap.MinimapPlugin.version=1.0
 plugin.minimap.MinimapPlugin.docs=description.html
 
 plugin.minimap.MinimapPlugin.depend.0=jdk 1.5
-plugin.minimap.MinimapPlugin.depend.1=jedit 04.03.15.00
+plugin.minimap.MinimapPlugin.depend.1=jedit 04.03.16.00
 
 minimap-show.label=Show minimap of current edit pane
 minimap-hide.label=Hide minimap of current edit pane
