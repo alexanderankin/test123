@@ -21,7 +21,9 @@
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
-
+	
+	<import file="${build.support}/plugin-build.xml" />
+	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
@@ -31,18 +33,6 @@
 	 	<mkdir dir="${build.dir}" />
 	</target>
 	
-	<target name="compile" depends="prepare">
-		<javac
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			deprecation="on"
-			debug="yes"
-			includeJavaRuntime="yes"
-		>
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
-
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 
