@@ -60,7 +60,8 @@
 	<target name="package">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
-		<plugin-package pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 	</target>
 	<target name="view">
 		<input addproperty="plugin.name" message="Plugin Name:" />
@@ -128,6 +129,7 @@
 	<macrodef name="plugin-package">
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
+		<attribute name="pluginJeditVersion" />
 		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
 			<!-- Clean plugin's src directory first -->
