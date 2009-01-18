@@ -8,11 +8,11 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.description=The SpellCheck Plugin performs spell checking of text in a jEdit buffer.\
-	You will need to install Aspell to use this plugin.
+    You will need to install Aspell to use this plugin.
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.longdescription=description.html
 ### These tell jEdit what JDK and jEdit version we require
 
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.11.00
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.15.00
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.5
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
@@ -23,8 +23,8 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.jars=hunspell.jar jna.jar
 
 ### Option panel labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.option-group=	spellcheck.general \
-	spellcheck.syntax \
-	spellcheck.aspell \
+    spellcheck.syntax \
+    spellcheck.aspell \
     spellcheck.hunspell
 
 options.spellcheck.general.label=General
@@ -69,11 +69,11 @@ options.SpellCheck.spellcheckOnSaveSep=Misspelled words highlighting...
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
     spell-check-selection-with-lang \
-	spell-check-errorlist \
-	spell-check-set-buffer-lang \
-	spell-check-clear-ignore-all \
-	spell-check-save-dicts \
-	spell-check-browse-dicts
+    spell-check-errorlist \
+    spell-check-set-buffer-lang \
+    spell-check-clear-ignore-all \
+    spell-check-save-dicts \
+    spell-check-browse-dicts
 
 spell-check-menu.label=Spell Check
 
