@@ -9,7 +9,6 @@
 
 package trie;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
@@ -17,9 +16,9 @@ import java.util.LinkedList;
  *
  * @author Sune Simonsen
  */
-public class Node<T> {
+final class Node<T> {
     
-    private LinkedList<T> elements = new LinkedList<T>();
+    private final LinkedList<T> elements = new LinkedList<T>();
     
     public LinkedList<T> getElements() {
         return elements;

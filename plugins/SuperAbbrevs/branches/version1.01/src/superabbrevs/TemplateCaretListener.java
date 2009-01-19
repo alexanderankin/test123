@@ -1,13 +1,15 @@
 package superabbrevs;
-import superabbrevs.template.fields.SelectableField;
 import java.util.HashMap;
-import javax.swing.event.*;
-import java.util.Hashtable;
 import java.util.Map;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+
 import org.gjt.sp.jedit.Buffer;
-import superabbrevs.template.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import superabbrevs.template.Template;
 
 public class TemplateCaretListener implements CaretListener {
 	public void caretUpdate(CaretEvent e){
@@ -28,9 +30,7 @@ public class TemplateCaretListener implements CaretListener {
 				int caret = textArea.getCaretPosition();
 				
 				if (!template.inCurrentField(caret)){
-					SelectableField f = template.getCurrentField();
 					Handler.removeHandler(buffer);
-					
 					removeCaretListener(textArea);
 				}
 			} 

@@ -20,7 +20,7 @@ import java.util.Collection;
  */
 public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
     
-    private ScrollAbleMenuModel<T> model = new ScrollAbleMenuModel<T>();
+    private ScrollAbleMenuModel model = new ScrollAbleMenuModel();
     private ArrayList<ScrollablePopupMenuListner<T>> listeners = 
             new ArrayList<ScrollablePopupMenuListner<T>>();
         
@@ -154,7 +154,7 @@ public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
     private javax.swing.JScrollPane menuJScrollPane;
     // End of variables declaration//GEN-END:variables
     
-    private class ScrollAbleMenuModel<T> extends AbstractListModel {
+    private class ScrollAbleMenuModel extends AbstractListModel {
         private ArrayList<T> elements = new ArrayList<T>();
         
         public void add(T element) {

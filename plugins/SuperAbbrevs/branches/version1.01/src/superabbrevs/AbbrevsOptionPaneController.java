@@ -1,12 +1,9 @@
 package superabbrevs;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.StandardUtilities;
+import java.util.Set;
+
 import superabbrevs.model.Abbrev;
 import superabbrevs.model.Mode;
 
@@ -16,52 +13,24 @@ import superabbrevs.model.Mode;
  *
  */
 public class AbbrevsOptionPaneController {
-    
-    private String modeName;
-    private int modeIndex;
-    
     Hashtable<String,Mode> modes = new Hashtable<String, Mode>();
     
-    /**
-     * Creates a new instance of AbbrevsOptionPaneController
-     */
-    public AbbrevsOptionPaneController(String modeName) {
-        this.modeName = modeName;
-    }
+    private Persistence persistence = new Persistence();
+	private final ModeService modeService;
 
-    public String[] getModes() {
-        org.gjt.sp.jedit.Mode[] jEditModes = jEdit.getModes();
-        String[] modeNames = new String[jEditModes.length+1];
-        
-        modeNames[0] = "global";
-        
-        for (int i = 0; i < jEditModes.length; i++) {
-            modeNames[i+1] = jEditModes[i].getName(); 
-        }
-        
-        Arrays.sort(modeNames,1,jEditModes.length-1,
-                String.CASE_INSENSITIVE_ORDER);
-        
-        for (int i = 1; i < jEditModes.length; i++) {
-            if (modeNames[i].equals(this.modeName)) {
-                // We found the selected index
-                modeIndex = i;
-                break;
-            }
-        }
-        
-        return modeNames;
+	public ModeService getModeService() {
+		return modeService;
+	}
+
+	public AbbrevsOptionPaneController(ModeService modeService) {
+        this.modeService = modeService;
     }
     
-    public int getIndexOfCurrentMode() {
-        return modeIndex;
-    }
-    
-    public ArrayList<Abbrev> loadsAbbrevs(String modeName) {
+    public Set<Abbrev> loadsAbbrevs(String modeName) {
         if (modes.containsKey(modeName)) {
             return modes.get(modeName).getAbbreviations();
         } else {
-            Mode mode = Persistence.loadMode(modeName);
+            Mode mode = persistence.loadMode(modeName);
             modes.put(modeName, mode);
             return mode.getAbbreviations();
         }
@@ -70,7 +39,7 @@ public class AbbrevsOptionPaneController {
     public void saveAbbrevs() throws IOException {
         for(Mode mode : modes.values()) {
             AbbrevsHandler.invalidateMode(mode.getName());
-            Persistence.saveMode(mode);  
+            persistence.saveMode(mode);  
         }
     }
 }

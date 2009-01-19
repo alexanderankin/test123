@@ -19,6 +19,8 @@ import superabbrevs.utilities.Log;
 
 public class Migration {
 
+	private Persistence persistence = new Persistence();
+	
     public static void Migrate() {
         Log.log(Log.Level.DEBUG, Migration.class, "Migrating old abbreviations");
         //importOldAbbrevs();
@@ -26,13 +28,15 @@ public class Migration {
         removeOldMacros();
     }
     
-    private static void deleteAbbrevsDir() {
+    @SuppressWarnings("unused")
+	private static void deleteAbbrevsDir() {
         // Remove settings directory
         File oldAbbrevsDir = new File(Paths.OLD_ABBREVS_DIR);
         deleteDirectory(oldAbbrevsDir);    
     }
 
-    private static void importOldAbbrevs() {
+    @SuppressWarnings("unused")
+	private void importOldAbbrevs() {
         for (org.gjt.sp.jedit.Mode mode : jEdit.getModes()) {
             Hashtable<String, ArrayList<Abbrev>> newAbbrevs = loadAbbrevs(mode.getName());
             Hashtable<String, String> oldAbbrevs = readModeFile(mode.getName());
@@ -62,7 +66,7 @@ public class Migration {
         return (path.delete());
     }
 
-    private static void importOldAbbrevsForMode(
+    private void importOldAbbrevsForMode(
             String modeName, Hashtable<String, String> oldAbbrevs,
             Hashtable<String, ArrayList<Abbrev>> newAbbrevs) {
 
@@ -75,7 +79,7 @@ public class Migration {
             
         try {
             // todo migrate variables
-            Persistence.saveMode(mode);
+            persistence.saveMode(mode);
         } catch (IOException ex) {
             Log.log(Log.Level.ERROR, Migration.class, ex);
         }
@@ -115,11 +119,11 @@ public class Migration {
         }
     }
 
-    private static Hashtable<String, ArrayList<Abbrev>> loadAbbrevs(String modeName) {
+    private Hashtable<String, ArrayList<Abbrev>> loadAbbrevs(String modeName) {
         Hashtable<String, ArrayList<Abbrev>> result =
                 new Hashtable<String, ArrayList<Abbrev>>();
 
-        for (Abbrev abbrev : Persistence.loadMode(modeName).getAbbreviations()) {
+        for (Abbrev abbrev : persistence.loadMode(modeName).getAbbreviations()) {
             ArrayList<Abbrev> abbrevs = result.get(abbrev.getAbbreviation());
             if (abbrevs == null) {
                 abbrevs = new ArrayList<Abbrev>();

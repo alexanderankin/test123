@@ -1,9 +1,9 @@
 package superabbrevs.lexer.template;
 
-import org.gjt.sp.jedit.bsh.Interpreter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import superabbrevs.template.TemplateInterpreter;
 import superabbrevs.template.fields.EndField;
 import superabbrevs.template.fields.Field;
@@ -38,20 +38,15 @@ class FieldListWirer implements TemplateFieldVisitor {
         return newTemplate;
     }
 
-    private VariableField getVariableField(int index) {
-        SelectableField field = selectableFieldMap.get(index);
-
-        if (!(field instanceof VariableField)) {
-            return null;
-        }
-
-        return (VariableField) field;
-    }
-
     public void visit(TempTranformationField field) {
         int index = field.getIndex();
-        VariableField variableField = getVariableField(index);
-        if (variableField != null) {
+        SelectableField selectableField = selectableFieldMap.get(index);
+        
+        if (selectableField != null && selectableField instanceof VariableField) {
+            VariableField variableField = (VariableField) selectableField;
+            // If we found a variable field in the selectable field map that is 
+            // instance of a variable field we will make transformation field 
+            // pointing to that variable field.
             newTemplate.add(new TransformationField(variableField,
                     field.getCode(), interpreter));
         }
@@ -59,8 +54,18 @@ class FieldListWirer implements TemplateFieldVisitor {
 
     public void visit(TempVariableFieldPointer field) {
         int index = field.getIndex();
-        VariableField variableField = getVariableField(index);
-        if (variableField != null) {
+        SelectableField selectableField = selectableFieldMap.get(index);
+        
+        if (selectableField == null) {
+            // if the variable we are pointing to does not exists we will add 
+            // this pointers as an empty variable field.
+            VariableField variableField = new VariableField(index, "");
+            newTemplate.add(variableField);
+            selectableFieldMap.put(index, variableField);
+        } else if (selectableField instanceof VariableField) {
+            // if the variable is a temp variable pointer pointing to a variable 
+            // field we will add a real variable field pointer to the template.
+            VariableField variableField = (VariableField) selectableField;
             newTemplate.add(new VariableFieldPointer(variableField));
         }
     }

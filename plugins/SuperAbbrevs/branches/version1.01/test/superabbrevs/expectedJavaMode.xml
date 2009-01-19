@@ -1,0 +1,37 @@
+<mode>
+  <name>java</name>
+  <abbreviations class="tree-set">
+    <no-comparator/>
+    <abbreviation>
+      <name>For-loop</name>
+      <abbreviation>for</abbreviation>
+      <expansion>for (...) {}</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>if-statement</name>
+      <abbreviation>if</abbreviation>
+      <expansion>if (...) {}</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+    <abbreviation>
+      <name>While-loop</name>
+      <abbreviation>while</abbreviation>
+      <expansion>while (...) {}</expansion>
+      <autoIndent>false</autoIndent>
+      <whenInvokedAsCommand>
+        <replacementType>AT_CARET</replacementType>
+        <replacementSelectionType>NOTHING</replacementSelectionType>
+      </whenInvokedAsCommand>
+    </abbreviation>
+  </abbreviations>
+  <variables/>
+</mode>

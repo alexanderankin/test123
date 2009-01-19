@@ -1,11 +1,10 @@
 package superabbrevs.template;
 
 import java.io.IOException;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
+
 import org.gjt.sp.jedit.bsh.EvalError;
 import org.gjt.sp.jedit.bsh.Interpreter;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+
 import superabbrevs.JEditInterface;
 import superabbrevs.Paths;
 import superabbrevs.model.Abbrev;
