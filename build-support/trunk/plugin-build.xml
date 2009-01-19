@@ -78,8 +78,8 @@
     <property name="compiler.deprecation"   value="off" />
     <property name="compiler.verbose"       value="off" />
     <property name="compiler.nowarn"        value="off" />
-    <property name="compiler.target"        value="1.4" />
-    <property name="compiler.source"        value="1.4" />
+    <property name="compiler.target"        value="1.5" />
+    <property name="compiler.source"        value="1.5" />
     <property name="compiler.listfiles"     value="no" />
     <property name="compiler.fork"          value="no" />
 
@@ -227,8 +227,8 @@
          compiler.deprecation: deprecation option (off)
          compiler.verbose: the verbose option (off)
          compiler.nowarn: the nowarn option (off)
-         compiler.target: the target option (1.4)
-         compiler.source: the source option (1.4)
+         compiler.target: the target option (1.5)
+         compiler.source: the source option (1.5)
          compiler.listfiles: the listfiles option (no)      -->
     <target name="compile"
             description="Compile the plugin's classes">
@@ -470,7 +470,7 @@
 
     <target name="docs-none"
         description="no xslt step - HTML docs" />
-    
+
     <!-- {{{ Target: docs-xalan =========================== -->
     <!-- Generate docs with Xalan tool from
          xml.apache.org . Same properties as the
