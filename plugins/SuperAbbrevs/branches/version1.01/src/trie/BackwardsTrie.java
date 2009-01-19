@@ -15,12 +15,24 @@ import java.util.LinkedList;
  *
  * @author Sune Simonsen
  */
-public class BackwardsTrie<T> implements Trie<T> {
+public final class BackwardsTrie<T> implements Trie<T> {
     
-    private Node<T> root = new Node<T>();
+    private final Node<T> root = new Node<T>();
 
     public LinkedList<T> scan(String text) {
         return scanHelper(root, text, text.length()-1);
+    }
+    
+    public boolean remove(String key, T element) {
+    	return get(key).remove(element);
+    }
+    
+    public LinkedList<T> get(String key) {
+    	return getHelper(root, key, key.length()-1);
+    }
+    
+    public void put(String key, T element) {
+    	putHelper(root, key, key.length()-1, element);
     }
     
     private LinkedList<T> scanHelper(Node<T> node, String key, int offset) {
@@ -33,17 +45,8 @@ public class BackwardsTrie<T> implements Trie<T> {
             return node.getElements();
         }
     }
-
-    public boolean remove(String key, T element) {
-        LinkedList<T> elements = get(key);
-        return elements.remove(element);
-    }
     
-    public LinkedList<T> get(String key) {
-        return getHelper(root, key, key.length()-1);
-    }
-    
-    public LinkedList<T> getHelper(Node<T> node, String key, int offset) {
+    private LinkedList<T> getHelper(Node<T> node, String key, int offset) {
         char c;
         if (0 <= offset && node.hasChild(c = key.charAt(offset))) {
             // We have not scanned the hole key
@@ -57,9 +60,6 @@ public class BackwardsTrie<T> implements Trie<T> {
         }
     }
     
-    public void put(String key, T element) {
-        putHelper(root, key, key.length()-1, element);
-    }
     
     private void putHelper(Node<T> node, String key, int offset, T element) {
         if (0 <= offset) {

@@ -1,12 +1,16 @@
 package superabbrevs.template;
 
-import superabbrevs.lexer.template.TemplateParser;
-import superabbrevs.lexer.templategenerator.TemplateGeneratorParser;
-import superabbrevs.lexer.templategenerator.TemplateGeneratorLexer;
-import org.gjt.sp.jedit.bsh.*;
-import java.io.*;
-import superabbrevs.lexer.*;
+import java.io.IOException;
+import java.io.StringReader;
+
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.ParseException;
+import org.gjt.sp.jedit.bsh.TargetError;
+
 import superabbrevs.lexer.template.TemplateLexer;
+import superabbrevs.lexer.template.TemplateParser;
+import superabbrevs.lexer.templategenerator.TemplateGeneratorLexer;
+import superabbrevs.lexer.templategenerator.TemplateGeneratorParser;
 
 /**
  * @author Sune Simonsen

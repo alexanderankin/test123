@@ -7,10 +7,11 @@ package superabbrevs.stdlib;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+
 import superabbrevs.JEditInterface;
 
 /**
@@ -19,17 +20,13 @@ import superabbrevs.JEditInterface;
  */
 public class Tpg {
     
-    private View view;
     private JEditTextArea textArea;
     private Buffer buffer;
-    private String indent;
     private StringBuffer out;
 
     public Tpg(String indent, JEditInterface jedit) {
-        this.view = jedit.getView();
         this.textArea = jedit.getTextArea();
         this.buffer = jedit.getBuffer();
-        this.indent = indent;
     }
 
     public StringBuffer getOut() {

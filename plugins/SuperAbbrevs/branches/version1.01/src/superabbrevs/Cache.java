@@ -9,10 +9,8 @@
 
 package superabbrevs;
 
-import java.lang.IllegalArgumentException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Set;
 
 /**
  *

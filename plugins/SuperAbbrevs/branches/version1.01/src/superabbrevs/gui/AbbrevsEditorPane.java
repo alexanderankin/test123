@@ -1,41 +1,28 @@
-/*
- * AbbrevsOptionPane.java
- *
- * Created on 27. januar 2007, 22:09
- */
 package superabbrevs.gui;
 
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputMap;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+
+import org.jdesktop.beansbinding.AbstractBindingListener;
+import org.jdesktop.beansbinding.AutoBinding;
+import org.jdesktop.beansbinding.BeanProperty;
+import org.jdesktop.beansbinding.Binding;
+import org.jdesktop.beansbinding.BindingGroup;
+import org.jdesktop.beansbinding.Bindings;
+import org.jdesktop.beansbinding.ELProperty;
+import org.jdesktop.beansbinding.Validator;
+import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
+import org.jdesktop.beansbinding.Binding.SyncFailure;
+
 import superabbrevs.model.Abbrev;
-import superabbrevs.AbbrevsOptionPaneController;
-import superabbrevs.SuperAbbrevsPlugin;
 
-/**
- *
- * @author  sune
- */
 public class AbbrevsEditorPane extends JPanel {
-
-    private boolean reactionOnSelectionChanged = true;
-    private boolean reactionOnModeChanged = true;
-    private int modeIndex;
+	
+    /**
+     * A combobox model containing all the replacaments types used in the 
+     * replacement area combobox if some text is selected in the text area.
+     */
     private ComboBoxModel commandInputModel = new DefaultComboBoxModel(
             new Abbrev.ReplacementTypes[]{
         Abbrev.ReplacementTypes.AT_CARET,
@@ -44,84 +31,65 @@ public class AbbrevsEditorPane extends JPanel {
         Abbrev.ReplacementTypes.WORD,
         Abbrev.ReplacementTypes.BUFFER
     });
+    
+    /**
+     * A combobox model containing all the replacaments types used in the 
+     * replacement area combobox if no text is selected in the text area.
+     */
     private ComboBoxModel commandInputSelectionModel = new DefaultComboBoxModel(
             new Abbrev.ReplementSelectionTypes[]{
         Abbrev.ReplementSelectionTypes.NOTHING,
         Abbrev.ReplementSelectionTypes.SELECTION,
         Abbrev.ReplementSelectionTypes.SELECTED_LINES
     });
-
-    /** 
-     * Creates new form AbbrevsOptionPane 
-     */
-    public AbbrevsEditorPane(AbbrevsOptionPaneController controller) {
-        this.mainPanel = this;
-        this.controller = controller;
-
-        abbrevsModel = new AbbrevsListModel(
-                controller.loadsAbbrevs(getCurrentMode()));
-        initComponents();
-        
-        Properties p = loadWindowState();
-        if (p != null) {
-            int dl = new Integer(p.getProperty("AbbrevsOptionPane.divider_location"));
-            abbrevsEditorJSplitPane.setDividerLocation(dl);
-        }
-
-        // register actions
-        ActionMap actionMap = getActionMap();
-        actionMap.put(addAction.getValue(Action.NAME), addAction);
-        actionMap.put(removeAction.getValue(Action.NAME), removeAction);
-        actionMap.put(renameAction.getValue(Action.NAME), renameAction);
-
-        // Bind keyboard shortcuts
-        InputMap inputMap = getInputMap(WHEN_IN_FOCUSED_WINDOW);
-        inputMap.put(
-                KeyStroke.getKeyStroke("control N"),
-                addAction.getValue(Action.NAME));
-
-        inputMap.put(
-                KeyStroke.getKeyStroke("control R"),
-                renameAction.getValue(Action.NAME));
-
-        inputMap.put(
-                KeyStroke.getKeyStroke("DELETE"),
-                removeAction.getValue(Action.NAME));
-
-        modeIndex = controller.getIndexOfCurrentMode();
-        selectFirstAbbrev();
-
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                abbrevsJList.requestFocus();
-            }
-        });
+    
+    class EmptyStringValidator extends Validator<String> {
+		@Override
+		public Validator<String>.Result validate(
+				String abbreviation) {
+			if (abbreviation == null || "".equals(abbreviation)) {
+				return new Result(0, "The input value must be non empty");
+			} 
+			return null;
+		}
+	}
+    
+    public AbbrevsEditorPane() {
+		initComponents();
     }
+	
+	public void bind(Abbrev abbrev) {
+		bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
+		AutoBinding binding = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				abbrev, ELProperty.create("${abbreviation}"),
+				abbrevJTextField, ELProperty.create("${text}"));
+		EmptyStringValidator emptyStringValidator = new EmptyStringValidator();
+		binding.setValidator(emptyStringValidator);
+		
+		bindingGroup.addBinding(binding); 
+		
+		bindingGroup.addBinding(Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				abbrev, BeanProperty.create("expansion"),
+				abbrevsEditorJTextArea, ELProperty.create("${text}"))); 
+		
+		bindingGroup.bind();
+		bindingGroup.addBindingListener(new AbstractBindingListener() {
 
-    @SuppressWarnings("deprecation")
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+			@Override
+			public void syncFailed(Binding binding, SyncFailure failure) {
+				System.out.println(failure);
+			}
 
-        abbrevsJPopupMenu = new javax.swing.JPopupMenu();
-        addJMenuItem = new javax.swing.JMenuItem();
-        removeAddJMenuItem = new javax.swing.JMenuItem();
-        renameJMenuItem = new javax.swing.JMenuItem();
-        abbrevsEditorJSplitPane = new javax.swing.JSplitPane();
-        abbrevsJPanel = new javax.swing.JPanel();
-        modesJComboBox = new javax.swing.JComboBox();
-        addJButton = new javax.swing.JButton();
-        removeJButton = new javax.swing.JButton();
-        modeJLabel = new javax.swing.JLabel();
-        abbrevsJLabel = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        abbrevsJList = new javax.swing.JList();
-        abbrevsEditorJPanel = new javax.swing.JPanel();
+		});
+		
+	}
+	
+	public void unBind() {
+		bindingGroup.unbind();
+	}
+
+	private void initComponents() {
+		
         expansionJLabel = new javax.swing.JLabel();
         abbrevJLabel = new javax.swing.JLabel();
         abbrevJTextField = new javax.swing.JTextField();
@@ -132,104 +100,8 @@ public class AbbrevsEditorPane extends JPanel {
         commandOrJLabel = new javax.swing.JLabel();
         commandNoSelectionReplacementJComboBox = new javax.swing.JComboBox();
         commandReplaceJLabel3 = new javax.swing.JLabel();
-
-        addJMenuItem.setAction(addAction);
-        abbrevsJPopupMenu.add(addJMenuItem);
-
-        removeAddJMenuItem.setAction(removeAction);
-        abbrevsJPopupMenu.add(removeAddJMenuItem);
-
-        renameJMenuItem.setAction(renameAction);
-        abbrevsJPopupMenu.add(renameJMenuItem);
-
-        setLayout(new java.awt.BorderLayout());
-
-        abbrevsEditorJSplitPane.setDividerLocation(220);
-
-        modesJComboBox.setModel(new DefaultComboBoxModel(controller.getModes()));
-        modesJComboBox.setSelectedIndex(controller.getIndexOfCurrentMode());
-        modesJComboBox.setNextFocusableComponent(abbrevsJList);
-        modesJComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modesJComboBoxActionPerformed(evt);
-            }
-        });
-
-        addJButton.setAction(addAction);
-        addJButton.setText("Add...");
-
-        removeJButton.setAction(removeAction);
-        removeJButton.setText("Remove");
-        removeJButton.setEnabled(false);
-
-        modeJLabel.setDisplayedMnemonic('M');
-        modeJLabel.setLabelFor(modesJComboBox);
-        modeJLabel.setText("Mode:");
-
-        abbrevsJLabel.setDisplayedMnemonic('A');
-        abbrevsJLabel.setLabelFor(abbrevsJList);
-        abbrevsJLabel.setText("Abbreviations:");
-
-        abbrevsJList.setModel(abbrevsModel);
-        abbrevsJList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        abbrevsJList.setNextFocusableComponent(addJButton);
-        abbrevsJList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                abbrevsJListMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                abbrevsJListMouseReleased(evt);
-            }
-        });
-        abbrevsJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                abbrevsJListValueChanged(evt);
-            }
-        });
-        jScrollPane2.setViewportView(abbrevsJList);
 		
-        org.jdesktop.layout.GroupLayout abbrevsJPanelLayout = new org.jdesktop.layout.GroupLayout(abbrevsJPanel);
-        abbrevsJPanel.setLayout(abbrevsJPanelLayout);
-        abbrevsJPanelLayout.setHorizontalGroup(
-            abbrevsJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(abbrevsJPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(abbrevsJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
-                    .add(abbrevsJPanelLayout.createSequentialGroup()
-                        .add(modeJLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(modesJComboBox, 0, 135, Short.MAX_VALUE))
-                    .add(abbrevsJLabel)
-                    .add(abbrevsJPanelLayout.createSequentialGroup()
-                        .add(addJButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(removeJButton)))
-                .addContainerGap())
-        );
-        abbrevsJPanelLayout.setVerticalGroup(
-            abbrevsJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, abbrevsJPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(abbrevsJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(modeJLabel)
-                    .add(modesJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(abbrevsJLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(abbrevsJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(removeJButton)
-                    .add(addJButton))
-                .addContainerGap())
-        );
-
-        addJButton.getAccessibleContext().setAccessibleName("addJButton");
-
-        abbrevsEditorJSplitPane.setLeftComponent(abbrevsJPanel);
-
-        expansionJLabel.setDisplayedMnemonic('E');
+		expansionJLabel.setDisplayedMnemonic('E');
         expansionJLabel.setLabelFor(abbrevsEditorJTextArea);
         expansionJLabel.setText("Expansion:");
 
@@ -238,12 +110,12 @@ public class AbbrevsEditorPane extends JPanel {
         abbrevJLabel.setText("Abbreviation:");
 
         abbrevJTextField.setToolTipText("Enter the abbreviation");
-        abbrevJTextField.setEnabled(false);
+        abbrevJTextField.setEnabled(true);
 
         abbrevsEditorJTextArea.setColumns(80);
         abbrevsEditorJTextArea.setRows(5);
         abbrevsEditorJTextArea.setTabSize(4);
-        abbrevsEditorJTextArea.setEnabled(false);
+        abbrevsEditorJTextArea.setEnabled(true);
         abbrevsEditorJScrollPane.setViewportView(abbrevsEditorJTextArea);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("When invoked as a command"));
@@ -289,8 +161,8 @@ public class AbbrevsEditorPane extends JPanel {
                 .add(commandNoSelectionReplacementJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
-        org.jdesktop.layout.GroupLayout abbrevsEditorJPanelLayout = new org.jdesktop.layout.GroupLayout(abbrevsEditorJPanel);
-        abbrevsEditorJPanel.setLayout(abbrevsEditorJPanelLayout);
+        org.jdesktop.layout.GroupLayout abbrevsEditorJPanelLayout = new org.jdesktop.layout.GroupLayout(this);
+        setLayout(abbrevsEditorJPanelLayout);
         abbrevsEditorJPanelLayout.setHorizontalGroup(
             abbrevsEditorJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(abbrevsEditorJPanelLayout.createSequentialGroup()
@@ -324,341 +196,18 @@ public class AbbrevsEditorPane extends JPanel {
         expansionJLabel.getAccessibleContext().setAccessibleName("expansionJLabel");
         abbrevJLabel.getAccessibleContext().setAccessibleName("abbrevJLabel");
         abbrevJTextField.getAccessibleContext().setAccessibleName("abbrevJTextField");
-
-        abbrevsEditorJSplitPane.setRightComponent(abbrevsEditorJPanel);
-
-        add(abbrevsEditorJSplitPane, java.awt.BorderLayout.CENTER);
-    }// </editor-fold>//GEN-END:initComponents
-    private void abbrevsJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_abbrevsJListValueChanged
-        if (reactionOnSelectionChanged) {
-            try {
-                int selection = getSelection();
-                if (lastSelection != -1 && lastSelection != selection) {
-                    validateAbbrev();
-                    saveAbbrev(lastSelection);
-                }
-                loadAbbrev();
-                lastSelection = selection;
-            } catch (ValidationException ex) {
-                reactionOnSelectionChanged = false;
-                setSelection(lastSelection);
-                reactionOnSelectionChanged = true;
-                showValidationException(ex);
-            }
-        }
-    }//GEN-LAST:event_abbrevsJListValueChanged
-
-    private void modesJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modesJComboBoxActionPerformed
-        if (reactionOnModeChanged) {
-            try {
-                validateAbbrev();
-
-                // remove the selection
-                abbrevsJList.clearSelection();
-                modeIndex = modesJComboBox.getSelectedIndex();
-                abbrevsModel = new AbbrevsListModel(controller.loadsAbbrevs(
-                        (String) modesJComboBox.getSelectedItem()));
-                abbrevsJList.setModel(abbrevsModel);
-                selectFirstAbbrev();
-            } catch (ValidationException ex) {
-                reactionOnModeChanged = false;
-                modesJComboBox.setSelectedIndex(modeIndex);
-                reactionOnModeChanged = true;
-                showValidationException(ex);
-            }
-        }
-    }//GEN-LAST:event_modesJComboBoxActionPerformed
-
-    private void abbrevsJListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_abbrevsJListMouseReleased
-        maybeShowPopup(evt);
-    }//GEN-LAST:event_abbrevsJListMouseReleased
-
-    private void abbrevsJListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_abbrevsJListMousePressed
-        maybeShowPopup(evt);
-    }//GEN-LAST:event_abbrevsJListMousePressed
-
-    private void maybeShowPopup(MouseEvent evt) {
-        if (evt.isPopupTrigger()) {
-            int selection =
-                    abbrevsJList.locationToIndex(new Point(evt.getX(), evt.getY()));
-            try {
-                validateAbbrev();
-                setSelection(selection);
-                abbrevsJPopupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-            } catch (ValidationException ex) {
-                showValidationException(ex);
-            }
-        }
-    }
-
-    private int getSelection() {
-        return abbrevsJList.getSelectedIndex();
-    }
-
-    private void setSelection(int selection) {
-        if (selection == -1) {
-            abbrevsJList.clearSelection();
-        } else {
-            abbrevsJList.setSelectedIndex(selection);
-        }
-    }
-
-    /**
-     * Copy all the elements in the abbreviation model to an arraylist and 
-     * use the controller to save them.
-     */
-    public void save() throws ValidationException {
-        int selection = getSelection();
-
-        try {
-            if (selection != -1) {
-                validateAbbrev();
-                saveAbbrev(selection);
-            }
-
-            controller.saveAbbrevs();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Could not write the file abbreviation file",
-                    "Write to file error", JOptionPane.ERROR_MESSAGE);
-        } catch (ValidationException ex) {
-            showValidationException(ex);
-            throw ex;
-        }
-        
-        saveWindowState();
-    }
-
-    private void saveAbbrev(int selection) {
-        Abbrev abbrev = abbrevsModel.get(selection);
-        abbrev.setAbbreviation(abbrevJTextField.getText());
-        abbrev.setExpansion(abbrevsEditorJTextArea.getText());
-        abbrev.whenInvokedAsCommand.replacementType = 
-                (Abbrev.ReplacementTypes) commandNoSelectionReplacementJComboBox.getSelectedItem();
-        abbrev.whenInvokedAsCommand.replacementSelectionType = 
-                (Abbrev.ReplementSelectionTypes) commandSelectionReplacementJComboBox.getSelectedItem();
-    }
-
-    private void loadAbbrev() {
-        int selection = getSelection();
-
-        if (selection != -1) {
-            Abbrev abbrev = abbrevsModel.get(selection);
-            setAbbrevPanelEnabled(true);
-            setAbbrevValues(abbrev);
-        } else {
-            Abbrev clear = new Abbrev("", "", "");
-            setAbbrevValues(clear);
-            setAbbrevPanelEnabled(false);
-        }
-    }
-
-    private void setAbbrevPanelEnabled(boolean enabled) {
-        abbrevJTextField.setEnabled(enabled);
-        abbrevsEditorJTextArea.setEnabled(enabled);
-        removeAction.setEnabled(enabled);
-        commandSelectionReplacementJComboBox.setEnabled(enabled);
-        commandNoSelectionReplacementJComboBox.setEnabled(enabled);
-    }
-
-    private void setAbbrevValues(Abbrev abbrev) {
-
-        abbrevJTextField.setText(abbrev.getAbbreviation());
-        abbrevsEditorJTextArea.setText(abbrev.getExpansion());
-        commandSelectionReplacementJComboBox.setSelectedItem(
-                abbrev.whenInvokedAsCommand.replacementSelectionType);
-        commandNoSelectionReplacementJComboBox.setSelectedItem(
-                abbrev.whenInvokedAsCommand.replacementType);
-    }
-
-    private String getCurrentMode() {
-        String[] modes = controller.getModes();
-        return modes[controller.getIndexOfCurrentMode()];
-    }
-
-    private void selectFirstAbbrev() {
-        if (abbrevsModel.getSize() != 0) {
-            abbrevsJList.setSelectedIndex(0);
-        } else {
-            // If the list is empty clear the selection
-            abbrevsJList.clearSelection();
-        }
-    }
-    
-    private AbbrevsOptionPaneController controller;
-    private AbbrevsListModel abbrevsModel;
-    private AbbrevsEditorPane mainPanel;
-    private AddAbbrevAction addAction = new AddAbbrevAction();
-    private RemoveAbbrevAction removeAction = new RemoveAbbrevAction();
-    private RenameAbbrevAction renameAction = new RenameAbbrevAction();
-    private int lastSelection = -1;
-
-    private void showValidationException(ValidationException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(),
-                "Validation error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    private void validateAbbrev() throws ValidationException {
-        if (getSelection() != -1 && "".equals(abbrevJTextField.getText())) {
-            throw new ValidationException("The abbreviation must not be empty");
-        }
-    }
-
-    private class AddAbbrevAction extends AbstractAction {
-
-        public AddAbbrevAction() {
-            putValue(Action.NAME, "Add...");
-            putValue(Action.SMALL_ICON,
-                    new javax.swing.ImageIcon(
-                    getClass().getResource("/superabbrevs/gui/icons/Plus.png")));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control N"));
-            putValue(Action.SHORT_DESCRIPTION, "Add a new abbreviation (Ctrl+N)");
-            setEnabled(true);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            try {
-                validateAbbrev();
-                String name = JOptionPane.showInputDialog(mainPanel,
-                        "Enter the name of the new abbreviation");
-                if (name != null && !name.trim().equals("")) {
-                    abbrevsJList.clearSelection();
-                    int selection = abbrevsModel.add(name);
-                    setSelection(selection);
-                    abbrevJTextField.grabFocus();
-                    abbrevsJList.ensureIndexIsVisible(selection);
-                }
-            } catch (ValidationException ex) {
-                showValidationException(ex);
-            }
-        }
-    }
-
-    private class RemoveAbbrevAction extends AbstractAction {
-
-        public RemoveAbbrevAction() {
-            putValue(Action.NAME, "Remove...");
-            putValue(Action.SMALL_ICON,
-                    new javax.swing.ImageIcon(
-                    getClass().getResource("/superabbrevs/gui/icons/Minus.png")));
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("DELETE"));
-            putValue(Action.SHORT_DESCRIPTION, "Remove the selected abbreviation (DELETE)");
-            setEnabled(false);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            int result = JOptionPane.showConfirmDialog(mainPanel,
-                    "Do you really wish to delete the selected abbreviation",
-                    "Delete Abbreviation", JOptionPane.OK_CANCEL_OPTION);
-
-            if (result == JOptionPane.OK_OPTION) {
-                int selection = getSelection();
-                abbrevsJList.clearSelection();
-                int newSelection = abbrevsModel.remove(selection);
-
-                setSelection(newSelection);
-                abbrevsJList.ensureIndexIsVisible(newSelection);
-            }
-        }
-    }
-
-    private class RenameAbbrevAction extends AbstractAction {
-
-        public RenameAbbrevAction() {
-            putValue(Action.NAME, "Rename...");
-            putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
-            putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control R"));
-            putValue(Action.SHORT_DESCRIPTION, "Rename the selected abbreviation (CTRL R)");
-            setEnabled(true);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-
-            try {
-                validateAbbrev();
-
-                int selection = getSelection();
-                Abbrev abbrev = abbrevsModel.get(selection);
-
-                String name = JOptionPane.showInputDialog(mainPanel,
-                        "Enter the new name for the abbreviation", abbrev.getName());
-                if (name != null && !name.trim().equals("") && !name.equals(abbrev.getName())) {
-                    abbrevsJList.clearSelection();
-
-                    abbrev.setName(name);
-                    selection = abbrevsModel.sort(selection);
-                    setSelection(selection);
-                    abbrevsJList.ensureIndexIsVisible(selection);
-                    abbrevsJList.grabFocus();
-                }
-            } catch (ValidationException ex) {
-                showValidationException(ex);
-            }
-        }
-    }
-    
-    private Properties loadWindowState() {
-        InputStream in = SuperAbbrevsPlugin.getResourceAsStream(
-                SuperAbbrevsPlugin.class, "AbbrevsOptionPane.properties");
-
-        Properties p = new Properties();
-
-        try {
-            p.load(in);
-            return p;
-        } catch (Exception ex) {
-            return null;
-        } finally {
-            try { in.close(); } catch (Exception ex) {}
-        }
-    }
-
-    private void saveWindowState() {
-        Properties p = new Properties();
-        p.setProperty("AbbrevsOptionPane.divider_location", "" + 
-                abbrevsEditorJSplitPane.getDividerLocation());
-
-        OutputStream out = SuperAbbrevsPlugin.getResourceAsOutputStream(
-                SuperAbbrevsPlugin.class, "AbbrevsOptionPane.properties");
-
-        try {
-            p.store(out, "Saving the window state");
-        } catch (Exception ex) {
-            JOptionPane.showConfirmDialog(this, ex.getMessage(), "Exception",
-                    JOptionPane.ERROR);
-        } finally {
-            try {
-                out.close();
-            } catch (Exception e) {}
-        }
-    }
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel abbrevJLabel;
-    private javax.swing.JTextField abbrevJTextField;
-    private javax.swing.JPanel abbrevsEditorJPanel;
-    private javax.swing.JScrollPane abbrevsEditorJScrollPane;
-    private javax.swing.JSplitPane abbrevsEditorJSplitPane;
-    private javax.swing.JTextArea abbrevsEditorJTextArea;
-    private javax.swing.JLabel abbrevsJLabel;
-    private javax.swing.JList abbrevsJList;
-    private javax.swing.JPanel abbrevsJPanel;
-    private javax.swing.JPopupMenu abbrevsJPopupMenu;
-    private javax.swing.JButton addJButton;
-    private javax.swing.JMenuItem addJMenuItem;
-    private javax.swing.JComboBox commandNoSelectionReplacementJComboBox;
-    private javax.swing.JLabel commandOrJLabel;
-    private javax.swing.JLabel commandReplaceJLabel3;
-    private javax.swing.JComboBox commandSelectionReplacementJComboBox;
-    private javax.swing.JLabel expansionJLabel;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel modeJLabel;
-    private javax.swing.JComboBox modesJComboBox;
-    private javax.swing.JMenuItem removeAddJMenuItem;
-    private javax.swing.JButton removeJButton;
-    private javax.swing.JMenuItem renameJMenuItem;
-    // End of variables declaration//GEN-END:variables
+	}
+	
+	 private javax.swing.JLabel abbrevJLabel;
+	private javax.swing.JTextField abbrevJTextField;
+	private javax.swing.JScrollPane abbrevsEditorJScrollPane;
+	private javax.swing.JTextArea abbrevsEditorJTextArea;
+	private javax.swing.JComboBox commandNoSelectionReplacementJComboBox;
+	private javax.swing.JLabel commandOrJLabel;
+	private javax.swing.JLabel commandReplaceJLabel3;
+	private javax.swing.JComboBox commandSelectionReplacementJComboBox;
+	private javax.swing.JLabel expansionJLabel;
+	private javax.swing.JPanel jPanel1;
+	
+	private BindingGroup bindingGroup;
 }

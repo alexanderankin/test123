@@ -31,14 +31,14 @@ public class Log {
         levelConversion.put(Log.Level.ERROR, org.gjt.sp.util.Log.ERROR);
     }
     
-    public static void log(Log.Level level, Class clazz, String message) {
+    public static void log(Log.Level level, Class<?> clazz, String message) {
         org.gjt.sp.util.Log.log(
                 levelConversion.get(level), 
                 clazz.getPackage() + "." + clazz.getName(), 
                 message);
     }
     
-    public static void log(Log.Level level, Class clazz, Exception ex) {
+    public static void log(Log.Level level, Class<?> clazz, Exception ex) {
         org.gjt.sp.util.Log.log(
                 levelConversion.get(level), 
                 clazz.getPackage() + "." + clazz.getName(), 

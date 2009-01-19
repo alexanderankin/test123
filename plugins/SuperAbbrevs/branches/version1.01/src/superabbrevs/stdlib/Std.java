@@ -1,13 +1,8 @@
 package superabbrevs.stdlib;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.TextUtilities;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
  *
@@ -21,17 +16,6 @@ public class Std {
     public Std(String indentString) {
         this.indentString = indentString;
     }
-    /*
-    public String date() {
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-
-        java.text.SimpleDateFormat sdf =
-                new java.text.SimpleDateFormat(DATE_FORMAT);
-
-        sdf.setTimeZone(TimeZone.getDefault());
-
-        return sdf.format(cal.getTime());
-    }*/
     
     public String firstUp(String s) {
         StringBuffer res = new StringBuffer(s);

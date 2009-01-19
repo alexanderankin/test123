@@ -10,12 +10,14 @@
 package superabbrevs;
 
 import java.util.ArrayList;
-import superabbrevs.model.Abbrev;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Set;
+
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import superabbrevs.model.Abbrev;
 
 /**
  *
@@ -23,7 +25,6 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
  */
 public class InputHandler {
 
-    private View view;
     private JEditTextArea textArea;
     private Buffer buffer;
 
@@ -32,7 +33,6 @@ public class InputHandler {
        
     /** Creates a new instance of InputHandler */
     public InputHandler(JEditInterface jedit) {
-        this.view = jedit.getView();
         this.textArea = jedit.getTextArea();
         this.buffer = jedit.getBuffer();
         
@@ -98,8 +98,8 @@ public class InputHandler {
 
     void showSearchDialog() {
         String mode = textAreaHandler.getModeAtCursor();
-        ArrayList<Abbrev> abbrevs = abbrevsHandler.getAbbrevs(mode);
-        textAreaHandler.showSearchDialog(abbrevs);
+        Set<Abbrev> abbrevs = abbrevsHandler.getAbbrevs(mode);
+        textAreaHandler.showSearchDialog(new ArrayList<Abbrev>(abbrevs));
     }
     
 }

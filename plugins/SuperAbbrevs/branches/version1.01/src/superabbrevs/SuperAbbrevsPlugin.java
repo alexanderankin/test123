@@ -56,10 +56,9 @@ public class SuperAbbrevsPlugin extends EditPlugin {
     public static void showOptionPane(View view, JEditTextArea textArea, 
             Buffer buffer) {
         JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        String mode = jedit.getMode().getName();
         
         AbbrevsOptionPaneController controller = 
-                new AbbrevsOptionPaneController(mode);
+                new AbbrevsOptionPaneController(jedit);
         JDialog dialog = new AbbrevsDialog(jedit.getView(), false, controller);
         dialog.setVisible(true);
     }

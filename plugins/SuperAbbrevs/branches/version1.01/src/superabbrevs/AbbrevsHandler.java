@@ -9,10 +9,10 @@
 
 package superabbrevs;
 
-import superabbrevs.model.Abbrev;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Set;
+
+import superabbrevs.model.Abbrev;
 import superabbrevs.model.Mode;
 import trie.BackwardsTrie;
 import trie.Trie;
@@ -22,6 +22,9 @@ import trie.Trie;
  * @author Sune Simonsen
  */
 public class AbbrevsHandler {
+	
+	private Persistence persistence = new Persistence();
+	
     
     private static Cache<String,Trie<Abbrev>> cache = 
             new Cache<String,Trie<Abbrev>>(10);
@@ -30,7 +33,7 @@ public class AbbrevsHandler {
         Trie<Abbrev> trie = cache.get(modeName);
         if (trie == null) {
             // Load the abbreviation from disc
-            Mode mode = Persistence.loadMode(modeName);
+            Mode mode = persistence.loadMode(modeName);
             trie = new BackwardsTrie<Abbrev>();
             for(Abbrev abbrev : mode.getAbbreviations()) {
                 trie.put(abbrev.getAbbreviation(), abbrev);
@@ -47,8 +50,8 @@ public class AbbrevsHandler {
         cache.invalidate(mode);
     }
 
-    ArrayList<Abbrev> getAbbrevs(String modeName) {
-        Mode mode = Persistence.loadMode(modeName);
+    Set<Abbrev> getAbbrevs(String modeName) {
+        Mode mode = persistence.loadMode(modeName);
         return mode.getAbbreviations();
     }
 }

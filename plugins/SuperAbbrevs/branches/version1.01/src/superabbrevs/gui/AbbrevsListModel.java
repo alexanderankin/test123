@@ -1,8 +1,10 @@
 package superabbrevs.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Set;
+
 import javax.swing.AbstractListModel;
+
+import superabbrevs.collections.IndexedSortedSet;
 import superabbrevs.model.Abbrev;
 
 /**
@@ -10,39 +12,19 @@ import superabbrevs.model.Abbrev;
  * Created on 28. januar 2007, 00:45
  *
  */
-public class AbbrevsListModel extends AbstractListModel{
+public class AbbrevsListModel extends AbstractListModel {
     
     /**
      * Creates a new instance of AbbrevsModel
      */
-    public AbbrevsListModel(ArrayList<Abbrev> abbrevs) {
-        // Sort the table
-        Collections.sort(abbrevs);
-        this.abbrevs = abbrevs;
+    public AbbrevsListModel(Set<Abbrev> abbrevs) {
+    	IndexedSortedSet<Abbrev> indexedSortedSet = new IndexedSortedSet<Abbrev>();
+    	indexedSortedSet.addAll(abbrevs);
+        this.abbrevs = indexedSortedSet;
     }
     
     public Object getElementAt(int index) {
         return abbrevs.get(index);
-    }
-    
-    public int sort(int selection) {
-        Object selectedObject = selection != -1 ? 
-            getElementAt(selection) : null; 
-        // Sort the table
-        Collections.sort(abbrevs);
-        int newSelection = -1;
-        if(selection != -1){
-            // Find the added element
-            boolean found = false;
-            for (int i = 0; !found; i++) {
-                if(selectedObject == (Object)abbrevs.get(i)) {
-                    newSelection = i;
-                    found = true;
-                }
-            }
-        }
-        fireContentsChanged(this, 0, abbrevs.size()-1);
-        return newSelection;
     }
     
     /**
@@ -54,10 +36,11 @@ public class AbbrevsListModel extends AbstractListModel{
     }
     
     public int add(String name) {
-        abbrevs.add(new Abbrev(name,"",""));
+    	Abbrev abbrev = new Abbrev(name,"","");
+        abbrevs.add(abbrev);
         int index = abbrevs.size()-1;
         fireIntervalAdded(this,index,index);
-        return sort(index);
+        return abbrevs.indexOf(abbrev);
     }
     
     /**
@@ -74,7 +57,6 @@ public class AbbrevsListModel extends AbstractListModel{
         fireIntervalRemoved(this,selection,selection);
         int newSelection = selection < abbrevs.size() ? 
             selection : selection - 1;
-        //sort(newSelection)
         return newSelection;
     }
     
@@ -82,16 +64,16 @@ public class AbbrevsListModel extends AbstractListModel{
         Abbrev selectedAbbrev = abbrevs.get(selection);
         if (!selectedAbbrev.getName().equals(name)) {
             selectedAbbrev.setName(name);
-            return sort(selection);
+            return abbrevs.indexOf(selectedAbbrev);
         } else {
             return selection;
         }
     }
     
-    public ArrayList<Abbrev> getAbbrevs(){
+    public IndexedSortedSet<Abbrev> getAbbrevs(){
         return abbrevs;
     }
     
     public boolean unsorted = false;
-    ArrayList<Abbrev> abbrevs;
+    IndexedSortedSet<Abbrev> abbrevs;
 }

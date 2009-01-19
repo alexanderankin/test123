@@ -20,7 +20,7 @@ import superabbrevs.SuperAbbrevsPlugin;
  */
 public class AbbrevsDialog extends EnhancedDialog {
 
-    private AbbrevsEditorPane abbrevsOptionPane;
+    private AbbrevsManagerPane abbrevsOptionPane;
 
     /** Creates new form AbbrevsDialog */
     public AbbrevsDialog(View view, boolean modal, AbbrevsOptionPaneController controller) {
@@ -42,7 +42,7 @@ public class AbbrevsDialog extends EnhancedDialog {
         }
 
         setEnterEnabled(false);
-        abbrevsOptionPane = new AbbrevsEditorPane(controller);
+        abbrevsOptionPane = new AbbrevsManagerPane(controller);
         abbrevsOptionPane.setVisible(true);
         setContentPane(abbrevsOptionPane);
     }

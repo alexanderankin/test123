@@ -1,21 +1,32 @@
 package superabbrevs.model;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Mode {
     private String name;
-    private ArrayList<Abbrev> abbreviations = new ArrayList<Abbrev>();
+    private Set<Abbrev> abbreviations = new TreeSet<Abbrev>();
     private ArrayList<Variable> variables = new ArrayList<Variable>();
 
-    public ArrayList<Abbrev> getAbbreviations() {
+    public Set<Abbrev> getAbbreviations() {
         return abbreviations;
+    }
+    
+    public void addAbbreviation(Abbrev abbrev) {
+    	abbreviations.add(abbrev);
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<Variable> getVariables() {
+    @Override
+	public String toString() {
+		return getName();
+	}
+
+	public ArrayList<Variable> getVariables() {
         return variables;
     }
     

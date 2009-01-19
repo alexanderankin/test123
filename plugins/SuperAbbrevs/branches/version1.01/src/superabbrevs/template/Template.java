@@ -36,7 +36,7 @@ public class Template {
     @Override
     public String toString() {
         StringBuffer output = new StringBuffer();
-        Iterator iter = template.iterator();
+        Iterator<Field> iter = template.iterator();
         while (iter.hasNext()) {
             Field field = (Field) iter.next();
             output.append(field.toString());
@@ -47,7 +47,7 @@ public class Template {
     private void updateOffsets() {
         int o = this.offset;
 
-        Iterator iter = template.iterator();
+        Iterator<Field> iter = template.iterator();
         while (iter.hasNext()) {
             Field field = (Field) iter.next();
 
