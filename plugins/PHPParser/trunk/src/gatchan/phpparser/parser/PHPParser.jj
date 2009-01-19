@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2008 Matthieu Casanova
+ * Copyright (C) 2003, 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -847,13 +847,13 @@ void phpTest() :
 void phpFile() :
 {}
 {
-	try 
+	try
 	{
 		(PhpBlock())*
 		{
 			createNewHTMLCode();
 		}
-	} 
+	}
 	catch (TokenMgrError e)
 	{
 		//{{{ Parse Error
@@ -889,9 +889,9 @@ void PhpBlock() :
 	}
 |
 	//{{{ <? | <?php
-	[   
+	[
   	<PHPSTARTLONG>
-	| 
+	|
 	token = <PHPSTARTSHORT>
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
@@ -906,7 +906,7 @@ void PhpBlock() :
 		createNewHTMLCode();
 	}
 	Php()
-	try 
+	try
 	{
 		phpEnd = <PHPEND>
 		{
@@ -915,7 +915,7 @@ void PhpBlock() :
 			htmlColumnStart = phpEnd.endColumn;
 		}
 	}
-	catch (ParseException e) 
+	catch (ParseException e)
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
 							  PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
@@ -928,40 +928,49 @@ void PhpBlock() :
 //{{{ phpEchoBlock()
 PHPEchoBlock phpEchoBlock() :
 {
-  final Expression expr;
-  PHPEchoBlock echoBlock;
-  final Token token, token2;
+	Expression expr;
+	PHPEchoBlock echoBlock;
+	Token echoStartToken;
+	Token echoEndToken;
 }
 {
-  token = <PHPECHOSTART> {createNewHTMLCode();}
-  expr = Expression() [ <SEMICOLON> ]
-  try {
-    token2 = <PHPEND>
-    {
-      htmlStart = token2.sourceEnd;
-      htmlLineStart = token2.endLine;
-      htmlColumnStart = token2.endColumn;
+	echoStartToken = <PHPECHOSTART> {createNewHTMLCode();}
+	expr = Expression() [ <SEMICOLON> ]
+	try
+	{
+		echoEndToken = <PHPEND>
+		{
+			htmlStart = echoEndToken.sourceEnd;
+			htmlLineStart = echoEndToken.endLine;
+			htmlColumnStart = echoEndToken.endColumn;
 
-      echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd, token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
-    }
-  } catch (ParseException e) {
-    fireParseMessage(new PHPParseMessageEvent(INFO,
-                                              PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-                                              path,
-                                              "'?>' is missing",
-                                              e.currentToken));
-    echoBlock = new PHPEchoBlock(expr,
-                                 token.sourceStart,
-                                 e.currentToken.sourceEnd,
-                                 token.beginLine,
-                                 e.currentToken.endLine,
-                                 token.beginColumn,
-                                 e.currentToken.endColumn);
-  }
-  {
-    pushOnAstNodes(echoBlock);
-    return echoBlock;
-  }
+			echoBlock = new PHPEchoBlock(expr,echoStartToken.sourceStart,
+						     echoEndToken.sourceEnd,
+						     echoStartToken.beginLine,
+						     echoEndToken.endLine,
+						     echoStartToken.beginColumn,
+						     echoEndToken.endColumn);
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseMessage(new PHPParseMessageEvent(INFO,
+							  PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
+							  path,
+							  "'?>' is missing",
+							  e.currentToken));
+		echoBlock = new PHPEchoBlock(expr,
+					     echoStartToken.sourceStart,
+					     e.currentToken.sourceEnd,
+					     echoStartToken.beginLine,
+					     e.currentToken.endLine,
+					     echoStartToken.beginColumn,
+					     e.currentToken.endColumn);
+	}
+	{
+		pushOnAstNodes(echoBlock);
+		return echoBlock;
+	}
 } //}}}
 
 //{{{ Php()
@@ -1331,27 +1340,27 @@ ClassHeader classHeader(Token abstractToken) :
 }
 {
 	//{{{ class
-	try 
+	try
 	{
 		classToken = <CLASS>
 		{
 			if (firstToken == null) firstToken = classToken;
 		}
-	} 
-	catch (ParseException e) 
+	}
+	catch (ParseException e)
 	{
 		fireParseError("identifier expected","identifier", e.currentToken.next);
 	} //}}}
 
 	//{{{ identifier
-	try 
+	try
 	{
 		className = <IDENTIFIER>
 		{
 			classNameImage = className.image;
 		}
-	} 
-	catch (ParseException e) 
+	}
+	catch (ParseException e)
 	{
 		fireParseError("identifier expected","identifier",e.currentToken.next);
 	} //}}}
@@ -1359,14 +1368,14 @@ ClassHeader classHeader(Token abstractToken) :
 	//{{{ extends XXX
 	[
 	<EXTENDS>
-	try 
+	try
 	{
 		(superclassName = <IDENTIFIER> | superclassName = <OBJECT>)
 		{
 			superclassNameImage = superclassName.image;
 		}
-	} 
-	catch (ParseException e) 
+	}
+	catch (ParseException e)
 	{
 		//{{{ Parse error
 		fireParseError("identifier expected", "identifier", e.currentToken.next);
@@ -1396,13 +1405,13 @@ ClassHeader classHeader(Token abstractToken) :
 
 	{
 		final int end,endLine,endColumn;
-		if (className == null) 
+		if (className == null)
 		{
 			end         = firstToken.sourceEnd;
 			endLine     = firstToken.endLine;
 			endColumn   = firstToken.endColumn;
-		} 
-		else 
+		}
+		else
 		{
 			end         = className.sourceEnd;
 			endLine     = className.endLine;
@@ -2305,14 +2314,14 @@ Variable Var() :
   Expression expr;
 }
 {
-  //{{{ literal 
+  //{{{ literal
   LOOKAHEAD(2)
   expr = Literal()
   {
     return expr;
   } //}}}
 |
-  //{{{ +/- integer 
+  //{{{ +/- integer
   {
 	  Token value;
 	  Token operator;
@@ -2323,7 +2332,7 @@ Variable Var() :
                                        operator);
   } //}}}
 |
-  //{{{ array 
+  //{{{ array
   expr = ArrayDeclarator()
   {
 	  return expr;
@@ -3413,7 +3422,7 @@ Expression UnaryExpression() :
 //{{{ AtNotTildeUnaryExpression()
 Expression AtNotTildeUnaryExpression() :
 {
-	if (shouldStop) 
+	if (shouldStop)
 		throw new ParsingAbortedError();
 	Expression expr;
 	Token prefix = null;
@@ -4697,154 +4706,173 @@ Define defineStatement() :
  */
 Statement Statement() :
 {
-  final Statement statement;
+	Statement statement;
 }
 {
-  (
-    statement = StatementNoBreak()
-  |
-    statement = BreakStatement()
-  )
-  {
-    statement.getModifiedVariable(tempList);
-    scope.addVariablesList(tempList);
-    tempList.clear();
-    return statement;
-  }
+	(
+		statement = StatementNoBreak()
+	|
+		statement = BreakStatement()
+	)
+	{
+		statement.getModifiedVariable(tempList);
+		scope.addVariablesList(tempList);
+		tempList.clear();
+		return statement;
+	}
 }
 
 //}}}
-//{{{ htmlBlock()
 
+//{{{ htmlBlock()
 /**
  * An html block inside a php syntax.
  */
 HTMLBlock htmlBlock() :
 {
-  int startIndex = nodePtr;
-  AstNode[] blockNodes;
-  int nbNodes;
-  Token phpEnd;
+	int startIndex = nodePtr;
+	AstNode[] blockNodes;
+	int nbNodes;
+	Token phpEnd;
 }
 {
-  phpEnd = <PHPEND>
-  {
-    htmlStart       = phpEnd.sourceEnd;
-    htmlLineStart   = phpEnd.endLine;
-    htmlColumnStart = phpEnd.endColumn;
-  }
-  (phpEchoBlock())*
-  try {
-    (<PHPSTARTLONG> | <PHPSTARTSHORT>)
-    {createNewHTMLCode();}
-  } catch (ParseException e) {
-    fireParseError("'<?php' expected","<?php",e.currentToken);
-  }
-  {
-    nbNodes = nodePtr - startIndex;
-    if (nbNodes == 0) {
-      return null;
-    }
-    blockNodes = new AstNode[nbNodes];
-    System.arraycopy(nodes,startIndex+1,blockNodes,0,nbNodes);
-    nodePtr         = startIndex;
-    HTMLBlock block = new HTMLBlock(blockNodes);
-    return block;
-  }
-}
+	phpEnd = <PHPEND>
+	{
+		htmlStart       = phpEnd.sourceEnd;
+		htmlLineStart   = phpEnd.endLine;
+		htmlColumnStart = phpEnd.endColumn;
+	}
+	(phpEchoBlock())*
+	try
+	{
+		(
+			<PHPSTARTLONG>
+		|
+			<PHPSTARTSHORT>
+		)
+		{
+			createNewHTMLCode();
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'<?php' expected","<?php",e.currentToken);
+	}
+	{
+		nbNodes = nodePtr - startIndex;
+		if (nbNodes == 0)
+		{
+			return null;
+		}
+		blockNodes = new AstNode[nbNodes];
+		System.arraycopy(nodes,startIndex+1,blockNodes,0,nbNodes);
+		nodePtr = startIndex;
+		HTMLBlock block = new HTMLBlock(blockNodes);
+		return block;
+	}
+} //}}}
 
-//}}}
 //{{{ IncludeExpression()
-
 /**
  * An include statement. It's "include" an expression;
  */
 InclusionExpression IncludeExpression() :
 {
-  Expression expr;
-  InclusionExpression inclusionExpression;
-  Token token;
-  int end,line,column;
+	Expression expr;
+	InclusionExpression inclusionExpression;
+	Token token;
+	int end,line,column;
 }
 {
-  (
-     token = <REQUIRE>
-   | token = <REQUIRE_ONCE>
-   | token = <INCLUDE>
-   | token = <INCLUDE_ONCE>
-  )
-  {
-    end=token.sourceEnd;
-    line=token.beginLine;
-    column=token.beginColumn;
-  }
-  try {
-    (
-       expr = PrimaryExpression()
-     | expr = Literal()
-     | <LPAREN> expr = Expression()
-       try {
-         <RPAREN>
-       } catch (ParseException e) {
-         //{{{ Parse Error
-         fireParseError(new PHPParseErrorEvent(ERROR,
-                                               path,
-                                               "')'n expected",
-                                               ")",
-                                               e.currentToken.image,
-                                               expr.getSourceEnd(),
-                                               expr.getSourceEnd()+1,
-                                               e.currentToken.beginLine,
-                                               e.currentToken.endLine,
-                                               e.currentToken.endColumn,
-                                               e.currentToken.endColumn+1)); //}}}
-       }
-    )
+	(
+		token = <REQUIRE>
+	|
+		token = <REQUIRE_ONCE>
+	|
+		token = <INCLUDE>
+	|
+		token = <INCLUDE_ONCE>
+	)
+	{
+		end = token.sourceEnd;
+		line = token.beginLine;
+		column = token.beginColumn;
+	}
+	try
+	{
+		(
+			expr = PrimaryExpression()
+		|
+			expr = Literal()
+		|
+			<LPAREN> expr = Expression()
+		try
+		{
+			<RPAREN>
+		}
+		catch (ParseException e)
+		{
+			//{{{ Parse Error
+			fireParseError(new PHPParseErrorEvent(ERROR,
+							      path,
+							      "')'n expected",
+							      ")",
+							      e.currentToken.image,
+							      expr.getSourceEnd(),
+							      expr.getSourceEnd()+1,
+							      e.currentToken.beginLine,
+							      e.currentToken.endLine,
+							      e.currentToken.endColumn,
+							      e.currentToken.endColumn+1)); //}}}
+		}
+		)
 
-    {
-      end    = expr.getSourceEnd();
-      line   = expr.getBeginLine();
-      column = expr.getBeginColumn();
-    }
-  } catch (ParseException e) {
-    if (errorMessage != null) {
-      throw e;
-    }
-    expr = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
-                                  token.sourceEnd,
-                                  token.sourceEnd+1,
-                                  token.endLine,
-                                  token.endLine,
-                                  token.endColumn,
-                                  token.endColumn+1);
-    //{{{ Parse Error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "expression expected",
-                                          "expression",
-                                          e.currentToken.image,
-                                          e.currentToken.next.sourceStart,
-                                          e.currentToken.next.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
-  }
-  {
-   inclusionExpression = new InclusionExpression(currentSegment,
-                                                 token.kind,
-                                                 expr,
-                                                 token.sourceStart,
-                                                 end,
-                                                 token.beginLine,
-                                                 line,
-                                                 token.beginColumn,
-                                                 column);
-   currentSegment.add(inclusionExpression);
-   return inclusionExpression;
-  }
-}
-//}}}
+		{
+			end    = expr.getSourceEnd();
+			line   = expr.getBeginLine();
+			column = expr.getBeginColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		if (errorMessage != null)
+			throw e;
+
+		expr = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
+					      token.sourceEnd,
+					      token.sourceEnd+1,
+					      token.endLine,
+					      token.endLine,
+					      token.endColumn,
+					      token.endColumn+1);
+		//{{{ Parse Error
+		fireParseError(new PHPParseErrorEvent(ERROR,
+						      path,
+						      "expression expected",
+						      "expression",
+						      e.currentToken.image,
+						      e.currentToken.next.sourceStart,
+						      e.currentToken.next.sourceEnd,
+						      e.currentToken.beginLine,
+						      e.currentToken.endLine,
+						      e.currentToken.endColumn,
+						      e.currentToken.endColumn+1)); //}}}
+	}
+	{
+		inclusionExpression = new InclusionExpression(currentSegment,
+							      token.kind,
+							      expr,
+							      token.sourceStart,
+							      end,
+							      token.beginLine,
+							      line,
+							      token.beginColumn,
+							      column);
+		currentSegment.add(inclusionExpression);
+		return inclusionExpression;
+	}
+} //}}}
+
 //{{{ PrintExpression()
 
 PrintExpression PrintExpression() :
@@ -5186,6 +5214,7 @@ Block Block() :
 	int start, beginLine, beginColumn;
 }
 {
+	//{{{ <LBRACE>
 	try
 	{
 		lbrace = <LBRACE>
@@ -5207,8 +5236,10 @@ Block Block() :
 		endLine     = this.token.endLine;
 		endColumn   = this.token.endColumn;
 		fireParseError("'{' expected","{",e.currentToken);
-	}
+	} //}}}
+
 	(
+	//{{{ BlockStatement()
 	statement = BlockStatement()
 	{
 		if (statement != null)
@@ -5218,8 +5249,10 @@ Block Block() :
 			endLine     = statement.getEndLine();
 			endColumn   = statement.getEndColumn();
 		}
-	}
-	| statement = htmlBlock()
+	} //}}}
+	|
+	//{{{ htmlBlock()
+	statement = htmlBlock()
 	{
 		if (statement != null)
 		{
@@ -5234,7 +5267,8 @@ Block Block() :
 			endLine   = this.token.endLine;
 			endColumn = this.token.endColumn;
 		}
-	}
+	} //}}}
+
 	)*
 	try
 	{
@@ -5271,15 +5305,15 @@ Statement BlockStatement() :
 }
 {
 (
-	 try 
+	 try
 	 {
 		 statement = Statement()
 		 {
 			 if (phpDocument == currentSegment) pushOnAstNodes(statement);
 		 }
-	 } 
-	 catch (ParseException e) 
-	 {                                  
+	 }
+	 catch (ParseException e)
+	 {
 		 final Token semicolumn = error_skipto(SEMICOLON);
 		 final Token nextToken = e.currentToken.next;
 		 if (nextToken == semicolumn)
@@ -5296,8 +5330,8 @@ Statement BlockStatement() :
 							       semicolumn.beginLine,
 							       nextToken.endColumn,
 							       semicolumn.beginColumn)); //}}}
-		 } 
-		 else 
+		 }
+		 else
 		 {
 			 fireParseError("statement expected","statement",nextToken);
 		 }

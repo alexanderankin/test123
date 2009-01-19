@@ -1,3 +1,24 @@
+/*
+* HTMLBlock.java
+* :tabSize=8:indentSize=8:noTabs=false:
+* :folding=explicit:collapseFolds=1:
+*
+* Copyright (C) 2003, 2009 Matthieu Casanova
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
@@ -7,64 +28,81 @@ import java.util.List;
 /**
  * @author Matthieu Casanova
  */
-public final class HTMLBlock extends Statement {
+public final class HTMLBlock extends Statement
+{
+	private final AstNode[] nodes;
 
-  private final AstNode[] nodes;
+	//{{{ HTMLBlock cosntructor
+	public HTMLBlock(AstNode[] nodes)
+	{
+		super(nodes[0].getSourceStart(),
+		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
+		      nodes[0].getBeginLine(),
+		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
+		      nodes[0].getBeginColumn(),
+		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndColumn());
+		this.nodes = nodes;
+	} //}}}
 
-  public HTMLBlock(AstNode[] nodes) {
-    super(nodes[0].getSourceStart(),
-            nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
-            nodes[0].getBeginLine(),
-            nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
-            nodes[0].getBeginColumn(),
-            nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndColumn());
-    this.nodes = nodes;
-  }
+	//{{{ toString() method
+	/**
+	 * Return the object into String.
+	 *
+	 * @param tab how many tabs (not used here
+	 * @return a String
+	 */
+	public String toString(int tab)
+	{
+		StringBuilder buff = new StringBuilder(tabString(tab));
+		buff.append("?>");
+		for (int i = 0; i < nodes.length; i++)
+		{
+			buff.append(nodes[i].toString(tab + 1));
+		}
+		buff.append("<?php\n");
+		return buff.toString();
+	} //}}}
 
-  /**
-   * Return the object into String.
-   *
-   * @param tab how many tabs (not used here
-   * @return a String
-   */
-  public String toString(int tab) {
-    StringBuffer buff = new StringBuffer(tabString(tab));
-    buff.append("?>");
-    for (int i = 0; i < nodes.length; i++) {
-      buff.append(nodes[i].toString(tab + 1));
-    }
-    buff.append("<?php\n");
-    return buff.toString();
-  }
+	//{{{ getOutsideVariable() method
+	/**
+	 * Get the variables from outside (parameters, globals ...)
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getOutsideVariable(List list)
+	{
+	} //}}}
 
-  /**
-   * Get the variables from outside (parameters, globals ...)
-   *
-   * @param list the list where we will put variables
-   */
-  public void getOutsideVariable(List list) {
-  }
+	//{{{ getModifiedVariable() method
+	/**
+	 * get the modified variables.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getModifiedVariable(List list)
+	{
+	} //}}}
 
-  /**
-   * get the modified variables.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getModifiedVariable(List list) {
-  }
+	//{{{ getUsedVariable() method
+	/**
+	 * Get the variables used.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getUsedVariable(List list)
+	{
+		for (AstNode node:nodes)
+			node.getUsedVariable(list);
+	} //}}}
 
-  /**
-   * Get the variables used.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getUsedVariable(List list) {
-  }
+	//{{{ expressionAt() method
+	public Expression expressionAt(int line, int column)
+	{
+		return null;
+	} //}}}
 
-  public Expression expressionAt(int line, int column) {
-    return null;
-  }
-
-  public void analyzeCode(PHPParser parser) {
-  }
+	//{{{ analyzeCode() method
+	public void analyzeCode(PHPParser parser)
+	{
+	} //}}}
 }
