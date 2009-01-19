@@ -61,7 +61,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private MouseListener ml;
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
-	
+
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
 		getBuffer().setProperty("folding","explicit");
@@ -81,7 +81,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		if (sb != null)
 			sb.setVisible(false);
 	}
-	
+
 	private JScrollBar findScrollBar(Container c) {
 		for (Component comp: c.getComponents()) {
 			if (comp instanceof JScrollBar)
@@ -129,19 +129,20 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		textArea.removeScrollListener(textAreaScrollListener);
 		dispose();
 	}
-	
+
 	//{{{ setMouseHandler() method
 	public void setMouseHandler(MouseInputAdapter mouseInputAdapter)
 	{
 	} //}}}
 
-	
+
 	private void updateStyles(SyntaxStyle[] styles) {
 		for (int i = 0; i < styles.length; i++) {
-        	SyntaxStyle style = styles[i];
-        	styles[i] = new SyntaxStyle(style.getForegroundColor(),
-        		style.getBackgroundColor(), deriveFont(style.getFont()));
-        }
+			SyntaxStyle style = styles[i];
+			styles[i] = new SyntaxStyle(style.getForegroundColor(),
+						    style.getBackgroundColor(),
+						    deriveFont(style.getFont()));
+		}
 	}
 
 	private class TextAreaScrollListener implements ScrollListener {
@@ -152,7 +153,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			scrollToMakeTextAreaVisible();
 		}
 	}
-	
+
 	private void scrollToMakeTextAreaVisible() {
 		int otherFirst = textArea.getFirstLine();
 		int thisFirst = getFirstLine();
@@ -166,7 +167,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 		repaint();
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -209,7 +210,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			propertiesChanged();
 		}
 	}
-	
+
 	private class MapMouseListener extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
