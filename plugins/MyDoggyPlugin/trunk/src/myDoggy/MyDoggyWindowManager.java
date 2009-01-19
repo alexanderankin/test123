@@ -130,6 +130,15 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	}
 
 	@Override
+	protected void dockableLoaded(String name, String position)
+	{
+		if (position == null || position.equals(DockableWindowManager.FLOATING))
+			return;
+		ToolWindow tw = createFakeToolWindow(name);
+		tw.setAvailable(true);
+	}
+	
+	@Override
 	protected void dockingPositionChanged(String name,
 		String oldPosition, String newPosition)
 	{
