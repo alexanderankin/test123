@@ -31,12 +31,14 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
@@ -51,7 +53,7 @@ public class Status {
             return null;     // nothing to do
         }
         if ( cd.getOut() == null ) {
-            //throw new CommandInitializationException( "Invalid output stream." );
+            throw new CommandInitializationException( "Invalid output stream." );
         }
         if ( cd.getErr() == null ) {
             cd.setErr( cd.getOut() );
@@ -78,16 +80,18 @@ public class Status {
         long revision = -1;
         for ( String path : paths ) {
             File localPath = new File( path );
+            // svnkit 1.1.8:
             // doStatus(path, recursive, remote, reportAll, includeIgnored, handler)
-            // TODO: pass in recursive and remote for sure, maybe the others?
+            // svnkit 1.2.x:
+            // doStatus(File path, SVNRevision revision, SVNDepth depth, boolean remote, boolean reportAll, boolean includeIgnored, boolean collectParentExternals, ISVNStatusHandler handler, Collection changeLists)
             try {
-                revision = client.doStatus( localPath, cd.getRecursive(), cd.getRemote(), false, false, handler );
+                revision = client.doStatus( localPath, SVNRevision.HEAD, SVNDepth.fromRecurse(cd.getRecursive()), cd.getRemote(), false, false, false, handler, null );
             }
             catch ( Exception e ) {
                 if ( cd.getRemote() ) {
                     // if disconnected, an error will be thrown if remote is true,
                     // so set remote to false and try again
-                    revision = client.doStatus( localPath, cd.getRecursive(), false, false, false, handler );
+                    revision = client.doStatus( localPath, SVNRevision.HEAD, SVNDepth.fromRecurse(cd.getRecursive()), false, false, false, false, handler, null );
                 }
             }
         }

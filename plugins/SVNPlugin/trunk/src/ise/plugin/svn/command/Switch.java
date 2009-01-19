@@ -31,9 +31,11 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
-import org.tmatesoft.svn.core.wc.SVNUpdateClient;
-import org.tmatesoft.svn.core.wc.ISVNOptions;
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.ISVNOptions;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 
@@ -85,7 +87,23 @@ public class Switch {
         PrintStream out = data.getOut();
         long revision = -1;
 
-        revision = client.doSwitch( localPath, data.getURL(), data.getSVNRevision(), data.getRecursive() );
+        /* new method for svnkit 1.2.x:
+            doSwitch(File path,
+                     SVNURL url,
+                     SVNRevision pegRevision,
+                     SVNRevision revision,
+                     SVNDepth depth,
+                     boolean allowUnversionedObstructions,
+                     boolean depthIsSticky)*/
+
+        revision = client.doSwitch(
+            localPath,
+            data.getURL(),
+            SVNRevision.UNDEFINED,  /// TODO: add peg revision to UpdateData
+            data.getSVNRevision(),
+            SVNDepth.fromRecurse(data.getRecursive()),
+            false,
+            false);
 
         out.flush();
         out.close();

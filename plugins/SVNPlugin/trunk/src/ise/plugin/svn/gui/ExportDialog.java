@@ -83,17 +83,17 @@ public class ExportDialog extends JDialog {
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // source for export
-        List paths = new ArrayList();
+        List<String> paths = new ArrayList<String>();
         if ( data.getSourceFiles() != null ) {
             SVNCopySource[] sources = data.getSourceFiles();
             for (SVNCopySource source : sources) {
-                paths.add(source.getFile());
+                paths.add(source.getFile().toString());
             }
         }
         else {
             SVNCopySource[] sources = data.getSourceFiles();
             for (SVNCopySource source : sources) {
-                paths.add(source.getURL());
+                paths.add(source.getURL().toString());
             }
         }
 
