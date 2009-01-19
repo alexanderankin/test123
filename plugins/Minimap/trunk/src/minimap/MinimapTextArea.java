@@ -251,8 +251,22 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-			int diff = (e.getY() - dragY) / h;
-			textArea.setFirstLine(line + diff);
+			int visibleLines = textArea.getVisibleLines();
+			int newFirstLine;
+			if (e.getY() < getY())
+				newFirstLine = textArea.getFirstLine() - visibleLines;
+			else if (e.getY() > getY() + getHeight())
+				newFirstLine = textArea.getFirstLine() + visibleLines;
+			else {
+				int diff = (e.getY() - dragY) / h;
+				newFirstLine = line + diff;
+			}
+			int count = textArea.getLineCount();
+			if (newFirstLine >= count)
+				newFirstLine = count - visibleLines;
+			if (newFirstLine < 0)
+				newFirstLine = 0;
+			textArea.setFirstLine(newFirstLine);
 			e.consume();
 		}
 	}
