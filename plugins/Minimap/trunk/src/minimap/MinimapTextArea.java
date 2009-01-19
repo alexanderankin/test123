@@ -165,6 +165,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			if (otherLast > thisLast)
 				setFirstLine(thisFirst + otherLast - thisLast);
 		}
+		setCaretPosition(textArea.getCaretPosition());
 		repaint();
 	}
 
@@ -267,6 +268,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			if (newFirstLine < 0)
 				newFirstLine = 0;
 			textArea.setFirstLine(newFirstLine);
+			int first = getFirstLine();
+			if (newFirstLine < first || newFirstLine + visibleLines > getLastPhysicalLine())
+				setFirstLine(newFirstLine);
 			e.consume();
 		}
 	}
@@ -283,12 +287,13 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		DisplayManager tdm = textArea.getDisplayManager();
 		DisplayManager dm = getDisplayManager();
 		int i = first;
-		while (i < dm.getLastVisibleLine()) {
+		int j = dm.getLastVisibleLine();
+		while (i < j) {
 			if (tdm.isLineVisible(i)) {
 				if (tdm.isLineVisible(i + 1)) {
 					dm.expandFold(i, false);
 					if (i >= getLastPhysicalLine())
-						return;
+						break;
 					i++;
 				}
 				else {
@@ -297,7 +302,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 					try {
 						i = tdm.getNextVisibleLine(i);
 					} catch (Exception e) {
-						return;
+						break;
 					}
 				}
 			} else {
@@ -305,5 +310,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				i = tdm.getNextVisibleLine(i);
 			}
 		}
+		scrollToMakeTextAreaVisible();
 	}
 }
