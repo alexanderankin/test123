@@ -1216,27 +1216,31 @@ ClassConstant classConstant() :
  */
 MethodDeclaration interfaceMethodDeclaration(List modifiers) :
 {
-  final MethodDeclaration functionDeclaration;
-  final MethodHeader methodHeader;
-  final Block block;
-  final OutlineableWithChildren seg = currentSegment;
-  final Token functionToken;
+	final MethodDeclaration functionDeclaration;
+	final MethodHeader methodHeader;
+	final Block block;
+	final OutlineableWithChildren seg = currentSegment;
+	final Token functionToken;
 }
 {
-  functionToken = <FUNCTION>
+	functionToken = <FUNCTION>
 
-  methodHeader = methodHeader(functionToken,CONST_METHOD, modifiers)
-  {
-    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
-  }
-  try {
-    <SEMICOLON>
-  } catch (ParseException e) {
-    fireParseError("unexpected token : "+e.currentToken.image, ";", e.currentToken);
-  }
-  {
-    return functionDeclaration;
-  }
+	methodHeader = methodHeader(functionToken,CONST_METHOD, modifiers)
+	{
+		functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+	}
+	try
+	{
+		<SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("unexpected token : "+e.currentToken.image, ";",
+			       e.currentToken);
+	}
+	{
+		return functionDeclaration;
+	}
 } //}}}
 
 
@@ -2487,54 +2491,63 @@ MethodDeclaration methodDeclaration(int type, List modifiers) :
  */
 MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
 {
-  Token reference = null;
-  final List formalParameters = new ArrayList();
-  final Token methodNameToken;
-  String identifierChar = SYNTAX_ERROR_CHAR;
+	Token reference = null;
+	final List formalParameters = new ArrayList();
+	final Token methodNameToken;
+	String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
-  [reference = <BIT_AND>]
-  {
-    try {
-      if (type == CONST_FUNCTION) {
-        methodNameToken = functionIdentifier();
-      } else {
-        methodNameToken = methodIdentifier();
-      }
-      identifierChar = methodNameToken.image;
-    } catch (ParseException e) {
-      if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
-        //{{{ Parse error
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "identifier expected",
-                                              "identifier",
-                                              e.currentToken.image,
-                                              functionToken.sourceStart,
-                                              e.currentToken.sourceStart,
-                                              e.currentToken.beginLine,
-                                              e.currentToken.endLine,
-                                              e.currentToken.beginColumn-1,
-                                              e.currentToken.endColumn)); //}}}
-      } else {
-        fireParseError("unexpected token","identifier",e.currentToken.next);
-      }
-    }
-  }
-  FormalParameters(formalParameters)
-  {
-    return new MethodHeader(path,
-                            modifiers,
-                            identifierChar,
-                            reference != null,
-                            formalParameters,
-                            functionToken.sourceStart,
-                            token.sourceEnd,
-                            functionToken.beginLine,
-                            token.endLine,
-                            functionToken.beginColumn,
-                            token.endColumn);
-  }
+	[reference = <BIT_AND>]
+	{
+		try
+		{
+			if (type == CONST_FUNCTION)
+			{
+				methodNameToken = functionIdentifier();
+			}
+			else
+			{
+				methodNameToken = methodIdentifier();
+			}
+			identifierChar = methodNameToken.image;
+		}
+		catch (ParseException e)
+		{
+			if (e.currentToken.next.kind == PHPParserConstants.LPAREN)
+			{
+				//{{{ Parse error
+				fireParseError(new PHPParseErrorEvent(ERROR,
+								      path,
+								      "identifier expected",
+								      "identifier",
+								      e.currentToken.image,
+								      functionToken.sourceStart,
+								      e.currentToken.sourceStart,
+								      e.currentToken.beginLine,
+								      e.currentToken.endLine,
+								      e.currentToken.beginColumn-1,
+								      e.currentToken.endColumn)); //}}}
+			}
+			else
+			{
+				fireParseError("unexpected token","identifier",e.currentToken.next);
+			}
+		}
+	}
+	FormalParameters(formalParameters)
+	{
+		return new MethodHeader(path,
+					modifiers,
+					identifierChar,
+					reference != null,
+					formalParameters,
+					functionToken.sourceStart,
+					token.sourceEnd,
+					functionToken.beginLine,
+					token.endLine,
+					functionToken.beginColumn,
+					token.endColumn);
+	}
 } //}}}
 
 //{{{ functionIdentifier()

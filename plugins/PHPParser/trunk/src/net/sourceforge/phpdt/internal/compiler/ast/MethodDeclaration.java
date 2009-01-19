@@ -1,5 +1,5 @@
 /*
-* PHPEchoBlock.java
+* MethodDeclaration.java
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
@@ -77,6 +77,8 @@ public class MethodDeclaration extends Statement implements OutlineableWithChild
 		sourceStart = methodHeader.getSourceStart();
 		beginLine = methodHeader.getBeginLine();
 		beginColumn = methodHeader.getBeginColumn();
+		endLine = methodHeader.getEndLine();
+		endColumn = methodHeader.getEndColumn();
 		this.parent = parent;
 		this.methodHeader = methodHeader;
 	} //}}}
@@ -350,15 +352,6 @@ public class MethodDeclaration extends Statement implements OutlineableWithChild
 										 param.getEndLine(),
 										 param.getBeginColumn(),
 										 param.getEndColumn()));
-				/* fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-				parser.getPath(),
-				"You should use '<?php' instead of '<?' it will avoid some problems with XML",
-				param.getSourceStart(),
-				param.getSourceStart() + param.getName().length(),
-				token.beginLine,
-				token.endLine,
-				token.beginColumn,
-				token.endColumn));*/
 			}
 		}
 	} //}}}
@@ -383,7 +376,7 @@ public class MethodDeclaration extends Statement implements OutlineableWithChild
 		return false;
 	} //}}}
 
-	//{{{
+	//{{{ findUnknownUsedVars() method
 	/**
 	 * This method will add a warning on all used variables in a method that aren't declared before.
 	 *

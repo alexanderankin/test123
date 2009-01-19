@@ -1,5 +1,26 @@
+/*
+ * PHPSideKickParser.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003, 2009 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package gatchan.phpparser.sidekick;
 
+//{{{ Imports
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import gatchan.phpparser.PHPErrorSource;
@@ -30,6 +51,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+//}}}
 
 /**
  * My sidekick implementation of the sidekick parser.
@@ -55,6 +77,7 @@ public final class PHPSideKickParser extends SideKickParser
 	private final PHPErrorSource phpErrorSource = new PHPErrorSource();
 	public static final String PHPDOCUMENT_PROPERTY = "PHPDocument";
 
+	//{{{ PHPSideKickParser constructor
 	/**
 	 * Instantiate the PHPSideKickParser.
 	 *
@@ -64,8 +87,9 @@ public final class PHPSideKickParser extends SideKickParser
 	{
 		super(name);
 		projectManager = ProjectManager.getInstance();
-	}
+	} //}}}
 
+	//{{{ parse() methods
 	/**
 	 * Parses the given text and returns a tree model. This method is called by the sidekick plugin
 	 *
@@ -143,8 +167,9 @@ public final class PHPSideKickParser extends SideKickParser
 		}
 		PHPDocument phpDocument = parser.getPHPDocument();
 		updateProject(phpDocument, path);
-	}
+	} //}}}
 
+	//{{{ stop() method
 	public void stop()
 	{
 		if (parser != null)
@@ -152,23 +177,26 @@ public final class PHPSideKickParser extends SideKickParser
 			Log.log(Log.MESSAGE, PHPSideKickParser.class, "Stopping parser");
 			parser.stop();
 		}
-	}
+	} //}}}
 
-
-	private void buildChildNodes(DefaultMutableTreeNode parent, OutlineableWithChildren outlineable, Buffer buffer)
+	//{{{ buildChildNodes() method
+	private void buildChildNodes(DefaultMutableTreeNode parent,
+				     OutlineableWithChildren outlineable,
+				     Buffer buffer)
 	{
 		for (int i = 0; i < outlineable.size(); i++)
 		{
 			Outlineable o = outlineable.get(i);
 			buildNode(parent, o, buffer);
 		}
-	}
+	} //}}}
 
-
+	//{{{ buildNode() method
 	private void buildNode(DefaultMutableTreeNode parent, Outlineable sourceNode, Buffer buffer)
 	{
 		AstNode astNode = (AstNode) sourceNode;
 		Position startPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getBeginLine() - 1) + astNode.getBeginColumn());
+		System.out.println("ASTNODE="+astNode+" "+astNode.getEndLine());
 		Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine() - 1) + astNode.getEndColumn());
 		IAsset asset = (IAsset) astNode;
 		asset.setStart(startPosition);
@@ -179,13 +207,15 @@ public final class PHPSideKickParser extends SideKickParser
 			buildChildNodes(node, (OutlineableWithChildren) sourceNode, buffer);
 		}
 		parent.add(node);
-	}
+	} //}}}
 
+	//{{{ supportsCompletion() method
 	public boolean supportsCompletion()
 	{
 		return true;
-	}
+	} //}}}
 
+	//{{{ complete() method
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		Log.log(Log.DEBUG, this, "Requesting sidekick complete");
@@ -350,8 +380,9 @@ public final class PHPSideKickParser extends SideKickParser
 		}
 
 		return null;
-	}
+	} //}}}
 
+	//{{{ classDeclarationAtOffset() method
 	private ClassDeclaration classDeclarationAtOffset(View view, int caret)
 	{
 		SideKickParsedData data = SideKickParsedData.getParsedData(view);
@@ -385,8 +416,9 @@ public final class PHPSideKickParser extends SideKickParser
 			}
 		}
 		return classDeclaration;
-	}
+	} //}}}
 
+	//{{{ getClassHeader() method
 	private ClassHeader getClassHeader(String className, PHPDocument phpDocument)
 	{
 		Project project = projectManager.getProject();
@@ -407,13 +439,13 @@ public final class PHPSideKickParser extends SideKickParser
 			}
 		}
 		return classHeader;
-	}
+	} //}}}
 
+	//{{{ completeStaticClassAccess() method
 	private static PHPSideKickCompletion completeStaticClassAccess(String currentWord,
 								       String line,
 								       int wordStart,
-								       Project project
-	)
+								       Project project)
 	{
 		PHPSideKickCompletion phpSideKickCompletion = null;
 		if ("::".equals(currentWord))
@@ -431,19 +463,9 @@ public final class PHPSideKickParser extends SideKickParser
 			phpSideKickCompletion = completeClassMembers(classHeader, currentWord, classAccessed + "::");
 		}
 		return phpSideKickCompletion;
-	}
+	} //}}}
 
-	/* private void addKeywords(Buffer buffer,
-				 int caret,
-				 PHPSideKickCompletion sideKickCompletion,
-				 String currentWord) {
-	  String[] keywords = buffer.getKeywordMapAtOffset(caret).getKeywords();
-	  for (int i = 0; i < keywords.length; i++) {
-	    String keyword = keywords[i];
-	    sideKickCompletion.addItem(keyword,currentWord);
-	  }
-	}  */
-
+	//{{{ getPreviousWord() method
 	/**
 	 * Returns the previous word in a buffer.
 	 *
@@ -466,8 +488,9 @@ public final class PHPSideKickParser extends SideKickParser
 			if (Character.isWhitespace(c)) break;
 		}
 		return buffer.getText(j + 1, i - j);
-	}
+	} //}}}
 
+	//{{{ buildClassNameList() method
 	/**
 	 * Build the completion list to follow a 'new'. It will contains classes name
 	 *
@@ -489,20 +512,20 @@ public final class PHPSideKickParser extends SideKickParser
 			while (iterator.hasNext())
 			{
 				Object o = iterator.next();
-                if (o instanceof PHPItem)
-                {
-                    phpSideKickCompletion.addItem(o, startName);
-                }
-                else
-                {
-                    List<PHPItem> item = (List<PHPItem>) o;
-                    for (int i = 0; i < item.size(); i++)
-                    {
-                        PHPItem phpItem = item.get(i);
-                        phpSideKickCompletion.addItem(phpItem, startName);
-                    }
-                }
-            }
+				if (o instanceof PHPItem)
+				{
+					phpSideKickCompletion.addItem(o, startName);
+				}
+				else
+				{
+					List<PHPItem> item = (List<PHPItem>) o;
+					for (int i = 0; i < item.size(); i++)
+					{
+						PHPItem phpItem = item.get(i);
+						phpSideKickCompletion.addItem(phpItem, startName);
+					}
+				}
+			}
 		}
 
 		for (int i = 0; i < phpDocument.size(); i++)
@@ -513,17 +536,12 @@ public final class PHPSideKickParser extends SideKickParser
 				phpSideKickCompletion.addItem(outlineable, startName);
 			}
 		}
-		Log.log(Log.DEBUG, this, "Items in list : " + phpSideKickCompletion.getItemsCount());
-		/*final List children = phpDocument.getList();
-		   for (int k = 0; k < children.size(); k++) {
-		     final Object o = children.get(k);
-		     if (o instanceof ClassDeclaration) {
-		       phpSideKickCompletion.addItem(o, startName);
-		     }
-		   } */
+		Log.log(Log.DEBUG, this, "Items in list : " +
+			phpSideKickCompletion.getItemsCount());
 		return phpSideKickCompletion;
-	}
+	} //}}}
 
+	//{{{ updateProject() method
 	private void updateProject(PHPDocument phpDocument, String path)
 	{
 		Project project = projectManager.getProject();
@@ -551,8 +569,9 @@ public final class PHPSideKickParser extends SideKickParser
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ completeClassMembers() methods
 	/**
 	 * Build the completion list to follow a '$this->'. It will contains fields and methods
 	 *
@@ -614,8 +633,9 @@ public final class PHPSideKickParser extends SideKickParser
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ completeInterfaceMembers() method
 	private static void completeInterfaceMembers(InterfaceDeclaration interfaceDeclaration,
 						     PHPSideKickCompletion phpSideKickCompletion,
 						     String currentWord)
@@ -644,6 +664,5 @@ public final class PHPSideKickParser extends SideKickParser
 				}
 			}
 		}
-
-	}
+	} //}}}
 }
