@@ -30,6 +30,7 @@ package ise.plugin.svn.command;
 
 import java.io.*;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
@@ -96,7 +97,9 @@ public class Export {
             SVNCopySource[] sources = data.getSourceFiles();
             for (SVNCopySource source : sources) {
                 File file = source.getFile();
-                revision = client.doExport( file, new File( destination, file.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
+                // svnkit 1.2.x:
+                // doExport(File srcPath, File dstPath, SVNRevision pegRevision, SVNRevision revision, String eolStyle, boolean overwrite, SVNDepth depth)
+                revision = client.doExport( file, new File( destination, file.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()) );
             }
         }
         else if ( data.getSourceURLs() != null ) {
@@ -104,7 +107,9 @@ public class Export {
             for (SVNCopySource source : sources) {
                 SVNURL url = source.getURL();
                 String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
-                revision = client.doExport( url, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), data.getRecursive() );
+                // svnkit 1.2.x:
+                // doExport(SVNURL url, File dstPath, SVNRevision pegRevision, SVNRevision revision, String eolStyle, boolean overwrite, SVNDepth depth)
+                revision = client.doExport( url, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()) );
             }
         }
 

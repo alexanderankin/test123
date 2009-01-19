@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
@@ -94,7 +95,25 @@ public class Commit {
         });
 
         // actually do the commit
-        SVNCommitInfo info = client.doCommit( localPaths, cd.getKeepLocks(), cd.getCommitMessage(), false, cd.getRecursive() );
+        /* doCommit(
+                  File[] paths,
+                  boolean keepLocks,
+                  String commitMessage,
+                  SVNProperties revisionProperties,
+                  String[] changelists,
+                  boolean keepChangelist,
+                  boolean force,
+                  SVNDepth depth) */
+
+        SVNCommitInfo info = client.doCommit(
+            localPaths,
+            cd.getKeepLocks(),
+            cd.getCommitMessage(),
+            null,
+            null,
+            false,
+            false,
+            SVNDepth.fromRecurse(cd.getRecursive()));
 
         // handle the results
         PrintStream out = cd.getOut();

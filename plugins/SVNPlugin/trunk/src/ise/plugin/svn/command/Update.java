@@ -31,6 +31,7 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
@@ -94,7 +95,7 @@ public class Update {
         long revision = -1;
 
         for ( File file : localPaths ) {
-            revision = client.doUpdate( file, data.getSVNRevision(), recursive );
+            revision = client.doUpdate( file, data.getSVNRevision(), SVNDepth.fromRecurse(recursive), false, false );
         }
 
         out.flush();

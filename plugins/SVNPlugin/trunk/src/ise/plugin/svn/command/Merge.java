@@ -31,6 +31,7 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
@@ -100,10 +101,11 @@ public class Merge {
                     data.getToFile(),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    data.getRecursive(),
+                    SVNDepth.fromRecurse(data.getRecursive()),
                     !data.getIgnoreAncestry(),
                     data.getForce(),
-                    data.getDryRun() );
+                    data.getDryRun(),
+                    false);     // recordOnly
             }
             else if ( data.getFromFile() != null && data.getToPath() != null ) {
                 //local, revision, remote, revision, destination
@@ -113,10 +115,11 @@ public class Merge {
                     SVNURL.parseURIDecoded( data.getToPath() ),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    data.getRecursive(),
+                    SVNDepth.fromRecurse(data.getRecursive()),
                     !data.getIgnoreAncestry(),
                     data.getForce(),
-                    data.getDryRun() );
+                    data.getDryRun(),
+                    false);     // recordOnly
             }
             else if ( data.getFromPath() != null && data.getToFile() != null ) {
                 //remote, revision, local, revision, destination
@@ -126,10 +129,11 @@ public class Merge {
                     data.getToFile(),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    data.getRecursive(),
+                    SVNDepth.fromRecurse(data.getRecursive()),
                     !data.getIgnoreAncestry(),
                     data.getForce(),
-                    data.getDryRun() );
+                    data.getDryRun(),
+                    false );    // recordOnly
             }
             else if ( data.getFromPath() != null && data.getToPath() != null ) {
                 //remote, revision, remote, revision, destination
@@ -139,10 +143,11 @@ public class Merge {
                     SVNURL.parseURIDecoded( data.getToPath() ),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    data.getRecursive(),
+                    SVNDepth.fromRecurse(data.getRecursive()),
                     !data.getIgnoreAncestry(),
                     data.getForce(),
-                    data.getDryRun() );
+                    data.getDryRun(),
+                    false );    // recordOnly
             }
             else {
                 String msg = data.checkValid();

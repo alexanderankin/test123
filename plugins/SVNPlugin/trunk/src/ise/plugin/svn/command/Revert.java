@@ -31,13 +31,14 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
+
+import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-
-import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
@@ -85,16 +86,13 @@ public class Revert {
         // actually do the reverts(s)
         PrintStream out = cd.getOut();
         AddResults results = new AddResults();
-        for ( String path : paths ) {
-            try {
-                File file = new File(path);
-                client.doRevert(file, cd.getRecursive());
-                results.addPath(path);
-            }
-            catch ( Exception e ) {
-                out.println( e.getMessage() );
-                results.addErrorPath(path, e.getMessage());
-            }
+        try {
+            client.doRevert(localPaths, SVNDepth.fromRecurse(cd.getRecursive()), null);
+            results.addPaths(paths);
+        }
+        catch ( Exception e ) {
+            out.println( e.getMessage() );
+            results.addErrorPath("Error", e.getMessage());
         }
 
         out.flush();
