@@ -33,4 +33,7 @@ package.targets.file=package.xml
 # property is passed down to all plugin builds.
 build.support=/Users/elberry/development/projects/jEdit/build-support
 
-#mode=properties#
+# The junit jar file is used by lots of plugins to run test suites.
+junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
+
+#::mode=properties::#
