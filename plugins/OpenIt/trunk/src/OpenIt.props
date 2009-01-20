@@ -10,6 +10,7 @@ plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.5
 plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.07.00
 plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.4
+plugin.org.etheridge.openit.OpenItPlugin.usePluginHome=true
 
 # For ProjectViewer
 plugin.projectviewer.org.etheridge.openit.OpenItPlugin.pv-listeners=org.etheridge.openit.PVListener
