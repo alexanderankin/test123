@@ -1,0 +1,44 @@
+plugin.macosx.MacOSXPlugin.activate=startup
+#plugin.macosx.MacOSXPlugin.option-pane=MacOSXPlugin
+#plugin.macosx.MacOSXPlugin.menu.code=new MacOSXPlugin();
+
+#
+# Plugin info
+#
+plugin.macosx.MacOSXPlugin.name=Mac OS X Support
+plugin.macosx.MacOSXPlugin.author=Seph M. Soliman
+plugin.macosx.MacOSXPlugin.version=1.1
+plugin.macosx.MacOSXPlugin.docs=MacOSX.html
+
+#
+# Dependencies
+#
+plugin.macosx.MacOSXPlugin.depend.0=jedit 04.02.01.00
+plugin.macosx.MacOSXPlugin.depend.1=jdk 1.5.0
+
+MacOSXPlugin.depend.os.name=Mac OS X
+MacOSXPlugin.depend.mrj.version=99
+
+#
+# Options dialog
+#
+#options.MacOSXPlugin.code=new macos.MacOSOptionPane();
+#options.MacOSXPlugin.label=Mac OS Settings
+#options.MacOSXPlugin.menubar.label=Enable Mac OS X style menubar
+#options.MacOSXPlugin.preserve.label=Preserve existing file/creator codes on save
+#options.MacOSXPlugin.scripts.label=Script folder search depth:
+#options.MacOSXPlugin.useSelection.label=Use system highlight colour for Text Area
+#options.MacOSXPlugin.setTypeCreator.label=Save the file type/creator on save
+
+#
+# Error dialogs
+#
+MacOSXPlugin.dialog.unload.title=Plugin warning
+MacOSXPlugin.dialog.unload.message=Unloading and reloading this plugin without restarting may cause errors.\nPlease restart jEdit.
+MacOSXPlugin.dialog.osname.message=Mac OS X plugin can only be used with Mac OS X.
+MacOSXPlugin.dialog.mrjversion.title=error
+MacOSXPlugin.dialog.mrjversion.message=Mac OS X plugin requires a newer version of Java (MRJ {0}).
+
+compiler.source=1.5
+compiler.target=1.5
+
