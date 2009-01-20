@@ -18,6 +18,11 @@
 		<echo>                        packages can be found under -</echo>
 		<echo>                        [sandbox]/[name]-[version]/packages</echo>
 		<echo></echo>
+		<echo>setup                 : Sets up the pjo-ant build environment. If</echo>
+		<echo>                        you see that the sandbox directory, SCM</echo>
+		<echo>                        targets file, or Packaging targets file is</echo>
+		<echo>                        blank below, you should run this target.</echo>
+		<echo></echo>
 		<echo>view                  : Starts up the "major" version of jEdit</echo>
 		<echo>                        required by the plugin with the plugin</echo>
 		<echo>                        installed.</echo>
@@ -51,6 +56,9 @@
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
 	</target>
+	<target name="copy-sample-build" if="use.sample.build.properties">
+		<copy file="build.properties.sample" tofile="build.properties"/>
+	</target>
 	<target name="download">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
@@ -62,6 +70,13 @@
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+	</target>
+	<target name="setup">
+		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file? (yes, or enter to skip)" />
+		<antcall target="copy-sample-build" />
+		<input addproperty="sandbox.dir" message="Sandbox Directory:" />
+		<input addproperty="scm.targets.file" message="SCM Targets File:" />
+		<input addproperty="package.targets.file" message="Packaging Targets File:" />
 	</target>
 	<target name="view">
 		<input addproperty="plugin.name" message="Plugin Name:" />
