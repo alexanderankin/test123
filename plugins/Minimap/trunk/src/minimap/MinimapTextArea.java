@@ -240,7 +240,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				int line = getFirstLine() + e.getY() / h;
 				int visibleLines = textArea.getVisibleLines();
 				line -= visibleLines >> 1;
-				textArea.setFirstLine(line);
+				scrollTextArea(line);
 			}
 			drag = false;
 		}
@@ -262,19 +262,24 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				int diff = (e.getY() - dragY) / h;
 				newFirstLine = line + diff;
 			}
-			int count = textArea.getLineCount();
-			if (newFirstLine >= count)
-				newFirstLine = count - visibleLines;
-			if (newFirstLine < 0)
-				newFirstLine = 0;
-			textArea.setFirstLine(newFirstLine);
-			int first = getFirstLine();
-			if (newFirstLine < first || newFirstLine + visibleLines > getLastPhysicalLine())
-				setFirstLine(newFirstLine);
+			scrollTextArea(newFirstLine);
 			e.consume();
 		}
 	}
 
+	private void scrollTextArea(int newFirstLine) {
+		int visibleLines = textArea.getVisibleLines();
+		int count = textArea.getLineCount();
+		if (newFirstLine >= count)
+			newFirstLine = count - visibleLines;
+		if (newFirstLine < 0)
+			newFirstLine = 0;
+		textArea.setFirstLine(newFirstLine);
+		int first = getFirstLine();
+		if (newFirstLine < first || newFirstLine + visibleLines > getLastPhysicalLine())
+			setFirstLine(newFirstLine);
+	}
+	
 	public void updateFolds() {
 		if (! Options.getFoldProp())
 			return;
