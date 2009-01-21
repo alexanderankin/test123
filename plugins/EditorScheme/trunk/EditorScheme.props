@@ -5,7 +5,7 @@ plugin.editorscheme.EditorSchemePlugin.activate=defer
 
 plugin.editorscheme.EditorSchemePlugin.name=Editor Scheme
 plugin.editorscheme.EditorSchemePlugin.author=Ollie Rutherfurd
-plugin.editorscheme.EditorSchemePlugin.version=1.1
+plugin.editorscheme.EditorSchemePlugin.version=1.2
 plugin.editorscheme.EditorSchemePlugin.docs=index.html
 
 plugin.editorscheme.EditorSchemePlugin.depend.0=jedit 04.02.02.00
@@ -77,6 +77,7 @@ editor-scheme.console-props=console.font \
     console.fontsize \
     console.fontstyle \
     console.bgColor \
+    console.caretColor \
     console.plainColor \
     console.infoColor \
     console.warningColor \
