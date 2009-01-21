@@ -61,13 +61,15 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private MouseListener ml;
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
-
+	private JScrollBar scrollBar;
+	
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
 		getBuffer().setProperty("folding","explicit");
 		setMapFont();
 		setBuffer(textArea.getBuffer());
-		hideScrollbar();
+		scrollBar = findScrollBar(this);
+		setScrollBarVisibility();
 		textAreaScrollListener = new TextAreaScrollListener();
 		ml = new MapMouseListener();
 		mml = new MapMouseMotionListener();
@@ -76,10 +78,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		lastFoldProp = Options.getFoldProp();
 	}
 
-	private void hideScrollbar() {
-		JScrollBar sb = findScrollBar(this);
-		if (sb != null)
-			sb.setVisible(false);
+	private void setScrollBarVisibility() {
+		if (scrollBar != null)
+			scrollBar.setVisible(Options.getScrollProp());
 	}
 
 	private JScrollBar findScrollBar(Container c) {
@@ -94,6 +95,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 		return null;
 	}
+	
 	private void setMapFont() {
 		TextAreaPainter painter = getPainter();
 		Font f = deriveFont(painter.getFont());
@@ -122,6 +124,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		EditBus.addToBus(this);
 		scrollToMakeTextAreaVisible();
 	}
+	
 	public void stop() {
 		EditBus.removeFromBus(this);
 		painter.removeMouseMotionListener(mml);
@@ -208,6 +211,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				else
 					getDisplayManager().expandAllFolds();
 			}
+			setScrollBarVisibility();
 			propertiesChanged();
 		}
 	}
