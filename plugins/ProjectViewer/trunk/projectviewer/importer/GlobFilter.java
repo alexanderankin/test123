@@ -51,12 +51,11 @@ public final class GlobFilter extends ImporterFileFilter {
 	 *	ProjectViewer "import settings".
 	 */
 	public static GlobFilter getImportSettingsFilter() {
-		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 		return new GlobFilter(
 			jEdit.getProperty("projectviewer.import.filter.settings.desc"),
 			jEdit.getProperty("projectviewer.import.filter.settings.rdesc"),
-			config.getImportGlobs(),
-			config.getExcludeDirs(),
+			null,
+			null,
 			false);
 	} //}}}
 
@@ -109,9 +108,16 @@ public final class GlobFilter extends ImporterFileFilter {
 	//{{{ +accept(VFSFile) : boolean
 	public boolean accept(VFSFile file) {
 		if (file_positive == null) {
+			if (!custom) {
+				ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+				fileGlobs = config.getImportGlobs();
+				dirGlobs = config.getExcludeDirs();
+			}
+
 			StringTokenizer globs = new StringTokenizer(fileGlobs);
 			StringBuffer fPos = new StringBuffer();
 			StringBuffer fNeg = new StringBuffer();
+
 			while (globs.hasMoreTokens()) {
 				String token = globs.nextToken();
 				if (token.startsWith("!")) {
@@ -187,6 +193,18 @@ public final class GlobFilter extends ImporterFileFilter {
 	public String getDirectoryGlobs()
 	{
 		return dirGlobs;
+	}
+
+
+	protected void done()
+	{
+		file_positive = null;
+		file_negative = null;
+		dir_negative = null;
+		if (!custom) {
+			dirGlobs = null;
+			fileGlobs = null;
+		}
 	}
 
 }
