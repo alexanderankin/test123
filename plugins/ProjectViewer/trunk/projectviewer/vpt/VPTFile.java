@@ -69,6 +69,8 @@ public class VPTFile extends VPTNode
 
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
+
+	private String tsCache;
 	//}}}
 
 	public VPTFile(String url)
@@ -155,6 +157,7 @@ public class VPTFile extends VPTNode
 	public void setURL(String url)
 	{
 		this.url = url;
+		this.tsCache = null;
 		setName(VFSManager.getVFSForPath(url).getFileName(url));
 	}
 
@@ -211,7 +214,10 @@ public class VPTFile extends VPTNode
 	/** Returns a string representation of the current node. */
 	public String toString()
 	{
-		return "File [" + url + "]";
+		if (tsCache == null) {
+			tsCache = "File [" + url + "]";
+		}
+		return tsCache;
 	}
 
 

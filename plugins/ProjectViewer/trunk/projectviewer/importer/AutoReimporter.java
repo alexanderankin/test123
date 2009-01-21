@@ -249,13 +249,11 @@ public class AutoReimporter implements ActionListener
 	{
 
 		private List<VPTDirectory> dirs;
-		private Map<VFS,Object> sessions;
 
 		private AutoReimporterImpl(VPTProject project)
 		{
 			super(project, null);
 			dirs = new ArrayList<VPTDirectory>();
-			sessions = new HashMap<VFS,Object>();
 		}
 
 		protected void internalDoImport()
@@ -263,7 +261,7 @@ public class AutoReimporter implements ActionListener
 			try {
 				/* Step 1: re-import files from the project root. */
 				removeFiles(project);
-				importFiles(project);
+				importFiles(project, options._getFilter(), false, false);
 
 				/*
 				 * Step 2: recurse into directories.
@@ -274,15 +272,7 @@ public class AutoReimporter implements ActionListener
 					VPTDirectory dir = dirs.remove(0);
 					removeFiles(dir);
 					removeDirectory(dir);
-					importFiles(dir);
-				}
-
-				/* Step 3: close all opened VFS sessions. */
-				for (VFS vfs : sessions.keySet()) {
-					Object session = sessions.get(vfs);
-					VFSHelper.endVFSSession(vfs,
-											session,
-											jEdit.getActiveView());
+					importFiles(dir, options._getFilter(), false, false);
 				}
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, "I/O error re-importing project", ioe);
@@ -308,56 +298,6 @@ public class AutoReimporter implements ActionListener
 			}
 		}
 
-
-		/**
-		 * Imports the files directly under the given node. Does not
-		 * recurse into subdirectories.
-		 */
-		private void importFiles(VPTNode dest)
-			throws IOException
-		{
-			VFS vfs = VFSManager.getVFSForPath(dest.getNodePath());
-			Object session = getSession(vfs, dest.getNodePath());
-			String[] children;
-
-			children = vfs._listDirectory(session,
-										  dest.getNodePath(),
-										  options._getFilter(),
-										  false,
-										  jEdit.getActiveView(),
-										  false,
-										  true);
-
-			if (children == null || children.length == 0) {
-				return;
-			}
-
-			for (String url: children) {
-				VFSFile file = VFSHelper.getFile(url);
-				if (file != null &&
-					file.getType() == VFSFile.FILE) {
-					findChild(url, dest, true);
-				}
-			}
-		}
-
-
-		/**
-		 * Retrieves a VFS session from the cache, creating a new one
-		 * if a miss occurs.
-		 */
-		private Object getSession(VFS vfs,
-								  String path)
-		{
-			Object session = sessions.get(vfs);
-			if (session == null) {
-				session = VFSHelper.createVFSSession(vfs,
-													 path,
-													 jEdit.getActiveView());
-				sessions.put(vfs, session);
-			}
-			return session;
-		}
 
 	}
 

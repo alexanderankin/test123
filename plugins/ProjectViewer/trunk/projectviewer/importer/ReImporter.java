@@ -110,7 +110,7 @@ public class ReImporter extends RootImporter {
 		try {
 			if (VFSHelper.pathExists(dir.getURL())) {
 				unregisterDir(dir, flatten);
-				addTree(dir, fnf, flatten);
+				importFiles(dir, fnf, true, flatten);
 			} else {
 				for (int i = 0; i < dir.getChildCount(); i++) {
 					VPTNode node = (VPTNode) dir.getChildAt(i);

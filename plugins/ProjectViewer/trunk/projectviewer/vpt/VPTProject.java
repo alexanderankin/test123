@@ -343,8 +343,8 @@ public class VPTProject extends VPTNode {
 	 *	Notifies the listeners that a group of files has been added to and/or
 	 *	removed from the project.
 	 */
-	public void fireFilesChanged(List<VPTFile> added,
-								 List<VPTFile> removed)
+	public void fireFilesChanged(Collection<VPTFile> added,
+								 Collection<VPTFile> removed)
 	{
 		ProjectUpdate up = new ProjectUpdate(this, added, removed);
 		EditBus.send(up);
