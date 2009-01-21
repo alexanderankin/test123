@@ -236,6 +236,16 @@
 
               <entry>Y</entry>
             </row>
+
+            <row>
+              <entry>Teradata</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>N</entry>
+            </row>
           </tbody>
         </tgroup>
       </table>
@@ -453,6 +463,17 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 1.07</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Added support for Teradata JDBC Type 4 driver.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <formalpara>
           <title>Version 1.06</title>

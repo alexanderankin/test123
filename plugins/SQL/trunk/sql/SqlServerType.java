@@ -106,7 +106,8 @@ public class SqlServerType extends Properties
 	                "/sql/serverTypes/MSSQL.jTDS.xml",
 	                "/sql/serverTypes/Sybase.xml",
 	                "/sql/serverTypes/Progress.xml",
-	                "/sql/serverTypes/Derby.xml"
+	                "/sql/serverTypes/Derby.xml",
+	                "/sql/serverTypes/teradata.xml"
 	        };
 
 
