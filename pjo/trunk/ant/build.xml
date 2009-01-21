@@ -56,7 +56,7 @@
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
 	</target>
-	<target name="copy-sample-build" if="use.sample.build.properties">
+	<target name="copy-sample-build" if="copy.sample.build.properties">
 		<copy file="build.properties.sample" tofile="build.properties"/>
 	</target>
 	<target name="download">
@@ -72,17 +72,46 @@
 		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 	</target>
 	<target name="setup">
-		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file? (yes, or enter to skip)" />
+		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file (y/n)?" />
+		<condition property="copy.sample.build.properties">
+			<equals arg1="y" arg2="${use.sample.build.properties}" />
+		</condition>
 		<antcall target="copy-sample-build" />
+		<property file="build.properties" />
 		<input addproperty="sandbox.dir" message="Sandbox Directory:" />
 		<input addproperty="scm.targets.file" message="SCM Targets File:" />
 		<input addproperty="package.targets.file" message="Packaging Targets File:" />
+		<input addproperty="build.support" message="Build Support Directory:" />
+		<input addproperty="junit.jar" message="Path to junit.jar:" />
+		<input addproperty="jedit.version.04.02.install.dir" defaultvalue="${sandbox.dir}/4.2" message="Path to jEdit 4.2 Installation:"/>
+		<input addproperty="jedit.version.04.02.settings.dir" defaultvalue="${jedit.version.04.02.install.dir}/settings" message="jEdit 4.2 Settings Directory:"/>
+		<input addproperty="jedit.version.04.03.install.dir" defaultvalue="${sandbox.dir}/4.3pre16" message="Path to jEdit 4.3 Installation:"/>
+		<input addproperty="jedit.version.04.03.settings.dir" defaultvalue="${jedit.version.04.03.install.dir}/settings" message="jEdit 4.3 Settings Directory:"/>
+		<antcall target="write-build-properties" />
 	</target>
 	<target name="view">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-view pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
+	</target>
+	<target name="write-build-properties" unless="copy.sample.build.properties">
+		<echo file="build.properties"># Generated File
+sandbox.dir=${sandbox.dir}
+scm.targets.file=${scm.targets.file}
+package.targets.file=${package.targets.file}
+build.support=${build.support}
+junit.jar=${junit.jar}
+
+# jEdit installation properties.
+jedit.version.04.02.install.dir=${jedit.version.04.02.install.dir}
+jedit.version.04.02.settings.dir=${jedit.version.04.02.settings.dir}
+jedit.version.04.03.install.dir=${jedit.version.04.03.install.dir}
+jedit.version.04.03.settings.dir=${jedit.version.04.03.settings.dir}
+
+# The jEdit Subversion URL - shouldn't ever change.
+jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
+		</echo>
 	</target>
 	<macrodef name="plugin-download">
 		<attribute name="pluginName" />
