@@ -1,3 +1,9 @@
+2009-01-20        svu
+
+	* users-guide.xml, sql/serverTypes/teradata.xml,
+	sql/SqlServerType.java: added Teradata JDBC Type 4 driver (basic
+	support).
+
 2007-03-14        svu
 
 	* sql/ResultSetPanel.java: Fixed sorting of the columns with null

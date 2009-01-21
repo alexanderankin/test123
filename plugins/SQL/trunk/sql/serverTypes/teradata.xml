@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Teradata">
+
+  <driverClass>com.ncr.teradata.TeraDriver</driverClass>
+
+  <connection>
+    <parameter name="host" default="127.0.0.1" description="Host name or IP"/>
+    <parameter name="user" default="tduser" description="User"/>
+    <parameter name="password" default="tduser" description="Password"/>
+    <string>jdbc:teradata://{host}</string>
+  </connection>
+
+  <statements>
+  </statements>
+
+</serverType>
