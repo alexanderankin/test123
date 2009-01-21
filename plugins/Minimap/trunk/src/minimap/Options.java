@@ -36,18 +36,21 @@ public class Options extends AbstractOptionPane {
 	private static final String FONT_LABEL = "labels.minimap.fontFamily";
 	private static final String SIZE_LABEL = "labels.minimap.fontSize";
 	private static final String SIDE_LABEL = "labels.minimap.side";
+	private static final String SCROLL_LABEL = "labels.minimap.scroll";
 	private static final String FOLD_LABEL = "labels.minimap.fold";
 	private static final String TIME_LABEL = "labels.minimap.time";
 	private static final String AUTO_PROP = "options.minimap.auto";
 	private static final String FONT_PROP = "options.minimap.font";
 	private static final String SIZE_PROP = "options.minimap.size";
 	private static final String SIDE_PROP = "options.minimap.side";
+	private static final String SCROLL_PROP = "options.minimap.scroll";
 	private static final String FOLD_PROP = "options.minimap.fold";
 	private static final String TIME_PROP = "options.minimap.time";
 	private JComboBox font;
 	private JTextField size;
 	private JCheckBox auto;
 	private JComboBox side;
+	private JCheckBox scroll;
 	private JCheckBox fold;
 	private JSlider time;
 	public static final String LEFT = "Left";
@@ -67,6 +70,8 @@ public class Options extends AbstractOptionPane {
 		addComponent(auto);
 		side = new JComboBox(SIDES);
 		addComponent(jEdit.getProperty(SIDE_LABEL), side);
+		scroll = new JCheckBox(jEdit.getProperty(SCROLL_LABEL));
+		addComponent(scroll);
 		fold = new JCheckBox(jEdit.getProperty(FOLD_LABEL));
 		addComponent(fold);
 		time = new JSlider(500, 5000);
@@ -82,6 +87,7 @@ public class Options extends AbstractOptionPane {
 		size.setText(String.valueOf(getSizeProp()));
 		auto.setSelected(getAutoProp());
 		side.setSelectedItem(getSideProp());
+		scroll.setSelected(getScrollProp());
 		fold.setSelected(getFoldProp());
 		time.setValue(getTimeProp());
 	}
@@ -96,6 +102,7 @@ public class Options extends AbstractOptionPane {
 		jEdit.setDoubleProperty(SIZE_PROP, d);
 		jEdit.setBooleanProperty(AUTO_PROP, auto.isSelected());
 		jEdit.setProperty(SIDE_PROP, side.getSelectedItem().toString());
+		jEdit.setBooleanProperty(SCROLL_PROP, scroll.isSelected());
 		jEdit.setBooleanProperty(FOLD_PROP, fold.isSelected());
 		jEdit.setIntegerProperty(TIME_PROP, time.getValue());
 	}
@@ -115,6 +122,9 @@ public class Options extends AbstractOptionPane {
 			if (s.equalsIgnoreCase(sideOption))
 				return sideOption;
 		return SIDES[0];
+	}
+	public static boolean getScrollProp() {
+		return jEdit.getBooleanProperty(SCROLL_PROP);
 	}
 	public static boolean getFoldProp() {
 		return jEdit.getBooleanProperty(FOLD_PROP, true);
