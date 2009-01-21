@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="SVN Command Line Targets" basedir="." default="help">
+	<target name="checkout-plugin">
+		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
+		<antcall target="clone-plugin-url" />
+		<antcall target="create-tag-branch" />
+	</target>
+	<target name="clone-plugin-url">
+		<input addproperty="clone.url" message="Clone URL:" />
+		<exec executable="git" failonerror="true">
+			<arg value="clone" />
+			<arg value="${clone.url}" />
+			<arg value="${plugin.download.dir}" />
+		</exec>
+	</target>
+	<target name="create-tag-branch">
+		<exec executable="git" failonerror="true" dir="${plugin.download.dir}">
+			<arg value="checkout" />
+			<arg value="-b" />
+			<arg value="${plugin.tag}" />
+		</exec>
+	</target>
+</project>
