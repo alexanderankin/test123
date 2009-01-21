@@ -143,7 +143,7 @@ public class RootImporter extends FileImporter {
 		}
 
 		try {
-			addTree(project, fnf, flatten);
+			importFiles(project, fnf, true, flatten);
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, "VFS exception while importing", ioe);
 		}

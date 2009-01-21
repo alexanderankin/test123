@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
@@ -81,19 +82,22 @@ public abstract class Importer implements Runnable {
 	/** The node to where the imported nodes will be added. */
 	protected final ProjectViewer viewer;
 
-	protected VPTNode		selected;
-	protected VPTProject	project;
-	private boolean			noThread;
-	private boolean			lockProject;
+	protected final VPTNode		selected;
+	protected final VPTProject	project;
+	private boolean noThread;
+	private boolean	lockProject;
 
 	private Map<VPTNode,VPTNode> addedNodes;
 
 	/** The list of added files, if any, for event firing purposes. */
-	private List<VPTFile>	added;
+	private Map<String,VPTFile>	added;
 	/** The list of removed files, if any, for event firing purposes. */
-	private List<VPTFile>	removed;
+	private Map<String,VPTFile>	removed;
 	/** The list of directories to be removed. */
 	private List<VPTDirectory> removedDirs;
+
+	/** Internal cache for VFS sessions. */
+	private Map<VFS,Object> sessions;
 
 	/**
 	 *	An action to be executed after the import occurs. It will be executed
@@ -195,10 +199,16 @@ public abstract class Importer implements Runnable {
 	}
 
 	/**
-	 * Inserts a new node into the private map of nodes that have been
-	 * imported. The {@link #run()} method of this class will take care
-	 * of processing all these nodes and properly registering files and
-	 * updating the trees.
+	 * Marks a node for importing. The {@link #run()} method of this
+	 * class will take care of processing all these nodes and properly
+	 * registering files and updating the trees.
+	 *
+	 * It is assumed that either the parent node already exists in the
+	 * project, or it has been properly imported using this method.
+	 *
+	 * If the node is a direct descendent of an already existing node,
+	 * then it will be processed later when the UI is updated. Otherwise
+	 * it will be added to the parent's list of children right away.
 	 *
 	 * @param	node	The node being inserted.
 	 * @param	parent	Where the node is being inserted.
@@ -210,10 +220,15 @@ public abstract class Importer implements Runnable {
 	{
 		assert (node != null) : "null node";
 		assert (parent != null) : "null parent node";
-		if (addedNodes == null) {
-			addedNodes = new HashMap<VPTNode,VPTNode>();
+		if (parent == selected ||
+			selected.isNodeDescendant(parent)) {
+			if (addedNodes == null) {
+				addedNodes = new HashMap<VPTNode,VPTNode>();
+			}
+			addedNodes.put(node, parent);
+		} else {
+			parent.insert(node, parent.findIndexForChild(node));
 		}
-		addedNodes.put(node, parent);
 	}
 
 
@@ -221,11 +236,7 @@ public abstract class Importer implements Runnable {
 	 *	Looks, in the children list for the given parent, for a node with
 	 *	the given path. If it exists, return it. If not, creates either a
 	 *	directory or file node (depending on what VFS says) if <i>create</i>
-	 *	is true, othrwise return null.
-	 *
-	 *	If a new node is created, it's automatically registered in the
-	 *	internal list of nodes to be processed (and removed from the
-	 *	list of nodes pending removal, if it's listed).
+	 *	is true, otherwise return null.
 	 *
 	 *	@param	url		The URL of the directory to look for.
 	 *	@param	parent	The node where to look for the directory.
@@ -240,6 +251,7 @@ public abstract class Importer implements Runnable {
 								boolean create)
 		throws IOException
 	{
+		/* Does the node already exist? */
 		Enumeration e = parent.children();
 		while (e.hasMoreElements()) {
 			VPTNode n = (VPTNode) e.nextElement();
@@ -247,18 +259,31 @@ public abstract class Importer implements Runnable {
 				return n;
 			} else if (n.isFile() && ((VPTFile)n).getURL().equals(url)) {
 				if (create) {
-					contains(removed, (VPTFile) n);
+					contains(removed, url);
 				}
 				return n;
 			}
 		}
+
+		/* Has the node been added? */
+		if (addedNodes != null) {
+			for (VPTNode n : addedNodes.keySet()) {
+				if (n.isDirectory() && ((VPTDirectory)n).getURL().equals(url)) {
+					return n;
+				} else if (n.isFile() && ((VPTFile)n).getURL().equals(url)) {
+					return n;
+				}
+			}
+		}
+
+		/* Create the node if requested. */
 		if (create) {
 			VFSFile file = VFSHelper.getFile(url);
 			VPTNode n = null;
 
 			if (file != null && file.getType() == VFSFile.FILE) {
 				n = new VPTFile(url);
-				contains(removed, (VPTFile) n);
+				contains(removed, ((VPTFile)n).getURL());
 			} else {
 				/*
 				 * Anything that is not a file is treated as a directory;
@@ -290,7 +315,6 @@ public abstract class Importer implements Runnable {
 									String path)
 		throws IOException
 	{
-		boolean addNode = true;
 		boolean isFile;
 		Stack<String> dirs;
 		String rootPath;
@@ -333,41 +357,82 @@ public abstract class Importer implements Runnable {
 		}
 
 		while (!dirs.isEmpty()) {
-			String curr = dirs.pop();
-			VPTNode n = findChild(curr, root, false);
-
-			if (n == null && addedNodes != null) {
-				/* Look in map of already added nodes. */
-				for (VPTNode tmp : addedNodes.keySet()) {
-					if (tmp.getNodePath().equals(curr)) {
-						n = tmp;
-						break;
-					}
-				}
-			}
-
-			if (n == null) {
-				if (isFile && dirs.size() == 0) {
-					n = new VPTFile(curr);
-					if (contains(removed, (VPTFile) n)) {
-						root = n;
-						break;
-					}
-				} else {
-					n = new VPTDirectory(curr);
-				}
-				if (addNode) {
-					addNode(n, root);
-					addNode = false;
-				} else {
-					root.insert(n, root.findIndexForChild(n));
-				}
-			} else if (n.isFile()) {
-				contains(removed, (VPTFile) n);
-			}
-			root = n;
+			root = findChild(dirs.pop(), root, true);
 		}
 		return root;
+	}
+
+
+	/**
+	 * Imports the files directly under the given node, optionally
+	 * recursing into sub-directories.
+	 *
+	 * @param	dest	Node where to add the new imported files.
+	 * @param	filter	File filter to use when listing directories.
+	 * @param	recurse	Whether to recurse into sub-directories.
+	 * @param	flatten	Whether to import all files (even from
+	 *					sub-directories) into the dest node.
+	 *
+	 * @since PV 3.0.0
+	 */
+	protected void importFiles(VPTNode dest,
+							   VFSFileFilter filter,
+							   boolean recurse,
+							   boolean flatten)
+		throws IOException
+	{
+		String[] children;
+		String dir = dest.getNodePath();
+		VFS vfs = VFSManager.getVFSForPath(dir);
+		VPTNode root = dest;
+		Object session = getSession(vfs, dir);
+
+		assert (filter != null) : "Filter can't be null.";
+
+		children = vfs._listDirectory(session,
+									  dir,
+									  filter,
+									  recurse,
+									  jEdit.getActiveView(),
+									  false,
+									  true);
+
+		if (children == null || children.length == 0) {
+			return;
+		}
+
+		/*
+		 * Now for the fun part. The VFS API doesn't return child directories
+		 * when listing directories; child directories are implied by
+		 * the list of files when listing recursively. Which is a big
+		 * PITA.
+		 *
+		 * So, to work around this issue, this function emulates a proper
+		 * directory walking algorithm: if file is under current dir,
+		 * import it; if not, add a new directory and change the current
+		 * dir.
+		 */
+
+		for (String url : children) {
+			if (!flatten) {
+				String parent = vfs.getParentOfPath(url);
+				if (parent.endsWith(File.separator)) {
+					parent = parent.substring(0, parent.length() - File.separator.length());
+				}
+
+				if (!parent.equals(dir)) {
+					dest = constructPath(root, parent);
+					dir = parent;
+				}
+			}
+
+			VFSFile file = VFSHelper.getFile(url);
+
+			if (file != null) {
+				VPTNode n = findChild(url, dest, true);
+				contains(removed, url);
+			}
+		}
 	}
 
 
@@ -391,11 +456,11 @@ public abstract class Importer implements Runnable {
 	 */
 	protected void removeFile(VPTFile file)
 	{
-		if (!contains(added, file)) {
+		if (!contains(added, file.getURL())) {
 			if (removed == null) {
-				removed = new ArrayList<VPTFile>();
+				removed = new HashMap<String,VPTFile>();
 			}
-			removed.add(file);
+			removed.put(file.getURL(), file);
 		}
 	}
 
@@ -404,18 +469,39 @@ public abstract class Importer implements Runnable {
 	 *	Checks whether the given list contains the given file or not. If the
 	 *	file is found, it is removed from the list.
 	 */
-	private boolean contains(List<VPTFile> list,
-							 VPTFile file)
+	private boolean contains(Map<String,VPTFile> list,
+							 String url)
 	{
-		if (list != null)
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getURL().equals(file.getURL())) {
-				list.remove(i);
-				return true;
-			}
+		if (list != null && list.containsKey(url)) {
+			list.remove(url);
+			return true;
 		}
 		return false;
 	}
+
+	/**
+	 * Retrieves a VFS session from the cache, creating a new one
+	 * if a miss occurs.
+	 */
+	private Object getSession(VFS vfs,
+							  String path)
+	{
+		Object session;
+
+		if (sessions == null) {
+			sessions = new HashMap<VFS,Object>();
+		}
+
+		session = sessions.get(vfs);
+		if (session == null) {
+			session = VFSHelper.createVFSSession(vfs,
+												 path,
+												 jEdit.getActiveView());
+			sessions.put(vfs, session);
+		}
+		return session;
+	}
+
 
 	//{{{ #setViewerEnabled(boolean) : void
 	protected void setViewerEnabled(final boolean flag) {
@@ -440,6 +526,14 @@ public abstract class Importer implements Runnable {
 		try {
 			internalDoImport();
 			cleanup();
+			if (sessions != null) {
+				for (VFS vfs : sessions.keySet()) {
+					Object session = sessions.get(vfs);
+					VFSHelper.endVFSSession(vfs,
+											session,
+											jEdit.getActiveView());
+				}
+			}
 			PVActions.swingInvoke(
 				new Runnable() {
 					public void run() {
@@ -563,8 +657,10 @@ public abstract class Importer implements Runnable {
 	{
 		/* Process all the added nodes. */
 		if (addedNodes != null) {
-			for (VPTNode n : addedNodes.keySet()) {
-				VPTNode parent = addedNodes.get(n);
+
+			for (Map.Entry<VPTNode,VPTNode> entry : addedNodes.entrySet()) {
+				VPTNode n = entry.getKey();
+				VPTNode parent = entry.getValue();
 				ProjectViewer.insertNodeInto(n, parent);
 				if (n.isFile()) {
 					registerFile((VPTFile)n);
@@ -576,7 +672,7 @@ public abstract class Importer implements Runnable {
 
 		/* Process all the files marked for removal. */
 		if (removed != null) {
-			for (VPTFile file : removed) {
+			for (VPTFile file : removed.values()) {
 				project.unregisterNodePath(file);
 				ProjectViewer.removeNodeFromParent(file);
 			}
@@ -613,7 +709,8 @@ public abstract class Importer implements Runnable {
 		}
 
 		if (added != null || removed != null) {
-			project.fireFilesChanged(added, removed);
+			project.fireFilesChanged((added != null) ? added.values() : null,
+									 (removed != null) ? removed.values() : null);
 		}
 	}
 
@@ -625,12 +722,12 @@ public abstract class Importer implements Runnable {
 	 */
 	private void registerFile(VPTFile file)
 	{
-		if (!contains(removed, file)) {
+		if (!contains(removed, file.getURL())) {
 			project.registerNodePath(file);
 			if (added == null) {
-				added = new ArrayList<VPTFile>();
+				added = new HashMap<String,VPTFile>();
 			}
-			added.add(file);
+			added.put(file.getURL(), file);
 		}
 	}
 
@@ -647,14 +744,16 @@ public abstract class Importer implements Runnable {
 		{
 			JTree tree = viewer.getCurrentTree();
 			if (tree != null) {
-				for (VPTNode n : addedNodes.keySet()) {
-					DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
-					TreeNode[] nodes = tModel.getPathToRoot(n);
-					tree.makeVisible(new TreePath(nodes));
-					if (n.isDirectory()) {
-						/* Expand directories. */
-						TreePath path = new TreePath(nodes);
-						tree.expandPath(path);
+				DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+				if (addedNodes != null) {
+					for (VPTNode n : addedNodes.keySet()) {
+						TreeNode[] nodes = tModel.getPathToRoot(n);
+						tree.makeVisible(new TreePath(nodes));
+						if (n.isDirectory()) {
+							/* Expand directories. */
+							TreePath path = new TreePath(nodes);
+							tree.expandPath(path);
+						}
 					}
 				}
 			}

@@ -18,7 +18,7 @@
  */
 package projectviewer.event;
 
-import java.util.List;
+import java.util.Collection;
 import org.gjt.sp.jedit.EBMessage;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
@@ -43,13 +43,13 @@ public final class ProjectUpdate extends EBMessage
     }
 
     private final Type type;
-    private final List<VPTFile> added;
-    private final List<VPTFile> removed;
+    private final Collection<VPTFile> added;
+    private final Collection<VPTFile> removed;
 
     /** Construct a new message with type FILES_CHANGED. */
     public ProjectUpdate(VPTProject p,
-                         List<VPTFile> added,
-                         List<VPTFile> removed)
+                         Collection<VPTFile> added,
+                         Collection<VPTFile> removed)
     {
         super(p);
         this.added = added;
@@ -78,13 +78,13 @@ public final class ProjectUpdate extends EBMessage
     }
 
     /** @return The list of added files (may be null). */
-    public List<VPTFile> getAddedFiles()
+    public Collection<VPTFile> getAddedFiles()
     {
         return added;
     }
 
     /** @return The list of removed files (may be null). */
-    public List<VPTFile> getRemovedFiles()
+    public Collection<VPTFile> getRemovedFiles()
     {
         return removed;
     }

@@ -124,12 +124,10 @@ public class FileImporter extends Importer {
 					}
 				}
 
-				if (!VFSHelper.pathExists(file.getPath())) {
-					node = findChild(file.getPath(), parent, true);
-				} else {
-					node = findChild(file.getPath(), parent, true);
+				node = findChild(file.getPath(), parent, true);
+				if (VFSHelper.pathExists(file.getPath())) {
 					if (node.isDirectory() && id.getTraverseDirectories()) {
-						addTree(node, fnf, id.getFlattenFilePaths());
+						importFiles(node, fnf, true, id.getFlattenFilePaths());
 					}
 				}
 			}
@@ -139,54 +137,6 @@ public class FileImporter extends Importer {
 
 		saveImportFilterStatus(project, id);
 		postAction = new ShowNodes();
-	}
-
-
-	/**
-	 * Adds a directory tree to the given node.
-	 *
-	 * @param	where	The node to where the new files will be added.
-	 * @param	filter	The filter to use to select files.
-	 * @param	flatten	Whether to "flat import" (add all files to top directory).
-	 */
-	protected void addTree(VPTNode where,
-						   VFSFileFilter filter,
-						   boolean flatten)
-		throws IOException
-	{
-		Object session;
-		String[] children;
-		VFSFile root;
-		View view;
-
-		view = jEdit.getActiveView();
-		root = VFSHelper.getFile(where.getNodePath());
-		if (root == null) {
-			return;
-		}
-
-		session = VFSHelper.createVFSSession(root.getVFS(), root.getPath(), view);
-
-		try {
-			children = root.getVFS()._listDirectory(session, root.getPath(),
-													filter, true, view, false,
-													true);
-		} finally {
-			VFSHelper.endVFSSession(root.getVFS(), session, view);
-		}
-
-		if (children == null || children.length == 0) {
-			return;
-		}
-
-		for (String url: children) {
-			VFSFile file = VFSHelper.getFile(url);
-			VPTNode node;
-			if (file == null) {
-				continue;
-			}
-			node = constructPath(where, url);
-		}
 	}
 
 
@@ -200,6 +150,7 @@ public class FileImporter extends Importer {
 									project, selected);
 		}
 	}
+
 
 	protected void cleanup()
 	{
