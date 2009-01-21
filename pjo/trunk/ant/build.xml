@@ -38,8 +38,8 @@
 		<echo>or:</echo>
 		<echo>   "ant download build view package -Dplugin.name=PluginName -Dplugin.version=1.0"</echo>
 		<echo></echo>
-		<echo>And you should be able see see the plugin in use before it's </echo>
-		<echo>release packages are created.</echo>
+		<echo>And you should be able see the plugin in use before it's release</echo>
+		<echo>packages are created.</echo>
 		<echo></echo>
 		<echo>Your sandbox directory is set to:</echo>
 		<echo>   ${sandbox.dir}</echo>
