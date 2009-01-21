@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.xml.sax.Attributes;
 
-import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -97,9 +97,9 @@ public class FileNodeHandler extends NodeHandler {
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
 		VPTFile file = (VPTFile) node;
-		VFSFile vfsFile = file.getFile();
-		if (vfsFile == null ||
-			!file.getName().equals(file.getFile().getName())) {
+		String fileName = VFSManager.getVFSForPath(file.getURL())
+							.getFileName(file.getURL());
+		if (!file.getName().equals(fileName)) {
 			writeAttr(NAME_ATTR, file.getName(), out);
 		}
 		writeAttr(PATH_ATTR, translatePath(file.getURL()), out);

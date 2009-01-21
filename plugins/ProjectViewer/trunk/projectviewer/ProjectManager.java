@@ -438,11 +438,16 @@ public final class ProjectManager {
 	 */
 	public void unloadProject(VPTProject p) {
 		Entry e = projects.get(p.getName());
-		saveProject(e.project, true);
-		e.project.removeAllChildren();
-		e.project.getProperties().clear();
-		e.project.clearOpenFiles();
-		e.isLoaded = false;
+
+		synchronized (e) {
+			if (e.isLoaded) {
+				saveProject(e.project, true);
+				e.project.removeAllChildren();
+				e.project.getProperties().clear();
+				e.project.clearOpenFiles();
+				e.isLoaded = false;
+			}
+		}
 	} //}}}
 
 	//{{{ +getGlobalFilterList() : List
