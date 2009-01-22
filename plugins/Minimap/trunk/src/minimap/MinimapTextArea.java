@@ -30,6 +30,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.TextAttribute;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JScrollBar;
@@ -52,6 +53,12 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
+
+	@Override
+	public void setFirstLine(int firstLine) {
+		super.setFirstLine(firstLine);
+		updateFolds(false);
+	}
 
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
@@ -112,7 +119,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		return (float) Options.getSizeProp();
 	}
 	private Font deriveFont(Font f) {
-		Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) f.getAttributes();
+		Map<TextAttribute, Object> attributes = new HashMap<TextAttribute, Object>(f.getAttributes());
 		attributes.put(TextAttribute.FAMILY, Options.getFontProp());
 		attributes.put(TextAttribute.SIZE, getFontSize());
 		return f.deriveFont(attributes);
@@ -274,17 +281,24 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private void scrollTextArea(int newFirstLine) {
 		int visibleLines = textArea.getVisibleLines();
 		int count = textArea.getLineCount();
-		if (newFirstLine >= count)
+		if (newFirstLine > count - visibleLines)
 			newFirstLine = count - visibleLines;
 		if (newFirstLine < 0)
 			newFirstLine = 0;
 		textArea.setFirstLine(newFirstLine);
 		int first = getFirstLine();
-		if (newFirstLine < first || newFirstLine + visibleLines > getLastPhysicalLine())
+		if (newFirstLine < first)
 			setFirstLine(newFirstLine);
+		else if (newFirstLine + visibleLines > getLastPhysicalLine())
+			setFirstLine(newFirstLine + visibleLines - getVisibleLines());
+		repaint();
 	}
 	
 	public void updateFolds() {
+		updateFolds(true);
+	}
+	
+	public void updateFolds(boolean allowMove) {
 		if (! Options.getFoldProp())
 			return;
 		if (getDisplayManager().getScrollLineCount() ==
@@ -319,6 +333,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				i = tdm.getNextVisibleLine(i);
 			}
 		}
-		scrollToMakeTextAreaVisible();
+		if (allowMove)
+			scrollToMakeTextAreaVisible();
 	}
 }
