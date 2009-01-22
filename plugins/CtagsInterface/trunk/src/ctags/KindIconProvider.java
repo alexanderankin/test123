@@ -14,13 +14,13 @@ public class KindIconProvider {
 	public static final String ICONS = "options.CtagsInterface.icons.kind.";
 	
 	static public ImageIcon getIcon(String kind) {
-		String iconName =
-			jEdit.getProperty(ICONS + kind);
-		if (iconName == null || iconName.length() == 0)
-			iconName = "unknown.png";
-		ImageIcon icon = (ImageIcon) icons.get(kind);
+		ImageIcon icon = (kind == null) ? null : icons.get(kind);
 		if (icon == null)
 		{
+			String iconName =
+				jEdit.getProperty(ICONS + kind);
+			if (iconName == null || iconName.length() == 0)
+				iconName = "unknown.png";
 			URL url = Tag.class.getClassLoader().getResource(
 					"icons/" + iconName);
 	        try {
