@@ -70,6 +70,8 @@ public class MinimapPlugin extends EBPlugin {
 
 	public void stop() {
 		foldCheckTimer.stop();
+		foldCheckTimer = null;
+		hideAll();
 		maps = null;
 	}
 
@@ -87,7 +89,7 @@ public class MinimapPlugin extends EBPlugin {
 	}
 
 	// Action interface (for actions.xml)
-	
+
 	public static void showAll() {
 		jEdit.visit(new JEditVisitorAdapter() {
 			@Override
@@ -104,7 +106,7 @@ public class MinimapPlugin extends EBPlugin {
 		map.start();
 		maps.put(editPane, map);
 	}
-	
+
 	public static void hideAll() {
 		Set<EditPane> editPanes = new HashSet<EditPane>();
 		for (EditPane ep: maps.keySet())
@@ -112,11 +114,11 @@ public class MinimapPlugin extends EBPlugin {
 		for (EditPane ep: editPanes)
 			hide(ep);
 	}
-	
+
 	public static void hide(EditPane editPane) {
 		hide(editPane, true);
 	}
-	
+
 	public static void toggle(EditPane editPane) {
 		if (maps.containsKey(editPane))
 			hide(editPane);
