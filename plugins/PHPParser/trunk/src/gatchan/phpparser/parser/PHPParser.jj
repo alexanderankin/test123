@@ -63,7 +63,8 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
  * @author Matthieu Casanova <chocolat.mou@gmail.com>
  * @version $Id$
  */
-public final class PHPParser {
+public final class PHPParser
+{
 
   //{{{ Fields
 
