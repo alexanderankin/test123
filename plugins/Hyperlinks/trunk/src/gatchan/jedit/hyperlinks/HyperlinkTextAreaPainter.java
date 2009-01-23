@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,17 +79,22 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 	{
 		if (hyperLink != this.hyperLink)
 		{
-			int line;
 			if (hyperLink == null)
 			{
-				line = this.hyperLink.getStartLine();
+				int line = this.hyperLink.getStartLine();
+				textArea.invalidateLine(line);
 			}
 			else
 			{
-				line = hyperLink.getStartLine();
+				int lineNew = hyperLink.getStartLine();
+				textArea.invalidateLine(lineNew);
+				if (this.hyperLink != null)
+				{
+					int lineOld = this.hyperLink.getStartLine();
+					textArea.invalidateLine(lineOld);
+				}
 			}
 			this.hyperLink = hyperLink;
-			textArea.invalidateLine(line);
 		}
 	}
 }
