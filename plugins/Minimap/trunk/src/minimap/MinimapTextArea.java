@@ -54,12 +54,6 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
 
-	@Override
-	public void setFirstLine(int firstLine) {
-		super.setFirstLine(firstLine);
-		updateFolds(false);
-	}
-
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
 	private boolean drag = false;
@@ -83,6 +77,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lastFoldProp = Options.getFoldProp();
+	}
+
+	@Override
+	public void setFirstPhysicalLine(int firstLine) {
+		super.setFirstPhysicalLine(firstLine);
+		updateFolds(false);
 	}
 
 	private void setScrollBarVisibility() {
@@ -165,17 +165,16 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	}
 
 	private void scrollToMakeTextAreaVisible() {
-		int otherFirst = textArea.getFirstLine();
-		int thisFirst = getFirstLine();
+		int otherFirst = textArea.getFirstPhysicalLine();
+		int thisFirst = getFirstPhysicalLine();
 		if (otherFirst < thisFirst)
-			setFirstLine(otherFirst);
+			setFirstPhysicalLine(otherFirst);
 		else {
 			int otherLast = otherFirst + textArea.getVisibleLines() - 1;
 			int thisLast = thisFirst + getVisibleLines() - 1;
 			if (otherLast > thisLast)
-				setFirstLine(thisFirst + otherLast - thisLast);
+				setFirstPhysicalLine(thisFirst + otherLast - thisLast);
 		}
-		setCaretPosition(textArea.getCaretPosition());
 		repaint();
 	}
 
@@ -188,7 +187,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		int x = 1;
 		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
-		int y = (textArea.getFirstLine() - getFirstLine()) * h;
+		int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
 		int height = textArea.getVisibleLines() * h - 1;
 		g.drawRect(x, y, width, height);
 		g.setColor(c);
@@ -230,10 +229,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-			int y = (textArea.getFirstLine() - getFirstLine()) * h;
+			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
 			int height = textArea.getVisibleLines() * h - 1;
 			if (e.getY() >= y && e.getY() < y + height) {
-				line = textArea.getFirstLine();
+				line = textArea.getFirstPhysicalLine();
 				dragY = e.getY();
 				drag = true;
 				e.consume();
@@ -248,7 +247,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			else {
 				// Move the text area to where the mouse was released
 				int h = painter.getFontMetrics().getHeight();
-				int line = getFirstLine() + e.getY() / h;
+				int line = getFirstPhysicalLine() + e.getY() / h;
 				int visibleLines = textArea.getVisibleLines();
 				line -= visibleLines >> 1;
 				scrollTextArea(line);
@@ -266,9 +265,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			int visibleLines = textArea.getVisibleLines();
 			int newFirstLine;
 			if (e.getY() < getY())
-				newFirstLine = textArea.getFirstLine() - visibleLines;
+				newFirstLine = textArea.getFirstPhysicalLine() - visibleLines;
 			else if (e.getY() > getY() + getHeight())
-				newFirstLine = textArea.getFirstLine() + visibleLines;
+				newFirstLine = textArea.getFirstPhysicalLine() + visibleLines;
 			else {
 				int diff = (e.getY() - dragY) / h;
 				newFirstLine = line + diff;
@@ -285,12 +284,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			newFirstLine = count - visibleLines;
 		if (newFirstLine < 0)
 			newFirstLine = 0;
-		textArea.setFirstLine(newFirstLine);
-		int first = getFirstLine();
+		textArea.setFirstPhysicalLine(newFirstLine);
+		int first = getFirstPhysicalLine();
 		if (newFirstLine < first)
-			setFirstLine(newFirstLine);
+			setFirstPhysicalLine(newFirstLine);
 		else if (newFirstLine + visibleLines > getLastPhysicalLine())
-			setFirstLine(newFirstLine + visibleLines - getVisibleLines());
+			setFirstPhysicalLine(newFirstLine + visibleLines - getVisibleLines());
 		repaint();
 	}
 	
@@ -306,7 +305,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		{
 			return;
 		}
-		int first = getFirstLine();
+		int first = getFirstPhysicalLine();
 		DisplayManager tdm = textArea.getDisplayManager();
 		DisplayManager dm = getDisplayManager();
 		int i = first;
