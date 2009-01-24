@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  * $Id$
  * @author   Dale Anson, danson@germane-software.com, August 2002
  */
+@SuppressWarnings("serial")
 public class NavToolBar extends JToolBar {
 
    private JButton back, forward;

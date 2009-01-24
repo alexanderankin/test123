@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
@@ -287,7 +286,7 @@ public class NavigatorPlugin extends EBPlugin
 			ViewUpdate vu = (ViewUpdate) message;
 			View v = vu.getView();
 			Object what = vu.getWhat();
-			if (what == vu.CREATED || what == vu.EDIT_PANE_CHANGED) 
+			if (what == ViewUpdate.CREATED || what == ViewUpdate.EDIT_PANE_CHANGED) 
 				createNavigators(v);
 			else if (what.equals(ViewUpdate.CLOSED))
 				removeNavigator(v);

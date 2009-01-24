@@ -21,7 +21,10 @@ plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
 #option pane settings
 plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
 options.navigator.label=Navigator
-options.navigator.code=new ise.plugin.nav.OptionPanel(ise.plugin.nav.NavigatorPlugin.NAME);
+options.navigator.code=new ise.plugin.nav.OptionPanel();
+
+navigator.options.groupByFile.label=Group history items by file
+navigator.options.showOnToolbar.label=Show Navigator on toolbar (buggy)
 
 # title for DockableWindowManager
 Navigator.title=Navigator

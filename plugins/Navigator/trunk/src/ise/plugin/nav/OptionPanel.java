@@ -8,35 +8,43 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * @author Dale Anson
  */
+@SuppressWarnings("serial")
 public class OptionPanel extends AbstractOptionPane
 {
-
+	private static final String Name = "navigator";
+	
+	private JCheckBox groupByFile = null;
 	private JCheckBox showOnToolbar = null;
 
-	public OptionPanel(String name)
+	public OptionPanel()
 	{
-		super(name);
+		super(Name);
 	}
 
 	public void _init()
 	{
-		String[] stackChoices = new String[] { jEdit.getProperty("navigator.back.label"),
-			jEdit.getProperty("navigator.forward.label") };
-
 		addComponent(new JLabel("<html><h3>Navigator</h3>"));
-		showOnToolbar = new JCheckBox("Show Navigator on toolbar (buggy)");
+		groupByFile = new JCheckBox(jEdit.getProperty("navigator.options.groupByFile.label"));
+		groupByFile.setSelected(getGroupByFileProp());
+        addComponent( groupByFile );
+		showOnToolbar = new JCheckBox(jEdit.getProperty("navigator.options.showOnToolbar.label"));
+        showOnToolbar.setSelected(getShowOnToolbarProp());
         addComponent( showOnToolbar );
 	}
 
 	public void _save()
 	{
-		boolean useToolBars = showOnToolbar.isSelected();
-		jEdit.setBooleanProperty(getName() + ".showOnToolbar", useToolBars);
+		jEdit.setBooleanProperty(Name + ".groupByFile", groupByFile.isSelected());
+		jEdit.setBooleanProperty(Name + ".showOnToolbar", showOnToolbar.isSelected());
 	    NavigatorPlugin.setToolBars();
 	}
 
-	public String getName()
+	public static boolean getShowOnToolbarProp()
 	{
-		return "navigator";
+		return jEdit.getBooleanProperty(Name + ".showOnToolbar");
+	}
+	public static boolean getGroupByFileProp()
+	{
+		return jEdit.getBooleanProperty(Name + ".groupByFile");
 	}
 }
