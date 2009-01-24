@@ -50,6 +50,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.ScrollListener;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
+import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
@@ -323,7 +324,12 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 						dm.collapseFold(i);
 					try {
 						i = tdm.getNextVisibleLine(i);
+						if (i == -1) {
+							// there is no next visible fold
+							break;
+						}
 					} catch (Exception e) {
+						Log.log(Log.ERROR, this, e);
 						break;
 					}
 				}
