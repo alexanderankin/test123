@@ -58,8 +58,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
 	private boolean drag;
-	private int dragY;
-	private int line;
 	private MouseListener ml;
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
@@ -91,7 +89,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			scrollBar.setVisible(Options.getScrollProp());
 	}
 
-	private JScrollBar findScrollBar(Container c) {
+	private static JScrollBar findScrollBar(Container c) {
 		for (Component comp: c.getComponents()) {
 			if (comp instanceof JScrollBar)
 				return (JScrollBar) comp;
@@ -116,15 +114,17 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.setFoldLineStyle(styles);
 	}
 
-	private float getFontSize() {
+	private static float getFontSize() {
 		return (float) Options.getSizeProp();
 	}
-	private Font deriveFont(Font f) {
+
+	private static Font deriveFont(Font f) {
 		Map<TextAttribute, Object> attributes = new HashMap<TextAttribute, Object>(f.getAttributes());
 		attributes.put(TextAttribute.FAMILY, Options.getFontProp());
 		attributes.put(TextAttribute.SIZE, getFontSize());
 		return f.deriveFont(attributes);
 	}
+
 	public void start() {
 		textArea.addScrollListener(textAreaScrollListener);
 		painter.addMouseListener(ml);
@@ -147,7 +147,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	} //}}}
 
 
-	private void updateStyles(SyntaxStyle[] styles) {
+	private static void updateStyles(SyntaxStyle[] styles) {
 		for (int i = 0; i < styles.length; i++) {
 			SyntaxStyle style = styles[i];
 			styles[i] = new SyntaxStyle(style.getForegroundColor(),
@@ -224,6 +224,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	}
 
 	private class MapMouseListener extends MouseAdapter {
+
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (e.getButton() != MouseEvent.BUTTON1)
@@ -240,8 +242,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
 			int height = textArea.getVisibleLines() * h - 1;
 			if (e.getY() >= y && e.getY() < y + height) {
-				MinimapTextArea.this.line = textArea.getFirstPhysicalLine();
-				dragY = e.getY();
 				drag = true;
 				e.consume();
 			}
@@ -259,7 +259,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private class MapMouseMotionListener extends MouseMotionAdapter {
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			if (! drag)
+			if (!drag)
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
@@ -270,9 +270,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			else if (e.getY() > getY() + getHeight())
 				newFirstLine = textArea.getFirstPhysicalLine() + visibleLines;
 			else {
-				int diff = (e.getY() - dragY) / h;
-				newFirstLine = line + diff;
+				newFirstLine = getFirstPhysicalLine() + e.getY() / h - (visibleLines >> 1);
 			}
+
 			scrollTextArea(newFirstLine);
 			e.consume();
 		}
