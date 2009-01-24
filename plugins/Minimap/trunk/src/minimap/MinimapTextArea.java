@@ -184,13 +184,11 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		super.paint(g);
 		Color c = g.getColor();
 		g.setColor(Color.RED);
-		TextAreaPainter painter = getPainter();
-		int x = 1;
 		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
-		int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
+		int y = (int) offsetToXY(textArea.getLineStartOffset(textArea.getFirstPhysicalLine())).getY();
 		int height = textArea.getVisibleLines() * h - 1;
-		g.drawRect(x, y, width, height);
+		g.drawRect(0, y, width, height);
 		g.setColor(c);
 	}
 
