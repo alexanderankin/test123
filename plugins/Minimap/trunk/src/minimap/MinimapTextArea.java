@@ -57,9 +57,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
-	private boolean drag = false;
-	private int dragY = 0;
-	private int line = 0;
+	private boolean drag;
+	private int dragY;
+	private int line;
 	private MouseListener ml;
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
@@ -230,10 +230,17 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
+
+
+			int line = getFirstPhysicalLine() + e.getY() / h;
+			int visibleLines = textArea.getVisibleLines();
+			line -= visibleLines >> 1;
+			scrollTextArea(line);
+
 			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
 			int height = textArea.getVisibleLines() * h - 1;
 			if (e.getY() >= y && e.getY() < y + height) {
-				line = textArea.getFirstPhysicalLine();
+				MinimapTextArea.this.line = textArea.getFirstPhysicalLine();
 				dragY = e.getY();
 				drag = true;
 				e.consume();
@@ -245,14 +252,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			if (drag)
 				e.consume();
-			else {
-				// Move the text area to where the mouse was released
-				int h = painter.getFontMetrics().getHeight();
-				int line = getFirstPhysicalLine() + e.getY() / h;
-				int visibleLines = textArea.getVisibleLines();
-				line -= visibleLines >> 1;
-				scrollTextArea(line);
-			}
+
 			drag = false;
 		}
 	}
