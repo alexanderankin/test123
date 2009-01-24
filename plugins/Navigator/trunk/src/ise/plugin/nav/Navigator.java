@@ -248,9 +248,8 @@ public class Navigator implements ActionListener
      * @param o
      *                The new NavPosition value
      */
-    public void setPosition(Object o)
+    public void setPosition(NavPosition np)
     {
-        NavPosition np = (NavPosition) o;
         String path = np.path;
         int caret = np.caret;
 
@@ -275,7 +274,7 @@ public class Navigator implements ActionListener
             if (buffers[i].getPath().equals(path))
             {
                 // found it
-                editPane.getView().goToBuffer(buffers[i]);
+            	editPane.setBuffer(buffers[i]);
                 EditBus.send(new PositionChanging(editPane));
                 try {
                 	editPane.getTextArea().setCaretPosition(caret, true);
@@ -290,7 +289,7 @@ public class Navigator implements ActionListener
         }
 
         // buffer isn't open
-        Buffer buffer = jEdit.openFile(editPane.getView(), path);
+        Buffer buffer = jEdit.openFile(editPane, path);
 
         // Now we can listen to events again
         ignoreUpdates = false;
