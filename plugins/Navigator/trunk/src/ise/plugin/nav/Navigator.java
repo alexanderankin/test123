@@ -1,5 +1,7 @@
 package ise.plugin.nav;
 
+import ise.plugin.nav.NavHistoryPopup.NavPositionItem;
+
 import java.awt.event.*;
 import java.util.Vector;
 
@@ -23,6 +25,7 @@ import org.gjt.sp.util.Log;
  */
 public class Navigator implements ActionListener
 {
+    @SuppressWarnings("serial")
     private class DontBother extends Exception
     {
     }
@@ -47,19 +50,10 @@ public class Navigator implements ActionListener
 
     private Vector<NavPosition> history;
     private int current;
-    private boolean jumpBack;
-
     private DefaultButtonModel backButtonModel;
-
     private DefaultButtonModel forwardButtonModel;
-
-    private NavPosition currentNode = null;
-
     private int maxStackSize = 512;
-
-    // private View view;
     private EditPane editPane;
-
     private boolean ignoreUpdates;
 
     public Navigator(EditPane pane)
@@ -154,15 +148,12 @@ public class Navigator implements ActionListener
      */
     private void update(NavPosition node)
     {
-        if (currentNode != null && ! node.toString().equals(currentNode.toString()))
+        if (current == -1 || ! node.toString().equals(history.get(current).toString()))
         {
-            history.set(current, node);
             current++;
-            while (history.size() > current)
-                history.remove(history.size() - 1);
-            history.add(null);
+            history.setSize(current + 1);
+            history.set(current, node);
         }
-        currentNode = node;
         setButtonState();
     }
 
@@ -178,13 +169,10 @@ public class Navigator implements ActionListener
     {
         if (ae.getActionCommand().equals(BACK))
         {
-
             goBack();
-
         }
         else if (ae.getActionCommand().equals(FORWARD))
         {
-
             goForward();
         }
         else if (ae.getActionCommand().equals(CAN_GO_BACK))
@@ -230,8 +218,7 @@ public class Navigator implements ActionListener
     public void clearStacks()
     {
         history.clear();
-        history.add(null);
-        current = 0;
+        current = -1;
         setButtonState();
     }
 
@@ -330,21 +317,16 @@ public class Navigator implements ActionListener
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Vector<NavPosition> list = new Vector<NavPosition>();
-        for (int i = current - 1; i >= 0; i--)
-            list.add(history.get(i));
-        jumpBack = true;
+        Vector<NavPositionItem> list = getItemsForPopup(current - 1, -1);
         new NavHistoryPopup(editPane.getView(), this, list, false);
     }
 
     synchronized public void jump(int index)
     {
-        if (jumpBack)
-            current -= index + 1;
-        else
-            current += index + 1;
-        currentNode = history.get(current);
-        setPosition(currentNode);
+    	if (index < 0 || index >= history.size())
+    		return;
+    	current = index;
+        setPosition(history.get(current));
         setButtonState();
     }
 
@@ -362,14 +344,27 @@ public class Navigator implements ActionListener
             }
 
             current--;
-            currentNode = history.get(current);
-            setPosition(currentNode);
+            setPosition(history.get(current));
             setButtonState();
         }
 
 
     }
 
+    private Vector<NavPositionItem> getItemsForPopup(int from, int to)
+    {
+        Vector<NavPositionItem> items = new Vector<NavPositionItem>();
+        while (from != to)
+        {
+        	items.add(new NavPositionItem(history.get(from), from));
+        	if (from < to)
+        		from++;
+        	else
+        		from--;
+        }
+    	return items;
+    }
+    
     synchronized public void forwardList()
     {
         if (current > history.size() - 2)
@@ -378,10 +373,7 @@ public class Navigator implements ActionListener
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Vector<NavPosition> list = new Vector<NavPosition>();
-        for (int i = current + 1; i < history.size(); i++)
-            list.add(history.get(i));
-        jumpBack = false;
+        Vector<NavPositionItem> list = getItemsForPopup(current + 1, history.size());
         new NavHistoryPopup(editPane.getView(), this, list, false);
     }
 
@@ -392,16 +384,14 @@ public class Navigator implements ActionListener
         {
             try
             {
-                currentNode = currentPosition();
-                history.set(current, currentNode);
+                history.set(current, currentPosition());
             }
             catch (DontBother db)
             {
             }
 
             current++;
-            currentNode = history.get(current);
-            setPosition(currentNode);
+            setPosition(history.get(current));
             setButtonState();
         }
 

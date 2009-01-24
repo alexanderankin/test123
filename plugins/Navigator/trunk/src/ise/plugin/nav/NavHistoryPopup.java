@@ -27,39 +27,38 @@ package ise.plugin.nav;
 
 //{{{ imports
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashSet;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
-import org.gjt.sp.util.Log;
 //}}}
 
+@SuppressWarnings("serial")
 class NavHistoryPopup extends JWindow
 {
 	//{{{ private declarations
 	private JList list;
 	private JLabel helpLabel;
-	private Vector positions;
 	private View view;
 	private boolean numberKeyProcessed = false;
-	private boolean openNewView;
 	private Navigator navigator = null;
 	//}}}
 
-	//{{{ ChooseTagListPopup constructor
-	public NavHistoryPopup(View view, Navigator navigator, Vector positions, boolean newView)
+	//{{{ NavHistoryPopup constructor
+	public NavHistoryPopup(View view, Navigator navigator,
+		Vector<NavPositionItem> positions, boolean newView)
 	{
 		super(view);
 		this.navigator = navigator;
-		this.positions = positions;
 		this.view = view;
-		this.openNewView = newView;
 
 		// create components
+		if (OptionPanel.getGroupByFileProp())
+			positions = groupByFile(positions);
 		list = new JList(positions);
 		helpLabel = new JLabel(jEdit.getProperty("Help"));
 		// setup components
@@ -90,13 +89,26 @@ class NavHistoryPopup extends JWindow
 		this.view.setKeyEventInterceptor(keyHandler);
 	} //}}}
 
+	//{{{ groupByFile() method
+	private Vector<NavPositionItem> groupByFile(Vector<NavPositionItem> positions)
+	{
+		Vector<NavPositionItem> items = new Vector<NavPositionItem>();
+		HashSet<String> paths = new HashSet<String>();
+		for (NavPositionItem pos: positions)
+		{
+			if (paths.add(pos.getPath()))
+				items.add(pos);
+		}
+		return items;
+	}
+	//}}}
+	
 	//{{{ setLocation() method
 	public void setLocation()
 	{
 		JEditTextArea textArea = view.getTextArea();
 
 		int caretLine = textArea.getCaretLine();
-		int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
 		textArea.getLineStartOffset(caretLine);
 
 		Rectangle rect = view.getGraphicsConfiguration().getBounds();
@@ -138,7 +150,8 @@ class NavHistoryPopup extends JWindow
 	//{{{ selected() method
 	private void selected()
 	{
-		navigator.jump(list.getSelectedIndex());
+		int index = ((NavPositionItem) list.getSelectedValue()).getIndex();
+		navigator.jump(index);
 		dispose();
 	} //}}}
 
@@ -265,6 +278,31 @@ class NavHistoryPopup extends JWindow
 			selected();
 		}
 	} //}}}
+	
+	//{{{ NavPositionItem
+	public static class NavPositionItem
+	{
+		private NavPosition pos;
+		private int index;
+		public NavPositionItem(NavPosition pos, int index)
+		{
+			this.pos = pos;
+			this.index = index;
+		}
+		public int getIndex()
+		{
+			return index;
+		}
+		public String toString()
+		{
+			return pos.toString();
+		}
+		public String getPath()
+		{
+			return pos.path;
+		}
+	}
+	
 }
 
 // :collapseFolds=1:noTabs=false:lineSeparator=\r\n:tabSize=4:indentSize=4:deepIndent=false:folding=explicit:
