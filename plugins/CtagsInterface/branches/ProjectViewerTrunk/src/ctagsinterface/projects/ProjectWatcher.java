@@ -1,8 +1,8 @@
 package ctagsinterface.projects;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -98,13 +98,13 @@ public class ProjectWatcher implements EBComponent {
 	
 	public void handleFilesChanged(ProjectUpdate pu) {
 		Vector<String> removed = new Vector<String>();
-		List<VPTFile> nodes = pu.getRemovedFiles();
-		for (int i = 0; i < nodes.size(); i++)
-			removed.add(nodes.get(i).getNodePath());
+		Collection<VPTFile> nodes = pu.getRemovedFiles();
+		for (VPTFile node: nodes)
+			removed.add(node.getNodePath());
 		Vector<String> added = new Vector<String>();
 		nodes = pu.getAddedFiles();
-		for (int i = 0; i < nodes.size(); i++)
-			added.add(nodes.get(i).getNodePath());
+		for (VPTFile node: nodes)
+			added.add(node.getNodePath());
 		CtagsInterfacePlugin.updateProject(pu.getProject().getName(),
 			added, removed);
 	}
