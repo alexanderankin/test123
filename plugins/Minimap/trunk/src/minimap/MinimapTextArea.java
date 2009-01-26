@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2009  Shlomy Reinstein
+Copyright (C) 2009  Matthieu Casanova
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,12 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.Graphics;
+//{{{ Imports
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -51,6 +48,7 @@ import org.gjt.sp.jedit.textarea.ScrollListener;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
+//}}}
 
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
@@ -62,7 +60,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
 	private JScrollBar scrollBar;
-	
+
+	private final Point point = new Point();
+
+	//{{{ MinimapTextArea constructor
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
 		getBuffer().setProperty("folding","explicit");
@@ -76,19 +77,22 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lastFoldProp = Options.getFoldProp();
-	}
+	} //}}}
 
+	//{{{ setFirstPhysicalLine() method
 	@Override
 	public void setFirstPhysicalLine(int firstLine) {
 		super.setFirstPhysicalLine(firstLine);
 		updateFolds(false);
-	}
+	} //}}}
 
+	//{{{ setScrollBarVisibility() method
 	private void setScrollBarVisibility() {
 		if (scrollBar != null)
 			scrollBar.setVisible(Options.getScrollProp());
-	}
+	} //}}}
 
+	//{{{ findScrollBar() method
 	private static JScrollBar findScrollBar(Container c) {
 		for (Component comp: c.getComponents()) {
 			if (comp instanceof JScrollBar)
@@ -100,8 +104,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			}
 		}
 		return null;
-	}
-	
+	} //}}}
+
+	//{{{ setMapFont() method
 	private void setMapFont() {
 		TextAreaPainter painter = getPainter();
 		Font f = deriveFont(painter.getFont());
@@ -112,41 +117,45 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		styles = painter.getFoldLineStyle();
 		updateStyles(styles);
 		painter.setFoldLineStyle(styles);
-	}
+	} //}}}
 
+	//{{{ getFontSize() method
 	private static float getFontSize() {
 		return (float) Options.getSizeProp();
-	}
+	} //}}}
 
+	//{{{ deriveFont() method
 	private static Font deriveFont(Font f) {
 		Map<TextAttribute, Object> attributes = new HashMap<TextAttribute, Object>(f.getAttributes());
 		attributes.put(TextAttribute.FAMILY, Options.getFontProp());
 		attributes.put(TextAttribute.SIZE, getFontSize());
 		return f.deriveFont(attributes);
-	}
+	} //}}}
 
+	//{{{ start() method
 	public void start() {
 		textArea.addScrollListener(textAreaScrollListener);
 		painter.addMouseListener(ml);
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
 		scrollToMakeTextAreaVisible();
-	}
-	
+	} //}}}
+
+	//{{{ stop() method
 	public void stop() {
 		EditBus.removeFromBus(this);
 		painter.removeMouseMotionListener(mml);
 		painter.removeMouseListener(ml);
 		textArea.removeScrollListener(textAreaScrollListener);
 		dispose();
-	}
+	} //}}}
 
 	//{{{ setMouseHandler() method
 	public void setMouseHandler(MouseInputAdapter mouseInputAdapter)
 	{
 	} //}}}
 
-
+	//{{{ updateStyles() method
 	private static void updateStyles(SyntaxStyle[] styles) {
 		for (int i = 0; i < styles.length; i++) {
 			SyntaxStyle style = styles[i];
@@ -154,17 +163,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 						    style.getBackgroundColor(),
 						    deriveFont(style.getFont()));
 		}
-	}
+	} //}}}
 
-	private class TextAreaScrollListener implements ScrollListener {
-		public void scrolledHorizontally(TextArea textArea) {
-		}
-
-		public void scrolledVertically(TextArea textArea) {
-			scrollToMakeTextAreaVisible();
-		}
-	}
-
+	//{{{ scrollToMakeTextAreaVisible() method
 	private void scrollToMakeTextAreaVisible() {
 		int otherFirst = textArea.getFirstPhysicalLine();
 		int thisFirst = getFirstPhysicalLine();
@@ -177,21 +178,32 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				setFirstPhysicalLine(thisFirst + otherLast - thisLast);
 		}
 		repaint();
-	}
+	} //}}}
 
+	//{{{ paint() method
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		Color c = g.getColor();
-		g.setColor(Color.RED);
 		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
-		int y = (int) offsetToXY(textArea.getLineStartOffset(textArea.getFirstPhysicalLine())).getY();
+		int firstPhysicalLine = textArea.getFirstPhysicalLine();
+		Point ret = offsetToXY(firstPhysicalLine, 0, point);
+
+		if (ret == null) {
+			// ret == null, the firstPhysicalLine of the textArea
+			// is not visible in the Minimap
+			return;
+		}
+		int y = (int) ret.getY();
 		int height = textArea.getVisibleLines() * h - 1;
+
+		Color c = g.getColor();
+		g.setColor(Color.RED);
 		g.drawRect(0, y, width, height);
 		g.setColor(c);
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage message) {
 		if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
@@ -204,8 +216,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			}
 		} else if ((message instanceof PropertiesChanged) ||
 			 ((message instanceof BufferUpdate) &&
-			  (((BufferUpdate) message).getWhat() == BufferUpdate.PROPERTIES_CHANGED)))
-		{
+			  (((BufferUpdate) message).getWhat() == BufferUpdate.PROPERTIES_CHANGED))) {
 			EditPane.initPainter(getPainter());
 			setMapFont();
 			boolean foldProp = Options.getFoldProp();
@@ -219,63 +230,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			setScrollBarVisibility();
 			propertiesChanged();
 		}
-	}
+	} //}}}
 
-	private class MapMouseListener extends MouseAdapter {
-
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			if (e.getButton() != MouseEvent.BUTTON1)
-				return;
-			TextAreaPainter painter = getPainter();
-			int h = painter.getFontMetrics().getHeight();
-
-
-			int line = getFirstPhysicalLine() + e.getY() / h;
-			int visibleLines = textArea.getVisibleLines();
-			line -= visibleLines >> 1;
-			scrollTextArea(line);
-
-			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
-			int height = textArea.getVisibleLines() * h - 1;
-			if (e.getY() >= y && e.getY() < y + height) {
-				drag = true;
-				e.consume();
-			}
-		}
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			if (e.getButton() != MouseEvent.BUTTON1)
-				return;
-			if (drag)
-				e.consume();
-
-			drag = false;
-		}
-	}
-	private class MapMouseMotionListener extends MouseMotionAdapter {
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			if (!drag)
-				return;
-			TextAreaPainter painter = getPainter();
-			int h = painter.getFontMetrics().getHeight();
-			int visibleLines = textArea.getVisibleLines();
-			int newFirstLine;
-			if (e.getY() < getY())
-				newFirstLine = textArea.getFirstPhysicalLine() - visibleLines;
-			else if (e.getY() > getY() + getHeight())
-				newFirstLine = textArea.getFirstPhysicalLine() + visibleLines;
-			else {
-				newFirstLine = getFirstPhysicalLine() + e.getY() / h - (visibleLines >> 1);
-			}
-
-			scrollTextArea(newFirstLine);
-			e.consume();
-		}
-	}
-
+	//{{{ scrollTextArea() method
 	private void scrollTextArea(int newFirstLine) {
 		int visibleLines = textArea.getVisibleLines();
 		int count = textArea.getLineCount();
@@ -290,12 +247,13 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		else if (newFirstLine + visibleLines > getLastPhysicalLine())
 			setFirstPhysicalLine(newFirstLine + visibleLines - getVisibleLines());
 		repaint();
-	}
-	
+	} //}}}
+
+	//{{{ updateFolds() methods
 	public void updateFolds() {
 		updateFolds(true);
 	}
-	
+
 	public void updateFolds(boolean allowMove) {
 		if (! Options.getFoldProp())
 			return;
@@ -338,5 +296,75 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 		if (allowMove)
 			scrollToMakeTextAreaVisible();
-	}
+	} //}}}
+
+	//{{{ TextAreaScrollListener class
+	private class TextAreaScrollListener implements ScrollListener {
+		public void scrolledHorizontally(TextArea textArea) {
+		}
+
+		public void scrolledVertically(TextArea textArea) {
+			scrollToMakeTextAreaVisible();
+		}
+	} //}}}
+
+	//{{{ MapMouseListener class
+	private class MapMouseListener extends MouseAdapter {
+		//{{{ mousePressed() method
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getButton() != MouseEvent.BUTTON1)
+				return;
+			TextAreaPainter painter = getPainter();
+			int h = painter.getFontMetrics().getHeight();
+
+
+			int line = getFirstPhysicalLine() + e.getY() / h;
+			int visibleLines = textArea.getVisibleLines();
+			line -= visibleLines >> 1;
+			scrollTextArea(line);
+
+			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
+			int height = textArea.getVisibleLines() * h - 1;
+			if (e.getY() >= y && e.getY() < y + height) {
+				drag = true;
+				e.consume();
+			}
+		} //}}}
+
+		//{{{ mouseReleased() method
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (e.getButton() != MouseEvent.BUTTON1)
+				return;
+			if (drag)
+				e.consume();
+
+			drag = false;
+		} //}}}
+
+	} //}}}
+
+	//{{{ MapMouseMotionListener class
+	private class MapMouseMotionListener extends MouseMotionAdapter {
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (!drag)
+				return;
+			TextAreaPainter painter = getPainter();
+			int h = painter.getFontMetrics().getHeight();
+			int visibleLines = textArea.getVisibleLines();
+			int newFirstLine;
+			if (e.getY() < getY())
+				newFirstLine = textArea.getFirstPhysicalLine() - visibleLines;
+			else if (e.getY() > getY() + getHeight())
+				newFirstLine = textArea.getFirstPhysicalLine() + visibleLines;
+			else {
+				newFirstLine = getFirstPhysicalLine() + e.getY() / h - (visibleLines >> 1);
+			}
+
+			scrollTextArea(newFirstLine);
+			e.consume();
+		}
+	} //}}}
 }
