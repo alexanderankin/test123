@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@
 package gatchan.jedit.hyperlinks;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -66,6 +65,7 @@ public class HyperlinksPlugin extends EBPlugin
 	{
 		HyperlinkManager clientProperty = (HyperlinkManager) textArea.getClientProperty(HyperlinkManager.class);
 		clientProperty.dispose();
+		textArea.putClientProperty(HyperlinkManager.class, null);
 	}
 
 	private static void initTextArea(JEditTextArea textArea)

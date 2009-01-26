@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,8 +62,8 @@ public class HyperlinkManager
 	public void dispose()
 	{
 		textArea.getPainter().removeExtension(painter);
-		textArea.removeMouseListener(mouseAdapter);
-		textArea.removeMouseMotionListener(mouseMotionAdapter);
+		textArea.getPainter().removeMouseListener(mouseAdapter);
+		textArea.getPainter().removeMouseMotionListener(mouseMotionAdapter);
 		textArea.removeFocusListener(focusListener);
 	}
 
