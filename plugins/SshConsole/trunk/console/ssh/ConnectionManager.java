@@ -3,6 +3,7 @@ package console.ssh;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,42 +135,52 @@ public class ConnectionManager extends ftp.ConnectionManager
 	}
 
 	public static synchronized Connection getShellConnection(Console console, ConnectionInfo info) 
-	throws IOException {
+	throws IOException
+	{
 		Connection connect = null;
-		for (Connection c: connections)  {
-			if (c.info.equals(info) &&  !c.inUse())  {
-				connect = c;
-				if(!connect.checkIfOpen())
-				{
-					Log.log(Log.DEBUG,ConnectionManager.class,
-						"Connection "
-						+ connect + " expired");
-					try
-					{
-						connect.logout();
-					}
-					catch(IOException io)
-					{
-					}
 
-					connections.remove(connect);
-					connect = null;
-				}
-			}	
-		}
-		if(connect == null )
+		synchronized (lock)
 		{
-			Log.log(Log.DEBUG,ConnectionManager.class,
-				Thread.currentThread() +
-				": Connecting to " + info);
-			connect = new Connection(console, info);
-			connections.add(connect);
+			Iterator<Connection> iterator = connections.iterator();
+			while (iterator.hasNext())
+			{
+				Connection c = iterator.next();
+				if (c.info.equals(info) &&  !c.inUse())
+				{
+					connect = c;
+					if(!connect.checkIfOpen())
+					{
+						Log.log(Log.DEBUG,ConnectionManager.class,
+							"Connection "
+							+ connect + " expired");
+						try
+						{
+							connect.logout();
+						}
+						catch(IOException io)
+						{
+						}
+
+						iterator.remove();
+						connect = null;
+					}
+				}
+			}
+
+			if(connect == null )
+			{
+				Log.log(Log.DEBUG,ConnectionManager.class,
+					Thread.currentThread() +
+					": Connecting to " + info);
+				connect = new Connection(console, info);
+				connections.add(connect);
+			}
+			else {
+				connect.setConsole(console);
+			}
+			connect.inUse=true;
+			return connect;
 		}
-		else {
-			connect.setConsole(console);
-		}
-		connect.inUse=true;
-		return connect;
 	}
 	
 	/**
