@@ -15,11 +15,13 @@ import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -383,6 +385,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	// Jumps to the specified location
 	public static void jumpTo(final View view, String file, final int line) {
+		EditBus.send(new PositionChanging(view.getEditPane()));
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
 			System.err.println("Unable to open: " + file);
