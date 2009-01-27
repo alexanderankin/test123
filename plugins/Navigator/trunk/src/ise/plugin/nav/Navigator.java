@@ -311,6 +311,7 @@ public class Navigator implements ActionListener
 
     synchronized public void backList()
     {
+    	update();
         if (current < 1)
         {
             JOptionPane.showMessageDialog(editPane, "No backward items", "Info",
@@ -333,6 +334,7 @@ public class Navigator implements ActionListener
     /** Moves to the previous item in the "back" history. */
     synchronized public void goBack()
     {
+    	update();
         if (current > 0)
         {
             try
