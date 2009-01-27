@@ -84,7 +84,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		project.setRootPath(fixPath(attrs.getValue(PATH_ATTR)));
+		project.setRootPath(attrs.getValue(PATH_ATTR));
 		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
 	} //}}}
@@ -97,7 +97,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
-		writeAttr(PATH_ATTR, translatePath(((VPTProject)node).getRootPath()), out);
+		writeAttr(PATH_ATTR, ((VPTProject)node).getRootPath(), out);
 		if (((VPTProject)node).getURL() != null)
 			writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
 		out.write(">\n");

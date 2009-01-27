@@ -82,7 +82,7 @@ public class FileNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		String url = fixPath(attrs.getValue(PATH_ATTR));
+		String url = attrs.getValue(PATH_ATTR);
 		VPTFile vf = new VPTFile(url);
 		if (attrs.getValue(NAME_ATTR) != null) {
 			vf.setName(attrs.getValue(NAME_ATTR));
@@ -102,7 +102,7 @@ public class FileNodeHandler extends NodeHandler {
 		if (!file.getName().equals(fileName)) {
 			writeAttr(NAME_ATTR, file.getName(), out);
 		}
-		writeAttr(PATH_ATTR, translatePath(file.getURL()), out);
+		writeAttr(PATH_ATTR, file.getURL(), out);
 	}
 }
 

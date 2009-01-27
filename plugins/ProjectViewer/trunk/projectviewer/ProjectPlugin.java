@@ -111,7 +111,11 @@ public final class ProjectPlugin extends EBPlugin {
 		throws FileNotFoundException
 	{
 		if (CONFIG_DIR != null) {
-			return new File(CONFIG_DIR, path).getAbsolutePath();
+			File f = new File(CONFIG_DIR, path);
+			File d = f.getParentFile();
+			if (! d.exists())
+				d.mkdir();
+			return f.getAbsolutePath();
 		} else {
 			throw new FileNotFoundException("No config directory.");
 		}

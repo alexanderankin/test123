@@ -77,7 +77,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		VPTDirectory dir = new VPTDirectory(fixPath(attrs.getValue(PATH_ATTR)));
+		VPTDirectory dir = new VPTDirectory(attrs.getValue(PATH_ATTR));
 		if (attrs.getValue(NAME_ATTR) != null) {
 			dir.setName(attrs.getValue(NAME_ATTR));
 		}
@@ -93,7 +93,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 		if (!dir.getName().equals(dir.getFileName())) {
 			writeAttr(NAME_ATTR, dir.getName(), out);
 		}
-		writeAttr(PATH_ATTR, translatePath(dir.getURL()), out);
+		writeAttr(PATH_ATTR, dir.getURL(), out);
 	}
 
 }
