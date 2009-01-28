@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+
+	<SERVICE CLASS="code2html.services.ExporterProvider" NAME="html">
+		new code2html.services.HtmlExporterProvider();
+	</SERVICE>
+	
+	<SERVICE CLASS="code2html.services.ExporterProvider" NAME="htmlcss">
+		new code2html.services.HtmlCssExporterProvider();
+	</SERVICE>
+	
+	<SERVICE CLASS="code2html.services.ExporterProvider" NAME="latex">
+		new code2html.services.LatexExporterProvider();
+	</SERVICE>
+	
+	
+</SERVICES>
