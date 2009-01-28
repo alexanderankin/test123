@@ -2,5 +2,7 @@ CVS policy file
 
 plugin: Code2HTML
 author: Andre Kaplan <akaplan@jedit.org>
+maintainer: Romain Francois <francoisromain@free.fr>
 
-please do not commit changes to this plugin without first consulting the author.
+Feel free to commit changes, but please let the maintainer know when you do so
+
