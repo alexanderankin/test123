@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ package gatchan.jedit.ancestor;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.*;
 
 /**
  * @author Matthieu Casanova
@@ -48,6 +49,7 @@ public class AncestorButton extends JButton
 				}
 			}
 		});
+		setMargin(new Insets(0,0,0,0));
 	} //}}}
 
 	//{{{ setAncestor() method
