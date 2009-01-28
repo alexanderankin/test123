@@ -1,8 +1,8 @@
 plugin.code2html.Code2HTMLPlugin.name=Code2HTML
 plugin.code2html.Code2HTMLPlugin.author=Andre Kaplan
-plugin.code2html.Code2HTMLPlugin.version=0.5.1
+plugin.code2html.Code2HTMLPlugin.version=0.6
 plugin.code2html.Code2HTMLPlugin.docs=users-guide.html
-plugin.code2html.Code2HTMLPlugin.activate=defer
+plugin.code2html.Code2HTMLPlugin.activate=startup
 
 plugin.code2html.Code2HTMLPlugin.depend.0=jdk 1.2
 plugin.code2html.Code2HTMLPlugin.depend.1=jedit 04.00.03.00
@@ -11,41 +11,36 @@ plugin.code2html.Code2HTMLPlugin.depend.1=jedit 04.00.03.00
 code2html.label=Code2HTML
 
 #Menu
-#code2html=code2html.current-buffer code2html.current-selection
-plugin.code2html.Code2HTMLPlugin.menu=code2html.current-buffer code2html.current-selection
+plugin.code2html.Code2HTMLPlugin.menu=	code2html.htmlcss.current-buffer code2html.htmlcss.current-selection code2html.htmlcss.content-buffer code2html.htmlcss.content-selection code2html.htmlcss.style - code2html.html.current-buffer code2html.html.current-selection code2html.html.content-buffer code2html.html.content-selection - code2html.latex.current-buffer code2html.latex.current-selection code2html.latex.style code2html.latex.content-buffer code2html.latex.content-selection
 
 # Menu action labels
-code2html.current-buffer.label=HTMLize current buffer
-code2html.current-selection.label=HTMLize current selection
+code2html.html.current-buffer.label=HTMLize current buffer
+code2html.html.current-selection.label=HTMLize current selection
+code2html.html.content-buffer.label=HTML current buffer (only content)
+code2html.html.content-selection.label=HTML current selection (only content)
+
+code2html.htmlcss.current-buffer.label=HTMLize current buffer using CSS
+code2html.htmlcss.current-selection.label=HTMLize current selection using CSS
+code2html.htmlcss.style.label=CSS style definitions
+code2html.htmlcss.content-buffer.label=HTML current buffer using CSS (only content)
+code2html.htmlcss.content-selection.label=HTML current selection (only content)
+
+code2html.latex.current-buffer.label=Latex current buffer
+code2html.latex.current-selection.label=Latex current selection
+code2html.latex.style.label=Latex style definitions
+code2html.latex.content-buffer.label=Latex current buffer (only content)
+code2html.latex.content-selection.label=Latex current selection (only content)
 
 # Option Pane labels
 options.code2html.label=Code2HTML
 options.code2html.use-css=Use CSS
 options.code2html.show-gutter=Show gutter
-options.code2html.show-numbers=Show line numbers
 options.code2html.wrap=Wrap at column (0 for no wrapping):
-options.code2html.gutter-divider=Char to use as border divider (HTML only):
-options.code2html.custom.styles.1=Set custom styles for the output
-options.code2html.custom.styles.2=These two tags enclose all of your code.
-options.code2html.body.style.open=body {
-options.code2html.pre.style.open=pre {
-options.code2html.body.html.open=<body 
-options.code2html.pre.html.open=<pre 
-options.code2html.body.style.close= }
-options.code2html.pre.style.close= }
-options.code2html.body.html.close= >
-options.code2html.pre.html.close= >
 
 # Option Pane values
 code2html.use-css=true
 code2html.show-gutter=true
-code2html.show-numbers=true
-code2html.gutter-divider=:
 code2html.wrap=0
-options.code2html.body.style.value=\tbackground: #ffffff;
-options.code2html.pre.style.value=
-options.code2html.body.html.value=bgcolor="#ffffff"
-options.code2html.pre.html.value=
 
 #-----------------------
 # option pane settings
@@ -53,7 +48,4 @@ options.code2html.pre.html.value=
 plugin.code2html.Code2HTMLPlugin.option-pane=code2html
 options.code2html.label=Code2HTML
 options.code2html.code=new code2html.Code2HTMLOptionPane();
-
-# Other properties
-plugin.code2html.line.separator=\n
 
