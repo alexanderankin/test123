@@ -32,10 +32,12 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.ServiceManager ;
+
 
 import code2html.* ;
 import code2html.services.LinkProvider ;
@@ -219,21 +221,36 @@ public abstract class GenericExporter {
         Token tokens = null;
         for (int i = first; i <= last; i++) {
             buffer.getLineText(i, line);
-            tokens = buffer.markTokens(i).getFirstToken();
-            GenericPainter painter_ = getPainter() ;
+						GenericPainter painter_ = getPainter() ;
 						painter_.setPos(0);
-            if (tokens == null) {
-                painter_.paintPlainLine(out, i + 1, line, null);
-            } else {
-                SyntaxToken syntaxTokens = SyntaxTokenUtilities.convertTokens(
-                    tokens
-                );
-                painter_.paintSyntaxLine(out, i + 1, line, syntaxTokens);
-            }
+						tokens = getTokens( i, buffer ) ;
+            painter_.paintSyntaxLine(out, i + 1, line, tokens );
             out.write( painter_.newLine() );
         }
     }
 
-
+		private Token getTokens( int i , Buffer buffer ){
+			DefaultTokenHandler list = new DefaultTokenHandler() ;
+      buffer.markTokens(i,list) ;
+			return list.getTokens() ;
+		}
+		
+		private class SelectionStartLineComparator implements Comparator    {
+		    public int compare(Object obj1, Object obj2) {
+		        Selection s1 = (Selection) obj1;
+		        Selection s2 = (Selection) obj2;
+		
+		        int diff = s1.getStartLine() - s2.getStartLine();
+		
+		        if (diff == 0) {
+		            return 0;
+		        } else if (diff > 0) {
+		            return 1;
+		        } else {
+		            return -1;
+		        }
+		    }
+		}
+		
 }
 
