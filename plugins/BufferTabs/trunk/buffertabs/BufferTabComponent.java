@@ -1,5 +1,21 @@
-/**
- * 
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2009 Shlomy Reinstein
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package buffertabs;
 
@@ -20,12 +36,12 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 class BufferTabComponent extends JPanel
 {
-	static private CloseIcon icon = new CloseIcon();
-	static private Dimension iconDimension =
+	private static CloseIcon icon = new CloseIcon();
+	private static Dimension iconDimension =
 		new Dimension(icon.getIconWidth(), icon.getIconHeight());
 	private BufferTabs pane;
 	
-	public BufferTabComponent(BufferTabs bufferTabs) {
+	BufferTabComponent(BufferTabs bufferTabs) {
 		super(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		pane = bufferTabs;
 		setOpaque(false);
@@ -66,16 +82,16 @@ class BufferTabComponent extends JPanel
 				int index = pane.indexOfTabComponent(BufferTabComponent.this);
 				if (index < 0)
 					return;
-				jEdit.closeBuffer(pane.getEditPane().getView(),
+				jEdit.closeBuffer(pane.getEditPane(),
 					pane.bufferSet.getBuffer(index));
 			}
 		});
 	}
 	
-	static private class CloseIcon implements Icon {
-		static final private int width = 9;
-		static final private int height = 11;
-		static final private int top = 3;
+	private static class CloseIcon implements Icon {
+		private static final int width = 9;
+		private static final int height = 11;
+		private static final int top = 3;
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			g.drawLine(0, top, width - 2, height - 1);
 			g.drawLine(1, top, width - 1, height - 1);

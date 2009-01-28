@@ -164,12 +164,12 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		removeMouseMotionListener(mouseMotionHandler);
 	}
 
-	private boolean areBuffersSorted()
+	private static boolean areBuffersSorted()
 	{
 		return jEdit.getBooleanProperty(SORT_BUFFERS);
 	}
 	
-	private void stopBufferSorting()
+	private static void stopBufferSorting()
 	{
 		jEdit.setBooleanProperty(SORT_BUFFERS, false);
 		jEdit.propertiesChanged();
@@ -757,12 +757,12 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 	class ReorderBuffersDisabledDialog extends JDialog
 	{
-		static private final String GEOMETRY =
+		private static final String GEOMETRY =
 			"buffertabs.reorderBuffersDisabledDialog.geometry";
 		private JRadioButton disableSorting;
 		private JRadioButton keepSorting;
 		
-		public ReorderBuffersDisabledDialog(Frame frame) {
+		ReorderBuffersDisabledDialog(Frame frame) {
 			super(frame, jEdit.getProperty(
 				"buffertabs.reorderBuffersDisabled.label"), true);
 			addWindowListener(new java.awt.event.WindowAdapter() {
@@ -869,7 +869,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 					int tabIndex = getTabAt(e.getX(), e.getY());
 
 					editPane.focusOnTextArea();
-					jEdit.closeBuffer(editPane.getView(), bufferSet.getBuffer(tabIndex));
+					jEdit.closeBuffer(editPane, bufferSet.getBuffer(tabIndex));
 					//if ( tab != selection )
 					//BufferTabs.this.editPane.getBuffer() );
 				}
@@ -897,7 +897,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 							JDialog dlg = new ReorderBuffersDisabledDialog(
 								editPane.getView());
 							dlg.setVisible(true);
-							movingEnabled = (! areBuffersSorted());
+							movingEnabled = !areBuffersSorted();
 						}
 						if (movingEnabled) {
 							//System.out.println( "moving tab from " + moving + " to " + index );
@@ -930,7 +930,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 					//set the focus on the selected buffer
 					int tabIndex = getTabAt(e.getX(), e.getY());
 					editPane.focusOnTextArea();
-					jEdit.closeBuffer(editPane.getView(), bufferSet.getBuffer(tabIndex));
+					jEdit.closeBuffer(editPane, bufferSet.getBuffer(tabIndex));
 
 				}
 			}
