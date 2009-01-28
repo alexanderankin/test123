@@ -114,7 +114,7 @@ public final class ProjectPlugin extends EBPlugin {
 			File f = new File(CONFIG_DIR, path);
 			File d = f.getParentFile();
 			if (! d.exists())
-				d.mkdir();
+				d.mkdirs();
 			return f.getAbsolutePath();
 		} else {
 			throw new FileNotFoundException("No config directory.");
@@ -143,7 +143,8 @@ public final class ProjectPlugin extends EBPlugin {
 			File oldConfig = new File(jEdit.getSettingsDirectory(),
 									  "projectviewer");
 			if (oldConfig.isDirectory()) {
-				if (!configDir.getParentFile().mkdirs()) {
+				File configParentDir = configDir.getParentFile(); 
+				if ((!configParentDir.isDirectory()) && (!configParentDir.mkdirs())) {
 					Log.log(Log.WARNING, this, "Cannot create plugin home dir.");
 					configDir = oldConfig;
 				} else if (!oldConfig.renameTo(configDir)) {
