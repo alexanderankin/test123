@@ -184,6 +184,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
+		if (getBuffer().isLoading())
+			return;
+
 		int width = painter.getWidth() - 1;
 		int h = painter.getFontMetrics().getHeight();
 		int firstPhysicalLine = textArea.getFirstPhysicalLine();
