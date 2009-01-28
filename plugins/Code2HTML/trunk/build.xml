@@ -44,7 +44,7 @@
 
     <property name="doc.dir" value="${build.dir}/docs"/>
     <property name="docs-proc.target" value="xsltproc"/>
-    <property name="docbook.xsl" value="/usr/share/docbook-xsl"/>
+    <property name="docbook.xsl" value="/usr/share/xsl/docbook-xsl-1.49"/>
 
 
     <target name="init">
@@ -67,6 +67,7 @@
             <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
+				 		<pathelement location="${install.dir}/GnuRegexp.jar" />
 
         </path>
     </target>
@@ -79,8 +80,8 @@
                 nowarn="on"
                 destdir="${build.dir}"
                 srcdir="${src.dir}"
-                target="1.4"
-                source="1.4">
+                target="1.5"
+                source="1.5">
             <classpath refid="project.class.path"/>
         </javac>
         <echo>compile complete</echo>
@@ -94,6 +95,7 @@
             <fileset dir="${build.dir}"/>
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
+                <include name="services.xml"/>
                 <include name="**/*.props"/>
                 <include name="schemes/*.jedit-scheme"/>
                 <include name="**/*.html"/>
