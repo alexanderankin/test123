@@ -48,11 +48,8 @@ import org.gjt.sp.util.Log;
 import com.microstar.xml.XmlException;
 import com.microstar.xml.XmlParser;
 
-import code2html.html.CSSStyle;
-import code2html.html.HtmlDocument;
-import code2html.html.AbstractGutter;
-import code2html.html.HtmlPainter;
-import code2html.html.AbstractStyle;
+import code2html.generic.* ; 
+import code2html.impl.htmlcss. * ;
 
 import code2html.syntax.ParserRuleSet;
 import code2html.syntax.TokenMarker;
@@ -102,15 +99,15 @@ public class Main {
                                   TokenMarker tokenMarker,
                                   Reader r,
                                   Writer w) {
-        AbstractStyle style = config.getStyle();
-        AbstractGutter gutter = config.getGutter();
-        HtmlPainter painter = config.getPainter();
+        Style style = config.getStyle();
+        GenericGutter gutter = config.getGutter();
+        GenericPainter painter = config.getPainter();
 
         try {
             BufferedReader reader = new BufferedReader(r);
             BufferedWriter writer = new BufferedWriter(w);
 
-            HtmlDocument document = new HtmlDocument(
+            GenericDocument document = new HtmlCssDocument(
                 Main.getProperty("view.bgColor", "#ffffff"),
                 Main.getProperty("view.fgColor", "#000000"),
                 painter.getSyntaxStyles(),
@@ -119,7 +116,7 @@ public class Main {
                 "Code2HTML",
                 jEdit.getProperty("plugin.code2html.line.separator"));
 
-            document.htmlOpen(writer);
+            document.open(writer);
 
             Segment seg = new Segment();
             String line = null;
@@ -154,7 +151,7 @@ public class Main {
                 writer.newLine();
             }
 
-            document.htmlClose(writer);
+            document.close(writer);
             writer.flush();
             writer.close();
         } catch (IOException ioe) {
