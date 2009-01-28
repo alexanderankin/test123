@@ -22,7 +22,7 @@ package code2html.impl.html;
 
 import java.awt.Color;
 
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 
 import org.gjt.sp.util.Log;
@@ -44,7 +44,7 @@ public class HtmlStyle extends Style {
         if ((c = style.getForegroundColor()) != null) {
             bufOpen.append("<font")
                 .append(" color=\"")
-                .append(GUIUtilities.getColorHexString(c))
+                .append(SyntaxUtilities.getColorHexString(c))
                 .append("\">");
             bufClose.insert(0, "</font>");
         }

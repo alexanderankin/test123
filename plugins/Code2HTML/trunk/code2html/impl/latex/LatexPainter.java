@@ -28,7 +28,6 @@ import javax.swing.text.Segment;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
-import code2html.SyntaxToken;
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;     
