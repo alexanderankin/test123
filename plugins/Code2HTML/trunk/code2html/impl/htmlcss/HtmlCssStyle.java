@@ -22,7 +22,7 @@ package code2html.impl.htmlcss ;
 
 import java.awt.Color;
 
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 
 import org.gjt.sp.util.Log;
@@ -53,13 +53,13 @@ public class HtmlCssStyle extends Style {
         Color c;
         if ((c = style.getBackgroundColor()) != null) {
             buf.append("  background: ")
-                .append(GUIUtilities.getColorHexString(c))
+                .append(SyntaxUtilities.getColorHexString(c))
                 .append(";\n");
         }
 
         if ((c = style.getForegroundColor()) != null) {
             buf.append("  color: ")
-                .append(GUIUtilities.getColorHexString(c))
+                .append(SyntaxUtilities.getColorHexString(c))
                 .append(";\n");
         }
 
