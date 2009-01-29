@@ -30,8 +30,22 @@ import java.util.HashMap ;
 import code2html.generic.* ;
 import code2html.services.LinkProvider ;
 
+/**
+ * Definition of style specific to latex output
+ * 
+ * @author Romain Francois
+ * @version 0.6
+ */
 public class LatexStyle extends Style {
     
+	  /**
+		 * Wraps the text in a specific style
+		 *
+		 * @param styleId the ID of the style we are printing
+		 * @param style the actual syntax style we are using
+		 * @param text the text to be wrapped
+		 * @return latex markup of the form \\syntax-STYLENAME{text}
+		 */
 		@Override
     public String format(int styleId, SyntaxStyle style, String text) {
 				StringBuffer buf = new StringBuffer();
@@ -40,6 +54,13 @@ public class LatexStyle extends Style {
 				return getLinkText( styleId, text, formattedText ) ;
     }
 
+		/**
+		 * Returns the style definition for the style
+		 * 
+		 * @param styleId The ID of the style we are using
+		 * @param style The actual style we are using
+		 * @return text of the latex style declaration using \\newcommand
+		 */
 		@Override
     public String style(int styleId, SyntaxStyle style) {
         StringBuffer buf = new StringBuffer();
@@ -80,11 +101,29 @@ public class LatexStyle extends Style {
         return buf.toString();
     }
 		
+		/** 
+		 * Map between actual style names and style names used in latex
+		 * (because latex does not want command with numbers and some
+		 * style names have numbers )
+		 */
 		private static HashMap<String,String> map = new HashMap<String,String>() ;
 		
+		/**
+		 * Returns the name of a style (numbers replaced by letters to make latex happy)
+		 *
+		 * @param id The ID of the style 
+		 * @return the cleaned name of the style 
+		 */
 		public static String getCleanStyle( int id ){
 			return getCleanStyle( getTokenString(id) ) ;
 		}
+		
+		/** 
+		 * Returns the name of a style (numbers replaced by letters to make latex happy)
+		 *
+		 * @param str the raw name of the style
+		 * @return the cleaned name of the style
+		 */ 
 		public static String getCleanStyle( String str ){
 			if( !map.isEmpty() && map.containsKey( str ) ){
 			} else {
@@ -102,6 +141,12 @@ public class LatexStyle extends Style {
 			return out; 
 		}
 		
+		/** 
+		 * Returns the mode the formatted buffer should be dislayed in (latex)
+		 *
+		 * @return the mode (latex)
+		 * @see org.gjt.sp.jedit.Mode#toString
+		 */
 		@Override
 		public String getMode(){
 			return "latex" ;

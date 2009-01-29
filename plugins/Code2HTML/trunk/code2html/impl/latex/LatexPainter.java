@@ -34,10 +34,25 @@ import code2html.line.LineWrapper;
 
 import code2html.generic.* ;
 
+/**
+ * Managing class used to paint the buffer
+ *
+ * @author Romain Francois
+ * @version 0.6
+ */
 public class LatexPainter extends GenericPainter {
 	
 	private static final String NEWLINE = "\\hspace*{\\fill}\\\\\n" ;
 	
+	/** 
+	 * Constructor for the painter
+	 * 
+	 * @param syntaxStyles styles used by jedit
+	 * @param style the latex style
+	 * @param gutter the gutter
+	 * @param expander the tab expander
+	 * @param wrapper the line wrapper
+	 */
 	public LatexPainter(
             SyntaxStyle[]   syntaxStyles,
             Style    style,
@@ -47,13 +62,23 @@ public class LatexPainter extends GenericPainter {
     ) {
 		super( syntaxStyles, style, gutter, expander, wrapper ) ;
 	}
-		
-	
+		    
+	/**
+	 * Returns the character string that is used at the end of each line
+	 *
+	 * @return end line character
+	 */
 	@Override
   protected String newLine( ){
 		return NEWLINE ;
 	}
 	
+	/**
+	 * Formats text to latex markup, outsourced to the LatexUtilities class
+	 *
+	 * @param text text in the buffer
+	 * @return text in the output document
+	 */
 	@Override
 	protected String format( String text){
 		return LatexUtilities.format( text ) ;
