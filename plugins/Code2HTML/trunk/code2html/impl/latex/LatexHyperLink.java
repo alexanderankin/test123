@@ -21,8 +21,18 @@ package code2html.impl.latex ;
 
 import code2html.generic.HyperLink ;
 
+/**
+ * Class used to make hyperlinks in latex documents
+ */ 
 public class LatexHyperLink extends HyperLink{
 	
+	/** 
+	 * Returns the latex markup for representing and hyperlink, using \\href from the hyperref package
+	 * @param text not used
+	 * @param url url of the link
+	 * @param content of the text
+	 * @return latex markup for the hyperlink
+	 */
 	@Override
 	public String getLinkText( String text, String url, String formattedText ){
 		StringBuffer buf = new StringBuffer( ) ;

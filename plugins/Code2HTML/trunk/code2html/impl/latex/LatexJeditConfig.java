@@ -22,11 +22,21 @@ package code2html.impl.latex ;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import code2html.generic.* ;
 
+/**
+ * Configuation specific to Latex, responsible for creating
+ * style, gutter and painter 
+ */
 public class LatexJeditConfig extends GenericJeditConfig implements Config {
     private LatexStyle       style       = null;
     private LatexGutter      gutter      = null;
     private LatexPainter     painter     = null;
-    
+                 
+		/**
+		 * Creates the configuration from the array of styles and the 
+		 * size of tabulation
+		 * @param styles array of styles used by jEdit
+		 * @param tabSize Size of one tabulation character
+		 */
     public LatexJeditConfig(SyntaxStyle[] styles, int tabSize) {
         super( styles, tabSize ) ;
 				
@@ -43,16 +53,28 @@ public class LatexJeditConfig extends GenericJeditConfig implements Config {
         );
     }
 
+		/**
+		 * Returns the gutter object
+		 * @return gutter object specific to latex (or null if the gutter is not displayed)
+		 */
 		@Override
     public GenericGutter getGutter() {
         return this.gutter;
     }
 
+		/**
+		 * Returns the style object
+		 * @return The style associated with this configuration
+		 */
 		@Override
     public Style getStyle() {
         return this.style;
     };
 
+		/** 
+		 * Returns the painter object
+		 * @return The painter associated with this configuration
+		 */ 
 		@Override
 		public GenericPainter getPainter() {
         return this.painter;

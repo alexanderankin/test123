@@ -38,8 +38,17 @@ import org.gjt.sp.util.Log;
 
 import code2html.generic.* ;
 
+/**
+ * Main class to convert the textarea into latex format
+ */
 public class LatexExporter extends GenericExporter {
 	
+		/**
+		 * Constructor for the latex exporter
+		 * @param buffer buffer we want to convert into latex code
+		 * @param syntaxStyle list of styles used by jedit
+		 * @param selection selection, if this is not null the output document will only contain the selected text
+		 */
     public LatexExporter(
             Buffer buffer, SyntaxStyle[] syntaxStyle, Selection[] selection
     ) {
@@ -64,11 +73,17 @@ public class LatexExporter extends GenericExporter {
             "\n"
         );
     }
-
+		
 		private static final String MODE = "latex" ;
+		
+		/** 
+		 * Returns the mode the output document should be using (latex)
+		 * @see org.gjt.sp.jedit.Mode#toString
+		 */
 		@Override 
 		public String getMode(){
 			return "latex" ;
 		}
+		
 }
 
