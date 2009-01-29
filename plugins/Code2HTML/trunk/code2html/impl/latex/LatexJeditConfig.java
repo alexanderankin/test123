@@ -32,9 +32,11 @@ public class LatexJeditConfig extends GenericJeditConfig implements Config {
 				
         this.style = new LatexStyle();
         
-        this.gutter = new LatexGutter(
-					bgColor, fgColor, highlightColor, highlightInterval
-				);
+				if (showGutter) {
+					this.gutter = new LatexGutter(
+						bgColor, fgColor, highlightColor, highlightInterval
+					);
+				}
         
         this.painter = new LatexPainter(
             styles, this.style, this.gutter, this.tabExpander, this.wrapper
