@@ -19,12 +19,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.noos.xing.mydoggy.Content;
 import org.noos.xing.mydoggy.DockedTypeDescriptor;
 import org.noos.xing.mydoggy.FloatingTypeDescriptor;
@@ -203,6 +205,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (tw == null)
 			return;
 		tw.setVisible(false);
+		EditBus.send(new DockableWindowUpdate(this, DockableWindowUpdate.DEACTIVATED,
+			name));
+		if (tw.getType() == ToolWindowType.DOCKED ||
+			tw.getType() == ToolWindowType.SLIDING)
+		{
+			// See if another window has become active
+			tw = getCurrentToolWindow(tw.getAnchor());
+			if (tw != null)
+				EditBus.send(new DockableWindowUpdate(this,
+					DockableWindowUpdate.ACTIVATED, tw.getId()));
+		}
 	}
 
 	@Override
@@ -432,8 +445,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			if (! bar.isVisible())
 				bar.setVisible(true);
 		}
+
+		// If another window is currently active, it is becoming deactivated
+		ToolWindow current = getCurrentToolWindow(anchor);
+		if (current != null && current != tw)
+			EditBus.send(new DockableWindowUpdate(this, DockableWindowUpdate.DEACTIVATED,
+				current.getId()));
+		
 		tw.setActive(true);
 		focusDockable(tw.getId());
+		EditBus.send(new DockableWindowUpdate(this, DockableWindowUpdate.ACTIVATED,
+			tw.getId()));
 	}
 
 	private ToolWindowAnchor position2anchor(String position)
@@ -462,14 +484,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			wm.getToolWindowBar(anchor).setVisible(true);
 		}
 		private ToolWindow getCurrentToolWindow() {
-			ToolWindow[] tools = wm.getToolsByAnchor(anchor);
-			for (ToolWindow tw: tools)
-				if (tw.isActive())
-					return tw;
-			for (ToolWindow tw: tools)
-				if (tw.isVisible())
-					return tw;
-			return null;
+			return MyDoggyWindowManager.this.getCurrentToolWindow(anchor);
 		}
 		public String getCurrent() {
 			ToolWindow current = getCurrentToolWindow();
@@ -498,6 +513,18 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				docked[i] = tools[i].getId();
 			return docked;
 		}
+	}
+	
+	public ToolWindow getCurrentToolWindow(ToolWindowAnchor anchor)
+	{
+		ToolWindow[] tools = wm.getToolsByAnchor(anchor);
+		for (ToolWindow tw: tools)
+			if (tw.isActive())
+				return tw;
+		for (ToolWindow tw: tools)
+			if (tw.isVisible())
+				return tw;
+		return null;
 	}
 	
 	public DockingArea getBottomDockingArea() {
