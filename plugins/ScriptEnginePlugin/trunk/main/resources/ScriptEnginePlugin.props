@@ -10,10 +10,7 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.version=0
 
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin.menu= \
 	scriptengine.plugin.evaluate.buffer \
-	scriptengine.plugin.evaluate.buffer.to.console \
-	- \
 	scriptengine.plugin.evaluate.selection \
-	scriptengine.plugin.evaluate.selection.to.console \
 	- \
 	scriptengine.plugin.macro.create \
 	scriptengine.plugin.macro.create.from.buffer
