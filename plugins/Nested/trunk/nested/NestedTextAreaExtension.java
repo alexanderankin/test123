@@ -53,7 +53,7 @@ public class NestedTextAreaExtension extends TextAreaExtension {
 				}
 				
 				if( p1 != null && p2 != null ){
-					gfx.setColor( color ) ;
+					gfx.setColor( getColor( mode, tokenmode ) ) ;
 					gfx.fillRect( p1.x , y, p2.x - p1.x, height ) ;
 					gfx.setColor( before ) ;
 				}
