@@ -2,9 +2,9 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-{{{ ScriptEnginePlugin 0.3.0
-    Source: Source code is in SVN with the tag XXXX (no SVN release numbers, please)
-    Announcement: 
+{{{ ScriptEnginePlugin 0.5.0
+    Source: Source code is in SVN with the tag release-0-5-0 (no SVN release numbers, please)
+    Announcement: Added Macro Support. Creation of jEdit Macros in ScriptEngine languages. Eg. Allowing users to create a jEdit Macro written in Groovy.
     Requires Java 1.5
     Requires jEdit 04.03.15.00
     
@@ -23,7 +23,7 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
 			It provides a ScriptEngineService which allows this plugin to pick up any ScriptEngines (installed separately) that are in other plugins.
 			<br>
 			<br>
-			It also provides 2 convenient methods for executing the current buffer or executing the currently selected text. Both of these methods provide the standard macro variables in the ScriptContext making them available to any scripts executed.
+			This plugin allows the evaluation of scripts from within jEdit's buffer, as well as using other scripting languages besides Beanshell to create jEdit Macros.
 		</p>
 	</body>
 </html>
