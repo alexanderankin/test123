@@ -1,0 +1,83 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="scriptengine.plugin.evaluate.buffer">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			Object returnValue = delegate.evaluateBuffer(view);
+			if(returnValue != null) {
+				view.getTextArea().setSelectedText(returnValue.toString());
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			Object returnValue = delegate.evaluateBuffer(view);
+			if(returnValue != null) {
+				view.getTextArea().setSelectedText(returnValue.toString());
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.evaluate.selection">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			if(view.getTextArea().getSelectedText() != null) {
+				Object returnValue = delegate.evaluateSelection(view);
+				if(returnValue != null) {
+					view.getTextArea().setSelectedText(returnValue.toString());
+				}
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.evaluate.selection.to.console">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			if(view.getTextArea().getSelectedText() != null) {
+				Object returnValue = delegate.evaluateSelection(view);
+				if(returnValue != null) {
+					view.getTextArea().setSelectedText(returnValue.toString());
+				}
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.macro.create">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			MacroDelegate delegate = plugin.getMacroDelegate();
+			
+			delegate.createMacro(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="scriptengine.plugin.macro.create.from.buffer">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			MacroDelegate delegate = plugin.getMacroDelegate();
+			
+			delegate.createMacroFromBuffer(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
