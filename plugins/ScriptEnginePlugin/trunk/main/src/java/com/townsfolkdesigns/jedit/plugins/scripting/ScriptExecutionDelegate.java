@@ -32,11 +32,6 @@ import java.io.FileReader;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
-import errorlist.ErrorSource;
-import errorlist.DefaultErrorSource;
-
 
 
 /**
@@ -46,7 +41,6 @@ import errorlist.DefaultErrorSource;
 public class ScriptExecutionDelegate {
 
    private ScriptEngineDelegate scriptEngineManager;
-	private ErrorSource errorSource;
 
    public ScriptExecutionDelegate() {
       this(new ScriptEngineDelegate());
@@ -60,28 +54,16 @@ public class ScriptExecutionDelegate {
       String bufferText = view.getTextArea().getText();
       Mode bufferMode = view.getBuffer().getMode();
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
-		Object returnVal = evaluateString(bufferText, bufferMode.getName(), scriptContext);
-		if(returnVal instanceof DefaultErrorSource.DefaultError) {
-			DefaultErrorSource.DefaultError error = (DefaultErrorSource.DefaultError)returnVal;
-			returnVal = null;
-			error.setFilePath(view.getBuffer().getPath());
-			errorSource.addError(error);
-		}
-		return returnVal;
+
+      return evaluateString(bufferText, bufferMode.getName(), scriptContext);
    }
 
    public Object evaluateSelection(View view) {
       String bufferText = view.getTextArea().getSelectedText();
       Mode bufferMode = view.getBuffer().getMode();
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
-		Object returnVal = evaluateString(bufferText, bufferMode.getName(), scriptContext);
-		if(returnVal instanceof DefaultErrorSource.DefaultError) {
-			DefaultErrorSource.DefaultError error = (DefaultErrorSource.DefaultError)returnVal;
-			returnVal = null;
-			error.setFilePath(view.getBuffer().getPath());
-			errorSource.addError(error);
-		}
-		return returnVal;
+
+      return evaluateString(bufferText, bufferMode.getName(), scriptContext);
    }
 
    public Object evaluateString(String script, String engineName, ScriptContext scriptContext) {
@@ -103,10 +85,7 @@ public class ScriptExecutionDelegate {
             }
 
             Log.log(Log.DEBUG, ScriptExecutionDelegate.class, "Script executed - return val: " + returnVal);
-         } catch (ScriptException e) {
-				Log.log(Log.ERROR, ScriptExecutionDelegate.class, "Error executing script - content: \n" + script, e);
-				returnVal = new DefaultErrorSource.DefaultError(errorSource, ErrorSource.ERROR, "", e.getLineNumber(), e.getColumnNumber(), 1, e.getMessage());
-			} catch (Exception e) {
+         } catch (Exception e) {
             Log.log(Log.ERROR, ScriptExecutionDelegate.class, "Error executing script - content: \n" + script, e);
          }
       } else {
@@ -123,12 +102,4 @@ public class ScriptExecutionDelegate {
    public void setScriptEngineManager(ScriptEngineDelegate scriptEngineManager) {
       this.scriptEngineManager = scriptEngineManager;
    }
-	
-	public ErrorSource getErrorSource() {
-		return errorSource;
-	}
-	
-	public void setErrorSource(ErrorSource errorSource) {
-		this.errorSource = errorSource;
-	}
 }

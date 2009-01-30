@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
-import javax.script.Compilable;
 
 
 /**
@@ -120,12 +119,10 @@ public class ScriptEngineDelegate {
             // Use the Mode as the ScriptEngine name for consistency. Some engine's are named not for their languages.
             // EG. The Javascript Engine used, is called "Mozilla Rhino" and not "javascript".
             manager.registerEngineName(serviceMode.getName(), factory);
-				
-				ScriptEngine engine = manager.getEngineByName(serviceMode.getName());
 
             Log.log(Log.DEBUG, ScriptEngineDelegate.class,
                "\"" + serviceMode.getName() + "\" ScriptEngine is registered: " +
-               (engine != null) + " | engine supports compiling: " + (engine instanceof Compilable));
+               (manager.getEngineByName(serviceMode.getName()) != null));
 
 
          } catch (Exception e) {
