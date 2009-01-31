@@ -10,10 +10,11 @@ import java.awt.Color ;
 import org.gjt.sp.util.Log ;
 import java.awt.Point ;
 
+import nested.manager.NestedTableModel ;
+
 public class NestedTextAreaExtension extends TextAreaExtension {
 	
 	private TextArea textArea ; 
-	private Color color = Color.decode( "#d7ffd0" ) ;
 	
 	public NestedTextAreaExtension( TextArea textArea ){
 		this.textArea=textArea ;
@@ -53,7 +54,7 @@ public class NestedTextAreaExtension extends TextAreaExtension {
 				}
 				
 				if( p1 != null && p2 != null ){
-					gfx.setColor( getColor( mode, tokenmode ) ) ;
+					gfx.setColor( nested.Plugin.getModel().getColor( mode, tokenmode ) ) ;
 					gfx.fillRect( p1.x , y, p2.x - p1.x, height ) ;
 					gfx.setColor( before ) ;
 				}
@@ -70,9 +71,5 @@ public class NestedTextAreaExtension extends TextAreaExtension {
 		return list.getTokens() ;
 	}
 
-	public Color getColor( String mainmode, String insidemode ){
-		return color ;
-	}
-	
 	
 }
