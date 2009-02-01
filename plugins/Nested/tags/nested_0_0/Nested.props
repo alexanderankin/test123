@@ -1,0 +1,16 @@
+plugin.nested.Plugin.name=Nested
+plugin.nested.Plugin.author=Romain Francois
+plugin.nested.Plugin.version=0.0
+plugin.nested.Plugin.activate=startup
+plugin.nested.Plugin.usePluginHome=true
+
+plugin.nested.Plugin.depend.0=jdk 1.5
+plugin.nested.Plugin.depend.1=jedit 04.03.16.00
+
+# Menu label
+nested.label=Nested
+nested.title=Nested
+
+# Option Pane labels
+options.nested.label=Nested
+
