@@ -8,6 +8,8 @@ import java.awt.Color ;
 import org.gjt.sp.jedit.textarea.JEditTextArea ;
 import org.gjt.sp.jedit.jEdit ;
 
+import javax.swing.SwingUtilities ;
+
 public class NestedTableModel extends AbstractTableModel {
 	
 	private String[] columnNames = { "mode", "sub-mode" , "" } ;
@@ -19,7 +21,9 @@ public class NestedTableModel extends AbstractTableModel {
 	}
 	
 	public void init( ){
-		data = new TreeMap<String,NestedObject>( ) ;
+		NestedReader nr = new NestedReader( ) ;
+		data = nr.getMap( ) ;
+		fireTableDataChanged( ) ;
 	}
 	
 	@Override
@@ -62,6 +66,11 @@ public class NestedTableModel extends AbstractTableModel {
 	public void setValueAt(Object aValue, int row, int column){
 		if( column != 2 ) return ;
 		( (NestedObject) data.get( data.keySet().toArray()[row] ) ).setColor( (Color)aValue ) ;
+		SwingUtilities.invokeLater( new Runnable(){
+				public void run(){
+					saveMap( ) ;
+				}
+		} ) ;
 		JEditTextArea textArea = jEdit.getActiveView().getTextArea( ) ;
 		int first = textArea.getFirstPhysicalLine() ;
 		int last = textArea.getLastPhysicalLine() ;
@@ -79,9 +88,19 @@ public class NestedTableModel extends AbstractTableModel {
 		String key = getKey( mode, submode ) ;
 		if( ! data.containsKey( key ) ) {
 			data.put( key, new NestedObject(mode, submode ) ) ;
-			fireTableDataChanged() ;
+			SwingUtilities.invokeLater( new Runnable(){
+					public void run(){
+						saveMap( ) ;
+					}
+			} ) ;
+		fireTableDataChanged() ;
 		}
 		return data.get( key ).getColor() ;
+	}
+	
+	private void saveMap( ){
+		NestedWriter writer = new NestedWriter() ;
+		writer.saveMap( data ) ;
 	}
 	
 }
