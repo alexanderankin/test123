@@ -1,18 +1,25 @@
 package nested.manager ;
 
 import java.util.Vector ;
-import java.util.HashMap ;
+import java.util.TreeMap ;
 import javax.swing.table.AbstractTableModel ;  
 import java.awt.Color ;
+
+import org.gjt.sp.jedit.textarea.JEditTextArea ;
+import org.gjt.sp.jedit.jEdit ;
 
 public class NestedTableModel extends AbstractTableModel {
 	
 	private String[] columnNames = { "mode", "sub-mode" , "" } ;
-	private Vector<NestedObject> data = null ;
+	private TreeMap<String,NestedObject> data ; 
 	
 	public NestedTableModel( ){
 		super( ) ;
 		init( ) ;
+	}
+	
+	public void init( ){
+		data = new TreeMap<String,NestedObject>( ) ;
 	}
 	
 	@Override
@@ -38,8 +45,8 @@ public class NestedTableModel extends AbstractTableModel {
 	
 	@Override
 	public Object getValueAt( int row, int col ){
-		if( data == null ) return null ;
-		NestedObject o = data.get( row ) ;
+		if( data == null || row > data.size() ) return null ;
+		NestedObject o = data.get( data.keySet().toArray()[row] );
 		if( col == 0 ) return o.getMode() ; 
 		if( col == 1 ) return o.getSubMode() ; 
 		if( col == 2 ) return o.getColor() ; 
@@ -48,38 +55,34 @@ public class NestedTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		return false; 
+		return col == 2; 
 	}
 	
-	// TODO: generate data reading file on the plugin dir
-	// TODO: use one data structure( SortedMap ) instead of Vector+ HashMap
-	public void init( ){
-		data = new Vector<NestedObject>( ) ;
-		data.add( new NestedObject( "jsp", "java", Color.YELLOW )  ) ;
-		data.add( new NestedObject( "jaxx", "java", Color.YELLOW )  ) ;
-		data.add( new NestedObject( "jaxx", "xml", null )  ) ;
-		data.add( new NestedObject( "jaxx", "css", Color.CYAN )  ) ;
-		data.add( new NestedObject( "actions", "xml", null )  ) ;
-		generateMap( ) ;
+	@Override
+	public void setValueAt(Object aValue, int row, int column){
+		if( column != 2 ) return ;
+		( (NestedObject) data.get( data.keySet().toArray()[row] ) ).setColor( (Color)aValue ) ;
+		JEditTextArea textArea = jEdit.getActiveView().getTextArea( ) ;
+		int first = textArea.getFirstPhysicalLine() ;
+		int last = textArea.getLastPhysicalLine() ;
+		textArea.invalidateLineRange( first, last ) ;
+		fireTableCellUpdated( row, column ) ;
 	}
 	
-	private HashMap<String,NestedObject> map = null ; 
+	private String getKey( String mode, String submode ){
+		String out = mode + "-" + submode ;
+		return out ; 
+	}
 	
 	public Color getColor( String mode, String submode ){
 		if( data == null ) return null ;
-		if( map == null ) generateMap( ) ;
-		String key = mode + "--" + submode ;
-		if( map.containsKey( key ) ) {
-			return map.get( key ).getColor() ;
+		String key = getKey( mode, submode ) ;
+		if( ! data.containsKey( key ) ) {
+			data.put( key, new NestedObject(mode, submode ) ) ;
+			fireTableDataChanged() ;
 		}
-		return null ;
+		return data.get( key ).getColor() ;
 	}
 	
-  private void generateMap( ){
-		map = new HashMap<String,NestedObject>( ) ;
-		for( int i=0; i<data.size(); i++){
-			NestedObject o = data.get(i) ;
-			map.put( o.getMode() + "--" + o.getSubMode(), o ) ;
-		}
-	}
 }
+

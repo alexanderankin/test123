@@ -1,13 +1,14 @@
 package nested.manager ;
 
 import java.awt.Color ;
+import org.gjt.sp.jedit.jEdit ;
 
 public class NestedObject {
 	
 	private String mode ;
 	private String submode; 
 	private Color color ;
-	private static final Color DEFAULT_COLOR = Color.decode( "#d7ffd0" ) ;
+	private static Color DEFAULT_COLOR = Color.decode( jEdit.getProperty("view.bgColor") ) ;
 	
 	/**
 	 * Constructor for a NestedObject using the default color
