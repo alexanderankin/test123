@@ -7,22 +7,23 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log ;
 
 import nested.manager.NestedTableModel ; 
+
 import java.io.File ;
 
 public class Plugin extends EBPlugin {
 	
 	public static final String NAME = "Nested";
-	private static NestedTableModel model  ;
-	private static File home ;
+	private static NestedTableModel model = null ; 
 	
-	public void start() { 
+	public Plugin( ){
+		super( ) ;
 		model = new NestedTableModel( ) ;
-		home = getPluginHome( ) ;
 	}
-	public void stop() { }
 	
-	public static File getHome( ){
-		return home ; 
+	public void start() { }
+	
+	public void stop() { 
+		getModel( ).saveMap( ) ;
 	}
 	
 	public void handleMessage(EBMessage message){
@@ -37,7 +38,16 @@ public class Plugin extends EBPlugin {
 	}
 
 	public static NestedTableModel getModel( ){
+		if( model == null ) model = new NestedTableModel( ) ; 
 		return model ;
+	}
+	
+	protected void finalize() throws Throwable {
+    try {
+      getModel().saveMap( ) ;
+    } finally {
+      super.finalize();
+    }
 	}
 	
 }

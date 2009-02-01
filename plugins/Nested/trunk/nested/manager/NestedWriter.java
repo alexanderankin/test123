@@ -3,14 +3,14 @@ package nested.manager ;
 import java.util.TreeMap ;
 import java.io.* ;
 import org.gjt.sp.util.SyntaxUtilities ;
+import org.gjt.sp.jedit.jEdit ;
 import java.util.Collection ;
 
 public class NestedWriter {
 	
 	private File file ;
 	
-	public NestedWriter( ) {
-		File home = nested.Plugin.getHome() ;
+	public NestedWriter( File home ) {
 		if( ! home.exists() ){
 			home.mkdir() ;
 		}
@@ -26,13 +26,17 @@ public class NestedWriter {
 			return ; 
 		}
 		
-		Collection<NestedObject> objects = map.values( ) ;
-		for( NestedObject o : objects ){
+		for( NestedObject o : map.values( ) ){
+			String hex = jEdit.getProperty( "view.bgColor" ) ; 
+			try{
+				hex = SyntaxUtilities.getColorHexString( o.getColor( ) ) ; 
+			} catch( Exception e ){}
+			
 			out.write( o.getMode() ) ; 
 			out.write( "," ) ;
 			out.write( o.getSubMode() ) ;
 			out.write( "," ) ;
-			out.write( SyntaxUtilities.getColorHexString(o.getColor()) ) ;
+			out.write( hex ) ;
 			out.write( "\n" ) ;
 		}
 		out.flush( ) ;
