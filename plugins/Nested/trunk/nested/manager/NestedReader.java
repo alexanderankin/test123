@@ -14,8 +14,11 @@ public class NestedReader {
 	File file ;
 	private static final Pattern rx = Pattern.compile( "^([^,]*),([^,]*),([^,]*)$" ) ;
 	
-	public NestedReader(){
-		file = new File( nested.Plugin.getHome(), "settings.txt" ) ;
+	public NestedReader( File home ){
+		if( !home.exists() ){
+			home.mkdir() ;
+		}
+		file = new File( home , "settings.txt" ) ;
 	}
 	
 	public TreeMap<String,NestedObject> getMap(){
@@ -24,6 +27,7 @@ public class NestedReader {
 		try{
 			reader = new BufferedReader( new FileReader( file ) ) ;
 		} catch( Exception e ){
+			e.printStackTrace() ;
 			return map ;
 		}
 		String line ;
@@ -43,7 +47,7 @@ public class NestedReader {
 			}
 			String mode = m.group(1).replaceAll( " ", "" ) ;
 			String submode = m.group(2).replaceAll( " ", "" ) ;
-			String colorString = m.group(1).replaceAll( " ", "" ) ;
+			String colorString = m.group(3).replaceAll( " ", "" ) ;
 			Color color = null ;
 			try{
 				color = Color.decode( colorString ) ;

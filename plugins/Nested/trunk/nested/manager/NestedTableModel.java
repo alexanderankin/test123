@@ -7,21 +7,21 @@ import java.awt.Color ;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea ;
 import org.gjt.sp.jedit.jEdit ;
+import org.gjt.sp.jedit.EditPlugin ;
 
 import javax.swing.SwingUtilities ;
+import java.io.File ;
 
 public class NestedTableModel extends AbstractTableModel {
 	
 	private String[] columnNames = { "mode", "sub-mode" , "" } ;
 	private TreeMap<String,NestedObject> data ; 
+	private File home ; 
 	
 	public NestedTableModel( ){
 		super( ) ;
-		init( ) ;
-	}
-	
-	public void init( ){
-		NestedReader nr = new NestedReader( ) ;
+		home = EditPlugin.getPluginHome( nested.Plugin.class ) ;
+		NestedReader nr = new NestedReader( home ) ;
 		data = nr.getMap( ) ;
 		fireTableDataChanged( ) ;
 	}
@@ -98,8 +98,8 @@ public class NestedTableModel extends AbstractTableModel {
 		return data.get( key ).getColor() ;
 	}
 	
-	private void saveMap( ){
-		NestedWriter writer = new NestedWriter() ;
+	public void saveMap( ){
+		NestedWriter writer = new NestedWriter( home ) ;
 		writer.saveMap( data ) ;
 	}
 	
