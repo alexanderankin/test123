@@ -39,6 +39,7 @@ import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.EBMessage;
@@ -243,13 +244,42 @@ public class SourceTree extends SideKickTree {
                 _hasMarker = hasMarker(
                             _asset.getStart().getOffset(),
                             _asset.getEnd().getOffset() );
-                setToolTipText( _asset.getLongString() );
+                setToolTipText( getToolTipText(node, _asset) );
             }
             else
                 setIcon( null );
             return this;
         } //}}}
 
+        private String getToolTipText(DefaultMutableTreeNode node, IAsset asset) {
+            //{{{ -getToolTipText(DefaultMutableTreeNode, IAsset): String
+        	StringBuffer sb = new StringBuffer("<html><body>");
+        	sb.append(asset.getLongString());
+        	sb.append("<br><br>");
+        	int indent = 0;
+        	for (TreeNode n: node.getPath()) {
+        		DefaultMutableTreeNode tn = (DefaultMutableTreeNode) n;
+        		Object o = tn.getUserObject();
+        		boolean last = (n == node);
+        		if (last)
+        			sb.append("<b>");
+        		if (o instanceof IAsset)
+        			sb.append(((IAsset) o).getShortString());
+        		else
+        			sb.append(o.toString());
+        		if (last)
+        			sb.append("</b>");
+        		if (! last) {
+            		sb.append("<br>");
+        			indent++;
+        			for (int j = 0; j < indent; j++)
+        				sb.append("&nbsp;&nbsp;");
+        		}
+        	}
+        	sb.append("</body></html>");
+        	return sb.toString();
+        } //}}}
+        
         public void paintComponent( Graphics g ) {
             //{{{ +paintComponent(Graphics) : void
             // inspired from ProjectViewer plugin
