@@ -39,7 +39,7 @@ public class TextObjectsPlugin extends EditPlugin
             Log.log(Log.DEBUG, s, s);
     }
    
-    private static abstract class Predicate implements Cloneable {
+    public static abstract class Predicate implements Cloneable {
         public abstract boolean match(Character c);
         public abstract Predicate clone();
         public int length = DEFAULT_LENGTH;
@@ -94,7 +94,7 @@ public class TextObjectsPlugin extends EditPlugin
         */
     }
     
-    private static abstract class CharSequenceIterator implements Iterator 
+    public static abstract class CharSequenceIterator implements Iterator 
     {
         public CharSequence text;
         protected int offset;
@@ -130,9 +130,9 @@ public class TextObjectsPlugin extends EditPlugin
         }
     }
     
-    private static class BackCharSequenceIterator extends CharSequenceIterator
+    public static class BackCharSequenceIterator extends CharSequenceIterator
     {
-        BackCharSequenceIterator(CharSequence text_, int offset_)
+        public BackCharSequenceIterator(CharSequence text_, int offset_)
         {
             super(text_, offset_);
         }
@@ -148,7 +148,7 @@ public class TextObjectsPlugin extends EditPlugin
         protected int adjust() { return 1; }
     }
     
-    private static class ForwardCharSequenceIterator extends CharSequenceIterator
+    public static class ForwardCharSequenceIterator extends CharSequenceIterator
     {
         public ForwardCharSequenceIterator(CharSequence text_, int offset_)
         {
@@ -170,7 +170,7 @@ public class TextObjectsPlugin extends EditPlugin
         protected int adjust() { return -1; }
     }
     
-    private static ForwardCharSequenceIterator forward(CharSequenceIterator i)
+    public static ForwardCharSequenceIterator forward(CharSequenceIterator i)
     {
         return new ForwardCharSequenceIterator(i);
     }
@@ -392,7 +392,7 @@ public class TextObjectsPlugin extends EditPlugin
         }
     }
     
-    private static int match(CharSequenceIterator iter, Predicate p)
+    public static int match(CharSequenceIterator iter, Predicate p)
     {
         int num_match = 0;
         while (iter.hasNext()) {
@@ -414,7 +414,7 @@ public class TextObjectsPlugin extends EditPlugin
     /** Returns the number of non-matched characters; -1 if no character
         matched.
       */
-    private static int find_first(CharSequenceIterator iter, Predicate p)
+    public static int find_first(CharSequenceIterator iter, Predicate p)
     {
         int offset = 0;
         while (iter.hasNext()) {
@@ -433,7 +433,7 @@ public class TextObjectsPlugin extends EditPlugin
     
     /** Returns the number of matched characters.
       */
-    private static int find_last(CharSequenceIterator iter, Predicate p)
+    public static int find_last(CharSequenceIterator iter, Predicate p)
     {
         int offset = 0;
         while (iter.hasNext()) {
@@ -458,7 +458,7 @@ public class TextObjectsPlugin extends EditPlugin
             Log.log(Log.DEBUG, s, "SEQ: " + s);
     }
     
-    private static HashMap<String, Integer> 
+    public static HashMap<String, Integer> 
     find_seq(CharSequenceIterator iter, ArrayList<Vector<Predicate>> fifos_)
     {
         HashMap<String, Integer> failed = new HashMap<String, Integer>();
@@ -555,8 +555,8 @@ public class TextObjectsPlugin extends EditPlugin
         return failed;
     }
    
-    private static Selection pair_first(CharSequence text, int pos, 
-                                        Predicate start, Predicate end)
+    public static Selection pair_first(CharSequence text, int pos, 
+            Predicate start, Predicate end)
     {
         int s = pos - find_first(new BackCharSequenceIterator(text, pos - 1), start);
         int e = pos + find_first(new ForwardCharSequenceIterator(text, pos), end);
@@ -565,8 +565,8 @@ public class TextObjectsPlugin extends EditPlugin
         return new Selection.Range(s, e);
     }
     
-    private static Selection pair_last(CharSequence text, int pos, 
-                                       Predicate start, Predicate end)
+    public static Selection pair_last(CharSequence text, int pos, 
+            Predicate start, Predicate end)
     {
         int s = pos - find_last(new BackCharSequenceIterator(text, pos - 1), start);
         int e = pos + find_last(new ForwardCharSequenceIterator(text, pos), end);
@@ -574,17 +574,17 @@ public class TextObjectsPlugin extends EditPlugin
         return new Selection.Range(s, e);
     }
     
-    private static ForwardCharSequenceIterator forward(CharSequence text, int pos)
+    public static ForwardCharSequenceIterator forward(CharSequence text, int pos)
     {
         return new ForwardCharSequenceIterator(text, pos);
     }
     
-    private static BackCharSequenceIterator back(CharSequence text, int pos)
+    public static BackCharSequenceIterator back(CharSequence text, int pos)
     {
         return new BackCharSequenceIterator(text, pos);
     }
 
-    private static<T> ArrayList<T> make_array(T... args)
+    public static<T> ArrayList<T> make_array(T... args)
     {
         // FIXME: Can I return args?
         ArrayList<T> array = new ArrayList<T>(args.length);
@@ -594,7 +594,7 @@ public class TextObjectsPlugin extends EditPlugin
         return array;
     }
     
-    private static Selection 
+    public static Selection 
     extend_whitespace(CharSequence text, Selection selection, 
                       boolean stop_on_newline)
     {
@@ -614,7 +614,7 @@ public class TextObjectsPlugin extends EditPlugin
         return new Selection.Range(selection.getStart(), extension);
     }
     
-    private static Selection extend_whitespace(CharSequence text, Selection selection)
+    public static Selection extend_whitespace(CharSequence text, Selection selection)
     {
         return extend_whitespace(text, selection, true);
     }
@@ -669,7 +669,7 @@ public class TextObjectsPlugin extends EditPlugin
         debug("BLOCK: " + s);
     }
     
-    private static class InvalidBlock extends Throwable
+    public static class InvalidBlock extends Throwable
     {
     }
     
@@ -742,7 +742,7 @@ public class TextObjectsPlugin extends EditPlugin
         return begin_pos;
     }
     
-    private static Selection block(CharSequence text, int pos, String pair)
+    public static Selection block(CharSequence text, int pos, String pair)
     {
         block_debug("Starting block search with " + pair + " at " + pos);
         char open_char = pair.charAt(0);
@@ -1113,4 +1113,4 @@ public class TextObjectsPlugin extends EditPlugin
         view.setInputHandler(new TextObjectsInputHandler(view, old, whole));
     }
 }
-    
+
