@@ -1,6 +1,6 @@
 plugin.nested.Plugin.name=Nested
 plugin.nested.Plugin.author=Romain Francois
-plugin.nested.Plugin.version=0.0
+plugin.nested.Plugin.version=0.1
 plugin.nested.Plugin.activate=startup
 plugin.nested.Plugin.usePluginHome=true
 plugin.nested.Plugin.description=Support for changing the background color of nested languages, e.g. java inside jsp, ...
