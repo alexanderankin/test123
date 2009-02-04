@@ -2296,13 +2296,7 @@ Variable Var() :
   |
     token = <IDENTIFIER>
     {
-      variable = new Variable(token.image,
-                              token.sourceStart,
-                              token.sourceEnd,
-                              token.beginLine,
-                              token.endLine,
-                              token.beginColumn,
-                              token.endColumn);
+      variable = new Variable(token);
     }
   )
   {
@@ -4108,32 +4102,30 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
 //{{{ LITERAL
 
 //{{{ Literal()
-
 Literal Literal() :
 {
-  final Token token;
-  final StringLiteral stringLiteral;
+	final Token token;
+	final StringLiteral stringLiteral;
 }
 {
-  token = <INTEGER_LITERAL>         {return new NumberLiteral(Type.INTEGER,token);}
-| token = <FLOATING_POINT_LITERAL>  {return new NumberLiteral(Type.INTEGER,token);}
-| token = <STRING_LITERAL>          {return new StringLiteral(token);}
-| token = <TRUE>                    {return new TrueLiteral(token);}
-| token = <FALSE>                   {return new FalseLiteral(token);}
-| token = <NULL>                    {return new NullLiteral(token);}
-| stringLiteral = heredoc()         {return stringLiteral;}
-| stringLiteral = evaluableString() {return stringLiteral;}
-}
+	token = <INTEGER_LITERAL>         {return new NumberLiteral(Type.INTEGER,token);}
+	| token = <FLOATING_POINT_LITERAL>  {return new NumberLiteral(Type.INTEGER,token);}
+	| token = <STRING_LITERAL>          {return new StringLiteral(token);}
+	| token = <TRUE>                    {return new TrueLiteral(token);}
+	| token = <FALSE>                   {return new FalseLiteral(token);}
+	| token = <NULL>                    {return new NullLiteral(token);}
+	| stringLiteral = heredoc()         {return stringLiteral;}
+	| stringLiteral = evaluableString() {return stringLiteral;}
+} //}}}
 
-//}}}
 //{{{ heredoc()
 
 StringLiteral heredoc() :
 {
-  final Token heredocStart;
-  Token startToken = null;
-  Token endToken;
-  String endImage;
+	final Token heredocStart;
+	Token startToken = null;
+	Token endToken;
+	String endImage;
 }
 {
   heredocStart = <HEREDOCSTARTTOKEN>
@@ -4210,61 +4202,46 @@ StringLiteral heredoc() :
 }
 
 //}}}
+
 //{{{ evaluableString()
-
-
 StringLiteral evaluableString() :
 {
-  ArrayList list = new ArrayList();
-  Token start,end;
+	List list = new ArrayList();
+	Token start,end;
 }
 {
-  start = <DOUBLEQUOTE>
-  (
-   <DOLLARS>
-        [token = <IDENTIFIER>
-        {
-          list.add(new Variable(token.image,
-                                token.sourceStart,
-                                token.sourceEnd,
-                                token.beginLine,
-                                token.endLine,
-                                token.beginColumn,
-                                token.endColumn));
-        }
-        |
-         <LBRACE1>
-         token = <ID>
-         {
-           list.add(new Variable(token.image,
-                                token.sourceStart,
-                                token.sourceEnd,
-                                token.beginLine,
-                                token.endLine,
-                                token.beginColumn,
-                                token.endColumn));
-         }
-         <RBRACE1>
-         ]
-   )*
-  end = <DOUBLEQUOTE2>
-  {
-  AbstractVariable[] vars = new AbstractVariable[list.size()];
-  list.toArray(vars);
-  //return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(start.sourceEnd,end.sourceStart),
-  return new StringLiteral("",
-                           start.sourceStart,
-                           end.sourceEnd,
-                           start.beginLine,
-                           end.endLine,
-                           start.beginColumn,
-                           end.endColumn,
-                           vars);
-  }
-}
+	start = <DOUBLEQUOTE>
+	(
+		<DOLLARS>
+		[
+			token = <IDENTIFIER>
+			{
+				list.add(new Variable(token));
+			}
+		|
+			<LBRACE1>
+			token = <ID>
+			{
+				list.add(new Variable(token));
+			}
+			<RBRACE1>
+		]
+	)*
+	end = <DOUBLEQUOTE2>
+	{
+		AbstractVariable[] vars = new AbstractVariable[list.size()];
+		list.toArray(vars);
+		return new StringLiteral("",
+					 start.sourceStart,
+					 end.sourceEnd,
+					 start.beginLine,
+					 end.endLine,
+					 start.beginColumn,
+					 end.endColumn,
+					 vars);
+	}
+} //}}}
 
-
-  //}}}
 //}}}
 
 //{{{ Arguments()
