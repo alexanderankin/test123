@@ -15,3 +15,6 @@ nested.title=Nested
 # Option Pane labels
 options.nested.label=Nested
 
+# Menu
+plugin.nested.Plugin.menu=nested
+
