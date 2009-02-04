@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -89,6 +90,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 			ImageIcon icon = tag.getIcon();
 			if (icon != null)
 				l.setIcon(icon);
+			l.setBorder(BorderFactory.createLoweredBevelBorder());
 			return l;
 		}
 
