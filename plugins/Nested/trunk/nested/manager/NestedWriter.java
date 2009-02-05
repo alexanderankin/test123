@@ -12,7 +12,7 @@ public class NestedWriter {
 	
 	public NestedWriter( File home ) {
 		if( ! home.exists() ){
-			home.mkdir() ;
+			home.mkdirs() ;
 		}
 		file = new File( home , "settings.txt" ) ;
 	}

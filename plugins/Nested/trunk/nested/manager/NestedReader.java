@@ -16,13 +16,14 @@ public class NestedReader {
 	
 	public NestedReader( File home ){
 		if( !home.exists() ){
-			home.mkdir() ;
+			home.mkdirs() ;
 		}
 		file = new File( home , "settings.txt" ) ;
 	}
 	
 	public TreeMap<String,NestedObject> getMap(){
 		TreeMap<String,NestedObject> map = new TreeMap<String,NestedObject>() ;
+		if( !file.exists() ) return map ;
 		BufferedReader reader ; 
 		try{
 			reader = new BufferedReader( new FileReader( file ) ) ;
