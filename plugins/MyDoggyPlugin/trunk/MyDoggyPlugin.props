@@ -7,7 +7,7 @@ plugin.myDoggy.Plugin.name=MyDoggyPlugin
 plugin.myDoggy.Plugin.author=Shlomy Reinstein
 plugin.myDoggy.Plugin.description=MyDoggyPlugin uses MyDoggy to manage the dockable windows in jEdit.
 
-plugin.myDoggy.Plugin.version=0.1
+plugin.myDoggy.Plugin.version=0.2
 
 # Dependencies
  
