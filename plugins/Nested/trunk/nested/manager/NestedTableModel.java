@@ -26,12 +26,10 @@ public class NestedTableModel extends AbstractTableModel {
 		fireTableDataChanged( ) ;
 	}
 	
-	@Override
 	public int  getColumnCount( ){
 		return columnNames.length ;
 	}
 	
-	@Override
 	public int getRowCount() {
 		return data == null ? 0 : data.size() ;
   }
@@ -47,7 +45,6 @@ public class NestedTableModel extends AbstractTableModel {
 		return String.class ;
   }
 	
-	@Override
 	public Object getValueAt( int row, int col ){
 		if( data == null || row > data.size() ) return null ;
 		NestedObject o = data.get( data.keySet().toArray()[row] );
