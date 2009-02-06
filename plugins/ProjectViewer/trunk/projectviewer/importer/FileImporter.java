@@ -83,7 +83,9 @@ public class FileImporter extends Importer {
 	protected void internalDoImport() {
 		VPTNode where = selected;
 		ImportDialog id = getImportDialog();
-		loadImportFilterStatus(project, id);
+		if (loadImportFilterStatus(project, id, FILTER_CONF_FILES) == null) {
+			loadImportFilterStatus(project, id, FILTER_CONF_PROJECT);
+		}
 		id.setVisible(true);
 
 		VFSFile[] chosen = id.getSelectedFiles();
@@ -135,7 +137,7 @@ public class FileImporter extends Importer {
 			Log.log(Log.ERROR, this, "VFS error while importing", ioe);
 		}
 
-		saveImportFilterStatus(project, id);
+		saveImportFilterStatus(project, id, FILTER_CONF_FILES);
 		postAction = new ShowNodes();
 	}
 

@@ -77,6 +77,9 @@ import projectviewer.VFSHelper;
  */
 public abstract class Importer implements Runnable {
 
+	static String FILTER_CONF_PROJECT = "projectviewer.import";
+	static String FILTER_CONF_FILES = "projectviewer.import_files";
+
 	//{{{ Instance variables
 
 	/** The node to where the imported nodes will be added. */
@@ -558,21 +561,23 @@ public abstract class Importer implements Runnable {
 
 
 	protected void saveImportFilterStatus(VPTProject project,
-										  ImportDialog dlg)
+										  ImportDialog dlg,
+										  String name)
 	{
 		ImportUtils.saveFilter(project.getProperties(),
 							   dlg.getImportFilter(),
-							   "projectviewer.import");
+							   name);
 	}
 
 
-	protected void loadImportFilterStatus(VPTProject project,
-										  ImportDialog dlg)
+	protected ImporterFileFilter loadImportFilterStatus(VPTProject project,
+														ImportDialog dlg,
+														String name)
 	{
 		ImporterFileFilter filter =
 			ImportUtils.loadFilter(project.getProperties(),
 								   dlg.getFileFilters(),
-								   "projectviewer.import");
+								   name);
 		if (filter != null) {
 			if (filter instanceof GlobFilter &&
 				((GlobFilter)filter).isCustom()) {
@@ -581,6 +586,8 @@ public abstract class Importer implements Runnable {
 				dlg.setImportFilter(filter);
 			}
 		}
+
+		return filter;
 	}
 
 

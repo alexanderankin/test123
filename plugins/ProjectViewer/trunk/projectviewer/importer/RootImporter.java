@@ -96,7 +96,7 @@ public class RootImporter extends FileImporter {
 							: "projectviewer.import.msg_reimport.title";
 			ImportDialog id = getImportDialog();
 			id.setTitle(jEdit.getProperty(dlgTitle));
-			loadImportFilterStatus(project, id);
+			loadImportFilterStatus(project, id, FILTER_CONF_PROJECT);
 			id.setVisible(true);
 
 			if (!id.isApproved()) {
@@ -105,7 +105,7 @@ public class RootImporter extends FileImporter {
 
 			fnf = id.getImportFilter();
 			flatten = id.getFlattenFilePaths();
-			saveImportFilterStatus(project, id);
+			saveImportFilterStatus(project, id, FILTER_CONF_PROJECT);
 		}
 
 		String state = null;
