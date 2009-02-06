@@ -12,6 +12,7 @@ plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.3=plugin sidekick.Side
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.description=MibSideKick is a mib parser
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.usePluginHome=true
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.jars=mibble-parser-2.8.jar grammatica-bin-1.4.jar
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.docs=docs/MibSideKick.html
 sidekick.parser.MibParser.label=Mib parser
 mode.smi-mib.sidekick.parser=MibParser
 
