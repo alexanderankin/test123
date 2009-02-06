@@ -92,7 +92,7 @@ public class ReImporter extends RootImporter {
 		} else {
 			ImportDialog id = getImportDialog();
 			id.setTitle(jEdit.getProperty("projectviewer.import.msg_reimport.title"));
-			loadImportFilterStatus(project, id);
+			loadImportFilterStatus(project, id, FILTER_CONF_PROJECT);
 			id.setVisible(true);
 
 			if (id.isApproved()) {
@@ -100,7 +100,7 @@ public class ReImporter extends RootImporter {
 				fnf = id.getImportFilter();
 				reimportDirectory((VPTDirectory)selected, id.getFlattenFilePaths());
 				postAction = new NodeStructureChange(selected, state);
-				saveImportFilterStatus(project, id);
+				saveImportFilterStatus(project, id, FILTER_CONF_PROJECT);
 			}
 		}
 	}
