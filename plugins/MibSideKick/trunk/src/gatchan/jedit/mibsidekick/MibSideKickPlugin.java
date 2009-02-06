@@ -23,6 +23,7 @@ package gatchan.jedit.mibsidekick;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,20 @@ import java.util.Map;
  * The MibSidekick plugin
 * @author Matthieu Casanova
 */
-public class MibSideKickPlugin extends EditPlugin
+public class MibSideKickPlugin extends EBPlugin
 {
+	@Override
+	public void start()
+	{
+		MibSidekickParser.propertiesChanged();
+	}
+
+	@Override
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof PropertiesChanged)
+		{
+			MibSidekickParser.propertiesChanged();
+		}
+	}
 }
