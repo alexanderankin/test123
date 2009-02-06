@@ -37,12 +37,15 @@ import javax.swing.tree.TreeModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Matthieu Casanova
  */
 public class MibSidekickParser extends SideKickParser
 {
+	private static Collection<File> searchPath;
 
 	public MibSidekickParser()
 	{
@@ -56,8 +59,12 @@ public class MibSidekickParser extends SideKickParser
 		{
 			File file = new File(buffer.getPath());
 			loader.addDir(file.getParentFile());
-			loader.addResourceDir("mibs/iana");
-			loader.addResourceDir("mibs/ietf");
+			for (File path : searchPath)
+			{
+				loader.addDir(path);
+			}
+//			loader.addResourceDir("mibs/iana");
+//			loader.addResourceDir("mibs/ietf");
 			Mib mib = loader.load(file);
 			SideKickParsedData datas = new SideKickParsedData(buffer.getPath());
 			MibTreeBuilder tree = MibTreeBuilder.getInstance();
@@ -99,5 +106,10 @@ public class MibSidekickParser extends SideKickParser
 
 		}
 		return null;
+	}
+
+	static void propertiesChanged()
+	{
+		searchPath = MibOptionPane.getPaths();
 	}
 }

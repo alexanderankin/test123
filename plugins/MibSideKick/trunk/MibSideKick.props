@@ -14,3 +14,15 @@ plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.usePluginHome=true
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.jars=mibble-parser-2.8.jar grammatica-bin-1.4.jar
 sidekick.parser.MibParser.label=Mib parser
 mode.smi-mib.sidekick.parser=MibParser
+
+
+# Option pane
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.option-pane=mibsidekick
+
+options.mibsidekick.label=Mib SideKick
+options.mibsidekick.code=new gatchan.jedit.mibsidekick.MibOptionPane();
+
+
+messages.mibsidekick.searchPath=Mib search paths
+messages.mibsidekick.addPath=Add path
+messages.mibsidekick.removePath=Remove selected path
