@@ -16,4 +16,14 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 	</path>
+	
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${basedir}/lib">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+
 </project>
