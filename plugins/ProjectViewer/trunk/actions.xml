@@ -162,6 +162,13 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_wrapper_open_selected">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.OpenSelectedAction(), view, false);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_wrapper_openwith">
 		<CODE>
 			projectviewer.PVActions.pvActionWrapper(

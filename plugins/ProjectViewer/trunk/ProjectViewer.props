@@ -53,6 +53,7 @@ projectviewer_wrapper_rename.label=Rename Node
 projectviewer_wrapper_archive.label=Archive Project
 projectviewer_wrapper_expand_all.label=Expand All Nodes
 projectviewer_wrapper_collapse_all.label=Collapse All Nodes
+projectviewer_wrapper_open_selected.label=Open Selected Files
 projectviewer_wrapper_openwith.label=Open with External Application
 projectviewer_wrapper_nodepropeties.label=Node Properties
 projectviewer_wrapper_reimport.label=Re-import files on Project/Directory
@@ -268,6 +269,7 @@ projectviewer.action.rename.file_error=Invalid name for file or directory
 projectviewer.action.rename.rename_error=Could not rename node.
 projectviewer.action.rename.dont_change_disk=Don't change the file/directory name on disk
 
+projectviewer.action.open_selected=Open
 projectviewer.launcher.open_with_none=Open with...
 projectviewer.launcher.open_with=Open with {0}
 projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?

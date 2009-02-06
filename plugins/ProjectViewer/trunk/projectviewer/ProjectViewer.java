@@ -301,7 +301,7 @@ public final class ProjectViewer extends JPanel
 
 			// Fires events if the dockable is not available
 			// (setRootNode() fires events when the dockable is available)
-			ViewerUpdate upd = new ViewerUpdate(aView, n, 
+			ViewerUpdate upd = new ViewerUpdate(aView, n,
 				ViewerUpdate.Type.PROJECT_LOADED);
 			EditBus.send(upd);
 		} else if (!ve.dockable.isLoadingProject) {
