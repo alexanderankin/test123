@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<title>Nested plugin for jedit</title>
+	</head>
+	<body>
+	
+	<p>
+		The <strong>Nested</strong> plugin allows to control the background color of 
+		a chunk of code that is not the same language as the 
+		language of the buffer. For example java code inside a jsp file, ...
+	</p>
+	
+	<p>	The settings are stored in the plugin directory in a file called 
+		<code>settings.txt</code> that looks like the one below, one line 
+		per association mode,submode,color (in hex format)
+	</p>
+		
+<pre style="border:1px solid black">
+jaxx,java,#ccff99
+jsp,java,#ffffff
+</pre>
+		
+	<p>	When a new file that contain sub languages is open in jedit, 
+		the nested plugin will detect it and add a line to the settings, 
+		the color is chosen to be the same as the default view background
+		so that by default, the buffer looks exactly the same as if the
+		plugin was not there.
+	</p>
+
+	<p>	
+		The plugin also provides a dockable window that displays the 
+		current settings in a table, one line per settings. The user 
+		can change the color for a particular setting by clicking on the 
+		color column (third column) of the table.
+	</p>
+	</body>
+</html>
