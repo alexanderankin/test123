@@ -579,11 +579,28 @@ public class TagDB {
 	// Create an index on a table column
 	public void createIndex(String index, String table, String column)
 	throws SQLException {
+		boolean exists = false;
+		ResultSet indices = conn.getMetaData().getIndexInfo(null, null, table, false, false);
+		while (indices.next()) {
+			if (indices.getString("INDEX_NAME").equals(index)) {
+				exists = true;
+				break;
+			}
+		}
+		if (exists) {
+			indices.close();
+			return;
+		}
 		update("CREATE INDEX " + index + " ON " + table + "(" + column + ")");
 	}
 	
 	private void createTable(String table, String [] columns)
 	throws SQLException {
+		ResultSet tables = conn.getMetaData().getTables(null, null, table, null);
+		if (tables.first()) {
+			tables.close();
+			return;	// Table already exists
+		}
 		StringBuffer st = new StringBuffer("CREATE TABLE ");
 		st.append(table);
 		st.append("(");
@@ -620,9 +637,11 @@ public class TagDB {
 				ORIGINS_NAME, varcharType,
 				ORIGINS_TYPE, varcharType
 			});
-			update("INSERT INTO " + ORIGINS_TABLE + " (" + ORIGINS_ID + "," +
-				ORIGINS_NAME + "," + ORIGINS_TYPE + ") VALUES (" + TEMP_ORIGIN_INDEX +
-				"," + quote(TEMP_ORIGIN_NAME) + ", " + quote(TEMP_ORIGIN) + ")");
+			// Insert the TEMP origin if doesn't exist
+			if (getOrigins(TEMP_ORIGIN).isEmpty())
+				update("INSERT INTO " + ORIGINS_TABLE + " (" + ORIGINS_ID + "," +
+					ORIGINS_NAME + "," + ORIGINS_TYPE + ") VALUES (" + TEMP_ORIGIN_INDEX +
+					"," + quote(TEMP_ORIGIN_NAME) + ", " + quote(TEMP_ORIGIN) + ")");
 			// Create Map table
 			createTable(MAP_TABLE, new String [] {
 				MAP_FILE_ID, integerType,
@@ -631,7 +650,10 @@ public class TagDB {
 			createIndex("MAP_FILE_ID", MAP_TABLE, MAP_FILE_ID);
 			createIndex("MAP_ORIGIN_ID", MAP_TABLE, MAP_ORIGIN_ID);
 		} catch (SQLException e) {
-			// Table already exists
+			// The methods createTable/createIndex do not execute an SQL statement
+			// if the table/index already exists. Hence, an exception here means
+			// there is a real problem.
+			e.printStackTrace();
 		}
 	}
 	
