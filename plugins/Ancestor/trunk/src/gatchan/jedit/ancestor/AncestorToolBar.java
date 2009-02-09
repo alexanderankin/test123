@@ -52,12 +52,12 @@ public class AncestorToolBar extends JToolBar
 	void setBuffer(Buffer buffer)
 	{
 		String path = buffer.getPath();
-		VFS _vfs = VFSManager.getVFSForPath(path);
 
 		list.clear();
 		while (true)
 		{
 			list.addFirst(path);
+			VFS _vfs = VFSManager.getVFSForPath(path);
 			String parent = _vfs.getParentOfPath(path);
 			if (path == null || MiscUtilities.pathsEqual(path,parent))
 				break;
@@ -82,9 +82,11 @@ public class AncestorToolBar extends JToolBar
 		}
 		int i = 0;
 		int nb = list.size();
-		boolean browseable = (_vfs.getCapabilities() & VFS.BROWSE_CAP) != 0;
+
 		for (String fileName : list)
 		{
+			VFS _vfs = VFSManager.getVFSForPath(fileName);
+			boolean browseable = (_vfs.getCapabilities() & VFS.BROWSE_CAP) != 0;
 			AncestorButton button = (AncestorButton) getComponent(i);
 			button.setAncestor(new Ancestor(view, fileName, _vfs.getFileName(fileName)));
 			i++;
