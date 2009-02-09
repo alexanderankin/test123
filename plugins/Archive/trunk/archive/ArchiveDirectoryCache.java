@@ -29,8 +29,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 

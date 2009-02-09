@@ -29,7 +29,6 @@ import java.io.PushbackInputStream;
 
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipEntry;
 
 import com.aftexsw.util.bzip.CBZip2InputStream;
 
