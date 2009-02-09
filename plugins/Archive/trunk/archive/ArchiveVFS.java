@@ -36,7 +36,6 @@ import java.util.zip.*;
 
 import javax.swing.SwingUtilities;
 
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.*;
 
 import org.gjt.sp.util.Log;
@@ -106,7 +105,7 @@ public class ArchiveVFS extends VFS {
 
 
     public ArchiveVFS() {
-        super(PROTOCOL,VFS.READ_CAP | VFS.WRITE_CAP);
+        super(PROTOCOL,VFS.READ_CAP | VFS.WRITE_CAP  | VFS.BROWSE_CAP);
     }
 
 
