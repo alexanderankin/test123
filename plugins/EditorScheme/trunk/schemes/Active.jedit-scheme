@@ -57,7 +57,6 @@ jdiff.selected-highlight-deleted-color=\#ff6666
 jdiff.highlight-deleted-color=\#ff9090
 view.gutter.fgColor=\#666666
 white-space.tab-color=\#bcbcbc
-view.structureHighlightColor=\#000000
 console.infoColor=\#009600
 jdiff.overview-changed-color=\#ffcc66
 error-list.errorColor=\#ff0000
