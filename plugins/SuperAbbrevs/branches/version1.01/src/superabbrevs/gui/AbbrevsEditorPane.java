@@ -1,24 +1,181 @@
 package superabbrevs.gui;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputVerifier;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.jdesktop.beansbinding.AbstractBindingListener;
-import org.jdesktop.beansbinding.AutoBinding;
-import org.jdesktop.beansbinding.BeanProperty;
-import org.jdesktop.beansbinding.Binding;
-import org.jdesktop.beansbinding.BindingGroup;
-import org.jdesktop.beansbinding.Bindings;
-import org.jdesktop.beansbinding.ELProperty;
-import org.jdesktop.beansbinding.Validator;
-import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
-import org.jdesktop.beansbinding.Binding.SyncFailure;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.JTextComponent;
 
 import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbrev.ReplacementTypes;
+import superabbrevs.model.Abbrev.ReplementSelectionTypes;
 
 public class AbbrevsEditorPane extends JPanel {
 	
+	public AbbrevsEditorPane() {
+		initComponents();
+    }
+	
+	public void setAbbrev(Abbrev abbrev) {
+		saveActiveAbbrev();
+		
+		activeAbbrev = abbrev;
+		
+		if (abbrev == null) {
+			ClearPanel();
+		} else {			
+			UpdatePanelValues(abbrev);
+		}
+		setEnabled(activeAbbrev != null);
+	}
+
+	public void saveActiveAbbrev() {
+		if (activeAbbrev != null) {
+			activeAbbrev.setAbbreviation(abbrevJTextField.getText());
+			activeAbbrev.setExpansion(abbrevsEditorJTextArea.getText());
+			Abbrev.WhenInvokedAsCommand whenInvokedAsCommand = new Abbrev.WhenInvokedAsCommand();
+			whenInvokedAsCommand.replacementType = (ReplacementTypes) commandNoSelectionReplacementJComboBox.getSelectedItem();
+			whenInvokedAsCommand.replacementSelectionType = (ReplementSelectionTypes) commandSelectionReplacementJComboBox.getSelectedItem();
+		}
+	}
+
+	private void UpdatePanelValues(Abbrev abbrev) {
+		if ("".equals(abbrev.getAbbreviation())) {
+			abbrevJTextField.requestFocus();
+		}
+		abbrevJTextField.setText(abbrev.getAbbreviation());
+		abbrevsEditorJTextArea.setText(abbrev.getExpansion());
+		commandNoSelectionReplacementJComboBox.setSelectedItem(abbrev.getWhenInvokedAsCommand().replacementType);
+		commandSelectionReplacementJComboBox.setSelectedItem(abbrev.getWhenInvokedAsCommand().replacementSelectionType);
+	}
+
+	private void ClearPanel() {
+		abbrevJTextField.setText("");
+		abbrevsEditorJTextArea.setText("");
+		commandNoSelectionReplacementJComboBox.setSelectedItem(Abbrev.ReplacementTypes.AT_CARET);
+		commandSelectionReplacementJComboBox.setSelectedItem(Abbrev.ReplementSelectionTypes.NOTHING);
+	}
+
+	private void initComponents() {
+		
+		setEnabled(false);
+		
+		GridBagLayout layout = new GridBagLayout();
+		setLayout(layout);
+		
+		GridBagConstraints constrains = new GridBagConstraints();
+		constrains.insets = new Insets(11,7,0,14);
+		constrains.fill = GridBagConstraints.HORIZONTAL;
+		constrains.weightx = 100;
+		constrains.gridy = 0;
+		add(createAbbrevPanel(), constrains);
+		
+		constrains.insets = new Insets(7,7,0,14);
+		constrains.gridy = 1;
+		JPanel whenInvikedAsACommandJPanel = createWhenInvokedAsACommandPanel();
+		add(whenInvikedAsACommandJPanel,constrains);
+		
+		constrains.insets = new Insets(7,7,14,14);
+		constrains.gridy = 2;
+		constrains.fill = GridBagConstraints.BOTH;
+		constrains.weighty = 100;
+		add(createExpansionPanel(), constrains);
+	}
+
+	private JPanel createExpansionPanel() {
+		BorderLayout layout = new BorderLayout(0,7);
+		JPanel panel = new JPanel(layout);
+		expansionJLabel.setDisplayedMnemonic('E');
+        expansionJLabel.setLabelFor(abbrevsEditorJTextArea);
+        expansionJLabel.setText("Expansion:");
+        expansionJLabel.getAccessibleContext().setAccessibleName("expansionJLabel");
+        panel.add(expansionJLabel, BorderLayout.NORTH);
+        
+        
+        abbrevsEditorJTextArea.setColumns(80);
+        abbrevsEditorJTextArea.setRows(5);
+        abbrevsEditorJTextArea.setTabSize(4);
+        abbrevsEditorJTextArea.setInputVerifier(new NotEmptyTextVerifier());
+        
+        abbrevsEditorJScrollPane.setViewportView(abbrevsEditorJTextArea);
+        panel.add(abbrevsEditorJScrollPane, BorderLayout.CENTER);
+        return panel;
+	}
+
+	private JPanel createAbbrevPanel() {
+		BorderLayout layout = new BorderLayout();
+		JPanel panel = new JPanel(layout);
+		
+		abbrevJLabel.setDisplayedMnemonic('b');
+        abbrevJLabel.setLabelFor(abbrevJTextField);
+        abbrevJLabel.setText("Abbreviation:");
+        abbrevJLabel.getAccessibleContext().setAccessibleName("abbrevJLabel");
+        panel.add(abbrevJLabel, BorderLayout.WEST);
+        
+        abbrevJTextField.setToolTipText("Enter the abbreviation");
+        abbrevJTextField.setEnabled(true);
+        abbrevJTextField.getAccessibleContext().setAccessibleName("abbrevJTextField");
+        abbrevJTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String text = abbrevJTextField.getText();
+				activeAbbrev.setAbbreviation(text);
+			}
+        });
+        abbrevJTextField.setInputVerifier(new NotEmptyTextVerifier());
+        panel.add(abbrevJTextField, BorderLayout.CENTER);
+		return panel;
+	}
+
+	private JPanel createWhenInvokedAsACommandPanel() {
+		TitledBorder titledBorder = BorderFactory.createTitledBorder("When invoked as a command");
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.setBorder(titledBorder);
+		
+		commandReplaceJLabel.setDisplayedMnemonic('p');
+        commandReplaceJLabel.setLabelFor(commandSelectionReplacementJComboBox);
+        commandReplaceJLabel.setText("Replace:");
+        panel.add(commandReplaceJLabel);
+		
+        commandSelectionReplacementJComboBox.setModel(commandInputSelectionModel);
+        commandSelectionReplacementJComboBox.setToolTipText("Select the area that should be replaced when abbreviation is inserted");
+        panel.add(commandSelectionReplacementJComboBox);
+
+        commandOrJLabel.setDisplayedMnemonic('o');
+        commandOrJLabel.setLabelFor(commandNoSelectionReplacementJComboBox);
+        commandOrJLabel.setText("or");
+        panel.add(commandOrJLabel);
+
+        commandNoSelectionReplacementJComboBox.setModel(commandInputModel);
+        commandNoSelectionReplacementJComboBox.setToolTipText("Select the area that should be replaced when abbreviation is inserted");
+        panel.add(commandNoSelectionReplacementJComboBox);
+
+        return panel;
+	}
+	
+    private class NotEmptyTextVerifier extends InputVerifier {
+		@Override
+		public boolean verify(JComponent input) {
+			return !"".equals(((JTextComponent)input).getText());
+		}
+	}
+    
     /**
      * A combobox model containing all the replacaments types used in the 
      * replacement area combobox if some text is selected in the text area.
@@ -43,171 +200,14 @@ public class AbbrevsEditorPane extends JPanel {
         Abbrev.ReplementSelectionTypes.SELECTED_LINES
     });
     
-    class EmptyStringValidator extends Validator<String> {
-		@Override
-		public Validator<String>.Result validate(
-				String abbreviation) {
-			if (abbreviation == null || "".equals(abbreviation)) {
-				return new Result(0, "The input value must be non empty");
-			} 
-			return null;
-		}
-	}
-    
-    public AbbrevsEditorPane() {
-		initComponents();
-    }
-	
-	public void bind(Abbrev abbrev) {
-		bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
-		AutoBinding binding = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
-				abbrev, ELProperty.create("${abbreviation}"),
-				abbrevJTextField, ELProperty.create("${text}"));
-		EmptyStringValidator emptyStringValidator = new EmptyStringValidator();
-		binding.setValidator(emptyStringValidator);
-		
-		bindingGroup.addBinding(binding); 
-		
-		bindingGroup.addBinding(Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
-				abbrev, BeanProperty.create("expansion"),
-				abbrevsEditorJTextArea, ELProperty.create("${text}"))); 
-		
-		bindingGroup.bind();
-		bindingGroup.addBindingListener(new AbstractBindingListener() {
-
-			@Override
-			public void syncFailed(Binding binding, SyncFailure failure) {
-				System.out.println(failure);
-			}
-
-		});
-		
-	}
-	
-	public void unBind() {
-		bindingGroup.unbind();
-	}
-
-	private void initComponents() {
-		
-        expansionJLabel = new javax.swing.JLabel();
-        abbrevJLabel = new javax.swing.JLabel();
-        abbrevJTextField = new javax.swing.JTextField();
-        abbrevsEditorJScrollPane = new javax.swing.JScrollPane();
-        abbrevsEditorJTextArea = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        commandSelectionReplacementJComboBox = new javax.swing.JComboBox();
-        commandOrJLabel = new javax.swing.JLabel();
-        commandNoSelectionReplacementJComboBox = new javax.swing.JComboBox();
-        commandReplaceJLabel3 = new javax.swing.JLabel();
-		
-		expansionJLabel.setDisplayedMnemonic('E');
-        expansionJLabel.setLabelFor(abbrevsEditorJTextArea);
-        expansionJLabel.setText("Expansion:");
-
-        abbrevJLabel.setDisplayedMnemonic('b');
-        abbrevJLabel.setLabelFor(abbrevJTextField);
-        abbrevJLabel.setText("Abbreviation:");
-
-        abbrevJTextField.setToolTipText("Enter the abbreviation");
-        abbrevJTextField.setEnabled(true);
-
-        abbrevsEditorJTextArea.setColumns(80);
-        abbrevsEditorJTextArea.setRows(5);
-        abbrevsEditorJTextArea.setTabSize(4);
-        abbrevsEditorJTextArea.setEnabled(true);
-        abbrevsEditorJScrollPane.setViewportView(abbrevsEditorJTextArea);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("When invoked as a command"));
-
-        commandSelectionReplacementJComboBox.setModel(commandInputSelectionModel);
-        commandSelectionReplacementJComboBox.setToolTipText("Select the area that should be replaced when abbreviation is inserted");
-        commandSelectionReplacementJComboBox.setEnabled(false);
-        commandSelectionReplacementJComboBox.setNextFocusableComponent(commandNoSelectionReplacementJComboBox);
-
-        commandOrJLabel.setDisplayedMnemonic('o');
-        commandOrJLabel.setLabelFor(commandNoSelectionReplacementJComboBox);
-        commandOrJLabel.setText("or");
-
-        commandNoSelectionReplacementJComboBox.setModel(commandInputModel);
-        commandNoSelectionReplacementJComboBox.setToolTipText("Select the area that should be replaced when abbreviation is inserted");
-        commandNoSelectionReplacementJComboBox.setEnabled(false);
-
-        commandReplaceJLabel3.setDisplayedMnemonic('p');
-        commandReplaceJLabel3.setLabelFor(commandSelectionReplacementJComboBox);
-        commandReplaceJLabel3.setText("Replace:");
-		
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(commandReplaceJLabel3)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(commandSelectionReplacementJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(commandOrJLabel)
-                .add(4, 4, 4)
-                .add(commandNoSelectionReplacementJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(521, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                .add(commandReplaceJLabel3)
-                .add(commandSelectionReplacementJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(commandOrJLabel)
-                .add(commandNoSelectionReplacementJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        );
-
-        org.jdesktop.layout.GroupLayout abbrevsEditorJPanelLayout = new org.jdesktop.layout.GroupLayout(this);
-        setLayout(abbrevsEditorJPanelLayout);
-        abbrevsEditorJPanelLayout.setHorizontalGroup(
-            abbrevsEditorJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(abbrevsEditorJPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(abbrevsEditorJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, abbrevsEditorJScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
-                    .add(expansionJLabel)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(abbrevsEditorJPanelLayout.createSequentialGroup()
-                        .add(abbrevJLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(abbrevJTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        abbrevsEditorJPanelLayout.setVerticalGroup(
-            abbrevsEditorJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(abbrevsEditorJPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(abbrevsEditorJPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(abbrevJLabel)
-                    .add(abbrevJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(expansionJLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(abbrevsEditorJScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        expansionJLabel.getAccessibleContext().setAccessibleName("expansionJLabel");
-        abbrevJLabel.getAccessibleContext().setAccessibleName("abbrevJLabel");
-        abbrevJTextField.getAccessibleContext().setAccessibleName("abbrevJTextField");
-	}
-	
-	 private javax.swing.JLabel abbrevJLabel;
-	private javax.swing.JTextField abbrevJTextField;
-	private javax.swing.JScrollPane abbrevsEditorJScrollPane;
-	private javax.swing.JTextArea abbrevsEditorJTextArea;
-	private javax.swing.JComboBox commandNoSelectionReplacementJComboBox;
-	private javax.swing.JLabel commandOrJLabel;
-	private javax.swing.JLabel commandReplaceJLabel3;
-	private javax.swing.JComboBox commandSelectionReplacementJComboBox;
-	private javax.swing.JLabel expansionJLabel;
-	private javax.swing.JPanel jPanel1;
-	
-	private BindingGroup bindingGroup;
+	private Abbrev activeAbbrev;
+	private JLabel abbrevJLabel = new JLabel();
+	private JTextField abbrevJTextField = new JTextField();
+	private JScrollPane abbrevsEditorJScrollPane = new JScrollPane();
+	private JTextArea abbrevsEditorJTextArea = new JTextArea();
+	private JComboBox commandNoSelectionReplacementJComboBox = new JComboBox();
+	private JLabel commandOrJLabel = new JLabel();
+	private JLabel commandReplaceJLabel = new JLabel();
+	private JComboBox commandSelectionReplacementJComboBox = new JComboBox();
+	private JLabel expansionJLabel = new JLabel();
 }
