@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import org.gjt.sp.util.Log;
-
 import superabbrevs.model.Abbrev;
 
 public class AbbrevsListModel extends AbstractListModel {

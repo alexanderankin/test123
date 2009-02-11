@@ -54,10 +54,6 @@ public class Installation {
         }
     }
     
-    private static void writeDefaultVariables() {
-        copyFileFromResourceDir(Paths.VARIABLES_FILE);
-    }
-    
     private static void writeDefaultAbbrevFunctions(){
         copyFileFromResourceDir(Paths.ABBREVS_FUNCTION_FILE);
     }
