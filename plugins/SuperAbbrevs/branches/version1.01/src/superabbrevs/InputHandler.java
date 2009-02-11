@@ -1,12 +1,3 @@
-/*
- * InputHandler.java
- *
- * Created on 16. juni 2007, 00:34
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package superabbrevs;
 
 import java.util.ArrayList;
@@ -14,15 +5,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.swing.JDialog;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+import superabbrevs.gui.AbbrevsDialog;
 import superabbrevs.model.Abbrev;
 
-/**
- *
- * @author Sune Simonsen
- */
 public class InputHandler {
 
     private JEditTextArea textArea;
@@ -30,13 +20,15 @@ public class InputHandler {
 
     private TextAreaHandler textAreaHandler;
     private AbbrevsHandler abbrevsHandler = new AbbrevsHandler();
+	private final JEditInterface jEdit;
        
     /** Creates a new instance of InputHandler */
-    public InputHandler(JEditInterface jedit) {
-        this.textArea = jedit.getTextArea();
-        this.buffer = jedit.getBuffer();
+    public InputHandler(JEditInterface jEdit) {
+        this.jEdit = jEdit;
+		this.textArea = jEdit.getTextArea();
+        this.buffer = jEdit.getBuffer();
         
-        textAreaHandler = new TextAreaHandler(jedit);
+        textAreaHandler = new TextAreaHandler(jEdit);
     }
     
     public void esc() {
@@ -101,5 +93,12 @@ public class InputHandler {
         Set<Abbrev> abbrevs = abbrevsHandler.getAbbrevs(mode);
         textAreaHandler.showSearchDialog(new ArrayList<Abbrev>(abbrevs));
     }
+
+	public void showOptionsPane() {
+		AbbrevsOptionPaneController controller = 
+            new AbbrevsOptionPaneController(jEdit);
+	    JDialog dialog = new AbbrevsDialog(jEdit.getView(), false, controller);
+	    dialog.setVisible(true);
+	}
     
 }

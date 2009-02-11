@@ -1,18 +1,12 @@
 package superabbrevs;
 
-import superabbrevs.installation.Installation;
-import javax.swing.JDialog;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import superabbrevs.gui.AbbrevsDialog;
 
-/**
- * @author sune
- * Created on 27. januar 2007, 21:58
- *
- */
+import superabbrevs.installation.Installation;
+
 public class SuperAbbrevsPlugin extends EditPlugin {
     
     public final static String NAME = "SuperAbbrevs";
@@ -28,39 +22,18 @@ public class SuperAbbrevsPlugin extends EditPlugin {
         super.stop();
     }
     
-    public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer){
-        JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        InputHandler inputHandler = new InputHandler(jedit);        
-        inputHandler.shiftTab();
-    }
-    
-    public static void tab(View view, JEditTextArea textArea, Buffer buffer){
-        JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        InputHandler inputHandler = new InputHandler(jedit);        
-        inputHandler.tab();
-    }
-    
-    public static void esc(View view, JEditTextArea textArea, Buffer buffer) {
-        JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        InputHandler inputHandler = new InputHandler(jedit);        
-        inputHandler.esc();
-    }
-    
-    public static void showSearchDialog(View view, JEditTextArea textArea, 
-            Buffer buffer){
-        JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        InputHandler inputHandler = new InputHandler(jedit);        
-        inputHandler.showSearchDialog();
-    }
-    
-    public static void showOptionPane(View view, JEditTextArea textArea, 
+    public static void handleAction(Actions action, View view, JEditTextArea textArea, 
             Buffer buffer) {
-        JEditInterface jedit = new JEditInterface(view, textArea, buffer);
-        
-        AbbrevsOptionPaneController controller = 
-                new AbbrevsOptionPaneController(jedit);
-        JDialog dialog = new AbbrevsDialog(jedit.getView(), false, controller);
-        dialog.setVisible(true);
+    	JEditInterface jEdit = new JEditInterface(view, textArea, buffer);
+    	InputHandler inputHandler = new InputHandler(jEdit);
+    	switch (action) {
+		case Esc:              inputHandler.esc();              break;
+		case ShiftTab:         inputHandler.shiftTab();	        break;
+		case ShowOptionPane:   inputHandler.showOptionsPane();  break;
+		case ShowSearchDialog: inputHandler.showSearchDialog();	break;
+		case Tab:              inputHandler.tab();              break;
+		default: break;
+		}
     }
     
     public boolean usePluginHome() {
