@@ -4,27 +4,27 @@
 <ACTIONS>
     <ACTION NAME="SuperAbbrevs.shiftTab">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.shiftTab(view, textArea, buffer);
+            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.ShirtTab, view, textArea, buffer);
         </CODE>
     </ACTION>
     <ACTION NAME="SuperAbbrevs.tab">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.tab(view, textArea, buffer);
+        	superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.Tab, view, textArea, buffer);
         </CODE>
     </ACTION>
     <ACTION NAME="SuperAbbrevs.esc">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.esc(view, textArea, buffer);
+            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.Esc, view, textArea, buffer);
         </CODE>
     </ACTION>
     <ACTION NAME="SuperAbbrevs.showSearchDialog">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.showSearchDialog(view, textArea, buffer);
+            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.ShowSearchDialog, view, textArea, buffer);
         </CODE>
     </ACTION>
     <ACTION NAME="SuperAbbrevs.showOptionPane">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.showOptionPane(view, textArea, buffer);
+            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.ShowOptionPane, view, textArea, buffer);
         </CODE>
     </ACTION>
 </ACTIONS>
