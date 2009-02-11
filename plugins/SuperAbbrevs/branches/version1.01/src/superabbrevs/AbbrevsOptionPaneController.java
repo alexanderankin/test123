@@ -27,12 +27,16 @@ public class AbbrevsOptionPaneController {
     }
     
     public Set<Abbrev> loadsAbbrevs(String modeName) {
-        if (modes.containsKey(modeName)) {
-            return modes.get(modeName).getAbbreviations();
+        return loadMode(modeName).getAbbreviations();
+    }
+    
+    public Mode loadMode(String modeName) {
+    	if (modes.containsKey(modeName)) {
+            return modes.get(modeName);
         } else {
             Mode mode = persistence.loadMode(modeName);
             modes.put(modeName, mode);
-            return mode.getAbbreviations();
+            return mode;
         }
     }
 

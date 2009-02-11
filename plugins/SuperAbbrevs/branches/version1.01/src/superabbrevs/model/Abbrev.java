@@ -2,14 +2,8 @@ package superabbrevs.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.IOException;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
-/**
- * @author sune Created on 27. januar 2007, 21:58
- * 
- */
 public class Abbrev implements Serializable, Comparable<Abbrev> {
 
 	public enum ReplacementTypes {
