@@ -1,8 +1,8 @@
 package superabbrevs.lexer.template;
 
-import com.sun.java_cup.internal.lexer;
 import java.util.ArrayList;
 import java.util.List;
+
 import superabbrevs.lexer.template.tokens.EndFieldToken;
 import superabbrevs.lexer.template.tokens.FieldPointerToken;
 import superabbrevs.lexer.template.tokens.FieldToken;
