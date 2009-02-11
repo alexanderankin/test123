@@ -1,9 +1,3 @@
-/*
- * ScrollablePopup.java
- *
- * Created on 16. juni 2007, 15:30
- */
-
 package superabbrevs.gui.scrollablepopupmenu;
 
 import java.awt.Point;
@@ -90,7 +84,7 @@ public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
         pack();
     }
 
-    private void menuJListKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_menuJListKeyPressed
+    private void menuJListKeyPressed(java.awt.event.KeyEvent evt) {
         switch(evt.getKeyCode()) {
             case KeyEvent.VK_ESCAPE:
                 closeWindow();
@@ -109,11 +103,11 @@ public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
             case KeyEvent.VK_9: invoke(9); break;
             case KeyEvent.VK_0: invoke(0); break;
         }
-    }//GEN-LAST:event_menuJListKeyPressed
+    }
 
-    private void menuJListFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_menuJListFocusLost
+    private void menuJListFocusLost(java.awt.event.FocusEvent evt) {
         closeWindow();
-    }//GEN-LAST:event_menuJListFocusLost
+    }
     
     private void closeWindow() {
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -123,9 +117,9 @@ public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
         });
     }
     
-    private void menuJListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuJListMouseClicked
+    private void menuJListMouseClicked(java.awt.event.MouseEvent evt) {
         invoke();
-    }//GEN-LAST:event_menuJListMouseClicked
+    }
 
     private void invoke() {
         int i = menuJList.getSelectedIndex();
