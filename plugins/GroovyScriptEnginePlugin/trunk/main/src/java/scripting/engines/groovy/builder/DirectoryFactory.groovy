@@ -31,7 +31,7 @@ class DirectoryFactory extends AbstractFactory {
 
     void onNodeCompleted( FactoryBuilderSupport builder, Object parent, Object node ) {
         if(!node.exists()) {
-            //node.mkdir()
+            node.mkdirs()
             println("DirectoryFactory - creating directory: ${node.path}")
         }
     }

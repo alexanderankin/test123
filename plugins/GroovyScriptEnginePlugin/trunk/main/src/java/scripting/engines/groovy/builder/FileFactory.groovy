@@ -30,11 +30,11 @@ class FileFactory extends AbstractFactory {
     void onNodeCompleted( FactoryBuilderSupport builder, Object parent, Object node ) {
         // parent can only be directories.
         if(!parent.exists()) {
-            //parent.mkdirs()
+            parent.mkdirs()
             println("FileFactory - creating parent: ${parent.path}")
         }
         if(!node.file.exists()) {
-            //node.createNewFile()
+            node.file.createNewFile()
             println("FileFactory - creating file: ${node.path}")
         }
 
@@ -65,16 +65,13 @@ class FileFactory extends AbstractFactory {
 
     private void writeContent() {
         println("writing content: ${content} | file: ${file.path}")
-        /*
         def FileWriter writer = new FileWriter(file, append)
         writer.println(content)
         writer.close()
-        */
     }
 
     private void writeTemplate() {
         println("writing template: ${template} | file: ${file.path}")
-        /*
         def FileWriter writer = new FileWriter(file, append)
         def templateFile = new File(template)
         def templateUrl = getClass().getResource(template)
@@ -89,6 +86,5 @@ class FileFactory extends AbstractFactory {
         }
         writer.println(templateContent)
         writer.close()
-        */
     }
 }
