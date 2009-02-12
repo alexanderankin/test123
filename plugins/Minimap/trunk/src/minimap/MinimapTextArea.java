@@ -55,7 +55,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 
 	private JEditTextArea textArea;
 	private ScrollListener textAreaScrollListener;
-	private boolean drag;
 	private MouseListener ml;
 	private MouseMotionListener mml;
 	private boolean lastFoldProp;
@@ -339,7 +338,6 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			}
 			dragStart = e.getPoint();
 			firstPhysicalLineDragStart = textArea.getFirstPhysicalLine();
-			drag = true;
 			e.consume();
 		} //}}}
 
@@ -348,10 +346,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		public void mouseReleased(MouseEvent e) {
 			if (e.getButton() != MouseEvent.BUTTON1)
 				return;
-			if (drag)
+			if (dragStart != null)
 				e.consume();
 
-			drag = false;
+			dragStart = null;
 		} //}}}
 
 	} //}}}
@@ -360,11 +358,11 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private class MapMouseMotionListener extends MouseMotionAdapter {
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			if (!drag)
+			if (dragStart == null)
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-
+			System.out.println(dragStart.getY());
 			int amount = (int) (e.getY() - dragStart.getY()) / h;
 			int line = firstPhysicalLineDragStart;
 			if (amount < 0)
