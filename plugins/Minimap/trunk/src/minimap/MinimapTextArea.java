@@ -63,6 +63,9 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 
 	private final Point point = new Point();
 
+	private Point dragStart;
+	private int firstPhysicalLineDragStart;
+
 	//{{{ MinimapTextArea constructor
 	public MinimapTextArea(JEditTextArea textArea) {
 		this.textArea = textArea;
@@ -318,21 +321,26 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		public void mousePressed(MouseEvent e) {
 			if (e.getButton() != MouseEvent.BUTTON1)
 				return;
-			TextAreaPainter painter = getPainter();
-			int h = painter.getFontMetrics().getHeight();
 
+			int offset = xyToOffset(0, e.getY());
+			int line = getLineOfOffset(offset);
+			if (line > textArea.getLastPhysicalLine() || line < textArea.getFirstPhysicalLine())
+			{
+				int visibleLines = textArea.getVisibleLines();
 
-			int line = getFirstPhysicalLine() + e.getY() / h;
-			int visibleLines = textArea.getVisibleLines();
-			line -= visibleLines >> 1;
-			scrollTextArea(line);
-
-			int y = (textArea.getFirstPhysicalLine() - getFirstPhysicalLine()) * h;
-			int height = textArea.getVisibleLines() * h - 1;
-			if (e.getY() >= y && e.getY() < y + height) {
-				drag = true;
-				e.consume();
+				int back = visibleLines >> 1;
+				for (int i =0;i<back;i++)
+				{
+					line = getDisplayManager().getPrevVisibleLine(line);
+					if (line == 0)
+						break;
+				}
+				scrollTextArea(line);
 			}
+			dragStart = e.getPoint();
+			firstPhysicalLineDragStart = textArea.getFirstPhysicalLine();
+			drag = true;
+			e.consume();
 		} //}}}
 
 		//{{{ mouseReleased() method
@@ -356,17 +364,32 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-			int visibleLines = textArea.getVisibleLines();
-			int newFirstLine;
-			if (e.getY() < getY())
-				newFirstLine = textArea.getFirstPhysicalLine() - visibleLines;
-			else if (e.getY() > getY() + getHeight())
-				newFirstLine = textArea.getFirstPhysicalLine() + visibleLines;
-			else {
-				newFirstLine = getFirstPhysicalLine() + e.getY() / h - (visibleLines >> 1);
-			}
 
-			scrollTextArea(newFirstLine);
+			int amount = (int) (e.getY() - dragStart.getY()) / h;
+			int line = firstPhysicalLineDragStart;
+			if (amount < 0)
+			{
+				for (int i = 0;i<-amount;i++)
+				{
+					int prevLine = getDisplayManager().getPrevVisibleLine(line);
+					if (prevLine != -1)
+						line = prevLine;
+					else
+						break;
+				}
+			}
+			else if (amount > 0)
+			{
+				for (int i = 0;i<amount;i++)
+				{
+					int nextLine = getDisplayManager().getNextVisibleLine(line);
+					if (nextLine != -1)
+						line = nextLine;
+					else
+						break;
+				}
+			}
+			scrollTextArea(line);
 			e.consume();
 		}
 	} //}}}
