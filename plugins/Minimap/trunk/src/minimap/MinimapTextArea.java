@@ -64,6 +64,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 
 	private Point dragStart;
 	private int firstPhysicalLineDragStart;
+	private int _firstPhysicalLineDragStart;
 
 	//{{{ MinimapTextArea constructor
 	public MinimapTextArea(JEditTextArea textArea) {
@@ -338,6 +339,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			}
 			dragStart = e.getPoint();
 			firstPhysicalLineDragStart = textArea.getFirstPhysicalLine();
+			_firstPhysicalLineDragStart = getFirstPhysicalLine();
 			e.consume();
 		} //}}}
 
@@ -362,9 +364,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 				return;
 			TextAreaPainter painter = getPainter();
 			int h = painter.getFontMetrics().getHeight();
-			System.out.println(dragStart.getY());
 			int amount = (int) (e.getY() - dragStart.getY()) / h;
-			int line = firstPhysicalLineDragStart;
+			int line = firstPhysicalLineDragStart + getFirstPhysicalLine() - _firstPhysicalLineDragStart;
 			if (amount < 0)
 			{
 				for (int i = 0;i<-amount;i++)
