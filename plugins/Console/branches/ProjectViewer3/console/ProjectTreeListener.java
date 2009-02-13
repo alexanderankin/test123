@@ -25,6 +25,7 @@ package console;
 
 // {{{ imports
 
+
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -33,10 +34,8 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.event.ViewerUpdate;
 import projectviewer.vpt.VPTNode;
-//import projectviewer.vpt.VPTProject;
 import org.gjt.sp.jedit.bsh.NameSpace;
 // }}}
-import org.gjt.sp.util.Log;
 
 // {{{ ProjectTreeListener class
 /**
@@ -52,7 +51,7 @@ public class ProjectTreeListener implements EBComponent
 {
 
 	static boolean onProjectChange;
-
+	
 	private Console console;
 	// {{{ constructor
 	public ProjectTreeListener(Console c)

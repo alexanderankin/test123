@@ -310,9 +310,7 @@
      <para>Generic errors matching the so called
   <quote>Emacs</quote> format:</para>
      <screen>
-      <replaceable>file</replaceable>:<replaceable>start <!--
-  -->line</replaceable>:<replaceable>end line</replaceable>:<replaceable>start <!--
-  -->column</replaceable>:<replaceable>end column</replaceable>:<replaceable>message</replaceable>
+      <replaceable>file</replaceable>:<replaceable>start line</replaceable>:<replaceable>end line</replaceable>:<replaceable>start column</replaceable>:<replaceable>end column</replaceable>:<replaceable>message</replaceable>
      </screen>
      <para>
    The <command>jikes</command> Java compiler will produce errors in this
@@ -322,16 +320,13 @@
   </para>
     </listitem>
 
-    <listitem>
-     <para>Errors output by the <command>javac</command> compiler
+    <listitem> <para>Errors output by the <command>javac</command> compiler
   found in
   Java 2 version 1.3 and later. Earlier versions are also supported, because
-  they output errors in the generic format documented above.</para>
-    </listitem>
-    
-    <para> Errors produced by <command>python</command>. </para>
-
-    <listitem>
+  they output errors in the generic format documented above.</para></listitem>
+  
+  <listitem><para> Errors produced by <command>python</command>. </para></listitem>
+  <listitem>
      <para>Errors output by the <command>javac</command> compiler
   when it is being run from the <application>Ant</application> project build
   tool.</para>

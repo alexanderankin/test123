@@ -29,7 +29,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -123,7 +122,6 @@ implements EBComponent, DefaultFocusComponent
 		propertiesChanged();
 		Shell s = Shell.getShell("System");
 		setShell(s);
-		addProjectListener();
 		load();
 		
 		
@@ -141,22 +139,27 @@ implements EBComponent, DefaultFocusComponent
 	public void load()
 	{
 		EditBus.addToBus(this);
-		addProjectListener();
 		errorSource = new DefaultErrorSource("error parsing");
 	} //}}}
 
-	void addProjectListener()
-	{
-		if (listener != null) return;
+	boolean projectViewerLoaded() {
 		String[] dockables = DockableWindowFactory.getInstance().getRegisteredDockableWindows();
 		EditPlugin[] plugins = jEdit.getPlugins();
 		for (EditPlugin p: plugins) {
 			if (p.getClassName() .equals("projectviewer.ProjectPlugin")) {
-				listener = new ProjectTreeListener(this);
-				EditBus.addToBus(listener);
+				PluginJAR jar = p.getPluginJAR();
+				if (jar != null && jar.getPlugin() != null)
+					return true;
 				break;
 			}
 		}
+		return false;
+	}
+	
+	void addProjectListener()
+	{
+		if (listener != null) return;
+		listener = new ProjectTreeListener(this);
 	}
 	
 	//{{{ unload() method
@@ -319,8 +322,13 @@ implements EBComponent, DefaultFocusComponent
 			handleNodeSelected((VFSPathSelected)msg);
 		else if (msg instanceof ViewUpdate)
 			handleViewUpdate((ViewUpdate)msg);
-
-	} //}}}
+		else if (listener != null) {
+			listener.handleMessage(msg);
+		}
+		else if (projectViewerLoaded()) {
+			addProjectListener();
+		}
+	} // }}}
 
 	//{{{ handleViewUpdate() method
 	private void handleViewUpdate(ViewUpdate vu) {
