@@ -73,7 +73,7 @@ public class ProjectTreeListener implements EBComponent
 		update();
 		if (!onProjectChange)
 			return;
-		if (!(msg instanceof ViewerUpdate)) return;
+		if (!(msg.getClass().getName().endsWith("ViewerUpdate"))) return;
 		final ViewerUpdate vu = (ViewerUpdate) msg;
 		if (vu.getView() != console.getView()) return;
 		if (vu.getType() != ViewerUpdate.Type.PROJECT_LOADED) return;

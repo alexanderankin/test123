@@ -139,22 +139,9 @@ implements EBComponent, DefaultFocusComponent
 	public void load()
 	{
 		EditBus.addToBus(this);
+		addProjectListener();
 		errorSource = new DefaultErrorSource("error parsing");
 	} //}}}
-
-	boolean projectViewerLoaded() {
-		String[] dockables = DockableWindowFactory.getInstance().getRegisteredDockableWindows();
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (EditPlugin p: plugins) {
-			if (p.getClassName() .equals("projectviewer.ProjectPlugin")) {
-				PluginJAR jar = p.getPluginJAR();
-				if (jar != null && jar.getPlugin() != null)
-					return true;
-				break;
-			}
-		}
-		return false;
-	}
 	
 	void addProjectListener()
 	{
@@ -324,9 +311,6 @@ implements EBComponent, DefaultFocusComponent
 			handleViewUpdate((ViewUpdate)msg);
 		else if (listener != null) {
 			listener.handleMessage(msg);
-		}
-		else if (projectViewerLoaded()) {
-			addProjectListener();
 		}
 	} // }}}
 
