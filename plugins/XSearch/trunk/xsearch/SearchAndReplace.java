@@ -1198,49 +1198,25 @@ public class SearchAndReplace
 						{
 							if (findAll)
 							{
-								/*
-								 * find all was
-								 * selected:
-								 * mark all
-								 * matches
-								 * display
-								 * status line
-								 * setSelection
-								 * move cursor
-								 * to each
-								 * Selection to
-								 * set it
-								 * visible reset
-								 * findAll flag
-								 */
+								/* find all was selected:
+								 * mark all matches display status line
+								 * setSelection move cursor to each Selection to
+								 * set it visible reset findAll flag */
 								Selection[] foundSelections = (Selection[]) findAllSelections
 									.toArray(new Selection[1]);
-								view
-									.getStatus()
-									.setMessageAndClear(
-										jEdit
-											.getProperty(
-												"view.status.findAll.number-of-occurance-found",
-												new Object[] { new Integer(
-													foundSelections.length) }));
+								view.getStatus().setMessageAndClear(jEdit.getProperty(
+									"view.status.findAll.number-of-occurance-found",
+									new Object[] { new Integer(foundSelections.length) }));
 								if (debug)
 									for (int i = 0; i < foundSelections.length; i++)
-										Log
-											.log(
-												Log.DEBUG,
-												BeanShell.class,
-												"SearchAndReplace.706: foundSelections[i].getEnd() = "
-													+ foundSelections[i]
-														.getEnd()
-													+ ", foundSelections[i].getStart() = "
-													+ foundSelections[i]
-														.getStart());
-								textArea
-									.setSelection(foundSelections);
+										Log.log(Log.DEBUG, BeanShell.class,
+											"SearchAndReplace.706: foundSelections[i].getEnd() = "
+											+ foundSelections[i].getEnd()
+											+ ", foundSelections[i].getStart() = "
+											+ foundSelections[i].getStart());
+								textArea.setSelection(foundSelections);
 								for (int i = foundSelections.length - 1; i >= 0; i--)
-									textArea
-										.moveCaretPosition(foundSelections[i]
-											.getEnd());
+									textArea.moveCaretPosition(foundSelections[i].getEnd());
 								findAll = false;
 							}
 							return true;
@@ -1252,15 +1228,10 @@ public class SearchAndReplace
 				{
 					if (!BeanShell.isScriptRunning())
 					{
-						view
-							.getStatus()
-							.setMessageAndClear(
-								jEdit
-									.getProperty("view.status.search-not-found")
-									+ (SearchAndReplace.search
-										.endsWith(" ") ? jEdit
-										.getProperty("view.status.search-ends-with-blank-warning")
-										: ""));
+						view.getStatus().setMessageAndClear(
+								jEdit.getProperty("view.status.search-not-found")
+								+ (SearchAndReplace.search.endsWith(" ") ?
+								     jEdit.getProperty("view.status.search-ends-with-blank-warning") : ""));
 
 						view.getToolkit().beep();
 					}
@@ -1280,8 +1251,7 @@ public class SearchAndReplace
 						view.getStatus().setMessageAndClear(
 							jEdit.getProperty("view.status.auto-wrap"));
 						// beep if beep property set
-						if (jEdit
-							.getBooleanProperty("search.beepOnSearchAutoWrap"))
+						if (jEdit.getBooleanProperty("search.beepOnSearchAutoWrap"))
 						{
 							view.getToolkit().beep();
 						}
@@ -1301,15 +1271,10 @@ public class SearchAndReplace
 						// message instead
 						if (!BeanShell.isScriptRunning())
 						{
-							view
-								.getStatus()
-								.setMessageAndClear(
-									jEdit
-										.getProperty("view.status.no-further-search-string-found")
-										+ (SearchAndReplace.search
-											.endsWith(" ") ? jEdit
-											.getProperty("view.status.search-ends-with-blank-warning")
-											: ""));
+							view.getStatus().setMessageAndClear(
+									jEdit.getProperty("view.status.no-further-search-string-found")
+										+ (SearchAndReplace.search.endsWith(" ") ? jEdit
+										   .getProperty("view.status.search-ends-with-blank-warning"): ""));
 						}
 						ignoreFromTop = false; // v0.7:
 						// enable
@@ -1347,15 +1312,9 @@ public class SearchAndReplace
 						lastSelection = view.getTextArea().getSelection();
 						lastCaret = view.getTextArea().getCaretPosition();
 						if (lastSelection.length > 0 && debug)
-							Log
-								.log(
-									Log.DEBUG,
-									BeanShell.class,
-									"tp662: lastSelection = "
-										+ view
-											.getTextArea()
-											.getSelectedText(
-												lastSelection[0]));
+							Log.log(Log.DEBUG, BeanShell.class,
+								"tp662: lastSelection = "
+								+ view.getTextArea().getSelectedText(lastSelection[0]));
 						restart = true;
 					}
 				}
@@ -1545,22 +1504,15 @@ public class SearchAndReplace
 						{
 							if (findAll)
 							{
-								findAllSelections
-									.add(lastMatchedSelection);
+								findAllSelections.add(lastMatchedSelection);
 								start += match.end;
 							}
 							else
 							{
-								textArea
-									.setSelection(lastMatchedSelection);
-								// make sure
-								// start of
-								// match is
-								// visible
-								textArea.scrollTo(matchOffsetBegin,
-									false);
-								textArea
-									.moveCaretPosition(matchOffsetEnd);
+								textArea.setSelection(lastMatchedSelection);
+								// make sure start of match is visible
+								textArea.scrollTo(matchOffsetBegin, false);
+								textArea.moveCaretPosition(matchOffsetEnd);
 							}
 						}
 					}
@@ -1663,9 +1615,8 @@ public class SearchAndReplace
 			if (find(view))
 			{
 				if (debug)
-					Log
-						.log(Log.DEBUG, BeanShell.class,
-							"SearchAndReplace.1058");
+					Log.log(Log.DEBUG, BeanShell.class,
+						"SearchAndReplace.1058");
 				selection = textArea.getSelection();
 			}
 			if (selection.length == 0)
