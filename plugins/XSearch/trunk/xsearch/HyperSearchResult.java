@@ -46,7 +46,7 @@ public class HyperSearchResult
 	public Buffer getBuffer()
 	{
 		if(buffer == null)
-			buffer = jEdit.openFile(null,path);
+			buffer = jEdit.openFile((View)null,path);
 		return buffer;
 	} //}}}
 
@@ -82,7 +82,7 @@ public class HyperSearchResult
 	{
 		//Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchResult.82");
 		if(buffer == null)
-			buffer = jEdit.openFile(null,path);
+			buffer = jEdit.openFile(view, path);
 
 		if(buffer == null)
 			return;
