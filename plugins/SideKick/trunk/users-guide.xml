@@ -49,8 +49,6 @@
 
   <para> On the top of the window, you will see a combobox which lists all installed SideKick parsers. You can switch to another parser temporarily for a buffer by selecting it from the combo box. </para>
 
-
-
  <para>
   The SideKick plugin can automatically parse your buffer depending on various events, such as: Buffer Switch, Buffer Save, or on the fly (after it is idle for a period of time). The last option is rarely used since it can eat up CPU time, so it is disabled by default. </para>
  <para>
@@ -80,11 +78,12 @@
  <para> SideKick supports what are called "Mode Options". Certain properties can be set on an edit-mode basis, such as the SideKick parser, tree expansion depth, etc. Other plugins (such as CtagsSideKick) added their own optionpane to this dialog, via the
  services API. </para></tip>
 
+ <tip> <title> Filter textfield </title>
  <para>
  Also at the top of the window is a "Filter" box.  Entering text into the box will cause the tree to collapse to show only those items in the tree whose names contain the text in the filter box.  This makes it easy to quickly locate items in the tree.  By default, clicking on an item in the tree clears the filter, but this can be changed in the SideKick plugin option settings by using the "Filter persists after tree selection" checkbox.
  </para>
 
- <tip><para>
+ <para>
  You don't have to click into the filter box to begin typing. As long as SideKick has focus, keystrokes are automatically sent to the box to make locating items even faster.
  </para></tip>
 
@@ -401,7 +400,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <listitem><para>
    Added a new option, which makes automatic completion popups get focus, to make the new behavior in 0.7.5 optional. (Kazutoshi Satoda, Bug #2027704)
  </para></listitem>
- <listitem><para> 
+ <listitem><para>
    Fixed a memory leak; multiple parser specific panels could be held in SideKickTree. (Kazutoshi Satoda)
  </para></listitem>
  </itemizedlist>
