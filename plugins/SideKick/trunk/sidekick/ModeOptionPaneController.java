@@ -27,32 +27,32 @@ public class ModeOptionPaneController implements ModeOptionPane {
 		// Returns whether or not the specified mode has mode-specific properties
 		boolean hasModeProps(String mode);
 	}
-	
+
 	private HashMap<String, Object> modeProps;
 	private Set<String> useDefaults;	// Modes that use default settings
 	private Object props;	// Properties of current mode
 	private String mode;	// Currently selected mode
-	ModeOptionPaneDelegate pane;		// The UI pane controlled by this controller
-	
+	ModeOptionPaneDelegate delegate;		// The delegate controlled by this controller.
+
 	public ModeOptionPaneController(ModeOptionPaneDelegate mop) {
 		modeProps = new HashMap<String, Object>();
 		useDefaults = new HashSet<String>();
-		pane = mop;
+		delegate = mop;
 	}
-	
+
 	public void modeSelected(String mode) {
 		if (this.mode != null)
-			pane.updatePropsFromUI(props);
+			delegate.updatePropsFromUI(props);
 		this.mode = mode;
 		props = modeProps.get(mode);
 		if (props == null) {
-			props = pane.createModeProps(mode);
-			if (! pane.hasModeProps(mode))
+			props = delegate.createModeProps(mode);
+			if (! delegate.hasModeProps(mode))
 				useDefaults.add(mode);
 			modeProps.put(mode, props);
 		}
-		pane.updateUIFromProps(props);
-		setEnabled(pane.getUIComponent(), ! useDefaults.contains(mode));
+		delegate.updateUIFromProps(props);
+		setEnabled(delegate.getUIComponent(), ! useDefaults.contains(mode));
 	}
 
 	public void setUseDefaults(boolean b) {
@@ -60,7 +60,7 @@ public class ModeOptionPaneController implements ModeOptionPane {
 			useDefaults.add(mode);
 		else
 			useDefaults.remove(mode);
-		setEnabled(pane.getUIComponent(), ! b);
+		setEnabled(delegate.getUIComponent(), ! b);
 	}
 
 	public void setEnabled(JComponent c, boolean enabled) {
@@ -70,16 +70,16 @@ public class ModeOptionPaneController implements ModeOptionPane {
 			if (children[i] instanceof JComponent)
 				setEnabled((JComponent) children[i], enabled);
 	}
-	
+
 	public void save() {
-		pane.updatePropsFromUI(props);
+		delegate.updatePropsFromUI(props);
 		Iterator<String> modes = modeProps.keySet().iterator();
 		while (modes.hasNext()) {
 			String m = modes.next();
 			if (useDefaults.contains(m))
-				pane.resetModeProps(m);
+				delegate.resetModeProps(m);
 			else
-				pane.saveModeProps(m, modeProps.get(m));
+				delegate.saveModeProps(m, modeProps.get(m));
 		}
 	}
 
@@ -90,6 +90,6 @@ public class ModeOptionPaneController implements ModeOptionPane {
 	public boolean getUseDefaults(String mode) {
 		if (modeProps.get(mode) != null)
 			return useDefaults.contains(mode);
-		return (! pane.hasModeProps(mode));
+		return (! delegate.hasModeProps(mode));
 	}
 }
