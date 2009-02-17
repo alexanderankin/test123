@@ -511,14 +511,14 @@ public class BrowseRepositoryPanel extends JPanel {
         }
 
         pm.addSeparator();
-        JMenuItem item = new JMenuItem( "Copy URL to clipboard" );
+        JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Copy_URL_to_clipboard", "Copy URL to clipboard") );
         item.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     TreePath path = tree.getSelectionPath();
                     if ( path == null ) {
                         /// TODO: put strings in property file
-                        JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, "Nothing selected", "Nothing selected, please select an item from the tree.", JOptionPane.ERROR_MESSAGE );
+                        JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty("ips.Nothing_selected", "Nothing selected"), jEdit.getProperty("ips.Nothing_selected,_please_select_an_item_from_the_tree.", "Nothing selected, please select an item from the tree."), JOptionPane.ERROR_MESSAGE );
                         return ;
                     }
                     String url = getUrl( path );
