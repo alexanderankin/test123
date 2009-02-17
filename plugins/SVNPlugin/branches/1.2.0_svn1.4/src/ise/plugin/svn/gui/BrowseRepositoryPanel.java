@@ -351,6 +351,7 @@ public class BrowseRepositoryPanel extends JPanel {
         }
         else {
             url = data.getURL();
+            url = url.endsWith("/") ? url : url + "/";
             Object[] parts = path.getPath();
             StringBuilder sb = new StringBuilder();
             for ( int i = 1; i < parts.length; i++ ) {
@@ -510,6 +511,7 @@ public class BrowseRepositoryPanel extends JPanel {
             }
         }
 
+        // add copy to clipboard command
         pm.addSeparator();
         JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Copy_URL_to_clipboard", "Copy URL to clipboard") );
         item.addActionListener(
