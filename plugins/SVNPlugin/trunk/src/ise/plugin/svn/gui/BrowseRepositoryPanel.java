@@ -297,7 +297,7 @@ public class BrowseRepositoryPanel extends JPanel {
                                 tree.setModel( new DefaultTreeModel( node ) );
                                 BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
                                 action.actionPerformed( null );
-                                return ;
+                                return;
                             }
                             data = new RepositoryData( data );
                             String url;
@@ -351,6 +351,7 @@ public class BrowseRepositoryPanel extends JPanel {
         }
         else {
             url = data.getURL();
+            url = url.endsWith("/") ? url : url + "/";
             Object[] parts = path.getPath();
             StringBuilder sb = new StringBuilder();
             for ( int i = 1; i < parts.length; i++ ) {
@@ -510,6 +511,7 @@ public class BrowseRepositoryPanel extends JPanel {
             }
         }
 
+        // add copy to clipboard command
         pm.addSeparator();
         JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Copy_URL_to_clipboard", "Copy URL to clipboard") );
         item.addActionListener(
@@ -517,7 +519,6 @@ public class BrowseRepositoryPanel extends JPanel {
                 public void actionPerformed( ActionEvent ae ) {
                     TreePath path = tree.getSelectionPath();
                     if ( path == null ) {
-                        /// TODO: put strings in property file
                         JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty("ips.Nothing_selected", "Nothing selected"), jEdit.getProperty("ips.Nothing_selected,_please_select_an_item_from_the_tree.", "Nothing selected, please select an item from the tree."), JOptionPane.ERROR_MESSAGE );
                         return ;
                     }

@@ -81,12 +81,20 @@ public class CopyAction extends SVNAction {
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
         this.title = data.getTitle();
-        System.out.println("+++++ CopyAction, " + data.toString());
     }
 
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data != null ) {
+            if ( getUsername() == null ) {
+                verifyLogin();
+                if ( isCanceled() ) {
+                    return ;
+                }
+            }
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+            
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -117,13 +125,16 @@ public class CopyAction extends SVNAction {
                 public TreeMap<String, SVNCommitInfo> doInBackground() {
                     TreeMap<String, SVNCommitInfo> results = new TreeMap<String, SVNCommitInfo>();
                     try {
-                        if ( data.getSourceFiles() != null ) {
-                            for ( SVNCopySource source : data.getSourceFiles() ) {
+                        SVNCopySource[] sources = data.getSourceFiles();
+                        if ( sources != null ) {
+                            for ( SVNCopySource source : sources ) {
                                 if ( source == null ) {
                                     continue;
                                 }
                                 File file = source.getFile();
                                 CopyData cd = new CopyData();
+                                cd.setUsername(data.getUsername());
+                                cd.setPassword(data.getPassword());
                                 cd.setSourceFile( file );
                                 cd.setRevision( data.getRevision() );
                                 String destination = "";
@@ -175,6 +186,8 @@ public class CopyAction extends SVNAction {
                                 }
                                 SVNURL url = source.getURL();
                                 CopyData cd = new CopyData();
+                                cd.setUsername(data.getUsername());
+                                cd.setPassword(data.getPassword());
                                 String destination = "";
                                 cd.setSourceURL( url );
                                 cd.setRevision( data.getRevision() );
