@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- $Id: actions.xml #svnrevisionnumber Fri Oct 17 15:04:30 CDT 2008 keeleyt83 $ -->
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="plugin.findfile.FindFilePlugin.actions.newSearch">
+        <CODE>
+            findfile.FindFileDialog fsd;
+            fsd = findfile.FindFileDialog.getFindFileDialog(view);
+            fsd.setVisible(true);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="plugin.finfile.FindFilePlugin.actions.showResults">
+        <CODE>
+            wm.addDockableWindow("FindFilePlugin");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="plugin.finfile.FindFilePlugin.actions.clearResults">
+        <CODE>
+            wm.addDockableWindow("FindFilePlugin");
+            wm.getDockableWindow("FindFilePlugin").removeAllSearches();
+        </CODE>
+    </ACTION>
+</ACTIONS>
