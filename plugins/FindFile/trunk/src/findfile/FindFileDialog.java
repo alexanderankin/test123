@@ -3,7 +3,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * @author Nicholas O'Leary
- * @version $Id: FindFileDialog.java 13886 Thu Oct 16 16:01:01 CDT 2008 keeleyt83 $
+ * @version $Id: FindFileDialog.java 14668 Thu Oct 16 16:01:01 CDT 2008 keeleyt83 $
  */
 
 package findfile;
@@ -13,7 +13,6 @@ import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.gjt.sp.jedit.gui.*;
@@ -65,6 +64,7 @@ public class FindFileDialog extends EnhancedDialog implements ActionListener {
 
         JLabel directoryLabel, filterLabel, settingsLabel;
         Dimension buttonDim = new Dimension (90, 25);
+        HistoryModel model;
                         
         JPanel content = new JPanel(new BorderLayout());
         content.setBorder(new EmptyBorder(12,12,12,12));
@@ -79,17 +79,16 @@ public class FindFileDialog extends EnhancedDialog implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // Initialize filter objects and add them to panel. Get previous filter,
-        // if we need to.
         filterField = new HistoryTextField("FindFilePlugin.filter");
-        filterField.setColumns(15);
-        String prevFilter = jEdit.getProperty(SEARCH_PROPS + "filter", filterField.toString());
-        if ("true".equals(jEdit.getProperty(OPTIONS + "rememberLastSearch")) &&
-            prevFilter != null) {
-            filterField.setText(prevFilter);
+
+        model = filterField.getModel();
+		if(model.getSize() != 0) {
+			filterField.setText(model.getItem(0));
         } else {
-            filterField.setText("*.*");
-        }
+			filterField.setText("*.*");
+		}
+
+        filterField.setColumns(20);
         filterField.addActionListener(this);
         filterLabel = new JLabel(jEdit.getProperty("FindFilePlugin.search-dialog.filter.label"));
         filterLabel.setDisplayedMnemonic(jEdit.getProperty("FindFilePlugin.search-dialog.filter.mnemonic").charAt(0));
@@ -103,9 +102,19 @@ public class FindFileDialog extends EnhancedDialog implements ActionListener {
         gbc.gridx = 0;
                 
         // Initialize directory objects and add them to panel.
+
         directoryField = new HistoryTextField("FindFilePlugin.path");
-        directoryField.setColumns(50);
-        directoryField.setText(path == null? getPath() : path);
+
+        model = directoryField.getModel();
+        if (path != null) {
+            directoryField.setText(path);
+        } else if(model.getSize() != 0) {
+			directoryField.setText(model.getItem(0));
+        } else {
+			directoryField.setText(getDefaultPath());
+		}
+        
+        directoryField.setColumns(40);
         directoryField.addActionListener(this);
         directoryLabel = new JLabel(jEdit.getProperty("FindFilePlugin.search-dialog.directory.label"));
         directoryLabel.setBorder(new EmptyBorder(0,0,0,12));
@@ -197,9 +206,7 @@ public class FindFileDialog extends EnhancedDialog implements ActionListener {
         FindFileRequest request = new FindFileRequest(view,results,options);
         VFSManager.runInWorkThread(request);
         GUIUtilities.saveGeometry(this,"FindFilePlugin");
-        directoryField.addCurrentToHistory();
-        filterField.addCurrentToHistory();
-
+        
         if (!keepDialog.isSelected()) {
             setVisible(false);
         }
@@ -271,47 +278,41 @@ public class FindFileDialog extends EnhancedDialog implements ActionListener {
      * Saves settings and previous search parameters.
      */
     private void saveSettings() {
+        directoryField.addCurrentToHistory();
+        filterField.addCurrentToHistory();
         jEdit.setProperty(OPTIONS + "recursiveSearch", (recursive.isSelected() ? "true" : "false"));
         jEdit.setProperty(OPTIONS + "openAllResults", (openAllResults.isSelected() ? "true" : "false"));
         jEdit.setProperty(OPTIONS + "keepDialog", (keepDialog.isSelected() ? "true" : "false"));
-        jEdit.setProperty(SEARCH_PROPS + "filter", filterField.getText());
-        jEdit.setProperty(SEARCH_PROPS + "directory", directoryField.getText());
     }//}}}
 
-    //{{{ getPath
+    //{{{ getDefaultPath
     /*
-     * Returns the path to be used. If thee "remember previous path" setting is
-     * selected, returns the last path.
+     * Returns the user's default path.
      */
-    private String getPath() {
+    private String getDefaultPath() {
         String path;
-        String prevPath;
         String userHome = System.getProperty("user.home");
         String defaultPath = jEdit.getProperty("vfs.browser.defaultPath");
-
-        if ("true".equals(jEdit.getProperty(OPTIONS + "rememberLastSearch"))) {
-            prevPath = jEdit.getProperty(SEARCH_PROPS + "directory", directoryField.toString());
-            path = prevPath == null? "" : prevPath;
+        
+        if (defaultPath.equals("home")) {
+            path = userHome;
         } else {
-            if (defaultPath.equals("home")) {
-                path = userHome;
+            if (defaultPath.equals("working")) {
+                path = System.getProperty("user.dir");
             } else {
-                if (defaultPath.equals("working")) {
-                    path = System.getProperty("user.dir");
-                } else {
-                    if (defaultPath.equals("buffer")) {
-                        if (view != null) {
-                            Buffer buffer = view.getBuffer();
-                            path = buffer.getDirectory();
-                        } else {
-                            path = userHome;
-                        }
+                if (defaultPath.equals("buffer")) {
+                    if (view != null) {
+                        Buffer buffer = view.getBuffer();
+                        path = buffer.getDirectory();
                     } else {
                         path = userHome;
                     }
+                } else {
+                    path = userHome;
                 }
             }
         }
+        
         return path;
     }//}}}
 

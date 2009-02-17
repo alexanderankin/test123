@@ -4,7 +4,7 @@
  *
  * Option pane for the plugin.
  * @author Nicholas O'Leary
- * @version $Id: FindFileOptionPane.java 13887 Thu Oct 16 16:03:43 CDT 2008 keeleyt83 $
+ * @version $Id: FindFileOptionPane.java 14668 Thu Oct 16 16:03:43 CDT 2008 keeleyt83 $
  */
 
 package findfile;
@@ -25,7 +25,6 @@ public class FindFileOptionPane extends AbstractOptionPane {
     private JCheckBox hidePath;
     private JCheckBox openResults;
     private JCheckBox keepDialog;
-    private JCheckBox rememberLastSearch;
     private JTextField archiveFilter;
     private JComboBox sortBy;
     //}}}
@@ -67,12 +66,6 @@ public class FindFileOptionPane extends AbstractOptionPane {
 
         gbc.gridy = 2;
         general.add(hidePath,gbc);
-
-        rememberLastSearch = new JCheckBox(jEdit.getProperty(OPTION_PANE_LABELS + "rememberLastSearch"));
-        rememberLastSearch.setSelected(jEdit.getProperty(OPTIONS + "rememberLastSearch", "false").equals("true"));
-
-        gbc.gridy = 3;
-        general.add(rememberLastSearch,gbc);
 
         addComponent(general,GridBagConstraints.BOTH);
 
@@ -119,7 +112,11 @@ public class FindFileOptionPane extends AbstractOptionPane {
 
         gbc.gridx = 1;
         gbc.weightx = 1;
-        archiveFilter = new JTextField(jEdit.getProperty(OPTIONS + "archiveFilter", jEdit.getProperty(OPTION_PANE_DEFAULTS + "archiveFilter")), 25);
+        String archiveFilterValue = jEdit.getProperty(OPTION_PANE_DEFAULTS + "archiveFilter");
+        if (archiveFilterValue == null) {
+            archiveFilterValue = jEdit.getProperty(OPTION_PANE_DEFAULTS + "archiveFilter");
+        }
+        archiveFilter = new JTextField(archiveFilterValue, 25);
         archive.add(archiveFilter,gbc);
         addComponent(archive,GridBagConstraints.BOTH);
     }//}}}
@@ -134,6 +131,5 @@ public class FindFileOptionPane extends AbstractOptionPane {
         jEdit.setProperty(OPTIONS + "archiveFilter",archiveFilter.getText());
         jEdit.setProperty(OPTIONS + "openAllResults", (openResults.isSelected() ? "true" : "false"));
         jEdit.setProperty(OPTIONS + "keepDialog", (keepDialog.isSelected() ? "true" : "false"));
-        jEdit.setProperty(OPTIONS + "rememberLastSearch", (rememberLastSearch.isSelected() ? "true" : "false"));
     }//}}}
 }
