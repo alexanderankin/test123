@@ -1,0 +1,118 @@
+# FindFile Plugin properties
+# $Id: FindFile.props 14668 Thu Oct 16 15:59:08 CDT 2008 keeleyt83 $
+
+plugin.findfile.FindFilePlugin.name=FindFile
+plugin.findfile.FindFilePlugin.author=Nicholas O'Leary, Anthony Keeley
+plugin.findfile.FindFilePlugin.version=1.2
+plugin.findfile.FindFilePlugin.activate=defer
+plugin.findfile.FindFilePlugin.depend.0=jdk 1.5.0
+plugin.findfile.FindFilePlugin.depend.1=jedit 04.03.16.00
+plugin.findfile.FindFilePlugin.depend.2=optional plugin Archive 0.4.3
+plugin.findfile.FindFilePlugin.docs=docs/about.html
+plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
+plugin.findfile.FindFilePlugin.description=This plugin allows you to search within a filesystem for any files that match a given filter.
+plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
+
+options.FindFilePlugin-options.label=FindFile
+options.FindFilePlugin-options.code=new findfile.FindFileOptionPane();
+
+plugin.findfile.FindFilePlugin.browser-menu-item=vfs.browser.FindFile
+
+FindFilePlugin.label=FindFile
+FindFilePlugin.title=FindFile Results
+FindFilePlugin.action-labels.open=Open
+FindFilePlugin.action-labels.openAs=Open as...
+FindFilePlugin.action-labels.close=Close
+FindFilePlugin.action-labels.delete=Delete...
+FindFilePlugin.action-labels.rename=Rename...
+FindFilePlugin.action-labels.browsePath=Browse File Path...
+FindFilePlugin.action-labels.browseArchive=Browse archive
+FindFilePlugin.action-labels.copyResult=Copy File Path
+FindFilePlugin.action-labels.removeSearch=Remove Node
+FindFilePlugin.action-labels.searchInFile=Search in File...
+FindFilePlugin.action-labels.searchInArchive=Search in archive...
+FindFilePlugin.action-labels.searchInFiles=Search in Files...
+
+FindFilePlugin.action-labels.openAllResults=Open All Files
+FindFilePlugin.action-labels.closeAllResults=Close All Files
+FindFilePlugin.action-labels.copyAllResults=Copy Results
+FindFilePlugin.action-labels.sortByFileName=File Name
+FindFilePlugin.action-labels.sortByPath=Path
+FindFilePlugin.action-labels.newSearch=Search for files...
+FindFilePlugin.action-labels.removeNode=Remove Node
+FindFilePlugin.action-labels.removeAllSearches=Remove All Nodes
+FindFilePlugin.action-labels.toggleMultple=Toggle Multiple Results
+FindFilePlugin.action-labels.redoSearch=Redo Search
+
+FindFilePlugin.search-dialog.title=Find Files
+FindFilePlugin.search-dialog.directory.label=Directory:
+FindFilePlugin.search-dialog.directory.mnemonic=y
+FindFilePlugin.search-dialog.filter.label=Filter:
+FindFilePlugin.search-dialog.filter.mnemonic=f
+FindFilePlugin.search-dialog.findButton.text=Find
+FindFilePlugin.search-dialog.closeButton.text=Close
+FindFilePlugin.search-dialog.chooseButton.text=Choose...
+FindFilePlugin.search-dialog.chooseButton.mnemonic=e
+FindFilePlugin.search-dialog.settings.label=Settings:
+FindFilePlugin.search-dialog.recursive.label=Recursive
+FindFilePlugin.search-dialog.recursive.mnemonic=r
+FindFilePlugin.search-dialog.openAllResults.label=Open all results
+FindFilePlugin.search-dialog.openAllResults.mnemonic=o
+FindFilePlugin.search-dialog.keepDialog.label=Keep dialog
+FindFilePlugin.search-dialog.keepDialog.mnemonic=k
+
+FindFilePlugin.option-pane-labels.multipleResults=Show multiple results
+FindFilePlugin.option-pane-labels.hidePath=Hide path details
+FindFilePlugin.option-pane-labels.defaultSettings=Default search options
+FindFilePlugin.option-pane-labels.generalSettings=General settings
+FindFilePlugin.option-pane-labels.archiveSettings=Archive settings
+FindFilePlugin.option-pane-labels.useModeDetection=Only open files that a mode can be detected for
+FindFilePlugin.option-pane-labels.recursiveSearch=Search subdirectories
+FindFilePlugin.option-pane-labels.openAllResults=Open all results
+FindFilePlugin.option-pane-labels.keepDialog=Keep search dialog
+FindFilePlugin.option-pane-labels.archiveFilter=Filter to identify archives:
+FindFilePlugin.option-pane-labels.sortBy=Result sort order
+
+FindFilePlugin.option-pane-defaults.archiveFilter=*.{zip,tar,tgz,jar}
+
+FindFilePlugin.status-message.started=Searching...
+FindFilePlugin.status-message.finished=Results for
+FindFilePlugin.status-message.blank=
+FindFilePlugin.status-message.noResults=No results for
+
+FindFilePlugin.delete-confirm.title=Confirm deletion
+FindFilePlugin.delete-confirm.message=Are you sure you want to delete: {0}?
+
+FindFilePlugin.not-implemented.title=Not implemented
+FindFilePlugin.not-implemented.message=Not implemented in this version.
+
+FindFilePlugin.invalid-archive-filter.title=Invalid archive filter
+FindFilePlugin.invalid-archive-filter.message={0} appears to be an invalid filter:\n\
+    {1}
+
+FindFilePlugin.failed-to-open.title=Failed to open
+FindFilePlugin.failed-to-open.message=Failed to open: {0} \
+    as no suitable edit mode was detected.
+
+FindFilePlugin.failed-to-open-some.title=Failed to open some files
+FindFilePlugin.failed-to-open-some.message=Failed to open some files as\n\
+    no suitable edit modes were detected.\n\
+    See the Activity Log for more information.
+
+FindFilePlugin.archive-not-installed.title=Archive plugin not installed
+FindFilePlugin.archive-not-installed.message=Browsing an archive requires the Archive plugin to be installed.
+
+FindFilePlugin.search-in-file.title=Search in file
+FindFilePlugin.search-in-file.message=Enter text to search for.
+
+vfs.browser.FindFile.label=Search for files...
+
+# Menu
+plugin.findfile.FindFilePlugin.menu=plugin.findfile.FindFilePlugin.actions.newSearch \
+    - \
+    plugin.finfile.FindFilePlugin.actions.showResults \
+    plugin.finfile.FindFilePlugin.actions.clearResults
+
+plugin.findfile.FindFilePlugin.actions.newSearch.label=Search For Files...
+plugin.finfile.FindFilePlugin.actions.showResults.label=Show Results
+plugin.finfile.FindFilePlugin.actions.clearResults.label=Clear Results
