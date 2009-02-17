@@ -48,7 +48,9 @@ import ise.plugin.svn.data.RepositoryData;
 import ise.plugin.svn.gui.br.*;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PrivilegedAccessor;
+
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Registers;
 
 import org.tmatesoft.svn.core.wc.*;
 
@@ -285,7 +287,7 @@ public class BrowseRepositoryPanel extends JPanel {
                             RepositoryData data = chooser.getSelectedRepository();
                             TreePath path = tree.getSelectionPath();
                             DirTreeNode node = null;
-                            if (path != null) {
+                            if ( path != null ) {
                                 node = ( DirTreeNode ) path.getLastPathComponent();
                                 node.removeAllChildren();
                             }
@@ -334,6 +336,29 @@ public class BrowseRepositoryPanel extends JPanel {
 
 
         add( new JScrollPane( tree ), BorderLayout.CENTER );
+    }
+
+    public String getUrl( TreePath path ) {
+        DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+        RepositoryData data = chooser.getSelectedRepository();
+        String url;
+        String filepath;
+        if ( node.isExternal() ) {
+            String rep = node.getRepositoryLocation();
+            url = rep.substring( 0, rep.lastIndexOf( "/" ) );
+            filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
+            return url + filepath;
+        }
+        else {
+            url = data.getURL();
+            Object[] parts = path.getPath();
+            StringBuilder sb = new StringBuilder();
+            for ( int i = 1; i < parts.length; i++ ) {
+                sb.append( "/" ).append( parts[ i ].toString() );
+            }
+            filepath = sb.toString().substring( 1 );
+            return url + filepath;
+        }
     }
 
     public void openFile( TreePath path, SVNRevision rev ) {
@@ -485,6 +510,23 @@ public class BrowseRepositoryPanel extends JPanel {
             }
         }
 
+        pm.addSeparator();
+        JMenuItem item = new JMenuItem( jEdit.getProperty("ips.Copy_URL_to_clipboard", "Copy URL to clipboard") );
+        item.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    TreePath path = tree.getSelectionPath();
+                    if ( path == null ) {
+                        JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty("ips.Nothing_selected", "Nothing selected"), jEdit.getProperty("ips.Nothing_selected,_please_select_an_item_from_the_tree.", "Nothing selected, please select an item from the tree."), JOptionPane.ERROR_MESSAGE );
+                        return ;
+                    }
+                    String url = getUrl( path );
+                    ( ( Registers.ClipboardRegister ) Registers.getRegister( '$' ) ).setValue( url );
+                }
+            }
+        );
+        pm.add( item );
+
         return pm;
     }
 
@@ -520,3 +562,4 @@ public class BrowseRepositoryPanel extends JPanel {
         }
     }
 }
+
