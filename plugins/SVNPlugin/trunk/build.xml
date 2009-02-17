@@ -91,7 +91,9 @@
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
                 target="1.5"
-                source="1.5">
+                source="1.5"
+                bootclasspath="${bootclasspath}"
+                extdirs="${extdirs}">
             <classpath refid="classpathref" />
             <compilerarg value="-Xlint:unchecked"/>
         </javac>

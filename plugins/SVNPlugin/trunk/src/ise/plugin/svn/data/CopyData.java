@@ -141,6 +141,10 @@ public class CopyData extends SVNData implements Serializable {
     public void setSourceFiles(List<File> files) {
         sourceFiles = files;
     }
+    
+    /**
+     * @return null array if no source files specified    
+     */
     public SVNCopySource[] getSourceFiles() {
         if (sourceFiles == null) {
             sourceFiles = new ArrayList<File>();
@@ -154,7 +158,8 @@ public class CopyData extends SVNData implements Serializable {
             SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
             sources[i] = source;
         }
-        return sources;
+        
+        return sources.length == 0 ? null : sources;
     }
 
     // set/get source url for copying remote url
@@ -178,7 +183,7 @@ public class CopyData extends SVNData implements Serializable {
             SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
             sources[i] = source;
         }
-        return sources;
+        return sources.length == 0 ? null : sources;
     }
 
     public void setSourceURLs( List<SVNURL> sourceURLs ) {

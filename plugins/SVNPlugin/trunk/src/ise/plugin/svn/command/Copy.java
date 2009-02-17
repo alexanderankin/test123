@@ -56,7 +56,6 @@ import ise.plugin.svn.data.CopyData;
 public class Copy {
 
     public SVNCommitInfo copy( CopyData data ) throws CommandInitializationException, SVNException {
-        System.out.println("+++++ " + data.toString());
         SVNKit.setupLibrary();
 
         // validate data values
@@ -71,7 +70,7 @@ public class Copy {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
 
         // get a copy client
         SVNCopyClient client = clientManager.getCopyClient();
@@ -87,73 +86,91 @@ public class Copy {
         SVNURL destinationURL = data.getDestinationURL();
         SVNCommitInfo results = SVNCommitInfo.NULL;
 
-        if (sourceFiles != null && destinationFile != null) {
-            // copy working copy to working copy, this is a local copy or move
-            SVNRevision revision = data.getRevision();
-            if (revision == null) {
-                revision = SVNRevision.WORKING;
-            }
-            // message on local copy
-            out.println("source file(s): ");
-            for (SVNCopySource source : sourceFiles) {
-                out.println("\t" + source.getFile().getAbsolutePath());
-            }
-            out.println("revision: " + revision);
+        try {
+            if ( sourceFiles != null && destinationFile != null ) {
+                // copy working copy to working copy, this is a local copy or move
+                SVNRevision revision = data.getRevision();
+                if ( revision == null ) {
+                    revision = SVNRevision.WORKING;
+                }
+                // message on local copy
+                out.println( "source file(s): " );
+                for ( SVNCopySource source : sourceFiles ) {
+                    out.println( "\t" + source.getFile().getAbsolutePath() );
+                }
+                out.println( "revision: " + revision );
 
-            // TODO: put hard-coded parameters in copy data
-            client.doCopy(sourceFiles, destinationFile, data.getIsMove(), true, false);
-        }
-        else if (sourceFiles != null && destinationURL != null) {
-            // copy working copy to repository with immediate commit, this can
-            // be used to make a branch or tag
-            SVNRevision revision = data.getRevision();
-            if (revision == null) {
-                revision = SVNRevision.WORKING;
+                // TODO: put hard-coded parameters in copy data
+                client.doCopy( sourceFiles, destinationFile, data.getIsMove(), true, false );
             }
-            // TODO: put hard-coded parameters in copy data
-            results = client.doCopy(sourceFiles, destinationURL, data.getIsMove(), true, false, data.getMessage(), null);
-        }
-        else if (sourceURLs != null && destinationURL != null) {
-            // copy a repository file or directory to another repository file or
-            // directory with immediate commit, this could be used to make a
-            // branch or tag
-            SVNRevision revision = data.getRevision();
-            if (revision == null) {
-                revision = SVNRevision.HEAD;
+            else if ( sourceFiles != null && destinationURL != null ) {
+                // copy working copy to repository with immediate commit, this can
+                // be used to make a branch or tag
+                SVNRevision revision = data.getRevision();
+                if ( revision == null ) {
+                    revision = SVNRevision.WORKING;
+                }
+                // TODO: put hard-coded parameters in copy data
+                results = client.doCopy( sourceFiles, destinationURL, data.getIsMove(), true, false, data.getMessage(), null );
             }
-            // TODO: put hard-coded parameters in copy data
-            results = client.doCopy(sourceURLs, destinationURL, data.getIsMove(), true, false, data.getMessage(), null);
-        }
-        else if (sourceURLs != null && destinationFile != null) {
-            // copy a file or directory from the repository to a local working
-            // copy, this can be used for an undelete.
-            SVNRevision revision = data.getRevision();
-            if (revision == null) {
-                revision = SVNRevision.WORKING;
+            else if ( sourceURLs != null && destinationURL != null ) {
+                // copy a repository file or directory to another repository file or
+                // directory with immediate commit, this could be used to make a
+                // branch or tag
+                SVNRevision revision = data.getRevision();
+                if ( revision == null ) {
+                    revision = SVNRevision.HEAD;
+                }
+                // TODO: put hard-coded parameters in copy data
+                // SVNCommitInfo doCopy(SVNCopySource[] sources, SVNURL dst, boolean isMove, boolean makeParents, boolean failWhenDstExists, String commitMessage, SVNProperties revisionProperties)
+                results = client.doCopy( sourceURLs, destinationURL, data.getIsMove(), true, false, data.getMessage(), null );
             }
-            // no message on copy to local
+            else if ( sourceURLs != null && destinationFile != null ) {
+                // copy a file or directory from the repository to a local working
+                // copy, this can be used for an undelete.
+                SVNRevision revision = data.getRevision();
+                if ( revision == null ) {
+                    revision = SVNRevision.WORKING;
+                }
+                // no message on copy to local
 
-            // TODO: put hard-coded parameters in copy data
-            client.doCopy(sourceURLs, destinationFile, data.getIsMove(), true, false);
-        }
-        else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Invalid file and/or URL parameters:\n");
-            sb.append("sourceFile(s) = ").append("\n");
-            for (SVNCopySource source : sourceFiles) {
-                sb.append("\t").append(source.getFile().getAbsolutePath()).append("\n");
+                // TODO: put hard-coded parameters in copy data
+                client.doCopy( sourceURLs, destinationFile, data.getIsMove(), true, false );
             }
-            sb.append("sourceURL(s) = ").append("\n");
-            for (SVNCopySource source : sourceURLs) {
-                sb.append("\t").append(source.getURL()).append("\n");
+            else {
+                StringBuilder sb = new StringBuilder();
+                sb.append( "Invalid file and/or URL parameters:\n" );
+                sb.append( "sourceFile(s) = " ).append( "\n" );
+                for ( SVNCopySource source : sourceFiles ) {
+                    sb.append( "\t" ).append( source.getFile().getAbsolutePath() ).append( "\n" );
+                }
+                sb.append( "sourceURL(s) = " ).append( "\n" );
+                for ( SVNCopySource source : sourceURLs ) {
+                    sb.append( "\t" ).append( source.getURL() ).append( "\n" );
+                }
+                sb.append( "destinationFile = " ).append( destinationFile ).append( "\n" );
+                sb.append( "destinationURL = " ).append( destinationURL ).append( "\n" );
+                throw new CommandInitializationException( sb.toString() );
             }
-            sb.append("destinationFile = ").append(destinationFile).append("\n");
-            sb.append("destinationURL = ").append(destinationURL).append("\n");
-            throw new CommandInitializationException(sb.toString());
-        }
 
-        out.flush();
-        out.close();
+            if ( results != null && results.equals( SVNCommitInfo.NULL ) ) {
+                // the commit didn't work, let the user know
+                out.println(results.getErrorMessage());
+                //javax.swing.JOptionPane.showMessageDialog(null, "Commit Error", results.getErrorMessage(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(CommandInitializationException cie) {
+            throw cie;   
+        }
+        catch(Exception e) {
+            out.println(e.getMessage());
+            e.printStackTrace();   
+        }
+        finally {
+            out.flush();
+            out.close();
+        }
+        
         return results;
     }
 }
