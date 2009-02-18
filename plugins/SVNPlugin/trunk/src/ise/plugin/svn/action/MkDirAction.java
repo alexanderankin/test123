@@ -91,10 +91,10 @@ public class MkDirAction extends SVNAction {
                 if ( isCanceled() ) {
                     return ;
                 }
-                data.setUsername( getUsername() );
-                data.setPassword( getPassword() );
             }
-
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+            
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );

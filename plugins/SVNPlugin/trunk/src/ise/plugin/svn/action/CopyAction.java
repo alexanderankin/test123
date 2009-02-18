@@ -81,6 +81,8 @@ public class CopyAction extends SVNAction {
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
         this.title = data.getTitle();
+        setUsername(data.getUsername());
+        setPassword(data.getPassword());
     }
 
 
