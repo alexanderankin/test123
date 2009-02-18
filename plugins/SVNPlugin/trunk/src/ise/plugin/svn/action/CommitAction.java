@@ -73,6 +73,7 @@ public class CommitAction extends SVNAction {
         if ( paths == null )
             throw new IllegalArgumentException( "paths may not be null" );
         this.paths = paths;
+        System.out.println("+++++ CommitAction, username/password = " + username + "/" + password);
         setUsername( username );
         setPassword( password );
     }

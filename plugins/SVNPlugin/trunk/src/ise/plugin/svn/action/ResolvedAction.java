@@ -113,10 +113,10 @@ public class ResolvedAction extends SVNAction {
                 if ( isCanceled() ) {
                     return ;
                 }
-                data.setUsername( getUsername() );
-                data.setPassword( getPassword() );
             }
-
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+            
             data.setPaths( paths );
 
             data.setOut( new ConsolePrintStream( getView() ) );

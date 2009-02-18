@@ -279,6 +279,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     }
                 };
         chooser.addActionListener( al );
+        
         if ( full ) {
             ActionListener refresh_al = new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {

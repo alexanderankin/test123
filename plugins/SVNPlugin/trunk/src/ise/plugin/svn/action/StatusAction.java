@@ -72,6 +72,8 @@ public class StatusAction extends SVNAction {
     public StatusAction( View view, SVNData data ) {
         super( view, jEdit.getProperty( "ips.Status", "Status" ) );
         this.data = data;
+        setUsername(data.getUsername());
+        setPassword(data.getPassword());
     }
 
     /**
@@ -98,6 +100,8 @@ public class StatusAction extends SVNAction {
             setUsername( data.getUsername() );
             setPassword( data.getPassword() );
         }
+        
+        System.out.println("+++++ StatusAction, username/password = " + getUsername() + "/" + getPassword());
         if ( data.getOut() == null ) {
             data.setOut( new ConsolePrintStream( getView() ) );
         }

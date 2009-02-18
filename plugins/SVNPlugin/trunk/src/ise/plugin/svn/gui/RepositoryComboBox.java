@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
-import java.awt.Component;
 import javax.swing.*;
 import java.util.*;
 import org.gjt.sp.jedit.jEdit;
@@ -193,26 +192,12 @@ public class RepositoryComboBox extends JComboBox {
             propertyMap.put(name, selected);
         }
 
-        // clear the old property values
+        // clear the old property values, this removes the property values from
+        // the jEdit property file for all repository data, new values will be
+        // written below.
         String url = null;
         int i = 0;
         do {
-            String name = jEdit.getProperty( propertyPrefix + "name." + i );
-            url = jEdit.getProperty( propertyPrefix + "url." + i );
-            String username = jEdit.getProperty( propertyPrefix + "username." + i );
-            String password = jEdit.getProperty( propertyPrefix + "password." + i );
-
-            // must have url at minimum, this also signals the end of the loop
-            if ( url == null ) {
-                break;
-            }
-
-            // set name to be same as url, this is partly for backward compatibility
-            // since the first release didn't allow naming a repository
-            if ( name == null ) {
-                name = url;
-            }
-
             jEdit.unsetProperty( propertyPrefix + "name." + i );
             jEdit.unsetProperty( propertyPrefix + "url." + i );
             jEdit.unsetProperty( propertyPrefix + "username." + i );
