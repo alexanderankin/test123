@@ -88,8 +88,12 @@ public class CopyAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( data != null ) {
+            // TODO: if copying to a url, need username/password for destination
+            // repository, which isn't necessarily the same as the username/password
+            // for the source.
             if ( getUsername() == null ) {
-                verifyLogin();
+                SVNCopySource[] sources = data.getSourceFiles();
+                verifyLogin(sources != null && sources.length > 0 && sources[0].getFile() != null ? sources[0].getFile().getAbsolutePath() : null );
                 if ( isCanceled() ) {
                     return ;
                 }

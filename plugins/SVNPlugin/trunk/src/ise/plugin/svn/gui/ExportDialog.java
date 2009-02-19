@@ -179,7 +179,7 @@ public class ExportDialog extends JDialog {
                             for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
                                 Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
                                 if ( selected ) {
-                                    paths.add( ( File ) file_table_model.getValueAt( row, 1 ) );
+                                    paths.add( new File( file_table_model.getValueAt( row, 1 ).toString() ) );
                                 }
                             }
 
