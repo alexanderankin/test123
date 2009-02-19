@@ -101,7 +101,6 @@ public class StatusAction extends SVNAction {
             setPassword( data.getPassword() );
         }
         
-        System.out.println("+++++ StatusAction, username/password = " + getUsername() + "/" + getPassword());
         if ( data.getOut() == null ) {
             data.setOut( new ConsolePrintStream( getView() ) );
         }

@@ -42,8 +42,8 @@ import ise.plugin.svn.library.PasswordHandler;
 public abstract class SVNAction implements ActionListener {
 
     private View view;
-    private String username;
-    private String password;
+    private String username = null;
+    private String password = null;
     private String actionName = "Subversion Command";
 
     private boolean canceled = false;
@@ -100,7 +100,7 @@ public abstract class SVNAction implements ActionListener {
      * Returns the value of username.
      */
     protected String getUsername() {
-        return username;
+        return username == null || username.length() == 0 ? null : username;
     }
 
     /**
@@ -115,7 +115,7 @@ public abstract class SVNAction implements ActionListener {
      * Returns the value of encrypted password.
      */
     protected String getPassword() {
-        return password;
+        return password == null || password.length() == 0 ? null : password;
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class SVNAction implements ActionListener {
         }
         String uname = getUsername();
         String pwd = getPassword();     // encrypted password
-
+        
         // no username, so assume no password.  Attempt to get username and
         // password from project the file belongs to
         if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
@@ -169,7 +169,6 @@ public abstract class SVNAction implements ActionListener {
             }
             uname = ld.getUsername();
             pwd = ld.getPassword();     // encrypted password from login dialog
-
         }
 
         setUsername( uname );
