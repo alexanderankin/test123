@@ -46,8 +46,8 @@ public class SVNData implements Serializable {
     private transient ConsolePrintStream err;
     private List<String> paths;
     private boolean pathsAreUrls = false;
-    private String username = "";
-    private String password = "";
+    private String username = null;
+    private String password = null;
     private boolean recursive = false;
     private boolean force = false;
     private boolean dryRun = false;
@@ -130,10 +130,10 @@ public class SVNData implements Serializable {
     }
 
     /**
-     * Returns the value of username.
+     * Returns the value of username, returns null if previously set to empty string.
      */
     public String getUsername() {
-        return username;
+        return username == null || username.length() == 0 ? null : username;
     }
 
     /**
@@ -145,10 +145,10 @@ public class SVNData implements Serializable {
     }
 
     /**
-     * Returns the value of password.
+     * Returns the value of password, returns null if previously set to empty string.
      */
     public String getPassword() {
-        return password;
+        return password == null || password.length() == 0 ? null : password;
     }
 
     public String getDecryptedPassword() {

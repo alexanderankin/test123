@@ -41,7 +41,8 @@ import javax.swing.SwingUtilities;
  * Some methods to help work with ProjectViewer.
  */
 public class PVHelper {
-    // prefix for properties stored for Subversion per ProjectViewer project
+    // prefix for properties stored for Subversion per ProjectViewer project,
+    // property names are PREFIX + project name + username/password
     public final static String PREFIX = "ise.plugin.svn.pv.";
 
     // filename to project name lookup, caching these to improve performance, but
