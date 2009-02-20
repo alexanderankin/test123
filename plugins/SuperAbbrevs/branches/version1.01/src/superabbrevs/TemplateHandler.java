@@ -45,8 +45,7 @@ public class TemplateHandler {
     void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand)
             throws TargetError, ParseException, EvalError, IOException {
         
-        int templateStart = getSelectionStart();
-        String indent = getIndent(templateStart);
+        String indent = getIndent(getSelectionStart());
         
         TemplateInterpreter ti = new TemplateInterpreter(jedit);
         ti.setInput(abbrev, invokedAsACommand, indent);
@@ -56,7 +55,8 @@ public class TemplateHandler {
         }        
 
         TemplateFactory tf = new TemplateFactory(ti, indent);
-        
+
+        int templateStart = getSelectionStart();
         Template t = tf.createTemplate(abbrev.getExpansion());
         t.setOffset(templateStart);
 
@@ -188,7 +188,7 @@ public class TemplateHandler {
 
     private void selectReplacementArea(Abbrev.WhenInvokedAsCommand whenInvokedAsCommand) {
     	SelectionReplacementTypes replacementType = whenInvokedAsCommand.onSelection.replace();
-        if (replacementType != SelectionReplacementTypes.NOTHING && hasSelection()) {
+        if (hasSelection()) {
             selectReplacementArea(replacementType);
         } else {
             selectReplacementArea(whenInvokedAsCommand.replace());

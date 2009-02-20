@@ -51,14 +51,12 @@ public class TemplateInterpreter {
             interpreter.source(Paths.TEMPLATE_GENERATION_FUNCTION_PATH);
             
             interpreter.set("std", std);
-            interpreter.set("input", "");
+            setEmptyInput();
             interpreter.set("indent", indent);
 
             if (invokedAsACommand) {
-                SelectionReplacementTypes replacementType =
-                        abbrev.whenInvokedAsCommand.onSelection.replace();
-                if (replacementType != SelectionReplacementTypes.NOTHING && hasSelection()) {
-                    setInput(replacementType);
+                if (hasSelection()) {
+                    setInput(abbrev.whenInvokedAsCommand.onSelection.replace());
                 } else {
                     setInput(abbrev.whenInvokedAsCommand.replace());
                 }
@@ -72,6 +70,10 @@ public class TemplateInterpreter {
             assert false : "This should never happen";
         }
     }
+
+	private void setEmptyInput() throws EvalError {
+		interpreter.set("input", "");
+	}
 
 	private boolean hasSelection() {
 		return 1 == jedit.getTextArea().getSelectionCount();
@@ -87,6 +89,7 @@ public class TemplateInterpreter {
 
     private void setInput(SelectionReplacementTypes inputType) throws EvalError {
         switch (inputType) {
+        	case NOTHING: break;
             case SELECTED_LINES: setSelectedLines(); break;
             case SELECTION: setSelection(); break;
         }
