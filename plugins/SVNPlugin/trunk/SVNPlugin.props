@@ -18,16 +18,13 @@ plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.15.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 2.1.0
-plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar
+plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar jna.jar
 
 # titles for DockableWindowManager
 subversion.title=SVN
 subversion.label=SVN
 subversion.browser.title=SVN Browser
 subversion.browser.label=SVN Browser
-
-# new setting for jEdit 4.2
-plugin.ise.plugin.svn.SVNPlugin.activate=startup
 
 # plugin option pane
 plugin.ise.plugin.svn.SVNPlugin.option-pane=svnplugin
