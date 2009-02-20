@@ -21,14 +21,14 @@ import javax.swing.border.TitledBorder;
 
 import superabbrevs.gui.verifiers.NonEmptyTextVerifier;
 import superabbrevs.model.Abbrev;
-import superabbrevs.model.Abbrev.ReplacementTypes;
-import superabbrevs.model.Abbrev.ReplementSelectionTypes;
-import superabbrevs.model.Abbrev.WhenInvokedAsCommand;
+import superabbrevs.model.ReplacementTypes;
+import superabbrevs.model.SelectionReplacementTypes;
 
 public class AbbrevsEditorPane extends JPanel {
 	
 	public AbbrevsEditorPane() {
 		initComponents();
+		updateComponentState();
     }
 	
 	public void setAbbrev(Abbrev abbrev) {
@@ -41,9 +41,8 @@ public class AbbrevsEditorPane extends JPanel {
 		if (activeAbbrev != null) {
 			activeAbbrev.setAbbreviation(abbrevJTextField.getText());
 			activeAbbrev.setExpansion(abbrevsEditorJTextArea.getText());
-			Abbrev.WhenInvokedAsCommand whenInvokedAsCommand = new Abbrev.WhenInvokedAsCommand();
-			whenInvokedAsCommand.replacementType = (ReplacementTypes) commandNoSelectionReplacementJComboBox.getSelectedItem();
-			whenInvokedAsCommand.replacementSelectionType = (ReplementSelectionTypes) commandSelectionReplacementJComboBox.getSelectedItem();
+			activeAbbrev.whenInvokedAsCommand.replace(getReplacementType());
+			activeAbbrev.whenInvokedAsCommand.onSelection.replace(getSelectionReplacementType());
 		}
 	}
 
@@ -53,7 +52,12 @@ public class AbbrevsEditorPane extends JPanel {
 		} else {			
 			UpdatePanelValues(activeAbbrev);
 		}
-		setEnabled(activeAbbrev != null);
+
+		boolean enabled = activeAbbrev != null;
+		abbrevJTextField.setEnabled(enabled);
+		abbrevsEditorJTextArea.setEnabled(enabled);
+		commandNoSelectionReplacementJComboBox.setEnabled(enabled);
+		commandSelectionReplacementJComboBox.setEnabled(enabled);
 	}
 	
 	private void UpdatePanelValues(Abbrev abbrev) {
@@ -62,22 +66,36 @@ public class AbbrevsEditorPane extends JPanel {
 		}
 		abbrevJTextField.setText(abbrev.getAbbreviation());
 		abbrevsEditorJTextArea.setText(abbrev.getExpansion());
-		WhenInvokedAsCommand whenInvokedAsCommand = abbrev.getWhenInvokedAsCommand();
-		commandNoSelectionReplacementJComboBox.setSelectedItem(whenInvokedAsCommand.replacementType);
-		commandSelectionReplacementJComboBox.setSelectedItem(whenInvokedAsCommand.replacementSelectionType);
+		setReplacementType(abbrev.whenInvokedAsCommand.replace());
+		setSelectionReplacementType(abbrev.whenInvokedAsCommand.onSelection.replace());
 	}
 
 	private void ClearPanel() {
 		abbrevJTextField.setText("");
 		abbrevsEditorJTextArea.setText("");
-		commandNoSelectionReplacementJComboBox.setSelectedItem(Abbrev.ReplacementTypes.AT_CARET);
-		commandSelectionReplacementJComboBox.setSelectedItem(Abbrev.ReplementSelectionTypes.NOTHING);
+		setReplacementType(ReplacementTypes.AT_CARET);
+		setSelectionReplacementType(SelectionReplacementTypes.NOTHING);
+	}
+
+	private void setSelectionReplacementType(SelectionReplacementTypes replacementType) {
+		commandSelectionReplacementJComboBox.setSelectedItem(replacementType);
+	}
+
+	private SelectionReplacementTypes getSelectionReplacementType() {
+		return (SelectionReplacementTypes) 
+			commandSelectionReplacementJComboBox.getSelectedItem();
+	}
+
+	private void setReplacementType(ReplacementTypes replacementType) {
+		commandNoSelectionReplacementJComboBox.setSelectedItem(replacementType);
+	}
+	
+	private ReplacementTypes getReplacementType() {
+		return (ReplacementTypes) 
+			commandNoSelectionReplacementJComboBox.getSelectedItem();
 	}
 
 	private void initComponents() {
-		
-		setEnabled(false);
-		
 		GridBagLayout layout = new GridBagLayout();
 		setLayout(layout);
 		
@@ -131,7 +149,6 @@ public class AbbrevsEditorPane extends JPanel {
         panel.add(abbrevJLabel, BorderLayout.WEST);
         
         abbrevJTextField.setToolTipText("Enter the abbreviation");
-        abbrevJTextField.setEnabled(true);
         abbrevJTextField.getAccessibleContext().setAccessibleName("abbrevJTextField");
         abbrevJTextField.addKeyListener(new KeyAdapter() {
 			@Override
@@ -170,30 +187,18 @@ public class AbbrevsEditorPane extends JPanel {
 
         return panel;
 	}
-    
+
     /**
      * A combobox model containing all the replacaments types used in the 
      * replacement area combobox if some text is selected in the text area.
      */
-    private ComboBoxModel commandInputModel = new DefaultComboBoxModel(
-            new Abbrev.ReplacementTypes[]{
-        Abbrev.ReplacementTypes.AT_CARET,
-        Abbrev.ReplacementTypes.CHAR,
-        Abbrev.ReplacementTypes.LINE,
-        Abbrev.ReplacementTypes.WORD,
-        Abbrev.ReplacementTypes.BUFFER
-    });
+    private ComboBoxModel commandInputModel = new DefaultComboBoxModel(ReplacementTypes.values());
     
     /**
      * A combobox model containing all the replacaments types used in the 
      * replacement area combobox if no text is selected in the text area.
      */
-    private ComboBoxModel commandInputSelectionModel = new DefaultComboBoxModel(
-            new Abbrev.ReplementSelectionTypes[]{
-        Abbrev.ReplementSelectionTypes.NOTHING,
-        Abbrev.ReplementSelectionTypes.SELECTION,
-        Abbrev.ReplementSelectionTypes.SELECTED_LINES
-    });
+    private ComboBoxModel commandInputSelectionModel = new DefaultComboBoxModel(SelectionReplacementTypes.values());
     
 	private Abbrev activeAbbrev;
 	private JLabel abbrevJLabel = new JLabel();

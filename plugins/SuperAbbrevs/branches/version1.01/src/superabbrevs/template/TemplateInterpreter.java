@@ -8,8 +8,8 @@ import org.gjt.sp.jedit.bsh.Interpreter;
 import superabbrevs.JEditInterface;
 import superabbrevs.Paths;
 import superabbrevs.model.Abbrev;
-import superabbrevs.model.Abbrev.ReplacementTypes;
-import superabbrevs.model.Abbrev.ReplementSelectionTypes;
+import superabbrevs.model.ReplacementTypes;
+import superabbrevs.model.SelectionReplacementTypes;
 import superabbrevs.stdlib.Std;
 import superabbrevs.stdlib.Tpg;
 
@@ -55,14 +55,12 @@ public class TemplateInterpreter {
             interpreter.set("indent", indent);
 
             if (invokedAsACommand) {
-
-                Abbrev.ReplementSelectionTypes replacementSelectionType =
-                        abbrev.whenInvokedAsCommand.replacementSelectionType;
-                if (replacementSelectionType != Abbrev.ReplementSelectionTypes.NOTHING &&
-                        1 == jedit.getTextArea().getSelectionCount()) {
-                    setInput(replacementSelectionType);
+                SelectionReplacementTypes replacementType =
+                        abbrev.whenInvokedAsCommand.onSelection.replace();
+                if (replacementType != SelectionReplacementTypes.NOTHING && hasSelection()) {
+                    setInput(replacementType);
                 } else {
-                    setInput(abbrev.whenInvokedAsCommand.replacementType);
+                    setInput(abbrev.whenInvokedAsCommand.replace());
                 }
             }
 
@@ -74,6 +72,10 @@ public class TemplateInterpreter {
             assert false : "This should never happen";
         }
     }
+
+	private boolean hasSelection() {
+		return 1 == jedit.getTextArea().getSelectionCount();
+	}
     
     private void setCaretChar() throws EvalError {
         interpreter.set("input", "" + tpg.getChar());
@@ -83,7 +85,7 @@ public class TemplateInterpreter {
         interpreter.set("input", tpg.getBufferText());
     }
 
-    private void setInput(ReplementSelectionTypes inputType) throws EvalError {
+    private void setInput(SelectionReplacementTypes inputType) throws EvalError {
         switch (inputType) {
             case SELECTED_LINES: setSelectedLines(); break;
             case SELECTION: setSelection(); break;

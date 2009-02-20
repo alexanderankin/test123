@@ -8,8 +8,6 @@
  */
 package superabbrevs;
 
-import superabbrevs.model.Abbrev.ReplementSelectionTypes;
-import superabbrevs.model.Abbrev.ReplacementTypes;
 import superabbrevs.utilities.TextUtil;
 import org.gjt.sp.jedit.bsh.EvalError;
 import org.gjt.sp.jedit.bsh.ParseException;
@@ -19,6 +17,8 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import superabbrevs.model.Abbrev;
+import superabbrevs.model.ReplacementTypes;
+import superabbrevs.model.SelectionReplacementTypes;
 import superabbrevs.template.fields.EndField;
 import superabbrevs.template.fields.SelectableField;
 import superabbrevs.template.Template;
@@ -168,8 +168,8 @@ public class TemplateHandler {
         textArea.setSelection(new Selection.Range(start, --end));
     }
 
-    private void selectReplacementArea(ReplementSelectionTypes replaceType) {
-        switch (replaceType) {
+    private void selectReplacementArea(SelectionReplacementTypes replacementType) {
+        switch (replacementType) {
             case NOTHING: textArea.selectNone(); break;
             case SELECTED_LINES: selectLines(); break;
             case SELECTION: break;
@@ -186,15 +186,16 @@ public class TemplateHandler {
         }
     }
 
-    private void selectReplacementArea(
-            Abbrev.WhenInvokedAsCommand whenInvokedAsCommand) {
-        Abbrev.ReplementSelectionTypes replacementSelectionType =
-                whenInvokedAsCommand.replacementSelectionType;
-        if (replacementSelectionType != Abbrev.ReplementSelectionTypes.NOTHING &&
-                1 == textArea.getSelectionCount()) {
-            selectReplacementArea(replacementSelectionType);
+    private void selectReplacementArea(Abbrev.WhenInvokedAsCommand whenInvokedAsCommand) {
+    	SelectionReplacementTypes replacementType = whenInvokedAsCommand.onSelection.replace();
+        if (replacementType != SelectionReplacementTypes.NOTHING && hasSelection()) {
+            selectReplacementArea(replacementType);
         } else {
-            selectReplacementArea(whenInvokedAsCommand.replacementType);
+            selectReplacementArea(whenInvokedAsCommand.replace());
         }
     }
+
+	private boolean hasSelection() {
+		return 1 == textArea.getSelectionCount();
+	}
 }

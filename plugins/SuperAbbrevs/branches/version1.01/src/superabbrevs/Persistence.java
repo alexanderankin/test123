@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.gjt.sp.util.IOUtilities;
+
 import superabbrevs.model.Abbrev;
 import superabbrevs.model.Mode;
 import superabbrevs.model.Variable;
@@ -50,28 +52,20 @@ public class Persistence {
     
     public Mode loadMode(String mode) {
         File modeFile = getModeFileName(mode);
-        if (modeFile.exists()) {
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(modeFile);
-                XStream xstream = new XStream();
-                xstream.setMode(XStream.NO_REFERENCES);
-                setupFormating(xstream);
-                Mode result = (Mode) xstream.fromXML(in);
-                return result;
-            } catch (FileNotFoundException ex) {
-                Log.log(Log.Level.ERROR,Persistence.class, ex);
-            } finally {
-                try {
-                    if (in != null) in.close();
-                } catch (IOException ex) {
-                    Log.log(Log.Level.ERROR,Persistence.class, ex);
-                }
-            }    
-        }
-        
-        // If the mode file does not exist return a empty abbreviation list
-        return new Mode(mode);
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(modeFile);
+            XStream xstream = new XStream();
+            xstream.setMode(XStream.NO_REFERENCES);
+            setupFormating(xstream);
+            Mode result = (Mode) xstream.fromXML(in);
+            return result;
+        } catch (FileNotFoundException ex) {
+            // If the mode file does not exist return a empty abbreviation list
+            return new Mode(mode);
+        } finally {
+        	IOUtilities.closeQuietly(in);
+        }    
     }
 
 	protected File getModeFileName(String mode) {
