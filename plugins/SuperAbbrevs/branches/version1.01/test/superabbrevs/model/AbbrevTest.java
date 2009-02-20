@@ -18,7 +18,21 @@ public class AbbrevTest {
 	}
 	
 	@Test
-	public void setAbbreviation() throws Exception {
+	public void setReplementType() throws Exception {
+		ReplacementTypes replacementType = ReplacementTypes.WORD;
+		abbrev.whenInvokedAsCommand.replace(replacementType);
+		assertEquals(replacementType, abbrev.whenInvokedAsCommand.replace());
+	}
+	
+	@Test
+	public void setSelectionReplementType() throws Exception {
+		SelectionReplacementTypes replamentType = SelectionReplacementTypes.SELECTION;
+		abbrev.whenInvokedAsCommand.onSelection.replace(replamentType);
+		assertEquals(replamentType, abbrev.whenInvokedAsCommand.onSelection.replace());
+	}
+	
+	@Test
+	public void setAbbreviationFiresPropertyChangeEvent() throws Exception {
 		String propertyName = "abbreviation";
 		String oldValue = abbrev.getAbbreviation();
 		String newValue = "New value";
@@ -30,7 +44,7 @@ public class AbbrevTest {
 	}
 	
 	@Test
-	public void setExpansion() throws Exception {
+	public void setExpansionFiresPropertyChangeEvent() throws Exception {
 		String propertyName = "expansion";
 		String oldValue = abbrev.getExpansion();
 		String newValue = "newValue";
@@ -42,7 +56,7 @@ public class AbbrevTest {
 	}
 	
 	@Test
-	public void setName() throws Exception {
+	public void setNameFiresPropertyChangeEvent() throws Exception {
 		String propertyName = "name";
 		String oldValue = abbrev.getName();
 		String newValue = "newValue";

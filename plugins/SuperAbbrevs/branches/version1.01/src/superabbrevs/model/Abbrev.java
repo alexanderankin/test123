@@ -5,39 +5,6 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 
 public class Abbrev implements Serializable, Comparable<Abbrev> {
-
-	public enum ReplacementTypes {
-		AT_CARET("At caret"), BUFFER("Buffer"), LINE("Line"), WORD("Word"), CHAR(
-				"Character");
-
-		private String label;
-
-		ReplacementTypes(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String toString() {
-			return label;
-		}
-	}
-
-	public enum ReplementSelectionTypes {
-		NOTHING("Nothing"), SELECTION("Selection"), SELECTED_LINES(
-				"Selected lines");
-
-		private String label;
-
-		ReplementSelectionTypes(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String toString() {
-			return label;
-		}
-	}
-
 	/**
 	 * A short name of the abbreviation.
 	 */
@@ -100,29 +67,32 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 		propertySupport.firePropertyChange("name", oldValue, name);
 	}
 
-	public WhenInvokedAsCommand getWhenInvokedAsCommand() {
-		return whenInvokedAsCommand;
-	}
-
-	public void setWhenInvokedAsCommand(
-			WhenInvokedAsCommand whenInvokedAsCommand) {
-		this.whenInvokedAsCommand = whenInvokedAsCommand;
-	}
-
+	public final WhenInvokedAsCommand whenInvokedAsCommand = new WhenInvokedAsCommand();
+	
 	public static class WhenInvokedAsCommand {
-		/**
-		 * The type of input provided for the abbreviation generation.
-		 */
-		public ReplacementTypes replacementType = ReplacementTypes.AT_CARET;
+		private ReplacementTypes replacementType = ReplacementTypes.AT_CARET;
+		
+		public void replace(ReplacementTypes replacementType) {
+			this.replacementType = replacementType;
+		}
+		
+		public ReplacementTypes replace() {
+			return replacementType;
+		}
+		
+		public final OnSelection onSelection = new OnSelection();
+		public static class OnSelection {
+			private SelectionReplacementTypes replacementType = SelectionReplacementTypes.NOTHING;
 
-		/**
-		 * The type of input provided for the abbreviation generation when text
-		 * is selected in the buffer.
-		 */
-		public ReplementSelectionTypes replacementSelectionType = ReplementSelectionTypes.NOTHING;
+			public void replace(SelectionReplacementTypes replacementType) {
+				this.replacementType = replacementType;
+			}
+
+			public SelectionReplacementTypes replace() {
+				return replacementType;
+			}
+		}
 	}
-
-	public WhenInvokedAsCommand whenInvokedAsCommand = new WhenInvokedAsCommand();
 
 	/**
 	 * Creates a new instance of Abbrev
