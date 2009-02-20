@@ -12,6 +12,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -104,9 +105,11 @@ public class AbbrevsManagerPane extends JPanel {
         abbrevsEditorJSplitPane.setDividerLocation(220);
         abbrevsEditorJSplitPane.setLeftComponent(abbrevsJPanel);
         abbrevsEditorJSplitPane.setRightComponent(abbrevEditorPane);
-
+        
         setLayout(new BorderLayout());
         add(abbrevsEditorJSplitPane, java.awt.BorderLayout.CENTER);
+        
+        modesJComboBox.bind();
     }
 
 	private JPanel createAbbrevListPanel() {
@@ -161,32 +164,41 @@ public class AbbrevsManagerPane extends JPanel {
         panel.add(modeJLabel);
     	
     	modesJComboBox = new ModesComboBox(controller.getModeService());
-        modesJComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        modesJComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 modesJComboBoxActionPerformed(evt);
             }
         });
-        modesJComboBox.bind();
         panel.add(modesJComboBox);
         
         return panel;
 	}
-    private void abbrevsJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_abbrevsJListValueChanged
+    private void abbrevsJListValueChanged(javax.swing.event.ListSelectionEvent evt) {
     	Abbrev selectedAbbrev = abbrevsJList.getSelectedValue();
+    	updateComponentState();
 		abbrevEditorPane.setAbbrev(selectedAbbrev);
     }
 
-    private void modesJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
-    	abbrevsJList.clearSelection();
-        String modeName = modesJComboBox.getSelectedItem();
-        abbrevsJList.setMode(controller.loadMode(modeName));
+    private void updateComponentState() {
+		boolean hasSelectedValue = abbrevsJList.hasSelectedValue();
+		renameAction.setEnabled(hasSelectedValue);
+		removeAction.setEnabled(hasSelectedValue);
+	}
+
+	private void modesJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        loadSelectedMode();
     }
+
+	private void loadSelectedMode() {
+		String modeName = modesJComboBox.getSelectedItem();
+        abbrevsJList.setMode(controller.loadMode(modeName));
+	}
 
     private void abbrevsJListMouseReleased(java.awt.event.MouseEvent evt) {
         maybeShowPopup(evt);
     }
 
-    private void abbrevsJListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_abbrevsJListMousePressed
+    private void abbrevsJListMousePressed(java.awt.event.MouseEvent evt) {
         maybeShowPopup(evt);
     }
 
@@ -233,18 +245,13 @@ public class AbbrevsManagerPane extends JPanel {
      */
     public void save() throws ValidationException {
         try {
-        	// Validate the entered abbrev
-        	// Save the entered abbrev
         	abbrevEditorPane.saveActiveAbbrev();
             controller.saveAbbrevs();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
                     "Could not write the file abbreviation file",
                     "Write to file error", JOptionPane.ERROR_MESSAGE);
-        } /*catch (ValidationException ex) {
-            showValidationException(ex);
-            throw ex;
-        }*/
+        } 
         
         saveWindowState();
     }
@@ -286,10 +293,7 @@ public class AbbrevsManagerPane extends JPanel {
             String name = JOptionPane.showInputDialog(mainPanel,
                     "Enter the name of the new abbreviation");
             if (name != null && !name.trim().equals("")) {
-                abbrevsJList.clearSelection();
-                // Add the new abbrev to the model
-                // Select it in the list
-                //abbrevsJList.ensureIndexIsVisible(selection);
+            	abbrevsJList.addAbbrev(name);
             }
         }
     }
@@ -317,7 +321,6 @@ public class AbbrevsManagerPane extends JPanel {
 
             if (result == JOptionPane.OK_OPTION) {
             	abbrevsJList.removeSelectedAbbreviation();
-                abbrevsJList.clearSelection();
             }
         }
     }
@@ -345,12 +348,7 @@ public class AbbrevsManagerPane extends JPanel {
             // abbreviation list will have to be resorted.
             if (name != null && !"".equals(name.trim()) && 
                     !name.equals(abbrev.getName())) {
-                abbrevsJList.clearSelection();
-
                 abbrev.setName(name);
-                //selection = abbrevsModel.update(selection, name);
-                //setSelection(selection);
-                //abbrevsJList.ensureIndexIsVisible(selection);
                 abbrevsJList.grabFocus();
             }
         }
@@ -413,5 +411,5 @@ public class AbbrevsManagerPane extends JPanel {
     private ModesComboBox modesJComboBox;
     private JMenuItem removeAddJMenuItem =  new JMenuItem();
     private JButton removeJButton = new JButton();
-    private JMenuItem renameJMenuItem = new JMenuItem();
+    private JMenuItem renameJMenuItem = new JMenuItem();    
 }

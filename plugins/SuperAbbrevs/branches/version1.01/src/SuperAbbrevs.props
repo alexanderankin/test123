@@ -16,7 +16,7 @@ plugin.superabbrevs.SuperAbbrevsPlugin.docs=doc/index.html
 
 superabbrevs.label=SuperAbbrevs
 
-plugin.superabbrevs.SuperAbbrevsPlugin.jars=beansbinding-1.2.1.jar xpp3_min-1.1.3.4.O.jar xstream-1.2.1.jar
+plugin.superabbrevs.SuperAbbrevsPlugin.jars=xstream-1.2.1.jar guice-1.0.jar
 
 plugin.superabbrevs.SuperAbbrevsPlugin.menu=SuperAbbrevs.showSearchDialog \
                                             SuperAbbrevs.showOptionPane
