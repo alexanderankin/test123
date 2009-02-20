@@ -4,6 +4,7 @@
     <!-- read build.props to override properties set below -->
     <property file="../build.properties"/>
     <property file="build.properties"/>
+    <property file="SVNPlugin.props"/>
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir" value="../.."/>
@@ -13,7 +14,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
 
     <!-- version number -->
-    <property name="build.num" value="1.0.0"/>
+    <property name="build.num" value="${plugin.ise.plugin.svn.SVNPlugin.version}"/>
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -56,10 +57,10 @@
             <pathelement path="${java.class.path}"/>
 
          <!-- SVNKit jars -->
-            <pathelement location="${lib.dir}/ganymed.jar"/>
+            <pathelement location="${lib.dir}/trilead.jar"/>
             <pathelement location="${lib.dir}/svnkit-cli.jar"/>
             <pathelement location="${lib.dir}/svnkit.jar"/>
-            <pathelement location="${lib.dir}/svnkit-javahl.jar"/>
+            <pathelement location="${lib.dir}/jna.jar"/>
 
          <!-- required for jEdit plugin -->
             <pathelement location="${jedit.install.dir}/jedit.jar" />
@@ -67,9 +68,6 @@
          <!-- dependencies -->
             <pathelement location="${install.dir}/ProjectViewer.jar"/>
             <pathelement location="${install.dir}/kappalayout.jar"/>
-            <pathelement location="${install.dir}/Console.jar"/>
-            <pathelement location="${install.dir}/xml-apis.jar"/>
-            <pathelement location="${install.dir}/xercesImpl.jar"/>
             <pathelement location="${install.dir}/JDiffPlugin.jar"/>
         </path>
     </target>
@@ -80,11 +78,6 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
-        <!--
-        <exec executable="/usr/bin/javac">
-            <arg value="-version"/>
-        </exec>
-        -->
         <javac deprecation="on"
                 debug="on"
                 nowarn="off"
@@ -124,14 +117,13 @@
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="init,compile,prep_files">
 
-
         <!-- make the plugin jar file -->
         <tstamp/>
-        <jar jarfile="${install.dir}/${ant.project.name}.jar">
+        <jar jarfile="${install.dir}/${plugin.ise.plugin.svn.SVNPlugin.name}.jar">
             <manifest>
-                <attribute name="AppName" value="${ant.project.name}" />
+                <attribute name="AppName" value="${plugin.ise.plugin.svn.SVNPlugin.name}" />
                 <attribute name="AppVersion" value="${build.num}" />
-                <attribute name="Author" value="Dale Anson" />
+                <attribute name="Author" value="${plugin.ise.plugin.svn.SVNPlugin.author}" />
                 <attribute name="Created-By" value="${user.name}" />
                 <attribute name="Created-On" value="${TODAY}"/>
             </manifest>
