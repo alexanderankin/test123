@@ -14,9 +14,19 @@ public class AbbrevsListModel extends AbstractListModel {
 	
 	public AbbrevsListModel(Collection<? extends Abbrev> abbrevs) {
 		items = new ArrayList<Abbrev>(abbrevs);
-		if (!items.isEmpty()) {
-			Collections.sort(items);
+		sort();
+	}
+	
+	public boolean remove(Abbrev abbrev) {
+		
+		int index = items.indexOf(abbrev);
+		boolean exists = index != -1;
+		
+		if (exists) {
+			items.remove(index);
+			fireIntervalRemoved(this, index, index);
 		}
+		return exists;
 	}
 	
 	public Abbrev getElementAt(int index) {
@@ -25,5 +35,11 @@ public class AbbrevsListModel extends AbstractListModel {
 
 	public int getSize() {
 		return items.size();
+	}
+
+	public void sort() {
+		if (!items.isEmpty()) {
+			Collections.sort(items);
+		}
 	}
 }

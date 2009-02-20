@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -143,6 +144,16 @@ public class SortedSetTest {
 	public void toArrayTest() throws Exception {
 		Integer[] array = sortedSet.toArray(new Integer[0]);
 		assertValues(Arrays.asList(array), 0, 1, 3, 4, 5, 7, 8, 9);
+	}
+	
+	@Test
+	public void toObjectArrayTest() throws Exception {
+		Object[] array = sortedSet.toArray();
+		List<Integer> list = new ArrayList<Integer>();
+		for (Object element : array) {
+			list.add((Integer)element);
+		}
+		assertValues(list, 0, 1, 3, 4, 5, 7, 8, 9);
 	}
 
 	protected static void assertValues(Iterable<Integer> actual, int... expected) {

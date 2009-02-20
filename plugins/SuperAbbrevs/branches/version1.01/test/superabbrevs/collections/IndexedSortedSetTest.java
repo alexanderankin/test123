@@ -39,4 +39,10 @@ public class IndexedSortedSetTest extends SortedSetTest {
 		assertValues(indexedSortedSet.subList(2, 6), 3, 4, 5, 7);
 	}
 
+	@Test
+	public void setTest() throws Exception {
+		int oldValue = indexedSortedSet.set(3, 10);
+		assertValues(indexedSortedSet, 0, 1, 3, 5, 7, 8, 9, 10);
+		assertEquals(4, oldValue);
+	}
 }
