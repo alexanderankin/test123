@@ -56,6 +56,9 @@ public class SessionSwitcher
 		Insets nullInsets = new Insets(0,0,0,0);
 
 		combo = new JComboBox(SessionManager.getInstance().getSessionNames());
+		int maxEntries = jEdit.getIntegerProperty(
+			"options.sessions.switcher.maxListSize", 8);
+		combo.setMaximumRowCount(maxEntries);
 		combo.setSelectedItem(SessionManager.getInstance().getCurrentSession());
 		combo.setEditable(false);
 		combo.addItemListener(this);

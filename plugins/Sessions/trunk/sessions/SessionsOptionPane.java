@@ -25,9 +25,15 @@ package sessions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
@@ -49,6 +55,8 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	private JCheckBox bChangeFSBDirectory;
 	private JCheckBox bShowSessionNameInTitleBar;
 	private JCheckBox bShowSessionPrefixInTitleBar;
+	private SpinnerNumberModel maxSessionListSizeModel;
+	private JSpinner  maxSessionListSize;
 
 
 	public SessionsOptionPane()
@@ -114,11 +122,29 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 			jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true)
 		);
 		bShowSessionNameInTitleBar.addActionListener(this);
-				
+		
 		bShowSessionPrefixInTitleBar = new JCheckBox(
 			jEdit.getProperty("options.sessions.switcher.showSessionPrefixInTitleBar"),
 			jEdit.getBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", true)
 		);
+		
+		// Max list size for session switcher combo
+		Box maxSessListSizePanel = new Box(BoxLayout.X_AXIS);
+		maxSessListSizePanel.add(new JLabel(
+			jEdit.getProperty("options.sessions.switcher.maxListSize.label"))
+		);
+		Integer maxListSize = 
+			jEdit.getIntegerProperty("options.sessions.switcher.maxListSize", 8);
+		maxSessionListSizeModel = new SpinnerNumberModel(
+			maxListSize,
+			new Integer(5),
+			new Integer(50), 
+			new Integer(1)
+		);
+		maxSessionListSize = new JSpinner(maxSessionListSizeModel);
+		maxSessionListSize.setMaximumSize(maxSessionListSize.getPreferredSize());
+		maxSessListSizePanel.add(maxSessionListSize);
+		maxSessListSizePanel.add(maxSessListSizePanel.createHorizontalGlue());
 		
 		addComponent(bAutoSave);
 		addComponent("    ", bAskSave);
@@ -128,10 +154,10 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		addComponent("    ", bShowJEditToolBar);
 		addComponent("    ", bShowInsideBufferList);
 		addComponent("    ", bShowTitle);
+		addComponent("    ", maxSessListSizePanel);
 		addComponent(bChangeFSBDirectory);
 		addComponent(bShowSessionNameInTitleBar);
 		addComponent("    ", bShowSessionPrefixInTitleBar);
-		
 	}
 
 
@@ -147,6 +173,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		jEdit.setBooleanProperty("sessions.switcher.changeFSBDirectory", bChangeFSBDirectory.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showSessionNameInTitleBar", bShowSessionNameInTitleBar.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", bShowSessionPrefixInTitleBar.isSelected());
+		jEdit.setIntegerProperty("options.sessions.switcher.maxListSize", (Integer)maxSessionListSizeModel.getNumber());
 	}
 
 
