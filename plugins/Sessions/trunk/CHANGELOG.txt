@@ -1,3 +1,6 @@
+VERSION 1.5.0 (Steve Jakob)
+- added a property in the Sessions plugin options to specify the maximum number of entries for the session switcher combo
+- removed calls to deprecated methods
 
 VERSION 1.4.3 (Steve Jakob)
 - incorporated code submitted by halyavin (patch #2006663) to change XML parser from Microstar's AElfred parser to the SAX parser provided by jEdit's XMLUtilities class (bugs 1992191 and 2046470)

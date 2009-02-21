@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 
@@ -414,7 +415,7 @@ public class SessionManager implements EBComponent
 			}
 		});
 
-		Arrays.sort(files, new MiscUtilities.StringICaseCompare());
+		Arrays.sort(files, new StandardUtilities.StringCompare(false));
 
 		Vector v = new Vector();
 		boolean foundDefault = false;

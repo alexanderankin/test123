@@ -122,7 +122,7 @@ public class SessionPropertiesDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(view);
-		show();
+		setVisible(true);
 	}
 
 
