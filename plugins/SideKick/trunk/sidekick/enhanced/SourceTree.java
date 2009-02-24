@@ -83,8 +83,6 @@ public class SourceTree extends SideKickTree {
         //{{{ SourceTree constructor
         super( view, docked );
         tree.setCellRenderer( new Renderer() );
-        if (jEdit.getBooleanProperty("options.sidekick.showToolTips"))
-            ToolTipManager.sharedInstance().registerComponent( tree );
         tree.addKeyListener( new KeyHandler() );
         MouseHandler mh = new MouseHandler();
         tree.addMouseListener( mh );
@@ -185,6 +183,10 @@ public class SourceTree extends SideKickTree {
     		_markerColor = c;
     		repaint();
     	}
+        if (jEdit.getBooleanProperty("sidekick.showToolTips"))
+            ToolTipManager.sharedInstance().registerComponent( tree );
+        else
+        	ToolTipManager.sharedInstance().unregisterComponent( tree );
     }
 
 	protected class KeyHandler extends KeyAdapter {
