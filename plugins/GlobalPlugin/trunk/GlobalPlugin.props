@@ -26,15 +26,18 @@ options.GlobalPlugin.jump_immediately.label=Jump immediately to single definitio
 show-call-tree.label=Show selection in Call Tree window
 show-references.label=Show selection in References window
 show-definitions.label=Show selection in Definitions window
+show-pattern.label=Show selection in Pattern window
 
 # menu items
 plugin.browser.GlobalPlugin.menu=call-tree-browser \
 	reference-browser \
 	definition-browser \
+	pattern-browser \
 	- \
 	show-call-tree \
 	show-references \
-	show-definitions
+	show-definitions \
+	show-pattern
 
 # dockables
 call-tree-browser.title=Call Tree
@@ -43,6 +46,8 @@ reference-browser.title=References
 reference-browser.label=References
 definition-browser.title=Definitions
 definition-browser.label=Definitions
+pattern-browser.title=Pattern
+pattern-browser.label=Pattern
 
 # messages
 messages.GlobalPlugin.cannot_run_global=Cannot run 'global'. Please set the path to 'global' in the plugin options.

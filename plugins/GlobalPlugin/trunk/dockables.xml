@@ -12,5 +12,8 @@
 	<DOCKABLE NAME="call-tree-browser" MOVABLE="TRUE">
 		new browser.CallTree(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="pattern-browser" MOVABLE="TRUE">
+		new browser.PatternList(view);
+	</DOCKABLE>
 </DOCKABLES>
 

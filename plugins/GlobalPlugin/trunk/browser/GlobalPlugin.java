@@ -46,6 +46,7 @@ public class GlobalPlugin extends EBPlugin
 	public static final String CALL_TREE_BROWSER = "call-tree-browser";
 	public static final String REFERENCE_BROWSER = "reference-browser";
 	public static final String DEFINITION_BROWSER = "definition-browser";
+	public static final String PATTERN_BROWSER = "pattern-browser";
 
 	private static Pattern identifierRegexp;
 	

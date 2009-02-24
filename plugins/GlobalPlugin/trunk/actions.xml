@@ -18,6 +18,11 @@
 			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.DEFINITION_BROWSER);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="show-pattern" NO_REPEAT="TRUE">
+		<CODE>
+			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.PATTERN_BROWSER);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 
