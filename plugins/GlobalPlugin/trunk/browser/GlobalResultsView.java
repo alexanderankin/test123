@@ -40,19 +40,22 @@ import org.gjt.sp.util.Log;
 
 import common.gui.HelpfulJTable;
 
-abstract public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
+@SuppressWarnings("serial")
+public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	GlobalDockableInterface
 {
 
 	private View view;
+	private String param;
 	private HelpfulJTable table;
 	private GlobalTableModel model;
 	private JTextField symbolTF;
 	
-	protected GlobalResultsView(final View view) {
+	public GlobalResultsView(final View view, String param) {
 		super(new BorderLayout());
 	
 		this.view = view;
+		this.param = param;
 		table = new HelpfulJTable();
 		table.setAutoResizeWithHeaders(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -107,7 +110,9 @@ abstract public class GlobalResultsView extends JPanel implements DefaultFocusCo
 		add(symbolPanel, BorderLayout.NORTH);
 	}
 	
-	abstract protected String getParam();
+	protected String getParam()	{
+		return param;
+	}
 	
 	private String getBufferDirectory() {
 		File file = new File(view.getBuffer().getPath());
