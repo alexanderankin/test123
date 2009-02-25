@@ -123,7 +123,7 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 		long start = System.currentTimeMillis();
 		model.clear();
 		symbolTF.setText(identifier);
-		Vector<GlobalRecord> refs = GlobalLauncher.instance().run(
+		Vector<GlobalRecord> refs = GlobalLauncher.instance().runRecordQuery(
 			getParam() + " " + identifier, getBufferDirectory());
 		GlobalReference ref = null;
 		for (int i = 0; i < refs.size(); i++)

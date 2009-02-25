@@ -33,9 +33,12 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+
+import browser.GlobalLauncher.OutputParser;
 
 public class GlobalPlugin extends EBPlugin
 {
@@ -136,10 +139,44 @@ public class GlobalPlugin extends EBPlugin
 		}
 	}
 
+	private class PathMatcher implements OutputParser {
+		String path;
+		boolean found;
+		public PathMatcher(String path) {
+			this.path = path;
+		}
+		public boolean parse(String line) {
+			found = line.equals(path);
+			return (! found);
+		}
+		public boolean found() {
+			return found;
+		}
+	}
+	
+	private void handleBufferUpdate(BufferUpdate bu) {
+		// Auto-update database when files from the database are saved
+		if (GlobalOptionPane.isAutoUpdateDB() &&
+		    bu.getWhat().equals(BufferUpdate.SAVED))
+		{
+			// Check if the saved buffer is in the database
+			Buffer buffer = bu.getBuffer();
+			String dir = buffer.getDirectory();
+			String path = buffer.getPath().replace('\\', '/');
+			PathMatcher matcher = new PathMatcher(path);
+			GlobalLauncher.instance().run("-P -a " + path, dir,
+				new PathMatcher(path));
+			if (matcher.found())
+				GlobalLauncher.instance().run("-u", dir);
+		}
+	}
+	
 	@Override
 	public void handleMessage(EBMessage message) {
-		if(message instanceof PropertiesChanged)
+		if (message instanceof PropertiesChanged)
 			propertiesChanged();
+		else if (message instanceof BufferUpdate)
+			handleBufferUpdate((BufferUpdate) message);
 	}
 }
 

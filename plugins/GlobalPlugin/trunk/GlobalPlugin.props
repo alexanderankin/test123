@@ -21,6 +21,7 @@ options.GlobalPlugin.identifier_regexp=\\w+
 options.GlobalPlugin.identifier_regexp.label=Regular expression of identifiers:
 options.GlobalPlugin.jump_immediately=true
 options.GlobalPlugin.jump_immediately.label=Jump immediately to single definition / reference
+options.GlobalPlugin.auto_update_db.label=Automatically update the database when buffers are saved
 
 # action labels
 show-call-tree.label=Show selection in Call Tree window
