@@ -37,26 +37,53 @@ public class GlobalLauncher {
 		return instance;
 	}
 	
-	public Vector<GlobalRecord> run(String options, String workingDirectory) {
-        Vector<GlobalRecord> records = new Vector<GlobalRecord>();
+	interface OutputParser{
+		// Return true to continue parsing, false to abort
+		boolean parse(String line);
+	}
+	
+	public boolean run(String options, String workingDirectory)
+	{
+		return run(options, workingDirectory, new OutputParser() {
+			public boolean parse(String line) {
+				return false;
+			}
+		});
+	}
+	public boolean run(String options, String workingDirectory, OutputParser parser)
+	{
         String globalPath = jEdit.getProperty(GlobalOptionPane.GLOBAL_PATH_OPTION);
 		try {
 			String command = globalPath + " " + options;
 			File dir = new File(workingDirectory);
 			Process p = Runtime.getRuntime().exec(command, null, dir);
-	        BufferedReader stdInput = new BufferedReader(new 
-	                InputStreamReader(p.getInputStream()));
+	        BufferedReader stdInput = new BufferedReader(
+	        	new InputStreamReader(p.getInputStream()));
 	        // read the output from the command
 	        String s;
 	        while ((s = stdInput.readLine()) != null)
-	        	records.add(new GlobalRecord(s));
+	        	if (! parser.parse(s))
+	        		break;
 	        stdInput.close();
 		} catch (Exception e) {
 			 JOptionPane.showMessageDialog(null, 
-					 jEdit.getProperty("messages.GlobalPlugin.cannot_run_global"),
-					 "Error",
-					 JOptionPane.ERROR_MESSAGE);
+				jEdit.getProperty("messages.GlobalPlugin.cannot_run_global"),
+				"Error", JOptionPane.ERROR_MESSAGE);
+			 return false;
 		}
+		return true;
+	}
+	
+	public Vector<GlobalRecord> runRecordQuery(String options, String workingDirectory)
+	{
+        final Vector<GlobalRecord> records = new Vector<GlobalRecord>();
+		OutputParser parser = new OutputParser() {
+			public boolean parse(String line) {
+				records.add(new GlobalRecord(line));
+				return true;
+			}
+		};
+		run(options, workingDirectory, parser);
 		return records;
 	}
 	

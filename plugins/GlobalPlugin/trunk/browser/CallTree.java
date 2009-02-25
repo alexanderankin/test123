@@ -96,7 +96,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDoc
 		String function = func.getName();
 		GlobalLauncher launcher = new GlobalLauncher();
 		Vector<GlobalRecord> records =
-			launcher.run("-r -x " + function, getBufferDirectory());
+			launcher.runRecordQuery("-r -x " + function, getBufferDirectory());
 		for (int i = 0; i < records.size(); i++) {
 			GlobalRecord r = records.get(i);
 			String file = r.getFile();
@@ -134,7 +134,7 @@ public class CallTree extends JPanel implements DefaultFocusComponent, GlobalDoc
 		Vector<FunctionTag> tags = new Vector<FunctionTag>();
 		GlobalLauncher launcher = new GlobalLauncher();
 		Vector<GlobalRecord> records = 
-			launcher.run("-f " + file, getBufferDirectory());
+			launcher.runRecordQuery("-f " + file, getBufferDirectory());
 		for (int i = 0; i < records.size(); i++) {
 			GlobalRecord r = records.get(i);
 			String caller = r.getName();
