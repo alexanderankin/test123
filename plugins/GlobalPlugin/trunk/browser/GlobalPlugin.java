@@ -33,12 +33,11 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-
-import browser.GlobalLauncher.OutputParser;
 
 public class GlobalPlugin extends EBPlugin
 {
@@ -139,19 +138,9 @@ public class GlobalPlugin extends EBPlugin
 		}
 	}
 
-	private class PathMatcher implements OutputParser {
-		String path;
-		boolean found;
-		public PathMatcher(String path) {
-			this.path = path;
-		}
-		public boolean parse(String line) {
-			found = line.equals(path);
-			return (! found);
-		}
-		public boolean found() {
-			return found;
-		}
+	private void runInBackground(Runnable runnable) {
+		Thread task = new Thread(runnable);
+		task.start();
 	}
 	
 	private void handleBufferUpdate(BufferUpdate bu) {
@@ -161,13 +150,16 @@ public class GlobalPlugin extends EBPlugin
 		{
 			// Check if the saved buffer is in the database
 			Buffer buffer = bu.getBuffer();
-			String dir = buffer.getDirectory();
-			String path = buffer.getPath().replace('\\', '/');
-			PathMatcher matcher = new PathMatcher(path);
-			GlobalLauncher.instance().run("-P -a " + path, dir,
-				new PathMatcher(path));
-			if (matcher.found())
-				GlobalLauncher.instance().run("-u", dir);
+			final String path = buffer.getPath();
+			final String dir = buffer.getDirectory();
+			final GlobalLauncher launcher = GlobalLauncher.instance();
+			if (launcher.isFileInDatabase(path, dir)) {
+				runInBackground(new Runnable() {
+					public void run() {
+						launcher.run("-u", dir);
+					}
+				});
+			}
 		}
 	}
 	
