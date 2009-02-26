@@ -91,7 +91,7 @@ public class ExportDialog extends JDialog {
             }
         }
         else {
-            SVNCopySource[] sources = data.getSourceFiles();
+            SVNCopySource[] sources = data.getSourceURLs();
             for (SVNCopySource source : sources) {
                 paths.add(source.getURL().toString());
             }
@@ -194,11 +194,16 @@ public class ExportDialog extends JDialog {
                         }
                         else if ( data.getSourceURLs() != null ) {
                             List<SVNURL> paths = new ArrayList<SVNURL>();
-                            for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
-                                Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
-                                if ( selected ) {
-                                    paths.add( ( SVNURL ) file_table_model.getValueAt( row, 1 ) );
+                            try {
+                                for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
+                                    Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
+                                    if ( selected ) {
+                                        paths.add( SVNURL.parseURIDecoded( file_table_model.getValueAt( row, 1 ).toString()) );
+                                    }
                                 }
+                            }
+                            catch ( Exception e ) {
+                                throw new IllegalArgumentException( e.getMessage() );
                             }
 
                             if ( paths.size() == 0 ) {

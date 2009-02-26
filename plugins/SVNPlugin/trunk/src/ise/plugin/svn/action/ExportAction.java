@@ -167,8 +167,12 @@ public class ExportAction extends SVNAction {
             @Override
             protected void done() {
                 try {
-                    UpdateData data = get();
-                    JPanel results_panel = new UpdateResultsPanel( getView(), data, true );
+                    UpdateData export_data = get();
+                    if (data == null) {
+                        data.getOut().printError("Unable to export.");
+                        return;
+                    }
+                    JPanel results_panel = new UpdateResultsPanel( getView(), export_data, true );
                     panel.addTab( jEdit.getProperty( "ips.Export", "Export" ), results_panel );
                     for ( String path : data.getPaths() ) {
                         Buffer buffer = jEdit.getBuffer( path );

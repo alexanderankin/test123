@@ -103,7 +103,7 @@ public class Export {
             }
         }
         else if ( data.getSourceURLs() != null ) {
-            SVNCopySource[] sources = data.getSourceFiles();
+            SVNCopySource[] sources = data.getSourceURLs();
             for (SVNCopySource source : sources) {
                 SVNURL url = source.getURL();
                 String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
