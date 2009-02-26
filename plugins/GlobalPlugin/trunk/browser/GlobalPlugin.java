@@ -20,6 +20,8 @@ package browser;
 
 //{{{ imports
 import java.awt.Toolkit;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +35,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -49,8 +50,9 @@ public class GlobalPlugin extends EBPlugin
 	public static final String REFERENCE_BROWSER = "reference-browser";
 	public static final String DEFINITION_BROWSER = "definition-browser";
 	public static final String PATTERN_BROWSER = "pattern-browser";
-
+	
 	private static Pattern identifierRegexp;
+	private Timer autoUpdateTimer = null;
 	
 	//{{{ start() method
 	public void start()
@@ -67,6 +69,24 @@ public class GlobalPlugin extends EBPlugin
 	{
 		identifierRegexp = Pattern.compile(
 				jEdit.getProperty(GlobalOptionPane.IDENTIFIER_REGEXP_OPTION));
+		if (GlobalOptionPane.isAutoUpdateDB() &&
+			GlobalOptionPane.isAutoUpdatePeriodically())
+		{
+			int seconds = GlobalOptionPane.getAutoUpdateSeconds();
+			if (autoUpdateTimer == null)
+				autoUpdateTimer = new Timer();
+			autoUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+				public void run() {
+					String dir = jEdit.getActiveView().getBuffer().getDirectory();
+					updateDatabase(dir);
+				}
+			}, seconds * 1000, seconds * 1000);
+			
+		}
+		else if (autoUpdateTimer != null) {
+			autoUpdateTimer.cancel();
+			autoUpdateTimer = null;
+		}
 	}
 	
 	static public String getIdentifierUnderCaret(View view)
@@ -143,23 +163,26 @@ public class GlobalPlugin extends EBPlugin
 		task.start();
 	}
 	
+	private void updateDatabase(final String workingDirectory) {
+		runInBackground(new Runnable() {
+			public void run() {
+				GlobalLauncher.instance().run("-u", workingDirectory);
+			}
+		});
+	}
+	
 	private void handleBufferUpdate(BufferUpdate bu) {
 		// Auto-update database when files from the database are saved
 		if (GlobalOptionPane.isAutoUpdateDB() &&
+			GlobalOptionPane.isAutoUpdateOnSave() &&
 		    bu.getWhat().equals(BufferUpdate.SAVED))
 		{
 			// Check if the saved buffer is in the database
 			Buffer buffer = bu.getBuffer();
-			final String path = buffer.getPath();
-			final String dir = buffer.getDirectory();
-			final GlobalLauncher launcher = GlobalLauncher.instance();
-			if (launcher.isFileInDatabase(path, dir)) {
-				runInBackground(new Runnable() {
-					public void run() {
-						launcher.run("-u", dir);
-					}
-				});
-			}
+			String path = buffer.getPath();
+			String dir = buffer.getDirectory();
+			if (GlobalLauncher.instance().isFileInDatabase(path, dir))
+				updateDatabase(dir);
 		}
 	}
 	
