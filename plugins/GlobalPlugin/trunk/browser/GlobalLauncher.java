@@ -37,18 +37,25 @@ public class GlobalLauncher {
 		return instance;
 	}
 	
-	interface OutputParser{
-		// Return true to continue parsing, false to abort
+	interface OutputParser {
+		// Return true to continue reading output, false to abort.
 		boolean parse(String line);
+	}
+	
+	private class OutputCollector implements OutputParser {
+		Vector<String> lines;
+		public OutputCollector(Vector<String> lines) {
+			this.lines = lines;
+		}
+		public boolean parse(String line) {
+			lines.add(line);
+			return true;
+		}
 	}
 	
 	public boolean run(String options, String workingDirectory)
 	{
-		return run(options, workingDirectory, new OutputParser() {
-			public boolean parse(String line) {
-				return false;
-			}
-		});
+		return run(options, workingDirectory, null);
 	}
 	public boolean run(String options, String workingDirectory, OutputParser parser)
 	{
@@ -57,14 +64,17 @@ public class GlobalLauncher {
 			String command = globalPath + " " + options;
 			File dir = new File(workingDirectory);
 			Process p = Runtime.getRuntime().exec(command, null, dir);
-	        BufferedReader stdInput = new BufferedReader(
-	        	new InputStreamReader(p.getInputStream()));
-	        // read the output from the command
-	        String s;
-	        while ((s = stdInput.readLine()) != null)
-	        	if (! parser.parse(s))
-	        		break;
-	        stdInput.close();
+			if (parser != null) {
+		        BufferedReader stdInput = new BufferedReader(
+		        	new InputStreamReader(p.getInputStream()));
+		        // read the output from the command
+		        String s;
+		        while ((s = stdInput.readLine()) != null) {
+		        	if (! parser.parse(s))
+		        		break;
+		        }
+		        stdInput.close();
+			}
 		} catch (Exception e) {
 			 JOptionPane.showMessageDialog(null, 
 				jEdit.getProperty("messages.GlobalPlugin.cannot_run_global"),
@@ -72,6 +82,30 @@ public class GlobalLauncher {
 			 return false;
 		}
 		return true;
+	}
+
+	public Vector<String> runForOutput(String options, String workingDirectory) {
+		Vector<String> output = new Vector<String>();
+		run(options, workingDirectory, new OutputCollector(output));
+		return output;
+	}
+
+	public String getDatabasePath(String workingDirectory) {
+		Vector<String> output = runForOutput("-p", workingDirectory);
+		if (output == null || output.size() == 0)
+			return null;
+		return output.get(0);
+	}
+	
+	public boolean isFileInDatabase(String file, String workingDirectory) {
+		file = file.replace('\\', '/');
+		int i = file.lastIndexOf('/');
+		String filename = (i > 0) ? file.substring(i + 1) : file;
+		Vector<String> output = runForOutput("-P -a " + filename, workingDirectory);
+		for (String line: output)
+			if (line.equals(file))
+				return true;
+		return false;
 	}
 	
 	public Vector<GlobalRecord> runRecordQuery(String options, String workingDirectory)

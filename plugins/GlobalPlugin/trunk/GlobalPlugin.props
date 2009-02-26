@@ -1,4 +1,4 @@
-plugin.browser.GlobalPlugin.activate=defer
+plugin.browser.GlobalPlugin.activate=startup
 
 # general plugin information
 plugin.browser.GlobalPlugin.name=GlobalPlugin
