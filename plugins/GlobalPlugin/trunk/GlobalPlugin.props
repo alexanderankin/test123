@@ -33,6 +33,7 @@ show-call-tree.label=Show selection in Call Tree window
 show-references.label=Show selection in References window
 show-definitions.label=Show selection in Definitions window
 show-pattern.label=Show selection in Pattern window
+GlobalPlugin-update-db.label=Update database of current buffer
 
 # menu items
 plugin.browser.GlobalPlugin.menu=call-tree-browser \
@@ -43,7 +44,9 @@ plugin.browser.GlobalPlugin.menu=call-tree-browser \
 	show-call-tree \
 	show-references \
 	show-definitions \
-	show-pattern
+	show-pattern \
+	- \
+	GlobalPlugin-update-db
 
 # dockables
 call-tree-browser.title=Call Tree

@@ -23,6 +23,11 @@
 			browser.GlobalPlugin.invokeDockable(view, browser.GlobalPlugin.PATTERN_BROWSER);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="GlobalPlugin-update-db" NO_REPEAT="TRUE">
+		<CODE>
+			browser.GlobalPlugin.updateDatabase(buffer.getDirectory());
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 
