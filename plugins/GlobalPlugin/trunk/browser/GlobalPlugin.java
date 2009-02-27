@@ -53,6 +53,8 @@ public class GlobalPlugin extends EBPlugin
 	
 	private static Pattern identifierRegexp;
 	private Timer autoUpdateTimer = null;
+	private boolean updateRunning = false;
+	private boolean updatePending = false;
 	
 	//{{{ start() method
 	public void start()
@@ -163,10 +165,31 @@ public class GlobalPlugin extends EBPlugin
 		task.start();
 	}
 	
+	// If a database update is currently running, set the "updatePending"
+	// flag and ignore the new update request (don't take into account
+	// multiple databases for now). When the current update ends, it will
+	// check the "updatePending" flag and re-update the database, and so on
+	// until there are no pending updates.
 	private void updateDatabase(final String workingDirectory) {
+		synchronized(this) {
+			if (updateRunning) {
+				updatePending = true;
+				return;
+			}
+			updateRunning = true;
+		}
 		runInBackground(new Runnable() {
 			public void run() {
-				GlobalLauncher.instance().run("-u", workingDirectory);
+				boolean pending = true;
+				while (pending) {
+					GlobalLauncher.instance().run("-u", workingDirectory, true);
+					synchronized(this) {
+						pending = updatePending;
+						updatePending = false;
+						if (! pending)
+							updateRunning = false;
+					}
+				}
 			}
 		});
 	}
