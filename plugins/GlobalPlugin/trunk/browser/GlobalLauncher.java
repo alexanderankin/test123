@@ -57,7 +57,16 @@ public class GlobalLauncher {
 	{
 		return run(options, workingDirectory, null);
 	}
+	public boolean run(String options, String workingDirectory, boolean wait)
+	{
+		return run(options, workingDirectory, null, wait);
+	}
 	public boolean run(String options, String workingDirectory, OutputParser parser)
+	{
+		return run(options, workingDirectory, parser, false);
+	}
+	public boolean run(String options, String workingDirectory, OutputParser parser,
+		boolean wait)
 	{
         String globalPath = jEdit.getProperty(GlobalOptionPane.GLOBAL_PATH_OPTION);
 		try {
@@ -74,6 +83,13 @@ public class GlobalLauncher {
 		        		break;
 		        }
 		        stdInput.close();
+			}
+			if (wait) {
+				try {
+					p.waitFor();
+				} catch (InterruptedException e) {
+					return false;
+				}
 			}
 		} catch (Exception e) {
 			 JOptionPane.showMessageDialog(null, 
