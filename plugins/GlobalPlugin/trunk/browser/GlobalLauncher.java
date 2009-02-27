@@ -20,6 +20,8 @@ package browser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
@@ -73,6 +75,11 @@ public class GlobalLauncher {
 			String command = globalPath + " " + options;
 			File dir = new File(workingDirectory);
 			Process p = Runtime.getRuntime().exec(command, null, dir);
+			// To ensure the process doesn't hang due to output/error
+			// stream buffering (i.e. process blocks because the buffer
+			// is full, and there's no consumer), consume these streams
+			// in any case.
+			new StreamConsumer(p.getErrorStream()).start();
 			if (parser != null) {
 		        BufferedReader stdInput = new BufferedReader(
 		        	new InputStreamReader(p.getInputStream()));
@@ -83,6 +90,8 @@ public class GlobalLauncher {
 		        		break;
 		        }
 		        stdInput.close();
+			} else {
+				new StreamConsumer(p.getInputStream()).start();
 			}
 			if (wait) {
 				try {
@@ -137,4 +146,23 @@ public class GlobalLauncher {
 		return records;
 	}
 	
+	// A dummy class to consume the output and error streams of the
+	// GNU Global process, to prevent it from hanging due to OS
+	// buffering.
+	private class StreamConsumer extends Thread {
+		private InputStream is;
+		public StreamConsumer(InputStream is) {
+			this.is = is;
+		}
+		public void run() {
+	        BufferedReader stdInput = new BufferedReader(
+	        	new InputStreamReader(is));
+	        try {
+				while (stdInput.readLine() != null)
+					;
+				stdInput.close();
+			} catch (IOException e) {
+			}
+		}
+	}
 }
