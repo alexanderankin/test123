@@ -160,7 +160,7 @@ public class GlobalPlugin extends EBPlugin
 		}
 	}
 
-	private static void runInBackground(Runnable runnable) {
+	public static void runInBackground(Runnable runnable) {
 		Thread task = new Thread(runnable);
 		task.start();
 	}
