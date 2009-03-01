@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package browser;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -26,6 +28,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,6 +56,9 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	private GlobalTableModel model;
 	private JTextField symbolTF;
 	private JLabel statusLbl;
+	private JComboBox historyCB;
+	private DefaultComboBoxModel historyModel;
+	private Vector<HistoryItem> history;
 	
 	public GlobalResultsView(final View view, String param) {
 		super(new BorderLayout());
@@ -109,9 +116,23 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 			}
 		});
 		symbolPanel.add(symbolTF, BorderLayout.CENTER);
-		JPanel toolbar = new JPanel();
+		JPanel toolbar = new JPanel(new BorderLayout(5, 0));
 		statusLbl = new JLabel("");
-		toolbar.add(statusLbl);
+		toolbar.add(statusLbl, BorderLayout.EAST);
+		historyModel = new DefaultComboBoxModel();
+		historyCB = new JComboBox(historyModel);
+		historyCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int index = historyCB.getSelectedIndex(); 
+				if (index >= historyModel.getSize())
+					return;
+				model.clear();
+				HistoryItem item = (HistoryItem) historyModel.getElementAt(index);
+				for (GlobalReference ref: item.refs)
+					model.add(ref);
+			}
+		});
+		toolbar.add(historyCB, BorderLayout.CENTER);
 		symbolPanel.add(toolbar, BorderLayout.EAST);
 		add(symbolPanel, BorderLayout.NORTH);
 	}
@@ -152,10 +173,17 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 				", " + identifier + "' took " + (end - start) * .001 + " seconds.");
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					statusLbl.setText("");
+					statusLbl.setText(model.getRowCount() + " results");
 				}
 			});
+			addToHistory(identifier);
 		}
+	}
+	private void addToHistory(String identifier) {
+		Vector<GlobalReference> refs = new Vector<GlobalReference>();
+		for (int i = 0; i < model.getRowCount(); i++)
+			refs.add(model.getRef(i));
+		historyModel.insertElementAt(new HistoryItem(identifier, refs), 0);
 	}
 	public void show(View view, String identifier) {
 		model.clear();
@@ -166,5 +194,17 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	
 	public void focusOnDefaultComponent() {
 		table.requestFocus();
+	}
+	
+	private class HistoryItem {
+		public HistoryItem(String identifier, Vector<GlobalReference> refs) {
+			this.refs = refs;
+			this.identifier = identifier;
+		}
+		public String toString() {
+			return identifier;
+		}
+		public Vector<GlobalReference> refs;
+		public String identifier;
 	}
 }
