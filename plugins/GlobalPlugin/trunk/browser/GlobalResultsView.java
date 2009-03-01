@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import options.GlobalOptionPane;
 
@@ -50,6 +51,7 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	private HelpfulJTable table;
 	private GlobalTableModel model;
 	private JTextField symbolTF;
+	private JLabel statusLbl;
 	
 	public GlobalResultsView(final View view, String param) {
 		super(new BorderLayout());
@@ -107,6 +109,10 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 			}
 		});
 		symbolPanel.add(symbolTF, BorderLayout.CENTER);
+		JPanel toolbar = new JPanel();
+		statusLbl = new JLabel("");
+		toolbar.add(statusLbl);
+		symbolPanel.add(toolbar, BorderLayout.EAST);
 		add(symbolPanel, BorderLayout.NORTH);
 	}
 	
@@ -119,20 +125,43 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 		return file.getParent();
 	}
 	
+	private class RecordQuery implements Runnable {
+		String identifier;
+		String workingDirectory;
+		public RecordQuery(String identifier, String workingDirectory)
+		{
+			this.identifier = identifier;
+			this.workingDirectory = workingDirectory;
+		}
+		public void run() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					statusLbl.setText("Working...");
+				}
+			});
+			long start = System.currentTimeMillis();
+			Vector<GlobalRecord> refs = GlobalLauncher.instance().runRecordQuery(
+				getParam() + " " + identifier, workingDirectory);
+			GlobalReference ref = null;
+			for (int i = 0; i < refs.size(); i++)
+				model.add(ref = new GlobalReference(refs.get(i)));
+			if (ref != null && model.getRowCount() == 1 && GlobalOptionPane.isJumpImmediately())
+				ref.jump(view);
+			long end = System.currentTimeMillis();
+			Log.log(Log.DEBUG, this.getClass(), "GlobalResultsView(" + getParam() +
+				", " + identifier + "' took " + (end - start) * .001 + " seconds.");
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					statusLbl.setText("");
+				}
+			});
+		}
+	}
 	public void show(View view, String identifier) {
-		long start = System.currentTimeMillis();
 		model.clear();
 		symbolTF.setText(identifier);
-		Vector<GlobalRecord> refs = GlobalLauncher.instance().runRecordQuery(
-			getParam() + " " + identifier, getBufferDirectory());
-		GlobalReference ref = null;
-		for (int i = 0; i < refs.size(); i++)
-			model.add(ref = new GlobalReference(refs.get(i)));
-		if (ref != null && model.getRowCount() == 1 && GlobalOptionPane.isJumpImmediately())
-			ref.jump(view);
-		long end = System.currentTimeMillis();
-		Log.log(Log.DEBUG, this.getClass(), "GlobalResultsView(" + getParam() +
-			", " + identifier + "' took " + (end - start) * .001 + " seconds.");
+		RecordQuery query = new RecordQuery(identifier,	getBufferDirectory());
+		GlobalPlugin.runInBackground(query);
 	}
 	
 	public void focusOnDefaultComponent() {
