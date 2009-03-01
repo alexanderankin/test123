@@ -462,11 +462,11 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	{
 		if (position.equals(DockableWindowManager.LEFT))
 			return ToolWindowAnchor.LEFT;
-		if (position.equals(DockableWindowManager.BOTTOM))
-			return ToolWindowAnchor.BOTTOM;
+		if (position.equals(DockableWindowManager.TOP))
+			return ToolWindowAnchor.TOP;
 		if (position.equals(DockableWindowManager.RIGHT))
 			return ToolWindowAnchor.RIGHT;
-		return ToolWindowAnchor.TOP;
+		return ToolWindowAnchor.BOTTOM;
 	}
 
 	@Override
