@@ -58,7 +58,6 @@ public class GlobalResultsView extends JPanel implements DefaultFocusComponent,
 	private JLabel statusLbl;
 	private JComboBox historyCB;
 	private DefaultComboBoxModel historyModel;
-	private Vector<HistoryItem> history;
 	
 	public GlobalResultsView(final View view, String param) {
 		super(new BorderLayout());
