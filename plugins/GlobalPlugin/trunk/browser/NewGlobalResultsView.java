@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -58,7 +59,13 @@ public class NewGlobalResultsView extends JPanel implements
 		add(symbolPanel, BorderLayout.NORTH);
 		root = new DefaultMutableTreeNode();
 		model = new DefaultTreeModel(root);
+		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+		renderer.setClosedIcon(null);
+		renderer.setOpenIcon(null);
+		renderer.setLeafIcon(null);
 		tree = new JTree(model);
+		tree.setCellRenderer(renderer);
+		tree.setShowsRootHandles(true);
 		tree.setRootVisible(false);
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
@@ -92,6 +99,9 @@ public class NewGlobalResultsView extends JPanel implements
 			this.identifier = identifier;
 			this.workingDirectory = workingDirectory;
 		}
+		private String makeBold(String s) {
+			return "<html><body><b>" + s + "</body></html>";
+		}
 		public void run() {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -103,7 +113,7 @@ public class NewGlobalResultsView extends JPanel implements
 				GlobalLauncher.instance().runRecordQuery(getParam() +
 					" " + identifier, workingDirectory);
 			DefaultMutableTreeNode rootNode =
-				new DefaultMutableTreeNode(identifier);
+				new DefaultMutableTreeNode(makeBold(identifier));
 			root.add(rootNode);
 			String lastFile = null;
 			DefaultMutableTreeNode fileNode = null;
@@ -112,7 +122,7 @@ public class NewGlobalResultsView extends JPanel implements
 				GlobalRecord rec = refs.get(i);
 				String file = rec.getFile();
 				if (! file.equals(lastFile)) {
-					fileNode = new DefaultMutableTreeNode(file);
+					fileNode = new DefaultMutableTreeNode(makeBold(file));
 					rootNode.add(fileNode);
 					lastFile = file;
 				}
@@ -129,6 +139,8 @@ public class NewGlobalResultsView extends JPanel implements
 				public void run() {
 					statusLbl.setText(refs.size() + " results");
 					model.nodeStructureChanged(root);
+					for (int i = 0; i < tree.getRowCount(); i++)
+						tree.expandRow(i);
 				}
 			});
 		}
