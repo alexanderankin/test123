@@ -31,7 +31,7 @@ public class GlobalReference {
 		String file = rec.getFile();
 		int line = rec.getLine();
 		if (file != null)
-			s.append("[" + file + ":" + line + "] ");
+			s.append(line + ": ");
 		s.append(rec.getText());
 		return s.toString();
 	}

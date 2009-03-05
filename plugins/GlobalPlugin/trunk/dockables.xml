@@ -4,16 +4,16 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="reference-browser" MOVABLE="TRUE">
-		new browser.GlobalResultsView(view, "-r -x -a");
+		new browser.NewGlobalResultsView(view, "-r -x -a");
 	</DOCKABLE>
 	<DOCKABLE NAME="definition-browser" MOVABLE="TRUE">
-		new browser.GlobalResultsView(view, "-x -a");
+		new browser.NewGlobalResultsView(view, "-x -a");
 	</DOCKABLE>
 	<DOCKABLE NAME="call-tree-browser" MOVABLE="TRUE">
 		new browser.CallTree(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="pattern-browser" MOVABLE="TRUE">
-		new browser.GlobalResultsView(view, "-g -x -a");
+		new browser.NewGlobalResultsView(view, "-g -x -a");
 	</DOCKABLE>
 </DOCKABLES>
 
