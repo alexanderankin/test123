@@ -76,8 +76,9 @@ public class NewGlobalResultsView extends JPanel implements
 					return;
 				e.consume();
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
-				model.removeNodeFromParent((DefaultMutableTreeNode)
-					tp.getLastPathComponent());
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					tp.getLastPathComponent();
+				model.removeNodeFromParent(node);
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -103,6 +104,33 @@ public class NewGlobalResultsView extends JPanel implements
 		File file = new File(view.getBuffer().getPath());
 		return file.getParent();
 	}
+
+	private String makeBold(String s) {
+		return "<html><body><b>" + s + "</body></html>";
+	}
+
+	private class FileNode extends DefaultMutableTreeNode {
+		String file;
+		public FileNode(String file) {
+			this.file = file;
+		}
+		public String toString() {
+			return makeBold(file + " (" + getChildCount() + " occurrences)");
+		}
+	}
+	
+	private class SearchNode extends DefaultMutableTreeNode {
+		String search;
+		public SearchNode(String search) {
+			this.search = search;
+		}
+		public String toString() {
+			int occurs = getLeafCount();
+			int files = getChildCount();
+			return makeBold(search + " (" + occurs + " occurrences in " + files +
+				" files)");
+		}
+	}
 	
 	private class RecordQuery implements Runnable {
 		String identifier;
@@ -111,9 +139,6 @@ public class NewGlobalResultsView extends JPanel implements
 		{
 			this.identifier = identifier;
 			this.workingDirectory = workingDirectory;
-		}
-		private String makeBold(String s) {
-			return "<html><body><b>" + s + "</body></html>";
 		}
 		public void run() {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -125,7 +150,7 @@ public class NewGlobalResultsView extends JPanel implements
 			final Vector<GlobalRecord> refs =
 				GlobalLauncher.instance().runRecordQuery(getParam() +
 					" " + identifier, workingDirectory);
-			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+			DefaultMutableTreeNode rootNode = new SearchNode(identifier);
 			root.add(rootNode);
 			String lastFile = null;
 			DefaultMutableTreeNode fileNode = null;
@@ -134,11 +159,7 @@ public class NewGlobalResultsView extends JPanel implements
 				GlobalRecord rec = refs.get(i);
 				String file = rec.getFile();
 				if (! file.equals(lastFile)) {
-					if (fileNode != null) {
-						fileNode.setUserObject(makeBold(lastFile + " (" +
-							fileNode.getChildCount() + " occurrences)"));
-					}
-					fileNode = new DefaultMutableTreeNode();
+					fileNode = new FileNode(file);
 					rootNode.add(fileNode);
 					lastFile = file;
 				}
@@ -146,12 +167,6 @@ public class NewGlobalResultsView extends JPanel implements
 					new GlobalReference(rec));
 				fileNode.add(refNode);
 			}
-			if (fileNode != null) {
-				fileNode.setUserObject(makeBold(lastFile + " (" +
-					fileNode.getChildCount() + " occurrences)"));
-			}
-			rootNode.setUserObject(makeBold(identifier + " (" + refs.size() +
-				" occurrences in " + rootNode.getChildCount() + " files)"));
 			if (refs.size() == 1 && GlobalOptionPane.isJumpImmediately())
 				new GlobalReference(refs.get(0)).jump(view);
 			long end = System.currentTimeMillis();
