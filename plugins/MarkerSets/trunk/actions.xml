@@ -5,7 +5,7 @@
 
 	<ACTION NAME="markersets-set-active-markerset" NO_REPEAT="TRUE">
 		<CODE>
-			marker.MarkerSetsPlugin.setActiveMarkerSet();
+			marker.MarkerSetsPlugin.setActiveMarkerSet(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="markersets-use-global-markerset" NO_REPEAT="TRUE">

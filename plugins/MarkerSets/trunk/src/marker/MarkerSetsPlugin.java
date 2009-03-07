@@ -1,11 +1,22 @@
 package marker;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
@@ -17,18 +28,32 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class MarkerSetsPlugin extends EBPlugin {
 
+	static public final String OPTION = "options.MarkerSets.";
 	private static final String MARKER_SET_EXTENSION = "MarkerSetExtension";
 	static private final String GLOBAL_SET = "Global";
 	private static HashMap<String, MarkerSet> markerSets;
 	private static MarkerSet active;
+	private static String xmlFile;
 	
 	public void start()
 	{
 		markerSets = new HashMap<String, MarkerSet>();
-		active = addMarkerSet(GLOBAL_SET);
+		File f = getPluginHome();
+		if (! f.exists())
+			f.mkdir();
+		xmlFile = f.getAbsolutePath() + File.separator + "markerSets.xml";
+		f = new File(xmlFile);
+		if (f.canRead())
+			importXml(xmlFile);
+		active = markerSets.get(GLOBAL_SET);
+		if (active == null)
+			active = addMarkerSet(GLOBAL_SET);
 		jEdit.visit(new MarkerSetVisitor(true));
 	}
 
@@ -98,6 +123,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 		Vector<String> names = new Vector<String>();
 		for (String s: markerSets.keySet())
 			names.add(s);
+		Collections.sort(names);
 		return names;
 	}
 	
@@ -117,17 +143,74 @@ public class MarkerSetsPlugin extends EBPlugin {
 		markerSets.put(name, ms);
 		return ms;
 	}
-
-	// Actions
-	static public void setActiveMarkerSet()
+	static private void importXml(String file)
 	{
-		String name = JOptionPane.showInputDialog("Set active marker set to:");
+		Document doc = null;
+		try {
+			File f = new File(file);
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.parse(f);
+			doc.getDocumentElement().normalize();
+		} catch (Exception e) {
+			System.err.println(e.getStackTrace());
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Failed to load marker sets from XML. Error: " + e.getMessage());
+			return;
+		}
+		NodeList markerSetNodes = doc.getElementsByTagName("MarkerSet");
+		for (int i = 0; i < markerSetNodes.getLength(); i++)
+		{
+			MarkerSet ms = new MarkerSet((Element) markerSetNodes.item(i));
+			markerSets.put(ms.getName(), ms);
+		}
+	}
+	static private void exportXml(String file)
+	{
+		DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+			Element root = doc.createElement("MarkerSets");
+			doc.appendChild(root);
+			for (MarkerSet ms: markerSets.values())
+				ms.exportXml(root);
+			Source source = new DOMSource(doc);
+	        File f = new File(file);
+	        Result result = new StreamResult(f);
+	        Transformer trans = TransformerFactory.newInstance().newTransformer();
+	        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+	        trans.transform(source, result);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Failed to save marker sets. Error:\n" + e.getMessage());
+			return;
+		}
+	}
+	
+	// Actions
+	static public void setActiveMarkerSet(View view)
+	{
+		String current = (active == null) ? null : active.getName();
+		MarkerSetSelectionDialog dlg = new MarkerSetSelectionDialog(view, current);
+		dlg.setVisible(true);
+		String name = dlg.getSelectedName();
+		if (name == null)
+			return;
+		Color c = dlg.getSelectedColor();
 		MarkerSet ms = markerSets.get(name);
 		if (ms == null)
 		{
 			ms = addMarkerSet(name);
-			ms.setColor(Color.green);
+			ms.setColor(c);
 		}
+		else
+		{
+			if (! ms.getColor().equals(c))
+				ms.setColor(c);
+		}
+		exportXml(xmlFile);
 		active = ms;
 	}
 	static public void useGlobalMarkerSet()
@@ -138,8 +221,10 @@ public class MarkerSetsPlugin extends EBPlugin {
 	{
 		Buffer b = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
-		FileMarker m = new FileMarker(b.getPath(), ta.getCaretLine(), '\0');
+		FileMarker m = new FileMarker(b.getPath(), ta.getCaretLine(), "");
 		active.toggle(m);
+		ta.repaint();
+		exportXml(xmlFile);
 	}
 }
 

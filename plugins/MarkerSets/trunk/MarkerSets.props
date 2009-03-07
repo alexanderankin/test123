@@ -1,4 +1,4 @@
-plugin.marker.MarkerSetsPlugin.activate=defer
+plugin.marker.MarkerSetsPlugin.activate=startup
 
 # general plugin information
 plugin.marker.MarkerSetsPlugin.name=MarkerSets
