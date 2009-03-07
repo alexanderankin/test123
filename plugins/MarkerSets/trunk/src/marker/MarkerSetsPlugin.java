@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -24,6 +25,8 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -40,9 +43,26 @@ public class MarkerSetsPlugin extends EBPlugin {
 	private static HashMap<String, MarkerSet> markerSets;
 	private static MarkerSet active;
 	private static String xmlFile;
+	private static Vector<ChangeListener> listeners;
+	
+	public enum Event {
+		MARKER_SET_ADDED,
+		MARKER_SET_REMOVED,
+		MARKER_ADDED,
+		MARKER_REMOVED,
+		MARKER_SET_CHANGED
+	}
+	
+	public interface ChangeListener
+	{
+		// e - the change that occurred
+		// o - the object (marker or marker set) for which the change occurred
+		void changed(Event e, Object o);
+	}
 	
 	public void start()
 	{
+		listeners = new Vector<ChangeListener>();
 		markerSets = new HashMap<String, MarkerSet>();
 		File f = getPluginHome();
 		if (! f.exists())
@@ -64,6 +84,30 @@ public class MarkerSetsPlugin extends EBPlugin {
 		active = null;
 	}
 
+	static public void addChangeListener(ChangeListener cl)
+	{
+		if (! listeners.contains(cl))
+			listeners.add(cl);
+	}
+	static public void removeChangeListener(ChangeListener cl)
+	{
+		listeners.remove(cl);
+	}
+	
+	static private void notifyChange(Event e, Object o)
+	{
+		for (ChangeListener cl: listeners)
+			cl.changed(e, o);
+	}
+	
+	static private void addMarkerSet(MarkerSet ms)
+	{
+		if (markerSets.containsKey(ms.getName()))
+			return;
+		markerSets.put(ms.getName(), ms);
+		notifyChange(Event.MARKER_SET_ADDED, ms);
+	}
+	
 	private class MarkerSetVisitor extends JEditVisitorAdapter
 	{
 		boolean start;
@@ -140,9 +184,17 @@ public class MarkerSetsPlugin extends EBPlugin {
 	static private MarkerSet addMarkerSet(String name)
 	{
 		MarkerSet ms = new MarkerSet(name);
-		markerSets.put(name, ms);
+		addMarkerSet(ms);
 		return ms;
 	}
+	static private MarkerSet addMarkerSet(String name, Color c)
+	{
+		MarkerSet ms = new MarkerSet(name);
+		ms.setColor(c);
+		addMarkerSet(ms);
+		return ms;
+	}
+	
 	static private void importXml(String file)
 	{
 		Document doc = null;
@@ -188,6 +240,36 @@ public class MarkerSetsPlugin extends EBPlugin {
 			return;
 		}
 	}
+
+	static public void jump(final View view, final String file, final int line)
+	{
+		if (file == null)
+			return;
+		final Buffer buffer = jEdit.openFile(view, file);
+		if(buffer == null) {
+			view.getStatus().setMessage("Unable to open: " + file);
+			return;
+		}
+		final Runnable moveCaret = new Runnable() {
+			public void run() {
+				JEditTextArea ta = view.getTextArea();
+				ta.setCaretPosition(ta.getLineStartOffset(line));
+			}
+		};
+		if (buffer.isLoaded())
+		{
+			moveCaret.run();
+		}
+		else
+		{
+			buffer.addBufferListener(new BufferAdapter() {
+				@Override
+				public void bufferLoaded(JEditBuffer buffer) {
+					SwingUtilities.invokeLater(moveCaret);
+				}
+			});
+		}
+	}
 	
 	// Actions
 	static public void setActiveMarkerSet(View view)
@@ -201,14 +283,14 @@ public class MarkerSetsPlugin extends EBPlugin {
 		Color c = dlg.getSelectedColor();
 		MarkerSet ms = markerSets.get(name);
 		if (ms == null)
-		{
-			ms = addMarkerSet(name);
-			ms.setColor(c);
-		}
+			ms = addMarkerSet(name, c);
 		else
 		{
 			if (! ms.getColor().equals(c))
+			{
 				ms.setColor(c);
+				notifyChange(Event.MARKER_SET_CHANGED, ms);
+			}
 		}
 		exportXml(xmlFile);
 		active = ms;
@@ -222,7 +304,10 @@ public class MarkerSetsPlugin extends EBPlugin {
 		Buffer b = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
 		FileMarker m = new FileMarker(b.getPath(), ta.getCaretLine(), "");
-		active.toggle(m);
+		if (active.toggle(m))
+			notifyChange(Event.MARKER_ADDED, m);
+		else
+			notifyChange(Event.MARKER_REMOVED, m);
 		ta.repaint();
 		exportXml(xmlFile);
 	}

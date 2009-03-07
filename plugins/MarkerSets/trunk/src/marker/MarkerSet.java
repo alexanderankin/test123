@@ -1,6 +1,7 @@
 package marker;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Vector;
 
 import org.gjt.sp.util.SyntaxUtilities;
@@ -31,11 +32,15 @@ public class MarkerSet {
 	
 	public String getName() { return name; }
 	
-	public void toggle(FileMarker marker) {
+	// Returns true if the marker was added, false if removed
+	public boolean toggle(FileMarker marker) {
 		if (markers.contains(marker))
+		{
 			remove(marker);
-		else
-			add(marker);
+			return false;
+		}
+		add(marker);
+		return true;
 	}
 	
 	public void add(FileMarker marker) {
@@ -48,8 +53,11 @@ public class MarkerSet {
 		markers.remove(marker);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Vector<FileMarker> getMarkers() {
-		return new Vector<FileMarker>(markers);
+		Vector<FileMarker> items = new Vector<FileMarker>(markers);
+		Collections.sort(items);
+		return items;
 	}
 	
 	public FileMarker getMarkerFor(String path, int line)
