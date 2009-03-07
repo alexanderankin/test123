@@ -1,7 +1,6 @@
 package marker;
 
 import java.awt.BorderLayout;
-import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.JTree;
@@ -39,7 +38,6 @@ public class MarkerSetManager extends JPanel {
 	public void init()
 	{
 		Vector<String> names = MarkerSetsPlugin.getMarkerSetNames();
-		Collections.sort(names);
 		for (String name: names)
 		{
 			DefaultMutableTreeNode msNode = new DefaultMutableTreeNode(name);
