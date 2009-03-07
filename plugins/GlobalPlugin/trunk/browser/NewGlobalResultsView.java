@@ -5,7 +5,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.Vector;
 
@@ -15,8 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -72,28 +69,30 @@ public class NewGlobalResultsView extends JPanel implements
 		tree.setRootVisible(false);
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() != MouseEvent.BUTTON3)
-					return;
-				e.consume();
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					tp.getLastPathComponent();
-				model.removeNodeFromParent(node);
-			}
-		});
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				TreePath tp = e.getPath();
-				Object obj = tp.getPathComponent(tp.getPathCount() - 1);
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) obj;
-				Object userObj = node.getUserObject();
-				if (userObj instanceof GlobalReference) {
-					GlobalReference ref = (GlobalReference) node.getUserObject();
-					ref.jump(view);
+				switch (e.getButton()) {
+				case MouseEvent.BUTTON1:
+					e.consume();
+					handleTreeNodeSelection((DefaultMutableTreeNode) node);
+					break;
+				case MouseEvent.BUTTON3:
+					e.consume();
+					model.removeNodeFromParent(node);
+					break;
 				}
 			}
 		});
 		add(new JScrollPane(tree), BorderLayout.CENTER);
+	}
+	
+	private void handleTreeNodeSelection(DefaultMutableTreeNode node) {
+		Object userObj = node.getUserObject();
+		if (userObj instanceof GlobalReference) {
+			GlobalReference ref = (GlobalReference) node.getUserObject();
+			ref.jump(view);
+		}
 	}
 	
 	protected String getParam()	{
