@@ -63,6 +63,7 @@ public class MarkerSetManager extends JPanel {
 	
 	public void updateTree()
 	{
+		root.removeAllChildren();
 		Vector<String> names = MarkerSetsPlugin.getMarkerSetNames();
 		for (String name: names)
 		{
@@ -74,6 +75,8 @@ public class MarkerSetManager extends JPanel {
 				msNode.add(new DefaultMutableTreeNode(marker));
 		}
 		model.nodeStructureChanged(root);
+		for (int i = 0; i < markers.getRowCount(); i++)
+			markers.expandRow(i);
 	}
 	
 	private class MarkerSetRenderer extends DefaultTreeCellRenderer
