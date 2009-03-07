@@ -43,7 +43,7 @@ public class NewGlobalResultsView extends JPanel implements
 		this.view = view;
 		this.param = param;
 		JPanel symbolPanel = new JPanel(new BorderLayout());
-		symbolPanel.add(new JLabel("Symbol:"), BorderLayout.WEST);
+		symbolPanel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		symbolTF = new JTextField(40);
 		symbolTF.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
