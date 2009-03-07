@@ -25,6 +25,8 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 import options.GlobalOptionPane;
 
 import org.gjt.sp.jedit.Buffer;
@@ -154,7 +156,7 @@ public class GlobalPlugin extends EBPlugin
 			buffer.addBufferListener(new BufferAdapter() {
 				@Override
 				public void bufferLoaded(JEditBuffer buffer) {
-					moveCaret.run();
+					SwingUtilities.invokeLater(moveCaret);
 				}
 			});
 		}
