@@ -16,7 +16,9 @@ markersets-use-global-markerset.label=Set to global marker set
 markersets-toggle-marker.label=Toggle marker at caret location
 
 # menu items
-plugin.marker.MarkerSetsPlugin.menu=markersets-set-active-markerset \
+plugin.marker.MarkerSetsPlugin.menu=\
+	marker-set-manager \
+	markersets-set-active-markerset \
 	markersets-use-global-markerset markersets-toggle-marker
 
 # dockables
