@@ -65,7 +65,8 @@ public class FileMarker implements Comparable {
 		parent.appendChild(marker);
 		marker.setAttribute(FILE_ATTR, file);
 		marker.setAttribute(LINE_ATTR, String.valueOf(line));
-		marker.setAttribute(SHORTCUT_ATTR, String.valueOf(shortcut));
+		if (shortcut != null)
+			marker.setAttribute(SHORTCUT_ATTR, shortcut);
 	}
 	
 	@Override
