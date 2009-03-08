@@ -1,0 +1,32 @@
+<schema targetNamespace="http://www.example.com/IPO"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+		elementFormDefault="qualified"
+        xmlns:ipo="http://www.example.com/IPO">
+
+  <annotation>
+    <documentation xml:lang="en">
+      Defines one comment element with content and one without 
+    </documentation>
+  </annotation>
+
+  <element name="root">
+  <complexType>
+  <sequence>
+  <element name="text">
+	  <complexType>
+	  	<sequence>
+			<element name="comment" type="string"/>
+		</sequence>
+	  </complexType>
+  </element>
+  	<element name="comment">
+	<complexType>
+	<sequence><element name="p" type="string"/></sequence>
+	</complexType>
+	</element>
+  </sequence></complexType>
+  </element>
+
+
+</schema>
+
