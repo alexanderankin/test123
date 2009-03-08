@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.DOMImplementationSource;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -31,6 +31,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
 
+import org.apache.xerces.xs.ElementPSVI;
+import org.apache.xerces.xs.PSVIProvider;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -117,8 +119,10 @@ public class XercesParserImpl extends XmlParser
 		try
 		{ 
 			
-			
-			reader = XMLReaderFactory.createXMLReader(); 
+			// One has to explicitely require the parser from XercesPlugin, otherwise
+			// one gets the crimson version bundled in the JRE and the rest fails
+			// miserably (at least on Mac OS X, JDK 5)
+			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser"); 
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
@@ -131,6 +135,8 @@ public class XercesParserImpl extends XmlParser
 			reader.setContentHandler(handler);
 			reader.setEntityResolver(handler);
 			
+			//get access to the schema
+			handler.setPSVIProvider((PSVIProvider)reader);
 //			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 		}
 		catch(SAXException se)
@@ -213,7 +219,13 @@ public class XercesParserImpl extends XmlParser
 		
 		String name = element.getName();
 		if(info.elementHash.get(name) != null)
+		{
+			// one must add the element to its parent's content, even if
+			// one knows the element already
+			if(parent!=null)parent.content.add(name);
 			return;
+		}
+		
 		ElementDecl elementDecl = null;
 		
 		if ( element.getAbstract() || element.getName().endsWith(".class")) {
@@ -312,7 +324,9 @@ public class XercesParserImpl extends XmlParser
 		Stack currentNodeStack;
 		Locator loc;
 		boolean empty;
-
+		//used to retrieve the XSModel for a particular node
+		PSVIProvider psviProvider;
+		
 		//{{{ Handler constructor
 		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
 			XmlParsedData data)
@@ -324,9 +338,14 @@ public class XercesParserImpl extends XmlParser
 			this.activePrefixes = new HashMap();
 			this.currentNodeStack = new Stack();
 			this.empty = true;
+			this.psviProvider = null;
 
 		} //}}}
 
+		private void setPSVIProvider(PSVIProvider psviProvider){
+			this.psviProvider = psviProvider;
+		}
+		
 		//{{{ addError() method
 		private boolean ignoreMessage(String message) {
 			if (message.startsWith("More pseudo attributes are expected")) return true;
@@ -344,11 +363,17 @@ public class XercesParserImpl extends XmlParser
 		private XSLoader xsLoader = null;
 
 		//{{{ getGrammarForNamespace() method
+		// TODO: this is no more called, should remove it !
 		private XSModel getModelForNamespace(String uri)
 		{
+			Log.log(Log.DEBUG,XercesParserImpl.this,"getModelForNamespace("+uri+")");
+			// this method has one big inconvenient : it can't deal with
+			// "xsi:noNamespaceSchemaLocation"
+			// - (the namespace is null, so xsLoader.loadURI can't guess which schema to load)
 			if (xsLoader == null) try {
-
-			           DOMImplementationRegistry dir = DOMImplementationRegistry.newInstance();
+						//switched to explicit class, to avoid System.setProperty()
+						//see http://xerces.apache.org/xerces2-j/faq-xs.html#faq-10
+			           DOMImplementationSource dir = new org.apache.xerces.dom.DOMXSImplementationSourceImpl();
 			           XSImplementation xsi = (XSImplementation) dir.getDOMImplementation("XS-Loader");
 			           xsLoader = xsi.createXSLoader(null);
 			}
@@ -361,6 +386,7 @@ public class XercesParserImpl extends XmlParser
 		private CompletionInfo modelToCompletionInfo(XSModel model)
 		{
 
+			Log.log(Log.DEBUG,XercesParserImpl.this,"modelToCompletionInfo("+model+")");
 			CompletionInfo info = new CompletionInfo();
 			
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
@@ -376,6 +402,8 @@ public class XercesParserImpl extends XmlParser
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSObject attribute = attributes.item(i);
+				//indeed, it's possible (like for XMLSchema-instance),
+				//when one uses getModelForNamespace("http://www.w3.org/2001/XMLSchema-instance")
 				System.err.println("look! " + attribute.getName());
 			}
 
@@ -385,14 +413,8 @@ public class XercesParserImpl extends XmlParser
 		//{{{ endDocument() method
 		public void endDocument() throws SAXException
 		{
-			XSModel model = getModelForNamespace(null);
-
-			if(model != null)
-			{
-				CompletionInfo info = modelToCompletionInfo(model);
-				if(info != null)
-					data.setCompletionInfo("",info);
-			}
+			// don't retrieve the null namespace schema
+			// via getModelForNamespace(null), as it returns null, anyway !
 		} //}}}
 
 		//{{{ setDocumentLocator() method
@@ -409,7 +431,9 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
 			throws SAXException, java.io.IOException {
-		
+	
+			Log.log(Log.DEBUG,this,"resolveEntity PUBLIC=" + publicId
+				+ ", SYSTEM=" + systemId);
 			InputSource source = null;
 			
 			try {
@@ -429,6 +453,9 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
+				// TODO: not sure wether it's the best thing to do : 
+				//it prints a cryptic "premature end of file" 
+				// error message
 				InputSource dummy = new InputSource(systemId);
 				dummy.setPublicId(publicId);
 				dummy.setCharacterStream(new StringReader("<!-- -->"));
@@ -465,15 +492,8 @@ public class XercesParserImpl extends XmlParser
 					return;
 				}
 			}
-
-			XSModel model = getModelForNamespace(uri);
-
-			if(model != null)
-			{
-				CompletionInfo info = modelToCompletionInfo(model);
-				if(info != null)
-					data.setCompletionInfo(prefix,info);
-			}
+			// don't retrieve schema based on prefix mapping anymore.
+			// see endElement()
 		} //}}}
 
 		//{{{ startElement() method
@@ -553,6 +573,40 @@ public class XercesParserImpl extends XmlParser
 			if(stopped)
 				throw new StoppedException();
 
+			/* retrieve the schema used to validate this element :
+			   PROS:
+				- already present in memory
+				- don't have to worry about fetching the null namespace Schema
+				- sure to get the actual schema used to validate the element !
+			   CONS:
+			    - doesn't fetch validation information for attribute-only
+				  schemas (like the one for XML-SchemaInstance)
+			 */
+			ElementPSVI psvi = psviProvider.getElementPSVI();
+			if(psvi!=null)
+			{
+				XSModel model = psvi.getSchemaInformation();
+				
+				//model is present only for top-level schema elements
+				//like ACTIONS vs ACTION in actions.xsd
+				if(model != null)
+				{
+					//get the prefix
+					String prefix=qName.substring(0,qName.length()-sName.length());
+					
+					//convert to Completion info
+					CompletionInfo info = modelToCompletionInfo(model);
+					
+					//set Completion Info
+					// TODO: what happens when reusing the same prefix for several
+					//       namespaces
+					if(info != null){
+						Log.log(Log.DEBUG,this,"setting completion info for :"+prefix);
+						data.setCompletionInfo(prefix,info);
+					}
+				}
+			}
+			
 			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
 				return;
 

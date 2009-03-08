@@ -10,13 +10,17 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.xerces.util.XMLCatalogResolver;
+import org.apache.xml.resolver.Catalog;
+
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -24,6 +28,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -59,6 +64,65 @@ public class Resolver extends DefaultHandler2
 		loadedCatalogs = false;
 	} //}}}
 	
+	//{{{ Package-private members
+
+	//{{{ init() method
+	// copied from CatalogManager
+	void init()
+	{
+		//do this here, as it will never change until restart of jEdit
+		setUsingCache(jEdit.getSettingsDirectory() != null);
+		
+		// TODO: not sure about this handler : is it useful ?
+		EditBus.addToBus(vfsUpdateHandler = new VFSUpdateHandler());
+	} //}}}
+
+	//{{{ uninit() method
+	void uninit()
+	{
+		EditBus.removeFromBus(vfsUpdateHandler);
+	} //}}}
+
+	//{{{ save() method
+	public void save()
+	{
+		if(loadedCache)
+		{
+			int systemCount = 0;
+			int publicCount = 0;
+
+			Iterator keys = resourceCache.keySet().iterator();
+			while(keys.hasNext())
+			{
+				Entry entry = (Entry)keys.next();
+				Object uri = resourceCache.get(entry);
+				if(uri == IGNORE)
+					continue;
+
+				if(entry.type == Entry.PUBLIC)
+				{
+					jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
+					jEdit.setProperty("xml.cache.public-id." + publicCount
+						+ ".uri",uri.toString());
+					publicCount++;
+				}
+				else
+				{
+					jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
+					jEdit.setProperty("xml.cache.system-id." + systemCount
+						+ ".uri",uri.toString());
+					systemCount++;
+				}
+			}
+
+			jEdit.unsetProperty("xml.cache.public-id." + publicCount);
+			jEdit.unsetProperty("xml.cache.public-id." + publicCount + ".uri");
+			jEdit.unsetProperty("xml.cache.system-id." + systemCount);
+			jEdit.unsetProperty("xml.cache.system-id." + systemCount + ".uri");
+		}
+	} //}}}
+	//}}}
+
 	/**
 	 * Ask before downloading remote files
 	 */
@@ -72,28 +136,35 @@ public class Resolver extends DefaultHandler2
 	/** Internal catalog for DTDs which are packaged in 
 	 * XML.jar and jEdit.jar */
 	public static final String INTERNALCATALOG = 
-		"jeditresource:XML.jar!/xml/dtds/catalog";
-	private static Object IGNORE = new Object();
+		"jeditresource:/XML.jar!/xml/dtds/catalog";
+	//a String : type-safety of the collection
+	private static String IGNORE = new String("IGNORE");
 	private static Resolver singleton = null;
 	private static String resourceDir;
 	
 	// }}}
 	
 	// {{{ Instance Variables 
+	private EBComponent vfsUpdateHandler;
 	/** Internal catalog for DTDs which are packaged in 
 	 * XML.jar and jEdit.jar 
-	   Parses and manages the catalog files 
+	   Parses and manages the catalog files
+	   Moved away from Xerces' XMLCatalogResolver,
+	   as it's really an overlay on top of commons-resolver
+	   and it supports less catalog formats than commons-resolver
 	   */
-	private XMLCatalogResolver catalog = null;
+	private Catalog catalog = null;
 
 	/** Mapping of URLs to public IDs */
-	private HashMap reverseResourceCache;
+	private HashMap<String,Entry> reverseResourceCache;
 	
 	/** Mapping from public ID to URLs */
-	private HashMap resourceCache;
+	private HashMap<Entry,String> resourceCache;
 	
-	/** List of catalog files to load */
-	private List catalogFiles;
+	/** Set of catalog files to load.
+	 *  A set is used to remove duplicates (either via symlinks or double entry by the user)
+	 */
+	private Set<String> catalogFiles;
 	
 	
 	
@@ -129,8 +200,8 @@ public class Resolver extends DefaultHandler2
 		if(!loadedCache)
 		{
 			
-			reverseResourceCache = new HashMap();
-			resourceCache = new HashMap();
+			reverseResourceCache = new HashMap<String,Entry>();
+			resourceCache = new HashMap<Entry,String>();
 			if (isUsingCache()) 
 				
 			{
@@ -163,30 +234,58 @@ public class Resolver extends DefaultHandler2
 		}
 		if (!loadedCatalogs) {
 			loadedCatalogs = true;
-			catalog = new XMLCatalogResolver();
-			catalogFiles = new LinkedList();
+			
+			catalog = new Catalog();
+			catalog.getCatalogManager().setPreferPublic(true);
+			//debug : 
+			//catalog.getCatalogManager().setVerbosity(Integer.MAX_VALUE);
+			catalog.setupReaders();
+			catalogFiles = new HashSet<String>();
 			catalogFiles.add(INTERNALCATALOG);
+			
+			try
+			{
+				Log.log(Log.MESSAGE,Resolver.class,
+						"Loading system catalogs");
+				catalog.loadSystemCatalogs();
+				Log.log(Log.MESSAGE,Resolver.class,
+						"Loading internal catalog: " + INTERNALCATALOG);
+				catalog.parseCatalog(INTERNALCATALOG);
+			}
+			catch(Exception ex1){
+				Log.log(Log.ERROR,Resolver.class,ex1);
+				ex1.printStackTrace();
+			}
+			
+			
 			int i = 0;
 			String uri = null;
 			do { 
 				String prop = "xml.catalog." + i++;
 				uri = jEdit.getProperty(prop);
 				if (uri == null) break;
+				
+				Log.log(Log.MESSAGE,Resolver.class,
+						"Loading catalog: " + uri);
+
 				if(MiscUtilities.isURL(uri))
 					catalogFiles.add(uri);
 				else
 					catalogFiles.add(MiscUtilities.resolveSymlinks(uri));
+
+				try
+				{
+						catalog.parseCatalog(uri);
+				}
+				catch(Exception ex2)
+				{
+					ex2.printStackTrace();
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+				
+				
 			} while (uri != null);
 
-			String[] catalogs = new String[catalogFiles.size()];
-			for (i=0; i<catalogs.length; ++i) 
-				catalogs[i] = catalogFiles.get(i).toString();
-			
-				
-			
-			catalog.setPreferPublic(true);
-			catalog.setCatalogList(catalogs);
-			
 		}
 
 
@@ -210,7 +309,8 @@ public class Resolver extends DefaultHandler2
 			systemId = null;
 
 		String newSystemId = null;
-
+		
+		Log.log(Log.DEBUG,Resolver.class,"Resolver.resolveEntity("+name+","+publicId+","+current+","+systemId+")");
 
 		/* we need this hack to support relative path names inside
 		 * cached files. we want them to be resolved relative to
@@ -231,6 +331,7 @@ public class Resolver extends DefaultHandler2
 
 		if(publicId == null && systemId != null && parent != null)
 		{
+			Log.log(Log.DEBUG,Resolver.class,"parent="+parent);
 			if(systemId.startsWith(parent))
 			{
 				// first, try resolving a relative name,
@@ -261,9 +362,11 @@ public class Resolver extends DefaultHandler2
 				newSystemId = systemId;
 			// XXX: is this correct?
 			/* else if(systemId.startsWith("/"))
-				newSystemId = "file://" + systemId;
-			else if(parent != null && !MiscUtilities.isURL(parent))
-				newSystemId = parent + systemId; */
+				newSystemId = "file://" + systemId;*/
+			//need this to resolve actions.xds from actions.xsd
+			//I don't understand this condition :  && !MiscUtilities.isURL(parent)
+			else if(parent != null)
+				newSystemId = parent + systemId;
 		}
 
 		if(newSystemId == null)
@@ -392,10 +495,8 @@ public class Resolver extends DefaultHandler2
 	
 	private String resolveSystem(String id) throws IOException 
 	{
-		String uri = null;
 		Entry e = new Entry(Entry.SYSTEM,id,null);
-		Object o = resourceCache.get(e);
-		if (o != null) uri = o.toString();
+		String uri = resourceCache.get(e);
 		if(uri == null)
 			return catalog.resolveSystem(id);
 		else if(uri == IGNORE)
@@ -440,7 +541,7 @@ public class Resolver extends DefaultHandler2
 		
 	{
 		Entry e = new Entry(Entry.PUBLIC,publicId,null);
-		String uri = (String)resourceCache.get(e);
+		String uri = resourceCache.get(e);
 		if(uri == null)
 			try {
 				return catalog.resolvePublic(publicId,null);
@@ -522,7 +623,36 @@ public class Resolver extends DefaultHandler2
 			return id.hashCode();
 		}
 	} //}}}
+	//{{{ VFSUpdateHandler class
+	/**
+	 * Reloads all catalog files when the user changes one of it on disk.
+	 * copied from CatalogManager
+	 */
+	public class VFSUpdateHandler implements EBComponent
+	{
+		public void handleMessage(EBMessage msg)
+		{
+			if(!loadedCatalogs)
+				return;
 
+			if(msg instanceof VFSUpdate)
+			{
+				String path = ((VFSUpdate)msg).getPath();
+				if(catalogFiles.contains(path))
+					loadedCatalogs = false;
+			}
+		}
+	} //}}}
+
+	//{{{ propertiesChanged() method
+	public static void propertiesChanged()
+	{
+		// reload the list of catalogs, in case the user added some in the
+		// option pane
+		loadedCatalogs = false;
+	} //}}}
+
+	
 	static public boolean isUsingCache() {
 		if(jEdit.getSettingsDirectory() == null) return false;
 		return jEdit.getBooleanProperty(CACHE);

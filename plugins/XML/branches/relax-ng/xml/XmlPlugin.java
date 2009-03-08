@@ -29,6 +29,8 @@ import org.gjt.sp.util.Log;
 
 import sidekick.SideKickPlugin;
 import xml.parser.*;
+import java.io.File;
+import java.io.IOException;
 //}}}
 
 public class XmlPlugin extends EBPlugin
@@ -42,10 +44,10 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 		*/
-		CatalogManager.init();
-
+		Resolver.instance().init();
+		Resolver.instance().propertiesChanged();
+		
 		XmlActions.propertiesChanged();
-		CatalogManager.propertiesChanged();
 
 		tagMouseHandler = new TagMouseHandler();
 
@@ -79,9 +81,9 @@ public class XmlPlugin extends EBPlugin
 			view = view.getNext();
 		}
 
-		CatalogManager.save();
+		Resolver.instance().save();
 
-		CatalogManager.uninit();
+		Resolver.instance().uninit();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -108,7 +110,7 @@ public class XmlPlugin extends EBPlugin
 		else if(msg instanceof PropertiesChanged)
 		{
 			XmlActions.propertiesChanged();
-			CatalogManager.propertiesChanged();
+			Resolver.instance().propertiesChanged();
 		} //}}}
 	} //}}}
 
