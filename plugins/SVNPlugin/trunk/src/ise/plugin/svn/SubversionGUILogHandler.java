@@ -271,9 +271,9 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             // I removed the invokeLater for svn plugin since the callers _should_
             // already be in an invokeLater.  Calling invokeLater from within an
             // invokeLater causes the logging to be delayed to the UI.
-            SwingUtilities.invokeLater(
-                new Runnable() {
-                    public void run() {
+//            SwingUtilities.invokeLater(
+//                new Runnable() {
+//                    public void run() {
                         String msg = lr.getMessage();
                         if ( msg == null )
                             return ;
@@ -316,9 +316,9 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
                         catch ( Exception e ) {     // NOPMD
                             //Log.log( e );
                         }
-                    }
-                }
-            );
+//                    }
+//                }
+//            );
         }
         catch ( Exception ignored ) {   // NOPMD
             // ignored
