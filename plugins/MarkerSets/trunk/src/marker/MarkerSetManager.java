@@ -1,14 +1,15 @@
 package marker;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -81,7 +82,13 @@ public class MarkerSetManager extends JPanel {
 	
 	private class MarkerSetRenderer extends DefaultTreeCellRenderer
 	{
+		private HashMap<MarkerSet, MarkerSetIcon> icons;
+		private int iconWidth, iconHeight;
+		
 		public MarkerSetRenderer() {
+			icons = new HashMap<MarkerSet, MarkerSetIcon>();
+			iconWidth = getOpenIcon().getIconWidth();
+			iconHeight = getOpenIcon().getIconHeight();
 			setOpenIcon(null);
 			setClosedIcon(null);
 			setLeafIcon(null);
@@ -93,10 +100,49 @@ public class MarkerSetManager extends JPanel {
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			Object obj = node.getUserObject();
+			MarkerSet ms = null;
 			if (obj instanceof MarkerSet)
-				value = ((MarkerSet)obj).getName();
-			return super.getTreeCellRendererComponent(tree, value, sel, expanded,
-				leaf, row, hasFocus);
+			{
+				ms = (MarkerSet) obj;
+				value = ms.getName();
+			}
+			Component c = super.getTreeCellRendererComponent(tree, value, sel,
+				expanded, leaf, row, hasFocus);
+			if (ms != null)
+			{
+				MarkerSetIcon icon = icons.get(ms);
+				if (icon == null)
+				{
+					icon = new MarkerSetIcon(ms);
+					icons.put(ms, icon);
+				}
+				setIcon(icon);
+			}
+			return c;
+		}
+		
+		private class MarkerSetIcon implements Icon
+		{
+			private MarkerSet ms;
+			public MarkerSetIcon(MarkerSet ms) {
+				this.ms = ms;
+			}
+			public Color getColor() {
+				return ms.getColor();
+			}
+			public int getIconHeight() {
+				return iconHeight;
+			}
+			public int getIconWidth() {
+				return iconWidth;
+			}
+			public void paintIcon(Component c, Graphics g, int x, int y) {
+				Color prevColor = g.getColor();
+				g.setColor(ms.getColor());
+				g.fillRect(0, 0, iconWidth, iconHeight);
+				g.setColor(prevColor);
+				
+			}
 		}
 	}
 }
