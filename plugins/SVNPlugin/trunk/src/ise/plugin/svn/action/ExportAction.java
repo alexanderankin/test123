@@ -50,6 +50,7 @@ import ise.plugin.svn.gui.ExportDialog;
 import ise.plugin.svn.command.Export;
 
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 /**
  * ActionListener to perform an svn export.
@@ -112,7 +113,7 @@ public class ExportAction extends SVNAction {
         }
 
         if ( data.getUsername() == null ) {
-            verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
+            verifyLogin( data.getSourceFile() == null ? null : data.getSourceFile().toString() );
             if ( isCanceled() ) {
                 return ;
             }
@@ -174,7 +175,8 @@ public class ExportAction extends SVNAction {
                     }
                     JPanel results_panel = new UpdateResultsPanel( getView(), export_data, true );
                     panel.addTab( jEdit.getProperty( "ips.Export", "Export" ), results_panel );
-                    for ( String path : data.getPaths() ) {
+                    for ( SVNCopySource source : data.getSourceFiles() ) {
+                        String path = source.getFile().toString();
                         Buffer buffer = jEdit.getBuffer( path );
                         if ( buffer != null ) {
                             buffer.reload( getView() );

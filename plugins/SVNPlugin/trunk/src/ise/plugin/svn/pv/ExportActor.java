@@ -48,7 +48,6 @@ public class ExportActor extends NodeActor {
                     paths.add( f );
                 }
             }
-
             ExportAction action = new ExportAction(view, paths, username, password);
             action.actionPerformed(ae);
         }
