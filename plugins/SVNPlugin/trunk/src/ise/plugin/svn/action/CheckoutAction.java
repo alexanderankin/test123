@@ -203,7 +203,6 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
                                     // get the group. If the user picked one, it will be
                                     // a project property, otherwise, default to the root project group
                                     VPTGroup group = ( VPTGroup ) project.getParent();
-                                    //VPTGroup group = ( VPTGroup ) project.getObjectProperty( "projectviewer.new-parent" );
                                     if ( group == null ) {
                                         group = VPTRoot.getInstance();
                                     }
