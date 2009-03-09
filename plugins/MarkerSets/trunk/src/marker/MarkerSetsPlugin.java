@@ -194,6 +194,15 @@ public class MarkerSetsPlugin extends EBPlugin {
 		addMarkerSet(ms);
 		return ms;
 	}
+	static public void removeMarkerSet(MarkerSet ms)
+	{
+		if (ms == markerSets.get(GLOBAL_SET)) // Cannot remove global marker set
+			return;
+		if (markerSets.remove(ms) != null)
+			notifyChange(Event.MARKER_SET_REMOVED, ms);
+		if (active == ms)
+			useGlobalMarkerSet();
+	}
 	
 	static private void importXml(String file)
 	{

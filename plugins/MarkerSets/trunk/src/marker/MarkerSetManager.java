@@ -25,6 +25,7 @@ import marker.tree.FolderTreeBuilder;
 import marker.tree.MarkerTreeBuilder;
 import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
+import marker.tree.SourceLinkTree.SourceLinkTreeModelListener;
 import marker.tree.SourceLinkTree.SourceLinkTreeNodeRenderer;
 
 import org.gjt.sp.jedit.View;
@@ -67,6 +68,7 @@ public class MarkerSetManager extends JPanel {
 			}
 		});
 		structure.setSelectedIndex(0);
+		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
 	}
 	
 	public void updateTree()
@@ -84,7 +86,24 @@ public class MarkerSetManager extends JPanel {
 		for (int i = 0; i < markers.getRowCount(); i++)
 			markers.expandRow(i);
 	}
-	
+
+	private class MarkerTreeListener implements SourceLinkTreeModelListener
+	{
+		public void nodeRemoved(DefaultMutableTreeNode node,
+			SourceLinkParentNode parent, Vector<DefaultMutableTreeNode> leafs)
+		{
+			if (parent == null)
+				return;
+			MarkerSet ms = (MarkerSet) parent.getUserObject();
+			if (node == parent)
+				MarkerSetsPlugin.removeMarkerSet(ms);
+			else {
+				for (DefaultMutableTreeNode leaf: leafs)
+					ms.remove((FileMarker) leaf.getUserObject());
+			}
+		}
+	}
+
 	private class MarkerSetRenderer extends SourceLinkTreeNodeRenderer
 	{
 		private HashMap<MarkerSet, MarkerSetIcon> icons;
