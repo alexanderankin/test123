@@ -60,7 +60,8 @@ public class CtagsSideKickTreeNode
 		{
 			node.setUserObject(obj);
 		}
-		else
+		// Do not add a placeholder if a tag with this name exists
+		else if ((node == null) || (! (obj instanceof String)))
 		{
 			// Either no children with this name were added, or multiple
 			// tags with the same name exist under this parent.
