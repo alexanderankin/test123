@@ -317,7 +317,6 @@ public class MarkerSetsPlugin extends EBPlugin {
 			notifyChange(Event.MARKER_ADDED, m);
 		else
 			notifyChange(Event.MARKER_REMOVED, m);
-		ta.repaint();
 		exportXml(xmlFile);
 	}
 }

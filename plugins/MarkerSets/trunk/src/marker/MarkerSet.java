@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.Vector;
 
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.visitors.JEditVisitor;
+import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.util.SyntaxUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,10 +51,12 @@ public class MarkerSet {
 		if (markers.contains(marker))
 			return;
 		markers.add(marker);
+		repaintAllTextAreas();
 	}
 	
 	public void remove(FileMarker marker) {
 		markers.remove(marker);
+		repaintAllTextAreas();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -94,5 +100,15 @@ public class MarkerSet {
 			SyntaxUtilities.getColorHexString(color));
 		for (int i = 0; i < markers.size(); i++)
 			markers.get(i).exportXml(setNode);
+	}
+
+	private void repaintAllTextAreas()
+	{
+		jEdit.visit(new JEditVisitorAdapter() {
+			@Override
+			public void visit(JEditTextArea textArea) {
+				textArea.repaint();
+			}
+		});
 	}
 }
