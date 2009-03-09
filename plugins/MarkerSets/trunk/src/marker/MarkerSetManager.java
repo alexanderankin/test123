@@ -4,79 +4,83 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 
 import marker.MarkerSetsPlugin.ChangeListener;
 import marker.MarkerSetsPlugin.Event;
-import marker.SourceLinkTree.SourceLinkTreeNodeRenderer;
+import marker.tree.FileTreeBuilder;
+import marker.tree.FlatTreeBuilder;
+import marker.tree.FolderTreeBuilder;
+import marker.tree.MarkerTreeBuilder;
+import marker.tree.SourceLinkTree;
+import marker.tree.SourceLinkTree.SourceLinkParentNode;
+import marker.tree.SourceLinkTree.SourceLinkTreeNodeRenderer;
 
 import org.gjt.sp.jedit.View;
 
+
 @SuppressWarnings("serial")
 public class MarkerSetManager extends JPanel {
-	private View view;
-	private DefaultTreeModel model;
-	private JTree markers;
-	private DefaultMutableTreeNode root;
+	private SourceLinkTree markers;
+	private JComboBox structure;
+	private MarkerTreeBuilder [] builders;
 	
 	public MarkerSetManager(View view)
 	{
 		super(new BorderLayout());
-		this.view = view;
-		root = new DefaultMutableTreeNode();
-		model = new DefaultTreeModel(root);
-		markers = new JTree(model);
-		markers.setRootVisible(false);
-		markers.setShowsRootHandles(true);
-		DefaultTreeCellRenderer renderer = new MarkerSetRenderer();
-		markers.setCellRenderer(renderer);
-		add(markers, BorderLayout.CENTER);
+		builders = new MarkerTreeBuilder[] {
+			new FlatTreeBuilder(),
+			new FileTreeBuilder(),
+			new FolderTreeBuilder()
+		};
+		JPanel structurePanel = new JPanel();
+		structurePanel.setAlignmentX(0);
+		add(structurePanel, BorderLayout.NORTH);
+		structurePanel.add(new JLabel("Group markers by:"));
+		structure = new JComboBox(builders);
+		structurePanel.add(structure);
+		markers = new SourceLinkTree(view);
+		markers.setCellRenderer(new MarkerSetRenderer());
+		add(new JScrollPane(markers), BorderLayout.CENTER);
 		updateTree();
-		markers.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				TreePath tp = markers.getPathForLocation(e.getX(), e.getY());
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					tp.getLastPathComponent();
-				Object obj = node.getUserObject();
-				if (obj instanceof FileMarker) {
-					FileMarker marker = (FileMarker) obj;
-					marker.jump(MarkerSetManager.this.view);
-				}
-			}
-		});
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
 			public void changed(Event e, Object o) {
 				updateTree();
 			}
 		});
+		structure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MarkerTreeBuilder builder =
+					(MarkerTreeBuilder) structure.getSelectedItem();
+				markers.setBuilder(builder);
+			}
+		});
+		structure.setSelectedIndex(0);
 	}
 	
 	public void updateTree()
 	{
-		root.removeAllChildren();
+		markers.clear();
 		Vector<String> names = MarkerSetsPlugin.getMarkerSetNames();
 		for (String name: names)
 		{
 			MarkerSet ms = MarkerSetsPlugin.getMarkerSet(name);
-			DefaultMutableTreeNode msNode = new DefaultMutableTreeNode(ms);
-			root.add(msNode);
+			SourceLinkParentNode msNode = markers.addSourceLinkParent(ms);
 			Vector<FileMarker> children = ms.getMarkers();
 			for (FileMarker marker: children)
-				msNode.add(new DefaultMutableTreeNode(marker));
+				msNode.addSourceLink(marker);
 		}
-		model.nodeStructureChanged(root);
 		for (int i = 0; i < markers.getRowCount(); i++)
 			markers.expandRow(i);
 	}
@@ -84,37 +88,32 @@ public class MarkerSetManager extends JPanel {
 	private class MarkerSetRenderer extends SourceLinkTreeNodeRenderer
 	{
 		private HashMap<MarkerSet, MarkerSetIcon> icons;
-		private int iconWidth, iconHeight;
 		
 		public MarkerSetRenderer() {
+			super();
 			icons = new HashMap<MarkerSet, MarkerSetIcon>();
-			iconWidth = getOpenIcon().getIconWidth();
-			iconHeight = getOpenIcon().getIconHeight();
 		}
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean sel, boolean expanded, boolean leaf, int row,
 				boolean hasFocus)
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-			Object obj = node.getUserObject();
-			MarkerSet ms = null;
-			if (obj instanceof MarkerSet)
-			{
-				ms = (MarkerSet) obj;
-				value = ms.getName();
-			}
 			Component c = super.getTreeCellRendererComponent(tree, value, sel,
 				expanded, leaf, row, hasFocus);
-			if (ms != null)
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			Object obj = node.getUserObject();
+			if (obj instanceof MarkerSet)
 			{
+				MarkerSet ms = (MarkerSet) obj;
+				JLabel l = (JLabel) c;
+				l.setText(ms.getName());
 				MarkerSetIcon icon = icons.get(ms);
 				if (icon == null)
 				{
 					icon = new MarkerSetIcon(ms);
 					icons.put(ms, icon);
 				}
-				setIcon(icon);
+				l.setIcon(icon);
 			}
 			return c;
 		}
@@ -129,15 +128,15 @@ public class MarkerSetManager extends JPanel {
 				return ms.getColor();
 			}
 			public int getIconHeight() {
-				return iconHeight;
+				return getDefaultIconHeight();
 			}
 			public int getIconWidth() {
-				return iconWidth;
+				return getDefaultIconWidth();
 			}
 			public void paintIcon(Component c, Graphics g, int x, int y) {
 				Color prevColor = g.getColor();
 				g.setColor(ms.getColor());
-				g.fillRect(0, 0, iconWidth, iconHeight);
+				g.fillRect(0, 0, getIconWidth(), getDefaultIconHeight());
 				g.setColor(prevColor);
 				
 			}
