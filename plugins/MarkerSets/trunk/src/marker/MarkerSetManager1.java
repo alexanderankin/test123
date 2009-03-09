@@ -4,11 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -22,20 +27,40 @@ import org.gjt.sp.jedit.View;
 @SuppressWarnings("serial")
 public class MarkerSetManager1 extends JPanel {
 	private SourceLinkTree markers;
+	private JComboBox structure;
+	private SourceLinkTree.MarkerTreeBuilder [] builders;
 	
 	public MarkerSetManager1(View view)
 	{
 		super(new BorderLayout());
+		builders = new SourceLinkTree.MarkerTreeBuilder[] {
+			new SourceLinkTree.FlatTreeBuilder(),
+			new SourceLinkTree.FileTreeBuilder(),
+			new SourceLinkTree.FolderTreeBuilder()
+		};
+		JPanel structurePanel = new JPanel();
+		structurePanel.setAlignmentX(0);
+		add(structurePanel, BorderLayout.NORTH);
+		structurePanel.add(new JLabel("Group markers by:"));
+		structure = new JComboBox(builders);
+		structurePanel.add(structure);
 		markers = new SourceLinkTree(view);
 		markers.setCellRenderer(new MarkerSetRenderer());
-		add(markers, BorderLayout.CENTER);
-		markers.setBuilder(new SourceLinkTree.FolderTreeBuilder());
+		add(new JScrollPane(markers), BorderLayout.CENTER);
 		updateTree();
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
 			public void changed(Event e, Object o) {
 				updateTree();
 			}
 		});
+		structure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SourceLinkTree.MarkerTreeBuilder builder =
+					(SourceLinkTree.MarkerTreeBuilder) structure.getSelectedItem();
+				markers.setBuilder(builder);
+			}
+		});
+		structure.setSelectedIndex(0);
 	}
 	
 	public void updateTree()
