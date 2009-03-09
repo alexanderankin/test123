@@ -3,6 +3,8 @@ package marker.tree;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -24,12 +26,14 @@ public class SourceLinkTree extends JTree
 	private DefaultMutableTreeNode root;
 	private DefaultTreeModel model;
 	private MarkerTreeBuilder builder;
+	private HashSet<SourceLinkTreeModelListener> listeners;
 	
 	public SourceLinkTree(View view)
 	{
 		this.view = view;
 		builder = new FlatTreeBuilder();
 		root = new DefaultMutableTreeNode();
+		listeners = new HashSet<SourceLinkTreeModelListener>(); 
 		model = new DefaultTreeModel(root);
 		setModel(model);
 		setRootVisible(false);
@@ -49,7 +53,7 @@ public class SourceLinkTree extends JTree
 					tp.getLastPathComponent();
 				switch (e.getButton()) {
 				case MouseEvent.BUTTON3:
-					model.removeNodeFromParent(node);
+					removeNode(node);
 					break;
 				case MouseEvent.BUTTON1:
 					Object obj = node.getUserObject();
@@ -97,8 +101,24 @@ public class SourceLinkTree extends JTree
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				root.getChildAt(i);
 			if (node.getUserObject() == parent)
-				model.removeNodeFromParent(node);
+				removeNode(node);
 		}
+	}
+
+	public interface SourceLinkTreeModelListener
+	{
+		void nodeRemoved(DefaultMutableTreeNode node, SourceLinkParentNode parent,
+			Vector<DefaultMutableTreeNode> nodeLeafs);
+	}
+	
+	public void addSourceLinkTreeModelListener(SourceLinkTreeModelListener l)
+	{
+		listeners.add(l);
+	}
+	
+	public void removeSourceLinkTreeModelListener(SourceLinkTreeModelListener l)
+	{
+		listeners.remove(l);
 	}
 	
 	public class SourceLinkParentNode extends DefaultMutableTreeNode
@@ -123,7 +143,7 @@ public class SourceLinkTree extends JTree
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					root.getChildAt(i);
 				if (node.getUserObject() == marker)
-					model.removeNodeFromParent(node);
+					removeNode(node);
 			}
 			updateStructure();
 		}
@@ -146,7 +166,6 @@ public class SourceLinkTree extends JTree
 			this.builder = builder;
 			rebuild();
 		}
-		
 		private Vector<DefaultMutableTreeNode> collectLeafs() {
 			Vector<DefaultMutableTreeNode> leafs =
 				new Vector<DefaultMutableTreeNode>();
@@ -205,4 +224,29 @@ public class SourceLinkTree extends JTree
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private void removeNode(DefaultMutableTreeNode node)
+	{
+		if (listeners.size() > 0)
+		{
+			// Find the source link parent and the leafs of the node.
+			DefaultMutableTreeNode parent = node;
+			while (parent != null && !(parent instanceof SourceLinkParentNode))
+				parent = (DefaultMutableTreeNode) parent.getParent();
+			Vector<DefaultMutableTreeNode> leafs =
+				new Vector<DefaultMutableTreeNode>();
+			Enumeration nodes = node.depthFirstEnumeration();
+			while (nodes.hasMoreElements())
+			{
+				DefaultMutableTreeNode n = (DefaultMutableTreeNode)
+					nodes.nextElement();
+				if (n.isLeaf())
+					leafs.add(n);
+			}
+			for (SourceLinkTreeModelListener listener: listeners)
+				listener.nodeRemoved(node, (SourceLinkParentNode) parent,
+					leafs);
+		}
+		model.removeNodeFromParent(node);
+	}
 }
