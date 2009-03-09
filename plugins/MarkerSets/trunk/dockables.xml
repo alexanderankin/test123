@@ -5,7 +5,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="marker-set-manager" MOVABLE="TRUE">
-		new marker.MarkerSetManager1(view);
+		new marker.MarkerSetManager(view);
 	</DOCKABLE>
 </DOCKABLES>
 

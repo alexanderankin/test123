@@ -11,10 +11,10 @@ public class FileMarker implements Comparable {
 	private static final String SHORTCUT_ATTR = "shortcut";
 	private static final String LINE_ATTR = "line";
 	private static final String FILE_ATTR = "file";
-	String file;
-	int line;
-	String shortcut;
-	String shortcutStr;
+	public String file;
+	public int line;
+	public String shortcut;
+	private String shortcutStr;
 	
 	public FileMarker(String file, int line, String shortcut) {
 		this.file = file;
