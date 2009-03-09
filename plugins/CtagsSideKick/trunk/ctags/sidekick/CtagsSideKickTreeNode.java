@@ -13,7 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class CtagsSideKickTreeNode
 {
-	private UniqueSequence children = null;
+	private ChildSet children = null;
 	private Object object = null;
 	void setUserObject(Object obj)
 	{
@@ -46,27 +46,27 @@ public class CtagsSideKickTreeNode
 	{
 		if (children == null)
 		{
-			children = new UniqueSequence();
+			children = new ChildSet();
 		}
 		String key =
 			(obj instanceof Tag)
 				? ((Tag)obj).getShortString()
 				: obj.toString();
 		CtagsSideKickTreeNode node = children.get(key);
-		if (node == null)
+		if ((node != null) && 
+			// Let real tags take over String placeholders
+			((node.getUserObject() instanceof String) &&
+			 (!(obj instanceof String))))
 		{
-			node = new CtagsSideKickTreeNode();
 			node.setUserObject(obj);
-			children.put(key, node);
 		}
 		else
 		{
-			// Let real tags take over String placeholders
-			if ((node.getUserObject() instanceof String) &&
-				(!(obj instanceof String)))
-			{
-				node.setUserObject(obj);
-			}
+			// Either no children with this name were added, or multiple
+			// tags with the same name exist under this parent.
+			node = new CtagsSideKickTreeNode();
+			node.setUserObject(obj);
+			children.put(key, node);
 		}
 		return node;
 	}
@@ -115,7 +115,7 @@ public class CtagsSideKickTreeNode
 	 * Container which keeps nodes in both ordered(sortable) and
 	 * efficiently identified.
 	 */
-	private static class UniqueSequence
+	private static class ChildSet
 	{
 		private Vector<CtagsSideKickTreeNode> ordered =
 			new Vector<CtagsSideKickTreeNode>();
@@ -124,7 +124,6 @@ public class CtagsSideKickTreeNode
 
 		public int size()
 		{
-			assert(ordered.size() == identified.size());
 			return ordered.size();
 		}
 
