@@ -1,5 +1,6 @@
 package marker;
 
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -157,6 +159,27 @@ public class SourceLinkTree extends JTree
 			setClosedIcon(null);
 			setLeafIcon(null);
 		}
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+			boolean sel, boolean expanded, boolean leaf, int row,
+			boolean hasFocus)
+		{
+			Component c = super.getTreeCellRendererComponent(tree, value, sel,
+				expanded, leaf, row, hasFocus);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			Object obj = node.getUserObject();
+			if (obj instanceof FileMarker)
+			{
+				if (! (node.getParent() instanceof SourceLinkParentNode))
+				{
+					// No need to include path in marker
+					FileMarker marker = (FileMarker) obj;
+					JLabel l = (JLabel) c;
+					l.setText(marker.line + ": " + marker.getLineText());
+				}
+			}
+			return c;
+		}
+
 	}
 	
 	public interface MarkerTreeBuilder
@@ -270,7 +293,8 @@ public class SourceLinkTree extends JTree
 			HashMap<String, Object> current = paths;
 			for (String r: roots)
 			{
-				String childPath = parent + File.separator + r;
+				String childPath = (parent != null) ?
+					(parent + File.separator + r) : r;
 				Object child = current.get(r);
 				if (child instanceof HashMap)
 				{
