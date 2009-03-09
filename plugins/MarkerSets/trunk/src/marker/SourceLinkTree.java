@@ -39,14 +39,25 @@ public class SourceLinkTree extends JTree
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (e.isConsumed())
+					return;
 				TreePath tp = SourceLinkTree.this.getPathForLocation(
 					e.getX(), e.getY());
+				if (tp == null)
+					return;
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					tp.getLastPathComponent();
-				Object obj = node.getUserObject();
-				if (obj instanceof FileMarker) {
-					FileMarker marker = (FileMarker) obj;
-					marker.jump(SourceLinkTree.this.view);
+				switch (e.getButton()) {
+				case MouseEvent.BUTTON3:
+					model.removeNodeFromParent(node);
+					break;
+				case MouseEvent.BUTTON1:
+					Object obj = node.getUserObject();
+					if (obj instanceof FileMarker) {
+						FileMarker marker = (FileMarker) obj;
+						marker.jump(SourceLinkTree.this.view);
+					}
+					break;
 				}
 			}
 		});
@@ -146,7 +157,7 @@ public class SourceLinkTree extends JTree
 			{
 				leafs.add(leaf);
 				leaf = leaf.getNextLeaf();
-			} while (leaf != null);
+			} while ((leaf != null) && isNodeDescendant(leaf));
 			return leafs;
 		}
 	}
@@ -191,6 +202,10 @@ public class SourceLinkTree extends JTree
 	
 	static public class FlatTreeBuilder implements MarkerTreeBuilder
 	{
+		public String toString()
+		{
+			return "Flat";
+		}
 		public boolean rebuildOnChange()
 		{
 			return false;
@@ -205,6 +220,10 @@ public class SourceLinkTree extends JTree
 	
 	static public class FileTreeBuilder implements MarkerTreeBuilder
 	{
+		public String toString()
+		{
+			return "File";
+		}
 		public boolean rebuildOnChange()
 		{
 			return true;
@@ -242,6 +261,10 @@ public class SourceLinkTree extends JTree
 	
 	static public class FolderTreeBuilder implements MarkerTreeBuilder
 	{
+		public String toString()
+		{
+			return "Folder";
+		}
 		public boolean rebuildOnChange()
 		{
 			return true;
@@ -290,10 +313,10 @@ public class SourceLinkTree extends JTree
 		{
 			Vector<String> roots = new Vector<String>(paths.keySet());
 			Collections.sort(roots);
-			HashMap<String, Object> current = paths;
 			for (String r: roots)
 			{
-				String childPath = (parent != null) ?
+				HashMap<String, Object> current = paths;
+				String childPath = (parent.length() > 0) ?
 					(parent + File.separator + r) : r;
 				Object child = current.get(r);
 				if (child instanceof HashMap)
