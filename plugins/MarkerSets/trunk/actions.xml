@@ -18,6 +18,16 @@
 			marker.MarkerSetsPlugin.toggleMarker(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="markersets-import" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.importMarkerSets(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="markersets-export" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.exportMarkerSets(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 

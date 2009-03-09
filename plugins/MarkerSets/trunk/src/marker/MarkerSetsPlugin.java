@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +38,9 @@ import org.w3c.dom.NodeList;
 
 public class MarkerSetsPlugin extends EBPlugin {
 
+	private static final String MARKER_SETS_ELEM = "MarkerSets";
+	private static final String MARKER_SET_ELEM = "MarkerSet";
+	private static final String ACTIVE_ATTR = "active";
 	static public final String OPTION = "options.MarkerSets.";
 	private static final String MARKER_SET_EXTENSION = "MarkerSetExtension";
 	static private final String GLOBAL_SET = "Global";
@@ -56,8 +60,9 @@ public class MarkerSetsPlugin extends EBPlugin {
 	public interface ChangeListener
 	{
 		// e - the change that occurred
-		// o - the object (marker or marker set) for which the change occurred
-		void changed(Event e, Object o);
+		// marker - the marker associated with the change, or null
+		// markerSet - the markerSet associated with the change
+		void changed(Event e, FileMarker marker, MarkerSet markerSet);
 	}
 	
 	public void start()
@@ -68,20 +73,25 @@ public class MarkerSetsPlugin extends EBPlugin {
 		if (! f.exists())
 			f.mkdir();
 		xmlFile = f.getAbsolutePath() + File.separator + "markerSets.xml";
-		f = new File(xmlFile);
-		if (f.canRead())
-			importXml(xmlFile);
-		active = markerSets.get(GLOBAL_SET);
-		if (active == null)
-			active = addMarkerSet(GLOBAL_SET);
+		loadState();
 		jEdit.visit(new MarkerSetVisitor(true));
 	}
 
 	public void stop()
 	{
+		saveState();
 		jEdit.visit(new MarkerSetVisitor(false));
 		markerSets.clear();
 		active = null;
+	}
+
+	static public void loadState()
+	{
+		importXml(xmlFile);
+	}
+	static public void saveState()
+	{
+		exportXml(xmlFile);
 	}
 
 	static public void addChangeListener(ChangeListener cl)
@@ -94,16 +104,22 @@ public class MarkerSetsPlugin extends EBPlugin {
 		listeners.remove(cl);
 	}
 	
-	static private void notifyChange(Event e, Object o)
+	static public void notifyChange(Event e, FileMarker m, MarkerSet ms)
 	{
 		for (ChangeListener cl: listeners)
-			cl.changed(e, o);
+			cl.changed(e, m, ms);
+	}
+	
+	static public void notifyChange(Event e, MarkerSet ms)
+	{
+		notifyChange(e, null, ms);
 	}
 	
 	static private void addMarkerSet(MarkerSet ms)
 	{
-		if (markerSets.containsKey(ms.getName()))
-			return;
+		MarkerSet current = markerSets.get(ms.getName()); 
+		if (current != null)
+			removeMarkerSet(current);
 		markerSets.put(ms.getName(), ms);
 		notifyChange(Event.MARKER_SET_ADDED, ms);
 	}
@@ -206,33 +222,43 @@ public class MarkerSetsPlugin extends EBPlugin {
 	
 	static private void importXml(String file)
 	{
+		// Do not test 'file' using File.canRead(), it can return false even
+		// when the file is readable and can be successfully parsed.
 		Document doc = null;
+		String activeName = GLOBAL_SET;
 		try {
 			File f = new File(file);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(f);
 			doc.getDocumentElement().normalize();
+			NodeList markerSetNodes = doc.getElementsByTagName(MARKER_SET_ELEM);
+			for (int i = 0; i < markerSetNodes.getLength(); i++)
+			{
+				MarkerSet ms = new MarkerSet((Element) markerSetNodes.item(i));
+				addMarkerSet(ms);
+			}
+			activeName = doc.getDocumentElement().getAttribute(ACTIVE_ATTR);
+			if ((activeName == null) || (activeName.length() == 0))
+				activeName = GLOBAL_SET;
 		} catch (Exception e) {
-			System.err.println(e.getStackTrace());
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
 				"Failed to load marker sets from XML. Error: " + e.getMessage());
-			return;
 		}
-		NodeList markerSetNodes = doc.getElementsByTagName("MarkerSet");
-		for (int i = 0; i < markerSetNodes.getLength(); i++)
-		{
-			MarkerSet ms = new MarkerSet((Element) markerSetNodes.item(i));
-			markerSets.put(ms.getName(), ms);
-		}
+		active = markerSets.get(activeName);
+		if (active == null)
+			active = addMarkerSet(activeName);
 	}
 	static private void exportXml(String file)
 	{
+		// Do not test 'file' using File.canWrite(), it can return false even
+		// when the file is writable and can be successfully built.
 		DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
-			Element root = doc.createElement("MarkerSets");
+			Element root = doc.createElement(MARKER_SETS_ELEM);
+			root.setAttribute(ACTIVE_ATTR, active.getName());
 			doc.appendChild(root);
 			for (MarkerSet ms: markerSets.values())
 				ms.exportXml(root);
@@ -301,7 +327,6 @@ public class MarkerSetsPlugin extends EBPlugin {
 				notifyChange(Event.MARKER_SET_CHANGED, ms);
 			}
 		}
-		exportXml(xmlFile);
 		active = ms;
 	}
 	static public void useGlobalMarkerSet()
@@ -314,10 +339,23 @@ public class MarkerSetsPlugin extends EBPlugin {
 		JEditTextArea ta = view.getTextArea();
 		FileMarker m = new FileMarker(b.getPath(), ta.getCaretLine(), "");
 		if (active.toggle(m))
-			notifyChange(Event.MARKER_ADDED, m);
+			notifyChange(Event.MARKER_ADDED, m, active);
 		else
-			notifyChange(Event.MARKER_REMOVED, m);
-		exportXml(xmlFile);
+			notifyChange(Event.MARKER_REMOVED, m, active);
+	}
+	static public void importMarkerSets(View view)
+	{
+		JFileChooser fc = new JFileChooser(xmlFile);
+		if (fc.showOpenDialog(view) != JFileChooser.APPROVE_OPTION)
+			return;
+		importXml(fc.getSelectedFile().getAbsolutePath());
+	}
+	static public void exportMarkerSets(View view)
+	{
+		JFileChooser fc = new JFileChooser(xmlFile);
+		if (fc.showSaveDialog(view) != JFileChooser.APPROVE_OPTION)
+			return;
+		exportXml(fc.getSelectedFile().getAbsolutePath());
 	}
 }
 

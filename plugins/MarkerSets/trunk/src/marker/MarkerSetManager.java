@@ -56,7 +56,7 @@ public class MarkerSetManager extends JPanel {
 		add(new JScrollPane(markers), BorderLayout.CENTER);
 		updateTree();
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
-			public void changed(Event e, Object o) {
+			public void changed(Event e, FileMarker m, MarkerSet ms) {
 				updateTree();
 			}
 		});

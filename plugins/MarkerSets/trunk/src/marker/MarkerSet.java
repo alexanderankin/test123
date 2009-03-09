@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.Vector;
 
+import marker.MarkerSetsPlugin.Event;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.visitors.JEditVisitor;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.util.SyntaxUtilities;
 import org.w3c.dom.Document;
@@ -51,11 +52,15 @@ public class MarkerSet {
 		if (markers.contains(marker))
 			return;
 		markers.add(marker);
+		MarkerSetsPlugin.notifyChange(Event.MARKER_ADDED, marker, this);
+		MarkerSetsPlugin.saveState();
 		repaintAllTextAreas();
 	}
 	
 	public void remove(FileMarker marker) {
 		markers.remove(marker);
+		MarkerSetsPlugin.notifyChange(Event.MARKER_REMOVED, marker, this);
+		MarkerSetsPlugin.saveState();
 		repaintAllTextAreas();
 	}
 	

@@ -14,12 +14,17 @@ plugin.marker.MarkerSetsPlugin.depend.1=jedit 04.03.17.00
 markersets-set-active-markerset.label=Set active marker set...
 markersets-use-global-markerset.label=Set to global marker set
 markersets-toggle-marker.label=Toggle marker at caret location
+markersets-export.label=Export marker sets to file...
+markersets-import.label=Import marker sets from file...
 
 # menu items
 plugin.marker.MarkerSetsPlugin.menu=\
 	marker-set-manager \
 	markersets-set-active-markerset \
-	markersets-use-global-markerset markersets-toggle-marker
+	markersets-use-global-markerset markersets-toggle-marker \
+	- \
+	markersets-import \
+	markersets-export
 
 # dockables
 marker-set-manager.title=Marker Sets
