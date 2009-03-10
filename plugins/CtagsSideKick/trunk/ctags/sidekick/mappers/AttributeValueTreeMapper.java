@@ -58,7 +58,11 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 
 	public void setLang(String lang) {
 	}
-	
+
+	public CollisionHandler getCollisionHandler() {
+		return null;
+	}
+
 	@SuppressWarnings("serial")
 	public class Editor extends AbstractObjectEditor {
 
@@ -96,5 +100,5 @@ public class AttributeValueTreeMapper extends AbstractParameterizedObjectProcess
 		}
 
 	}
-	
+
 }

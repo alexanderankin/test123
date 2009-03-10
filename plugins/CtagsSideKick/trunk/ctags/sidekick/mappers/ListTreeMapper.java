@@ -1,6 +1,7 @@
 package ctags.sidekick.mappers;
 import java.util.Vector;
 
+import ctags.sidekick.CtagsSideKickTreeNode;
 import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.ListObjectProcessor;
 import ctags.sidekick.Tag;
@@ -33,7 +34,20 @@ public class ListTreeMapper extends ListObjectProcessor implements ITreeMapper {
 		}
 	}
 
+	public CollisionHandler getCollisionHandler() {
+		Vector<IObjectProcessor> processors = getProcessors();
+		CollisionHandler collisionHandler = null;
+		for (int i = processors.size() - 1; i >= 0; i--) {
+			ITreeMapper mapper = (ITreeMapper) processors.get(i);
+			collisionHandler = mapper.getCollisionHandler();
+			if (collisionHandler != null)
+				break;
+		}
+		return collisionHandler;
+	}
+	
 	public IObjectProcessor getClone() {
 		return new ListTreeMapper();
 	}
+
 }
