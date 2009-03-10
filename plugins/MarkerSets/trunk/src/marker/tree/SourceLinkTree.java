@@ -216,7 +216,7 @@ public class SourceLinkTree extends JTree
 					// No need to include path in marker
 					FileMarker marker = (FileMarker) obj;
 					JLabel l = (JLabel) c;
-					l.setText(marker.line + ": " + marker.getLineText());
+					l.setText(marker.getLine() + ": " + marker.getLineText());
 				}
 			}
 			return c;

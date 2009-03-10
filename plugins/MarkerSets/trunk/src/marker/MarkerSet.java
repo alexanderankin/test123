@@ -6,7 +6,9 @@ import java.util.Vector;
 
 import marker.MarkerSetsPlugin.Event;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.util.SyntaxUtilities;
@@ -64,6 +66,21 @@ public class MarkerSet {
 		repaintAllTextAreas();
 	}
 	
+	public void handleBufferUpdate(BufferUpdate bu) {
+		Object event = bu.getWhat();
+		if ((event != BufferUpdate.LOADED) && (event != BufferUpdate.CLOSED))
+			return;
+		Buffer b = bu.getBuffer();
+		Vector<FileMarker> pathMarkers = getMarkersFor(b.getPath());
+		for (FileMarker marker: pathMarkers)
+		{
+			if (event == BufferUpdate.LOADED)
+				marker.createPosition(b);
+			else
+				marker.removePosition();
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Vector<FileMarker> getMarkers() {
 		Vector<FileMarker> items = new Vector<FileMarker>(markers);
@@ -76,10 +93,22 @@ public class MarkerSet {
 		for (int i = 0; i < markers.size(); i++)
 		{
 			FileMarker marker = markers.get(i);
-			if (marker.file.equals(path) && marker.line == line)
+			if (marker.file.equals(path) && marker.getLine() == line)
 				return marker;
 		}
 		return null;
+	}
+	
+	public Vector<FileMarker> getMarkersFor(String path)
+	{
+		Vector<FileMarker> pathMarkers = new Vector<FileMarker>();
+		for (int i = 0; i < markers.size(); i++)
+		{
+			FileMarker marker = markers.get(i);
+			if (marker.file.equals(path))
+				pathMarkers.add(marker);
+		}
+		return pathMarkers;
 	}
 	
 	public void importXml(Element node)
