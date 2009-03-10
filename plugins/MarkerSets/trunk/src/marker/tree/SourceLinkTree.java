@@ -1,13 +1,16 @@
 package marker.tree;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -49,11 +52,21 @@ public class SourceLinkTree extends JTree
 					e.getX(), e.getY());
 				if (tp == null)
 					return;
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					tp.getLastPathComponent();
+				final DefaultMutableTreeNode node =
+					(DefaultMutableTreeNode) tp.getLastPathComponent();
 				switch (e.getButton()) {
 				case MouseEvent.BUTTON3:
-					removeNode(node);
+					JPopupMenu p;
+					if (node instanceof SourceLinkParentNode)
+						p = ((SourceLinkParentNode) node).getPopupMenu();
+					else
+						p = new JPopupMenu();
+					p.add(new AbstractAction("Remove") {
+						public void actionPerformed(ActionEvent e) {
+							removeNode(node);
+						}
+					});
+					p.show(SourceLinkTree.this, e.getX(), e.getY());
 					break;
 				case MouseEvent.BUTTON1:
 					Object obj = node.getUserObject();
@@ -121,9 +134,16 @@ public class SourceLinkTree extends JTree
 		listeners.remove(l);
 	}
 	
+	/*
+	 * SourceLinkParentNode represents a root node for a list of
+	 * FileMarker nodes (SourceLinkNode objects) that can be
+	 * arranged in various ways underneath it.
+	 */
+	
 	public class SourceLinkParentNode extends DefaultMutableTreeNode
 	{
 		private MarkerTreeBuilder builder;
+		private JPopupMenu popup;
 		
 		public SourceLinkParentNode(Object userObject, MarkerTreeBuilder builder)
 		{
@@ -164,9 +184,11 @@ public class SourceLinkTree extends JTree
 			if (this.builder == builder)
 				return;
 			this.builder = builder;
+			popup = null; // Change list of builders in popup ... 
 			rebuild();
 		}
-		private Vector<DefaultMutableTreeNode> collectLeafs() {
+		private Vector<DefaultMutableTreeNode> collectLeafs()
+		{
 			Vector<DefaultMutableTreeNode> leafs =
 				new Vector<DefaultMutableTreeNode>();
 			if (isLeaf())
@@ -178,6 +200,34 @@ public class SourceLinkTree extends JTree
 				leaf = leaf.getNextLeaf();
 			} while ((leaf != null) && isNodeDescendant(leaf));
 			return leafs;
+		}
+		public JPopupMenu getPopupMenu()
+		{
+			if (popup != null)
+				return popup;
+			popup = new JPopupMenu();
+			if (! (builder instanceof FolderTreeBuilder)) {
+				popup.add(new AbstractAction("Group by folder") {
+					public void actionPerformed(ActionEvent e) {
+						setBuilder(new FolderTreeBuilder());
+					}
+				});
+			}
+			if (! (builder instanceof FileTreeBuilder))	{
+				popup.add(new AbstractAction("Group by file") {
+					public void actionPerformed(ActionEvent e) {
+						setBuilder(new FileTreeBuilder());
+					}
+				});
+			}
+			if (! (builder instanceof FlatTreeBuilder)) {
+				popup.add(new AbstractAction("Flat list") {
+					public void actionPerformed(ActionEvent e) {
+						setBuilder(new FlatTreeBuilder());
+					}
+				});
+			}
+			return popup;
 		}
 	}
 	
