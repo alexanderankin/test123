@@ -14,7 +14,6 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
 import sidekick.ModeOptionPane;
-import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 @SuppressWarnings("serial")
 public abstract class AbstractModeOptionPane extends AbstractOptionPane {

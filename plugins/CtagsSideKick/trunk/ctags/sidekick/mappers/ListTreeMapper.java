@@ -1,7 +1,6 @@
 package ctags.sidekick.mappers;
 import java.util.Vector;
 
-import ctags.sidekick.CtagsSideKickTreeNode;
 import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.ListObjectProcessor;
 import ctags.sidekick.Tag;
