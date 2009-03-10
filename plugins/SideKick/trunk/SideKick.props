@@ -130,3 +130,7 @@ sidekick-complete.none=No completions
 # Filter
 options.sidekick.persistentFilter.label=Filter persists after tree selection
 options.sidekick.persistentFilter=true
+# Only show expanded assets when filtering (default is to expandAll after
+# filtering).
+options.sidekick.filter-visible-assets.label=Limit filter results to include only currently expanded assets
+options.sidekcik.filter-visible-assets=false
