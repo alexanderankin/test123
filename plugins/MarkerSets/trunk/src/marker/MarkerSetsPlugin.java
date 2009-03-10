@@ -28,6 +28,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -171,11 +172,19 @@ public class MarkerSetsPlugin extends EBPlugin {
 			uninitEditPane(ep);
 	}
 	
+	private void handleBufferUpdate(BufferUpdate bu)
+	{
+		for (MarkerSet ms: markerSets.values())
+			ms.handleBufferUpdate(bu);
+	}
+	
 	@Override
 	public void handleMessage(EBMessage message)
 	{
 		if (message instanceof EditPaneUpdate)
 			handleEditPaneUpdate((EditPaneUpdate) message);
+		else if (message instanceof BufferUpdate)
+			handleBufferUpdate((BufferUpdate) message);
 	}
 
 	static public Vector<String> getMarkerSetNames()
@@ -337,7 +346,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 	{
 		Buffer b = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
-		FileMarker m = new FileMarker(b.getPath(), ta.getCaretLine(), "");
+		FileMarker m = new FileMarker(b, ta.getCaretLine(), "");
 		if (active.toggle(m))
 			notifyChange(Event.MARKER_ADDED, m, active);
 		else

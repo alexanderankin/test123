@@ -1,5 +1,7 @@
 package marker;
 
+import javax.swing.text.Position;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -12,17 +14,23 @@ public class FileMarker implements Comparable {
 	private static final String LINE_ATTR = "line";
 	private static final String FILE_ATTR = "file";
 	public String file;
-	public int line;
+	private int line;
 	public String shortcut;
 	private String shortcutStr;
+	private Position pos;
+	private Buffer buffer;
 	
-	public FileMarker(String file, int line, String shortcut) {
-		this.file = file;
+	public FileMarker(Buffer b, int line, String shortcut) {
+		this.file = b.getPath();
 		this.line = line;
+		createPosition(b);
 		setShortcut(shortcut);
 	}
 	public FileMarker(Element node) {
 		importXml(node);
+		Buffer b = jEdit.getBuffer(file);
+		if (b != null)
+			createPosition(b);
 	}
 
 	private void setShortcut(String shortcut) {
@@ -33,11 +41,17 @@ public class FileMarker implements Comparable {
 	}
 	
 	public void jump(View view) {
-		MarkerSetsPlugin.jump(view, file, line);
+		MarkerSetsPlugin.jump(view, file, getLine());
 	}
 	
 	public String toString() {
-		return shortcutStr + file + "(" + line + "): " + getLineText();
+		return shortcutStr + file + "(" + getLine() + "): " + getLineText();
+	}
+	
+	public int getLine() {
+		if (pos == null)
+			return line;
+		return buffer.getLineOfOffset(pos.getOffset());
 	}
 	
 	public String getLineText() {
@@ -45,7 +59,7 @@ public class FileMarker implements Comparable {
 		if (buffer == null)
 			return "";
 		try {
-			return buffer.getLineText(line);
+			return buffer.getLineText(getLine());
 		} catch (Exception e) {
 		}
 		return "";
@@ -64,9 +78,22 @@ public class FileMarker implements Comparable {
 		Element marker = doc.createElement("Marker");
 		parent.appendChild(marker);
 		marker.setAttribute(FILE_ATTR, file);
-		marker.setAttribute(LINE_ATTR, String.valueOf(line));
+		marker.setAttribute(LINE_ATTR, String.valueOf(getLine()));
 		if (shortcut != null)
 			marker.setAttribute(SHORTCUT_ATTR, shortcut);
+	}
+	
+	public void createPosition(Buffer b)
+	{
+		pos = b.createPosition(b.getLineStartOffset(line));
+		buffer = b;
+	}
+	
+	public void removePosition()
+	{
+		line = buffer.getLineOfOffset(pos.getOffset());
+		pos = null;
+		buffer = null;
 	}
 	
 	@Override
@@ -74,12 +101,12 @@ public class FileMarker implements Comparable {
 		if (! (obj instanceof FileMarker))
 			return false;
 		FileMarker other = (FileMarker) obj;
-		return (file.equals(other.file) && line == other.line);
+		return (file.equals(other.file) && getLine() == other.getLine());
 	}
 
 	@Override
 	public int hashCode() {
-		return file.hashCode() + line;
+		return file.hashCode() + getLine();
 	}
 	
 	public int compareTo(Object o) {
@@ -89,9 +116,11 @@ public class FileMarker implements Comparable {
 		int res = file.compareTo(other.file);
 		if (res != 0)
 			return res;
-		if (line < other.line)
+		int l1 = getLine();
+		int l2 = other.getLine();
+		if (l1 < l2)
 			return -1;
-		if (line == other.line)
+		if (l1 == l2)
 			return 0;
 		return 1;
 	}
