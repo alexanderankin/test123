@@ -73,16 +73,15 @@ public class ParsedData extends SideKickParsedData
 			tag.setIcon(iconProvider.getIcon(tag));
 		if (mapper == null)
 		{
-			tree.putChild(tag);
+			tree.putChild(tag, false);
 			return;
 		}
+		boolean deferCollisions = (mapper.getCollisionHandler() != null);
 		Vector<Object> path = mapper.getPath(tag);
 		path.add(tag);
 		CtagsSideKickTreeNode node = tree; 
 		for (int i = 0; i < path.size(); i++)
-		{
-			node = node.putChild(path.get(i));
-		}
+			node = node.putChild(path.get(i), deferCollisions);
 	}
 	public void done()
 	{
@@ -90,7 +89,7 @@ public class ParsedData extends SideKickParsedData
 			tree.sort(sorter);
 		if (mapper instanceof KindTreeMapper)
 			tree.addChildCounts();
-		tree.addToTree(root);
+		tree.addToTree(root, mapper.getCollisionHandler());
 	}
 	private static boolean assetContains(IAsset asset, int offset)
 	{

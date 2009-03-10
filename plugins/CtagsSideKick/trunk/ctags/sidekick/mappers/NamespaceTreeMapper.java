@@ -20,10 +20,13 @@ package ctags.sidekick.mappers;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import ctags.sidekick.CtagsSideKickTreeNode;
 import ctags.sidekick.IObjectProcessor;
 import ctags.sidekick.Tag;
+import ctags.sidekick.mappers.ITreeMapper.CollisionHandler;
 
-public class NamespaceTreeMapper extends AbstractTreeMapper {
+public class NamespaceTreeMapper extends AbstractTreeMapper
+	implements CollisionHandler {
 
 	private static final String NAME = "Namespace";
 	private static final String DESCRIPTION =
@@ -72,7 +75,37 @@ public class NamespaceTreeMapper extends AbstractTreeMapper {
 		}
 		return path;		
 	}
+
+	public CollisionHandler getCollisionHandler() {
+		return this;
+	}
+
 	public IObjectProcessor getClone() {
 		return new NamespaceTreeMapper();
+	}
+
+	public void remapChildrenOf(Vector<CtagsSideKickTreeNode> parents) {
+		// Look for a single parent candidate for all children
+		CtagsSideKickTreeNode selected = null;
+		for (CtagsSideKickTreeNode parent: parents) {
+			Object obj = parent.getUserObject();
+			if (obj instanceof Tag) {
+				Tag t = (Tag) obj;
+				for (String keyword: Keywords) {
+					if (keyword.equals(t.getKind())) {
+						if (selected == null)
+							selected = parent;
+						else	// Multiple candidate parents - do nothing
+							return;
+					}
+				}				
+			}
+		}
+		// Found a candidate parent - move all children under it
+		for (CtagsSideKickTreeNode parent: parents) {
+			if (parent == selected)
+				continue;
+			selected.takeChildrenFrom(parent);
+		}
 	}
 }

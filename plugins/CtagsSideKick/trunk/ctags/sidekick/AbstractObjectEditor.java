@@ -2,6 +2,7 @@ package ctags.sidekick;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public abstract class AbstractObjectEditor extends JPanel {
 
 	protected IObjectProcessor processor;

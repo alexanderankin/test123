@@ -11,4 +11,8 @@ public abstract class AbstractTreeMapper extends AbstractObjectProcessor impleme
 	public void setLang(String lang) {
 	}
 
+	public CollisionHandler getCollisionHandler() {
+		return null;
+	}
+
 }
