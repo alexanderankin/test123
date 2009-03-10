@@ -11,7 +11,6 @@ of the License, or (at your option) any later version.
 package ctags.sidekick.options;
 
 import sidekick.ModeOptionPane;
-import sidekick.ModeOptionPaneController.ModeOptionPaneDelegate;
 
 
 @SuppressWarnings("serial")
