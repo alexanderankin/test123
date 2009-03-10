@@ -37,6 +37,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Stack;
+import java.util.HashSet;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -823,6 +824,32 @@ public class SideKickTree extends JPanel
 		}
 	} //}}}
 
+	protected void find_visible_nodes(HashSet<TreePath> set, DefaultMutableTreeNode node)
+	{
+		TreePath path = new TreePath(node.getPath());
+		if (tree.isVisible(path) && tree.isExpanded(path)) {
+			set.add(new TreePath(node.getPath()));
+			for (Enumeration e = node.children(); e.hasMoreElements(); )
+				find_visible_nodes(set, (DefaultMutableTreeNode)e.nextElement());
+		}
+	}
+	
+	protected void filter_visible_nodes(FilteredTreeModel model, 
+					    HashSet<TreePath> visible, 
+					    DefaultMutableTreeNode node)
+	{
+		TreePath path = new TreePath(node.getPath());
+		if (!visible.contains(path)) {
+			return;
+		}
+		
+		tree.expandPath(path);
+		for (Enumeration e = node.children(); e.hasMoreElements(); )
+		{
+			filter_visible_nodes(model, visible, (DefaultMutableTreeNode)e.nextElement());
+		}
+	}
+			
 	public void updateFilter(boolean with_delay)
 	{
 		FilteredTreeModel ftm = (FilteredTreeModel)tree.getModel();
@@ -846,8 +873,15 @@ public class SideKickTree extends JPanel
 				expandTreeWithDelay();
 			}
 		} else {
+			HashSet<TreePath> visible = new HashSet<TreePath>();
+			find_visible_nodes(visible, (DefaultMutableTreeNode)ftm.getRoot());
 			ftm.filterByText(searchField.getText());
-			expandAll(true);
+			DefaultMutableTreeNode root = (DefaultMutableTreeNode)ftm.getRoot();
+			if (jEdit.getBooleanProperty(SideKick.FILTER_VISIBLE)) {
+				filter_visible_nodes(ftm, visible, root);
+			} else {
+				expandAll(true);
+			}
 		}
 	}
 
@@ -884,7 +918,7 @@ public class SideKickTree extends JPanel
 				node = e.nextElement();
 			}
 			if (node != null) {
-				while ((node != null) && (!model.isVisible(node))) {
+				while ((node != null) && !(model.isVisible(node) && tree.isVisible(new TreePath(node.getPath())))) {
 					node = node.getNextLeaf();
 				}
 				if (node != null) {
@@ -1106,7 +1140,7 @@ public class SideKickTree extends JPanel
 			return this;
 		}
 	} //}}}
-
+	
 
 	//}}}
 }

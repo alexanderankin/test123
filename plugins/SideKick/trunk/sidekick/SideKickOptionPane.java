@@ -67,6 +67,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 		addComponent(persistentFilter = 
 			     new JCheckBox(jEdit.getProperty("options.sidekick.persistentFilter.label")));
 		persistentFilter.setSelected(jEdit.getBooleanProperty("sidekick.persistentFilter"));
+		addComponent(filterVisible = 
+			     new JCheckBox(jEdit.getProperty("options.sidekick.filter-visible-assets.label")));
+		persistentFilter.setSelected(jEdit.getBooleanProperty("sidekick.filter-visible-assets"));
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
 		autoExpandTreeDepth.addActionListener(new ActionHandler());
@@ -198,6 +201,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
 		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
 		jEdit.setBooleanProperty("sidekick.persistentFilter", persistentFilter.isSelected());
+		jEdit.setBooleanProperty("sidekick.filter-visible-assets", filterVisible.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
@@ -232,6 +236,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JTextField acceptChars;
 	private JTextField insertChars;
 	private JCheckBox persistentFilter;
+	private JCheckBox filterVisible;
 	//}}}
 
 	//{{{ ActionHandler class

@@ -80,6 +80,7 @@ class SideKick implements EBComponent
 	public static final String FOLLOW_CARET = "sidekick-tree.follows-caret";
 	public static final String AUTO_EXPAND_DEPTH = "sidekick-tree.auto-expand-tree-depth";
 	public static final String SHOW_STATUS= "sidekick.showStatusWindow.label";
+	public static final String FILTER_VISIBLE = "sidekick.filter-visible-assets";
 	// }}}
 
 	//{{{ SideKick constructor
