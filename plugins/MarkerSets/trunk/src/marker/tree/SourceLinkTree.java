@@ -19,11 +19,8 @@ import javax.swing.tree.TreePath;
 
 import marker.FileMarker;
 
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 @SuppressWarnings("serial")
@@ -49,35 +46,42 @@ public class SourceLinkTree extends JTree
 		setCellRenderer(renderer);
 		addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() != MouseEvent.BUTTON1)
+					return;
 				TreePath tp = SourceLinkTree.this.getPathForLocation(
 					e.getX(), e.getY());
 				if (tp == null)
 					return;
 				final DefaultMutableTreeNode node =
 					(DefaultMutableTreeNode) tp.getLastPathComponent();
-				switch (e.getButton()) {
-				case MouseEvent.BUTTON3:
-					JPopupMenu p = new JPopupMenu();
-					if (node instanceof PopupMenuProvider)
-						((PopupMenuProvider) node).addPopupMenuItems(p);
-					p.add(new AbstractAction("Remove") {
-						public void actionPerformed(ActionEvent e) {
-							removeNode(node);
-						}
-					});
-					p.show(SourceLinkTree.this, e.getX(), e.getY());
-					e.consume();
-					break;
-				case MouseEvent.BUTTON1:
-					Object obj = node.getUserObject();
-					if (obj instanceof FileMarker) {
-						FileMarker marker = (FileMarker) obj;
-						marker.jump(SourceLinkTree.this.view);
-					}
-					e.consume();
-					break;
+				Object obj = node.getUserObject();
+				if (obj instanceof FileMarker) {
+					FileMarker marker = (FileMarker) obj;
+					marker.jump(SourceLinkTree.this.view);
 				}
+				e.consume();
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() != MouseEvent.BUTTON3)
+					return;
+				TreePath tp = SourceLinkTree.this.getPathForLocation(
+					e.getX(), e.getY());
+				if (tp == null)
+					return;
+				final DefaultMutableTreeNode node =
+					(DefaultMutableTreeNode) tp.getLastPathComponent();
+				JPopupMenu p = new JPopupMenu();
+				if (node instanceof PopupMenuProvider)
+					((PopupMenuProvider) node).addPopupMenuItems(p);
+				p.add(new AbstractAction("Remove") {
+					public void actionPerformed(ActionEvent e) {
+						removeNode(node);
+					}
+				});
+				p.show(SourceLinkTree.this, e.getX(), e.getY());
+				e.consume();
 			}
 		});
 	}
