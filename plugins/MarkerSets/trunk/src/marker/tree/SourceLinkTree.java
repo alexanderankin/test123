@@ -19,7 +19,11 @@ import javax.swing.tree.TreePath;
 
 import marker.FileMarker;
 
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 @SuppressWarnings("serial")
@@ -45,9 +49,7 @@ public class SourceLinkTree extends JTree
 		setCellRenderer(renderer);
 		addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.isConsumed())
-					return;
+			public void mouseReleased(MouseEvent e) {
 				TreePath tp = SourceLinkTree.this.getPathForLocation(
 					e.getX(), e.getY());
 				if (tp == null)
@@ -56,17 +58,16 @@ public class SourceLinkTree extends JTree
 					(DefaultMutableTreeNode) tp.getLastPathComponent();
 				switch (e.getButton()) {
 				case MouseEvent.BUTTON3:
-					JPopupMenu p;
-					if (node instanceof SourceLinkParentNode)
-						p = ((SourceLinkParentNode) node).getPopupMenu();
-					else
-						p = new JPopupMenu();
+					JPopupMenu p = new JPopupMenu();
+					if (node instanceof PopupMenuProvider)
+						((PopupMenuProvider) node).addPopupMenuItems(p);
 					p.add(new AbstractAction("Remove") {
 						public void actionPerformed(ActionEvent e) {
 							removeNode(node);
 						}
 					});
 					p.show(SourceLinkTree.this, e.getX(), e.getY());
+					e.consume();
 					break;
 				case MouseEvent.BUTTON1:
 					Object obj = node.getUserObject();
@@ -74,6 +75,7 @@ public class SourceLinkTree extends JTree
 						FileMarker marker = (FileMarker) obj;
 						marker.jump(SourceLinkTree.this.view);
 					}
+					e.consume();
 					break;
 				}
 			}
@@ -133,6 +135,52 @@ public class SourceLinkTree extends JTree
 	{
 		listeners.remove(l);
 	}
+
+	// An interface for nodes to provide their pop-up menus
+	
+	private interface PopupMenuProvider
+	{
+		void addPopupMenuItems(JPopupMenu popup);
+	}
+
+	/*
+	 * SourceLinkLeafNode represents a file marker node.
+	 */
+	
+	private class SourceLinkLeafNode extends DefaultMutableTreeNode
+		implements PopupMenuProvider
+	{
+		public SourceLinkLeafNode(FileMarker marker)
+		{
+			super(marker);
+		}
+		private FileMarker getMarker()
+		{
+			return (FileMarker) getUserObject();
+		}
+		public void addPopupMenuItems(JPopupMenu popup)
+		{
+			if (popup == null)
+				return;
+			popup.add(new AbstractAction("Open in split pane") {
+				public void actionPerformed(ActionEvent e) {
+					view.splitHorizontally();
+					goToNode(view);
+				}
+			});
+			popup.add(new AbstractAction("Open in new view") {
+				public void actionPerformed(ActionEvent e) {
+					View newView = jEdit.newView(view);
+					jEdit.openFile(newView, getMarker().file);
+					goToNode(newView);
+				}
+			});
+		}
+		private void goToNode(View v)
+		{
+			getMarker().jump(v);
+		}
+	}
 	
 	/*
 	 * SourceLinkParentNode represents a root node for a list of
@@ -141,9 +189,9 @@ public class SourceLinkTree extends JTree
 	 */
 	
 	public class SourceLinkParentNode extends DefaultMutableTreeNode
+		implements PopupMenuProvider
 	{
 		private MarkerTreeBuilder builder;
-		private JPopupMenu popup;
 		
 		public SourceLinkParentNode(Object userObject, MarkerTreeBuilder builder)
 		{
@@ -152,7 +200,7 @@ public class SourceLinkTree extends JTree
 		}
 		public void addSourceLink(FileMarker marker)
 		{
-			add(new DefaultMutableTreeNode(marker));
+			add(new SourceLinkLeafNode(marker));
 			updateStructure();
 			model.nodeStructureChanged(this);
 		}
@@ -184,7 +232,6 @@ public class SourceLinkTree extends JTree
 			if (this.builder == builder)
 				return;
 			this.builder = builder;
-			popup = null; // Change list of builders in popup ... 
 			rebuild();
 		}
 		private Vector<DefaultMutableTreeNode> collectLeafs()
@@ -201,11 +248,10 @@ public class SourceLinkTree extends JTree
 			} while ((leaf != null) && isNodeDescendant(leaf));
 			return leafs;
 		}
-		public JPopupMenu getPopupMenu()
+		public void addPopupMenuItems(JPopupMenu popup)
 		{
-			if (popup != null)
-				return popup;
-			popup = new JPopupMenu();
+			if (popup == null)
+				return;
 			if (! (builder instanceof FolderTreeBuilder)) {
 				popup.add(new AbstractAction("Group by folder") {
 					public void actionPerformed(ActionEvent e) {
@@ -227,7 +273,6 @@ public class SourceLinkTree extends JTree
 					}
 				});
 			}
-			return popup;
 		}
 	}
 	
