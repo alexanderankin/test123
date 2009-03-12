@@ -73,8 +73,17 @@ public class SourceLinkTree extends JTree
 				final DefaultMutableTreeNode node =
 					(DefaultMutableTreeNode) tp.getLastPathComponent();
 				JPopupMenu p = new JPopupMenu();
+				// Allow node-specific context menu items 
 				if (node instanceof PopupMenuProvider)
 					((PopupMenuProvider) node).addPopupMenuItems(p);
+				// Allow SourceLinkParent objects to provide context menu items
+				// for all descendant nodes.
+				for (Object pathNode: tp.getPath())
+				{
+					if (pathNode instanceof SourceLinkParentNode)
+						((SourceLinkParentNode) pathNode).addSubtreePopupMenuItems(p, node);
+				}
+				// Common items for all nodes
 				p.add(new AbstractAction("Remove") {
 					public void actionPerformed(ActionEvent e) {
 						removeNode(node);
@@ -186,6 +195,15 @@ public class SourceLinkTree extends JTree
 		}
 	}
 	
+	// An interface for source link parent objects to provide pop-up menus for their
+	// descendant nodes, which are created by the source link tree.
+	
+	public interface SubtreePopupMenuProvider
+	{
+		void addPopupMenuItemsFor(JPopupMenu popup, SourceLinkParentNode parent,
+			DefaultMutableTreeNode node);
+	}
+
 	/*
 	 * SourceLinkParentNode represents a root node for a list of
 	 * FileMarker nodes (SourceLinkNode objects) that can be
@@ -226,7 +244,7 @@ public class SourceLinkTree extends JTree
 		}
 		private void rebuild()
 		{
-			Vector<DefaultMutableTreeNode> leafs = collectLeafs();
+			Vector<DefaultMutableTreeNode> leafs = collectLeafs(this);
 			removeAllChildren();
 			builder.buildSubTree(this, leafs);
 			model.nodeStructureChanged(this);
@@ -238,19 +256,41 @@ public class SourceLinkTree extends JTree
 			this.builder = builder;
 			rebuild();
 		}
-		private Vector<DefaultMutableTreeNode> collectLeafs()
+		private Vector<DefaultMutableTreeNode> collectLeafs(DefaultMutableTreeNode node)
 		{
 			Vector<DefaultMutableTreeNode> leafs =
 				new Vector<DefaultMutableTreeNode>();
-			if (isLeaf())
-				return leafs;
-			DefaultMutableTreeNode leaf = getFirstLeaf();
+			DefaultMutableTreeNode leaf = node.getFirstLeaf();
 			do
 			{
+				if (leaf instanceof SourceLinkParentNode)
+					break;	// Do not collect source link parents...
 				leafs.add(leaf);
 				leaf = leaf.getNextLeaf();
-			} while ((leaf != null) && isNodeDescendant(leaf));
+			} while ((leaf != null) && node.isNodeDescendant(leaf));
 			return leafs;
+		}
+		// Returns the markers under the given node
+		public Vector<FileMarker> getFileMarkers(DefaultMutableTreeNode node)
+		{
+			Vector<FileMarker> markers = new Vector<FileMarker>();
+			Vector<DefaultMutableTreeNode> markerNodes = collectLeafs(node);
+			for (DefaultMutableTreeNode markerNode: markerNodes)
+			{
+				FileMarker marker = (FileMarker) markerNode.getUserObject();
+				markers.add(marker);
+			}
+			return markers;
+		}
+		// This allows the user object of the SourceLinkParent node to
+		// provide context menu actions for all children.
+		public void addSubtreePopupMenuItems(JPopupMenu popup, DefaultMutableTreeNode node)
+		{
+			if (popup == null)
+				return;
+			Object userObj = getUserObject();
+			if (userObj instanceof SubtreePopupMenuProvider)
+				((SubtreePopupMenuProvider) userObj).addPopupMenuItemsFor(popup, this, node);
 		}
 		public void addPopupMenuItems(JPopupMenu popup)
 		{
