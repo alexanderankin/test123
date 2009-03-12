@@ -80,16 +80,19 @@ public class GlobalResultsView extends JPanel implements
 		return "<html><body><b>" + s + "</body></html>";
 	}
 
-	private class SearchNode extends DefaultMutableTreeNode
-		implements SubtreePopupMenuProvider
+	private class SearchNode implements SubtreePopupMenuProvider
 	{
 		String search;
+		SourceLinkParentNode parent;
+		
 		public SearchNode(String search) {
 			this.search = search;
 		}
 		public String toString() {
-			int occurs = getLeafCount();
-			int files = getChildCount();
+			if (parent == null)
+				return makeBold(search);
+			int occurs = parent.getLeafCount();
+			int files = parent.getChildCount();
 			return makeBold(search + " (" + occurs + " occurrences in " + files +
 				" files)");
 		}
@@ -105,6 +108,10 @@ public class GlobalResultsView extends JPanel implements
 						MarkerSetsPlugin.toggleMarker(marker);
 				}
 			});
+		}
+		public void setTreeNode(SourceLinkParentNode parent)
+		{
+			this.parent = parent;
 		}
 	}
 	
@@ -126,9 +133,10 @@ public class GlobalResultsView extends JPanel implements
 			final Vector<GlobalRecord> refs =
 				GlobalLauncher.instance().runRecordQuery(getParam() +
 					" " + identifier, workingDirectory);
-			DefaultMutableTreeNode rootNode = new SearchNode(identifier);
+			SearchNode rootNode = new SearchNode(identifier);
 			SourceLinkParentNode parent =
 				tree.addSourceLinkParent(rootNode);
+			rootNode.setTreeNode(parent);
 			for (int i = 0; i < refs.size(); i++)
 			{
 				GlobalRecord rec = refs.get(i);
