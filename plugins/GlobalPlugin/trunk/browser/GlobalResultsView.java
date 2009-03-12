@@ -1,13 +1,16 @@
 package browser;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -15,8 +18,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import marker.FileMarker;
+import marker.MarkerSetsPlugin;
 import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
+import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 import options.GlobalOptionPane;
 
 import org.gjt.sp.jedit.View;
@@ -75,7 +80,9 @@ public class GlobalResultsView extends JPanel implements
 		return "<html><body><b>" + s + "</body></html>";
 	}
 
-	private class SearchNode extends DefaultMutableTreeNode {
+	private class SearchNode extends DefaultMutableTreeNode
+		implements SubtreePopupMenuProvider
+	{
 		String search;
 		public SearchNode(String search) {
 			this.search = search;
@@ -85,6 +92,19 @@ public class GlobalResultsView extends JPanel implements
 			int files = getChildCount();
 			return makeBold(search + " (" + occurs + " occurrences in " + files +
 				" files)");
+		}
+		public void addPopupMenuItemsFor(JPopupMenu popup, final SourceLinkParentNode parent,
+			final DefaultMutableTreeNode node)
+		{
+			if (popup == null)
+				return;
+			popup.add(new AbstractAction("Toggle marker(s)") {
+				public void actionPerformed(ActionEvent e) {
+					Vector<FileMarker> markers = parent.getFileMarkers(node);
+					for (FileMarker marker: markers)
+						MarkerSetsPlugin.toggleMarker(marker);
+				}
+			});
 		}
 	}
 	
@@ -112,9 +132,9 @@ public class GlobalResultsView extends JPanel implements
 			for (int i = 0; i < refs.size(); i++)
 			{
 				GlobalRecord rec = refs.get(i);
-				String file = rec.getFile();
+				String file = rec.getFile().replace("/", File.separator);
 				int line = rec.getLine();
-				parent.addSourceLink(new FileMarker(file, line, ""));
+				parent.addSourceLink(new FileMarker(file, line - 1, ""));
 			}
 			if (refs.size() == 1 && GlobalOptionPane.isJumpImmediately())
 				new GlobalReference(refs.get(0)).jump(view);
