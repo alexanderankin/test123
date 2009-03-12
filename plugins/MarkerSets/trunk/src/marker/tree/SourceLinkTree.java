@@ -226,6 +226,27 @@ public class SourceLinkTree extends JTree
 			updateStructure();
 			model.nodeStructureChanged(this);
 		}
+		@SuppressWarnings("unchecked")
+		public int [] getFileAndMarkerCounts()
+		{
+			int [] counts = new int[] { 0, 0 };
+			HashSet<String> files = new HashSet<String>();
+			Enumeration nodes = this.breadthFirstEnumeration();
+			while (nodes.hasMoreElements())
+			{
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					nodes.nextElement();
+				Object obj = node.getUserObject();
+				if (obj instanceof FileMarker)
+				{
+					counts[1]++;
+					FileMarker marker = (FileMarker) obj;
+					if (files.add(marker.file))
+						counts[0]++;
+				}
+			}
+			return counts;
+		}
 		public void removeSourceLink(FileMarker marker)
 		{
 			for (int i = 0; i < root.getChildCount(); i++)
@@ -244,7 +265,7 @@ public class SourceLinkTree extends JTree
 		}
 		private void rebuild()
 		{
-			Vector<DefaultMutableTreeNode> leafs = collectLeafs(this);
+			Vector<DefaultMutableTreeNode> leafs = collectMarkers(this);
 			removeAllChildren();
 			builder.buildSubTree(this, leafs);
 			model.nodeStructureChanged(this);
@@ -256,7 +277,8 @@ public class SourceLinkTree extends JTree
 			this.builder = builder;
 			rebuild();
 		}
-		private Vector<DefaultMutableTreeNode> collectLeafs(DefaultMutableTreeNode node)
+		private Vector<DefaultMutableTreeNode> collectMarkers(
+			DefaultMutableTreeNode node)
 		{
 			Vector<DefaultMutableTreeNode> leafs =
 				new Vector<DefaultMutableTreeNode>();
@@ -265,6 +287,8 @@ public class SourceLinkTree extends JTree
 			{
 				if (leaf instanceof SourceLinkParentNode)
 					break;	// Do not collect source link parents...
+				if (! (leaf.getUserObject() instanceof FileMarker))
+					continue;
 				leafs.add(leaf);
 				leaf = leaf.getNextLeaf();
 			} while ((leaf != null) && node.isNodeDescendant(leaf));
@@ -274,7 +298,7 @@ public class SourceLinkTree extends JTree
 		public Vector<FileMarker> getFileMarkers(DefaultMutableTreeNode node)
 		{
 			Vector<FileMarker> markers = new Vector<FileMarker>();
-			Vector<DefaultMutableTreeNode> markerNodes = collectLeafs(node);
+			Vector<DefaultMutableTreeNode> markerNodes = collectMarkers(node);
 			for (DefaultMutableTreeNode markerNode: markerNodes)
 			{
 				FileMarker marker = (FileMarker) markerNode.getUserObject();
