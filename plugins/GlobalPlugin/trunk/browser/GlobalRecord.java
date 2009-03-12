@@ -31,7 +31,13 @@ public class GlobalRecord {
 		return fields[0];
 	}
 	public int getLine() {
-		return Integer.parseInt(fields[1]);
+		int line = 0;
+		try {
+			line = Integer.parseInt(fields[1]);
+		} catch (Exception e) {
+			// Number format exception ...
+		}
+		return line;
 	}
 	public String getFile() {
 		return fields[2];
