@@ -141,7 +141,7 @@ public class MarkerSet {
 		jEdit.visit(new JEditVisitorAdapter() {
 			@Override
 			public void visit(JEditTextArea textArea) {
-				textArea.repaint();
+				textArea.getGutter().repaint();
 			}
 		});
 	}

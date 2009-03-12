@@ -315,7 +315,18 @@ public class MarkerSetsPlugin extends EBPlugin {
 		}
 	}
 	
+	// Interface for plugins
+	
+	static public void toggleMarker(FileMarker marker)
+	{
+		if (active.toggle(marker))
+			notifyChange(Event.MARKER_ADDED, marker, active);
+		else
+			notifyChange(Event.MARKER_REMOVED, marker, active);
+	}
+	
 	// Actions
+	
 	static public void setActiveMarkerSet(View view)
 	{
 		String current = (active == null) ? null : active.getName();
