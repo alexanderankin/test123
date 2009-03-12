@@ -87,14 +87,17 @@ public class GlobalResultsView extends JPanel implements
 		
 		public SearchNode(String search) {
 			this.search = search;
+			parent = null;
+		}
+		public void setTreeNode(SourceLinkParentNode parent) {
+			this.parent = parent;
 		}
 		public String toString() {
 			if (parent == null)
 				return makeBold(search);
-			int occurs = parent.getLeafCount();
-			int files = parent.getChildCount();
-			return makeBold(search + " (" + occurs + " occurrences in " + files +
-				" files)");
+			int [] counts = parent.getFileAndMarkerCounts(); 
+			return makeBold(search + " (" + counts[1] +
+				" occurrences in " + counts[0] + " files)");
 		}
 		public void addPopupMenuItemsFor(JPopupMenu popup, final SourceLinkParentNode parent,
 			final DefaultMutableTreeNode node)
@@ -108,10 +111,6 @@ public class GlobalResultsView extends JPanel implements
 						MarkerSetsPlugin.toggleMarker(marker);
 				}
 			});
-		}
-		public void setTreeNode(SourceLinkParentNode parent)
-		{
-			this.parent = parent;
 		}
 	}
 	
@@ -136,7 +135,6 @@ public class GlobalResultsView extends JPanel implements
 			SearchNode rootNode = new SearchNode(identifier);
 			SourceLinkParentNode parent =
 				tree.addSourceLinkParent(rootNode);
-			rootNode.setTreeNode(parent);
 			for (int i = 0; i < refs.size(); i++)
 			{
 				GlobalRecord rec = refs.get(i);
@@ -144,6 +142,7 @@ public class GlobalResultsView extends JPanel implements
 				int line = rec.getLine();
 				parent.addSourceLink(new FileMarker(file, line - 1, ""));
 			}
+			rootNode.setTreeNode(parent);
 			if (refs.size() == 1 && GlobalOptionPane.isJumpImmediately())
 				new GlobalReference(refs.get(0)).jump(view);
 			long end = System.currentTimeMillis();
