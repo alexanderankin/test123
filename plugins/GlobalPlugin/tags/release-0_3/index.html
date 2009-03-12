@@ -1,0 +1,59 @@
+<html>
+<head>
+   <title>GlobalPlugin</title>
+</head>
+
+<body>
+<h1>GlobalPlugin documentation</h1>
+Written by Shlomy Reinstein, July 2007.
+<h2>Description</h2>
+GlobalPlugin provides jEdit with an interface to the GNU Global, a source code
+tag system similar to Cscope. The GlobalPlugin allows you to find the definition
+or the references to selected tags in your source code.
+For more information about GNU Global, visit
+<a href="http://www.gnu.org/software/global">the GNU Global website</a>.
+<h2>Installation</h2>
+To use GlobalPlugin, you must first install GNU Global. You can download the
+tool from <a href="http://www.gnu.org/software/global/download.html">
+the GNU Global website</a>.
+<br>
+Next, either add the 'global' executable to your path, or specify the path to
+it in the GlobalPlugin options.
+<h2>Usage</h2>
+GNU Global reads tag information from database files created by the 'gtags'
+tool, which is normally installed as part of the GNU Global package. In order
+to use the GlobalPlugin, you should first create the database files. This is
+done simply by running 'gtags' at the root directory of your project. Running
+'gtags' will scan your directory tree for source files and generate several
+database files in the directory where you ran it. (For more information, visit
+<a href="http://www.gnu.org/software/global/globaldoc_toc.html">the GNU Global
+website</a>.)
+<br>
+Once the database has been created, you can start using GlobalPlugin: Simply
+select a tag in a jEdit buffer, then invoke one of the items from the
+GlobalPlugin menu. Each of the menu item will open a dockable window with the
+requested information, retrieved from GNU Global.
+<h3>Notes</h3>
+The 'Call Tree' dockable window is a special feature that is not provided
+directly by GNU Global, but rather inferred from multiple queries of GNU Global.
+The algorithm of 'Call Tree' is simple:
+<ol>
+<li>Run "global" to get the list of references to the selected tag.</li>
+<li>For each reference, run "global" to get the list of definitions in the file
+containing the reference.</li>
+<li>Present the bottomost definition that is above the reference line as a "caller".
+</li>
+</ol>
+Although the 'call tree' may be very handy, it is far from being accurate for
+several reasons:
+<ul>
+<li>The bottomost definition above the reference line is not necessarily a function
+definition, in which case it's not really a "caller".</li>
+<li>GNU Global lists function declarations in header files in the list of references
+to the function. Of course, function declarations are not "calls" to the function,
+but GlobalPlugin has no way of telling the difference, so it will use the same
+algorithm and present the tag defined above the declaration as a "caller".</li>
+</ul>
+<h3>Enjoy!</h3>
+</body>
+</html>
