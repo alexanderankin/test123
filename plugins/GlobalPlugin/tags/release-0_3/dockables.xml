@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOsCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="reference-browser" MOVABLE="TRUE">
+		new browser.GlobalResultsView(view, "-r -x -a");
+	</DOCKABLE>s
+	<DOCKABLE NAME="definition-browser" MOVABLE="TRUE">
+		new browser.GlobalResultsView(view, "-x -a");
+	</DOCKABLE>
+	<DOCKABLE NAME="call-tree-browser" MOVABLE="TRUE">
+		new browser.CallTree(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="pattern-browser" MOVABLE="TRUE">
+		new browser.GlobalResultsView(view, "-g -x -a");
+	</DOCKABLE>
+</DOCKABLES>
+
