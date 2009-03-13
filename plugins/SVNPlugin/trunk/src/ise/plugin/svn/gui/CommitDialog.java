@@ -150,7 +150,7 @@ public class CommitDialog extends JDialog {
             try {
                 cmd.doGetProperties( data );
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // oh well...
             }
             if ( cmd.getProperties() != null ) {
@@ -174,12 +174,6 @@ public class CommitDialog extends JDialog {
 
         final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursively_commit?", "Recursively commit?") );
         recursive_cb.setSelected( recursive );
-        recursive_cb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        commitData.setRecursive( recursive_cb.isSelected() );
-                    }
-                }
-                                      );
 
         JLabel label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this_commit>", "Enter comment for this commit:") );
         comment = new JTextArea( 5, 50 );
@@ -246,6 +240,7 @@ public class CommitDialog extends JDialog {
 
                             commitData.setUsername( login.getUsername() );
                             commitData.setPassword( login.getPassword() );
+                            commitData.setRecursive( recursive_cb.isSelected() );
                         }
                         CommitDialog.this._save();
                         CommitDialog.this.setVisible( false );
@@ -263,12 +258,12 @@ public class CommitDialog extends JDialog {
                 }
                                     );
 
+        /* TODO: make this work for bugtraq
         // field for bug number
         JLabel bug_label = new JLabel( jEdit.getProperty("ips.Issue_>>", "Issue #:") );
         JTextField bug_field = new JTextField( 10 );
 
         // add the components to the option panel
-        /* TODO: make this work for bugtraq
         panel.add( "0, 0, 1, 1, W,  , 3", bug_label );
         panel.add( "1, 0, 1, 1, W, w, 3", bug_field );
         panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );

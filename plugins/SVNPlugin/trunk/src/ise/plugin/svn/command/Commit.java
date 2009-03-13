@@ -48,6 +48,7 @@ import ise.plugin.svn.data.CommitInfo;
 public class Commit {
 
     public CommitData commit( CommitData cd ) throws CommandInitializationException, SVNException {
+
         SVNKit.setupLibrary();
 
         // validate commit data values
@@ -113,7 +114,7 @@ public class Commit {
             null,
             false,
             false,
-            SVNDepth.fromRecurse(cd.getRecursive()));
+            cd.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY);
 
         // handle the results
         PrintStream out = cd.getOut();
