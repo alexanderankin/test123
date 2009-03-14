@@ -231,28 +231,31 @@ public class MarkerSetsPlugin extends EBPlugin {
 	
 	static private void importXml(String file)
 	{
-		// Do not test 'file' using File.canRead(), it can return false even
-		// when the file is readable and can be successfully parsed.
-		Document doc = null;
 		String activeName = GLOBAL_SET;
-		try {
-			File f = new File(file);
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			doc = db.parse(f);
-			doc.getDocumentElement().normalize();
-			NodeList markerSetNodes = doc.getElementsByTagName(MARKER_SET_ELEM);
-			for (int i = 0; i < markerSetNodes.getLength(); i++)
-			{
-				MarkerSet ms = new MarkerSet((Element) markerSetNodes.item(i));
-				addMarkerSet(ms);
+		File f = new File(file);
+		if (f.exists())
+		{
+			// Do not test 'file' using File.canRead(), it can return false even
+			// when the file is readable and can be successfully parsed.
+			Document doc = null;
+			try {
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				doc = db.parse(f);
+				doc.getDocumentElement().normalize();
+				NodeList markerSetNodes = doc.getElementsByTagName(MARKER_SET_ELEM);
+				for (int i = 0; i < markerSetNodes.getLength(); i++)
+				{
+					MarkerSet ms = new MarkerSet((Element) markerSetNodes.item(i));
+					addMarkerSet(ms);
+				}
+				activeName = doc.getDocumentElement().getAttribute(ACTIVE_ATTR);
+				if ((activeName == null) || (activeName.length() == 0))
+					activeName = GLOBAL_SET;
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(jEdit.getActiveView(),
+					"Failed to load marker sets from XML. Error: " + e.getMessage());
 			}
-			activeName = doc.getDocumentElement().getAttribute(ACTIVE_ATTR);
-			if ((activeName == null) || (activeName.length() == 0))
-				activeName = GLOBAL_SET;
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(jEdit.getActiveView(),
-				"Failed to load marker sets from XML. Error: " + e.getMessage());
 		}
 		active = markerSets.get(activeName);
 		if (active == null)
@@ -279,8 +282,9 @@ public class MarkerSetsPlugin extends EBPlugin {
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
 	        trans.transform(source, result);
 		} catch (Exception e) {
+			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
-				"Failed to save marker sets. Error:\n" + e.getMessage());
+				"Failed to save marker sets. Error:\n" + e.getStackTrace());
 			return;
 		}
 	}
