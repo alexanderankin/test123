@@ -1,0 +1,39 @@
+plugin.marker.MarkerSetsPlugin.activate=startup
+
+# general plugin information
+plugin.marker.MarkerSetsPlugin.name=MarkerSets
+plugin.marker.MarkerSetsPlugin.author=Shlomy Reinstein
+plugin.marker.MarkerSetsPlugin.version=0.2
+plugin.marker.MarkerSetsPlugin.description=The MarkerSets plugin enables you \
+  to create named sets of markers from various files.
+
+plugin.marker.MarkerSetsPlugin.depend.0=jdk 1.5
+plugin.marker.MarkerSetsPlugin.depend.1=jedit 04.03.17.00
+
+# action labels
+markersets-set-active-markerset.label=Set active marker set...
+markersets-use-global-markerset.label=Set to global marker set
+markersets-toggle-marker.label=Toggle marker at caret location
+markersets-export.label=Export marker sets to file...
+markersets-import.label=Import marker sets from file...
+
+# menu items
+plugin.marker.MarkerSetsPlugin.menu=\
+	marker-set-manager \
+	markersets-set-active-markerset \
+	markersets-use-global-markerset markersets-toggle-marker \
+	- \
+	markersets-import \
+	markersets-export
+
+# dockables
+marker-set-manager.title=Marker Sets
+marker-set-manager.longtitle=View and Manage Marker Sets
+marker-set-manager.label=Marker Sets
+
+# docs
+plugin.marker.MarkerSetsPlugin.docs=index.html
+
+# messages
+#class-browser.msg.title=Class Browser
+#class-browser.msg.no-selected-class=For this action to work, you must either
