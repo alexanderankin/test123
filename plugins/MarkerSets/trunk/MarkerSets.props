@@ -8,7 +8,7 @@ plugin.marker.MarkerSetsPlugin.description=The MarkerSets plugin enables you \
   to create named sets of markers from various files.
 
 plugin.marker.MarkerSetsPlugin.depend.0=jdk 1.5
-plugin.marker.MarkerSetsPlugin.depend.1=jedit 04.03.17.00
+plugin.marker.MarkerSetsPlugin.depend.1=jedit 04.03.16.00
 
 # action labels
 markersets-set-active-markerset.label=Set active marker set...
