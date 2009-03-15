@@ -16,6 +16,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import marker.FileMarker;
 
@@ -35,6 +36,7 @@ public class SourceLinkTree extends JTree
 	public SourceLinkTree(View view)
 	{
 		this.view = view;
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		builder = new FlatTreeBuilder();
 		root = new DefaultMutableTreeNode();
 		listeners = new HashSet<SourceLinkTreeModelListener>(); 
@@ -72,6 +74,7 @@ public class SourceLinkTree extends JTree
 					return;
 				final DefaultMutableTreeNode node =
 					(DefaultMutableTreeNode) tp.getLastPathComponent();
+				SourceLinkTree.this.setSelectionPath(tp);
 				JPopupMenu p = new JPopupMenu();
 				// Allow node-specific context menu items 
 				if (node instanceof PopupMenuProvider)

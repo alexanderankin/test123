@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,6 +36,8 @@ import org.gjt.sp.jedit.View;
 
 @SuppressWarnings("serial")
 public class MarkerSetManager extends JPanel {
+	
+	private View view;
 	private SourceLinkTree markers;
 	private JComboBox structure;
 	private MarkerTreeBuilder [] builders;
@@ -44,6 +47,7 @@ public class MarkerSetManager extends JPanel {
 	public MarkerSetManager(View view)
 	{
 		super(new BorderLayout());
+		this.view = view;
 		JPanel northPanel = new JPanel();
 		add(northPanel, BorderLayout.NORTH);
 		builders = new MarkerTreeBuilder[] {
@@ -82,6 +86,13 @@ public class MarkerSetManager extends JPanel {
 		active.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				MarkerSetsPlugin.setActiveMarkerSet(active.getSelectedItem().toString());
+			}
+		});
+		JButton newMarkerSet = new JButton("New...");
+		northPanel.add(newMarkerSet);
+		newMarkerSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MarkerSetsPlugin.setActiveMarkerSet(MarkerSetManager.this.view);
 			}
 		});
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
