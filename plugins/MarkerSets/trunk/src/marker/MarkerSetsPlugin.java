@@ -223,7 +223,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 	{
 		if (ms == markerSets.get(GLOBAL_SET)) // Cannot remove global marker set
 			return;
-		if (markerSets.remove(ms) != null)
+		if (markerSets.remove(ms.getName()) != null)
 			notifyChange(Event.MARKER_SET_REMOVED, ms);
 		if (active == ms)
 			useGlobalMarkerSet();
@@ -317,6 +317,17 @@ public class MarkerSetsPlugin extends EBPlugin {
 				}
 			});
 		}
+	}
+
+	static public boolean setActiveMarkerSet(String activeName)
+	{
+		if ((activeName == null) || (activeName.length() == 0))
+			return false;
+		MarkerSet newActive = markerSets.get(activeName);
+		if (newActive == null)
+			return false;
+		active = newActive;
+		return true;
 	}
 	
 	// Interface for plugins

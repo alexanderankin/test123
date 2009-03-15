@@ -410,6 +410,13 @@ public class SourceLinkTree extends JTree
 				listener.nodeRemoved(node, (SourceLinkParentNode) parent,
 					leafs);
 		}
-		model.removeNodeFromParent(node);
+		if (node.getParent() != null)
+			model.removeNodeFromParent(node);
+		else
+		{
+			int i = root.getIndex(node);
+			root.remove(i);
+			model.nodesWereRemoved(root, new int [] {i}, new Object [] { node });
+		}
 	}
 }
