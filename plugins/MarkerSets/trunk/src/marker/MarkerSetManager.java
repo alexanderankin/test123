@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -36,10 +38,13 @@ public class MarkerSetManager extends JPanel {
 	private SourceLinkTree markers;
 	private JComboBox structure;
 	private MarkerTreeBuilder [] builders;
+	private JComboBox active;
 	
 	public MarkerSetManager(View view)
 	{
 		super(new BorderLayout());
+		JPanel northPanel = new JPanel();
+		add(northPanel, BorderLayout.NORTH);
 		builders = new MarkerTreeBuilder[] {
 			new FlatTreeBuilder(),
 			new FileTreeBuilder(),
@@ -47,7 +52,7 @@ public class MarkerSetManager extends JPanel {
 		};
 		JPanel structurePanel = new JPanel();
 		structurePanel.setAlignmentX(0);
-		add(structurePanel, BorderLayout.NORTH);
+		northPanel.add(structurePanel);
 		structurePanel.add(new JLabel("Group markers by:"));
 		structure = new JComboBox(builders);
 		structurePanel.add(structure);
@@ -68,6 +73,16 @@ public class MarkerSetManager extends JPanel {
 			}
 		});
 		structure.setSelectedIndex(0);
+		JPanel activePanel = new JPanel();
+		northPanel.add(activePanel);
+		activePanel.add(new JLabel("Active marker set:"));
+		active = new JComboBox(MarkerSetsPlugin.getMarkerSetNames());
+		activePanel.add(active);
+		active.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				MarkerSetsPlugin.setActiveMarkerSet(active.getSelectedItem().toString());
+			}
+		});
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
 	}
 	
