@@ -39,6 +39,7 @@ public class MarkerSetManager extends JPanel {
 	private JComboBox structure;
 	private MarkerTreeBuilder [] builders;
 	private JComboBox active;
+	private boolean selfUpdate;
 	
 	public MarkerSetManager(View view)
 	{
@@ -84,10 +85,13 @@ public class MarkerSetManager extends JPanel {
 			}
 		});
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
+		selfUpdate = false;
 	}
 	
 	public void updateTree()
 	{
+		if (selfUpdate)
+			return;
 		markers.clear();
 		Vector<String> names = MarkerSetsPlugin.getMarkerSetNames();
 		for (String name: names)
@@ -109,6 +113,7 @@ public class MarkerSetManager extends JPanel {
 		{
 			if (parent == null)
 				return;
+			selfUpdate = true;
 			MarkerSet ms = (MarkerSet) parent.getUserObject();
 			if (node == parent)
 				MarkerSetsPlugin.removeMarkerSet(ms);
@@ -116,6 +121,7 @@ public class MarkerSetManager extends JPanel {
 				for (DefaultMutableTreeNode leaf: leafs)
 					ms.remove((FileMarker) leaf.getUserObject());
 			}
+			selfUpdate = false;
 		}
 	}
 
