@@ -60,29 +60,16 @@ public class MetalColorPlugin extends EditPlugin
             Color bgColor = jEdit.getColorProperty( BGCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_BGCOLOR );
             
             MetalLookAndFeel.setCurrentTheme( new MetalColorTheme(controlColor, textColor, bgColor) );
-            updateAllComponentTreeUIs();
+
+            if( UIManager.getLookAndFeel() instanceof MetalLookAndFeel )
+            {
+                // re-install the Metal Look and Feel
+                UIManager.setLookAndFeel( new MetalLookAndFeel() );
+            }
         }
         catch (Exception e)
         {
             Log.log(Log.ERROR, MetalColorPlugin.class, e);
-        }
-    }
-    
-    /**
-     * Update the component trees of all windows.
-     */
-    private static void updateAllComponentTreeUIs() throws javax.swing.UnsupportedLookAndFeelException
-    {
-        if( UIManager.getLookAndFeel() instanceof MetalLookAndFeel )
-        {
-            // re-install the Metal Look and Feel
-            UIManager.setLookAndFeel( new MetalLookAndFeel() );
-            
-            Frame[] frames = Frame.getFrames();
-            for (int i=0; i<frames.length; i++)
-            {
-                SwingUtilities.updateComponentTreeUI(frames[i]);
-            }
         }
     }
 }
