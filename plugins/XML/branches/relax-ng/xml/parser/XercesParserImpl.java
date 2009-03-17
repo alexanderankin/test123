@@ -130,6 +130,10 @@ public class XercesParserImpl extends XmlParser
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
 			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
+			reader.setFeature("http://apache.org/xml/features/xinclude",
+				buffer.getBooleanProperty("xml.xinclude"));
+			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
+				buffer.getBooleanProperty("xml.xinclude.xmlbase"));
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
 			reader.setContentHandler(handler);
@@ -137,7 +141,8 @@ public class XercesParserImpl extends XmlParser
 			
 			//get access to the schema
 			handler.setPSVIProvider((PSVIProvider)reader);
-//			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+			//get access to the DTD
+			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 		}
 		catch(SAXException se)
 		{
@@ -779,7 +784,7 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 		{
-			return resolveEntity(null, publicId, systemId, null);
+			return resolveEntity(null, publicId, null, systemId);
 		}
 	} //}}}
 
