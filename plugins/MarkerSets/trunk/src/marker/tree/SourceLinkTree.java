@@ -32,10 +32,12 @@ public class SourceLinkTree extends JTree
 	private DefaultTreeModel model;
 	private MarkerTreeBuilder builder;
 	private HashSet<SourceLinkTreeModelListener> listeners;
+	private boolean multiple;
 	
 	public SourceLinkTree(View view)
 	{
 		this.view = view;
+		multiple = true;
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		builder = new FlatTreeBuilder();
 		root = new DefaultMutableTreeNode();
@@ -98,6 +100,20 @@ public class SourceLinkTree extends JTree
 		});
 	}
 
+	public void allowMultipleResults(boolean multiple)
+	{
+		if (this.multiple == multiple)
+			return;
+		this.multiple = multiple;
+		if ((! multiple) && (root.getChildCount() > 0))
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getLastChild();
+			clear();
+			root.add(node);
+			model.nodeStructureChanged(root);
+		}
+	}
+	
 	public void setBuilder(MarkerTreeBuilder builder)
 	{
 		if (this.builder == builder)
@@ -120,6 +136,8 @@ public class SourceLinkTree extends JTree
 	public SourceLinkParentNode addSourceLinkParent(Object parent)
 	{
 		SourceLinkParentNode node = new SourceLinkParentNode(parent, builder);
+		if (! multiple)
+			clear();
 		root.add(node);
 		model.nodeStructureChanged(root);
 		return node;
