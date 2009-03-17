@@ -2,12 +2,14 @@ package browser;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -36,6 +38,7 @@ public class GlobalResultsView extends JPanel implements
 	private String param;
 	private JTextField symbolTF;
 	private JLabel statusLbl;
+	private JCheckBox multiCB;
 	private SourceLinkTree tree;
 	
 	public GlobalResultsView(final View view, String param)
@@ -44,6 +47,7 @@ public class GlobalResultsView extends JPanel implements
 		this.view = view;
 		this.param = param;
 		JPanel symbolPanel = new JPanel(new BorderLayout());
+		add(symbolPanel, BorderLayout.NORTH);
 		symbolPanel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		symbolTF = new JTextField(40);
 		symbolTF.addKeyListener(new KeyAdapter() {
@@ -54,10 +58,9 @@ public class GlobalResultsView extends JPanel implements
 		});
 		symbolPanel.add(symbolTF, BorderLayout.CENTER);
 		JPanel toolbar = new JPanel(new BorderLayout(5, 0));
+		symbolPanel.add(toolbar, BorderLayout.EAST);
 		statusLbl = new JLabel("");
 		toolbar.add(statusLbl, BorderLayout.EAST);
-		symbolPanel.add(toolbar, BorderLayout.EAST);
-		add(symbolPanel, BorderLayout.NORTH);
 		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 		renderer.setClosedIcon(null);
 		renderer.setOpenIcon(null);
@@ -65,6 +68,13 @@ public class GlobalResultsView extends JPanel implements
 		tree = new SourceLinkTree(view);
 		tree.setCellRenderer(renderer);
 		add(new JScrollPane(tree), BorderLayout.CENTER);
+		multiCB = new JCheckBox("Multiple", true);
+		toolbar.add(multiCB, BorderLayout.CENTER);
+		multiCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tree.allowMultipleResults(multiCB.isSelected());
+			}
+		});
 	}
 	
 	protected String getParam()	{
