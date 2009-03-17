@@ -236,7 +236,6 @@ public class PropertyPanel extends JPanel {
                                 Property property = new Property();
                                 try {
                                     property.doSetProperties( data );
-
                                 }
                                 catch ( Exception e ) {
                                     e.printStackTrace();
