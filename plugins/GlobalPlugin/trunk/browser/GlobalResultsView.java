@@ -145,6 +145,7 @@ public class GlobalResultsView extends JPanel implements
 			SearchNode rootNode = new SearchNode(identifier);
 			SourceLinkParentNode parent =
 				tree.addSourceLinkParent(rootNode);
+			final int index = parent.getRoot().getIndex(parent);
 			for (int i = 0; i < refs.size(); i++)
 			{
 				GlobalRecord rec = refs.get(i);
@@ -161,7 +162,7 @@ public class GlobalResultsView extends JPanel implements
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					statusLbl.setText(refs.size() + " results");
-					for (int i = 0; i < tree.getRowCount(); i++)
+					for (int i = index; i < tree.getRowCount(); i++)
 						tree.expandRow(i);
 				}
 			});
