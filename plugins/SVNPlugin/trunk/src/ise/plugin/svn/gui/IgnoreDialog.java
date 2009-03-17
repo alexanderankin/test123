@@ -69,18 +69,23 @@ public class IgnoreDialog extends JDialog {
         final JRadioButton this_file_btn = new JRadioButton( jEdit.getProperty( "ips.This_file", "This file" ) );
         final JRadioButton this_dir_btn = new JRadioButton( jEdit.getProperty( "ips.This_directory", "This directory" ) );
         final JRadioButton this_dir_pattern_btn = new JRadioButton( jEdit.getProperty( "ips.Files_in_this_directory_with_this_pattern>", "Files in this directory with this pattern:" ) );
-        if (f.isFile()) {
+        if ( f.isFile() ) {
             bg.add( this_file_btn );
-            this_file_btn.setSelected(true);
+            this_file_btn.setSelected( true );
         }
         else {
             bg.add( this_dir_btn );
-            this_dir_btn.setSelected(true);
+            this_dir_btn.setSelected( true );
         }
         bg.add( this_dir_pattern_btn );
 
         final JTextField pattern_field = new JTextField();
         pattern_field.setEnabled( false );
+        int extension_index = pathfilename.lastIndexOf( "." );
+        if ( extension_index > 0 ) {
+            pattern_field.setText( "*" + pathfilename.substring( extension_index ) );
+        }
+
         final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recursive", "Recursive" ), false );
         recursive_cb.setEnabled( false );
 
@@ -107,12 +112,25 @@ public class IgnoreDialog extends JDialog {
         ok_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
+                    path = IgnoreDialog.this.pathfilename;
                     if ( this_dir_pattern_btn.isSelected() ) {
-                        path = IgnoreDialog.this.pathfilename;
-                    }
-                    pattern = pattern_field.getText();
-                    if ( pattern != null && pattern.length() == 0 ) {
-                        pattern = null;
+                        pattern = pattern_field.getText();
+                        if ( pattern == null || pattern.length() == 0 ) {
+                            JOptionPane.showMessageDialog( IgnoreDialog.this, jEdit.getProperty("ips.No_pattern_entered.", "No pattern entered."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            return;
+                        }
+                        // patterns can't be added to a file, they need to be added to
+                        // the parent directory
+                        File f = new File( path );
+                        if ( !f.isDirectory() ) {
+                            path = f.getParent();
+                            if ( path.endsWith( "/" ) ) {
+                                path = path.substring( 0, path.length() - 1 );
+                            }
+                        }
+                        else {
+                            path = f.getAbsolutePath();
+                        }
                     }
                     recursive = recursive_cb.isSelected();
                     IgnoreDialog.this.setVisible( false );
