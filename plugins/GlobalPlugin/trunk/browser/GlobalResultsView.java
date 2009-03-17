@@ -145,6 +145,7 @@ public class GlobalResultsView extends JPanel implements
 			SearchNode rootNode = new SearchNode(identifier);
 			SourceLinkParentNode parent =
 				tree.addSourceLinkParent(rootNode);
+			rootNode.setTreeNode(parent);
 			final int index = parent.getRoot().getIndex(parent);
 			for (int i = 0; i < refs.size(); i++)
 			{
@@ -153,7 +154,6 @@ public class GlobalResultsView extends JPanel implements
 				int line = rec.getLine();
 				parent.addSourceLink(new FileMarker(file, line - 1, ""));
 			}
-			rootNode.setTreeNode(parent);
 			if (refs.size() == 1 && GlobalOptionPane.isJumpImmediately())
 				new GlobalReference(refs.get(0)).jump(view);
 			long end = System.currentTimeMillis();
