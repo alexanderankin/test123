@@ -311,7 +311,10 @@ public class Resolver extends DefaultHandler2
 		String newSystemId = null;
 		
 		Log.log(Log.DEBUG,Resolver.class,"Resolver.resolveEntity("+name+","+publicId+","+current+","+systemId+")");
-
+		
+		//catch an error message here
+		if(publicId == null && systemId == null)return null;
+		
 		/* we need this hack to support relative path names inside
 		 * cached files. we want them to be resolved relative to
 		 * the original system ID of the cached resource, not the

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!--
+  - valid file
+  - the dtd is referenced via a relative URI,
+    VALIDATION FAILS as the URI resolution is already done
+	and no file actions.dtd is here !
+  -->
+<ACTIONS>
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>
