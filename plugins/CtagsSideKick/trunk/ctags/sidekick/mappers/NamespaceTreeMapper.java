@@ -101,6 +101,9 @@ public class NamespaceTreeMapper extends AbstractTreeMapper
 				}				
 			}
 		}
+		// If no candidates were found, leave the current mapping
+		if (selected == null)
+			return;
 		// Found a candidate parent - move all children under it
 		for (CtagsSideKickTreeNode parent: parents) {
 			if (parent == selected)
