@@ -133,6 +133,8 @@ public class CtagsSideKickTreeNode
 	// re-parents their children to the right node.
 	public void takeChildrenFrom(CtagsSideKickTreeNode parent)
 	{
+		if (parent.children == null)
+			return;
 		Enumeration<CtagsSideKickTreeNode> otherChildren =
 			parent.children.elements();
 		while (otherChildren.hasMoreElements())
