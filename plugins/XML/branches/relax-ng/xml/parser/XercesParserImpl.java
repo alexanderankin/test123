@@ -71,31 +71,23 @@ import xml.completion.IDDecl;
  * This class should eventually replace SAXParserImpl.
  * The design goal is to use more recent APIs in Xerces, and to avoid
  * using internal or native interface classes, including the Grammar
- * class. 
+ * class.
  * It is not fully working yet.
- *  
- *     
- *     
  */
 
 public class XercesParserImpl extends XmlParser
 {
-	
-	
 	//{{{ SAXParserImpl constructor
 	public XercesParserImpl()
 	{
-		super("newxml");
-		
+		super("xml");
 	} //}}}
-	
+
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
 		stopped = false;
-
 		String text;
-
 		try
 		{
 			buffer.readLock();
@@ -110,19 +102,18 @@ public class XercesParserImpl extends XmlParser
 			return new XmlParsedData(buffer.getName(),false);
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
-	
+
 
 		Handler handler = new Handler(buffer,text,errorSource,data);
 
 
 		XMLReader reader = null;
 		try
-		{ 
-			
-			// One has to explicitely require the parser from XercesPlugin, otherwise
+		{
+			// One has to explicitly require the parser from XercesPlugin, otherwise
 			// one gets the crimson version bundled in the JRE and the rest fails
 			// miserably (at least on Mac OS X, JDK 5)
-			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser"); 
+			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
@@ -138,7 +129,7 @@ public class XercesParserImpl extends XmlParser
 			reader.setErrorHandler(handler);
 			reader.setContentHandler(handler);
 			reader.setEntityResolver(handler);
-			
+
 			//get access to the schema
 			handler.setPSVIProvider((PSVIProvider)reader);
 			//get access to the DTD
@@ -205,9 +196,7 @@ public class XercesParserImpl extends XmlParser
 		{
 			Log.log(Log.ERROR,this,e);
 		}
-
 		Collections.sort(data.ids,new IDDecl.Compare());
-
 		return data;
 	} //}}}
 
@@ -217,24 +206,22 @@ public class XercesParserImpl extends XmlParser
 	private void xsElementToElementDecl(XSNamedMap elements, CompletionInfo info,
 		XSElementDeclaration element, ElementDecl parent)
 	{
-
-
 		if(parent != null && parent.content == null)
-			parent.content = new HashSet();
-		
+			parent.content = new HashSet<String>();
+
 		String name = element.getName();
 		if(info.elementHash.get(name) != null)
 		{
 			// one must add the element to its parent's content, even if
 			// one knows the element already
-			if(parent!=null)parent.content.add(name);
+			if(parent!=null) parent.content.add(name);
 			return;
 		}
-		
+
 		ElementDecl elementDecl = null;
-		
+
 		if ( element.getAbstract() || element.getName().endsWith(".class")) {
-			
+
 			for (int j=0; j<elements.getLength(); ++j) {
 				XSElementDeclaration decl = (XSElementDeclaration)elements.item(j);
 				XSElementDeclaration group = decl.getSubstitutionGroupAffiliation();
@@ -264,7 +251,7 @@ public class XercesParserImpl extends XmlParser
 				else
 					xsTermToElementDecl(elements, info,particleTerm,elementDecl);
 			}
-			
+
 			XSObjectList attributes = complex.getAttributeUses();
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
@@ -277,7 +264,7 @@ public class XercesParserImpl extends XmlParser
 				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
 				String type = typeDef.getName();
 				StringList valueStringList = typeDef.getLexicalEnumeration();
-				ArrayList values = new ArrayList();
+				ArrayList<String> values = new ArrayList<String>();
 				for (int j = 0; j < valueStringList.getLength(); j++) {
 				    values.add(valueStringList.item(j));
 				}
@@ -294,12 +281,11 @@ public class XercesParserImpl extends XmlParser
 	private void xsTermToElementDecl(XSNamedMap elements, CompletionInfo info, XSTerm term,
 		ElementDecl parent)
 	{
-		
+
 		if(term instanceof XSElementDeclaration)
 		{
 			xsElementToElementDecl(elements, info,
-				(XSElementDeclaration)term,
-				parent);
+				(XSElementDeclaration)term, parent);
 		}
 		else if(term instanceof XSModelGroup)
 		{
@@ -323,15 +309,14 @@ public class XercesParserImpl extends XmlParser
 		DefaultErrorSource errorSource;
 		String text;
 		XmlParsedData data;
-		
 
-		HashMap activePrefixes;
-		Stack currentNodeStack;
+		HashMap<String, String> activePrefixes;
+		Stack<DefaultMutableTreeNode> currentNodeStack;
 		Locator loc;
 		boolean empty;
 		//used to retrieve the XSModel for a particular node
 		PSVIProvider psviProvider;
-		
+
 		//{{{ Handler constructor
 		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
 			XmlParsedData data)
@@ -340,8 +325,8 @@ public class XercesParserImpl extends XmlParser
 			this.text = text;
 			this.errorSource = errorSource;
 			this.data = data;
-			this.activePrefixes = new HashMap();
-			this.currentNodeStack = new Stack();
+			this.activePrefixes = new HashMap<String, String>();
+			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
 			this.empty = true;
 			this.psviProvider = null;
 
@@ -350,13 +335,13 @@ public class XercesParserImpl extends XmlParser
 		private void setPSVIProvider(PSVIProvider psviProvider){
 			this.psviProvider = psviProvider;
 		}
-		
+
 		//{{{ addError() method
 		private boolean ignoreMessage(String message) {
 			if (message.startsWith("More pseudo attributes are expected")) return true;
 			if (message.startsWith("Content is not allowed in prolog")) return true;
 			return false;
-			
+
 		}
 		private void addError(int type, String uri, int line, String message)
 		{
@@ -393,13 +378,13 @@ public class XercesParserImpl extends XmlParser
 
 			Log.log(Log.DEBUG,XercesParserImpl.this,"modelToCompletionInfo("+model+")");
 			CompletionInfo info = new CompletionInfo();
-			
+
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
 			for(int i = 0; i < elements.getLength(); i++)
 			{
 				XSElementDeclaration element = (XSElementDeclaration)
 					elements.item(i);
-				
+
 				xsElementToElementDecl(elements, info, element, null);
 			}
 
@@ -436,11 +421,11 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
 			throws SAXException, java.io.IOException {
-	
+
 			Log.log(Log.DEBUG,this,"resolveEntity PUBLIC=" + publicId
 				+ ", SYSTEM=" + systemId);
 			InputSource source = null;
-			
+
 			try {
 				source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
 			}
@@ -458,8 +443,8 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
-				// TODO: not sure wether it's the best thing to do : 
-				//it prints a cryptic "premature end of file" 
+				// TODO: not sure wether it's the best thing to do :
+				//it prints a cryptic "premature end of file"
 				// error message
 				InputSource dummy = new InputSource(systemId);
 				dummy.setPublicId(publicId);
@@ -591,17 +576,17 @@ public class XercesParserImpl extends XmlParser
 			if(psvi!=null)
 			{
 				XSModel model = psvi.getSchemaInformation();
-				
+
 				//model is present only for top-level schema elements
 				//like ACTIONS vs ACTION in actions.xsd
 				if(model != null)
 				{
 					//get the prefix
 					String prefix=qName.substring(0,qName.length()-sName.length());
-					
+
 					//convert to Completion info
 					CompletionInfo info = modelToCompletionInfo(model);
-					
+
 					//set Completion Info
 					// TODO: what happens when reusing the same prefix for several
 					//       namespaces
@@ -611,7 +596,7 @@ public class XercesParserImpl extends XmlParser
 					}
 				}
 			}
-			
+
 			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
 				return;
 
