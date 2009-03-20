@@ -270,7 +270,7 @@ public class ElementDecl
 		public String type;
 		public boolean required;
 
-		public AttributeDecl(String name, String value, ArrayList values,
+		public AttributeDecl(String name, String value, ArrayList<String> values,
 			String type, boolean required)
 		{
 			this.name = name;
