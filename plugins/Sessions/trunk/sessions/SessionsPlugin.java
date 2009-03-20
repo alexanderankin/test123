@@ -43,6 +43,10 @@ import org.gjt.sp.util.StandardUtilities;
  */
 public class SessionsPlugin extends EBPlugin
 {
+	private Hashtable viewSessionSwitchers = new Hashtable();
+	
+	private boolean switcherInBufferList = false;
+	
 	public void start()
 	{
 		boolean restore = jEdit.getBooleanProperty("restore");
@@ -76,11 +80,25 @@ public class SessionsPlugin extends EBPlugin
 		
 		if (jEdit.getBooleanProperty("sessions.switcher.showToolBar", false))
 		{
-			// Add SessionSwitcher to existing Views
-			View[] views = jEdit.getViews();
-			for (int i = 0; i < views.length; i++)
+			// If the switcher is to be shown in the BufferList dockable ...
+			if(jEdit.getBooleanProperty(
+					"sessions.switcher.showInsideBufferList", false))
 			{
-				addSessionSwitcher(views[i]);
+				// ... defer switcher creation until after JEdit is completely 
+				// started, so we can be sure that the BufferList dockable has
+				// been created.
+				Log.log(Log.DEBUG, this, "Defer session switcher creation");
+				switcherInBufferList = true;
+			}
+			else
+			{
+				// Add SessionSwitcher to existing Views
+				Log.log(Log.DEBUG, this, "Add SessionSwitcher to existing Views");
+				View[] views = jEdit.getViews();
+				for (int i = 0; i < views.length; i++)
+				{
+					addSessionSwitcher(views[i]);
+				}
 			}
 		}
 	}
@@ -118,6 +136,10 @@ public class SessionsPlugin extends EBPlugin
 			{
 				viewSessionSwitchers.remove(vu.getView());
 			}
+		}
+		else if (message instanceof DockableWindowUpdate)
+		{
+			handleDockableWindowUpdate((DockableWindowUpdate)message);
 		}
 		else if (message instanceof EditorExitRequested)
 		{
@@ -159,6 +181,28 @@ public class SessionsPlugin extends EBPlugin
 	{
 		DockableWindowManager mgr = view.getDockableWindowManager();
 		return mgr.getDockable("bufferlist");
+	}
+
+
+	private void handleDockableWindowUpdate(DockableWindowUpdate eemsg)
+	{
+		String msgSrc = eemsg.getDockable();
+		String what = (String)eemsg.getWhat();
+		// We respond only to activation of the BufferList dockable
+		if ("bufferlist".equals(msgSrc) && "ACTIVATED".equals(what))
+		{
+			// If the switcher is to be displayed in the BufferList dockable ...
+			if (switcherInBufferList)
+			{
+				Log.log(Log.DEBUG, this, "Add session switcher to BufferList dockable");
+				// ... then add switcher to all views
+				View[] views = jEdit.getViews();
+				for (int i = 0; i < views.length; i++)
+				{
+					addSessionSwitcher(views[i]);
+				}
+			}
+		}
 	}
 
 
@@ -206,6 +250,7 @@ public class SessionsPlugin extends EBPlugin
 
 	private synchronized void addSessionSwitcher(final View view)
 	{
+		Log.log(Log.DEBUG, this, "Adding session switcher component to view");
 		// remove old
 		removeSessionSwitcher(view);
 
@@ -234,13 +279,18 @@ public class SessionsPlugin extends EBPlugin
 		}
 		else if(jEdit.getBooleanProperty("sessions.switcher.showInsideBufferList", false))
 		{
+			// Add the session switcher to BufferList's dockable.
 			final JComponent bufferlist = getBufferList(view);
-			if(bufferlist != null)
+			// It's possible that this method was called prior to creation of
+			// the BufferList dockable component, so we need to check to be 
+			// sure that it exists.
+			if(bufferlist == null)
+			{
+				Log.log(Log.WARNING, this, "BufferList is null!!!");
+			}
+			else
 			{
 				// Add to BufferList:
-				// Again, we need to do this later, because the BufferList component
-				// might not yet be there, especially when jEdit is starting or the
-				// view is being created.
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -300,6 +350,4 @@ public class SessionsPlugin extends EBPlugin
 		}
 	}
 
-
-	private Hashtable viewSessionSwitchers = new Hashtable();
 }
