@@ -293,6 +293,11 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				return createFakeToolWindow(toolWindowId);
 			return createToolWindow(toolWindowId);
 		}
+
+		public String validate(PersistenceNode node, String attribute,
+				String attributeValue, Object attributeDefaultValue) {
+			return attributeValue;
+		}
 	}
 	
 	private ToolWindow createFakeToolWindow(String name)
