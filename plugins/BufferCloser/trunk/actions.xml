@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="buffercloser-toggle">
+		<CODE>
+            oldValue = jEdit.getBooleanProperty("buffercloser.enabled");
+            jEdit.setBooleanProperty("buffercloser.enabled", !oldValue);
+		</CODE>
+		<IS_SELECTED>
+		jEdit.getBooleanProperty("buffercloser.enabled");
+		</IS_SELECTED>
+	</ACTION>
+</ACTIONS>

@@ -16,6 +16,7 @@ import org.gjt.sp.util.Log;
 
 public class BufferCloserPlugin extends EBPlugin {
 	public void handleMessage(EBMessage message) {
+		if (!jEdit.getBooleanProperty("buffercloser.enabled")) return;
 		if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
 			if (epu.getWhat() == epu.BUFFER_CHANGED) {
