@@ -28,9 +28,8 @@ public class BufferCloserPlugin extends EBPlugin {
 						if (epc == ep) continue;
 						if (epc.getBufferSet() == bs) continue;
 						if (epc.getBufferSet() == jEdit.getGlobalBufferSet()) continue;
-						Log.log(Log.WARNING, this, "BufferCloserPlugin buffer: " 
-							+ b.getPath() + " EditPane: " + ep.toString() );
 						if (epc.getBufferSet().indexOf(b) < 0) continue;
+                        // found it open somewhere else thats not our bufferset!
 						jEdit.getBufferSetManager().removeBuffer(epc, b);
 					}
 				}

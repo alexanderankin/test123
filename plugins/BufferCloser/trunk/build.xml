@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <project name="BufferCloser" default="build" basedir=".">
+	<property name="docs-proc.target"  value="none" />
+
     <property file="build.properties"/>
     <property file="../build.properties"/>
+
     <property name="build.support" value="../build-support" />
     <property name="javadoc.packagenames"	value="buffercloser.*" />
     <property name="build.dir" value="build"/>
@@ -10,4 +13,12 @@
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
     </path>
+
+    <selector id="packageFiles">
+			<or>
+				<filename name="index.html" />
+			</or>
+	</selector>
+
+
 </project>
