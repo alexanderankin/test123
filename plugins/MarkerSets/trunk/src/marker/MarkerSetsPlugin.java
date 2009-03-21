@@ -378,7 +378,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 	{
 		Buffer b = view.getBuffer();
 		JEditTextArea ta = view.getTextArea();
-		FileMarker m = new FileMarker(b, ta.getCaretLine(), "");
+		FileMarker m = new FileMarker(b, ta.getCaretLine());
 		if (active.toggle(m))
 			notifyChange(Event.MARKER_ADDED, m, active);
 		else
