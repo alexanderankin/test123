@@ -23,19 +23,20 @@ public class FileMarker implements Comparable {
 	public FileMarker(String file, int line, String shortcut) {
 		init(file, line, shortcut);
 		Buffer b = jEdit.getBuffer(file);
-		if (b == null)
+		if ((b == null) || (! b.isLoaded()))
 			pos = null;
 		else
 			createPosition(b);
 	}
 	public FileMarker(Buffer b, int line, String shortcut) {
 		init(b.getPath(), line, shortcut);
-		createPosition(b);
+		if (b.isLoaded())
+			createPosition(b);
 	}
 	public FileMarker(Element node) {
 		importXml(node);
 		Buffer b = jEdit.getBuffer(file);
-		if (b != null)
+		if ((b != null) && b.isLoaded())
 			createPosition(b);
 	}
 	private void init(String file, int line, String shortcut) {
