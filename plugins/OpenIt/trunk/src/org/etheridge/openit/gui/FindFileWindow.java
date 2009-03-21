@@ -113,7 +113,10 @@ public class FindFileWindow extends JDialog {
 
                 if (sourceFiles.isEmpty()) {
                         mSourceFileListWindow.setVisible(false);
-                        mSourceFileNameField.requestFocus();
+			if(!OperatingSystem.isMacOS()) // Only fix for windows
+			{
+				mSourceFileNameField.requestFocus();
+			}
                         mSourceFileNameField.setForeground(Color.RED);
                 } else {
                         mSourceFileNameField.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
@@ -145,6 +148,7 @@ public class FindFileWindow extends JDialog {
         private void init() {
                 getContentPane().setLayout(new BorderLayout());
                 setUndecorated(true);
+		mSourceFileNameField.setBackground(jEdit.getColorProperty("view.bgColor", Color.white));
 
                 mSourceFileListModel = new SourceFileListModel();
                 mSourceFileList = new JList(mSourceFileListModel);
@@ -317,12 +321,15 @@ public class FindFileWindow extends JDialog {
                                         }
 
                                         updateList(documentText);
-                                        // fix for focus problems under windows
-                                        SwingUtilities.invokeLater(new Runnable() {
-                                                        public void run() {
-                                                                mSourceFileNameField.requestFocus();
-                                                        }
-                                        });
+					if(!OperatingSystem.isMacOS())
+					{
+						// fix for focus problems under windows
+						SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									mSourceFileNameField.requestFocus();
+								}
+						});
+					}
                                 }
                 });
                 // }}}
@@ -475,11 +482,14 @@ public class FindFileWindow extends JDialog {
                                                 jEdit.setBooleanProperty(OpenItProperties.POP_UP_FILTER_APPLIED,
                                                         (e.getStateChange() == ItemEvent.SELECTED));
                                                 updateList(mSourceFileNameField.getText());
-                                                SwingUtilities.invokeLater(new Runnable() {
-                                                                public void run() {
-                                                                        mSourceFileNameField.requestFocus();
-                                                                }
-                                                });
+						if(!OperatingSystem.isMacOS())
+						{
+							SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										mSourceFileNameField.requestFocus();
+									}
+							});
+						}
                                         }
                         });
 
