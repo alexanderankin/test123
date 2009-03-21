@@ -154,6 +154,7 @@ public class P4OptionPane extends AbstractOptionPane
         if (config != null) {
             config.save(p.getProperties());
         } else {
+            config = new P4Config();
             config.clean(p.getProperties());
         }
     }
