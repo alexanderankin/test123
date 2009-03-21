@@ -110,13 +110,13 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
 			return Collections.binarySearch(lastList, (VPTNode) child);
 		}
 
-		VPTNode node = (VPTNode) child;
+		VPTNode node = (VPTNode) parent;
 		if (node.isGroup()) {
 			return super.getIndexOfChild(parent, child);
 		} else if (node.isProject()) {
 			lastParent = parent;
-			return Collections.binarySearch(getCachedChildren((VPTProject) node),
-											(VPTNode) child);
+            lastList = getCachedChildren((VPTProject) node);
+			return Collections.binarySearch(lastList, (VPTNode) child);
 		}
         assert (false) : "should not reach here";
 		return -1;
@@ -235,13 +235,13 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
      */
     protected List<VPTNode> getCachedChildren(VPTProject proj)
     {
-			List<VPTNode> lst = childCache.get(proj);
-			if (lst == null) {
-				lst = getChildren(proj);
-                Collections.sort(lst);
-				childCache.put(proj, lst);
-			}
-            return lst;
+        List<VPTNode> lst = childCache.get(proj);
+        if (lst == null) {
+            lst = getChildren(proj);
+            Collections.sort(lst);
+            childCache.put(proj, lst);
+        }
+        return lst;
     }
 
 
