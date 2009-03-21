@@ -110,7 +110,7 @@ public final class ProjectPersistenceManager {
 	public static VPTProject load(VPTProject p, String file) {
 		InputStream in = ProjectPlugin.getResourceAsStream(CONFIG_DIR + file);
 		if (in == null) {
-			Log.log(Log.WARNING, ProjectPersistenceManager.class.getName(), "Cannot read config file " + file);
+			Log.log(Log.WARNING, ProjectPersistenceManager.class, "Cannot read config file " + file);
 			return null;
 		}
 
