@@ -132,16 +132,6 @@ public abstract class NodeHandler {
 	}
 
 	/**
-	 *	Translates any "\" found in the string to "/". Paths saved to the XML
-	 *	file are generally expected to be in Unix format, so this method is
-	 *	useful when saving the project in a Windows system.
-	 */
-	protected final String translatePath(String src) {
-		if (src == null) return "";
-		return src.replace('\\', '/');
-	}
-
-	/**
 	 *  Translates the directory separators read from the XML according
 	 *  the file system.
 	 */
