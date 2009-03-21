@@ -1,0 +1,12 @@
+# Plugin properties
+plugin.buffercloser.BufferCloserPlugin.name=BufferCloser
+plugin.buffercloser.BufferCloserPlugin.activate=startup
+plugin.buffercloser.BufferCloserPlugin.author=Alan Ezust
+plugin.buffercloser.BufferCloserPlugin.version=0.1
+plugin.buffercloser.BufferCloserPlugin.docs=index.html
+plugin.buffercloser.BufferCloserPlugin.depend.0=jedit 04.03.14.00
+plugin.buffercloser.BufferCloserPlugin.depend.1=jdk 1.5
+plugin.buffercloser.BufferCloserPlugin.description=Keeps your BufferSets small by closing buffers that are open in other editpanes whenever you open them in the current one.
+plugin.buffercloser.BufferCloserPlugin.longdescription=description.html
+
+
