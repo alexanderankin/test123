@@ -170,6 +170,12 @@ public class MarkerSetsPlugin extends EBPlugin {
 			initEditPane(ep);
 		else if (event == EditPaneUpdate.DESTROYED)
 			uninitEditPane(ep);
+		MarkerSetManager dockable = (MarkerSetManager)
+			ep.getView().getDockableWindowManager().getDockableWindow(
+				"marker-set-manager");
+		if (dockable != null)
+			dockable.bufferChanged(ep.getBuffer());
+			
 	}
 	
 	private void handleBufferUpdate(BufferUpdate bu)
