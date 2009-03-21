@@ -20,16 +20,16 @@ public class FileMarker implements Comparable {
 	private Position pos;
 	private Buffer buffer;
 	
-	public FileMarker(String file, int line, String shortcut) {
-		init(file, line, shortcut);
+	public FileMarker(String file, int line) {
+		init(file, line);
 		Buffer b = jEdit.getBuffer(file);
 		if ((b == null) || (! b.isLoaded()))
 			pos = null;
 		else
 			createPosition(b);
 	}
-	public FileMarker(Buffer b, int line, String shortcut) {
-		init(b.getPath(), line, shortcut);
+	public FileMarker(Buffer b, int line) {
+		init(b.getPath(), line);
 		if (b.isLoaded())
 			createPosition(b);
 	}
@@ -39,13 +39,12 @@ public class FileMarker implements Comparable {
 		if ((b != null) && b.isLoaded())
 			createPosition(b);
 	}
-	private void init(String file, int line, String shortcut) {
+	private void init(String file, int line) {
 		this.file = file;
 		this.line = line;
-		setShortcut(shortcut);
 	}
 
-	private void setShortcut(String shortcut) {
+	public void setShortcut(String shortcut) {
 		if ("".equals(shortcut))
 			shortcut = null;
 		this.shortcut = shortcut;
