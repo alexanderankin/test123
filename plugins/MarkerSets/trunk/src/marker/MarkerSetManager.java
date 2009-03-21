@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,6 +32,7 @@ import marker.tree.SourceLinkTree.SourceLinkParentNode;
 import marker.tree.SourceLinkTree.SourceLinkTreeModelListener;
 import marker.tree.SourceLinkTree.SourceLinkTreeNodeRenderer;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 
 
@@ -42,6 +44,7 @@ public class MarkerSetManager extends JPanel {
 	private JComboBox structure;
 	private MarkerTreeBuilder [] builders;
 	private JComboBox active;
+	private JCheckBox bufferScope;
 	private boolean selfUpdate;
 	
 	public MarkerSetManager(View view)
@@ -64,12 +67,6 @@ public class MarkerSetManager extends JPanel {
 		markers = new SourceLinkTree(view);
 		markers.setCellRenderer(new MarkerSetRenderer());
 		add(new JScrollPane(markers), BorderLayout.CENTER);
-		updateTree();
-		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
-			public void changed(Event e, FileMarker m, MarkerSet ms) {
-				updateTree();
-			}
-		});
 		structure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MarkerTreeBuilder builder =
@@ -97,6 +94,25 @@ public class MarkerSetManager extends JPanel {
 		});
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
 		selfUpdate = false;
+		bufferScope = new JCheckBox("Buffer scope");
+		northPanel.add(bufferScope);
+		bufferScope.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				updateTree();
+			}
+		});
+		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
+			public void changed(Event e, FileMarker m, MarkerSet ms) {
+				updateTree();
+			}
+		});
+		updateTree();
+	}
+
+	public void bufferChanged(Buffer b)
+	{
+		if (bufferScope.isSelected())
+			updateTree();
 	}
 	
 	public void updateTree()
@@ -105,13 +121,17 @@ public class MarkerSetManager extends JPanel {
 			return;
 		markers.clear();
 		Vector<String> names = MarkerSetsPlugin.getMarkerSetNames();
+		String path = null;
+		if (bufferScope.isSelected())
+			path = view.getBuffer().getPath();
 		for (String name: names)
 		{
 			MarkerSet ms = MarkerSetsPlugin.getMarkerSet(name);
 			SourceLinkParentNode msNode = markers.addSourceLinkParent(ms);
 			Vector<FileMarker> children = ms.getMarkers();
 			for (FileMarker marker: children)
-				msNode.addSourceLink(marker);
+				if (path == null || (marker.file.equals(path)))
+					msNode.addSourceLink(marker);
 		}
 		for (int i = 0; i < markers.getRowCount(); i++)
 			markers.expandRow(i);
