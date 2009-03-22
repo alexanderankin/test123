@@ -16,12 +16,15 @@ markersets-use-global-markerset.label=Set to global marker set
 markersets-toggle-marker.label=Toggle marker at caret location
 markersets-export.label=Export marker sets to file...
 markersets-import.label=Import marker sets from file...
+markersets-jump-to-marker.label=Jump to marker...
 
 # menu items
 plugin.marker.MarkerSetsPlugin.menu=\
 	marker-set-manager \
 	markersets-set-active-markerset \
-	markersets-use-global-markerset markersets-toggle-marker \
+	markersets-use-global-markerset \
+	markersets-toggle-marker \
+	markersets-jump-to-marker \
 	- \
 	markersets-import \
 	markersets-export

@@ -88,6 +88,17 @@ public class MarkerSet {
 		return items;
 	}
 	
+	public FileMarker getMarkerByShortcut(String shortcut)
+	{
+		for (int i = 0; i < markers.size(); i++)
+		{
+			FileMarker marker = markers.get(i);
+			if (shortcut.equals(marker.shortcut))
+				return marker;
+		}
+		return null;
+	}
+	
 	public FileMarker getMarkerFor(String path, int line)
 	{
 		for (int i = 0; i < markers.size(); i++)
