@@ -26,7 +26,8 @@ projectviewer.label=Open Project Viewer Dockable
 plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
 	projectviewer.optiongroup.context_menu \
 	projectviewer.optiongroup.external_apps \
-	projectviewer.optiongroup.filter
+	projectviewer.optiongroup.filter \
+	projectviewer.optiongroup.extensions
 
 options.projectviewer.optiongroup.main_options.label=General Options
 
@@ -37,6 +38,8 @@ options.projectviewer.optiongroup.external_apps.label=External Applications
 options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane();
 options.projectviewer.optiongroup.filter.label=Filtered view
 options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane();
+options.projectviewer.optiongroup.extensions.label=Extensions
+options.projectviewer.optiongroup.extensions.code=new projectviewer.config.ExtensionConfigPane();
 
 options.projectviewer.contextmenu.userfirst=User Actions First
 #}}}
@@ -138,7 +141,7 @@ projectviewer.options.ask_import.tooltip=Whether to ask to import saved files th
 projectviewer.options.ask_import.auto_import=Auto import
 projectviewer.options.ask_import.always=Always ask
 projectviewer.options.ask_import.once=Ask once per session
-projectviewer.options.ask_import.never=Never ask
+projectviewer.options.ask_import.never=Never import
 
 projectviewer.options.show_toolbar=Show toolbar
 projectviewer.options.show_folders=Show folders tree
@@ -366,5 +369,14 @@ projectviewer.project.auto_reimport.file_glob=Files to import:
 projectviewer.project.auto_reimport.file_glob.tooltip=Use standard globs to define filters; prepend with ! to not import files that match the glob.
 projectviewer.project.auto_reimport.dir_glob=Directories to ignore:
 projectviewer.project.auto_reimport.period_error=Invalid value for re-import period.
+#}}}
+
+#{{{ Extension config options
+projectviewer.options.ext_cfg.no_exts=No extensions are available.
+projectviewer.options.ext_cfg.help=Choose a category and select/unselect extensions to enable/disable them.
+
+projectviewer.extensions.context_menu=Context Menu Actions
+projectviewer.extensions.custom_nodes=Custom Node Types
+projectviewer.extensions.file_filters=File Filters
 #}}}
 

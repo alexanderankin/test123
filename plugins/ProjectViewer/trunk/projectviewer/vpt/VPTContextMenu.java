@@ -178,6 +178,16 @@ public class VPTContextMenu extends MouseAdapter
 	 *
 	 *	@since PV 3.0.0
 	 */
+	public String getServiceName()
+	{
+		return jEdit.getProperty("projectviewer.extensions.context_menu");
+	}
+
+	/**
+	 *	ManagedService implementation.
+	 *
+	 *	@since PV 3.0.0
+	 */
 	public void updateExtensions(List<Object> l)
 	{
 		ProjectViewerConfig cfg = ProjectViewerConfig.getInstance();
