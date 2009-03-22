@@ -42,6 +42,7 @@ public class FileMarker implements Comparable {
 	private void init(String file, int line) {
 		this.file = file;
 		this.line = line;
+		setShortcut(null);
 	}
 
 	public void setShortcut(String shortcut) {
