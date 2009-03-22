@@ -113,7 +113,7 @@ public class FindFileWindow extends JDialog {
 
                 if (sourceFiles.isEmpty()) {
                         mSourceFileListWindow.setVisible(false);
-			if(!OperatingSystem.isMacOS()) // Only fix for windows
+			if(!OperatingSystem.isMacOS()) // There is no focus issue on mac
 			{
 				mSourceFileNameField.requestFocus();
 			}
@@ -321,9 +321,10 @@ public class FindFileWindow extends JDialog {
                                         }
 
                                         updateList(documentText);
+					// There is no focus issue on mac
 					if(!OperatingSystem.isMacOS())
 					{
-						// fix for focus problems under windows
+						// fix for focus problems under windows (and perhaps other os)
 						SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
 									mSourceFileNameField.requestFocus();
