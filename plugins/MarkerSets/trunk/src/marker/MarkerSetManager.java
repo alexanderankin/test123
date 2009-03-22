@@ -11,12 +11,15 @@ import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -31,6 +34,7 @@ import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
 import marker.tree.SourceLinkTree.SourceLinkTreeModelListener;
 import marker.tree.SourceLinkTree.SourceLinkTreeNodeRenderer;
+import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
@@ -127,7 +131,8 @@ public class MarkerSetManager extends JPanel {
 		for (String name: names)
 		{
 			MarkerSet ms = MarkerSetsPlugin.getMarkerSet(name);
-			SourceLinkParentNode msNode = markers.addSourceLinkParent(ms);
+			SourceLinkParentNode msNode = markers.addSourceLinkParent(
+				new MarkerSetNode(ms));
 			Vector<FileMarker> children = ms.getMarkers();
 			for (FileMarker marker: children)
 				if (path == null || (marker.file.equals(path)))
@@ -137,6 +142,38 @@ public class MarkerSetManager extends JPanel {
 			markers.expandRow(i);
 	}
 
+	private class MarkerSetNode implements SubtreePopupMenuProvider
+	{
+		private MarkerSet ms;
+		public MarkerSetNode(MarkerSet ms)
+		{
+			this.ms = ms;
+		}
+		public MarkerSet getMarkerSet()
+		{
+			return ms;
+		}
+		public void addPopupMenuItemsFor(JPopupMenu popup,
+				SourceLinkParentNode parent, DefaultMutableTreeNode node)
+		{
+			Object userObj = node.getUserObject();
+			if (! (userObj instanceof FileMarker))
+				return;
+			final FileMarker marker = (FileMarker) userObj;
+			popup.add(new AbstractAction("Set shortcut ...") {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String shortcut = JOptionPane.showInputDialog(
+						view, "Shortcut for marker:");
+					if (shortcut == null || shortcut.length() == 0)
+						return;
+					marker.setShortcut(shortcut);
+				}
+			});
+		}
+		
+	}
+	
 	private class MarkerTreeListener implements SourceLinkTreeModelListener
 	{
 		public void nodeRemoved(DefaultMutableTreeNode node,
@@ -173,9 +210,9 @@ public class MarkerSetManager extends JPanel {
 				expanded, leaf, row, hasFocus);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			Object obj = node.getUserObject();
-			if (obj instanceof MarkerSet)
+			if (obj instanceof MarkerSetNode)
 			{
-				MarkerSet ms = (MarkerSet) obj;
+				MarkerSet ms = ((MarkerSetNode) obj).getMarkerSet();
 				JLabel l = (JLabel) c;
 				l.setText(ms.getName());
 				MarkerSetIcon icon = icons.get(ms);

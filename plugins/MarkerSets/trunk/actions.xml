@@ -18,6 +18,11 @@
 			marker.MarkerSetsPlugin.toggleMarker(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="markersets-jump-to-marker" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.jumpToMarker(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="markersets-import" NO_REPEAT="TRUE">
 		<CODE>
 			marker.MarkerSetsPlugin.importMarkerSets(view);

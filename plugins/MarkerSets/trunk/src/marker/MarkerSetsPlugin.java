@@ -384,6 +384,21 @@ public class MarkerSetsPlugin extends EBPlugin {
 		else
 			notifyChange(Event.MARKER_REMOVED, m, active);
 	}
+	static public void jumpToMarker(View view)
+	{
+		String s = JOptionPane.showInputDialog(view, "Marker:");
+		if (s == null || s.length() == 0)
+			return;
+		for (MarkerSet ms: markerSets.values())
+		{
+			FileMarker marker = ms.getMarkerByShortcut(s);
+			if (marker != null)
+			{
+				marker.jump(view);
+				break;
+			}
+		}
+	}
 	static public void importMarkerSets(View view)
 	{
 		JFileChooser fc = new JFileChooser(xmlFile);
