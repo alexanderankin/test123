@@ -118,14 +118,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		super(view, instance, config);
 		UIManager.put(MyDoggyKeySpace.DEBUG, false);
 		setLayout(new BorderLayout());
-		// Search for the PluginJAR of mydoggy res jar file and use
-		// the classloader used by jEdit to load it...
-		ClassLoader uiClassLoader = null;
-		for (PluginJAR pluginJAR: jEdit.getPluginJARs()) {
-			if (pluginJAR.getPath().contains("mydoggy-res"))
-				uiClassLoader = pluginJAR.getClassLoader();
-		}
-		wm = new MyDoggyToolWindowManager(Locale.getDefault(), uiClassLoader);
+		wm = new MyDoggyToolWindowManager();
 		wm.getTypeDescriptorTemplate(ToolWindowType.DOCKED).setAnimating(
 			OptionPane.getEnableAnimationsProp());
 		add(wm, BorderLayout.CENTER);
