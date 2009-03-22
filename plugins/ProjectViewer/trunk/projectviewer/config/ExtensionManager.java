@@ -20,6 +20,7 @@ package projectviewer.config;
 
 import java.lang.ref.WeakReference;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +55,30 @@ public class ExtensionManager
 		services = new LinkedList<WeakReference<ManagedService>>();
 	}
 
-	/** Registers the given managed service with the manager. */
+	/**
+	 * Returns the list of registered services.
+	 *
+	 * @return A read-only list of services, or null if no services are
+	 *         registered.
+	 */
+	public List<ManagedService> getServices()
+	{
+		if (services == null) {
+			return null;
+		}
+		List<ManagedService> copy = new LinkedList<ManagedService>();
+		for (WeakReference<ManagedService> svc : services) {
+			copy.add(svc.get());
+		}
+		return Collections.unmodifiableList(copy);
+	}
+
+	/**
+	 * Registers the given managed service with the manager. The manager
+	 * keeps weak references to the services it monitors, so make sure
+	 * that the service instance is not garbage-collected, otherwise
+	 * it won't be notified of updates.
+	 */
 	public void register(ManagedService service)
 	{
 		services.add(new WeakReference<ManagedService>(service));
@@ -91,7 +115,6 @@ public class ExtensionManager
 		}
 	}
 
-
 	/**
 	 *	Returns the extensions that implement the given service class.
 	 *	The returned list is pruned to only include services that were
@@ -99,20 +122,24 @@ public class ExtensionManager
 	 */
 	public List<Object> loadExtensions(Class clazz)
 	{
+		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 		String[] extensions = ServiceManager.getServiceNames(clazz.getName());
 		List<Object> lst = null;
 		for (String ext : extensions) {
-			// XXX: check if extension is disabled
 			Object svc = ServiceManager.getService(clazz.getName(), ext);
-			if (svc != null) {
-				if (lst == null) {
-					lst = new LinkedList<Object>();
+			if (config.isExtensionEnabled(clazz.getName(),
+										  svc.getClass().getName())) {
+				if (svc != null) {
+					if (lst == null) {
+						lst = new LinkedList<Object>();
+					}
+					lst.add(svc);
 				}
-				lst.add(svc);
 			}
 		}
 		return lst;
 	}
+
 
 	/**
 	 *	Classes that use extensions should implement this interface
@@ -122,6 +149,9 @@ public class ExtensionManager
 	 */
 	public static interface ManagedService
 	{
+
+		/** Returns the service name. */
+		public String getServiceName();
 
 		/** Returns the base class of the jEdit service. */
 		public Class getServiceClass();

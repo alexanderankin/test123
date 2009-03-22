@@ -85,11 +85,15 @@ public final class ProjectPersistenceManager {
 	/** the node handler for projects (cannot be changed). */
 	private static final NodeHandler projHandler = new ProjectNodeHandler();
 
+	private static final ExtensionManager.ManagedService service;
+
 	/** static initializer, registers the default handlers. */
 	static {
 		handlerNames = new HashMap<String,NodeHandler>();
 		handlerClasses = new HashMap<Class,NodeHandler>();
-		ExtensionManager.getInstance().register(new MService());
+
+		service = new MService();
+		ExtensionManager.getInstance().register(service);
 	}
 
 	//}}}
@@ -301,6 +305,11 @@ public final class ProjectPersistenceManager {
 		public Class getServiceClass()
 		{
 			return NodeHandler.class;
+		}
+
+		public String getServiceName()
+		{
+			return jEdit.getProperty("projectviewer.extensions.custom_nodes");
 		}
 
 		public void updateExtensions(List<Object> l)

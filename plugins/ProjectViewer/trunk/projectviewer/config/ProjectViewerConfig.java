@@ -21,8 +21,13 @@ package projectviewer.config;
 
 //{{{ Imports
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
@@ -96,6 +101,8 @@ public final class ProjectViewerConfig {
 	public static final String USER_MENU_FIRST			  = "projectviewer.contextmenu.userfirst";
 	public static final String USER_CONTEXT_MENU		  = "projectviewer.user_context_menu";
 
+	public static final String EXTENSIONS_PREFIX		  = "projectviewer.extensions.disable.";
+
 	public static final int ASK_ALWAYS	= 0;
 	public static final int ASK_ONCE	= 1;
 	public static final int ASK_NEVER	= 2;
@@ -144,6 +151,7 @@ public final class ProjectViewerConfig {
 
 	private List<PropertyChangeListener>	listeners;
 	private Stack<Object>					lastNodes;
+	private Map<String, Set<String>>		extensions;
 
 	//}}}
 
@@ -328,6 +336,22 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(FOLLOW_BUFFER_OPT);
 		if (tmp != null) {
 			setFollowCurrentBuffer("true".equalsIgnoreCase(tmp));
+		}
+
+		// disabled extensions
+		extensions = new HashMap<String, Set<String>>();
+		for (Object _key : props.keySet()) {
+			String key = (String) _key;
+			if (key.startsWith(EXTENSIONS_PREFIX)) {
+				String ext = key.substring(EXTENSIONS_PREFIX.length());
+				StringTokenizer vals = new StringTokenizer(props.getProperty(key),
+														   ",");
+				Set<String> lst = new HashSet<String>();
+				while (vals.hasMoreTokens()) {
+					lst.add(vals.nextToken());
+				}
+				extensions.put(ext, lst);
+			}
 		}
 
 		//{{{ Incremental updates to the config file
@@ -621,6 +645,41 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ disabled extensions
+
+	public boolean isExtensionEnabled(String type,
+	                                  String ext)
+	{
+		Set<String> lst = extensions.get(type);
+		return (lst == null || !lst.contains(ext));
+	}
+
+
+	public void enableExtension(String type,
+	                            String ext)
+	{
+		Set<String> lst = extensions.get(type);
+		if (lst != null) {
+			lst.remove(ext);
+			if (lst.size() == 0) {
+				extensions.remove(type);
+			}
+		}
+	}
+
+	public void disableExtension(String type,
+	                             String ext)
+	{
+		Set<String> lst = extensions.get(type);
+		if (lst == null) {
+			lst = new HashSet<String>();
+			extensions.put(type, lst);
+		}
+		lst.add(ext);
+	}
+
+	//}}}
+
 	//}}}
 
 	//{{{ Public Methods
@@ -697,6 +756,18 @@ public final class ProjectViewerConfig {
 		}
 		props.setProperty(LAST_NODE_OPT + "count", String.valueOf(lastNodes.size()));
 
+		// disabled extensions
+		for (String ext : extensions.keySet()) {
+			StringBuilder val = new StringBuilder();
+			Set<String> lst = extensions.get(ext);
+			for (Iterator<String> i = lst.iterator(); i.hasNext(); ) {
+				val.append(i.next());
+				if (i.hasNext()) {
+					val.append(",");
+				}
+			}
+			props.setProperty(EXTENSIONS_PREFIX + ext, val.toString());
+		}
 	} //}}}
 
 	//{{{ save() method
