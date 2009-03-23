@@ -240,13 +240,21 @@ public class TagDB {
 		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
 		return q;
 	}
-	
+
 	// Returns a query for a tag name
 	public Query getTagNameQuery(String tag) {
 		Query q = getBasicTagQuery();
 		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
 		return q;
 	}
+	
+	// Returns a query for a tag prefix
+	public Query getTagPrefixQuery(String prefix) {
+		Query q = getBasicTagQuery();
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + " LIKE " + quote(prefix + '%'));
+		return q;
+	}
+
 	// Makes the given tagQuery be scoped to the given project
 	public void makeProjectScopedQuery(Query tagQuery, String project) {
 		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE,

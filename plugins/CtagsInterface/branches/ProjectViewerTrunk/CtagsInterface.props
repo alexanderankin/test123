@@ -22,7 +22,8 @@ ctags-interface-jump-to-tag.label=Jump to tag
 ctags-interface-search-tag-by-substring.label=Search for a tag with substring...
 ctags-interface-search-tag-by-prefix.label=Search for a tag with prefix...
 ctags-interface-tag-all-projects.label=Tag all projects
-ctags-interface-complete.label=Suggest completion options
+ctags-interface-complete-from-db.label=Suggest completion options
+ctags-interface-complete.label=Suggest completion options by context
 ctags-interface-change-db-settings.label=Change database settings...
 
 # menu items
@@ -31,6 +32,7 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=ctags-interface-add-file \
 	ctags-interface-search-tag-by-prefix \
 	ctags-interface-search-tag-by-substring \
 	ctags-interface-preview \
+	ctags-interface-complete-from-db \
 	ctags-interface-complete \
 	- \
 	ctags-interface-tag-all-projects \
