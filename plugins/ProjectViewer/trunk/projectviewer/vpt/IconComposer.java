@@ -19,6 +19,7 @@
 package projectviewer.vpt;
 
 //{{{ Imports
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ import org.gjt.sp.util.Log;
 import errorlist.ErrorSource;
 
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.config.VersionControlService;
 //}}}
 
 /**
@@ -51,27 +53,15 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public final class IconComposer {
 
-	//{{{ Constants
-	public final static int FILE_STATE_NORMAL		= 0;
-	public final static int FILE_STATE_CHANGED		= 1;
-	public final static int FILE_STATE_READONLY		= 2;
-	public final static int FILE_STATE_NOT_FOUND	= 3;
+	//{{{ Private constants
+	private final static int FILE_STATE_NORMAL		= 0;
+	private final static int FILE_STATE_CHANGED		= 1;
+	private final static int FILE_STATE_READONLY	= 2;
+	private final static int FILE_STATE_NOT_FOUND	= 3;
 
-	public final static int VC_STATE_NONE			= 0;
-	public final static int VC_STATE_LOCAL_MOD		= 1;
-	public final static int VC_STATE_LOCAL_ADD		= 2;
-	public final static int VC_STATE_LOCAL_RM		= 3;
-	public final static int VC_STATE_NEED_UPDATE	= 4;
-	public final static int VC_STATE_CONFLICT		= 5;
-
-	public final static int MSG_STATE_NONE			= 0;
-	public final static int MSG_STATE_MESSAGES		= 1;
-	public final static int MSG_STATE_ERRORS		= 2;
-	//}}}
-
-	//{{{ Attributes
-	private final static Map<Icon,Icon[][][][]> iconCache =
-		new HashMap<Icon,Icon[][][][]>();
+	private final static int MSG_STATE_NONE			= 0;
+	private final static int MSG_STATE_MESSAGES		= 1;
+	private final static int MSG_STATE_ERRORS		= 2;
 
 	private final static Icon FILE_STATE_CHANGED_IMG =
 		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/file_state_changed.png"));
@@ -83,78 +73,94 @@ public final class IconComposer {
 		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/msg_state_messages.png"));
 	private final static Icon MSG_STATE_ERRORS_IMG =
 		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/msg_state_errors.png"));
-
-	private static VCProvider vcProvider = null;
 	//}}}
 
-	//{{{ Public methods
+	private final VersionControlService vcservice;
 
-	//{{{ +_setVersionControlProvider(VCProvider)_ : void
-	public static void setVersionControlProvider(VCProvider vc) {
-		iconCache.clear();
-		vcProvider = vc;
-	} //}}}
+	/**
+	 * Constructs a new icon composer that will use the given version
+	 * control service for vc-related status.
+	 *
+	 * @param	vcservice	Version control service instance, or null.
+	 */
+	IconComposer(VersionControlService vcservice)
+	{
+		this.vcservice = vcservice;
+	}
 
-	//{{{ +_composeIcon(VFSFile, String, Icon)_ : Icon
-	public static Icon composeIcon(VFSFile f, String path, Icon baseIcon) {
-		Icon[][][][] cache = getIconCache(baseIcon);
 
+	/**
+	 * Composes a new icon by overlaying status icons on top of the
+	 * given base icon. Currently, three status icons are supported:
+	 *
+	 * <ul>
+	 *   <li>top left: version control status, if configured for the
+	 *                 project.</li>
+	 *
+	 *   <li>bottom left: file status (read only, dirty, etc).</li>
+	 *
+	 *   <li>bottom right: error list status (if ErrorList is available).</li>
+	 * </ul>
+	 *
+	 * @param	f			File node to query.
+	 * @param	baseIcon	Icon where to overlay status icons.
+	 *
+	 * @return A new icon with the overlayed status icons.
+	 */
+	public Icon composeIcon(VPTFile f,
+							Icon baseIcon)
+	{
+		VFSFile vfsf = f.getFile();
 		int msg_state = MSG_STATE_NONE;
 		if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
-			msg_state = Helper.getMessageState(path);
+			msg_state = Helper.getMessageState(f.getURL());
 		}
 
-		int file_state = (f != null) ? getFileState(f, path) : FILE_STATE_NOT_FOUND;
-		int vc_state = VC_STATE_NONE;
-		if (vcProvider != null) {
-			vc_state = vcProvider.getFileState(f, path);
+		int file_state = (vfsf != null) ? getFileState(vfsf, f.getURL()) : FILE_STATE_NOT_FOUND;
+
+		Icon tr = null; // unused
+
+		Icon tl = null; // vc_state
+		if (vcservice != null) {
+			int vcstate = vcservice.getFileState(f);
+			tl = vcservice.getIcon(vcstate);
 		}
 
-		try {
-			if(cache[vc_state][0][file_state][msg_state] == null) {
-				Icon tl = null; // vc_state
-				Icon tr = null; // unused
-				Icon bl = null; // file_state
-				switch(file_state) {
-					case FILE_STATE_CHANGED:
-						bl = FILE_STATE_CHANGED_IMG;
-						break;
+		Icon bl = null; // file_state
+		switch(file_state) {
+			case FILE_STATE_CHANGED:
+				bl = FILE_STATE_CHANGED_IMG;
+				break;
 
-					case FILE_STATE_READONLY:
-						bl = FILE_STATE_READONLY_IMG;
-						break;
+			case FILE_STATE_READONLY:
+				bl = FILE_STATE_READONLY_IMG;
+				break;
 
-					case FILE_STATE_NOT_FOUND:
-						bl = FILE_STATE_NOT_FOUND_IMG;
-						break;
-				}
-				Icon br = null; // msg_state
-				switch(msg_state) {
-					case MSG_STATE_MESSAGES:
-						br = MSG_STATE_MESSAGES_IMG;
-						break;
-					case MSG_STATE_ERRORS:
-						br = MSG_STATE_ERRORS_IMG;
-						break;
-				}
-				if (vcProvider != null)
-					tl = vcProvider.getIcon(vc_state);
-				cache[vc_state][0][file_state][msg_state] =
-					composeIcons(baseIcon, tl, tr, bl, br);
-			}
-			baseIcon = cache[vc_state][0][file_state][msg_state];
-		} catch(ArrayIndexOutOfBoundsException ex) {
-			Log.log(Log.WARNING, null, ex);
+			case FILE_STATE_NOT_FOUND:
+				bl = FILE_STATE_NOT_FOUND_IMG;
+				break;
 		}
-		return baseIcon;
-	} //}}}
 
-	//}}}
+		Icon br = null; // msg_state
+		switch(msg_state) {
+			case MSG_STATE_MESSAGES:
+				br = MSG_STATE_MESSAGES_IMG;
+				break;
+			case MSG_STATE_ERRORS:
+				br = MSG_STATE_ERRORS_IMG;
+				break;
+		}
 
-	//{{{ Private methods
+		return composeIcons(baseIcon, tl, tr, bl, br);
+	}
 
-	//{{{ -_composeIcons(Icon, Icon, Icon, Icon, Icon)_ : Icon
-	private static Icon composeIcons(Icon baseIcon, Icon tl, Icon tr, Icon bl, Icon br) {
+
+	private Icon composeIcons(Icon baseIcon,
+							  Icon tl,
+							  Icon tr,
+							  Icon bl,
+							  Icon br)
+	{
 		// copy base image
 		int baseWidth = baseIcon.getIconWidth();
 		int baseHeight = baseIcon.getIconHeight();
@@ -174,10 +180,14 @@ public final class IconComposer {
 		}
 
 		return baseIcon;
-	} //}}}
+	}
 
-	//{{{ -_composeIcons(Icon, Icon, int, int)_ : Icon
-	private static Icon composeIcons(Icon baseIcon, Icon decoIcon, int px, int py) {
+
+	private Icon composeIcons(Icon baseIcon,
+							  Icon decoIcon,
+							  int px,
+							  int py)
+	{
 		Image baseImage;
 		if (baseIcon instanceof ImageIcon) {
 			baseImage = ((ImageIcon)baseIcon).getImage();
@@ -203,15 +213,11 @@ public final class IconComposer {
 		PixelGrabber decoPG = new PixelGrabber(decoImage, 0, 0, decoWidth, decoHeight, deco, 0, decoWidth);
 		try { decoPG.grabPixels(); } catch (Exception ie1) { }
 
-		//Log.log(Log.DEBUG, null, "baseSize :["+baseWidth+"x"+baseHeight+"]");
-		//Log.log(Log.DEBUG, null, "decoSize :["+decoWidth+"x"+decoHeight+"]");
-
-		// overlay base icon with deco icon
 		int baseIx,decoIx;
 		int p,bb,bg,br,ba,db,dg,dr,da,r,g,b,a;
 		double bw,dw;
-		for(int y = 0; y < decoHeight; y++) {
-			for(int x = 0; x < decoWidth; x++) {
+		for (int y = 0; y < decoHeight; y++) {
+			for (int x = 0; x < decoWidth; x++) {
 				decoIx = y * decoWidth + x;
 				baseIx = (py+y) * baseWidth +(px+x);
 
@@ -260,29 +266,18 @@ public final class IconComposer {
 		Image compositeImage = Toolkit.getDefaultToolkit().createImage(mis);
 
 		return (new ImageIcon(compositeImage));
-	} //}}}
+	}
 
-	//{{{ -_getIconCache(Icon)_ : Icon[][][][][]
-	private static Icon[][][][] getIconCache(Icon icon) {
-		Icon[][][][] cache = (Icon[][][][]) iconCache.get(icon);
-		if (cache == null) {
-			if (vcProvider == null)
-				cache = new Icon[1][1][4][3];
-			else
-				cache = new Icon[6][1][4][3];
-			iconCache.put(icon, cache);
-		}
-		return cache;
-	} //}}}
 
-	//{{{ -_getFileState(VFSFile, String)_ : int
-	private static int getFileState(VFSFile f, String path) {
+	private int getFileState(VFSFile f,
+							 String path)
+	{
 		if (f != null && !f.isReadable())
 			return FILE_STATE_NOT_FOUND;
 		Buffer buffer = jEdit.getBuffer(path);
 		int file_state = IconComposer.FILE_STATE_NORMAL;
 		if (buffer != null) {
-			if(buffer.isDirty()) {
+			if (buffer.isDirty()) {
 				return FILE_STATE_CHANGED;
 			} else if (!buffer.isEditable()) {
 				return FILE_STATE_READONLY;
@@ -291,9 +286,8 @@ public final class IconComposer {
 			return FILE_STATE_READONLY;
 		}
 		return FILE_STATE_NORMAL;
-	} //}}}
+	}
 
-	//}}}
 
 	//{{{ -class _Helper_
 	/**
@@ -322,42 +316,6 @@ public final class IconComposer {
 			}
 			return msg_state;
 		} //}}}
-
-	} //}}}
-
-	//{{{ +class _VCProvider_
-	/**
-	 *	Version control plugins that want to provide file status info to PV
-	 *	should implement this interface.
-	 *
-	 *	@since	PV 2.1.0
-	 */
-	public static interface VCProvider {
-
-		//{{{ +*getFileState(File, String)* : int
-		/**
-		 *	This method should return one of the VC_STATE possible values
-		 *	for the given file. The file argument may be null, in which
-		 *	case the path should be used to identify the file (this will
-		 *	be the case, for example, with files from a VFS).
-		 *
-		 *	<p>No range checking is performed on the returned values, so
-		 *	make sure that the value is one of the defined constants.</p>
-		 *
-		 *	@param	f		The file, if it's a local file.
-		 *	@param	path	The path to the file (absolute path if local, VFS
-		 *					URL otherwise).
-		 */
-		public int getFileState(VFSFile f, String path); //}}}
-
-		//{{{ +*getIcon(int)* : Icon
-		/**
-		 *	This should return the icon to be used to represent the requested
-		 *	state.
-		 *
-		 *	@param	state	One of the defined VC_STATE_* constants.
-		 */
-		public Icon getIcon(int state); //}}}
 
 	} //}}}
 

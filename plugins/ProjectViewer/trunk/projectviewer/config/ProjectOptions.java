@@ -19,8 +19,11 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
@@ -45,6 +48,11 @@ public class ProjectOptions extends OptionsDialog {
 	private static String			lookupPath;
 	private static VPTProject		p;
 	private static boolean			isNew;
+
+	private static final ExtensionManager.ManagedService service = new MService();
+	static {
+		ExtensionManager.getInstance().register(service);
+	}
 
 	//{{{ +_run(VPTProject)_ : VPTProject
 	/**
@@ -127,9 +135,7 @@ public class ProjectOptions extends OptionsDialog {
 		project = p;
 		p = null;
 		return project;
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ +_getProject()_ : VPTProject
 	/**
@@ -146,7 +152,7 @@ public class ProjectOptions extends OptionsDialog {
 
 	//{{{ Instance Variables
 
-	private OptionTreeModel			paneModel;
+	private PVOptionTreeModel		paneModel;
 	private ProjectPropertiesPane	pOptPane;
 
 	//}}}
@@ -181,7 +187,7 @@ public class ProjectOptions extends OptionsDialog {
 	 *	before closing the dialog.
 	 */
 	public void ok() {
-		super.ok(false); //save(paneModel.getRoot());
+		super.ok(false);
 		if (pOptPane.isOK()) {
 			dispose();
 		}
@@ -194,9 +200,9 @@ public class ProjectOptions extends OptionsDialog {
 
 	//{{{ #createOptionTreeModel() : OptionTreeModel
 	protected OptionTreeModel createOptionTreeModel() {
-		paneModel = new OptionTreeModel();
+		paneModel = new PVOptionTreeModel();
 
-		pOptPane = new ProjectPropertiesPane(p, isNew, lookupPath);
+		pOptPane = new ProjectPropertiesPane(this, p, isNew, lookupPath);
 		addOptionPane(pOptPane);
 
 		addOptionPane(new AutoReimportPane(p));
@@ -204,45 +210,162 @@ public class ProjectOptions extends OptionsDialog {
 
 		EditPlugin[] eplugins = jEdit.getPlugins();
 		for (int i = 0; i < eplugins.length; i++) {
-			createOptions(eplugins[i]);
+			addRemoveOptions(eplugins[i].getClassName(),
+							 "option-pane",
+							 "option-group",
+							 true);
 		}
 
 		return paneModel;
 	} //}}}
 
-	//{{{ #createOptions(EditPlugin) : boolean
-	/**
-	 *	For jEdit 4.2: creates options panes based on properties set by the
-	 *	plugin, so manual registration of the plugin is not necessary. More
-	 *	details in the package description documentation.
-	 *
-	 *	@return	true if an option pane or an option group was added, false
-	 *			otherwise.
-	 */
-	protected boolean createOptions(EditPlugin plugin) {
+
+	void removeOptions(VersionControlService svc)
+	{
+		PVOptionGroup root = (PVOptionGroup) paneModel.getRoot();
+		addRemoveOptions(svc.getPlugin().getName(),
+						 "vc-option-pane",
+						 "vc-option-group",
+						 false);
+	}
+
+
+	void addOptions(VersionControlService svc)
+	{
+		addRemoveOptions(svc.getPlugin().getName(),
+						 "vc-option-pane",
+						 "vc-option-group",
+						 true);
+	}
+
+
+	private void addRemoveOptions(String plugin,
+								  String pane,
+								  String group,
+								  boolean add)
+	{
+		PVOptionGroup root = (PVOptionGroup) paneModel.getRoot();
+
 		// Look for a single option pane
-		String property = "plugin.projectviewer." + plugin.getClassName() + ".option-pane";
+		String property = "plugin.projectviewer." + plugin + "." + pane;
 		if ((property = jEdit.getProperty(property)) != null) {
-			((OptionGroup)paneModel.getRoot()).addOptionPane(property);
-			return true;
+			if (add) {
+				root.addOptionPane(property);
+				paneModel.addRemoveMember(root, property, true);
+			} else {
+				paneModel.addRemoveMember(root, property, false);
+			}
 		}
 
 		// Look for an option group
-		property = "plugin.projectviewer." +
-					plugin.getClassName() + ".option-group";
+		property = "plugin.projectviewer." + plugin + "." + group;
 		if ((property = jEdit.getProperty(property)) != null) {
-			((OptionGroup)paneModel.getRoot()).addOptionGroup(
-				new OptionGroup("plugin." + plugin.getClassName(),
-					jEdit.getProperty("plugin."
-										+ plugin.getClassName() + ".name"),
-					property)
-				);
-			return true;
+			if (add) {
+				OptionGroup newgroup =
+					new OptionGroup("plugin." + plugin,
+						jEdit.getProperty("plugin." + plugin + ".name"),
+						property);
+				root.addOptionGroup(newgroup);
+				paneModel.addRemoveMember(root, newgroup.getLabel(), true);
+			} else {
+				String label = jEdit.getProperty(property + ".label");
+				paneModel.addRemoveMember(root, label, false);
+			}
+		}
+	}
+
+	private class PVOptionGroup extends OptionGroup
+	{
+
+		PVOptionGroup()
+		{
+			super(null);
 		}
 
-		// nothing found
-		return false;
-	} //}}}
+
+		int getIndexByName(String name)
+		{
+			for (int i = 0; i < members.size(); i++) {
+				Object o = members.get(i);
+				if (o instanceof String) {
+					if (name.equals((String)o)) {
+						return i;
+					}
+				} else if (o instanceof OptionGroup) {
+					if (name.equals(((OptionGroup)o).getLabel())) {
+						return i;
+					}
+				} else if (o instanceof AbstractOptionPane) {
+					if (name.equals(((AbstractOptionPane)o).getName())) {
+						return i;
+					}
+				} else {
+					throw new InternalError();
+				}
+			}
+			return -1;
+		}
+
+		void remove(int idx)
+		{
+			members.remove(idx);
+		}
+
+	}
+
+	private class PVOptionTreeModel extends OptionTreeModel
+	{
+
+		PVOptionTreeModel()
+		{
+			super(new PVOptionGroup());
+		}
+
+
+		void addRemoveMember(PVOptionGroup grp,
+							 String member,
+							 boolean add)
+		{
+			int idx = grp.getIndexByName(member);
+			if (idx == -1) {
+				return;
+			}
+
+			Object[] path = new Object[] { grp };
+			int[] indices = new int[] { idx };
+			Object[] children = new Object[] { grp.getMember(idx) };
+			if (add) {
+				paneModel.fireNodesInserted(this, path, indices, children);
+			} else {
+				paneModel.fireNodesRemoved(this, path, indices, children);
+				grp.remove(idx);
+			}
+		}
+
+	}
+
+
+	/**
+	 * Dummy implementation of a managed service, just to allow
+	 * the user to enable or disable version control extensions.
+	 */
+	private static class MService implements ExtensionManager.ManagedService
+	{
+		public Class getServiceClass()
+		{
+			return VersionControlService.class;
+		}
+
+		public String getServiceName()
+		{
+			return jEdit.getProperty("projectviewer.extensions.version_control");
+		}
+
+		public void updateExtensions(List<Object> l)
+		{
+
+		}
+	}
 
 }
 

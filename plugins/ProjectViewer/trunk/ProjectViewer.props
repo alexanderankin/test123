@@ -11,7 +11,7 @@ plugin.projectviewer.ProjectPlugin.description=The ProjectViewer plugin provides
 	for managing a "project", i.e. a related group of \
 	source files.
 
-plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.03.13.00
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.03.17.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.5
 
 plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
@@ -352,6 +352,9 @@ projectviewer.project.options.url_root=Web root URL:
 projectviewer.project.options.url_root.tooltip=sets the URL for a web project e.g. http://<projecturl>
 projectviewer.project.options.parent_group=Parent group:
 
+projectviewer.project.options.vc_service=Version Control:
+projectviewer.project.options.vc_none=None
+
 projectviewer.groupmenu.create_project=New project here
 projectviewer.groupmenu.create_group=New group here
 #}}}
@@ -378,5 +381,6 @@ projectviewer.options.ext_cfg.help=Choose a category and select/unselect extensi
 projectviewer.extensions.context_menu=Context Menu Actions
 projectviewer.extensions.custom_nodes=Custom Node Types
 projectviewer.extensions.file_filters=File Filters
+projectviewer.extensions.version_control=Version Control Status
 #}}}
 

@@ -154,7 +154,7 @@ class GeneralNodeProperties implements NodePropertyProvider
 
 				text = new JLabel(fmt.format(p.getOpenableNodes().size()));
 				_add(text, GridBagConstraints.REMAINDER);
-				
+
 				/* Disk size; calculated on demand. */
 				addSizeWidget(f, true);
 			} else {
@@ -205,16 +205,16 @@ class GeneralNodeProperties implements NodePropertyProvider
 				nodeSzLabel.setText(formatSize(fmt, len));
 			}
 		}
-		
-		
+
+
 		private void addSizeWidget(VFSFile f,
 								   boolean calcOnDemand)
 		{
 			JLabel text;
-			
+
 			text = new JLabel(getProperty("size"));
 			_add(text, 1);
-			
+
 			if (calcOnDemand || f == null) {
 				text = new JLabel(getProperty("unknown"));
 			} else {

@@ -192,7 +192,7 @@ public class VPTFile extends VPTNode
 				baseIcon = fileClosedIcon;
 			}
 		}
-		return IconComposer.composeIcon(getFile(), url, baseIcon);
+		return baseIcon;
 	}
 
 

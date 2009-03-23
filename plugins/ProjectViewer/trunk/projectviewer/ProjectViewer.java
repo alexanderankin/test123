@@ -1047,6 +1047,8 @@ public final class ProjectViewer extends JPanel
 				reimporter = AutoReimporter.create(msg.getProject());
 				break;
 			}
+			treePanel.reloadIconComposer(msg.getProject());
+			repaint();
 		}
 	}
 

@@ -11,6 +11,15 @@ for jEdit's Plugin Options dialog.</p>
 	<li><tt>plugin.projectviewer.<i>className</i>.option-pane</tt>: defines a single <i>optionPaneName</i> to be added to the project's option dialog.</li>
 
 	<li><tt>plugin.projectviewer.<i>className</i>.option-group</tt> a whitespace-separated list of <i>optionPaneName</i>s to be added to the options dialog.</li>
+
+	<li><tt>plugin.projectviewer.<i>className</i>.vc-option-pane</tt>:
+	if your plugin provides a version control service to ProjectViewer,
+	defines a single option pane for configuring the version control
+	options when it is chosen as the version control provider for a project.</li>
+
+	<li><tt>plugin.projectviewer.<i>className</i>.vc-option-group</tt>:
+	same as above, but defines an option group instead of a single option
+	pane.</li>
 </ul>
 
 <p>For each option pane, set the following properties:</p>

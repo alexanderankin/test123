@@ -47,6 +47,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -62,6 +63,7 @@ import projectviewer.action.ReimportAction;
 import projectviewer.action.UpAction;
 
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.config.VersionControlService;
 //}}}
 
 /**
@@ -277,10 +279,35 @@ public class ProjectTreePanel extends JPanel
      */
     public void setRoot(VPTNode root)
     {
+        if (root != null && root.isProject()) {
+            reloadIconComposer((VPTProject)root);
+        }
         for (JTree tree : trees) {
             VPTCellRenderer renderer = (VPTCellRenderer) tree.getCellRenderer();
             tree.setRowHeight(renderer.getRowHeight(root));
             ((ProjectTreeModel)tree.getModel()).setRoot(root);
+        }
+    }
+
+
+    /**
+     * Reload the icon composer for the trees when a project has
+     * been editer.
+     */
+    public void reloadIconComposer(VPTProject proj)
+    {
+        VersionControlService svc = null;
+        String svcname = ((VPTProject)proj).getProperty(VersionControlService.VC_SERVICE_KEY);
+        if (svcname != null) {
+            svc = (VersionControlService)
+                ServiceManager.getService(VersionControlService.class.getName(),
+                                          svcname);
+        }
+
+        IconComposer ic = new IconComposer(svc);
+        for (JTree tree : trees) {
+            VPTCellRenderer renderer = (VPTCellRenderer) tree.getCellRenderer();
+            renderer.setIconComposer(ic);
         }
     }
 
