@@ -161,7 +161,6 @@ public class MarkerSetManager extends JPanel {
 				return;
 			final FileMarker marker = (FileMarker) userObj;
 			popup.add(new AbstractAction("Set shortcut ...") {
-				@Override
 				public void actionPerformed(ActionEvent e) {
 					String shortcut = JOptionPane.showInputDialog(
 						view, "Shortcut for marker:");
