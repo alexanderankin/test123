@@ -261,7 +261,9 @@ public class AutoReimporter implements ActionListener
 			try {
 				/* Step 1: re-import files from the project root. */
 				removeFiles(project);
-				importFiles(project, options._getFilter(), false, false);
+				if (VFSHelper.pathExists(project.getRootPath())) {
+					importFiles(project, options._getFilter(), false, false);
+				}
 
 				/*
 				 * Step 2: recurse into directories.
@@ -272,7 +274,9 @@ public class AutoReimporter implements ActionListener
 					VPTDirectory dir = dirs.remove(0);
 					removeFiles(dir);
 					removeDirectory(dir);
-					importFiles(dir, options._getFilter(), false, false);
+					if (VFSHelper.pathExists(dir.getURL())) {
+						importFiles(dir, options._getFilter(), false, false);
+					}
 				}
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, "I/O error re-importing project", ioe);
