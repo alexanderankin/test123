@@ -37,9 +37,9 @@ import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OperatingSystem;
-import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
+import projectviewer.gui.OptionPaneBase;
 //}}}
 
 /**
@@ -48,7 +48,7 @@ import projectviewer.ProjectViewer;
  *  @author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectViewerOptionsPane extends AbstractOptionPane
+public class ProjectViewerOptionsPane extends OptionPaneBase
 										implements ActionListener {
 
 	//{{{ Instance variables
@@ -82,63 +82,46 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JTextField	browserExecPath;
 	//}}}
 
-	//{{{ +ProjectViewerOptionsPane(String) : <init>
-
-	public ProjectViewerOptionsPane(String name) {
-		super(name);
+	public ProjectViewerOptionsPane(String name)
+	{
+		super(name, "projectviewer.options");
 		config = ProjectViewerConfig.getInstance();
 	}
 
-	//}}}
-
-	//{{{ #_init() : void
 	/** Initializes the option pane. */
-	protected void _init() {
+	protected void _init()
+	{
 		//{{{ general options
 		addSeparator("options.projectviewer.general-opt.label");
 
-		// Checkbox: "use external apps by default"
-		useExternalApps = new JCheckBox(jEdit.getProperty("projectviewer.options.use_external_apps"));
-		useExternalApps.setToolTipText(jEdit.getProperty("projectviewer.options.use_external_apps.tooltip"));
-		useExternalApps.setSelected(config.getUseExternalApps());
-		addComponent(useExternalApps);
+		useExternalApps = addCheckBox("use_external_apps",
+									  config.getUseExternalApps());
 
-		// Checkbox: "close project files on switch"
-		closeFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.close_on_change"));
-		closeFiles.setToolTipText(jEdit.getProperty("projectviewer.options.close_on_change.tooltip"));
-		closeFiles.setSelected(config.getCloseFiles());
-		addComponent(closeFiles);
+		closeFiles = addCheckBox("close_on_change",
+								 config.getCloseFiles());
 
-		// Checkbox: "remember open project files"
-		rememberOpen = new JCheckBox(jEdit.getProperty("projectviewer.options.remember_open"));
-		rememberOpen.setToolTipText(jEdit.getProperty("projectviewer.options.remember_open.tooltip"));
-		rememberOpen.setSelected(config.getRememberOpen());
-		addComponent(rememberOpen);
+		rememberOpen = addCheckBox("remember_open",
+								   config.getRememberOpen());
 
-		// Checkbox: "delete non-existant files"
-		deleteNotFoundFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.delete_stale"));
-		deleteNotFoundFiles.setToolTipText(jEdit.getProperty("projectviewer.options.delete_stale.tooltip"));
-		deleteNotFoundFiles.setSelected(config.getDeleteNotFoundFiles());
-		addComponent(deleteNotFoundFiles);
+		deleteNotFoundFiles = addCheckBox("delete_stale",
+										  config.getDeleteNotFoundFiles());
 
 		//{{{ Button group: "ask import"
-		JLabel label = new JLabel(jEdit.getProperty("projectviewer.options.ask_import"));
-		label.setToolTipText(jEdit.getProperty("projectviewer.options.ask_import.tooltip"));
-		addComponent(label);
+		addComponent(createLabel("ask_import"));
 
 		JPanel pane = new JPanel(new FlowLayout());
 		ButtonGroup bg = new ButtonGroup();
 
-		autoImport = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.auto_import"));
+		autoImport = new JRadioButton(prop("ask_import.auto_import"));
 		bg.add(autoImport);
 		pane.add(autoImport);
-		askAlways = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.always"));
+		askAlways = new JRadioButton(prop("ask_import.always"));
 		bg.add(askAlways);
 		pane.add(askAlways);
-		askOnce = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.once"));
+		askOnce = new JRadioButton(prop("ask_import.once"));
 		bg.add(askOnce);
 		pane.add(askOnce);
-		askNever = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.never"));
+		askNever = new JRadioButton(prop("ask_import.never"));
 		bg.add(askNever);
 		pane.add(askNever);
 
@@ -168,42 +151,32 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		//{{{ gui options
 		addSeparator("options.projectviewer.gui-opt.label");
 
-		showFoldersTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_folders"));
-		showFoldersTree.setSelected(config.getShowFoldersTree());
-		addComponent(showFoldersTree);
+		showFoldersTree = addCheckBox("show_folders",
+									  config.getShowFoldersTree());
 
-		showFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_files"));
-		showFilesTree.setSelected(config.getShowFilesTree());
-		showFilesTree.setToolTipText(jEdit.getProperty("projectviewer.options.show_files.tooltip"));
-		addComponent(showFilesTree);
+		showFilesTree = addCheckBox("show_files",
+									config.getShowFilesTree());
 
-		showWorkingFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_working_files"));
-		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
-		addComponent(showWorkingFilesTree);
+		showWorkingFilesTree = addCheckBox("show_working_files",
+										   config.getShowWorkingFilesTree());
 
-		showCompactTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_compact_tree"));
-		showCompactTree.setSelected(config.getShowCompactTree());
-		addComponent(showCompactTree);
+		showCompactTree = addCheckBox("show_compact_tree",
+									  config.getShowCompactTree());
 
-		showFilteredTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_filtered_tree"));
-		showFilteredTree.setSelected(config.getShowFilteredTree());
-		addComponent(showFilteredTree);
+		showFilteredTree = addCheckBox("show_filtered_tree",
+									   config.getShowFilteredTree());
 
-		useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
-		useSystemIcons.setSelected(config.getUseSystemIcons());
-		addComponent(useSystemIcons);
+		useSystemIcons = addCheckBox("use_system_icons",
+									 config.getUseSystemIcons());
 
-		showProjectInTitle = new JCheckBox(jEdit.getProperty("projectviewer.options.show_project_in_title"));
-		showProjectInTitle.setSelected(config.getShowProjectInTitle());
-		addComponent(showProjectInTitle);
+		showProjectInTitle = addCheckBox("show_project_in_title",
+										 config.getShowProjectInTitle());
 
-		caseInsensitiveSort = new JCheckBox(jEdit.getProperty("projectviewer.options.case_insensitive_sort"));
-		caseInsensitiveSort.setSelected(config.getCaseInsensitiveSort());
-		addComponent(caseInsensitiveSort);
+		caseInsensitiveSort = addCheckBox("case_insensitive_sort",
+										  config.getCaseInsensitiveSort());
 
-		followCurrentBuffer = new JCheckBox(jEdit.getProperty("projectviewer.options.follow_current_buffer"));
-		followCurrentBuffer.setSelected(config.getFollowCurrentBuffer());
-		addComponent(followCurrentBuffer);
+		followCurrentBuffer = addCheckBox("follow_current_buffer",
+										  config.getFollowCurrentBuffer());
 
 		//}}}
 
@@ -215,34 +188,33 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		if (config.getImportGlobs() != null) {
 			importGlobs.setText(config.getImportGlobs());
 		}
-		importGlobs.setToolTipText(jEdit.getProperty("projectviewer.options.import_globs.tooltip"));
-		addComponent(jEdit.getProperty("projectviewer.options.import_globs"),
-			new JScrollPane(importGlobs, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-							JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
-				GridBagConstraints.BOTH);
+		importGlobs.setToolTipText(prop("import_globs.tooltip"));
+		addComponent(prop("import_globs"),
+					 new JScrollPane(importGlobs,
+									 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+									 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
+					 GridBagConstraints.BOTH);
 
 		excludeDirs = new JTextField(5);
 		if (config.getExcludeDirs() != null) {
 			excludeDirs.setText(config.getExcludeDirs());
 		}
-		addComponent(jEdit.getProperty("projectviewer.options.ignore_dir"),excludeDirs);
+		addComponent(excludeDirs, "ignore_dir");
 		//}}}
 
 		//{{{ web project options
 		addSeparator("options.projectviewer.web-prj-opt.label");
 
-		useInfoViewer = new JCheckBox(jEdit.getProperty("projectviewer.options.use_info_viewer"));
-		useInfoViewer.setSelected(config.getUseInfoViewer());
+		useInfoViewer = addCheckBox("use_info_viewer",
+									config.getUseInfoViewer());
 		useInfoViewer.addActionListener(this);
 		useInfoViewer.setEnabled(config.isInfoViewerAvailable());
-		addComponent(useInfoViewer);
 
 		browserExecPath = new JTextField(5);
 		if (config.getBrowserPath() != null) {
 			browserExecPath.setText(config.getBrowserPath());
 		}
-		addComponent(jEdit.getProperty("projectviewer.options.browser_path"), browserExecPath);
-		browserExecPath.setToolTipText(jEdit.getProperty("projectviewer.options.browser_path.tooltip"));
+		addComponent(browserExecPath, "browser_path");
 		browserExecPath.setEnabled(!useInfoViewer.isSelected());
 		//}}}
 
