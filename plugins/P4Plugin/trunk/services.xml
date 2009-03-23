@@ -17,5 +17,9 @@
 		new p4plugin.action.P4FileMenu();
 	</SERVICE>
 
+	<SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Perforce">
+		new p4plugin.P4Service();
+	</SERVICE>
+
 </SERVICES>
 

@@ -20,8 +20,6 @@
  */
 package p4plugin.config;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -46,13 +44,11 @@ import projectviewer.vpt.VPTProject;
  *  @since      P4P 0.1
  */
 public class P4OptionPane extends AbstractOptionPane
-                          implements ActionListener,
-                                     ItemListener
+                          implements ItemListener
 {
 
     private P4Config    config;
 
-    private JCheckBox   usePerforce;
     private JComboBox   editorType;
     private JTextField  editorCommand;
     private JTextField  client;
@@ -68,11 +64,6 @@ public class P4OptionPane extends AbstractOptionPane
     protected void _init() {
         config = P4Config.getProjectConfig(ProjectOptions.getProject());
 
-        usePerforce = new JCheckBox(jEdit.getProperty("p4plugin.project_cfg.use_perforce"));
-        usePerforce.setSelected(config != null);
-        usePerforce.addActionListener(this);
-        addComponent(usePerforce);
-
         if (config == null) {
             config = new P4Config();
         }
@@ -82,7 +73,6 @@ public class P4OptionPane extends AbstractOptionPane
         editorType.addItem(jEdit.getProperty("p4plugin.project_cfg.editor_type.custom"));
         editorType.addItem(jEdit.getProperty("p4plugin.project_cfg.editor_type.no_editor"));
         editorType.setSelectedIndex(config.getEditorConfig());
-        editorType.setEnabled(usePerforce.isSelected());
         addComponent(jEdit.getProperty("p4plugin.project_cfg.editor_type"), editorType);
 
         editorCommand = new JTextField(config.getEditor());
@@ -93,51 +83,35 @@ public class P4OptionPane extends AbstractOptionPane
         KeyHandler khandler = new KeyHandler();
 
         client = new JTextField(config.getClient());
-        client.setEnabled(usePerforce.isSelected());
         client.addKeyListener(khandler);
+        client.setEnabled(config.getConfig() == null);
         addComponent(jEdit.getProperty("p4plugin.project_cfg.client"), client);
 
         p4config = new JTextField(config.getConfig());
-        p4config.setEnabled(usePerforce.isSelected() && config.getClient() == null);
+        p4config.setEnabled(config.getClient() == null);
         p4config.addKeyListener(khandler);
         addComponent(jEdit.getProperty("p4plugin.project_cfg.p4config"), p4config);
 
         user = new JTextField(config.getUser());
-        user.setEnabled(usePerforce.isSelected());
         addComponent(jEdit.getProperty("p4plugin.project_cfg.user"), user);
     } //}}}
 
     //{{{ _save() method
     /** Saves the options. */
     protected void _save() {
-        if (usePerforce.isSelected()) {
-            config.setEditorConfig(editorType.getSelectedIndex());
-            if (editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM)
-                config.setEditor(editorCommand.getText());
-            else
-                config.setEditor(null);
-            config.setClient(client.getText());
-            config.setConfig(p4config.getText());
-            config.setUser(user.getText());
-            setProjectConfig(config);
-        } else {
-            setProjectConfig(null);
-        }
+        config.setEditorConfig(editorType.getSelectedIndex());
+        if (editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM)
+            config.setEditor(editorCommand.getText());
+        else
+            config.setEditor(null);
+        config.setClient(client.getText());
+        config.setConfig(p4config.getText());
+        config.setUser(user.getText());
+        setProjectConfig(config);
     } //}}}
 
     private boolean shouldEnableCommandBox() {
-        return usePerforce.isSelected()
-               && editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM;
-    }
-
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == usePerforce) {
-            editorType.setEnabled(usePerforce.isSelected());
-            editorCommand.setEnabled(shouldEnableCommandBox());
-            client.setEnabled(usePerforce.isSelected());
-            p4config.setEnabled(usePerforce.isSelected());
-            user.setEnabled(usePerforce.isSelected());
-        }
+        return (editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM);
     }
 
     public void itemStateChanged(ItemEvent ie) {
