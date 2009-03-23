@@ -322,6 +322,44 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			"Completion dialog", 0, null, options, options[0]);
 	}
 	
+	// Actions: Offer code completion options
+	public static void completeFromDb(final View view)
+	{
+		String prefix = getCompletionPrefix(view);
+		if (prefix == null)
+			return;
+		Vector<String> completions = new Vector<String>();
+		Query q = db.getTagPrefixQuery(prefix);
+		String project = getScopeName(view);
+		if (project != null)
+			db.makeProjectScopedQuery(q, project);
+		try {
+			ResultSet rs = db.query(q);
+			while (rs.next())
+				completions.add(rs.getString(TagDB.TAGS_NAME));
+			rs.close();
+		} catch (SQLException e) {
+		}
+		if (completions.isEmpty()) {
+			JOptionPane.showMessageDialog(view, "No completions");
+			return;
+		}
+		String [] options = new String[completions.size()];
+		int i = 0;
+		for (String completion: completions) {
+			options[i] = completion;
+			i++;
+		}
+		String sel = (String) JOptionPane.showInputDialog(view,
+			"Select completion:", "Completion dialog", 0,
+			null, options, options[0]);
+		if (sel == null)
+			return;
+		String completion = sel.substring(prefix.length());
+		view.getBuffer().insert(
+			view.getTextArea().getCaretPosition(), completion);
+	}
+
 	// Returns the prefix for code completion
 	public static String getCompletionPrefix(View view) {
 		String tag = view.getTextArea().getSelectedText();

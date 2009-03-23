@@ -46,5 +46,10 @@
 			ctagsinterface.main.CtagsInterfacePlugin.changeDbSettings(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-complete-from-db" NO_REPEAT="TRUE">
+		<CODE>
+			ctagsinterface.main.CtagsInterfacePlugin.completeFromDb(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
