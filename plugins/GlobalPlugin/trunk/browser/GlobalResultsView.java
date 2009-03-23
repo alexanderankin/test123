@@ -17,7 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
 import marker.FileMarker;
 import marker.MarkerSetsPlugin;
@@ -61,12 +60,7 @@ public class GlobalResultsView extends JPanel implements
 		symbolPanel.add(toolbar, BorderLayout.EAST);
 		statusLbl = new JLabel("");
 		toolbar.add(statusLbl, BorderLayout.EAST);
-		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-		renderer.setClosedIcon(null);
-		renderer.setOpenIcon(null);
-		renderer.setLeafIcon(null);
 		tree = new SourceLinkTree(view);
-		tree.setCellRenderer(renderer);
 		add(new JScrollPane(tree), BorderLayout.CENTER);
 		multiCB = new JCheckBox("Multiple", true);
 		toolbar.add(multiCB, BorderLayout.CENTER);
