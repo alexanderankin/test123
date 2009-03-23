@@ -19,7 +19,7 @@
 package pvdebug;
 
 //{{{ Imports
-import java.util.List;
+import java.util.Collection;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
@@ -58,8 +58,8 @@ public final class PVDebugPlugin extends EBPlugin {
 		System.err.println("Type:    " + msg.getType());
 
 		if (msg.getType() == ProjectUpdate.Type.FILES_CHANGED) {
-			List<VPTFile> added = msg.getAddedFiles();
-			List<VPTFile> removed = msg.getRemovedFiles();
+			Collection<VPTFile> added = msg.getAddedFiles();
+			Collection<VPTFile> removed = msg.getRemovedFiles();
 
 			if (added != null)
 			for (VPTFile f : added) {

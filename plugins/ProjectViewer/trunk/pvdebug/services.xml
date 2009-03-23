@@ -6,5 +6,8 @@
 	<SERVICE CLASS="projectviewer.action.Action" NAME="PVDebug Dummy Action">
 		new pvdebug.DummyAction();
 	</SERVICE>
+	<SERVICE CLASS="projectviewer.config.VersionControlService" NAME="PVDebug Dummy Version Control">
+		new pvdebug.DummyVC();
+	</SERVICE>
 </SERVICES>
 
