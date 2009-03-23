@@ -42,11 +42,6 @@ public final class ImportUtils
 	private static final String FILTER_CFG_FILES_GLOB	= ".globfilter.files";
 	private static final String FILTER_CFG_DIRS_GLOB	= ".globfilter.directories";
 
-	private static final ExtensionManager.ManagedService service = new MService();
-	static {
-		ExtensionManager.getInstance().register(service);
-	}
-
 	/**
 	 * Return the list of filters available for importing files.
 	 *
@@ -185,29 +180,6 @@ public final class ImportUtils
 	private ImportUtils()
 	{
 		/* never called. */
-	}
-
-
-	/**
-	 * Dummy implementation of a managed service, just to allow
-	 * the user to enable or disable the 3rd-party file filters.
-	 */
-	private static class MService implements ExtensionManager.ManagedService
-	{
-		public Class getServiceClass()
-		{
-			return ImporterFileFilter.class;
-		}
-
-		public String getServiceName()
-		{
-			return jEdit.getProperty("projectviewer.extensions.file_filters");
-		}
-
-		public void updateExtensions(List<Object> l)
-		{
-
-		}
 	}
 
 }

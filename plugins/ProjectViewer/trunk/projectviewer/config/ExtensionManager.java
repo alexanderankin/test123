@@ -28,6 +28,9 @@ import java.util.List;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.ServiceManager;
 
+import projectviewer.gui.NodePropertyProvider;
+import projectviewer.importer.ImporterFileFilter;
+
 /**
  *	A central location for managing ProjectViewer extensions (deployed
  *	as jEdit services). Allows for instantiation, cleanup, configuration
@@ -40,7 +43,7 @@ import org.gjt.sp.jedit.ServiceManager;
 public class ExtensionManager
 {
 
-	//{{{ Singleton
+	//{{{ Static members
 	private static ExtensionManager instance = new ExtensionManager();
 
 	public static ExtensionManager getInstance() {
@@ -48,29 +51,33 @@ public class ExtensionManager
 	}
 	//}}}
 
+	private List<ManagedService> dummyServices;
 	private List<WeakReference<ManagedService>> services;
 
 	private ExtensionManager()
 	{
 		services = new LinkedList<WeakReference<ManagedService>>();
+		dummyServices = new LinkedList<ManagedService>();
+		dummyServices.add(new DummyManagedService(NodePropertyProvider.class,
+												  "node_props"));
+		dummyServices.add(new DummyManagedService(ImporterFileFilter.class,
+												  "file_filters"));
+		dummyServices.add(new DummyManagedService(VersionControlService.class,
+												  "version_control"));
 	}
 
 	/**
 	 * Returns the list of registered services.
 	 *
-	 * @return A read-only list of services, or null if no services are
-	 *         registered.
+	 * @return A list of services.
 	 */
 	public List<ManagedService> getServices()
 	{
-		if (services == null) {
-			return null;
-		}
 		List<ManagedService> copy = new LinkedList<ManagedService>();
 		for (WeakReference<ManagedService> svc : services) {
 			copy.add(svc.get());
 		}
-		return Collections.unmodifiableList(copy);
+		return copy;
 	}
 
 	/**
@@ -163,6 +170,45 @@ public class ExtensionManager
 		 *	old extension list and use the new one.
 		 */
 		public void updateExtensions(List<Object> l);
+
+	}
+
+
+	/**
+	 * A generic "dummy" implementation of a managed service, for
+	 * extensions that don't really need live notification of changes;
+	 * this allows these extensions to be configured through PV's
+	 * option pane, but avoids having to implement dummy services
+	 * when they're not really needed.
+	 */
+	private class DummyManagedService implements ManagedService
+	{
+
+		private Class clazz;
+		private String property;
+
+		DummyManagedService(Class clazz,
+							String property)
+		{
+			this.clazz = clazz;
+			this.property = property;
+			services.add(new WeakReference<ManagedService>(this));
+		}
+
+		public Class getServiceClass()
+		{
+			return clazz;
+		}
+
+		public String getServiceName()
+		{
+			return jEdit.getProperty("projectviewer.extensions." + property);
+		}
+
+		public void updateExtensions(List<Object> l)
+		{
+
+		}
 
 	}
 
