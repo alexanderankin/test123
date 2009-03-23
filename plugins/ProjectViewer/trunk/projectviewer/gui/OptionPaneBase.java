@@ -64,6 +64,23 @@ public abstract class OptionPaneBase extends AbstractOptionPane
 	protected void addComponent(JComponent comp,
 								String labelProp)
 	{
+		addComponent(comp, labelProp, GridBagConstraints.HORIZONTAL);
+	}
+
+
+	/**
+	 * Adds a component adding an optional label, and setting its tooltip
+	 * if one is available, using the given fill property.
+	 *
+	 * @param	comp		Component to add.
+	 * @param	labelProp	Label property name. Tooltip is the same property,
+	 *						with ".tooltip" added.
+	 * @param	fill		GridBagConstraints fill property.
+	 */
+	protected void addComponent(JComponent comp,
+								String labelProp,
+								int fill)
+	{
 		JLabel label = null;
 
 		if (labelProp != null) {
@@ -79,9 +96,9 @@ public abstract class OptionPaneBase extends AbstractOptionPane
 		}
 
 		if (label == null) {
-			addComponent(comp, GridBagConstraints.HORIZONTAL);
+			addComponent(comp, fill);
 		} else {
-			addComponent(label, comp, GridBagConstraints.HORIZONTAL);
+			addComponent(label, comp, fill);
 		}
 	}
 
@@ -105,6 +122,24 @@ public abstract class OptionPaneBase extends AbstractOptionPane
 		cb.setSelected(selected);
 		addComponent(cb);
 		return cb;
+	}
+
+
+	/**
+	 * Creates a label based on the given property name.
+	 *
+	 * @param	prop	Property name for the text / tooltip.
+	 *
+	 * @return A new JLabel.
+	 */
+	protected JLabel createLabel(String prop)
+	{
+		JLabel label = new JLabel(prop(prop));
+		String tooltip = prop(prop + ".tooltip");
+		if (tooltip != null) {
+			label.setToolTipText(tooltip);
+		}
+		return label;
 	}
 
 

@@ -107,6 +107,9 @@ projectviewer.appconfig.no_value=No value found
 projectviewer.appconfig.application=Application
 projectviewer.appconfig.extension=File name glob:
 
+projectviewer.options.extenal_apps.extensions=Extensions:
+projectviewer.options.extenal_apps.application=Application:
+
 projectviewer.filterconfig.no_value=No value found
 projectviewer.filterconfig.filter=Filter Name:
 projectviewer.filterconfig.extension=File name glob:

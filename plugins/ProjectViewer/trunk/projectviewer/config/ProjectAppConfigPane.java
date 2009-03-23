@@ -45,9 +45,10 @@ import java.util.Iterator;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
 
 import common.gui.FileTextField;
+
+import projectviewer.gui.OptionPaneBase;
 //}}}
 
 /**
@@ -56,15 +57,8 @@ import common.gui.FileTextField;
  *	@author		Matthew Payne
  *	@version	$Id$
  */
-public class ProjectAppConfigPane extends AbstractOptionPane
+public class ProjectAppConfigPane extends OptionPaneBase
 							  	  implements ActionListener {
-
-	//{{{ Static constants
-
-	private final static String EXTENSIONS_TEXT  = "Extension:";
-	private final static String APPLICATION_TEXT = "Application:";
-
-	//}}}
 
  	//{{{ Private members
 	private JButton cmdAdd;
@@ -80,10 +74,13 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	private int editingRow;
 	//}}}
 
-	//{{{ +ProjectAppConfigPane() : <init>
-	public ProjectAppConfigPane() {
-		super("projectviewer.optiongroup.external_apps");
-	} //}}}
+
+	public ProjectAppConfigPane()
+	{
+		super("projectviewer.optiongroup.external_apps",
+			  "projectviewer.options.extenal_apps");
+	}
+
 
 	//{{{ #_init() : void
 	protected void _init() {
@@ -95,8 +92,8 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		GridBagConstraints gbc = new GridBagConstraints();
 		input.setLayout(gb);
 
-		JLabel extLabel = new JLabel(EXTENSIONS_TEXT);
-		JLabel appLabel = new JLabel(APPLICATION_TEXT);
+		JLabel extLabel = createLabel("extensions");
+		JLabel appLabel = createLabel("application");
 
 		appField = new FileTextField(true);
 		extField = new JTextField();
@@ -111,7 +108,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 
 		// first line: labels
 
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;

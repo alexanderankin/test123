@@ -46,10 +46,10 @@ import java.util.List;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
+import projectviewer.gui.OptionPaneBase;
 import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -60,8 +60,9 @@ import projectviewer.vpt.VPTProject;
  *	@author		Rudolf Widmann, reused code from Matthew Payne
  *	@version	$Id$
  */
-public class ProjectFilterPane extends AbstractOptionPane
-							   implements ActionListener {
+public class ProjectFilterPane extends OptionPaneBase
+							   implements ActionListener
+{
 
 	//{{{ Static constants
 
@@ -88,10 +89,11 @@ public class ProjectFilterPane extends AbstractOptionPane
 	private int editingRow;
 	//}}}
 
-	//{{{ +ProjectFilterPane() : <init>
-	public ProjectFilterPane() {
-		super("projectviewer.optiongroup.filter");
-	} //}}}
+	ProjectFilterPane()
+	{
+		super("projectviewer.optiongroup.filter",
+			  "projectviewer.filterconfig");
+	}
 
 	//{{{ #_init() : void
 	protected void _init() {
@@ -103,8 +105,8 @@ public class ProjectFilterPane extends AbstractOptionPane
 		GridBagConstraints gbc = new GridBagConstraints();
 		input.setLayout(gb);
 
-		JLabel extLabel = new JLabel(jEdit.getProperty("projectviewer.filterconfig.extension"));
-		JLabel filterLabel = new JLabel(jEdit.getProperty("projectviewer.filterconfig.filter"));
+		JLabel extLabel = createLabel("extension");
+		JLabel filterLabel = createLabel("filter");
 
 		filterName = new JTextField();
 		extField = new JTextField();
@@ -119,8 +121,8 @@ public class ProjectFilterPane extends AbstractOptionPane
 		cmdDelete = new JButton(jEdit.getProperty("projectviewer.common.delete"));
 		cmdDelete.addActionListener(this);
 
-		cmdDown = new JButton(jEdit.getProperty("projectviewer.filterconfig.down"));
-		cmdUp = new JButton(jEdit.getProperty("projectviewer.filterconfig.up"));
+		cmdDown = new JButton(prop("down"));
+		cmdUp = new JButton(prop("up"));
 
 		// first line: labels
 
