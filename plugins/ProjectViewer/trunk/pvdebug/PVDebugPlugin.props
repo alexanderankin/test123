@@ -13,7 +13,7 @@ plugin.pvdebug.PVDebugPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0.0
 
 #{{{ Debug
 
-plugin.projectviewer.pvdebug.PVDebugPlugin.option-pane=dummy
+plugin.projectviewer.pvdebug.PVDebugPlugin.vc-option-pane=dummy
 options.dummy.code=new pvdebug.DummyOptionPane("dummy");
 options.dummy.label=Dummy
 
